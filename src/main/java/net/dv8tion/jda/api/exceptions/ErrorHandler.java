@@ -19,9 +19,9 @@ package net.dv8tion.jda.api.exceptions;
 import net.dv8tion.jda.api.requests.ErrorResponse;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.internal.utils.Checks;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -73,7 +73,7 @@ public class ErrorHandler implements Consumer<Throwable>
      * @param base
      *        The base {@link Consumer}
      */
-    public ErrorHandler(@Nonnull Consumer<? super Throwable> base)
+    public ErrorHandler(@NotNull Consumer<? super Throwable> base)
     {
         Checks.notNull(base, "Consumer");
         this.base = base;
@@ -103,8 +103,8 @@ public class ErrorHandler implements Consumer<Throwable>
      *
      * @return This ErrorHandler with the applied ignore cases
      */
-    @Nonnull
-    public ErrorHandler ignore(@Nonnull ErrorResponse ignored, @Nonnull ErrorResponse... errorResponses)
+    @NotNull
+    public ErrorHandler ignore(@NotNull ErrorResponse ignored, @NotNull ErrorResponse... errorResponses)
     {
         Checks.notNull(ignored, "ErrorResponse");
         Checks.noneNull(errorResponses, "ErrorResponse");
@@ -134,8 +134,8 @@ public class ErrorHandler implements Consumer<Throwable>
      *
      * @return This ErrorHandler with the applied ignore cases
      */
-    @Nonnull
-    public ErrorHandler ignore(@Nonnull Collection<ErrorResponse> errorResponses)
+    @NotNull
+    public ErrorHandler ignore(@NotNull Collection<ErrorResponse> errorResponses)
     {
         return handle(errorResponses, empty);
     }
@@ -163,8 +163,8 @@ public class ErrorHandler implements Consumer<Throwable>
      *
      * @see    java.net.SocketTimeoutException
      */
-    @Nonnull
-    public ErrorHandler ignore(@Nonnull Class<?> clazz, @Nonnull Class<?>... classes)
+    @NotNull
+    public ErrorHandler ignore(@NotNull Class<?> clazz, @NotNull Class<?>... classes)
     {
         Checks.notNull(clazz, "Classes");
         Checks.noneNull(classes, "Classes");
@@ -201,8 +201,8 @@ public class ErrorHandler implements Consumer<Throwable>
      *
      * @see    ErrorResponseException
      */
-    @Nonnull
-    public ErrorHandler ignore(@Nonnull Predicate<? super Throwable> condition)
+    @NotNull
+    public ErrorHandler ignore(@NotNull Predicate<? super Throwable> condition)
     {
         return handle(condition, empty);
     }
@@ -232,8 +232,8 @@ public class ErrorHandler implements Consumer<Throwable>
      *
      * @return This ErrorHandler with the applied handler
      */
-    @Nonnull
-    public ErrorHandler handle(@Nonnull ErrorResponse response, @Nonnull Consumer<? super ErrorResponseException> handler)
+    @NotNull
+    public ErrorHandler handle(@NotNull ErrorResponse response, @NotNull Consumer<? super ErrorResponseException> handler)
     {
         Checks.notNull(response, "ErrorResponse");
         return handle(EnumSet.of(response), handler);
@@ -264,8 +264,8 @@ public class ErrorHandler implements Consumer<Throwable>
      *
      * @return This ErrorHandler with the applied handler
      */
-    @Nonnull
-    public ErrorHandler handle(@Nonnull Collection<ErrorResponse> errorResponses, @Nonnull Consumer<? super ErrorResponseException> handler)
+    @NotNull
+    public ErrorHandler handle(@NotNull Collection<ErrorResponse> errorResponses, @NotNull Consumer<? super ErrorResponseException> handler)
     {
         Checks.notNull(handler, "Handler");
         Checks.noneNull(errorResponses, "ErrorResponse");
@@ -295,8 +295,8 @@ public class ErrorHandler implements Consumer<Throwable>
      *
      * @return This ErrorHandler with the applied handler
      */
-    @Nonnull
-    public <T> ErrorHandler handle(@Nonnull Class<T> clazz, @Nonnull Consumer<? super T> handler)
+    @NotNull
+    public <T> ErrorHandler handle(@NotNull Class<T> clazz, @NotNull Consumer<? super T> handler)
     {
         Checks.notNull(clazz, "Class");
         Checks.notNull(handler, "Handler");
@@ -329,8 +329,8 @@ public class ErrorHandler implements Consumer<Throwable>
      *
      * @return This ErrorHandler with the applied handler
      */
-    @Nonnull
-    public <T> ErrorHandler handle(@Nonnull Class<T> clazz, @Nonnull Predicate<? super T> condition, @Nonnull Consumer<? super T> handler)
+    @NotNull
+    public <T> ErrorHandler handle(@NotNull Class<T> clazz, @NotNull Predicate<? super T> condition, @NotNull Consumer<? super T> handler)
     {
         Checks.notNull(clazz, "Class");
         Checks.notNull(handler, "Handler");
@@ -362,8 +362,8 @@ public class ErrorHandler implements Consumer<Throwable>
      *
      * @return This ErrorHandler with the applied handler
      */
-    @Nonnull
-    public ErrorHandler handle(@Nonnull Collection<Class<?>> clazz, @Nullable Predicate<? super Throwable> condition, @Nonnull Consumer<? super Throwable> handler)
+    @NotNull
+    public ErrorHandler handle(@NotNull Collection<Class<?>> clazz, @Nullable Predicate<? super Throwable> condition, @NotNull Consumer<? super Throwable> handler)
     {
         Checks.noneNull(clazz, "Class");
         Checks.notNull(handler, "Handler");
@@ -392,8 +392,8 @@ public class ErrorHandler implements Consumer<Throwable>
      *
      * @return This ErrorHandler with the applied handler
      */
-    @Nonnull
-    public ErrorHandler handle(@Nonnull Predicate<? super Throwable> condition, @Nonnull Consumer<? super Throwable> handler)
+    @NotNull
+    public ErrorHandler handle(@NotNull Predicate<? super Throwable> condition, @NotNull Consumer<? super Throwable> handler)
     {
         Checks.notNull(condition, "Condition");
         Checks.notNull(handler, "Handler");

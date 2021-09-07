@@ -19,10 +19,10 @@ package net.dv8tion.jda.api.managers;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.Region;
 import net.dv8tion.jda.api.entities.*;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Collection;
 
 /**
@@ -93,7 +93,7 @@ public interface ChannelManager extends Manager<ChannelManager>
      *
      * @return ChannelManager for chaining convenience
      */
-    @Nonnull
+    @NotNull
     @Override
     ChannelManager reset(long fields);
 
@@ -120,7 +120,7 @@ public interface ChannelManager extends Manager<ChannelManager>
      *
      * @return ChannelManager for chaining convenience
      */
-    @Nonnull
+    @NotNull
     @Override
     ChannelManager reset(long... fields);
 
@@ -130,7 +130,7 @@ public interface ChannelManager extends Manager<ChannelManager>
      *
      * @return The {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel}
      */
-    @Nonnull
+    @NotNull
     GuildChannel getChannel();
 
     /**
@@ -138,7 +138,7 @@ public interface ChannelManager extends Manager<ChannelManager>
      *
      * @return The ChannelType
      */
-    @Nonnull
+    @NotNull
     default ChannelType getType()
     {
         return getChannel().getType();
@@ -151,7 +151,7 @@ public interface ChannelManager extends Manager<ChannelManager>
      *
      * @return The parent {@link net.dv8tion.jda.api.entities.Guild Guild}
      */
-    @Nonnull
+    @NotNull
     default Guild getGuild()
     {
         return getChannel().getGuild();
@@ -162,7 +162,7 @@ public interface ChannelManager extends Manager<ChannelManager>
      *
      * @return ChannelManager for chaining convenience
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     ChannelManager clearOverridesAdded();
 
@@ -171,7 +171,7 @@ public interface ChannelManager extends Manager<ChannelManager>
      *
      * @return ChannelManager for chaining convenience
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     ChannelManager clearOverridesRemoved();
 
@@ -198,9 +198,9 @@ public interface ChannelManager extends Manager<ChannelManager>
      * @see    #putPermissionOverride(IPermissionHolder, Collection, Collection)
      * @see    net.dv8tion.jda.api.Permission#getRaw(Permission...) Permission.getRaw(Permission...)
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    ChannelManager putPermissionOverride(@Nonnull IPermissionHolder permHolder, long allow, long deny);
+    ChannelManager putPermissionOverride(@NotNull IPermissionHolder permHolder, long allow, long deny);
 
     /**
      * Adds an override for the specified {@link net.dv8tion.jda.api.entities.IPermissionHolder IPermissionHolder}
@@ -226,9 +226,9 @@ public interface ChannelManager extends Manager<ChannelManager>
      * @see    #putPermissionOverride(IPermissionHolder, long, long)
      * @see    java.util.EnumSet EnumSet
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    default ChannelManager putPermissionOverride(@Nonnull IPermissionHolder permHolder, @Nullable Collection<Permission> allow, @Nullable Collection<Permission> deny)
+    default ChannelManager putPermissionOverride(@NotNull IPermissionHolder permHolder, @Nullable Collection<Permission> allow, @Nullable Collection<Permission> deny)
     {
         long allowRaw = allow == null ? 0 : Permission.getRaw(allow);
         long denyRaw  = deny  == null ? 0 : Permission.getRaw(deny);
@@ -255,7 +255,7 @@ public interface ChannelManager extends Manager<ChannelManager>
      * @see    #putRolePermissionOverride(long, Collection, Collection)
      * @see    net.dv8tion.jda.api.Permission#getRaw(Permission...) Permission.getRaw(Permission...)
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     ChannelManager putRolePermissionOverride(long roleId, long allow, long deny);
 
@@ -279,7 +279,7 @@ public interface ChannelManager extends Manager<ChannelManager>
      * @see    #putRolePermissionOverride(long, long, long)
      * @see    java.util.EnumSet EnumSet
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     default ChannelManager putRolePermissionOverride(long roleId, @Nullable Collection<Permission> allow, @Nullable Collection<Permission> deny)
     {
@@ -308,7 +308,7 @@ public interface ChannelManager extends Manager<ChannelManager>
      * @see    #putMemberPermissionOverride(long, Collection, Collection)
      * @see    net.dv8tion.jda.api.Permission#getRaw(Permission...) Permission.getRaw(Permission...)
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     ChannelManager putMemberPermissionOverride(long memberId, long allow, long deny);
 
@@ -332,7 +332,7 @@ public interface ChannelManager extends Manager<ChannelManager>
      * @see    #putMemberPermissionOverride(long, long, long)
      * @see    java.util.EnumSet EnumSet
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     default ChannelManager putMemberPermissionOverride(long memberId, @Nullable Collection<Permission> allow, @Nullable Collection<Permission> deny)
     {
@@ -357,9 +357,9 @@ public interface ChannelManager extends Manager<ChannelManager>
      *
      * @return ChannelManager for chaining convenience
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    ChannelManager removePermissionOverride(@Nonnull IPermissionHolder permHolder);
+    ChannelManager removePermissionOverride(@NotNull IPermissionHolder permHolder);
 
     /**
      * Removes the {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverride} for the specified
@@ -374,7 +374,7 @@ public interface ChannelManager extends Manager<ChannelManager>
      *
      * @return ChannelManager for chaining convenience
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     ChannelManager removePermissionOverride(long id);
 
@@ -398,7 +398,7 @@ public interface ChannelManager extends Manager<ChannelManager>
      *
      * @see     <a href="https://discord.com/developers/docs/topics/permissions#permission-syncing" target="_blank">Discord Documentation - Permission Syncing</a>
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     default ChannelManager sync()
     {
@@ -430,9 +430,9 @@ public interface ChannelManager extends Manager<ChannelManager>
      *
      * @see     <a href="https://discord.com/developers/docs/topics/permissions#permission-syncing" target="_blank">Discord Documentation - Permission Syncing</a>
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    ChannelManager sync(@Nonnull GuildChannel syncSource);
+    ChannelManager sync(@NotNull GuildChannel syncSource);
 
     /**
      * Sets the <b><u>name</u></b> of the selected {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel}.
@@ -451,9 +451,9 @@ public interface ChannelManager extends Manager<ChannelManager>
      *
      * @return ChannelManager for chaining convenience
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    ChannelManager setName(@Nonnull String name);
+    ChannelManager setName(@NotNull String name);
 
     /**
      * Sets the <b><u>{@link net.dv8tion.jda.api.entities.Category Parent Category}</u></b>
@@ -472,7 +472,7 @@ public interface ChannelManager extends Manager<ChannelManager>
      *
      * @since  3.4.0
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     ChannelManager setParent(@Nullable Category category);
 
@@ -488,7 +488,7 @@ public interface ChannelManager extends Manager<ChannelManager>
      *
      * @return ChannelManager for chaining convenience
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     ChannelManager setPosition(int position);
 
@@ -510,7 +510,7 @@ public interface ChannelManager extends Manager<ChannelManager>
      *
      * @return ChannelManager for chaining convenience
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     ChannelManager setTopic(@Nullable String topic);
 
@@ -525,7 +525,7 @@ public interface ChannelManager extends Manager<ChannelManager>
      *
      * @return ChannelManager for chaining convenience
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     ChannelManager setNSFW(boolean nsfw);
 
@@ -551,7 +551,7 @@ public interface ChannelManager extends Manager<ChannelManager>
      *
      * @return ChannelManager for chaining convenience
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     ChannelManager setSlowmode(int slowmode);
 
@@ -572,7 +572,7 @@ public interface ChannelManager extends Manager<ChannelManager>
      *
      * @return ChannelManager for chaining convenience
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     ChannelManager setUserLimit(int userLimit);
 
@@ -595,7 +595,7 @@ public interface ChannelManager extends Manager<ChannelManager>
      *
      * @see    net.dv8tion.jda.api.entities.Guild#getFeatures()
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     ChannelManager setBitrate(int bitrate);
 
@@ -631,7 +631,7 @@ public interface ChannelManager extends Manager<ChannelManager>
      *         If the provided Region is not in the list of usable values
      * @return ChannelManager for chaining convenience
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     ChannelManager setRegion(Region region);
 
@@ -654,7 +654,7 @@ public interface ChannelManager extends Manager<ChannelManager>
      *
      * @since  4.2.1
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     ChannelManager setNews(boolean news);
 }

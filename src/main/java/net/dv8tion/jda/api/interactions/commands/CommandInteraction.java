@@ -16,15 +16,15 @@
 
 package net.dv8tion.jda.api.interactions.commands;
 
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.interactions.Interaction;
-import net.dv8tion.jda.internal.entities.MemberImpl;
-import net.dv8tion.jda.internal.entities.RoleImpl;
-import net.dv8tion.jda.internal.entities.UserImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -50,7 +50,7 @@ public interface CommandInteraction extends Interaction
      *
      * @return The command name
      */
-    @Nonnull
+    @NotNull
     String getName();
 
     /**
@@ -102,7 +102,7 @@ public interface CommandInteraction extends Interaction
      *
      * @return The command path
      */
-    @Nonnull
+    @NotNull
     default String getCommandPath()
     {
         StringBuilder builder = new StringBuilder(getName());
@@ -113,7 +113,7 @@ public interface CommandInteraction extends Interaction
         return builder.toString();
     }
 
-    @Nonnull
+    @NotNull
     @Override
     MessageChannel getChannel();
 
@@ -129,7 +129,7 @@ public interface CommandInteraction extends Interaction
      *
      * @return The command id
      */
-    @Nonnull
+    @NotNull
     default String getCommandId()
     {
         return Long.toUnsignedString(getCommandIdLong());
@@ -141,7 +141,7 @@ public interface CommandInteraction extends Interaction
      *
      * @return The options passed for this command
      */
-    @Nonnull
+    @NotNull
     List<OptionMapping> getOptions();
 
     /**
@@ -157,8 +157,8 @@ public interface CommandInteraction extends Interaction
      *
      * @see   #getOption(String)
      */
-    @Nonnull
-    default List<OptionMapping> getOptionsByName(@Nonnull String name)
+    @NotNull
+    default List<OptionMapping> getOptionsByName(@NotNull String name)
     {
         Checks.notNull(name, "Name");
         return getOptions().stream()
@@ -177,8 +177,8 @@ public interface CommandInteraction extends Interaction
      *
      * @return The list of options
      */
-    @Nonnull
-    default List<OptionMapping> getOptionsByType(@Nonnull OptionType type)
+    @NotNull
+    default List<OptionMapping> getOptionsByType(@NotNull OptionType type)
     {
         Checks.notNull(type, "Type");
         return getOptions().stream()
@@ -198,7 +198,7 @@ public interface CommandInteraction extends Interaction
      * @return The option with the provided name, or null if that option is not provided
      */
     @Nullable
-    default OptionMapping getOption(@Nonnull String name)
+    default OptionMapping getOption(@NotNull String name)
     {
         List<OptionMapping> options = getOptionsByName(name);
         return options.isEmpty() ? null : options.get(0);
@@ -212,7 +212,7 @@ public interface CommandInteraction extends Interaction
      *
      * @return The command String for this slash command
      */
-    @Nonnull
+    @NotNull
     default String getCommandString()
     {
         //Get text like the text that appears when you hover over the interaction in discord

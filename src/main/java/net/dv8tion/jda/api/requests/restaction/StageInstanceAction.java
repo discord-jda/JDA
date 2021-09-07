@@ -18,10 +18,10 @@ package net.dv8tion.jda.api.requests.restaction;
 
 import net.dv8tion.jda.api.entities.StageInstance;
 import net.dv8tion.jda.api.requests.RestAction;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 
@@ -32,15 +32,15 @@ import java.util.function.BooleanSupplier;
  */
 public interface StageInstanceAction extends RestAction<StageInstance>
 {
-    @Nonnull
+    @NotNull
     @Override
     StageInstanceAction setCheck(@Nullable BooleanSupplier checks);
 
-    @Nonnull
+    @NotNull
     @Override
-    StageInstanceAction timeout(long timeout, @Nonnull TimeUnit unit);
+    StageInstanceAction timeout(long timeout, @NotNull TimeUnit unit);
 
-    @Nonnull
+    @NotNull
     @Override
     StageInstanceAction deadline(long timestamp);
 
@@ -56,9 +56,9 @@ public interface StageInstanceAction extends RestAction<StageInstance>
      *
      * @return The StageInstanceAction for chaining
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    StageInstanceAction setTopic(@Nonnull String topic);
+    StageInstanceAction setTopic(@NotNull String topic);
 
     /**
      * Sets the {@link net.dv8tion.jda.api.entities.StageInstance.PrivacyLevel PrivacyLevel} for the stage instance.
@@ -72,7 +72,7 @@ public interface StageInstanceAction extends RestAction<StageInstance>
      *
      * @return The StageInstanceAction for chaining
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    StageInstanceAction setPrivacyLevel(@Nonnull StageInstance.PrivacyLevel level);
+    StageInstanceAction setPrivacyLevel(@NotNull StageInstance.PrivacyLevel level);
 }

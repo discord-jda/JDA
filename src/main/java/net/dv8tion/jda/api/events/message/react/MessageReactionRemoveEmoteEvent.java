@@ -20,8 +20,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.MessageReaction;
 import net.dv8tion.jda.api.events.message.GenericMessageEvent;
-
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Indicates that all reactions for a specific emoji/emote were removed by a moderator.
@@ -42,7 +41,7 @@ public class MessageReactionRemoveEmoteEvent extends GenericMessageEvent
 {
     private final MessageReaction reaction;
 
-    public MessageReactionRemoveEmoteEvent(@Nonnull JDA api, long responseNumber, long messageId, @Nonnull MessageChannel channel, @Nonnull MessageReaction reaction)
+    public MessageReactionRemoveEmoteEvent(@NotNull JDA api, long responseNumber, long messageId, @NotNull MessageChannel channel, @NotNull MessageReaction reaction)
     {
         super(api, responseNumber, messageId, channel);
         this.reaction = reaction;
@@ -53,7 +52,7 @@ public class MessageReactionRemoveEmoteEvent extends GenericMessageEvent
      *
      * @return The removed MessageReaction
      */
-    @Nonnull
+    @NotNull
     public MessageReaction getReaction()
     {
         return reaction;
@@ -65,7 +64,7 @@ public class MessageReactionRemoveEmoteEvent extends GenericMessageEvent
      *
      * @return The ReactionEmote
      */
-    @Nonnull
+    @NotNull
     public MessageReaction.ReactionEmote getReactionEmote()
     {
         return reaction.getReactionEmote();

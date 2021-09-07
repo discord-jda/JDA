@@ -20,8 +20,8 @@ import net.dv8tion.jda.api.events.GenericEvent;
 import net.dv8tion.jda.api.hooks.IEventManager;
 import net.dv8tion.jda.api.hooks.InterfacedEventManager;
 import net.dv8tion.jda.internal.JDAImpl;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.RejectedExecutionException;
@@ -48,19 +48,19 @@ public class EventManagerProxy implements IEventManager
     }
 
     @Override
-    public void register(@Nonnull Object listener)
+    public void register(@NotNull Object listener)
     {
         this.subject.register(listener);
     }
 
     @Override
-    public void unregister(@Nonnull Object listener)
+    public void unregister(@NotNull Object listener)
     {
         this.subject.unregister(listener);
     }
 
     @Override
-    public void handle(@Nonnull GenericEvent event)
+    public void handle(@NotNull GenericEvent event)
     {
         try
         {
@@ -80,7 +80,7 @@ public class EventManagerProxy implements IEventManager
         }
     }
 
-    private void handleInternally(@Nonnull GenericEvent event)
+    private void handleInternally(@NotNull GenericEvent event)
     {
         // don't allow mere exceptions to obstruct the socket handler
         try
@@ -93,7 +93,7 @@ public class EventManagerProxy implements IEventManager
         }
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public List<Object> getRegisteredListeners()
     {

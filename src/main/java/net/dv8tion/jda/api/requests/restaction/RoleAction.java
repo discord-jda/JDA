@@ -20,10 +20,10 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.internal.utils.Checks;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.awt.*;
 import java.util.Collection;
 import java.util.concurrent.TimeUnit;
@@ -43,15 +43,15 @@ import java.util.function.BooleanSupplier;
  */
 public interface RoleAction extends AuditableRestAction<Role>
 {
-    @Nonnull
+    @NotNull
     @Override
     RoleAction setCheck(@Nullable BooleanSupplier checks);
 
-    @Nonnull
+    @NotNull
     @Override
-    RoleAction timeout(long timeout, @Nonnull TimeUnit unit);
+    RoleAction timeout(long timeout, @NotNull TimeUnit unit);
 
-    @Nonnull
+    @NotNull
     @Override
     RoleAction deadline(long timestamp);
 
@@ -60,7 +60,7 @@ public interface RoleAction extends AuditableRestAction<Role>
      *
      * @return The guild
      */
-    @Nonnull
+    @NotNull
     Guild getGuild();
 
     /**
@@ -74,7 +74,7 @@ public interface RoleAction extends AuditableRestAction<Role>
      *
      * @return The current RoleAction, for chaining convenience
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     RoleAction setName(@Nullable String name);
 
@@ -86,7 +86,7 @@ public interface RoleAction extends AuditableRestAction<Role>
      *
      * @return The current RoleAction, for chaining convenience
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     RoleAction setHoisted(@Nullable Boolean hoisted);
 
@@ -99,7 +99,7 @@ public interface RoleAction extends AuditableRestAction<Role>
      *
      * @return The current RoleAction, for chaining convenience
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     RoleAction setMentionable(@Nullable Boolean mentionable);
 
@@ -111,7 +111,7 @@ public interface RoleAction extends AuditableRestAction<Role>
      *
      * @return The current RoleAction, for chaining convenience
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     default RoleAction setColor(@Nullable Color color)
     {
@@ -128,7 +128,7 @@ public interface RoleAction extends AuditableRestAction<Role>
      *
      * @return The current RoleAction, for chaining convenience
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     RoleAction setColor(@Nullable Integer rgb);
 
@@ -149,7 +149,7 @@ public interface RoleAction extends AuditableRestAction<Role>
      *
      * @see    net.dv8tion.jda.api.Permission#getRaw(net.dv8tion.jda.api.Permission...) Permission.getRaw(Permission...)
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     default RoleAction setPermissions(@Nullable Permission... permissions)
     {
@@ -177,7 +177,7 @@ public interface RoleAction extends AuditableRestAction<Role>
      * @see    net.dv8tion.jda.api.Permission#getRaw(java.util.Collection) Permission.getRaw(Collection)
      * @see    java.util.EnumSet EnumSet
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     default RoleAction setPermissions(@Nullable Collection<Permission> permissions)
     {
@@ -205,7 +205,7 @@ public interface RoleAction extends AuditableRestAction<Role>
      * @see    net.dv8tion.jda.api.Permission#getRaw(java.util.Collection)
      * @see    net.dv8tion.jda.api.Permission#getRaw(net.dv8tion.jda.api.Permission...)
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     RoleAction setPermissions(@Nullable Long permissions);
 }

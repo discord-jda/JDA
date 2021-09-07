@@ -16,9 +16,9 @@
 package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.requests.RestAction;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
 
 /**
  * Represents the connection used for direct messaging.
@@ -32,7 +32,7 @@ public interface PrivateChannel extends MessageChannel
      *
      * @return A non-null {@link net.dv8tion.jda.api.entities.User User}.
      */
-    @Nonnull
+    @NotNull
     User getUser();
 
     /**
@@ -42,7 +42,7 @@ public interface PrivateChannel extends MessageChannel
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: Void
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     RestAction<Void> close();
 }

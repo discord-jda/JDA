@@ -21,9 +21,9 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.MessageType;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.ComponentLayout;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -66,7 +66,7 @@ public class DataMessage extends AbstractMessage
         return mentionedUsers;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public MessageType getType()
     {
@@ -105,14 +105,14 @@ public class DataMessage extends AbstractMessage
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public List<MessageEmbed> getEmbeds()
     {
         return embeds == null ? Collections.emptyList() : new ArrayList<>(embeds);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public List<ActionRow> getActionRows()
     {

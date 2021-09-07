@@ -28,9 +28,9 @@ import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.PermissionUtil;
 import okhttp3.RequestBody;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.EnumSet;
 
@@ -59,7 +59,7 @@ public class RoleManagerImpl extends ManagerBase<RoleManager> implements RoleMan
             checkPermissions();
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Role getRole()
     {
@@ -69,7 +69,7 @@ public class RoleManagerImpl extends ManagerBase<RoleManager> implements RoleMan
         return role;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @CheckReturnValue
     public RoleManagerImpl reset(long fields)
@@ -82,7 +82,7 @@ public class RoleManagerImpl extends ManagerBase<RoleManager> implements RoleMan
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @CheckReturnValue
     public RoleManagerImpl reset(long... fields)
@@ -91,7 +91,7 @@ public class RoleManagerImpl extends ManagerBase<RoleManager> implements RoleMan
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @CheckReturnValue
     public RoleManagerImpl reset()
@@ -102,10 +102,10 @@ public class RoleManagerImpl extends ManagerBase<RoleManager> implements RoleMan
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @CheckReturnValue
-    public RoleManagerImpl setName(@Nonnull String name)
+    public RoleManagerImpl setName(@NotNull String name)
     {
         Checks.notBlank(name, "Name");
         name = name.trim();
@@ -116,7 +116,7 @@ public class RoleManagerImpl extends ManagerBase<RoleManager> implements RoleMan
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @CheckReturnValue
     public RoleManagerImpl setPermissions(long perms)
@@ -138,7 +138,7 @@ public class RoleManagerImpl extends ManagerBase<RoleManager> implements RoleMan
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @CheckReturnValue
     public RoleManagerImpl setColor(int rgb)
@@ -148,7 +148,7 @@ public class RoleManagerImpl extends ManagerBase<RoleManager> implements RoleMan
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @CheckReturnValue
     public RoleManagerImpl setHoisted(boolean hoisted)
@@ -158,7 +158,7 @@ public class RoleManagerImpl extends ManagerBase<RoleManager> implements RoleMan
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @CheckReturnValue
     public RoleManagerImpl setMentionable(boolean mentionable)
@@ -168,20 +168,20 @@ public class RoleManagerImpl extends ManagerBase<RoleManager> implements RoleMan
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @CheckReturnValue
-    public RoleManagerImpl givePermissions(@Nonnull Collection<Permission> perms)
+    public RoleManagerImpl givePermissions(@NotNull Collection<Permission> perms)
     {
         Checks.noneNull(perms, "Permissions");
         setupPermissions();
         return setPermissions(this.permissions | Permission.getRaw(perms));
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @CheckReturnValue
-    public RoleManagerImpl revokePermissions(@Nonnull Collection<Permission> perms)
+    public RoleManagerImpl revokePermissions(@NotNull Collection<Permission> perms)
     {
         Checks.noneNull(perms, "Permissions");
         setupPermissions();

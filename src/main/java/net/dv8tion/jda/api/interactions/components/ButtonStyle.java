@@ -16,7 +16,7 @@
 
 package net.dv8tion.jda.api.interactions.components;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * The available styles used for {@link Button Buttons}.
@@ -67,7 +67,7 @@ public enum ButtonStyle
      *
      * @return The button style or {@link #UNKNOWN}
      */
-    @Nonnull
+    @NotNull
     public static ButtonStyle fromKey(int key)
     {
         for (ButtonStyle style : values())

@@ -21,8 +21,6 @@ import net.dv8tion.jda.api.entities.VoiceChannel;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nonnull;
-
 /**
  * Indicates that a {@link VoiceChannel VoiceChannel}'s region changed.
  *
@@ -44,7 +42,7 @@ public class VoiceChannelUpdateRegionEvent extends GenericVoiceChannelUpdateEven
      *
      * @return The old region
      */
-    @Nonnull
+    @NotNull
     public Region getOldRegion()
     {
         return getOldValue() == null ? Region.AUTOMATIC : Region.fromKey(getOldValue());
@@ -55,7 +53,7 @@ public class VoiceChannelUpdateRegionEvent extends GenericVoiceChannelUpdateEven
      *
      * @return The new region
      */
-    @Nonnull
+    @NotNull
     public Region getNewRegion()
     {
         return getNewValue() == null ? Region.AUTOMATIC : Region.fromKey(getNewValue());

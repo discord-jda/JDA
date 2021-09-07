@@ -18,8 +18,7 @@ package net.dv8tion.jda.api.events.channel.store.update;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.StoreChannel;
-
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Indicates that a {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannel}'s name changed.
@@ -32,8 +31,8 @@ public class StoreChannelUpdateNameEvent extends GenericStoreChannelUpdateEvent<
 {
     public static final String IDENTIFIER = "name";
 
-    public StoreChannelUpdateNameEvent(@Nonnull JDA api, long responseNumber, @Nonnull StoreChannel channel,
-                                       @Nonnull String prev)
+    public StoreChannelUpdateNameEvent(@NotNull JDA api, long responseNumber, @NotNull StoreChannel channel,
+                                       @NotNull String prev)
     {
         super(api, responseNumber, channel, prev, channel.getName(), IDENTIFIER);
     }
@@ -43,7 +42,7 @@ public class StoreChannelUpdateNameEvent extends GenericStoreChannelUpdateEvent<
      *
      * @return The old name
      */
-    @Nonnull
+    @NotNull
     public String getOldName()
     {
         return getOldValue();
@@ -54,20 +53,20 @@ public class StoreChannelUpdateNameEvent extends GenericStoreChannelUpdateEvent<
      *
      * @return The new name
      */
-    @Nonnull
+    @NotNull
     public String getNewName()
     {
         return getNewValue();
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public String getOldValue()
     {
         return super.getOldValue();
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public String getNewValue()
     {

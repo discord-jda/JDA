@@ -28,9 +28,9 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
 import okhttp3.RequestBody;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
 
 public class WebhookManagerImpl extends ManagerBase<WebhookManager> implements WebhookManager
 {
@@ -53,14 +53,14 @@ public class WebhookManagerImpl extends ManagerBase<WebhookManager> implements W
             checkPermissions();
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Webhook getWebhook()
     {
         return webhook;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @CheckReturnValue
     public WebhookManagerImpl reset(long fields)
@@ -75,7 +75,7 @@ public class WebhookManagerImpl extends ManagerBase<WebhookManager> implements W
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @CheckReturnValue
     public WebhookManagerImpl reset(long... fields)
@@ -84,7 +84,7 @@ public class WebhookManagerImpl extends ManagerBase<WebhookManager> implements W
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @CheckReturnValue
     public WebhookManagerImpl reset()
@@ -96,10 +96,10 @@ public class WebhookManagerImpl extends ManagerBase<WebhookManager> implements W
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @CheckReturnValue
-    public WebhookManagerImpl setName(@Nonnull String name)
+    public WebhookManagerImpl setName(@NotNull String name)
     {
         Checks.notBlank(name, "Name");
         this.name = name;
@@ -107,7 +107,7 @@ public class WebhookManagerImpl extends ManagerBase<WebhookManager> implements W
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @CheckReturnValue
     public WebhookManagerImpl setAvatar(Icon icon)
@@ -117,10 +117,10 @@ public class WebhookManagerImpl extends ManagerBase<WebhookManager> implements W
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @CheckReturnValue
-    public WebhookManagerImpl setChannel(@Nonnull TextChannel channel)
+    public WebhookManagerImpl setChannel(@NotNull TextChannel channel)
     {
         Checks.notNull(channel, "Channel");
         Checks.check(channel.getGuild().equals(getGuild()), "Channel is not from the same guild");

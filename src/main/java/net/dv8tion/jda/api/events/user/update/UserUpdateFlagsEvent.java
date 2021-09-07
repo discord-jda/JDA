@@ -17,8 +17,8 @@ package net.dv8tion.jda.api.events.user.update;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.User;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.util.EnumSet;
 
 /**
@@ -43,7 +43,7 @@ public class UserUpdateFlagsEvent extends GenericUserUpdateEvent<EnumSet<User.Us
 {
     public static final String IDENTIFIER = "public_flags";
     
-    public UserUpdateFlagsEvent(@Nonnull JDA api, long responseNumber, @Nonnull User user, @Nonnull EnumSet<User.UserFlag> oldFlags)
+    public UserUpdateFlagsEvent(@NotNull JDA api, long responseNumber, @NotNull User user, @NotNull EnumSet<User.UserFlag> oldFlags)
     {
         super(api, responseNumber, user, oldFlags, user.getFlags(), IDENTIFIER);
     }
@@ -53,7 +53,7 @@ public class UserUpdateFlagsEvent extends GenericUserUpdateEvent<EnumSet<User.Us
      * 
      * @return {@link EnumSet} of the old {@link net.dv8tion.jda.api.entities.User.UserFlag UserFlags}
      */
-    @Nonnull
+    @NotNull
     public EnumSet<User.UserFlag> getOldFlags()
     {
         return getOldValue();
@@ -74,7 +74,7 @@ public class UserUpdateFlagsEvent extends GenericUserUpdateEvent<EnumSet<User.Us
      *
      * @return The new {@code EnumSet<{@link net.dv8tion.jda.api.entities.User.UserFlag UserFlag}>} representation of the User's flags.
      */
-    @Nonnull
+    @NotNull
     public EnumSet<User.UserFlag> getNewFlags()
     {
         return getNewValue();

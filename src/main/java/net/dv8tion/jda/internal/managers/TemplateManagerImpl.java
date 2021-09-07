@@ -26,10 +26,10 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
 import okhttp3.RequestBody;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 public class TemplateManagerImpl extends ManagerBase<TemplateManager> implements TemplateManager
 {
@@ -54,7 +54,7 @@ public class TemplateManagerImpl extends ManagerBase<TemplateManager> implements
             checkPermissions();
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @CheckReturnValue
     public TemplateManagerImpl reset(long fields)
@@ -67,7 +67,7 @@ public class TemplateManagerImpl extends ManagerBase<TemplateManager> implements
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @CheckReturnValue
     public TemplateManagerImpl reset(long... fields)
@@ -76,7 +76,7 @@ public class TemplateManagerImpl extends ManagerBase<TemplateManager> implements
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @CheckReturnValue
     public TemplateManagerImpl reset()
@@ -87,10 +87,10 @@ public class TemplateManagerImpl extends ManagerBase<TemplateManager> implements
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @CheckReturnValue
-    public TemplateManagerImpl setName(@Nonnull String name)
+    public TemplateManagerImpl setName(@NotNull String name)
     {
         Checks.notEmpty(name, "Name");
         Checks.notLonger(name, 100, "Name");
@@ -99,7 +99,7 @@ public class TemplateManagerImpl extends ManagerBase<TemplateManager> implements
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @CheckReturnValue
     public TemplateManagerImpl setDescription(@Nullable String description)

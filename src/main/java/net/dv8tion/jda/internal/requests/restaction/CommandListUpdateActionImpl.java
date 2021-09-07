@@ -28,8 +28,8 @@ import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
 import okhttp3.RequestBody;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -48,37 +48,37 @@ public class CommandListUpdateActionImpl extends RestActionImpl<List<Command>> i
         this.guild = guild;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public CommandListUpdateAction timeout(long timeout, @Nonnull TimeUnit unit)
+    public CommandListUpdateAction timeout(long timeout, @NotNull TimeUnit unit)
     {
         return (CommandListUpdateAction) super.timeout(timeout, unit);
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public CommandListUpdateAction addCheck(@Nonnull BooleanSupplier checks)
+    public CommandListUpdateAction addCheck(@NotNull BooleanSupplier checks)
     {
         return (CommandListUpdateAction) super.addCheck(checks);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public CommandListUpdateAction setCheck(BooleanSupplier checks)
     {
         return (CommandListUpdateAction) super.setCheck(checks);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public CommandListUpdateAction deadline(long timestamp)
     {
         return (CommandListUpdateAction) super.deadline(timestamp);
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public CommandListUpdateAction addCommands(@Nonnull Collection<? extends CommandData> commands)
+    public CommandListUpdateAction addCommands(@NotNull Collection<? extends CommandData> commands)
     {
         Checks.noneNull(commands, "Command");
         Checks.check(this.commands.size() + commands.size() <= 100, "Cannot have more than 100 commands! Try using subcommands instead.");

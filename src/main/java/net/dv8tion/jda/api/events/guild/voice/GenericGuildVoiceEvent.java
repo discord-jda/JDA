@@ -20,8 +20,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.guild.GenericGuildEvent;
-
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Indicates that a {@link net.dv8tion.jda.api.entities.Guild Guild} voice event is fired.
@@ -45,7 +44,7 @@ public abstract class GenericGuildVoiceEvent extends GenericGuildEvent
 {
     protected final Member member;
 
-    public GenericGuildVoiceEvent(@Nonnull JDA api, long responseNumber, @Nonnull Member member)
+    public GenericGuildVoiceEvent(@NotNull JDA api, long responseNumber, @NotNull Member member)
     {
         super(api, responseNumber, member.getGuild());
         this.member = member;
@@ -56,7 +55,7 @@ public abstract class GenericGuildVoiceEvent extends GenericGuildEvent
      *
      * @return The affected Member
      */
-    @Nonnull
+    @NotNull
     public Member getMember()
     {
         return member;
@@ -68,7 +67,7 @@ public abstract class GenericGuildVoiceEvent extends GenericGuildEvent
      *
      * @return The {@link net.dv8tion.jda.api.entities.GuildVoiceState GuildVoiceState} of the member
      */
-    @Nonnull
+    @NotNull
     public GuildVoiceState getVoiceState()
     {
         return member.getVoiceState();

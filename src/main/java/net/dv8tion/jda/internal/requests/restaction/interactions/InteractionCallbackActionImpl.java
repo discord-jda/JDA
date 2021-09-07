@@ -30,8 +30,8 @@ import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.IOUtil;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
@@ -113,7 +113,7 @@ public abstract class InteractionCallbackActionImpl extends RestActionImpl<Inter
         super.queue(success, failure);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public CompletableFuture<InteractionHook> submit(boolean shouldQueue)
     {

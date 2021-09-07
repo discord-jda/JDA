@@ -27,9 +27,9 @@ import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.JDALogger;
 import net.dv8tion.jda.internal.utils.tuple.Pair;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
-import javax.annotation.Nonnull;
 import javax.security.auth.login.LoginException;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -52,7 +52,7 @@ public class SessionControllerAdapter implements SessionController
     }
 
     @Override
-    public void appendSession(@Nonnull SessionConnectNode node)
+    public void appendSession(@NotNull SessionConnectNode node)
     {
         removeSession(node);
         connectQueue.add(node);
@@ -60,7 +60,7 @@ public class SessionControllerAdapter implements SessionController
     }
 
     @Override
-    public void removeSession(@Nonnull SessionConnectNode node)
+    public void removeSession(@NotNull SessionConnectNode node)
     {
         connectQueue.remove(node);
     }
@@ -77,18 +77,18 @@ public class SessionControllerAdapter implements SessionController
         globalRatelimit.set(ratelimit);
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public String getGateway(@Nonnull JDA api)
+    public String getGateway(@NotNull JDA api)
     {
         Route.CompiledRoute route = Route.Misc.GATEWAY.compile();
         return new RestActionImpl<String>(api, route,
                 (response, request) -> response.getObject().getString("url")).priority().complete();
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public ShardedGateway getShardedGateway(@Nonnull JDA api)
+    public ShardedGateway getShardedGateway(@NotNull JDA api)
     {
         AccountTypeException.check(api.getAccountType(), AccountType.BOT);
         return new RestActionImpl<ShardedGateway>(api, Route.Misc.GATEWAY_BOT.compile())
@@ -119,10 +119,10 @@ public class SessionControllerAdapter implements SessionController
         }.priority().complete();
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @SuppressWarnings({"deprecation", "RedundantSuppression"})
-    public Pair<String, Integer> getGatewayBot(@Nonnull JDA api)
+    public Pair<String, Integer> getGatewayBot(@NotNull JDA api)
     {
         ShardedGateway bot = getShardedGateway(api);
         return Pair.of(bot.getUrl(), bot.getShardTotal());

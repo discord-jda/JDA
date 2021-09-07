@@ -21,9 +21,8 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.guild.GenericGuildEvent;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Indicates that a user was removed from a {@link Guild}. This includes kicks, bans, and leaves respectively.
@@ -44,7 +43,7 @@ public class GuildMemberRemoveEvent extends GenericGuildEvent
     private final User user;
     private final Member member;
 
-    public GuildMemberRemoveEvent(@Nonnull JDA api, long responseNumber, @Nonnull Guild guild, @Nonnull User user, @Nullable Member member)
+    public GuildMemberRemoveEvent(@NotNull JDA api, long responseNumber, @NotNull Guild guild, @NotNull User user, @Nullable Member member)
     {
         super(api, responseNumber, guild);
         this.user = user;
@@ -56,7 +55,7 @@ public class GuildMemberRemoveEvent extends GenericGuildEvent
      *
      * @return The user who was removed
      */
-    @Nonnull
+    @NotNull
     public User getUser()
     {
         return user;

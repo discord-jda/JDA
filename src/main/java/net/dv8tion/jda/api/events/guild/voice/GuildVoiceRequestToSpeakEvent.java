@@ -21,10 +21,10 @@ import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.StageChannel;
 import net.dv8tion.jda.api.requests.RestAction;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.time.OffsetDateTime;
 
 /**
@@ -49,7 +49,7 @@ public class GuildVoiceRequestToSpeakEvent extends GenericGuildVoiceEvent
 {
     private final OffsetDateTime oldTime, newTime;
 
-    public GuildVoiceRequestToSpeakEvent(@Nonnull JDA api, long responseNumber, @Nonnull Member member,
+    public GuildVoiceRequestToSpeakEvent(@NotNull JDA api, long responseNumber, @NotNull Member member,
                                          @Nullable OffsetDateTime oldTime, @Nullable OffsetDateTime newTime)
     {
         super(api, responseNumber, member);
@@ -92,7 +92,7 @@ public class GuildVoiceRequestToSpeakEvent extends GenericGuildVoiceEvent
      *
      * @return {@link RestAction}
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     public RestAction<Void> approveSpeaker()
     {
@@ -112,7 +112,7 @@ public class GuildVoiceRequestToSpeakEvent extends GenericGuildVoiceEvent
      *
      * @return {@link RestAction}
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     public RestAction<Void> declineSpeaker()
     {

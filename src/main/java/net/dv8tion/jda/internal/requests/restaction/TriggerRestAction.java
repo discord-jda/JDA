@@ -25,8 +25,8 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import okhttp3.RequestBody;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -117,7 +117,7 @@ public class TriggerRestAction<T> extends RestActionImpl<T>
         });
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public CompletableFuture<T> submit(boolean shouldQueue)
     {

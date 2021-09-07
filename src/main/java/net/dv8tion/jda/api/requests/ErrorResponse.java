@@ -19,9 +19,9 @@ package net.dv8tion.jda.api.requests;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.utils.Checks;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
@@ -130,7 +130,7 @@ public enum ErrorResponse
         return code;
     }
 
-    @Nonnull
+    @NotNull
     public String getMeaning()
     {
         return meaning;
@@ -159,8 +159,8 @@ public enum ErrorResponse
      *
      * @return {@link Predicate} which returns true, if the error response is equal to this
      */
-    @Nonnull
-    public static Predicate<Throwable> test(@Nonnull ErrorResponse... responses)
+    @NotNull
+    public static Predicate<Throwable> test(@NotNull ErrorResponse... responses)
     {
         Checks.noneNull(responses, "ErrorResponse");
         EnumSet<ErrorResponse> set = EnumSet.noneOf(ErrorResponse.class);
@@ -177,8 +177,8 @@ public enum ErrorResponse
      *
      * @return {@link Predicate} which returns true, if the error response is equal to this
      */
-    @Nonnull
-    public static Predicate<Throwable> test(@Nonnull Collection<ErrorResponse> responses)
+    @NotNull
+    public static Predicate<Throwable> test(@NotNull Collection<ErrorResponse> responses)
     {
         Checks.noneNull(responses, "ErrorResponse");
         EnumSet<ErrorResponse> set = EnumSet.copyOf(responses);
@@ -186,7 +186,7 @@ public enum ErrorResponse
 
     }
 
-    @Nonnull
+    @NotNull
     public static ErrorResponse fromCode(int code)
     {
         for (ErrorResponse error : values())
@@ -197,7 +197,7 @@ public enum ErrorResponse
         return SERVER_ERROR;
     }
 
-    @Nonnull
+    @NotNull
     public static ErrorResponse fromJSON(@Nullable DataObject obj)
     {
         if (obj == null || obj.isNull("code"))

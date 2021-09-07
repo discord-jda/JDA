@@ -21,9 +21,9 @@ import net.dv8tion.jda.api.requests.restaction.ChannelAction;
 import net.dv8tion.jda.api.requests.restaction.order.CategoryOrderAction;
 import net.dv8tion.jda.api.requests.restaction.order.ChannelOrderAction;
 import net.dv8tion.jda.api.requests.restaction.order.OrderAction;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
 import java.util.List;
 
 /**
@@ -53,7 +53,7 @@ public interface Category extends GuildChannel
      *
      * @return Immutable list of all child channels
      */
-    @Nonnull
+    @NotNull
     List<GuildChannel> getChannels();
 
     /**
@@ -64,7 +64,7 @@ public interface Category extends GuildChannel
      *
      * @since  4.0.0
      */
-    @Nonnull
+    @NotNull
     List<StoreChannel> getStoreChannels();
 
     /**
@@ -73,7 +73,7 @@ public interface Category extends GuildChannel
      *
      * @return Immutable list of all child TextChannels
      */
-    @Nonnull
+    @NotNull
     List<TextChannel> getTextChannels();
 
     /**
@@ -82,7 +82,7 @@ public interface Category extends GuildChannel
      *
      * @return Immutable list of all child VoiceChannels
      */
-    @Nonnull
+    @NotNull
     List<VoiceChannel> getVoiceChannels();
 
     /**
@@ -118,9 +118,9 @@ public interface Category extends GuildChannel
      * @return A specific {@link ChannelAction ChannelAction}
      *         <br>This action allows to set fields for the new TextChannel before creating it
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    ChannelAction<TextChannel> createTextChannel(@Nonnull String name);
+    ChannelAction<TextChannel> createTextChannel(@NotNull String name);
 
     /**
      * Creates a new {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel} with this Category as parent.
@@ -155,9 +155,9 @@ public interface Category extends GuildChannel
      * @return A specific {@link ChannelAction ChannelAction}
      *         <br>This action allows to set fields for the new VoiceChannel before creating it
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    ChannelAction<VoiceChannel> createVoiceChannel(@Nonnull String name);
+    ChannelAction<VoiceChannel> createVoiceChannel(@NotNull String name);
 
     /**
      * Creates a new {@link net.dv8tion.jda.api.entities.StageChannel StageChannel} with this Category as parent.
@@ -192,9 +192,9 @@ public interface Category extends GuildChannel
      * @return A specific {@link ChannelAction ChannelAction}
      *         <br>This action allows to set fields for the new StageChannel before creating it
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    ChannelAction<StageChannel> createStageChannel(@Nonnull String name);
+    ChannelAction<StageChannel> createStageChannel(@NotNull String name);
 
     /**
      * Modifies the positional order of this Category's nested {@link #getTextChannels() TextChannels} and {@link #getStoreChannels() StoreChannels}.
@@ -220,7 +220,7 @@ public interface Category extends GuildChannel
      *         ordering the Category's {@link net.dv8tion.jda.api.entities.TextChannel TextChannels}
      *         and {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannels}.
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     CategoryOrderAction modifyTextChannelPositions();
 
@@ -247,15 +247,15 @@ public interface Category extends GuildChannel
      * @return A {@link CategoryOrderAction CategoryOrderAction} for
      *         ordering the Category's {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels}.
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     CategoryOrderAction modifyVoiceChannelPositions();
 
-    @Nonnull
+    @NotNull
     @Override
-    ChannelAction<Category> createCopy(@Nonnull Guild guild);
+    ChannelAction<Category> createCopy(@NotNull Guild guild);
 
-    @Nonnull
+    @NotNull
     @Override
     ChannelAction<Category> createCopy();
 }

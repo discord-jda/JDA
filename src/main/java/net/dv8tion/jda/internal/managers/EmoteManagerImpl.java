@@ -28,9 +28,9 @@ import net.dv8tion.jda.internal.entities.EmoteImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
 import okhttp3.RequestBody;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -64,14 +64,14 @@ public class EmoteManagerImpl extends ManagerBase<EmoteManager> implements Emote
         return g;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Emote getEmote()
     {
         return emote;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @CheckReturnValue
     public EmoteManagerImpl reset(long fields)
@@ -84,7 +84,7 @@ public class EmoteManagerImpl extends ManagerBase<EmoteManager> implements Emote
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @CheckReturnValue
     public EmoteManagerImpl reset(long... fields)
@@ -93,7 +93,7 @@ public class EmoteManagerImpl extends ManagerBase<EmoteManager> implements Emote
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @CheckReturnValue
     public EmoteManagerImpl reset()
@@ -104,10 +104,10 @@ public class EmoteManagerImpl extends ManagerBase<EmoteManager> implements Emote
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @CheckReturnValue
-    public EmoteManagerImpl setName(@Nonnull String name)
+    public EmoteManagerImpl setName(@NotNull String name)
     {
         Checks.notBlank(name, "Name");
         name = name.trim();
@@ -117,7 +117,7 @@ public class EmoteManagerImpl extends ManagerBase<EmoteManager> implements Emote
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @CheckReturnValue
     public EmoteManagerImpl setRoles(Set<Role> roles)

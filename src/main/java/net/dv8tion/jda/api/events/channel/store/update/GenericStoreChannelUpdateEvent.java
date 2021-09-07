@@ -20,9 +20,8 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.StoreChannel;
 import net.dv8tion.jda.api.events.UpdateEvent;
 import net.dv8tion.jda.api.events.channel.store.GenericStoreChannelEvent;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Indicates that a {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannel} was updated.
@@ -36,8 +35,8 @@ public abstract class GenericStoreChannelUpdateEvent<T> extends GenericStoreChan
     protected final T next;
     protected final String identifier;
 
-    public GenericStoreChannelUpdateEvent(@Nonnull JDA api, long responseNumber, @Nonnull StoreChannel channel,
-                                          @Nullable T prev, @Nullable T next, @Nonnull String identifier)
+    public GenericStoreChannelUpdateEvent(@NotNull JDA api, long responseNumber, @NotNull StoreChannel channel,
+                                          @Nullable T prev, @Nullable T next, @NotNull String identifier)
     {
         super(api, responseNumber, channel);
         this.prev = prev;
@@ -45,14 +44,14 @@ public abstract class GenericStoreChannelUpdateEvent<T> extends GenericStoreChan
         this.identifier = identifier;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public String getPropertyIdentifier()
     {
         return identifier;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public StoreChannel getEntity()
     {

@@ -19,8 +19,7 @@ package net.dv8tion.jda.api.events.guild.invite;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.Invite;
-
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Indicates that an {@link Invite Invite} was created in a {@link net.dv8tion.jda.api.entities.Invite.Guild Guild}.
@@ -36,7 +35,7 @@ public class GuildInviteCreateEvent extends GenericGuildInviteEvent
 {
     private final Invite invite;
 
-    public GuildInviteCreateEvent(@Nonnull JDA api, long responseNumber, @Nonnull Invite invite, @Nonnull GuildChannel channel)
+    public GuildInviteCreateEvent(@NotNull JDA api, long responseNumber, @NotNull Invite invite, @NotNull GuildChannel channel)
     {
         super(api, responseNumber, invite.getCode(), channel);
         this.invite = invite;
@@ -47,7 +46,7 @@ public class GuildInviteCreateEvent extends GenericGuildInviteEvent
      *
      * @return {@link Invite}
      */
-    @Nonnull
+    @NotNull
     public Invite getInvite()
     {
         return invite;

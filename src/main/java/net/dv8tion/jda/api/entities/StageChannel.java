@@ -19,10 +19,10 @@ package net.dv8tion.jda.api.entities;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.requests.restaction.StageInstanceAction;
 import net.dv8tion.jda.internal.utils.Checks;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 /**
  * Represents a Stage Channel.
@@ -63,9 +63,9 @@ public interface StageChannel extends VoiceChannel
      *
      * @return {@link StageInstanceAction}
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    StageInstanceAction createStageInstance(@Nonnull String topic);
+    StageInstanceAction createStageInstance(@NotNull String topic);
 
     /**
      * Whether this member is considered a moderator for this stage channel.
@@ -88,7 +88,7 @@ public interface StageChannel extends VoiceChannel
      *
      * @return True, if the provided member is a stage moderator
      */
-    default boolean isModerator(@Nonnull Member member)
+    default boolean isModerator(@NotNull Member member)
     {
         Checks.notNull(member, "Member");
         return member.hasPermission(this, Permission.MANAGE_CHANNEL, Permission.VOICE_MUTE_OTHERS, Permission.VOICE_MOVE_OTHERS);

@@ -18,10 +18,10 @@ package net.dv8tion.jda.api.requests.restaction;
 
 import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.Invite;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 
@@ -33,15 +33,15 @@ import java.util.function.BooleanSupplier;
  */
 public interface InviteAction extends AuditableRestAction<Invite>
 {
-    @Nonnull
+    @NotNull
     @Override
     InviteAction setCheck(@Nullable BooleanSupplier checks);
 
-    @Nonnull
+    @NotNull
     @Override
-    InviteAction timeout(long timeout, @Nonnull TimeUnit unit);
+    InviteAction timeout(long timeout, @NotNull TimeUnit unit);
 
-    @Nonnull
+    @NotNull
     @Override
     InviteAction deadline(long timestamp);
 
@@ -57,7 +57,7 @@ public interface InviteAction extends AuditableRestAction<Invite>
      *
      * @return The current InviteAction for chaining.
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     InviteAction setMaxAge(@Nullable final Integer maxAge);
 
@@ -75,9 +75,9 @@ public interface InviteAction extends AuditableRestAction<Invite>
      *
      * @return The current InviteAction for chaining.
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    InviteAction setMaxAge(@Nullable final Long maxAge, @Nonnull final TimeUnit timeUnit);
+    InviteAction setMaxAge(@Nullable final Long maxAge, @NotNull final TimeUnit timeUnit);
 
     /**
      * Sets the max uses for the invite. Set this to {@code 0} if the invite should have unlimited uses. Default is {@code 0}.
@@ -91,7 +91,7 @@ public interface InviteAction extends AuditableRestAction<Invite>
      *
      * @return The current InviteAction for chaining.
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     InviteAction setMaxUses(@Nullable final Integer maxUses);
 
@@ -103,7 +103,7 @@ public interface InviteAction extends AuditableRestAction<Invite>
      *
      * @return The current InviteAction for chaining.
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     InviteAction setTemporary(@Nullable final Boolean temporary);
 
@@ -115,7 +115,7 @@ public interface InviteAction extends AuditableRestAction<Invite>
      *
      * @return The current InviteAction for chaining.
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     InviteAction setUnique(@Nullable final Boolean unique);
 }

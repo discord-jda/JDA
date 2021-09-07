@@ -21,8 +21,8 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.interactions.ButtonImpl;
 import net.dv8tion.jda.internal.interactions.SelectionMenuImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -51,8 +51,8 @@ public class ActionRow implements ComponentLayout, Iterable<Component>
      *
      * @return ActionRow instance
      */
-    @Nonnull
-    public static ActionRow fromData(@Nonnull DataObject data)
+    @NotNull
+    public static ActionRow fromData(@NotNull DataObject data)
     {
         Checks.notNull(data, "Data");
         ActionRow row = new ActionRow();
@@ -88,8 +88,8 @@ public class ActionRow implements ComponentLayout, Iterable<Component>
      *
      * @return The action row
      */
-    @Nonnull
-    public static ActionRow of(@Nonnull Collection<? extends Component> components)
+    @NotNull
+    public static ActionRow of(@NotNull Collection<? extends Component> components)
     {
         Checks.noneNull(components, "Components");
         return of(components.toArray(new Component[0]));
@@ -107,8 +107,8 @@ public class ActionRow implements ComponentLayout, Iterable<Component>
      *
      * @return The action row
      */
-    @Nonnull
-    public static ActionRow of(@Nonnull Component... components)
+    @NotNull
+    public static ActionRow of(@NotNull Component... components)
     {
         Checks.noneNull(components, "Components");
         Checks.check(components.length > 0, "Cannot have empty row!");
@@ -132,7 +132,7 @@ public class ActionRow implements ComponentLayout, Iterable<Component>
      *
      * @return The list of components
      */
-    @Nonnull
+    @NotNull
     @Override
     public List<Component> getComponents()
     {
@@ -144,7 +144,7 @@ public class ActionRow implements ComponentLayout, Iterable<Component>
      *
      * @return Immutable list of buttons
      */
-    @Nonnull
+    @NotNull
     @Override
     public List<Button> getButtons()
     {
@@ -155,14 +155,14 @@ public class ActionRow implements ComponentLayout, Iterable<Component>
                 .collect(Collectors.toList()));
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Type getType()
     {
         return Type.ACTION_ROW;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public DataObject toData()
     {
@@ -171,7 +171,7 @@ public class ActionRow implements ComponentLayout, Iterable<Component>
                 .put("components", DataArray.fromCollection(components));
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Iterator<Component> iterator()
     {

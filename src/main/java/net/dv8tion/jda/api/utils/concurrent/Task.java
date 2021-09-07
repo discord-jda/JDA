@@ -16,7 +16,8 @@
 
 package net.dv8tion.jda.api.utils.concurrent;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.function.Consumer;
 
 /**
@@ -50,8 +51,8 @@ public interface Task<T>
      *
      * @return The current Task instance for chaining
      */
-    @Nonnull
-    Task<T> onError(@Nonnull Consumer<? super Throwable> callback);
+    @NotNull
+    Task<T> onError(@NotNull Consumer<? super Throwable> callback);
 
     /**
      * Provide a callback for success handling.
@@ -65,8 +66,8 @@ public interface Task<T>
      *
      * @return The current Task instance for chaining
      */
-    @Nonnull
-    Task<T> onSuccess(@Nonnull Consumer<? super T> callback);
+    @NotNull
+    Task<T> onSuccess(@NotNull Consumer<? super T> callback);
 
     /**
      * Blocks the current thread until the result is ready.
@@ -82,7 +83,7 @@ public interface Task<T>
      *
      * @return The result value
      */
-    @Nonnull
+    @NotNull
     T get();
 
     /**

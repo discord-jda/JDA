@@ -18,8 +18,7 @@ package net.dv8tion.jda.api.events.stage.update;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.StageInstance;
-
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Indicates that a {@link net.dv8tion.jda.api.entities.StageInstance StageInstance} updated its {@link net.dv8tion.jda.api.entities.StageInstance.PrivacyLevel PrivacyLevel}.
@@ -33,19 +32,19 @@ public class StageInstanceUpdatePrivacyLevelEvent extends GenericStageInstanceUp
 {
     public static final String IDENTIFIER = "privacy_level";
 
-    public StageInstanceUpdatePrivacyLevelEvent(@Nonnull JDA api, long responseNumber, @Nonnull StageInstance stageInstance, @Nonnull StageInstance.PrivacyLevel previous)
+    public StageInstanceUpdatePrivacyLevelEvent(@NotNull JDA api, long responseNumber, @NotNull StageInstance stageInstance, @NotNull StageInstance.PrivacyLevel previous)
     {
         super(api, responseNumber, stageInstance, previous, stageInstance.getPrivacyLevel(), IDENTIFIER);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public StageInstance.PrivacyLevel getOldValue()
     {
         return super.getOldValue();
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public StageInstance.PrivacyLevel getNewValue()
     {

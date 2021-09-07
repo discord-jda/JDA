@@ -18,8 +18,7 @@ package net.dv8tion.jda.api.events.channel.store.update;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.StoreChannel;
-
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Indicates that a {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannel}'s position changed.
@@ -32,7 +31,7 @@ public class StoreChannelUpdatePositionEvent extends GenericStoreChannelUpdateEv
 {
     public static final String IDENTIFIER = "position";
 
-    public StoreChannelUpdatePositionEvent(@Nonnull JDA api, long responseNumber, @Nonnull StoreChannel channel, int prev)
+    public StoreChannelUpdatePositionEvent(@NotNull JDA api, long responseNumber, @NotNull StoreChannel channel, int prev)
     {
         super(api, responseNumber, channel, prev, channel.getPositionRaw(), IDENTIFIER);
     }

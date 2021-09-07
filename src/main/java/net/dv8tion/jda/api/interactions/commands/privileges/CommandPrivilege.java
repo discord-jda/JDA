@@ -25,8 +25,8 @@ import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.internal.utils.Checks;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.Map;
 
@@ -47,7 +47,7 @@ public class CommandPrivilege implements ISnowflake, SerializableData
     private final boolean enabled;
     private final long id;
 
-    public CommandPrivilege(@Nonnull Type type, boolean enabled, long id)
+    public CommandPrivilege(@NotNull Type type, boolean enabled, long id)
     {
         Checks.notNull(type, "Type");
         this.type = type;
@@ -63,8 +63,8 @@ public class CommandPrivilege implements ISnowflake, SerializableData
      *
      * @return CommandPrivilege instance
      */
-    @Nonnull
-    public static CommandPrivilege enable(@Nonnull Role role)
+    @NotNull
+    public static CommandPrivilege enable(@NotNull Role role)
     {
         Checks.notNull(role, "Role");
         return new CommandPrivilege(Type.ROLE, true, role.getIdLong());
@@ -78,8 +78,8 @@ public class CommandPrivilege implements ISnowflake, SerializableData
      *
      * @return CommandPrivilege instance
      */
-    @Nonnull
-    public static CommandPrivilege enable(@Nonnull User user)
+    @NotNull
+    public static CommandPrivilege enable(@NotNull User user)
     {
         Checks.notNull(user, "User");
         return new CommandPrivilege(Type.USER, true, user.getIdLong());
@@ -93,8 +93,8 @@ public class CommandPrivilege implements ISnowflake, SerializableData
      *
      * @return CommandPrivilege instance
      */
-    @Nonnull
-    public static CommandPrivilege enableUser(@Nonnull String userId)
+    @NotNull
+    public static CommandPrivilege enableUser(@NotNull String userId)
     {
         return enableUser(MiscUtil.parseSnowflake(userId));
     }
@@ -107,7 +107,7 @@ public class CommandPrivilege implements ISnowflake, SerializableData
      *
      * @return CommandPrivilege instance
      */
-    @Nonnull
+    @NotNull
     public static CommandPrivilege enableUser(long userId)
     {
         return new CommandPrivilege(Type.USER, true, userId);
@@ -121,8 +121,8 @@ public class CommandPrivilege implements ISnowflake, SerializableData
      *
      * @return CommandPrivilege instance
      */
-    @Nonnull
-    public static CommandPrivilege enableRole(@Nonnull String roleId)
+    @NotNull
+    public static CommandPrivilege enableRole(@NotNull String roleId)
     {
         return enableRole(MiscUtil.parseSnowflake(roleId));
     }
@@ -135,7 +135,7 @@ public class CommandPrivilege implements ISnowflake, SerializableData
      *
      * @return CommandPrivilege instance
      */
-    @Nonnull
+    @NotNull
     public static CommandPrivilege enableRole(long roleId)
     {
         return new CommandPrivilege(Type.ROLE, true, roleId);
@@ -149,8 +149,8 @@ public class CommandPrivilege implements ISnowflake, SerializableData
      *
      * @return CommandPrivilege instance
      */
-    @Nonnull
-    public static CommandPrivilege disable(@Nonnull Role role)
+    @NotNull
+    public static CommandPrivilege disable(@NotNull Role role)
     {
         Checks.notNull(role, "Role");
         return new CommandPrivilege(Type.ROLE, false, role.getIdLong());
@@ -164,8 +164,8 @@ public class CommandPrivilege implements ISnowflake, SerializableData
      *
      * @return CommandPrivilege instance
      */
-    @Nonnull
-    public static CommandPrivilege disable(@Nonnull User user)
+    @NotNull
+    public static CommandPrivilege disable(@NotNull User user)
     {
         Checks.notNull(user, "User");
         return new CommandPrivilege(Type.USER, false, user.getIdLong());
@@ -179,8 +179,8 @@ public class CommandPrivilege implements ISnowflake, SerializableData
      *
      * @return CommandPrivilege instance
      */
-    @Nonnull
-    public static CommandPrivilege disableUser(@Nonnull String userId)
+    @NotNull
+    public static CommandPrivilege disableUser(@NotNull String userId)
     {
         return disableUser(MiscUtil.parseSnowflake(userId));
     }
@@ -193,7 +193,7 @@ public class CommandPrivilege implements ISnowflake, SerializableData
      *
      * @return CommandPrivilege instance
      */
-    @Nonnull
+    @NotNull
     public static CommandPrivilege disableUser(long userId)
     {
         return new CommandPrivilege(Type.USER, false, userId);
@@ -207,8 +207,8 @@ public class CommandPrivilege implements ISnowflake, SerializableData
      *
      * @return CommandPrivilege instance
      */
-    @Nonnull
-    public static CommandPrivilege disableRole(@Nonnull String roleId)
+    @NotNull
+    public static CommandPrivilege disableRole(@NotNull String roleId)
     {
         return disableRole(MiscUtil.parseSnowflake(roleId));
     }
@@ -221,7 +221,7 @@ public class CommandPrivilege implements ISnowflake, SerializableData
      *
      * @return CommandPrivilege instance
      */
-    @Nonnull
+    @NotNull
     public static CommandPrivilege disableRole(long roleId)
     {
         return new CommandPrivilege(Type.ROLE, false, roleId);
@@ -239,7 +239,7 @@ public class CommandPrivilege implements ISnowflake, SerializableData
      *
      * @return The target {@link Type}
      */
-    @Nonnull
+    @NotNull
     public Type getType()
     {
         return type;
@@ -281,7 +281,7 @@ public class CommandPrivilege implements ISnowflake, SerializableData
         return ((CommandPrivilege) obj).id == id;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public DataObject toData()
     {
@@ -315,7 +315,7 @@ public class CommandPrivilege implements ISnowflake, SerializableData
          *
          * @return The Type constant, or {@link #UNKNOWN} if there is no known representation
          */
-        @Nonnull
+        @NotNull
         public static Type fromKey(int key)
         {
             for (Type type : values())

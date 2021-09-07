@@ -20,8 +20,8 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.EncodingUtil;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.util.Objects;
 import java.util.regex.Matcher;
 
@@ -53,7 +53,7 @@ public class Emoji implements SerializableData, IMentionable
      *
      * @return The unicode or custom name
      */
-    @Nonnull
+    @NotNull
     public String getName()
     {
         return name;
@@ -109,8 +109,8 @@ public class Emoji implements SerializableData, IMentionable
      *
      * @return The new emoji instance
      */
-    @Nonnull
-    public static Emoji fromUnicode(@Nonnull String code)
+    @NotNull
+    public static Emoji fromUnicode(@NotNull String code)
     {
         Checks.notEmpty(code, "Unicode");
         if (code.startsWith("U+") || code.startsWith("u+"))
@@ -139,8 +139,8 @@ public class Emoji implements SerializableData, IMentionable
      *
      * @return The new emoji instance
      */
-    @Nonnull
-    public static Emoji fromEmote(@Nonnull String name, long id, boolean animated)
+    @NotNull
+    public static Emoji fromEmote(@NotNull String name, long id, boolean animated)
     {
         Checks.notEmpty(name, "Name");
         return new Emoji(name, id, animated);
@@ -157,8 +157,8 @@ public class Emoji implements SerializableData, IMentionable
      *
      * @return The new emoji instance
      */
-    @Nonnull
-    public static Emoji fromEmote(@Nonnull Emote emote)
+    @NotNull
+    public static Emoji fromEmote(@NotNull Emote emote)
     {
         Checks.notNull(emote, "Emote");
         return fromEmote(emote.getName(), emote.getIdLong(), emote.isAnimated());
@@ -188,8 +188,8 @@ public class Emoji implements SerializableData, IMentionable
      *
      * @return The emoji instance
      */
-    @Nonnull
-    public static Emoji fromMarkdown(@Nonnull String code)
+    @NotNull
+    public static Emoji fromMarkdown(@NotNull String code)
     {
         Matcher matcher = Message.MentionType.EMOTE.getPattern().matcher(code);
         if (matcher.matches())
@@ -208,15 +208,15 @@ public class Emoji implements SerializableData, IMentionable
      *
      * @return The emoji instance
      */
-    @Nonnull
-    public static Emoji fromData(@Nonnull DataObject emoji)
+    @NotNull
+    public static Emoji fromData(@NotNull DataObject emoji)
     {
         return new Emoji(emoji.getString("name"),
                 emoji.getUnsignedLong("id", 0),
                 emoji.getBoolean("animated"));
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public DataObject toData()
     {
@@ -229,7 +229,7 @@ public class Emoji implements SerializableData, IMentionable
         return json;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public String getAsMention()
     {

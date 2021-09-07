@@ -22,8 +22,7 @@ import net.dv8tion.jda.api.interactions.components.ComponentInteraction;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.requests.restaction.interactions.UpdateInteractionActionImpl;
-
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 public abstract class ComponentInteractionImpl extends InteractionImpl implements ComponentInteraction
 {
@@ -42,7 +41,7 @@ public abstract class ComponentInteractionImpl extends InteractionImpl implement
         message = messageJson.isNull("type") ? null : jda.getEntityBuilder().createMessage(messageJson);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @SuppressWarnings("ConstantConditions")
     public MessageChannel getChannel()
@@ -50,14 +49,14 @@ public abstract class ComponentInteractionImpl extends InteractionImpl implement
         return (MessageChannel) super.getChannel();
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public String getComponentId()
     {
         return customId;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Message getMessage()
     {
@@ -70,7 +69,7 @@ public abstract class ComponentInteractionImpl extends InteractionImpl implement
         return messageId;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public UpdateInteractionActionImpl deferEdit()
     {

@@ -21,9 +21,9 @@ import net.dv8tion.jda.api.exceptions.RateLimitedException;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.internal.utils.Checks;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nonnull;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
@@ -57,14 +57,14 @@ public class DeferredRestAction<T, R extends RestAction<T>> implements Auditable
         this.actionSupplier = actionSupplier;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public JDA getJDA()
     {
         return api;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public AuditableRestAction<T> reason(String reason)
     {
@@ -72,7 +72,7 @@ public class DeferredRestAction<T, R extends RestAction<T>> implements Auditable
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public AuditableRestAction<T> setCheck(BooleanSupplier checks)
     {
@@ -87,15 +87,15 @@ public class DeferredRestAction<T, R extends RestAction<T>> implements Auditable
         return transitiveChecks;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public AuditableRestAction<T> timeout(long timeout, @Nonnull TimeUnit unit)
+    public AuditableRestAction<T> timeout(long timeout, @NotNull TimeUnit unit)
     {
         Checks.notNull(unit, "TimeUnit");
         return deadline(timeout <= 0 ? 0 : System.currentTimeMillis() + unit.toMillis(timeout));
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public AuditableRestAction<T> deadline(long timestamp)
     {
@@ -139,7 +139,7 @@ public class DeferredRestAction<T, R extends RestAction<T>> implements Auditable
         }
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public CompletableFuture<T> submit(boolean shouldQueue)
     {

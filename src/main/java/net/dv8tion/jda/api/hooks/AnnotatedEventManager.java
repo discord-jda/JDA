@@ -18,8 +18,8 @@ package net.dv8tion.jda.api.hooks;
 import net.dv8tion.jda.api.events.GenericEvent;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.utils.ClassWalker;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -55,7 +55,7 @@ public class AnnotatedEventManager implements IEventManager
     private final Map<Class<?>, Map<Object, List<Method>>> methods = new ConcurrentHashMap<>();
 
     @Override
-    public void register(@Nonnull Object listener)
+    public void register(@NotNull Object listener)
     {
         if (listeners.add(listener))
         {
@@ -64,7 +64,7 @@ public class AnnotatedEventManager implements IEventManager
     }
 
     @Override
-    public void unregister(@Nonnull Object listener)
+    public void unregister(@NotNull Object listener)
     {
         if (listeners.remove(listener))
         {
@@ -72,7 +72,7 @@ public class AnnotatedEventManager implements IEventManager
         }
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public List<Object> getRegisteredListeners()
     {
@@ -80,7 +80,7 @@ public class AnnotatedEventManager implements IEventManager
     }
 
     @Override
-    public void handle(@Nonnull GenericEvent event)
+    public void handle(@NotNull GenericEvent event)
     {
         for (Class<?> eventClass : ClassWalker.walk(event.getClass()))
         {

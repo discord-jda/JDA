@@ -31,10 +31,10 @@ import net.dv8tion.jda.api.utils.AttachmentOption;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.requests.restaction.MessageActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
@@ -125,7 +125,7 @@ public interface MessageAction extends RestAction<Message>, Appendable, AllowedM
      *
      * @return Default mentions set by MessageAction.setDefaultMentions(Collection)
      */
-    @Nonnull
+    @NotNull
     static EnumSet<Message.MentionType> getDefaultMentions()
     {
         return AllowedMentions.getDefaultMentions();
@@ -185,15 +185,15 @@ public interface MessageAction extends RestAction<Message>, Appendable, AllowedM
         return MessageActionImpl.isDefaultFailOnInvalidReply();
     }
 
-    @Nonnull
+    @NotNull
     @Override
     MessageAction setCheck(@Nullable BooleanSupplier checks);
 
-    @Nonnull
+    @NotNull
     @Override
-    MessageAction timeout(long timeout, @Nonnull TimeUnit unit);
+    MessageAction timeout(long timeout, @NotNull TimeUnit unit);
 
-    @Nonnull
+    @NotNull
     @Override
     MessageAction deadline(long timestamp);
 
@@ -202,7 +202,7 @@ public interface MessageAction extends RestAction<Message>, Appendable, AllowedM
      *
      * @return The target channel
      */
-    @Nonnull
+    @NotNull
     MessageChannel getChannel();
 
     /**
@@ -239,7 +239,7 @@ public interface MessageAction extends RestAction<Message>, Appendable, AllowedM
      *
      * @return Updated MessageAction for chaining convenience
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     MessageAction apply(@Nullable final Message message);
 
@@ -265,7 +265,7 @@ public interface MessageAction extends RestAction<Message>, Appendable, AllowedM
      *
      * @since  4.2.1
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     MessageAction referenceById(long messageId);
 
@@ -291,9 +291,9 @@ public interface MessageAction extends RestAction<Message>, Appendable, AllowedM
      *
      * @since  4.2.1
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    default MessageAction referenceById(@Nonnull String messageId)
+    default MessageAction referenceById(@NotNull String messageId)
     {
         return referenceById(MiscUtil.parseSnowflake(messageId));
     }
@@ -320,9 +320,9 @@ public interface MessageAction extends RestAction<Message>, Appendable, AllowedM
      *
      * @since  4.2.1
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    default MessageAction reference(@Nonnull Message message)
+    default MessageAction reference(@NotNull Message message)
     {
         Checks.notNull(message, "Message");
         return referenceById(message.getIdLong());
@@ -341,7 +341,7 @@ public interface MessageAction extends RestAction<Message>, Appendable, AllowedM
      *
      * @since  4.2.1
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     MessageAction mentionRepliedUser(boolean mention);
 
@@ -358,7 +358,7 @@ public interface MessageAction extends RestAction<Message>, Appendable, AllowedM
      *
      * @since  4.2.1
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     MessageAction failOnInvalidReply(boolean fail);
 
@@ -371,7 +371,7 @@ public interface MessageAction extends RestAction<Message>, Appendable, AllowedM
      *
      * @return Updated MessageAction for chaining convenience
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     MessageAction tts(final boolean isTTS);
 
@@ -384,7 +384,7 @@ public interface MessageAction extends RestAction<Message>, Appendable, AllowedM
      *
      * @return Updated MessageAction for chaining convenience
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     MessageAction reset();
 
@@ -403,7 +403,7 @@ public interface MessageAction extends RestAction<Message>, Appendable, AllowedM
      * @see    net.dv8tion.jda.api.MessageBuilder#setNonce(String)
      * @see    <a href="https://en.wikipedia.org/wiki/Cryptographic_nonce" target="_blank">Cryptographic Nonce - Wikipedia</a>
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     MessageAction nonce(@Nullable final String nonce);
 
@@ -420,7 +420,7 @@ public interface MessageAction extends RestAction<Message>, Appendable, AllowedM
      *
      * @return Updated MessageAction for chaining convenience
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     MessageAction content(@Nullable final String content);
 
@@ -442,7 +442,7 @@ public interface MessageAction extends RestAction<Message>, Appendable, AllowedM
      *
      * @deprecated This is deprecated in favor of {@link #setEmbeds(MessageEmbed...)}
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     @Deprecated
     @ForRemoval(deadline="5.0.0")
@@ -466,9 +466,9 @@ public interface MessageAction extends RestAction<Message>, Appendable, AllowedM
      *
      * @return Updated MessageAction for chaining convenience
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    MessageAction setEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds);
+    MessageAction setEmbeds(@NotNull Collection<? extends MessageEmbed> embeds);
 
     /**
      * Sets up to 10 {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbeds}
@@ -486,9 +486,9 @@ public interface MessageAction extends RestAction<Message>, Appendable, AllowedM
      *
      * @return Updated MessageAction for chaining convenience
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    default MessageAction setEmbeds(@Nonnull MessageEmbed... embeds)
+    default MessageAction setEmbeds(@NotNull MessageEmbed... embeds)
     {
         Checks.noneNull(embeds, "MessageEmbeds");
         return setEmbeds(Arrays.asList(embeds));
@@ -502,10 +502,10 @@ public interface MessageAction extends RestAction<Message>, Appendable, AllowedM
      *
      * @return Updated MessageAction for chaining convenience
      */
-    @Nonnull
+    @NotNull
     @Override
     @CheckReturnValue
-    default MessageAction append(@Nonnull final CharSequence csq)
+    default MessageAction append(@NotNull final CharSequence csq)
     {
         return append(csq, 0, csq.length());
     }
@@ -518,7 +518,7 @@ public interface MessageAction extends RestAction<Message>, Appendable, AllowedM
      *
      * @return Updated MessageAction for chaining convenience
      */
-    @Nonnull
+    @NotNull
     @Override
     @CheckReturnValue
     MessageAction append(@Nullable final CharSequence csq, final int start, final int end);
@@ -531,7 +531,7 @@ public interface MessageAction extends RestAction<Message>, Appendable, AllowedM
      *
      * @return Updated MessageAction for chaining convenience
      */
-    @Nonnull
+    @NotNull
     @Override
     @CheckReturnValue
     MessageAction append(final char c);
@@ -560,9 +560,9 @@ public interface MessageAction extends RestAction<Message>, Appendable, AllowedM
      *
      * @return Updated MessageAction for chaining convenience
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    default MessageAction appendFormat(@Nonnull final String format, final Object... args)
+    default MessageAction appendFormat(@NotNull final String format, final Object... args)
     {
         return append(String.format(format, args));
     }
@@ -592,9 +592,9 @@ public interface MessageAction extends RestAction<Message>, Appendable, AllowedM
      *
      * @return Updated MessageAction for chaining convenience
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    MessageAction addFile(@Nonnull final InputStream data, @Nonnull final String name, @Nonnull AttachmentOption... options);
+    MessageAction addFile(@NotNull final InputStream data, @NotNull final String name, @NotNull AttachmentOption... options);
 
     /**
      * Adds the provided byte[] as file data.
@@ -623,9 +623,9 @@ public interface MessageAction extends RestAction<Message>, Appendable, AllowedM
      *
      * @see    net.dv8tion.jda.api.entities.SelfUser#getAllowedFileSize() SelfUser.getAllowedFileSize()
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    default MessageAction addFile(@Nonnull final byte[] data, @Nonnull final String name, @Nonnull AttachmentOption... options)
+    default MessageAction addFile(@NotNull final byte[] data, @NotNull final String name, @NotNull AttachmentOption... options)
     {
         Checks.notNull(data, "Data");
         final long maxSize = getJDA().getSelfUser().getAllowedFileSize();
@@ -654,9 +654,9 @@ public interface MessageAction extends RestAction<Message>, Appendable, AllowedM
      *
      * @see    net.dv8tion.jda.api.entities.SelfUser#getAllowedFileSize() SelfUser.getAllowedFileSize()
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    default MessageAction addFile(@Nonnull final File file, @Nonnull AttachmentOption... options)
+    default MessageAction addFile(@NotNull final File file, @NotNull AttachmentOption... options)
     {
         Checks.notNull(file, "File");
         return addFile(file, file.getName(), options);
@@ -691,9 +691,9 @@ public interface MessageAction extends RestAction<Message>, Appendable, AllowedM
      *
      * @see    net.dv8tion.jda.api.entities.SelfUser#getAllowedFileSize() SelfUser.getAllowedFileSize()
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    MessageAction addFile(@Nonnull final File file, @Nonnull final String name, @Nonnull AttachmentOption... options);
+    MessageAction addFile(@NotNull final File file, @NotNull final String name, @NotNull AttachmentOption... options);
 
     /**
      * Clears all previously added files
@@ -704,7 +704,7 @@ public interface MessageAction extends RestAction<Message>, Appendable, AllowedM
      *
      * @see    #clearFiles(BiConsumer)
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     MessageAction clearFiles();
 
@@ -719,9 +719,9 @@ public interface MessageAction extends RestAction<Message>, Appendable, AllowedM
      *
      * @see    java.io.Closeable
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    MessageAction clearFiles(@Nonnull BiConsumer<String, InputStream> finalizer);
+    MessageAction clearFiles(@NotNull BiConsumer<String, InputStream> finalizer);
 
     /**
      * Clears all previously added files
@@ -735,9 +735,9 @@ public interface MessageAction extends RestAction<Message>, Appendable, AllowedM
      *
      * @see    java.io.Closeable
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    MessageAction clearFiles(@Nonnull Consumer<InputStream> finalizer);
+    MessageAction clearFiles(@NotNull Consumer<InputStream> finalizer);
 
     /**
      * Removes all attachments that are currently attached to the existing message except for the ones provided.
@@ -753,9 +753,9 @@ public interface MessageAction extends RestAction<Message>, Appendable, AllowedM
      *
      * @return Updated MessageAction for chaining convenience
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    MessageAction retainFilesById(@Nonnull Collection<String> ids);
+    MessageAction retainFilesById(@NotNull Collection<String> ids);
 
     /**
      * Removes all attachments that are currently attached to the existing message except for the ones provided.
@@ -771,9 +771,9 @@ public interface MessageAction extends RestAction<Message>, Appendable, AllowedM
      *
      * @return Updated MessageAction for chaining convenience
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    default MessageAction retainFilesById(@Nonnull String... ids)
+    default MessageAction retainFilesById(@NotNull String... ids)
     {
         Checks.notNull(ids, "IDs");
         return retainFilesById(Arrays.asList(ids));
@@ -793,7 +793,7 @@ public interface MessageAction extends RestAction<Message>, Appendable, AllowedM
      *
      * @return Updated MessageAction for chaining convenience
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     default MessageAction retainFilesById(long... ids)
     {
@@ -819,9 +819,9 @@ public interface MessageAction extends RestAction<Message>, Appendable, AllowedM
      *
      * @return Updated MessageAction for chaining convenience
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    default MessageAction retainFiles(@Nonnull Collection<? extends Message.Attachment> attachments)
+    default MessageAction retainFiles(@NotNull Collection<? extends Message.Attachment> attachments)
     {
         Checks.noneNull(attachments, "Attachments");
         return retainFilesById(attachments
@@ -842,9 +842,9 @@ public interface MessageAction extends RestAction<Message>, Appendable, AllowedM
      *
      * @return Updated MessageAction for chaining convenience
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    default MessageAction setActionRows(@Nonnull Collection<? extends ActionRow> rows)
+    default MessageAction setActionRows(@NotNull Collection<? extends ActionRow> rows)
     {
         Checks.noneNull(rows, "ActionRows");
         return setActionRows(rows.toArray(new ActionRow[0]));
@@ -861,9 +861,9 @@ public interface MessageAction extends RestAction<Message>, Appendable, AllowedM
      *
      * @return Updated MessageAction for chaining convenience
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    MessageAction setActionRows(@Nonnull ActionRow... rows);
+    MessageAction setActionRows(@NotNull ActionRow... rows);
 
     /**
      * Create one row of up to 5 interactive message {@link Component components}.
@@ -879,9 +879,9 @@ public interface MessageAction extends RestAction<Message>, Appendable, AllowedM
      *
      * @see    ActionRow#of(Collection)
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    default MessageAction setActionRow(@Nonnull Collection<? extends Component> components)
+    default MessageAction setActionRow(@NotNull Collection<? extends Component> components)
     {
         return setActionRows(ActionRow.of(components));
     }
@@ -900,9 +900,9 @@ public interface MessageAction extends RestAction<Message>, Appendable, AllowedM
      *
      * @see    ActionRow#of(Component...)
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    default MessageAction setActionRow(@Nonnull Component... components)
+    default MessageAction setActionRow(@NotNull Component... components)
     {
         return setActionRows(ActionRow.of(components));
     }
@@ -916,7 +916,7 @@ public interface MessageAction extends RestAction<Message>, Appendable, AllowedM
      *
      * @return Updated MessageAction for chaining convenience
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     MessageAction override(final boolean bool);
 }

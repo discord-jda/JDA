@@ -16,7 +16,7 @@
 
 package net.dv8tion.jda.api.entities;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Member of a {@link net.dv8tion.jda.api.entities.ApplicationTeam}.
@@ -32,7 +32,7 @@ public interface TeamMember
      *
      * @return The user
      */
-    @Nonnull
+    @NotNull
     User getUser();
 
     /**
@@ -42,7 +42,7 @@ public interface TeamMember
      *
      * @return The {@link net.dv8tion.jda.api.entities.TeamMember.MembershipState}, or {@link net.dv8tion.jda.api.entities.TeamMember.MembershipState#UNKNOWN UNKNOWN}
      */
-    @Nonnull
+    @NotNull
     MembershipState getMembershipState();
 
     /**
@@ -50,7 +50,7 @@ public interface TeamMember
      *
      * @return The team id.
      */
-    @Nonnull
+    @NotNull
     default String getTeamId()
     {
         return Long.toUnsignedString(getTeamIdLong());
@@ -100,7 +100,7 @@ public interface TeamMember
          *
          * @return The MembershipState, or {@link #UNKNOWN}
          */
-        @Nonnull
+        @NotNull
         public static MembershipState fromKey(int key)
         {
             for (MembershipState state : values())

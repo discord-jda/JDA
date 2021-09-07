@@ -23,8 +23,8 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.DataType;
 import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.internal.utils.Checks;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -93,7 +93,7 @@ public class OptionData implements SerializableData
      *             <li>{@code description} is between 1 and {@value #MAX_DESCRIPTION_LENGTH} characters long</li>
      *         </ul>
      */
-    public OptionData(@Nonnull OptionType type, @Nonnull String name, @Nonnull String description)
+    public OptionData(@NotNull OptionType type, @NotNull String name, @NotNull String description)
     {
         this(type, name, description, false);
     }
@@ -119,7 +119,7 @@ public class OptionData implements SerializableData
      *             <li>{@code description} is between 1 and {@value #MAX_DESCRIPTION_LENGTH} characters long</li>
      *         </ul>
      */
-    public OptionData(@Nonnull OptionType type, @Nonnull String name, @Nonnull String description, boolean isRequired)
+    public OptionData(@NotNull OptionType type, @NotNull String name, @NotNull String description, boolean isRequired)
     {
         Checks.notNull(type, "Type");
         Checks.notEmpty(name, "Name");
@@ -141,7 +141,7 @@ public class OptionData implements SerializableData
      *
      * @return The {@link OptionType}
      */
-    @Nonnull
+    @NotNull
     public OptionType getType()
     {
         return type;
@@ -152,7 +152,7 @@ public class OptionData implements SerializableData
      *
      * @return The name
      */
-    @Nonnull
+    @NotNull
     public String getName()
     {
         return name;
@@ -163,7 +163,7 @@ public class OptionData implements SerializableData
      *
      * @return The description
      */
-    @Nonnull
+    @NotNull
     public String getDescription()
     {
         return description;
@@ -191,7 +191,7 @@ public class OptionData implements SerializableData
      * @see #addChoice(String, int)
      * @see #addChoice(String, String)
      */
-    @Nonnull
+    @NotNull
     public List<Command.Choice> getChoices()
     {
         if (choices == null || choices.isEmpty())
@@ -220,8 +220,8 @@ public class OptionData implements SerializableData
      *
      * @return The OptionData instance, for chaining
      */
-    @Nonnull
-    public OptionData setName(@Nonnull String name)
+    @NotNull
+    public OptionData setName(@NotNull String name)
     {
         Checks.notEmpty(name, "Name");
         Checks.notLonger(name, MAX_NAME_LENGTH, "Name");
@@ -242,8 +242,8 @@ public class OptionData implements SerializableData
      *
      * @return The OptionData instance, for chaining
      */
-    @Nonnull
-    public OptionData setDescription(@Nonnull String description)
+    @NotNull
+    public OptionData setDescription(@NotNull String description)
     {
         Checks.notEmpty(description, "Description");
         Checks.notLonger(description, MAX_DESCRIPTION_LENGTH, "Description");
@@ -260,7 +260,7 @@ public class OptionData implements SerializableData
      *
      * @return The OptionData instance, for chaining
      */
-    @Nonnull
+    @NotNull
     public OptionData setRequired(boolean required)
     {
         this.isRequired = required;
@@ -288,8 +288,8 @@ public class OptionData implements SerializableData
      * 
      * @return The OptionData instance, for chaining
      */
-    @Nonnull
-    public OptionData addChoice(@Nonnull String name, double value)
+    @NotNull
+    public OptionData addChoice(@NotNull String name, double value)
     {
         Checks.notEmpty(name, "Name");
         Checks.notLonger(name, MAX_CHOICE_NAME_LENGTH, "Name");
@@ -321,8 +321,8 @@ public class OptionData implements SerializableData
      *
      * @return The OptionData instance, for chaining
      */
-    @Nonnull
-    public OptionData addChoice(@Nonnull String name, int value)
+    @NotNull
+    public OptionData addChoice(@NotNull String name, int value)
     {
         Checks.notEmpty(name, "Name");
         Checks.notLonger(name, MAX_CHOICE_NAME_LENGTH, "Name");
@@ -353,8 +353,8 @@ public class OptionData implements SerializableData
      *
      * @return The OptionData instance, for chaining
      */
-    @Nonnull
-    public OptionData addChoice(@Nonnull String name, @Nonnull String value)
+    @NotNull
+    public OptionData addChoice(@NotNull String name, @NotNull String value)
     {
         Checks.notEmpty(name, "Name");
         Checks.notEmpty(value, "Value");
@@ -385,8 +385,8 @@ public class OptionData implements SerializableData
      *
      * @return The OptionData instance, for chaining
      */
-    @Nonnull
-    public OptionData addChoices(@Nonnull Command.Choice... choices)
+    @NotNull
+    public OptionData addChoices(@NotNull Command.Choice... choices)
     {
         if (this.choices == null)
             throw new IllegalStateException("Cannot add choices for an option of type " + type);
@@ -424,14 +424,14 @@ public class OptionData implements SerializableData
      *
      * @return The OptionData instance, for chaining
      */
-    @Nonnull
-    public OptionData addChoices(@Nonnull Collection<? extends Command.Choice> choices)
+    @NotNull
+    public OptionData addChoices(@NotNull Collection<? extends Command.Choice> choices)
     {
         Checks.noneNull(choices, "Choices");
         return addChoices(choices.toArray(new Command.Choice[0]));
     }
     
-    @Nonnull
+    @NotNull
     @Override
     public DataObject toData()
     {
@@ -465,8 +465,8 @@ public class OptionData implements SerializableData
      *
      * @return The parsed OptionData instance, which can be further configured through setters
      */
-    @Nonnull
-    public static OptionData fromData(@Nonnull DataObject json)
+    @NotNull
+    public static OptionData fromData(@NotNull DataObject json)
     {
         String name = json.getString("name");
         String description = json.getString("description");

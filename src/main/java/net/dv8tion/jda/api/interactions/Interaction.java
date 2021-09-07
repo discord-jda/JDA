@@ -22,10 +22,10 @@ import net.dv8tion.jda.api.interactions.components.ComponentInteraction;
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyAction;
 import net.dv8tion.jda.internal.requests.restaction.interactions.ReplyActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Collection;
 
 /**
@@ -57,7 +57,7 @@ public interface Interaction extends ISnowflake
      *
      * @return The {@link InteractionType} or {@link InteractionType#UNKNOWN}
      */
-    @Nonnull
+    @NotNull
     default InteractionType getType()
     {
         return InteractionType.fromKey(getTypeRaw());
@@ -68,7 +68,7 @@ public interface Interaction extends ISnowflake
      *
      * @return The interaction token
      */
-    @Nonnull
+    @NotNull
     String getToken();
 
     /**
@@ -97,7 +97,7 @@ public interface Interaction extends ISnowflake
      *
      * @return The {@link ChannelType}
      */
-    @Nonnull
+    @NotNull
     default ChannelType getChannelType()
     {
         AbstractChannel channel = getChannel();
@@ -109,7 +109,7 @@ public interface Interaction extends ISnowflake
      *
      * @return The {@link User}
      */
-    @Nonnull
+    @NotNull
     User getUser();
 
     /**
@@ -138,7 +138,7 @@ public interface Interaction extends ISnowflake
      *
      * @return The interaction hook
      */
-    @Nonnull
+    @NotNull
     InteractionHook getHook();
 
     /**
@@ -163,7 +163,7 @@ public interface Interaction extends ISnowflake
      *
      * @return {@link ReplyAction}
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     ReplyAction deferReply();
 
@@ -193,7 +193,7 @@ public interface Interaction extends ISnowflake
      *
      * @return {@link ReplyAction}
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     default ReplyAction deferReply(boolean ephemeral)
     {
@@ -218,9 +218,9 @@ public interface Interaction extends ISnowflake
      *
      * @return {@link ReplyAction}
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    default ReplyAction reply(@Nonnull Message message)
+    default ReplyAction reply(@NotNull Message message)
     {
         Checks.notNull(message, "Message");
         ReplyActionImpl action = (ReplyActionImpl) deferReply();
@@ -245,9 +245,9 @@ public interface Interaction extends ISnowflake
      *
      * @return {@link ReplyAction}
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    default ReplyAction reply(@Nonnull String content)
+    default ReplyAction reply(@NotNull String content)
     {
         Checks.notNull(content, "Content");
         return deferReply().setContent(content);
@@ -271,9 +271,9 @@ public interface Interaction extends ISnowflake
      *
      * @return {@link ReplyAction}
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    default ReplyAction replyEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
+    default ReplyAction replyEmbeds(@NotNull Collection<? extends MessageEmbed> embeds)
     {
         return deferReply().addEmbeds(embeds);
     }
@@ -298,9 +298,9 @@ public interface Interaction extends ISnowflake
      *
      * @return {@link ReplyAction}
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    default ReplyAction replyEmbeds(@Nonnull MessageEmbed embed, @Nonnull MessageEmbed... embeds)
+    default ReplyAction replyEmbeds(@NotNull MessageEmbed embed, @NotNull MessageEmbed... embeds)
     {
         Checks.notNull(embed, "MessageEmbed");
         Checks.noneNull(embeds, "MessageEmbed");
@@ -325,9 +325,9 @@ public interface Interaction extends ISnowflake
 //     *
 //     * @return {@link ReplyAction}
 //     */
-//    @Nonnull
+//    @NotNull
 //    @CheckReturnValue
-//    default ReplyAction replyComponents(@Nonnull Collection<? extends ComponentLayout> components)
+//    default ReplyAction replyComponents(@NotNull Collection<? extends ComponentLayout> components)
 //    {
 //        if (components.stream().anyMatch(it -> !(it instanceof ActionRow)))
 //            throw new UnsupportedOperationException("Only ActionRow layouts are currently supported.");
@@ -355,9 +355,9 @@ public interface Interaction extends ISnowflake
 //     *
 //     * @return {@link ReplyAction}
 //     */
-//    @Nonnull
+//    @NotNull
 //    @CheckReturnValue
-//    default ReplyAction replyComponents(@Nonnull ComponentLayout component, @Nonnull ComponentLayout... components)
+//    default ReplyAction replyComponents(@NotNull ComponentLayout component, @NotNull ComponentLayout... components)
 //    {
 //        Checks.notNull(component, "ComponentLayouts");
 //        Checks.noneNull(components, "ComponentLayouts");
@@ -387,9 +387,9 @@ public interface Interaction extends ISnowflake
      *
      * @return {@link ReplyAction}
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    default ReplyAction replyFormat(@Nonnull String format, @Nonnull Object... args)
+    default ReplyAction replyFormat(@NotNull String format, @NotNull Object... args)
     {
         Checks.notNull(format, "Format String");
         return reply(String.format(format, args));
@@ -404,7 +404,7 @@ public interface Interaction extends ISnowflake
      *
      * @return The {@link GuildChannel}
      */
-    @Nonnull
+    @NotNull
     default GuildChannel getGuildChannel()
     {
         AbstractChannel channel = getChannel();
@@ -422,7 +422,7 @@ public interface Interaction extends ISnowflake
      *
      * @return The {@link MessageChannel}
      */
-    @Nonnull
+    @NotNull
     default MessageChannel getMessageChannel()
     {
         AbstractChannel channel = getChannel();
@@ -440,7 +440,7 @@ public interface Interaction extends ISnowflake
      *
      * @return The {@link TextChannel}
      */
-    @Nonnull
+    @NotNull
     default TextChannel getTextChannel()
     {
         AbstractChannel channel = getChannel();
@@ -458,7 +458,7 @@ public interface Interaction extends ISnowflake
      *
      * @return The {@link VoiceChannel}
      */
-    @Nonnull
+    @NotNull
     default VoiceChannel getVoiceChannel()
     {
         AbstractChannel channel = getChannel();
@@ -476,7 +476,7 @@ public interface Interaction extends ISnowflake
      *
      * @return The {@link PrivateChannel}
      */
-    @Nonnull
+    @NotNull
     default PrivateChannel getPrivateChannel()
     {
         AbstractChannel channel = getChannel();
@@ -490,7 +490,7 @@ public interface Interaction extends ISnowflake
      *
      * @return the corresponding JDA instance
      */
-    @Nonnull
+    @NotNull
     JDA getJDA();
 
 }

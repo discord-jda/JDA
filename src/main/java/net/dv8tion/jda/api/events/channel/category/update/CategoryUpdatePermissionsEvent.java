@@ -24,8 +24,8 @@ import net.dv8tion.jda.api.entities.IPermissionHolder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.channel.category.GenericCategoryEvent;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -44,7 +44,7 @@ public class CategoryUpdatePermissionsEvent extends GenericCategoryEvent
 {
     protected final List<IPermissionHolder> changed;
 
-    public CategoryUpdatePermissionsEvent(@Nonnull JDA api, long responseNumber, @Nonnull Category category, @Nonnull List<IPermissionHolder> changed)
+    public CategoryUpdatePermissionsEvent(@NotNull JDA api, long responseNumber, @NotNull Category category, @NotNull List<IPermissionHolder> changed)
     {
         super(api, responseNumber, category);
         this.changed = changed;
@@ -55,7 +55,7 @@ public class CategoryUpdatePermissionsEvent extends GenericCategoryEvent
      *
      * @return Immutable list of permission holders affected by this event
      */
-    @Nonnull
+    @NotNull
     public List<IPermissionHolder> getChangedPermissionHolders()
     {
         return changed;
@@ -66,7 +66,7 @@ public class CategoryUpdatePermissionsEvent extends GenericCategoryEvent
      *
      * @return Immutable list of affected roles
      */
-    @Nonnull
+    @NotNull
     public List<Role> getChangedRoles()
     {
         return changed.stream()
@@ -80,7 +80,7 @@ public class CategoryUpdatePermissionsEvent extends GenericCategoryEvent
      *
      * @return Immutable list of affected members
      */
-    @Nonnull
+    @NotNull
     public List<Member> getChangedMembers()
     {
         return changed.stream()

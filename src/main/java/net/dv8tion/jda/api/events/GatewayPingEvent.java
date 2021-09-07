@@ -17,8 +17,7 @@
 package net.dv8tion.jda.api.events;
 
 import net.dv8tion.jda.api.JDA;
-
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Indicates that the gateway ping has been updated by the heartbeat cycle.
@@ -33,7 +32,7 @@ public class GatewayPingEvent extends Event implements UpdateEvent<JDA, Long>
     public static final String IDENTIFIER = "gateway-ping";
     private final long next, prev;
 
-    public GatewayPingEvent(@Nonnull JDA api, long old)
+    public GatewayPingEvent(@NotNull JDA api, long old)
     {
         super(api);
         this.next = api.getGatewayPing();
@@ -60,28 +59,28 @@ public class GatewayPingEvent extends Event implements UpdateEvent<JDA, Long>
         return prev;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public String getPropertyIdentifier()
     {
         return IDENTIFIER;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public JDA getEntity()
     {
         return getJDA();
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Long getOldValue()
     {
         return prev;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Long getNewValue()
     {

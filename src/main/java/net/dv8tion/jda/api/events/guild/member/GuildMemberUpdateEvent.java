@@ -18,8 +18,7 @@ package net.dv8tion.jda.api.events.guild.member;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Member;
-
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Fired for every {@link Member} update, regardless of cache.
@@ -40,7 +39,7 @@ import javax.annotation.Nonnull;
  */
 public class GuildMemberUpdateEvent extends GenericGuildMemberEvent
 {
-    public GuildMemberUpdateEvent(@Nonnull JDA api, long responseNumber, @Nonnull Member member)
+    public GuildMemberUpdateEvent(@NotNull JDA api, long responseNumber, @NotNull Member member)
     {
         super(api, responseNumber, member);
     }

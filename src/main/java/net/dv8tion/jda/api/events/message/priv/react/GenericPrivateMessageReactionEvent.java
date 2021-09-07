@@ -16,17 +16,18 @@
 
 package net.dv8tion.jda.api.events.message.priv.react;
 
-import javax.annotation.CheckReturnValue;
-
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageReaction;
+import net.dv8tion.jda.api.entities.PrivateChannel;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.priv.GenericPrivateMessageEvent;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.internal.requests.CompletedRestAction;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import javax.annotation.CheckReturnValue;
 
 /**
  * Indicates that a {@link net.dv8tion.jda.api.entities.MessageReaction MessageReaction} was added or removed.
@@ -42,7 +43,7 @@ public class GenericPrivateMessageReactionEvent extends GenericPrivateMessageEve
     protected final long userId;
     protected final MessageReaction reaction;
 
-    public GenericPrivateMessageReactionEvent(@Nonnull JDA api, long responseNumber, @Nonnull MessageReaction reaction, long userId)
+    public GenericPrivateMessageReactionEvent(@NotNull JDA api, long responseNumber, @NotNull MessageReaction reaction, long userId)
     {
         super(api, responseNumber, reaction.getMessageIdLong(), (PrivateChannel) reaction.getChannel());
         this.userId = userId;
@@ -54,7 +55,7 @@ public class GenericPrivateMessageReactionEvent extends GenericPrivateMessageEve
      *
      * @return The user id
      */
-    @Nonnull
+    @NotNull
     public String getUserId()
     {
         return Long.toUnsignedString(userId);
@@ -91,7 +92,7 @@ public class GenericPrivateMessageReactionEvent extends GenericPrivateMessageEve
      *
      * @return The message reaction
      */
-    @Nonnull
+    @NotNull
     public MessageReaction getReaction()
     {
         return reaction;
@@ -103,7 +104,7 @@ public class GenericPrivateMessageReactionEvent extends GenericPrivateMessageEve
      *
      * @return The message reaction emote
      */
-    @Nonnull
+    @NotNull
     public MessageReaction.ReactionEmote getReactionEmote()
     {
         return reaction.getReactionEmote();
@@ -117,7 +118,7 @@ public class GenericPrivateMessageReactionEvent extends GenericPrivateMessageEve
      *
      * @since  4.3.1
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     public RestAction<User> retrieveUser()
     {
@@ -137,7 +138,7 @@ public class GenericPrivateMessageReactionEvent extends GenericPrivateMessageEve
      *
      * @since  4.3.1
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     public RestAction<Message> retrieveMessage()
     {

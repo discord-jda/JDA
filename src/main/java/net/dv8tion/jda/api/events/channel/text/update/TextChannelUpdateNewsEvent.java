@@ -18,8 +18,7 @@ package net.dv8tion.jda.api.events.channel.text.update;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.TextChannel;
-
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Indicates that a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}'s has been converted into a news channel
@@ -36,19 +35,19 @@ public class TextChannelUpdateNewsEvent extends GenericTextChannelUpdateEvent<Bo
 {
     public static final String IDENTIFIER = "news";
 
-    public TextChannelUpdateNewsEvent(@Nonnull JDA api, long responseNumber, @Nonnull TextChannel channel)
+    public TextChannelUpdateNewsEvent(@NotNull JDA api, long responseNumber, @NotNull TextChannel channel)
     {
         super(api, responseNumber, channel, !channel.isNews(), channel.isNews(), IDENTIFIER);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Boolean getOldValue()
     {
         return super.getOldValue();
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Boolean getNewValue()
     {

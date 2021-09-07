@@ -18,8 +18,7 @@ package net.dv8tion.jda.api.events.channel.store;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.StoreChannel;
-
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Indicates that a {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannel} has been deleted.
@@ -28,7 +27,7 @@ import javax.annotation.Nonnull;
  */
 public class StoreChannelDeleteEvent extends GenericStoreChannelEvent
 {
-    public StoreChannelDeleteEvent(@Nonnull JDA api, long responseNumber, @Nonnull StoreChannel channel)
+    public StoreChannelDeleteEvent(@NotNull JDA api, long responseNumber, @NotNull StoreChannel channel)
     {
         super(api, responseNumber, channel);
     }

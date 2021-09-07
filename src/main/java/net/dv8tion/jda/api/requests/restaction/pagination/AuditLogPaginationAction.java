@@ -20,9 +20,8 @@ import net.dv8tion.jda.api.audit.ActionType;
 import net.dv8tion.jda.api.audit.AuditLogEntry;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.User;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * {@link PaginationAction PaginationAction} that paginates the audit logs endpoint.
@@ -73,7 +72,7 @@ public interface AuditLogPaginationAction extends PaginationAction<AuditLogEntry
      *
      * @return The never-null target Guild
      */
-    @Nonnull
+    @NotNull
     Guild getGuild();
     
     /**
@@ -85,7 +84,7 @@ public interface AuditLogPaginationAction extends PaginationAction<AuditLogEntry
      *
      * @return The current AuditLogPaginationAction for chaining convenience
      */
-    @Nonnull
+    @NotNull
     AuditLogPaginationAction type(@Nullable ActionType type);
 
     /**
@@ -98,7 +97,7 @@ public interface AuditLogPaginationAction extends PaginationAction<AuditLogEntry
      *
      * @return The current AuditLogPaginationAction for chaining convenience
      */
-    @Nonnull
+    @NotNull
     AuditLogPaginationAction user(@Nullable User user);
 
     /**
@@ -114,7 +113,7 @@ public interface AuditLogPaginationAction extends PaginationAction<AuditLogEntry
      *
      * @return The current AuditLogPaginationAction for chaining convenience
      */
-    @Nonnull
+    @NotNull
     AuditLogPaginationAction user(@Nullable String userId);
 
     /**
@@ -126,6 +125,6 @@ public interface AuditLogPaginationAction extends PaginationAction<AuditLogEntry
      *
      * @return The current AuditLogPaginationAction for chaining convenience
      */
-    @Nonnull
+    @NotNull
     AuditLogPaginationAction user(long userId);
 }

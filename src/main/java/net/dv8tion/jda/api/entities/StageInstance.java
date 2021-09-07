@@ -19,9 +19,9 @@ package net.dv8tion.jda.api.entities;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.managers.StageInstanceManager;
 import net.dv8tion.jda.api.requests.RestAction;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -38,7 +38,7 @@ public interface StageInstance extends ISnowflake
      *
      * @return The {@link Guild}
      */
-    @Nonnull
+    @NotNull
     Guild getGuild();
 
     /**
@@ -46,7 +46,7 @@ public interface StageInstance extends ISnowflake
      *
      * @return The {@link StageChannel}
      */
-    @Nonnull
+    @NotNull
     StageChannel getChannel();
 
     /**
@@ -54,7 +54,7 @@ public interface StageInstance extends ISnowflake
      *
      * @return The topic
      */
-    @Nonnull
+    @NotNull
     String getTopic();
 
     /**
@@ -62,7 +62,7 @@ public interface StageInstance extends ISnowflake
      *
      * @return The {@link PrivacyLevel}
      */
-    @Nonnull
+    @NotNull
     PrivacyLevel getPrivacyLevel();
 
     /**
@@ -84,7 +84,7 @@ public interface StageInstance extends ISnowflake
      *
      * @return {@link List} of {@link Member Members} which can speak in this stage instance
      */
-    @Nonnull
+    @NotNull
     default List<Member> getSpeakers()
     {
         return Collections.unmodifiableList(getChannel().getMembers()
@@ -105,7 +105,7 @@ public interface StageInstance extends ISnowflake
      *
      * @return {@link List} of {@link Member Members} which cannot speak in this stage instance
      */
-    @Nonnull
+    @NotNull
     default List<Member> getAudience()
     {
         return Collections.unmodifiableList(getChannel().getMembers()
@@ -130,7 +130,7 @@ public interface StageInstance extends ISnowflake
      *
      * @return {@link RestAction}
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     RestAction<Void> delete();
 
@@ -145,7 +145,7 @@ public interface StageInstance extends ISnowflake
      *
      * @see    #cancelRequestToSpeak()
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     RestAction<Void> requestToSpeak();
 
@@ -162,7 +162,7 @@ public interface StageInstance extends ISnowflake
      *
      * @see    #requestToSpeak()
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     RestAction<Void> cancelRequestToSpeak();
 
@@ -177,7 +177,7 @@ public interface StageInstance extends ISnowflake
      *
      * @return The {@link StageInstanceManager}
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     StageInstanceManager getManager();
 
@@ -220,7 +220,7 @@ public interface StageInstance extends ISnowflake
          *
          * @return The enum value or {@link #UNKNOWN}
          */
-        @Nonnull
+        @NotNull
         public static PrivacyLevel fromKey(int key)
         {
             for (PrivacyLevel level : values())

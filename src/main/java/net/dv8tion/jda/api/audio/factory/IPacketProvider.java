@@ -18,9 +18,9 @@ package net.dv8tion.jda.api.audio.factory;
 
 import net.dv8tion.jda.api.audio.hooks.ConnectionStatus;
 import net.dv8tion.jda.api.entities.VoiceChannel;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.concurrent.NotThreadSafe;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -43,7 +43,7 @@ public interface IPacketProvider
      *
      * @return Never-null String unique to this audio connection.
      */
-    @Nonnull
+    @NotNull
     String getIdentifier();
 
     /**
@@ -51,7 +51,7 @@ public interface IPacketProvider
      *
      * @return The {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel} that this connection is sending to.
      */
-    @Nonnull
+    @NotNull
     VoiceChannel getConnectedChannel();
 
     /**
@@ -63,7 +63,7 @@ public interface IPacketProvider
      *
      * @return The UDP socket connection used for audio sending.
      */
-    @Nonnull
+    @NotNull
     DatagramSocket getUdpSocket();
 
     /**
@@ -72,7 +72,7 @@ public interface IPacketProvider
      *
      * @return {@link InetSocketAddress} of the current UDP connection
      */
-    @Nonnull
+    @NotNull
     InetSocketAddress getSocketAddress();
 
     /**
@@ -133,7 +133,7 @@ public interface IPacketProvider
      *         The {@link net.dv8tion.jda.api.audio.hooks.ConnectionStatus ConnectionStatus} being reported to JDA
      *         indicating an error with connection.
      */
-    void onConnectionError(@Nonnull ConnectionStatus status);
+    void onConnectionError(@NotNull ConnectionStatus status);
 
     /**
      * This method is used to indicate to JDA that the UDP connection has been lost, whether that be due internet loss

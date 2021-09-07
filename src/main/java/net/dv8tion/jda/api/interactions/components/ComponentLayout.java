@@ -18,9 +18,9 @@ package net.dv8tion.jda.api.interactions.components;
 
 import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.internal.utils.Checks;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -39,7 +39,7 @@ public interface ComponentLayout extends SerializableData, Iterable<Component>
      *
      * @return {@link List} of components in this action row
      */
-    @Nonnull
+    @NotNull
     List<Component> getComponents();
 
     /**
@@ -47,7 +47,7 @@ public interface ComponentLayout extends SerializableData, Iterable<Component>
      *
      * @return Immutable {@link List} of {@link Button Buttons}
      */
-    @Nonnull
+    @NotNull
     List<Button> getButtons();
 
     /**
@@ -55,7 +55,7 @@ public interface ComponentLayout extends SerializableData, Iterable<Component>
      *
      * @return The layout {@link Type} or {@link Type#UNKNOWN}
      */
-    @Nonnull
+    @NotNull
     Type getType();
 
     /**
@@ -110,7 +110,7 @@ public interface ComponentLayout extends SerializableData, Iterable<Component>
      * @return The old {@link Component} that was replaced or removed
      */
     @Nullable
-    default Component updateComponent(@Nonnull String id, @Nullable Component newComponent)
+    default Component updateComponent(@NotNull String id, @Nullable Component newComponent)
     {
         Checks.notNull(id, "ID");
         List<Component> list = getComponents();
@@ -150,7 +150,7 @@ public interface ComponentLayout extends SerializableData, Iterable<Component>
      *
      * @return True, if any of the layouts was modified
      */
-    static boolean updateComponent(@Nonnull List<? extends ComponentLayout> layouts, @Nonnull String id, @Nullable Component newComponent)
+    static boolean updateComponent(@NotNull List<? extends ComponentLayout> layouts, @NotNull String id, @Nullable Component newComponent)
     {
         Checks.notNull(layouts, "ComponentLayout");
         Checks.notEmpty(id, "ID or URL");

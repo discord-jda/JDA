@@ -16,7 +16,7 @@
 
 package net.dv8tion.jda.api.entities;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * The type of client a user might be active on.
@@ -60,8 +60,8 @@ public enum ClientType
      *
      * @return The resolved ClientType or {@link #UNKNOWN}
      */
-    @Nonnull
-    public static ClientType fromKey(@Nonnull String key)
+    @NotNull
+    public static ClientType fromKey(@NotNull String key)
     {
         for (ClientType type : values())
         {

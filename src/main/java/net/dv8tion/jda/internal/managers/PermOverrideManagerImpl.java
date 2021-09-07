@@ -27,9 +27,9 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.entities.AbstractChannelImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import okhttp3.RequestBody;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
 
 public class PermOverrideManagerImpl extends ManagerBase<PermOverrideManager> implements PermOverrideManager
 {
@@ -66,7 +66,7 @@ public class PermOverrideManagerImpl extends ManagerBase<PermOverrideManager> im
             this.denied = getPermissionOverride().getDeniedRaw();
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public PermissionOverride getPermissionOverride()
     {
@@ -77,7 +77,7 @@ public class PermOverrideManagerImpl extends ManagerBase<PermOverrideManager> im
         return override;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @CheckReturnValue
     public PermOverrideManagerImpl reset(long fields)
@@ -86,7 +86,7 @@ public class PermOverrideManagerImpl extends ManagerBase<PermOverrideManager> im
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @CheckReturnValue
     public PermOverrideManagerImpl reset(long... fields)
@@ -95,7 +95,7 @@ public class PermOverrideManagerImpl extends ManagerBase<PermOverrideManager> im
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @CheckReturnValue
     public PermOverrideManagerImpl reset()
@@ -104,7 +104,7 @@ public class PermOverrideManagerImpl extends ManagerBase<PermOverrideManager> im
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @CheckReturnValue
     public PermOverrideManagerImpl grant(long permissions)
@@ -118,7 +118,7 @@ public class PermOverrideManagerImpl extends ManagerBase<PermOverrideManager> im
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @CheckReturnValue
     public PermOverrideManagerImpl deny(long permissions)
@@ -132,7 +132,7 @@ public class PermOverrideManagerImpl extends ManagerBase<PermOverrideManager> im
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @CheckReturnValue
     public PermOverrideManagerImpl clear(long permissions)

@@ -20,9 +20,9 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.exceptions.RateLimitedException;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
@@ -52,35 +52,35 @@ public class CompletedRestAction<T> implements AuditableRestAction<T>
     }
 
 
-    @Nonnull
+    @NotNull
     @Override
     public AuditableRestAction<T> reason(@Nullable String reason)
     {
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public JDA getJDA()
     {
         return api;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public AuditableRestAction<T> setCheck(@Nullable BooleanSupplier checks)
     {
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public AuditableRestAction<T> timeout(long timeout, @Nonnull TimeUnit unit)
+    public AuditableRestAction<T> timeout(long timeout, @NotNull TimeUnit unit)
     {
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public AuditableRestAction<T> deadline(long timestamp)
     {
@@ -122,7 +122,7 @@ public class CompletedRestAction<T> implements AuditableRestAction<T>
         return value;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public CompletableFuture<T> submit(boolean shouldQueue)
     {

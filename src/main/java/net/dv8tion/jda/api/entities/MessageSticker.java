@@ -19,8 +19,8 @@ import net.dv8tion.jda.annotations.DeprecatedSince;
 import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.internal.utils.Helpers;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.util.Set;
 
 /**
@@ -73,7 +73,7 @@ public class MessageSticker implements ISnowflake
      *
      * @return the name of the sticker
      */
-    @Nonnull
+    @NotNull
     public String getName()
     {
         return name;
@@ -84,7 +84,7 @@ public class MessageSticker implements ISnowflake
      *
      * @return Possibly-empty String containing the description of the sticker
      */
-    @Nonnull
+    @NotNull
     public String getDescription()
     {
         return description;
@@ -97,7 +97,7 @@ public class MessageSticker implements ISnowflake
      *
      * @return the ID of the pack the sticker is from
      */
-    @Nonnull
+    @NotNull
     public String getPackId()
     {
         return Long.toUnsignedString(getPackIdLong());
@@ -123,7 +123,7 @@ public class MessageSticker implements ISnowflake
      *
      * @deprecated Use {@link #getIconUrl()} instead
      */
-    @Nonnull
+    @NotNull
     @Deprecated
     @ForRemoval
     @ReplaceWith("getIconUrl()")
@@ -143,7 +143,7 @@ public class MessageSticker implements ISnowflake
      *
      * @deprecated Use {@link #getIconUrl()} instead
      */
-    @Nonnull
+    @NotNull
     @Deprecated
     @ForRemoval
     @ReplaceWith("getIconUrl()")
@@ -161,7 +161,7 @@ public class MessageSticker implements ISnowflake
      *
      * @return The image url of the sticker
      */
-    @Nonnull
+    @NotNull
     public String getIconUrl()
     {
         return Helpers.format(ICON_URL, getId(), formatType.getExtension());
@@ -172,7 +172,7 @@ public class MessageSticker implements ISnowflake
      *
      * @return the format of the sticker
      */
-    @Nonnull
+    @NotNull
     public StickerFormat getFormatType()
     {
         return formatType;
@@ -183,7 +183,7 @@ public class MessageSticker implements ISnowflake
      *
      * @return Possibly-empty unmodifiable Set of tags of the sticker
      */
-    @Nonnull
+    @NotNull
     public Set<String> getTags()
     {
         return tags;
@@ -228,7 +228,7 @@ public class MessageSticker implements ISnowflake
          *
          * @return The file extension for this format
          */
-        @Nonnull
+        @NotNull
         public String getExtension()
         {
             if (this == UNKNOWN)
@@ -244,7 +244,7 @@ public class MessageSticker implements ISnowflake
          *
          * @return The representative StickerFormat or UNKNOWN if it can't be resolved
          */
-        @Nonnull
+        @NotNull
         public static MessageSticker.StickerFormat fromId(int id)
         {
             for (MessageSticker.StickerFormat stickerFormat : values())

@@ -16,8 +16,9 @@
 
 package net.dv8tion.jda.api.audio;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.util.Collection;
 import java.util.EnumSet;
 
@@ -53,7 +54,7 @@ public enum SpeakingMode
      *
      * @return {@link EnumSet EnumSet} containing the speaking modes
      */
-    @Nonnull
+    @NotNull
     public static EnumSet<SpeakingMode> getModes(int mask)
     {
         final EnumSet<SpeakingMode> modes = EnumSet.noneOf(SpeakingMode.class);

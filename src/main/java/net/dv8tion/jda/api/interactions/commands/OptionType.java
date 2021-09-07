@@ -16,7 +16,7 @@
 
 package net.dv8tion.jda.api.interactions.commands;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * The available types for {@link Command} options.
@@ -79,7 +79,7 @@ public enum OptionType
      *
      * @return The OptionType constant or {@link #UNKNOWN}
      */
-    @Nonnull
+    @NotNull
     public static OptionType fromKey(int key)
     {
         for (OptionType type : values())

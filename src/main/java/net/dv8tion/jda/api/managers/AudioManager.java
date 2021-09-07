@@ -29,10 +29,10 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.JDALogger;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumSet;
@@ -105,7 +105,7 @@ public interface AudioManager
      * @see    #setSpeakingMode(SpeakingMode...)
      */
     @Incubating
-    void setSpeakingMode(@Nonnull Collection<SpeakingMode> mode);
+    void setSpeakingMode(@NotNull Collection<SpeakingMode> mode);
 
     /**
      * The {@link SpeakingMode} that should be used when sending audio via
@@ -123,7 +123,7 @@ public interface AudioManager
      * @see    #getSpeakingMode()
      */
     @Incubating
-    default void setSpeakingMode(@Nonnull SpeakingMode... mode)
+    default void setSpeakingMode(@NotNull SpeakingMode... mode)
     {
         Checks.notNull(mode, "Speaking Mode");
         setSpeakingMode(Arrays.asList(mode));
@@ -140,7 +140,7 @@ public interface AudioManager
      *
      * @see    #setSpeakingMode(Collection)
      */
-    @Nonnull
+    @NotNull
     @Incubating
     EnumSet<SpeakingMode> getSpeakingMode();
 
@@ -168,7 +168,7 @@ public interface AudioManager
      *
      * @return The corresponding JDA instance
      */
-    @Nonnull
+    @NotNull
     JDA getJDA();
 
     /**
@@ -176,7 +176,7 @@ public interface AudioManager
      *
      * @return The Guild that this AudioManager manages.
      */
-    @Nonnull
+    @NotNull
     Guild getGuild();
 
     /**
@@ -327,7 +327,7 @@ public interface AudioManager
      *
      * @return The current {@link net.dv8tion.jda.api.audio.hooks.ConnectionStatus ConnectionStatus}.
      */
-    @Nonnull
+    @NotNull
     ConnectionStatus getConnectionStatus();
 
     /**

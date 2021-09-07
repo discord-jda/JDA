@@ -18,9 +18,9 @@ package net.dv8tion.jda.api.audio;
 
 import net.dv8tion.jda.internal.audio.AudioPacket;
 import net.dv8tion.jda.internal.audio.Decoder;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.Objects;
 
@@ -51,7 +51,7 @@ public final class OpusPacket implements Comparable<OpusPacket>
     private short[] decoded;
     private boolean triedDecode;
 
-    public OpusPacket(@Nonnull AudioPacket packet, long userId, @Nullable Decoder decoder)
+    public OpusPacket(@NotNull AudioPacket packet, long userId, @Nullable Decoder decoder)
     {
         this.rawPacket = packet;
         this.userId = userId;
@@ -124,7 +124,7 @@ public final class OpusPacket implements Comparable<OpusPacket>
      *
      * @return The raw opus audio
      */
-    @Nonnull
+    @NotNull
     public byte[] getOpusAudio()
     {
         //prevent write access to backing array
@@ -172,7 +172,7 @@ public final class OpusPacket implements Comparable<OpusPacket>
      *
      * @return The stereo PCM audio data as specified by {@link net.dv8tion.jda.api.audio.AudioReceiveHandler#OUTPUT_FORMAT}.
      */
-    @Nonnull
+    @NotNull
     @SuppressWarnings("ConstantConditions") // the null case is handled with an exception
     public byte[] getAudioData(double volume)
     {
@@ -194,9 +194,9 @@ public final class OpusPacket implements Comparable<OpusPacket>
      *
      * @return The stereo PCM audio data as specified by {@link net.dv8tion.jda.api.audio.AudioReceiveHandler#OUTPUT_FORMAT}.
      */
-    @Nonnull
+    @NotNull
     @SuppressWarnings("ConstantConditions") // the null case is handled with an exception
-    public static byte[] getAudioData(@Nonnull short[] decoded, double volume)
+    public static byte[] getAudioData(@NotNull short[] decoded, double volume)
     {
         if (decoded == null)
             throw new IllegalArgumentException("Cannot get audio data from null");
@@ -217,7 +217,7 @@ public final class OpusPacket implements Comparable<OpusPacket>
     }
 
     @Override
-    public int compareTo(@Nonnull OpusPacket o)
+    public int compareTo(@NotNull OpusPacket o)
     {
         return getSequence() - o.getSequence();
     }

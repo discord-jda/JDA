@@ -18,8 +18,8 @@ package net.dv8tion.jda.api.utils;
 
 import net.dv8tion.jda.api.entities.ISnowflake;
 import net.dv8tion.jda.internal.utils.Checks;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
@@ -54,7 +54,7 @@ public class TimeUtil
      *
      * @return The creation time of the JDA entity as OffsetDateTime
      */
-    @Nonnull
+    @NotNull
     public static OffsetDateTime getTimeCreated(long entityId)
     {
         long timestamp = (entityId >>> TIMESTAMP_OFFSET) + DISCORD_EPOCH;
@@ -75,8 +75,8 @@ public class TimeUtil
      *
      * @return The creation time of the JDA entity as OffsetDateTime
      */
-    @Nonnull
-    public static OffsetDateTime getTimeCreated(@Nonnull ISnowflake entity)
+    @NotNull
+    public static OffsetDateTime getTimeCreated(@NotNull ISnowflake entity)
     {
         Checks.notNull(entity, "Entity");
         return getTimeCreated(entity.getIdLong());
@@ -90,8 +90,8 @@ public class TimeUtil
      *
      * @return The String of the formatted OffsetDateTime
      */
-    @Nonnull
-    public static String getDateTimeString(@Nonnull OffsetDateTime time)
+    @NotNull
+    public static String getDateTimeString(@NotNull OffsetDateTime time)
     {
         return time.format(dtFormatter);
     }

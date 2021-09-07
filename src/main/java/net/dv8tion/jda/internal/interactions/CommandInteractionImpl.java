@@ -30,8 +30,8 @@ import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.entities.MemberImpl;
 import net.dv8tion.jda.internal.entities.UserImpl;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -123,7 +123,7 @@ public class CommandInteractionImpl extends InteractionImpl implements CommandIn
         }
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @SuppressWarnings("ConstantConditions")
     public MessageChannel getChannel()
@@ -131,7 +131,7 @@ public class CommandInteractionImpl extends InteractionImpl implements CommandIn
         return (MessageChannel) super.getChannel();
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public String getName()
     {
@@ -156,7 +156,7 @@ public class CommandInteractionImpl extends InteractionImpl implements CommandIn
         return commandId;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public List<OptionMapping> getOptions()
     {

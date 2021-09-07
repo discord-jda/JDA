@@ -20,9 +20,9 @@ import net.dv8tion.jda.api.entities.Emoji;
 import net.dv8tion.jda.api.interactions.components.Button;
 import net.dv8tion.jda.api.interactions.components.ButtonStyle;
 import net.dv8tion.jda.api.utils.data.DataObject;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Objects;
 
 public class ButtonImpl implements Button
@@ -60,7 +60,7 @@ public class ButtonImpl implements Button
         this.emoji = emoji;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Type getType()
     {
@@ -74,14 +74,14 @@ public class ButtonImpl implements Button
         return id;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public String getLabel()
     {
         return label;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public ButtonStyle getStyle()
     {
@@ -108,7 +108,7 @@ public class ButtonImpl implements Button
         return disabled;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public DataObject toData()
     {

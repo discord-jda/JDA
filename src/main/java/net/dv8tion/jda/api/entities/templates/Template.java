@@ -27,10 +27,10 @@ import net.dv8tion.jda.internal.managers.TemplateManagerImpl;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.time.OffsetDateTime;
 
 /**
@@ -97,7 +97,7 @@ public class Template
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.api.entities.templates.Template Template}
      *         <br>The Template object
      */
-    @Nonnull
+    @NotNull
     public static RestAction<Template> resolve(final JDA api, final String code)
     {
         Checks.notEmpty(code, "code");
@@ -124,7 +124,7 @@ public class Template
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.api.entities.templates.Template Template}
      *         <br>The synced Template object
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     public RestAction<Template> sync()
     {
@@ -146,7 +146,7 @@ public class Template
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction}
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     public RestAction<Void> delete()
     {
@@ -160,7 +160,7 @@ public class Template
      *
      * @return The template code
      */
-    @Nonnull
+    @NotNull
     public String getCode()
     {
         return this.code;
@@ -171,7 +171,7 @@ public class Template
      *
      * @return The template name
      */
-    @Nonnull
+    @NotNull
     public String getName()
     {
         return this.name;
@@ -203,7 +203,7 @@ public class Template
      *
      * @return The user who created this template
      */
-    @Nonnull
+    @NotNull
     public User getCreator()
     {
         return this.creator;
@@ -214,7 +214,7 @@ public class Template
      *
      * @return The creation date of this template
      */
-    @Nonnull
+    @NotNull
     public OffsetDateTime getTimeCreated()
     {
         return this.createdAt;
@@ -228,7 +228,7 @@ public class Template
      *
      * @see    #getTimeCreated()
      */
-    @Nonnull
+    @NotNull
     public OffsetDateTime getTimeUpdated()
     {
         return this.updatedAt;
@@ -242,7 +242,7 @@ public class Template
      *
      * @see    TemplateGuild
      */
-    @Nonnull
+    @NotNull
     public TemplateGuild getGuild()
     {
         return this.guild;
@@ -273,7 +273,7 @@ public class Template
      *
      * @return The TemplateManager of this Template
      */
-    @Nonnull
+    @NotNull
     public TemplateManager getManager()
     {
         checkInteraction();
@@ -297,7 +297,7 @@ public class Template
      *
      * @return The corresponding JDA instance
      */
-    @Nonnull
+    @NotNull
     public JDA getJDA()
     {
         return this.api;

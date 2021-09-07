@@ -22,8 +22,8 @@ import net.dv8tion.jda.api.managers.Manager;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
@@ -48,7 +48,7 @@ public abstract class ManagerBase<M extends Manager<M>> extends AuditableRestAct
         super(api, route);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @SuppressWarnings("unchecked")
     public M setCheck(BooleanSupplier checks)
@@ -56,15 +56,15 @@ public abstract class ManagerBase<M extends Manager<M>> extends AuditableRestAct
         return (M) super.setCheck(checks);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @SuppressWarnings("unchecked")
-    public M timeout(long timeout, @Nonnull TimeUnit unit)
+    public M timeout(long timeout, @NotNull TimeUnit unit)
     {
         return (M) super.timeout(timeout, unit);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @SuppressWarnings("unchecked")
     public M deadline(long timestamp)
@@ -72,7 +72,7 @@ public abstract class ManagerBase<M extends Manager<M>> extends AuditableRestAct
         return (M) super.deadline(timestamp);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @SuppressWarnings("unchecked")
     public M reset(long fields)
@@ -86,7 +86,7 @@ public abstract class ManagerBase<M extends Manager<M>> extends AuditableRestAct
         return (M) this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @SuppressWarnings("unchecked")
     public M reset(long... fields)
@@ -105,7 +105,7 @@ public abstract class ManagerBase<M extends Manager<M>> extends AuditableRestAct
         return reset(sum);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @SuppressWarnings("unchecked")
     public M reset()

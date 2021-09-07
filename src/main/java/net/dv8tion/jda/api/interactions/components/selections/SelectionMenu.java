@@ -21,10 +21,10 @@ import net.dv8tion.jda.api.interactions.components.Component;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.interactions.SelectionMenuImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -85,7 +85,7 @@ public interface SelectionMenu extends Component
      *
      * @return The {@link SelectOption SelectOptions} this menu provides
      */
-    @Nonnull
+    @NotNull
     List<SelectOption> getOptions();
 
     /**
@@ -105,7 +105,7 @@ public interface SelectionMenu extends Component
      *
      * @see    #withDisabled(boolean)
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     default SelectionMenu asDisabled()
     {
@@ -119,7 +119,7 @@ public interface SelectionMenu extends Component
      *
      * @see    #withDisabled(boolean)
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     default SelectionMenu asEnabled()
     {
@@ -136,7 +136,7 @@ public interface SelectionMenu extends Component
      *
      * @see    #withDisabled(boolean)
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     default SelectionMenu withDisabled(boolean disabled)
     {
@@ -149,7 +149,7 @@ public interface SelectionMenu extends Component
      *
      * @return The {@link Builder} used to create the selection menu
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     default Builder createCopy()
     {
@@ -173,9 +173,9 @@ public interface SelectionMenu extends Component
      *
      * @return The {@link Builder} used to create the selection menu
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    static Builder create(@Nonnull String customId)
+    static Builder create(@NotNull String customId)
     {
         return new Builder(customId);
     }
@@ -194,9 +194,9 @@ public interface SelectionMenu extends Component
      *
      * @return The parsed SelectionMenu Builder instance
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    static Builder fromData(@Nonnull DataObject data)
+    static Builder fromData(@NotNull DataObject data)
     {
         return new SelectionMenuImpl(data).createCopy();
     }
@@ -212,7 +212,7 @@ public interface SelectionMenu extends Component
         private boolean disabled = false;
         private final List<SelectOption> options = new ArrayList<>();
 
-        protected Builder(@Nonnull String customId)
+        protected Builder(@NotNull String customId)
         {
             setId(customId);
         }
@@ -228,8 +228,8 @@ public interface SelectionMenu extends Component
          *
          * @return The same builder instance for chaining
          */
-        @Nonnull
-        public Builder setId(@Nonnull String customId)
+        @NotNull
+        public Builder setId(@NotNull String customId)
         {
             Checks.notEmpty(customId, "Component ID");
             Checks.notLonger(customId, 100, "Component ID");
@@ -248,7 +248,7 @@ public interface SelectionMenu extends Component
          *
          * @return The same builder instance for chaining
          */
-        @Nonnull
+        @NotNull
         public Builder setPlaceholder(@Nullable String placeholder)
         {
             if (placeholder != null)
@@ -274,7 +274,7 @@ public interface SelectionMenu extends Component
          *
          * @return The same builder instance for chaining
          */
-        @Nonnull
+        @NotNull
         public Builder setMinValues(int minValues)
         {
             Checks.notNegative(minValues, "Min Values");
@@ -297,7 +297,7 @@ public interface SelectionMenu extends Component
          *
          * @return The same builder instance for chaining
          */
-        @Nonnull
+        @NotNull
         public Builder setMaxValues(int maxValues)
         {
             Checks.positive(maxValues, "Max Values");
@@ -322,7 +322,7 @@ public interface SelectionMenu extends Component
          *
          * @return The same builder instance for chaining
          */
-        @Nonnull
+        @NotNull
         public Builder setRequiredRange(int min, int max)
         {
             Checks.check(min <= max, "Min Values should be less than or equal to Max Values! Provided: [%d, %d]", min, max);
@@ -338,7 +338,7 @@ public interface SelectionMenu extends Component
          *
          * @return The same builder instance for chaining
          */
-        @Nonnull
+        @NotNull
         public Builder setDisabled(boolean disabled)
         {
             this.disabled = disabled;
@@ -358,8 +358,8 @@ public interface SelectionMenu extends Component
          *
          * @see    SelectOption#of(String, String)
          */
-        @Nonnull
-        public Builder addOptions(@Nonnull SelectOption... options)
+        @NotNull
+        public Builder addOptions(@NotNull SelectOption... options)
         {
             Checks.noneNull(options, "Options");
             Checks.check(this.options.size() + options.length <= 25, "Cannot have more than 25 options for a selection menu!");
@@ -380,8 +380,8 @@ public interface SelectionMenu extends Component
          *
          * @see    SelectOption#of(String, String)
          */
-        @Nonnull
-        public Builder addOptions(@Nonnull Collection<? extends SelectOption> options)
+        @NotNull
+        public Builder addOptions(@NotNull Collection<? extends SelectOption> options)
         {
             Checks.noneNull(options, "Options");
             Checks.check(this.options.size() + options.size() <= 25, "Cannot have more than 25 options for a selection menu!");
@@ -402,8 +402,8 @@ public interface SelectionMenu extends Component
          *
          * @return The same builder instance for chaining
          */
-        @Nonnull
-        public Builder addOption(@Nonnull String label, @Nonnull String value)
+        @NotNull
+        public Builder addOption(@NotNull String label, @NotNull String value)
         {
             return addOptions(new SelectOption(label, value));
         }
@@ -423,8 +423,8 @@ public interface SelectionMenu extends Component
          *
          * @return The same builder instance for chaining
          */
-        @Nonnull
-        public Builder addOption(@Nonnull String label, @Nonnull String value, @Nonnull Emoji emoji)
+        @NotNull
+        public Builder addOption(@NotNull String label, @NotNull String value, @NotNull Emoji emoji)
         {
             return addOption(label, value, null, emoji);
         }
@@ -444,8 +444,8 @@ public interface SelectionMenu extends Component
          *
          * @return The same builder instance for chaining
          */
-        @Nonnull
-        public Builder addOption(@Nonnull String label, @Nonnull String value, @Nonnull String description)
+        @NotNull
+        public Builder addOption(@NotNull String label, @NotNull String value, @NotNull String description)
         {
             return addOption(label, value, description, null);
         }
@@ -467,8 +467,8 @@ public interface SelectionMenu extends Component
          *
          * @return The same builder instance for chaining
          */
-        @Nonnull
-        public Builder addOption(@Nonnull String label, @Nonnull String value, @Nullable String description, @Nullable Emoji emoji)
+        @NotNull
+        public Builder addOption(@NotNull String label, @NotNull String value, @Nullable String description, @Nullable Emoji emoji)
         {
             return addOptions(new SelectOption(label, value, description, false, emoji));
         }
@@ -478,7 +478,7 @@ public interface SelectionMenu extends Component
          *
          * @return The list of {@link SelectOption SelectOptions}
          */
-        @Nonnull
+        @NotNull
         public List<SelectOption> getOptions()
         {
             return options;
@@ -495,8 +495,8 @@ public interface SelectionMenu extends Component
          *
          * @return The same builder instance for chaining
          */
-        @Nonnull
-        public Builder setDefaultValues(@Nonnull Collection<String> values)
+        @NotNull
+        public Builder setDefaultValues(@NotNull Collection<String> values)
         {
             Checks.noneNull(values, "Values");
             Set<String> set = new HashSet<>(values);
@@ -520,8 +520,8 @@ public interface SelectionMenu extends Component
          *
          * @return The same builder instance for chaining
          */
-        @Nonnull
-        public Builder setDefaultOptions(@Nonnull Collection<? extends SelectOption> values)
+        @NotNull
+        public Builder setDefaultOptions(@NotNull Collection<? extends SelectOption> values)
         {
             Checks.noneNull(values, "Values");
             return setDefaultValues(values.stream().map(SelectOption::getValue).collect(Collectors.toSet()));
@@ -532,7 +532,7 @@ public interface SelectionMenu extends Component
          *
          * @return The custom id
          */
-        @Nonnull
+        @NotNull
         public String getId()
         {
             return customId;
@@ -591,7 +591,7 @@ public interface SelectionMenu extends Component
          *
          * @return The new {@link SelectionMenu} instance
          */
-        @Nonnull
+        @NotNull
         public SelectionMenu build()
         {
             Checks.check(minValues <= maxValues, "Min values cannot be greater than max values!");

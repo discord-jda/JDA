@@ -16,7 +16,8 @@
 
 package net.dv8tion.jda.internal.utils;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.*;
 
 public class ClassWalker implements Iterable<Class<?>>
@@ -45,7 +46,7 @@ public class ClassWalker implements Iterable<Class<?>>
         return new ClassWalker(start);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Iterator<Class<?>> iterator()
     {

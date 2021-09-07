@@ -18,9 +18,8 @@ package net.dv8tion.jda.api.events.user.update;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.User;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Indicates that the Avatar of a {@link net.dv8tion.jda.api.entities.User User} changed.
@@ -44,7 +43,7 @@ public class UserUpdateAvatarEvent extends GenericUserUpdateEvent<String>
 {
     public static final String IDENTIFIER = "avatar";
 
-    public UserUpdateAvatarEvent(@Nonnull JDA api, long responseNumber, @Nonnull User user, @Nullable String oldAvatar)
+    public UserUpdateAvatarEvent(@NotNull JDA api, long responseNumber, @NotNull User user, @Nullable String oldAvatar)
     {
         super(api, responseNumber, user, oldAvatar, user.getAvatarId(), IDENTIFIER);
     }

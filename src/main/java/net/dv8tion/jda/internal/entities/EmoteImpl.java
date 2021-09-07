@@ -27,8 +27,8 @@ import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.managers.EmoteManagerImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -82,7 +82,7 @@ public class EmoteImpl implements ListedEmote
         return guild;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public List<Role> getRoles()
     {
@@ -97,7 +97,7 @@ public class EmoteImpl implements ListedEmote
         return roles != null;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public String getName()
     {
@@ -122,14 +122,14 @@ public class EmoteImpl implements ListedEmote
         return id;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public JDAImpl getJDA()
     {
         return api;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public User getUser()
     {
@@ -144,7 +144,7 @@ public class EmoteImpl implements ListedEmote
         return user != null;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public EmoteManager getManager()
     {
@@ -159,7 +159,7 @@ public class EmoteImpl implements ListedEmote
         return animated;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public AuditableRestAction<Void> delete()
     {

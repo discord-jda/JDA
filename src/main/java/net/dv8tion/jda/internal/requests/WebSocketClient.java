@@ -47,10 +47,10 @@ import net.dv8tion.jda.internal.utils.UnlockHook;
 import net.dv8tion.jda.internal.utils.cache.AbstractCacheView;
 import net.dv8tion.jda.internal.utils.compress.Decompressor;
 import net.dv8tion.jda.internal.utils.compress.ZlibDecompressor;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.MDC;
 
-import javax.annotation.Nonnull;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.lang.ref.SoftReference;
@@ -1368,14 +1368,14 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
     protected abstract class ConnectNode implements SessionController.SessionConnectNode
     {
-        @Nonnull
+        @NotNull
         @Override
         public JDA getJDA()
         {
             return api;
         }
 
-        @Nonnull
+        @NotNull
         @Override
         public JDA.ShardInfo getShardInfo()
         {

@@ -17,8 +17,7 @@ package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.managers.AccountManager;
-
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Represents the currently logged in account.
@@ -41,7 +40,7 @@ public interface SelfUser extends User
      *
      * @return The application id
      */
-    @Nonnull
+    @NotNull
     default String getApplicationId()
     {
         return Long.toUnsignedString(getApplicationIdLong());
@@ -86,6 +85,6 @@ public interface SelfUser extends User
      *
      * @return An AccountManager instance for the current account
      */
-    @Nonnull
+    @NotNull
     AccountManager getManager();
 }

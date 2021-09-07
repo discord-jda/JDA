@@ -18,8 +18,7 @@ package net.dv8tion.jda.api.events.message.priv;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.PrivateChannel;
 import net.dv8tion.jda.api.events.Event;
-
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Indicates that a {@link net.dv8tion.jda.api.entities.Message Message} event is fired from a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}.
@@ -36,7 +35,7 @@ public abstract class GenericPrivateMessageEvent extends Event
     protected final long messageId;
     protected final PrivateChannel channel;
 
-    public GenericPrivateMessageEvent(@Nonnull JDA api, long responseNumber, long messageId, @Nonnull PrivateChannel channel)
+    public GenericPrivateMessageEvent(@NotNull JDA api, long responseNumber, long messageId, @NotNull PrivateChannel channel)
     {
         super(api, responseNumber);
         this.messageId = messageId;
@@ -48,7 +47,7 @@ public abstract class GenericPrivateMessageEvent extends Event
      *
      * @return The PrivateChannel
      */
-    @Nonnull
+    @NotNull
     public PrivateChannel getChannel()
     {
         return channel;
@@ -59,7 +58,7 @@ public abstract class GenericPrivateMessageEvent extends Event
      *
      * @return The id for this message
      */
-    @Nonnull
+    @NotNull
     public String getMessageId()
     {
         return Long.toUnsignedString(messageId);

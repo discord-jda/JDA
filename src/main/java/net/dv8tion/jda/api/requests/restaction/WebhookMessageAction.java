@@ -24,10 +24,10 @@ import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.AllowedMentions;
 import net.dv8tion.jda.api.utils.AttachmentOption;
 import net.dv8tion.jda.internal.utils.Checks;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -60,7 +60,7 @@ public interface WebhookMessageAction<T> extends RestAction<T>, AllowedMentions<
 //     *
 //     * @return The same message action, for chaining convenience
 //     */
-//    @Nonnull
+//    @NotNull
 //    @CheckReturnValue
 //    WebhookMessageAction<T> setUsername(@Nullable String name);
 //
@@ -75,7 +75,7 @@ public interface WebhookMessageAction<T> extends RestAction<T>, AllowedMentions<
 //     *
 //     * @return The same message action, for chaining convenience
 //     */
-//    @Nonnull
+//    @NotNull
 //    @CheckReturnValue
 //    WebhookMessageAction<T> setAvatarUrl(@Nullable String iconUrl);
 
@@ -99,7 +99,7 @@ public interface WebhookMessageAction<T> extends RestAction<T>, AllowedMentions<
      *
      * @return The same message action, for chaining convenience
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     WebhookMessageAction<T> setEphemeral(boolean ephemeral);
 
@@ -114,7 +114,7 @@ public interface WebhookMessageAction<T> extends RestAction<T>, AllowedMentions<
      *
      * @return The same message action, for chaining convenience
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     WebhookMessageAction<T> setContent(@Nullable String content);
 
@@ -126,7 +126,7 @@ public interface WebhookMessageAction<T> extends RestAction<T>, AllowedMentions<
      *
      * @return The same message action, for chaining convenience
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     WebhookMessageAction<T> setTTS(boolean tts);
 
@@ -141,9 +141,9 @@ public interface WebhookMessageAction<T> extends RestAction<T>, AllowedMentions<
      *
      * @return The same message action, for chaining convenience
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    WebhookMessageAction<T> addEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds); // Doesn't work on ephemeral messages!
+    WebhookMessageAction<T> addEmbeds(@NotNull Collection<? extends MessageEmbed> embeds); // Doesn't work on ephemeral messages!
 
     /**
      * Add {@link MessageEmbed MessageEmbeds} to this message
@@ -158,9 +158,9 @@ public interface WebhookMessageAction<T> extends RestAction<T>, AllowedMentions<
      *
      * @return The same message action, for chaining convenience
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    default WebhookMessageAction<T> addEmbeds(@Nonnull MessageEmbed embed, @Nonnull MessageEmbed... other)
+    default WebhookMessageAction<T> addEmbeds(@NotNull MessageEmbed embed, @NotNull MessageEmbed... other)
     {
         ArrayList<MessageEmbed> embeds = new ArrayList<>();
         embeds.add(embed);
@@ -191,9 +191,9 @@ public interface WebhookMessageAction<T> extends RestAction<T>, AllowedMentions<
      *
      * @return The same message action, for chaining convenience
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    WebhookMessageAction<T> addFile(@Nonnull InputStream data, @Nonnull String name, @Nonnull AttachmentOption... options);
+    WebhookMessageAction<T> addFile(@NotNull InputStream data, @NotNull String name, @NotNull AttachmentOption... options);
 
     /**
      * Adds the provided byte[] as file data.
@@ -220,9 +220,9 @@ public interface WebhookMessageAction<T> extends RestAction<T>, AllowedMentions<
      *
      * @see    net.dv8tion.jda.api.entities.SelfUser#getAllowedFileSize() SelfUser.getAllowedFileSize()
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    default WebhookMessageAction<T> addFile(@Nonnull byte[] data, @Nonnull String name, @Nonnull AttachmentOption... options)
+    default WebhookMessageAction<T> addFile(@NotNull byte[] data, @NotNull String name, @NotNull AttachmentOption... options)
     {
         Checks.notNull(name, "Name");
         Checks.notNull(data, "Data");
@@ -257,9 +257,9 @@ public interface WebhookMessageAction<T> extends RestAction<T>, AllowedMentions<
      *
      * @see    net.dv8tion.jda.api.entities.SelfUser#getAllowedFileSize() SelfUser.getAllowedFileSize()
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    default WebhookMessageAction<T> addFile(@Nonnull File file, @Nonnull String name, @Nonnull AttachmentOption... options)
+    default WebhookMessageAction<T> addFile(@NotNull File file, @NotNull String name, @NotNull AttachmentOption... options)
     {
         Checks.notEmpty(name, "Name");
         Checks.notNull(file, "File");
@@ -294,9 +294,9 @@ public interface WebhookMessageAction<T> extends RestAction<T>, AllowedMentions<
      *
      * @see    net.dv8tion.jda.api.entities.SelfUser#getAllowedFileSize() SelfUser.getAllowedFileSize()
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    default WebhookMessageAction<T> addFile(@Nonnull File file, @Nonnull AttachmentOption... options)
+    default WebhookMessageAction<T> addFile(@NotNull File file, @NotNull AttachmentOption... options)
     {
         Checks.notNull(file, "File");
         return addFile(file, file.getName(), options);
@@ -313,9 +313,9 @@ public interface WebhookMessageAction<T> extends RestAction<T>, AllowedMentions<
      *
      * @return The same message action, for chaining convenience
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    default WebhookMessageAction<T> addActionRow(@Nonnull Component... components)
+    default WebhookMessageAction<T> addActionRow(@NotNull Component... components)
     {
         return addActionRows(ActionRow.of(components));
     }
@@ -331,9 +331,9 @@ public interface WebhookMessageAction<T> extends RestAction<T>, AllowedMentions<
      *
      * @return The same message action, for chaining convenience
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    default WebhookMessageAction<T> addActionRow(@Nonnull Collection<? extends Component> components)
+    default WebhookMessageAction<T> addActionRow(@NotNull Collection<? extends Component> components)
     {
         return addActionRows(ActionRow.of(components));
     }
@@ -349,9 +349,9 @@ public interface WebhookMessageAction<T> extends RestAction<T>, AllowedMentions<
      *
      * @return The same message action, for chaining convenience
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    default WebhookMessageAction<T> addActionRows(@Nonnull Collection<? extends ActionRow> rows)
+    default WebhookMessageAction<T> addActionRows(@NotNull Collection<? extends ActionRow> rows)
     {
         Checks.noneNull(rows, "ActionRows");
         return addActionRows(rows.toArray(new ActionRow[0]));
@@ -368,9 +368,9 @@ public interface WebhookMessageAction<T> extends RestAction<T>, AllowedMentions<
      *
      * @return The same message action, for chaining convenience
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    WebhookMessageAction<T> addActionRows(@Nonnull ActionRow... rows);
+    WebhookMessageAction<T> addActionRows(@NotNull ActionRow... rows);
 
     /**
      * Applies the sendable information of the provided {@link net.dv8tion.jda.api.entities.Message Message}
@@ -389,7 +389,7 @@ public interface WebhookMessageAction<T> extends RestAction<T>, AllowedMentions<
      *
      * @return The same message action, for chaining convenience
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    WebhookMessageAction<T> applyMessage(@Nonnull Message message);
+    WebhookMessageAction<T> applyMessage(@NotNull Message message);
 }

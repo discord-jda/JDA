@@ -21,10 +21,10 @@ import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.message.guild.GenericGuildMessageEvent;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.internal.requests.CompletedRestAction;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 /**
  * Indicates that a {@link net.dv8tion.jda.api.entities.MessageReaction MessageReaction} was added or removed in a TextChannel.
@@ -41,7 +41,7 @@ public abstract class GenericGuildMessageReactionEvent extends GenericGuildMessa
     protected final Member issuer;
     protected final MessageReaction reaction;
 
-    public GenericGuildMessageReactionEvent(@Nonnull JDA api, long responseNumber, @Nullable Member user, @Nonnull MessageReaction reaction, long userId)
+    public GenericGuildMessageReactionEvent(@NotNull JDA api, long responseNumber, @Nullable Member user, @NotNull MessageReaction reaction, long userId)
     {
         super(api, responseNumber, reaction.getMessageIdLong(), (TextChannel) reaction.getChannel());
         this.issuer = user;
@@ -54,7 +54,7 @@ public abstract class GenericGuildMessageReactionEvent extends GenericGuildMessa
      *
      * @return The user id
      */
-    @Nonnull
+    @NotNull
     public String getUserId()
     {
         return Long.toUnsignedString(userId);
@@ -103,7 +103,7 @@ public abstract class GenericGuildMessageReactionEvent extends GenericGuildMessa
      *
      * @return The message reaction
      */
-    @Nonnull
+    @NotNull
     public MessageReaction getReaction()
     {
         return reaction;
@@ -115,7 +115,7 @@ public abstract class GenericGuildMessageReactionEvent extends GenericGuildMessa
      *
      * @return The reaction emote
      */
-    @Nonnull
+    @NotNull
     public MessageReaction.ReactionEmote getReactionEmote()
     {
         return reaction.getReactionEmote();
@@ -129,7 +129,7 @@ public abstract class GenericGuildMessageReactionEvent extends GenericGuildMessa
      *
      * @since  4.2.1
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     public RestAction<User> retrieveUser()
     {
@@ -150,7 +150,7 @@ public abstract class GenericGuildMessageReactionEvent extends GenericGuildMessa
      *
      * @since  4.2.1
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     public RestAction<Member> retrieveMember()
     {
@@ -170,7 +170,7 @@ public abstract class GenericGuildMessageReactionEvent extends GenericGuildMessa
      *
      * @since  4.2.1
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     public RestAction<Message> retrieveMessage()
     {

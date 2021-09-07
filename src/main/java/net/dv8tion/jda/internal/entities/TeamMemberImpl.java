@@ -18,8 +18,8 @@ package net.dv8tion.jda.internal.entities;
 
 import net.dv8tion.jda.api.entities.TeamMember;
 import net.dv8tion.jda.api.entities.User;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.util.Objects;
 
 public class TeamMemberImpl implements TeamMember
@@ -35,14 +35,14 @@ public class TeamMemberImpl implements TeamMember
         this.teamId = teamId;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public User getUser()
     {
         return user;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public MembershipState getMembershipState()
     {

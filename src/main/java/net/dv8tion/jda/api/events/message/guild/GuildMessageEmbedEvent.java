@@ -18,8 +18,8 @@ package net.dv8tion.jda.api.events.message.guild;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.TextChannel;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.util.List;
 
 /**
@@ -36,7 +36,7 @@ public class GuildMessageEmbedEvent extends GenericGuildMessageEvent
 {
     private final List<MessageEmbed> embeds;
 
-    public GuildMessageEmbedEvent(@Nonnull final JDA api, final long responseNumber, final long messageId, @Nonnull final TextChannel channel, @Nonnull final List<MessageEmbed> embeds)
+    public GuildMessageEmbedEvent(@NotNull final JDA api, final long responseNumber, final long messageId, @NotNull final TextChannel channel, @NotNull final List<MessageEmbed> embeds)
     {
         super(api, responseNumber, messageId, channel);
         this.embeds = embeds;
@@ -47,7 +47,7 @@ public class GuildMessageEmbedEvent extends GenericGuildMessageEvent
      *
      * @return The MessageEmbeds
      */
-    @Nonnull
+    @NotNull
     public List<MessageEmbed> getMessageEmbeds()
     {
         return embeds;

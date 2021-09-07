@@ -34,12 +34,11 @@ import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.JDALogger;
 import org.apache.commons.collections4.map.ListOrderedMap;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
 import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.io.UncheckedIOException;
 import java.util.*;
 
 /**
@@ -67,7 +66,7 @@ public class MessageHistory
      * @param  channel
      *         The {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel} to retrieval history from.
      */
-    public MessageHistory(@Nonnull MessageChannel channel)
+    public MessageHistory(@NotNull MessageChannel channel)
     {
         Checks.notNull(channel, "Channel");
         this.channel = channel;
@@ -87,7 +86,7 @@ public class MessageHistory
      *
      * @return The corresponding JDA instance
      */
-    @Nonnull
+    @NotNull
     public JDA getJDA()
     {
         return channel.getJDA();
@@ -122,7 +121,7 @@ public class MessageHistory
      *
      * @return The MessageChannel of this history.
      */
-    @Nonnull
+    @NotNull
     public MessageChannel getChannel()
     {
         return channel;
@@ -179,7 +178,7 @@ public class MessageHistory
      *         <br>Retrieved Messages are placed in a List and provided in order of most recent to oldest with most recent
      *         starting at index 0. If the list is empty, there were no more messages left to retrieve.
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     public RestAction<List<Message>> retrievePast(int amount)
     {
@@ -258,7 +257,7 @@ public class MessageHistory
      *         <br>Retrieved Messages are placed in a List and provided in order of most recent to oldest with most recent
      *         starting at index 0. If the list is empty, there were no more messages left to retrieve.
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     public RestAction<List<Message>> retrieveFuture(int amount)
     {
@@ -308,7 +307,7 @@ public class MessageHistory
      *
      * @return An immutable List of Messages, sorted newest to oldest.
      */
-    @Nonnull
+    @NotNull
     public List<Message> getRetrievedHistory()
     {
         int size = size();
@@ -338,7 +337,7 @@ public class MessageHistory
      * @return Possibly-null Message with the same {@code id} as the one provided.
      */
     @Nullable
-    public Message getMessageById(@Nonnull String id)
+    public Message getMessageById(@NotNull String id)
     {
         return getMessageById(MiscUtil.parseSnowflake(id));
     }
@@ -398,9 +397,9 @@ public class MessageHistory
      * @see    net.dv8tion.jda.api.entities.MessageChannel#getHistoryAfter(long, int)    MessageChannel.getHistoryAfter(long, int)
      * @see    net.dv8tion.jda.api.entities.MessageChannel#getHistoryAfter(Message, int) MessageChannel.getHistoryAfter(Message, int)
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    public static MessageRetrieveAction getHistoryAfter(@Nonnull MessageChannel channel, @Nonnull String messageId)
+    public static MessageRetrieveAction getHistoryAfter(@NotNull MessageChannel channel, @NotNull String messageId)
     {
         checkArguments(channel, messageId);
         Route.CompiledRoute route = Route.Messages.GET_MESSAGE_HISTORY.compile(channel.getId()).withQueryParams("after", messageId);
@@ -443,9 +442,9 @@ public class MessageHistory
      * @see    net.dv8tion.jda.api.entities.MessageChannel#getHistoryBefore(long, int)    MessageChannel.getHistoryBefore(long, int)
      * @see    net.dv8tion.jda.api.entities.MessageChannel#getHistoryBefore(Message, int) MessageChannel.getHistoryBefore(Message, int)
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    public static MessageRetrieveAction getHistoryBefore(@Nonnull MessageChannel channel, @Nonnull String messageId)
+    public static MessageRetrieveAction getHistoryBefore(@NotNull MessageChannel channel, @NotNull String messageId)
     {
         checkArguments(channel, messageId);
         Route.CompiledRoute route = Route.Messages.GET_MESSAGE_HISTORY.compile(channel.getId()).withQueryParams("before", messageId);
@@ -488,9 +487,9 @@ public class MessageHistory
      * @see    net.dv8tion.jda.api.entities.MessageChannel#getHistoryAround(long, int)    MessageChannel.getHistoryAround(long, int)
      * @see    net.dv8tion.jda.api.entities.MessageChannel#getHistoryAround(Message, int) MessageChannel.getHistoryAround(Message, int)
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    public static MessageRetrieveAction getHistoryAround(@Nonnull MessageChannel channel, @Nonnull String messageId)
+    public static MessageRetrieveAction getHistoryAround(@NotNull MessageChannel channel, @NotNull String messageId)
     {
         checkArguments(channel, messageId);
         Route.CompiledRoute route = Route.Messages.GET_MESSAGE_HISTORY.compile(channel.getId()).withQueryParams("around", messageId);
@@ -521,9 +520,9 @@ public class MessageHistory
      *
      * @see    net.dv8tion.jda.api.entities.MessageChannel#getHistoryFromBeginning(int)  MessageChannel.getHistoryFromBeginning(int)
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    public static MessageRetrieveAction getHistoryFromBeginning(@Nonnull MessageChannel channel)
+    public static MessageRetrieveAction getHistoryFromBeginning(@NotNull MessageChannel channel)
     {
         return getHistoryAfter(channel, "0");
     }
@@ -569,7 +568,7 @@ public class MessageHistory
          *
          * @return The current MessageRetrieveAction for chaining convenience
          */
-        @Nonnull
+        @NotNull
         @CheckReturnValue
         public MessageRetrieveAction limit(@Nullable Integer limit)
         {

@@ -31,9 +31,9 @@ import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.PermissionUtil;
 import okhttp3.RequestBody;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
 import java.util.EnumSet;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
@@ -67,45 +67,45 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
         this.name = name;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public ChannelActionImpl<T> setCheck(BooleanSupplier checks)
     {
         return (ChannelActionImpl<T>) super.setCheck(checks);
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public ChannelActionImpl<T> timeout(long timeout, @Nonnull TimeUnit unit)
+    public ChannelActionImpl<T> timeout(long timeout, @NotNull TimeUnit unit)
     {
         return (ChannelActionImpl<T>) super.timeout(timeout, unit);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public ChannelActionImpl<T> deadline(long timestamp)
     {
         return (ChannelActionImpl<T>) super.deadline(timestamp);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Guild getGuild()
     {
         return guild;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public ChannelType getType()
     {
         return type;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @CheckReturnValue
-    public ChannelActionImpl<T> setName(@Nonnull String name)
+    public ChannelActionImpl<T> setName(@NotNull String name)
     {
         Checks.notEmpty(name, "Name");
         Checks.notLonger(name, 100, "Name");
@@ -113,7 +113,7 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @CheckReturnValue
     public ChannelActionImpl<T> setParent(Category category)
@@ -123,7 +123,7 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @CheckReturnValue
     public ChannelActionImpl<T> setPosition(Integer position)
@@ -133,7 +133,7 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @CheckReturnValue
     public ChannelActionImpl<T> setTopic(String topic)
@@ -146,7 +146,7 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @CheckReturnValue
     public ChannelActionImpl<T> setNSFW(boolean nsfw)
@@ -157,7 +157,7 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @CheckReturnValue
     public ChannelActionImpl<T> setSlowmode(int slowmode)
@@ -169,7 +169,7 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @CheckReturnValue
     public ChannelActionImpl<T> setNews(boolean news)
@@ -182,7 +182,7 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @CheckReturnValue
     public ChannelActionImpl<T> addMemberPermissionOverride(long userId, long allow, long deny)
@@ -190,7 +190,7 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
         return addOverride(userId, PermOverrideData.MEMBER_TYPE, allow, deny);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @CheckReturnValue
     public ChannelActionImpl<T> addRolePermissionOverride(long roleId, long allow, long deny)
@@ -198,7 +198,7 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
         return addOverride(roleId, PermOverrideData.ROLE_TYPE, allow, deny);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public ChannelAction<T> removePermissionOverride(long id)
     {
@@ -206,7 +206,7 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public ChannelAction<T> clearPermissionOverrides()
     {
@@ -214,7 +214,7 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @SuppressWarnings("ResultOfMethodCallIgnored")
     public ChannelAction<T> syncPermissionOverrides()
@@ -277,7 +277,7 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
     }
 
     // --voice only--
-    @Nonnull
+    @NotNull
     @Override
     @CheckReturnValue
     public ChannelActionImpl<T> setBitrate(Integer bitrate)
@@ -297,7 +297,7 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @CheckReturnValue
     public ChannelActionImpl<T> setUserlimit(Integer userlimit)

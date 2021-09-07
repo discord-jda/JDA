@@ -16,7 +16,8 @@
 
 package net.dv8tion.jda.api.entities;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Objects;
 
 /**
@@ -29,7 +30,7 @@ public class VanityInvite
     private final String code;
     private final int uses;
 
-    public VanityInvite(@Nonnull String code, int uses)
+    public VanityInvite(@NotNull String code, int uses)
     {
         this.code = code;
         this.uses = uses;
@@ -40,7 +41,7 @@ public class VanityInvite
      *
      * @return The code
      */
-    @Nonnull
+    @NotNull
     public String getCode()
     {
         return code;
@@ -62,7 +63,7 @@ public class VanityInvite
      *
      * @return The invite url
      */
-    @Nonnull
+    @NotNull
     public String getUrl()
     {
         return "https://discord.gg/" + getCode();

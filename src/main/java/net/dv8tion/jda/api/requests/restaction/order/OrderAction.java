@@ -17,9 +17,9 @@
 package net.dv8tion.jda.api.requests.restaction.order;
 
 import net.dv8tion.jda.api.requests.RestAction;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -45,15 +45,15 @@ import java.util.function.BooleanSupplier;
  */
 public interface OrderAction<T, M extends OrderAction<T, M>> extends RestAction<Void>
 {
-    @Nonnull
+    @NotNull
     @Override
     M setCheck(@Nullable BooleanSupplier checks);
 
-    @Nonnull
+    @NotNull
     @Override
-    M timeout(long timeout, @Nonnull TimeUnit unit);
+    M timeout(long timeout, @NotNull TimeUnit unit);
 
-    @Nonnull
+    @NotNull
     @Override
     M deadline(long timestamp);
 
@@ -71,7 +71,7 @@ public interface OrderAction<T, M extends OrderAction<T, M>> extends RestAction<
      *
      * @return Immutable List representing the current order
      */
-    @Nonnull
+    @NotNull
     List<T> getCurrentOrder();
 
     /**
@@ -90,7 +90,7 @@ public interface OrderAction<T, M extends OrderAction<T, M>> extends RestAction<
      * @see    #getSelectedPosition()
      * @see    #getSelectedEntity()
      */
-    @Nonnull
+    @NotNull
     M selectPosition(int selectedPosition);
 
     /**
@@ -108,8 +108,8 @@ public interface OrderAction<T, M extends OrderAction<T, M>> extends RestAction<
      * @see    #getSelectedPosition()
      * @see    #getSelectedEntity()
      */
-    @Nonnull
-    M selectPosition(@Nonnull T selectedEntity);
+    @NotNull
+    M selectPosition(@NotNull T selectedEntity);
 
     /**
      * The currently selected position
@@ -127,7 +127,7 @@ public interface OrderAction<T, M extends OrderAction<T, M>> extends RestAction<
      *
      * @return The currently selected entity
      */
-    @Nonnull
+    @NotNull
     T getSelectedEntity();
 
     /**
@@ -146,7 +146,7 @@ public interface OrderAction<T, M extends OrderAction<T, M>> extends RestAction<
      *
      * @see    #moveTo(int)
      */
-    @Nonnull
+    @NotNull
     M moveUp(int amount);
 
     /**
@@ -165,7 +165,7 @@ public interface OrderAction<T, M extends OrderAction<T, M>> extends RestAction<
      *
      * @see    #moveTo(int)
      */
-    @Nonnull
+    @NotNull
     M moveDown(int amount);
 
     /**
@@ -186,7 +186,7 @@ public interface OrderAction<T, M extends OrderAction<T, M>> extends RestAction<
      * @see    #moveDown(int)
      * @see    #moveUp(int)
      */
-    @Nonnull
+    @NotNull
     M moveTo(int position);
 
     /**
@@ -203,7 +203,7 @@ public interface OrderAction<T, M extends OrderAction<T, M>> extends RestAction<
      *
      * @return The current OrderAction sub-implementation instance
      */
-    @Nonnull
+    @NotNull
     M swapPosition(int swapPosition);
 
     /**
@@ -224,8 +224,8 @@ public interface OrderAction<T, M extends OrderAction<T, M>> extends RestAction<
      *
      * @see    #swapPosition(int)
      */
-    @Nonnull
-    M swapPosition(@Nonnull T swapEntity);
+    @NotNull
+    M swapPosition(@NotNull T swapEntity);
 
     /**
      * Reverses the {@link #getCurrentOrder() current order} by using
@@ -235,7 +235,7 @@ public interface OrderAction<T, M extends OrderAction<T, M>> extends RestAction<
      *
      * @see    java.util.Collections#reverse(java.util.List)
      */
-    @Nonnull
+    @NotNull
     M reverseOrder();
 
     /**
@@ -246,7 +246,7 @@ public interface OrderAction<T, M extends OrderAction<T, M>> extends RestAction<
      *
      * @see    java.util.Collections#shuffle(java.util.List)
      */
-    @Nonnull
+    @NotNull
     M shuffleOrder();
 
     /**
@@ -264,6 +264,6 @@ public interface OrderAction<T, M extends OrderAction<T, M>> extends RestAction<
      *
      * @see    java.util.ArrayList#sort(java.util.Comparator)
      */
-    @Nonnull
-    M sortOrder(@Nonnull final Comparator<T> comparator);
+    @NotNull
+    M sortOrder(@NotNull final Comparator<T> comparator);
 }

@@ -19,9 +19,8 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Indicates that a Message was edited in a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}.
@@ -36,7 +35,7 @@ public class GuildMessageUpdateEvent extends GenericGuildMessageEvent
 {
     private final Message message;
 
-    public GuildMessageUpdateEvent(@Nonnull JDA api, long responseNumber, @Nonnull Message message)
+    public GuildMessageUpdateEvent(@NotNull JDA api, long responseNumber, @NotNull Message message)
     {
         super(api, responseNumber, message.getIdLong(), message.getTextChannel());
         this.message = message;
@@ -47,7 +46,7 @@ public class GuildMessageUpdateEvent extends GenericGuildMessageEvent
      *
      * @return The Message
      */
-    @Nonnull
+    @NotNull
     public Message getMessage()
     {
         return message;
@@ -60,7 +59,7 @@ public class GuildMessageUpdateEvent extends GenericGuildMessageEvent
      *
      * @see    net.dv8tion.jda.api.entities.User User
      */
-    @Nonnull
+    @NotNull
     public User getAuthor()
     {
         return message.getAuthor();

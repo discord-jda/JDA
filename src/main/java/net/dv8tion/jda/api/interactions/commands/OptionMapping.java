@@ -19,9 +19,9 @@ package net.dv8tion.jda.api.interactions.commands;
 import gnu.trove.map.TLongObjectMap;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.utils.data.DataObject;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Objects;
 
 /**
@@ -53,7 +53,7 @@ public class OptionMapping
      *
      * @return The {@link OptionType OptionType}
      */
-    @Nonnull
+    @NotNull
     public OptionType getType()
     {
         return type;
@@ -64,7 +64,7 @@ public class OptionMapping
      *
      * @return The option name
      */
-    @Nonnull
+    @NotNull
     public String getName()
     {
         return name;
@@ -77,7 +77,7 @@ public class OptionMapping
      *
      * @return The String representation of this option value
      */
-    @Nonnull
+    @NotNull
     public String getAsString()
     {
         return data.getString("value");
@@ -156,7 +156,7 @@ public class OptionMapping
      *
      * @return The resolved {@link IMentionable}
      */
-    @Nonnull
+    @NotNull
     public IMentionable getAsMentionable()
     {
         Object entity = resolved.get(getAsLong());
@@ -193,7 +193,7 @@ public class OptionMapping
      *
      * @return The resolved {@link User}
      */
-    @Nonnull
+    @NotNull
     public User getAsUser()
     {
         if (type != OptionType.USER)
@@ -214,7 +214,7 @@ public class OptionMapping
      *
      * @return The resolved {@link Role}
      */
-    @Nonnull
+    @NotNull
     public Role getAsRole()
     {
         if (type != OptionType.ROLE)
@@ -235,7 +235,7 @@ public class OptionMapping
      *
      * @return The resolved {@link GuildChannel}
      */
-    @Nonnull
+    @NotNull
     public GuildChannel getAsGuildChannel()
     {
         AbstractChannel value = getAsChannel();
@@ -268,7 +268,7 @@ public class OptionMapping
      *
      * @return The {@link ChannelType}
      */
-    @Nonnull
+    @NotNull
     public ChannelType getChannelType()
     {
         AbstractChannel channel = getAsChannel();

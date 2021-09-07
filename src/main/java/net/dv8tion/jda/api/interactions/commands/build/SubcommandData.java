@@ -21,8 +21,8 @@ import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.internal.utils.Checks;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.util.Collection;
 
 /**
@@ -47,7 +47,7 @@ public class SubcommandData extends BaseCommand<CommandData> implements Serializ
      *             <li>The description must be 1-100 characters long</li>
      *         </ul>
      */
-    public SubcommandData(@Nonnull String name, @Nonnull String description)
+    public SubcommandData(@NotNull String name, @NotNull String description)
     {
         super(name, description);
     }
@@ -69,8 +69,8 @@ public class SubcommandData extends BaseCommand<CommandData> implements Serializ
      *
      * @return The SubcommandData instance, for chaining
      */
-    @Nonnull
-    public SubcommandData addOptions(@Nonnull OptionData... options)
+    @NotNull
+    public SubcommandData addOptions(@NotNull OptionData... options)
     {
         Checks.noneNull(options, "Option");
         Checks.check(options.length + this.options.length() <= 25, "Cannot have more than 25 options for a subcommand!");
@@ -102,8 +102,8 @@ public class SubcommandData extends BaseCommand<CommandData> implements Serializ
      *
      * @return The SubcommandData instance, for chaining
      */
-    @Nonnull
-    public SubcommandData addOptions(@Nonnull Collection<? extends OptionData> options)
+    @NotNull
+    public SubcommandData addOptions(@NotNull Collection<? extends OptionData> options)
     {
         Checks.noneNull(options, "Options");
         return addOptions(options.toArray(new OptionData[0]));
@@ -132,8 +132,8 @@ public class SubcommandData extends BaseCommand<CommandData> implements Serializ
      *
      * @return The SubcommandData instance, for chaining
      */
-    @Nonnull
-    public SubcommandData addOption(@Nonnull OptionType type, @Nonnull String name, @Nonnull String description, boolean required)
+    @NotNull
+    public SubcommandData addOption(@NotNull OptionType type, @NotNull String name, @NotNull String description, boolean required)
     {
         return addOptions(new OptionData(type, name, description).setRequired(required));
     }
@@ -160,13 +160,13 @@ public class SubcommandData extends BaseCommand<CommandData> implements Serializ
      *
      * @return The SubcommandData instance, for chaining
      */
-    @Nonnull
-    public SubcommandData addOption(@Nonnull OptionType type, @Nonnull String name, @Nonnull String description)
+    @NotNull
+    public SubcommandData addOption(@NotNull OptionType type, @NotNull String name, @NotNull String description)
     {
         return addOption(type, name, description, false);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public DataObject toData()
     {
@@ -187,8 +187,8 @@ public class SubcommandData extends BaseCommand<CommandData> implements Serializ
      *
      * @return The parsed SubcommandData instance, which can be further configured through setters
      */
-    @Nonnull
-    public static SubcommandData fromData(@Nonnull DataObject json)
+    @NotNull
+    public static SubcommandData fromData(@NotNull DataObject json)
     {
         String name = json.getString("name");
         String description = json.getString("description");

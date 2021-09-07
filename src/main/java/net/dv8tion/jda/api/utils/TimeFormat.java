@@ -17,8 +17,8 @@
 package net.dv8tion.jda.api.utils;
 
 import net.dv8tion.jda.internal.utils.Checks;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.TemporalAccessor;
@@ -106,7 +106,7 @@ public enum TimeFormat
      *
      * @return The style flag
      */
-    @Nonnull
+    @NotNull
     public String getStyle()
     {
         return style;
@@ -123,8 +123,8 @@ public enum TimeFormat
      *
      * @return The representative TimeFormat or {@link #DEFAULT} if none could be identified
      */
-    @Nonnull
-    public static TimeFormat fromStyle(@Nonnull String style)
+    @NotNull
+    public static TimeFormat fromStyle(@NotNull String style)
     {
         Checks.notEmpty(style, "Style");
         Checks.notLonger(style, 1, "Style");
@@ -148,8 +148,8 @@ public enum TimeFormat
      *
      * @return {@link Timestamp} instance for the provided markdown
      */
-    @Nonnull
-    public static Timestamp parse(@Nonnull String markdown)
+    @NotNull
+    public static Timestamp parse(@NotNull String markdown)
     {
         Checks.notNull(markdown, "Markdown");
         Matcher matcher = MARKDOWN.matcher(markdown.trim());
@@ -174,8 +174,8 @@ public enum TimeFormat
      *
      * @see    Instant#from(TemporalAccessor)
      */
-    @Nonnull
-    public String format(@Nonnull TemporalAccessor temporal)
+    @NotNull
+    public String format(@NotNull TemporalAccessor temporal)
     {
         Checks.notNull(temporal, "Temporal");
         long timestamp = Instant.from(temporal).toEpochMilli();
@@ -191,7 +191,7 @@ public enum TimeFormat
      *
      * @return The markdown string with this encoded style
      */
-    @Nonnull
+    @NotNull
     public String format(long timestamp)
     {
         return "<t:" + timestamp / 1000 + ":" + style + ">";
@@ -213,8 +213,8 @@ public enum TimeFormat
      * @see    Instant#from(TemporalAccessor)
      * @see    Instant#toEpochMilli()
      */
-    @Nonnull
-    public Timestamp atInstant(@Nonnull Instant instant)
+    @NotNull
+    public Timestamp atInstant(@NotNull Instant instant)
     {
         Checks.notNull(instant, "Instant");
         return new Timestamp(this, instant.toEpochMilli());
@@ -231,7 +231,7 @@ public enum TimeFormat
      *
      * @see    #now()
      */
-    @Nonnull
+    @NotNull
     public Timestamp atTimestamp(long timestamp)
     {
         return new Timestamp(this, timestamp);
@@ -245,7 +245,7 @@ public enum TimeFormat
      * @see    Timestamp#plus(long)
      * @see    Timestamp#minus(long)
      */
-    @Nonnull
+    @NotNull
     public Timestamp now()
     {
         return new Timestamp(this, System.currentTimeMillis());
@@ -265,8 +265,8 @@ public enum TimeFormat
      * @see    #now()
      * @see    Timestamp#plus(Duration)
      */
-    @Nonnull
-    public Timestamp after(@Nonnull Duration duration)
+    @NotNull
+    public Timestamp after(@NotNull Duration duration)
     {
         return now().plus(duration);
     }
@@ -282,7 +282,7 @@ public enum TimeFormat
      * @see    #now()
      * @see    Timestamp#plus(long)
      */
-    @Nonnull
+    @NotNull
     public Timestamp after(long millis)
     {
         return now().plus(millis);
@@ -302,8 +302,8 @@ public enum TimeFormat
      * @see    #now()
      * @see    Timestamp#minus(Duration)
      */
-    @Nonnull
-    public Timestamp before(@Nonnull Duration duration)
+    @NotNull
+    public Timestamp before(@NotNull Duration duration)
     {
         return now().minus(duration);
     }
@@ -319,7 +319,7 @@ public enum TimeFormat
      * @see    #now()
      * @see    Timestamp#minus(long)
      */
-    @Nonnull
+    @NotNull
     public Timestamp before(long millis)
     {
         return now().minus(millis);

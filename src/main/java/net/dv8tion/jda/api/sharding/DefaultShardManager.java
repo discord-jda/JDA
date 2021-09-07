@@ -41,10 +41,10 @@ import net.dv8tion.jda.internal.utils.config.SessionConfig;
 import net.dv8tion.jda.internal.utils.config.ThreadingConfig;
 import net.dv8tion.jda.internal.utils.config.sharding.*;
 import okhttp3.OkHttpClient;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.security.auth.login.LoginException;
 import java.util.Arrays;
 import java.util.Collection;
@@ -146,18 +146,18 @@ public class DefaultShardManager implements ShardManager
      */
     protected final ChunkingFilter chunkingFilter;
 
-    public DefaultShardManager(@Nonnull String token)
+    public DefaultShardManager(@NotNull String token)
     {
         this(token, null);
     }
 
-    public DefaultShardManager(@Nonnull String token, @Nullable Collection<Integer> shardIds)
+    public DefaultShardManager(@NotNull String token, @Nullable Collection<Integer> shardIds)
     {
         this(token, shardIds, null, null, null, null, null, null, null);
     }
 
     public DefaultShardManager(
-        @Nonnull String token, @Nullable Collection<Integer> shardIds,
+        @NotNull String token, @Nullable Collection<Integer> shardIds,
         @Nullable ShardingConfig shardingConfig, @Nullable EventConfig eventConfig,
         @Nullable PresenceProviderConfig presenceConfig, @Nullable ThreadingProviderConfig threadingConfig,
         @Nullable ShardingSessionConfig sessionConfig, @Nullable ShardingMetaConfig metaConfig,
@@ -193,7 +193,7 @@ public class DefaultShardManager implements ShardManager
         }
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public EnumSet<GatewayIntent> getGatewayIntents()
     {
@@ -201,7 +201,7 @@ public class DefaultShardManager implements ShardManager
     }
 
     @Override
-    public void addEventListener(@Nonnull final Object... listeners)
+    public void addEventListener(@NotNull final Object... listeners)
     {
         ShardManager.super.addEventListener(listeners);
         for (Object o : listeners)
@@ -209,7 +209,7 @@ public class DefaultShardManager implements ShardManager
     }
 
     @Override
-    public void removeEventListener(@Nonnull final Object... listeners)
+    public void removeEventListener(@NotNull final Object... listeners)
     {
         ShardManager.super.removeEventListener(listeners);
         for (Object o : listeners)
@@ -217,14 +217,14 @@ public class DefaultShardManager implements ShardManager
     }
 
     @Override
-    public void addEventListeners(@Nonnull IntFunction<Object> eventListenerProvider)
+    public void addEventListeners(@NotNull IntFunction<Object> eventListenerProvider)
     {
         ShardManager.super.addEventListeners(eventListenerProvider);
         eventConfig.addEventListenerProvider(eventListenerProvider);
     }
 
     @Override
-    public void removeEventListenerProvider(@Nonnull IntFunction<Object> eventListenerProvider)
+    public void removeEventListenerProvider(@NotNull IntFunction<Object> eventListenerProvider)
     {
         eventConfig.removeEventListenerProvider(eventListenerProvider);
     }
@@ -249,7 +249,7 @@ public class DefaultShardManager implements ShardManager
         return shard == null ? null : shard.getGuildById(id);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public ShardCacheView getShardCache()
     {
@@ -613,7 +613,7 @@ public class DefaultShardManager implements ShardManager
     }
 
     @Override
-    public void setIdleProvider(@Nonnull IntFunction<Boolean> idleProvider)
+    public void setIdleProvider(@NotNull IntFunction<Boolean> idleProvider)
     {
         ShardManager.super.setIdleProvider(idleProvider);
         presenceConfig.setIdleProvider(idleProvider);

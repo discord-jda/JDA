@@ -20,10 +20,10 @@ import net.dv8tion.jda.api.entities.IMentionable;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.internal.utils.AllowedMentionsImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.EnumSet;
 
@@ -65,7 +65,7 @@ public interface AllowedMentions<R>
      *
      * @return Default mentions set by AllowedMentions.setDefaultMentions(Collection)
      */
-    @Nonnull
+    @NotNull
     static EnumSet<Message.MentionType> getDefaultMentions()
     {
         return AllowedMentionsImpl.getDefaultMentions();
@@ -109,7 +109,7 @@ public interface AllowedMentions<R>
      *
      * @return Updated Action for chaining convenience
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     R mentionRepliedUser(boolean mention);
 
@@ -128,7 +128,7 @@ public interface AllowedMentions<R>
      *
      * @return Updated Action for chaining convenience
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     R allowedMentions(@Nullable Collection<Message.MentionType> allowedMentions);
 
@@ -153,9 +153,9 @@ public interface AllowedMentions<R>
      * @see    #allowedMentions(Collection)
      * @see    #setDefaultMentions(Collection)
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    R mention(@Nonnull IMentionable... mentions);
+    R mention(@NotNull IMentionable... mentions);
 
     /**
      * Used to provide a whitelist for {@link net.dv8tion.jda.api.entities.User Users}, {@link net.dv8tion.jda.api.entities.Member Members}
@@ -178,9 +178,9 @@ public interface AllowedMentions<R>
      * @see    #allowedMentions(Collection)
      * @see    #setDefaultMentions(Collection)
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    default R mention(@Nonnull Collection<? extends IMentionable> mentions)
+    default R mention(@NotNull Collection<? extends IMentionable> mentions)
     {
         Checks.noneNull(mentions, "Mention");
         return mention(mentions.toArray(new IMentionable[0]));
@@ -205,9 +205,9 @@ public interface AllowedMentions<R>
      * @see    #allowedMentions(Collection)
      * @see    #setDefaultMentions(Collection)
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    R mentionUsers(@Nonnull String... userIds);
+    R mentionUsers(@NotNull String... userIds);
 
     /**
      * Used to provide a whitelist of {@link net.dv8tion.jda.api.entities.User Users} that should be pinged,
@@ -228,9 +228,9 @@ public interface AllowedMentions<R>
      * @see    #allowedMentions(Collection)
      * @see    #setDefaultMentions(Collection)
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    default R mentionUsers(@Nonnull long... userIds)
+    default R mentionUsers(@NotNull long... userIds)
     {
         Checks.notNull(userIds, "UserId array");
         String[] stringIds = new String[userIds.length];
@@ -260,9 +260,9 @@ public interface AllowedMentions<R>
      * @see    #allowedMentions(Collection)
      * @see    #setDefaultMentions(Collection)
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    R mentionRoles(@Nonnull String... roleIds);
+    R mentionRoles(@NotNull String... roleIds);
 
     /**
      * Used to provide a whitelist of {@link net.dv8tion.jda.api.entities.Role Roles} that should be pinged,
@@ -283,9 +283,9 @@ public interface AllowedMentions<R>
      * @see    #allowedMentions(Collection)
      * @see    #setDefaultMentions(Collection)
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    default R mentionRoles(@Nonnull long... roleIds)
+    default R mentionRoles(@NotNull long... roleIds)
     {
         Checks.notNull(roleIds, "RoleId array");
         String[] stringIds = new String[roleIds.length];

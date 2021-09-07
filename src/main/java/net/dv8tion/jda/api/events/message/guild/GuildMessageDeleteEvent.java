@@ -17,8 +17,7 @@ package net.dv8tion.jda.api.events.message.guild;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.TextChannel;
-
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Indicates that a Guild Message was deleted.
@@ -31,7 +30,7 @@ import javax.annotation.Nonnull;
  */
 public class GuildMessageDeleteEvent extends GenericGuildMessageEvent
 {
-    public GuildMessageDeleteEvent(@Nonnull JDA api, long responseNumber, long messageId, @Nonnull TextChannel channel)
+    public GuildMessageDeleteEvent(@NotNull JDA api, long responseNumber, long messageId, @NotNull TextChannel channel)
     {
         super(api, responseNumber, messageId, channel);
     }

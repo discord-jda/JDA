@@ -24,8 +24,8 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.StoreChannel;
 import net.dv8tion.jda.api.events.channel.store.GenericStoreChannelEvent;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -44,7 +44,7 @@ public class StoreChannelUpdatePermissionsEvent extends GenericStoreChannelEvent
 {
     private final List<IPermissionHolder> changed;
 
-    public StoreChannelUpdatePermissionsEvent(@Nonnull JDA api, long responseNumber, @Nonnull StoreChannel channel, List<IPermissionHolder> permHolders)
+    public StoreChannelUpdatePermissionsEvent(@NotNull JDA api, long responseNumber, @NotNull StoreChannel channel, List<IPermissionHolder> permHolders)
     {
         super(api, responseNumber, channel);
         this.changed = permHolders;
@@ -58,7 +58,7 @@ public class StoreChannelUpdatePermissionsEvent extends GenericStoreChannelEvent
      * @see    #getChangedRoles()
      * @see    #getChangedMembers()
      */
-    @Nonnull
+    @NotNull
     public List<IPermissionHolder> getChangedPermissionHolders()
     {
         return changed;
@@ -69,7 +69,7 @@ public class StoreChannelUpdatePermissionsEvent extends GenericStoreChannelEvent
      *
      * @return List of affected roles
      */
-    @Nonnull
+    @NotNull
     public List<Role> getChangedRoles()
     {
         return changed.stream()
@@ -83,7 +83,7 @@ public class StoreChannelUpdatePermissionsEvent extends GenericStoreChannelEvent
      *
      * @return List of affected members
      */
-    @Nonnull
+    @NotNull
     public List<Member> getChangedMembers()
     {
         return changed.stream()

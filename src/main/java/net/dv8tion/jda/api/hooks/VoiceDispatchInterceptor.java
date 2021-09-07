@@ -23,9 +23,8 @@ import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.managers.DirectAudioController;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.SerializableData;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Interceptor used to handle critical voice dispatches.
@@ -43,7 +42,7 @@ public interface VoiceDispatchInterceptor
      * @param update
      *        The {@link VoiceServerUpdate} to handle
      */
-    void onVoiceServerUpdate(@Nonnull VoiceServerUpdate update);
+    void onVoiceServerUpdate(@NotNull VoiceServerUpdate update);
 
     /**
      * Handles the <b>VOICE_STATE_UPDATE</b>.
@@ -54,7 +53,7 @@ public interface VoiceDispatchInterceptor
      *
      * @return True, if a connection was previously established
      */
-    boolean onVoiceStateUpdate(@Nonnull VoiceStateUpdate update);
+    boolean onVoiceStateUpdate(@NotNull VoiceStateUpdate update);
 
     /**
      * Abstraction for all relevant voice updates
@@ -69,7 +68,7 @@ public interface VoiceDispatchInterceptor
          *
          * @return The guild
          */
-        @Nonnull
+        @NotNull
         Guild getGuild();
 
         /**
@@ -77,7 +76,7 @@ public interface VoiceDispatchInterceptor
          *
          * @return The raw JSON object
          */
-        @Nonnull
+        @NotNull
         @Override
         DataObject toData();
 
@@ -86,7 +85,7 @@ public interface VoiceDispatchInterceptor
          *
          * @return The {@link DirectAudioController} for this JDA instance
          */
-        @Nonnull
+        @NotNull
         default DirectAudioController getAudioController()
         {
             return getJDA().getDirectAudioController();
@@ -107,7 +106,7 @@ public interface VoiceDispatchInterceptor
          *
          * @return The guild id
          */
-        @Nonnull
+        @NotNull
         default String getGuildId()
         {
             return Long.toUnsignedString(getGuildIdLong());
@@ -118,7 +117,7 @@ public interface VoiceDispatchInterceptor
          *
          * @return The JDA instance
          */
-        @Nonnull
+        @NotNull
         default JDA getJDA()
         {
             return getGuild().getJDA();
@@ -156,14 +155,14 @@ public interface VoiceDispatchInterceptor
             this.json = json;
         }
 
-        @Nonnull
+        @NotNull
         @Override
         public Guild getGuild()
         {
             return guild;
         }
 
-        @Nonnull
+        @NotNull
         @Override
         public DataObject toData()
         {
@@ -175,7 +174,7 @@ public interface VoiceDispatchInterceptor
          *
          * @return The endpoint
          */
-        @Nonnull
+        @NotNull
         public String getEndpoint()
         {
             return endpoint;
@@ -186,7 +185,7 @@ public interface VoiceDispatchInterceptor
          *
          * @return The access token
          */
-        @Nonnull
+        @NotNull
         public String getToken()
         {
             return token;
@@ -197,7 +196,7 @@ public interface VoiceDispatchInterceptor
          *
          * @return The session id
          */
-        @Nonnull
+        @NotNull
         public String getSessionId()
         {
             return sessionId;
@@ -220,14 +219,14 @@ public interface VoiceDispatchInterceptor
             this.json = json;
         }
 
-        @Nonnull
+        @NotNull
         @Override
         public Guild getGuild()
         {
             return voiceState.getGuild();
         }
 
-        @Nonnull
+        @NotNull
         @Override
         public DataObject toData()
         {
@@ -250,7 +249,7 @@ public interface VoiceDispatchInterceptor
          *
          * @return The voice state
          */
-        @Nonnull
+        @NotNull
         public GuildVoiceState getVoiceState()
         {
             return voiceState;

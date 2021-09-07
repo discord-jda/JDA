@@ -19,9 +19,8 @@ package net.dv8tion.jda.api.events.application;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.commands.Command;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Indicates that a {@link Command} was created.
@@ -30,7 +29,7 @@ import javax.annotation.Nullable;
  */
 public class ApplicationCommandCreateEvent extends GenericApplicationCommandEvent
 {
-    public ApplicationCommandCreateEvent(@Nonnull JDA api, long responseNumber, @Nonnull Command command, @Nullable Guild guild)
+    public ApplicationCommandCreateEvent(@NotNull JDA api, long responseNumber, @NotNull Command command, @Nullable Guild guild)
     {
         super(api, responseNumber, command, guild);
     }

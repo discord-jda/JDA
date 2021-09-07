@@ -21,10 +21,10 @@ import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.ComponentInteraction;
 import net.dv8tion.jda.api.interactions.components.ComponentLayout;
 import net.dv8tion.jda.api.requests.RestAction;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -80,7 +80,7 @@ public interface SelectionMenuInteraction extends ComponentInteraction
      *
      * @return {@link List} of {@link SelectOption#getValue()}
      */
-    @Nonnull
+    @NotNull
     List<String> getValues();
 
     /**
@@ -100,7 +100,7 @@ public interface SelectionMenuInteraction extends ComponentInteraction
      * @see    SelectionMenu#createCopy()
      * @see    SelectionMenu#create(String)
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     default RestAction<Void> editSelectionMenu(@Nullable SelectionMenu newMenu)
     {

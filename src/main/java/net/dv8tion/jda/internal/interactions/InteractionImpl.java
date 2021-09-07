@@ -25,9 +25,8 @@ import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.entities.MemberImpl;
 import net.dv8tion.jda.internal.requests.restaction.interactions.ReplyActionImpl;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class InteractionImpl implements Interaction
 {
@@ -99,7 +98,7 @@ public class InteractionImpl implements Interaction
         return type;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public String getToken()
     {
@@ -120,14 +119,14 @@ public class InteractionImpl implements Interaction
         return channel;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public InteractionHook getHook()
     {
         return hook;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public User getUser()
     {
@@ -147,14 +146,14 @@ public class InteractionImpl implements Interaction
         return hook.isAck();
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public ReplyActionImpl deferReply()
     {
         return new ReplyActionImpl(this.hook);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public JDA getJDA()
     {

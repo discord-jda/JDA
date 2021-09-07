@@ -21,8 +21,7 @@ import net.dv8tion.jda.api.interactions.components.ButtonInteraction;
 import net.dv8tion.jda.api.interactions.components.Component;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
-
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 public class ButtonInteractionImpl extends ComponentInteractionImpl implements ButtonInteraction
 {
@@ -34,14 +33,14 @@ public class ButtonInteractionImpl extends ComponentInteractionImpl implements B
         button = message != null ? this.message.getButtonById(customId) : null;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Component.Type getComponentType()
     {
         return Component.Type.BUTTON;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Button getButton()
     {

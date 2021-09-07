@@ -19,9 +19,8 @@ package net.dv8tion.jda.api.events.guild.update;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.TextChannel;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Indicates that the rules channel of a {@link Guild Guild} changed.
@@ -34,7 +33,7 @@ public class GuildUpdateRulesChannelEvent extends GenericGuildUpdateEvent<TextCh
 {
     public static final String IDENTIFIER = "rules_channel";
 
-    public GuildUpdateRulesChannelEvent(@Nonnull JDA api, long responseNumber, @Nonnull Guild guild, @Nullable TextChannel oldRulesChannel)
+    public GuildUpdateRulesChannelEvent(@NotNull JDA api, long responseNumber, @NotNull Guild guild, @Nullable TextChannel oldRulesChannel)
     {
         super(api, responseNumber, guild, oldRulesChannel, guild.getRulesChannel(), IDENTIFIER);
     }

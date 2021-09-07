@@ -19,8 +19,7 @@ package net.dv8tion.jda.api.events.guild;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.events.Event;
 import net.dv8tion.jda.api.events.ReadyEvent;
-
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Indicates that a guild failed to ready up and timed out.
@@ -38,7 +37,7 @@ public class GuildTimeoutEvent extends Event
 {
     private final long guildId;
 
-    public GuildTimeoutEvent(@Nonnull JDA api, long guildId)
+    public GuildTimeoutEvent(@NotNull JDA api, long guildId)
     {
         super(api);
         this.guildId = guildId;
@@ -59,7 +58,7 @@ public class GuildTimeoutEvent extends Event
      *
      * @return The guild id
      */
-    @Nonnull
+    @NotNull
     public String getGuildId()
     {
         return Long.toUnsignedString(guildId);

@@ -23,10 +23,10 @@ import net.dv8tion.jda.api.interactions.Interaction;
 import net.dv8tion.jda.api.requests.restaction.interactions.UpdateInteractionAction;
 import net.dv8tion.jda.internal.requests.restaction.interactions.UpdateInteractionActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -48,7 +48,7 @@ public interface ComponentInteraction extends Interaction
      *
      * @return The component ID
      */
-    @Nonnull
+    @NotNull
     String getComponentId();
 
     /**
@@ -65,7 +65,7 @@ public interface ComponentInteraction extends Interaction
      *
      * @return The {@link Message}
      */
-    @Nonnull
+    @NotNull
     Message getMessage();
 
     /**
@@ -80,7 +80,7 @@ public interface ComponentInteraction extends Interaction
      *
      * @return The message id
      */
-    @Nonnull
+    @NotNull
     default String getMessageId()
     {
         return Long.toUnsignedString(getMessageIdLong());
@@ -91,7 +91,7 @@ public interface ComponentInteraction extends Interaction
      *
      * @return The {@link Component.Type}
      */
-    @Nonnull
+    @NotNull
     Component.Type getComponentType();
 
     /**
@@ -99,7 +99,7 @@ public interface ComponentInteraction extends Interaction
      *
      * @return The {@link MessageChannel}
      */
-    @Nonnull
+    @NotNull
     @Override
     MessageChannel getChannel();
 
@@ -116,7 +116,7 @@ public interface ComponentInteraction extends Interaction
      *
      * @see    #editMessage(String)
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     UpdateInteractionAction deferEdit();
 
@@ -137,9 +137,9 @@ public interface ComponentInteraction extends Interaction
      *
      * @return {@link UpdateInteractionAction} that can be used to further update the message
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    default UpdateInteractionAction editMessage(@Nonnull Message message)
+    default UpdateInteractionAction editMessage(@NotNull Message message)
     {
         Checks.notNull(message, "Message");
         UpdateInteractionActionImpl action = (UpdateInteractionActionImpl) deferEdit();
@@ -163,9 +163,9 @@ public interface ComponentInteraction extends Interaction
      *
      * @return {@link UpdateInteractionAction} that can be used to further update the message
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    default UpdateInteractionAction editMessage(@Nonnull String content)
+    default UpdateInteractionAction editMessage(@NotNull String content)
     {
         Checks.notNull(content, "Content");
         return deferEdit().setContent(content);
@@ -188,9 +188,9 @@ public interface ComponentInteraction extends Interaction
      *
      * @return {@link UpdateInteractionAction} that can be used to further update the message
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    default UpdateInteractionAction editComponents(@Nonnull Collection<? extends ComponentLayout> components)
+    default UpdateInteractionAction editComponents(@NotNull Collection<? extends ComponentLayout> components)
     {
         Checks.noneNull(components, "Components");
         if (components.stream().anyMatch(it -> !(it instanceof ActionRow)))
@@ -216,9 +216,9 @@ public interface ComponentInteraction extends Interaction
      *
      * @return {@link UpdateInteractionAction} that can be used to further update the message
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    default UpdateInteractionAction editComponents(@Nonnull ComponentLayout... components)
+    default UpdateInteractionAction editComponents(@NotNull ComponentLayout... components)
     {
         Checks.noneNull(components, "ComponentLayouts");
         return editComponents(Arrays.asList(components));
@@ -241,9 +241,9 @@ public interface ComponentInteraction extends Interaction
      *
      * @return {@link UpdateInteractionAction} that can be used to further update the message
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    default UpdateInteractionAction editMessageEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
+    default UpdateInteractionAction editMessageEmbeds(@NotNull Collection<? extends MessageEmbed> embeds)
     {
         Checks.noneNull(embeds, "MessageEmbed");
         return deferEdit().setEmbeds(embeds);
@@ -266,9 +266,9 @@ public interface ComponentInteraction extends Interaction
      *
      * @return {@link UpdateInteractionAction} that can be used to further update the message
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    default UpdateInteractionAction editMessageEmbeds(@Nonnull MessageEmbed... embeds)
+    default UpdateInteractionAction editMessageEmbeds(@NotNull MessageEmbed... embeds)
     {
         Checks.noneNull(embeds, "MessageEmbed");
         return deferEdit().setEmbeds(embeds);
@@ -293,9 +293,9 @@ public interface ComponentInteraction extends Interaction
      *
      * @return {@link UpdateInteractionAction} that can be used to further update the message
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    default UpdateInteractionAction editMessageFormat(@Nonnull String format, @Nonnull Object... args)
+    default UpdateInteractionAction editMessageFormat(@NotNull String format, @NotNull Object... args)
     {
         Checks.notNull(format, "Format String");
         return editMessage(String.format(format, args));

@@ -20,10 +20,10 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.requests.RestAction;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
@@ -42,15 +42,15 @@ import java.util.function.BooleanSupplier;
  */
 public interface MemberAction extends RestAction<Void>
 {
-    @Nonnull
+    @NotNull
     @Override
     MemberAction setCheck(@Nullable BooleanSupplier checks);
 
-    @Nonnull
+    @NotNull
     @Override
-    MemberAction timeout(long timeout, @Nonnull TimeUnit unit);
+    MemberAction timeout(long timeout, @NotNull TimeUnit unit);
 
-    @Nonnull
+    @NotNull
     @Override
     MemberAction deadline(long timestamp);
 
@@ -59,7 +59,7 @@ public interface MemberAction extends RestAction<Void>
      *
      * @return The access token
      */
-    @Nonnull
+    @NotNull
     String getAccessToken();
 
     /**
@@ -67,7 +67,7 @@ public interface MemberAction extends RestAction<Void>
      *
      * @return The id of the user
      */
-    @Nonnull
+    @NotNull
     String getUserId();
 
     /**
@@ -84,7 +84,7 @@ public interface MemberAction extends RestAction<Void>
      *
      * @return The Guild
      */
-    @Nonnull
+    @NotNull
     Guild getGuild();
 
     /**
@@ -99,7 +99,7 @@ public interface MemberAction extends RestAction<Void>
      *
      * @return The current MemberAction for chaining
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     MemberAction setNickname(@Nullable String nick);
 
@@ -115,7 +115,7 @@ public interface MemberAction extends RestAction<Void>
      *
      * @return The current MemberAction for chaining
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     MemberAction setRoles(@Nullable Collection<Role> roles);
 
@@ -131,7 +131,7 @@ public interface MemberAction extends RestAction<Void>
      *
      * @return The current MemberAction for chaining
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     MemberAction setRoles(@Nullable Role... roles);
 
@@ -144,7 +144,7 @@ public interface MemberAction extends RestAction<Void>
      *
      * @return The current MemberAction for chaining
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     MemberAction setMute(boolean mute);
 
@@ -157,7 +157,7 @@ public interface MemberAction extends RestAction<Void>
      *
      * @return The current MemberAction for chaining
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     MemberAction setDeafen(boolean deaf);
 }

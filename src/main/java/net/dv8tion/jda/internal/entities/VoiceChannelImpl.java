@@ -22,9 +22,9 @@ import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.requests.restaction.ChannelAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.utils.Checks;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -60,14 +60,14 @@ public class VoiceChannelImpl extends AbstractChannelImpl<VoiceChannel, VoiceCha
         return bitrate;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public ChannelType getType()
     {
         return ChannelType.VOICE;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Region getRegion()
     {
@@ -81,7 +81,7 @@ public class VoiceChannelImpl extends AbstractChannelImpl<VoiceChannel, VoiceCha
         return region;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public List<Member> getMembers()
     {
@@ -100,9 +100,9 @@ public class VoiceChannelImpl extends AbstractChannelImpl<VoiceChannel, VoiceCha
         throw new IllegalStateException("Somehow when determining position we never found the VoiceChannel in the Guild's channels? wtf?");
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public ChannelAction<VoiceChannel> createCopy(@Nonnull Guild guild)
+    public ChannelAction<VoiceChannel> createCopy(@NotNull Guild guild)
     {
         Checks.notNull(guild, "Guild");
         ChannelAction<VoiceChannel> action = guild.createVoiceChannel(name).setBitrate(bitrate).setUserlimit(userLimit);

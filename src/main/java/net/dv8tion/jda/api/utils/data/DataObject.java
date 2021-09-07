@@ -29,11 +29,11 @@ import net.dv8tion.jda.api.utils.data.etf.ExTermEncoder;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
 import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.util.*;
@@ -44,7 +44,7 @@ import java.util.function.UnaryOperator;
  * Represents a map of values used in communication with the Discord API.
  *
  * <p>Throws {@link java.lang.NullPointerException},
- * if a parameter annotated with {@link javax.annotation.Nonnull} is provided with {@code null}.
+ * if a parameter annotated with {@link org.jetbrains.annotations.NotNull} is provided with {@code null}.
  *
  * <p>This class is not Thread-Safe.
  */
@@ -67,7 +67,7 @@ public class DataObject implements SerializableData
 
     protected final Map<String, Object> data;
 
-    protected DataObject(@Nonnull Map<String, Object> data)
+    protected DataObject(@NotNull Map<String, Object> data)
     {
         this.data = data;
     }
@@ -79,7 +79,7 @@ public class DataObject implements SerializableData
      *
      * @see    #put(String, Object)
      */
-    @Nonnull
+    @NotNull
     public static DataObject empty()
     {
         return new DataObject(new HashMap<>());
@@ -96,8 +96,8 @@ public class DataObject implements SerializableData
      *
      * @return A DataObject instance for the provided payload
      */
-    @Nonnull
-    public static DataObject fromJson(@Nonnull byte[] data)
+    @NotNull
+    public static DataObject fromJson(@NotNull byte[] data)
     {
         try
         {
@@ -121,8 +121,8 @@ public class DataObject implements SerializableData
      *
      * @return A DataObject instance for the provided payload
      */
-    @Nonnull
-    public static DataObject fromJson(@Nonnull String json)
+    @NotNull
+    public static DataObject fromJson(@NotNull String json)
     {
         try
         {
@@ -146,8 +146,8 @@ public class DataObject implements SerializableData
      *
      * @return A DataObject instance for the provided payload
      */
-    @Nonnull
-    public static DataObject fromJson(@Nonnull InputStream stream)
+    @NotNull
+    public static DataObject fromJson(@NotNull InputStream stream)
     {
         try
         {
@@ -171,8 +171,8 @@ public class DataObject implements SerializableData
      *
      * @return A DataObject instance for the provided payload
      */
-    @Nonnull
-    public static DataObject fromJson(@Nonnull Reader stream)
+    @NotNull
+    public static DataObject fromJson(@NotNull Reader stream)
     {
         try
         {
@@ -201,8 +201,8 @@ public class DataObject implements SerializableData
      *
      * @since  4.2.1
      */
-    @Nonnull
-    public static DataObject fromETF(@Nonnull byte[] data)
+    @NotNull
+    public static DataObject fromETF(@NotNull byte[] data)
     {
         Checks.notNull(data, "Data");
         try
@@ -225,7 +225,7 @@ public class DataObject implements SerializableData
      *
      * @return True, if the specified key is present
      */
-    public boolean hasKey(@Nonnull String key)
+    public boolean hasKey(@NotNull String key)
     {
         return data.containsKey(key);
     }
@@ -238,7 +238,7 @@ public class DataObject implements SerializableData
      *
      * @return True, if the specified key is null or missing
      */
-    public boolean isNull(@Nonnull String key)
+    public boolean isNull(@NotNull String key)
     {
         return data.get(key) == null;
     }
@@ -255,7 +255,7 @@ public class DataObject implements SerializableData
      *
      * @see    net.dv8tion.jda.api.utils.data.DataType#isType(Object) DataType.isType(Object)
      */
-    public boolean isType(@Nonnull String key, @Nonnull DataType type)
+    public boolean isType(@NotNull String key, @NotNull DataType type)
     {
         return type.isType(data.get(key));
     }
@@ -271,8 +271,8 @@ public class DataObject implements SerializableData
      *
      * @return The resolved instance of DataObject for the key
      */
-    @Nonnull
-    public DataObject getObject(@Nonnull String key)
+    @NotNull
+    public DataObject getObject(@NotNull String key)
     {
         return optObject(key).orElseThrow(() -> valueError(key, "DataObject"));
     }
@@ -288,9 +288,9 @@ public class DataObject implements SerializableData
      *
      * @return The resolved instance of DataObject for the key, wrapped in {@link java.util.Optional}
      */
-    @Nonnull
+    @NotNull
     @SuppressWarnings("unchecked")
-    public Optional<DataObject> optObject(@Nonnull String key)
+    public Optional<DataObject> optObject(@NotNull String key)
     {
         Map<String, Object> child = null;
         try
@@ -315,8 +315,8 @@ public class DataObject implements SerializableData
      *
      * @return The resolved instance of DataArray for the key
      */
-    @Nonnull
-    public DataArray getArray(@Nonnull String key)
+    @NotNull
+    public DataArray getArray(@NotNull String key)
     {
         return optArray(key).orElseThrow(() -> valueError(key, "DataArray"));
     }
@@ -332,9 +332,9 @@ public class DataObject implements SerializableData
      *
      * @return The resolved instance of DataArray for the key, wrapped in {@link java.util.Optional}
      */
-    @Nonnull
+    @NotNull
     @SuppressWarnings("unchecked")
-    public Optional<DataArray> optArray(@Nonnull String key)
+    public Optional<DataArray> optArray(@NotNull String key)
     {
         List<Object> child = null;
         try
@@ -356,8 +356,8 @@ public class DataObject implements SerializableData
      *
      * @return {@link java.util.Optional} with a possible value
      */
-    @Nonnull
-    public Optional<Object> opt(@Nonnull String key)
+    @NotNull
+    public Optional<Object> opt(@NotNull String key)
     {
         return Optional.ofNullable(data.get(key));
     }
@@ -375,8 +375,8 @@ public class DataObject implements SerializableData
      *
      * @see    #opt(String)
      */
-    @Nonnull
-    public Object get(@Nonnull String key)
+    @NotNull
+    public Object get(@NotNull String key)
     {
         Object value = data.get(key);
         if (value == null)
@@ -395,8 +395,8 @@ public class DataObject implements SerializableData
      *
      * @return The String value
      */
-    @Nonnull
-    public String getString(@Nonnull String key)
+    @NotNull
+    public String getString(@NotNull String key)
     {
         String value = getString(key, null);
         if (value == null)
@@ -415,7 +415,7 @@ public class DataObject implements SerializableData
      * @return The String value, or null if provided with null defaultValue
      */
     @Contract("_, !null -> !null")
-    public String getString(@Nonnull String key, @Nullable String defaultValue)
+    public String getString(@NotNull String key, @Nullable String defaultValue)
     {
         String value = get(String.class, key, UnaryOperator.identity(), String::valueOf);
         return value == null ? defaultValue : value;
@@ -432,7 +432,7 @@ public class DataObject implements SerializableData
      *
      * @return True, if the value is present and set to true. False if the value is missing or set to false.
      */
-    public boolean getBoolean(@Nonnull String key)
+    public boolean getBoolean(@NotNull String key)
     {
         return getBoolean(key, false);
     }
@@ -450,7 +450,7 @@ public class DataObject implements SerializableData
      *
      * @return True, if the value is present and set to true. False if the value is set to false. defaultValue if it is missing.
      */
-    public boolean getBoolean(@Nonnull String key, boolean defaultValue)
+    public boolean getBoolean(@NotNull String key, boolean defaultValue)
     {
         Boolean value = get(Boolean.class, key, Boolean::parseBoolean, null);
         return value == null ? defaultValue : value;
@@ -467,7 +467,7 @@ public class DataObject implements SerializableData
      *
      * @return The long value for the key
      */
-    public long getLong(@Nonnull String key)
+    public long getLong(@NotNull String key)
     {
         Long value = get(Long.class, key, MiscUtil::parseLong, Number::longValue);
         if (value == null)
@@ -488,7 +488,7 @@ public class DataObject implements SerializableData
      *
      * @return The long value for the key
      */
-    public long getLong(@Nonnull String key, long defaultValue)
+    public long getLong(@NotNull String key, long defaultValue)
     {
         Long value = get(Long.class, key, Long::parseLong, Number::longValue);
         return value == null ? defaultValue : value;
@@ -505,7 +505,7 @@ public class DataObject implements SerializableData
      *
      * @return The unsigned long value for the key
      */
-    public long getUnsignedLong(@Nonnull String key)
+    public long getUnsignedLong(@NotNull String key)
     {
         Long value = get(Long.class, key, Long::parseUnsignedLong, Number::longValue);
         if (value == null)
@@ -526,7 +526,7 @@ public class DataObject implements SerializableData
      *
      * @return The unsigned long value for the key
      */
-    public long getUnsignedLong(@Nonnull String key, long defaultValue)
+    public long getUnsignedLong(@NotNull String key, long defaultValue)
     {
         Long value = get(Long.class, key, Long::parseUnsignedLong, Number::longValue);
         return value == null ? defaultValue : value;
@@ -543,7 +543,7 @@ public class DataObject implements SerializableData
      *
      * @return The int value for the key
      */
-    public int getInt(@Nonnull String key)
+    public int getInt(@NotNull String key)
     {
         Integer value = get(Integer.class, key, Integer::parseInt, Number::intValue);
         if (value == null)
@@ -564,7 +564,7 @@ public class DataObject implements SerializableData
      *
      * @return The int value for the key
      */
-    public int getInt(@Nonnull String key, int defaultValue)
+    public int getInt(@NotNull String key, int defaultValue)
     {
         Integer value = get(Integer.class, key, Integer::parseInt, Number::intValue);
         return value == null ? defaultValue : value;
@@ -581,7 +581,7 @@ public class DataObject implements SerializableData
      *
      * @return The unsigned int value for the key
      */
-    public int getUnsignedInt(@Nonnull String key)
+    public int getUnsignedInt(@NotNull String key)
     {
         Integer value = get(Integer.class, key, Integer::parseUnsignedInt, Number::intValue);
         if (value == null)
@@ -602,7 +602,7 @@ public class DataObject implements SerializableData
      *
      * @return The unsigned int value for the key
      */
-    public int getUnsignedInt(@Nonnull String key, int defaultValue)
+    public int getUnsignedInt(@NotNull String key, int defaultValue)
     {
         Integer value = get(Integer.class, key, Integer::parseUnsignedInt, Number::intValue);
         return value == null ? defaultValue : value;
@@ -619,7 +619,7 @@ public class DataObject implements SerializableData
      * 
      * @return The double value for the key
      */
-    public double getDouble(@Nonnull String key)
+    public double getDouble(@NotNull String key)
     {
         Double value = get(Double.class, key, Double::parseDouble, Number::doubleValue);
         if(value == null)
@@ -640,7 +640,7 @@ public class DataObject implements SerializableData
      * 
      * @return The double value for the key
      */
-    public double getDouble(@Nonnull String key, double defaultValue)
+    public double getDouble(@NotNull String key, double defaultValue)
     {
         Double value = get(Double.class, key, Double::parseDouble, Number::doubleValue);
         return value == null ? defaultValue : value;
@@ -655,8 +655,8 @@ public class DataObject implements SerializableData
      *
      * @return A DataObject with the removed key
      */
-    @Nonnull
-    public DataObject remove(@Nonnull String key)
+    @NotNull
+    public DataObject remove(@NotNull String key)
     {
         data.remove(key);
         return this;
@@ -670,8 +670,8 @@ public class DataObject implements SerializableData
      *
      * @return A DataObject with the updated value
      */
-    @Nonnull
-    public DataObject putNull(@Nonnull String key)
+    @NotNull
+    public DataObject putNull(@NotNull String key)
     {
         data.put(key, null);
         return this;
@@ -687,8 +687,8 @@ public class DataObject implements SerializableData
      *
      * @return A DataObject with the updated value
      */
-    @Nonnull
-    public DataObject put(@Nonnull String key, @Nullable Object value)
+    @NotNull
+    public DataObject put(@NotNull String key, @Nullable Object value)
     {
         if (value instanceof SerializableData)
             data.put(key, ((SerializableData) value).toData().data);
@@ -704,7 +704,7 @@ public class DataObject implements SerializableData
      *
      * @return {@link java.util.Collection} for all values
      */
-    @Nonnull
+    @NotNull
     public Collection<Object> values()
     {
         return data.values();
@@ -715,7 +715,7 @@ public class DataObject implements SerializableData
      *
      * @return {@link Set} of keys
      */
-    @Nonnull
+    @NotNull
     public Set<String> keys()
     {
         return data.keySet();
@@ -726,7 +726,7 @@ public class DataObject implements SerializableData
      *
      * @return byte array containing the JSON representation of this object
      */
-    @Nonnull
+    @NotNull
     public byte[] toJson()
     {
         try
@@ -748,7 +748,7 @@ public class DataObject implements SerializableData
      *
      * @since  4.2.1
      */
-    @Nonnull
+    @NotNull
     public byte[] toETF()
     {
         ByteBuffer buffer = ExTermEncoder.pack(data);
@@ -768,7 +768,7 @@ public class DataObject implements SerializableData
         }
     }
 
-    @Nonnull
+    @NotNull
     public String toPrettyString()
     {
         DefaultPrettyPrinter.Indenter indent = new DefaultIndenter("    ", DefaultIndenter.SYS_LF);
@@ -789,13 +789,13 @@ public class DataObject implements SerializableData
      *
      * @return The resulting map
      */
-    @Nonnull
+    @NotNull
     public Map<String, Object> toMap()
     {
         return data;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public DataObject toData()
     {
@@ -808,13 +808,13 @@ public class DataObject implements SerializableData
     }
 
     @Nullable
-    private <T> T get(@Nonnull Class<T> type, @Nonnull String key)
+    private <T> T get(@NotNull Class<T> type, @NotNull String key)
     {
         return get(type, key, null, null);
     }
 
     @Nullable
-    private <T> T get(@Nonnull Class<T> type, @Nonnull String key, @Nullable Function<String, T> stringParse, @Nullable Function<Number, T> numberParse)
+    private <T> T get(@NotNull Class<T> type, @NotNull String key, @Nullable Function<String, T> stringParse, @Nullable Function<Number, T> numberParse)
     {
         Object value = data.get(key);
         if (value == null)

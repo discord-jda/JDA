@@ -18,8 +18,7 @@ package net.dv8tion.jda.api.events.stage.update;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.StageInstance;
-
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Indicates that a {@link net.dv8tion.jda.api.entities.StageInstance StageInstance} updated its {@code topic}.
@@ -33,19 +32,19 @@ public class StageInstanceUpdateTopicEvent extends GenericStageInstanceUpdateEve
 {
     public static final String IDENTIFIER = "topic";
 
-    public StageInstanceUpdateTopicEvent(@Nonnull JDA api, long responseNumber, @Nonnull StageInstance stageInstance, String previous)
+    public StageInstanceUpdateTopicEvent(@NotNull JDA api, long responseNumber, @NotNull StageInstance stageInstance, String previous)
     {
         super(api, responseNumber, stageInstance, previous, stageInstance.getTopic(), IDENTIFIER);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public String getOldValue()
     {
         return super.getOldValue();
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public String getNewValue()
     {

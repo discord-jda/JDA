@@ -16,8 +16,8 @@
 
 package net.dv8tion.jda.api.utils;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public final class MarkdownUtil
 {
@@ -33,8 +33,8 @@ public final class MarkdownUtil
      *
      * @return The resulting output
      */
-    @Nonnull
-    public static String bold(@Nonnull String input)
+    @NotNull
+    public static String bold(@NotNull String input)
     {
         String sanitized = MarkdownSanitizer.escape(input, ~MarkdownSanitizer.BOLD);
         return "**" + sanitized + "**";
@@ -50,8 +50,8 @@ public final class MarkdownUtil
      *
      * @return The resulting output
      */
-    @Nonnull
-    public static String italics(@Nonnull String input)
+    @NotNull
+    public static String italics(@NotNull String input)
     {
         String sanitized = MarkdownSanitizer.escape(input, ~MarkdownSanitizer.ITALICS_U);
         return "_" + sanitized + "_";
@@ -67,8 +67,8 @@ public final class MarkdownUtil
      *
      * @return The resulting output
      */
-    @Nonnull
-    public static String underline(@Nonnull String input)
+    @NotNull
+    public static String underline(@NotNull String input)
     {
         String sanitized = MarkdownSanitizer.escape(input, ~MarkdownSanitizer.UNDERLINE);
         return "__" + sanitized + "__";
@@ -84,8 +84,8 @@ public final class MarkdownUtil
      *
      * @return The resulting output
      */
-    @Nonnull
-    public static String monospace(@Nonnull String input)
+    @NotNull
+    public static String monospace(@NotNull String input)
     {
         String sanitized = MarkdownSanitizer.escape(input, ~MarkdownSanitizer.MONO);
         return "`" + sanitized + "`";
@@ -101,8 +101,8 @@ public final class MarkdownUtil
      *
      * @return The resulting output
      */
-    @Nonnull
-    public static String codeblock(@Nonnull String input)
+    @NotNull
+    public static String codeblock(@NotNull String input)
     {
         return codeblock(null, input);
     }
@@ -119,8 +119,8 @@ public final class MarkdownUtil
      *
      * @return The resulting output
      */
-    @Nonnull
-    public static String codeblock(@Nullable String language, @Nonnull String input)
+    @NotNull
+    public static String codeblock(@Nullable String language, @NotNull String input)
     {
         String sanitized = MarkdownSanitizer.escape(input, ~MarkdownSanitizer.BLOCK);
         if (language != null)
@@ -138,8 +138,8 @@ public final class MarkdownUtil
      *
      * @return The resulting output
      */
-    @Nonnull
-    public static String spoiler(@Nonnull String input)
+    @NotNull
+    public static String spoiler(@NotNull String input)
     {
         String sanitized = MarkdownSanitizer.escape(input, ~MarkdownSanitizer.SPOILER);
         return "||" + sanitized + "||";
@@ -155,8 +155,8 @@ public final class MarkdownUtil
      *
      * @return The resulting output
      */
-    @Nonnull
-    public static String strike(@Nonnull String input)
+    @NotNull
+    public static String strike(@NotNull String input)
     {
         String sanitized = MarkdownSanitizer.escape(input, ~MarkdownSanitizer.STRIKE);
         return "~~" + sanitized + "~~";
@@ -172,8 +172,8 @@ public final class MarkdownUtil
      *
      * @return The resulting output
      */
-    @Nonnull
-    public static String quote(@Nonnull String input)
+    @NotNull
+    public static String quote(@NotNull String input)
     {
         String sanitized = MarkdownSanitizer.escape(input, ~MarkdownSanitizer.QUOTE);
         return "> " + sanitized.replace("\n", "\n> ");
@@ -188,8 +188,8 @@ public final class MarkdownUtil
      *
      * @return The resulting output
      */
-    @Nonnull
-    public static String quoteBlock(@Nonnull String input)
+    @NotNull
+    public static String quoteBlock(@NotNull String input)
     {
         return ">>> " + input;
     }
@@ -206,8 +206,8 @@ public final class MarkdownUtil
      *
      * @return The resulting output
      */
-    @Nonnull
-    public static String maskedLink(@Nonnull String text, @Nonnull String url)
+    @NotNull
+    public static String maskedLink(@NotNull String text, @NotNull String url)
     {
         return "[" + text.replace("]", "\\]") + "](" + url.replace(")", "%29") + ")";
     }

@@ -23,9 +23,9 @@ import net.dv8tion.jda.api.entities.StageInstance;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.requests.restaction.StageInstanceAction;
 import net.dv8tion.jda.internal.requests.restaction.StageInstanceActionImpl;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.EnumSet;
 
 public class StageChannelImpl extends VoiceChannelImpl implements StageChannel
@@ -37,7 +37,7 @@ public class StageChannelImpl extends VoiceChannelImpl implements StageChannel
         super(id, guild);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public ChannelType getType()
     {
@@ -51,9 +51,9 @@ public class StageChannelImpl extends VoiceChannelImpl implements StageChannel
         return instance;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public StageInstanceAction createStageInstance(@Nonnull String topic)
+    public StageInstanceAction createStageInstance(@NotNull String topic)
     {
         EnumSet<Permission> permissions = getGuild().getSelfMember().getPermissions(this);
         EnumSet<Permission> required = EnumSet.of(Permission.MANAGE_CHANNEL, Permission.VOICE_MUTE_OTHERS, Permission.VOICE_MOVE_OTHERS);

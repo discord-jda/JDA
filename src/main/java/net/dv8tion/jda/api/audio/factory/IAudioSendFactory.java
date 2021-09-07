@@ -16,7 +16,7 @@
 
 package net.dv8tion.jda.api.audio.factory;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Factory interface for the creation of new {@link net.dv8tion.jda.api.audio.factory.IAudioSendSystem IAudioSendSystem} objects.
@@ -38,6 +38,6 @@ public interface IAudioSendFactory
      *
      * @return The newly constructed IAudioSendSystem, ready for {@link IAudioSendSystem#start()} to be called.
      */
-    @Nonnull
-    IAudioSendSystem createSendSystem(@Nonnull IPacketProvider packetProvider);
+    @NotNull
+    IAudioSendSystem createSendSystem(@NotNull IPacketProvider packetProvider);
 }

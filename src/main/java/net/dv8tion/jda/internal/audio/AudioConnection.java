@@ -37,10 +37,10 @@ import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.managers.AudioManagerImpl;
 import net.dv8tion.jda.internal.utils.IOUtil;
 import net.dv8tion.jda.internal.utils.JDALogger;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import tomp2p.opuswrapper.Opus;
 
-import javax.annotation.Nonnull;
 import java.net.*;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
@@ -628,28 +628,28 @@ public class AudioConnection
             this.boxer = boxer;
         }
 
-        @Nonnull
+        @NotNull
         @Override
         public String getIdentifier()
         {
             return threadIdentifier;
         }
 
-        @Nonnull
+        @NotNull
         @Override
         public VoiceChannel getConnectedChannel()
         {
             return getChannel();
         }
 
-        @Nonnull
+        @NotNull
         @Override
         public DatagramSocket getUdpSocket()
         {
             return udpSocket;
         }
 
-        @Nonnull
+        @NotNull
         @Override
         public InetSocketAddress getSocketAddress()
         {
@@ -809,7 +809,7 @@ public class AudioConnection
         }
 
         @Override
-        public void onConnectionError(@Nonnull ConnectionStatus status)
+        public void onConnectionError(@NotNull ConnectionStatus status)
         {
             LOG.warn("IAudioSendSystem reported a connection error of: {}", status);
             LOG.warn("Shutting down AudioConnection.");

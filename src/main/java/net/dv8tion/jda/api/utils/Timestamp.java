@@ -17,8 +17,8 @@
 package net.dv8tion.jda.api.utils;
 
 import net.dv8tion.jda.internal.utils.Checks;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.time.Duration;
 import java.time.Instant;
 
@@ -46,7 +46,7 @@ public class Timestamp
      *
      * @return The {@link TimeFormat}
      */
-    @Nonnull
+    @NotNull
     public TimeFormat getFormat()
     {
         return format;
@@ -69,7 +69,7 @@ public class Timestamp
      *
      * @return The {@link Instant} of this timestamp
      */
-    @Nonnull
+    @NotNull
     public Instant toInstant()
     {
         return Instant.ofEpochMilli(timestamp);
@@ -85,7 +85,7 @@ public class Timestamp
      *
      * @see    #plus(Duration)
      */
-    @Nonnull
+    @NotNull
     public Timestamp plus(long millis)
     {
         return new Timestamp(format, timestamp + millis);
@@ -104,8 +104,8 @@ public class Timestamp
      *
      * @see    #plus(long)
      */
-    @Nonnull
-    public Timestamp plus(@Nonnull Duration duration)
+    @NotNull
+    public Timestamp plus(@NotNull Duration duration)
     {
         Checks.notNull(duration, "Duration");
         return plus(duration.toMillis());
@@ -121,7 +121,7 @@ public class Timestamp
      *
      * @see    #minus(Duration)
      */
-    @Nonnull
+    @NotNull
     public Timestamp minus(long millis)
     {
         return new Timestamp(format, timestamp - millis);
@@ -140,8 +140,8 @@ public class Timestamp
      *
      * @see    #minus(long)
      */
-    @Nonnull
-    public Timestamp minus(@Nonnull Duration duration)
+    @NotNull
+    public Timestamp minus(@NotNull Duration duration)
     {
         Checks.notNull(duration, "Duration");
         return minus(duration.toMillis());

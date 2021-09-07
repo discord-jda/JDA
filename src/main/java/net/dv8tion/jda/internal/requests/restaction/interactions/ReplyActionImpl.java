@@ -28,9 +28,9 @@ import net.dv8tion.jda.internal.interactions.InteractionHookImpl;
 import net.dv8tion.jda.internal.utils.AllowedMentionsImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -96,7 +96,7 @@ public class ReplyActionImpl extends InteractionCallbackActionImpl implements Re
         return Helpers.isEmpty(content) && embeds.isEmpty() && files.isEmpty() && components.isEmpty();
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public ReplyActionImpl setEphemeral(boolean ephemeral)
     {
@@ -107,9 +107,9 @@ public class ReplyActionImpl extends InteractionCallbackActionImpl implements Re
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public ReplyAction addFile(@Nonnull InputStream data, @Nonnull String name, @Nonnull AttachmentOption... options)
+    public ReplyAction addFile(@NotNull InputStream data, @NotNull String name, @NotNull AttachmentOption... options)
     {
         Checks.notNull(data, "Data");
         Checks.notEmpty(name, "Name");
@@ -121,9 +121,9 @@ public class ReplyActionImpl extends InteractionCallbackActionImpl implements Re
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public ReplyAction addEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
+    public ReplyAction addEmbeds(@NotNull Collection<? extends MessageEmbed> embeds)
     {
         Checks.noneNull(embeds, "MessageEmbed");
         for (MessageEmbed embed : embeds)
@@ -139,9 +139,9 @@ public class ReplyActionImpl extends InteractionCallbackActionImpl implements Re
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public ReplyAction addActionRows(@Nonnull ActionRow... rows)
+    public ReplyAction addActionRows(@NotNull ActionRow... rows)
     {
         Checks.noneNull(rows, "ActionRows");
         Checks.check(components.size() + rows.length <= 5, "Can only have 5 action rows per message!");
@@ -149,28 +149,28 @@ public class ReplyActionImpl extends InteractionCallbackActionImpl implements Re
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public ReplyAction setCheck(BooleanSupplier checks)
     {
         return (ReplyAction) super.setCheck(checks);
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public ReplyAction timeout(long timeout, @Nonnull TimeUnit unit)
+    public ReplyAction timeout(long timeout, @NotNull TimeUnit unit)
     {
         return (ReplyAction) super.timeout(timeout, unit);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public ReplyAction deadline(long timestamp)
     {
         return (ReplyAction) super.deadline(timestamp);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public ReplyActionImpl setTTS(boolean isTTS)
     {
@@ -178,7 +178,7 @@ public class ReplyActionImpl extends InteractionCallbackActionImpl implements Re
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public ReplyActionImpl setContent(String content)
     {
@@ -188,7 +188,7 @@ public class ReplyActionImpl extends InteractionCallbackActionImpl implements Re
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @SuppressWarnings("ResultOfMethodCallIgnored")
     public ReplyAction mentionRepliedUser(boolean mention)
@@ -197,7 +197,7 @@ public class ReplyActionImpl extends InteractionCallbackActionImpl implements Re
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @SuppressWarnings("ResultOfMethodCallIgnored")
     public ReplyAction allowedMentions(@Nullable Collection<Message.MentionType> allowedMentions)
@@ -206,28 +206,28 @@ public class ReplyActionImpl extends InteractionCallbackActionImpl implements Re
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    public ReplyAction mention(@Nonnull IMentionable... mentions)
+    public ReplyAction mention(@NotNull IMentionable... mentions)
     {
         allowedMentions.mention(mentions);
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    public ReplyAction mentionUsers(@Nonnull String... userIds)
+    public ReplyAction mentionUsers(@NotNull String... userIds)
     {
         allowedMentions.mentionUsers(userIds);
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    public ReplyAction mentionRoles(@Nonnull String... roleIds)
+    public ReplyAction mentionRoles(@NotNull String... roleIds)
     {
         allowedMentions.mentionRoles(roleIds);
         return this;

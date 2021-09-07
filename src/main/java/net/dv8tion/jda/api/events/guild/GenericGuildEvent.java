@@ -18,8 +18,7 @@ package net.dv8tion.jda.api.events.guild;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.Event;
-
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Indicates that a {@link net.dv8tion.jda.api.entities.Guild Guild} event is fired.
@@ -31,7 +30,7 @@ public abstract class GenericGuildEvent extends Event
 {
     protected final Guild guild;
 
-    public GenericGuildEvent(@Nonnull JDA api, long responseNumber, @Nonnull Guild guild)
+    public GenericGuildEvent(@NotNull JDA api, long responseNumber, @NotNull Guild guild)
     {
         super(api, responseNumber);
         this.guild = guild;
@@ -42,7 +41,7 @@ public abstract class GenericGuildEvent extends Event
      *
      * @return The Guild
      */
-    @Nonnull
+    @NotNull
     public Guild getGuild()
     {
         return guild;

@@ -16,8 +16,8 @@
 
 package net.dv8tion.jda.api.requests;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Constants representing main gateway close codes with association to an explaining message.
@@ -75,7 +75,7 @@ public enum CloseCode
      *
      * @return The reason for this close
      */
-    @Nonnull
+    @NotNull
     public String getMeaning()
     {
         return meaning;

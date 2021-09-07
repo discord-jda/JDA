@@ -30,8 +30,8 @@ import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.WebhookMessageActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.WebhookMessageUpdateActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.List;
@@ -53,44 +53,44 @@ public abstract class AbstractWebhookClient<T> implements WebhookClient<T>
     public abstract WebhookMessageActionImpl<T> sendRequest();
     public abstract WebhookMessageUpdateActionImpl<T> editRequest(String messageId);
 
-    @Nonnull
+    @NotNull
     @Override
-    public WebhookMessageActionImpl<T> sendMessage(@Nonnull String content)
+    public WebhookMessageActionImpl<T> sendMessage(@NotNull String content)
     {
         return sendRequest().setContent(content);
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public WebhookMessageActionImpl<T> sendMessageEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
+    public WebhookMessageActionImpl<T> sendMessageEmbeds(@NotNull Collection<? extends MessageEmbed> embeds)
     {
         return sendRequest().addEmbeds(embeds);
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public WebhookMessageActionImpl<T> sendMessage(@Nonnull Message message)
+    public WebhookMessageActionImpl<T> sendMessage(@NotNull Message message)
     {
         return sendRequest().applyMessage(message);
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public WebhookMessageActionImpl<T> sendFile(@Nonnull InputStream data, @Nonnull String name, @Nonnull AttachmentOption... options)
+    public WebhookMessageActionImpl<T> sendFile(@NotNull InputStream data, @NotNull String name, @NotNull AttachmentOption... options)
     {
         return sendRequest().addFile(data, name, options);
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public WebhookMessageUpdateActionImpl<T> editMessageById(@Nonnull String messageId, @Nonnull String content)
+    public WebhookMessageUpdateActionImpl<T> editMessageById(@NotNull String messageId, @NotNull String content)
     {
         return (WebhookMessageUpdateActionImpl<T>) editRequest(messageId).setContent(content);
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public WebhookMessageUpdateAction<T> editMessageComponentsById(@Nonnull String messageId, @Nonnull Collection<? extends ComponentLayout> components)
+    public WebhookMessageUpdateAction<T> editMessageComponentsById(@NotNull String messageId, @NotNull Collection<? extends ComponentLayout> components)
     {
         Checks.noneNull(components, "Components");
         if (components.stream().anyMatch(x -> !(x instanceof ActionRow)))
@@ -99,30 +99,30 @@ public abstract class AbstractWebhookClient<T> implements WebhookClient<T>
         return editRequest(messageId).setActionRows(actionRows);
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public WebhookMessageUpdateActionImpl<T> editMessageEmbedsById(@Nonnull String messageId, @Nonnull Collection<? extends MessageEmbed> embeds)
+    public WebhookMessageUpdateActionImpl<T> editMessageEmbedsById(@NotNull String messageId, @NotNull Collection<? extends MessageEmbed> embeds)
     {
         return (WebhookMessageUpdateActionImpl<T>) editRequest(messageId).setEmbeds(embeds);
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public WebhookMessageUpdateActionImpl<T> editMessageById(@Nonnull String messageId, @Nonnull Message message)
+    public WebhookMessageUpdateActionImpl<T> editMessageById(@NotNull String messageId, @NotNull Message message)
     {
         return (WebhookMessageUpdateActionImpl<T>) editRequest(messageId).applyMessage(message);
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public WebhookMessageUpdateActionImpl<T> editMessageById(@Nonnull String messageId, @Nonnull InputStream data, @Nonnull String name, @Nonnull AttachmentOption... options)
+    public WebhookMessageUpdateActionImpl<T> editMessageById(@NotNull String messageId, @NotNull InputStream data, @NotNull String name, @NotNull AttachmentOption... options)
     {
         return (WebhookMessageUpdateActionImpl<T>) editRequest(messageId).addFile(data, name, options);
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public RestAction<Void> deleteMessageById(@Nonnull String messageId)
+    public RestAction<Void> deleteMessageById(@NotNull String messageId)
     {
         Checks.isSnowflake(messageId);
         Route.CompiledRoute route = Route.Webhooks.EXECUTE_WEBHOOK_DELETE.compile(Long.toUnsignedString(id), token, messageId);

@@ -27,8 +27,8 @@ import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
 import okhttp3.RequestBody;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 
@@ -44,30 +44,30 @@ public class StageInstanceActionImpl extends RestActionImpl<StageInstance> imple
         this.channel = channel;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public StageInstanceAction setCheck(BooleanSupplier checks)
     {
         return (StageInstanceAction) super.setCheck(checks);
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public StageInstanceAction timeout(long timeout, @Nonnull TimeUnit unit)
+    public StageInstanceAction timeout(long timeout, @NotNull TimeUnit unit)
     {
         return (StageInstanceAction) super.timeout(timeout, unit);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public StageInstanceAction deadline(long timestamp)
     {
         return (StageInstanceAction) super.deadline(timestamp);
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public StageInstanceAction setTopic(@Nonnull String topic)
+    public StageInstanceAction setTopic(@NotNull String topic)
     {
         Checks.notBlank(topic, "Topic");
         Checks.notLonger(topic, 120, "Topic");
@@ -75,9 +75,9 @@ public class StageInstanceActionImpl extends RestActionImpl<StageInstance> imple
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public StageInstanceAction setPrivacyLevel(@Nonnull StageInstance.PrivacyLevel level)
+    public StageInstanceAction setPrivacyLevel(@NotNull StageInstance.PrivacyLevel level)
     {
         Checks.notNull(level, "PrivacyLevel");
         Checks.check(level != StageInstance.PrivacyLevel.UNKNOWN, "The PrivacyLevel must not be UNKNOWN!");

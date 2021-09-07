@@ -21,8 +21,8 @@ import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.internal.utils.Checks;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -53,12 +53,12 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
      *             <li>The description must be 1-100 characters long</li>
      *         </ul>
      */
-    public CommandData(@Nonnull String name, @Nonnull String description)
+    public CommandData(@NotNull String name, @NotNull String description)
     {
         super(name, description);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public DataObject toData()
     {
@@ -70,7 +70,7 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
      *
      * @return Immutable list of {@link SubcommandData}
      */
-    @Nonnull
+    @NotNull
     public List<SubcommandData> getSubcommands()
     {
         return options.stream(DataArray::getObject)
@@ -88,7 +88,7 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
      *
      * @return Immutable list of {@link SubcommandGroupData}
      */
-    @Nonnull
+    @NotNull
     public List<SubcommandGroupData> getSubcommandGroups()
     {
         return options.stream(DataArray::getObject)
@@ -110,7 +110,7 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
      *
      * @return The CommandData instance, for chaining
      */
-    @Nonnull
+    @NotNull
     public CommandData setDefaultEnabled(boolean enabled)
     {
         this.defaultPermissions = enabled;
@@ -136,8 +136,8 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
      *
      * @return The CommandData instance, for chaining
      */
-    @Nonnull
-    public CommandData addOptions(@Nonnull OptionData... options)
+    @NotNull
+    public CommandData addOptions(@NotNull OptionData... options)
     {
         Checks.noneNull(options, "Option");
         Checks.check(options.length + this.options.length() <= 25, "Cannot have more than 25 options for a command!");
@@ -173,8 +173,8 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
      *
      * @return The CommandData instance, for chaining
      */
-    @Nonnull
-    public CommandData addOptions(@Nonnull Collection<? extends OptionData> options)
+    @NotNull
+    public CommandData addOptions(@NotNull Collection<? extends OptionData> options)
     {
         Checks.noneNull(options, "Option");
         return addOptions(options.toArray(new OptionData[0]));
@@ -205,8 +205,8 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
      *
      * @return The CommandData instance, for chaining
      */
-    @Nonnull
-    public CommandData addOption(@Nonnull OptionType type, @Nonnull String name, @Nonnull String description, boolean required)
+    @NotNull
+    public CommandData addOption(@NotNull OptionType type, @NotNull String name, @NotNull String description, boolean required)
     {
         return addOptions(new OptionData(type, name, description).setRequired(required));
     }
@@ -235,8 +235,8 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
      *
      * @return The CommandData instance, for chaining
      */
-    @Nonnull
-    public CommandData addOption(@Nonnull OptionType type, @Nonnull String name, @Nonnull String description)
+    @NotNull
+    public CommandData addOption(@NotNull OptionType type, @NotNull String name, @NotNull String description)
     {
         return addOption(type, name, description, false);
     }
@@ -253,8 +253,8 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
      *
      * @return The CommandData instance, for chaining
      */
-    @Nonnull
-    public CommandData addSubcommands(@Nonnull SubcommandData... subcommands)
+    @NotNull
+    public CommandData addSubcommands(@NotNull SubcommandData... subcommands)
     {
         Checks.noneNull(subcommands, "Subcommands");
         if (!allowSubcommands)
@@ -278,8 +278,8 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
      *
      * @return The CommandData instance, for chaining
      */
-    @Nonnull
-    public CommandData addSubcommands(@Nonnull Collection<? extends SubcommandData> subcommands)
+    @NotNull
+    public CommandData addSubcommands(@NotNull Collection<? extends SubcommandData> subcommands)
     {
         Checks.noneNull(subcommands, "Subcommands");
         return addSubcommands(subcommands.toArray(new SubcommandData[0]));
@@ -297,8 +297,8 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
      *
      * @return The CommandData instance, for chaining
      */
-    @Nonnull
-    public CommandData addSubcommandGroups(@Nonnull SubcommandGroupData... groups)
+    @NotNull
+    public CommandData addSubcommandGroups(@NotNull SubcommandGroupData... groups)
     {
         Checks.noneNull(groups, "SubcommandGroups");
         if (!allowGroups)
@@ -322,8 +322,8 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
      *
      * @return The CommandData instance, for chaining
      */
-    @Nonnull
-    public CommandData addSubcommandGroups(@Nonnull Collection<? extends SubcommandGroupData> groups)
+    @NotNull
+    public CommandData addSubcommandGroups(@NotNull Collection<? extends SubcommandGroupData> groups)
     {
         Checks.noneNull(groups, "SubcommandGroups");
         return addSubcommandGroups(groups.toArray(new SubcommandGroupData[0]));
@@ -343,8 +343,8 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
      *
      * @return The parsed CommandData instance, which can be further configured through setters
      */
-    @Nonnull
-    public static CommandData fromData(@Nonnull DataObject object)
+    @NotNull
+    public static CommandData fromData(@NotNull DataObject object)
     {
         Checks.notNull(object, "DataObject");
         String name = object.getString("name");
@@ -383,8 +383,8 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
      *
      * @return The parsed CommandData instances, which can be further configured through setters
      */
-    @Nonnull
-    public static List<CommandData> fromList(@Nonnull DataArray array)
+    @NotNull
+    public static List<CommandData> fromList(@NotNull DataArray array)
     {
         Checks.notNull(array, "DataArray");
         return array.stream(DataArray::getObject)
@@ -406,8 +406,8 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
      *
      * @return The parsed CommandData instances, which can be further configured through setters
      */
-    @Nonnull
-    public static List<CommandData> fromList(@Nonnull Collection<? extends DataObject> collection)
+    @NotNull
+    public static List<CommandData> fromList(@NotNull Collection<? extends DataObject> collection)
     {
         Checks.noneNull(collection, "CommandData");
         return fromList(DataArray.fromCollection(collection));

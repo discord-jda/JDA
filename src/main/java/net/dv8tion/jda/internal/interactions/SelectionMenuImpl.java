@@ -20,9 +20,9 @@ import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
 import net.dv8tion.jda.api.interactions.components.selections.SelectionMenu;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -64,7 +64,7 @@ public class SelectionMenuImpl implements SelectionMenu
         return options;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Type getType()
     {
@@ -97,7 +97,7 @@ public class SelectionMenuImpl implements SelectionMenu
         return maxValues;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public List<SelectOption> getOptions()
     {
@@ -110,7 +110,7 @@ public class SelectionMenuImpl implements SelectionMenu
         return disabled;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public DataObject toData()
     {

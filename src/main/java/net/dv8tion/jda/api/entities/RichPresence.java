@@ -17,9 +17,9 @@
 package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.internal.utils.Helpers;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.EnumSet;
 import java.util.Objects;
 
@@ -45,7 +45,7 @@ public interface RichPresence extends Activity
      *
      * @return The ID for the application
      */
-    @Nonnull
+    @NotNull
     String getApplicationId();
 
     /**
@@ -149,7 +149,7 @@ public interface RichPresence extends Activity
          *
          * @return The key for this image
          */
-        @Nonnull
+        @NotNull
         public String getKey()
         {
             return key;
@@ -171,7 +171,7 @@ public interface RichPresence extends Activity
          *
          * @return URL for this image
          */
-        @Nonnull
+        @NotNull
         public String getUrl()
         {
             if (key.startsWith("spotify:"))

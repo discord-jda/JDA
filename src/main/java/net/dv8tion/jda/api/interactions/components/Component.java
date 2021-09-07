@@ -17,9 +17,8 @@
 package net.dv8tion.jda.api.interactions.components;
 
 import net.dv8tion.jda.api.utils.data.SerializableData;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Component of a Message.
@@ -35,7 +34,7 @@ public interface Component extends SerializableData
      *
      * @return {@link Type}
      */
-    @Nonnull
+    @NotNull
     Type getType();
 
     /**
@@ -100,7 +99,7 @@ public interface Component extends SerializableData
          *
          * @return The Type or {@link #UNKNOWN}
          */
-        @Nonnull
+        @NotNull
         public static Type fromKey(int type)
         {
             for (Type t : values())

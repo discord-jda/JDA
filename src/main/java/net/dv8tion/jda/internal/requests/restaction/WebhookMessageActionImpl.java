@@ -35,9 +35,9 @@ import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.IOUtil;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.io.InputStream;
 import java.util.*;
 import java.util.function.Function;
@@ -65,8 +65,8 @@ public class WebhookMessageActionImpl<T>
         this.transformer = transformer;
     }
 
-    @Nonnull
-    public WebhookMessageActionImpl<T> applyMessage(@Nonnull Message message)
+    @NotNull
+    public WebhookMessageActionImpl<T> applyMessage(@NotNull Message message)
     {
         Checks.notNull(message, "Message");
         this.tts = message.isTTS();
@@ -76,7 +76,7 @@ public class WebhookMessageActionImpl<T>
         return setContent(message.getContentRaw());
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public WebhookMessageActionImpl<T> setEphemeral(boolean ephemeral)
     {
@@ -84,7 +84,7 @@ public class WebhookMessageActionImpl<T>
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public WebhookMessageActionImpl<T> setContent(@Nullable String content)
     {
@@ -94,7 +94,7 @@ public class WebhookMessageActionImpl<T>
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public WebhookMessageActionImpl<T> setTTS(boolean tts)
     {
@@ -102,7 +102,7 @@ public class WebhookMessageActionImpl<T>
         return this;
     }
 
-//    @Nonnull
+//    @NotNull
 //    @Override
 //    public WebhookMessageActionImpl<T> setUsername(@Nullable String name)
 //    {
@@ -115,7 +115,7 @@ public class WebhookMessageActionImpl<T>
 //        return this;
 //    }
 //
-//    @Nonnull
+//    @NotNull
 //    @Override
 //    public WebhookMessageActionImpl<T> setAvatarUrl(@Nullable String iconUrl)
 //    {
@@ -125,9 +125,9 @@ public class WebhookMessageActionImpl<T>
 //        return this;
 //    }
 
-    @Nonnull
+    @NotNull
     @Override
-    public WebhookMessageActionImpl<T> addEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
+    public WebhookMessageActionImpl<T> addEmbeds(@NotNull Collection<? extends MessageEmbed> embeds)
     {
         Checks.noneNull(embeds, "MessageEmbeds");
         embeds.forEach(embed ->
@@ -141,9 +141,9 @@ public class WebhookMessageActionImpl<T>
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public WebhookMessageActionImpl<T> addFile(@Nonnull InputStream data, @Nonnull String name, @Nonnull AttachmentOption... options)
+    public WebhookMessageActionImpl<T> addFile(@NotNull InputStream data, @NotNull String name, @NotNull AttachmentOption... options)
     {
         Checks.notNull(name, "Name");
         Checks.notNull(data, "Data");
@@ -156,9 +156,9 @@ public class WebhookMessageActionImpl<T>
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public WebhookMessageActionImpl<T> addActionRows(@Nonnull ActionRow... rows)
+    public WebhookMessageActionImpl<T> addActionRows(@NotNull ActionRow... rows)
     {
         Checks.noneNull(rows, "ActionRows");
         Checks.check(rows.length + components.size() <= 5, "Can only have 5 action rows per message!");
@@ -213,7 +213,7 @@ public class WebhookMessageActionImpl<T>
         request.onSuccess(message);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @SuppressWarnings("ResultOfMethodCallIgnored")
     public WebhookMessageActionImpl<T> mentionRepliedUser(boolean mention)
@@ -222,7 +222,7 @@ public class WebhookMessageActionImpl<T>
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @SuppressWarnings("ResultOfMethodCallIgnored")
     public WebhookMessageActionImpl<T> allowedMentions(@Nullable Collection<Message.MentionType> allowedMentions)
@@ -231,28 +231,28 @@ public class WebhookMessageActionImpl<T>
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    public WebhookMessageActionImpl<T> mention(@Nonnull IMentionable... mentions)
+    public WebhookMessageActionImpl<T> mention(@NotNull IMentionable... mentions)
     {
         allowedMentions.mention(mentions);
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    public WebhookMessageActionImpl<T> mentionUsers(@Nonnull String... userIds)
+    public WebhookMessageActionImpl<T> mentionUsers(@NotNull String... userIds)
     {
         allowedMentions.mentionUsers(userIds);
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    public WebhookMessageActionImpl<T> mentionRoles(@Nonnull String... roleIds)
+    public WebhookMessageActionImpl<T> mentionRoles(@NotNull String... roleIds)
     {
         allowedMentions.mentionRoles(roleIds);
         return this;

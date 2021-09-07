@@ -28,9 +28,9 @@ import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import okhttp3.RequestBody;
 import org.apache.commons.collections4.map.CaseInsensitiveMap;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.TimeoutException;
 import java.util.function.BooleanSupplier;
@@ -155,25 +155,25 @@ public class Request<T>
         onFailure(new TimeoutException("RestAction has timed out"));
     }
 
-    @Nonnull
+    @NotNull
     public JDAImpl getJDA()
     {
         return api;
     }
 
-    @Nonnull
+    @NotNull
     public RestAction<T> getRestAction()
     {
         return restAction;
     }
 
-    @Nonnull
+    @NotNull
     public Consumer<? super T> getOnSuccess()
     {
         return onSuccess;
     }
 
-    @Nonnull
+    @NotNull
     public Consumer<? super Throwable> getOnFailure()
     {
         return onFailure;
@@ -221,7 +221,7 @@ public class Request<T>
         return headers;
     }
 
-    @Nonnull
+    @NotNull
     public Route.CompiledRoute getRoute()
     {
         return route;
@@ -254,7 +254,7 @@ public class Request<T>
         return isCancelled;
     }
 
-    public void handleResponse(@Nonnull Response response)
+    public void handleResponse(@NotNull Response response)
     {
         restAction.handleResponse(response, this);
         api.handleEvent(new HttpRequestEvent(this, response));

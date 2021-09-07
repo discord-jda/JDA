@@ -25,9 +25,9 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
 import okhttp3.RequestBody;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
 
 public class AccountManagerImpl extends ManagerBase<AccountManager> implements AccountManager
 {
@@ -48,14 +48,14 @@ public class AccountManagerImpl extends ManagerBase<AccountManager> implements A
         this.selfUser = selfUser;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public SelfUser getSelfUser()
     {
         return selfUser;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @CheckReturnValue
     public AccountManagerImpl reset(long fields)
@@ -66,7 +66,7 @@ public class AccountManagerImpl extends ManagerBase<AccountManager> implements A
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @CheckReturnValue
     public AccountManagerImpl reset(long... fields)
@@ -75,7 +75,7 @@ public class AccountManagerImpl extends ManagerBase<AccountManager> implements A
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @CheckReturnValue
     public AccountManagerImpl reset()
@@ -85,10 +85,10 @@ public class AccountManagerImpl extends ManagerBase<AccountManager> implements A
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @CheckReturnValue
-    public AccountManagerImpl setName(@Nonnull String name)
+    public AccountManagerImpl setName(@NotNull String name)
     {
         Checks.notBlank(name, "Name");
         name = name.trim();
@@ -99,7 +99,7 @@ public class AccountManagerImpl extends ManagerBase<AccountManager> implements A
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @CheckReturnValue
     public AccountManagerImpl setAvatar(Icon avatar)

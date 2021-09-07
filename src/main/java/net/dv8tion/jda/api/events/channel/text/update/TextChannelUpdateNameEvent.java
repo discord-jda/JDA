@@ -17,8 +17,7 @@ package net.dv8tion.jda.api.events.channel.text.update;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.TextChannel;
-
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Indicates that a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}'s name changed.
@@ -31,7 +30,7 @@ public class TextChannelUpdateNameEvent extends GenericTextChannelUpdateEvent<St
 {
     public static final String IDENTIFIER = "name";
 
-    public TextChannelUpdateNameEvent(@Nonnull JDA api, long responseNumber, @Nonnull TextChannel channel, @Nonnull String oldName)
+    public TextChannelUpdateNameEvent(@NotNull JDA api, long responseNumber, @NotNull TextChannel channel, @NotNull String oldName)
     {
         super(api, responseNumber, channel, oldName, channel.getName(), IDENTIFIER);
     }
@@ -41,7 +40,7 @@ public class TextChannelUpdateNameEvent extends GenericTextChannelUpdateEvent<St
      *
      * @return The old name
      */
-    @Nonnull
+    @NotNull
     public String getOldName()
     {
         return getOldValue();
@@ -52,20 +51,20 @@ public class TextChannelUpdateNameEvent extends GenericTextChannelUpdateEvent<St
      *
      * @return The new name
      */
-    @Nonnull
+    @NotNull
     public String getNewName()
     {
         return getNewValue();
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public String getOldValue()
     {
         return super.getOldValue();
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public String getNewValue()
     {

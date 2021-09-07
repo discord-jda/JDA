@@ -18,9 +18,9 @@ package net.dv8tion.jda.internal.utils.config.sharding;
 
 import net.dv8tion.jda.api.hooks.IEventManager;
 import net.dv8tion.jda.internal.utils.Checks;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.IntFunction;
@@ -36,37 +36,37 @@ public class EventConfig
         this.eventManagerProvider = eventManagerProvider;
     }
 
-    public void addEventListener(@Nonnull Object listener)
+    public void addEventListener(@NotNull Object listener)
     {
         Checks.notNull(listener, "Listener");
         listeners.add(listener);
     }
 
-    public void removeEventListener(@Nonnull Object listener)
+    public void removeEventListener(@NotNull Object listener)
     {
         Checks.notNull(listener, "Listener");
         listeners.remove(listener);
     }
 
-    public void addEventListenerProvider(@Nonnull IntFunction<Object> provider)
+    public void addEventListenerProvider(@NotNull IntFunction<Object> provider)
     {
         Checks.notNull(provider, "Provider");
         listenerProviders.add(provider);
     }
 
-    public void removeEventListenerProvider(@Nonnull IntFunction<Object> provider)
+    public void removeEventListenerProvider(@NotNull IntFunction<Object> provider)
     {
         Checks.notNull(provider, "Provider");
         listenerProviders.remove(provider);
     }
 
-    @Nonnull
+    @NotNull
     public List<Object> getListeners()
     {
         return listeners;
     }
 
-    @Nonnull
+    @NotNull
     public List<IntFunction<Object>> getListenerProviders()
     {
         return listenerProviders;
@@ -78,7 +78,7 @@ public class EventConfig
         return eventManagerProvider;
     }
 
-    @Nonnull
+    @NotNull
     public static EventConfig getDefault()
     {
         return new EventConfig(null);

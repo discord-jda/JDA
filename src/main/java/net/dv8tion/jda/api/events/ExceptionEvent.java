@@ -17,8 +17,7 @@
 package net.dv8tion.jda.api.events;
 
 import net.dv8tion.jda.api.JDA;
-
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Indicates that JDA encountered a Throwable that could not be forwarded to another end-user frontend.
@@ -33,7 +32,7 @@ public class ExceptionEvent extends Event
     protected final Throwable throwable;
     protected final boolean logged;
 
-    public ExceptionEvent(@Nonnull JDA api, @Nonnull Throwable throwable, boolean logged)
+    public ExceptionEvent(@NotNull JDA api, @NotNull Throwable throwable, boolean logged)
     {
         super(api);
         this.throwable = throwable;
@@ -55,7 +54,7 @@ public class ExceptionEvent extends Event
      *
      * @return The cause
      */
-    @Nonnull
+    @NotNull
     public Throwable getCause()
     {
         return throwable;

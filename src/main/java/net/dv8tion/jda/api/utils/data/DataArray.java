@@ -28,11 +28,11 @@ import net.dv8tion.jda.api.utils.data.etf.ExTermEncoder;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
 import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.util.*;
@@ -81,7 +81,7 @@ public class DataArray implements Iterable<Object>, SerializableArray
      *
      * @see    #add(Object)
      */
-    @Nonnull
+    @NotNull
     public static DataArray empty()
     {
         return new DataArray(new ArrayList<>());
@@ -96,8 +96,8 @@ public class DataArray implements Iterable<Object>, SerializableArray
      *
      * @return A new DataArray populated with the contents of the collection
      */
-    @Nonnull
-    public static DataArray fromCollection(@Nonnull Collection<?> col)
+    @NotNull
+    public static DataArray fromCollection(@NotNull Collection<?> col)
     {
         return empty().addAll(col);
     }
@@ -113,8 +113,8 @@ public class DataArray implements Iterable<Object>, SerializableArray
      *
      * @return A new DataArray instance for the provided array
      */
-    @Nonnull
-    public static DataArray fromJson(@Nonnull String json)
+    @NotNull
+    public static DataArray fromJson(@NotNull String json)
     {
         try
         {
@@ -137,8 +137,8 @@ public class DataArray implements Iterable<Object>, SerializableArray
      *
      * @return A new DataArray instance for the provided array
      */
-    @Nonnull
-    public static DataArray fromJson(@Nonnull InputStream json)
+    @NotNull
+    public static DataArray fromJson(@NotNull InputStream json)
     {
         try
         {
@@ -161,8 +161,8 @@ public class DataArray implements Iterable<Object>, SerializableArray
      *
      * @return A new DataArray instance for the provided array
      */
-    @Nonnull
-    public static DataArray fromJson(@Nonnull Reader json)
+    @NotNull
+    public static DataArray fromJson(@NotNull Reader json)
     {
         try
         {
@@ -190,8 +190,8 @@ public class DataArray implements Iterable<Object>, SerializableArray
      *
      * @since  4.2.1
      */
-    @Nonnull
-    public static DataArray fromETF(@Nonnull byte[] data)
+    @NotNull
+    public static DataArray fromETF(@NotNull byte[] data)
     {
         Checks.notNull(data, "Data");
         try
@@ -231,7 +231,7 @@ public class DataArray implements Iterable<Object>, SerializableArray
      *
      * @see    net.dv8tion.jda.api.utils.data.DataType#isType(Object) DataType.isType(Object)
      */
-    public boolean isType(int index, @Nonnull DataType type)
+    public boolean isType(int index, @NotNull DataType type)
     {
         return type.isType(data.get(index));
     }
@@ -267,7 +267,7 @@ public class DataArray implements Iterable<Object>, SerializableArray
      *
      * @return The resolved DataObject
      */
-    @Nonnull
+    @NotNull
     @SuppressWarnings("unchecked")
     public DataObject getObject(int index)
     {
@@ -296,7 +296,7 @@ public class DataArray implements Iterable<Object>, SerializableArray
      *
      * @return The resolved DataArray
      */
-    @Nonnull
+    @NotNull
     @SuppressWarnings("unchecked")
     public DataArray getArray(int index)
     {
@@ -325,7 +325,7 @@ public class DataArray implements Iterable<Object>, SerializableArray
      *
      * @return The resolved String
      */
-    @Nonnull
+    @NotNull
     public String getString(int index)
     {
         String value = get(String.class, index, UnaryOperator.identity(), String::valueOf);
@@ -549,7 +549,7 @@ public class DataArray implements Iterable<Object>, SerializableArray
      *
      * @return A DataArray with the value inserted at the end
      */
-    @Nonnull
+    @NotNull
     public DataArray add(@Nullable Object value)
     {
         if (value instanceof SerializableData)
@@ -569,8 +569,8 @@ public class DataArray implements Iterable<Object>, SerializableArray
      *
      * @return A DataArray with the values inserted at the end
      */
-    @Nonnull
-    public DataArray addAll(@Nonnull Collection<?> values)
+    @NotNull
+    public DataArray addAll(@NotNull Collection<?> values)
     {
         values.forEach(this::add);
         return this;
@@ -584,8 +584,8 @@ public class DataArray implements Iterable<Object>, SerializableArray
      *
      * @return A DataArray with the values inserted at the end
      */
-    @Nonnull
-    public DataArray addAll(@Nonnull DataArray array)
+    @NotNull
+    public DataArray addAll(@NotNull DataArray array)
     {
         return addAll(array.data);
     }
@@ -600,7 +600,7 @@ public class DataArray implements Iterable<Object>, SerializableArray
      *
      * @return A DataArray with the value inserted at the specified index
      */
-    @Nonnull
+    @NotNull
     public DataArray insert(int index, @Nullable Object value)
     {
         if (value instanceof SerializableData)
@@ -620,7 +620,7 @@ public class DataArray implements Iterable<Object>, SerializableArray
      *
      * @return A DataArray with the value removed
      */
-    @Nonnull
+    @NotNull
     public DataArray remove(int index)
     {
         data.remove(index);
@@ -635,7 +635,7 @@ public class DataArray implements Iterable<Object>, SerializableArray
      *
      * @return A DataArray with the value removed
      */
-    @Nonnull
+    @NotNull
     public DataArray remove(@Nullable Object value)
     {
         data.remove(value);
@@ -647,7 +647,7 @@ public class DataArray implements Iterable<Object>, SerializableArray
      *
      * @return byte array containing the JSON representation of this object
      */
-    @Nonnull
+    @NotNull
     public byte[] toJson()
     {
         try
@@ -669,7 +669,7 @@ public class DataArray implements Iterable<Object>, SerializableArray
      *
      * @since  4.2.1
      */
-    @Nonnull
+    @NotNull
     public byte[] toETF()
     {
         ByteBuffer buffer = ExTermEncoder.pack(data);
@@ -689,7 +689,7 @@ public class DataArray implements Iterable<Object>, SerializableArray
         }
     }
 
-    @Nonnull
+    @NotNull
     public String toPrettyString()
     {
         DefaultPrettyPrinter.Indenter indent = new DefaultIndenter("    ", DefaultIndenter.SYS_LF);
@@ -710,7 +710,7 @@ public class DataArray implements Iterable<Object>, SerializableArray
      *
      * @return The resulting list
      */
-    @Nonnull
+    @NotNull
     public List<Object> toList()
     {
         return data;
@@ -722,13 +722,13 @@ public class DataArray implements Iterable<Object>, SerializableArray
     }
 
     @Nullable
-    private <T> T get(@Nonnull Class<T> type, int index)
+    private <T> T get(@NotNull Class<T> type, int index)
     {
         return get(type, index, null, null);
     }
 
     @Nullable
-    private <T> T get(@Nonnull Class<T> type, int index, @Nullable Function<String, T> stringMapper, @Nullable Function<Number, T> numberMapper)
+    private <T> T get(@NotNull Class<T> type, int index, @Nullable Function<String, T> stringMapper, @Nullable Function<Number, T> numberMapper)
     {
         Object value = data.get(index);
         if (value == null)
@@ -747,21 +747,21 @@ public class DataArray implements Iterable<Object>, SerializableArray
                                                       index, type.getSimpleName(), value, value.getClass().getSimpleName()));
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Iterator<Object> iterator()
     {
         return data.iterator();
     }
 
-    @Nonnull
+    @NotNull
     public <T> Stream<T> stream(BiFunction<? super DataArray, Integer, ? extends T> mapper)
     {
         return IntStream.range(0, length())
                 .mapToObj(index -> mapper.apply(this, index));
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public DataArray toDataArray()
     {

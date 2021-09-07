@@ -21,10 +21,10 @@ import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.Component;
 import net.dv8tion.jda.api.utils.AttachmentOption;
 import net.dv8tion.jda.internal.utils.Checks;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.io.*;
 import java.util.Arrays;
 import java.util.Collection;
@@ -45,7 +45,7 @@ public interface UpdateInteractionAction extends InteractionCallbackAction
      *
      * @return The same update action, for chaining convenience
      */
-    @Nonnull
+    @NotNull
     UpdateInteractionAction setContent(@Nullable final String content);
 
     /**
@@ -59,9 +59,9 @@ public interface UpdateInteractionAction extends InteractionCallbackAction
      *
      * @return The same update action, for chaining convenience
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    default UpdateInteractionAction setEmbeds(@Nonnull MessageEmbed... embeds)
+    default UpdateInteractionAction setEmbeds(@NotNull MessageEmbed... embeds)
     {
         Checks.noneNull(embeds, "MessageEmbed");
         return setEmbeds(Arrays.asList(embeds));
@@ -78,9 +78,9 @@ public interface UpdateInteractionAction extends InteractionCallbackAction
      *
      * @return The same update action, for chaining convenience
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    UpdateInteractionAction setEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds);
+    UpdateInteractionAction setEmbeds(@NotNull Collection<? extends MessageEmbed> embeds);
 
     /**
      * Set the action rows for the message.
@@ -93,9 +93,9 @@ public interface UpdateInteractionAction extends InteractionCallbackAction
      *
      * @return The same update action, for chaining convenience
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    default UpdateInteractionAction setActionRows(@Nonnull Collection<? extends ActionRow> rows)
+    default UpdateInteractionAction setActionRows(@NotNull Collection<? extends ActionRow> rows)
     {
         Checks.noneNull(rows, "ActionRows");
         return setActionRows(rows.toArray(new ActionRow[0]));
@@ -112,9 +112,9 @@ public interface UpdateInteractionAction extends InteractionCallbackAction
      *
      * @return The same update action, for chaining convenience
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    UpdateInteractionAction setActionRows(@Nonnull ActionRow... rows);
+    UpdateInteractionAction setActionRows(@NotNull ActionRow... rows);
 
     /**
      * Set only one action row for convenience.
@@ -129,9 +129,9 @@ public interface UpdateInteractionAction extends InteractionCallbackAction
      *
      * @see    ActionRow#of(Component...)
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    default UpdateInteractionAction setActionRow(@Nonnull Component... components)
+    default UpdateInteractionAction setActionRow(@NotNull Component... components)
     {
         return setActionRows(ActionRow.of(components));
     }
@@ -149,9 +149,9 @@ public interface UpdateInteractionAction extends InteractionCallbackAction
      *
      * @see    ActionRow#of(Collection)
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    default UpdateInteractionAction setActionRow(@Nonnull Collection<? extends Component> components)
+    default UpdateInteractionAction setActionRow(@NotNull Collection<? extends Component> components)
     {
         return setActionRows(ActionRow.of(components));
     }
@@ -171,9 +171,9 @@ public interface UpdateInteractionAction extends InteractionCallbackAction
      *
      * @return The same update action, for chaining convenience
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    default UpdateInteractionAction addFile(@Nonnull File file, @Nonnull AttachmentOption... options)
+    default UpdateInteractionAction addFile(@NotNull File file, @NotNull AttachmentOption... options)
     {
         Checks.notNull(file, "File");
         return addFile(file, file.getName(), options);
@@ -208,9 +208,9 @@ public interface UpdateInteractionAction extends InteractionCallbackAction
      *
      * @return The same update action, for chaining convenience
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    default UpdateInteractionAction addFile(@Nonnull File file, @Nonnull String name, @Nonnull AttachmentOption... options)
+    default UpdateInteractionAction addFile(@NotNull File file, @NotNull String name, @NotNull AttachmentOption... options)
     {
         try
         {
@@ -242,9 +242,9 @@ public interface UpdateInteractionAction extends InteractionCallbackAction
      *
      * @return The same update action, for chaining convenience
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    default UpdateInteractionAction addFile(@Nonnull byte[] data, @Nonnull String name, @Nonnull AttachmentOption... options)
+    default UpdateInteractionAction addFile(@NotNull byte[] data, @NotNull String name, @NotNull AttachmentOption... options)
     {
         Checks.notNull(data, "Data");
         return addFile(new ByteArrayInputStream(data), name, options);
@@ -268,9 +268,9 @@ public interface UpdateInteractionAction extends InteractionCallbackAction
      *
      * @return The same update action, for chaining convenience
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    UpdateInteractionAction addFile(@Nonnull InputStream data, @Nonnull String name, @Nonnull AttachmentOption... options);
+    UpdateInteractionAction addFile(@NotNull InputStream data, @NotNull String name, @NotNull AttachmentOption... options);
 
 /////// This is waiting for https://github.com/discord/discord-api-docs/issues/3048
 //
@@ -288,9 +288,9 @@ public interface UpdateInteractionAction extends InteractionCallbackAction
 //     *
 //     * @return The same update action, for chaining convenience
 //     */
-//    @Nonnull
+//    @NotNull
 //    @CheckReturnValue
-//    UpdateInteractionAction retainFilesById(@Nonnull Collection<String> ids);
+//    UpdateInteractionAction retainFilesById(@NotNull Collection<String> ids);
 //
 //    /**
 //     * Removes all attachments that are currently attached to the existing message except for the ones provided.
@@ -306,9 +306,9 @@ public interface UpdateInteractionAction extends InteractionCallbackAction
 //     *
 //     * @return The same update action, for chaining convenience
 //     */
-//    @Nonnull
+//    @NotNull
 //    @CheckReturnValue
-//    default UpdateInteractionAction retainFilesById(@Nonnull String... ids)
+//    default UpdateInteractionAction retainFilesById(@NotNull String... ids)
 //    {
 //        Checks.notNull(ids, "IDs");
 //        return retainFilesById(Arrays.asList(ids));
@@ -328,7 +328,7 @@ public interface UpdateInteractionAction extends InteractionCallbackAction
 //     *
 //     * @return The same update action, for chaining convenience
 //     */
-//    @Nonnull
+//    @NotNull
 //    @CheckReturnValue
 //    default UpdateInteractionAction retainFilesById(long... ids)
 //    {
@@ -354,9 +354,9 @@ public interface UpdateInteractionAction extends InteractionCallbackAction
 //     *
 //     * @return The same update action, for chaining convenience
 //     */
-//    @Nonnull
+//    @NotNull
 //    @CheckReturnValue
-//    default UpdateInteractionAction retainFiles(@Nonnull Collection<? extends Message.Attachment> attachments)
+//    default UpdateInteractionAction retainFiles(@NotNull Collection<? extends Message.Attachment> attachments)
 //    {
 //        Checks.noneNull(attachments, "Attachments");
 //        return retainFilesById(attachments

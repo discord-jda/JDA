@@ -31,8 +31,8 @@ import net.dv8tion.jda.internal.requests.restaction.WebhookMessageActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.WebhookMessageUpdateActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.JDALogger;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.Future;
@@ -56,7 +56,7 @@ public class InteractionHookImpl extends AbstractWebhookClient<Message> implemen
     // By default, discord only responds with "unknown interaction" which is horrible UX so we add a check manually here
     private volatile boolean isAck;
 
-    public InteractionHookImpl(@Nonnull InteractionImpl interaction, @Nonnull JDA api)
+    public InteractionHookImpl(@NotNull InteractionImpl interaction, @NotNull JDA api)
     {
         super(api.getSelfUser().getApplicationIdLong(), interaction.getToken(), api);
         this.interaction = interaction;
@@ -114,14 +114,14 @@ public class InteractionHookImpl extends AbstractWebhookClient<Message> implemen
         });
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Interaction getInteraction()
     {
         return interaction;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public InteractionHook setEphemeral(boolean ephemeral)
     {
@@ -129,14 +129,14 @@ public class InteractionHookImpl extends AbstractWebhookClient<Message> implemen
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public JDA getJDA()
     {
         return api;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public RestAction<Message> retrieveOriginal()
     {
@@ -146,7 +146,7 @@ public class InteractionHookImpl extends AbstractWebhookClient<Message> implemen
                 jda.getEntityBuilder().createMessage(response.getObject(), getInteraction().getMessageChannel(), false)));
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public WebhookMessageActionImpl<Message> sendRequest()
     {
@@ -156,7 +156,7 @@ public class InteractionHookImpl extends AbstractWebhookClient<Message> implemen
         return onReady(new WebhookMessageActionImpl<>(getJDA(), interaction.getMessageChannel(), route, transform)).setEphemeral(ephemeral);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public WebhookMessageUpdateActionImpl<Message> editRequest(String messageId)
     {
@@ -168,9 +168,9 @@ public class InteractionHookImpl extends AbstractWebhookClient<Message> implemen
         return onReady(new WebhookMessageUpdateActionImpl<>(getJDA(), route, transform));
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public RestAction<Void> deleteMessageById(@Nonnull String messageId)
+    public RestAction<Void> deleteMessageById(@NotNull String messageId)
     {
         if (!"@original".equals(messageId))
             Checks.isSnowflake(messageId);

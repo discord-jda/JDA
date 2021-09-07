@@ -18,9 +18,9 @@ package net.dv8tion.jda.api.managers;
 
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.internal.managers.ManagerBase;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 
@@ -60,23 +60,23 @@ public interface Manager<M extends Manager<M>> extends AuditableRestAction<Void>
         return ManagerBase.isPermissionChecksEnabled();
     }
 
-    @Nonnull
+    @NotNull
     @Override
     M setCheck(BooleanSupplier checks);
 
-    @Nonnull
+    @NotNull
     @Override
-    M timeout(long timeout, @Nonnull TimeUnit unit);
+    M timeout(long timeout, @NotNull TimeUnit unit);
 
-    @Nonnull
+    @NotNull
     @Override
     M deadline(long timestamp);
 
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     M reset(long fields);
 
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     M reset(long... fields);
 
@@ -85,7 +85,7 @@ public interface Manager<M extends Manager<M>> extends AuditableRestAction<Void>
      *
      * @return The current Manager with all settings reset to default
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     M reset();
 }

@@ -25,9 +25,9 @@ import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.interactions.InteractionHookImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -86,9 +86,9 @@ public class UpdateInteractionActionImpl extends InteractionCallbackActionImpl i
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public UpdateInteractionAction setEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
+    public UpdateInteractionAction setEmbeds(@NotNull Collection<? extends MessageEmbed> embeds)
     {
         Checks.noneNull(embeds, "MessageEmbed");
         Checks.check(embeds.size() <= 10, "Cannot have more than 10 embeds per message!");
@@ -105,9 +105,9 @@ public class UpdateInteractionActionImpl extends InteractionCallbackActionImpl i
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public UpdateInteractionAction setActionRows(@Nonnull ActionRow... rows)
+    public UpdateInteractionAction setActionRows(@NotNull ActionRow... rows)
     {
         Checks.noneNull(rows, "ActionRows");
         Checks.check(rows.length <= 5, "Can only have 5 action rows per message!");
@@ -116,9 +116,9 @@ public class UpdateInteractionActionImpl extends InteractionCallbackActionImpl i
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public UpdateInteractionAction addFile(@Nonnull InputStream data, @Nonnull String name, @Nonnull AttachmentOption... options)
+    public UpdateInteractionAction addFile(@NotNull InputStream data, @NotNull String name, @NotNull AttachmentOption... options)
     {
         Checks.notNull(data, "Data");
         Checks.notEmpty(name, "Name");
@@ -130,9 +130,9 @@ public class UpdateInteractionActionImpl extends InteractionCallbackActionImpl i
         return this;
     }
 
-//    @Nonnull
+//    @NotNull
 //    @Override
-//    public UpdateInteractionAction retainFilesById(@Nonnull Collection<String> ids)
+//    public UpdateInteractionAction retainFilesById(@NotNull Collection<String> ids)
 //    {
 //        Checks.noneNull(ids, "IDs");
 //        ids.forEach(Checks::isSnowflake);
@@ -141,7 +141,7 @@ public class UpdateInteractionActionImpl extends InteractionCallbackActionImpl i
 //        return this;
 //    }
 
-    @Nonnull
+    @NotNull
     @Override
     public UpdateInteractionAction setContent(@Nullable String content)
     {

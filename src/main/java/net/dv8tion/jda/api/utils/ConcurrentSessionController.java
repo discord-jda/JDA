@@ -20,8 +20,8 @@ import com.neovisionaries.ws.client.OpeningHandshakeException;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import net.dv8tion.jda.internal.utils.Helpers;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.NoSuchElementException;
@@ -58,13 +58,13 @@ public class ConcurrentSessionController extends SessionControllerAdapter implem
     }
 
     @Override
-    public void appendSession(@Nonnull SessionConnectNode node)
+    public void appendSession(@NotNull SessionConnectNode node)
     {
         getWorker(node).enqueue(node);
     }
 
     @Override
-    public void removeSession(@Nonnull SessionConnectNode node)
+    public void removeSession(@NotNull SessionConnectNode node)
     {
         getWorker(node).dequeue(node);
     }

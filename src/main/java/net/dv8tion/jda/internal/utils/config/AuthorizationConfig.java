@@ -18,32 +18,31 @@ package net.dv8tion.jda.internal.utils.config;
 
 import net.dv8tion.jda.api.AccountType;
 import net.dv8tion.jda.internal.utils.Checks;
-
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 public final class AuthorizationConfig
 {
     private String token;
 
-    public AuthorizationConfig(@Nonnull String token)
+    public AuthorizationConfig(@NotNull String token)
     {
         Checks.notNull(token, "Token");
         setToken(token);
     }
 
-    @Nonnull
+    @NotNull
     public AccountType getAccountType()
     {
         return AccountType.BOT;
     }
 
-    @Nonnull
+    @NotNull
     public String getToken()
     {
         return token;
     }
 
-    public void setToken(@Nonnull String token)
+    public void setToken(@NotNull String token)
     {
         this.token = "Bot " + token;
     }

@@ -20,8 +20,8 @@ import net.dv8tion.jda.api.entities.ISnowflake;
 import net.dv8tion.jda.api.utils.cache.SortedSnowflakeCacheView;
 import net.dv8tion.jda.internal.utils.UnlockHook;
 import org.apache.commons.collections4.iterators.ObjectArrayIterator;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -46,7 +46,7 @@ public class SortedSnowflakeCacheViewImpl<T extends ISnowflake & Comparable<? su
     }
 
     @Override
-    public void forEach(@Nonnull Consumer<? super T> action)
+    public void forEach(@NotNull Consumer<? super T> action)
     {
         try (UnlockHook hook = readLock())
         {
@@ -55,12 +55,12 @@ public class SortedSnowflakeCacheViewImpl<T extends ISnowflake & Comparable<? su
     }
 
     @Override
-    public void forEachUnordered(@Nonnull Consumer<? super T> action)
+    public void forEachUnordered(@NotNull Consumer<? super T> action)
     {
         super.forEach(action);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public List<T> asList()
     {
@@ -78,7 +78,7 @@ public class SortedSnowflakeCacheViewImpl<T extends ISnowflake & Comparable<? su
         }
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public NavigableSet<T> asSet()
     {
@@ -95,9 +95,9 @@ public class SortedSnowflakeCacheViewImpl<T extends ISnowflake & Comparable<? su
         }
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public List<T> getElementsByName(@Nonnull String name, boolean ignoreCase)
+    public List<T> getElementsByName(@NotNull String name, boolean ignoreCase)
     {
         List<T> filtered = super.getElementsByName(name, ignoreCase);
         filtered.sort(comparator);
@@ -113,35 +113,35 @@ public class SortedSnowflakeCacheViewImpl<T extends ISnowflake & Comparable<? su
         }
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Stream<T> streamUnordered()
     {
         return super.stream();
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Stream<T> parallelStreamUnordered()
     {
         return super.parallelStream();
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Stream<T> stream()
     {
         return super.stream().sorted(comparator);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Stream<T> parallelStream()
     {
         return super.parallelStream().sorted(comparator);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Iterator<T> iterator()
     {

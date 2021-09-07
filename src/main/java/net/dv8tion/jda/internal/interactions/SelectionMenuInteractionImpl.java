@@ -22,9 +22,9 @@ import net.dv8tion.jda.api.interactions.components.selections.SelectionMenuInter
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -62,14 +62,14 @@ public class SelectionMenuInteractionImpl extends ComponentInteractionImpl imple
         return menu;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Component.Type getComponentType()
     {
         return Component.Type.SELECTION_MENU;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public List<String> getValues()
     {

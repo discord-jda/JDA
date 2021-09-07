@@ -35,9 +35,9 @@ import net.dv8tion.jda.internal.entities.MemberPresenceImpl;
 import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.JDALogger;
 import net.dv8tion.jda.internal.utils.UnlockHook;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;

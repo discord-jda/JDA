@@ -19,9 +19,9 @@ package net.dv8tion.jda.api.entities.templates;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.ISnowflake;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.EnumSet;
@@ -99,7 +99,7 @@ public class TemplateChannel implements ISnowflake
      *
      * @return The channel type
      */
-    @Nonnull
+    @NotNull
     public ChannelType getType()
     {
         return this.channelType;
@@ -111,7 +111,7 @@ public class TemplateChannel implements ISnowflake
      *
      * @return The name of this GuildChannel
      */
-    @Nonnull
+    @NotNull
     public String getName()
     {
         return this.name;
@@ -228,7 +228,7 @@ public class TemplateChannel implements ISnowflake
      * @return Immutable list of all {@link net.dv8tion.jda.api.entities.templates.TemplateChannel.PermissionOverride PermissionOverrides}
      *         for this {@link net.dv8tion.jda.api.entities.templates.TemplateChannel TemplateChannel}.
      */
-    @Nonnull
+    @NotNull
     public List<TemplateChannel.PermissionOverride> getPermissionOverrides()
     {
         return this.permissionOverrides;
@@ -292,7 +292,7 @@ public class TemplateChannel implements ISnowflake
          *
          * @return Possibly-empty set of allowed {@link net.dv8tion.jda.api.Permission Permissions}.
          */
-        @Nonnull
+        @NotNull
         public EnumSet<Permission> getAllowed()
         {
             return Permission.getPermissions(allow);
@@ -304,7 +304,7 @@ public class TemplateChannel implements ISnowflake
          *
          * @return Possibly-empty set of unaffected {@link net.dv8tion.jda.api.Permission Permissions}.
          */
-        @Nonnull
+        @NotNull
         public EnumSet<Permission> getInherit()
         {
             return Permission.getPermissions(getInheritRaw());
@@ -316,7 +316,7 @@ public class TemplateChannel implements ISnowflake
          *
          * @return Possibly-empty set of denied {@link net.dv8tion.jda.api.Permission Permissions}.
          */
-        @Nonnull
+        @NotNull
         public EnumSet<Permission> getDenied()
         {
             return Permission.getPermissions(deny);

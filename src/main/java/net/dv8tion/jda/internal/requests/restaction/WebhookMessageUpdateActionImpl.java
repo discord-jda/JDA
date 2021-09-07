@@ -32,9 +32,9 @@ import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.IOUtil;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.io.InputStream;
 import java.util.*;
 import java.util.function.Function;
@@ -64,7 +64,7 @@ public class WebhookMessageUpdateActionImpl<T>
         this.transformer = transformer;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public WebhookMessageUpdateAction<T> setContent(@Nullable String content)
     {
@@ -75,9 +75,9 @@ public class WebhookMessageUpdateActionImpl<T>
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public WebhookMessageUpdateAction<T> setEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
+    public WebhookMessageUpdateAction<T> setEmbeds(@NotNull Collection<? extends MessageEmbed> embeds)
     {
         Checks.noneNull(embeds, "MessageEmbeds");
         embeds.forEach(embed ->
@@ -93,9 +93,9 @@ public class WebhookMessageUpdateActionImpl<T>
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public WebhookMessageUpdateAction<T> addFile(@Nonnull InputStream data, @Nonnull String name, @Nonnull AttachmentOption... options)
+    public WebhookMessageUpdateAction<T> addFile(@NotNull InputStream data, @NotNull String name, @NotNull AttachmentOption... options)
     {
         Checks.notNull(name, "File name");
         Checks.notNull(data, "File data");
@@ -107,9 +107,9 @@ public class WebhookMessageUpdateActionImpl<T>
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public WebhookMessageUpdateAction<T> retainFilesById(@Nonnull Collection<String> ids)
+    public WebhookMessageUpdateAction<T> retainFilesById(@NotNull Collection<String> ids)
     {
         Checks.noneNull(ids, "IDs");
         ids.forEach(Checks::isSnowflake);
@@ -119,9 +119,9 @@ public class WebhookMessageUpdateActionImpl<T>
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public WebhookMessageUpdateAction<T> setActionRows(@Nonnull ActionRow... rows)
+    public WebhookMessageUpdateAction<T> setActionRows(@NotNull ActionRow... rows)
     {
         Checks.noneNull(rows, "ActionRows");
         this.components.clear();
@@ -130,10 +130,10 @@ public class WebhookMessageUpdateActionImpl<T>
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    public WebhookMessageUpdateAction<T> applyMessage(@Nonnull Message message)
+    public WebhookMessageUpdateAction<T> applyMessage(@NotNull Message message)
     {
         Checks.notNull(message, "Message");
         setContent(message.getContentRaw());

@@ -18,8 +18,7 @@ package net.dv8tion.jda.api.events.message.guild;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.guild.GenericGuildEvent;
-
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Indicates that a {@link net.dv8tion.jda.api.entities.Message Message} event is fired from a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}.
@@ -36,7 +35,7 @@ public abstract class GenericGuildMessageEvent extends GenericGuildEvent
     protected final long messageId;
     protected final TextChannel channel;
 
-    public GenericGuildMessageEvent(@Nonnull JDA api, long responseNumber, long messageId, @Nonnull TextChannel channel)
+    public GenericGuildMessageEvent(@NotNull JDA api, long responseNumber, long messageId, @NotNull TextChannel channel)
     {
         super(api, responseNumber, channel.getGuild());
         this.messageId = messageId;
@@ -48,7 +47,7 @@ public abstract class GenericGuildMessageEvent extends GenericGuildEvent
      *
      * @return The message id
      */
-    @Nonnull
+    @NotNull
     public String getMessageId()
     {
         return Long.toUnsignedString(messageId);
@@ -69,7 +68,7 @@ public abstract class GenericGuildMessageEvent extends GenericGuildEvent
      *
      * @return The TextChannel for this message
      */
-    @Nonnull
+    @NotNull
     public TextChannel getChannel()
     {
         return channel;

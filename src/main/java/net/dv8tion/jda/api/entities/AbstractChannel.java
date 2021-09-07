@@ -17,8 +17,7 @@
 package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.JDA;
-
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Abstract Channel interface for all {@link ChannelType ChannelTypes}.
@@ -30,7 +29,7 @@ public interface AbstractChannel extends ISnowflake
      *
      * @return The name of this channel
      */
-    @Nonnull
+    @NotNull
     String getName();
 
     /**
@@ -38,7 +37,7 @@ public interface AbstractChannel extends ISnowflake
      *
      * @return The channel type
      */
-    @Nonnull
+    @NotNull
     ChannelType getType();
 
     /**
@@ -46,6 +45,6 @@ public interface AbstractChannel extends ISnowflake
      *
      * @return the corresponding JDA instance
      */
-    @Nonnull
+    @NotNull
     JDA getJDA();
 }

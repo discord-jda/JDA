@@ -16,7 +16,7 @@
 
 package net.dv8tion.jda.api.utils.data;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Allows custom serialization for JSON payloads of an object.
@@ -28,6 +28,6 @@ public interface SerializableData
      *
      * @return {@link net.dv8tion.jda.api.utils.data.DataObject}
      */
-    @Nonnull
+    @NotNull
     DataObject toData();
 }

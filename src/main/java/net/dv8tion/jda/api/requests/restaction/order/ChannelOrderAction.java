@@ -19,8 +19,8 @@ package net.dv8tion.jda.api.requests.restaction.order;
 import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.GuildChannel;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.util.EnumSet;
 
 /**
@@ -47,7 +47,7 @@ public interface ChannelOrderAction extends OrderAction<GuildChannel, ChannelOrd
      *
      * @return The corresponding {@link net.dv8tion.jda.api.entities.Guild Guild}
      */
-    @Nonnull
+    @NotNull
     Guild getGuild();
 
     /**
@@ -66,7 +66,7 @@ public interface ChannelOrderAction extends OrderAction<GuildChannel, ChannelOrd
      *
      * @see    net.dv8tion.jda.api.entities.ChannelType#fromSortBucket(int)
      */
-    @Nonnull
+    @NotNull
     default EnumSet<ChannelType> getChannelTypes()
     {
         return ChannelType.fromSortBucket(getSortBucket());

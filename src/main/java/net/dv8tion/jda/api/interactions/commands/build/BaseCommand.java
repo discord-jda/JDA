@@ -21,8 +21,8 @@ import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.internal.utils.Checks;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -31,7 +31,7 @@ public abstract class BaseCommand<T extends BaseCommand<T>> implements Serializa
     protected final DataArray options = DataArray.empty();
     protected String name, description;
 
-    public BaseCommand(@Nonnull String name, @Nonnull String description)
+    public BaseCommand(@NotNull String name, @NotNull String description)
     {
         Checks.notEmpty(name, "Name");
         Checks.notEmpty(description, "Description");
@@ -54,9 +54,9 @@ public abstract class BaseCommand<T extends BaseCommand<T>> implements Serializa
      *
      * @return The builder, for chaining
      */
-    @Nonnull
+    @NotNull
     @SuppressWarnings("unchecked")
-    public T setName(@Nonnull String name)
+    public T setName(@NotNull String name)
     {
         Checks.notEmpty(name, "Name");
         Checks.notLonger(name, 32, "Name");
@@ -77,9 +77,9 @@ public abstract class BaseCommand<T extends BaseCommand<T>> implements Serializa
      *
      * @return The builder, for chaining
      */
-    @Nonnull
+    @NotNull
     @SuppressWarnings("unchecked")
-    public T setDescription(@Nonnull String description)
+    public T setDescription(@NotNull String description)
     {
         Checks.notEmpty(description, "Description");
         Checks.notLonger(description, 100, "Description");
@@ -92,7 +92,7 @@ public abstract class BaseCommand<T extends BaseCommand<T>> implements Serializa
      *
      * @return The name
      */
-    @Nonnull
+    @NotNull
     public String getName()
     {
         return name;
@@ -103,7 +103,7 @@ public abstract class BaseCommand<T extends BaseCommand<T>> implements Serializa
      *
      * @return The description
      */
-    @Nonnull
+    @NotNull
     public String getDescription()
     {
         return description;
@@ -114,7 +114,7 @@ public abstract class BaseCommand<T extends BaseCommand<T>> implements Serializa
      *
      * @return Immutable list of {@link OptionData}
      */
-    @Nonnull
+    @NotNull
     public List<OptionData> getOptions()
     {
         return options.stream(DataArray::getObject)
@@ -123,7 +123,7 @@ public abstract class BaseCommand<T extends BaseCommand<T>> implements Serializa
                 .collect(Collectors.toList());
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public DataObject toData()
     {

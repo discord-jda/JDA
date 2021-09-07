@@ -18,9 +18,8 @@ package net.dv8tion.jda.api.entities;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Region;
 import net.dv8tion.jda.api.requests.restaction.ChannelAction;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Represents a Discord Voice GuildChannel.
@@ -68,7 +67,7 @@ public interface VoiceChannel extends GuildChannel
      *
      * @return the {@link net.dv8tion.jda.api.Region Region} of this channel.
      */
-    @Nonnull
+    @NotNull
     Region getRegion();
 
     /**
@@ -80,11 +79,11 @@ public interface VoiceChannel extends GuildChannel
     @Nullable
     String getRegionRaw();
 
-    @Nonnull
+    @NotNull
     @Override
-    ChannelAction<VoiceChannel> createCopy(@Nonnull Guild guild);
+    ChannelAction<VoiceChannel> createCopy(@NotNull Guild guild);
 
-    @Nonnull
+    @NotNull
     @Override
     ChannelAction<VoiceChannel> createCopy();
 }

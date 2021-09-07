@@ -15,8 +15,9 @@
  */
 package net.dv8tion.jda.api;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Set;
@@ -92,7 +93,7 @@ public enum Region
      *
      * @return The name of this region
      */
-    @Nonnull
+    @NotNull
     public String getName()
     {
         return name;
@@ -103,7 +104,7 @@ public enum Region
      *
      * @return The key (internal name) of this region
      */
-    @Nonnull
+    @NotNull
     public String getKey()
     {
         return key;
@@ -141,7 +142,7 @@ public enum Region
      * @return The {@link net.dv8tion.jda.api.Region Region} matching the key. If there is no match,
      *         returns {@link net.dv8tion.jda.api.Region#UNKNOWN UNKNOWN}.
      */
-    @Nonnull
+    @NotNull
     public static Region fromKey(@Nullable String key)
     {
         for (Region region : values())

@@ -18,8 +18,7 @@ package net.dv8tion.jda.api.events.stage;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.StageInstance;
-
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Indicates that a {@link net.dv8tion.jda.api.entities.StageInstance StageInstance} was deleted.
@@ -28,7 +27,7 @@ import javax.annotation.Nonnull;
  */
 public class StageInstanceDeleteEvent extends GenericStageInstanceEvent
 {
-    public StageInstanceDeleteEvent(@Nonnull JDA api, long responseNumber, @Nonnull StageInstance stageInstance)
+    public StageInstanceDeleteEvent(@NotNull JDA api, long responseNumber, @NotNull StageInstance stageInstance)
     {
         super(api, responseNumber, stageInstance);
     }

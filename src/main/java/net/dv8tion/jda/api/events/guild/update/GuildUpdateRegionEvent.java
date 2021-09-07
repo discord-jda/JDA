@@ -21,8 +21,7 @@ import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Region;
 import net.dv8tion.jda.api.entities.Guild;
-
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Indicates that the {@link net.dv8tion.jda.api.Region Region} of a {@link net.dv8tion.jda.api.entities.Guild Guild} changed.
@@ -43,7 +42,7 @@ public class GuildUpdateRegionEvent extends GenericGuildUpdateEvent<Region>
     private final String oldRegion;
     private final String newRegion;
 
-    public GuildUpdateRegionEvent(@Nonnull JDA api, long responseNumber, @Nonnull Guild guild, @Nonnull String oldRegion)
+    public GuildUpdateRegionEvent(@NotNull JDA api, long responseNumber, @NotNull Guild guild, @NotNull String oldRegion)
     {
         super(api, responseNumber, guild, Region.fromKey(oldRegion), guild.getRegion(), IDENTIFIER);
         this.oldRegion = oldRegion;
@@ -58,7 +57,7 @@ public class GuildUpdateRegionEvent extends GenericGuildUpdateEvent<Region>
      *
      * @return Resolved {@link net.dv8tion.jda.api.Region Region} constant from the raw name
      */
-    @Nonnull
+    @NotNull
     public Region getOldRegion()
     {
         return getOldValue();
@@ -71,7 +70,7 @@ public class GuildUpdateRegionEvent extends GenericGuildUpdateEvent<Region>
      *
      * @return Raw name of the old voice region
      */
-    @Nonnull
+    @NotNull
     public String getOldRegionRaw()
     {
         return oldRegion;
@@ -85,7 +84,7 @@ public class GuildUpdateRegionEvent extends GenericGuildUpdateEvent<Region>
      *
      * @return Resolved {@link net.dv8tion.jda.api.Region Region} constant from the raw name
      */
-    @Nonnull
+    @NotNull
     public Region getNewRegion()
     {
         return getNewValue();
@@ -98,20 +97,20 @@ public class GuildUpdateRegionEvent extends GenericGuildUpdateEvent<Region>
      *
      * @return Raw name of the updated voice region
      */
-    @Nonnull
+    @NotNull
     public String getNewRegionRaw()
     {
         return newRegion;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Region getOldValue()
     {
         return super.getOldValue();
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Region getNewValue()
     {

@@ -23,10 +23,10 @@ import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.internal.utils.Checks;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
@@ -37,19 +37,19 @@ import java.util.function.BooleanSupplier;
  */
 public interface CommandCreateAction extends RestAction<Command>
 {
-    @Nonnull
+    @NotNull
     @Override
     CommandCreateAction setCheck(@Nullable BooleanSupplier checks);
 
-    @Nonnull
+    @NotNull
     @Override
-    CommandCreateAction addCheck(@Nonnull BooleanSupplier checks);
+    CommandCreateAction addCheck(@NotNull BooleanSupplier checks);
 
-    @Nonnull
+    @NotNull
     @Override
-    CommandCreateAction timeout(long timeout, @Nonnull TimeUnit unit);
+    CommandCreateAction timeout(long timeout, @NotNull TimeUnit unit);
 
-    @Nonnull
+    @NotNull
     @Override
     CommandCreateAction deadline(long timestamp);
 
@@ -62,7 +62,7 @@ public interface CommandCreateAction extends RestAction<Command>
      *
      * @return The CommandCreateAction instance, for chaining
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     CommandCreateAction setDefaultEnabled(boolean enabled);
 
@@ -77,9 +77,9 @@ public interface CommandCreateAction extends RestAction<Command>
      *
      * @return The CommandCreateAction instance, for chaining
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    CommandCreateAction setName(@Nonnull String name);
+    CommandCreateAction setName(@NotNull String name);
 
     /**
      * Change the description of the command.
@@ -93,9 +93,9 @@ public interface CommandCreateAction extends RestAction<Command>
      *
      * @return The CommandCreateAction instance, for chaining
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    CommandCreateAction setDescription(@Nonnull String description);
+    CommandCreateAction setDescription(@NotNull String description);
 
     /**
      * Add up to 25 options to this command.
@@ -116,9 +116,9 @@ public interface CommandCreateAction extends RestAction<Command>
      *
      * @return The CommandCreateAction instance, for chaining
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    CommandCreateAction addOptions(@Nonnull OptionData... options);
+    CommandCreateAction addOptions(@NotNull OptionData... options);
 
     /**
      * Add up to 25 options to this command.
@@ -139,9 +139,9 @@ public interface CommandCreateAction extends RestAction<Command>
      *
      * @return The CommandCreateAction instance, for chaining
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    default CommandCreateAction addOptions(@Nonnull Collection<? extends OptionData> options)
+    default CommandCreateAction addOptions(@NotNull Collection<? extends OptionData> options)
     {
         Checks.noneNull(options, "Option");
         return addOptions(options.toArray(new OptionData[0]));
@@ -172,9 +172,9 @@ public interface CommandCreateAction extends RestAction<Command>
      *
      * @return The CommandCreateAction instance, for chaining
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    default CommandCreateAction addOption(@Nonnull OptionType type, @Nonnull String name, @Nonnull String description, boolean required)
+    default CommandCreateAction addOption(@NotNull OptionType type, @NotNull String name, @NotNull String description, boolean required)
     {
         return addOptions(new OptionData(type, name, description).setRequired(required));
     }
@@ -203,9 +203,9 @@ public interface CommandCreateAction extends RestAction<Command>
      *
      * @return The CommandCreateAction instance, for chaining
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    default CommandCreateAction addOption(@Nonnull OptionType type, @Nonnull String name, @Nonnull String description)
+    default CommandCreateAction addOption(@NotNull OptionType type, @NotNull String name, @NotNull String description)
     {
         return addOption(type, name, description, false);
     }
@@ -222,9 +222,9 @@ public interface CommandCreateAction extends RestAction<Command>
      *
      * @return The CommandCreateAction instance, for chaining
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    CommandCreateAction addSubcommands(@Nonnull SubcommandData subcommands);
+    CommandCreateAction addSubcommands(@NotNull SubcommandData subcommands);
 
     /**
      * Add up to 25 {@link SubcommandGroupData Subcommand-Groups} to this command.
@@ -238,7 +238,7 @@ public interface CommandCreateAction extends RestAction<Command>
      *
      * @return The CommandCreateAction instance, for chaining
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    CommandCreateAction addSubcommandGroups(@Nonnull SubcommandGroupData groups);
+    CommandCreateAction addSubcommandGroups(@NotNull SubcommandGroupData groups);
 }

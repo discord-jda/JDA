@@ -18,8 +18,7 @@ package net.dv8tion.jda.api.events.guild.voice;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Member;
-
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Indicates that a {@link net.dv8tion.jda.api.entities.Member Member} started or ended a stream.
@@ -42,7 +41,7 @@ public class GuildVoiceStreamEvent extends GenericGuildVoiceEvent
 {
     private final boolean stream;
 
-    public GuildVoiceStreamEvent(@Nonnull JDA api, long responseNumber, @Nonnull Member member, boolean stream)
+    public GuildVoiceStreamEvent(@NotNull JDA api, long responseNumber, @NotNull Member member, boolean stream)
     {
         super(api, responseNumber, member);
         this.stream = stream;

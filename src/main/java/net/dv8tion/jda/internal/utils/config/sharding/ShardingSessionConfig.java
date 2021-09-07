@@ -25,9 +25,9 @@ import net.dv8tion.jda.internal.utils.config.SessionConfig;
 import net.dv8tion.jda.internal.utils.config.flags.ConfigFlag;
 import net.dv8tion.jda.internal.utils.config.flags.ShardingConfigFlag;
 import okhttp3.OkHttpClient;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.EnumSet;
 
 public class ShardingSessionConfig extends SessionConfig
@@ -74,7 +74,7 @@ public class ShardingSessionConfig extends SessionConfig
         return audioSendFactory;
     }
 
-    @Nonnull
+    @NotNull
     public static ShardingSessionConfig getDefault()
     {
         return new ShardingSessionConfig(null, null, new OkHttpClient(), null, null, null, ConfigFlag.getDefault(), ShardingConfigFlag.getDefault(), 900, 250);

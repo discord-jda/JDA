@@ -21,9 +21,9 @@ import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.interactions.commands.CommandInteraction;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.internal.interactions.CommandInteractionImpl;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.List;
 
 /**
@@ -37,20 +37,20 @@ public class SlashCommandEvent extends GenericInteractionCreateEvent implements 
 {
     private final CommandInteractionImpl commandInteraction;
 
-    public SlashCommandEvent(@Nonnull JDA api, long responseNumber, @Nonnull CommandInteractionImpl interaction)
+    public SlashCommandEvent(@NotNull JDA api, long responseNumber, @NotNull CommandInteractionImpl interaction)
     {
         super(api, responseNumber, interaction);
         this.commandInteraction = interaction;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public MessageChannel getChannel()
     {
         return commandInteraction.getChannel();
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public String getName()
     {
@@ -77,14 +77,14 @@ public class SlashCommandEvent extends GenericInteractionCreateEvent implements 
         return commandInteraction.getCommandIdLong();
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public List<OptionMapping> getOptions()
     {
         return commandInteraction.getOptions();
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public String getCommandString()
     {

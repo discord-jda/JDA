@@ -32,9 +32,9 @@ import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.CommandEditActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
 import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.function.Function;
@@ -99,7 +99,7 @@ public class Command implements ISnowflake
      *
      * @return {@link RestAction}
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     public RestAction<Void> delete()
     {
@@ -123,7 +123,7 @@ public class Command implements ISnowflake
      *
      * @return {@link CommandEditAction}
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     public CommandEditAction editCommand()
     {
@@ -149,9 +149,9 @@ public class Command implements ISnowflake
      *
      * @return {@link RestAction} - Type: {@link List} of {@link CommandPrivilege}
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    public RestAction<List<CommandPrivilege>> retrievePrivileges(@Nonnull Guild guild)
+    public RestAction<List<CommandPrivilege>> retrievePrivileges(@NotNull Guild guild)
     {
         Checks.notNull(guild, "Guild");
         return guild.retrieveCommandPrivilegesById(id);
@@ -178,9 +178,9 @@ public class Command implements ISnowflake
      * @return {@link RestAction} - Type: {@link List} or {@link CommandPrivilege}
      *         The updated list of privileges for this command.
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    public RestAction<List<CommandPrivilege>> updatePrivileges(@Nonnull Guild guild, @Nonnull Collection<? extends CommandPrivilege> privileges)
+    public RestAction<List<CommandPrivilege>> updatePrivileges(@NotNull Guild guild, @NotNull Collection<? extends CommandPrivilege> privileges)
     {
         if (applicationId != api.getSelfUser().getApplicationIdLong())
             throw new IllegalStateException("Cannot update privileges for a command from another bot!");
@@ -209,9 +209,9 @@ public class Command implements ISnowflake
      * @return {@link RestAction} - Type: {@link List} or {@link CommandPrivilege}
      *         The updated list of privileges for this command.
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    public RestAction<List<CommandPrivilege>> updatePrivileges(@Nonnull Guild guild, @Nonnull CommandPrivilege... privileges)
+    public RestAction<List<CommandPrivilege>> updatePrivileges(@NotNull Guild guild, @NotNull CommandPrivilege... privileges)
     {
         Checks.noneNull(privileges, "CommandPrivileges");
         return updatePrivileges(guild, Arrays.asList(privileges));
@@ -222,7 +222,7 @@ public class Command implements ISnowflake
      *
      * @return the corresponding JDA instance
      */
-    @Nonnull
+    @NotNull
     public JDA getJDA()
     {
         return api;
@@ -233,7 +233,7 @@ public class Command implements ISnowflake
      *
      * @return The name
      */
-    @Nonnull
+    @NotNull
     public String getName()
     {
         return name;
@@ -244,7 +244,7 @@ public class Command implements ISnowflake
      *
      * @return The description
      */
-    @Nonnull
+    @NotNull
     public String getDescription()
     {
         return description;
@@ -265,7 +265,7 @@ public class Command implements ISnowflake
      *
      * @return Immutable list of command options
      */
-    @Nonnull
+    @NotNull
     public List<Option> getOptions()
     {
         return options;
@@ -276,7 +276,7 @@ public class Command implements ISnowflake
      *
      * @return Immutable list of subcommands
      */
-    @Nonnull
+    @NotNull
     public List<Subcommand> getSubcommands()
     {
         return subcommands;
@@ -287,7 +287,7 @@ public class Command implements ISnowflake
      *
      * @return Immutable list of subcommand groups
      */
-    @Nonnull
+    @NotNull
     public List<SubcommandGroup> getSubcommandGroups()
     {
         return groups;
@@ -308,7 +308,7 @@ public class Command implements ISnowflake
      *
      * @return The application id
      */
-    @Nonnull
+    @NotNull
     public String getApplicationId()
     {
         return Long.toUnsignedString(applicationId);
@@ -335,7 +335,7 @@ public class Command implements ISnowflake
      *
      * @see #getVersion()
      */
-    @Nonnull
+    @NotNull
     public OffsetDateTime getTimeModified()
     {
         return TimeUtil.getTimeCreated(getVersion());
@@ -390,7 +390,7 @@ public class Command implements ISnowflake
          * @param value
          *        The integer value you receive in a command option
          */
-        public Choice(@Nonnull String name, long value)
+        public Choice(@NotNull String name, long value)
         {
             this.name = name;
             setIntValue(value);
@@ -404,7 +404,7 @@ public class Command implements ISnowflake
          * @param value
          *        The double value you receive in a command option
          */
-        public Choice(@Nonnull String name, double value)
+        public Choice(@NotNull String name, double value)
         {
             this.name = name;
             setDoubleValue(value);
@@ -418,7 +418,7 @@ public class Command implements ISnowflake
          * @param value
          *        The string value you receive in a command option
          */
-        public Choice(@Nonnull String name, @Nonnull String value)
+        public Choice(@NotNull String name, @NotNull String value)
         {
             this.name = name;
             setStringValue(value);
@@ -435,7 +435,7 @@ public class Command implements ISnowflake
          * @throws net.dv8tion.jda.api.exceptions.ParsingException
          *         If the data is not formatted correctly or missing required parameters
          */
-        public Choice(@Nonnull DataObject json)
+        public Choice(@NotNull DataObject json)
         {
             Checks.notNull(json, "DataObject");
             this.name = json.getString("name");
@@ -459,7 +459,7 @@ public class Command implements ISnowflake
          *
          * @return The choice name
          */
-        @Nonnull
+        @NotNull
         public String getName()
         {
             return name;
@@ -490,7 +490,7 @@ public class Command implements ISnowflake
          *
          * @return The String value
          */
-        @Nonnull
+        @NotNull
         public String getAsString()
         {
             return stringValue;
@@ -531,7 +531,7 @@ public class Command implements ISnowflake
             this.stringValue = Double.toString(value);
         }
         
-        private void setStringValue(@Nonnull String value)
+        private void setStringValue(@NotNull String value)
         {
             this.doubleValue = Double.NaN;
             this.intValue = 0;
@@ -549,7 +549,7 @@ public class Command implements ISnowflake
         private final boolean required;
         private final List<Choice> choices;
 
-        public Option(@Nonnull DataObject json)
+        public Option(@NotNull DataObject json)
         {
             this.name = json.getString("name");
             this.description = json.getString("description");
@@ -565,7 +565,7 @@ public class Command implements ISnowflake
          *
          * @return The name
          */
-        @Nonnull
+        @NotNull
         public String getName()
         {
             return name;
@@ -576,7 +576,7 @@ public class Command implements ISnowflake
          *
          * @return The description
          */
-        @Nonnull
+        @NotNull
         public String getDescription()
         {
             return description;
@@ -607,7 +607,7 @@ public class Command implements ISnowflake
          *
          * @return The type
          */
-        @Nonnull
+        @NotNull
         public OptionType getType()
         {
             return OptionType.fromKey(type);
@@ -619,7 +619,7 @@ public class Command implements ISnowflake
          *
          * @return Immutable {@link List} of {@link Choice}
          */
-        @Nonnull
+        @NotNull
         public List<Choice> getChoices()
         {
             return choices;
@@ -670,7 +670,7 @@ public class Command implements ISnowflake
          *
          * @return The name
          */
-        @Nonnull
+        @NotNull
         public String getName()
         {
             return name;
@@ -681,7 +681,7 @@ public class Command implements ISnowflake
          *
          * @return The description
          */
-        @Nonnull
+        @NotNull
         public String getDescription()
         {
             return description;
@@ -692,7 +692,7 @@ public class Command implements ISnowflake
          *
          * @return Immutable list of Options
          */
-        @Nonnull
+        @NotNull
         public List<Option> getOptions()
         {
             return options;
@@ -742,7 +742,7 @@ public class Command implements ISnowflake
          *
          * @return The name
          */
-        @Nonnull
+        @NotNull
         public String getName()
         {
             return name;
@@ -753,7 +753,7 @@ public class Command implements ISnowflake
          *
          * @return The description
          */
-        @Nonnull
+        @NotNull
         public String getDescription()
         {
             return description;
@@ -764,7 +764,7 @@ public class Command implements ISnowflake
          *
          * @return Immutable {@link List} of {@link Subcommand}
          */
-        @Nonnull
+        @NotNull
         public List<Subcommand> getSubcommands()
         {
             return subcommands;

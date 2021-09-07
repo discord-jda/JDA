@@ -18,9 +18,9 @@ package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.utils.Checks;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.List;
 
 /**
@@ -51,7 +51,7 @@ public interface ApplicationTeam extends ISnowflake
      *
      * @return The owner id
      */
-    @Nonnull
+    @NotNull
     default String getOwnerId()
     {
         return Long.toUnsignedString(getOwnerIdLong());
@@ -91,7 +91,7 @@ public interface ApplicationTeam extends ISnowflake
      *
      * @return Immutable list of team members
      */
-    @Nonnull
+    @NotNull
     List<TeamMember> getMembers();
 
     /**
@@ -105,7 +105,7 @@ public interface ApplicationTeam extends ISnowflake
      *
      * @return True, if the provided user is a member of this team
      */
-    default boolean isMember(@Nonnull User user)
+    default boolean isMember(@NotNull User user)
     {
         return getMember(user) != null;
     }
@@ -123,7 +123,7 @@ public interface ApplicationTeam extends ISnowflake
      * @return The {@link net.dv8tion.jda.api.entities.TeamMember TeamMember} for the user or null
      */
     @Nullable
-    default TeamMember getMember(@Nonnull User user)
+    default TeamMember getMember(@NotNull User user)
     {
         Checks.notNull(user, "User");
         return getMemberById(user.getIdLong());
@@ -142,7 +142,7 @@ public interface ApplicationTeam extends ISnowflake
      * @return The {@link net.dv8tion.jda.api.entities.TeamMember TeamMember} for the user or null
      */
     @Nullable
-    default TeamMember getMemberById(@Nonnull String userId)
+    default TeamMember getMemberById(@NotNull String userId)
     {
         return getMemberById(MiscUtil.parseSnowflake(userId));
     }

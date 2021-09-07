@@ -22,9 +22,8 @@ import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.interactions.components.Component;
 import net.dv8tion.jda.api.interactions.components.ComponentInteraction;
 import net.dv8tion.jda.api.requests.restaction.interactions.UpdateInteractionAction;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Indicates that a {@link ComponentInteraction} was created in a channel.
@@ -38,27 +37,27 @@ public class GenericComponentInteractionCreateEvent extends GenericInteractionCr
 {
     private final ComponentInteraction interaction;
 
-    public GenericComponentInteractionCreateEvent(@Nonnull JDA api, long responseNumber, @Nonnull ComponentInteraction interaction)
+    public GenericComponentInteractionCreateEvent(@NotNull JDA api, long responseNumber, @NotNull ComponentInteraction interaction)
     {
         super(api, responseNumber, interaction);
         this.interaction = interaction;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public ComponentInteraction getInteraction()
     {
         return interaction;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public MessageChannel getChannel()
     {
         return interaction.getChannel();
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public String getComponentId()
     {
@@ -72,7 +71,7 @@ public class GenericComponentInteractionCreateEvent extends GenericInteractionCr
         return interaction.getComponent();
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Message getMessage()
     {
@@ -85,14 +84,14 @@ public class GenericComponentInteractionCreateEvent extends GenericInteractionCr
         return interaction.getMessageIdLong();
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Component.Type getComponentType()
     {
         return interaction.getComponentType();
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public UpdateInteractionAction deferEdit()
     {

@@ -22,9 +22,9 @@ import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.internal.entities.DataMessage;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.*;
 
 public class AllowedMentionsImpl implements SerializableData, AllowedMentions<AllowedMentionsImpl>
@@ -43,7 +43,7 @@ public class AllowedMentionsImpl implements SerializableData, AllowedMentions<Al
                 : Helpers.copyEnumSet(Message.MentionType.class, allowedMentions);
     }
 
-    @Nonnull
+    @NotNull
     public static EnumSet<Message.MentionType> getDefaultMentions()
     {
         return defaultParse.clone();
@@ -59,7 +59,7 @@ public class AllowedMentionsImpl implements SerializableData, AllowedMentions<Al
         return defaultMentionRepliedUser;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public DataObject toData()
     {
@@ -129,7 +129,7 @@ public class AllowedMentionsImpl implements SerializableData, AllowedMentions<Al
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public AllowedMentionsImpl mentionRepliedUser(boolean mention)
     {
@@ -137,7 +137,7 @@ public class AllowedMentionsImpl implements SerializableData, AllowedMentions<Al
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public AllowedMentionsImpl allowedMentions(@Nullable Collection<Message.MentionType> allowedMentions)
     {
@@ -147,9 +147,9 @@ public class AllowedMentionsImpl implements SerializableData, AllowedMentions<Al
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public AllowedMentionsImpl mention(@Nonnull IMentionable... mentions)
+    public AllowedMentionsImpl mention(@NotNull IMentionable... mentions)
     {
         Checks.noneNull(mentions, "Mentionables");
         for (IMentionable mentionable : mentions)
@@ -162,18 +162,18 @@ public class AllowedMentionsImpl implements SerializableData, AllowedMentions<Al
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public AllowedMentionsImpl mentionUsers(@Nonnull String... userIds)
+    public AllowedMentionsImpl mentionUsers(@NotNull String... userIds)
     {
         Checks.noneNull(userIds, "User Id");
         Collections.addAll(users, userIds);
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public AllowedMentionsImpl mentionRoles(@Nonnull String... roleIds)
+    public AllowedMentionsImpl mentionRoles(@NotNull String... roleIds)
     {
         Checks.noneNull(roleIds, "Role Id");
         Collections.addAll(roles, roleIds);

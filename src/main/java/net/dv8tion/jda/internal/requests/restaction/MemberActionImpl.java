@@ -27,10 +27,10 @@ import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
 import okhttp3.RequestBody;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -57,35 +57,35 @@ public class MemberActionImpl extends RestActionImpl<Void> implements MemberActi
         this.guild = guild;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public MemberAction setCheck(BooleanSupplier checks)
     {
         return (MemberAction) super.setCheck(checks);
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public MemberAction timeout(long timeout, @Nonnull TimeUnit unit)
+    public MemberAction timeout(long timeout, @NotNull TimeUnit unit)
     {
         return (MemberAction) super.timeout(timeout, unit);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public MemberAction deadline(long timestamp)
     {
         return (MemberAction) super.deadline(timestamp);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public String getAccessToken()
     {
         return accessToken;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public String getUserId()
     {
@@ -99,14 +99,14 @@ public class MemberActionImpl extends RestActionImpl<Void> implements MemberActi
         return getJDA().getUserById(userId);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Guild getGuild()
     {
         return guild;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @CheckReturnValue
     public MemberActionImpl setNickname(String nick)
@@ -124,7 +124,7 @@ public class MemberActionImpl extends RestActionImpl<Void> implements MemberActi
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @CheckReturnValue
     public MemberActionImpl setRoles(Collection<Role> roles)
@@ -141,7 +141,7 @@ public class MemberActionImpl extends RestActionImpl<Void> implements MemberActi
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @CheckReturnValue
     public MemberActionImpl setRoles(Role... roles)
@@ -158,7 +158,7 @@ public class MemberActionImpl extends RestActionImpl<Void> implements MemberActi
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @CheckReturnValue
     public MemberActionImpl setMute(boolean mute)
@@ -167,7 +167,7 @@ public class MemberActionImpl extends RestActionImpl<Void> implements MemberActi
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @CheckReturnValue
     public MemberActionImpl setDeafen(boolean deaf)

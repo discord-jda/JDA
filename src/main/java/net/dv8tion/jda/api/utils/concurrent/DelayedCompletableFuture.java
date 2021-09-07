@@ -16,7 +16,8 @@
 
 package net.dv8tion.jda.api.utils.concurrent;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.concurrent.*;
 import java.util.function.Function;
 
@@ -53,8 +54,8 @@ public class DelayedCompletableFuture<T> extends CompletableFuture<T> implements
      *
      * @return DelayedCompletableFuture for the specified runnable
      */
-    @Nonnull
-    public static <E> DelayedCompletableFuture<E> make(@Nonnull ScheduledExecutorService executor, long delay, @Nonnull TimeUnit unit, @Nonnull Function<? super DelayedCompletableFuture<E>, ? extends Runnable> mapping)
+    @NotNull
+    public static <E> DelayedCompletableFuture<E> make(@NotNull ScheduledExecutorService executor, long delay, @NotNull TimeUnit unit, @NotNull Function<? super DelayedCompletableFuture<E>, ? extends Runnable> mapping)
     {
         DelayedCompletableFuture<E> handle = new DelayedCompletableFuture<>();
         ScheduledFuture<?> future = executor.schedule(mapping.apply(handle), delay, unit);
@@ -91,13 +92,13 @@ public class DelayedCompletableFuture<T> extends CompletableFuture<T> implements
     }
 
     @Override
-    public long getDelay(@Nonnull TimeUnit unit)
+    public long getDelay(@NotNull TimeUnit unit)
     {
         return future.getDelay(unit);
     }
 
     @Override
-    public int compareTo(@Nonnull Delayed o)
+    public int compareTo(@NotNull Delayed o)
     {
         return future.compareTo(o);
     }

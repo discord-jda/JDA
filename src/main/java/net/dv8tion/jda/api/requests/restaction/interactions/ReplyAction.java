@@ -22,10 +22,10 @@ import net.dv8tion.jda.api.interactions.components.Component;
 import net.dv8tion.jda.api.utils.AllowedMentions;
 import net.dv8tion.jda.api.utils.AttachmentOption;
 import net.dv8tion.jda.internal.utils.Checks;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.io.*;
 import java.util.Arrays;
 import java.util.Collection;
@@ -38,15 +38,15 @@ import java.util.function.BooleanSupplier;
  */
 public interface ReplyAction extends InteractionCallbackAction, AllowedMentions<ReplyAction>
 {
-    @Nonnull
+    @NotNull
     @Override
     ReplyAction setCheck(@Nullable BooleanSupplier checks);
 
-    @Nonnull
+    @NotNull
     @Override
-    ReplyAction timeout(long timeout, @Nonnull TimeUnit unit);
+    ReplyAction timeout(long timeout, @NotNull TimeUnit unit);
 
-    @Nonnull
+    @NotNull
     @Override
     ReplyAction deadline(long timestamp);
 
@@ -61,9 +61,9 @@ public interface ReplyAction extends InteractionCallbackAction, AllowedMentions<
      *
      * @return The same reply action, for chaining convenience
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    default ReplyAction addEmbeds(@Nonnull MessageEmbed... embeds)
+    default ReplyAction addEmbeds(@NotNull MessageEmbed... embeds)
     {
         Checks.noneNull(embeds, "MessageEmbed");
         return addEmbeds(Arrays.asList(embeds));
@@ -80,9 +80,9 @@ public interface ReplyAction extends InteractionCallbackAction, AllowedMentions<
      *
      * @return The same reply action, for chaining convenience
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    ReplyAction addEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds);
+    ReplyAction addEmbeds(@NotNull Collection<? extends MessageEmbed> embeds);
 
     /**
      * Add a single {@link ActionRow} to the message.
@@ -97,9 +97,9 @@ public interface ReplyAction extends InteractionCallbackAction, AllowedMentions<
      *
      * @see    ActionRow#of(Component...)
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    default ReplyAction addActionRow(@Nonnull Component... components)
+    default ReplyAction addActionRow(@NotNull Component... components)
     {
         return addActionRows(ActionRow.of(components));
     }
@@ -117,9 +117,9 @@ public interface ReplyAction extends InteractionCallbackAction, AllowedMentions<
      *
      * @see    ActionRow#of(Collection)
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    default ReplyAction addActionRow(@Nonnull Collection<? extends Component> components)
+    default ReplyAction addActionRow(@NotNull Collection<? extends Component> components)
     {
         return addActionRows(ActionRow.of(components));
     }
@@ -135,9 +135,9 @@ public interface ReplyAction extends InteractionCallbackAction, AllowedMentions<
      *
      * @return The same reply action, for chaining convenience
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    default ReplyAction addActionRows(@Nonnull Collection<? extends ActionRow> rows)
+    default ReplyAction addActionRows(@NotNull Collection<? extends ActionRow> rows)
     {
         Checks.noneNull(rows, "ActionRows");
         return addActionRows(rows.toArray(new ActionRow[0]));
@@ -154,9 +154,9 @@ public interface ReplyAction extends InteractionCallbackAction, AllowedMentions<
      *
      * @return The same reply action, for chaining convenience
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    ReplyAction addActionRows(@Nonnull ActionRow... rows);
+    ReplyAction addActionRows(@NotNull ActionRow... rows);
 
     /**
      * Set the content for this message.
@@ -169,7 +169,7 @@ public interface ReplyAction extends InteractionCallbackAction, AllowedMentions<
      *
      * @return The same reply action, for chaining convenience
      */
-    @Nonnull
+    @NotNull
     ReplyAction setContent(@Nullable final String content);
 
     /**
@@ -180,7 +180,7 @@ public interface ReplyAction extends InteractionCallbackAction, AllowedMentions<
      *
      * @return The same reply action, for chaining convenience
      */
-    @Nonnull
+    @NotNull
     ReplyAction setTTS(final boolean isTTS);
 
     /**
@@ -201,7 +201,7 @@ public interface ReplyAction extends InteractionCallbackAction, AllowedMentions<
      *
      * @return The same reply action, for chaining convenience
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     ReplyAction setEphemeral(boolean ephemeral);
 
@@ -221,9 +221,9 @@ public interface ReplyAction extends InteractionCallbackAction, AllowedMentions<
      *
      * @return The same reply action, for chaining convenience
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    default ReplyAction addFile(@Nonnull File file, @Nonnull AttachmentOption... options)
+    default ReplyAction addFile(@NotNull File file, @NotNull AttachmentOption... options)
     {
         Checks.notNull(file, "File");
         return addFile(file, file.getName(), options);
@@ -258,9 +258,9 @@ public interface ReplyAction extends InteractionCallbackAction, AllowedMentions<
      *
      * @return The same reply action, for chaining convenience
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    default ReplyAction addFile(@Nonnull File file, @Nonnull String name, @Nonnull AttachmentOption... options)
+    default ReplyAction addFile(@NotNull File file, @NotNull String name, @NotNull AttachmentOption... options)
     {
         try
         {
@@ -292,9 +292,9 @@ public interface ReplyAction extends InteractionCallbackAction, AllowedMentions<
      *
      * @return The same reply action, for chaining convenience
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    default ReplyAction addFile(@Nonnull byte[] data, @Nonnull String name, @Nonnull AttachmentOption... options)
+    default ReplyAction addFile(@NotNull byte[] data, @NotNull String name, @NotNull AttachmentOption... options)
     {
         Checks.notNull(data, "Data");
         return addFile(new ByteArrayInputStream(data), name, options);
@@ -318,7 +318,7 @@ public interface ReplyAction extends InteractionCallbackAction, AllowedMentions<
      *
      * @return The same reply action, for chaining convenience
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    ReplyAction addFile(@Nonnull InputStream data, @Nonnull String name, @Nonnull AttachmentOption... options);
+    ReplyAction addFile(@NotNull InputStream data, @NotNull String name, @NotNull AttachmentOption... options);
 }

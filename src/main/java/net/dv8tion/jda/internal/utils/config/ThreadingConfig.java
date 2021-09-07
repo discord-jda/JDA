@@ -17,9 +17,9 @@
 package net.dv8tion.jda.internal.utils.config;
 
 import net.dv8tion.jda.internal.utils.concurrent.CountingThreadFactory;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.concurrent.*;
 import java.util.function.Supplier;
 
@@ -79,7 +79,7 @@ public class ThreadingConfig
         this.shutdownAudioPool = shutdown;
     }
 
-    public void init(@Nonnull Supplier<String> identifier)
+    public void init(@NotNull Supplier<String> identifier)
     {
         if (this.rateLimitPool == null)
             this.rateLimitPool = newScheduler(5, identifier, "RateLimit", false);
@@ -132,19 +132,19 @@ public class ThreadingConfig
             audioPool.shutdownNow();
     }
 
-    @Nonnull
+    @NotNull
     public ScheduledExecutorService getRateLimitPool()
     {
         return rateLimitPool;
     }
 
-    @Nonnull
+    @NotNull
     public ScheduledExecutorService getGatewayPool()
     {
         return gatewayPool;
     }
 
-    @Nonnull
+    @NotNull
     public ExecutorService getCallbackPool()
     {
         return callbackPool;
@@ -157,7 +157,7 @@ public class ThreadingConfig
     }
 
     @Nullable
-    public ScheduledExecutorService getAudioPool(@Nonnull Supplier<String> identifier)
+    public ScheduledExecutorService getAudioPool(@NotNull Supplier<String> identifier)
     {
         ScheduledExecutorService pool = audioPool;
         if (pool == null)
@@ -197,19 +197,19 @@ public class ThreadingConfig
         return shutdownAudioPool;
     }
 
-    @Nonnull
+    @NotNull
     public static ScheduledThreadPoolExecutor newScheduler(int coreSize, Supplier<String> identifier, String baseName)
     {
         return newScheduler(coreSize, identifier, baseName, true);
     }
 
-    @Nonnull
+    @NotNull
     public static ScheduledThreadPoolExecutor newScheduler(int coreSize, Supplier<String> identifier, String baseName, boolean daemon)
     {
         return new ScheduledThreadPoolExecutor(coreSize, new CountingThreadFactory(identifier, baseName, daemon));
     }
 
-    @Nonnull
+    @NotNull
     public static ThreadingConfig getDefault()
     {
         return new ThreadingConfig();

@@ -22,9 +22,9 @@ import okio.BufferedSink;
 import okio.BufferedSource;
 import okio.Okio;
 import okio.Source;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.io.IOException;
 
 public class BufferedRequestBody extends RequestBody
@@ -47,7 +47,7 @@ public class BufferedRequestBody extends RequestBody
     }
 
     @Override
-    public void writeTo(@Nonnull BufferedSink sink) throws IOException
+    public void writeTo(@NotNull BufferedSink sink) throws IOException
     {
         if (data != null)
         {

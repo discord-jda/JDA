@@ -18,9 +18,9 @@ package net.dv8tion.jda.api.entities.templates;
 
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.ISnowflake;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.awt.*;
 import java.time.OffsetDateTime;
 import java.util.EnumSet;
@@ -77,7 +77,7 @@ public class TemplateRole implements ISnowflake
      *
      * @return Never-null String containing the name of this {@link TemplateRole Role}.
      */
-    @Nonnull
+    @NotNull
     public String getName()
     {
         return this.name;
@@ -134,7 +134,7 @@ public class TemplateRole implements ISnowflake
      *
      * @return An EnumSet of Permissions granted to this PermissionHolder.
      */
-    @Nonnull
+    @NotNull
     public EnumSet<Permission> getPermissions()
     {
         return Permission.getPermissions(rawPermissions);

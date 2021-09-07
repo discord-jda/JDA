@@ -19,8 +19,7 @@ import net.dv8tion.jda.annotations.DeprecatedSince;
 import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Member;
-
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Indicates a {@link net.dv8tion.jda.api.entities.Member Member} left a {@link net.dv8tion.jda.api.entities.Guild Guild}.
@@ -41,7 +40,7 @@ import javax.annotation.Nonnull;
 @ReplaceWith("GuildMemberRemoveEvent")
 public class GuildMemberLeaveEvent extends GenericGuildMemberEvent
 {
-    public GuildMemberLeaveEvent(@Nonnull JDA api, long responseNumber, @Nonnull Member member)
+    public GuildMemberLeaveEvent(@NotNull JDA api, long responseNumber, @NotNull Member member)
     {
         super(api, responseNumber, member);
     }

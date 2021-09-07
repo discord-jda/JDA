@@ -26,8 +26,8 @@ import net.dv8tion.jda.internal.requests.CompletedRestAction;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Helpers;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.time.OffsetDateTime;
 
 public class GuildVoiceStateImpl implements GuildVoiceState
@@ -66,7 +66,7 @@ public class GuildVoiceStateImpl implements GuildVoiceState
         return selfDeafened;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public JDA getJDA()
     {
@@ -90,14 +90,14 @@ public class GuildVoiceStateImpl implements GuildVoiceState
         return requestToSpeak == 0 ? null : Helpers.toOffset(requestToSpeak);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public RestAction<Void> approveSpeaker()
     {
         return update(false);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public RestAction<Void> declineSpeaker()
     {
@@ -120,7 +120,7 @@ public class GuildVoiceStateImpl implements GuildVoiceState
         return new RestActionImpl<>(getJDA(), route, body);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public RestAction<Void> inviteSpeaker()
     {
@@ -185,7 +185,7 @@ public class GuildVoiceStateImpl implements GuildVoiceState
         return connectedChannel;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Guild getGuild()
     {
@@ -195,7 +195,7 @@ public class GuildVoiceStateImpl implements GuildVoiceState
         return guild;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Member getMember()
     {

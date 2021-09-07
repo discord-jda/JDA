@@ -19,8 +19,7 @@ package net.dv8tion.jda.api.events.channel.store;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.StoreChannel;
 import net.dv8tion.jda.api.events.Event;
-
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Indicates that a {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannel} event was fired.
@@ -32,7 +31,7 @@ public abstract class GenericStoreChannelEvent extends Event
 {
     protected final StoreChannel channel;
 
-    public GenericStoreChannelEvent(@Nonnull JDA api, long responseNumber, @Nonnull StoreChannel channel)
+    public GenericStoreChannelEvent(@NotNull JDA api, long responseNumber, @NotNull StoreChannel channel)
     {
         super(api, responseNumber);
         this.channel = channel;
@@ -43,7 +42,7 @@ public abstract class GenericStoreChannelEvent extends Event
      *
      * @return The channel
      */
-    @Nonnull
+    @NotNull
     public StoreChannel getChannel()
     {
         return channel;

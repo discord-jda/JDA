@@ -18,10 +18,10 @@ package net.dv8tion.jda.api.interactions.components;
 
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.requests.RestAction;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -65,7 +65,7 @@ public interface ButtonInteraction extends ComponentInteraction
      *
      * @return {@link RestAction}
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     default RestAction<Void> editButton(@Nullable Button newButton)
     {

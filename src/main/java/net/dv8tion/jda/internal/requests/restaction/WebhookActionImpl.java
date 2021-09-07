@@ -27,9 +27,9 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
 import okhttp3.RequestBody;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 
@@ -50,38 +50,38 @@ public class WebhookActionImpl extends AuditableRestActionImpl<Webhook> implemen
         this.name = name;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public WebhookActionImpl setCheck(BooleanSupplier checks)
     {
         return (WebhookActionImpl) super.setCheck(checks);
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public WebhookActionImpl timeout(long timeout, @Nonnull TimeUnit unit)
+    public WebhookActionImpl timeout(long timeout, @NotNull TimeUnit unit)
     {
         return (WebhookActionImpl) super.timeout(timeout, unit);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public WebhookActionImpl deadline(long timestamp)
     {
         return (WebhookActionImpl) super.deadline(timestamp);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public TextChannel getChannel()
     {
         return channel;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @CheckReturnValue
-    public WebhookActionImpl setName(@Nonnull String name)
+    public WebhookActionImpl setName(@NotNull String name)
     {
         Checks.notEmpty(name, "Name");
         Checks.notLonger(name, 100, "Name");
@@ -90,7 +90,7 @@ public class WebhookActionImpl extends AuditableRestActionImpl<Webhook> implemen
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @CheckReturnValue
     public WebhookActionImpl setAvatar(Icon icon)

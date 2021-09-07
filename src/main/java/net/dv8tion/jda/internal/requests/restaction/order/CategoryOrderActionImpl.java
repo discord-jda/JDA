@@ -20,8 +20,8 @@ import net.dv8tion.jda.api.entities.Category;
 import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.requests.restaction.order.CategoryOrderAction;
 import net.dv8tion.jda.internal.utils.Checks;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
@@ -46,7 +46,7 @@ public class CategoryOrderActionImpl
         this.category = category;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Category getCategory()
     {
@@ -61,7 +61,7 @@ public class CategoryOrderActionImpl
         Checks.check(orderList.contains(entity), "Provided channel is not in the list of orderable channels!");
     }
 
-    @Nonnull
+    @NotNull
     private static Collection<GuildChannel> getChannelsOfType(Category category, int bucket)
     {
         Checks.notNull(category, "Category");

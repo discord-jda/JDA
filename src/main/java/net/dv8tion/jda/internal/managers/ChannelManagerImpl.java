@@ -33,9 +33,9 @@ import net.dv8tion.jda.internal.requests.restaction.PermOverrideData;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.PermissionUtil;
 import okhttp3.RequestBody;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.EnumSet;
 
@@ -78,7 +78,7 @@ public class ChannelManagerImpl extends ManagerBase<ChannelManager> implements C
         this.overridesRem = new TLongHashSet();
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public GuildChannel getChannel()
     {
@@ -88,7 +88,7 @@ public class ChannelManagerImpl extends ManagerBase<ChannelManager> implements C
         return channel;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @CheckReturnValue
     public ChannelManagerImpl reset(long fields)
@@ -115,7 +115,7 @@ public class ChannelManagerImpl extends ManagerBase<ChannelManager> implements C
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @CheckReturnValue
     public ChannelManagerImpl reset(long... fields)
@@ -124,7 +124,7 @@ public class ChannelManagerImpl extends ManagerBase<ChannelManager> implements C
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @CheckReturnValue
     public ChannelManagerImpl reset()
@@ -143,7 +143,7 @@ public class ChannelManagerImpl extends ManagerBase<ChannelManager> implements C
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @CheckReturnValue
     public ChannelManagerImpl clearOverridesAdded()
@@ -157,7 +157,7 @@ public class ChannelManagerImpl extends ManagerBase<ChannelManager> implements C
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @CheckReturnValue
     public ChannelManagerImpl clearOverridesRemoved()
@@ -171,10 +171,10 @@ public class ChannelManagerImpl extends ManagerBase<ChannelManager> implements C
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @CheckReturnValue
-    public ChannelManagerImpl putPermissionOverride(@Nonnull IPermissionHolder permHolder, long allow, long deny)
+    public ChannelManagerImpl putPermissionOverride(@NotNull IPermissionHolder permHolder, long allow, long deny)
     {
         Checks.notNull(permHolder, "PermissionHolder");
         Checks.check(permHolder.getGuild().equals(getGuild()), "PermissionHolder is not from the same Guild!");
@@ -184,7 +184,7 @@ public class ChannelManagerImpl extends ManagerBase<ChannelManager> implements C
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @CheckReturnValue
     public ChannelManagerImpl putMemberPermissionOverride(long memberId, long allow, long deny)
@@ -193,7 +193,7 @@ public class ChannelManagerImpl extends ManagerBase<ChannelManager> implements C
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @CheckReturnValue
     public ChannelManagerImpl putRolePermissionOverride(long roleId, long allow, long deny)
@@ -225,7 +225,7 @@ public class ChannelManagerImpl extends ManagerBase<ChannelManager> implements C
         }
     }
 
-    private void putPermissionOverride(@Nonnull final PermOverrideData overrideData)
+    private void putPermissionOverride(@NotNull final PermOverrideData overrideData)
     {
         checkCanPutPermissions(overrideData.allow, overrideData.deny);
         withLock(lock, (lock) ->
@@ -236,17 +236,17 @@ public class ChannelManagerImpl extends ManagerBase<ChannelManager> implements C
         });
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @CheckReturnValue
-    public ChannelManagerImpl removePermissionOverride(@Nonnull IPermissionHolder permHolder)
+    public ChannelManagerImpl removePermissionOverride(@NotNull IPermissionHolder permHolder)
     {
         Checks.notNull(permHolder, "PermissionHolder");
         Checks.check(permHolder.getGuild().equals(getGuild()), "PermissionHolder is not from the same Guild!");
         return removePermissionOverride(permHolder.getIdLong());
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @CheckReturnValue
     public ChannelManagerImpl removePermissionOverride(final long id)
@@ -262,10 +262,10 @@ public class ChannelManagerImpl extends ManagerBase<ChannelManager> implements C
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @CheckReturnValue
-    public ChannelManagerImpl sync(@Nonnull GuildChannel syncSource)
+    public ChannelManagerImpl sync(@NotNull GuildChannel syncSource)
     {
         Checks.notNull(syncSource, "SyncSource");
         Checks.check(getGuild().equals(syncSource.getGuild()), "Sync only works for channels of same guild");
@@ -312,10 +312,10 @@ public class ChannelManagerImpl extends ManagerBase<ChannelManager> implements C
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @CheckReturnValue
-    public ChannelManagerImpl setName(@Nonnull String name)
+    public ChannelManagerImpl setName(@NotNull String name)
     {
         Checks.notBlank(name, "Name");
         name = name.trim();
@@ -326,10 +326,10 @@ public class ChannelManagerImpl extends ManagerBase<ChannelManager> implements C
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @CheckReturnValue
-    public ChannelManagerImpl setRegion(@Nonnull Region region)
+    public ChannelManagerImpl setRegion(@NotNull Region region)
     {
         Checks.notNull(region, "Region");
         if (!getType().isAudio())
@@ -340,7 +340,7 @@ public class ChannelManagerImpl extends ManagerBase<ChannelManager> implements C
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @CheckReturnValue
     public ChannelManagerImpl setParent(Category category)
@@ -356,7 +356,7 @@ public class ChannelManagerImpl extends ManagerBase<ChannelManager> implements C
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @CheckReturnValue
     public ChannelManagerImpl setPosition(int position)
@@ -366,7 +366,7 @@ public class ChannelManagerImpl extends ManagerBase<ChannelManager> implements C
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @CheckReturnValue
     public ChannelManagerImpl setTopic(String topic)
@@ -380,7 +380,7 @@ public class ChannelManagerImpl extends ManagerBase<ChannelManager> implements C
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @CheckReturnValue
     public ChannelManagerImpl setNSFW(boolean nsfw)
@@ -392,7 +392,7 @@ public class ChannelManagerImpl extends ManagerBase<ChannelManager> implements C
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @CheckReturnValue
     public ChannelManagerImpl setSlowmode(int slowmode)
@@ -405,7 +405,7 @@ public class ChannelManagerImpl extends ManagerBase<ChannelManager> implements C
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @CheckReturnValue
     public ChannelManagerImpl setUserLimit(int userLimit)
@@ -419,7 +419,7 @@ public class ChannelManagerImpl extends ManagerBase<ChannelManager> implements C
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @CheckReturnValue
     public ChannelManagerImpl setBitrate(int bitrate)
@@ -434,7 +434,7 @@ public class ChannelManagerImpl extends ManagerBase<ChannelManager> implements C
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @CheckReturnValue
     public ChannelManagerImpl setNews(boolean news)

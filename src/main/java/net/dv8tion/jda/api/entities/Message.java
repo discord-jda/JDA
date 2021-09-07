@@ -39,10 +39,10 @@ import net.dv8tion.jda.internal.utils.IOUtil;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import org.apache.commons.collections4.Bag;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.io.*;
 import java.time.OffsetDateTime;
 import java.util.*;
@@ -258,7 +258,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return immutable list of mentioned users
      */
-    @Nonnull
+    @NotNull
     List<User> getMentionedUsers();
 
     /**
@@ -291,7 +291,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @see    #getMentionedUsers()
      */
-    @Nonnull
+    @NotNull
     Bag<User> getMentionedUsersBag();
 
     /**
@@ -305,7 +305,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return immutable list of mentioned TextChannels
      */
-    @Nonnull
+    @NotNull
     List<TextChannel> getMentionedChannels();
 
     /**
@@ -338,7 +338,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @see    #getMentionedChannels()
      */
-    @Nonnull
+    @NotNull
     Bag<TextChannel> getMentionedChannelsBag();
 
     /**
@@ -353,7 +353,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return immutable list of mentioned Roles
      */
-    @Nonnull
+    @NotNull
     List<Role> getMentionedRoles();
 
     /**
@@ -387,7 +387,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @see    #getMentionedRoles()
      */
-    @Nonnull
+    @NotNull
     Bag<Role> getMentionedRolesBag();
 
     /**
@@ -410,8 +410,8 @@ public interface Message extends ISnowflake, Formattable
      *
      * @since  3.4.0
      */
-    @Nonnull
-    List<Member> getMentionedMembers(@Nonnull Guild guild);
+    @NotNull
+    List<Member> getMentionedMembers(@NotNull Guild guild);
 
     /**
      * Creates an immutable list of {@link net.dv8tion.jda.api.entities.Member Members}
@@ -429,7 +429,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @since  3.4.0
      */
-    @Nonnull
+    @NotNull
     List<Member> getMentionedMembers();
 
     /**
@@ -452,8 +452,8 @@ public interface Message extends ISnowflake, Formattable
      *
      * @since  3.4.0
      */
-    @Nonnull
-    List<IMentionable> getMentions(@Nonnull MentionType... types);
+    @NotNull
+    List<IMentionable> getMentions(@NotNull MentionType... types);
 
     /**
      * Checks if given {@link net.dv8tion.jda.api.entities.IMentionable IMentionable}
@@ -477,7 +477,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return True, if the given mentionable was mentioned in this message
      */
-    boolean isMentioned(@Nonnull IMentionable mentionable, @Nonnull MentionType... types);
+    boolean isMentioned(@NotNull IMentionable mentionable, @NotNull MentionType... types);
 
     /**
      * Indicates if this Message mentions everyone using @everyone or @here.
@@ -520,7 +520,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return Message author
      */
-    @Nonnull
+    @NotNull
     User getAuthor();
 
     /**
@@ -552,7 +552,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return A String representing the jump-to URL for the message
      */
-    @Nonnull
+    @NotNull
     String getJumpUrl();
 
     /**
@@ -574,7 +574,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return The textual content of the message with mentions resolved to be visually like the Discord client.
      */
-    @Nonnull
+    @NotNull
     String getContentDisplay();
 
     /**
@@ -585,7 +585,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return The raw textual content of the message, containing unresolved Discord message formatting.
      */
-    @Nonnull
+    @NotNull
     String getContentRaw();
 
     /**
@@ -598,7 +598,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return The textual content from {@link #getContentDisplay()} with all text formatting characters removed or escaped.
      */
-    @Nonnull
+    @NotNull
     String getContentStripped();
 
     /**
@@ -616,7 +616,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return Immutable list of invite codes
      */
-    @Nonnull
+    @NotNull
     List<String> getInvites();
 
     /**
@@ -651,7 +651,7 @@ public interface Message extends ISnowflake, Formattable
      * @return True if the {@link net.dv8tion.jda.api.entities.ChannelType ChannelType} which this message was received
      *         from is the same as the one specified by {@code type}.
      */
-    boolean isFromType(@Nonnull ChannelType type);
+    boolean isFromType(@NotNull ChannelType type);
 
     /**
      * Whether this message was sent in a {@link net.dv8tion.jda.api.entities.Guild Guild}.
@@ -674,7 +674,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return The ChannelType which this message was received from.
      */
-    @Nonnull
+    @NotNull
     ChannelType getChannelType();
 
     /**
@@ -697,7 +697,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return The MessageChannel of this Message
      */
-    @Nonnull
+    @NotNull
     MessageChannel getChannel();
 
     /**
@@ -719,7 +719,7 @@ public interface Message extends ISnowflake, Formattable
      * @see    #isFromType(ChannelType)
      * @see    #getChannelType()
      */
-    @Nonnull
+    @NotNull
     PrivateChannel getPrivateChannel();
 
     /**
@@ -741,7 +741,7 @@ public interface Message extends ISnowflake, Formattable
      * @see    #isFromType(ChannelType)
      * @see    #getChannelType()
      */
-    @Nonnull
+    @NotNull
     TextChannel getTextChannel();
 
     /**
@@ -774,7 +774,7 @@ public interface Message extends ISnowflake, Formattable
      * @see    #isFromType(ChannelType)
      * @see    #getChannelType()
      */
-    @Nonnull
+    @NotNull
     Guild getGuild();
 
     /**
@@ -786,7 +786,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return Immutable list of {@link net.dv8tion.jda.api.entities.Message.Attachment Attachments}.
      */
-    @Nonnull
+    @NotNull
     List<Attachment> getAttachments();
 
     /**
@@ -798,7 +798,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return Immutable list of all given MessageEmbeds.
      */
-    @Nonnull
+    @NotNull
     List<MessageEmbed> getEmbeds();
 
     /**
@@ -810,7 +810,7 @@ public interface Message extends ISnowflake, Formattable
      * @see    #getButtons()
      * @see    #getButtonById(String)
      */
-    @Nonnull
+    @NotNull
     List<ActionRow> getActionRows();
 
     /**
@@ -818,7 +818,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return Immutable {@link List} of {@link Button Buttons}
      */
-    @Nonnull
+    @NotNull
     default List<Button> getButtons()
     {
         return getActionRows().stream()
@@ -839,7 +839,7 @@ public interface Message extends ISnowflake, Formattable
      * @return The {@link Button} or null of no button with that ID is present on this message
      */
     @Nullable
-    default Button getButtonById(@Nonnull String id)
+    default Button getButtonById(@NotNull String id)
     {
         Checks.notNull(id, "Button ID");
         return getButtons().stream()
@@ -860,8 +860,8 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return Immutable {@link List} of {@link Button Buttons} with the specified label
      */
-    @Nonnull
-    default List<Button> getButtonsByLabel(@Nonnull String label, boolean ignoreCase)
+    @NotNull
+    default List<Button> getButtonsByLabel(@NotNull String label, boolean ignoreCase)
     {
         Checks.notNull(label, "Label");
         Predicate<Button> filter;
@@ -887,7 +887,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return An immutable list of the Emotes used in this message (example match {@literal <:jda:230988580904763393>})
      */
-    @Nonnull
+    @NotNull
     List<Emote> getEmotes();
 
     /**
@@ -919,7 +919,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @see    #getEmotes()
      */
-    @Nonnull
+    @NotNull
     Bag<Emote> getEmotesBag();
 
     /**
@@ -930,7 +930,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return Immutable list of all MessageReactions on this message.
      */
-    @Nonnull
+    @NotNull
     List<MessageReaction> getReactions();
 
     /**
@@ -942,7 +942,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return Immutable list of all MessageStickers in this message.
      */
-    @Nonnull
+    @NotNull
     List<MessageSticker> getStickers();
 
     /**
@@ -992,9 +992,9 @@ public interface Message extends ISnowflake, Formattable
      * @return {@link MessageAction MessageAction}
      *         <br>The {@link net.dv8tion.jda.api.entities.Message Message} with the updated content
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    MessageAction editMessage(@Nonnull CharSequence newContent);
+    MessageAction editMessage(@NotNull CharSequence newContent);
 
     /**
      * Edits this Message's content to the provided {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbed}.
@@ -1031,13 +1031,13 @@ public interface Message extends ISnowflake, Formattable
      *
      * @deprecated Use {@link #editMessageEmbeds(MessageEmbed...)} instead
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     @Deprecated
     @ForRemoval(deadline = "5.0.0")
     @ReplaceWith("editMessageEmbeds(newEmbed)")
     @DeprecatedSince("4.4.0")
-    default MessageAction editMessage(@Nonnull MessageEmbed newContent)
+    default MessageAction editMessage(@NotNull MessageEmbed newContent)
     {
         return editMessageEmbeds(newContent);
     }
@@ -1075,9 +1075,9 @@ public interface Message extends ISnowflake, Formattable
      * @return {@link MessageAction MessageAction}
      *         <br>The {@link net.dv8tion.jda.api.entities.Message Message} with the updated content
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    MessageAction editMessageEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds);
+    MessageAction editMessageEmbeds(@NotNull Collection<? extends MessageEmbed> embeds);
 
     /**
      * Edits this Message's content to the provided {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbeds}.
@@ -1112,9 +1112,9 @@ public interface Message extends ISnowflake, Formattable
      * @return {@link MessageAction MessageAction}
      *         <br>The {@link net.dv8tion.jda.api.entities.Message Message} with the updated content
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    default MessageAction editMessageEmbeds(@Nonnull MessageEmbed... embeds)
+    default MessageAction editMessageEmbeds(@NotNull MessageEmbed... embeds)
     {
         Checks.noneNull(embeds, "MessageEmbeds");
         return editMessageEmbeds(Arrays.asList(embeds));
@@ -1170,9 +1170,9 @@ public interface Message extends ISnowflake, Formattable
      * @return {@link MessageAction MessageAction}
      *         <br>The {@link net.dv8tion.jda.api.entities.Message Message} with the updated components
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    MessageAction editMessageComponents(@Nonnull Collection<? extends ComponentLayout> components);
+    MessageAction editMessageComponents(@NotNull Collection<? extends ComponentLayout> components);
 
     /**
      * Edits this Message's content to the provided {@link net.dv8tion.jda.api.interactions.components.ComponentLayout ComponentLayouts}.
@@ -1223,9 +1223,9 @@ public interface Message extends ISnowflake, Formattable
      * @return {@link MessageAction MessageAction}
      *         <br>The {@link net.dv8tion.jda.api.entities.Message Message} with the updated components
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    default MessageAction editMessageComponents(@Nonnull ComponentLayout... components)
+    default MessageAction editMessageComponents(@NotNull ComponentLayout... components)
     {
         Checks.noneNull(components, "Components");
         return editMessageComponents(Arrays.asList(components));
@@ -1276,9 +1276,9 @@ public interface Message extends ISnowflake, Formattable
      * @return {@link MessageAction MessageAction}
      *         <br>The {@link net.dv8tion.jda.api.entities.Message Message} with the updated content
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    MessageAction editMessageFormat(@Nonnull String format, @Nonnull Object... args);
+    MessageAction editMessageFormat(@NotNull String format, @NotNull Object... args);
 
     /**
      * Edits this Message's content to the provided {@link net.dv8tion.jda.api.entities.Message Message}.
@@ -1315,9 +1315,9 @@ public interface Message extends ISnowflake, Formattable
      * @return {@link MessageAction MessageAction}
      *         <br>The {@link net.dv8tion.jda.api.entities.Message Message} with the updated content
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    MessageAction editMessage(@Nonnull Message newContent);
+    MessageAction editMessage(@NotNull Message newContent);
 
     /**
      * Replies and references this message.
@@ -1335,9 +1335,9 @@ public interface Message extends ISnowflake, Formattable
      *
      * @since  4.2.1
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    default MessageAction reply(@Nonnull CharSequence content)
+    default MessageAction reply(@NotNull CharSequence content)
     {
         return getChannel().sendMessage(content).reference(this);
     }
@@ -1360,13 +1360,13 @@ public interface Message extends ISnowflake, Formattable
      *
      * @deprecated Use {@link #replyEmbeds(MessageEmbed, MessageEmbed...)} instead
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     @Deprecated
     @ForRemoval(deadline = "5.0.0")
     @ReplaceWith("replyEmbeds(content)")
     @DeprecatedSince("4.4.0")
-    default MessageAction reply(@Nonnull MessageEmbed content)
+    default MessageAction reply(@NotNull MessageEmbed content)
     {
         return getChannel().sendMessage(content).reference(this);
     }
@@ -1391,9 +1391,9 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return {@link MessageAction} Providing the {@link Message} created from this upload.
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    default MessageAction replyEmbeds(@Nonnull MessageEmbed embed, @Nonnull MessageEmbed... other)
+    default MessageAction replyEmbeds(@NotNull MessageEmbed embed, @NotNull MessageEmbed... other)
     {
         Checks.notNull(embed, "MessageEmbeds");
         Checks.noneNull(other, "MessageEmbeds");
@@ -1421,9 +1421,9 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return {@link MessageAction} Providing the {@link Message} created from this upload.
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    default MessageAction replyEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
+    default MessageAction replyEmbeds(@NotNull Collection<? extends MessageEmbed> embeds)
     {
         return getChannel().sendMessageEmbeds(embeds).reference(this);
     }
@@ -1444,9 +1444,9 @@ public interface Message extends ISnowflake, Formattable
      *
      * @since  4.2.1
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    default MessageAction reply(@Nonnull Message content)
+    default MessageAction reply(@NotNull Message content)
     {
         return getChannel().sendMessage(content).reference(this);
     }
@@ -1469,9 +1469,9 @@ public interface Message extends ISnowflake, Formattable
      *
      * @since  4.2.1
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    default MessageAction replyFormat(@Nonnull String format, @Nonnull Object... args)
+    default MessageAction replyFormat(@NotNull String format, @NotNull Object... args)
     {
         return getChannel().sendMessageFormat(format, args).reference(this);
     }
@@ -1494,9 +1494,9 @@ public interface Message extends ISnowflake, Formattable
      *
      * @since  4.2.1
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    default MessageAction reply(@Nonnull File file, @Nonnull AttachmentOption... options)
+    default MessageAction reply(@NotNull File file, @NotNull AttachmentOption... options)
     {
         return getChannel().sendFile(file, options).reference(this);
     }
@@ -1521,9 +1521,9 @@ public interface Message extends ISnowflake, Formattable
      *
      * @since  4.2.1
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    default MessageAction reply(@Nonnull File data, @Nonnull String name, @Nonnull AttachmentOption... options)
+    default MessageAction reply(@NotNull File data, @NotNull String name, @NotNull AttachmentOption... options)
     {
         return getChannel().sendFile(data, name, options).reference(this);
     }
@@ -1548,9 +1548,9 @@ public interface Message extends ISnowflake, Formattable
      *
      * @since  4.2.1
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    default MessageAction reply(@Nonnull InputStream data, @Nonnull String name, @Nonnull AttachmentOption... options)
+    default MessageAction reply(@NotNull InputStream data, @NotNull String name, @NotNull AttachmentOption... options)
     {
         return getChannel().sendFile(data, name, options).reference(this);
     }
@@ -1575,9 +1575,9 @@ public interface Message extends ISnowflake, Formattable
      *
      * @since  4.2.1
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    default MessageAction reply(@Nonnull byte[] data, @Nonnull String name, @Nonnull AttachmentOption... options)
+    default MessageAction reply(@NotNull byte[] data, @NotNull String name, @NotNull AttachmentOption... options)
     {
         return getChannel().sendFile(data, name, options).reference(this);
     }
@@ -1627,7 +1627,7 @@ public interface Message extends ISnowflake, Formattable
      * @see    net.dv8tion.jda.api.entities.TextChannel#deleteMessages(java.util.Collection) TextChannel.deleteMessages(Collection)
      * @see    net.dv8tion.jda.api.entities.MessageChannel#purgeMessages(java.util.List) MessageChannel.purgeMessages(List)
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     AuditableRestAction<Void> delete();
 
@@ -1639,7 +1639,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return  the corresponding JDA instance
      */
-    @Nonnull
+    @NotNull
     JDA getJDA();
 
     /**
@@ -1689,7 +1689,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link java.lang.Void}
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     RestAction<Void> pin();
 
@@ -1730,7 +1730,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link java.lang.Void}
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     RestAction<Void> unpin();
 
@@ -1794,9 +1794,9 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link java.lang.Void}
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    RestAction<Void> addReaction(@Nonnull Emote emote);
+    RestAction<Void> addReaction(@NotNull Emote emote);
 
     /**
      * Adds a reaction to this Message using a unicode emoji.
@@ -1865,9 +1865,9 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link java.lang.Void}
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    RestAction<Void> addReaction(@Nonnull String unicode);
+    RestAction<Void> addReaction(@NotNull String unicode);
 
     /**
      * Removes all reactions from this Message.
@@ -1908,7 +1908,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link java.lang.Void}
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     RestAction<Void> clearReactions();
 
@@ -1962,9 +1962,9 @@ public interface Message extends ISnowflake, Formattable
      *
      * @since  4.2.0
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    RestAction<Void> clearReactions(@Nonnull String unicode);
+    RestAction<Void> clearReactions(@NotNull String unicode);
 
     /**
      * Removes all reactions for the specified emote.
@@ -2003,9 +2003,9 @@ public interface Message extends ISnowflake, Formattable
      *
      * @since  4.2.0
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    RestAction<Void> clearReactions(@Nonnull Emote emote);
+    RestAction<Void> clearReactions(@NotNull Emote emote);
 
     /**
      * Removes a reaction from this Message using an {@link net.dv8tion.jda.api.entities.Emote Emote}.
@@ -2054,9 +2054,9 @@ public interface Message extends ISnowflake, Formattable
      *
      * @since  4.1.0
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    RestAction<Void> removeReaction(@Nonnull Emote emote);
+    RestAction<Void> removeReaction(@NotNull Emote emote);
 
     /**
      * Removes a {@link net.dv8tion.jda.api.entities.User User's} reaction from this Message using an {@link net.dv8tion.jda.api.entities.Emote Emote}.
@@ -2120,9 +2120,9 @@ public interface Message extends ISnowflake, Formattable
      *
      * @since  4.1.0
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    RestAction<Void> removeReaction(@Nonnull Emote emote, @Nonnull User user);
+    RestAction<Void> removeReaction(@NotNull Emote emote, @NotNull User user);
 
     /**
      * Removes a reaction from this Message using a unicode emoji.
@@ -2179,9 +2179,9 @@ public interface Message extends ISnowflake, Formattable
      *
      * @since  4.1.0
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    RestAction<Void> removeReaction(@Nonnull String unicode);
+    RestAction<Void> removeReaction(@NotNull String unicode);
 
     /**
      * Removes a reaction from this Message using a unicode emoji.
@@ -2247,9 +2247,9 @@ public interface Message extends ISnowflake, Formattable
      *
      * @since  4.1.0
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    RestAction<Void> removeReaction(@Nonnull String unicode, @Nonnull User user);
+    RestAction<Void> removeReaction(@NotNull String unicode, @NotNull User user);
 
     /**
      * This obtains the {@link net.dv8tion.jda.api.entities.User users} who reacted using the given {@link net.dv8tion.jda.api.entities.Emote emote}.
@@ -2289,9 +2289,9 @@ public interface Message extends ISnowflake, Formattable
      *
      * @since  4.1.0
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    ReactionPaginationAction retrieveReactionUsers(@Nonnull Emote emote);
+    ReactionPaginationAction retrieveReactionUsers(@NotNull Emote emote);
 
     /**
      * This obtains the {@link net.dv8tion.jda.api.entities.User users} who reacted using the given unicode emoji.
@@ -2333,9 +2333,9 @@ public interface Message extends ISnowflake, Formattable
      *
      * @since  4.1.0
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    ReactionPaginationAction retrieveReactionUsers(@Nonnull String unicode);
+    ReactionPaginationAction retrieveReactionUsers(@NotNull String unicode);
 
     /**
      * This obtains the {@link net.dv8tion.jda.api.entities.MessageReaction.ReactionEmote ReactionEmote} for the given unicode reaction on this message.
@@ -2359,7 +2359,7 @@ public interface Message extends ISnowflake, Formattable
      */
     @Nullable
     @CheckReturnValue
-    MessageReaction.ReactionEmote getReactionByUnicode(@Nonnull String unicode);
+    MessageReaction.ReactionEmote getReactionByUnicode(@NotNull String unicode);
 
     /**
      * This obtains the {@link net.dv8tion.jda.api.entities.MessageReaction.ReactionEmote ReactionEmote} for the given reaction id on this message.
@@ -2383,7 +2383,7 @@ public interface Message extends ISnowflake, Formattable
      */
     @Nullable
     @CheckReturnValue
-    MessageReaction.ReactionEmote getReactionById(@Nonnull String id);
+    MessageReaction.ReactionEmote getReactionById(@NotNull String id);
 
     /**
      * This obtains the {@link net.dv8tion.jda.api.entities.MessageReaction.ReactionEmote ReactionEmote} for the given reaction id on this message.
@@ -2443,7 +2443,7 @@ public interface Message extends ISnowflake, Formattable
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction} - Type: {@link java.lang.Void}
      * @see    #isSuppressedEmbeds()
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     AuditableRestAction<Void> suppressEmbeds(boolean suppressed);
 
@@ -2488,7 +2488,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @since  4.2.1
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     RestAction<Message> crosspost();
 
@@ -2513,7 +2513,7 @@ public interface Message extends ISnowflake, Formattable
      * @return Never-Null EnumSet of present {@link Message.MessageFlag MessageFlags}
      * @see    Message.MessageFlag
      */
-    @Nonnull
+    @NotNull
     EnumSet<MessageFlag> getFlags();
 
     /**
@@ -2549,7 +2549,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return The {@link net.dv8tion.jda.api.entities.MessageType MessageType} of this message.
      */
-    @Nonnull
+    @NotNull
     MessageType getType();
 
     /**
@@ -2608,7 +2608,7 @@ public interface Message extends ISnowflake, Formattable
             this.parseKey = parseKey;
         }
 
-        @Nonnull
+        @NotNull
         public Pattern getPattern()
         {
             return pattern;
@@ -2691,7 +2691,7 @@ public interface Message extends ISnowflake, Formattable
          *         Non-Negative integer representing a bitfield of MessageFlags
          * @return Never-Null EnumSet of MessageFlags being found in the bitfield
          */
-        @Nonnull
+        @NotNull
         public static EnumSet<MessageFlag> fromBitField(int bitfield)
         {
             Set<MessageFlag> set = Arrays.stream(MessageFlag.values())
@@ -2709,7 +2709,7 @@ public interface Message extends ISnowflake, Formattable
          *         If the provided Collection is {@code null}
          * @return Integer value of the bitfield representing the given MessageFlags
          */
-        public static int toBitField(@Nonnull Collection<MessageFlag> coll)
+        public static int toBitField(@NotNull Collection<MessageFlag> coll)
         {
             Checks.notNull(coll, "Collection");
             int flags = 0;
@@ -2759,7 +2759,7 @@ public interface Message extends ISnowflake, Formattable
          *
          * @return The corresponding JDA instance for this Attachment
          */
-        @Nonnull
+        @NotNull
         public JDA getJDA()
         {
             return jda;
@@ -2776,7 +2776,7 @@ public interface Message extends ISnowflake, Formattable
          *
          * @return Non-null String containing the Attachment URL.
          */
-        @Nonnull
+        @NotNull
         public String getUrl()
         {
             return url;
@@ -2787,7 +2787,7 @@ public interface Message extends ISnowflake, Formattable
          *
          * @return Non-null String containing the proxied Attachment url.
          */
-        @Nonnull
+        @NotNull
         public String getProxyUrl()
         {
             return proxyUrl;
@@ -2798,7 +2798,7 @@ public interface Message extends ISnowflake, Formattable
          *
          * @return Non-null String containing the Attachment file name.
          */
-        @Nonnull
+        @NotNull
         public String getFileName()
         {
             return fileName;
@@ -2857,7 +2857,7 @@ public interface Message extends ISnowflake, Formattable
          *
          * @return {@link java.util.concurrent.CompletableFuture} - Type: {@link java.io.InputStream}
          */
-        @Nonnull
+        @NotNull
         public CompletableFuture<InputStream> retrieveInputStream() // it is expected that the response is closed by the callback!
         {
             CompletableFuture<InputStream> future = new CompletableFuture<>();
@@ -2902,7 +2902,7 @@ public interface Message extends ISnowflake, Formattable
          *
          * @return {@link java.util.concurrent.CompletableFuture} - Type: {@link java.io.File}
          */
-        @Nonnull
+        @NotNull
         public CompletableFuture<File> downloadToFile() // using relative path
         {
             return downloadToFile(getFileName());
@@ -2935,7 +2935,7 @@ public interface Message extends ISnowflake, Formattable
          *
          * @return {@link java.util.concurrent.CompletableFuture} - Type: {@link java.io.File}
          */
-        @Nonnull
+        @NotNull
         public CompletableFuture<File> downloadToFile(String path)
         {
             Checks.notNull(path, "Path");
@@ -2970,7 +2970,7 @@ public interface Message extends ISnowflake, Formattable
          * @return {@link java.util.concurrent.CompletableFuture} - Type: {@link java.io.File}
          */
         @SuppressWarnings("ResultOfMethodCallIgnored")
-        @Nonnull
+        @NotNull
         public CompletableFuture<File> downloadToFile(File file)
         {
             Checks.notNull(file, "File");
@@ -3034,7 +3034,7 @@ public interface Message extends ISnowflake, Formattable
          *
          * @return {@link java.util.concurrent.CompletableFuture} - Type: {@link net.dv8tion.jda.api.entities.Icon}
          */
-        @Nonnull
+        @NotNull
         public CompletableFuture<Icon> retrieveAsIcon()
         {
             if (!isImage())
@@ -3181,7 +3181,7 @@ public interface Message extends ISnowflake, Formattable
          *
          * @return The {@link net.dv8tion.jda.api.interactions.InteractionType} or {@link net.dv8tion.jda.api.interactions.InteractionType#UNKNOWN}
          */
-        @Nonnull
+        @NotNull
         public InteractionType getType()
         {
             return InteractionType.fromKey(getTypeRaw());
@@ -3192,7 +3192,7 @@ public interface Message extends ISnowflake, Formattable
          *
          * @return The command name
          */
-        @Nonnull
+        @NotNull
         public String getName()
         {
             return name;
@@ -3203,7 +3203,7 @@ public interface Message extends ISnowflake, Formattable
          *
          * @return The {@link User}
          */
-        @Nonnull
+        @NotNull
         public User getUser()
         {
             return user;

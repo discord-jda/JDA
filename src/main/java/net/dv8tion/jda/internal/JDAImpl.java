@@ -76,10 +76,10 @@ import net.dv8tion.jda.internal.utils.config.MetaConfig;
 import net.dv8tion.jda.internal.utils.config.SessionConfig;
 import net.dv8tion.jda.internal.utils.config.ThreadingConfig;
 import okhttp3.OkHttpClient;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.MDC;
 
-import javax.annotation.Nonnull;
 import javax.security.auth.login.LoginException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -155,7 +155,7 @@ public class JDAImpl implements JDA
         this.eventManager = new EventManagerProxy(new InterfacedEventManager(), this.threadConfig.getEventPool());
     }
 
-    public void handleEvent(@Nonnull GenericEvent event)
+    public void handleEvent(@NotNull GenericEvent event)
     {
         eventManager.handle(event);
     }
@@ -386,7 +386,7 @@ public class JDAImpl implements JDA
         return authConfig;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public String getToken()
     {
@@ -421,21 +421,21 @@ public class JDAImpl implements JDA
         return sessionConfig.isAutoReconnect();
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Status getStatus()
     {
         return status;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public EnumSet<GatewayIntent> getGatewayIntents()
     {
         return GatewayIntent.getIntents(client.getGatewayIntents());
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public EnumSet<CacheFlag> getCacheFlags()
     {
@@ -463,9 +463,9 @@ public class JDAImpl implements JDA
         return gatewayPing;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public JDA awaitStatus(@Nonnull Status status, @Nonnull Status... failOn) throws InterruptedException
+    public JDA awaitStatus(@NotNull Status status, @NotNull Status... failOn) throws InterruptedException
     {
         Checks.notNull(status, "Status");
         Checks.check(status.isInit(), "Cannot await the status %s as it is not part of the login cycle!", status);
@@ -490,28 +490,28 @@ public class JDAImpl implements JDA
         return requester.getRateLimiter().cancelRequests();
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public ScheduledExecutorService getRateLimitPool()
     {
         return threadConfig.getRateLimitPool();
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public ScheduledExecutorService getGatewayPool()
     {
         return threadConfig.getGatewayPool();
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public ExecutorService getCallbackPool()
     {
         return threadConfig.getCallbackPool();
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @SuppressWarnings("ConstantConditions") // this can't really happen unless you pass bad configs
     public OkHttpClient getHttpClient()
@@ -519,7 +519,7 @@ public class JDAImpl implements JDA
         return sessionConfig.getHttpClient();
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public DirectAudioControllerImpl getDirectAudioController()
     {
@@ -528,17 +528,17 @@ public class JDAImpl implements JDA
         return this.audioController;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public List<Guild> getMutualGuilds(@Nonnull User... users)
+    public List<Guild> getMutualGuilds(@NotNull User... users)
     {
         Checks.notNull(users, "users");
         return getMutualGuilds(Arrays.asList(users));
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public List<Guild> getMutualGuilds(@Nonnull Collection<User> users)
+    public List<Guild> getMutualGuilds(@NotNull Collection<User> users)
     {
         Checks.notNull(users, "users");
         for(User u : users)
@@ -548,14 +548,14 @@ public class JDAImpl implements JDA
                 .collect(Collectors.toList()));
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public RestAction<User> retrieveUserById(@Nonnull String id)
+    public RestAction<User> retrieveUserById(@NotNull String id)
     {
         return retrieveUserById(MiscUtil.parseSnowflake(id));
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public RestAction<User> retrieveUserById(long id, boolean update)
     {
@@ -572,21 +572,21 @@ public class JDAImpl implements JDA
                 });
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public CacheView<AudioManager> getAudioManagerCache()
     {
         return audioManagers;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public SnowflakeCacheView<Guild> getGuildCache()
     {
         return guildCache;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Set<String> getUnavailableGuilds()
     {
@@ -602,49 +602,49 @@ public class JDAImpl implements JDA
         return guildSetupController.isUnavailable(guildId);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public SnowflakeCacheView<Role> getRoleCache()
     {
         return CacheView.allSnowflakes(() -> guildCache.stream().map(Guild::getRoleCache));
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public SnowflakeCacheView<Emote> getEmoteCache()
     {
         return CacheView.allSnowflakes(() -> guildCache.stream().map(Guild::getEmoteCache));
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public SnowflakeCacheView<Category> getCategoryCache()
     {
         return categories;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public SnowflakeCacheView<StoreChannel> getStoreChannelCache()
     {
         return storeChannelCache;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public SnowflakeCacheView<TextChannel> getTextChannelCache()
     {
         return textChannelCache;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public SnowflakeCacheView<VoiceChannel> getVoiceChannelCache()
     {
         return voiceChannelCache;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public SnowflakeCacheView<PrivateChannel> getPrivateChannelCache()
     {
@@ -652,7 +652,7 @@ public class JDAImpl implements JDA
     }
 
     @Override
-    public PrivateChannel getPrivateChannelById(@Nonnull String id)
+    public PrivateChannel getPrivateChannelById(@NotNull String id)
     {
         return getPrivateChannelById(MiscUtil.parseSnowflake(id));
     }
@@ -666,7 +666,7 @@ public class JDAImpl implements JDA
         return channel;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public RestAction<PrivateChannel> openPrivateChannelById(long userId)
     {
@@ -685,7 +685,7 @@ public class JDAImpl implements JDA
         });
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public SnowflakeCacheView<User> getUserCache()
     {
@@ -697,7 +697,7 @@ public class JDAImpl implements JDA
         return selfUser != null;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public SelfUser getSelfUser()
     {
@@ -783,28 +783,28 @@ public class JDAImpl implements JDA
         return sessionConfig.getMaxReconnectDelay();
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public ShardInfo getShardInfo()
     {
         return shardInfo == null ? ShardInfo.SINGLE : shardInfo;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Presence getPresence()
     {
         return presence;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public IEventManager getEventManager()
     {
         return eventManager.getSubject();
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public AccountType getAccountType()
     {
@@ -818,7 +818,7 @@ public class JDAImpl implements JDA
     }
 
     @Override
-    public void addEventListener(@Nonnull Object... listeners)
+    public void addEventListener(@NotNull Object... listeners)
     {
         Checks.noneNull(listeners, "listeners");
 
@@ -827,7 +827,7 @@ public class JDAImpl implements JDA
     }
 
     @Override
-    public void removeEventListener(@Nonnull Object... listeners)
+    public void removeEventListener(@NotNull Object... listeners)
     {
         Checks.noneNull(listeners, "listeners");
 
@@ -835,14 +835,14 @@ public class JDAImpl implements JDA
             eventManager.unregister(listener);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public List<Object> getRegisteredListeners()
     {
         return eventManager.getRegisteredListeners();
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public RestAction<List<Command>> retrieveCommands()
     {
@@ -855,24 +855,24 @@ public class JDAImpl implements JDA
                         .collect(Collectors.toList()));
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public RestAction<Command> retrieveCommandById(@Nonnull String id)
+    public RestAction<Command> retrieveCommandById(@NotNull String id)
     {
         Checks.isSnowflake(id);
         Route.CompiledRoute route = Route.Interactions.GET_COMMAND.compile(getSelfUser().getApplicationId(), id);
         return new RestActionImpl<>(this, route, (response, request) -> new Command(this, null, response.getObject()));
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public CommandCreateAction upsertCommand(@Nonnull CommandData command)
+    public CommandCreateAction upsertCommand(@NotNull CommandData command)
     {
         Checks.notNull(command, "CommandData");
         return new CommandCreateActionImpl(this, command);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public CommandListUpdateAction updateCommands()
     {
@@ -880,35 +880,35 @@ public class JDAImpl implements JDA
         return new CommandListUpdateActionImpl(this, null, route);
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public CommandEditAction editCommandById(@Nonnull String id)
+    public CommandEditAction editCommandById(@NotNull String id)
     {
         Checks.isSnowflake(id);
         return new CommandEditActionImpl(this, id);
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public RestAction<Void> deleteCommandById(@Nonnull String commandId)
+    public RestAction<Void> deleteCommandById(@NotNull String commandId)
     {
         Checks.isSnowflake(commandId);
         Route.CompiledRoute route = Route.Interactions.DELETE_COMMAND.compile(getSelfUser().getApplicationId(), commandId);
         return new RestActionImpl<>(this, route);
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public GuildActionImpl createGuild(@Nonnull String name)
+    public GuildActionImpl createGuild(@NotNull String name)
     {
         if (guildCache.size() >= 10)
             throw new IllegalStateException("Cannot create a Guild with a Bot in 10 or more guilds!");
         return new GuildActionImpl(this, name);
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public RestAction<Void> createGuildFromTemplate(@Nonnull String code, @Nonnull String name, Icon icon)
+    public RestAction<Void> createGuildFromTemplate(@NotNull String code, @NotNull String name, Icon icon)
     {
         if (guildCache.size() >= 10)
             throw new IllegalStateException("Cannot create a Guild with a Bot in 10 or more guilds!");
@@ -928,9 +928,9 @@ public class JDAImpl implements JDA
         return new RestActionImpl<>(this, route, object);
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public RestAction<Webhook> retrieveWebhookById(@Nonnull String webhookId)
+    public RestAction<Webhook> retrieveWebhookById(@NotNull String webhookId)
     {
         Checks.isSnowflake(webhookId, "Webhook ID");
 
@@ -944,7 +944,7 @@ public class JDAImpl implements JDA
         });
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public RestAction<ApplicationInfo> retrieveApplicationInfo()
     {
@@ -958,9 +958,9 @@ public class JDAImpl implements JDA
         });
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public JDA setRequiredScopes(@Nonnull Collection<String> scopes)
+    public JDA setRequiredScopes(@NotNull Collection<String> scopes)
     {
         Checks.noneNull(scopes, "Scopes");
         this.requiredScopes = String.join("+", scopes);
@@ -974,7 +974,7 @@ public class JDAImpl implements JDA
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public String getInviteUrl(Permission... permissions)
     {
@@ -984,7 +984,7 @@ public class JDAImpl implements JDA
         return builder.toString();
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public String getInviteUrl(Collection<Permission> permissions)
     {

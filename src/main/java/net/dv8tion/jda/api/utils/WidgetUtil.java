@@ -30,9 +30,9 @@ import net.dv8tion.jda.internal.utils.IOUtil;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
@@ -66,8 +66,8 @@ public class WidgetUtil
      *
      * @return A String containing the URL of the banner image
      */
-    @Nonnull
-    public static String getWidgetBanner(@Nonnull Guild guild, @Nonnull BannerType type)
+    @NotNull
+    public static String getWidgetBanner(@NotNull Guild guild, @NotNull BannerType type)
     {
         Checks.notNull(guild, "Guild");
         return getWidgetBanner(guild.getId(), type);
@@ -86,8 +86,8 @@ public class WidgetUtil
      *
      * @return A String containing the URL of the banner image
      */
-    @Nonnull
-    public static String getWidgetBanner(@Nonnull String guildId, @Nonnull BannerType type)
+    @NotNull
+    public static String getWidgetBanner(@NotNull String guildId, @NotNull BannerType type)
     {
         Checks.notNull(guildId, "GuildId");
         Checks.notNull(type, "BannerType");
@@ -110,8 +110,8 @@ public class WidgetUtil
      *
      * @return a String containing the pre-made widget with the supplied settings
      */
-    @Nonnull
-    public static String getPremadeWidgetHtml(@Nonnull Guild guild, @Nonnull WidgetTheme theme, int width, int height)
+    @NotNull
+    public static String getPremadeWidgetHtml(@NotNull Guild guild, @NotNull WidgetTheme theme, int width, int height)
     {
         Checks.notNull(guild, "Guild");
         return getPremadeWidgetHtml(guild.getId(), theme, width, height);
@@ -134,8 +134,8 @@ public class WidgetUtil
      *
      * @return a String containing the pre-made widget with the supplied settings
      */
-    @Nonnull
-    public static String getPremadeWidgetHtml(@Nonnull String guildId, @Nonnull WidgetTheme theme, int width, int height)
+    @NotNull
+    public static String getPremadeWidgetHtml(@NotNull String guildId, @NotNull WidgetTheme theme, int width, int height)
     {
         Checks.notNull(guildId, "GuildId");
         Checks.notNull(theme, "WidgetTheme");
@@ -170,7 +170,7 @@ public class WidgetUtil
      *         in question has the widget enabled.
      */
     @Nullable
-    public static Widget getWidget(@Nonnull String guildId) throws RateLimitedException
+    public static Widget getWidget(@NotNull String guildId) throws RateLimitedException
     {
         return getWidget(MiscUtil.parseSnowflake(guildId));
     }
@@ -313,7 +313,7 @@ public class WidgetUtil
          * @param json
          *        The {@link net.dv8tion.jda.api.utils.data.DataObject DataObject} to construct the Widget from
          */
-        private Widget(@Nonnull DataObject json)
+        private Widget(@NotNull DataObject json)
         {
             String inviteCode = json.getString("instant_invite", null);
             if (inviteCode != null)
@@ -380,7 +380,7 @@ public class WidgetUtil
          *
          * @return the name of the guild
          */
-        @Nonnull
+        @NotNull
         public String getName()
         {
             checkAvailable();
@@ -413,7 +413,7 @@ public class WidgetUtil
          *
          * @return the list of voice channels in the guild
          */
-        @Nonnull
+        @NotNull
         public List<VoiceChannel> getVoiceChannels()
         {
             checkAvailable();
@@ -469,7 +469,7 @@ public class WidgetUtil
          *
          * @return the list of members
          */
-        @Nonnull
+        @NotNull
         public List<Member> getMembers()
         {
             checkAvailable();
@@ -555,7 +555,7 @@ public class WidgetUtil
             private final Widget widget;
             private VoiceState state;
             
-            private Member(@Nonnull DataObject json, @Nonnull Widget widget)
+            private Member(@NotNull DataObject json, @NotNull Widget widget)
             {
                 this.widget = widget;
                 this.bot = json.getBoolean("bot");
@@ -588,7 +588,7 @@ public class WidgetUtil
              * 
              * @return the username of the member
              */
-            @Nonnull
+            @NotNull
             public String getName()
             {
                 return username;
@@ -600,7 +600,7 @@ public class WidgetUtil
                 return id;
             }
 
-            @Nonnull
+            @NotNull
             @Override
             public String getAsMention()
             {
@@ -612,7 +612,7 @@ public class WidgetUtil
              * 
              * @return the never-null discriminator of the member
              */
-            @Nonnull
+            @NotNull
             public String getDiscriminator()
             {
                 return discriminator;
@@ -651,7 +651,7 @@ public class WidgetUtil
              * @return never-null String containing the asset id of the member's
              *         default avatar
              */
-            @Nonnull
+            @NotNull
             public String getDefaultAvatarId()
             {
                 return String.valueOf(Integer.parseInt(getDiscriminator()) % 5);
@@ -663,7 +663,7 @@ public class WidgetUtil
              * @return never-null String containing the url of the member's
              *         default avatar
              */
-            @Nonnull
+            @NotNull
             public String getDefaultAvatarUrl()
             {
                 return String.format(User.DEFAULT_AVATAR_URL, getDefaultAvatarId());
@@ -676,7 +676,7 @@ public class WidgetUtil
             * 
             * @return Never-null String containing the member's effective avatar url.
             */
-            @Nonnull
+            @NotNull
             public String getEffectiveAvatarUrl()
             {
                 String avatarUrl = getAvatarUrl();
@@ -701,7 +701,7 @@ public class WidgetUtil
              * 
              * @return never-null String containing the member's effective (visible) name
              */
-            @Nonnull
+            @NotNull
             public String getEffectiveName()
             {
                 return nickname == null ? username : nickname;
@@ -713,7 +713,7 @@ public class WidgetUtil
              * 
              * @return the {@link net.dv8tion.jda.api.OnlineStatus OnlineStatus} of the member
              */
-            @Nonnull
+            @NotNull
             public OnlineStatus getOnlineStatus()
             {
                 return status;
@@ -739,7 +739,7 @@ public class WidgetUtil
              * 
              * @return never-null VoiceState of the member
              */
-            @Nonnull
+            @NotNull
             public VoiceState getVoiceState()
             {
                 return state == null ? new VoiceState(this, widget) : state;
@@ -750,7 +750,7 @@ public class WidgetUtil
              * 
              * @return the Widget that holds this member
              */
-            @Nonnull
+            @NotNull
             public Widget getWidget()
             {
                 return widget;
@@ -784,7 +784,7 @@ public class WidgetUtil
             private final List<Member> members;
             private final Widget widget;
             
-            private VoiceChannel(@Nonnull DataObject json, @Nonnull Widget widget)
+            private VoiceChannel(@NotNull DataObject json, @NotNull Widget widget)
             {
                 this.widget = widget;
                 this.position = json.getInt("position");
@@ -793,7 +793,7 @@ public class WidgetUtil
                 this.members = new ArrayList<>();
             }
             
-            private void addMember(@Nonnull Member member)
+            private void addMember(@NotNull Member member)
             {
                 members.add(member);
             }
@@ -819,7 +819,7 @@ public class WidgetUtil
              * 
              * @return name of the channel
              */
-            @Nonnull
+            @NotNull
             public String getName()
             {
                 return name;
@@ -830,7 +830,7 @@ public class WidgetUtil
              * 
              * @return never-null, possibly-empty list of members in the channel
              */
-            @Nonnull
+            @NotNull
             public List<Member> getMembers()
             {
                 return members;
@@ -841,7 +841,7 @@ public class WidgetUtil
              * 
              * @return the Widget object that holds this voice channel
              */
-            @Nonnull
+            @NotNull
             public Widget getWidget()
             {
                 return widget;
@@ -878,12 +878,12 @@ public class WidgetUtil
             private final Member member;
             private final Widget widget;
             
-            private VoiceState(@Nonnull Member member, @Nonnull Widget widget)
+            private VoiceState(@NotNull Member member, @NotNull Widget widget)
             {
                 this(null, false, false, false, false, false, member, widget);
             }
             
-            private VoiceState(@Nullable VoiceChannel channel, boolean muted, boolean deafened, boolean suppress, boolean selfMute, boolean selfDeaf, @Nonnull Member member, @Nonnull Widget widget)
+            private VoiceState(@Nullable VoiceChannel channel, boolean muted, boolean deafened, boolean suppress, boolean selfMute, boolean selfDeaf, @NotNull Member member, @NotNull Widget widget)
             {
                 this.channel = channel;
                 this.muted = muted;
@@ -987,13 +987,13 @@ public class WidgetUtil
                 return selfDeaf || deafened;
             }
 
-            @Nonnull
+            @NotNull
             public Member getMember()
             {
                 return member;
             }
 
-            @Nonnull
+            @NotNull
             public Widget getWidget()
             {
                 return widget;

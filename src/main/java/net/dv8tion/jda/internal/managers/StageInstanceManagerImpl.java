@@ -22,9 +22,8 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
 import okhttp3.RequestBody;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class StageInstanceManagerImpl extends ManagerBase<StageInstanceManager> implements StageInstanceManager
 {
@@ -39,14 +38,14 @@ public class StageInstanceManagerImpl extends ManagerBase<StageInstanceManager> 
         this.instance = instance;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public StageInstance getStageInstance()
     {
         return instance;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public StageInstanceManager setTopic(@Nullable String topic)
     {
@@ -62,9 +61,9 @@ public class StageInstanceManagerImpl extends ManagerBase<StageInstanceManager> 
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public StageInstanceManager setPrivacyLevel(@Nonnull StageInstance.PrivacyLevel level)
+    public StageInstanceManager setPrivacyLevel(@NotNull StageInstance.PrivacyLevel level)
     {
         Checks.notNull(level, "PrivacyLevel");
         Checks.check(level != StageInstance.PrivacyLevel.UNKNOWN, "PrivacyLevel must not be UNKNOWN!");

@@ -19,8 +19,8 @@ package net.dv8tion.jda.api.entities;
 import net.dv8tion.jda.api.managers.AccountManager;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.IOUtil;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -46,7 +46,7 @@ public class Icon
 {
     protected final String encoding;
 
-    protected Icon(@Nonnull IconType type, @Nonnull String base64Encoding)
+    protected Icon(@NotNull IconType type, @NotNull String base64Encoding)
     {
         //Note: the usage of `image/jpeg` does not mean png/gif are not supported!
         this.encoding = type.getHeader() + base64Encoding;
@@ -57,7 +57,7 @@ public class Icon
      *
      * @return String representation of the encoded data for this icon
      */
-    @Nonnull
+    @NotNull
     public String getEncoding()
     {
         return encoding;
@@ -77,8 +77,8 @@ public class Icon
      *
      * @return An Icon instance representing the specified File
      */
-    @Nonnull
-    public static Icon from(@Nonnull File file) throws IOException
+    @NotNull
+    public static Icon from(@NotNull File file) throws IOException
     {
         Checks.notNull(file, "Provided File");
         Checks.check(file.exists(), "Provided file does not exist!");
@@ -107,8 +107,8 @@ public class Icon
      *
      * @return An Icon instance representing the specified InputStream
      */
-    @Nonnull
-    public static Icon from(@Nonnull InputStream stream) throws IOException
+    @NotNull
+    public static Icon from(@NotNull InputStream stream) throws IOException
     {
         return from(stream, IconType.JPEG);
     }
@@ -126,8 +126,8 @@ public class Icon
      *
      * @return An Icon instance representing the specified image data
      */
-    @Nonnull
-    public static Icon from(@Nonnull byte[] data)
+    @NotNull
+    public static Icon from(@NotNull byte[] data)
     {
         return from(data, IconType.JPEG);
     }
@@ -148,8 +148,8 @@ public class Icon
      *
      * @return An Icon instance representing the specified File
      */
-    @Nonnull
-    public static Icon from(@Nonnull File file, @Nonnull IconType type) throws IOException
+    @NotNull
+    public static Icon from(@NotNull File file, @NotNull IconType type) throws IOException
     {
         Checks.notNull(file, "Provided File");
         Checks.notNull(type, "IconType");
@@ -175,8 +175,8 @@ public class Icon
      *
      * @return An Icon instance representing the specified InputStream
      */
-    @Nonnull
-    public static Icon from(@Nonnull InputStream stream, @Nonnull IconType type) throws IOException
+    @NotNull
+    public static Icon from(@NotNull InputStream stream, @NotNull IconType type) throws IOException
     {
         Checks.notNull(stream, "InputStream");
         Checks.notNull(type, "IconType");
@@ -197,8 +197,8 @@ public class Icon
      *
      * @return An Icon instance representing the specified image data
      */
-    @Nonnull
-    public static Icon from(@Nonnull byte[] data, @Nonnull IconType type)
+    @NotNull
+    public static Icon from(@NotNull byte[] data, @NotNull IconType type)
     {
         Checks.notNull(data, "Provided byte[]");
         Checks.notNull(type, "IconType");
@@ -226,7 +226,7 @@ public class Icon
         private final String mime;
         private final String header;
 
-        IconType(@Nonnull String mime)
+        IconType(@NotNull String mime)
         {
             this.mime = mime;
             this.header = "data:" + mime + ";base64,";
@@ -239,7 +239,7 @@ public class Icon
          *
          * @see    <a href="https://en.wikipedia.org/wiki/MIME" target="_blank">MIME</a>
          */
-        @Nonnull
+        @NotNull
         public String getMIME()
         {
             return mime;
@@ -250,7 +250,7 @@ public class Icon
          *
          * @return The data header
          */
-        @Nonnull
+        @NotNull
         public String getHeader()
         {
             return header;
@@ -265,8 +265,8 @@ public class Icon
          *
          * @return The resolved IconType or {@link #UNKNOWN}.
          */
-        @Nonnull
-        public static IconType fromMIME(@Nonnull String mime)
+        @NotNull
+        public static IconType fromMIME(@NotNull String mime)
         {
             Checks.notNull(mime, "MIME Type");
             for (IconType type : values())
@@ -286,8 +286,8 @@ public class Icon
          *
          * @return The resolved IconType or {@link #UNKNOWN}.
          */
-        @Nonnull
-        public static IconType fromExtension(@Nonnull String extension)
+        @NotNull
+        public static IconType fromExtension(@NotNull String extension)
         {
             Checks.notNull(extension, "Extension Type");
             switch (extension.toLowerCase())

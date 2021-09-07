@@ -22,8 +22,7 @@ import net.dv8tion.jda.api.managers.DirectAudioController;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.requests.WebSocketClient;
 import net.dv8tion.jda.internal.utils.Checks;
-
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 public class DirectAudioControllerImpl implements DirectAudioController
 {
@@ -34,7 +33,7 @@ public class DirectAudioControllerImpl implements DirectAudioController
         this.api = api;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public JDAImpl getJDA()
     {
@@ -42,7 +41,7 @@ public class DirectAudioControllerImpl implements DirectAudioController
     }
 
     @Override
-    public void connect(@Nonnull VoiceChannel channel)
+    public void connect(@NotNull VoiceChannel channel)
     {
         Checks.notNull(channel, "Voice Channel");
         JDAImpl jda = getJDA();
@@ -51,7 +50,7 @@ public class DirectAudioControllerImpl implements DirectAudioController
     }
 
     @Override
-    public void disconnect(@Nonnull Guild guild)
+    public void disconnect(@NotNull Guild guild)
     {
         Checks.notNull(guild, "Guild");
         JDAImpl jda = getJDA();
@@ -60,7 +59,7 @@ public class DirectAudioControllerImpl implements DirectAudioController
     }
 
     @Override
-    public void reconnect(@Nonnull VoiceChannel channel)
+    public void reconnect(@NotNull VoiceChannel channel)
     {
         Checks.notNull(channel, "Voice Channel");
         JDAImpl jda = getJDA();

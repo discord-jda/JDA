@@ -20,8 +20,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.StageChannel;
 import net.dv8tion.jda.api.entities.StageInstance;
 import net.dv8tion.jda.api.events.guild.GenericGuildEvent;
-
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Indicates that a {@link net.dv8tion.jda.api.entities.StageInstance StageInstance} was created/deleted/changed.
@@ -33,7 +32,7 @@ public abstract class GenericStageInstanceEvent extends GenericGuildEvent
 {
     protected final StageInstance instance;
 
-    public GenericStageInstanceEvent(@Nonnull JDA api, long responseNumber, @Nonnull StageInstance stageInstance)
+    public GenericStageInstanceEvent(@NotNull JDA api, long responseNumber, @NotNull StageInstance stageInstance)
     {
         super(api, responseNumber, stageInstance.getGuild());
         this.instance = stageInstance;
@@ -44,7 +43,7 @@ public abstract class GenericStageInstanceEvent extends GenericGuildEvent
      *
      * @return The {@link StageInstance}
      */
-    @Nonnull
+    @NotNull
     public StageInstance getInstance()
     {
         return instance;
@@ -55,7 +54,7 @@ public abstract class GenericStageInstanceEvent extends GenericGuildEvent
      *
      * @return The StageChannel
      */
-    @Nonnull
+    @NotNull
     public StageChannel getChannel()
     {
         return instance.getChannel();
