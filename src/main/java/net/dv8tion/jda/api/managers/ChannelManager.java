@@ -368,8 +368,6 @@ public interface ChannelManager extends Manager<ChannelManager>
      * @param  id
      *         The ID of the permission holder
      *
-     * @throws java.lang.IllegalArgumentException
-     *         If the provided permission holder is {@code null}
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have {@link net.dv8tion.jda.api.Permission#MANAGE_PERMISSIONS Permission.MANAGE_PERMISSIONS}
      *         in this channel
