@@ -198,7 +198,7 @@ public class OptionData implements SerializableData
      *
      * @return Immutable list of {@link net.dv8tion.jda.api.interactions.commands.Command.Choice Choices}
      *
-     * @see #addChoice(String, int)
+     * @see #addChoice(String, long)
      * @see #addChoice(String, String)
      */
     @Nonnull
