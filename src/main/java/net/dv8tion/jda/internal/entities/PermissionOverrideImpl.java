@@ -37,14 +37,14 @@ public class PermissionOverrideImpl implements PermissionOverride
     private final long id;
     private final boolean isRole;
     private final JDAImpl api;
-    private GuildChannel channel;
+    private IPermissionContainer channel;
 
     protected PermissionOverrideAction manager;
 
     private long allow;
     private long deny;
 
-    public PermissionOverrideImpl(GuildChannel channel, long id, boolean isRole)
+    public PermissionOverrideImpl(IPermissionContainer channel, long id, boolean isRole)
     {
         this.isRole = isRole;
         this.api = (JDAImpl) channel.getJDA();
@@ -118,9 +118,9 @@ public class PermissionOverrideImpl implements PermissionOverride
 
     @Nonnull
     @Override
-    public GuildChannel getChannel()
+    public IPermissionContainer getChannel()
     {
-        GuildChannel realChannel = api.getGuildChannelById(channel.getType(), channel.getIdLong());
+        IPermissionContainer realChannel = (IPermissionContainer) api.getGuildChannelById(channel.getType(), channel.getIdLong());
         if (realChannel != null)
             channel = realChannel;
         return channel;
@@ -149,14 +149,8 @@ public class PermissionOverrideImpl implements PermissionOverride
     @Override
     public PermissionOverrideAction getManager()
     {
-        Member selfMember = getGuild().getSelfMember();
-        GuildChannel channel = getChannel();
-        if (!selfMember.hasPermission(channel, Permission.VIEW_CHANNEL))
-            throw new MissingAccessException(channel, Permission.VIEW_CHANNEL);
-        if (!selfMember.hasAccess(channel))
-            throw new MissingAccessException(channel, Permission.VOICE_CONNECT);
-        if (!selfMember.hasPermission(channel, Permission.MANAGE_PERMISSIONS))
-            throw new InsufficientPermissionException(channel, Permission.MANAGE_PERMISSIONS);
+        checkPermissions();
+
         if (manager == null)
             return manager = new PermissionOverrideActionImpl(this).setOverride(false);
         return manager;
@@ -166,15 +160,7 @@ public class PermissionOverrideImpl implements PermissionOverride
     @Override
     public AuditableRestAction<Void> delete()
     {
-
-        Member selfMember = getGuild().getSelfMember();
-        GuildChannel channel = getChannel();
-        if (!selfMember.hasPermission(channel, Permission.VIEW_CHANNEL))
-            throw new MissingAccessException(channel, Permission.VIEW_CHANNEL);
-        if (!selfMember.hasAccess(channel))
-            throw new MissingAccessException(channel, Permission.VOICE_CONNECT);
-        if (!selfMember.hasPermission(channel, Permission.MANAGE_PERMISSIONS))
-            throw new InsufficientPermissionException(channel, Permission.MANAGE_PERMISSIONS);
+        checkPermissions();
 
         Route.CompiledRoute route = Route.Channels.DELETE_PERM_OVERRIDE.compile(this.channel.getId(), getId());
         return new AuditableRestActionImpl<>(getJDA(), route);
@@ -219,5 +205,17 @@ public class PermissionOverrideImpl implements PermissionOverride
     public String toString()
     {
         return "PermOver:(" + (isMemberOverride() ? "M" : "R") + ")(" + channel.getId() + " | " + getId() + ")";
+    }
+
+    private void checkPermissions()
+    {
+        Member selfMember = getGuild().getSelfMember();
+        IPermissionContainer channel = getChannel();
+        if (!selfMember.hasPermission(channel, Permission.VIEW_CHANNEL))
+            throw new MissingAccessException(channel, Permission.VIEW_CHANNEL);
+        if (!selfMember.hasAccess(channel))
+            throw new MissingAccessException(channel, Permission.VOICE_CONNECT);
+        if (!selfMember.hasPermission(channel, Permission.MANAGE_PERMISSIONS))
+            throw new InsufficientPermissionException(channel, Permission.MANAGE_PERMISSIONS);
     }
 }

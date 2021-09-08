@@ -24,7 +24,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
- * Indicates that a {@link PermissionOverride} for a {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel} was created, deleted, or updated.
+ * Indicates that a {@link PermissionOverride} for a {@link GuildChannel GuildChannel} was created, deleted, or updated.
  * <br>Every guild channel override event is a subclass of this event and can be casted
  *
  * <p>Can be used to detect that any guild channel override event was fired
@@ -122,7 +122,7 @@ public class GenericPermissionOverrideEvent extends GenericGuildEvent
 
     /**
      * The {@link Category} this override belongs to.
-     * <br>Note: This is not the same as {@code getChannel().getParent()}!
+     * <br>Note: This is not the same as {@code getChannel().getParentCategory()}!
      *
      * @throws IllegalStateException
      *         If the override does not belong to a Category

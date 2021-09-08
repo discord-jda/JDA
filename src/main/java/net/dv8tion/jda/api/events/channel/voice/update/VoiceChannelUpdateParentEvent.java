@@ -36,7 +36,7 @@ public class VoiceChannelUpdateParentEvent extends GenericVoiceChannelUpdateEven
 
     public VoiceChannelUpdateParentEvent(@Nonnull JDA api, long responseNumber, @Nonnull VoiceChannel channel, @Nullable Category oldParent)
     {
-        super(api, responseNumber, channel, oldParent, channel.getParent(), IDENTIFIER);
+        super(api, responseNumber, channel, oldParent, channel.getParentCategory(), IDENTIFIER);
     }
 
     /**

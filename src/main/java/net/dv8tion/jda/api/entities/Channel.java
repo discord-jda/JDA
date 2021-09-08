@@ -17,13 +17,16 @@
 package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 
+import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 
 /**
  * Abstract Channel interface for all {@link ChannelType ChannelTypes}.
  */
-public interface AbstractChannel extends ISnowflake
+public interface Channel extends IMentionable
 {
     /**
      * The human readable name of this channel.
@@ -48,4 +51,20 @@ public interface AbstractChannel extends ISnowflake
      */
     @Nonnull
     JDA getJDA();
+
+    /**
+     * TODO-v5: Revisit these docs
+     * Deletes this Channel.
+     *
+     * <p>Possible ErrorResponses include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
+     *     <br>If this channel was already deleted</li>
+     * </ul>
+     *
+     * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction}
+     */
+    @Nonnull
+    @CheckReturnValue
+    RestAction<Void> delete();
 }

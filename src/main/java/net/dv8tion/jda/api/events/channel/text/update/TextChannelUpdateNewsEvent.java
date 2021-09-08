@@ -38,7 +38,8 @@ public class TextChannelUpdateNewsEvent extends GenericTextChannelUpdateEvent<Bo
 
     public TextChannelUpdateNewsEvent(@Nonnull JDA api, long responseNumber, @Nonnull TextChannel channel)
     {
-        super(api, responseNumber, channel, !channel.isNews(), channel.isNews(), IDENTIFIER);
+        //TODO-v5: Address this event as TextChannels no longer have isNews on them anymore.
+        super(api, responseNumber, channel, false, true, IDENTIFIER);
     }
 
     @Nonnull

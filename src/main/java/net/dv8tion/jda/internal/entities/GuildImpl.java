@@ -626,7 +626,13 @@ public class GuildImpl implements Guild
     public List<GuildChannel> getChannels(boolean includeHidden)
     {
         Member self = getSelfMember();
-        Predicate<GuildChannel> filterHidden = it -> self.hasPermission(it, Permission.VIEW_CHANNEL);
+        Predicate<GuildChannel> filterHidden = it -> {
+            //TODO-v5: Do we need to if-protected cast here? If the channel _isnt_ a IPermissionContainer, then would we even be using this filter on it?
+            if (it instanceof IPermissionContainer) {
+                self.hasPermission((IPermissionContainer) it, Permission.VIEW_CHANNEL);
+            }
+            return false;
+        };
 
         List<GuildChannel> channels;
         SnowflakeCacheViewImpl<Category> categoryView = getCategoriesView();
@@ -658,10 +664,10 @@ public class GuildImpl implements Guild
             channels = new ArrayList<>((int) categoryView.size() + voiceChannels.size() + textChannels.size() + storeChannels.size());
         }
 
-        storeChannels.stream().filter(it -> it.getParent() == null).forEach(channels::add);
-        textChannels.stream().filter(it -> it.getParent() == null).forEach(channels::add);
+        storeChannels.stream().filter(it -> it.getParentCategory() == null).forEach(channels::add);
+        textChannels.stream().filter(it -> it.getParentCategory() == null).forEach(channels::add);
         Collections.sort(channels);
-        voiceChannels.stream().filter(it -> it.getParent() == null).forEach(channels::add);
+        voiceChannels.stream().filter(it -> it.getParentCategory() == null).forEach(channels::add);
 
         for (Category category : categories)
         {

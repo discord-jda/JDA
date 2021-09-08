@@ -238,7 +238,7 @@ public class OptionMapping
     @Nonnull
     public GuildChannel getAsGuildChannel()
     {
-        AbstractChannel value = getAsChannel();
+        Channel value = getAsChannel();
         if (value instanceof GuildChannel)
             return (GuildChannel) value;
         throw new IllegalStateException("Could not resolve GuildChannel!");
@@ -256,7 +256,7 @@ public class OptionMapping
     @Nullable
     public MessageChannel getAsMessageChannel()
     {
-        AbstractChannel value = getAsChannel();
+        Channel value = getAsChannel();
         return value instanceof MessageChannel ? (MessageChannel) value : null;
     }
 
@@ -271,7 +271,7 @@ public class OptionMapping
     @Nonnull
     public ChannelType getChannelType()
     {
-        AbstractChannel channel = getAsChannel();
+        Channel channel = getAsChannel();
         return channel == null ? ChannelType.UNKNOWN : channel.getType();
     }
 
@@ -299,10 +299,10 @@ public class OptionMapping
     }
 
     @Nullable
-    private AbstractChannel getAsChannel()
+    private Channel getAsChannel()
     {
         if (type != OptionType.CHANNEL)
             throw new IllegalStateException("Cannot resolve AbstractChannel for option " + getName() + " of type " + type);
-        return (AbstractChannel) resolved.get(getAsLong());
+        return (Channel) resolved.get(getAsLong());
     }
 }

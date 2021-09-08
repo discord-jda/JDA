@@ -282,14 +282,16 @@ public class MessageReference
 
     private void checkPermission(Permission permission)
     {
-        if (guild == null || !(channel instanceof GuildChannel)) return;
+        if (guild == null || !(channel instanceof IPermissionContainer)) return;
 
         Member selfMember = guild.getSelfMember();
-        GuildChannel guildChannel = (GuildChannel) channel;
 
-        if (!selfMember.hasAccess(guildChannel))
-            throw new MissingAccessException(guildChannel, Permission.VIEW_CHANNEL);
-        if (!selfMember.hasPermission(guildChannel, permission))
-            throw new InsufficientPermissionException(guildChannel, permission);
+        //TODO-v5: What do we need to do to properly check perms for threads?
+        IPermissionContainer permChannel = (IPermissionContainer) channel;
+
+        if (!selfMember.hasAccess(permChannel))
+            throw new MissingAccessException(permChannel, Permission.VIEW_CHANNEL);
+        if (!selfMember.hasPermission(permChannel, permission))
+            throw new InsufficientPermissionException(permChannel, permission);
     }
 }

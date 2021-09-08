@@ -56,7 +56,7 @@ public class ChannelOrderActionImpl
     /**
      * Creates a new ChannelOrderAction instance using the provided
      * {@link net.dv8tion.jda.api.entities.Guild Guild}, as well as the provided
-     * list of {@link net.dv8tion.jda.api.entities.GuildChannel Channels}.
+     * list of {@link GuildChannel Channels}.
      *
      * @param  guild
      *         The target {@link net.dv8tion.jda.api.entities.Guild Guild}
@@ -64,7 +64,7 @@ public class ChannelOrderActionImpl
      * @param  bucket
      *         The sorting bucket
      * @param  channels
-     *         The {@link net.dv8tion.jda.api.entities.GuildChannel Channels} to order, all of which
+     *         The {@link GuildChannel Channels} to order, all of which
      *         are on the same Guild specified, and all of which are of the same generic type of GuildChannel
      *         corresponding to the the ChannelType specified.
      *

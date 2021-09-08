@@ -15,6 +15,7 @@
  */
 package net.dv8tion.jda.api.entities;
 
+import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.requests.RestAction;
 
 import javax.annotation.CheckReturnValue;
@@ -44,5 +45,7 @@ public interface PrivateChannel extends MessageChannel
      */
     @Nonnull
     @CheckReturnValue
+    @Deprecated
+    @ReplaceWith("delete")
     RestAction<Void> close();
 }

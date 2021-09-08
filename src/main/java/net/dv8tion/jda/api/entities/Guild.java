@@ -1419,7 +1419,7 @@ public interface Guild extends ISnowflake
     MemberCacheView getMemberCache();
 
     /**
-     * Get {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel} for the provided ID.
+     * Get {@link GuildChannel GuildChannel} for the provided ID.
      * <br>This checks if any of the channel types in this guild have the provided ID and returns the first match.
      *
      * <br>To get more specific channel types you can use one of the following:
@@ -1447,7 +1447,7 @@ public interface Guild extends ISnowflake
     }
 
     /**
-     * Get {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel} for the provided ID.
+     * Get {@link GuildChannel GuildChannel} for the provided ID.
      * <br>This checks if any of the channel types in this guild have the provided ID and returns the first match.
      *
      * <br>To get more specific channel types you can use one of the following:
@@ -1477,7 +1477,7 @@ public interface Guild extends ISnowflake
     }
 
     /**
-     * Get {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel} for the provided ID.
+     * Get {@link GuildChannel GuildChannel} for the provided ID.
      *
      * <br>This is meant for systems that use a dynamic {@link net.dv8tion.jda.api.entities.ChannelType} and can
      * profit from a simple function to get the channel instance.
@@ -1508,7 +1508,7 @@ public interface Guild extends ISnowflake
     }
 
     /**
-     * Get {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel} for the provided ID.
+     * Get {@link GuildChannel GuildChannel} for the provided ID.
      *
      * <br>This is meant for systems that use a dynamic {@link net.dv8tion.jda.api.entities.ChannelType} and can
      * profit from a simple function to get the channel instance.
@@ -2788,7 +2788,7 @@ public interface Guild extends ISnowflake
      * Will throw an {@link net.dv8tion.jda.api.exceptions.InsufficientPermissionException InsufficientPermissionException} otherwise.
      *
      * <p>To get all invites for a {@link GuildChannel GuildChannel}
-     * use {@link GuildChannel#retrieveInvites() GuildChannel.retrieveInvites()}
+     * use {@link IInviteContainer#retrieveInvites() GuildChannel.retrieveInvites()}
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         if the account does not have {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} in this Guild.
@@ -2796,7 +2796,7 @@ public interface Guild extends ISnowflake
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: List{@literal <}{@link net.dv8tion.jda.api.entities.Invite Invite}{@literal >}
      *         <br>The list of expanded Invite objects
      *
-     * @see     GuildChannel#retrieveInvites()
+     * @see     IInviteContainer#retrieveInvites()
      */
     @Nonnull
     @CheckReturnValue
@@ -5275,7 +5275,7 @@ public interface Guild extends ISnowflake
     ChannelAction<Category> createCategory(@Nonnull String name);
 
     /**
-     * Creates a copy of the specified {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel}
+     * Creates a copy of the specified {@link GuildChannel GuildChannel}
      * in this {@link net.dv8tion.jda.api.entities.Guild Guild}.
      * <br>The provided channel need not be in the same Guild for this to work!
      *
@@ -5301,7 +5301,7 @@ public interface Guild extends ISnowflake
      * @param  <T>
      *         The channel type
      * @param  channel
-     *         The {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel} to use for the copy template
+     *         The {@link GuildChannel GuildChannel} to use for the copy template
      *
      * @throws java.lang.IllegalArgumentException
      *         If the provided channel is {@code null}
@@ -5320,7 +5320,7 @@ public interface Guild extends ISnowflake
     @Nonnull
     @CheckReturnValue
     @SuppressWarnings("unchecked") // we need to do an unchecked cast for the channel type here
-    default <T extends GuildChannel> ChannelAction<T> createCopyOfChannel(@Nonnull T channel)
+    default <T extends ICopyableChannel> ChannelAction<T> createCopyOfChannel(@Nonnull T channel)
     {
         Checks.notNull(channel, "Channel");
         return (ChannelAction<T>) channel.createCopy(this);

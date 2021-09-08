@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.audit;
 
+import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.Member;
 
 /**
@@ -48,7 +49,7 @@ public enum ActionType
 
 
     /**
-     * An Administrator created a {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel}
+     * An Administrator created a {@link GuildChannel GuildChannel}
      *
      * <h2>Possible Keys</h2>
      * <ul>
@@ -66,7 +67,7 @@ public enum ActionType
     CHANNEL_CREATE(10, TargetType.CHANNEL),
 
     /**
-     * An Administrator updated {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel} information.
+     * An Administrator updated {@link GuildChannel GuildChannel} information.
      *
      * <h2>Possible Keys</h2>
      * <ul>
@@ -82,7 +83,7 @@ public enum ActionType
     CHANNEL_UPDATE(11, TargetType.CHANNEL),
 
     /**
-     * An Administrator deleted a {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel}.
+     * An Administrator deleted a {@link GuildChannel GuildChannel}.
      *
      * <h2>Possible Keys</h2>
      * <ul>

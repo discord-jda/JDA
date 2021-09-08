@@ -113,7 +113,7 @@ public class ChannelUpdateHandler extends SocketHandler
                 }
 
                 //If any properties changed, update the values and fire the proper events.
-                final Category parent = textChannel.getParent();
+                final Category parent = textChannel.getParentCategory();
                 final Long oldParent = parent == null ? null : parent.getIdLong();
                 final String oldName = textChannel.getName();
                 final String oldTopic = textChannel.getTopic();
@@ -171,14 +171,15 @@ public class ChannelUpdateHandler extends SocketHandler
                                     textChannel, oldSlowmode));
                 }
 
-                if (news != textChannel.isNews())
-                {
-                    textChannel.setNews(news);
-                    getJDA().handleEvent(
-                        new TextChannelUpdateNewsEvent(
-                            getJDA(), responseNumber,
-                            textChannel));
-                }
+                //TODO-v5: Address this event as TextChannels no longer have isNews on them.
+//                if (news != textChannel.isNews())
+//                {
+//                    textChannel.setNews(news);
+//                    getJDA().handleEvent(
+//                        new TextChannelUpdateNewsEvent(
+//                            getJDA(), responseNumber,
+//                            textChannel));
+//                }
 
                 applyPermissions(textChannel, permOverwrites);
                 break;  //Finish the TextChannelUpdate case
@@ -197,7 +198,7 @@ public class ChannelUpdateHandler extends SocketHandler
                     return null;
                 }
                 //If any properties changed, update the values and fire the proper events.
-                final Category parent = voiceChannel.getParent();
+                final Category parent = voiceChannel.getParentCategory();
                 final Long oldParent = parent == null ? null : parent.getIdLong();
                 final String oldName = voiceChannel.getName();
                 final String oldRegion = voiceChannel.getRegionRaw();
