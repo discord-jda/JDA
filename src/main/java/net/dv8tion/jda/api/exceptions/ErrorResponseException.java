@@ -443,7 +443,7 @@ public class ErrorResponseException extends RuntimeException
         @Override
         public String toString()
         {
-            return location + "\n\t- " + errors.stream().map(Object::toString).collect(Collectors.joining("\n\t- "));
+            return (location.isEmpty() ? "" : location+"\n") + "\t- " + errors.stream().map(Object::toString).collect(Collectors.joining("\n\t- "));
         }
     }
 }
