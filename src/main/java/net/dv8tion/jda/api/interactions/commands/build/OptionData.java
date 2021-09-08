@@ -34,6 +34,16 @@ import java.util.stream.Collectors;
 public class OptionData implements SerializableData
 {
     /**
+     * The highest positive amount Discord allows the {@link OptionType#INTEGER INTEGER} type to be.
+     */
+    public static final long MAX_POSITIVE_INTEGER = (1L << 53) - 1; // 1L << 53 is non-inclusive for Discord
+
+    /**
+     * The largest negative amount Discord allows the {@link OptionType#INTEGER INTEGER} type to be.
+     */
+    public static final long MIN_NEGATIVE_INTEGER = -(1L << 53) + 1; // 1L << 53 is non-inclusive for Discord
+
+    /**
      * The highest positive amount Discord allows the {@link OptionType#NUMBER NUMBER} type to be.
      */
     public static final double MAX_POSITIVE_NUMBER = (1L << 53) - 1; // 1L << 53 is non-inclusive for Discord
@@ -315,6 +325,7 @@ public class OptionData implements SerializableData
      *         If any of the following checks fail
      *         <ul>
      *             <li>{@code name} is not null, empty and less or equal to {@value #MAX_CHOICE_NAME_LENGTH} characters long</li>
+     *             <li>{@code value} is not less than {@link #MIN_NEGATIVE_INTEGER} and not larger than {@link #MAX_POSITIVE_INTEGER}</li>
      *             <li>The amount of already set choices is less than {@link #MAX_CHOICES}</li>
      *             <li>The {@link OptionType} is {@link OptionType#INTEGER}</li>
      *         </ul>
@@ -322,13 +333,15 @@ public class OptionData implements SerializableData
      * @return The OptionData instance, for chaining
      */
     @Nonnull
-    public OptionData addChoice(@Nonnull String name, int value)
+    public OptionData addChoice(@Nonnull String name, long value)
     {
         Checks.notEmpty(name, "Name");
         Checks.notLonger(name, MAX_CHOICE_NAME_LENGTH, "Name");
+        Checks.check(value >= MIN_NEGATIVE_INTEGER, "Integer value may not be lower than %d", MIN_NEGATIVE_INTEGER);
+        Checks.check(value <= MAX_POSITIVE_INTEGER, "Integer value may not be larger than %d", MAX_POSITIVE_NUMBER);
         Checks.check(choices.size() < MAX_CHOICES, "Cannot have more than 25 choices for an option!");
         if (type != OptionType.INTEGER)
-            throw new IllegalArgumentException("Cannot add int choice for OptionType." + type);
+            throw new IllegalArgumentException("Cannot add integer choice for OptionType." + type);
         choices.put(name, value);
         return this;
     }
