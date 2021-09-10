@@ -184,7 +184,6 @@ public class ChannelUpdateHandler extends SocketHandler
                 applyPermissions(textChannel, permOverwrites);
                 break;  //Finish the TextChannelUpdate case
             }
-            case STAGE:
             case VOICE:
             {
                 VoiceChannelImpl voiceChannel = (VoiceChannelImpl) getJDA().getVoiceChannelsView().get(channelId);
@@ -398,7 +397,6 @@ public class ChannelUpdateHandler extends SocketHandler
                     api, responseNumber,
                     (StoreChannel) channel, changed));
             break;
-        case STAGE:
         case VOICE:
             api.handleEvent(
                 new VoiceChannelUpdatePermissionsEvent(

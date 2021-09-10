@@ -68,7 +68,6 @@ public class ChannelCreateHandler extends SocketHandler
                         builder.createTextChannel(content, guildId)));
                 break;
             }
-            case STAGE:
             case VOICE:
             {
                 jda.handleEvent(
