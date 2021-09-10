@@ -86,6 +86,15 @@ public interface Category extends GuildChannel, ICopyableChannel, IPositionableC
     List<VoiceChannel> getVoiceChannels();
 
     /**
+     * All {@link net.dv8tion.jda.api.entities.StageChannel StageChannel}
+     * listed for this Category
+     *
+     * @return Immutable list of all child StageChannel
+     */
+    @Nonnull
+    List<StageChannel> getStageChannels();
+
+    /**
      * Creates a new {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} with this Category as parent.
      * For this to be successful, the logged in account has to have the
      * {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} Permission in this Category.

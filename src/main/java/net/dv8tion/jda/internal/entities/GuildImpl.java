@@ -78,6 +78,7 @@ public class GuildImpl implements Guild
     private final SortedSnowflakeCacheViewImpl<VoiceChannel> voiceChannelCache = new SortedSnowflakeCacheViewImpl<>(VoiceChannel.class, GuildChannel::getName, Comparator.naturalOrder());
     private final SortedSnowflakeCacheViewImpl<StoreChannel> storeChannelCache = new SortedSnowflakeCacheViewImpl<>(StoreChannel.class, StoreChannel::getName, Comparator.naturalOrder());
     private final SortedSnowflakeCacheViewImpl<TextChannel> textChannelCache = new SortedSnowflakeCacheViewImpl<>(TextChannel.class, GuildChannel::getName, Comparator.naturalOrder());
+    private final SortedSnowflakeCacheViewImpl<StageChannel> stageChannelCache = new SortedSnowflakeCacheViewImpl<>(StageChannel.class, GuildChannel::getName, Comparator.naturalOrder());
     private final SortedSnowflakeCacheViewImpl<Role> roleCache = new SortedSnowflakeCacheViewImpl<>(Role.class, Role::getName, Comparator.reverseOrder());
     private final SnowflakeCacheViewImpl<Emote> emoteCache = new SnowflakeCacheViewImpl<>(Emote.class, Emote::getName);
     private final MemberCacheViewImpl memberCache = new MemberCacheViewImpl();
@@ -608,6 +609,13 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
+    public SortedSnowflakeCacheView<StageChannel> getStageChannelCache()
+    {
+        return stageChannelCache;
+    }
+
+    @Nonnull
+    @Override
     public SortedSnowflakeCacheView<Role> getRoleCache()
     {
         return roleCache;
@@ -636,37 +644,43 @@ public class GuildImpl implements Guild
         List<GuildChannel> channels;
         SnowflakeCacheViewImpl<Category> categoryView = getCategoriesView();
         SnowflakeCacheViewImpl<VoiceChannel> voiceView = getVoiceChannelsView();
+        SnowflakeCacheViewImpl<StageChannel> stageView = getStageChannelsView();
         SnowflakeCacheViewImpl<TextChannel> textView = getTextChannelsView();
         SnowflakeCacheViewImpl<StoreChannel> storeView = getStoreChannelView();
         List<TextChannel> textChannels;
         List<StoreChannel> storeChannels;
         List<VoiceChannel> voiceChannels;
+        List<StageChannel> stageChannels;
         List<Category> categories;
         try (UnlockHook categoryHook = categoryView.readLock();
              UnlockHook voiceHook = voiceView.readLock();
              UnlockHook textHook = textView.readLock();
-             UnlockHook storeHook = storeView.readLock())
+             UnlockHook storeHook = storeView.readLock();
+             UnlockHook stageHook = stageView.readLock())
         {
             if (includeHidden)
             {
                 storeChannels = storeView.asList();
                 textChannels = textView.asList();
                 voiceChannels = voiceView.asList();
+                stageChannels = stageView.asList();
             }
             else
             {
                 storeChannels = storeView.stream().filter(filterHidden).collect(Collectors.toList());
                 textChannels = textView.stream().filter(filterHidden).collect(Collectors.toList());
                 voiceChannels = voiceView.stream().filter(filterHidden).collect(Collectors.toList());
+                stageChannels = stageView.stream().filter(filterHidden).collect(Collectors.toList());
             }
             categories = categoryView.asList(); // we filter categories out when they are empty (no visible channels inside)
-            channels = new ArrayList<>((int) categoryView.size() + voiceChannels.size() + textChannels.size() + storeChannels.size());
+            channels = new ArrayList<>((int) categoryView.size() + voiceChannels.size() + textChannels.size() + storeChannels.size() + stageChannels.size());
         }
 
         storeChannels.stream().filter(it -> it.getParentCategory() == null).forEach(channels::add);
         textChannels.stream().filter(it -> it.getParentCategory() == null).forEach(channels::add);
-        Collections.sort(channels);
         voiceChannels.stream().filter(it -> it.getParentCategory() == null).forEach(channels::add);
+        stageChannels.stream().filter(it -> it.getParentCategory() == null).forEach(channels::add);
+        Collections.sort(channels);
 
         for (Category category : categories)
         {
@@ -1969,6 +1983,11 @@ public class GuildImpl implements Guild
     public SortedSnowflakeCacheViewImpl<VoiceChannel> getVoiceChannelsView()
     {
         return voiceChannelCache;
+    }
+
+    public SortedSnowflakeCacheViewImpl<StageChannel> getStageChannelsView()
+    {
+        return stageChannelCache;
     }
 
     public SortedSnowflakeCacheViewImpl<Role> getRolesView()

@@ -300,6 +300,8 @@ public class EntityBuilder
             createTextChannel(guildObj, channelData, guildObj.getIdLong());
             break;
         case STAGE:
+            createStageChannel(guildObj, channelData, guildObj.getIdLong());
+            break;
         case VOICE:
             createVoiceChannel(guildObj, channelData, guildObj.getIdLong());
             break;
@@ -1000,6 +1002,48 @@ public class EntityBuilder
             .setUserLimit(json.getInt("user_limit"))
             .setBitrate(json.getInt("bitrate"))
             .setRegion(json.getString("rtc_region", null));
+
+        createOverridesPass(channel, json.getArray("permission_overwrites"));
+        if (playbackCache)
+            getJDA().getEventCache().playbackCache(EventCache.Type.CHANNEL, id);
+        return channel;
+    }
+
+    public StageChannel createStageChannel(DataObject json, long guildId)
+    {
+        return createStageChannel(null, json, guildId);
+    }
+
+    public StageChannel createStageChannel(GuildImpl guild, DataObject json, long guildId)
+    {
+        boolean playbackCache = false;
+        final long id = json.getLong("id");
+        StageChannelImpl channel = ((StageChannelImpl) getJDA().getStageChannelView().get(id));
+        if (channel == null)
+        {
+            if (guild == null)
+                guild = (GuildImpl) getJDA().getGuildsView().get(guildId);
+            SnowflakeCacheViewImpl<StageChannel>
+                    guildStageView = guild.getStageChannelsView(),
+                    stageView = getJDA().getStageChannelView();
+            try (
+                    UnlockHook vlock = guildStageView.writeLock();
+                    UnlockHook jlock = stageView.writeLock())
+            {
+                channel = new StageChannelImpl(id, guild);
+                guildStageView.getMap().put(id, channel);
+                playbackCache = stageView.getMap().put(id, channel) == null;
+            }
+        }
+
+        //TODO-v5: detect stage instance and add it?
+
+        channel
+                .setParent(json.getLong("parent_id", 0))
+                .setName(json.getString("name"))
+                .setPosition(json.getInt("position"))
+                .setBitrate(json.getInt("bitrate"))
+                .setRegion(json.getString("rtc_region", null));
 
         createOverridesPass(channel, json.getArray("permission_overwrites"));
         if (playbackCache)
