@@ -184,7 +184,6 @@ public class ChannelUpdateHandler extends SocketHandler
                 applyPermissions(textChannel, permOverwrites);
                 break;  //Finish the TextChannelUpdate case
             }
-            case STAGE:
             case VOICE:
             {
                 VoiceChannelImpl voiceChannel = (VoiceChannelImpl) getJDA().getVoiceChannelsView().get(channelId);
@@ -256,6 +255,69 @@ public class ChannelUpdateHandler extends SocketHandler
 
                 applyPermissions(voiceChannel, permOverwrites);
                 break;  //Finish the VoiceChannelUpdate case
+            }
+            case STAGE:
+            {
+                StageChannelImpl stageChannel = (StageChannelImpl) getJDA().getStageChannelView().get(channelId);
+                int bitrate = content.getInt("bitrate");
+                final String region = content.getString("rtc_region", null);
+                if (stageChannel == null)
+                {
+                    getJDA().getEventCache().cache(EventCache.Type.CHANNEL, channelId, responseNumber, allContent, this::handle);
+                    EventCache.LOG.debug("CHANNEL_UPDATE attempted to update a StageChannel that does not exist. JSON: {}", content);
+                    return null;
+                }
+                //TODO-v5: Restore these events for StageChannels once we decide how we're going to handle XChannelUpdateYEvent
+                //If any properties changed, update the values and fire the proper events.
+                final Category parent = stageChannel.getParentCategory();
+                final Long oldParent = parent == null ? null : parent.getIdLong();
+                final String oldName = stageChannel.getName();
+                final String oldRegion = stageChannel.getRegionRaw();
+                final int oldPosition = stageChannel.getPositionRaw();
+                final int oldBitrate = stageChannel.getBitrate();
+                if (!Objects.equals(oldName, name))
+                {
+                    stageChannel.setName(name);
+//                    getJDA().handleEvent(
+//                            new StageChannelUpdateNameEvent(
+//                                    getJDA(), responseNumber,
+//                                    voiceChannel, oldName));
+                }
+                if (!Objects.equals(oldRegion, region))
+                {
+                    stageChannel.setRegion(region);
+//                    getJDA().handleEvent(
+//                            new StageChannelUpdateRegionEvent(
+//                                    getJDA(), responseNumber,
+//                                    voiceChannel, oldRegion));
+                }
+                if (!Objects.equals(oldParent, parentId))
+                {
+                    stageChannel.setParent(parentId == null ? 0 : parentId);
+//                    getJDA().handleEvent(
+//                            new StageChannelUpdateParentEvent(
+//                                    getJDA(), responseNumber,
+//                                    voiceChannel, parent));
+                }
+                if (oldPosition != position)
+                {
+                    stageChannel.setPosition(position);
+//                    getJDA().handleEvent(
+//                            new StageChannelUpdatePositionEvent(
+//                                    getJDA(), responseNumber,
+//                                    voiceChannel, oldPosition));
+                }
+                if (oldBitrate != bitrate)
+                {
+                    stageChannel.setBitrate(bitrate);
+//                    getJDA().handleEvent(
+//                            new StageChannelUpdateBitrateEvent(
+//                                    getJDA(), responseNumber,
+//                                    voiceChannel, oldBitrate));
+                }
+
+                applyPermissions(stageChannel, permOverwrites);
+                break;  //Finish the StageChannelUpdate case
             }
             case CATEGORY:
             {
@@ -335,12 +397,18 @@ public class ChannelUpdateHandler extends SocketHandler
                     api, responseNumber,
                     (StoreChannel) channel, changed));
             break;
-        case STAGE:
         case VOICE:
             api.handleEvent(
                 new VoiceChannelUpdatePermissionsEvent(
                     api, responseNumber,
                     (VoiceChannel) channel, changed));
+            break;
+        case STAGE:
+            //TODO-v5: Add event once we decide how we're going to handle XChannelUpdateYEvent
+//            api.handleEvent(
+//                new StageChannelUpdatePermissionsEvent(
+//                    api, responseNumber,
+//                    (StageChannel) channel, changed));
             break;
         case TEXT:
             api.handleEvent(

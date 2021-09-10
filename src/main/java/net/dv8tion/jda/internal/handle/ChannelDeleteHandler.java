@@ -18,6 +18,7 @@ package net.dv8tion.jda.internal.handle;
 
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.channel.category.CategoryDeleteEvent;
+import net.dv8tion.jda.api.events.channel.stage.StageChannelDeleteEvent;
 import net.dv8tion.jda.api.events.channel.store.StoreChannelDeleteEvent;
 import net.dv8tion.jda.api.events.channel.text.TextChannelDeleteEvent;
 import net.dv8tion.jda.api.events.channel.voice.VoiceChannelDeleteEvent;
@@ -84,7 +85,6 @@ public class ChannelDeleteHandler extends SocketHandler
                         channel));
                 break;
             }
-            case STAGE:
             case VOICE:
             {
                 VoiceChannel channel = getJDA().getVoiceChannelsView().remove(channelId);
@@ -109,6 +109,22 @@ public class ChannelDeleteHandler extends SocketHandler
                         channel));
                 break;
             }
+            case STAGE:
+            {
+                StageChannel channel = getJDA().getStageChannelView().remove(channelId);
+                if (channel == null || guild == null)
+                {
+                    WebSocketClient.LOG.debug("CHANNEL_DELETE attempted to delete a stage channel that is not yet cached. JSON: {}", content);
+                    return null;
+                }
+
+                guild.getStageChannelsView().remove(channel.getIdLong());
+                getJDA().handleEvent(
+                    new StageChannelDeleteEvent(
+                        getJDA(), responseNumber,
+                        channel));
+            }
+
             case CATEGORY:
             {
                 Category category = getJDA().getCategoriesView().remove(channelId);
