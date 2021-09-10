@@ -407,7 +407,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
     @Override
     public RestAction<Void> pinMessageById(@Nonnull String messageId)
     {
-        checkPermission(Permission.VIEW_CHANNEL, "You cannot pin a message in a channel you can't access. (MESSAGE_READ)");
+        checkPermission(Permission.VIEW_CHANNEL, "You cannot pin a message in a channel you can't access. (VIEW_CHANNEL)");
         checkPermission(Permission.MESSAGE_MANAGE, "You need MESSAGE_MANAGE to pin or unpin messages.");
 
         //Call MessageChannel's default method
@@ -418,7 +418,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
     @Override
     public RestAction<Void> unpinMessageById(@Nonnull String messageId)
     {
-        checkPermission(Permission.VIEW_CHANNEL, "You cannot unpin a message in a channel you can't access. (MESSAGE_READ)");
+        checkPermission(Permission.VIEW_CHANNEL, "You cannot unpin a message in a channel you can't access. (VIEW_CHANNEL)");
         checkPermission(Permission.MESSAGE_MANAGE, "You need MESSAGE_MANAGE to pin or unpin messages.");
 
         //Call MessageChannel's default method
@@ -429,7 +429,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
     @Override
     public RestAction<List<Message>> retrievePinnedMessages()
     {
-        checkPermission(Permission.VIEW_CHANNEL, "Cannot get the pinned message of a channel without MESSAGE_READ access.");
+        checkPermission(Permission.VIEW_CHANNEL, "Cannot get the pinned message of a channel without VIEW_CHANNEL access.");
 
         //Call MessageChannel's default method
         return TextChannel.super.retrievePinnedMessages();
