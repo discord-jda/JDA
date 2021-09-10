@@ -85,6 +85,7 @@ public interface PermissionOverrideAction extends AuditableRestAction<Permission
     @Nonnull
     PermissionOverrideAction resetDeny();
 
+    //TODO-v5: Should probably be IPermissionContainer?
     /**
      * The {@link GuildChannel} this will be created in
      *
