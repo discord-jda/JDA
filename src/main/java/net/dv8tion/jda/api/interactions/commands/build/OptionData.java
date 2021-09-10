@@ -183,7 +183,7 @@ public class OptionData implements SerializableData
      *
      * @return Immutable list of {@link net.dv8tion.jda.api.interactions.commands.Command.Choice Choices}
      *
-     * @see #addChoice(String, int)
+     * @see #addChoice(String, long)
      * @see #addChoice(String, String)
      */
     @Nonnull
@@ -310,6 +310,7 @@ public class OptionData implements SerializableData
      *         If any of the following checks fail
      *         <ul>
      *             <li>{@code name} is not null, empty and less or equal to {@value #MAX_NAME_LENGTH} characters long</li>
+     *             <li>{@code value} is not less than {@link #MIN_NEGATIVE_NUMBER} and not larger than {@link #MAX_POSITIVE_NUMBER}</li>
      *             <li>The amount of already set choices is less than {@link #MAX_CHOICES}</li>
      *             <li>The {@link OptionType} is {@link OptionType#INTEGER}</li>
      *         </ul>
@@ -317,13 +318,15 @@ public class OptionData implements SerializableData
      * @return The OptionData instance, for chaining
      */
     @Nonnull
-    public OptionData addChoice(@Nonnull String name, int value)
+    public OptionData addChoice(@Nonnull String name, long value)
     {
         Checks.notEmpty(name, "Name");
         Checks.notLonger(name, MAX_NAME_LENGTH, "Name");
+        Checks.check(value >= MIN_NEGATIVE_NUMBER, "Long value may not be lower than %f", MIN_NEGATIVE_NUMBER);
+        Checks.check(value <= MAX_POSITIVE_NUMBER, "Long value may not be larger than %f", MAX_POSITIVE_NUMBER);
         Checks.check(choices.size() < MAX_CHOICES, "Cannot have more than 25 choices for an option!");
         if (type != OptionType.INTEGER)
-            throw new IllegalArgumentException("Cannot add int choice for OptionType." + type);
+            throw new IllegalArgumentException("Cannot add Long choice for OptionType." + type);
         choices.put(name, value);
         return this;
     }
@@ -390,7 +393,7 @@ public class OptionData implements SerializableData
         for (Command.Choice choice : choices)
         {
             if (type == OptionType.INTEGER)
-                addChoice(choice.getName(), (int) choice.getAsLong());
+                addChoice(choice.getName(), choice.getAsLong());
             else if (type == OptionType.STRING)
                 addChoice(choice.getName(), choice.getAsString());
             else if (type == OptionType.NUMBER)
