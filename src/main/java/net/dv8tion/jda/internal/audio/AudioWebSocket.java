@@ -21,9 +21,9 @@ import net.dv8tion.jda.api.JDAInfo;
 import net.dv8tion.jda.api.audio.SpeakingMode;
 import net.dv8tion.jda.api.audio.hooks.ConnectionListener;
 import net.dv8tion.jda.api.audio.hooks.ConnectionStatus;
+import net.dv8tion.jda.api.entities.AudioChannel;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.events.ExceptionEvent;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.data.DataArray;
@@ -93,9 +93,9 @@ class AudioWebSocket extends WebSocketAdapter
         wssEndpoint = Helpers.format("wss://%s/?v=%d", endpoint, JDAInfo.AUDIO_GATEWAY_VERSION);
 
         if (sessionId == null || sessionId.isEmpty())
-            throw new IllegalArgumentException("Cannot create a voice connection using a null/empty sessionId!");
+            throw new IllegalArgumentException("Cannot create a audio websocket connection using a null/empty sessionId!");
         if (token == null || token.isEmpty())
-            throw new IllegalArgumentException("Cannot create a voice connection using a null/empty token!");
+            throw new IllegalArgumentException("Cannot create a audio websocket connection using a null/empty token!");
     }
 
     /* Used by AudioConnection */
@@ -162,7 +162,7 @@ class AudioWebSocket extends WebSocketAdapter
 
             audioConnection.shutdown();
 
-            VoiceChannel disconnectedChannel = manager.getConnectedChannel();
+            AudioChannel disconnectedChannel = manager.getConnectedChannel();
             manager.setAudioConnection(null);
 
             //Verify that it is actually a lost of connection and not due the connected channel being deleted.
@@ -179,7 +179,8 @@ class AudioWebSocket extends WebSocketAdapter
                 Guild connGuild = api.getGuildById(guild.getIdLong());
                 if (connGuild != null)
                 {
-                    if (connGuild.getVoiceChannelById(audioConnection.getChannel().getIdLong()) == null)
+                    AudioChannel channel = (AudioChannel) connGuild.getGuildChannelById(audioConnection.getChannel().getIdLong());
+                    if (channel == null)
                         status = ConnectionStatus.DISCONNECTED_CHANNEL_DELETED;
                 }
             }
@@ -193,7 +194,7 @@ class AudioWebSocket extends WebSocketAdapter
             {
                 if (disconnectedChannel == null)
                 {
-                    LOG.debug("Cannot reconnect due to null voice channel");
+                    LOG.debug("Cannot reconnect due to null audio channel");
                     return;
                 }
                 api.getDirectAudioController().reconnect(disconnectedChannel);
