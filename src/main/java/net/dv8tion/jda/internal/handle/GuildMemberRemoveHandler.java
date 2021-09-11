@@ -15,6 +15,7 @@
  */
 package net.dv8tion.jda.internal.handle;
 
+import net.dv8tion.jda.api.entities.AudioChannel;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.VoiceChannel;
@@ -93,15 +94,17 @@ public class GuildMemberRemoveHandler extends SocketHandler
         }
 
         GuildVoiceStateImpl voiceState = (GuildVoiceStateImpl) member.getVoiceState();
-        if (voiceState != null && voiceState.inVoiceChannel())//If this user was in a VoiceChannel, fire VoiceLeaveEvent.
+        if (voiceState != null && voiceState.inAudioChannel())//If this user was in an AudioChannel, fire VoiceLeaveEvent.
         {
-            VoiceChannel channel = voiceState.getChannel();
+            AudioChannel channel = voiceState.getChannel();
             voiceState.setConnectedChannel(null);
             ((VoiceChannelImpl) channel).getConnectedMembersMap().remove(userId);
-            getJDA().handleEvent(
-                new GuildVoiceLeaveEvent(
-                    getJDA(), responseNumber,
-                    member, channel));
+
+            //TODO-v5: Re-enable event once we figure out how to handle Voice vs AudioChannel for stage too.
+//            getJDA().handleEvent(
+//                new GuildVoiceLeaveEvent(
+//                    getJDA(), responseNumber,
+//                    member, channel));
         }
 
         //The user is not in a different guild that we share

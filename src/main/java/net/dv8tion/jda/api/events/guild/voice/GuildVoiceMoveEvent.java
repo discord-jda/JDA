@@ -47,7 +47,8 @@ public class GuildVoiceMoveEvent extends GenericGuildVoiceUpdateEvent
 {
     public GuildVoiceMoveEvent(@Nonnull JDA api, long responseNumber, @Nonnull Member member, @Nonnull VoiceChannel channelLeft)
     {
-        super(api, responseNumber, member, channelLeft, member.getVoiceState().getChannel());
+        //TODO-v5: Cannot cast directly to VoiceChannel here, but doing this to get stuff to compile. We need to revisit when we revisit how to handle the other events too
+        super(api, responseNumber, member, channelLeft, (VoiceChannel) member.getVoiceState().getChannel());
     }
 
     @Nonnull

@@ -45,7 +45,8 @@ public class GuildVoiceJoinEvent extends GenericGuildVoiceUpdateEvent
 {
     public GuildVoiceJoinEvent(@Nonnull JDA api, long responseNumber, @Nonnull Member member)
     {
-        super(api, responseNumber, member, null, member.getVoiceState().getChannel());
+        //TODO-v5: Cannot cast directly to VoiceChannel here, but doing this to get stuff to compile. We need to revisit when we revisit how to handle the other events too
+        super(api, responseNumber, member, null, (VoiceChannel) member.getVoiceState().getChannel());
     }
 
     @Nonnull

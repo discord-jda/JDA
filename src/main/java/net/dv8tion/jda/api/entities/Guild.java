@@ -1459,6 +1459,8 @@ public interface Guild extends ISnowflake
         if (channel == null)
             channel = getVoiceChannelById(id);
         if (channel == null)
+            channel = getStageChannelById(id);
+        if (channel == null)
             channel = getStoreChannelById(id);
         if (channel == null)
             channel = getCategoryById(id);
