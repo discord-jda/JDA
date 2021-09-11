@@ -535,9 +535,9 @@ public class EntityBuilder
         GuildVoiceStateImpl voiceState = (GuildVoiceStateImpl) member.getVoiceState();
 
         final long channelId = voiceStateJson.getLong("channel_id");
-        VoiceChannelImpl voiceChannel = (VoiceChannelImpl) guild.getVoiceChannelsView().get(channelId);
-        if (voiceChannel != null)
-            voiceChannel.getConnectedMembersMap().put(member.getIdLong(), member);
+        AudioChannel audioChannel = (AudioChannel) guild.getGuildChannelById(channelId);
+        if (audioChannel != null)
+            ((AbstractGuildAudioChannelImpl<?, ?>) audioChannel).getConnectedMembersMap().put(member.getIdLong(), member);
         else
             LOG.error("Received a GuildVoiceState with a channel ID for a non-existent channel! ChannelId: {} GuildId: {} UserId: {}",
                       channelId, guild.getId(), user.getId());
@@ -556,7 +556,7 @@ public class EntityBuilder
                   .setSessionId(voiceStateJson.getString("session_id"))
                   .setStream(voiceStateJson.getBoolean("self_stream"))
                   .setRequestToSpeak(timestamp)
-                  .setConnectedChannel(voiceChannel);
+                  .setConnectedChannel(audioChannel);
     }
 
     public void updateMember(GuildImpl guild, MemberImpl member, DataObject content, List<Role> newRoles)
@@ -986,11 +986,7 @@ public class EntityBuilder
                 UnlockHook vlock = guildVoiceView.writeLock();
                 UnlockHook jlock = voiceView.writeLock())
             {
-                //TODO-v5: Re-enable creation of StageChannels
-//                if (json.getInt("type") == ChannelType.STAGE.getId())
-//                    channel = new StageChannelImpl(id, guild);
-//                else
-                    channel = new VoiceChannelImpl(id, guild);
+                channel = new VoiceChannelImpl(id, guild);
                 guildVoiceView.getMap().put(id, channel);
                 playbackCache = voiceView.getMap().put(id, channel) == null;
             }
@@ -1037,14 +1033,12 @@ public class EntityBuilder
             }
         }
 
-        //TODO-v5: detect stage instance and add it?
-
         channel
-                .setParent(json.getLong("parent_id", 0))
-                .setName(json.getString("name"))
-                .setPosition(json.getInt("position"))
-                .setBitrate(json.getInt("bitrate"))
-                .setRegion(json.getString("rtc_region", null));
+            .setParent(json.getLong("parent_id", 0))
+            .setName(json.getString("name"))
+            .setPosition(json.getInt("position"))
+            .setBitrate(json.getInt("bitrate"))
+            .setRegion(json.getString("rtc_region", null));
 
         createOverridesPass(channel, json.getArray("permission_overwrites"));
         if (playbackCache)

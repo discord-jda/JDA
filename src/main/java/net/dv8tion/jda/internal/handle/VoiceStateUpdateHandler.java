@@ -169,10 +169,6 @@ public class VoiceStateUpdateHandler extends SocketHandler
 
         if (!Objects.equals(channel, vState.getChannel()))
         {
-            //TODO-v5: Make this allow StageChannels as well. This can be achieved via duplicate code ofc, but maybe in the future
-            // StageChannels and VoiceChannels will both use a shared implementation of AudioChannel so we will be able to either
-            // case to a shared Impl super class to access things like `getConnectedMembersMap()`.
-
             AudioChannel oldChannel = vState.getChannel();
             vState.setConnectedChannel(channel);
 
@@ -181,11 +177,10 @@ public class VoiceStateUpdateHandler extends SocketHandler
                 ((AbstractGuildAudioChannelImpl<?, ?>) channel).getConnectedMembersMap().put(userId, member);
                 getJDA().getEntityBuilder().updateMemberCache(member);
 
-                //TODO-v5: Re-enable event once we figure out how to handle Voice vs AudioChannel for stage too.
-//                getJDA().handleEvent(
-//                    new GuildVoiceJoinEvent(
-//                        getJDA(), responseNumber,
-//                        member));
+                getJDA().handleEvent(
+                    new GuildVoiceJoinEvent(
+                        getJDA(), responseNumber,
+                        member));
             }
             else if (channel == null)
             {
@@ -194,11 +189,10 @@ public class VoiceStateUpdateHandler extends SocketHandler
                     getJDA().getDirectAudioController().update(guild, null);
                 getJDA().getEntityBuilder().updateMemberCache(member, memberJson.isNull("joined_at"));
 
-                //TODO-v5: Re-enable event once we figure out how to handle Voice vs AudioChannel for stage too.
-//                getJDA().handleEvent(
-//                    new GuildVoiceLeaveEvent(
-//                        getJDA(), responseNumber,
-//                        member, oldChannel));
+                getJDA().handleEvent(
+                    new GuildVoiceLeaveEvent(
+                        getJDA(), responseNumber,
+                        member, oldChannel));
             }
             else
             {
@@ -224,19 +218,17 @@ public class VoiceStateUpdateHandler extends SocketHandler
                 ((AbstractGuildAudioChannelImpl<?, ?>) oldChannel).getConnectedMembersMap().remove(userId);
                 getJDA().getEntityBuilder().updateMemberCache(member);
 
-                //TODO-v5: Re-enable event once we figure out how to handle Voice vs AudioChannel for stage too.
-//                getJDA().handleEvent(
-//                    new GuildVoiceMoveEvent(
-//                        getJDA(), responseNumber,
-//                        member, oldChannel));
+                getJDA().handleEvent(
+                    new GuildVoiceMoveEvent(
+                        getJDA(), responseNumber,
+                        member, oldChannel));
             }
         }
-//
+
         if (isSelf && voiceInterceptor != null)
         {
-            //TODO-v5: Uncomment when audio system supports AudioChannel instead of being exclusive to VoiceChannel
-//            if (voiceInterceptor.onVoiceStateUpdate(new VoiceDispatchInterceptor.VoiceStateUpdate(channel, vState, allContent)))
-//                getJDA().getDirectAudioController().update(guild, channel);
+            if (voiceInterceptor.onVoiceStateUpdate(new VoiceDispatchInterceptor.VoiceStateUpdate(channel, vState, allContent)))
+                getJDA().getDirectAudioController().update(guild, channel);
         }
 
         ((GuildImpl) guild).updateRequestToSpeak();

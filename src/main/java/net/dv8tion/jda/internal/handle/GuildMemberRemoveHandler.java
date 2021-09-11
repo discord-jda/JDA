@@ -98,13 +98,12 @@ public class GuildMemberRemoveHandler extends SocketHandler
         {
             AudioChannel channel = voiceState.getChannel();
             voiceState.setConnectedChannel(null);
-            ((VoiceChannelImpl) channel).getConnectedMembersMap().remove(userId);
+            ((AbstractGuildAudioChannelImpl<?, ?>) channel).getConnectedMembersMap().remove(userId);
 
-            //TODO-v5: Re-enable event once we figure out how to handle Voice vs AudioChannel for stage too.
-//            getJDA().handleEvent(
-//                new GuildVoiceLeaveEvent(
-//                    getJDA(), responseNumber,
-//                    member, channel));
+            getJDA().handleEvent(
+                new GuildVoiceLeaveEvent(
+                    getJDA(), responseNumber,
+                    member, channel));
         }
 
         //The user is not in a different guild that we share

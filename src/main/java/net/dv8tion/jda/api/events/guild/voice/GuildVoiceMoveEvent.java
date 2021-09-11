@@ -17,13 +17,13 @@
 package net.dv8tion.jda.api.events.guild.voice;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.AudioChannel;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.VoiceChannel;
 
 import javax.annotation.Nonnull;
 
 /**
- * Indicates that a {@link net.dv8tion.jda.api.entities.Member Member} moves between {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels}.
+ * Indicates that a {@link net.dv8tion.jda.api.entities.Member Member} moves between {@link net.dv8tion.jda.api.entities.AudioChannel AudioChannels}.
  *
  * <p><b>When the {@link net.dv8tion.jda.api.entities.Member Member} is leaving a {@link net.dv8tion.jda.api.events.guild.voice.GuildVoiceLeaveEvent GuildVoiceLeaveEvent} is fired instead</b>
  *
@@ -45,36 +45,35 @@ import javax.annotation.Nonnull;
  */
 public class GuildVoiceMoveEvent extends GenericGuildVoiceUpdateEvent
 {
-    public GuildVoiceMoveEvent(@Nonnull JDA api, long responseNumber, @Nonnull Member member, @Nonnull VoiceChannel channelLeft)
+    public GuildVoiceMoveEvent(@Nonnull JDA api, long responseNumber, @Nonnull Member member, @Nonnull AudioChannel channelLeft)
     {
-        //TODO-v5: Cannot cast directly to VoiceChannel here, but doing this to get stuff to compile. We need to revisit when we revisit how to handle the other events too
-        super(api, responseNumber, member, channelLeft, (VoiceChannel) member.getVoiceState().getChannel());
+         super(api, responseNumber, member, channelLeft, member.getVoiceState().getChannel());
     }
 
     @Nonnull
     @Override
-    public VoiceChannel getChannelLeft()
+    public AudioChannel getChannelLeft()
     {
         return super.getChannelLeft();
     }
 
     @Nonnull
     @Override
-    public VoiceChannel getChannelJoined()
+    public AudioChannel getChannelJoined()
     {
         return super.getChannelJoined();
     }
 
     @Nonnull
     @Override
-    public VoiceChannel getOldValue()
+    public AudioChannel getOldValue()
     {
         return super.getOldValue();
     }
 
     @Nonnull
     @Override
-    public VoiceChannel getNewValue()
+    public AudioChannel getNewValue()
     {
         return super.getNewValue();
     }
