@@ -20,10 +20,8 @@ import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.channel.category.update.CategoryUpdateNameEvent;
-import net.dv8tion.jda.api.events.channel.category.update.CategoryUpdatePermissionsEvent;
 import net.dv8tion.jda.api.events.channel.category.update.CategoryUpdatePositionEvent;
 import net.dv8tion.jda.api.events.channel.store.update.StoreChannelUpdateNameEvent;
-import net.dv8tion.jda.api.events.channel.store.update.StoreChannelUpdatePermissionsEvent;
 import net.dv8tion.jda.api.events.channel.store.update.StoreChannelUpdatePositionEvent;
 import net.dv8tion.jda.api.events.channel.text.update.*;
 import net.dv8tion.jda.api.events.channel.voice.update.*;
@@ -357,7 +355,6 @@ public class ChannelUpdateHandler extends SocketHandler
         return null;
     }
 
-    @SuppressWarnings("deprecation")
     private void applyPermissions(AbstractChannelImpl<?,?> channel, DataArray permOverwrites)
     {
         TLongObjectMap<PermissionOverride> currentOverrides = new TLongObjectHashMap<>(channel.getOverrideMap());
@@ -383,40 +380,15 @@ public class ChannelUpdateHandler extends SocketHandler
 
         if (changed.isEmpty())
             return;
-        switch (channel.getType())
+
+        //TODO-v5: Add event once we decide how we're going to handle XChannelUpdateYEvent
+        /*if (channel.getType() == ChannelType.STAGE)
         {
-        case CATEGORY:
             api.handleEvent(
-                new CategoryUpdatePermissionsEvent(
+                new StageChannelUpdatePermissionsEvent(
                     api, responseNumber,
-                    (Category) channel, changed));
-            break;
-        case STORE:
-            api.handleEvent(
-                new StoreChannelUpdatePermissionsEvent(
-                    api, responseNumber,
-                    (StoreChannel) channel, changed));
-            break;
-        case VOICE:
-            api.handleEvent(
-                new VoiceChannelUpdatePermissionsEvent(
-                    api, responseNumber,
-                    (VoiceChannel) channel, changed));
-            break;
-        case STAGE:
-            //TODO-v5: Add event once we decide how we're going to handle XChannelUpdateYEvent
-//            api.handleEvent(
-//                new StageChannelUpdatePermissionsEvent(
-//                    api, responseNumber,
-//                    (StageChannel) channel, changed));
-            break;
-        case TEXT:
-            api.handleEvent(
-                new TextChannelUpdatePermissionsEvent(
-                    api, responseNumber,
-                    (TextChannel) channel, changed));
-            break;
-        }
+                    (StageChannel) channel, changed));
+        }*/
     }
 
     private void addPermissionHolder(List<IPermissionHolder> changed, Guild guild, long id)

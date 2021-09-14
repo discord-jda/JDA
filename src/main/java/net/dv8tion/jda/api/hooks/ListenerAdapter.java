@@ -15,8 +15,6 @@
  */
 package net.dv8tion.jda.api.hooks;
 
-import net.dv8tion.jda.annotations.DeprecatedSince;
-import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.events.*;
 import net.dv8tion.jda.api.events.application.ApplicationCommandCreateEvent;
@@ -27,7 +25,6 @@ import net.dv8tion.jda.api.events.channel.category.CategoryCreateEvent;
 import net.dv8tion.jda.api.events.channel.category.CategoryDeleteEvent;
 import net.dv8tion.jda.api.events.channel.category.GenericCategoryEvent;
 import net.dv8tion.jda.api.events.channel.category.update.CategoryUpdateNameEvent;
-import net.dv8tion.jda.api.events.channel.category.update.CategoryUpdatePermissionsEvent;
 import net.dv8tion.jda.api.events.channel.category.update.CategoryUpdatePositionEvent;
 import net.dv8tion.jda.api.events.channel.category.update.GenericCategoryUpdateEvent;
 import net.dv8tion.jda.api.events.channel.store.GenericStoreChannelEvent;
@@ -35,7 +32,6 @@ import net.dv8tion.jda.api.events.channel.store.StoreChannelCreateEvent;
 import net.dv8tion.jda.api.events.channel.store.StoreChannelDeleteEvent;
 import net.dv8tion.jda.api.events.channel.store.update.GenericStoreChannelUpdateEvent;
 import net.dv8tion.jda.api.events.channel.store.update.StoreChannelUpdateNameEvent;
-import net.dv8tion.jda.api.events.channel.store.update.StoreChannelUpdatePermissionsEvent;
 import net.dv8tion.jda.api.events.channel.store.update.StoreChannelUpdatePositionEvent;
 import net.dv8tion.jda.api.events.channel.text.GenericTextChannelEvent;
 import net.dv8tion.jda.api.events.channel.text.TextChannelCreateEvent;
@@ -130,24 +126,6 @@ import java.util.concurrent.ConcurrentMap;
  */
 public abstract class ListenerAdapter implements EventListener
 {
-    @Deprecated
-    @ForRemoval(deadline = "4.4.0")
-    @DeprecatedSince("4.2.0")
-    @ReplaceWith("onPermissionOverrideUpdate(), onPermissionOverrideCreate(), and onPermissionOverrideDelete()")
-    public void onStoreChannelUpdatePermissions(@Nonnull StoreChannelUpdatePermissionsEvent event) {}
-
-    @Deprecated
-    @ForRemoval(deadline = "4.4.0")
-    @DeprecatedSince("4.2.0")
-    @ReplaceWith("onPermissionOverrideUpdate(), onPermissionOverrideCreate(), and onPermissionOverrideDelete()")
-    public void onVoiceChannelUpdatePermissions(@Nonnull VoiceChannelUpdatePermissionsEvent event) {}
-
-    @Deprecated
-    @ForRemoval(deadline = "4.4.0")
-    @DeprecatedSince("4.2.0")
-    @ReplaceWith("onPermissionOverrideUpdate(), onPermissionOverrideCreate(), and onPermissionOverrideDelete()")
-    public void onCategoryUpdatePermissions(@Nonnull CategoryUpdatePermissionsEvent event) {}
-
     public void onGenericEvent(@Nonnull GenericEvent event) {}
     public void onGenericUpdate(@Nonnull UpdateEvent<?, ?> event) {}
     public void onRawGateway(@Nonnull RawGatewayEvent event) {}
