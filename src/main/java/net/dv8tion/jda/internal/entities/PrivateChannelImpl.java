@@ -18,7 +18,10 @@ package net.dv8tion.jda.internal.entities;
 
 import net.dv8tion.jda.api.AccountType;
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.ChannelType;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.PrivateChannel;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import net.dv8tion.jda.api.utils.AttachmentOption;
@@ -146,14 +149,6 @@ public class PrivateChannelImpl implements PrivateChannel
     {
         checkBot();
         return PrivateChannel.super.sendMessage(text);
-    }
-
-    @Nonnull
-    @Override
-    public MessageAction sendMessage(@Nonnull MessageEmbed embed)
-    {
-        checkBot();
-        return PrivateChannel.super.sendMessage(embed);
     }
 
     @Nonnull

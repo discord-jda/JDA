@@ -182,20 +182,6 @@ public class AudioManagerImpl implements AudioManager
     }
 
     @Override
-    @Deprecated
-    public boolean isAttemptingToConnect()
-    {
-        return false;
-    }
-
-    @Override
-    @Deprecated
-    public AudioChannel getQueuedAudioConnection()
-    {
-        return null;
-    }
-
-    @Override
     public AudioChannel getConnectedChannel()
     {
         return audioConnection == null ? null : audioConnection.getChannel();

@@ -30,8 +30,6 @@ import net.dv8tion.jda.api.events.channel.category.update.CategoryUpdateNameEven
 import net.dv8tion.jda.api.events.channel.category.update.CategoryUpdatePermissionsEvent;
 import net.dv8tion.jda.api.events.channel.category.update.CategoryUpdatePositionEvent;
 import net.dv8tion.jda.api.events.channel.category.update.GenericCategoryUpdateEvent;
-import net.dv8tion.jda.api.events.channel.priv.PrivateChannelCreateEvent;
-import net.dv8tion.jda.api.events.channel.priv.PrivateChannelDeleteEvent;
 import net.dv8tion.jda.api.events.channel.store.GenericStoreChannelEvent;
 import net.dv8tion.jda.api.events.channel.store.StoreChannelCreateEvent;
 import net.dv8tion.jda.api.events.channel.store.StoreChannelDeleteEvent;
@@ -130,16 +128,8 @@ import java.util.concurrent.ConcurrentMap;
  * @see net.dv8tion.jda.api.hooks.EventListener EventListener
  * @see net.dv8tion.jda.api.hooks.InterfacedEventManager InterfacedEventManager
  */
-@SuppressWarnings("deprecation")
 public abstract class ListenerAdapter implements EventListener
 {
-    //Deprecated/Unused events
-    @Deprecated
-    @ForRemoval(deadline = "4.4.0")
-    @DeprecatedSince("4.2.0")
-    @ReplaceWith("onPermissionOverrideUpdate(), onPermissionOverrideCreate(), and onPermissionOverrideDelete()")
-    public void onTextChannelUpdatePermissions(@Nonnull TextChannelUpdatePermissionsEvent event) {}
-
     @Deprecated
     @ForRemoval(deadline = "4.4.0")
     @DeprecatedSince("4.2.0")
@@ -157,24 +147,6 @@ public abstract class ListenerAdapter implements EventListener
     @DeprecatedSince("4.2.0")
     @ReplaceWith("onPermissionOverrideUpdate(), onPermissionOverrideCreate(), and onPermissionOverrideDelete()")
     public void onCategoryUpdatePermissions(@Nonnull CategoryUpdatePermissionsEvent event) {}
-
-    @Deprecated
-    @ForRemoval(deadline = "4.4.0")
-    @DeprecatedSince("4.2.0")
-    @ReplaceWith("onGuildMemberRemove(GuildMemberRemoveEvent)")
-    public void onGuildMemberLeave(@Nonnull GuildMemberLeaveEvent event) {}
-
-    @Deprecated
-    @ForRemoval(deadline = "4.4.0")
-    @DeprecatedSince("4.2.1")
-    @ReplaceWith("onResumed(ResumedEvent)")
-    public void onResume(@Nonnull ResumedEvent event) {}
-
-    @Deprecated
-    @ForRemoval(deadline = "4.4.0")
-    @DeprecatedSince("4.2.1")
-    @ReplaceWith("onReconnected(ReconnectedEvent)")
-    public void onReconnect(@Nonnull ReconnectedEvent event) {}
 
     public void onGenericEvent(@Nonnull GenericEvent event) {}
     public void onGenericUpdate(@Nonnull UpdateEvent<?, ?> event) {}
@@ -285,20 +257,6 @@ public abstract class ListenerAdapter implements EventListener
     public void onCategoryUpdateName(@Nonnull CategoryUpdateNameEvent event) {}
     public void onCategoryUpdatePosition(@Nonnull CategoryUpdatePositionEvent event) {}
     public void onCategoryCreate(@Nonnull CategoryCreateEvent event) {}
-
-    //PrivateChannel Events
-
-    /**
-     * @deprecated This event is no longer supported by discord
-     */
-    @Deprecated
-    @ForRemoval(deadline = "4.4.0")
-    @DeprecatedSince("4.3.0")
-    public void onPrivateChannelCreate(@Nonnull PrivateChannelCreateEvent event) {}
-    @Deprecated
-    @ForRemoval(deadline = "4.4.0")
-    @DeprecatedSince("4.3.0")
-    public void onPrivateChannelDelete(@Nonnull PrivateChannelDeleteEvent event) {}
 
     //StageInstance Event
     public void onStageInstanceDelete(@Nonnull StageInstanceDeleteEvent event) {}
@@ -459,12 +417,6 @@ public abstract class ListenerAdapter implements EventListener
         onGenericEvent(event);
         if (event instanceof UpdateEvent)
             onGenericUpdate((UpdateEvent<?, ?>) event);
-
-        //TODO: Remove once deprecated methods are removed
-        if (event instanceof ResumedEvent)
-            onResume((ResumedEvent) event);
-        else if (event instanceof ReconnectedEvent)
-            onReconnect((ReconnectedEvent) event);
 
         for (Class<?> clazz : ClassWalker.range(event.getClass(), GenericEvent.class))
         {

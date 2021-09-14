@@ -205,8 +205,7 @@ public class EntityBuilder
         final int notificationLevel = guildJson.getInt("default_message_notifications", 0);
         final int explicitContentLevel = guildJson.getInt("explicit_content_filter", 0);
 
-        guildObj.setAvailable(true)
-                .setName(name)
+        guildObj.setName(name)
                 .setIconId(iconId)
                 .setSplashId(splashId)
                 .setRegion(region)
@@ -1559,7 +1558,6 @@ public class EntityBuilder
         final String name = content.getString("name");
         final String description = content.getString("description", "");
         final long packId = content.getLong("pack_id", content.getLong("guild_id", 0L));
-        final String asset = content.getString("asset", "");
         final MessageSticker.StickerFormat format = MessageSticker.StickerFormat.fromId(content.getInt("format_type"));
         final Set<String> tags;
         if (content.isNull("tags"))
@@ -1572,7 +1570,7 @@ public class EntityBuilder
             final Set<String> tmp = new HashSet<>(Arrays.asList(split));
             tags = Collections.unmodifiableSet(tmp);
         }
-        return new MessageSticker(id, name, description, packId, asset, format, tags);
+        return new MessageSticker(id, name, description, packId, format, tags);
     }
 
     @Nullable

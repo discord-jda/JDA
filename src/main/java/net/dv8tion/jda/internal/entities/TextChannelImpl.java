@@ -314,17 +314,6 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
 
     @Nonnull
     @Override
-    public MessageAction sendMessage(@Nonnull MessageEmbed embed)
-    {
-        checkPermission(Permission.MESSAGE_READ);
-        checkPermission(Permission.MESSAGE_WRITE);
-        // this is checked because you cannot send an empty message
-        checkPermission(Permission.MESSAGE_EMBED_LINKS);
-        return TextChannel.super.sendMessage(embed);
-    }
-
-    @Nonnull
-    @Override
     public MessageAction sendMessage(@Nonnull Message msg)
     {
         Checks.notNull(msg, "Message");
@@ -544,17 +533,6 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
         checkPermission(Permission.MESSAGE_READ);
         checkPermission(Permission.MESSAGE_WRITE);
         return TextChannel.super.editMessageById(messageId, newContent);
-    }
-
-    @Nonnull
-    @Override
-    @Deprecated
-    public MessageAction editMessageById(@Nonnull String messageId, @Nonnull MessageEmbed newEmbed)
-    {
-        checkPermission(Permission.MESSAGE_READ);
-        checkPermission(Permission.MESSAGE_WRITE);
-        checkPermission(Permission.MESSAGE_EMBED_LINKS);
-        return TextChannel.super.editMessageById(messageId, newEmbed);
     }
 
     @Nonnull
