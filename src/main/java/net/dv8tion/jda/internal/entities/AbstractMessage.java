@@ -283,6 +283,13 @@ public abstract class AbstractMessage implements Message
         return false;
     }
 
+    @Override
+    public long getWebhookIdLong()
+    {
+        unsupported();
+        return 0;
+    }
+
     @Nonnull
     @Override
     public MessageChannel getChannel()

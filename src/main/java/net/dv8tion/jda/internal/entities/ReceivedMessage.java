@@ -60,7 +60,7 @@ public class ReceivedMessage extends AbstractMessage
     protected final MessageType type;
     protected final MessageChannel channel;
     protected final MessageReference messageReference;
-    protected final boolean fromWebhook;
+    protected final long webhookId;
     protected final boolean mentionsEveryone;
     protected final boolean pinned;
     protected final User author;
@@ -92,7 +92,7 @@ public class ReceivedMessage extends AbstractMessage
 
     public ReceivedMessage(
         long id, MessageChannel channel, MessageType type, MessageReference messageReference,
-        boolean fromWebhook, boolean mentionsEveryone, TLongSet mentionedUsers, TLongSet mentionedRoles, boolean tts, boolean pinned,
+        long webhookId, boolean mentionsEveryone, TLongSet mentionedUsers, TLongSet mentionedRoles, boolean tts, boolean pinned,
         String content, String nonce, User author, Member member, MessageActivity activity, OffsetDateTime editTime,
         List<MessageReaction> reactions, List<Attachment> attachments, List<MessageEmbed> embeds, List<MessageSticker> stickers, List<ActionRow> components, int flags, Message.Interaction interaction)
     {
@@ -102,7 +102,7 @@ public class ReceivedMessage extends AbstractMessage
         this.messageReference = messageReference;
         this.type = type;
         this.api = (channel != null) ? (JDAImpl) channel.getJDA() : null;
-        this.fromWebhook = fromWebhook;
+        this.webhookId = webhookId;
         this.mentionsEveryone = mentionsEveryone;
         this.pinned = pinned;
         this.author = author;
@@ -833,7 +833,13 @@ public class ReceivedMessage extends AbstractMessage
     @Override
     public boolean isWebhookMessage()
     {
-        return fromWebhook;
+        return webhookId != 0;
+    }
+
+    @Override
+    public long getWebhookIdLong()
+    {
+        return webhookId;
     }
 
     @Override

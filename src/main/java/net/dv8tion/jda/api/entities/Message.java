@@ -686,8 +686,40 @@ public interface Message extends ISnowflake, Formattable
      *         If this is a system message
      *
      * @return True if this message was sent by a {@link net.dv8tion.jda.api.entities.Webhook Webhook}.
+     *
+     * @see #getWebhookIdLong()
+     * @see #getWebhookId()
      */
     boolean isWebhookMessage();
+
+    /**
+     * Returns the id of the {@link net.dv8tion.jda.api.entities.Webhook Webhook} that sent this message
+     * or {@code null} if it wasn't sent by a Webhook.
+     *
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is a system message
+     *
+     * @return The id of the webhook that sent this message or {@code null} if it wasn't sent by a webhook
+     *
+     * @see #isWebhookMessage()
+     */
+    default String getWebhookId()
+    {
+        return isWebhookMessage() ? Long.toUnsignedString(getIdLong()) : null;
+    }
+
+    /**
+     * Returns the id of the {@link net.dv8tion.jda.api.entities.Webhook Webhook} that sent this message
+     * or 0 if it wasn't sent by a Webhook.
+     *
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is a system message
+     *
+     * @return The id of the webhook that sent this message or 0 if it wasn't sent by a webhook
+     *
+     * @see #isWebhookMessage()
+     */
+    long getWebhookIdLong();
 
     /**
      * Returns the {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel} that this message was sent in.

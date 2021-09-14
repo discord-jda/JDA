@@ -1180,7 +1180,7 @@ public class EntityBuilder
         }
 
         final String content = jsonObject.getString("content", "");
-        final boolean fromWebhook = jsonObject.hasKey("webhook_id");
+        final long webhookId = jsonObject.getLong("webhook_id", 0);
         final boolean pinned = jsonObject.getBoolean("pinned");
         final boolean tts = jsonObject.getBoolean("tts");
         final boolean mentionsEveryone = jsonObject.getBoolean("mention_everyone");
@@ -1217,7 +1217,7 @@ public class EntityBuilder
                 user = member != null ? member.getUser() : null;
                 if (user == null)
                 {
-                    if (fromWebhook || !modifyCache)
+                    if (webhookId != 0 || !modifyCache)
                         user = createUser(author);
                     else
                         throw new IllegalArgumentException(MISSING_USER); // Specifically for MESSAGE_CREATE
@@ -1226,7 +1226,7 @@ public class EntityBuilder
             default: throw new IllegalArgumentException("Invalid Channel for creating a Message [" + channel.getType() + ']');
         }
 
-        if (modifyCache && !fromWebhook) // update the user information on message receive
+        if (modifyCache && webhookId == 0) // update the user information on message receive
             updateUser((UserImpl) user, author);
 
         TLongSet mentionedRoles = new TLongHashSet();
@@ -1302,13 +1302,13 @@ public class EntityBuilder
             throw new IllegalArgumentException(UNKNOWN_MESSAGE_TYPE);
         if (!type.isSystem())
         {
-            message = new ReceivedMessage(id, channel, type, messageReference, fromWebhook,
+            message = new ReceivedMessage(id, channel, type, messageReference, webhookId,
                     mentionsEveryone, mentionedUsers, mentionedRoles, tts, pinned,
                     content, nonce, user, member, activity, editTime, reactions, attachments, embeds, stickers, components, flags, messageInteraction);
         }
         else
         {
-            message = new SystemMessage(id, channel, type, messageReference, fromWebhook,
+            message = new SystemMessage(id, channel, type, messageReference, webhookId,
                     mentionsEveryone, mentionedUsers, mentionedRoles, tts, pinned,
                     content, nonce, user, member, activity, editTime, reactions, attachments, embeds, stickers, flags);
             return message; // We don't need to parse mentions for system messages, they are always empty anyway
