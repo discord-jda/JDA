@@ -26,7 +26,6 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.JDALogger;
-import net.dv8tion.jda.internal.utils.tuple.Pair;
 import org.slf4j.Logger;
 
 import javax.annotation.Nonnull;
@@ -117,15 +116,6 @@ public class SessionControllerAdapter implements SessionController
                 }
             }
         }.priority().complete();
-    }
-
-    @Nonnull
-    @Override
-    @SuppressWarnings({"deprecation", "RedundantSuppression"})
-    public Pair<String, Integer> getGatewayBot(@Nonnull JDA api)
-    {
-        ShardedGateway bot = getShardedGateway(api);
-        return Pair.of(bot.getUrl(), bot.getShardTotal());
     }
 
     protected void runWorker()
