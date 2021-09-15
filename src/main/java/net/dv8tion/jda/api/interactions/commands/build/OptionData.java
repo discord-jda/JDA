@@ -468,8 +468,7 @@ public class OptionData implements SerializableData
         DataObject json = DataObject.empty()
                 .put("type", type.getKey())
                 .put("name", name)
-                .put("description", description)
-                .put("channel_types", Arrays.stream(channelTypes).map(ChannelType::getId).collect(Collectors.toList()));
+                .put("description", description);
         if (type != OptionType.SUB_COMMAND && type != OptionType.SUB_COMMAND_GROUP)
             json.put("required", isRequired);
         if (choices != null && !choices.isEmpty())
@@ -479,6 +478,8 @@ public class OptionData implements SerializableData
                     .map(entry -> DataObject.empty().put("name", entry.getKey()).put("value", entry.getValue()))
                     .collect(Collectors.toList())));
         }
+        if (channelTypes != null)
+            json.put("channel_types", Arrays.stream(channelTypes).map(ChannelType::getId).collect(Collectors.toList()));
         return json;
     }
 
