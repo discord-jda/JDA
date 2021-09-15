@@ -43,6 +43,8 @@ public interface Role extends IMentionable, IPermissionHolder, Comparable<Role>
 {
     /** Used to keep consistency between color values used in the API */
     int DEFAULT_COLOR_RAW = 0x1FFFFFFF; // java.awt.Color fills the MSB with FF, we just use 1F to provide better consistency
+    /** Template for {@link #getIconUrl()}. */
+    String ICON_URL = "https://cdn.discordapp.com/role-icons/%s/%s.png";
 
     /**
      * The hierarchical position of this {@link net.dv8tion.jda.api.entities.Role Role}
@@ -290,6 +292,34 @@ public interface Role extends IMentionable, IPermissionHolder, Comparable<Role>
      */
     @Nonnull
     RoleTags getTags();
+
+    /**
+     * The Discord hash-id of the {@link net.dv8tion.jda.api.entities.Role Role} icon image.
+     * If no icon has been set, this returns {@code null}.
+     * <p>The Role icon can be modified using {@link RoleManager#setIcon(Icon)}.
+     *
+     * @return Possibly-null String containing the Role's icon hash-id.
+     *
+     * @since  4.3.1
+     */
+    @Nullable
+    String getIconId();
+
+    /**
+     * The URL of the {@link net.dv8tion.jda.api.entities.Role Role} icon image.
+     * If no icon has been set, this returns {@code null}.
+     * <p>The Role icon can be modified using {@link RoleManager#setIcon(Icon)} (Icon)}.
+     *
+     * @return Possibly-null String containing the Role's icon URL.
+     *
+     * @since  4.3.1
+     */
+    @Nullable
+    default String getIconUrl()
+    {
+        String iconId = getIconId();
+        return iconId == null ? null : String.format(ICON_URL, getId(), iconId);
+    }
 
     /**
      * Tags associated with this role.

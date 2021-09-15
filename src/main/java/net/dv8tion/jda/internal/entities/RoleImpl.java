@@ -39,6 +39,7 @@ import net.dv8tion.jda.internal.utils.PermissionUtil;
 import net.dv8tion.jda.internal.utils.cache.SortedSnowflakeCacheViewImpl;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.awt.*;
 import java.time.OffsetDateTime;
 import java.util.Collection;
@@ -61,6 +62,7 @@ public class RoleImpl implements Role
     private long rawPermissions;
     private int color;
     private int rawPosition;
+    private String iconId;
 
     public RoleImpl(long id, Guild guild)
     {
@@ -330,6 +332,13 @@ public class RoleImpl implements Role
         return tags == null ? RoleTagsImpl.EMPTY : tags;
     }
 
+    @Nullable
+    @Override
+    public String getIconId()
+    {
+        return iconId;
+    }
+
     @Nonnull
     @Override
     public String getAsMention()
@@ -441,6 +450,12 @@ public class RoleImpl implements Role
         if (this.tags == null)
             return this;
         this.tags = new RoleTagsImpl(tags);
+        return this;
+    }
+
+    public RoleImpl setIconId(String iconId)
+    {
+        this.iconId = iconId;
         return this;
     }
 

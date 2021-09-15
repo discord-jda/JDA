@@ -64,6 +64,7 @@ public class GuildRoleUpdateHandler extends SocketHandler
         long permissions = rolejson.getLong("permissions");
         boolean hoisted = rolejson.getBoolean("hoist");
         boolean mentionable = rolejson.getBoolean("mentionable");
+        String iconId = rolejson.getString("icon", null);
 
         if (!Objects.equals(name, role.getName()))
         {
@@ -120,6 +121,15 @@ public class GuildRoleUpdateHandler extends SocketHandler
                     new RoleUpdateMentionableEvent(
                             getJDA(), responseNumber,
                             role, wasMentionable));
+        }
+        if (!Objects.equals(iconId, role.getIconId()))
+        {
+            String oldIconId = role.getIconId();
+            role.setIconId(iconId);
+            getJDA().handleEvent(
+                    new RoleUpdateIconEvent(
+                            getJDA(), responseNumber,
+                            role, oldIconId));
         }
         return null;
     }
