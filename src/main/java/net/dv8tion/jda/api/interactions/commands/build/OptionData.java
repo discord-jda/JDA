@@ -283,7 +283,12 @@ public class OptionData implements SerializableData
      *         or empty array to accept all {@link ChannelType ChannelTypes}
      *
      * @throws IllegalArgumentException
-     *         If this option is not of the {@link OptionType#CHANNEL CHANNEL} type or the array contains {@code null}
+     *         If any of the following checks fail
+     *         <ul>
+     *             <li>{@link OptionType OptionType} is {@link OptionType#CHANNEL CHANNEL}</li>
+     *             <li>{@code channelTypes} doesn't contain {@code null}</li>
+     *             <li>{@code channelTypes} doesn't contain {@link ChannelType#UNKNOWN ChannelType#UNKNOWN}</li>
+     *         </ul>
      *
      * @return The OptionData instance, for chaining
      */
@@ -292,6 +297,12 @@ public class OptionData implements SerializableData
         if (type != OptionType.CHANNEL)
             throw new IllegalArgumentException("The OptionType must be CHANNEL to restrict the types");
         Checks.noneNull(channelTypes, "ChannelType");
+
+        for (ChannelType channelType : channelTypes)
+        {
+            if (channelType == ChannelType.UNKNOWN)
+                throw new IllegalArgumentException("ChannelTypes may not contain UNKNOWN");
+        }
 
         this.channelTypes = channelTypes;
         return this;
