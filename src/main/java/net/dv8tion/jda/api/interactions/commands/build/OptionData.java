@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.interactions.commands.build;
 
+import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.utils.data.DataArray;
@@ -37,7 +38,7 @@ public class OptionData implements SerializableData
      * The highest positive amount Discord allows the {@link OptionType#NUMBER NUMBER} type to be.
      */
     public static final double MAX_POSITIVE_NUMBER = (1L << 53) - 1; // 1L << 53 is non-inclusive for Discord
-    
+
     /**
      * The largest negative amount Discord allows the {@link OptionType#NUMBER NUMBER} type to be.
      */
@@ -47,7 +48,7 @@ public class OptionData implements SerializableData
      * The maximum length the name of an option can be.
      */
     public static final int MAX_NAME_LENGTH = 32;
-    
+
     /**
      * The maximum length of the name of Command Option Choice names
      */
@@ -67,10 +68,11 @@ public class OptionData implements SerializableData
      * The total amount of {@link #getChoices() choices} you can set.
      */
     public static final int MAX_CHOICES = 25;
-    
+
     private final OptionType type;
     private String name, description;
     private boolean isRequired;
+    private ChannelType[] channelTypes;
     private Map<String, Object> choices;
 
     /**
@@ -122,16 +124,11 @@ public class OptionData implements SerializableData
     public OptionData(@Nonnull OptionType type, @Nonnull String name, @Nonnull String description, boolean isRequired)
     {
         Checks.notNull(type, "Type");
-        Checks.notEmpty(name, "Name");
-        Checks.notEmpty(description, "Description");
-        Checks.notLonger(name, MAX_NAME_LENGTH, "Name");
-        Checks.notLonger(description, MAX_DESCRIPTION_LENGTH, "Description");
-        Checks.matches(name, Checks.ALPHANUMERIC_WITH_DASH, "Name");
-        Checks.isLowercase(name, "Name");
         this.type = type;
-        this.name = name;
-        this.description = description;
-        this.isRequired = isRequired;
+
+        setName(name);
+        setDescription(description);
+        setRequired(isRequired);
         if (type.canSupportChoices())
             choices = new LinkedHashMap<>();
     }
@@ -180,6 +177,17 @@ public class OptionData implements SerializableData
     public boolean isRequired()
     {
         return isRequired;
+    }
+
+    /**
+     * The {@link ChannelType ChannelTypes} this option is restricted to
+     * or empty array if this option is not of the {@link OptionType#CHANNEL CHANNEL} type
+     * or if this {@link OptionType#CHANNEL CHANNEL} option accepts all {@link ChannelType ChannelTypes}.
+     *
+     * @return The {@link ChannelType ChannelTypes} this option is restricted to
+     */
+    public ChannelType[] getChannelTypes() {
+        return channelTypes;
     }
 
     /**
@@ -268,15 +276,37 @@ public class OptionData implements SerializableData
     }
 
     /**
+     * Configure the {@link ChannelType ChannelTypes} to restrict this option to.
+     *
+     * @param  channelTypes
+     *         The {@link ChannelType ChannelTypes} to restrict this option to
+     *         or empty array to accept all {@link ChannelType ChannelTypes}
+     *
+     * @throws IllegalArgumentException
+     *         If this option is not of the {@link OptionType#CHANNEL CHANNEL} type or the array contains {@code null}
+     *
+     * @return The OptionData instance, for chaining
+     */
+    @Nonnull
+    public OptionData setChannelTypes(ChannelType... channelTypes) {
+        if (type != OptionType.CHANNEL)
+            throw new IllegalArgumentException("The OptionType must be CHANNEL to restrict the types");
+        Checks.noneNull(channelTypes, "ChannelType");
+
+        this.channelTypes = channelTypes;
+        return this;
+    }
+
+    /**
      * Add a predefined choice for this option.
      * <br>The user can only provide one of the choices and cannot specify any other value.
-     * 
+     *
      * @param  name
      *         The name used in the client, up to {@value #MAX_CHOICE_NAME_LENGTH} characters long, as defined by
      *         {@link #MAX_CHOICE_NAME_LENGTH}
      * @param  value
      *         The value received in {@link net.dv8tion.jda.api.interactions.commands.OptionMapping OptionMapping}
-     * 
+     *
      * @throws IllegalArgumentException
      *         If any of the following checks fail
      *         <ul>
@@ -285,7 +315,7 @@ public class OptionData implements SerializableData
      *             <li>The amount of already set choices is less than {@link #MAX_CHOICES}</li>
      *             <li>The {@link OptionType} is {@link OptionType#NUMBER}</li>
      *         </ul>
-     * 
+     *
      * @return The OptionData instance, for chaining
      */
     @Nonnull
@@ -301,7 +331,7 @@ public class OptionData implements SerializableData
         choices.put(name, value);
         return this;
     }
-    
+
     /**
      * Add a predefined choice for this option.
      * <br>The user can only provide one of the choices and cannot specify any other value.
@@ -430,7 +460,7 @@ public class OptionData implements SerializableData
         Checks.noneNull(choices, "Choices");
         return addChoices(choices.toArray(new Command.Choice[0]));
     }
-    
+
     @Nonnull
     @Override
     public DataObject toData()
@@ -438,7 +468,8 @@ public class OptionData implements SerializableData
         DataObject json = DataObject.empty()
                 .put("type", type.getKey())
                 .put("name", name)
-                .put("description", description);
+                .put("description", description)
+                .put("channel_types", Arrays.stream(channelTypes).map(ChannelType::getId).collect(Collectors.toList()));
         if (type != OptionType.SUB_COMMAND && type != OptionType.SUB_COMMAND_GROUP)
             json.put("required", isRequired);
         if (choices != null && !choices.isEmpty())
