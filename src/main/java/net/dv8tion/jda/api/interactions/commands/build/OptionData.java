@@ -285,9 +285,10 @@ public class OptionData implements SerializableData
      * @throws IllegalArgumentException
      *         If any of the following checks fail
      *         <ul>
-     *             <li>{@link OptionType OptionType} is {@link OptionType#CHANNEL CHANNEL}</li>
+     *             <li>{@link OptionType type of this option} is {@link OptionType#CHANNEL CHANNEL}</li>
      *             <li>{@code channelTypes} doesn't contain {@code null}</li>
-     *             <li>{@code channelTypes} doesn't contain {@link ChannelType#UNKNOWN ChannelType#UNKNOWN}</li>
+     *             <li>{@code channelTypes} doesn't contain {@link ChannelType#UNKNOWN ChannelType#UNKNOWN}
+     *             or {@link ChannelType#PRIVATE ChannelType#PRIVATE}</li>
      *         </ul>
      *
      * @return The OptionData instance, for chaining
@@ -300,8 +301,8 @@ public class OptionData implements SerializableData
 
         for (ChannelType channelType : channelTypes)
         {
-            if (channelType == ChannelType.UNKNOWN)
-                throw new IllegalArgumentException("ChannelTypes may not contain UNKNOWN");
+            if (channelType == ChannelType.UNKNOWN || channelType == ChannelType.PRIVATE)
+                throw new IllegalArgumentException("ChannelTypes may not contain UNKNOWN or PRIVATE");
         }
 
         this.channelTypes = channelTypes;
