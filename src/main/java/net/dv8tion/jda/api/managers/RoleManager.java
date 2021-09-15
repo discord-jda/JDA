@@ -58,7 +58,7 @@ public interface RoleManager extends Manager<RoleManager>
     /** Used to reset the mentionable field */
     long MENTIONABLE = 0x10;
     /** Used to reset the icon field */
-    long ICON = 0x12;
+    long ICON        = 0x12;
 
     /**
      * Resets the fields specified by the provided bit-flag pattern.
