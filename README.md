@@ -653,19 +653,19 @@ All dependencies are managed automatically by Gradle.
    * Version: **2.14**
    * [Github](https://github.com/TakahikoKawasaki/nv-websocket-client)
  * OkHttp
-   * Version: **3.13.0**
+   * Version: **4.9.1**
    * [Github](https://github.com/square/okhttp)
  * Apache Commons Collections4
-   * Version: **4.1**
+   * Version: **4.4**
    * [Website](https://commons.apache.org/proper/commons-collections)
  * jackson
-   * Version: **2.10.1**
+   * Version: **2.12.5**
    * [Github](https://github.com/FasterXML/jackson)
  * Trove4j
    * Version: **3.0.3**
    * [BitBucket](https://bitbucket.org/trove4j/trove)
  * slf4j-api
-   * Version: **1.7.25**
+   * Version: **1.7.32**
    * [Website](https://www.slf4j.org/)
  * opus-java (optional)
    * Version: **1.1.0**
