@@ -2738,10 +2738,11 @@ public interface Message extends ISnowflake, Formattable
         private final int size;
         private final int height;
         private final int width;
+        private final boolean ephemeral;
 
         private final JDAImpl jda;
 
-        public Attachment(long id, String url, String proxyUrl, String fileName, String contentType, int size, int height, int width, JDAImpl jda)
+        public Attachment(long id, String url, String proxyUrl, String fileName, String contentType, int size, int height, int width, boolean ephemeral, JDAImpl jda)
         {
             this.id = id;
             this.url = url;
@@ -2751,6 +2752,7 @@ public interface Message extends ISnowflake, Formattable
             this.size = size;
             this.height = height;
             this.width = width;
+            this.ephemeral = ephemeral;
             this.jda = jda;
         }
 
@@ -3096,6 +3098,17 @@ public interface Message extends ISnowflake, Formattable
         public int getWidth()
         {
             return width;
+        }
+
+        /**
+         *  Whether or not this attachment is from an ephemeral Message,
+         * <br>If this Attachment is ephemeral it will automatically be removed after 2 weeks, but it's guaranteed to be available as long as the message itself exists.
+         *
+         * @return True if this attachement is from an ephemeral message
+         */
+        public boolean isEphemeral()
+        {
+            return ephemeral;
         }
 
         /**
