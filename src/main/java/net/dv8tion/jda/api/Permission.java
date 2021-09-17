@@ -40,7 +40,7 @@ public enum Permission
     VIEW_GUILD_INSIGHTS( 19, true, false, "View Server Insights"),
 
     // Applicable to all channel types
-    VIEW_CHANNEL(            10, true, true, "Read Text Channels & See Voice Channels"),
+    VIEW_CHANNEL(            10, true, true, "View Channel(s)"),
 
     // Text Permissions
     MESSAGE_WRITE(           11, true, true, "Send Messages"),
