@@ -72,7 +72,7 @@ public class OptionData implements SerializableData
     private final OptionType type;
     private String name, description;
     private boolean isRequired;
-    private final Set<ChannelType> channelTypes = EnumSet.noneOf(ChannelType.class);
+    private final EnumSet<ChannelType> channelTypes = EnumSet.noneOf(ChannelType.class);
     private Map<String, Object> choices;
 
     /**
@@ -183,10 +183,10 @@ public class OptionData implements SerializableData
      * The {@link ChannelType ChannelTypes} this option is restricted to.
      * <br>This is empty if the option is not of type {@link OptionType#CHANNEL CHANNEL} or not restricted to specific types.
      *
-     * @return {@link Set} of {@link ChannelType}
+     * @return {@link EnumSet} of {@link ChannelType}
      */
     @Nonnull
-    public Set<ChannelType> getChannelTypes()
+    public EnumSet<ChannelType> getChannelTypes()
     {
         return channelTypes;
     }
@@ -519,7 +519,7 @@ public class OptionData implements SerializableData
                     .map(entry -> DataObject.empty().put("name", entry.getKey()).put("value", entry.getValue()))
                     .collect(Collectors.toList())));
         }
-        if (type == OptionType.CHANNEL)
+        if (type == OptionType.CHANNEL && !channelTypes.isEmpty())
             json.put("channel_types", channelTypes.stream().map(ChannelType::getId).collect(Collectors.toList()));
         return json;
     }
