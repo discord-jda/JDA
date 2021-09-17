@@ -43,17 +43,18 @@ public enum Permission
     VIEW_CHANNEL(            10, true, true, "Read Text Channels & See Voice Channels"),
 
     // Text Permissions
-    MESSAGE_READ(            10, true, true, "Read Messages"),
-    MESSAGE_WRITE(           11, true, true, "Send Messages"),
-    MESSAGE_TTS(             12, true, true, "Send TTS Messages"),
-    MESSAGE_MANAGE(          13, true, true, "Manage Messages"),
-    MESSAGE_EMBED_LINKS(     14, true, true, "Embed Links"),
-    MESSAGE_ATTACH_FILES(    15, true, true, "Attach Files"),
-    MESSAGE_HISTORY(         16, true, true, "Read History"),
-    MESSAGE_MENTION_EVERYONE(17, true, true, "Mention Everyone"),
-    MESSAGE_EXT_EMOJI(       18, true, true, "Use External Emojis"),
-    MESSAGE_EXT_STICKER(     37, true, true, "Use External Stickers"),
-    USE_SLASH_COMMANDS(      31, true, true, "Use Slash Commands"),
+    MESSAGE_READ(             10, true, true, "Read Messages"),
+    MESSAGE_WRITE(            11, true, true, "Send Messages"),
+    MESSAGE_TTS(              12, true, true, "Send TTS Messages"),
+    MESSAGE_MANAGE(           13, true, true, "Manage Messages"),
+    MESSAGE_EMBED_LINKS(      14, true, true, "Embed Links"),
+    MESSAGE_ATTACH_FILES(     15, true, true, "Attach Files"),
+    MESSAGE_HISTORY(          16, true, true, "Read History"),
+    MESSAGE_MENTION_EVERYONE( 17, true, true, "Mention Everyone"),
+    MESSAGE_EXT_EMOJI(        18, true, true, "Use External Emojis"),
+    MESSAGE_EXT_STICKER(      37, true, true, "Use External Stickers"),
+    USE_SLASH_COMMANDS(       31, true, true, "Use Slash Commands"),
+    START_EMBEDDED_ACTIVITIES(39, true, true, "Launching Activities in Voice Channels"),
 
     MANAGE_THREADS(     34, true, true, "Manage Threads"),
     USE_PUBLIC_THREADS( 35, true, true, "Use Public Threads"),
@@ -117,7 +118,8 @@ public enum Permission
      */
     public static final long ALL_VOICE_PERMISSIONS
             = Permission.getRaw(VOICE_STREAM, VOICE_CONNECT, VOICE_SPEAK, VOICE_MUTE_OTHERS,
-                                VOICE_DEAF_OTHERS, VOICE_MOVE_OTHERS, VOICE_USE_VAD, PRIORITY_SPEAKER, REQUEST_TO_SPEAK);
+                                VOICE_DEAF_OTHERS, VOICE_MOVE_OTHERS, VOICE_USE_VAD,
+                                PRIORITY_SPEAKER, REQUEST_TO_SPEAK, START_EMBEDDED_ACTIVITIES);
 
     private final int offset;
     private final long raw;
