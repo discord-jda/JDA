@@ -3102,7 +3102,7 @@ public interface Message extends ISnowflake, Formattable
 
         /**
          * Whether or not this attachment is from an ephemeral Message.
-         * <br>If this Attachment is ephemeral, it will automatically be removed after 2 weeks. The attachment guaranteed to be available as long as the message itself exists.
+         * <br>If this Attachment is ephemeral, it will automatically be removed after 2 weeks. The attachment is guaranteed to be available as long as the message itself exists.
          *
          * @return True if this attachment is from an ephemeral message
          */
