@@ -72,7 +72,7 @@ public class OptionData implements SerializableData
     private final OptionType type;
     private String name, description;
     private boolean isRequired;
-    private Set<ChannelType> channelTypes = new HashSet<>();
+    private final Set<ChannelType> channelTypes = EnumSet.noneOf(ChannelType.class);
     private Map<String, Object> choices;
 
     /**
@@ -183,7 +183,7 @@ public class OptionData implements SerializableData
      * The {@link ChannelType ChannelTypes} this option is restricted to.
      * <br>This is empty if the option is not of type {@link OptionType#CHANNEL CHANNEL} or not restricted to specific types.
      *
-     * @return Immutable {@link Set} of {@link ChannelType}
+     * @return {@link Set} of {@link ChannelType}
      */
     @Nonnull
     public Set<ChannelType> getChannelTypes()
@@ -297,8 +297,8 @@ public class OptionData implements SerializableData
     @Nonnull
     public OptionData setChannelTypes(@Nonnull ChannelType... channelTypes)
     {
-        setChannelTypes(Arrays.asList(channelTypes));
-        return this;
+        Checks.noneNull(channelTypes, "ChannelTypes");
+        return setChannelTypes(Arrays.asList(channelTypes));
     }
 
     /**
@@ -331,8 +331,9 @@ public class OptionData implements SerializableData
         for (ChannelType channelType : channelTypes)
         {
             if (!channelType.isGuild())
-                throw new IllegalArgumentException("Can only apply channel type restriction to guild channels");
+                throw new IllegalArgumentException("Provided channel type is not a guild channel type. Provided: " + channelType);
         }
+        this.channelTypes.clear();
         this.channelTypes.addAll(channelTypes);
         return this;
     }
@@ -508,8 +509,7 @@ public class OptionData implements SerializableData
         DataObject json = DataObject.empty()
                 .put("type", type.getKey())
                 .put("name", name)
-                .put("description", description)
-                .put("channel_types", channelTypes.stream().map(ChannelType::getId).collect(Collectors.toList()));
+                .put("description", description);
         if (type != OptionType.SUB_COMMAND && type != OptionType.SUB_COMMAND_GROUP)
             json.put("required", isRequired);
         if (choices != null && !choices.isEmpty())
@@ -519,6 +519,8 @@ public class OptionData implements SerializableData
                     .map(entry -> DataObject.empty().put("name", entry.getKey()).put("value", entry.getValue()))
                     .collect(Collectors.toList())));
         }
+        if (type == OptionType.CHANNEL)
+            json.put("channel_types", channelTypes.stream().map(ChannelType::getId).collect(Collectors.toList()));
         return json;
     }
 
