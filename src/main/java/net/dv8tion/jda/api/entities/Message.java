@@ -3101,7 +3101,7 @@ public interface Message extends ISnowflake, Formattable
         }
 
         /**
-         *  Whether or not this attachment is from an ephemeral Message,
+         *  Whether or not this attachment is from an ephemeral Message.
          * <br>If this Attachment is ephemeral it will automatically be removed after 2 weeks, but it's guaranteed to be available as long as the message itself exists.
          *
          * @return True if this attachement is from an ephemeral message
