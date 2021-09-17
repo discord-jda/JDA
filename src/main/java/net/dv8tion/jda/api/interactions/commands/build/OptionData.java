@@ -72,7 +72,7 @@ public class OptionData implements SerializableData
     private final OptionType type;
     private String name, description;
     private boolean isRequired;
-    private ChannelType[] channelTypes;
+    private Set<ChannelType> channelTypes = new HashSet<>();
     private Map<String, Object> choices;
 
     /**
@@ -180,13 +180,14 @@ public class OptionData implements SerializableData
     }
 
     /**
-     * The {@link ChannelType ChannelTypes} this option is restricted to
-     * or empty array if this option is not of the {@link OptionType#CHANNEL CHANNEL} type
-     * or if this {@link OptionType#CHANNEL CHANNEL} option accepts all {@link ChannelType ChannelTypes}.
+     * The {@link ChannelType ChannelTypes} this option is restricted to.
+     * <br>This is empty if the option is not of type {@link OptionType#CHANNEL CHANNEL} or not restricted to specific types.
      *
-     * @return The {@link ChannelType ChannelTypes} this option is restricted to
+     * @return Immutable {@link Set} of {@link ChannelType}
      */
-    public ChannelType[] getChannelTypes() {
+    @Nonnull
+    public Set<ChannelType> getChannelTypes()
+    {
         return channelTypes;
     }
 
@@ -277,6 +278,7 @@ public class OptionData implements SerializableData
 
     /**
      * Configure the {@link ChannelType ChannelTypes} to restrict this option to.
+     * <b>This only applies to options of type {@link OptionType#CHANNEL CHANNEL}.</b>
      *
      * @param  channelTypes
      *         The {@link ChannelType ChannelTypes} to restrict this option to
@@ -287,25 +289,51 @@ public class OptionData implements SerializableData
      *         <ul>
      *             <li>{@link OptionType type of this option} is {@link OptionType#CHANNEL CHANNEL}</li>
      *             <li>{@code channelTypes} doesn't contain {@code null}</li>
-     *             <li>{@code channelTypes} doesn't contain {@link ChannelType#UNKNOWN ChannelType#UNKNOWN}
-     *             or {@link ChannelType#PRIVATE ChannelType#PRIVATE}</li>
+     *             <li>{@code channelTypes} only contains guild channels</li>
      *         </ul>
      *
      * @return The OptionData instance, for chaining
      */
     @Nonnull
-    public OptionData setChannelTypes(ChannelType... channelTypes) {
+    public OptionData setChannelTypes(@Nonnull ChannelType... channelTypes)
+    {
+        setChannelTypes(Arrays.asList(channelTypes));
+        return this;
+    }
+
+    /**
+     * Configure the {@link ChannelType ChannelTypes} to restrict this option to.
+     * <b>This only applies to options of type {@link OptionType#CHANNEL CHANNEL}.</b>
+     *
+     * @param  channelTypes
+     *         The {@link ChannelType ChannelTypes} to restrict this option to
+     *         or empty collection to accept all {@link ChannelType ChannelTypes}
+     *
+     * @throws IllegalArgumentException
+     *         If any of the following checks fail
+     *         <ul>
+     *             <li>{@link OptionType type of this option} is {@link OptionType#CHANNEL CHANNEL}</li>
+     *             <li>{@code channelTypes} is not null</li>
+     *             <li>{@code channelTypes} doesn't contain {@code null}</li>
+     *             <li>{@code channelTypes} only contains guild channels</li>
+     *         </ul>
+     *
+     * @return The OptionData instance, for chaining
+     */
+    @Nonnull
+    public OptionData setChannelTypes(@Nonnull Collection<ChannelType> channelTypes)
+    {
         if (type != OptionType.CHANNEL)
-            throw new IllegalArgumentException("The OptionType must be CHANNEL to restrict the types");
+            throw new IllegalArgumentException("Can only apply channel type restriction to options of type CHANNEL");
+        Checks.notNull(channelTypes, "ChannelType collection");
         Checks.noneNull(channelTypes, "ChannelType");
 
         for (ChannelType channelType : channelTypes)
         {
-            if (channelType == ChannelType.UNKNOWN || channelType == ChannelType.PRIVATE)
-                throw new IllegalArgumentException("ChannelTypes may not contain UNKNOWN or PRIVATE");
+            if (!channelType.isGuild())
+                throw new IllegalArgumentException("Can only apply channel type restriction to guild channels");
         }
-
-        this.channelTypes = channelTypes;
+        this.channelTypes.addAll(channelTypes);
         return this;
     }
 
@@ -480,7 +508,8 @@ public class OptionData implements SerializableData
         DataObject json = DataObject.empty()
                 .put("type", type.getKey())
                 .put("name", name)
-                .put("description", description);
+                .put("description", description)
+                .put("channel_types", channelTypes.stream().map(ChannelType::getId).collect(Collectors.toList()));
         if (type != OptionType.SUB_COMMAND && type != OptionType.SUB_COMMAND_GROUP)
             json.put("required", isRequired);
         if (choices != null && !choices.isEmpty())
@@ -490,8 +519,6 @@ public class OptionData implements SerializableData
                     .map(entry -> DataObject.empty().put("name", entry.getKey()).put("value", entry.getValue()))
                     .collect(Collectors.toList())));
         }
-        if (channelTypes != null)
-            json.put("channel_types", Arrays.stream(channelTypes).map(ChannelType::getId).collect(Collectors.toList()));
         return json;
     }
 

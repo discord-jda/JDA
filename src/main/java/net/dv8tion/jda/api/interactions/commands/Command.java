@@ -548,7 +548,7 @@ public class Command implements ISnowflake
         private final String name, description;
         private final int type;
         private final boolean required;
-        private final ChannelType[] channelTypes;
+        private final Set<ChannelType> channelTypes;
         private final List<Choice> choices;
 
         public Option(@Nonnull DataObject json)
@@ -557,9 +557,9 @@ public class Command implements ISnowflake
             this.description = json.getString("description");
             this.type = json.getInt("type");
             this.required = json.getBoolean("required");
-            this.channelTypes = json.optArray("channel_types")
-                    .map(it -> it.stream(DataArray::getInt).map(ChannelType::fromId).toArray(ChannelType[]::new))
-                    .orElse(new ChannelType[0]);
+            this.channelTypes = Collections.unmodifiableSet(json.optArray("channel_types")
+                    .map(it -> it.stream(DataArray::getInt).map(ChannelType::fromId).collect(Collectors.toSet()))
+                    .orElse(Collections.emptySet()));
             this.choices = json.optArray("choices")
                 .map(it -> it.stream(DataArray::getObject).map(Choice::new).collect(Collectors.toList()))
                 .orElse(Collections.emptyList());
@@ -619,14 +619,14 @@ public class Command implements ISnowflake
         }
 
         /**
-         * The {@link ChannelType ChannelTypes} this option is restricted to
-         * or empty array if this option is not of the {@link OptionType#CHANNEL CHANNEL} type
-         * or if this {@link OptionType#CHANNEL CHANNEL} option accepts all {@link ChannelType ChannelTypes}.
+         * The {@link ChannelType ChannelTypes} this option is restricted to.
+         * <br>This is empty if the option is not of type {@link OptionType#CHANNEL CHANNEL} or not restricted to specific types.
          *
-         * @return The {@link ChannelType ChannelTypes} this option is restricted to
+         * @return Immutable {@link Set} of {@link ChannelType}
          */
         @Nonnull
-        public ChannelType[] getChannelTypes() {
+        public Set<ChannelType> getChannelTypes()
+        {
             return channelTypes;
         }
 
@@ -645,7 +645,7 @@ public class Command implements ISnowflake
         @Override
         public int hashCode()
         {
-            return Objects.hash(name, description, type, choices);
+            return Objects.hash(name, description, type, choices, channelTypes);
         }
 
         @Override
@@ -657,6 +657,7 @@ public class Command implements ISnowflake
             return Objects.equals(other.name, name)
                 && Objects.equals(other.description, description)
                 && Objects.equals(other.choices, choices)
+                && Objects.equals(other.channelTypes, channelTypes)
                 && other.type == type;
         }
 
