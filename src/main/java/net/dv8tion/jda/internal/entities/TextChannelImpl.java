@@ -161,7 +161,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
         if (!getGuild().equals(member.getGuild()))
             throw new IllegalArgumentException("Provided Member is not from the Guild that this TextChannel is part of.");
 
-        return member.hasPermission(this, Permission.VIEW_CHANNEL, Permission.MESSAGE_WRITE);
+        return member.hasPermission(this, Permission.VIEW_CHANNEL, Permission.MESSAGE_SEND);
     }
 
     @Nonnull
@@ -308,7 +308,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
     public MessageAction sendMessage(@Nonnull CharSequence text)
     {
         checkPermission(Permission.VIEW_CHANNEL);
-        checkPermission(Permission.MESSAGE_WRITE);
+        checkPermission(Permission.MESSAGE_SEND);
         return TextChannel.super.sendMessage(text);
     }
 
@@ -317,7 +317,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
     public MessageAction sendMessage(@Nonnull MessageEmbed embed)
     {
         checkPermission(Permission.VIEW_CHANNEL);
-        checkPermission(Permission.MESSAGE_WRITE);
+        checkPermission(Permission.MESSAGE_SEND);
         // this is checked because you cannot send an empty message
         checkPermission(Permission.MESSAGE_EMBED_LINKS);
         return TextChannel.super.sendMessage(embed);
@@ -330,7 +330,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
         Checks.notNull(msg, "Message");
 
         checkPermission(Permission.VIEW_CHANNEL);
-        checkPermission(Permission.MESSAGE_WRITE);
+        checkPermission(Permission.MESSAGE_SEND);
         if (msg.getContentRaw().isEmpty() && !msg.getEmbeds().isEmpty())
             checkPermission(Permission.MESSAGE_EMBED_LINKS);
 
@@ -343,7 +343,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
     public MessageAction sendFile(@Nonnull File file, @Nonnull String fileName, @Nonnull AttachmentOption... options)
     {
         checkPermission(Permission.VIEW_CHANNEL);
-        checkPermission(Permission.MESSAGE_WRITE);
+        checkPermission(Permission.MESSAGE_SEND);
         checkPermission(Permission.MESSAGE_ATTACH_FILES);
 
         final long maxSize = getGuild().getMaxFileSize();
@@ -359,7 +359,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
     public MessageAction sendFile(@Nonnull InputStream data, @Nonnull String fileName, @Nonnull AttachmentOption... options)
     {
         checkPermission(Permission.VIEW_CHANNEL);
-        checkPermission(Permission.MESSAGE_WRITE);
+        checkPermission(Permission.MESSAGE_SEND);
         checkPermission(Permission.MESSAGE_ATTACH_FILES);
 
         //Call MessageChannel's default method
@@ -371,7 +371,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
     public MessageAction sendFile(@Nonnull byte[] data, @Nonnull String fileName, @Nonnull AttachmentOption... options)
     {
         checkPermission(Permission.VIEW_CHANNEL);
-        checkPermission(Permission.MESSAGE_WRITE);
+        checkPermission(Permission.MESSAGE_SEND);
         checkPermission(Permission.MESSAGE_ATTACH_FILES);
 
         final long maxSize = getGuild().getMaxFileSize();
@@ -542,7 +542,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
     public MessageAction editMessageById(@Nonnull String messageId, @Nonnull CharSequence newContent)
     {
         checkPermission(Permission.VIEW_CHANNEL);
-        checkPermission(Permission.MESSAGE_WRITE);
+        checkPermission(Permission.MESSAGE_SEND);
         return TextChannel.super.editMessageById(messageId, newContent);
     }
 
@@ -552,7 +552,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
     public MessageAction editMessageById(@Nonnull String messageId, @Nonnull MessageEmbed newEmbed)
     {
         checkPermission(Permission.VIEW_CHANNEL);
-        checkPermission(Permission.MESSAGE_WRITE);
+        checkPermission(Permission.MESSAGE_SEND);
         checkPermission(Permission.MESSAGE_EMBED_LINKS);
         return TextChannel.super.editMessageById(messageId, newEmbed);
     }
@@ -562,7 +562,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
     public MessageAction editMessageEmbedsById(@Nonnull String messageId, @Nonnull Collection<? extends MessageEmbed> newEmbeds)
     {
         checkPermission(Permission.VIEW_CHANNEL);
-        checkPermission(Permission.MESSAGE_WRITE);
+        checkPermission(Permission.MESSAGE_SEND);
         checkPermission(Permission.MESSAGE_EMBED_LINKS);
         return TextChannel.super.editMessageEmbedsById(messageId, newEmbeds);
     }
@@ -575,7 +575,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
 
         //checkVerification(); no verification needed to edit a message
         checkPermission(Permission.VIEW_CHANNEL);
-        checkPermission(Permission.MESSAGE_WRITE);
+        checkPermission(Permission.MESSAGE_SEND);
         if (newContent.getContentRaw().isEmpty() && !newContent.getEmbeds().isEmpty())
             checkPermission(Permission.MESSAGE_EMBED_LINKS);
 

@@ -224,7 +224,7 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
      * <pre>{@code
      * Role role = guild.getPublicRole();
      * EnumSet<Permission> allow = EnumSet.of(Permission.VIEW_CHANNEL);
-     * EnumSet<Permission> deny = EnumSet.of(Permission.MESSAGE_WRITE);
+     * EnumSet<Permission> deny = EnumSet.of(Permission.MESSAGE_SEND);
      * channelAction.addPermissionOverride(role, allow, deny);
      * }</pre>
      *
@@ -265,7 +265,7 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
      * <pre>{@code
      * Role role = guild.getPublicRole();
      * long allow = Permission.VIEW_CHANNEL.getRawValue();
-     * long deny = Permission.MESSAGE_WRITE.getRawValue() | Permission.MESSAGE_ADD_REACTION.getRawValue();
+     * long deny = Permission.MESSAGE_SEND.getRawValue() | Permission.MESSAGE_ADD_REACTION.getRawValue();
      * channelAction.addPermissionOverride(role, allow, deny);
      * }</pre>
      *
@@ -316,7 +316,7 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
      * <pre>{@code
      * long userId = user.getIdLong();
      * EnumSet<Permission> allow = EnumSet.of(Permission.VIEW_CHANNEL);
-     * EnumSet<Permission> deny = EnumSet.of(Permission.MESSAGE_WRITE);
+     * EnumSet<Permission> deny = EnumSet.of(Permission.MESSAGE_SEND);
      * channelAction.addMemberPermissionOverride(userId, allow, deny);
      * }</pre>
      *
@@ -355,7 +355,7 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
      * <pre>{@code
      * long roleId = role.getIdLong();
      * EnumSet<Permission> allow = EnumSet.of(Permission.VIEW_CHANNEL);
-     * EnumSet<Permission> deny = EnumSet.of(Permission.MESSAGE_WRITE);
+     * EnumSet<Permission> deny = EnumSet.of(Permission.MESSAGE_SEND);
      * channelAction.addRolePermissionOverride(roleId, allow, deny);
      * }</pre>
      *
@@ -393,7 +393,7 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
      * <pre>{@code
      * long userId = user.getIdLong();
      * long allow = Permission.VIEW_CHANNEL.getRawValue();
-     * long deny = Permission.MESSAGE_WRITE.getRawValue() | Permission.MESSAGE_ADD_REACTION.getRawValue();
+     * long deny = Permission.MESSAGE_SEND.getRawValue() | Permission.MESSAGE_ADD_REACTION.getRawValue();
      * channelAction.addMemberPermissionOverride(userId, allow, deny);
      * }</pre>
      *
@@ -431,7 +431,7 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
      * <pre>{@code
      * long roleId = role.getIdLong();
      * long allow = Permission.VIEW_CHANNEL.getRawValue();
-     * long deny = Permission.MESSAGE_WRITE.getRawValue() | Permission.MESSAGE_ADD_REACTION.getRawValue();
+     * long deny = Permission.MESSAGE_SEND.getRawValue() | Permission.MESSAGE_ADD_REACTION.getRawValue();
      * channelAction.addMemberPermissionOverride(roleId, allow, deny);
      * }</pre>
      *

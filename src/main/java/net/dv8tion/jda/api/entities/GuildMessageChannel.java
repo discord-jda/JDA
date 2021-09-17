@@ -17,7 +17,7 @@ public interface GuildMessageChannel extends GuildChannel, MessageChannel
      * Whether we can send messages in this channel.
      * <br>This is an overload of {@link #canTalk(Member)} with the SelfMember.
      * <br>Checks for both {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} and
-     * {@link net.dv8tion.jda.api.Permission#MESSAGE_WRITE Permission.MESSAGE_WRITE}.
+     * {@link net.dv8tion.jda.api.Permission#MESSAGE_SEND Permission.MESSAGE_SEND}.
      *
      * @return True, if we are able to read and send messages in this channel
      */
@@ -27,7 +27,7 @@ public interface GuildMessageChannel extends GuildChannel, MessageChannel
      * Whether the specified {@link net.dv8tion.jda.api.entities.Member}
      * can send messages in this channel.
      * <br>Checks for both {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} and
-     * {@link net.dv8tion.jda.api.Permission#MESSAGE_WRITE Permission.MESSAGE_WRITE}.
+     * {@link net.dv8tion.jda.api.Permission#MESSAGE_SEND Permission.MESSAGE_SEND}.
      *
      * @param  member
      *         The Member to check
