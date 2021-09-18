@@ -53,9 +53,10 @@ public enum Permission
     MESSAGE_EXT_EMOJI(       18, true, true, "Use External Emojis"),
     USE_APPLICATION_COMMANDS(31, true, true, "Use Application Commands"),
 
-    MANAGE_THREADS(        34, true, true, "Manage Threads"),
-    CREATE_PUBLIC_THREADS( 35, true, true, "Create Public Threads"),
-    CREATE_PRIVATE_THREADS(36, true, true, "Create Private Threads"),
+    MANAGE_THREADS(         34, true, true, "Manage Threads"),
+    CREATE_PUBLIC_THREADS(  35, true, true, "Create Public Threads"),
+    CREATE_PRIVATE_THREADS( 36, true, true, "Create Private Threads"),
+    MESSAGE_SEND_IN_THREADS(38, true, true, "Send Messages in Threads"),
 
     // Voice Permissions
     VOICE_STREAM(      9, true, true, "Video"),
@@ -108,7 +109,7 @@ public enum Permission
             = Permission.getRaw(MESSAGE_ADD_REACTION, MESSAGE_SEND, MESSAGE_TTS,
                                 MESSAGE_MANAGE, MESSAGE_EMBED_LINKS, MESSAGE_ATTACH_FILES,
                                 MESSAGE_HISTORY, MESSAGE_MENTION_EVERYONE, USE_APPLICATION_COMMANDS,
-                                MANAGE_THREADS, CREATE_PUBLIC_THREADS, CREATE_PRIVATE_THREADS);
+                                MANAGE_THREADS, CREATE_PUBLIC_THREADS, CREATE_PRIVATE_THREADS, MESSAGE_SEND_IN_THREADS);
 
     /**
      * All voice channel specific permissions which are only available in voice channel permission overrides
