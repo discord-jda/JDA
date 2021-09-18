@@ -1870,6 +1870,72 @@ public interface Message extends ISnowflake, Formattable
     RestAction<Void> addReaction(@Nonnull String unicode);
 
     /**
+     * Adds a reaction to this Message using an {@link net.dv8tion.jda.api.entities.Emoji Emoji}.
+     *
+     * <p>This message instance will not be updated by this operation.
+     *
+     * <p>Reactions are the small emoji/emotes below a message that have a counter beside them
+     * showing how many users have reacted with the same emoji/emote.
+     *
+     * <p><b>Neither success nor failure of this request will affect this Message's {@link #getReactions()} return as Message is immutable.</b>
+     *
+     * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>The reaction request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
+     *         due to {@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ} being revoked
+     *     <br>Also can happen if the account lost the {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#REACTION_BLOCKED REACTION_BLOCKED}
+     *     <br>The user has blocked the currently logged in account and the reaction failed</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#TOO_MANY_REACTIONS TOO_MANY_REACTIONS}
+     *     <br>The message already has too many reactions to proceed</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The reaction request was attempted after the account lost {@link net.dv8tion.jda.api.Permission#MESSAGE_ADD_REACTION Permission.MESSAGE_ADD_REACTION}
+     *         or {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}
+     *         in the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} when adding the reaction.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_EMOJI UNKNOWN_EMOJI}
+     *     <br>The provided emoji was invalid. It either did not correspond to a unicode emoji or,
+     *     if it corresponded to a custom emote, it was deleted, doesn't exist,
+     *     or is not available to the currently logged-in account in this channel.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>If the message has already been deleted. This might also be triggered for ephemeral messages.</li>
+     * </ul>
+     *
+     * @param  emoji
+     *         The {@link net.dv8tion.jda.api.entities.Emoji Emoji} to add as a reaction to this Message.
+     *
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is a system message
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the MessageChannel this message was sent in was a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
+     *         and the logged in account does not have
+     *         <ul>
+     *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_ADD_REACTION Permission.MESSAGE_ADD_REACTION}</li>
+     *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
+     *         </ul>
+     * @throws java.lang.IllegalArgumentException
+     *         <ul>
+     *             <li>If the provided {@link net.dv8tion.jda.api.entities.Emoji emoji} is null or cannot be found.</li>
+     *             <li>If the provided {@link net.dv8tion.jda.api.entities.Emoji emoji} cannot be used in the current channel.
+     *                 See {@link Emote#canInteract(User, MessageChannel)} or {@link Emote#canInteract(Member)} for more information.</li>
+     *         </ul>
+     * @throws IllegalStateException
+     *         If this message is ephemeral
+     *
+     * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link java.lang.Void}
+     *
+     * @since 4.4.0
+     */
+    @Nonnull
+    @CheckReturnValue
+    RestAction<Void> addReaction(@Nonnull Emoji emoji);
+
+    /**
      * Removes all reactions from this Message.
      * <br>This is useful for moderator commands that wish to remove all reactions at once from a specific message.
      *
@@ -2006,6 +2072,49 @@ public interface Message extends ISnowflake, Formattable
     @Nonnull
     @CheckReturnValue
     RestAction<Void> clearReactions(@Nonnull Emote emote);
+
+    /**
+     * Removes all reactions for the specified emoji.
+     *
+     * <p>Please note that you <b>can't</b> clear reactions if this message was sent in a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}!
+     *
+     * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>The currently logged in account lost access to the channel by either being removed from the guild
+     *         or losing the {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL VIEW_CHANNEL} permission</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_EMOJI UNKNOWN_EMOJI}
+     *     <br>The provided emoji was invalid. It either did not correspond to a valid unicode emoji,
+     *     or, if it corresponded to a custom emote, it was deleted, doesn't exist,
+     *     or is not available to the currently logged-in account in this channel.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>If the message has already been deleted. This might also be triggered for ephemeral messages.</li>
+     * </ul>
+     *
+     * @param  emoji
+     *         The {@link Emoji} to remove reactions for
+     *
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is a system message
+     * @throws InsufficientPermissionException
+     *         If the currently logged in account does not have {@link Permission#MESSAGE_MANAGE} in the channel
+     * @throws IllegalArgumentException
+     *         If provided with null
+     * @throws java.lang.IllegalStateException
+     *         <ul>
+     *             <li>If this message was <b>not</b> sent in a {@link net.dv8tion.jda.api.entities.Guild Guild}.</li>
+     *             <li>If this message is ephemeral</li>
+     *         </ul>
+     *
+     * @return {@link RestAction}
+     *
+     * @since  4.4.0
+     */
+    @Nonnull
+    @CheckReturnValue
+    RestAction<Void> clearReactions(@Nonnull Emoji emoji);
 
     /**
      * Removes a reaction from this Message using an {@link net.dv8tion.jda.api.entities.Emote Emote}.
@@ -2250,6 +2359,123 @@ public interface Message extends ISnowflake, Formattable
     @Nonnull
     @CheckReturnValue
     RestAction<Void> removeReaction(@Nonnull String unicode, @Nonnull User user);
+
+    /**
+     * Removes a reaction from this Message using an {@link net.dv8tion.jda.api.entities.Emoji Emoji}.
+     *
+     * <p>This message instance will not be updated by this operation.
+     *
+     * <p>Reactions are the small emoji/emotes below a message that have a counter beside them
+     * showing how many users have reacted with the same emoji/emote.
+     *
+     * <p><b>Neither success nor failure of this request will affect this Message's {@link #getReactions()} return as Message is immutable.</b>
+     *
+     * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>The reaction request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
+     *         due to {@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ} being revoked
+     *     <br>Also can happen if the account lost the {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_EMOJI UNKNOWN_EMOJI}
+     *     <br>The provided emoji was invalid. It either did not correspond to a valid unicode emoji,
+     *     or, if it corresponded to a custom emote, it was deleted, doesn't exist,
+     *     or is not available to the currently logged-in account in this channel.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>If the message has already been deleted. This might also be triggered for ephemeral messages.</li>
+     * </ul>
+     *
+     * @param  emoji
+     *         The {@link net.dv8tion.jda.api.entities.Emoji Emoji} to remove as a reaction from this Message.
+     *
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is a system message
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the MessageChannel this message was sent in was a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
+     *         and the logged in account does not have {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}
+     * @throws java.lang.IllegalArgumentException
+     *         <ul>
+     *             <li>If the provided {@link net.dv8tion.jda.api.entities.Emoji Emoji} is null or empty.</li>
+     *             <li>If the provided {@link net.dv8tion.jda.api.entities.Emoji Emoji} cannot be used in the current channel.
+     *                 See {@link Emote#canInteract(User, MessageChannel)} or {@link Emote#canInteract(Member)} for more information.</li>
+     *         </ul>
+     * @throws IllegalStateException
+     *         If this is an ephemeral message
+     *
+     * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link java.lang.Void}
+     *
+     * @since  4.4.0
+     */
+    @Nonnull
+    @CheckReturnValue
+    RestAction<Void> removeReaction(@Nonnull Emoji emoji);
+
+    /**
+     * Removes a {@link net.dv8tion.jda.api.entities.User User's} reaction from this Message using an {@link net.dv8tion.jda.api.entities.Emoji Emoji}.
+     *
+     * <p>Please note that you <b>can't</b> remove reactions of other users if this message was sent in a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}!
+     *
+     * <p>This message instance will not be updated by this operation.
+     *
+     * <p>Reactions are the small emoji/emotes below a message that have a counter beside them
+     * showing how many users have reacted with the same emoji/emote.
+     *
+     * <p><b>Neither success nor failure of this request will affect this Message's {@link #getReactions()} return as Message is immutable.</b>
+     *
+     * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>The reaction request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
+     *         due to {@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ} being revoked
+     *     <br>Also can happen if the account lost the {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The reaction request was attempted after the account lost {@link net.dv8tion.jda.api.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE}
+     *         in the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} when removing the reaction.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_EMOJI UNKNOWN_EMOJI}
+     *     <br>The provided emoji was invalid. It either did not correspond to a valid unicode emoji,
+     *     or, if it corresponded to a custom emote, it was deleted, doesn't exist,
+     *     or is not available to the currently logged-in account in this channel.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>If the message has already been deleted. This might also be triggered for ephemeral messages.</li>
+     * </ul>
+     *
+     * @param  emoji
+     *         The {@link net.dv8tion.jda.api.entities.Emoji Emoji} to remove as a reaction from this Message.
+     * @param  user
+     *         The {@link net.dv8tion.jda.api.entities.User User} to remove the reaction for.
+     *
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is a system message
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the MessageChannel this message was sent in was a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
+     *         and the logged in account does not have {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}.
+     * @throws java.lang.IllegalArgumentException
+     *         <ul>
+     *             <li>If the provided {@link net.dv8tion.jda.api.entities.Emoji Emoji} is null or empty.</li>
+     *             <li>If the provided {@link net.dv8tion.jda.api.entities.Emoji Emoji} cannot be used in the current channel.
+     *                 See {@link Emote#canInteract(User, MessageChannel)} or {@link Emote#canInteract(Member)} for more information.</li>
+     *             <li>If the provided user is null</li>
+     *         </ul>
+     * @throws java.lang.IllegalStateException
+     * <ul>
+     *     <li>If this message was <b>not</b> sent in a
+     *         {@link net.dv8tion.jda.api.entities.Guild Guild}
+     *         <b>and</b> the given user is <b>not</b> the {@link net.dv8tion.jda.api.entities.SelfUser SelfUser}.</li>
+     *     <li>If this message is ephemeral</li>
+     * </ul>
+     *
+     *
+     * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link java.lang.Void}
+     *
+     * @since  4.4.0
+     */
+    @Nonnull
+    @CheckReturnValue
+    RestAction<Void> removeReaction(@Nonnull Emoji emoji, @Nonnull User user);
 
     /**
      * This obtains the {@link net.dv8tion.jda.api.entities.User users} who reacted using the given {@link net.dv8tion.jda.api.entities.Emote emote}.

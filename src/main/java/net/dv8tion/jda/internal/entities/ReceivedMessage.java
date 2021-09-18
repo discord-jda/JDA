@@ -200,6 +200,27 @@ public class ReceivedMessage extends AbstractMessage
 
     @Nonnull
     @Override
+    public RestAction<Void> addReaction(@Nonnull Emoji emoji)
+    {
+        if (isEphemeral())
+            throw new IllegalStateException("Cannot add reactions to ephemeral messages.");
+
+        Checks.notNull(emoji, "Emoji");
+
+        // emote
+        if (emoji.isCustom()) {
+            Emote emote = api.getEmoteById(emoji.getIdLong());
+            if (emote == null)
+                throw new IllegalArgumentException("Emote is unavailable or was deleted");
+            return addReaction(emote);
+        }
+
+        // unicode
+        return addReaction(emoji.getName());
+    }
+
+    @Nonnull
+    @Override
     public RestAction<Void> clearReactions()
     {
         if (isEphemeral())
@@ -229,6 +250,17 @@ public class ReceivedMessage extends AbstractMessage
         if (!isFromGuild())
             throw new IllegalStateException("Cannot clear reactions from a message in a Group or PrivateChannel.");
         return getTextChannel().clearReactionsById(getId(), emote);
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<Void> clearReactions(@Nonnull Emoji emoji)
+    {
+        if (isEphemeral())
+            throw new IllegalStateException("Cannot clear reactions from ephemeral messages.");
+        if (!isFromGuild())
+            throw new IllegalStateException("Cannot clear reactions from a message in a Group or PrivateChannel.");
+        return getTextChannel().clearReactionsById(getId(), emoji);
     }
 
     @Nonnull
@@ -281,6 +313,31 @@ public class ReceivedMessage extends AbstractMessage
         if (!isFromGuild())
             throw new IllegalStateException("Cannot remove reactions of others from a message in a Group or PrivateChannel.");
         return getTextChannel().removeReactionById(getId(), unicode, user);
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<Void> removeReaction(@Nonnull Emoji emoji)
+    {
+        if (isEphemeral())
+            throw new IllegalStateException("Cannot remove reactions from ephemeral messages.");
+
+        return channel.removeReactionById(getId(), emoji);
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<Void> removeReaction(@Nonnull Emoji emoji, @Nonnull User user)
+    {
+        Checks.notNull(user, "User");
+        if (user.equals(getJDA().getSelfUser()))
+            return channel.removeReactionById(getIdLong(), emoji);
+
+        if (isEphemeral())
+            throw new IllegalStateException("Cannot remove reactions from ephemeral messages.");
+        if (!isFromGuild())
+            throw new IllegalStateException("Cannot remove reactions of others from a message in a Group or PrivateChannel.");
+        return getTextChannel().removeReactionById(getId(), emoji, user);
     }
 
     @Nonnull

@@ -475,6 +475,14 @@ public abstract class AbstractMessage implements Message
 
     @Nonnull
     @Override
+    public RestAction<Void> addReaction(@Nonnull Emoji emoji)
+    {
+        unsupported();
+        return null;
+    }
+
+    @Nonnull
+    @Override
     public RestAction<Void> clearReactions()
     {
         unsupported();
@@ -492,6 +500,14 @@ public abstract class AbstractMessage implements Message
     @Nonnull
     @Override
     public RestAction<Void> clearReactions(@Nonnull Emote emote)
+    {
+        unsupported();
+        return null;
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<Void> clearReactions(@Nonnull Emoji emoji)
     {
         unsupported();
         return null;
@@ -524,6 +540,22 @@ public abstract class AbstractMessage implements Message
     @Nonnull
     @Override
     public RestAction<Void> removeReaction(@Nonnull String unicode, @Nonnull User user)
+    {
+        unsupported();
+        return null;
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<Void> removeReaction(@Nonnull Emoji emoji)
+    {
+        unsupported();
+        return null;
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<Void> removeReaction(@Nonnull Emoji emoji, @Nonnull User user)
     {
         unsupported();
         return null;
