@@ -17,11 +17,7 @@
 package net.dv8tion.jda.internal.handle;
 
 import net.dv8tion.jda.api.entities.*;
-import net.dv8tion.jda.api.events.channel.category.CategoryDeleteEvent;
-import net.dv8tion.jda.api.events.channel.stage.StageChannelDeleteEvent;
-import net.dv8tion.jda.api.events.channel.store.StoreChannelDeleteEvent;
-import net.dv8tion.jda.api.events.channel.text.TextChannelDeleteEvent;
-import net.dv8tion.jda.api.events.channel.voice.VoiceChannelDeleteEvent;
+import net.dv8tion.jda.api.events.channel.ChannelDeleteEvent;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.GuildImpl;
@@ -64,7 +60,7 @@ public class ChannelDeleteHandler extends SocketHandler
 
                 guild.getStoreChannelView().remove(channelId);
                 getJDA().handleEvent(
-                    new StoreChannelDeleteEvent(
+                    new ChannelDeleteEvent(
                         getJDA(), responseNumber,
                         channel));
                 break;
@@ -80,7 +76,7 @@ public class ChannelDeleteHandler extends SocketHandler
 
                 guild.getTextChannelsView().remove(channel.getIdLong());
                 getJDA().handleEvent(
-                    new TextChannelDeleteEvent(
+                    new ChannelDeleteEvent(
                         getJDA(), responseNumber,
                         channel));
                 break;
@@ -104,7 +100,7 @@ public class ChannelDeleteHandler extends SocketHandler
 //                }
                 guild.getVoiceChannelsView().remove(channel.getIdLong());
                 getJDA().handleEvent(
-                    new VoiceChannelDeleteEvent(
+                    new ChannelDeleteEvent(
                         getJDA(), responseNumber,
                         channel));
                 break;
@@ -120,7 +116,7 @@ public class ChannelDeleteHandler extends SocketHandler
 
                 guild.getStageChannelsView().remove(channel.getIdLong());
                 getJDA().handleEvent(
-                    new StageChannelDeleteEvent(
+                    new ChannelDeleteEvent(
                         getJDA(), responseNumber,
                         channel));
             }
@@ -136,7 +132,7 @@ public class ChannelDeleteHandler extends SocketHandler
 
                 guild.getCategoriesView().remove(channelId);
                 getJDA().handleEvent(
-                    new CategoryDeleteEvent(
+                    new ChannelDeleteEvent(
                         getJDA(), responseNumber,
                         category));
                 break;
