@@ -314,7 +314,7 @@ public class OptionData implements SerializableData
      * @throws IllegalArgumentException
      *         If any of the following checks fail
      *         <ul>
-     *             <li>{@code name} is not null, empty and less or equal to {@value #MAX_NAME_LENGTH} characters long</li>
+     *             <li>{@code name} is not null, empty and less or equal to {@value #MAX_CHOICE_NAME_LENGTH} characters long</li>
      *             <li>{@code value} is not less than {@link #MIN_NEGATIVE_NUMBER} and not larger than {@link #MAX_POSITIVE_NUMBER}</li>
      *             <li>The amount of already set choices is less than {@link #MAX_CHOICES}</li>
      *             <li>The {@link OptionType} is {@link OptionType#INTEGER}</li>
@@ -331,7 +331,7 @@ public class OptionData implements SerializableData
         Checks.check(value <= MAX_POSITIVE_NUMBER, "Long value may not be larger than %f", MAX_POSITIVE_NUMBER);
         Checks.check(choices.size() < MAX_CHOICES, "Cannot have more than 25 choices for an option!");
         if (type != OptionType.INTEGER)
-            throw new IllegalArgumentException("Cannot add Long choice for OptionType." + type);
+            throw new IllegalArgumentException("Cannot add long choice for OptionType." + type);
         choices.put(name, value);
         return this;
     }
