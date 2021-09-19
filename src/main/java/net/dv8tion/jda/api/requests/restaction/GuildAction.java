@@ -17,6 +17,7 @@
 package net.dv8tion.jda.api.requests.restaction;
 
 import net.dv8tion.jda.annotations.DeprecatedSince;
+import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.Region;
@@ -80,6 +81,7 @@ public interface GuildAction extends RestAction<Void>
     @Nonnull
     @CheckReturnValue
     @Deprecated
+    @ForRemoval(deadline = "5.0.0")
     @ReplaceWith("ChannelManager.setRegion()")
     @DeprecatedSince("4.3.0")
     GuildAction setRegion(@Nullable Region region);

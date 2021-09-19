@@ -17,6 +17,7 @@ package net.dv8tion.jda.api.sharding;
 
 import com.neovisionaries.ws.client.WebSocketFactory;
 import net.dv8tion.jda.annotations.DeprecatedSince;
+import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.GatewayEncoding;
 import net.dv8tion.jda.api.JDABuilder;
@@ -564,6 +565,7 @@ public class  DefaultShardManagerBuilder
      */
     @Nonnull
     @Deprecated
+    @ForRemoval(deadline = "5.0.0")
     @ReplaceWith("enableCache(flags) and disableCache(flags)")
     @DeprecatedSince("4.2.0")
     public DefaultShardManagerBuilder setEnabledCacheFlags(@Nullable EnumSet<CacheFlag> flags)
@@ -637,6 +639,7 @@ public class  DefaultShardManagerBuilder
      */
     @Nonnull
     @Deprecated
+    @ForRemoval(deadline = "5.0.0")
     @ReplaceWith("enableCache(flags) and disableCache(flags)")
     @DeprecatedSince("4.2.0")
     public DefaultShardManagerBuilder setDisabledCacheFlags(@Nullable EnumSet<CacheFlag> flags)
@@ -1105,6 +1108,7 @@ public class  DefaultShardManagerBuilder
      */
     @Nonnull
     @Deprecated
+    @ForRemoval(deadline = "5.0.0")
     @DeprecatedSince("3.8.1")
     @ReplaceWith("setEventManagerProvider((id) -> manager)")
     public DefaultShardManagerBuilder setEventManager(@Nonnull final IEventManager manager)
@@ -1940,6 +1944,7 @@ public class  DefaultShardManagerBuilder
      */
     @Nonnull
     @Deprecated
+    @ForRemoval(deadline = "5.0.0")
     @ReplaceWith("setDisabledIntents(...).setMemberCachePolicy(...)")
     @DeprecatedSince("4.2.0")
     public DefaultShardManagerBuilder setGuildSubscriptionsEnabled(boolean enabled)

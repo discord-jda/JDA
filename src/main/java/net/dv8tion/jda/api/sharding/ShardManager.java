@@ -16,6 +16,7 @@
 package net.dv8tion.jda.api.sharding;
 
 import net.dv8tion.jda.annotations.DeprecatedSince;
+import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDA.Status;
@@ -1318,6 +1319,7 @@ public interface ShardManager
      *         Use {@link #setActivity(net.dv8tion.jda.api.entities.Activity)} instead
      */
     @Deprecated
+    @ForRemoval(deadline = "5.0.0")
     @DeprecatedSince("4.0.0")
     @ReplaceWith("setActivity()")
     default void setGame(@Nullable final Activity game)
