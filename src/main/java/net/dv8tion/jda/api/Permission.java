@@ -43,17 +43,17 @@ public enum Permission
     VIEW_CHANNEL(            10, true, true, "Read Text Channels & See Voice Channels"),
 
     // Text Permissions
-    MESSAGE_READ(             10, true, true, "Read Messages"),
-    MESSAGE_WRITE(            11, true, true, "Send Messages"),
-    MESSAGE_TTS(              12, true, true, "Send TTS Messages"),
-    MESSAGE_MANAGE(           13, true, true, "Manage Messages"),
-    MESSAGE_EMBED_LINKS(      14, true, true, "Embed Links"),
-    MESSAGE_ATTACH_FILES(     15, true, true, "Attach Files"),
-    MESSAGE_HISTORY(          16, true, true, "Read History"),
-    MESSAGE_MENTION_EVERYONE( 17, true, true, "Mention Everyone"),
-    MESSAGE_EXT_EMOJI(        18, true, true, "Use External Emojis"),
-    MESSAGE_EXT_STICKER(      37, true, true, "Use External Stickers"),
-    USE_SLASH_COMMANDS(       31, true, true, "Use Slash Commands"),
+    MESSAGE_READ(            10, true, true, "Read Messages"),
+    MESSAGE_WRITE(           11, true, true, "Send Messages"),
+    MESSAGE_TTS(             12, true, true, "Send TTS Messages"),
+    MESSAGE_MANAGE(          13, true, true, "Manage Messages"),
+    MESSAGE_EMBED_LINKS(     14, true, true, "Embed Links"),
+    MESSAGE_ATTACH_FILES(    15, true, true, "Attach Files"),
+    MESSAGE_HISTORY(         16, true, true, "Read History"),
+    MESSAGE_MENTION_EVERYONE(17, true, true, "Mention Everyone"),
+    MESSAGE_EXT_EMOJI(       18, true, true, "Use External Emojis"),
+    MESSAGE_EXT_STICKER(     37, true, true, "Use External Stickers"),
+    USE_SLASH_COMMANDS(      31, true, true, "Use Slash Commands"),
 
     MANAGE_THREADS(     34, true, true, "Manage Threads"),
     USE_PUBLIC_THREADS( 35, true, true, "Use Public Threads"),
@@ -76,6 +76,7 @@ public enum Permission
     MANAGE_PERMISSIONS(28, false, true,  "Manage Permissions"),
     MANAGE_WEBHOOKS(   29, true,  true,  "Manage Webhooks"),
     MANAGE_EMOTES(     30, true,  false, "Manage Emojis"),
+
     REQUEST_TO_SPEAK(  32, true, true, "Request to Speak"),
 
     UNKNOWN(-1, false, false, "Unknown");
