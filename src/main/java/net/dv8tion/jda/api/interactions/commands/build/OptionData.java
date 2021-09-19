@@ -363,7 +363,7 @@ public class OptionData implements SerializableData
         Checks.check(value <= MAX_POSITIVE_NUMBER, "Long value may not be larger than %f", MAX_POSITIVE_NUMBER);
         Checks.check(choices.size() < MAX_CHOICES, "Cannot have more than 25 choices for an option!");
         if (type != OptionType.INTEGER)
-            throw new IllegalArgumentException("Cannot add Long choice for OptionType." + type);
+            throw new IllegalArgumentException("Cannot add long choice for OptionType." + type);
         choices.put(name, value);
         return this;
     }
