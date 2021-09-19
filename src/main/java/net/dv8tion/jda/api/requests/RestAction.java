@@ -923,8 +923,8 @@ public interface RestAction<T>
      * <pre>{@code
      * public RestAction<Void> initializeGiveaway(Guild guild, String channelName) {
      *     return guild.createTextChannel(channelName)
-     *          .addPermissionOverride(guild.getPublicRole(), null, EnumSet.of(Permission.MESSAGE_WRITE)) // deny write for everyone
-     *          .addPermissionOverride(guild.getSelfMember(), EnumSet.of(Permission.MESSAGE_WRITE), null) // allow for self user
+     *          .addPermissionOverride(guild.getPublicRole(), null, EnumSet.of(Permission.MESSAGE_SEND)) // deny write for everyone
+     *          .addPermissionOverride(guild.getSelfMember(), EnumSet.of(Permission.MESSAGE_SEND), null) // allow for self user
      *          .flatMap((channel) -> channel.sendMessage("React to enter giveaway!")) // send message
      *          .flatMap((message) -> message.addReaction(REACTION)); // add reaction
      * }

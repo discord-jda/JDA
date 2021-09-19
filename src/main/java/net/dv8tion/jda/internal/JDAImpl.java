@@ -98,6 +98,7 @@ public class JDAImpl implements JDA
     protected final SnowflakeCacheViewImpl<StoreChannel> storeChannelCache = new SnowflakeCacheViewImpl<>(StoreChannel.class, GuildChannel::getName);
     protected final SnowflakeCacheViewImpl<TextChannel> textChannelCache = new SnowflakeCacheViewImpl<>(TextChannel.class, GuildChannel::getName);
     protected final SnowflakeCacheViewImpl<VoiceChannel> voiceChannelCache = new SnowflakeCacheViewImpl<>(VoiceChannel.class, GuildChannel::getName);
+    protected final SnowflakeCacheViewImpl<StageChannel> stageChannelCache = new SnowflakeCacheViewImpl<>(StageChannel.class, GuildChannel::getName);
     protected final SnowflakeCacheViewImpl<PrivateChannel> privateChannelCache = new SnowflakeCacheViewImpl<>(PrivateChannel.class, MessageChannel::getName);
     protected final LinkedList<Long> privateChannelLRU = new LinkedList<>();
 
@@ -646,6 +647,13 @@ public class JDAImpl implements JDA
 
     @Nonnull
     @Override
+    public SnowflakeCacheView<StageChannel> getStageChannelCache()
+    {
+        return stageChannelCache;
+    }
+
+    @Nonnull
+    @Override
     public SnowflakeCacheView<PrivateChannel> getPrivateChannelCache()
     {
         return privateChannelCache;
@@ -1086,6 +1094,11 @@ public class JDAImpl implements JDA
     public SnowflakeCacheViewImpl<VoiceChannel> getVoiceChannelsView()
     {
         return voiceChannelCache;
+    }
+
+    public SnowflakeCacheViewImpl<StageChannel> getStageChannelView()
+    {
+        return stageChannelCache;
     }
 
     public SnowflakeCacheViewImpl<PrivateChannel> getPrivateChannelsView()

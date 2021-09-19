@@ -39,7 +39,7 @@ public class VoiceChannelUpdateUserLimitEvent extends GenericVoiceChannelUpdateE
     /**
      * The old userlimit
      *
-     * @return The old userlimit
+     * @return The old userlimit, or 0 if there is no limit set.
      */
     public int getOldUserLimit()
     {
@@ -49,7 +49,7 @@ public class VoiceChannelUpdateUserLimitEvent extends GenericVoiceChannelUpdateE
     /**
      * The new userlimit
      *
-     * @return The new userlimit
+     * @return The new userlimit, or 0 if there is no limit set.
      */
     public int getNewUserLimit()
     {

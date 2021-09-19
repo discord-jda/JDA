@@ -64,6 +64,7 @@ public abstract class GenericGuildMessageEvent extends GenericGuildEvent
         return messageId;
     }
 
+    //TODO-v5: Clearly we can receive messages in a Guild in more than just a text channel... Should we kill off these events? Should this be GuildMessageChannel?
     /**
      * The {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} for this message
      *

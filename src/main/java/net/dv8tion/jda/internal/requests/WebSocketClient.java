@@ -22,8 +22,9 @@ import gnu.trove.map.TLongObjectMap;
 import net.dv8tion.jda.api.*;
 import net.dv8tion.jda.api.audio.hooks.ConnectionListener;
 import net.dv8tion.jda.api.audio.hooks.ConnectionStatus;
+import net.dv8tion.jda.api.entities.AudioChannel;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.VoiceChannel;
+import net.dv8tion.jda.api.entities.IPermissionContainer;
 import net.dv8tion.jda.api.events.*;
 import net.dv8tion.jda.api.exceptions.ParsingException;
 import net.dv8tion.jda.api.managers.AudioManager;
@@ -1118,7 +1119,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         }
     }
 
-    public void queueAudioReconnect(VoiceChannel channel)
+    public void queueAudioReconnect(AudioChannel channel)
     {
         locked("There was an error queueing the audio reconnect", () ->
         {
@@ -1141,7 +1142,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         });
     }
 
-    public void queueAudioConnect(VoiceChannel channel)
+    public void queueAudioConnect(AudioChannel channel)
     {
         locked("There was an error queueing the audio connect", () ->
         {
@@ -1193,12 +1194,12 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         return locked("There was an error cleaning up audio connections for deleted guild", () -> queuedAudioConnections.remove(guildId));
     }
 
-    public ConnectionRequest updateAudioConnection(long guildId, VoiceChannel connectedChannel)
+    public ConnectionRequest updateAudioConnection(long guildId, AudioChannel connectedChannel)
     {
         return locked("There was an error updating the audio connection", () -> updateAudioConnection0(guildId, connectedChannel));
     }
 
-    public ConnectionRequest updateAudioConnection0(long guildId, VoiceChannel connectedChannel)
+    public ConnectionRequest updateAudioConnection0(long guildId, AudioChannel connectedChannel)
     {
         //Called by VoiceStateUpdateHandler when we receive a response from discord
         // about our request to CONNECT or DISCONNECT.
@@ -1272,7 +1273,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 if (audioRequest.getStage() != ConnectionStage.DISCONNECT)
                 {
                     // Check if we can connect to the target channel
-                    VoiceChannel channel = guild.getVoiceChannelById(audioRequest.getChannelId());
+                    AudioChannel channel = (AudioChannel) guild.getGuildChannelById(audioRequest.getChannelId());
                     if (channel == null)
                     {
                         if (listener != null)
@@ -1280,7 +1281,8 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                         return false;
                     }
 
-                    if (!guild.getSelfMember().hasPermission(channel, Permission.VOICE_CONNECT))
+                    IPermissionContainer permChannel = (IPermissionContainer) channel;
+                    if (!guild.getSelfMember().hasPermission(permChannel, Permission.VOICE_CONNECT))
                     {
                         if (listener != null)
                             listener.onStatusChange(ConnectionStatus.DISCONNECTED_LOST_PERMISSION);

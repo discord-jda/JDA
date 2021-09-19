@@ -597,9 +597,31 @@ public abstract class AbstractMessage implements Message
         return null;
     }
 
+    @Override
+    public long getFlagsRaw()
+    {
+        unsupported();
+        return 0;
+    }
+
+    @Override
+    public boolean isEphemeral()
+    {
+        unsupported();
+        return false;
+    }
+
     @Nonnull
     @Override
     public MessageType getType()
+    {
+        unsupported();
+        return null;
+    }
+
+    @Nullable
+    @Override
+    public Message.Interaction getInteraction()
     {
         unsupported();
         return null;

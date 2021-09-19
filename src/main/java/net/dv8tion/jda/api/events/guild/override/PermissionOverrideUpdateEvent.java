@@ -29,6 +29,7 @@ import java.util.EnumSet;
  *
  * <p>Can be used to retrieve the updated override and old {@link #getOldAllow() allow} and {@link #getOldDeny() deny}.
  */
+//TODO-v5: Should this be implementing UpdateEvent?
 public class PermissionOverrideUpdateEvent extends GenericPermissionOverrideEvent
 {
     private final long oldAllow, oldDeny;
