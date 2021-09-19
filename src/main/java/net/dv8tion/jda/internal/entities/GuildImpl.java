@@ -1127,8 +1127,9 @@ public class GuildImpl implements Guild
                 result.complete(collect);
         });
 
-        result.exceptionally(ex -> {
+        handle.exceptionally(ex -> {
             WebSocketClient.LOG.error("Encountered exception trying to handle member chunk response", ex);
+            result.completeExceptionally(ex);
             return null;
         });
 
@@ -1153,8 +1154,9 @@ public class GuildImpl implements Guild
                 result.complete(collect);
         });
 
-        result.exceptionally(ex -> {
+        handle.exceptionally(ex -> {
             WebSocketClient.LOG.error("Encountered exception trying to handle member chunk response", ex);
+            result.completeExceptionally(ex);
             return null;
         });
 
@@ -1175,7 +1177,6 @@ public class GuildImpl implements Guild
             throw new InsufficientPermissionException(this, Permission.MANAGE_SERVER);
 
         final Route.CompiledRoute route = Route.Invites.GET_GUILD_INVITES.compile(getId());
-
         return new RestActionImpl<>(getJDA(), route, (response, request) ->
         {
             EntityBuilder entityBuilder = api.getEntityBuilder();
