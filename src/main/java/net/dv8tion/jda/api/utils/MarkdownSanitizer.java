@@ -266,7 +266,14 @@ public class MarkdownSanitizer
                         builder.append("\\`");
                         break;
                     case '|':
-                        builder.append("\\|");
+                        if(i+1 < sequence.length()){
+                            if(sequence.charAt(i+1) == '|'){
+                                builder.append("\\|\\|");
+                                i++;
+                                continue;
+                            }
+                        }
+                        builder.append("|");
                         break;
                     case '~':
                         builder.append("\\~");

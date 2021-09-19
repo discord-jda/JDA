@@ -434,8 +434,8 @@ class EscapeMarkdownAllTest
     @Test
     public void testPipe()
     {
-        Assertions.assertEquals("Hello\\|\\|World",MarkdownSanitizer.escape("Hello||World",true));
-        Assertions.assertEquals("Hello\\|World",MarkdownSanitizer.escape("Hello|World",true));
+        Assertions.assertEquals("Hello\\|\\|World", MarkdownSanitizer.escape("Hello||World", true));
+        Assertions.assertEquals("Hello|World", MarkdownSanitizer.escape("Hello|World", true));
 
         Assertions.assertEquals("Hello\\|\\|World",MarkdownSanitizer.escape("Hello\\|\\|World",true));
         Assertions.assertEquals("Hello\\|World",MarkdownSanitizer.escape("Hello\\|World",true));
