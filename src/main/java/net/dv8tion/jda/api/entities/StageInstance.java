@@ -87,12 +87,10 @@ public interface StageInstance extends ISnowflake
     @Nonnull
     default List<Member> getSpeakers()
     {
-        //TODO-v5: Determine how to re-introduce this functionality once we are storing connected users in the StageInstance.
-        throw new UnsupportedOperationException("Not implemented yet");
-//        return Collections.unmodifiableList(getChannel().getMembers()
-//                .stream()
-//                .filter(member -> !member.getVoiceState().isSuppressed()) // voice states should not be null since getMembers() checks only for connected members in the channel
-//                .collect(Collectors.toList()));
+        return Collections.unmodifiableList(getChannel().getMembers()
+                .stream()
+                .filter(member -> !member.getVoiceState().isSuppressed()) // voice states should not be null since getMembers() checks only for connected members in the channel
+                .collect(Collectors.toList()));
     }
 
     /**
@@ -110,12 +108,10 @@ public interface StageInstance extends ISnowflake
     @Nonnull
     default List<Member> getAudience()
     {
-        //TODO-v5: Determine how to re-introduce this functionality once we are storing connected users in the StageInstance.
-        throw new UnsupportedOperationException("Not implemented yet");
-//        return Collections.unmodifiableList(getChannel().getMembers()
-//                .stream()
-//                .filter(member -> member.getVoiceState().isSuppressed()) // voice states should not be null since getMembers() checks only for connected members in the channel
-//                .collect(Collectors.toList()));
+        return Collections.unmodifiableList(getChannel().getMembers()
+                .stream()
+                .filter(member -> member.getVoiceState().isSuppressed()) // voice states should not be null since getMembers() checks only for connected members in the channel
+                .collect(Collectors.toList()));
     }
 
     /**

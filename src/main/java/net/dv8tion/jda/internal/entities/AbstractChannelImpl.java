@@ -124,9 +124,9 @@ public abstract class AbstractChannelImpl<T extends GuildChannel, M extends Abst
     }
 
     @Override
-    public Category getParentCategory()
+    public long getParentCategoryIdLong()
     {
-        return getGuild().getCategoriesView().get(parentId);
+        return parentId;
     }
 
     @Override

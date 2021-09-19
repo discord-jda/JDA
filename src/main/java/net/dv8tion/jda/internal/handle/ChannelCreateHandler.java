@@ -17,10 +17,7 @@
 package net.dv8tion.jda.internal.handle;
 
 import net.dv8tion.jda.api.entities.ChannelType;
-import net.dv8tion.jda.api.events.channel.category.CategoryCreateEvent;
-import net.dv8tion.jda.api.events.channel.store.StoreChannelCreateEvent;
-import net.dv8tion.jda.api.events.channel.text.TextChannelCreateEvent;
-import net.dv8tion.jda.api.events.channel.voice.VoiceChannelCreateEvent;
+import net.dv8tion.jda.api.events.channel.ChannelCreateEvent;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
@@ -54,7 +51,7 @@ public class ChannelCreateHandler extends SocketHandler
             {
                 builder.createStoreChannel(content, guildId);
                 jda.handleEvent(
-                    new StoreChannelCreateEvent(
+                    new ChannelCreateEvent(
                         jda, responseNumber,
                         builder.createStoreChannel(content, guildId)));
                 break;
@@ -62,24 +59,31 @@ public class ChannelCreateHandler extends SocketHandler
             case TEXT:
             {
                 jda.handleEvent(
-                    new TextChannelCreateEvent(
+                    new ChannelCreateEvent(
                         jda, responseNumber,
                         builder.createTextChannel(content, guildId)));
                 break;
             }
-            case STAGE:
             case VOICE:
             {
                 jda.handleEvent(
-                    new VoiceChannelCreateEvent(
+                    new ChannelCreateEvent(
                         jda, responseNumber,
                         builder.createVoiceChannel(content, guildId)));
+                break;
+            }
+            case STAGE:
+            {
+                jda.handleEvent(
+                    new ChannelCreateEvent(
+                        jda, responseNumber,
+                        builder.createStageChannel(content, guildId)));
                 break;
             }
             case CATEGORY:
             {
                 jda.handleEvent(
-                    new CategoryCreateEvent(
+                    new ChannelCreateEvent(
                         jda, responseNumber,
                         builder.createCategory(content, guildId)));
                 break;

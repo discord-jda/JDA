@@ -17,7 +17,7 @@
 package net.dv8tion.jda.api.audio.factory;
 
 import net.dv8tion.jda.api.audio.hooks.ConnectionStatus;
-import net.dv8tion.jda.api.entities.VoiceChannel;
+import net.dv8tion.jda.api.entities.AudioChannel;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -49,10 +49,10 @@ public interface IPacketProvider
     /**
      * Provides the current channel that this connection is transmitting to.
      *
-     * @return The {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel} that this connection is sending to.
+     * @return The {@link net.dv8tion.jda.api.entities.AudioChannel AudioChannel} that this connection is sending to.
      */
     @Nonnull
-    VoiceChannel getConnectedChannel();
+    AudioChannel getConnectedChannel();
 
     /**
      * The UDP connection for this audio connection. The {@link net.dv8tion.jda.api.audio.factory.DefaultSendSystem DefaultSendSystem}

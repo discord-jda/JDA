@@ -21,6 +21,15 @@ import javax.annotation.Nullable;
 //TODO-v5: Need Docs
 public interface ICategorizableChannel extends GuildChannel
 {
+    //TODO-v5: Docs
+    long getParentCategoryIdLong();
+
+    //TODO-v5: Docs
+    default String getParentCategoryId()
+    {
+        return Long.toUnsignedString(getParentCategoryIdLong());
+    }
+
     /**
      * Parent {@link net.dv8tion.jda.api.entities.Category Category} of this
      * GuildChannel. Channels don't need to have a parent Category.
@@ -30,7 +39,10 @@ public interface ICategorizableChannel extends GuildChannel
      * @return Possibly-null {@link net.dv8tion.jda.api.entities.Category Category} for this GuildChannel
      */
     @Nullable
-    Category getParentCategory();
+    default Category getParentCategory()
+    {
+        return getGuild().getCategoryById(getParentCategoryId());
+    }
 
     /**
      * Whether or not this GuildChannel's {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverrides} match

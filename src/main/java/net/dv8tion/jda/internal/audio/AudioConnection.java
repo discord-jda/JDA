@@ -28,9 +28,9 @@ import net.dv8tion.jda.api.audio.factory.IAudioSendFactory;
 import net.dv8tion.jda.api.audio.factory.IAudioSendSystem;
 import net.dv8tion.jda.api.audio.factory.IPacketProvider;
 import net.dv8tion.jda.api.audio.hooks.ConnectionStatus;
+import net.dv8tion.jda.api.entities.AudioChannel;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.events.ExceptionEvent;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
@@ -69,7 +69,7 @@ public class AudioConnection
     private final AudioWebSocket webSocket;
     private final JDAImpl api;
 
-    private VoiceChannel channel;
+    private AudioChannel channel;
     private PointerByReference opusEncoder;
     private ScheduledExecutorService combinedAudioExecutor;
     private IAudioSendSystem sendSystem;
@@ -86,7 +86,7 @@ public class AudioConnection
     private volatile int speakingMode = SpeakingMode.VOICE.getRaw();
     private volatile int silenceCounter = 0;
 
-    public AudioConnection(AudioManagerImpl manager, String endpoint, String sessionId, String token, VoiceChannel channel)
+    public AudioConnection(AudioManagerImpl manager, String endpoint, String sessionId, String token, AudioChannel channel)
     {
         this.api = (JDAImpl) channel.getJDA();
         this.channel = channel;
@@ -144,12 +144,12 @@ public class AudioConnection
         this.queueTimeout = queueTimeout;
     }
 
-    public VoiceChannel getChannel()
+    public AudioChannel getChannel()
     {
         return channel;
     }
 
-    public void setChannel(VoiceChannel channel)
+    public void setChannel(AudioChannel channel)
     {
         this.channel = channel;
     }
@@ -637,7 +637,7 @@ public class AudioConnection
 
         @Nonnull
         @Override
-        public VoiceChannel getConnectedChannel()
+        public AudioChannel getConnectedChannel()
         {
             return getChannel();
         }

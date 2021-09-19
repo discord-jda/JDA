@@ -18,15 +18,13 @@ package net.dv8tion.jda.internal.handle;
 
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
+import net.dv8tion.jda.api.Region;
 import net.dv8tion.jda.api.entities.*;
-import net.dv8tion.jda.api.events.channel.category.update.CategoryUpdateNameEvent;
 import net.dv8tion.jda.api.events.channel.category.update.CategoryUpdatePermissionsEvent;
-import net.dv8tion.jda.api.events.channel.category.update.CategoryUpdatePositionEvent;
-import net.dv8tion.jda.api.events.channel.store.update.StoreChannelUpdateNameEvent;
 import net.dv8tion.jda.api.events.channel.store.update.StoreChannelUpdatePermissionsEvent;
-import net.dv8tion.jda.api.events.channel.store.update.StoreChannelUpdatePositionEvent;
-import net.dv8tion.jda.api.events.channel.text.update.*;
-import net.dv8tion.jda.api.events.channel.voice.update.*;
+import net.dv8tion.jda.api.events.channel.text.update.TextChannelUpdatePermissionsEvent;
+import net.dv8tion.jda.api.events.channel.update.*;
+import net.dv8tion.jda.api.events.channel.voice.update.VoiceChannelUpdatePermissionsEvent;
 import net.dv8tion.jda.api.events.guild.override.PermissionOverrideCreateEvent;
 import net.dv8tion.jda.api.events.guild.override.PermissionOverrideDeleteEvent;
 import net.dv8tion.jda.api.events.guild.override.PermissionOverrideUpdateEvent;
@@ -61,7 +59,7 @@ public class ChannelUpdateHandler extends SocketHandler
         }
 
         final long channelId = content.getLong("id");
-        final Long parentId = content.isNull("parent_id") ? null : content.getLong("parent_id");
+        final long parentId = content.isNull("parent_id") ? 0 : content.getLong("parent_id");
         final int position = content.getInt("position");
         final String name = content.getString("name");
         final boolean nsfw = content.getBoolean("nsfw");
@@ -85,17 +83,18 @@ public class ChannelUpdateHandler extends SocketHandler
                 {
                     storeChannel.setName(name);
                     getJDA().handleEvent(
-                        new StoreChannelUpdateNameEvent(
+                        new ChannelUpdateNameEvent(
                             getJDA(), responseNumber,
-                            storeChannel, oldName));
+                            storeChannel, oldName, name
+                        ));
                 }
                 if (!Objects.equals(oldPosition, position))
                 {
                     storeChannel.setPosition(position);
                     getJDA().handleEvent(
-                        new StoreChannelUpdatePositionEvent(
+                        new ChannelUpdatePositionEvent(
                             getJDA(), responseNumber,
-                            storeChannel, oldPosition));
+                            storeChannel, oldPosition, position));
                 }
 
                 applyPermissions(storeChannel, permOverwrites);
@@ -113,8 +112,7 @@ public class ChannelUpdateHandler extends SocketHandler
                 }
 
                 //If any properties changed, update the values and fire the proper events.
-                final Category parent = textChannel.getParentCategory();
-                final Long oldParent = parent == null ? null : parent.getIdLong();
+                final long oldParentId = textChannel.getParentCategoryIdLong();
                 final String oldName = textChannel.getName();
                 final String oldTopic = textChannel.getTopic();
                 final int oldPosition = textChannel.getPositionRaw();
@@ -124,54 +122,56 @@ public class ChannelUpdateHandler extends SocketHandler
                 {
                     textChannel.setName(name);
                     getJDA().handleEvent(
-                            new TextChannelUpdateNameEvent(
+                            new ChannelUpdateNameEvent(
                                     getJDA(), responseNumber,
-                                    textChannel, oldName));
+                                    textChannel, oldName, name));
                 }
-                if (!Objects.equals(oldParent, parentId))
+                if (oldParentId != parentId)
                 {
-                    textChannel.setParent(parentId == null ? 0 : parentId);
+                    final Category oldParent = textChannel.getParentCategory();
+                    textChannel.setParent(parentId);
                     getJDA().handleEvent(
-                           new TextChannelUpdateParentEvent(
+                           new ChannelUpdateParentEvent(
                                getJDA(), responseNumber,
-                               textChannel, parent));
+                               textChannel, oldParent, textChannel.getParentCategory()));
                 }
                 if (!Objects.equals(oldTopic, topic))
                 {
                     textChannel.setTopic(topic);
                     getJDA().handleEvent(
-                            new TextChannelUpdateTopicEvent(
+                            new ChannelUpdateTopicEvent(
                                     getJDA(), responseNumber,
-                                    textChannel, oldTopic));
+                                    textChannel, oldTopic, topic));
                 }
                 if (oldPosition != position)
                 {
                     textChannel.setPosition(position);
                     getJDA().handleEvent(
-                            new TextChannelUpdatePositionEvent(
+                            new ChannelUpdatePositionEvent(
                                     getJDA(), responseNumber,
-                                    textChannel, oldPosition));
+                                    textChannel, oldPosition, position));
                 }
 
                 if (oldNsfw != nsfw)
                 {
                     textChannel.setNSFW(nsfw);
                     getJDA().handleEvent(
-                            new TextChannelUpdateNSFWEvent(
+                            new ChannelUpdateNSFWEvent(
                                     getJDA(), responseNumber,
-                                    textChannel, oldNsfw));
+                                    textChannel, oldNsfw, nsfw));
                 }
 
                 if (oldSlowmode != slowmode)
                 {
                     textChannel.setSlowmode(slowmode);
                     getJDA().handleEvent(
-                            new TextChannelUpdateSlowmodeEvent(
+                            new ChannelUpdateSlowmodeEvent(
                                     getJDA(), responseNumber,
-                                    textChannel, oldSlowmode));
+                                    textChannel, oldSlowmode, slowmode));
                 }
 
                 //TODO-v5: Address this event as TextChannels no longer have isNews on them.
+                //TODO-v5: This probably needs to be some form of ChannelUpdateTypeEvent
 //                if (news != textChannel.isNews())
 //                {
 //                    textChannel.setNews(news);
@@ -184,13 +184,12 @@ public class ChannelUpdateHandler extends SocketHandler
                 applyPermissions(textChannel, permOverwrites);
                 break;  //Finish the TextChannelUpdate case
             }
-            case STAGE:
             case VOICE:
             {
                 VoiceChannelImpl voiceChannel = (VoiceChannelImpl) getJDA().getVoiceChannelsView().get(channelId);
                 int userLimit = content.getInt("user_limit");
                 int bitrate = content.getInt("bitrate");
-                final String region = content.getString("rtc_region", null);
+                final String regionRaw = content.getString("rtc_region", null);
                 if (voiceChannel == null)
                 {
                     getJDA().getEventCache().cache(EventCache.Type.CHANNEL, channelId, responseNumber, allContent, this::handle);
@@ -198,10 +197,9 @@ public class ChannelUpdateHandler extends SocketHandler
                     return null;
                 }
                 //If any properties changed, update the values and fire the proper events.
-                final Category parent = voiceChannel.getParentCategory();
-                final Long oldParent = parent == null ? null : parent.getIdLong();
+                final long oldParentId = voiceChannel.getParentCategoryIdLong();
                 final String oldName = voiceChannel.getName();
-                final String oldRegion = voiceChannel.getRegionRaw();
+                final String oldRegionRaw = voiceChannel.getRegionRaw();
                 final int oldPosition = voiceChannel.getPositionRaw();
                 final int oldLimit = voiceChannel.getUserLimit();
                 final int oldBitrate = voiceChannel.getBitrate();
@@ -209,53 +207,119 @@ public class ChannelUpdateHandler extends SocketHandler
                 {
                     voiceChannel.setName(name);
                     getJDA().handleEvent(
-                            new VoiceChannelUpdateNameEvent(
+                            new ChannelUpdateNameEvent(
                                     getJDA(), responseNumber,
-                                    voiceChannel, oldName));
+                                    voiceChannel, oldName, name));
                 }
-                if (!Objects.equals(oldRegion, region))
+                if (!Objects.equals(oldRegionRaw, regionRaw))
                 {
-                    voiceChannel.setRegion(region);
+                    final Region oldRegion = Region.fromKey(oldRegionRaw);
+                    voiceChannel.setRegion(regionRaw);
                     getJDA().handleEvent(
-                            new VoiceChannelUpdateRegionEvent(
+                            new ChannelUpdateRegionEvent(
                                     getJDA(), responseNumber,
-                                    voiceChannel, oldRegion));
+                                    voiceChannel, oldRegion, voiceChannel.getRegion()));
                 }
-                if (!Objects.equals(oldParent, parentId))
+                if (oldParentId != parentId)
                 {
-                    voiceChannel.setParent(parentId == null ? 0 : parentId);
+                    final Category oldParent = voiceChannel.getParentCategory();
+                    voiceChannel.setParent(parentId);
                     getJDA().handleEvent(
-                            new VoiceChannelUpdateParentEvent(
+                            new ChannelUpdateParentEvent(
                                     getJDA(), responseNumber,
-                                    voiceChannel, parent));
+                                    voiceChannel, oldParent, voiceChannel.getParentCategory()));
                 }
                 if (oldPosition != position)
                 {
                     voiceChannel.setPosition(position);
                     getJDA().handleEvent(
-                            new VoiceChannelUpdatePositionEvent(
+                            new ChannelUpdatePositionEvent(
                                     getJDA(), responseNumber,
-                                    voiceChannel, oldPosition));
+                                    voiceChannel, oldPosition, position));
                 }
                 if (oldLimit != userLimit)
                 {
                     voiceChannel.setUserLimit(userLimit);
                     getJDA().handleEvent(
-                            new VoiceChannelUpdateUserLimitEvent(
+                            new ChannelUpdateUserLimitEvent(
                                     getJDA(), responseNumber,
-                                    voiceChannel, oldLimit));
+                                    voiceChannel, oldLimit, userLimit));
                 }
                 if (oldBitrate != bitrate)
                 {
                     voiceChannel.setBitrate(bitrate);
                     getJDA().handleEvent(
-                            new VoiceChannelUpdateBitrateEvent(
+                            new ChannelUpdateBitrateEvent(
                                     getJDA(), responseNumber,
-                                    voiceChannel, oldBitrate));
+                                    voiceChannel, oldBitrate, bitrate));
                 }
 
                 applyPermissions(voiceChannel, permOverwrites);
                 break;  //Finish the VoiceChannelUpdate case
+            }
+            case STAGE:
+            {
+                StageChannelImpl stageChannel = (StageChannelImpl) getJDA().getStageChannelView().get(channelId);
+                int bitrate = content.getInt("bitrate");
+                final String regionRaw = content.getString("rtc_region", null);
+                if (stageChannel == null)
+                {
+                    getJDA().getEventCache().cache(EventCache.Type.CHANNEL, channelId, responseNumber, allContent, this::handle);
+                    EventCache.LOG.debug("CHANNEL_UPDATE attempted to update a StageChannel that does not exist. JSON: {}", content);
+                    return null;
+                }
+                //TODO-v5: Restore these events for StageChannels once we decide how we're going to handle XChannelUpdateYEvent
+                //If any properties changed, update the values and fire the proper events.
+                final long oldParentId = stageChannel.getParentCategoryIdLong();
+                final String oldName = stageChannel.getName();
+                final String oldRegionRaw = stageChannel.getRegionRaw();
+                final int oldPosition = stageChannel.getPositionRaw();
+                final int oldBitrate = stageChannel.getBitrate();
+                if (!Objects.equals(oldName, name))
+                {
+                    stageChannel.setName(name);
+                    getJDA().handleEvent(
+                            new ChannelUpdateNameEvent(
+                                    getJDA(), responseNumber,
+                                    stageChannel, oldName, name));
+                }
+                if (!Objects.equals(oldRegionRaw, regionRaw))
+                {
+                    final Region oldRegion = Region.fromKey(oldRegionRaw);
+                    stageChannel.setRegion(regionRaw);
+                    getJDA().handleEvent(
+                            new ChannelUpdateRegionEvent(
+                                    getJDA(), responseNumber,
+                                    stageChannel, oldRegion, stageChannel.getRegion()));
+                }
+                if (oldParentId != parentId)
+                {
+                    final Category oldParent = stageChannel.getParentCategory();
+                    stageChannel.setParent(parentId);
+                    getJDA().handleEvent(
+                            new ChannelUpdateParentEvent(
+                                    getJDA(), responseNumber,
+                                    stageChannel, oldParent, stageChannel.getParentCategory()));
+                }
+                if (oldPosition != position)
+                {
+                    stageChannel.setPosition(position);
+                    getJDA().handleEvent(
+                            new ChannelUpdatePositionEvent(
+                                    getJDA(), responseNumber,
+                                    stageChannel, oldPosition, position));
+                }
+                if (oldBitrate != bitrate)
+                {
+                    stageChannel.setBitrate(bitrate);
+                    getJDA().handleEvent(
+                            new ChannelUpdateBitrateEvent(
+                                    getJDA(), responseNumber,
+                                    stageChannel, oldBitrate, bitrate));
+                }
+
+                applyPermissions(stageChannel, permOverwrites);
+                break;  //Finish the StageChannelUpdate case
             }
             case CATEGORY:
             {
@@ -273,17 +337,17 @@ public class ChannelUpdateHandler extends SocketHandler
                 {
                     category.setName(name);
                     getJDA().handleEvent(
-                            new CategoryUpdateNameEvent(
+                            new ChannelUpdateNameEvent(
                                 getJDA(), responseNumber,
-                                category, oldName));
+                                category, oldName, name));
                 }
                 if (!Objects.equals(oldPosition, position))
                 {
                     category.setPosition(position);
                     getJDA().handleEvent(
-                            new CategoryUpdatePositionEvent(
+                            new ChannelUpdatePositionEvent(
                                 getJDA(), responseNumber,
-                                category, oldPosition));
+                                category, oldPosition, position));
                 }
 
                 applyPermissions(category, permOverwrites);
@@ -335,12 +399,14 @@ public class ChannelUpdateHandler extends SocketHandler
                     api, responseNumber,
                     (StoreChannel) channel, changed));
             break;
-        case STAGE:
         case VOICE:
             api.handleEvent(
                 new VoiceChannelUpdatePermissionsEvent(
                     api, responseNumber,
                     (VoiceChannel) channel, changed));
+            break;
+        case STAGE:
+            //TODO-v5: We are killing all of these events in v5, so don't add new event here
             break;
         case TEXT:
             api.handleEvent(

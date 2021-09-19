@@ -58,6 +58,7 @@ public class GenericPermissionOverrideEvent extends GenericGuildEvent
      * @return The {@link GuildChannel}
      */
     @Nonnull
+    //TODO-v5: Make this IPermissionContainer?
     public GuildChannel getChannel()
     {
         return channel;

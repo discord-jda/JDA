@@ -23,6 +23,10 @@ import net.dv8tion.jda.api.events.application.ApplicationCommandCreateEvent;
 import net.dv8tion.jda.api.events.application.ApplicationCommandDeleteEvent;
 import net.dv8tion.jda.api.events.application.ApplicationCommandUpdateEvent;
 import net.dv8tion.jda.api.events.application.GenericApplicationCommandEvent;
+import net.dv8tion.jda.api.events.channel.ChannelCreateEvent;
+import net.dv8tion.jda.api.events.channel.ChannelDeleteEvent;
+import net.dv8tion.jda.api.events.channel.update.*;
+import net.dv8tion.jda.api.events.channel.GenericChannelEvent;
 import net.dv8tion.jda.api.events.channel.category.CategoryCreateEvent;
 import net.dv8tion.jda.api.events.channel.category.CategoryDeleteEvent;
 import net.dv8tion.jda.api.events.channel.category.GenericCategoryEvent;
@@ -306,6 +310,22 @@ public abstract class ListenerAdapter implements EventListener
     public void onStageInstanceUpdatePrivacyLevel(@Nonnull StageInstanceUpdatePrivacyLevelEvent event) {}
     public void onStageInstanceCreate(@Nonnull StageInstanceCreateEvent event) {}
 
+    //Channel Events
+    public void onChannelCreate(@Nonnull ChannelCreateEvent event) {}
+    public void onChannelDelete(@Nonnull ChannelDeleteEvent event) {}
+
+    //Channel Update Events
+    public void onChannelUpdateBitrate(@Nonnull ChannelUpdateBitrateEvent event) {}
+    public void onChannelUpdateName(@Nonnull ChannelUpdateNameEvent event) {}
+    public void onChannelUpdateNSFW(@Nonnull ChannelUpdateNSFWEvent event) {}
+    public void onChannelUpdateParent(@Nonnull ChannelUpdateParentEvent event) {}
+    public void onChannelUpdatePosition(@Nonnull ChannelUpdatePositionEvent event) {}
+    public void onChannelUpdateRegion(@Nonnull ChannelUpdateRegionEvent event) {}
+    public void onChannelUpdateSlowmode(@Nonnull ChannelUpdateSlowmodeEvent event) {}
+    public void onChannelUpdateTopic(@Nonnull ChannelUpdateTopicEvent event) {}
+    public void onChannelUpdateType(@Nonnull ChannelUpdateTypeEvent event) {}
+    public void onChannelUpdateUserLimit(@Nonnull ChannelUpdateUserLimitEvent event) {}
+
     //Guild Events
     public void onGuildReady(@Nonnull GuildReadyEvent event) {}
     public void onGuildTimeout(@Nonnull GuildTimeoutEvent event) {}
@@ -349,6 +369,7 @@ public abstract class ListenerAdapter implements EventListener
     public void onGuildUpdateBoostCount(@Nonnull GuildUpdateBoostCountEvent event) {}
     public void onGuildUpdateMaxMembers(@Nonnull GuildUpdateMaxMembersEvent event) {}
     public void onGuildUpdateMaxPresences(@Nonnull GuildUpdateMaxPresencesEvent event) {}
+    public void onGuildUpdateNSFWLevel(@Nonnull GuildUpdateNSFWLevelEvent event) {}
 
     //Guild Invite Events
     public void onGuildInviteCreate(@Nonnull GuildInviteCreateEvent event) {}
@@ -427,6 +448,8 @@ public abstract class ListenerAdapter implements EventListener
     public void onGenericCategoryUpdate(@Nonnull GenericCategoryUpdateEvent event) {}
     public void onGenericStageInstance(@Nonnull GenericStageInstanceEvent event) {}
     public void onGenericStageInstanceUpdate(@Nonnull GenericStageInstanceUpdateEvent event) {}
+    public void onGenericChannel(@Nonnull GenericChannelEvent event) {}
+    public void onGenericChannelUpdate(@Nonnull GenericChannelUpdateEvent<?> event) {}
     public void onGenericGuild(@Nonnull GenericGuildEvent event) {}
     public void onGenericGuildUpdate(@Nonnull GenericGuildUpdateEvent event) {}
     public void onGenericGuildInvite(@Nonnull GenericGuildInviteEvent event) {}
