@@ -336,11 +336,12 @@ public class MessageReaction
         boolean self = user.equals(getJDA().getSelfUser());
         if (!self)
         {
+            //TODO-v5: This needs to re-eval'd for NEWS and THREAD
             if (channel.getType() == ChannelType.TEXT)
             {
-                GuildChannel channel = (GuildChannel) this.channel;
-                if (!channel.getGuild().getSelfMember().hasPermission(channel, Permission.MESSAGE_MANAGE))
-                    throw new InsufficientPermissionException(channel, Permission.MESSAGE_MANAGE);
+                IPermissionContainer permChannel = (IPermissionContainer) this.channel;
+                if (!permChannel.getGuild().getSelfMember().hasPermission(permChannel, Permission.MESSAGE_MANAGE))
+                    throw new InsufficientPermissionException(permChannel, Permission.MESSAGE_MANAGE);
             }
             else
             {

@@ -100,7 +100,7 @@ public interface Interaction extends ISnowflake
     @Nonnull
     default ChannelType getChannelType()
     {
-        AbstractChannel channel = getChannel();
+        Channel channel = getChannel();
         return channel != null ? channel.getType() : ChannelType.UNKNOWN;
     }
 
@@ -128,7 +128,7 @@ public interface Interaction extends ISnowflake
      * @return The channel or null if this interaction is not from a channel context
      */
     @Nullable
-    AbstractChannel getChannel();
+    Channel getChannel();
 
     /**
      * The {@link InteractionHook} which can be used to send deferred replies or followup messages.
@@ -407,7 +407,7 @@ public interface Interaction extends ISnowflake
     @Nonnull
     default GuildChannel getGuildChannel()
     {
-        AbstractChannel channel = getChannel();
+        Channel channel = getChannel();
         if (channel instanceof GuildChannel)
             return (GuildChannel) channel;
         throw new IllegalStateException("Cannot convert channel of type " + getChannelType() + " to GuildChannel");
@@ -425,7 +425,7 @@ public interface Interaction extends ISnowflake
     @Nonnull
     default MessageChannel getMessageChannel()
     {
-        AbstractChannel channel = getChannel();
+        Channel channel = getChannel();
         if (channel instanceof MessageChannel)
             return (MessageChannel) channel;
         throw new IllegalStateException("Cannot convert channel of type " + getChannelType() + " to MessageChannel");
@@ -443,7 +443,7 @@ public interface Interaction extends ISnowflake
     @Nonnull
     default TextChannel getTextChannel()
     {
-        AbstractChannel channel = getChannel();
+        Channel channel = getChannel();
         if (channel instanceof TextChannel)
             return (TextChannel) channel;
         throw new IllegalStateException("Cannot convert channel of type " + getChannelType() + " to TextChannel");
@@ -461,7 +461,7 @@ public interface Interaction extends ISnowflake
     @Nonnull
     default VoiceChannel getVoiceChannel()
     {
-        AbstractChannel channel = getChannel();
+        Channel channel = getChannel();
         if (channel instanceof VoiceChannel)
             return (VoiceChannel) channel;
         throw new IllegalStateException("Cannot convert channel of type " + getChannelType() + " to VoiceChannel");
@@ -479,7 +479,7 @@ public interface Interaction extends ISnowflake
     @Nonnull
     default PrivateChannel getPrivateChannel()
     {
-        AbstractChannel channel = getChannel();
+        Channel channel = getChannel();
         if (channel instanceof PrivateChannel)
             return (PrivateChannel) channel;
         throw new IllegalStateException("Cannot convert channel of type " + getChannelType() + " to PrivateChannel");

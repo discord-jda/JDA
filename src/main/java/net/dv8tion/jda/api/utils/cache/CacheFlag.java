@@ -17,7 +17,6 @@
 package net.dv8tion.jda.api.utils.cache;
 
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.requests.GatewayIntent;
@@ -58,7 +57,7 @@ public enum CacheFlag
      */
     CLIENT_STATUS(GatewayIntent.GUILD_PRESENCES),
     /**
-     * Enables cache for {@link GuildChannel#getMemberPermissionOverrides()}
+     * Enables cache for {@link net.dv8tion.jda.api.entities.IPermissionContainer#getMemberPermissionOverrides()}
      */
     MEMBER_OVERRIDES,
     /**

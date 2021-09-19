@@ -18,7 +18,7 @@ package net.dv8tion.jda.api.events.interaction;
 
 import net.dv8tion.jda.annotations.Incubating;
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.AbstractChannel;
+import net.dv8tion.jda.api.entities.Channel;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
@@ -83,7 +83,7 @@ public class GenericInteractionCreateEvent extends Event implements Interaction
 
     @Nullable
     @Override
-    public AbstractChannel getChannel()
+    public Channel getChannel()
     {
         return interaction.getChannel();
     }

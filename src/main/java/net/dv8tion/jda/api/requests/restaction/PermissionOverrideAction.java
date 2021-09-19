@@ -31,15 +31,15 @@ import java.util.function.BooleanSupplier;
 /**
  * Extension of {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction} specifically
  * designed to create a {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverride}
- * for a {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel}.
+ * for a {@link GuildChannel GuildChannel}.
  * This extension allows setting properties before executing the action.
  *
  * @since  3.0
  *
  * @see    net.dv8tion.jda.api.entities.PermissionOverride#getManager()
- * @see    net.dv8tion.jda.api.entities.GuildChannel#upsertPermissionOverride(IPermissionHolder)
- * @see    net.dv8tion.jda.api.entities.GuildChannel#createPermissionOverride(IPermissionHolder)
- * @see    net.dv8tion.jda.api.entities.GuildChannel#putPermissionOverride(IPermissionHolder)
+ * @see    IPermissionContainer#upsertPermissionOverride(IPermissionHolder)
+ * @see    IPermissionContainer#createPermissionOverride(IPermissionHolder)
+ * @see    IPermissionContainer#putPermissionOverride(IPermissionHolder)
  */
 public interface PermissionOverrideAction extends AuditableRestAction<PermissionOverride>
 {
@@ -85,6 +85,7 @@ public interface PermissionOverrideAction extends AuditableRestAction<Permission
     @Nonnull
     PermissionOverrideAction resetDeny();
 
+    //TODO-v5: Should probably be IPermissionContainer?
     /**
      * The {@link GuildChannel} this will be created in
      *
@@ -251,7 +252,7 @@ public interface PermissionOverrideAction extends AuditableRestAction<Permission
      * using a Collection of {@link net.dv8tion.jda.api.Permission Permissions}.
      * <br><b>Note: Permissions not marked as {@link net.dv8tion.jda.api.Permission#isChannel() isChannel()} will have no affect!</b>
      *
-     * <p>Example: {@code setAllow(EnumSet.of(Permission.MESSAGE_READ))}</p>
+     * <p>Example: {@code setAllow(EnumSet.of(Permission.VIEW_CHANNEL))}</p>
      *
      * @param  permissions
      *         The Collection of Permissions representing the granted
@@ -400,7 +401,7 @@ public interface PermissionOverrideAction extends AuditableRestAction<Permission
      * using a Collection of {@link net.dv8tion.jda.api.Permission Permissions}.
      * <br><b>Note: Permissions not marked as {@link net.dv8tion.jda.api.Permission#isChannel() isChannel()} will have no affect!</b>
      *
-     * <p>Example: {@code setDeny(EnumSet.of(Permission.MESSAGE_WRITE, Permission.MESSAGE_EXT_EMOJI))}</p>
+     * <p>Example: {@code setDeny(EnumSet.of(Permission.MESSAGE_SEND, Permission.MESSAGE_EXT_EMOJI))}</p>
      *
      * @param  permissions
      *         The Collection of Permissions representing the denied
@@ -612,7 +613,7 @@ public interface PermissionOverrideAction extends AuditableRestAction<Permission
      * <br>First sets the granted permissions and then the denied permissions.
      * <br>If a passed collection is {@code null} it resets the represented value to {@code 0} - no permission specifics.
      *
-     * <p>Example: {@code setPermissions(EnumSet.of(Permission.MESSAGE_READ), EnumSet.of(Permission.MESSAGE_WRITE, Permission.MESSAGE_EXT_EMOJI))}
+     * <p>Example: {@code setPermissions(EnumSet.of(Permission.VIEW_CHANNEL), EnumSet.of(Permission.MESSAGE_SEND, Permission.MESSAGE_EXT_EMOJI))}
      *
      * @param  grantPermissions
      *         A Collection of {@link net.dv8tion.jda.api.Permission Permissions}

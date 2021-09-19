@@ -68,7 +68,7 @@ public class MessageReference
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
      *     <br>The request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
-     *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ}
+     *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
      *         was revoked in the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
@@ -85,7 +85,7 @@ public class MessageReference
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If this reference refers to a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} and the logged in account does not have
      *         <ul>
-     *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ}</li>
+     *             <li>{@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}</li>
      *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
      *         </ul>
      *
@@ -108,7 +108,7 @@ public class MessageReference
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
      *     <br>The request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
-     *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ}
+     *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
      *         was revoked in the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
@@ -128,7 +128,7 @@ public class MessageReference
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If this reference refers to a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} and the logged in account does not have
      *         <ul>
-     *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ}</li>
+     *             <li>{@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}</li>
      *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
      *         </ul>
      *
@@ -140,7 +140,7 @@ public class MessageReference
     @Nonnull
     public RestAction<Message> resolve(boolean update)
     {
-        checkPermission(Permission.MESSAGE_READ);
+        checkPermission(Permission.VIEW_CHANNEL);
         checkPermission(Permission.MESSAGE_HISTORY);
 
         if (channel == null)
@@ -282,14 +282,16 @@ public class MessageReference
 
     private void checkPermission(Permission permission)
     {
-        if (guild == null || !(channel instanceof GuildChannel)) return;
+        if (guild == null || !(channel instanceof IPermissionContainer)) return;
 
         Member selfMember = guild.getSelfMember();
-        GuildChannel guildChannel = (GuildChannel) channel;
 
-        if (!selfMember.hasAccess(guildChannel))
-            throw new MissingAccessException(guildChannel, Permission.VIEW_CHANNEL);
-        if (!selfMember.hasPermission(guildChannel, permission))
-            throw new InsufficientPermissionException(guildChannel, permission);
+        //TODO-v5: What do we need to do to properly check perms for threads?
+        IPermissionContainer permChannel = (IPermissionContainer) channel;
+
+        if (!selfMember.hasAccess(permChannel))
+            throw new MissingAccessException(permChannel, Permission.VIEW_CHANNEL);
+        if (!selfMember.hasPermission(permChannel, permission))
+            throw new InsufficientPermissionException(permChannel, permission);
     }
 }

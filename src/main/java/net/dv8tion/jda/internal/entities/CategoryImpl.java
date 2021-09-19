@@ -46,7 +46,7 @@ public class CategoryImpl extends AbstractChannelImpl<Category, CategoryImpl> im
     }
 
     @Override
-    public Category getParent()
+    public Category getParentCategory()
     {
         return null;
     }
@@ -63,7 +63,9 @@ public class CategoryImpl extends AbstractChannelImpl<Category, CategoryImpl> im
     public List<Member> getMembers()
     {
         return Collections.unmodifiableList(getChannels().stream()
-                    .map(GuildChannel::getMembers)
+                    .filter(IMemberContainer.class::isInstance)
+                    .map(IMemberContainer.class::cast)
+                    .map(IMemberContainer::getMembers)
                     .flatMap(List::stream)
                     .distinct()
                     .collect(Collectors.toList()));
@@ -124,6 +126,7 @@ public class CategoryImpl extends AbstractChannelImpl<Category, CategoryImpl> im
         channels.addAll(getStoreChannels());
         channels.addAll(getTextChannels());
         channels.addAll(getVoiceChannels());
+        channels.addAll(getStageChannels());
         Collections.sort(channels);
         return Collections.unmodifiableList(channels);
     }
@@ -133,7 +136,7 @@ public class CategoryImpl extends AbstractChannelImpl<Category, CategoryImpl> im
     public List<StoreChannel> getStoreChannels()
     {
         return Collections.unmodifiableList(getGuild().getStoreChannelCache().stream()
-                    .filter(channel -> equals(channel.getParent()))
+                    .filter(channel -> equals(channel.getParentCategory()))
                     .sorted().collect(Collectors.toList()));
     }
 
@@ -141,8 +144,8 @@ public class CategoryImpl extends AbstractChannelImpl<Category, CategoryImpl> im
     @Override
     public List<TextChannel> getTextChannels()
     {
-        return Collections.unmodifiableList(getGuild().getTextChannels().stream()
-                    .filter(channel -> equals(channel.getParent()))
+        return Collections.unmodifiableList(getGuild().getTextChannelCache().stream()
+                    .filter(channel -> equals(channel.getParentCategory()))
                     .sorted().collect(Collectors.toList()));
     }
 
@@ -150,9 +153,18 @@ public class CategoryImpl extends AbstractChannelImpl<Category, CategoryImpl> im
     @Override
     public List<VoiceChannel> getVoiceChannels()
     {
-        return Collections.unmodifiableList(getGuild().getVoiceChannels().stream()
-                    .filter(channel -> equals(channel.getParent()))
+        return Collections.unmodifiableList(getGuild().getVoiceChannelsView().stream()
+                    .filter(channel -> equals(channel.getParentCategory()))
                     .sorted().collect(Collectors.toList()));
+    }
+
+    @Nonnull
+    @Override
+    public List<StageChannel> getStageChannels()
+    {
+        return Collections.unmodifiableList(getGuild().getStageChannelsView().stream()
+                .filter(channel -> equals(channel.getParentCategory()))
+                .sorted().collect(Collectors.toList()));
     }
 
     @Nonnull

@@ -589,7 +589,11 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
     {
         if (!channel.getType().isGuild())
             return;
-        GuildChannel gc = (GuildChannel) channel;
+
+        if (!(channel instanceof IPermissionContainer))
+            return;
+
+        IPermissionContainer gc = (IPermissionContainer) channel;
         if (!gc.getGuild().getSelfMember().hasAccess(gc))
             throw new MissingAccessException(gc, Permission.VIEW_CHANNEL);
         if (!hasPermission(perm))

@@ -13,39 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-package net.dv8tion.jda.api.entities;
+package net.dv8tion.jda.api.events.channel.stage;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.StageChannel;
+import net.dv8tion.jda.api.entities.VoiceChannel;
 
 import javax.annotation.Nonnull;
 
 /**
- * Abstract Channel interface for all {@link ChannelType ChannelTypes}.
+ * Indicates that a {@link StageChannel StageChannel} was created.
+ *
+ * <p>Can be used to get affected StageChannel.
  */
-public interface AbstractChannel extends ISnowflake
+public class StageChannelCreateEvent extends GenericStageChannelEvent
 {
-    /**
-     * The human readable name of this channel.
-     *
-     * @return The name of this channel
-     */
-    @Nonnull
-    String getName();
-
-    /**
-     * The {@link net.dv8tion.jda.api.entities.ChannelType ChannelType} for this channel
-     *
-     * @return The channel type
-     */
-    @Nonnull
-    ChannelType getType();
-
-    /**
-     * Returns the {@link net.dv8tion.jda.api.JDA JDA} instance of this channel
-     *
-     * @return the corresponding JDA instance
-     */
-    @Nonnull
-    JDA getJDA();
+    public StageChannelCreateEvent(@Nonnull JDA api, long responseNumber, @Nonnull StageChannel channel)
+    {
+        super(api, responseNumber, channel);
+    }
 }

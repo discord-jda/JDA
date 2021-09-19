@@ -1,32 +1,11 @@
-/*
- * Copyright 2015 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.managers.ChannelManager;
-import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
-import net.dv8tion.jda.api.requests.restaction.ChannelAction;
-import net.dv8tion.jda.api.requests.restaction.InviteAction;
-import net.dv8tion.jda.api.requests.restaction.PermissionOverrideAction;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.List;
 
 /**
  * Represents a {@link net.dv8tion.jda.api.entities.Guild Guild} channel.
@@ -37,7 +16,7 @@ import java.util.List;
  * @see JDA#getGuildChannelById(long)
  * @see JDA#getGuildChannelById(ChannelType, long)
  */
-public interface GuildChannel extends AbstractChannel, IMentionable, Comparable<GuildChannel>
+public interface GuildChannel extends Channel, Comparable<GuildChannel>
 {
     /**
      * Returns the {@link net.dv8tion.jda.api.entities.Guild Guild} that this GuildChannel is part of.
@@ -46,201 +25,6 @@ public interface GuildChannel extends AbstractChannel, IMentionable, Comparable<
      */
     @Nonnull
     Guild getGuild();
-
-    /**
-     * Parent {@link net.dv8tion.jda.api.entities.Category Category} of this
-     * GuildChannel. Channels don't need to have a parent Category.
-     * <br>Note that a {@link net.dv8tion.jda.api.entities.Category Category} will
-     * always return {@code null} for this method as nested categories are not supported.
-     *
-     * @return Possibly-null {@link net.dv8tion.jda.api.entities.Category Category} for this GuildChannel
-     */
-    @Nullable
-    Category getParent();
-
-    /**
-     * A List of all {@link net.dv8tion.jda.api.entities.Member Members} that are in this GuildChannel
-     * <br>For {@link net.dv8tion.jda.api.entities.TextChannel TextChannels},
-     * this returns all Members with the {@link net.dv8tion.jda.api.Permission#MESSAGE_READ} Permission.
-     * <br>For {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels},
-     * this returns all Members that joined that VoiceChannel.
-     * <br>For {@link net.dv8tion.jda.api.entities.Category Categories},
-     * this returns all Members who are in its child channels.
-     *
-     * @return An immutable List of {@link net.dv8tion.jda.api.entities.Member Members} that are in this GuildChannel.
-     */
-    @Nonnull
-    List<Member> getMembers();
-
-    /**
-     * The position this GuildChannel is displayed at.
-     * <br>Higher values mean they are displayed lower in the Client. Position 0 is the top most GuildChannel
-     * Channels of a {@link net.dv8tion.jda.api.entities.Guild Guild} do not have to have continuous positions
-     *
-     * @throws IllegalStateException
-     *         If this channel is not in the guild cache
-     *
-     * @return Zero-based int of position of the GuildChannel.
-     */
-    int getPosition();
-
-    /**
-     * The actual position of the {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel} as stored and given by Discord.
-     * Channel positions are actually based on a pairing of the creation time (as stored in the snowflake id)
-     * and the position. If 2 or more channels share the same position then they are sorted based on their creation date.
-     * The more recent a channel was created, the lower it is in the hierarchy. This is handled by {@link #getPosition()}
-     * and it is most likely the method you want. If, for some reason, you want the actual position of the
-     * channel then this method will give you that value.
-     *
-     * @return The true, Discord stored, position of the {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel}.
-     */
-    int getPositionRaw();
-
-    /**
-     * The {@link PermissionOverride} relating to the specified {@link net.dv8tion.jda.api.entities.Member Member} or {@link net.dv8tion.jda.api.entities.Role Role}.
-     * If there is no {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverride} for this {@link GuildChannel GuildChannel}
-     * relating to the provided Member or Role, then this returns {@code null}.
-     *
-     * @param  permissionHolder
-     *         The {@link net.dv8tion.jda.api.entities.Member Member} or {@link net.dv8tion.jda.api.entities.Role Role} whose
-     *         {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverride} is requested.
-     *
-     * @throws IllegalArgumentException
-     *         If the provided permission holder is null, or from a different guild
-     *
-     * @return Possibly-null {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverride}
-     *         relating to the provided Member or Role.
-     */
-    @Nullable
-    PermissionOverride getPermissionOverride(@Nonnull IPermissionHolder permissionHolder);
-
-    /**
-     * Gets all of the {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverrides} that are part
-     * of this {@link GuildChannel GuildChannel}.
-     * <br>This combines {@link net.dv8tion.jda.api.entities.Member Member} and {@link net.dv8tion.jda.api.entities.Role Role} overrides.
-     * If you would like only {@link net.dv8tion.jda.api.entities.Member Member} overrides or only {@link net.dv8tion.jda.api.entities.Role Role}
-     * overrides, use {@link #getMemberPermissionOverrides()} or {@link #getRolePermissionOverrides()} respectively.
-     *
-     * <p>This requires {@link net.dv8tion.jda.api.utils.cache.CacheFlag#MEMBER_OVERRIDES CacheFlag.MEMBER_OVERRIDES} to be enabled!
-     * Without that CacheFlag, this list will only contain overrides for the currently logged in account and roles.
-     *
-     * @return Possibly-empty immutable list of all {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverrides}
-     *         for this {@link GuildChannel GuildChannel}.
-     */
-    @Nonnull
-    List<PermissionOverride> getPermissionOverrides();
-
-    /**
-     * Gets all of the {@link net.dv8tion.jda.api.entities.Member Member} {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverrides}
-     * that are part of this {@link GuildChannel GuildChannel}.
-     *
-     * <p>This requires {@link net.dv8tion.jda.api.utils.cache.CacheFlag#MEMBER_OVERRIDES CacheFlag.MEMBER_OVERRIDES} to be enabled!
-     *
-     * @return Possibly-empty immutable list of all {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverrides}
-     *         for {@link net.dv8tion.jda.api.entities.Member Member}
-     *         for this {@link GuildChannel GuildChannel}.
-     */
-    @Nonnull
-    List<PermissionOverride> getMemberPermissionOverrides();
-
-    /**
-     * Gets all of the {@link net.dv8tion.jda.api.entities.Role Role} {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverrides}
-     * that are part of this {@link GuildChannel GuildChannel}.
-     *
-     * @return Possibly-empty immutable list of all {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverrides}
-     *         for {@link net.dv8tion.jda.api.entities.Role Roles}
-     *         for this {@link GuildChannel GuildChannel}.
-     */
-    @Nonnull
-    List<PermissionOverride> getRolePermissionOverrides();
-
-    /**
-     * Whether or not this GuildChannel's {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverrides} match
-     * those of {@link #getParent() its parent category}. If the channel doesn't have a parent category, this will return true.
-     *
-     * <p>This requires {@link net.dv8tion.jda.api.utils.cache.CacheFlag#MEMBER_OVERRIDES CacheFlag.MEMBER_OVERRIDES} to be enabled.
-     * <br>{@link net.dv8tion.jda.api.JDABuilder#createLight(String) createLight(String)} disables this CacheFlag by default.
-     *
-     * @return True, if this channel is synced with its parent category
-     *
-     * @since  4.2.1
-     */
-    boolean isSynced();
-
-    /**
-     * Creates a copy of the specified {@link GuildChannel GuildChannel}
-     * in the specified {@link net.dv8tion.jda.api.entities.Guild Guild}.
-     * <br>If the provided target guild is not the same Guild this channel is in then
-     * the parent category and permissions will not be copied due to technical difficulty and ambiguity.
-     *
-     * <p>This copies the following elements:
-     * <ol>
-     *     <li>Name</li>
-     *     <li>Parent Category (if present)</li>
-     *     <li>Voice Elements (Bitrate, Userlimit)</li>
-     *     <li>Text Elements (Topic, NSFW, Slowmode)</li>
-     *     <li>All permission overrides for Members/Roles</li>
-     * </ol>
-     *
-     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
-     *     <br>The channel could not be created due to a permission discrepancy</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>The {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL VIEW_CHANNEL} permission was removed</li>
-     * </ul>
-     *
-     * @param  guild
-     *         The {@link net.dv8tion.jda.api.entities.Guild Guild} to create the channel in
-     *
-     * @throws java.lang.IllegalArgumentException
-     *         If the provided guild is {@code null}
-     * @throws net.dv8tion.jda.api.exceptions.PermissionException
-     *         If the currently logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} Permission
-     *
-     * @return A specific {@link ChannelAction ChannelAction}
-     *         <br>This action allows to set fields for the new GuildChannel before creating it!
-     */
-    @Nonnull
-    @CheckReturnValue
-    ChannelAction<? extends GuildChannel> createCopy(@Nonnull Guild guild);
-
-    /**
-     * Creates a copy of the specified {@link GuildChannel GuildChannel}.
-     *
-     * <p>This copies the following elements:
-     * <ol>
-     *     <li>Name</li>
-     *     <li>Parent Category (if present)</li>
-     *     <li>Voice Elements (Bitrate, Userlimit)</li>
-     *     <li>Text Elements (Topic, NSFW, Slowmode)</li>
-     *     <li>All permission overrides for Members/Roles</li>
-     * </ol>
-     *
-     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
-     *     <br>The channel could not be created due to a permission discrepancy</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>The {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL VIEW_CHANNEL} permission was removed</li>
-     * </ul>
-     *
-     * @throws net.dv8tion.jda.api.exceptions.PermissionException
-     *         If the currently logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} Permission
-     *
-     * @return A specific {@link ChannelAction ChannelAction}
-     *         <br>This action allows to set fields for the new GuildChannel before creating it!
-     */
-    @Nonnull
-    @CheckReturnValue
-    default ChannelAction<? extends GuildChannel> createCopy()
-    {
-        return createCopy(getGuild());
-    }
 
     /**
      * Returns the {@link ChannelManager ChannelManager} for this GuildChannel.
@@ -256,9 +40,10 @@ public interface GuildChannel extends AbstractChannel, IMentionable, Comparable<
      * @return The ChannelManager of this GuildChannel
      */
     @Nonnull
-    ChannelManager getManager();
+    ChannelManager<? extends GuildChannel> getManager();
 
     /**
+     * TODO-v5: this override might not be needed anymore if we remove AuditableRestAction and instead place auditable hooks onto RestAction itself.
      * Deletes this GuildChannel.
      *
      * <p>Possible ErrorResponses include:
@@ -280,121 +65,8 @@ public interface GuildChannel extends AbstractChannel, IMentionable, Comparable<
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      */
+    @Override
     @Nonnull
     @CheckReturnValue
     AuditableRestAction<Void> delete();
-
-    /**
-     * Creates a {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverride}
-     * for the specified {@link net.dv8tion.jda.api.entities.Member Member} or {@link net.dv8tion.jda.api.entities.Role Role} in this GuildChannel.
-     * You can use {@link #putPermissionOverride(IPermissionHolder)} to replace existing overrides.
-     *
-     * <p>Possible ErrorResponses include:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
-     *     <br>If this channel was already deleted</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>If we were removed from the Guild</li>
-     * </ul>
-     *
-     * @param  permissionHolder
-     *         The Member or Role to create an override for
-     *
-     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         if we don't have the permission to {@link net.dv8tion.jda.api.Permission#MANAGE_PERMISSIONS MANAGE_PERMISSIONS}
-     * @throws IllegalArgumentException
-     *         if the specified permission holder is null or is not from {@link #getGuild()}
-     * @throws java.lang.IllegalStateException
-     *         If the specified permission holder already has a PermissionOverride. Use {@link #getPermissionOverride(IPermissionHolder)} to retrieve it.
-     *         You can use {@link #putPermissionOverride(IPermissionHolder)} to replace existing overrides.
-     *
-     * @return {@link PermissionOverrideAction PermissionOverrideAction}
-     *         Provides the newly created PermissionOverride for the specified permission holder
-     */
-    @Nonnull
-    @CheckReturnValue
-    PermissionOverrideAction createPermissionOverride(@Nonnull IPermissionHolder permissionHolder);
-
-    /**
-     * Creates a {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverride}
-     * for the specified {@link net.dv8tion.jda.api.entities.Member Member} or {@link net.dv8tion.jda.api.entities.Role Role} in this GuildChannel.
-     * <br>If the permission holder already has an existing override it will be replaced.
-     *
-     * @param  permissionHolder
-     *         The Member or Role to create the override for
-     *
-     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         if we don't have the permission to {@link net.dv8tion.jda.api.Permission#MANAGE_PERMISSIONS MANAGE_PERMISSIONS}
-     * @throws java.lang.IllegalArgumentException
-     *         If the provided permission holder is null or from a different guild
-     *
-     * @return {@link PermissionOverrideAction PermissionOverrideAction}
-     *         Provides the newly created PermissionOverride for the specified permission holder
-     */
-    @Nonnull
-    @CheckReturnValue
-    PermissionOverrideAction putPermissionOverride(@Nonnull IPermissionHolder permissionHolder);
-
-    /**
-     * Creates a new override or updates an existing one.
-     * <br>This is similar to calling {@link PermissionOverride#getManager()} if an override exists.
-     *
-     * @param  permissionHolder
-     *         The Member/Role for the override
-     *
-     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If we don't have the permission to {@link net.dv8tion.jda.api.Permission#MANAGE_PERMISSIONS MANAGE_PERMISSIONS}
-     * @throws java.lang.IllegalArgumentException
-     *         If the provided permission holder is null or not from this guild
-     *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.PermissionOverrideAction}
-     *         <br>With the current settings of an existing override or a fresh override with no permissions set
-     *
-     * @since  4.0.0
-     */
-    @Nonnull
-    @CheckReturnValue
-    default PermissionOverrideAction upsertPermissionOverride(@Nonnull IPermissionHolder permissionHolder)
-    {
-        PermissionOverride override = getPermissionOverride(permissionHolder);
-        if (override != null)
-            return override.getManager();
-        return putPermissionOverride(permissionHolder);
-    }
-
-    /**
-     * Creates a new {@link InviteAction InviteAction} which can be used to create a
-     * new {@link net.dv8tion.jda.api.entities.Invite Invite}.
-     * <br>Requires {@link net.dv8tion.jda.api.Permission#CREATE_INSTANT_INVITE CREATE_INSTANT_INVITE} in this channel.
-     *
-     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the account does not have {@link net.dv8tion.jda.api.Permission#CREATE_INSTANT_INVITE CREATE_INSTANT_INVITE} in this channel
-     * @throws java.lang.IllegalArgumentException
-     *         If this is an instance of a {@link net.dv8tion.jda.api.entities.Category Category}
-     *
-     * @return A new {@link InviteAction InviteAction}
-     * 
-     * @see    InviteAction
-     */
-    @Nonnull
-    @CheckReturnValue
-    InviteAction createInvite();
-
-    /**
-     * Returns all invites for this channel.
-     * <br>Requires {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} in this channel.
-     * Will throw an {@link net.dv8tion.jda.api.exceptions.InsufficientPermissionException InsufficientPermissionException} otherwise.
-     *
-     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         if the account does not have {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} in this channel
-     *
-     * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: List{@literal <}{@link net.dv8tion.jda.api.entities.Invite Invite}{@literal >}
-     *         <br>The list of expanded Invite objects
-     *
-     * @see    net.dv8tion.jda.api.entities.Guild#retrieveInvites()
-     */
-    @Nonnull
-    @CheckReturnValue
-    RestAction<List<Invite>> retrieveInvites();
 }

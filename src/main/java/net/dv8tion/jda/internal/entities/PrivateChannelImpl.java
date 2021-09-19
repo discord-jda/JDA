@@ -99,10 +99,17 @@ public class PrivateChannelImpl implements PrivateChannel
 
     @Nonnull
     @Override
-    public RestAction<Void> close()
+    public RestAction<Void> delete()
     {
         Route.CompiledRoute route = Route.Channels.DELETE_CHANNEL.compile(getId());
         return new RestActionImpl<>(getJDA(), route);
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<Void> close()
+    {
+        return this.delete();
     }
 
     @Nonnull
@@ -124,6 +131,13 @@ public class PrivateChannelImpl implements PrivateChannel
     public long getIdLong()
     {
         return id;
+    }
+
+    @Nonnull
+    @Override
+    public String getAsMention()
+    {
+        return "<#" + id + '>';
     }
 
     @Nonnull

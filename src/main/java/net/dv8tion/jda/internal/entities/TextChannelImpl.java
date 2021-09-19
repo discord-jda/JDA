@@ -113,21 +113,6 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
 
     @Nonnull
     @Override
-    public RestAction<Webhook.WebhookReference> follow(@Nonnull String targetChannelId)
-    {
-        Checks.notNull(targetChannelId, "Target Channel ID");
-        if (!isNews())
-            throw new IllegalStateException("Can only follow news channels!");
-        Route.CompiledRoute route = Route.Channels.FOLLOW_CHANNEL.compile(getId());
-        DataObject body = DataObject.empty().put("webhook_channel_id", targetChannelId);
-        return new RestActionImpl<>(getJDA(), route, body, (response, request) -> {
-            DataObject json = response.getObject();
-            return new Webhook.WebhookReference(request.getJDA(), json.getUnsignedLong("webhook_id") , json.getUnsignedLong("channel_id"));
-        });
-    }
-
-    @Nonnull
-    @Override
     public RestAction<Void> deleteMessages(@Nonnull Collection<Message> messages)
     {
         Checks.notEmpty(messages, "Messages collection");
@@ -176,7 +161,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
         if (!getGuild().equals(member.getGuild()))
             throw new IllegalArgumentException("Provided Member is not from the Guild that this TextChannel is part of.");
 
-        return member.hasPermission(this, Permission.MESSAGE_READ, Permission.MESSAGE_WRITE);
+        return member.hasPermission(this, Permission.VIEW_CHANNEL, Permission.MESSAGE_SEND);
     }
 
     @Nonnull
@@ -282,12 +267,6 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
     }
 
     @Override
-    public boolean isNews()
-    {
-        return news && getGuild().getFeatures().contains("NEWS");
-    }
-
-    @Override
     public int getSlowmode()
     {
         return slowmode;
@@ -298,24 +277,8 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
     public List<Member> getMembers()
     {
         return Collections.unmodifiableList(getGuild().getMembersView().stream()
-                  .filter(m -> m.hasPermission(this, Permission.MESSAGE_READ))
+                  .filter(m -> m.hasPermission(this, Permission.VIEW_CHANNEL))
                   .collect(Collectors.toList()));
-    }
-
-    @Override
-    public int getPosition()
-    {
-        //We call getTextChannels instead of directly accessing the GuildImpl.getTextChannelsView because
-        // getTextChannels does the sorting logic.
-        List<GuildChannel> channels = new ArrayList<>(getGuild().getTextChannels());
-        channels.addAll(getGuild().getStoreChannels());
-        Collections.sort(channels);
-        for (int i = 0; i < channels.size(); i++)
-        {
-            if (equals(channels.get(i)))
-                return i;
-        }
-        throw new IllegalStateException("Somehow when determining position we never found the TextChannel in the Guild's channels? wtf?");
     }
 
     @Nonnull
@@ -326,7 +289,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
         ChannelAction<TextChannel> action = guild.createTextChannel(name).setNSFW(nsfw).setTopic(topic).setSlowmode(slowmode);
         if (guild.equals(getGuild()))
         {
-            Category parent = getParent();
+            Category parent = getParentCategory();
             if (parent != null)
                 action.setParent(parent);
             for (PermissionOverride o : overrides.valueCollection())
@@ -344,8 +307,8 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
     @Override
     public MessageAction sendMessage(@Nonnull CharSequence text)
     {
-        checkPermission(Permission.MESSAGE_READ);
-        checkPermission(Permission.MESSAGE_WRITE);
+        checkPermission(Permission.VIEW_CHANNEL);
+        checkPermission(Permission.MESSAGE_SEND);
         return TextChannel.super.sendMessage(text);
     }
 
@@ -353,8 +316,8 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
     @Override
     public MessageAction sendMessage(@Nonnull MessageEmbed embed)
     {
-        checkPermission(Permission.MESSAGE_READ);
-        checkPermission(Permission.MESSAGE_WRITE);
+        checkPermission(Permission.VIEW_CHANNEL);
+        checkPermission(Permission.MESSAGE_SEND);
         // this is checked because you cannot send an empty message
         checkPermission(Permission.MESSAGE_EMBED_LINKS);
         return TextChannel.super.sendMessage(embed);
@@ -366,8 +329,8 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
     {
         Checks.notNull(msg, "Message");
 
-        checkPermission(Permission.MESSAGE_READ);
-        checkPermission(Permission.MESSAGE_WRITE);
+        checkPermission(Permission.VIEW_CHANNEL);
+        checkPermission(Permission.MESSAGE_SEND);
         if (msg.getContentRaw().isEmpty() && !msg.getEmbeds().isEmpty())
             checkPermission(Permission.MESSAGE_EMBED_LINKS);
 
@@ -379,8 +342,8 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
     @Override
     public MessageAction sendFile(@Nonnull File file, @Nonnull String fileName, @Nonnull AttachmentOption... options)
     {
-        checkPermission(Permission.MESSAGE_READ);
-        checkPermission(Permission.MESSAGE_WRITE);
+        checkPermission(Permission.VIEW_CHANNEL);
+        checkPermission(Permission.MESSAGE_SEND);
         checkPermission(Permission.MESSAGE_ATTACH_FILES);
 
         final long maxSize = getGuild().getMaxFileSize();
@@ -395,8 +358,8 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
     @Override
     public MessageAction sendFile(@Nonnull InputStream data, @Nonnull String fileName, @Nonnull AttachmentOption... options)
     {
-        checkPermission(Permission.MESSAGE_READ);
-        checkPermission(Permission.MESSAGE_WRITE);
+        checkPermission(Permission.VIEW_CHANNEL);
+        checkPermission(Permission.MESSAGE_SEND);
         checkPermission(Permission.MESSAGE_ATTACH_FILES);
 
         //Call MessageChannel's default method
@@ -407,8 +370,8 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
     @Override
     public MessageAction sendFile(@Nonnull byte[] data, @Nonnull String fileName, @Nonnull AttachmentOption... options)
     {
-        checkPermission(Permission.MESSAGE_READ);
-        checkPermission(Permission.MESSAGE_WRITE);
+        checkPermission(Permission.VIEW_CHANNEL);
+        checkPermission(Permission.MESSAGE_SEND);
         checkPermission(Permission.MESSAGE_ATTACH_FILES);
 
         final long maxSize = getGuild().getMaxFileSize();
@@ -422,7 +385,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
     @Override
     public RestAction<Message> retrieveMessageById(@Nonnull String messageId)
     {
-        checkPermission(Permission.MESSAGE_READ);
+        checkPermission(Permission.VIEW_CHANNEL);
         checkPermission(Permission.MESSAGE_HISTORY);
 
         //Call MessageChannel's default method
@@ -434,7 +397,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
     public AuditableRestAction<Void> deleteMessageById(@Nonnull String messageId)
     {
         Checks.isSnowflake(messageId, "Message ID");
-        checkPermission(Permission.MESSAGE_READ);
+        checkPermission(Permission.VIEW_CHANNEL);
 
         //Call MessageChannel's default method
         return TextChannel.super.deleteMessageById(messageId);
@@ -444,7 +407,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
     @Override
     public RestAction<Void> pinMessageById(@Nonnull String messageId)
     {
-        checkPermission(Permission.MESSAGE_READ, "You cannot pin a message in a channel you can't access. (MESSAGE_READ)");
+        checkPermission(Permission.VIEW_CHANNEL, "You cannot pin a message in a channel you can't access. (VIEW_CHANNEL)");
         checkPermission(Permission.MESSAGE_MANAGE, "You need MESSAGE_MANAGE to pin or unpin messages.");
 
         //Call MessageChannel's default method
@@ -455,7 +418,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
     @Override
     public RestAction<Void> unpinMessageById(@Nonnull String messageId)
     {
-        checkPermission(Permission.MESSAGE_READ, "You cannot unpin a message in a channel you can't access. (MESSAGE_READ)");
+        checkPermission(Permission.VIEW_CHANNEL, "You cannot unpin a message in a channel you can't access. (VIEW_CHANNEL)");
         checkPermission(Permission.MESSAGE_MANAGE, "You need MESSAGE_MANAGE to pin or unpin messages.");
 
         //Call MessageChannel's default method
@@ -466,7 +429,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
     @Override
     public RestAction<List<Message>> retrievePinnedMessages()
     {
-        checkPermission(Permission.MESSAGE_READ, "Cannot get the pinned message of a channel without MESSAGE_READ access.");
+        checkPermission(Permission.VIEW_CHANNEL, "Cannot get the pinned message of a channel without VIEW_CHANNEL access.");
 
         //Call MessageChannel's default method
         return TextChannel.super.retrievePinnedMessages();
@@ -578,8 +541,8 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
     @Override
     public MessageAction editMessageById(@Nonnull String messageId, @Nonnull CharSequence newContent)
     {
-        checkPermission(Permission.MESSAGE_READ);
-        checkPermission(Permission.MESSAGE_WRITE);
+        checkPermission(Permission.VIEW_CHANNEL);
+        checkPermission(Permission.MESSAGE_SEND);
         return TextChannel.super.editMessageById(messageId, newContent);
     }
 
@@ -588,8 +551,8 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
     @Deprecated
     public MessageAction editMessageById(@Nonnull String messageId, @Nonnull MessageEmbed newEmbed)
     {
-        checkPermission(Permission.MESSAGE_READ);
-        checkPermission(Permission.MESSAGE_WRITE);
+        checkPermission(Permission.VIEW_CHANNEL);
+        checkPermission(Permission.MESSAGE_SEND);
         checkPermission(Permission.MESSAGE_EMBED_LINKS);
         return TextChannel.super.editMessageById(messageId, newEmbed);
     }
@@ -598,8 +561,8 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
     @Override
     public MessageAction editMessageEmbedsById(@Nonnull String messageId, @Nonnull Collection<? extends MessageEmbed> newEmbeds)
     {
-        checkPermission(Permission.MESSAGE_READ);
-        checkPermission(Permission.MESSAGE_WRITE);
+        checkPermission(Permission.VIEW_CHANNEL);
+        checkPermission(Permission.MESSAGE_SEND);
         checkPermission(Permission.MESSAGE_EMBED_LINKS);
         return TextChannel.super.editMessageEmbedsById(messageId, newEmbeds);
     }
@@ -611,8 +574,8 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
         Checks.notNull(newContent, "Message");
 
         //checkVerification(); no verification needed to edit a message
-        checkPermission(Permission.MESSAGE_READ);
-        checkPermission(Permission.MESSAGE_WRITE);
+        checkPermission(Permission.VIEW_CHANNEL);
+        checkPermission(Permission.MESSAGE_SEND);
         if (newContent.getContentRaw().isEmpty() && !newContent.getEmbeds().isEmpty())
             checkPermission(Permission.MESSAGE_EMBED_LINKS);
 

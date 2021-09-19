@@ -1117,6 +1117,17 @@ public interface Guild extends ISnowflake
     Member getSelfMember();
 
     /**
+     * Returns the NSFW Level that this guild is classified with.
+     * <br>For a short description of the different values, see {@link net.dv8tion.jda.api.entities.Guild.NSFWLevel NSFWLevel}.
+     * <p>
+     * This value can only be modified by Discord after reviewing the Guild.
+     *
+     * @return The NSFWLevel of this guild.
+     */
+    @Nonnull
+    NSFWLevel getNSFWLevel();
+
+    /**
      * Gets the Guild specific {@link net.dv8tion.jda.api.entities.Member Member} object for the provided
      * {@link net.dv8tion.jda.api.entities.User User}.
      * <br>If the user is not in this guild, {@code null} is returned.
@@ -1408,7 +1419,7 @@ public interface Guild extends ISnowflake
     MemberCacheView getMemberCache();
 
     /**
-     * Get {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel} for the provided ID.
+     * Get {@link GuildChannel GuildChannel} for the provided ID.
      * <br>This checks if any of the channel types in this guild have the provided ID and returns the first match.
      *
      * <br>To get more specific channel types you can use one of the following:
@@ -1436,7 +1447,7 @@ public interface Guild extends ISnowflake
     }
 
     /**
-     * Get {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel} for the provided ID.
+     * Get {@link GuildChannel GuildChannel} for the provided ID.
      * <br>This checks if any of the channel types in this guild have the provided ID and returns the first match.
      *
      * <br>To get more specific channel types you can use one of the following:
@@ -1459,6 +1470,8 @@ public interface Guild extends ISnowflake
         if (channel == null)
             channel = getVoiceChannelById(id);
         if (channel == null)
+            channel = getStageChannelById(id);
+        if (channel == null)
             channel = getStoreChannelById(id);
         if (channel == null)
             channel = getCategoryById(id);
@@ -1466,7 +1479,7 @@ public interface Guild extends ISnowflake
     }
 
     /**
-     * Get {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel} for the provided ID.
+     * Get {@link GuildChannel GuildChannel} for the provided ID.
      *
      * <br>This is meant for systems that use a dynamic {@link net.dv8tion.jda.api.entities.ChannelType} and can
      * profit from a simple function to get the channel instance.
@@ -1497,7 +1510,7 @@ public interface Guild extends ISnowflake
     }
 
     /**
-     * Get {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel} for the provided ID.
+     * Get {@link GuildChannel GuildChannel} for the provided ID.
      *
      * <br>This is meant for systems that use a dynamic {@link net.dv8tion.jda.api.entities.ChannelType} and can
      * profit from a simple function to get the channel instance.
@@ -1537,6 +1550,16 @@ public interface Guild extends ISnowflake
     }
 
     /**
+     * Sorted {@link net.dv8tion.jda.api.utils.cache.SnowflakeCacheView SnowflakeCacheView} of
+     * all cached {@link net.dv8tion.jda.api.entities.StageChannel StageChannel} of this Guild.
+     * <br>StageChannel are sorted according to their position.
+     *
+     * @return {@link net.dv8tion.jda.api.utils.cache.SortedSnowflakeCacheView SortedSnowflakeCacheView}
+     */
+    @Nonnull
+    SortedSnowflakeCacheView<StageChannel> getStageChannelCache();
+
+    /**
      * Gets a list of all {@link net.dv8tion.jda.api.entities.StageChannel StageChannel} in this Guild that have the same
      * name as the one provided.
      * <br>If there are no {@link net.dv8tion.jda.api.entities.StageChannel StageChannels} with the provided name, then this returns an empty list.
@@ -1551,11 +1574,7 @@ public interface Guild extends ISnowflake
     @Nonnull
     default List<StageChannel> getStageChannelsByName(@Nonnull String name, boolean ignoreCase)
     {
-        return getVoiceChannelsByName(name, ignoreCase)
-                .stream()
-                .filter(StageChannel.class::isInstance)
-                .map(StageChannel.class::cast)
-                .collect(Collectors.toList());
+        return getStageChannelCache().getElementsByName(name, ignoreCase);
     }
 
     /**
@@ -1576,7 +1595,7 @@ public interface Guild extends ISnowflake
     @Nullable
     default StageChannel getStageChannelById(@Nonnull String id)
     {
-        return getStageChannelById(MiscUtil.parseSnowflake(id));
+        return getStageChannelCache().getElementById(id);
     }
 
     /**
@@ -1594,8 +1613,7 @@ public interface Guild extends ISnowflake
     @Nullable
     default StageChannel getStageChannelById(long id)
     {
-        VoiceChannel channel = getVoiceChannelById(id);
-        return channel instanceof StageChannel ? (StageChannel) channel : null;
+        return getStageChannelCache().getElementById(id);
     }
 
     /**
@@ -1603,18 +1621,16 @@ public interface Guild extends ISnowflake
      * <br>The channels returned will be sorted according to their position.
      *
      * <p>This copies the backing store into a list. This means every call
-     * creates a new list with O(n) complexity.
+     * creates a new list with O(n) complexity. It is recommended to store this into
+     * a local variable or use {@link #getStageChannelCache()} and use its more efficient
+     * versions of handling these values.
      *
      * @return An immutable List of {@link net.dv8tion.jda.api.entities.StageChannel StageChannels}.
      */
     @Nonnull
     default List<StageChannel> getStageChannels()
     {
-        return getVoiceChannels()
-                .stream()
-                .filter(StageChannel.class::isInstance)
-                .map(StageChannel.class::cast)
-                .collect(Collectors.toList());
+       return getStageChannelCache().asList();
     }
 
     /**
@@ -1886,8 +1902,6 @@ public interface Guild extends ISnowflake
      * <br>If there is no {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel} with an id that matches the provided
      * one, then this returns {@code null}.
      *
-     * <p>This may also contain {@link StageChannel StageChannels}!
-     *
      * @param  id
      *         The id of the {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel}.
      *
@@ -1909,8 +1923,6 @@ public interface Guild extends ISnowflake
      * <br>If there is no {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel} with an id that matches the provided
      * one, then this returns {@code null}.
      *
-     * <p>This may also contain {@link StageChannel StageChannels}!
-     *
      * @param  id
      *         The id of the {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel}.
      *
@@ -1931,8 +1943,6 @@ public interface Guild extends ISnowflake
      * a local variable or use {@link #getVoiceChannelCache()} and use its more efficient
      * versions of handling these values.
      *
-     * <p>This may also contain {@link StageChannel StageChannels}!
-     *
      * @return An immutable List of {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels}.
      */
     @Nonnull
@@ -1945,8 +1955,6 @@ public interface Guild extends ISnowflake
      * Gets a list of all {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels} in this Guild that have the same
      * name as the one provided.
      * <br>If there are no {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels} with the provided name, then this returns an empty list.
-     *
-     * <p>This may also contain {@link StageChannel StageChannels}!
      *
      * @param  name
      *         The name used to filter the returned {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels}.
@@ -1966,8 +1974,6 @@ public interface Guild extends ISnowflake
      * all cached {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels} of this Guild.
      * <br>VoiceChannels are sorted according to their position.
      *
-     * <p>This may also contain {@link StageChannel StageChannels}!
-     *
      * @return {@link net.dv8tion.jda.api.utils.cache.SortedSnowflakeCacheView SortedSnowflakeCacheView}
      */
     @Nonnull
@@ -1982,10 +1988,12 @@ public interface Guild extends ISnowflake
      * <ol>
      *     <li>TextChannel and StoreChannel without parent</li>
      *     <li>VoiceChannel without parent</li>
+     *     <li>StageChannel without parent</li>
      *     <li>Categories
      *         <ol>
      *             <li>TextChannel and StoreChannel with category as parent</li>
      *             <li>VoiceChannel with category as parent</li>
+     *             <li>StageChannel with category as parent</li>
      *         </ol>
      *     </li>
      * </ol>
@@ -2008,10 +2016,12 @@ public interface Guild extends ISnowflake
      * <ol>
      *     <li>TextChannel and StoreChannel without parent</li>
      *     <li>VoiceChannel without parent</li>
+     *     <li>StageChannel without parent</li>
      *     <li>Categories
      *         <ol>
      *             <li>TextChannel and StoreChannel with category as parent</li>
      *             <li>VoiceChannel with category as parent</li>
+     *             <li>StageChannel with category as parent</li>
      *         </ol>
      *     </li>
      * </ol>
@@ -2335,7 +2345,7 @@ public interface Guild extends ISnowflake
      * Retrieves an immutable list of emotes together with their respective creators.
      *
      * <p>Note that {@link ListedEmote#getUser()} is only available if the currently
-     * logged in account has {@link net.dv8tion.jda.api.Permission#MANAGE_EMOTES Permission.MANAGE_EMOTES}.
+     * logged in account has {@link net.dv8tion.jda.api.Permission#MANAGE_EMOTES_AND_STICKERS Permission.MANAGE_EMOTES_AND_STICKERS}.
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: List of {@link net.dv8tion.jda.api.entities.ListedEmote ListedEmote}
      *
@@ -2350,7 +2360,7 @@ public interface Guild extends ISnowflake
      * <br><b>This does not include unicode emoji.</b>
      *
      * <p>Note that {@link ListedEmote#getUser()} is only available if the currently
-     * logged in account has {@link net.dv8tion.jda.api.Permission#MANAGE_EMOTES Permission.MANAGE_EMOTES}.
+     * logged in account has {@link net.dv8tion.jda.api.Permission#MANAGE_EMOTES_AND_STICKERS Permission.MANAGE_EMOTES_AND_STICKERS}.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
      * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
@@ -2377,7 +2387,7 @@ public interface Guild extends ISnowflake
      * Retrieves a listed emote together with its respective creator.
      *
      * <p>Note that {@link ListedEmote#getUser()} is only available if the currently
-     * logged in account has {@link net.dv8tion.jda.api.Permission#MANAGE_EMOTES Permission.MANAGE_EMOTES}.
+     * logged in account has {@link net.dv8tion.jda.api.Permission#MANAGE_EMOTES_AND_STICKERS Permission.MANAGE_EMOTES_AND_STICKERS}.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
      * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
@@ -2404,7 +2414,7 @@ public interface Guild extends ISnowflake
      * Retrieves a listed emote together with its respective creator.
      *
      * <p>Note that {@link ListedEmote#getUser()} is only available if the currently
-     * logged in account has {@link net.dv8tion.jda.api.Permission#MANAGE_EMOTES Permission.MANAGE_EMOTES}.
+     * logged in account has {@link net.dv8tion.jda.api.Permission#MANAGE_EMOTES_AND_STICKERS Permission.MANAGE_EMOTES_AND_STICKERS}.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
      * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
@@ -2434,7 +2444,7 @@ public interface Guild extends ISnowflake
             if (emote instanceof ListedEmote)
             {
                 ListedEmote listedEmote = (ListedEmote) emote;
-                if (listedEmote.hasUser() || !getSelfMember().hasPermission(Permission.MANAGE_EMOTES))
+                if (listedEmote.hasUser() || !getSelfMember().hasPermission(Permission.MANAGE_EMOTES_AND_STICKERS))
                     return listedEmote;
             }
             return null;
@@ -2599,7 +2609,7 @@ public interface Guild extends ISnowflake
      * that is not directed at a specific {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}.
      *
      * <p>Note: This channel is the first channel in the guild (ordered by position) that the {@link #getPublicRole()}
-     * has the {@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ} in.
+     * has the {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} in.
      *
      * @return The {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} representing the default channel for this guild
      */
@@ -2777,7 +2787,7 @@ public interface Guild extends ISnowflake
      * Will throw an {@link net.dv8tion.jda.api.exceptions.InsufficientPermissionException InsufficientPermissionException} otherwise.
      *
      * <p>To get all invites for a {@link GuildChannel GuildChannel}
-     * use {@link GuildChannel#retrieveInvites() GuildChannel.retrieveInvites()}
+     * use {@link IInviteContainer#retrieveInvites() GuildChannel.retrieveInvites()}
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         if the account does not have {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} in this Guild.
@@ -2785,7 +2795,7 @@ public interface Guild extends ISnowflake
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: List{@literal <}{@link net.dv8tion.jda.api.entities.Invite Invite}{@literal >}
      *         <br>The list of expanded Invite objects
      *
-     * @see     GuildChannel#retrieveInvites()
+     * @see     IInviteContainer#retrieveInvites()
      */
     @Nonnull
     @CheckReturnValue
@@ -5264,7 +5274,7 @@ public interface Guild extends ISnowflake
     ChannelAction<Category> createCategory(@Nonnull String name);
 
     /**
-     * Creates a copy of the specified {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel}
+     * Creates a copy of the specified {@link GuildChannel GuildChannel}
      * in this {@link net.dv8tion.jda.api.entities.Guild Guild}.
      * <br>The provided channel need not be in the same Guild for this to work!
      *
@@ -5290,7 +5300,7 @@ public interface Guild extends ISnowflake
      * @param  <T>
      *         The channel type
      * @param  channel
-     *         The {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel} to use for the copy template
+     *         The {@link GuildChannel GuildChannel} to use for the copy template
      *
      * @throws java.lang.IllegalArgumentException
      *         If the provided channel is {@code null}
@@ -5309,7 +5319,7 @@ public interface Guild extends ISnowflake
     @Nonnull
     @CheckReturnValue
     @SuppressWarnings("unchecked") // we need to do an unchecked cast for the channel type here
-    default <T extends GuildChannel> ChannelAction<T> createCopyOfChannel(@Nonnull T channel)
+    default <T extends ICopyableChannel> ChannelAction<T> createCopyOfChannel(@Nonnull T channel)
     {
         Checks.notNull(channel, "Channel");
         return (ChannelAction<T>) channel.createCopy(this);
@@ -5381,7 +5391,7 @@ public interface Guild extends ISnowflake
     /**
      * Creates a new {@link net.dv8tion.jda.api.entities.Emote Emote} in this Guild.
      * <br>If one or more Roles are specified the new Emote will only be available to Members with any of the specified Roles (see {@link Member#canInteract(Emote)})
-     * <br>For this to be successful, the logged in account has to have the {@link net.dv8tion.jda.api.Permission#MANAGE_EMOTES MANAGE_EMOTES} Permission.
+     * <br>For this to be successful, the logged in account has to have the {@link net.dv8tion.jda.api.Permission#MANAGE_EMOTES_AND_STICKERS MANAGE_EMOTES_AND_STICKERS} Permission.
      *
      * <p><b><u>Unicode emojis are not included as {@link net.dv8tion.jda.api.entities.Emote Emote}!</u></b>
      *
@@ -5406,7 +5416,7 @@ public interface Guild extends ISnowflake
      *         <br>If no roles are provided the Emote will be available to all Members of this Guild
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_EMOTES MANAGE_EMOTES} Permission
+     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_EMOTES_AND_STICKERS MANAGE_EMOTES_AND_STICKERS} Permission
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction} - Type: {@link net.dv8tion.jda.api.entities.Emote Emote}
      */
@@ -5863,6 +5873,70 @@ public interface Guild extends ISnowflake
             for (ExplicitContentLevel level : values())
             {
                 if (level.key == key)
+                    return level;
+            }
+            return UNKNOWN;
+        }
+    }
+
+    /**
+     * Represents the NSFW level for this guild.
+     */
+    enum NSFWLevel
+    {
+        /**
+         * Discord has not rated this guild.
+         */
+        DEFAULT(0),
+        /**
+         * Is classified as a NSFW server
+         */
+        EXPLICIT(1),
+        /**
+         * Doesn't classify as a NSFW server
+         */
+        SAFE(2),
+        /**
+         * Is classified as NSFW and has an age restriction in place
+         */
+        AGE_RESTRICTED(3),
+        /**
+         * Placeholder for unsupported levels.
+         */
+        UNKNOWN(-1);
+
+        private final int key;
+
+        NSFWLevel(int key)
+        {
+            this.key = key;
+        }
+
+        /**
+         * The Discord id key used to represent this NSFW level.
+         *
+         * @return Integer id for this NSFW level.
+         */
+        public int getKey()
+        {
+            return key;
+        }
+
+        /**
+         * Used to retrieve a {@link net.dv8tion.jda.api.entities.Guild.NSFWLevel NSFWLevel} based
+         * on the Discord id key.
+         *
+         * @param  key
+         *         The Discord id key representing the requested NSFWLevel.
+         *
+         * @return The NSFWLevel related to the provided key, or {@link #UNKNOWN NSFWLevel.UNKNOWN} if the key is not recognized.
+         */
+        @Nonnull
+        public static NSFWLevel fromKey(int key)
+        {
+            for (NSFWLevel level : values())
+            {
+                if (level.getKey() == key)
                     return level;
             }
             return UNKNOWN;

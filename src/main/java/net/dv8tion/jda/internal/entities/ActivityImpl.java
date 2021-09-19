@@ -32,7 +32,7 @@ public class ActivityImpl implements Activity
 
     protected ActivityImpl(String name)
     {
-        this(name, null, ActivityType.DEFAULT);
+        this(name, null, ActivityType.PLAYING);
     }
 
     protected ActivityImpl(String name, String url)

@@ -16,25 +16,15 @@
 
 package net.dv8tion.jda.internal.entities;
 
-import gnu.trove.map.TLongObjectMap;
-import net.dv8tion.jda.api.Region;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.requests.restaction.ChannelAction;
-import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
-public class VoiceChannelImpl extends AbstractChannelImpl<VoiceChannel, VoiceChannelImpl> implements VoiceChannel
+public class VoiceChannelImpl extends AbstractGuildAudioChannelImpl<VoiceChannel, VoiceChannelImpl> implements VoiceChannel
 {
-    private final TLongObjectMap<Member> connectedMembers = MiscUtil.newLongMap();
     private int userLimit;
-    private int bitrate;
-    private String region;
 
     public VoiceChannelImpl(long id, GuildImpl guild)
     {
@@ -54,12 +44,6 @@ public class VoiceChannelImpl extends AbstractChannelImpl<VoiceChannel, VoiceCha
         return userLimit;
     }
 
-    @Override
-    public int getBitrate()
-    {
-        return bitrate;
-    }
-
     @Nonnull
     @Override
     public ChannelType getType()
@@ -69,46 +53,14 @@ public class VoiceChannelImpl extends AbstractChannelImpl<VoiceChannel, VoiceCha
 
     @Nonnull
     @Override
-    public Region getRegion()
-    {
-        return region == null ? Region.AUTOMATIC : Region.fromKey(region);
-    }
-
-    @Nullable
-    @Override
-    public String getRegionRaw()
-    {
-        return region;
-    }
-
-    @Nonnull
-    @Override
-    public List<Member> getMembers()
-    {
-        return Collections.unmodifiableList(new ArrayList<>(getConnectedMembersMap().valueCollection()));
-    }
-
-    @Override
-    public int getPosition()
-    {
-        List<VoiceChannel> channels = getGuild().getVoiceChannels();
-        for (int i = 0; i < channels.size(); i++)
-        {
-            if (equals(channels.get(i)))
-                return i;
-        }
-        throw new IllegalStateException("Somehow when determining position we never found the VoiceChannel in the Guild's channels? wtf?");
-    }
-
-    @Nonnull
-    @Override
     public ChannelAction<VoiceChannel> createCopy(@Nonnull Guild guild)
     {
         Checks.notNull(guild, "Guild");
+        //TODO-v5: .setRegion here?
         ChannelAction<VoiceChannel> action = guild.createVoiceChannel(name).setBitrate(bitrate).setUserlimit(userLimit);
         if (guild.equals(getGuild()))
         {
-            Category parent = getParent();
+            Category parent = getParentCategory();
             if (parent != null)
                 action.setParent(parent);
             for (PermissionOverride o : overrides.valueCollection())
@@ -143,29 +95,5 @@ public class VoiceChannelImpl extends AbstractChannelImpl<VoiceChannel, VoiceCha
     {
         this.userLimit = userLimit;
         return this;
-    }
-
-    public VoiceChannelImpl setBitrate(int bitrate)
-    {
-        this.bitrate = bitrate;
-        return this;
-    }
-
-    public VoiceChannelImpl setRegion(String region)
-    {
-        this.region = region;
-        return this;
-    }
-
-    // -- Map Getters --
-
-    public TLongObjectMap<Member> getConnectedMembersMap()
-    {
-        connectedMembers.transformValues((member) -> {
-            // Load real member instance from cache to provided up-to-date cache information
-            Member real = getGuild().getMemberById(member.getIdLong());
-            return real != null ? real : member;
-        });
-        return connectedMembers;
     }
 }

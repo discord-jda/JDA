@@ -30,7 +30,7 @@ import javax.annotation.Nullable;
  * Indicates that the user is missing a {@link Permission} for some action.
  *
  * @see   net.dv8tion.jda.api.entities.IPermissionHolder#hasPermission(Permission...) IPermissionHolder.hasPermission(Permission...)
- * @see   net.dv8tion.jda.api.entities.IPermissionHolder#hasPermission(GuildChannel, Permission...) IPermissionHolder.hasPermission(GuildChannel, Permission...)
+ * @see   net.dv8tion.jda.api.entities.IPermissionHolder#hasPermission(net.dv8tion.jda.api.entities.IPermissionContainer, Permission...) IPermissionHolder.hasPermission(GuildChannel, Permission...)
  */
 public class InsufficientPermissionException extends PermissionException
 {
@@ -89,7 +89,7 @@ public class InsufficientPermissionException extends PermissionException
     }
 
     /**
-     * The id for the responsible {@link net.dv8tion.jda.api.entities.GuildChannel} instance.
+     * The id for the responsible {@link GuildChannel} instance.
      *
      * @return The ID as a long or 0
      *
@@ -136,7 +136,7 @@ public class InsufficientPermissionException extends PermissionException
     }
 
     /**
-     * The {@link net.dv8tion.jda.api.entities.GuildChannel} instance for the {@link #getChannelId() channel id}.
+     * The {@link GuildChannel} instance for the {@link #getChannelId() channel id}.
      *
      * @param  api
      *         The shard to perform the lookup in

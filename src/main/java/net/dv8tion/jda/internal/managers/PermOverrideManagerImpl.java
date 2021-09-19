@@ -18,6 +18,7 @@ package net.dv8tion.jda.internal.managers;
 
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.GuildChannel;
+import net.dv8tion.jda.api.entities.IPermissionContainer;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.PermissionOverride;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
@@ -173,7 +174,7 @@ public class PermOverrideManagerImpl extends ManagerBase<PermOverrideManager> im
     protected boolean checkPermissions()
     {
         Member selfMember = getGuild().getSelfMember();
-        GuildChannel channel = getChannel();
+        IPermissionContainer channel = getChannel();
         if (!selfMember.hasPermission(channel, Permission.VIEW_CHANNEL))
             throw new MissingAccessException(channel, Permission.VIEW_CHANNEL);
         if (!selfMember.hasAccess(channel))

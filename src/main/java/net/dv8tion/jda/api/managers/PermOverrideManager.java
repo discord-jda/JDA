@@ -19,6 +19,7 @@ package net.dv8tion.jda.api.managers;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.GuildChannel;
+import net.dv8tion.jda.api.entities.IPermissionContainer;
 import net.dv8tion.jda.api.entities.PermissionOverride;
 import net.dv8tion.jda.internal.utils.Checks;
 
@@ -31,11 +32,11 @@ import java.util.Collection;
  *
  * <p><b>Example</b>
  * <pre>{@code
- * manager.setDenied(Permission.MESSAGE_WRITE)
- *        .setAllowed(Permission.MESSAGE_READ)
+ * manager.setDenied(Permission.MESSAGE_SEND)
+ *        .setAllowed(Permission.VIEW_CHANNEL)
  *        .queue();
  * manager.reset(PermOverrideManager.DENIED | PermOverrideManager.ALLOWED)
- *        .grant(Permission.MESSAGE_WRITE)
+ *        .grant(Permission.MESSAGE_SEND)
  *        .clear(Permission.MESSAGE_MANAGE)
  *        .queue();
  * }</pre>
@@ -95,7 +96,7 @@ public interface PermOverrideManager extends Manager<PermOverrideManager>
 
     /**
      * The {@link net.dv8tion.jda.api.entities.Guild Guild} this Manager's
-     * {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel} is in.
+     * {@link GuildChannel GuildChannel} is in.
      * <br>This is logically the same as calling {@code getPermissionOverride().getGuild()}
      *
      * @return The parent {@link net.dv8tion.jda.api.entities.Guild Guild}
@@ -107,14 +108,14 @@ public interface PermOverrideManager extends Manager<PermOverrideManager>
     }
 
     /**
-     * The {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel} this Manager's
+     * The {@link IPermissionContainer GuildChannel} this Manager's
      * {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverride} is in.
      * <br>This is logically the same as calling {@code getPermissionOverride().getChannel()}
      *
-     * @return The parent {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel}
+     * @return The parent {@link GuildChannel GuildChannel}
      */
     @Nonnull
-    default GuildChannel getChannel()
+    default IPermissionContainer getChannel()
     {
         return getPermissionOverride().getChannel();
     }
