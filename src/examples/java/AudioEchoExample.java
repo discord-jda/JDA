@@ -95,7 +95,7 @@ public class AudioEchoExample extends ListenerAdapter
         // Note: None of these can be null due to our configuration with the JDABuilder!
         Member member = event.getMember();                              // Member is the context of the user for the specific guild, containing voice state and roles
         GuildVoiceState voiceState = member.getVoiceState();            // Check the current voice state of the user
-        VoiceChannel channel = voiceState.getChannel();                 // Use the channel the user is currently connected to
+        AudioChannel channel = voiceState.getChannel();                 // Use the channel the user is currently connected to
         if (channel != null)
         {
             connectTo(channel);                                         // Join the channel of the user
@@ -150,7 +150,7 @@ public class AudioEchoExample extends ListenerAdapter
      * @param textChannel
      *        The text channel to send the message in
      */
-    private void onConnecting(VoiceChannel channel, TextChannel textChannel)
+    private void onConnecting(AudioChannel channel, TextChannel textChannel)
     {
         textChannel.sendMessage("Connecting to " + channel.getName()).queue(); // never forget to queue()!
     }
@@ -174,7 +174,7 @@ public class AudioEchoExample extends ListenerAdapter
      * @param channel
      *        The channel to connect to
      */
-    private void connectTo(VoiceChannel channel)
+    private void connectTo(AudioChannel channel)
     {
         Guild guild = channel.getGuild();
         // Get an audio manager for this guild, this will be created upon first use for each guild

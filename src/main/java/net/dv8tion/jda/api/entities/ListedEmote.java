@@ -35,7 +35,7 @@ public interface ListedEmote extends Emote
      *
      * <p>This is only available for manually retrieved emotes from {@link Guild#retrieveEmotes()}
      * and {@link Guild#retrieveEmoteById(long)}.
-     * <br>Requires {@link net.dv8tion.jda.api.Permission#MANAGE_EMOTES Permission.MANAGE_EMOTES}.
+     * <br>Requires {@link net.dv8tion.jda.api.Permission#MANAGE_EMOTES_AND_STICKERS Permission.MANAGE_EMOTES_AND_STICKERS}.
      *
      * @throws IllegalStateException
      *         If this emote does not have user information
@@ -53,7 +53,7 @@ public interface ListedEmote extends Emote
      *
      * <p>This is only available for manually retrieved emotes from {@link Guild#retrieveEmotes()}
      * and {@link Guild#retrieveEmoteById(long)}.
-     * <br>Requires {@link net.dv8tion.jda.api.Permission#MANAGE_EMOTES Permission.MANAGE_EMOTES}.
+     * <br>Requires {@link net.dv8tion.jda.api.Permission#MANAGE_EMOTES_AND_STICKERS Permission.MANAGE_EMOTES_AND_STICKERS}.
      *
      * @return True, if this emote has an owner
      */
