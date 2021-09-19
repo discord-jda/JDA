@@ -5889,12 +5889,12 @@ public interface Guild extends ISnowflake
         TIER_1(1, 128000, 100),
         /**
          * The second tier.
-         * <br>Unlocked at 15 boosters.
+         * <br>Unlocked at 7 boosters.
          */
         TIER_2(2, 256000, 150),
         /**
          * The third tier.
-         * <br>Unlocked at 30 boosters.
+         * <br>Unlocked at 14 boosters.
          */
         TIER_3(3, 384000, 250),
         /**
@@ -5939,10 +5939,10 @@ public interface Guild extends ISnowflake
          * The maximum amount of emotes a guild can have when this tier is reached.
          *
          * @return The maximum emotes
-         * 
+         *
          * @see    net.dv8tion.jda.api.entities.Guild#getMaxEmotes()
          */
-        public int getMaxEmotes() 
+        public int getMaxEmotes()
         {
             return maxEmotes;
         }
