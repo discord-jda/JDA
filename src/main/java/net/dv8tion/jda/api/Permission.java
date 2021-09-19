@@ -54,20 +54,20 @@ public enum Permission
     MESSAGE_EXT_EMOJI(        18, true, true, "Use External Emojis"),
     MESSAGE_EXT_STICKER(      37, true, true, "Use External Stickers"),
     USE_SLASH_COMMANDS(       31, true, true, "Use Slash Commands"),
-    START_EMBEDDED_ACTIVITIES(39, true, true, "Launching Activities in Voice Channels"),
 
     MANAGE_THREADS(     34, true, true, "Manage Threads"),
     USE_PUBLIC_THREADS( 35, true, true, "Use Public Threads"),
     USE_PRIVATE_THREADS(36, true, true, "Use Private Threads"),
 
     // Voice Permissions
-    VOICE_STREAM(      9, true, true, "Video"),
-    VOICE_CONNECT(    20, true, true, "Connect"),
-    VOICE_SPEAK(      21, true, true, "Speak"),
-    VOICE_MUTE_OTHERS(22, true, true, "Mute Members"),
-    VOICE_DEAF_OTHERS(23, true, true, "Deafen Members"),
-    VOICE_MOVE_OTHERS(24, true, true, "Move Members"),
-    VOICE_USE_VAD(    25, true, true, "Use Voice Activity"),
+    VOICE_STREAM(              9, true, true, "Video"),
+    VOICE_CONNECT(            20, true, true, "Connect"),
+    VOICE_SPEAK(              21, true, true, "Speak"),
+    VOICE_MUTE_OTHERS(        22, true, true, "Mute Members"),
+    VOICE_DEAF_OTHERS(        23, true, true, "Deafen Members"),
+    VOICE_MOVE_OTHERS(        24, true, true, "Move Members"),
+    VOICE_USE_VAD(            25, true, true, "Use Voice Activity"),
+    START_EMBEDDED_ACTIVITIES(39, true, true, "Launching Activities in Voice Channels"),
 
     NICKNAME_CHANGE(26, true, false, "Change Nickname"),
     NICKNAME_MANAGE(27, true, false, "Manage Nicknames"),
