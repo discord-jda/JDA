@@ -17,8 +17,8 @@
 package net.dv8tion.jda.internal.audio;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.AudioChannel;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.VoiceChannel;
 
 public class ConnectionRequest
 {
@@ -33,7 +33,7 @@ public class ConnectionRequest
         this.guildId = guild.getIdLong();
     }
 
-    public ConnectionRequest(VoiceChannel channel, ConnectionStage stage)
+    public ConnectionRequest(AudioChannel channel, ConnectionStage stage)
     {
         this.channelId = channel.getIdLong();
         this.guildId = channel.getGuild().getIdLong();
@@ -46,7 +46,7 @@ public class ConnectionRequest
         this.stage = stage;
     }
 
-    public void setChannel(VoiceChannel channel)
+    public void setChannel(AudioChannel channel)
     {
         this.channelId = channel.getIdLong();
     }
@@ -56,9 +56,9 @@ public class ConnectionRequest
         this.nextAttemptEpoch = epochMillis;
     }
 
-    public VoiceChannel getChannel(JDA api)
+    public AudioChannel getChannel(JDA api)
     {
-        return api.getVoiceChannelById(channelId);
+        return (AudioChannel) api.getGuildChannelById(channelId);
     }
 
     public long getChannelId()

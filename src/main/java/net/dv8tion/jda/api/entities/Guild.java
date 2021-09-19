@@ -1117,6 +1117,17 @@ public interface Guild extends ISnowflake
     Member getSelfMember();
 
     /**
+     * Returns the NSFW Level that this guild is classified with.
+     * <br>For a short description of the different values, see {@link net.dv8tion.jda.api.entities.Guild.NSFWLevel NSFWLevel}.
+     * <p>
+     * This value can only be modified by Discord after reviewing the Guild.
+     *
+     * @return The NSFWLevel of this guild.
+     */
+    @Nonnull
+    NSFWLevel getNSFWLevel();
+
+    /**
      * Gets the Guild specific {@link net.dv8tion.jda.api.entities.Member Member} object for the provided
      * {@link net.dv8tion.jda.api.entities.User User}.
      * <br>If the user is not in this guild, {@code null} is returned.
@@ -1459,6 +1470,8 @@ public interface Guild extends ISnowflake
         if (channel == null)
             channel = getVoiceChannelById(id);
         if (channel == null)
+            channel = getStageChannelById(id);
+        if (channel == null)
             channel = getStoreChannelById(id);
         if (channel == null)
             channel = getCategoryById(id);
@@ -1537,6 +1550,16 @@ public interface Guild extends ISnowflake
     }
 
     /**
+     * Sorted {@link net.dv8tion.jda.api.utils.cache.SnowflakeCacheView SnowflakeCacheView} of
+     * all cached {@link net.dv8tion.jda.api.entities.StageChannel StageChannel} of this Guild.
+     * <br>StageChannel are sorted according to their position.
+     *
+     * @return {@link net.dv8tion.jda.api.utils.cache.SortedSnowflakeCacheView SortedSnowflakeCacheView}
+     */
+    @Nonnull
+    SortedSnowflakeCacheView<StageChannel> getStageChannelCache();
+
+    /**
      * Gets a list of all {@link net.dv8tion.jda.api.entities.StageChannel StageChannel} in this Guild that have the same
      * name as the one provided.
      * <br>If there are no {@link net.dv8tion.jda.api.entities.StageChannel StageChannels} with the provided name, then this returns an empty list.
@@ -1551,11 +1574,7 @@ public interface Guild extends ISnowflake
     @Nonnull
     default List<StageChannel> getStageChannelsByName(@Nonnull String name, boolean ignoreCase)
     {
-        return getVoiceChannelsByName(name, ignoreCase)
-                .stream()
-                .filter(StageChannel.class::isInstance)
-                .map(StageChannel.class::cast)
-                .collect(Collectors.toList());
+        return getStageChannelCache().getElementsByName(name, ignoreCase);
     }
 
     /**
@@ -1576,7 +1595,7 @@ public interface Guild extends ISnowflake
     @Nullable
     default StageChannel getStageChannelById(@Nonnull String id)
     {
-        return getStageChannelById(MiscUtil.parseSnowflake(id));
+        return getStageChannelCache().getElementById(id);
     }
 
     /**
@@ -1594,8 +1613,7 @@ public interface Guild extends ISnowflake
     @Nullable
     default StageChannel getStageChannelById(long id)
     {
-        VoiceChannel channel = getVoiceChannelById(id);
-        return channel instanceof StageChannel ? (StageChannel) channel : null;
+        return getStageChannelCache().getElementById(id);
     }
 
     /**
@@ -1603,18 +1621,16 @@ public interface Guild extends ISnowflake
      * <br>The channels returned will be sorted according to their position.
      *
      * <p>This copies the backing store into a list. This means every call
-     * creates a new list with O(n) complexity.
+     * creates a new list with O(n) complexity. It is recommended to store this into
+     * a local variable or use {@link #getStageChannelCache()} and use its more efficient
+     * versions of handling these values.
      *
      * @return An immutable List of {@link net.dv8tion.jda.api.entities.StageChannel StageChannels}.
      */
     @Nonnull
     default List<StageChannel> getStageChannels()
     {
-        return getVoiceChannels()
-                .stream()
-                .filter(StageChannel.class::isInstance)
-                .map(StageChannel.class::cast)
-                .collect(Collectors.toList());
+       return getStageChannelCache().asList();
     }
 
     /**
@@ -1886,8 +1902,6 @@ public interface Guild extends ISnowflake
      * <br>If there is no {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel} with an id that matches the provided
      * one, then this returns {@code null}.
      *
-     * <p>This may also contain {@link StageChannel StageChannels}!
-     *
      * @param  id
      *         The id of the {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel}.
      *
@@ -1909,8 +1923,6 @@ public interface Guild extends ISnowflake
      * <br>If there is no {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel} with an id that matches the provided
      * one, then this returns {@code null}.
      *
-     * <p>This may also contain {@link StageChannel StageChannels}!
-     *
      * @param  id
      *         The id of the {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel}.
      *
@@ -1931,8 +1943,6 @@ public interface Guild extends ISnowflake
      * a local variable or use {@link #getVoiceChannelCache()} and use its more efficient
      * versions of handling these values.
      *
-     * <p>This may also contain {@link StageChannel StageChannels}!
-     *
      * @return An immutable List of {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels}.
      */
     @Nonnull
@@ -1945,8 +1955,6 @@ public interface Guild extends ISnowflake
      * Gets a list of all {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels} in this Guild that have the same
      * name as the one provided.
      * <br>If there are no {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels} with the provided name, then this returns an empty list.
-     *
-     * <p>This may also contain {@link StageChannel StageChannels}!
      *
      * @param  name
      *         The name used to filter the returned {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels}.
@@ -1966,8 +1974,6 @@ public interface Guild extends ISnowflake
      * all cached {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels} of this Guild.
      * <br>VoiceChannels are sorted according to their position.
      *
-     * <p>This may also contain {@link StageChannel StageChannels}!
-     *
      * @return {@link net.dv8tion.jda.api.utils.cache.SortedSnowflakeCacheView SortedSnowflakeCacheView}
      */
     @Nonnull
@@ -1982,10 +1988,12 @@ public interface Guild extends ISnowflake
      * <ol>
      *     <li>TextChannel and StoreChannel without parent</li>
      *     <li>VoiceChannel without parent</li>
+     *     <li>StageChannel without parent</li>
      *     <li>Categories
      *         <ol>
      *             <li>TextChannel and StoreChannel with category as parent</li>
      *             <li>VoiceChannel with category as parent</li>
+     *             <li>StageChannel with category as parent</li>
      *         </ol>
      *     </li>
      * </ol>
@@ -2008,10 +2016,12 @@ public interface Guild extends ISnowflake
      * <ol>
      *     <li>TextChannel and StoreChannel without parent</li>
      *     <li>VoiceChannel without parent</li>
+     *     <li>StageChannel without parent</li>
      *     <li>Categories
      *         <ol>
      *             <li>TextChannel and StoreChannel with category as parent</li>
      *             <li>VoiceChannel with category as parent</li>
+     *             <li>StageChannel with category as parent</li>
      *         </ol>
      *     </li>
      * </ol>
@@ -5863,6 +5873,70 @@ public interface Guild extends ISnowflake
             for (ExplicitContentLevel level : values())
             {
                 if (level.key == key)
+                    return level;
+            }
+            return UNKNOWN;
+        }
+    }
+
+    /**
+     * Represents the NSFW level for this guild.
+     */
+    enum NSFWLevel
+    {
+        /**
+         * Discord has not rated this guild.
+         */
+        DEFAULT(0),
+        /**
+         * Is classified as a NSFW server
+         */
+        EXPLICIT(1),
+        /**
+         * Doesn't classify as a NSFW server
+         */
+        SAFE(2),
+        /**
+         * Is classified as NSFW and has an age restriction in place
+         */
+        AGE_RESTRICTED(3),
+        /**
+         * Placeholder for unsupported levels.
+         */
+        UNKNOWN(-1);
+
+        private final int key;
+
+        NSFWLevel(int key)
+        {
+            this.key = key;
+        }
+
+        /**
+         * The Discord id key used to represent this NSFW level.
+         *
+         * @return Integer id for this NSFW level.
+         */
+        public int getKey()
+        {
+            return key;
+        }
+
+        /**
+         * Used to retrieve a {@link net.dv8tion.jda.api.entities.Guild.NSFWLevel NSFWLevel} based
+         * on the Discord id key.
+         *
+         * @param  key
+         *         The Discord id key representing the requested NSFWLevel.
+         *
+         * @return The NSFWLevel related to the provided key, or {@link #UNKNOWN NSFWLevel.UNKNOWN} if the key is not recognized.
+         */
+        @Nonnull
+        public static NSFWLevel fromKey(int key)
+        {
+            for (NSFWLevel level : values())
+            {
+                if (level.getKey() == key)
                     return level;
             }
             return UNKNOWN;

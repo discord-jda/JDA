@@ -16,25 +16,15 @@
 
 package net.dv8tion.jda.internal.entities;
 
-import gnu.trove.map.TLongObjectMap;
-import net.dv8tion.jda.api.Region;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.requests.restaction.ChannelAction;
-import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
-public class VoiceChannelImpl extends AbstractChannelImpl<VoiceChannel, VoiceChannelImpl> implements VoiceChannel
+public class VoiceChannelImpl extends AbstractGuildAudioChannelImpl<VoiceChannel, VoiceChannelImpl> implements VoiceChannel
 {
-    private final TLongObjectMap<Member> connectedMembers = MiscUtil.newLongMap();
     private int userLimit;
-    private int bitrate;
-    private String region;
 
     public VoiceChannelImpl(long id, GuildImpl guild)
     {
@@ -54,31 +44,11 @@ public class VoiceChannelImpl extends AbstractChannelImpl<VoiceChannel, VoiceCha
         return userLimit;
     }
 
-    @Override
-    public int getBitrate()
-    {
-        return bitrate;
-    }
-
     @Nonnull
     @Override
     public ChannelType getType()
     {
         return ChannelType.VOICE;
-    }
-
-    @Nullable
-    @Override
-    public String getRegionRaw()
-    {
-        return region;
-    }
-
-    @Nonnull
-    @Override
-    public List<Member> getMembers()
-    {
-        return Collections.unmodifiableList(new ArrayList<>(getConnectedMembersMap().valueCollection()));
     }
 
     @Nonnull
@@ -125,29 +95,5 @@ public class VoiceChannelImpl extends AbstractChannelImpl<VoiceChannel, VoiceCha
     {
         this.userLimit = userLimit;
         return this;
-    }
-
-    public VoiceChannelImpl setBitrate(int bitrate)
-    {
-        this.bitrate = bitrate;
-        return this;
-    }
-
-    public VoiceChannelImpl setRegion(String region)
-    {
-        this.region = region;
-        return this;
-    }
-
-    // -- Map Getters --
-
-    public TLongObjectMap<Member> getConnectedMembersMap()
-    {
-        connectedMembers.transformValues((member) -> {
-            // Load real member instance from cache to provided up-to-date cache information
-            Member real = getGuild().getMemberById(member.getIdLong());
-            return real != null ? real : member;
-        });
-        return connectedMembers;
     }
 }

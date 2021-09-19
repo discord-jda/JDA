@@ -24,7 +24,6 @@ import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.requests.restaction.interactions.UpdateInteractionActionImpl;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 public abstract class ComponentInteractionImpl extends InteractionImpl implements ComponentInteraction
 {
@@ -58,7 +57,7 @@ public abstract class ComponentInteractionImpl extends InteractionImpl implement
         return customId;
     }
 
-    @Nullable
+    @Nonnull
     @Override
     public Message getMessage()
     {

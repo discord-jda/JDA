@@ -118,7 +118,7 @@ public interface Activity
      * @throws IllegalArgumentException
      *         if the specified name is null, empty, blank or longer than 128 characters
      *
-     * @return A valid Activity instance with the provided name with {@link net.dv8tion.jda.api.entities.Activity.ActivityType#DEFAULT}
+     * @return A valid Activity instance with the provided name with {@link net.dv8tion.jda.api.entities.Activity.ActivityType#PLAYING}
      */
     @Nonnull
     static Activity playing(@Nonnull String name)
@@ -126,7 +126,7 @@ public interface Activity
         Checks.notBlank(name, "Name");
         name = name.trim();
         Checks.notLonger(name, 128, "Name");
-        return EntityBuilder.createActivity(name, null, ActivityType.DEFAULT);
+        return EntityBuilder.createActivity(name, null, ActivityType.PLAYING);
     }
 
     /**
@@ -156,7 +156,7 @@ public interface Activity
         if (isValidStreamingUrl(url))
             type = ActivityType.STREAMING;
         else
-            type = ActivityType.DEFAULT;
+            type = ActivityType.PLAYING;
         return EntityBuilder.createActivity(name, url, type);
     }
 
@@ -278,7 +278,7 @@ public interface Activity
         Checks.notNull(type, "Type");
         switch (type)
         {
-            case DEFAULT:
+            case PLAYING:
                 return playing(name);
             case STREAMING:
                 return streaming(name, url);
@@ -307,17 +307,18 @@ public interface Activity
     }
 
     /**
-     * The type game being played, differentiating between a game and stream types.
+     * The activity being executed, differentiating between, amongst others, playing, listening and streaming.
      */
     enum ActivityType
     {
         /**
-         * The ActivityType used to represent a normal {@link Activity Activity} status.
+         * Used to indicate that the {@link Activity Activity} should display
+         * as {@code Playing...} in the official client.
          */
-        DEFAULT(0),
+        PLAYING(0),
         /**
-         * Used to indicate that the {@link Activity Activity} is a stream
-         * <br>This type is displayed as "Streaming" in the discord client.
+         * Used to indicate that the {@link Activity Activity} is a stream and should be displayed
+         * as {@code Streaming...} in the official client.
          */
         STREAMING(1),
         /**
@@ -369,12 +370,12 @@ public interface Activity
 
         /**
          * Gets the ActivityType related to the provided key.
-         * <br>If an unknown key is provided, this returns {@link #DEFAULT}
+         * <br>If an unknown key is provided, this returns {@link #PLAYING}
          *
          * @param  key
          *         The Discord key referencing a ActivityType.
          *
-         * @return The ActivityType that has the key provided, or {@link #DEFAULT} for unknown key.
+         * @return The ActivityType that has the key provided, or {@link #PLAYING} for unknown key.
          */
         @Nonnull
         public static ActivityType fromKey(int key)
@@ -383,7 +384,7 @@ public interface Activity
             {
                 case 0:
                 default:
-                    return DEFAULT;
+                    return PLAYING;
                 case 1:
                     return STREAMING;
                 case 2:

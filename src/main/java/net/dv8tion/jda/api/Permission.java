@@ -52,6 +52,7 @@ public enum Permission
     MESSAGE_MENTION_EVERYONE(17, true, true, "Mention Everyone"),
     MESSAGE_EXT_EMOJI(       18, true, true, "Use External Emojis"),
     USE_APPLICATION_COMMANDS(31, true, true, "Use Application Commands"),
+    MESSAGE_EXT_STICKER(     37, true, true, "Use External Stickers"),
 
     MANAGE_THREADS(         34, true, true, "Manage Threads"),
     CREATE_PUBLIC_THREADS(  35, true, true, "Create Public Threads"),
@@ -59,13 +60,14 @@ public enum Permission
     MESSAGE_SEND_IN_THREADS(38, true, true, "Send Messages in Threads"),
 
     // Voice Permissions
-    VOICE_STREAM(      9, true, true, "Video"),
-    VOICE_CONNECT(    20, true, true, "Connect"),
-    VOICE_SPEAK(      21, true, true, "Speak"),
-    VOICE_MUTE_OTHERS(22, true, true, "Mute Members"),
-    VOICE_DEAF_OTHERS(23, true, true, "Deafen Members"),
-    VOICE_MOVE_OTHERS(24, true, true, "Move Members"),
-    VOICE_USE_VAD(    25, true, true, "Use Voice Activity"),
+    VOICE_STREAM(           9, true, true, "Video"),
+    VOICE_CONNECT(         20, true, true, "Connect"),
+    VOICE_SPEAK(           21, true, true, "Speak"),
+    VOICE_MUTE_OTHERS(     22, true, true, "Mute Members"),
+    VOICE_DEAF_OTHERS(     23, true, true, "Deafen Members"),
+    VOICE_MOVE_OTHERS(     24, true, true, "Move Members"),
+    VOICE_USE_VAD(         25, true, true, "Use Voice Activity"),
+    VOICE_START_ACTIVITIES(39, true, true, "Launch Activities in Voice Channels"),
 
     NICKNAME_CHANGE(26, true, false, "Change Nickname"),
     NICKNAME_MANAGE(27, true, false, "Manage Nicknames"),
@@ -106,8 +108,8 @@ public enum Permission
      * All text channel specific permissions which are only available in text channel permission overrides
      */
     public static final long ALL_TEXT_PERMISSIONS
-            = Permission.getRaw(MESSAGE_ADD_REACTION, MESSAGE_SEND, MESSAGE_TTS,
-                                MESSAGE_MANAGE, MESSAGE_EMBED_LINKS, MESSAGE_ATTACH_FILES,
+            = Permission.getRaw(MESSAGE_ADD_REACTION, MESSAGE_SEND, MESSAGE_TTS, MESSAGE_MANAGE,
+                                MESSAGE_EMBED_LINKS, MESSAGE_ATTACH_FILES, MESSAGE_EXT_EMOJI, MESSAGE_EXT_STICKER,
                                 MESSAGE_HISTORY, MESSAGE_MENTION_EVERYONE, USE_APPLICATION_COMMANDS,
                                 MANAGE_THREADS, CREATE_PUBLIC_THREADS, CREATE_PRIVATE_THREADS, MESSAGE_SEND_IN_THREADS);
 
@@ -116,7 +118,8 @@ public enum Permission
      */
     public static final long ALL_VOICE_PERMISSIONS
             = Permission.getRaw(VOICE_STREAM, VOICE_CONNECT, VOICE_SPEAK, VOICE_MUTE_OTHERS,
-                                VOICE_DEAF_OTHERS, VOICE_MOVE_OTHERS, VOICE_USE_VAD, PRIORITY_SPEAKER, REQUEST_TO_SPEAK);
+                                VOICE_DEAF_OTHERS, VOICE_MOVE_OTHERS, VOICE_USE_VAD,
+                                PRIORITY_SPEAKER, REQUEST_TO_SPEAK, VOICE_START_ACTIVITIES);
 
     private final int offset;
     private final long raw;

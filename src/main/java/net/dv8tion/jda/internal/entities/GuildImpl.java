@@ -78,6 +78,7 @@ public class GuildImpl implements Guild
     private final SortedSnowflakeCacheViewImpl<VoiceChannel> voiceChannelCache = new SortedSnowflakeCacheViewImpl<>(VoiceChannel.class, GuildChannel::getName, Comparator.naturalOrder());
     private final SortedSnowflakeCacheViewImpl<StoreChannel> storeChannelCache = new SortedSnowflakeCacheViewImpl<>(StoreChannel.class, StoreChannel::getName, Comparator.naturalOrder());
     private final SortedSnowflakeCacheViewImpl<TextChannel> textChannelCache = new SortedSnowflakeCacheViewImpl<>(TextChannel.class, GuildChannel::getName, Comparator.naturalOrder());
+    private final SortedSnowflakeCacheViewImpl<StageChannel> stageChannelCache = new SortedSnowflakeCacheViewImpl<>(StageChannel.class, GuildChannel::getName, Comparator.naturalOrder());
     private final SortedSnowflakeCacheViewImpl<Role> roleCache = new SortedSnowflakeCacheViewImpl<>(Role.class, Role::getName, Comparator.reverseOrder());
     private final SnowflakeCacheViewImpl<Emote> emoteCache = new SnowflakeCacheViewImpl<>(Emote.class, Emote::getName);
     private final MemberCacheViewImpl memberCache = new MemberCacheViewImpl();
@@ -105,6 +106,7 @@ public class GuildImpl implements Guild
     private NotificationLevel defaultNotificationLevel = NotificationLevel.UNKNOWN;
     private MFALevel mfaLevel = MFALevel.UNKNOWN;
     private ExplicitContentLevel explicitContentLevel = ExplicitContentLevel.UNKNOWN;
+    private NSFWLevel nsfwLevel = NSFWLevel.UNKNOWN;
     private Timeout afkTimeout;
     private BoostTier boostTier = BoostTier.NONE;
     private Locale preferredLocale = Locale.ENGLISH;
@@ -608,6 +610,13 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
+    public SortedSnowflakeCacheView<StageChannel> getStageChannelCache()
+    {
+        return stageChannelCache;
+    }
+
+    @Nonnull
+    @Override
     public SortedSnowflakeCacheView<Role> getRoleCache()
     {
         return roleCache;
@@ -636,37 +645,43 @@ public class GuildImpl implements Guild
         List<GuildChannel> channels;
         SnowflakeCacheViewImpl<Category> categoryView = getCategoriesView();
         SnowflakeCacheViewImpl<VoiceChannel> voiceView = getVoiceChannelsView();
+        SnowflakeCacheViewImpl<StageChannel> stageView = getStageChannelsView();
         SnowflakeCacheViewImpl<TextChannel> textView = getTextChannelsView();
         SnowflakeCacheViewImpl<StoreChannel> storeView = getStoreChannelView();
         List<TextChannel> textChannels;
         List<StoreChannel> storeChannels;
         List<VoiceChannel> voiceChannels;
+        List<StageChannel> stageChannels;
         List<Category> categories;
         try (UnlockHook categoryHook = categoryView.readLock();
              UnlockHook voiceHook = voiceView.readLock();
              UnlockHook textHook = textView.readLock();
-             UnlockHook storeHook = storeView.readLock())
+             UnlockHook storeHook = storeView.readLock();
+             UnlockHook stageHook = stageView.readLock())
         {
             if (includeHidden)
             {
                 storeChannels = storeView.asList();
                 textChannels = textView.asList();
                 voiceChannels = voiceView.asList();
+                stageChannels = stageView.asList();
             }
             else
             {
                 storeChannels = storeView.stream().filter(filterHidden).collect(Collectors.toList());
                 textChannels = textView.stream().filter(filterHidden).collect(Collectors.toList());
                 voiceChannels = voiceView.stream().filter(filterHidden).collect(Collectors.toList());
+                stageChannels = stageView.stream().filter(filterHidden).collect(Collectors.toList());
             }
             categories = categoryView.asList(); // we filter categories out when they are empty (no visible channels inside)
-            channels = new ArrayList<>((int) categoryView.size() + voiceChannels.size() + textChannels.size() + storeChannels.size());
+            channels = new ArrayList<>((int) categoryView.size() + voiceChannels.size() + textChannels.size() + storeChannels.size() + stageChannels.size());
         }
 
         storeChannels.stream().filter(it -> it.getParentCategory() == null).forEach(channels::add);
         textChannels.stream().filter(it -> it.getParentCategory() == null).forEach(channels::add);
-        Collections.sort(channels);
         voiceChannels.stream().filter(it -> it.getParentCategory() == null).forEach(channels::add);
+        stageChannels.stream().filter(it -> it.getParentCategory() == null).forEach(channels::add);
+        Collections.sort(channels);
 
         for (Category category : categories)
         {
@@ -915,7 +930,7 @@ public class GuildImpl implements Guild
             pendingRequestToSpeak = null;
         }
 
-        VoiceChannel channel = getSelfMember().getVoiceState().getChannel();
+        AudioChannel channel = getSelfMember().getVoiceState().getChannel();
         StageInstance instance = channel instanceof StageChannel ? ((StageChannel) channel).getStageInstance() : null;
         if (instance == null)
             return new GatewayTask<>(CompletableFuture.completedFuture(null), () -> {});
@@ -1237,11 +1252,11 @@ public class GuildImpl implements Guild
         GuildVoiceState vState = member.getVoiceState();
         if (vState == null)
             throw new IllegalStateException("Cannot move a Member with disabled CacheFlag.VOICE_STATE");
-        VoiceChannel channel = vState.getChannel();
+        AudioChannel channel = vState.getChannel();
         if (channel == null)
             throw new IllegalStateException("You cannot move a Member who isn't in a VoiceChannel!");
 
-        if (!PermissionUtil.checkPermission(channel, getSelfMember(), Permission.VOICE_MOVE_OTHERS))
+        if (!PermissionUtil.checkPermission((IPermissionContainer) channel, getSelfMember(), Permission.VOICE_MOVE_OTHERS))
             throw new InsufficientPermissionException(channel, Permission.VOICE_MOVE_OTHERS, "This account does not have Permission to MOVE_OTHERS out of the channel that the Member is currently in.");
 
         if (voiceChannel != null
@@ -1442,7 +1457,7 @@ public class GuildImpl implements Guild
         {
             if (voiceState.getChannel() == null)
                 throw new IllegalStateException("Can only mute members who are currently in a voice channel");
-            if (voiceState.isGuildMuted() == mute)
+            if (voiceState.isGuildMuted() == mute && (mute || !voiceState.isSuppressed()))
                 return new CompletedRestAction<>(getJDA(), null);
         }
 
@@ -1768,7 +1783,7 @@ public class GuildImpl implements Guild
     {
         if (!isRequestToSpeakPending())
             return;
-        VoiceChannel connectedChannel = getSelfMember().getVoiceState().getChannel();
+        AudioChannel connectedChannel = getSelfMember().getVoiceState().getChannel();
         if (!(connectedChannel instanceof StageChannel))
             return;
         StageChannel stage = (StageChannel) connectedChannel;
@@ -1949,6 +1964,12 @@ public class GuildImpl implements Guild
         return this;
     }
 
+    public GuildImpl setNSFWLevel(NSFWLevel nsfwLevel)
+    {
+        this.nsfwLevel = nsfwLevel;
+        return this;
+    }
+
     // -- Map getters --
 
     public SortedSnowflakeCacheViewImpl<Category> getCategoriesView()
@@ -1971,6 +1992,11 @@ public class GuildImpl implements Guild
         return voiceChannelCache;
     }
 
+    public SortedSnowflakeCacheViewImpl<StageChannel> getStageChannelsView()
+    {
+        return stageChannelCache;
+    }
+
     public SortedSnowflakeCacheViewImpl<Role> getRolesView()
     {
         return roleCache;
@@ -1984,6 +2010,13 @@ public class GuildImpl implements Guild
     public MemberCacheViewImpl getMembersView()
     {
         return memberCache;
+    }
+
+    @Nonnull
+    @Override
+    public NSFWLevel getNSFWLevel()
+    {
+        return nsfwLevel;
     }
 
     @Nullable

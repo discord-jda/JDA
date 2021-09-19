@@ -16,15 +16,14 @@
 
 package net.dv8tion.jda.internal.handle;
 
+import net.dv8tion.jda.api.entities.AudioChannel;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.events.guild.voice.*;
 import net.dv8tion.jda.api.hooks.VoiceDispatchInterceptor;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
-import net.dv8tion.jda.internal.entities.GuildImpl;
-import net.dv8tion.jda.internal.entities.GuildVoiceStateImpl;
-import net.dv8tion.jda.internal.entities.MemberImpl;
-import net.dv8tion.jda.internal.entities.VoiceChannelImpl;
+import net.dv8tion.jda.internal.entities.*;
 import net.dv8tion.jda.internal.managers.AudioManagerImpl;
 import net.dv8tion.jda.internal.requests.WebSocketClient;
 
@@ -88,11 +87,15 @@ public class VoiceStateUpdateHandler extends SocketHandler
             return;
         }
 
-        VoiceChannelImpl channel = channelId != null ? (VoiceChannelImpl) guild.getVoiceChannelById(channelId) : null;
-        if (channel == null && channelId != null)
+        AudioChannel channel = null;
+        if (channelId != null) {
+            channel = (AudioChannel) guild.getGuildChannelById(channelId);
+        }
+
+        if (channel == null && (channelId != null))
         {
             getJDA().getEventCache().cache(EventCache.Type.CHANNEL, channelId, responseNumber, allContent, this::handle);
-            EventCache.LOG.debug("Received VOICE_STATE_UPDATE for a VoiceChannel that has yet to be cached. JSON: {}", content);
+            EventCache.LOG.debug("Received VOICE_STATE_UPDATE for an AudioChannel that has yet to be cached. JSON: {}", content);
             return;
         }
 
@@ -166,13 +169,14 @@ public class VoiceStateUpdateHandler extends SocketHandler
 
         if (!Objects.equals(channel, vState.getChannel()))
         {
-            VoiceChannelImpl oldChannel = (VoiceChannelImpl) vState.getChannel();
+            AudioChannel oldChannel = vState.getChannel();
             vState.setConnectedChannel(channel);
 
             if (oldChannel == null)
             {
-                channel.getConnectedMembersMap().put(userId, member);
+                ((AbstractGuildAudioChannelImpl<?, ?>) channel).getConnectedMembersMap().put(userId, member);
                 getJDA().getEntityBuilder().updateMemberCache(member);
+
                 getJDA().handleEvent(
                     new GuildVoiceJoinEvent(
                         getJDA(), responseNumber,
@@ -180,10 +184,11 @@ public class VoiceStateUpdateHandler extends SocketHandler
             }
             else if (channel == null)
             {
-                oldChannel.getConnectedMembersMap().remove(userId);
+                ((AbstractGuildAudioChannelImpl<?, ?>) oldChannel).getConnectedMembersMap().remove(userId);
                 if (isSelf)
                     getJDA().getDirectAudioController().update(guild, null);
                 getJDA().getEntityBuilder().updateMemberCache(member, memberJson.isNull("joined_at"));
+
                 getJDA().handleEvent(
                     new GuildVoiceLeaveEvent(
                         getJDA(), responseNumber,
@@ -209,9 +214,10 @@ public class VoiceStateUpdateHandler extends SocketHandler
                     //If we are not already connected this will be removed by VOICE_SERVER_UPDATE
                 }
 
-                channel.getConnectedMembersMap().put(userId, member);
-                oldChannel.getConnectedMembersMap().remove(userId);
+                ((AbstractGuildAudioChannelImpl<?, ?>) channel).getConnectedMembersMap().put(userId, member);
+                ((AbstractGuildAudioChannelImpl<?, ?>) oldChannel).getConnectedMembersMap().remove(userId);
                 getJDA().getEntityBuilder().updateMemberCache(member);
+
                 getJDA().handleEvent(
                     new GuildVoiceMoveEvent(
                         getJDA(), responseNumber,

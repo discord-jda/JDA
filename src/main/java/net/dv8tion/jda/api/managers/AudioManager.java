@@ -25,8 +25,8 @@ import net.dv8tion.jda.api.audio.AudioSendHandler;
 import net.dv8tion.jda.api.audio.SpeakingMode;
 import net.dv8tion.jda.api.audio.hooks.ConnectionListener;
 import net.dv8tion.jda.api.audio.hooks.ConnectionStatus;
+import net.dv8tion.jda.api.entities.AudioChannel;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.JDALogger;
 import org.slf4j.Logger;
@@ -50,19 +50,16 @@ public interface AudioManager
     Logger LOG = JDALogger.getLog(AudioManager.class);
 
     /**
-     * Starts the process to create an audio connection with a {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel}
-     * or, if an audio connection is already open, JDA will move the connection to the provided VoiceChannel.
-     * <br><b>Note</b>: Currently you can only be connected to a single {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel}
+     * Starts the process to create an audio connection with an {@link net.dv8tion.jda.api.entities.AudioChannel AudioChannel}
+     * or, if an audio connection is already open, JDA will move the connection to the provided AudioChannel.
+     * <br><b>Note</b>: Currently you can only be connected to a single {@link net.dv8tion.jda.api.entities.AudioChannel AudioChannel}
      * per {@link net.dv8tion.jda.api.entities.Guild Guild}.
      *
      * <p>This method will automatically move the current connection if one connection is already open in this underlying {@link Guild}.
      * <br>Current connections can be closed with {@link #closeAudioConnection()}.
      *
-     * <p>Client accounts can only connect to a single {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel}
-     * at once. It is an Account-Wide limitation!
-     *
      * @param  channel
-     *         The {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel} to open an audio connection with.
+     *         The {@link net.dv8tion.jda.api.entities.AudioChannel AudioChannel} to open an audio connection with.
      *
      * @throws IllegalArgumentException
      *         <ul>
@@ -78,11 +75,11 @@ public interface AudioManager
      *                 and the {@link net.dv8tion.jda.api.entities.VoiceChannel#getUserLimit() user limit} has been exceeded!</li>
      *         </ul>
      */
-    void openAudioConnection(VoiceChannel channel);
+    void openAudioConnection(AudioChannel channel);
 
     /**
      * Close down the current audio connection of this {@link net.dv8tion.jda.api.entities.Guild Guild}
-     * and disconnects from the {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel}.
+     * and disconnects from the {@link net.dv8tion.jda.api.entities.AudioChannel AudioChannel}.
      * <br>If this is called when JDA doesn't have an audio connection, nothing happens.
      */
     void closeAudioConnection();
@@ -182,7 +179,7 @@ public interface AudioManager
     /**
      * This can be used to find out if JDA is currently attempting to setup an audio connection.
      * <br>If this returns true then {@link #getQueuedAudioConnection()} will return the
-     * {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel} that JDA is attempting to setup an audio connection to.
+     * {@link net.dv8tion.jda.api.entities.AudioChannel AudioChannel} that JDA is attempting to setup an audio connection to.
      *
      * @return True, if JDA is currently attempting to create an audio connection.
      *
@@ -194,13 +191,13 @@ public interface AudioManager
     boolean isAttemptingToConnect();
 
     /**
-     * This can be used to find out what {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel} JDA is currently
+     * This can be used to find out what {@link net.dv8tion.jda.api.entities.AudioChannel AudioChannel} JDA is currently
      * attempting to setup an audio connection for. If JDA isn't trying to create an audio connection this will return
      * null.
      * <br>In addition, if JDA is already connected, this will return null. To determine if JDA is already has an audio connection
-     * with a {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel} use {@link #isConnected()}
+     * with a {@link net.dv8tion.jda.api.entities.AudioChannel AudioChannel} use {@link #isConnected()}
      *
-     * @return The {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel} that JDA is attempting to create an
+     * @return The {@link net.dv8tion.jda.api.entities.AudioChannel AudioChannel} that JDA is attempting to create an
      *         audio connection with, or {@code null} if JDA isn't attempting to create a connection.
      *
      * @deprecated The internals have changed and this is no longer used
@@ -209,23 +206,23 @@ public interface AudioManager
     @Deprecated
     @ForRemoval
     @DeprecatedSince("4.2.0")
-    VoiceChannel getQueuedAudioConnection();
+    AudioChannel getQueuedAudioConnection();
 
     /**
-     * The {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel} that JDA currently has an audio connection
-     * to. If JDA currently doesn't have an audio connection to a {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel}
+     * The {@link net.dv8tion.jda.api.entities.AudioChannel AudioChannel} that JDA currently has an audio connection
+     * to. If JDA currently doesn't have an audio connection to an {@link net.dv8tion.jda.api.entities.AudioChannel AudioChannel}
      * this will return {@code null}.
      *
-     * @return The {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel} the audio connection is connected to
+     * @return The {@link net.dv8tion.jda.api.entities.AudioChannel AudioChannel} the audio connection is connected to
      *         or {@code null} if not connected.
      */
     @Nullable
-    VoiceChannel getConnectedChannel();
+    AudioChannel getConnectedChannel();
 
     /**
      * This can be used to find out if JDA currently has an active audio connection with a
-     * {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel}. If this returns true, then
-     * {@link #getConnectedChannel()} will return the {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel} which
+     * {@link net.dv8tion.jda.api.entities.AudioChannel AudioChannel}. If this returns true, then
+     * {@link #getConnectedChannel()} will return the {@link net.dv8tion.jda.api.entities.AudioChannel AudioChannel} which
      * JDA is connected to.
      *
      * @return True, if JDA currently has an active audio connection.
