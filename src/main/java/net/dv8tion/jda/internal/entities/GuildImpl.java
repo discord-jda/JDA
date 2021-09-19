@@ -106,6 +106,7 @@ public class GuildImpl implements Guild
     private NotificationLevel defaultNotificationLevel = NotificationLevel.UNKNOWN;
     private MFALevel mfaLevel = MFALevel.UNKNOWN;
     private ExplicitContentLevel explicitContentLevel = ExplicitContentLevel.UNKNOWN;
+    private NSFWLevel nsfwLevel = NSFWLevel.UNKNOWN;
     private Timeout afkTimeout;
     private BoostTier boostTier = BoostTier.NONE;
     private Locale preferredLocale = Locale.ENGLISH;
@@ -929,7 +930,7 @@ public class GuildImpl implements Guild
             pendingRequestToSpeak = null;
         }
 
-        VoiceChannel channel = getSelfMember().getVoiceState().getChannel();
+        AudioChannel channel = getSelfMember().getVoiceState().getChannel();
         StageInstance instance = channel instanceof StageChannel ? ((StageChannel) channel).getStageInstance() : null;
         if (instance == null)
             return new GatewayTask<>(CompletableFuture.completedFuture(null), () -> {});
@@ -1251,11 +1252,11 @@ public class GuildImpl implements Guild
         GuildVoiceState vState = member.getVoiceState();
         if (vState == null)
             throw new IllegalStateException("Cannot move a Member with disabled CacheFlag.VOICE_STATE");
-        VoiceChannel channel = vState.getChannel();
+        AudioChannel channel = vState.getChannel();
         if (channel == null)
             throw new IllegalStateException("You cannot move a Member who isn't in a VoiceChannel!");
 
-        if (!PermissionUtil.checkPermission(channel, getSelfMember(), Permission.VOICE_MOVE_OTHERS))
+        if (!PermissionUtil.checkPermission((IPermissionContainer) channel, getSelfMember(), Permission.VOICE_MOVE_OTHERS))
             throw new InsufficientPermissionException(channel, Permission.VOICE_MOVE_OTHERS, "This account does not have Permission to MOVE_OTHERS out of the channel that the Member is currently in.");
 
         if (voiceChannel != null
@@ -1456,7 +1457,7 @@ public class GuildImpl implements Guild
         {
             if (voiceState.getChannel() == null)
                 throw new IllegalStateException("Can only mute members who are currently in a voice channel");
-            if (voiceState.isGuildMuted() == mute)
+            if (voiceState.isGuildMuted() == mute && (mute || !voiceState.isSuppressed()))
                 return new CompletedRestAction<>(getJDA(), null);
         }
 
@@ -1782,7 +1783,7 @@ public class GuildImpl implements Guild
     {
         if (!isRequestToSpeakPending())
             return;
-        VoiceChannel connectedChannel = getSelfMember().getVoiceState().getChannel();
+        AudioChannel connectedChannel = getSelfMember().getVoiceState().getChannel();
         if (!(connectedChannel instanceof StageChannel))
             return;
         StageChannel stage = (StageChannel) connectedChannel;
@@ -1963,6 +1964,12 @@ public class GuildImpl implements Guild
         return this;
     }
 
+    public GuildImpl setNSFWLevel(NSFWLevel nsfwLevel)
+    {
+        this.nsfwLevel = nsfwLevel;
+        return this;
+    }
+
     // -- Map getters --
 
     public SortedSnowflakeCacheViewImpl<Category> getCategoriesView()
@@ -2003,6 +2010,13 @@ public class GuildImpl implements Guild
     public MemberCacheViewImpl getMembersView()
     {
         return memberCache;
+    }
+
+    @Nonnull
+    @Override
+    public NSFWLevel getNSFWLevel()
+    {
+        return nsfwLevel;
     }
 
     @Nullable

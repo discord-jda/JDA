@@ -85,7 +85,6 @@ public interface SelectionMenuInteraction extends ComponentInteraction
 
     /**
      * Update the selection menu with a new selection menu instance.
-     * <br>This only works for non-ephemeral messages where {@link #getMessage()} is available!
      *
      * <p>If this interaction is already acknowledged this will use {@link #getHook()}
      * and otherwise {@link #editComponents(Collection)} directly to acknowledge the interaction.
@@ -106,8 +105,6 @@ public interface SelectionMenuInteraction extends ComponentInteraction
     default RestAction<Void> editSelectionMenu(@Nullable SelectionMenu newMenu)
     {
         Message message = getMessage();
-        if (message == null)
-            throw new IllegalStateException("Cannot update selection menu for ephemeral messages! Discord does not provide enough information to perform the update.");
         List<ActionRow> components = new ArrayList<>(message.getActionRows());
         ComponentLayout.updateComponent(components, getComponentId(), newMenu);
 

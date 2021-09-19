@@ -114,19 +114,18 @@ public interface GuildVoiceState extends ISnowflake
     boolean isSendingVideo();
 
     /**
-     * Returns the current {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel} that the {@link net.dv8tion.jda.api.entities.Member Member}
+     * Returns the current {@link net.dv8tion.jda.api.entities.AudioChannel AudioChannel} that the {@link net.dv8tion.jda.api.entities.Member Member}
      * is in. If the {@link net.dv8tion.jda.api.entities.Member Member} is currently not in a
-     * {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel}, this returns null.
+     * {@link net.dv8tion.jda.api.entities.AudioChannel AudioChannel}, this returns null.
      *
-     * @return The VoiceChannel that the Member is in, or null.
+     * @return The AudioChannel that the Member is in, or null.
      */
     @Nullable
-    VoiceChannel getChannel();
+    AudioChannel getChannel();
 
     /**
-     * Returns the current {@link net.dv8tion.jda.api.entities.Guild Guild} of the {@link net.dv8tion.jda.api.entities.Member Member's}
-     * {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel}. If the {@link net.dv8tion.jda.api.entities.Member Member} is currently
-     * not in a {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel}, this returns null
+     * Returns the {@link net.dv8tion.jda.api.entities.Guild Guild} for the {@link net.dv8tion.jda.api.entities.Member Member}
+     * that this {@link GuildVoiceState GuildVoiceState} belongs to. (BackReference)
      *
      * @return the Member's Guild
      */
@@ -135,7 +134,7 @@ public interface GuildVoiceState extends ISnowflake
 
     /**
      * Returns the {@link net.dv8tion.jda.api.entities.Member Member} corresponding to this GuildVoiceState instance
-     * (Backreference)
+     * (BackReference)
      *
      * @return the Member that holds this GuildVoiceState
      */
@@ -143,14 +142,14 @@ public interface GuildVoiceState extends ISnowflake
     Member getMember();
 
     /**
-     * Used to determine if the {@link net.dv8tion.jda.api.entities.Member Member} is currently in a {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel}
+     * Used to determine if the {@link net.dv8tion.jda.api.entities.Member Member} is currently in an {@link net.dv8tion.jda.api.entities.AudioChannel AudioChannel}
      * in the {@link net.dv8tion.jda.api.entities.Guild Guild} returned from {@link #getGuild() getGuild()}.<br>
      * If this is {@code false}, {@link #getChannel() getChannel()} will return {@code null}.
      *
-     * @return True, if the {@link net.dv8tion.jda.api.entities.Member Member} is currently in a {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel}
+     * @return True, if the {@link net.dv8tion.jda.api.entities.Member Member} is currently in a {@link net.dv8tion.jda.api.entities.AudioChannel AudioChannel}
      *         in this {@link net.dv8tion.jda.api.entities.Guild Guild}.
      */
-    boolean inVoiceChannel();
+    boolean inAudioChannel();
 
     /**
      * The Session-Id for this VoiceState

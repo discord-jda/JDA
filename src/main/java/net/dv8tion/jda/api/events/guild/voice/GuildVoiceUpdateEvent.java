@@ -16,22 +16,22 @@
 
 package net.dv8tion.jda.api.events.guild.voice;
 
+import net.dv8tion.jda.api.entities.AudioChannel;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.events.UpdateEvent;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
- * Indicates that a {@link net.dv8tion.jda.api.entities.Member Member} joined or left a {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel}.
+ * Indicates that a {@link net.dv8tion.jda.api.entities.Member Member} joined or left an {@link net.dv8tion.jda.api.entities.AudioChannel AudioChannel}.
  * <br>Generic event that combines
  * {@link net.dv8tion.jda.api.events.guild.voice.GuildVoiceLeaveEvent GuildVoiceLeaveEvent},
  * {@link net.dv8tion.jda.api.events.guild.voice.GuildVoiceJoinEvent GuildVoiceJoinEvent}, and
  * {@link net.dv8tion.jda.api.events.guild.voice.GuildVoiceMoveEvent GuildVoiceMoveEvent} for convenience.
  *
- * <p>Can be used to detect when a Member leaves/joins a channel
+ * <p>Can be used to detect when a Member leaves/joins an AudioChannel
  *
  * <h2>Requirements</h2>
  *
@@ -47,9 +47,9 @@ import javax.annotation.Nullable;
  *
  * <p>Identifier: {@code voice-channel}
  */
-public interface GuildVoiceUpdateEvent extends UpdateEvent<Member, VoiceChannel>
+public interface GuildVoiceUpdateEvent extends UpdateEvent<Member, AudioChannel>
 {
-    String IDENTIFIER = "voice-channel";
+    String IDENTIFIER = "audio-channel";
 
     /**
      * The affected {@link net.dv8tion.jda.api.entities.Member Member}
@@ -68,18 +68,18 @@ public interface GuildVoiceUpdateEvent extends UpdateEvent<Member, VoiceChannel>
     Guild getGuild();
 
     /**
-     * The {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel} that the {@link net.dv8tion.jda.api.entities.Member Member} is moved from
+     * The {@link net.dv8tion.jda.api.entities.AudioChannel AudioChannel} that the {@link net.dv8tion.jda.api.entities.Member Member} is moved from
      *
-     * @return The {@link net.dv8tion.jda.api.entities.VoiceChannel}
+     * @return The {@link net.dv8tion.jda.api.entities.AudioChannel}
      */
     @Nullable
-    VoiceChannel getChannelLeft();
+    AudioChannel getChannelLeft();
 
     /**
-     * The {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel} that was joined
+     * The {@link net.dv8tion.jda.api.entities.AudioChannel AudioChannel} that was joined
      *
-     * @return The {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel}
+     * @return The {@link net.dv8tion.jda.api.entities.AudioChannel AudioChannel}
      */
     @Nullable
-    VoiceChannel getChannelJoined();
+    AudioChannel getChannelJoined();
 }
