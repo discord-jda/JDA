@@ -1445,6 +1445,7 @@ public class EntityBuilder
 
     public Message.Attachment createMessageAttachment(DataObject jsonObject)
     {
+        final boolean ephemeral = jsonObject.getBoolean("ephemeral", false);
         final int width = jsonObject.getInt("width", -1);
         final int height = jsonObject.getInt("height", -1);
         final int size = jsonObject.getInt("size");
@@ -1453,7 +1454,7 @@ public class EntityBuilder
         final String filename = jsonObject.getString("filename");
         final String contentType = jsonObject.getString("content_type", null);
         final long id = jsonObject.getLong("id");
-        return new Message.Attachment(id, url, proxyUrl, filename, contentType, size, height, width, getJDA());
+        return new Message.Attachment(id, url, proxyUrl, filename, contentType, size, height, width, ephemeral, getJDA());
     }
 
     public MessageEmbed createMessageEmbed(DataObject content)
