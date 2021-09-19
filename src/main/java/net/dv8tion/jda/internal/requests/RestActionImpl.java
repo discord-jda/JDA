@@ -294,7 +294,7 @@ public class RestActionImpl<T> implements RestAction<T>
         protected BooleanSupplier finalizeChecks()
         {
             // throw exception, if missing perms
-            return () -> hasPermission(Permission.MESSAGE_WRITE);
+            return () -> hasPermission(Permission.MESSAGE_SEND);
         }
      */
     protected static class CheckWrapper implements BooleanSupplier

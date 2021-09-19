@@ -1680,7 +1680,7 @@ public interface JDA
      * not mean that you will be able to send messages to it. Furthermore, if you log into this account on the discord
      * client, it is possible that you will see fewer channels than this returns. This is because the discord
      * client hides any {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} that you don't have the
-     * {@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ} permission in.
+     * {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} permission in.
      *
      * <p>This copies the backing store into a list. This means every call
      * creates a new list with O(n) complexity. It is recommended to store this into
@@ -1704,7 +1704,7 @@ public interface JDA
      * not mean that you will be able to send messages to it. Furthermore, if you log into this account on the discord
      * client, it is you will not see the channel that this returns. This is because the discord client
      * hides any {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} that you don't have the
-     * {@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ} permission in.
+     * {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} permission in.
      *
      * @param  id
      *         The id of the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}.
@@ -1728,7 +1728,7 @@ public interface JDA
      * not mean that you will be able to send messages to it. Furthermore, if you log into this account on the discord
      * client, it is you will not see the channel that this returns. This is because the discord client
      * hides any {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} that you don't have the
-     * {@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ} permission in.
+     * {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} permission in.
      *
      * @param  id
      *         The id of the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}.
@@ -1749,7 +1749,7 @@ public interface JDA
      * not mean that you will be able to send messages to it. Furthermore, if you log into this account on the discord
      * client, it is possible that you will see fewer channels than this returns. This is because the discord client
      * hides any {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} that you don't have the
-     * {@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ} permission in.
+     * {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} permission in.
      *
      * @param  name
      *         The name of the requested {@link net.dv8tion.jda.api.entities.TextChannel TextChannels}.

@@ -28,23 +28,27 @@ import java.util.stream.Collectors;
  */
 public enum Permission
 {
-    CREATE_INSTANT_INVITE(0, true, true, "Create Instant Invite"),
+    // General Server / Channel Permissions
+    MANAGE_CHANNEL(             4, true,  true,  "Manage Channels"),
+    MANAGE_SERVER(              5, true,  false, "Manage Server"),
+    VIEW_AUDIT_LOGS(            7, true,  false, "View Audit Logs"),
+    VIEW_CHANNEL(              10, true,  true,  "View Channel(s)"),
+    VIEW_GUILD_INSIGHTS(       19, true,  false, "View Server Insights"),
+    MANAGE_ROLES(              28, true,  false, "Manage Roles"),
+    MANAGE_PERMISSIONS(        28, false, true,  "Manage Permissions"),
+    MANAGE_WEBHOOKS(           29, true,  true,  "Manage Webhooks"),
+    MANAGE_EMOTES_AND_STICKERS(30, true,  false, "Manage Emojis and Stickers"),
+
+    // Membership Permissions
+    CREATE_INSTANT_INVITE(0, true, true,  "Create Instant Invite"),
     KICK_MEMBERS(         1, true, false, "Kick Members"),
     BAN_MEMBERS(          2, true, false, "Ban Members"),
-    ADMINISTRATOR(        3, true, false, "Administrator"),
-    MANAGE_CHANNEL(       4, true, true, "Manage Channels"),
-    MANAGE_SERVER(        5, true, false, "Manage Server"),
-    MESSAGE_ADD_REACTION( 6, true, true, "Add Reactions"),
-    VIEW_AUDIT_LOGS(      7, true, false, "View Audit Logs"),
-    PRIORITY_SPEAKER(     8, true, true, "Priority Speaker"),
-    VIEW_GUILD_INSIGHTS(19, true, false, "View Server Insights"),
-
-    // Applicable to all channel types
-    VIEW_CHANNEL(            10, true, true, "Read Text Channels & See Voice Channels"),
+    NICKNAME_CHANGE(     26, true, false, "Change Nickname"),
+    NICKNAME_MANAGE(     27, true, false, "Manage Nicknames"),
 
     // Text Permissions
-    MESSAGE_READ(            10, true, true, "Read Messages"),
-    MESSAGE_WRITE(           11, true, true, "Send Messages"),
+    MESSAGE_ADD_REACTION(     6, true, true, "Add Reactions"),
+    MESSAGE_SEND(            11, true, true, "Send Messages"),
     MESSAGE_TTS(             12, true, true, "Send TTS Messages"),
     MESSAGE_MANAGE(          13, true, true, "Manage Messages"),
     MESSAGE_EMBED_LINKS(     14, true, true, "Embed Links"),
@@ -52,14 +56,17 @@ public enum Permission
     MESSAGE_HISTORY(         16, true, true, "Read History"),
     MESSAGE_MENTION_EVERYONE(17, true, true, "Mention Everyone"),
     MESSAGE_EXT_EMOJI(       18, true, true, "Use External Emojis"),
+    USE_APPLICATION_COMMANDS(31, true, true, "Use Application Commands"),
     MESSAGE_EXT_STICKER(     37, true, true, "Use External Stickers"),
-    USE_SLASH_COMMANDS(      31, true, true, "Use Slash Commands"),
 
-    MANAGE_THREADS(     34, true, true, "Manage Threads"),
-    USE_PUBLIC_THREADS( 35, true, true, "Use Public Threads"),
-    USE_PRIVATE_THREADS(36, true, true, "Use Private Threads"),
+    // Thread Permissions
+    MANAGE_THREADS(          34, true, true, "Manage Threads"),
+    CREATE_PUBLIC_THREADS(   35, true, true, "Create Public Threads"),
+    CREATE_PRIVATE_THREADS(  36, true, true, "Create Private Threads"),
+    MESSAGE_SEND_IN_THREADS( 38, true, true, "Send Messages in Threads"),
 
     // Voice Permissions
+    PRIORITY_SPEAKER(       8, true, true, "Priority Speaker"),
     VOICE_STREAM(           9, true, true, "Video"),
     VOICE_CONNECT(         20, true, true, "Connect"),
     VOICE_SPEAK(           21, true, true, "Speak"),
@@ -69,15 +76,12 @@ public enum Permission
     VOICE_USE_VAD(         25, true, true, "Use Voice Activity"),
     VOICE_START_ACTIVITIES(39, true, true, "Launch Activities in Voice Channels"),
 
-    NICKNAME_CHANGE(26, true, false, "Change Nickname"),
-    NICKNAME_MANAGE(27, true, false, "Manage Nicknames"),
+    // Stage Channel Permissions
+    REQUEST_TO_SPEAK(      32, true, true, "Request to Speak"),
 
-    MANAGE_ROLES(      28, true,  false, "Manage Roles"),
-    MANAGE_PERMISSIONS(28, false, true,  "Manage Permissions"),
-    MANAGE_WEBHOOKS(   29, true,  true,  "Manage Webhooks"),
-    MANAGE_EMOTES(     30, true,  false, "Manage Emojis"),
+    // Advanced Permissions
+    ADMINISTRATOR(3, true, false, "Administrator"),
 
-    REQUEST_TO_SPEAK(  32, true, true, "Request to Speak"),
 
     UNKNOWN(-1, false, false, "Unknown");
 
@@ -108,10 +112,10 @@ public enum Permission
      * All text channel specific permissions which are only available in text channel permission overrides
      */
     public static final long ALL_TEXT_PERMISSIONS
-            = Permission.getRaw(MESSAGE_ADD_REACTION, MESSAGE_WRITE, MESSAGE_TTS, MESSAGE_MANAGE,
-                                MESSAGE_EMBED_LINKS, MESSAGE_ATTACH_FILES, MESSAGE_EXT_STICKER,
-                                MESSAGE_EXT_EMOJI, MESSAGE_HISTORY, MESSAGE_MENTION_EVERYONE,
-                                USE_SLASH_COMMANDS, MANAGE_THREADS, USE_PUBLIC_THREADS, USE_PRIVATE_THREADS);
+            = Permission.getRaw(MESSAGE_ADD_REACTION, MESSAGE_SEND, MESSAGE_TTS, MESSAGE_MANAGE,
+                                MESSAGE_EMBED_LINKS, MESSAGE_ATTACH_FILES, MESSAGE_EXT_EMOJI, MESSAGE_EXT_STICKER,
+                                MESSAGE_HISTORY, MESSAGE_MENTION_EVERYONE, USE_APPLICATION_COMMANDS,
+                                MANAGE_THREADS, CREATE_PUBLIC_THREADS, CREATE_PRIVATE_THREADS, MESSAGE_SEND_IN_THREADS);
 
     /**
      * All voice channel specific permissions which are only available in voice channel permission overrides
@@ -283,7 +287,7 @@ public enum Permission
     /**
      * This is effectively the opposite of {@link #getPermissions(long)}, this takes a Collection of {@link net.dv8tion.jda.api.Permission Permissions}
      * and returns the raw offset {@code long} representation of the permissions.
-     * <br>Example: {@code getRaw(EnumSet.of(Permission.MESSAGE_READ, Permission.MESSAGE_WRITE))}
+     * <br>Example: {@code getRaw(EnumSet.of(Permission.VIEW_CHANNEL, Permission.MESSAGE_SEND))}
      *
      * @param  permissions
      *         The Collection of permissions of which to form into the raw long representation.

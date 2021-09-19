@@ -25,7 +25,7 @@ public interface IMemberContainer extends GuildChannel
     /**
      * A List of all {@link net.dv8tion.jda.api.entities.Member Members} that are in this GuildChannel
      * <br>For {@link net.dv8tion.jda.api.entities.TextChannel TextChannels},
-     * this returns all Members with the {@link net.dv8tion.jda.api.Permission#MESSAGE_READ} Permission.
+     * this returns all Members with the {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} Permission.
      * <br>For {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels},
      * this returns all Members that joined that VoiceChannel.
      * <br>For {@link net.dv8tion.jda.api.entities.Category Categories},
