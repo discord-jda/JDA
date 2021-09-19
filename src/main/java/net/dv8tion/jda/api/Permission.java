@@ -60,14 +60,14 @@ public enum Permission
     USE_PRIVATE_THREADS(36, true, true, "Use Private Threads"),
 
     // Voice Permissions
-    VOICE_STREAM(              9, true, true, "Video"),
-    VOICE_CONNECT(            20, true, true, "Connect"),
-    VOICE_SPEAK(              21, true, true, "Speak"),
-    VOICE_MUTE_OTHERS(        22, true, true, "Mute Members"),
-    VOICE_DEAF_OTHERS(        23, true, true, "Deafen Members"),
-    VOICE_MOVE_OTHERS(        24, true, true, "Move Members"),
-    VOICE_USE_VAD(            25, true, true, "Use Voice Activity"),
-    START_EMBEDDED_ACTIVITIES(39, true, true, "Launching Activities in Voice Channels"),
+    VOICE_STREAM(           9, true, true, "Video"),
+    VOICE_CONNECT(         20, true, true, "Connect"),
+    VOICE_SPEAK(           21, true, true, "Speak"),
+    VOICE_MUTE_OTHERS(     22, true, true, "Mute Members"),
+    VOICE_DEAF_OTHERS(     23, true, true, "Deafen Members"),
+    VOICE_MOVE_OTHERS(     24, true, true, "Move Members"),
+    VOICE_USE_VAD(         25, true, true, "Use Voice Activity"),
+    VOICE_START_ACTIVITIES(39, true, true, "Launch Activities in Voice Channels"),
 
     NICKNAME_CHANGE(26, true, false, "Change Nickname"),
     NICKNAME_MANAGE(27, true, false, "Manage Nicknames"),
@@ -76,7 +76,6 @@ public enum Permission
     MANAGE_PERMISSIONS(28, false, true,  "Manage Permissions"),
     MANAGE_WEBHOOKS(   29, true,  true,  "Manage Webhooks"),
     MANAGE_EMOTES(     30, true,  false, "Manage Emojis"),
-
     REQUEST_TO_SPEAK(  32, true, true, "Request to Speak"),
 
     UNKNOWN(-1, false, false, "Unknown");
@@ -119,7 +118,7 @@ public enum Permission
     public static final long ALL_VOICE_PERMISSIONS
             = Permission.getRaw(VOICE_STREAM, VOICE_CONNECT, VOICE_SPEAK, VOICE_MUTE_OTHERS,
                                 VOICE_DEAF_OTHERS, VOICE_MOVE_OTHERS, VOICE_USE_VAD,
-                                PRIORITY_SPEAKER, REQUEST_TO_SPEAK, START_EMBEDDED_ACTIVITIES);
+                                PRIORITY_SPEAKER, REQUEST_TO_SPEAK, VOICE_START_ACTIVITIES);
 
     private final int offset;
     private final long raw;
