@@ -193,6 +193,8 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
      *         The option description, 1-100 characters
      * @param  required
      *         Whether this option is required (See {@link OptionData#setRequired(boolean)})
+     * @param  autocomplete
+     *         Whether this option can be autocompleted (See {@link OptionData#setAutoComplete(boolean)})
      *
      * @throws IllegalArgumentException
      *         <ul>
@@ -206,14 +208,14 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
      * @return The CommandData instance, for chaining
      */
     @Nonnull
-    public CommandData addOption(@Nonnull OptionType type, @Nonnull String name, @Nonnull String description, boolean required)
+    public CommandData addOption(@Nonnull OptionType type, @Nonnull String name, @Nonnull String description, boolean required, boolean autocomplete)
     {
-        return addOptions(new OptionData(type, name, description).setRequired(required));
+        return addOptions(new OptionData(type, name, description).setRequired(required).setAutoComplete(autocomplete));
     }
 
     /**
      * Adds an option to this command.
-     * <br>The option is set to be non-required! You can use {@link #addOption(OptionType, String, String, boolean)} to add a required option instead.
+     * <br>The option is set to be non-required! You can use {@link #addOption(OptionType, String, String, boolean, boolean)} to add a required option instead.
      *
      * <p>Required options must be added before non-required options!
      *
@@ -238,7 +240,7 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
     @Nonnull
     public CommandData addOption(@Nonnull OptionType type, @Nonnull String name, @Nonnull String description)
     {
-        return addOption(type, name, description, false);
+        return addOption(type, name, description, false, false);
     }
 
     /**

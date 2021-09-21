@@ -190,6 +190,8 @@ public interface CommandEditAction extends RestAction<Command>
      *         The option description, 1-100 characters
      * @param  required
      *         Whether this option is required (See {@link OptionData#setRequired(boolean)})
+     * @param  autocomplete
+     *         Whether this option can be autocompleted (See {@link OptionData#setAutoComplete(boolean)})
      *
      * @throws IllegalArgumentException
      *         <ul>
@@ -204,9 +206,9 @@ public interface CommandEditAction extends RestAction<Command>
      */
     @Nonnull
     @CheckReturnValue
-    default CommandEditAction addOption(@Nonnull OptionType type, @Nonnull String name, @Nonnull String description, boolean required)
+    default CommandEditAction addOption(@Nonnull OptionType type, @Nonnull String name, @Nonnull String description, boolean required, boolean autocomplete)
     {
-        return addOptions(new OptionData(type, name, description).setRequired(required));
+        return addOptions(new OptionData(type, name, description).setRequired(required).setAutoComplete(autocomplete));
     }
 
     /**
@@ -237,7 +239,7 @@ public interface CommandEditAction extends RestAction<Command>
     @CheckReturnValue
     default CommandEditAction addOption(@Nonnull OptionType type, @Nonnull String name, @Nonnull String description)
     {
-        return addOption(type, name, description, false);
+        return addOption(type, name, description, false, false);
     }
 
     /**

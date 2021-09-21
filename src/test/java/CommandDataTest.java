@@ -35,9 +35,9 @@ public class CommandDataTest
     {
         CommandData command = new CommandData("ban", "Ban a user from this server")
                 .setDefaultEnabled(false)
-                .addOption(OptionType.USER, "user", "The user to ban", true) // required before non-required
+                .addOption(OptionType.USER, "user", "The user to ban", true, false) // required before non-required
                 .addOption(OptionType.STRING, "reason", "The ban reason") // test that default is false
-                .addOption(OptionType.INTEGER, "days", "The duration of the ban", false); // test with explicit false
+                .addOption(OptionType.INTEGER, "days", "The duration of the ban", false, false); // test with explicit false
 
         DataObject data = command.toData();
         Assertions.assertEquals("ban", data.getString("name"));
@@ -145,7 +145,7 @@ public class CommandDataTest
         CommandData command = new CommandData("ban", "Simple ban command");
         command.addOption(OptionType.STRING, "opt", "desc");
 
-        Assertions.assertThrows(IllegalArgumentException.class, () -> command.addOption(OptionType.STRING, "other", "desc", true));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> command.addOption(OptionType.STRING, "other", "desc", true, false));
 
         SubcommandData subcommand = new SubcommandData("sub", "Simple subcommand");
         subcommand.addOption(OptionType.STRING, "opt", "desc");

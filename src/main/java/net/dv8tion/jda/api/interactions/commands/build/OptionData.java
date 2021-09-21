@@ -70,7 +70,7 @@ public class OptionData implements SerializableData
     
     private final OptionType type;
     private String name, description;
-    private boolean isRequired;
+    private boolean isRequired, isAutoComplete;
     private Map<String, Object> choices;
 
     /**
@@ -95,7 +95,7 @@ public class OptionData implements SerializableData
      */
     public OptionData(@Nonnull OptionType type, @Nonnull String name, @Nonnull String description)
     {
-        this(type, name, description, false);
+        this(type, name, description, false, false);
     }
 
     /**
@@ -110,6 +110,8 @@ public class OptionData implements SerializableData
      *         The option description, up to {@value #MAX_DESCRIPTION_LENGTH} characters, as defined by {@link #MAX_DESCRIPTION_LENGTH}
      * @param  isRequired
      *         {@code True}, if this option is required
+     * @param  isAutoComplete
+     *         {@code True}, if this option can be autocompleted
      *
      * @throws IllegalArgumentException
      *         If any of the following checks fail
@@ -119,7 +121,7 @@ public class OptionData implements SerializableData
      *             <li>{@code description} is between 1 and {@value #MAX_DESCRIPTION_LENGTH} characters long</li>
      *         </ul>
      */
-    public OptionData(@Nonnull OptionType type, @Nonnull String name, @Nonnull String description, boolean isRequired)
+    public OptionData(@Nonnull OptionType type, @Nonnull String name, @Nonnull String description, boolean isRequired, boolean isAutoComplete)
     {
         Checks.notNull(type, "Type");
         Checks.notEmpty(name, "Name");
@@ -132,6 +134,7 @@ public class OptionData implements SerializableData
         this.name = name;
         this.description = description;
         this.isRequired = isRequired;
+        this.isAutoComplete = isAutoComplete;
         if (type.canSupportChoices())
             choices = new LinkedHashMap<>();
     }
@@ -268,6 +271,22 @@ public class OptionData implements SerializableData
     }
 
     /**
+     * Configure whether the option can be autocompleted by the application.
+     * <br>If true, no choices may be present
+     *
+     * @param  autocomplete
+     *         True, if this option can be autocompleted
+     *
+     * @return The OptionData instance, for chaining
+     */
+    @Nonnull
+    public OptionData setAutoComplete(boolean autocomplete)
+    {
+        this.isAutoComplete = autocomplete;
+        return this;
+    }
+
+    /**
      * Add a predefined choice for this option.
      * <br>The user can only provide one of the choices and cannot specify any other value.
      * 
@@ -284,6 +303,7 @@ public class OptionData implements SerializableData
      *             <li>{@code value} is not less than {@link #MIN_NEGATIVE_NUMBER} and not larger than {@link #MAX_POSITIVE_NUMBER}</li>
      *             <li>The amount of already set choices is less than {@link #MAX_CHOICES}</li>
      *             <li>The {@link OptionType} is {@link OptionType#NUMBER}</li>
+     *             <li>Autocomplete is not enabled</li>
      *         </ul>
      * 
      * @return The OptionData instance, for chaining
@@ -295,6 +315,7 @@ public class OptionData implements SerializableData
         Checks.notLonger(name, MAX_CHOICE_NAME_LENGTH, "Name");
         Checks.check(value >= MIN_NEGATIVE_NUMBER, "Double value may not be lower than %f", MIN_NEGATIVE_NUMBER);
         Checks.check(value <= MAX_POSITIVE_NUMBER, "Double value may not be larger than %f", MAX_POSITIVE_NUMBER);
+        Checks.check(!isAutoComplete, "Choices may not be present when autocomplete is enabled");
         Checks.check(choices.size() < MAX_CHOICES, "Cannot have more than 25 choices for an option!");
         if (type != OptionType.NUMBER)
             throw new IllegalArgumentException("Cannot add double choice for OptionType." + type);
@@ -318,6 +339,7 @@ public class OptionData implements SerializableData
      *             <li>{@code value} is not less than {@link #MIN_NEGATIVE_NUMBER} and not larger than {@link #MAX_POSITIVE_NUMBER}</li>
      *             <li>The amount of already set choices is less than {@link #MAX_CHOICES}</li>
      *             <li>The {@link OptionType} is {@link OptionType#INTEGER}</li>
+     *             <li>Autocomplete is not enabled</li>>
      *         </ul>
      *
      * @return The OptionData instance, for chaining
@@ -329,6 +351,7 @@ public class OptionData implements SerializableData
         Checks.notLonger(name, MAX_CHOICE_NAME_LENGTH, "Name");
         Checks.check(value >= MIN_NEGATIVE_NUMBER, "Long value may not be lower than %f", MIN_NEGATIVE_NUMBER);
         Checks.check(value <= MAX_POSITIVE_NUMBER, "Long value may not be larger than %f", MAX_POSITIVE_NUMBER);
+        Checks.check(!isAutoComplete, "Choices may not be present when autocomplete is enabled");
         Checks.check(choices.size() < MAX_CHOICES, "Cannot have more than 25 choices for an option!");
         if (type != OptionType.INTEGER)
             throw new IllegalArgumentException("Cannot add long choice for OptionType." + type);
@@ -352,6 +375,7 @@ public class OptionData implements SerializableData
      *             <li>{@code value} is not null, empty and less or equal to {@value #MAX_CHOICE_VALUE_LENGTH} characters long</li>
      *             <li>The amount of already set choices is less than {@link #MAX_CHOICES}</li>
      *             <li>The {@link OptionType} is {@link OptionType#STRING}</li>
+     *             <li>Autocomplete is not enabled</li>
      *         </ul>
      *
      * @return The OptionData instance, for chaining
@@ -363,6 +387,7 @@ public class OptionData implements SerializableData
         Checks.notEmpty(value, "Value");
         Checks.notLonger(name, MAX_CHOICE_NAME_LENGTH, "Name");
         Checks.notLonger(value, MAX_CHOICE_VALUE_LENGTH, "Value");
+        Checks.check(!isAutoComplete, "Choices may not be present when autocomplete is enabled");
         Checks.check(choices.size() < MAX_CHOICES, "Cannot have more than 25 choices for an option!");
         if (type != OptionType.STRING)
             throw new IllegalArgumentException("Cannot add string choice for OptionType." + type);
@@ -384,6 +409,7 @@ public class OptionData implements SerializableData
      *             <li>The provided {@code choices} are not null</li>
      *             <li>The amount of {@code choices} provided is smaller than {@link #MAX_CHOICES} when combined with already set choices</li>
      *             <li>The {@link OptionType} of the choices is either {@link OptionType#INTEGER}, {@link OptionType#STRING} or {@link OptionType#NUMBER}</li>
+     *             <li>Autocomplete is not enabled</li>
      *         </ul>
      *
      * @return The OptionData instance, for chaining
@@ -393,6 +419,7 @@ public class OptionData implements SerializableData
     {
         if (this.choices == null)
             throw new IllegalStateException("Cannot add choices for an option of type " + type);
+        Checks.check(!isAutoComplete, "Choices may not be present when autocomplete is enabled");
         Checks.noneNull(choices, "Choices");
         Checks.check(choices.length + this.choices.size() <= MAX_CHOICES, "Cannot have more than 25 choices for one option!");
         for (Command.Choice choice : choices)
@@ -443,7 +470,10 @@ public class OptionData implements SerializableData
                 .put("name", name)
                 .put("description", description);
         if (type != OptionType.SUB_COMMAND && type != OptionType.SUB_COMMAND_GROUP)
+        {
             json.put("required", isRequired);
+            json.put("autocomplete", isAutoComplete);
+        }
         if (choices != null && !choices.isEmpty())
         {
             json.put("choices", DataArray.fromCollection(choices.entrySet()
@@ -476,6 +506,7 @@ public class OptionData implements SerializableData
         OptionType type = OptionType.fromKey(json.getInt("type"));
         OptionData option = new OptionData(type, name, description);
         option.setRequired(json.getBoolean("required"));
+        option.setAutoComplete(json.getBoolean("autocomplete"));
         json.optArray("choices").ifPresent(choices1 ->
                 choices1.stream(DataArray::getObject).forEach(o ->
                 {
