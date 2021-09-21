@@ -26,7 +26,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-//TODO-v5: Need Docs
+/**
+ * Represents a {@link GuildChannel} that is capable of holding {@link PermissionOverride Permission Overrides}.
+ *
+ * @see PermissionOverride
+ */
 public interface IPermissionContainer extends GuildChannel
 {
     /**

@@ -10,7 +10,15 @@ import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.List;
 
-//TODO-v5: Docs
+
+/**
+ * Represents all message channels present in guilds.
+ *
+ * This includes channels that are not included in {@link BaseGuildMessageChannel BaseGuildMessageChannel}, such as Threads.
+ *
+ * @see BaseGuildMessageChannel
+ * //todo-v5: Add links to MessageThreads
+ */
 public interface GuildMessageChannel extends GuildChannel, MessageChannel
 {
     /**

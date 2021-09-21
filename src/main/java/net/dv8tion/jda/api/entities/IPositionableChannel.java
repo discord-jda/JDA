@@ -19,7 +19,13 @@ package net.dv8tion.jda.api.entities;
 import java.util.List;
 import java.util.stream.Collectors;
 
-//TODO-v5: Need Docs
+/**
+ * Represents a {@link GuildChannel GuildChannel} that has a position.
+ *
+ * These channels can be re-ordered using a position value.
+ *
+ * In the case of identical permission values, the natural ordering of the channel snowflakes are used.
+ */
 public interface IPositionableChannel extends GuildChannel
 {
     //TODO-v5: We should probably reconsider how getPosition is calculated as it isn't particularly useful anymore...

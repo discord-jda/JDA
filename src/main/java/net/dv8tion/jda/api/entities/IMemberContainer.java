@@ -19,7 +19,13 @@ package net.dv8tion.jda.api.entities;
 import javax.annotation.Nonnull;
 import java.util.List;
 
-//TODO-v5: Need Docs
+/**
+ * Represents a {@link GuildChannel} that is capable of containing members.
+ *
+ * Implementations interpret this meaning as best applies to them.
+ *
+ * @see IMemberContainer#getMembers()
+ */
 public interface IMemberContainer extends GuildChannel
 {
     /**

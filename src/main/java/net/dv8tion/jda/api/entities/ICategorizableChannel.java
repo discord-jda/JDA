@@ -18,13 +18,26 @@ package net.dv8tion.jda.api.entities;
 
 import javax.annotation.Nullable;
 
-//TODO-v5: Need Docs
+
+/**
+ * Represents a channel that can be a member of a {@link Category}.
+ * Channels represented by this interface can have a parent {@link Category}.
+ *
+ * @see Category
+ * @see Guild#getCategories()
+ */
 public interface ICategorizableChannel extends GuildChannel
 {
-    //TODO-v5: Docs
+    /**
+     * Get the snowflake of the {@link Category} that contains this channel.
+     * @return The Discord ID snowflake of the parent channel as a long.
+     */
     long getParentCategoryIdLong();
 
-    //TODO-v5: Docs
+    /**
+     * Get the snowflake of the {@link Category} that contains this channel.
+     * @return The Discord ID snowflake of the parent channel as a String.
+     */
     default String getParentCategoryId()
     {
         return Long.toUnsignedString(getParentCategoryIdLong());

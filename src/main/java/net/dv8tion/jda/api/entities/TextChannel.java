@@ -25,15 +25,15 @@ import java.util.FormattableFlags;
 import java.util.Formatter;
 
 /**
- * Represents a Discord Text GuildChannel.
- * <br>Adds additional functionality and information for text channels in Discord.
+ * Represents a standard Discord Text GuildChannel.
+ * <br>Adds additional functionality and information for text channels in Discord,
+ * on top of the common functionality present in other guild message channels.
  *
  * <p>This is a {@link GuildChannel GuildChannel} capable of sending messages.
  *
  * @see GuildChannel
  * @see MessageChannel
- * @see VoiceChannel
- * @see Category
+ * @see BaseGuildMessageChannel
  *
  * @see   Guild#getTextChannelCache()
  * @see   Guild#getTextChannels()
