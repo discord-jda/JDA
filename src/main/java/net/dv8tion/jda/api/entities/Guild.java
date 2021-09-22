@@ -1070,6 +1070,7 @@ public interface Guild extends ISnowflake
      * @deprecated Guilds no longer have the {@link net.dv8tion.jda.api.Region Region} option. Use {@link VoiceChannel#getRegion()} instead.
      */
     @Deprecated
+    @ForRemoval(deadline = "5.0.0")
     @ReplaceWith("VoiceChannel.getRegion()")
     @DeprecatedSince("4.3.0")
     @Nonnull
@@ -1090,6 +1091,7 @@ public interface Guild extends ISnowflake
      * @deprecated Guilds no longer have the {@link net.dv8tion.jda.api.Region Region} option. Use {@link VoiceChannel#getRegion()} instead.
      */
     @Deprecated
+    @ForRemoval(deadline = "5.0.0")
     @ReplaceWith("VoiceChannel.getRegionRaw()")
     @DeprecatedSince("4.3.0")
     @Nonnull
@@ -2960,6 +2962,7 @@ public interface Guild extends ISnowflake
      */
     @Nonnull
     @Deprecated
+    @ForRemoval(deadline = "5.0.0")
     @DeprecatedSince("4.2.0")
     @ReplaceWith("loadMembers(Consumer<Member>) or loadMembers()")
     CompletableFuture<Void> retrieveMembers();

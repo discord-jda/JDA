@@ -44,7 +44,7 @@ public class MessageSticker implements ISnowflake
      * @deprecated Use {@link #ICON_URL} instead
      */
     @Deprecated
-    @ForRemoval
+    @ForRemoval(deadline = "5.0.0")
     @ReplaceWith("ICON_URL")
     @DeprecatedSince("4.3.1")
     public static final String ASSET_URL = "https://cdn.discordapp.com/stickers/%s/%s.%s";
@@ -125,7 +125,7 @@ public class MessageSticker implements ISnowflake
      */
     @Nonnull
     @Deprecated
-    @ForRemoval
+    @ForRemoval(deadline = "5.0.0")
     @ReplaceWith("getIconUrl()")
     @DeprecatedSince("4.3.1")
     public String getAssetHash()
@@ -145,7 +145,7 @@ public class MessageSticker implements ISnowflake
      */
     @Nonnull
     @Deprecated
-    @ForRemoval
+    @ForRemoval(deadline = "5.0.0")
     @ReplaceWith("getIconUrl()")
     @DeprecatedSince("4.3.1")
     public String getAssetUrl()

@@ -336,6 +336,7 @@ public abstract class ListenerAdapter implements EventListener
      * @deprecated This event is no longer supported by discord, use {@link #onVoiceChannelUpdateRegion(VoiceChannelUpdateRegionEvent)} instead.
      */
     @Deprecated
+    @ForRemoval(deadline = "5.0.0")
     @ReplaceWith("VoiceChannelUpdateRegionEvent")
     public void onGuildUpdateRegion(@Nonnull GuildUpdateRegionEvent event) {}
     public void onGuildUpdateSplash(@Nonnull GuildUpdateSplashEvent event) {}
