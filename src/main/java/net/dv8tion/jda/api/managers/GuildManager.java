@@ -17,6 +17,7 @@
 package net.dv8tion.jda.api.managers;
 
 import net.dv8tion.jda.annotations.DeprecatedSince;
+import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.Region;
 import net.dv8tion.jda.api.entities.Guild;
@@ -185,6 +186,7 @@ public interface GuildManager extends Manager<GuildManager>
     @Nonnull
     @CheckReturnValue
     @Deprecated
+    @ForRemoval(deadline = "5.0.0")
     @ReplaceWith("ChannelManager.setRegion()")
     @DeprecatedSince("4.3.0")
     GuildManager setRegion(@Nonnull Region region);
