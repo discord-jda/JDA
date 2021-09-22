@@ -22,6 +22,9 @@ import javax.annotation.Nonnull;
  * This is referred to as following this channel.
  *
  * Messages sent in this channel can be crossposted, at which point they will be sent (via webhook) to all subscribed channels.
+ *
+ * @see Message#getFlags()
+ * @see net.dv8tion.jda.api.entities.Message.MessageFlag#CROSSPOSTED
  */
 public interface NewsChannel extends BaseGuildMessageChannel
 {
