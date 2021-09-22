@@ -30,6 +30,7 @@ public enum InteractionType
     PING(1),
     SLASH_COMMAND(2),
     COMPONENT(3),
+    COMMAND_AUTOCOMPLETE(4),
     ;
 
     private final int key;
@@ -56,6 +57,8 @@ public enum InteractionType
             return SLASH_COMMAND;
         case 3:
             return COMPONENT;
+        case 4:
+            return COMMAND_AUTOCOMPLETE;
         default:
             return UNKNOWN;
         }

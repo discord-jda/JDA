@@ -39,6 +39,7 @@ public class OptionMapping
     private final OptionType type;
     private final String name;
     private final TLongObjectMap<Object> resolved;
+    private final boolean focused;
 
     public OptionMapping(DataObject data, TLongObjectMap<Object> resolved)
     {
@@ -46,6 +47,7 @@ public class OptionMapping
         this.type = OptionType.fromKey(data.getInt("type", -1));
         this.name = data.getString("name");
         this.resolved = resolved;
+        this.focused = data.getBoolean("focused", false);
     }
 
     /**
@@ -82,6 +84,13 @@ public class OptionMapping
     {
         return data.getString("value");
     }
+
+    /**
+     * Indicates if the option is focused by the user when autocomplete is enabled
+     *
+     * @return True, if the user is focusing the option
+     */
+    public boolean isFocused() { return focused; }
 
     /**
      * The boolean value.

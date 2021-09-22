@@ -16,18 +16,12 @@
 
 package net.dv8tion.jda.internal.handle;
 
-import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
-import net.dv8tion.jda.api.events.interaction.GenericInteractionCreateEvent;
-import net.dv8tion.jda.api.events.interaction.SelectionMenuEvent;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.events.interaction.*;
 import net.dv8tion.jda.api.interactions.InteractionType;
 import net.dv8tion.jda.api.interactions.components.Component;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
-import net.dv8tion.jda.internal.interactions.ButtonInteractionImpl;
-import net.dv8tion.jda.internal.interactions.CommandInteractionImpl;
-import net.dv8tion.jda.internal.interactions.InteractionImpl;
-import net.dv8tion.jda.internal.interactions.SelectionMenuInteractionImpl;
+import net.dv8tion.jda.internal.interactions.*;
 import net.dv8tion.jda.internal.requests.WebSocketClient;
 
 public class InteractionCreateHandler extends SocketHandler
@@ -61,6 +55,9 @@ public class InteractionCreateHandler extends SocketHandler
             case COMPONENT: // buttons/components
                 handleAction(content);
                 break;
+            case COMMAND_AUTOCOMPLETE:
+                handleCommandAutoComplete(content);
+                break;
             default:
                 api.handleEvent(
                     new GenericInteractionCreateEvent(api, responseNumber,
@@ -92,5 +89,11 @@ public class InteractionCreateHandler extends SocketHandler
                     new SelectionMenuInteractionImpl(api, content)));
             break;
         }
+    }
+
+    private void handleCommandAutoComplete(DataObject content) {
+        api.handleEvent(
+                new CommandAutoCompleteEvent(api, responseNumber,
+                        new CommandInteractionImpl(api, content)));
     }
 }
