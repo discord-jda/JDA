@@ -206,103 +206,75 @@ public class MarkdownSanitizer
     public static String escape(@Nonnull String sequence, boolean single)
     {
         Checks.notNull(sequence, "Input");
-        if(single)
-        {
-            StringBuilder builder = new StringBuilder();
-            boolean escaped = false;
-            boolean newline = true;
-            for (int i = 0; i < sequence.length(); i++)
-            {
-                char current = sequence.charAt(i);
-                if(newline)
-                {
-                    if(current == '>')
-                    {
-                        if(i+1 < sequence.length())
-                        {
-                            if(sequence.charAt(i+1) == ' ')
-                            {
-                                builder.append("\\>");
-                            }
-                            else
-                            {
-                                if(i + 3 < sequence.length())
-                                {
-                                    if(sequence.startsWith(">>> ", i))
-                                    {
-                                        builder.append("\\>\\>\\> ");
-                                        i += 3;
-                                        newline = false;
-                                        continue;
-                                    }
-                                }
-                                builder.append(current);
-                            }
-                            newline = false;
-                            continue;
-                        }
-                        else
-                            escaped = true;
-                    }
-                    else if(current == ' ')
-                    {
-                        builder.append(current);
-                        continue;
-                    }
-                    newline=false;
-                }
+        if(!single) return escape(sequence);
 
-                if(!escaped)
+        StringBuilder builder = new StringBuilder();
+        boolean escaped = false;
+        boolean newline = true;
+        for (int i = 0; i < sequence.length(); i++)
+        {
+            char current = sequence.charAt(i);
+            if (newline)
+            {
+                newline = Character.isWhitespace(current); // might still be a quote if prefixed by whitespace
+                if (current == '>')
                 {
-                    switch (current)
+                    // Check for quote if line starts with angle bracket
+                    if (i + 1 < sequence.length() && Character.isWhitespace(sequence.charAt(i+1)))
                     {
-                    case '*':
-                        builder.append("\\*");
-                        break;
-                    case '_':
-                        builder.append("\\_");
-                        break;
-                    case '`':
-                        builder.append("\\`");
-                        break;
-                    case '|':
-                        if(i+1 < sequence.length()){
-                            if(sequence.charAt(i+1) == '|'){
-                                builder.append("\\|\\|");
-                                i++;
-                                continue;
-                            }
-                        }
-                        builder.append("|");
-                        break;
-                    case '~':
-                        builder.append("\\~");
-                        break;
-                    case '\\':
-                        builder.append(current);
-                        escaped = true;
-                        break;
-                    case '\n':
-                        builder.append(current);
-                        newline = true;
-                        break;
-                    default:
-                        builder.append(current);
+                        builder.append("\\>"); // simple quote
                     }
+                    else if (i + 3 < sequence.length() && sequence.startsWith(">>>", i) && Character.isWhitespace(sequence.charAt(i+3)))
+                    {
+                        builder.append("\\>\\>\\>").append(sequence.charAt(i+3)); // block quote
+                        i += 3; // since we include 3 angle brackets AND whitespace
+                    }
+                    else
+                    {
+                        builder.append(current); // just a normal angle bracket
+                    }
+                    continue;
+                }
+            }
+
+            if (escaped)
+            {
+                builder.append(current);
+                escaped = false;
+                continue;
+            }
+            // Handle average case
+            switch (current)
+            {
+            case '*': // simple markdown escapes for single characters
+            case '_':
+            case '`':
+                builder.append('\\').append(current);
+                break;
+            case '|': // cases that require at least 2 characters in sequence
+            case '~':
+                if (i + 1 < sequence.length() && sequence.charAt(i+1) == current)
+                {
+                    builder.append('\\').append(current)
+                            .append('\\').append(current);
+                    i++;
                 }
                 else
-                {
                     builder.append(current);
-                    escaped = false;
-                }
-
+                break;
+            case '\\': // escape character
+                builder.append(current);
+                escaped = true;
+                break;
+            case '\n': // linefeed is a special case for quotes
+                builder.append(current);
+                newline = true;
+                break;
+            default:
+                builder.append(current);
             }
-            return builder.toString();
         }
-        else
-        {
-            return escape(sequence);
-        }
+        return builder.toString();
     }
 
     /**
