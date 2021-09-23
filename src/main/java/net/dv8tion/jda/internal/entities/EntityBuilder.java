@@ -204,6 +204,7 @@ public class EntityBuilder
         final int verificationLevel = guildJson.getInt("verification_level", 0);
         final int notificationLevel = guildJson.getInt("default_message_notifications", 0);
         final int explicitContentLevel = guildJson.getInt("explicit_content_filter", 0);
+        final int nsfwLevel = guildJson.getInt("nsfw_level", -1);
 
         guildObj.setAvailable(true)
                 .setName(name)
@@ -224,7 +225,8 @@ public class EntityBuilder
                 .setLocale(locale)
                 .setBoostCount(boostCount)
                 .setBoostTier(boostTier)
-                .setMemberCount(memberCount);
+                .setMemberCount(memberCount)
+                .setNSFWLevel(Guild.NSFWLevel.fromKey(nsfwLevel));
 
         SnowflakeCacheViewImpl<Guild> guildView = getJDA().getGuildsView();
         try (UnlockHook hook = guildView.writeLock())
@@ -276,6 +278,18 @@ public class EntityBuilder
 
         if (guildObj.getOwner() == null)
             LOG.debug("Finished setup for guild with a null owner. GuildId: {} OwnerId: {}", guildId, guildJson.opt("owner_id").orElse(null));
+        if (guildObj.getMember(api.getSelfUser()) == null)
+        {
+            LOG.error("Guild is missing a SelfMember. GuildId: {}", guildId);
+            LOG.debug("Guild is missing a SelfMember. GuildId: {} JSON: \n{}", guildId, guildJson);
+            // This is actually a gateway request
+            guildObj.retrieveMembersByIds(api.getSelfUser().getIdLong()).onSuccess(m -> {
+                if (m.isEmpty())
+                    LOG.warn("Was unable to recover SelfMember for guild with id {}. This guild might be corrupted!", guildId);
+                else
+                    LOG.debug("Successfully recovered SelfMember for guild with id {}.", guildId);
+            });
+        }
 
 
         createGuildEmotePass(guildObj, emotesArray);
@@ -1285,13 +1299,24 @@ public class EntityBuilder
                     .collect(Collectors.toList());
         }
 
+        Message.Interaction messageInteraction = null;
+        if (!jsonObject.isNull("interaction"))
+        {
+            GuildImpl guild = null;
+            if (channel instanceof GuildChannel)
+            {
+                guild = (GuildImpl) ((GuildChannel) (channel)).getGuild();
+            }
+            messageInteraction = createMessageInteraction(guild, jsonObject.getObject("interaction"));
+        }
+
         if (type == MessageType.UNKNOWN)
             throw new IllegalArgumentException(UNKNOWN_MESSAGE_TYPE);
         if (!type.isSystem())
         {
             message = new ReceivedMessage(id, channel, type, messageReference, fromWebhook,
                     mentionsEveryone, mentionedUsers, mentionedRoles, tts, pinned,
-                    content, nonce, user, member, activity, editTime, reactions, attachments, embeds, stickers, components, flags);
+                    content, nonce, user, member, activity, editTime, reactions, attachments, embeds, stickers, components, flags, messageInteraction);
         }
         else
         {
@@ -1393,6 +1418,7 @@ public class EntityBuilder
 
     public Message.Attachment createMessageAttachment(DataObject jsonObject)
     {
+        final boolean ephemeral = jsonObject.getBoolean("ephemeral", false);
         final int width = jsonObject.getInt("width", -1);
         final int height = jsonObject.getInt("height", -1);
         final int size = jsonObject.getInt("size");
@@ -1401,7 +1427,7 @@ public class EntityBuilder
         final String filename = jsonObject.getString("filename");
         final String contentType = jsonObject.getString("content_type", null);
         final long id = jsonObject.getLong("id");
-        return new Message.Attachment(id, url, proxyUrl, filename, contentType, size, height, width, getJDA());
+        return new Message.Attachment(id, url, proxyUrl, filename, contentType, size, height, width, ephemeral, getJDA());
     }
 
     public MessageEmbed createMessageEmbed(DataObject content)
@@ -1534,6 +1560,29 @@ public class EntityBuilder
             tags = Collections.unmodifiableSet(tmp);
         }
         return new MessageSticker(id, name, description, packId, asset, format, tags);
+    }
+
+    public Message.Interaction createMessageInteraction(GuildImpl guildImpl, DataObject content)
+    {
+        final long id = content.getLong("id");
+        final int type = content.getInt("type");
+        final String name = content.getString("name");
+        DataObject userJson = content.getObject("user");
+        User user = null;
+        MemberImpl member = null;
+        if (!content.isNull("member") && guildImpl != null)
+        {
+            DataObject memberJson = content.getObject("member");
+            memberJson.put("user", userJson);
+            member = createMember(guildImpl, memberJson);
+            user = member.getUser();
+        }
+        else
+        {
+            user = createUser(userJson);
+        }
+
+        return new Message.Interaction(id, type, name, user, member);
     }
 
     @Nullable

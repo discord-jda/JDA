@@ -343,7 +343,7 @@ public class MessageEmbed implements SerializableData
     /**
      * The total amount of characters that is displayed when this embed is displayed by the Discord client.
      *
-     * <p>An Embed can only have, at max, {@value #EMBED_MAX_LENGTH_BOT} displayable text characters.
+     * <p>The total character limit is defined by {@link #EMBED_MAX_LENGTH_BOT} as {@value #EMBED_MAX_LENGTH_BOT}.
      *
      * @return A never-negative sum of all displayed text characters.
      */
@@ -360,7 +360,7 @@ public class MessageEmbed implements SerializableData
             if (title != null)
                 length += Helpers.codePointLength(title);
             if (description != null)
-                length += Helpers.codePointLength(description);
+                length += Helpers.codePointLength(description.trim());
             if (author != null)
                 length += Helpers.codePointLength(author.getName());
             if (footer != null)

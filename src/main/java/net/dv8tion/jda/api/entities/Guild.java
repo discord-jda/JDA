@@ -1117,6 +1117,17 @@ public interface Guild extends ISnowflake
     Member getSelfMember();
 
     /**
+     * Returns the NSFW Level that this guild is classified with.
+     * <br>For a short description of the different values, see {@link net.dv8tion.jda.api.entities.Guild.NSFWLevel NSFWLevel}.
+     * <p>
+     * This value can only be modified by Discord after reviewing the Guild.
+     *
+     * @return The NSFWLevel of this guild.
+     */
+    @Nonnull
+    NSFWLevel getNSFWLevel();
+
+    /**
      * Gets the Guild specific {@link net.dv8tion.jda.api.entities.Member Member} object for the provided
      * {@link net.dv8tion.jda.api.entities.User User}.
      * <br>If the user is not in this guild, {@code null} is returned.
@@ -5863,6 +5874,70 @@ public interface Guild extends ISnowflake
             for (ExplicitContentLevel level : values())
             {
                 if (level.key == key)
+                    return level;
+            }
+            return UNKNOWN;
+        }
+    }
+
+    /**
+     * Represents the NSFW level for this guild.
+     */
+    enum NSFWLevel
+    {
+        /**
+         * Discord has not rated this guild.
+         */
+        DEFAULT(0),
+        /**
+         * Is classified as a NSFW server
+         */
+        EXPLICIT(1),
+        /**
+         * Doesn't classify as a NSFW server
+         */
+        SAFE(2),
+        /**
+         * Is classified as NSFW and has an age restriction in place
+         */
+        AGE_RESTRICTED(3),
+        /**
+         * Placeholder for unsupported levels.
+         */
+        UNKNOWN(-1);
+
+        private final int key;
+
+        NSFWLevel(int key)
+        {
+            this.key = key;
+        }
+
+        /**
+         * The Discord id key used to represent this NSFW level.
+         *
+         * @return Integer id for this NSFW level.
+         */
+        public int getKey()
+        {
+            return key;
+        }
+
+        /**
+         * Used to retrieve a {@link net.dv8tion.jda.api.entities.Guild.NSFWLevel NSFWLevel} based
+         * on the Discord id key.
+         *
+         * @param  key
+         *         The Discord id key representing the requested NSFWLevel.
+         *
+         * @return The NSFWLevel related to the provided key, or {@link #UNKNOWN NSFWLevel.UNKNOWN} if the key is not recognized.
+         */
+        @Nonnull
+        public static NSFWLevel fromKey(int key)
+        {
+            for (NSFWLevel level : values())
+            {
+                if (level.getKey() == key)
                     return level;
             }
             return UNKNOWN;

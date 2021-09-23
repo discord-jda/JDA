@@ -236,9 +236,115 @@ public interface ChannelManager extends Manager<ChannelManager>
     }
 
     /**
+     * Adds an override for the specified role with the provided raw bitmasks as allowed and denied permissions.
+     * If the role already had an override on this channel it will be replaced instead.
+     *
+     * @param  roleId
+     *         The ID of the role to set permissions for
+     * @param  allow
+     *         The bitmask to grant
+     * @param  deny
+     *         The bitmask to deny
+     *
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the currently logged in account does not have {@link net.dv8tion.jda.api.Permission#MANAGE_PERMISSIONS Permission.MANAGE_PERMISSIONS}
+     *         in this channel, or tries to set permissions it does not have without having {@link Permission#MANAGE_PERMISSIONS Permission.MANAGE_PERMISSIONS} explicitly for this channel through an override.
+     *
+     * @return ChannelManager for chaining convenience
+     *
+     * @see    #putRolePermissionOverride(long, Collection, Collection)
+     * @see    net.dv8tion.jda.api.Permission#getRaw(Permission...) Permission.getRaw(Permission...)
+     */
+    @Nonnull
+    @CheckReturnValue
+    ChannelManager putRolePermissionOverride(long roleId, long allow, long deny);
+
+    /**
+     * Adds an override for the specified role with the provided permission sets as allowed and denied permissions.
+     * If the role already had an override on this channel it will be replaced instead.
+     *
+     * @param  roleId
+     *         The ID of the role to set permissions for
+     * @param  allow
+     *         The permissions to grant, or null
+     * @param  deny
+     *         The permissions to deny, or null
+     *
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the currently logged in account does not have {@link net.dv8tion.jda.api.Permission#MANAGE_PERMISSIONS Permission.MANAGE_PERMISSIONS}
+     *         in this channel, or tries to set permissions it does not have without having {@link Permission#MANAGE_PERMISSIONS Permission.MANAGE_PERMISSIONS} explicitly for this channel through an override.
+     *
+     * @return ChannelManager for chaining convenience
+     *
+     * @see    #putRolePermissionOverride(long, long, long)
+     * @see    java.util.EnumSet EnumSet
+     */
+    @Nonnull
+    @CheckReturnValue
+    default ChannelManager putRolePermissionOverride(long roleId, @Nullable Collection<Permission> allow, @Nullable Collection<Permission> deny)
+    {
+        long allowRaw = allow == null ? 0 : Permission.getRaw(allow);
+        long denyRaw  = deny  == null ? 0 : Permission.getRaw(deny);
+        return putRolePermissionOverride(roleId, allowRaw, denyRaw);
+    }
+
+    /**
+     * Adds an override for the specified member with the provided raw bitmasks as allowed and denied permissions.
+     * If the member already had an override on this channel it will be replaced instead.
+     *
+     * @param  memberId
+     *         The ID of the member to set permissions for
+     * @param  allow
+     *         The bitmask to grant
+     * @param  deny
+     *         The bitmask to deny
+     *
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the currently logged in account does not have {@link net.dv8tion.jda.api.Permission#MANAGE_PERMISSIONS Permission.MANAGE_PERMISSIONS}
+     *         in this channel, or tries to set permissions it does not have without having {@link Permission#MANAGE_PERMISSIONS Permission.MANAGE_PERMISSIONS} explicitly for this channel through an override.
+     *
+     * @return ChannelManager for chaining convenience
+     *
+     * @see    #putMemberPermissionOverride(long, Collection, Collection)
+     * @see    net.dv8tion.jda.api.Permission#getRaw(Permission...) Permission.getRaw(Permission...)
+     */
+    @Nonnull
+    @CheckReturnValue
+    ChannelManager putMemberPermissionOverride(long memberId, long allow, long deny);
+
+    /**
+     * Adds an override for the specified member with the provided permission sets as allowed and denied permissions.
+     * If the member already had an override on this channel it will be replaced instead.
+     *
+     * @param  memberId
+     *         The ID of the member to set permissions for
+     * @param  allow
+     *         The permissions to grant, or null
+     * @param  deny
+     *         The permissions to deny, or null
+     *
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the currently logged in account does not have {@link net.dv8tion.jda.api.Permission#MANAGE_PERMISSIONS Permission.MANAGE_PERMISSIONS}
+     *         in this channel, or tries to set permissions it does not have without having {@link Permission#MANAGE_PERMISSIONS Permission.MANAGE_PERMISSIONS} explicitly for this channel through an override.
+     *
+     * @return ChannelManager for chaining convenience
+     *
+     * @see    #putMemberPermissionOverride(long, long, long)
+     * @see    java.util.EnumSet EnumSet
+     */
+    @Nonnull
+    @CheckReturnValue
+    default ChannelManager putMemberPermissionOverride(long memberId, @Nullable Collection<Permission> allow, @Nullable Collection<Permission> deny)
+    {
+        long allowRaw = allow == null ? 0 : Permission.getRaw(allow);
+        long denyRaw  = deny  == null ? 0 : Permission.getRaw(deny);
+        return putMemberPermissionOverride(memberId, allowRaw, denyRaw);
+    }
+
+    /**
      * Removes the {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverride} for the specified
      * {@link net.dv8tion.jda.api.entities.IPermissionHolder IPermissionHolder}. If no override existed for this member
-     * this does nothing.
+     * or role, this does nothing.
      *
      * @param  permHolder
      *         The permission holder
@@ -254,6 +360,23 @@ public interface ChannelManager extends Manager<ChannelManager>
     @Nonnull
     @CheckReturnValue
     ChannelManager removePermissionOverride(@Nonnull IPermissionHolder permHolder);
+
+    /**
+     * Removes the {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverride} for the specified
+     * member or role ID. If no override existed for this member or role, this does nothing.
+     *
+     * @param  id
+     *         The ID of the permission holder
+     *
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the currently logged in account does not have {@link net.dv8tion.jda.api.Permission#MANAGE_PERMISSIONS Permission.MANAGE_PERMISSIONS}
+     *         in this channel
+     *
+     * @return ChannelManager for chaining convenience
+     */
+    @Nonnull
+    @CheckReturnValue
+    ChannelManager removePermissionOverride(long id);
 
     /**
      * Syncs all {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverrides} of this GuildChannel with

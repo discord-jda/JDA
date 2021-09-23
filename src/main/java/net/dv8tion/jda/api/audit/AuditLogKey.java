@@ -248,6 +248,14 @@ public enum AuditLogKey
     CHANNEL_NSFW("nsfw"),
 
     /**
+     * Change of the {@link net.dv8tion.jda.api.Region Region} value.
+     * <br>Only for {@link net.dv8tion.jda.api.entities.ChannelType#VOICE ChannelType.VOICE} and {@link net.dv8tion.jda.api.entities.ChannelType#STAGE ChannelType.STAGE}
+     *
+     * <p>Expected type: <b>String</b></p>
+     */
+    CHANNEL_REGION("rtc_region"),
+
+    /**
      * The integer type of this channel.
      * <br>Use with {@link net.dv8tion.jda.api.entities.ChannelType#fromId(int) ChannelType.fromId(int)}.
      *

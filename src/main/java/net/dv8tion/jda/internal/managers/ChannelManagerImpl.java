@@ -178,6 +178,32 @@ public class ChannelManagerImpl extends ManagerBase<ChannelManager> implements C
     {
         Checks.notNull(permHolder, "PermissionHolder");
         Checks.check(permHolder.getGuild().equals(getGuild()), "PermissionHolder is not from the same Guild!");
+        final long id = permHolder.getIdLong();
+        final int type = permHolder instanceof Role ? PermOverrideData.ROLE_TYPE : PermOverrideData.MEMBER_TYPE;
+        putPermissionOverride(new PermOverrideData(type, id, allow, deny));
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    @CheckReturnValue
+    public ChannelManagerImpl putMemberPermissionOverride(long memberId, long allow, long deny)
+    {
+        putPermissionOverride(new PermOverrideData(PermOverrideData.MEMBER_TYPE, memberId, allow, deny));
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    @CheckReturnValue
+    public ChannelManagerImpl putRolePermissionOverride(long roleId, long allow, long deny)
+    {
+        putPermissionOverride(new PermOverrideData(PermOverrideData.ROLE_TYPE, roleId, allow, deny));
+        return this;
+    }
+
+    private void checkCanPutPermissions(long allow, long deny)
+    {
         Member selfMember = getGuild().getSelfMember();
         if (isPermissionChecksEnabled() && !selfMember.hasPermission(Permission.ADMINISTRATOR))
         {
@@ -197,15 +223,17 @@ public class ChannelManagerImpl extends ManagerBase<ChannelManager> implements C
                     throw new InsufficientPermissionException(channel, Permission.MANAGE_PERMISSIONS, "You must have Permission.MANAGE_PERMISSIONS on the channel explicitly in order to set permissions you don't already have!");
             }
         }
-        final long id = getId(permHolder);
-        final int type = permHolder instanceof Role ? PermOverrideData.ROLE_TYPE : PermOverrideData.MEMBER_TYPE;
+    }
+
+    private void putPermissionOverride(@Nonnull final PermOverrideData overrideData)
+    {
+        checkCanPutPermissions(overrideData.allow, overrideData.deny);
         withLock(lock, (lock) ->
         {
-            this.overridesRem.remove(id);
-            this.overridesAdd.put(id, new PermOverrideData(type, id, allow, deny));
+            this.overridesRem.remove(overrideData.id);
+            this.overridesAdd.put(overrideData.id, overrideData);
             set |= PERMISSION;
         });
-        return this;
     }
 
     @Nonnull
@@ -215,9 +243,16 @@ public class ChannelManagerImpl extends ManagerBase<ChannelManager> implements C
     {
         Checks.notNull(permHolder, "PermissionHolder");
         Checks.check(permHolder.getGuild().equals(getGuild()), "PermissionHolder is not from the same Guild!");
+        return removePermissionOverride(permHolder.getIdLong());
+    }
+
+    @Nonnull
+    @Override
+    @CheckReturnValue
+    public ChannelManagerImpl removePermissionOverride(final long id)
+    {
         if (isPermissionChecksEnabled() && !getGuild().getSelfMember().hasPermission(getChannel(), Permission.MANAGE_PERMISSIONS))
             throw new InsufficientPermissionException(getChannel(), Permission.MANAGE_PERMISSIONS);
-        final long id = getId(permHolder);
         withLock(lock, (lock) ->
         {
             this.overridesRem.add(id);
@@ -476,13 +511,5 @@ public class ChannelManagerImpl extends ManagerBase<ChannelManager> implements C
             return true;
         });
         return data.valueCollection();
-    }
-
-    protected long getId(IPermissionHolder holder)
-    {
-        if (holder instanceof Role)
-            return ((Role) holder).getIdLong();
-        else
-            return ((Member) holder).getUser().getIdLong();
     }
 }
