@@ -33,12 +33,11 @@ import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
+import java.time.OffsetDateTime;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
-import java.time.OffsetDateTime;
-import java.util.*;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.function.Predicate;
 
 /**

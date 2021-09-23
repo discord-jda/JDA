@@ -200,10 +200,10 @@ public class OptionData implements SerializableData
                 .map(entry ->
                 {
                     if (entry.getValue() instanceof String)
-                        return new SlashCommand(entry.getKey(), entry.getValue().toString());
+                        return new SlashCommand.Choice(entry.getKey(), entry.getValue().toString());
                     else if (entry.getValue() instanceof Double)
-                        return new SlashCommand(entry.getKey(), ((Number) entry.getValue()).doubleValue());
-                    return new SlashCommand(entry.getKey(), ((Number) entry.getValue()).longValue());
+                        return new SlashCommand.Choice(entry.getKey(), ((Number) entry.getValue()).doubleValue());
+                    return new SlashCommand.Choice(entry.getKey(), ((Number) entry.getValue()).longValue());
                 })
                 .collect(Collectors.toList());
     }
