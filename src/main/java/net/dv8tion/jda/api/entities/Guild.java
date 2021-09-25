@@ -1468,6 +1468,8 @@ public interface Guild extends ISnowflake
     {
         GuildChannel channel = getTextChannelById(id);
         if (channel == null)
+            channel = getNewsChannelById(id);
+        if (channel == null)
             channel = getVoiceChannelById(id);
         if (channel == null)
             channel = getStageChannelById(id);
@@ -1894,6 +1896,90 @@ public interface Guild extends ISnowflake
      */
     @Nonnull
     SortedSnowflakeCacheView<TextChannel> getTextChannelCache();
+
+    /**
+     * Gets a {@link net.dv8tion.jda.api.entities.NewsChannel NewsChannel} from this guild that has the same id as the
+     * one provided. This method is similar to {@link net.dv8tion.jda.api.JDA#getNewsChannelById(String)}, but it only
+     * checks this specific Guild for a NewsChannel.
+     * <br>If there is no {@link net.dv8tion.jda.api.entities.NewsChannel NewsChannel} with an id that matches the provided
+     * one, then this returns {@code null}.
+     *
+     * @param  id
+     *         The id of the {@link net.dv8tion.jda.api.entities.NewsChannel NewsChannel}.
+     *
+     * @throws java.lang.NumberFormatException
+     *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
+     *
+     * @return Possibly-null {@link net.dv8tion.jda.api.entities.NewsChannel NewsChannel} with matching id.
+     */
+    @Nullable
+    default NewsChannel getNewsChannelById(@Nonnull String id)
+    {
+        return getNewsChannelCache().getElementById(id);
+    }
+
+    /**
+     * Gets a {@link net.dv8tion.jda.api.entities.NewsChannel NewsChannel} from this guild that has the same id as the
+     * one provided. This method is similar to {@link net.dv8tion.jda.api.JDA#getNewsChannelById(long)}, but it only
+     * checks this specific Guild for a NewsChannel.
+     * <br>If there is no {@link net.dv8tion.jda.api.entities.NewsChannel NewsChannel} with an id that matches the provided
+     * one, then this returns {@code null}.
+     *
+     * @param  id
+     *         The id of the {@link net.dv8tion.jda.api.entities.NewsChannel NewsChannel}.
+     *
+     * @return Possibly-null {@link net.dv8tion.jda.api.entities.NewsChannel NewsChannel} with matching id.
+     */
+    @Nullable
+    default NewsChannel getNewsChannelById(long id)
+    {
+        return getNewsChannelCache().getElementById(id);
+    }
+
+    /**
+     * Gets all {@link net.dv8tion.jda.api.entities.NewsChannel NewsChannels} in this {@link net.dv8tion.jda.api.entities.Guild Guild}.
+     * <br>The channels returned will be sorted according to their position.
+     *
+     * <p>This copies the backing store into a list. This means every call
+     * creates a new list with O(n) complexity. It is recommended to store this into
+     * a local variable or use {@link #getNewsChannelCache()} and use its more efficient
+     * versions of handling these values.
+     *
+     * @return An immutable List of all {@link net.dv8tion.jda.api.entities.NewsChannel NewsChannels} in this Guild.
+     */
+    @Nonnull
+    default List<NewsChannel> getNewsChannels()
+    {
+        return getNewsChannelCache().asList();
+    }
+
+    /**
+     * Gets a list of all {@link net.dv8tion.jda.api.entities.NewsChannel NewsChannels} in this Guild that have the same
+     * name as the one provided.
+     * <br>If there are no {@link net.dv8tion.jda.api.entities.NewsChannel NewsChannels} with the provided name, then this returns an empty list.
+     *
+     * @param  name
+     *         The name used to filter the returned {@link net.dv8tion.jda.api.entities.NewsChannel NewsChannels}.
+     * @param  ignoreCase
+     *         Determines if the comparison ignores case when comparing. True - case insensitive.
+     *
+     * @return Possibly-empty immutable list of all NewsChannels names that match the provided name.
+     */
+    @Nonnull
+    default List<NewsChannel> getNewsChannelsByName(@Nonnull String name, boolean ignoreCase)
+    {
+        return getNewsChannelCache().getElementsByName(name, ignoreCase);
+    }
+
+    /**
+     * Sorted {@link net.dv8tion.jda.api.utils.cache.SnowflakeCacheView SnowflakeCacheView} of
+     * all cached {@link net.dv8tion.jda.api.entities.NewsChannel NewsChannels} of this Guild.
+     * <br>NewsChannel are sorted according to their position.
+     *
+     * @return {@link net.dv8tion.jda.api.utils.cache.SortedSnowflakeCacheView SortedSnowflakeCacheView}
+     */
+    @Nonnull
+    SortedSnowflakeCacheView<NewsChannel> getNewsChannelCache();
 
     /**
      * Gets a {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel} from this guild that has the same id as the
@@ -5115,6 +5201,70 @@ public interface Guild extends ISnowflake
     @Nonnull
     @CheckReturnValue
     ChannelAction<TextChannel> createTextChannel(@Nonnull String name, @Nullable Category parent);
+
+    /**
+     * Creates a new {@link net.dv8tion.jda.api.entities.NewsChannel NewsChannel} in this Guild.
+     * For this to be successful, the logged in account has to have the {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} Permission
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
+     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The channel could not be created due to a permission discrepancy</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MAX_CHANNELS MAX_CHANNELS}
+     *     <br>The maximum number of channels were exceeded</li>
+     * </ul>
+     *
+     * @param  name
+     *         The name of the NewsChannel to create
+     *
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL} permission
+     * @throws IllegalArgumentException
+     *         If the provided name is {@code null} or empty or greater than 100 characters in length
+     *
+     * @return A specific {@link net.dv8tion.jda.api.requests.restaction.ChannelAction ChannelAction}
+     *         <br>This action allows to set fields for the new NewsChannel before creating it
+     */
+    @Nonnull
+    @CheckReturnValue
+    default ChannelAction<NewsChannel> createNewsChannel(@Nonnull String name)
+    {
+        return createNewsChannel(name, null);
+    }
+
+    /**
+     * Creates a new {@link net.dv8tion.jda.api.entities.NewsChannel NewsChannel} in this Guild.
+     * For this to be successful, the logged in account has to have the {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} Permission
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
+     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The channel could not be created due to a permission discrepancy</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MAX_CHANNELS MAX_CHANNELS}
+     *     <br>The maximum number of channels were exceeded</li>
+     * </ul>
+     *
+     * @param  name
+     *         The name of the NewsChannel to create
+     * @param  parent
+     *         The optional parent category for this channel, or null
+     *
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL} permission
+     * @throws IllegalArgumentException
+     *         If the provided name is {@code null} or empty or greater than 100 characters in length;
+     *         or the provided parent is not in the same guild.
+     *
+     * @return A specific {@link net.dv8tion.jda.api.requests.restaction.ChannelAction ChannelAction}
+     *         <br>This action allows to set fields for the new NewsChannel before creating it
+     */
+    @Nonnull
+    @CheckReturnValue
+    ChannelAction<NewsChannel> createNewsChannel(@Nonnull String name, @Nullable Category parent);
 
     /**
      * Creates a new {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel} in this Guild.

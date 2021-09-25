@@ -184,6 +184,69 @@ public class ChannelUpdateHandler extends SocketHandler
                 applyPermissions(textChannel, permOverwrites);
                 break;  //Finish the TextChannelUpdate case
             }
+            case NEWS:
+            {
+                String topic = content.getString("topic", null);
+                NewsChannelImpl newsChannel = (NewsChannelImpl) getJDA().getNewsChannelView().get(channelId);
+                if (newsChannel == null)
+                {
+                    getJDA().getEventCache().cache(EventCache.Type.CHANNEL, channelId, responseNumber, allContent, this::handle);
+                    EventCache.LOG.debug("CHANNEL_UPDATE attempted to update a NewsChannel that does not exist. JSON: {}", content);
+                    return null;
+                }
+
+                //If any properties changed, update the values and fire the proper events.
+                final long oldParentId = newsChannel.getParentCategoryIdLong();
+                final String oldName = newsChannel.getName();
+                final String oldTopic = newsChannel.getTopic();
+                final int oldPosition = newsChannel.getPositionRaw();
+                final boolean oldNsfw = newsChannel.isNSFW();
+                if (!Objects.equals(oldName, name))
+                {
+                    newsChannel.setName(name);
+                    getJDA().handleEvent(
+                            new ChannelUpdateNameEvent(
+                                    getJDA(), responseNumber,
+                                    newsChannel, oldName, name));
+                }
+                if (oldParentId != parentId)
+                {
+                    final Category oldParent = newsChannel.getParentCategory();
+                    newsChannel.setParent(parentId);
+                    getJDA().handleEvent(
+                            new ChannelUpdateParentEvent(
+                                    getJDA(), responseNumber,
+                                    newsChannel, oldParent, newsChannel.getParentCategory()));
+                }
+                if (!Objects.equals(oldTopic, topic))
+                {
+                    newsChannel.setTopic(topic);
+                    getJDA().handleEvent(
+                            new ChannelUpdateTopicEvent(
+                                    getJDA(), responseNumber,
+                                    newsChannel, oldTopic, topic));
+                }
+                if (oldPosition != position)
+                {
+                    newsChannel.setPosition(position);
+                    getJDA().handleEvent(
+                            new ChannelUpdatePositionEvent(
+                                    getJDA(), responseNumber,
+                                    newsChannel, oldPosition, position));
+                }
+
+                if (oldNsfw != nsfw)
+                {
+                    newsChannel.setNSFW(nsfw);
+                    getJDA().handleEvent(
+                            new ChannelUpdateNSFWEvent(
+                                    getJDA(), responseNumber,
+                                    newsChannel, oldNsfw, nsfw));
+                }
+
+                applyPermissions(newsChannel, permOverwrites);
+                break;  //Finish the TextChannelUpdate case
+            }
             case VOICE:
             {
                 VoiceChannelImpl voiceChannel = (VoiceChannelImpl) getJDA().getVoiceChannelsView().get(channelId);
@@ -406,6 +469,9 @@ public class ChannelUpdateHandler extends SocketHandler
                     (VoiceChannel) channel, changed));
             break;
         case STAGE:
+            //TODO-v5: We are killing all of these events in v5, so don't add new event here
+            break;
+        case NEWS:
             //TODO-v5: We are killing all of these events in v5, so don't add new event here
             break;
         case TEXT:

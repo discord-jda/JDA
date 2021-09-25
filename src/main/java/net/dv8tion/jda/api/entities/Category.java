@@ -78,6 +78,15 @@ public interface Category extends GuildChannel, ICopyableChannel, IPositionableC
     List<TextChannel> getTextChannels();
 
     /**
+     * All {@link net.dv8tion.jda.api.entities.NewsChannel NewsChannels}
+     * listed for this Category
+     *
+     * @return Immutable list of all child NewsChannels
+     */
+    @Nonnull
+    List<NewsChannel> getNewsChannels();
+
+    /**
      * All {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels}
      * listed for this Category
      *
