@@ -173,7 +173,8 @@ public class RoleManagerImpl extends ManagerBase<RoleManager> implements RoleMan
     @Nonnull
     @Override
     @CheckReturnValue
-    public RoleManagerImpl setIcon(Icon icon) {
+    public RoleManagerImpl setIcon(Icon icon)
+    {
         this.icon = icon;
         set |= ICON;
         return this;
