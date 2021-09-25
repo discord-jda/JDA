@@ -18,10 +18,9 @@ package net.dv8tion.jda.api.events.channel.voice.update;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Region;
 import net.dv8tion.jda.api.entities.VoiceChannel;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Indicates that a {@link VoiceChannel VoiceChannel}'s region changed.
@@ -34,7 +33,7 @@ public class VoiceChannelUpdateRegionEvent extends GenericVoiceChannelUpdateEven
 {
     public static final String IDENTIFIER = "region";
 
-    public VoiceChannelUpdateRegionEvent(@NotNull JDA api, long responseNumber, @NotNull VoiceChannel channel, @Nullable String oldRegion)
+    public VoiceChannelUpdateRegionEvent(@Nonnull JDA api, long responseNumber, @Nonnull VoiceChannel channel, @Nullable String oldRegion)
     {
         super(api, responseNumber, channel, oldRegion, channel.getRegionRaw(), IDENTIFIER);
     }
