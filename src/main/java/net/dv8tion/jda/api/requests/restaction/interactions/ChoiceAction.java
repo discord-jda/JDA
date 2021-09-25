@@ -1,19 +1,34 @@
-package net.dv8tion.jda.api.interactions.commands;
+package net.dv8tion.jda.api.requests.restaction.interactions;
 
+import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
-import net.dv8tion.jda.api.requests.restaction.interactions.ChoiceAction;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Collection;
+import java.util.concurrent.TimeUnit;
+import java.util.function.BooleanSupplier;
 
 /**
- * Interaction of a command option autocomplete
- * @see net.dv8tion.jda.api.events.interaction.CommandAutoCompleteEvent
+ * A {@link InteractionCallbackAction} which can be used to update the choices for an autocomplete interaction
  */
-public interface CommandAutoCompleteInteraction extends CommandInteraction
+public interface ChoiceAction extends InteractionCallbackAction
 {
+    @Nonnull
+    @Override
+    ChoiceAction setCheck(@Nullable BooleanSupplier checks);
+
+    @Nonnull
+    @Override
+    ChoiceAction timeout(long timeout, @Nonnull TimeUnit unit);
+
+    @Nonnull
+    @Override
+    ChoiceAction deadline(long timestamp);
+
     /**
      * Add a predefined choice for this option.
      * <br>The user can only provide one of the choices and cannot specify any other value.
@@ -48,6 +63,4 @@ public interface CommandAutoCompleteInteraction extends CommandInteraction
         Checks.noneNull(choices, "Choices");
         return respondChoices(choices.toArray(new Command.Choice[0]));
     }
-
-    OptionMapping getFocusedOptionType();
 }

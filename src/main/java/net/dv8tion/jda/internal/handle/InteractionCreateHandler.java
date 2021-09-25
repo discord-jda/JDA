@@ -18,6 +18,7 @@ package net.dv8tion.jda.internal.handle;
 
 import net.dv8tion.jda.api.events.interaction.*;
 import net.dv8tion.jda.api.interactions.InteractionType;
+import net.dv8tion.jda.api.interactions.commands.CommandAutoCompleteInteraction;
 import net.dv8tion.jda.api.interactions.components.Component;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
@@ -94,6 +95,6 @@ public class InteractionCreateHandler extends SocketHandler
     private void handleCommandAutoComplete(DataObject content) {
         api.handleEvent(
                 new CommandAutoCompleteEvent(api, responseNumber,
-                        new CommandInteractionImpl(api, content)));
+                        new CommandAutoCompleteInteractionImpl(api, content)));
     }
 }

@@ -205,7 +205,6 @@ public interface ReplyAction extends InteractionCallbackAction, AllowedMentions<
     @CheckReturnValue
     ReplyAction setEphemeral(boolean ephemeral);
 
-
     /**
      * Adds the provided {@link File}.
      * <br><u>The stream will be closed upon execution!</u>
