@@ -42,21 +42,26 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
 {
     protected final TLongObjectMap<PermOverrideData> overrides = new TLongObjectHashMap<>();
     protected final Guild guild;
-    protected final ChannelType type;
     protected final Class<T> clazz;
+
+    // --all channels--
     protected String name;
     protected Category parent;
     protected Integer position;
+    protected ChannelType type;
 
     // --text only--
+    protected Integer slowmode = null;
+
+    // --text and news--
     protected String topic = null;
     protected Boolean nsfw = null;
-    protected Integer slowmode = null;
-    protected Boolean news = null;
 
     // --voice only--
-    protected Integer bitrate = null;
     protected Integer userlimit = null;
+
+    // --voice and stage--
+    protected Integer bitrate = null;
 
     public ChannelActionImpl(Class<T> clazz, String name, Guild guild, ChannelType type)
     {
@@ -116,9 +121,35 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
     @Nonnull
     @Override
     @CheckReturnValue
+    public ChannelActionImpl<T> setType(@Nonnull ChannelType type)
+    {
+        Checks.check(type == ChannelType.TEXT || type == ChannelType.NEWS, "Can only change ChannelType to TEXT or NEWS");
+
+        if (this.type != ChannelType.TEXT && this.type != ChannelType.NEWS)
+            throw new UnsupportedOperationException("Can only set ChannelType for TextChannel and NewsChannels");
+        if (type == ChannelType.NEWS && !getGuild().getFeatures().contains("NEWS"))
+            throw new IllegalStateException("Can only set ChannelType to NEWS for guilds with NEWS feature");
+
+        this.type = type;
+
+        //After the type is changed, be sure to clean up any properties that are exclusive to a specific channel type
+        if (type != ChannelType.TEXT)
+        {
+            slowmode = null;
+        }
+
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    @CheckReturnValue
     public ChannelActionImpl<T> setParent(Category category)
     {
         Checks.check(category == null || category.getGuild().equals(guild), "Category is not from same guild!");
+        if (type == ChannelType.CATEGORY)
+            throw new UnsupportedOperationException("Cannot set a parent Category on a Category");
+
         this.parent = category;
         return this;
     }
@@ -168,20 +199,6 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
         this.slowmode = slowmode;
         return this;
     }
-
-    //TODO-v5: Determine how we are going to convert from TextChannel -> NextChannel
-//    @Nonnull
-//    @Override
-//    @CheckReturnValue
-//    public ChannelActionImpl<T> setNews(boolean news)
-//    {
-//        if (type != ChannelType.TEXT)
-//            throw new UnsupportedOperationException("Can only set news for a TextChannel!");
-//        if (news && !getGuild().getFeatures().contains("NEWS"))
-//            throw new IllegalStateException("Can only set channel as news for guilds with NEWS feature");
-//        this.news = news;
-//        return this;
-//    }
 
     @Nonnull
     @Override
@@ -315,44 +332,33 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
     protected RequestBody finalizeData()
     {
         DataObject object = DataObject.empty();
+
+        //All channel types
         object.put("name", name);
         object.put("type", type.getId());
         object.put("permission_overwrites", DataArray.fromCollection(overrides.valueCollection()));
         if (position != null)
             object.put("position", position);
-        switch (type)
-        {
-            //TODO-v5: refactor this to remove duplicate code
-            case VOICE:
-                if (bitrate != null)
-                    object.put("bitrate", bitrate);
-                if (userlimit != null)
-                    object.put("user_limit", userlimit);
-                break;
-            case TEXT:
-                if (topic != null && !topic.isEmpty())
-                    object.put("topic", topic);
-                if (nsfw != null)
-                    object.put("nsfw", nsfw);
-                if (slowmode != null)
-                    object.put("rate_limit_per_user", slowmode);
-                if (news != null)
-                    object.put("type", news ? 5 : 0);
-                break;
-            case NEWS:
-                if (topic != null && !topic.isEmpty())
-                    object.put("topic", topic);
-                if (nsfw != null)
-                    object.put("nsfw", nsfw);
-                if (news != null)
-                    object.put("type", news ? 5 : 0);
-            case STAGE:
-                if (bitrate != null)
-                    object.put("bitrate", bitrate);
-                break;
-        }
-        if (type != ChannelType.CATEGORY && parent != null)
+        if (parent != null)
             object.put("parent_id", parent.getId());
+
+        //Text only
+        if (slowmode != null)
+            object.put("rate_limit_per_user", slowmode);
+
+        //Text and News
+        if (topic != null && !topic.isEmpty())
+            object.put("topic", topic);
+        if (nsfw != null)
+            object.put("nsfw", nsfw);
+
+        //Voice only
+        if (userlimit != null)
+            object.put("user_limit", userlimit);
+
+        //Voice and Stage
+        if (bitrate != null)
+            object.put("bitrate", bitrate);
 
         return getRequestBody(object);
     }
