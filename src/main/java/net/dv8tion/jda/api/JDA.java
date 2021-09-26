@@ -1339,6 +1339,8 @@ public interface JDA
     {
         GuildChannel channel = getTextChannelById(id);
         if (channel == null)
+            channel = getNewsChannelById(id);
+        if (channel == null)
             channel = getVoiceChannelById(id);
         if (channel == null)
             channel = getStageChannelById(id);
@@ -1411,9 +1413,11 @@ public interface JDA
         Checks.notNull(type, "ChannelType");
         switch (type)
         {
-            //TODO-v5: Add support for NEWS and THREAD here
+            //TODO-v5: Add support THREAD here
         case TEXT:
             return getTextChannelById(id);
+        case NEWS:
+            return getNewsChannelById(id);
         case VOICE:
             return getVoiceChannelById(id);
         case STAGE:

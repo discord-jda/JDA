@@ -154,8 +154,6 @@ public enum ChannelType
     @Nonnull
     public static ChannelType fromId(int id)
     {
-        if (id == 5) // NEWS = TEXT
-            return TEXT;
         for (ChannelType type : values())
         {
             if (type.id == id)

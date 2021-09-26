@@ -313,6 +313,9 @@ public class EntityBuilder
         case TEXT:
             createTextChannel(guildObj, channelData, guildObj.getIdLong());
             break;
+        case NEWS:
+            createNewsChannel(guildObj, channelData, guildObj.getIdLong());
+            break;
         case STAGE:
             createStageChannel(guildObj, channelData, guildObj.getIdLong());
             break;
