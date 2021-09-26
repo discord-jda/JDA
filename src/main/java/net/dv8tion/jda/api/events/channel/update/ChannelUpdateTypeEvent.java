@@ -23,6 +23,7 @@ import net.dv8tion.jda.api.entities.ChannelField;
 
 import javax.annotation.Nonnull;
 
+//TODO-v5: Docs
 public class ChannelUpdateTypeEvent extends GenericChannelUpdateEvent<ChannelType>
 {
     public static final ChannelField FIELD = ChannelField.TYPE;

@@ -25,6 +25,7 @@ import net.dv8tion.jda.api.events.channel.GenericChannelEvent;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+//TODO-v5: Docs
 public class GenericChannelUpdateEvent<T> extends GenericChannelEvent implements UpdateEvent<Channel, T>
 {
     protected final ChannelField channelField;
