@@ -228,6 +228,10 @@ public interface User extends IMentionable
 
     /**
      * Loads the user's {@link User.Profile} data.
+     * Returns a completed RestAction if this User has been retrieved using {@link JDA#retrieveUserById(long)}.
+     *
+     * @throws UnsupportedOperationException
+     *         If this User was created with {@link #fromId(long)}
      *
      * @return {@link RestAction} - Type: {@link User.Profile}
      *
