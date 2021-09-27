@@ -40,7 +40,10 @@ import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleRemoveEvent;
 import net.dv8tion.jda.api.events.guild.member.update.GuildMemberUpdateBoostTimeEvent;
 import net.dv8tion.jda.api.events.guild.member.update.GuildMemberUpdateNicknameEvent;
 import net.dv8tion.jda.api.events.guild.member.update.GuildMemberUpdatePendingEvent;
-import net.dv8tion.jda.api.events.user.update.*;
+import net.dv8tion.jda.api.events.user.update.UserUpdateAvatarEvent;
+import net.dv8tion.jda.api.events.user.update.UserUpdateDiscriminatorEvent;
+import net.dv8tion.jda.api.events.user.update.UserUpdateFlagsEvent;
+import net.dv8tion.jda.api.events.user.update.UserUpdateNameEvent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.api.utils.cache.CacheView;
@@ -57,13 +60,11 @@ import org.apache.commons.collections4.map.CaseInsensitiveMap;
 import org.slf4j.Logger;
 
 import javax.annotation.Nullable;
-import java.awt.*;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAccessor;
 import java.util.*;
-import java.util.List;
 import java.util.function.Function;
 import java.util.function.ToLongFunction;
 import java.util.function.UnaryOperator;
@@ -127,8 +128,6 @@ public class EntityBuilder
                 .setName(self.getString("username"))
                 .setDiscriminator(self.getString("discriminator"))
                 .setAvatarId(self.getString("avatar", null))
-                .setBannerId(self.getString("banner", null))
-                .setAccentColor(self.getInt("accent_color", User.DEFAULT_ACCENT_COLOR_RAW))
                 .setBot(self.getBoolean("bot"))
                 .setSystem(false);
 
@@ -332,6 +331,9 @@ public class EntityBuilder
             }
         }
 
+        User.Profile profile = user.hasKey("banner") ? new User.Profile(id, user.getString("banner"),
+                user.getInt("accent_color", User.DEFAULT_ACCENT_COLOR_RAW)) : null;
+
         if (newUser)
         {
             // Initial creation
@@ -342,7 +344,8 @@ public class EntityBuilder
                    .setAccentColor(user.getInt("accent_color", User.DEFAULT_ACCENT_COLOR_RAW))
                    .setBot(user.getBoolean("bot"))
                    .setSystem(user.getBoolean("system"))
-                   .setFlags(user.getInt("public_flags", 0));
+                   .setFlags(user.getInt("public_flags", 0))
+                   .setProfile(profile);
         }
         else
         {
@@ -361,11 +364,6 @@ public class EntityBuilder
         String newDiscriminator = user.get("discriminator").toString();
         String oldAvatar = userObj.getAvatarId();
         String newAvatar = user.getString("avatar", null);
-        String oldBanner = userObj.getBannerId();
-        String newBanner = user.hasKey("banner") ? user.getString("banner", null) : "";
-        // User.DEFAULT_ACCENT_COLOR_RAW = unset, -1 = unknown
-        int oldAccentColor = userObj.getAccentColorRaw();
-        int newAccentColor = user.hasKey("accent_color") ? user.getInt("accent_color", User.DEFAULT_ACCENT_COLOR_RAW) : -1;
         int oldFlags = userObj.getFlagsRaw();
         int newFlags = user.getInt("public_flags", 0);
 
@@ -398,18 +396,13 @@ public class EntityBuilder
                     userObj, oldAvatar));
         }
 
-        if (!Objects.equals(oldBanner, newBanner) && !Objects.equals(newBanner, ""))
-        {
-            userObj.setBannerId(newBanner);
-        }
-        if (oldAccentColor != newAccentColor && newAccentColor != -1)
-        {
-            userObj.setAccentColor(newAccentColor);
-        }
-
         if (oldFlags != newFlags)
         {
             userObj.setFlags(newFlags);
+            jda.handleEvent(
+                    new UserUpdateFlagsEvent(
+                            jda, responseNumber,
+                            userObj, User.UserFlag.getFlags(oldFlags)));
         }
     }
 

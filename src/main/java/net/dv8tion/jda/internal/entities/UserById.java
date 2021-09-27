@@ -26,7 +26,6 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.awt.*;
 import java.util.EnumSet;
 import java.util.List;
 
@@ -102,29 +101,6 @@ public class UserById implements User
     {
         unsupported();
         return null;
-    }
-
-    @Nullable
-    @Override
-    public String getBannerId()
-    {
-        unsupported();
-        return null;
-    }
-
-    @Nullable
-    @Override
-    public Color getAccentColor()
-    {
-        unsupported();
-        return null;
-    }
-
-    @Override
-    public int getAccentColorRaw()
-    {
-        unsupported();
-        return 0;
     }
 
     @NotNull

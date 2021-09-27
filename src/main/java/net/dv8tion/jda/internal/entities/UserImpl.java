@@ -29,8 +29,6 @@ import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.awt.*;
 import java.util.EnumSet;
 import java.util.FormattableFlags;
 import java.util.Formatter;
@@ -43,8 +41,7 @@ public class UserImpl extends UserById implements User
     protected short discriminator;
     protected String name;
     protected String avatarId;
-    protected String bannerId;
-    protected int accentColor;
+    protected Profile profile;
     protected long privateChannel = 0L;
     protected boolean bot;
     protected boolean system;
@@ -77,39 +74,26 @@ public class UserImpl extends UserById implements User
         return avatarId;
     }
 
-    @Nullable
-    @Override
-    public String getBannerId()
-    {
-        return bannerId;
-    }
-
-    @Nullable
-    @Override
-    public Color getAccentColor()
-    {
-        return accentColor == User.DEFAULT_ACCENT_COLOR_RAW ? null : new Color(accentColor);
-    }
-
-    @Override
-    public int getAccentColorRaw()
-    {
-        return accentColor;
-    }
-
     @Nonnull
     @Override
     public RestAction<Profile> retrieveProfile()
     {
-        Route.CompiledRoute route = Route.Users.GET_USER.compile(getId());
-        return new RestActionImpl<Profile>(getJDA(), route, (response, request) -> {
-            DataObject json = response.getObject();
+        return new DeferredRestAction<>(getJDA(), Profile.class, this::getProfile, () -> {
+            Route.CompiledRoute route = Route.Users.GET_USER.compile(getId());
+            return new RestActionImpl<>(getJDA(), route, (response, request) -> {
+                DataObject json = response.getObject();
 
-            String bannerId = json.getString("banner");
-            int accentColor = json.getInt("accent_color", User.DEFAULT_ACCENT_COLOR_RAW);
+                String bannerId = json.getString("banner");
+                int accentColor = json.getInt("accent_color", User.DEFAULT_ACCENT_COLOR_RAW);
 
-            return new Profile(getIdLong(), bannerId, accentColor);
+                return new Profile(getIdLong(), bannerId, accentColor);
+            });
         });
+    }
+
+    public Profile getProfile()
+    {
+        return profile;
     }
 
     @Nonnull
@@ -221,15 +205,19 @@ public class UserImpl extends UserById implements User
         return this;
     }
 
+    public UserImpl setProfile(Profile profile)
+    {
+        this.profile = profile;
+        return this;
+    }
+
     public UserImpl setBannerId(String bannerId)
     {
-        this.bannerId = bannerId;
         return this;
     }
 
     public UserImpl setAccentColor(int accentColor)
     {
-        this.accentColor = accentColor;
         return this;
     }
 

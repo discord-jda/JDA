@@ -85,7 +85,7 @@ public interface User extends IMentionable
     String AVATAR_URL = "https://cdn.discordapp.com/avatars/%s/%s.%s";
     /** Template for {@link #getDefaultAvatarUrl()} */
     String DEFAULT_AVATAR_URL = "https://cdn.discordapp.com/embed/avatars/%s.png";
-    /** Template for {@link #getBannerUrl()} */
+    /** Template for {@link Profile#getBannerUrl()} */
     String BANNER_URL = "https://cdn.discordapp.com/banners/%s/%s.%s";
 
     /** Used to keep consistency between color values used in the API */
@@ -227,38 +227,6 @@ public interface User extends IMentionable
     }
 
     /**
-     * The Discord Id for this user's banner image.
-     * If the user has not set a banner, this will return null.
-     * If the user has not been retrieved using {@link JDA#retrieveUserById(long)}, this will return null.
-     *
-     * @throws UnsupportedOperationException
-     *         If this User was created with {@link #fromId(long)}
-     *
-     * @return Possibly-null String containing the {@link net.dv8tion.jda.api.entities.User User} banner id.
-     */
-    @Nullable
-    String getBannerId();
-
-    /**
-     * The URL for the user's banner image.
-     * If the user has not set a banner, this will return null.
-     * If the user has not been retrieved using {@link JDA#retrieveUserById(long)}, this will return null.
-     *
-     * @throws UnsupportedOperationException
-     *         If this User was created with {@link #fromId(long)}
-     *
-     * @return Possibly-null String containing the {@link net.dv8tion.jda.api.entities.User User} banner url.
-     *
-     * @see User#BANNER_URL
-     */
-    @Nullable
-    default String getBannerUrl()
-    {
-        String bannerId = getBannerId();
-        return bannerId == null ? null : String.format(BANNER_URL, getId(), bannerId, bannerId.startsWith("a_") ? "gif" : "png");
-    }
-
-    /**
      * Loads the user's {@link User.Profile} data.
      *
      * @return {@link RestAction} - Type: {@link User.Profile}
@@ -268,28 +236,6 @@ public interface User extends IMentionable
     @Nonnull
     @CheckReturnValue
     RestAction<Profile> retrieveProfile();
-
-    /**
-     * The user's accent color.
-     * If the user has not set an accent color, this will return null. The automatically calculated color is not returned.
-     * The accent color is not shown in the client if the user has set a banner.
-     * Unless the user has been retrieved using {@link JDA#retrieveUserById(long)}, the accent color will be null.
-     *
-     * @throws UnsupportedOperationException
-     *         If this User was created with {@link #fromId(long)}
-     *
-     * @return Possibly-null {@link java.awt.Color} containing the {@link net.dv8tion.jda.api.entities.User User} accent color.
-     */
-    @Nullable
-    Color getAccentColor();
-
-    /**
-     * The raw RGB value of this user's accent color.
-     * <br>Defaults to {@link #DEFAULT_ACCENT_COLOR_RAW} if this user's banner color is not available.
-     *
-     * @return The raw RGB color value or default
-     */
-    int getAccentColorRaw();
 
     /**
      * The "tag" for this user
@@ -454,18 +400,7 @@ public interface User extends IMentionable
          */
         public String getBannerUrl()
         {
-            return String.format(BANNER_URL, Long.toString(userId), bannerId, bannerId.startsWith("a_") ? "gif" : "png");
-        }
-
-        /**
-         * The raw RGB value of this user's accent color.
-         * <br>Defaults to {@link #DEFAULT_ACCENT_COLOR_RAW} if this user's banner color is not available.
-         *
-         * @return The raw RGB color value or {@link User#DEFAULT_ACCENT_COLOR_RAW}
-         */
-        public int getAccentColorRaw()
-        {
-            return accentColor;
+            return String.format(BANNER_URL, Long.toUnsignedString(userId), bannerId, bannerId.startsWith("a_") ? "gif" : "png");
         }
 
         /**
@@ -479,6 +414,27 @@ public interface User extends IMentionable
         public Color getAccentColor()
         {
             return accentColor == DEFAULT_ACCENT_COLOR_RAW ? null : new Color(accentColor);
+        }
+
+        /**
+         * The raw RGB value of this user's accent color.
+         * <br>Defaults to {@link #DEFAULT_ACCENT_COLOR_RAW} if this user's banner color is not available.
+         *
+         * @return The raw RGB color value or {@link User#DEFAULT_ACCENT_COLOR_RAW}
+         */
+        public int getAccentColorRaw()
+        {
+            return accentColor;
+        }
+
+        @Override
+        public String toString()
+        {
+            return "Profile{" +
+                    "userId=" + userId +
+                    ", bannerId='" + bannerId + '\'' +
+                    ", accentColor=" + accentColor +
+                    '}';
         }
     }
 
