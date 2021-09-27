@@ -126,13 +126,6 @@ public class PrivateChannelImpl implements PrivateChannel
         return id;
     }
 
-    @Override
-    @Deprecated
-    public boolean isFake()
-    {
-        return user.isFake();
-    }
-
     @Nonnull
     @Override
     public MessageAction sendMessage(@Nonnull CharSequence text)

@@ -16,9 +16,6 @@
 
 package net.dv8tion.jda.api;
 
-import net.dv8tion.jda.annotations.DeprecatedSince;
-import net.dv8tion.jda.annotations.ForRemoval;
-import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.hooks.IEventManager;
 import net.dv8tion.jda.api.interactions.commands.Command;
@@ -58,6 +55,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
+import java.util.stream.Collectors;
 
 /**
  * The core of JDA. Acts as a registry system of JDA. All parts of the the API can be accessed starting from this class.
@@ -727,6 +725,36 @@ public interface JDA
     GuildAction createGuild(@Nonnull String name);
 
     /**
+     * Constructs a new {@link net.dv8tion.jda.api.entities.Guild Guild} from the specified template code.
+     *
+     * <p>This RestAction does not provide the resulting Guild!
+     * It will be in a following {@link net.dv8tion.jda.api.events.guild.GuildJoinEvent GuildJoinEvent}.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_GUILD_TEMPLATE Unknown Guild Template}
+     *     <br>The template doesn't exist.</li>
+     * </ul>
+     *
+     * @param  code
+     *         The template code to use to create a guild
+     * @param  name
+     *         The name of the resulting guild
+     * @param  icon
+     *         The {@link net.dv8tion.jda.api.entities.Icon Icon} to use, or null to use no icon
+     *
+     * @throws java.lang.IllegalStateException
+     *         If the currently logged in account is in 10 or more guilds
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided name is empty, {@code null} or not between 2-100 characters
+     *
+     * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction}
+     */
+    @Nonnull
+    @CheckReturnValue
+    RestAction<Void> createGuildFromTemplate(@Nonnull String code, @Nonnull String name, @Nullable Icon icon);
+
+    /**
      * {@link net.dv8tion.jda.api.utils.cache.CacheView CacheView} of
      * all cached {@link net.dv8tion.jda.api.managers.AudioManager AudioManagers} created for this JDA instance.
      * <br>AudioManagers are created when first retrieved via {@link net.dv8tion.jda.api.entities.Guild#getAudioManager() Guild.getAudioManager()}.
@@ -1385,12 +1413,89 @@ public interface JDA
             return getTextChannelById(id);
         case VOICE:
             return getVoiceChannelById(id);
+        case STAGE:
+            return getStageChannelById(id);
         case STORE:
             return getStoreChannelById(id);
         case CATEGORY:
             return getCategoryById(id);
         }
         return null;
+    }
+
+    /**
+     * An unmodifiable list of all {@link net.dv8tion.jda.api.entities.StageChannel StageChannels} that have the same name as the one provided.
+     * <br>If there are no {@link net.dv8tion.jda.api.entities.StageChannel StageChannels} with the provided name, then this returns an empty list.
+     *
+     * @param  name
+     *         The name of the requested {@link net.dv8tion.jda.api.entities.StageChannel StageChannels}.
+     * @param  ignoreCase
+     *         Whether to ignore case or not when comparing the provided name to each {@link net.dv8tion.jda.api.entities.StageChannel#getName()}.
+     *
+     * @return Possibly-empty list of all the {@link net.dv8tion.jda.api.entities.StageChannel StageChannels} that all have the
+     *         same name as the provided name.
+     */
+    @Nonnull
+    default List<StageChannel> getStageChannelsByName(@Nonnull String name, boolean ignoreCase)
+    {
+        return getVoiceChannelsByName(name, ignoreCase)
+                .stream()
+                .filter(StageChannel.class::isInstance)
+                .map(StageChannel.class::cast)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * This returns the {@link net.dv8tion.jda.api.entities.StageChannel StageChannel} which has the same id as the one provided.
+     * <br>If there is no known {@link net.dv8tion.jda.api.entities.StageChannel StageChannel} with an id that matches the provided
+     * one, then this returns {@code null}.
+     *
+     * @param  id
+     *         The id of the {@link net.dv8tion.jda.api.entities.StageChannel StageChannel}.
+     * @throws java.lang.NumberFormatException
+     *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
+     *
+     * @return Possibly-null {@link net.dv8tion.jda.api.entities.StageChannel StageChannel} with matching id.
+     */
+    @Nullable
+    default StageChannel getStageChannelById(@Nonnull String id)
+    {
+        return getStageChannelById(MiscUtil.parseSnowflake(id));
+    }
+
+    /**
+     * This returns the {@link net.dv8tion.jda.api.entities.StageChannel StageChannel} which has the same id as the one provided.
+     * <br>If there is no known {@link net.dv8tion.jda.api.entities.StageChannel StageChannel} with an id that matches the provided
+     * one, then this returns {@code null}.
+     *
+     * @param  id
+     *         The id of the {@link net.dv8tion.jda.api.entities.StageChannel StageChannel}.
+     *
+     * @return Possibly-null {@link net.dv8tion.jda.api.entities.StageChannel StageChannel} with matching id.
+     */
+    @Nullable
+    default StageChannel getStageChannelById(long id)
+    {
+        VoiceChannel channel = getVoiceChannelById(id);
+        return channel instanceof StageChannel ? (StageChannel) channel : null;
+    }
+
+    /**
+     * An unmodifiable list of all {@link net.dv8tion.jda.api.entities.StageChannel StageChannels} of all connected
+     * {@link net.dv8tion.jda.api.entities.Guild Guilds}.
+     *
+     * <p>This copies the backing store into a list. This means every call
+     * creates a new list with O(n) complexity.
+     *
+     * @return Possible-empty list of all known {@link net.dv8tion.jda.api.entities.StageChannel StageChannels}.
+     */
+    @Nonnull
+    default List<StageChannel> getStageChannels()
+    {
+        return getVoiceChannels().stream()
+                .filter(StageChannel.class::isInstance)
+                .map(StageChannel.class::cast)
+                .collect(Collectors.toList());
     }
 
     /**
@@ -1658,6 +1763,8 @@ public interface JDA
      * {@link net.dv8tion.jda.api.utils.cache.SnowflakeCacheView SnowflakeCacheView} of
      * all cached {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels} visible to this JDA session.
      *
+     * <p>This may also contain {@link StageChannel StageChannels}!
+     *
      * @return {@link net.dv8tion.jda.api.utils.cache.SnowflakeCacheView SnowflakeCacheView}
      */
     @Nonnull
@@ -1672,6 +1779,8 @@ public interface JDA
      * a local variable or use {@link #getVoiceChannelCache()} and use its more efficient
      * versions of handling these values.
      *
+     * <p>This may also contain {@link StageChannel StageChannels}!
+     *
      * @return Possible-empty list of all known {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels}.
      */
     @Nonnull
@@ -1684,6 +1793,8 @@ public interface JDA
      * This returns the {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel} which has the same id as the one provided.
      * <br>If there is no known {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel} with an id that matches the provided
      * one, then this returns {@code null}.
+     *
+     * <p>This may also contain {@link StageChannel StageChannels}!
      *
      * @param  id
      *         The id of the {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel}.
@@ -1703,6 +1814,8 @@ public interface JDA
      * <br>If there is no known {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel} with an id that matches the provided
      * one, then this returns {@code null}.
      *
+     * <p>This may also contain {@link StageChannel StageChannels}!
+     *
      * @param  id
      *         The id of the {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel}.
      *
@@ -1718,30 +1831,7 @@ public interface JDA
      * An unmodifiable list of all {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels} that have the same name as the one provided.
      * <br>If there are no {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels} with the provided name, then this returns an empty list.
      *
-     * @param  name
-     *         The name of the requested {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels}.
-     * @param  ignoreCase
-     *         Whether to ignore case or not when comparing the provided name to each {@link net.dv8tion.jda.api.entities.VoiceChannel#getName()}.
-     *
-     * @return Possibly-empty list of all the {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels} that all have the
-     *         same name as the provided name.
-     *
-     * @deprecated
-     *         Replace with {@link #getVoiceChannelsByName(String, boolean)}
-     */
-    @Nonnull
-    @Deprecated
-    @DeprecatedSince("4.0.0")
-    @ForRemoval(deadline="4.3.0")
-    @ReplaceWith("jda.getVoiceChannelsByName(name, ignoreCase)")
-    default List<VoiceChannel> getVoiceChannelByName(@Nonnull String name, boolean ignoreCase)
-    {
-        return getVoiceChannelsByName(name, ignoreCase);
-    }
-
-    /**
-     * An unmodifiable list of all {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels} that have the same name as the one provided.
-     * <br>If there are no {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels} with the provided name, then this returns an empty list.
+     * <p>This may also contain {@link StageChannel StageChannels}!
      *
      * @param  name
      *         The name of the requested {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels}.

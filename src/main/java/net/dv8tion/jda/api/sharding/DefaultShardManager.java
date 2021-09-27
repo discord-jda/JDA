@@ -256,6 +256,7 @@ public class DefaultShardManager implements ShardManager
         return this.shards;
     }
 
+    @Override
     public void login() throws LoginException
     {
         // building the first one in the current thread ensures that LoginException and IllegalArgumentException can be thrown on login

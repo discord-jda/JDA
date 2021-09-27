@@ -21,6 +21,7 @@ import gnu.trove.set.TLongSet;
 import gnu.trove.set.hash.TLongHashSet;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.Region;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.exceptions.MissingAccessException;
@@ -45,6 +46,7 @@ public class ChannelManagerImpl extends ManagerBase<ChannelManager> implements C
     protected String name;
     protected String parent;
     protected String topic;
+    protected String region;
     protected int position;
     protected boolean nsfw;
     protected int slowmode;
@@ -100,6 +102,8 @@ public class ChannelManagerImpl extends ManagerBase<ChannelManager> implements C
             this.topic = null;
         if ((fields & NEWS) == NEWS)
             this.news = false;
+        if ((fields & REGION) == REGION)
+            this.region = null;
         if ((fields & PERMISSION) == PERMISSION)
         {
             withLock(lock, (lock) ->
@@ -129,6 +133,7 @@ public class ChannelManagerImpl extends ManagerBase<ChannelManager> implements C
         this.name = null;
         this.parent = null;
         this.topic = null;
+        this.region = null;
         this.news = false;
         withLock(lock, (lock) ->
         {
@@ -173,6 +178,32 @@ public class ChannelManagerImpl extends ManagerBase<ChannelManager> implements C
     {
         Checks.notNull(permHolder, "PermissionHolder");
         Checks.check(permHolder.getGuild().equals(getGuild()), "PermissionHolder is not from the same Guild!");
+        final long id = permHolder.getIdLong();
+        final int type = permHolder instanceof Role ? PermOverrideData.ROLE_TYPE : PermOverrideData.MEMBER_TYPE;
+        putPermissionOverride(new PermOverrideData(type, id, allow, deny));
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    @CheckReturnValue
+    public ChannelManagerImpl putMemberPermissionOverride(long memberId, long allow, long deny)
+    {
+        putPermissionOverride(new PermOverrideData(PermOverrideData.MEMBER_TYPE, memberId, allow, deny));
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    @CheckReturnValue
+    public ChannelManagerImpl putRolePermissionOverride(long roleId, long allow, long deny)
+    {
+        putPermissionOverride(new PermOverrideData(PermOverrideData.ROLE_TYPE, roleId, allow, deny));
+        return this;
+    }
+
+    private void checkCanPutPermissions(long allow, long deny)
+    {
         Member selfMember = getGuild().getSelfMember();
         if (isPermissionChecksEnabled() && !selfMember.hasPermission(Permission.ADMINISTRATOR))
         {
@@ -192,15 +223,17 @@ public class ChannelManagerImpl extends ManagerBase<ChannelManager> implements C
                     throw new InsufficientPermissionException(channel, Permission.MANAGE_PERMISSIONS, "You must have Permission.MANAGE_PERMISSIONS on the channel explicitly in order to set permissions you don't already have!");
             }
         }
-        final long id = getId(permHolder);
-        final int type = permHolder instanceof Role ? PermOverrideData.ROLE_TYPE : PermOverrideData.MEMBER_TYPE;
+    }
+
+    private void putPermissionOverride(@Nonnull final PermOverrideData overrideData)
+    {
+        checkCanPutPermissions(overrideData.allow, overrideData.deny);
         withLock(lock, (lock) ->
         {
-            this.overridesRem.remove(id);
-            this.overridesAdd.put(id, new PermOverrideData(type, id, allow, deny));
+            this.overridesRem.remove(overrideData.id);
+            this.overridesAdd.put(overrideData.id, overrideData);
             set |= PERMISSION;
         });
-        return this;
     }
 
     @Nonnull
@@ -210,9 +243,16 @@ public class ChannelManagerImpl extends ManagerBase<ChannelManager> implements C
     {
         Checks.notNull(permHolder, "PermissionHolder");
         Checks.check(permHolder.getGuild().equals(getGuild()), "PermissionHolder is not from the same Guild!");
+        return removePermissionOverride(permHolder.getIdLong());
+    }
+
+    @Nonnull
+    @Override
+    @CheckReturnValue
+    public ChannelManagerImpl removePermissionOverride(final long id)
+    {
         if (isPermissionChecksEnabled() && !getGuild().getSelfMember().hasPermission(getChannel(), Permission.MANAGE_PERMISSIONS))
             throw new InsufficientPermissionException(getChannel(), Permission.MANAGE_PERMISSIONS);
-        final long id = getId(permHolder);
         withLock(lock, (lock) ->
         {
             this.overridesRem.add(id);
@@ -283,6 +323,20 @@ public class ChannelManagerImpl extends ManagerBase<ChannelManager> implements C
         Checks.notLonger(name, 100, "Name");
         this.name = name;
         set |= NAME;
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    @CheckReturnValue
+    public ChannelManagerImpl setRegion(@Nonnull Region region)
+    {
+        Checks.notNull(region, "Region");
+        if (!getType().isAudio())
+            throw new IllegalStateException("Can only change region on voice channels!");
+        Checks.check(Region.VOICE_CHANNEL_REGIONS.contains(region), "Region is not usable for VoiceChannel region overrides!");
+        this.region = region == Region.AUTOMATIC ? null : region.getKey();
+        set |= REGION;
         return this;
     }
 
@@ -370,7 +424,7 @@ public class ChannelManagerImpl extends ManagerBase<ChannelManager> implements C
     @CheckReturnValue
     public ChannelManagerImpl setBitrate(int bitrate)
     {
-        if (getType() != ChannelType.VOICE)
+        if (!getType().isAudio())
             throw new IllegalStateException("Can only set bitrate on voice channels");
         final int maxBitrate = getGuild().getMaxBitrate();
         Checks.check(bitrate >= 8000, "Bitrate must be greater or equal to 8000");
@@ -416,6 +470,8 @@ public class ChannelManagerImpl extends ManagerBase<ChannelManager> implements C
             frame.put("parent_id", parent);
         if (shouldUpdate(NEWS))
             frame.put("type", news ? 5 : 0);
+        if (shouldUpdate(REGION))
+            frame.put("rtc_region", region);
         withLock(lock, (lock) ->
         {
             if (shouldUpdate(PERMISSION))
@@ -455,13 +511,5 @@ public class ChannelManagerImpl extends ManagerBase<ChannelManager> implements C
             return true;
         });
         return data.valueCollection();
-    }
-
-    protected long getId(IPermissionHolder holder)
-    {
-        if (holder instanceof Role)
-            return ((Role) holder).getIdLong();
-        else
-            return ((Member) holder).getUser().getIdLong();
     }
 }

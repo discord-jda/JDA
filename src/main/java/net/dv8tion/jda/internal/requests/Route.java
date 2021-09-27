@@ -146,6 +146,7 @@ public class Route
         public static final Route GET_GUILD_EMOTES =   new Route(GET,    "guilds/{guild_id}/emojis");
         public static final Route GET_AUDIT_LOGS =     new Route(GET,    "guilds/{guild_id}/audit-logs");
         public static final Route GET_VOICE_REGIONS =  new Route(GET,    "guilds/{guild_id}/regions");
+        public static final Route UPDATE_VOICE_STATE = new Route(PATCH,  "guilds/{guild_id}/voice-states/{user_id}");
 
         public static final Route GET_INTEGRATIONS =   new Route(GET,    "guilds/{guild_id}/integrations");
         public static final Route CREATE_INTEGRATION = new Route(POST,   "guilds/{guild_id}/integrations");
@@ -226,6 +227,14 @@ public class Route
         public static final Route STOP_CALL =        new Route(POST,   "channels/{channel_id}/call/stop_ringing"); // aka deny or end call
     }
 
+    public static class StageInstances
+    {
+        public static final Route GET_INSTANCE =    new Route(GET,    "stage-instances/{channel_id}");
+        public static final Route DELETE_INSTANCE = new Route(DELETE, "stage-instances/{channel_id}");
+        public static final Route UPDATE_INSTANCE = new Route(PATCH,  "stage-instances/{channel_id}");
+        public static final Route CREATE_INSTANCE = new Route(POST,   "stage-instances");
+    }
+
     public static class Messages
     {
         public static final Route EDIT_MESSAGE =          new Route(PATCH,  "channels/{channel_id}/messages/{message_id}"); // requires special handling, same bucket but different endpoints
@@ -259,6 +268,17 @@ public class Route
         public static final Route GET_CHANNEL_INVITES = new Route(GET,    "channels/{channel_id}/invites");
         public static final Route CREATE_INVITE =       new Route(POST,   "channels/{channel_id}/invites");
         public static final Route DELETE_INVITE =       new Route(DELETE, "invites/{code}");
+    }
+
+    public static class Templates
+    {
+        public static final Route GET_TEMPLATE =               new Route(GET,    "guilds/templates/{code}");
+        public static final Route SYNC_TEMPLATE =              new Route(PUT,    "guilds/{guild_id}/templates/{code}");
+        public static final Route CREATE_TEMPLATE =            new Route(POST,   "guilds/{guild_id}/templates");
+        public static final Route MODIFY_TEMPLATE =            new Route(PATCH,  "guilds/{guild_id}/templates/{code}");
+        public static final Route DELETE_TEMPLATE =            new Route(DELETE, "guilds/{guild_id}/templates/{code}");
+        public static final Route GET_GUILD_TEMPLATES =        new Route(GET,    "guilds/{guild_id}/templates");
+        public static final Route CREATE_GUILD_FROM_TEMPLATE = new Route(POST,   "guilds/templates/{code}");
     }
 
     @Nonnull

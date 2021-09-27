@@ -60,9 +60,11 @@ public enum ErrorResponse
     UNKNOWN_LOBBY(                  10031, "Unknown Lobby"),
     UNKNOWN_BRANCH(                 10032, "Unknown Branch"),
     UNKNOWN_REDISTRIBUTABLE(        10036, "Unknown Redistributable"),
+    UNKNOWN_GUILD_TEMPLATE(         10057, "Unknown Guild Template"),
     UNKNOWN_INTERACTION(            10062, "Unknown Interaction"),
     UNKNOWN_COMMAND(                10063, "Unknown application command"),
     UNKNOWN_COMMAND_PERMISSIONS(    10066, "Unknown application command permissions"),
+    UNKNOWN_STAGE_INSTANCE(         10067, "Unknown Stage Instance"),
     BOTS_NOT_ALLOWED(               20001, "Bots cannot use this endpoint"),
     ONLY_BOTS_ALLOWED(              20002, "Only bots can use this endpoint"),
     MAX_GUILDS(                     30001, "Maximum number of Guilds reached (100)"),
@@ -74,6 +76,7 @@ public enum ErrorResponse
     TOO_MANY_REACTIONS(             30010, "Maximum number of reactions reached (20)"),
     MAX_CHANNELS(                   30013, "Maximum number of guild channels reached (500)"),
     MAX_INVITES(                    30016, "Maximum number of invites reached (1000)"),
+    ALREADY_HAS_TEMPLATE(           30031, "Guild already has a template"),
     UNAUTHORIZED(                   40001, "Unauthorized"),
     REQUEST_ENTITY_TOO_LARGE(       40005, "Request entity too large"),
     USER_NOT_CONNECTED(             40032, "Target user is not connected to voice."),
@@ -108,6 +111,7 @@ public enum ErrorResponse
     MFA_NOT_ENABLED(                60003, "MFA auth required but not enabled"),
     REACTION_BLOCKED(               90001, "Reaction Blocked"),
     RESOURCES_OVERLOADED(          130000, "Resource overloaded"),
+    STAGE_ALREADY_OPEN(            150006, "The Stage is already open"),
 
     SERVER_ERROR(                       0, "Discord encountered an internal server error! Not good!");
 

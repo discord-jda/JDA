@@ -37,7 +37,7 @@ import java.util.stream.Collectors;
  *             with {@link net.dv8tion.jda.api.events.guild.override.GenericPermissionOverrideEvent GenericPermissionOverrideEvent} and derivatives.
  */
 @Deprecated
-@ForRemoval
+@ForRemoval(deadline = "4.4.0")
 @DeprecatedSince("4.2.0")
 public class TextChannelUpdatePermissionsEvent extends GenericTextChannelEvent
 {

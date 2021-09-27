@@ -259,7 +259,7 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
         Checks.noneNull(subcommands, "Subcommands");
         if (!allowSubcommands)
             throw new IllegalArgumentException("You cannot mix options with subcommands/groups.");
-        allowOption = allowGroups = false;
+        allowOption = false;
         Checks.check(subcommands.length + options.length() <= 25, "Cannot have more than 25 subcommands for a command!");
         for (SubcommandData data : subcommands)
             options.add(data);
@@ -303,7 +303,7 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
         Checks.noneNull(groups, "SubcommandGroups");
         if (!allowGroups)
             throw new IllegalArgumentException("You cannot mix options with subcommands/groups.");
-        allowSubcommands = allowOption = false;
+        allowOption = false;
         Checks.check(groups.length + options.length() <= 25, "Cannot have more than 25 subcommand groups for a command!");
         for (SubcommandGroupData data : groups)
             options.add(data);

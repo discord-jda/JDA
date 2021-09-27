@@ -73,7 +73,7 @@ import java.util.regex.Pattern;
  *
  * @see JDA#retrieveUserById(String)
  */
-public interface User extends IMentionable, IFakeable
+public interface User extends IMentionable
 {
     /**
      * Compiled pattern for a Discord Tag: {@code (.{2,32})#(\d{4})}
@@ -362,7 +362,7 @@ public interface User extends IMentionable, IFakeable
         EARLY_SUPPORTER(     9, "Early Supporter"),
         TEAM_USER(          10, "Team User"),
         @Deprecated
-        @ForRemoval
+        @ForRemoval(deadline = "4.4.0")
         @ReplaceWith("User.isSystem()")
         @DeprecatedSince("4.3.0")
         SYSTEM(             12, "System User"),

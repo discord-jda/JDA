@@ -17,12 +17,8 @@
 package net.dv8tion.jda.api.events.interaction;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.interactions.components.Button;
 import net.dv8tion.jda.api.interactions.components.ButtonInteraction;
-import net.dv8tion.jda.api.interactions.components.Component;
-import net.dv8tion.jda.api.requests.restaction.interactions.UpdateInteractionAction;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -31,13 +27,12 @@ import javax.annotation.Nullable;
  * Indicates that a custom {@link Button} on one of the bots messages was clicked by a user.
  *
  * <p>This fires when a user clicks one of the custom buttons attached to a bot or webhook message.
- * <br><b>Keep in mind that users can use your webhooks to spoof components!</b>
  *
  * <h2>Requirements</h2>
  * To receive these events, you must unset the <b>Interactions Endpoint URL</b> in your application dashboard.
  * You can simply remove the URL for this endpoint in your settings at the <a href="https://discord.com/developers/applications" target="_blank">Discord Developers Portal</a>.
  */
-public class ButtonClickEvent extends GenericInteractionCreateEvent implements ButtonInteraction
+public class ButtonClickEvent extends GenericComponentInteractionCreateEvent implements ButtonInteraction
 {
     private final ButtonInteraction interaction;
 
@@ -49,50 +44,16 @@ public class ButtonClickEvent extends GenericInteractionCreateEvent implements B
 
     @Nonnull
     @Override
-    public MessageChannel getChannel()
-    {
-        return interaction.getChannel();
-    }
-
-    @Nonnull
-    @Override
-    public UpdateInteractionAction deferEdit()
-    {
-        return interaction.deferEdit();
-    }
-
-    @Nonnull
-    @Override
     public ButtonInteraction getInteraction()
     {
         return interaction;
     }
 
-    @Nonnull
-    @Override
-    public String getComponentId()
-    {
-        return interaction.getComponentId();
-    }
-
     @Nullable
     @Override
-    public Message getMessage()
+    public Button getComponent()
     {
-        return interaction.getMessage();
-    }
-
-    @Override
-    public long getMessageIdLong()
-    {
-        return interaction.getMessageIdLong();
-    }
-
-    @Nonnull
-    @Override
-    public Component.Type getComponentType()
-    {
-        return interaction.getComponentType();
+        return interaction.getComponent();
     }
 
     @Nullable

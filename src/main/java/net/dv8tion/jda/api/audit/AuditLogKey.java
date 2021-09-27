@@ -248,6 +248,14 @@ public enum AuditLogKey
     CHANNEL_NSFW("nsfw"),
 
     /**
+     * Change of the {@link net.dv8tion.jda.api.Region Region} value.
+     * <br>Only for {@link net.dv8tion.jda.api.entities.ChannelType#VOICE ChannelType.VOICE} and {@link net.dv8tion.jda.api.entities.ChannelType#STAGE ChannelType.STAGE}
+     *
+     * <p>Expected type: <b>String</b></p>
+     */
+    CHANNEL_REGION("rtc_region"),
+
+    /**
      * The integer type of this channel.
      * <br>Use with {@link net.dv8tion.jda.api.entities.ChannelType#fromId(int) ChannelType.fromId(int)}.
      *
@@ -261,6 +269,16 @@ public enum AuditLogKey
      * <p>Expected type: <b>List{@literal <Map<String, Object>>}</b>
      */
     CHANNEL_OVERRIDES("permission_overwrites"),
+
+    // STAGE_INSTANCE
+
+    /**
+     * Change of the {@link net.dv8tion.jda.api.entities.StageInstance#getPrivacyLevel() StageInstance.getPrivacyLevel()} value
+     * <br>Use with {@link net.dv8tion.jda.api.entities.StageInstance.PrivacyLevel#fromKey(int) StageInstance.PrivacyLevel.fromKey(int)}
+     *
+     * <p>Expected type: <b>Integer</b>
+     */
+    PRIVACY_LEVEL("privacy_level"),
 
 
     // MEMBER

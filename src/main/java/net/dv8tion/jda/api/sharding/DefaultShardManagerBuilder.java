@@ -17,7 +17,6 @@ package net.dv8tion.jda.api.sharding;
 
 import com.neovisionaries.ws.client.WebSocketFactory;
 import net.dv8tion.jda.annotations.DeprecatedSince;
-import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.GatewayEncoding;
 import net.dv8tion.jda.api.JDABuilder;
@@ -95,55 +94,6 @@ public class  DefaultShardManagerBuilder
     protected ThreadFactory threadFactory = null;
     protected ChunkingFilter chunkingFilter;
     protected MemberCachePolicy memberCachePolicy = MemberCachePolicy.ALL;
-
-    /**
-     * Creates a completely empty DefaultShardManagerBuilder.
-     * <br>You need to set the token using
-     * {@link #setToken(String) setToken(String)}
-     * before calling {@link #build() build()}.
-     *
-     * @throws UnsupportedOperationException
-     *         Always.
-     *
-     * @deprecated Due to breaking changes to the discord api gateway you are now required to explicitly
-     * state which events your bot needs. For this reason we have changed to new factory methods that require setting
-     * the gateway intents. Use {@link #create(Collection)} instead.
-     */
-    @Deprecated
-    @ForRemoval(deadline="4.3.0")
-    @DeprecatedSince("4.2.0")
-    @ReplaceWith("DefaultShardManager.create(String, EnumSet)")
-    public DefaultShardManagerBuilder()
-    {
-        throw new UnsupportedOperationException("You cannot use the deprecated constructor anymore. Please use create(...), createDefault(...), or createLight(...) instead.");
-    }
-
-    /**
-     * Creates a DefaultShardManagerBuilder with the given token.
-     * <br>This is equivalent to using the constructor
-     * {@link #DefaultShardManagerBuilder() DefaultShardManagerBuilder()}
-     * and calling {@link #setToken(String) setToken(String)}
-     * directly afterward. You can always change the token later with
-     * {@link #setToken(String) setToken(String)}.
-     *
-     * @param token
-     *        The login token
-     *
-     * @throws UnsupportedOperationException
-     *         Always.
-     *
-     * @deprecated Due to breaking changes to the discord api gateway you are now required to explicitly
-     * state which events your bot needs. For this reason we have changed to new factory methods that require setting
-     * the gateway intents. Use {@link #create(String, Collection)} instead.
-     */
-    @Deprecated
-    @ForRemoval(deadline="4.3.0")
-    @DeprecatedSince("4.2.0")
-    @ReplaceWith("DefaultShardManager.create(String, EnumSet)")
-    public DefaultShardManagerBuilder(@Nonnull String token)
-    {
-        throw new UnsupportedOperationException("You cannot use the deprecated constructor anymore. Please use create(...), createDefault(...), or createLight(...) instead.");
-    }
 
     private DefaultShardManagerBuilder(@Nullable String token, int intents)
     {
@@ -2303,6 +2253,34 @@ public class  DefaultShardManagerBuilder
     @Nonnull
     public ShardManager build() throws LoginException, IllegalArgumentException
     {
+        return build(true);
+    }
+
+    /**
+     * Builds a new {@link net.dv8tion.jda.api.sharding.ShardManager ShardManager} instance. If the login parameter is true, then it will start the login process.
+     * <br>The login process runs in a different thread, so while this will return immediately, {@link net.dv8tion.jda.api.sharding.ShardManager ShardManager} has not
+     * finished loading, thus many {@link net.dv8tion.jda.api.sharding.ShardManager ShardManager} methods have the chance to return incorrect information.
+     * <br>The main use of this method is to start the JDA connect process and do other things in parallel while startup is
+     * being performed like database connection or local resource loading.
+     *
+     * <p>Note that this method is async and as such will <b>not</b> block until all shards are started.
+     *
+     * @param  login
+     *         Whether the login process will be started. If this is false, then you will need to manually call
+     *         {@link net.dv8tion.jda.api.sharding.ShardManager#login()} to start it.
+     *
+     * @throws  LoginException
+     *          If the provided token is invalid and {@code login} is true
+     * @throws  IllegalArgumentException
+     *          If the provided token is empty or null. Or the provided intents/cache configuration is not possible.
+     *
+     * @return A {@link net.dv8tion.jda.api.sharding.ShardManager ShardManager} instance. If {@code login} is set to
+     * true, then the instance will have started the login process. It is unknown as to whether or not loading has
+     * finished when this returns.
+     */
+    @Nonnull
+    public ShardManager build(boolean login) throws LoginException, IllegalArgumentException
+    {
         checkIntents();
         boolean useShutdownNow = shardingFlags.contains(ShardingConfigFlag.SHUTDOWN_NOW);
         final ShardingConfig shardingConfig = new ShardingConfig(shardsTotal, useShutdownNow, intents, memberCachePolicy);
@@ -2318,7 +2296,8 @@ public class  DefaultShardManagerBuilder
         final ShardingMetaConfig metaConfig = new ShardingMetaConfig(maxBufferSize, contextProvider, cacheFlags, flags, compression, encoding);
         final DefaultShardManager manager = new DefaultShardManager(this.token, this.shards, shardingConfig, eventConfig, presenceConfig, threadingConfig, sessionConfig, metaConfig, chunkingFilter);
 
-        manager.login();
+        if (login)
+             manager.login();
 
         return manager;
     }

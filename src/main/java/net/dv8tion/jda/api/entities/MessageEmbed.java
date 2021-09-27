@@ -15,14 +15,10 @@
  */
 package net.dv8tion.jda.api.entities;
 
-import net.dv8tion.jda.annotations.DeprecatedSince;
-import net.dv8tion.jda.annotations.ForRemoval;
-import net.dv8tion.jda.api.AccountType;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.SerializableData;
-import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.Nonnull;
@@ -70,10 +66,16 @@ public class MessageEmbed implements SerializableData
     public static final int VALUE_MAX_LENGTH = 1024;
 
     /**
-     * The maximum length the description and footer of an embed can have
+     * The maximum length the description of an embed can have
+     *
+     * @see net.dv8tion.jda.api.EmbedBuilder#setDescription(CharSequence) EmbedBuilder.setDescription(text)
+     */
+    public static final int DESCRIPTION_MAX_LENGTH = 4096;
+    
+    /**
+     * The maximum length the footer of an embed can have
      *
      * @see net.dv8tion.jda.api.EmbedBuilder#setFooter(String, String) EmbedBuilder.setFooter(text, iconUrl)
-     * @see net.dv8tion.jda.api.EmbedBuilder#setDescription(CharSequence) EmbedBuilder.setDescription(text)
      */
     public static final int TEXT_MAX_LENGTH = 2048;
 
@@ -341,7 +343,7 @@ public class MessageEmbed implements SerializableData
     /**
      * The total amount of characters that is displayed when this embed is displayed by the Discord client.
      *
-     * <p>An Embed can only have, at max, {@value #EMBED_MAX_LENGTH_BOT} displayable text characters.
+     * <p>The total character limit is defined by {@link #EMBED_MAX_LENGTH_BOT} as {@value #EMBED_MAX_LENGTH_BOT}.
      *
      * @return A never-negative sum of all displayed text characters.
      */
@@ -356,17 +358,17 @@ public class MessageEmbed implements SerializableData
             length = 0;
 
             if (title != null)
-                length += title.length();
+                length += Helpers.codePointLength(title);
             if (description != null)
-                length += description.length();
+                length += Helpers.codePointLength(description.trim());
             if (author != null)
-                length += author.getName().length();
+                length += Helpers.codePointLength(author.getName());
             if (footer != null)
-                length += footer.getText().length();
+                length += Helpers.codePointLength(footer.getText());
             if (fields != null)
             {
                 for (Field f : fields)
-                    length += f.getName().length() + f.getValue().length();
+                    length += Helpers.codePointLength(f.getName()) + Helpers.codePointLength(f.getValue());
             }
 
             return length;
@@ -389,45 +391,6 @@ public class MessageEmbed implements SerializableData
 
         final int length = getLength();
         return length <= EMBED_MAX_LENGTH_BOT;
-    }
-
-    /**
-     * Whether this MessageEmbed can be used in a message.
-     *
-     * <p>Total Character Limits
-     * <ul>
-     *     <li>Bot: {@value #EMBED_MAX_LENGTH_BOT}</li>
-     *     <li>Client: {@value #EMBED_MAX_LENGTH_CLIENT}</li>
-     * </ul>
-     *
-     * @param  type
-     *         The {@link net.dv8tion.jda.api.AccountType AccountType} to inspect
-     *
-     * @throws java.lang.IllegalArgumentException
-     *         If the provided AccountType is {@code null} or not supported by this operation
-     *
-     * @return True, if this MessageEmbed can be used to send messages for this specified AccountType
-     *
-     * @see    #getLength()
-     *
-     * @deprecated Use {@link #isSendable()} instead
-     */
-    @Deprecated
-    @ForRemoval
-    @DeprecatedSince("4.2.0")
-    public boolean isSendable(@Nonnull AccountType type)
-    {
-        Checks.notNull(type, "AccountType");
-        final int length = getLength();
-        if (isEmpty())
-            return false;
-
-        switch (type)
-        {
-            case BOT: return length <= EMBED_MAX_LENGTH_BOT;
-            case CLIENT: return length <= EMBED_MAX_LENGTH_CLIENT;
-            default: throw new IllegalArgumentException(String.format("Cannot check against AccountType '%s'!", type));
-        }
     }
 
     @Override

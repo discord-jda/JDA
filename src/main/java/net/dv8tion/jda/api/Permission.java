@@ -52,24 +52,32 @@ public enum Permission
     MESSAGE_HISTORY(         16, true, true, "Read History"),
     MESSAGE_MENTION_EVERYONE(17, true, true, "Mention Everyone"),
     MESSAGE_EXT_EMOJI(       18, true, true, "Use External Emojis"),
+    MESSAGE_EXT_STICKER(     37, true, true, "Use External Stickers"),
     USE_SLASH_COMMANDS(      31, true, true, "Use Slash Commands"),
 
+    MANAGE_THREADS(     34, true, true, "Manage Threads"),
+    USE_PUBLIC_THREADS( 35, true, true, "Use Public Threads"),
+    USE_PRIVATE_THREADS(36, true, true, "Use Private Threads"),
+
     // Voice Permissions
-    VOICE_STREAM(      9, true, true, "Video"),
-    VOICE_CONNECT(    20, true, true, "Connect"),
-    VOICE_SPEAK(      21, true, true, "Speak"),
-    VOICE_MUTE_OTHERS(22, true, true, "Mute Members"),
-    VOICE_DEAF_OTHERS(23, true, true, "Deafen Members"),
-    VOICE_MOVE_OTHERS(24, true, true, "Move Members"),
-    VOICE_USE_VAD(    25, true, true, "Use Voice Activity"),
+    VOICE_STREAM(           9, true, true, "Video"),
+    VOICE_CONNECT(         20, true, true, "Connect"),
+    VOICE_SPEAK(           21, true, true, "Speak"),
+    VOICE_MUTE_OTHERS(     22, true, true, "Mute Members"),
+    VOICE_DEAF_OTHERS(     23, true, true, "Deafen Members"),
+    VOICE_MOVE_OTHERS(     24, true, true, "Move Members"),
+    VOICE_USE_VAD(         25, true, true, "Use Voice Activity"),
+    VOICE_START_ACTIVITIES(39, true, true, "Launch Activities in Voice Channels"),
 
     NICKNAME_CHANGE(26, true, false, "Change Nickname"),
     NICKNAME_MANAGE(27, true, false, "Manage Nicknames"),
 
-    MANAGE_ROLES(      28, true, false, "Manage Roles"),
-    MANAGE_PERMISSIONS(28, false, true, "Manage Permissions"),
-    MANAGE_WEBHOOKS(   29, true, true, "Manage Webhooks"),
-    MANAGE_EMOTES(     30, true, false, "Manage Emojis"),
+    MANAGE_ROLES(      28, true,  false, "Manage Roles"),
+    MANAGE_PERMISSIONS(28, false, true,  "Manage Permissions"),
+    MANAGE_WEBHOOKS(   29, true,  true,  "Manage Webhooks"),
+    MANAGE_EMOTES(     30, true,  false, "Manage Emojis"),
+
+    REQUEST_TO_SPEAK(  32, true, true, "Request to Speak"),
 
     UNKNOWN(-1, false, false, "Unknown");
 
@@ -100,16 +108,18 @@ public enum Permission
      * All text channel specific permissions which are only available in text channel permission overrides
      */
     public static final long ALL_TEXT_PERMISSIONS
-            = Permission.getRaw(MESSAGE_ADD_REACTION, MESSAGE_WRITE, MESSAGE_TTS,
-                                MESSAGE_MANAGE, MESSAGE_EMBED_LINKS, MESSAGE_ATTACH_FILES,
-                                MESSAGE_HISTORY, MESSAGE_MENTION_EVERYONE, USE_SLASH_COMMANDS);
+            = Permission.getRaw(MESSAGE_ADD_REACTION, MESSAGE_WRITE, MESSAGE_TTS, MESSAGE_MANAGE,
+                                MESSAGE_EMBED_LINKS, MESSAGE_ATTACH_FILES, MESSAGE_EXT_STICKER,
+                                MESSAGE_EXT_EMOJI, MESSAGE_HISTORY, MESSAGE_MENTION_EVERYONE,
+                                USE_SLASH_COMMANDS, MANAGE_THREADS, USE_PUBLIC_THREADS, USE_PRIVATE_THREADS);
 
     /**
      * All voice channel specific permissions which are only available in voice channel permission overrides
      */
     public static final long ALL_VOICE_PERMISSIONS
             = Permission.getRaw(VOICE_STREAM, VOICE_CONNECT, VOICE_SPEAK, VOICE_MUTE_OTHERS,
-                                VOICE_DEAF_OTHERS, VOICE_MOVE_OTHERS, VOICE_USE_VAD, PRIORITY_SPEAKER);
+                                VOICE_DEAF_OTHERS, VOICE_MOVE_OTHERS, VOICE_USE_VAD,
+                                PRIORITY_SPEAKER, REQUEST_TO_SPEAK, VOICE_START_ACTIVITIES);
 
     private final int offset;
     private final long raw;
