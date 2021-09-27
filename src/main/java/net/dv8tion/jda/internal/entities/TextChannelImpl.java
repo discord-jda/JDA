@@ -585,12 +585,23 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
 
     @Nonnull
     @Override
+    @Deprecated
     public MessageAction editMessageById(@Nonnull String messageId, @Nonnull MessageEmbed newEmbed)
     {
         checkPermission(Permission.MESSAGE_READ);
         checkPermission(Permission.MESSAGE_WRITE);
         checkPermission(Permission.MESSAGE_EMBED_LINKS);
         return TextChannel.super.editMessageById(messageId, newEmbed);
+    }
+
+    @Nonnull
+    @Override
+    public MessageAction editMessageEmbedsById(@Nonnull String messageId, @Nonnull Collection<? extends MessageEmbed> newEmbeds)
+    {
+        checkPermission(Permission.MESSAGE_READ);
+        checkPermission(Permission.MESSAGE_WRITE);
+        checkPermission(Permission.MESSAGE_EMBED_LINKS);
+        return TextChannel.super.editMessageEmbedsById(messageId, newEmbeds);
     }
 
     @Nonnull

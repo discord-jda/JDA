@@ -321,6 +321,24 @@ public interface WebhookMessageAction<T> extends RestAction<T>, AllowedMentions<
     }
 
     /**
+     * Add one {@link ActionRow ActionRow} for the message.
+     *
+     * @param  components
+     *         The components for the action row, such as {@link net.dv8tion.jda.api.interactions.components.Button Button}
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided or more than 5 actions rows are provided
+     *
+     * @return The same message action, for chaining convenience
+     */
+    @Nonnull
+    @CheckReturnValue
+    default WebhookMessageAction<T> addActionRow(@Nonnull Collection<? extends Component> components)
+    {
+        return addActionRows(ActionRow.of(components));
+    }
+
+    /**
      * Add {@link ActionRow ActionRows} for the message.
      *
      * @param  rows

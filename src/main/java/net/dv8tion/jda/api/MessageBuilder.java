@@ -19,14 +19,10 @@ import net.dv8tion.jda.annotations.DeprecatedSince;
 import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.entities.*;
-import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
-import net.dv8tion.jda.api.exceptions.MissingAccessException;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.ComponentLayout;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import net.dv8tion.jda.internal.entities.DataMessage;
-import net.dv8tion.jda.internal.requests.Route;
-import net.dv8tion.jda.internal.requests.restaction.MessageActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
 
@@ -49,10 +45,10 @@ public class MessageBuilder implements Appendable
 {
     protected final StringBuilder builder = new StringBuilder();
 
+    protected final List<MessageEmbed> embeds = new ArrayList<>();
+    protected final List<ComponentLayout> components = new ArrayList<>();
     protected boolean isTTS = false;
     protected String nonce;
-    protected MessageEmbed embed;
-    protected List<ComponentLayout> components = new ArrayList<>();
     protected EnumSet<Message.MentionType> allowedMentions = null;
     protected Set<String> mentionedUsers = new HashSet<>();
     protected Set<String> mentionedRoles = new HashSet<>();
@@ -72,8 +68,8 @@ public class MessageBuilder implements Appendable
             isTTS = message.isTTS();
             builder.append(message.getContentRaw());
             List<MessageEmbed> embeds = message.getEmbeds();
-            if (embeds != null && !embeds.isEmpty() && embeds.get(0).getType() == EmbedType.RICH)
-                embed = embeds.get(0);
+            if (embeds != null)
+                embeds.stream().filter(it -> it.getType() == EmbedType.RICH).forEach(this.embeds::add);
             components.addAll(message.getActionRows());
             if (message instanceof DataMessage)
             {
@@ -93,7 +89,7 @@ public class MessageBuilder implements Appendable
             this.isTTS = builder.isTTS;
             this.builder.append(builder.builder);
             this.nonce = builder.nonce;
-            this.embed = builder.embed;
+            this.embeds.addAll(builder.embeds);
             this.components.addAll(builder.components);
             if (builder.allowedMentions != null)
                 this.allowedMentions = Helpers.copyEnumSet(Message.MentionType.class, builder.allowedMentions);
@@ -105,12 +101,13 @@ public class MessageBuilder implements Appendable
     public MessageBuilder(@Nullable EmbedBuilder builder)
     {
         if (builder != null)
-            this.embed = builder.build();
+            this.embeds.add(builder.build());
     }
 
     public MessageBuilder(@Nullable MessageEmbed embed)
     {
-        this.embed = embed;
+        if (embed != null)
+            this.embeds.add(embed);
     }
 
     /**
@@ -129,7 +126,7 @@ public class MessageBuilder implements Appendable
         this.isTTS = tts;
         return this;
     }
-    
+
     /**
      * Adds a {@link net.dv8tion.jda.api.entities.MessageEmbed} to the Message. Embeds can be built using
      * the {@link net.dv8tion.jda.api.EmbedBuilder} and offer specialized formatting.
@@ -138,11 +135,66 @@ public class MessageBuilder implements Appendable
      *         the embed to add, or null to remove
      *
      * @return The MessageBuilder instance. Useful for chaining.
+     *
+     * @deprecated Use {@link #setEmbeds(MessageEmbed...)} instead
      */
     @Nonnull
+    @Deprecated
+    @ForRemoval(deadline = "5.0.0")
+    @ReplaceWith("setEmbeds(embed)")
+    @DeprecatedSince("4.4.0")
     public MessageBuilder setEmbed(@Nullable MessageEmbed embed)
     {
-        this.embed = embed;
+        return embed == null ? setEmbeds() : setEmbeds(embed);
+    }
+
+    /**
+     * Adds up to 10 {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbeds} to the Message. Embeds can be built using
+     * the {@link net.dv8tion.jda.api.EmbedBuilder} and offer specialized formatting.
+     *
+     * @param  embeds
+     *         the embeds to add, or empty array to remove
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If any of the provided MessageEmbeds is null or not sendable according to {@link net.dv8tion.jda.api.entities.MessageEmbed#isSendable() MessageEmbed.isSendable()}!
+     *         The sum of all {@link MessageEmbed#getLength()} must not be greater than {@link MessageEmbed#EMBED_MAX_LENGTH_BOT}!
+     *
+     * @return The MessageBuilder instance. Useful for chaining.
+     */
+    @Nonnull
+    public MessageBuilder setEmbeds(@Nonnull MessageEmbed... embeds)
+    {
+        Checks.noneNull(embeds, "MessageEmbeds");
+        return setEmbeds(Arrays.asList(embeds));
+    }
+
+    /**
+     * Adds up to 10 {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbeds} to the Message. Embeds can be built using
+     * the {@link net.dv8tion.jda.api.EmbedBuilder} and offer specialized formatting.
+     *
+     * @param  embeds
+     *         the embeds to add, or empty list to remove
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If any of the provided MessageEmbeds is null or not sendable according to {@link net.dv8tion.jda.api.entities.MessageEmbed#isSendable() MessageEmbed.isSendable()}!
+     *         The sum of all {@link MessageEmbed#getLength()} must not be greater than {@link MessageEmbed#EMBED_MAX_LENGTH_BOT}!
+     *
+     * @return The MessageBuilder instance. Useful for chaining.
+     */
+    @Nonnull
+    public MessageBuilder setEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
+    {
+
+        Checks.noneNull(embeds, "MessageEmbeds");
+        embeds.forEach(embed ->
+            Checks.check(embed.isSendable(),
+                "Provided Message contains an empty embed or an embed with a length greater than %d characters, which is the max for bot accounts!",
+                MessageEmbed.EMBED_MAX_LENGTH_BOT)
+        );
+        Checks.check(embeds.size() <= 10, "Cannot have more than 10 embeds in a message!");
+        Checks.check(embeds.stream().mapToInt(MessageEmbed::getLength).sum() <= MessageEmbed.EMBED_MAX_LENGTH_BOT, "The sum of all MessageEmbeds may not exceed %d!", MessageEmbed.EMBED_MAX_LENGTH_BOT);
+        this.embeds.clear();
+        this.embeds.addAll(embeds);
         return this;
     }
 
@@ -460,7 +512,7 @@ public class MessageBuilder implements Appendable
      * @return whether the message contains content
      */
     public boolean isEmpty() {
-        return builder.length() == 0 && embed == null;
+        return builder.length() == 0 && embeds.isEmpty();
     }
 
     /**
@@ -818,7 +870,7 @@ public class MessageBuilder implements Appendable
      */
     @Nonnull
     @Deprecated
-    @ForRemoval
+    @ForRemoval(deadline = "4.4.0")
     @ReplaceWith("setAllowedMentions(Collections.emptyList())")
     @DeprecatedSince("4.2.0")
     public MessageBuilder stripMentions(@Nonnull JDA jda)
@@ -845,7 +897,7 @@ public class MessageBuilder implements Appendable
      */
     @Nonnull
     @Deprecated
-    @ForRemoval
+    @ForRemoval(deadline = "4.4.0")
     @ReplaceWith("setAllowedMentions(Collections.emptyList())")
     @DeprecatedSince("4.2.0")
     public MessageBuilder stripMentions(@Nonnull Guild guild)
@@ -874,7 +926,7 @@ public class MessageBuilder implements Appendable
      */
     @Nonnull
     @Deprecated
-    @ForRemoval
+    @ForRemoval(deadline = "4.4.0")
     @ReplaceWith("denyMentions(types)")
     @DeprecatedSince("4.2.0")
     public MessageBuilder stripMentions(@Nonnull Guild guild, @Nonnull Message.MentionType... types)
@@ -900,7 +952,7 @@ public class MessageBuilder implements Appendable
      */
     @Nonnull
     @Deprecated
-    @ForRemoval
+    @ForRemoval(deadline = "4.4.0")
     @ReplaceWith("denyMentions(types)")
     @DeprecatedSince("4.2.0")
     public MessageBuilder stripMentions(@Nonnull JDA jda, @Nonnull Message.MentionType... types)
@@ -1023,7 +1075,7 @@ public class MessageBuilder implements Appendable
     @Nonnull
     public MessageBuilder clear() {
         this.builder.setLength(0);
-        this.embed = null;
+        this.embeds.clear();
         this.isTTS = false;
         return this;
     }
@@ -1170,52 +1222,6 @@ public class MessageBuilder implements Appendable
     }
 
     /**
-     * Creates a {@link MessageAction MessageAction}
-     * with the current settings without building a {@link net.dv8tion.jda.api.entities.Message Message} instance first.
-     *
-     * @param  channel
-     *         The not-null target {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel}
-     *
-     * @throws java.lang.IllegalArgumentException
-     *         If the provided channel is {@code null}
-     * @throws net.dv8tion.jda.api.exceptions.PermissionException
-     *         If the currently logged in account does not have permission to send or read messages in this channel.
-     * @throws java.lang.UnsupportedOperationException
-     *         If this is a PrivateChannel and both users (sender and receiver) are bots
-     *
-     * @return {@link MessageAction MessageAction}
-     *
-     * @deprecated Use {@link MessageChannel#sendMessage(Message) channel.sendMessage(builder.build())} instead
-     */
-    @Nonnull
-    @Deprecated
-    @DeprecatedSince("4.2.1")
-    @ForRemoval(deadline="4.3.0")
-    @ReplaceWith("channel.sendMessage(builder.build())")
-    public MessageAction sendTo(@Nonnull MessageChannel channel)
-    {
-        Checks.notNull(channel, "Target Channel");
-        switch (channel.getType())
-        {
-            case TEXT:
-                final TextChannel text = (TextChannel) channel;
-                final Member self = text.getGuild().getSelfMember();
-                if (!self.hasAccess(text))
-                    throw new MissingAccessException(text, Permission.VIEW_CHANNEL);
-                if (!self.hasPermission(text, Permission.MESSAGE_WRITE))
-                    throw new InsufficientPermissionException(text, Permission.MESSAGE_WRITE);
-                break;
-            case PRIVATE:
-                final PrivateChannel priv = (PrivateChannel) channel;
-                if (priv.getUser().isBot() && channel.getJDA().getAccountType() == AccountType.BOT)
-                    throw new UnsupportedOperationException("Cannot send a private message between bots.");
-        }
-        final Route.CompiledRoute route = Route.Messages.SEND_MESSAGE.compile(channel.getId());
-        final MessageActionImpl action = new MessageActionImpl(channel.getJDA(), route, channel, builder);
-        return action.tts(isTTS).embed(embed).nonce(nonce);
-    }
-
-    /**
      * Creates a {@link net.dv8tion.jda.api.entities.Message Message} object from this MessageBuilder
      *
      * <p><b>Hint:</b> You can use {@link #build(int, int)} or
@@ -1241,7 +1247,7 @@ public class MessageBuilder implements Appendable
             throw new IllegalStateException("Cannot build a Message with more than 2000 characters. Please limit your input.");
 
         String[] ids = new String[0];
-        return new DataMessage(isTTS, message, nonce, embed,
+        return new DataMessage(isTTS, message, nonce, embeds,
                 allowedMentions, mentionedUsers.toArray(ids), mentionedRoles.toArray(ids), components.toArray(new ComponentLayout[0]));
     }
 
@@ -1269,20 +1275,19 @@ public class MessageBuilder implements Appendable
 
         LinkedList<Message> messages = new LinkedList<>();
 
-        if (builder.length() <= 2000) {
+        if (builder.length() <= Message.MAX_CONTENT_LENGTH)
+        {
             messages.add(this.build());
             return messages;
         }
 
         if (policy == null || policy.length == 0)
-        {
             policy = new SplitPolicy[]{ SplitPolicy.ANYWHERE };
-        }
 
         int currentBeginIndex = 0;
 
         messageLoop:
-        while (currentBeginIndex < builder.length() - 2001)
+        while (currentBeginIndex < builder.length() - Message.MAX_CONTENT_LENGTH)
         {
             for (SplitPolicy splitPolicy : policy)
             {
@@ -1297,15 +1302,11 @@ public class MessageBuilder implements Appendable
             throw new IllegalStateException("Failed to split the messages");
         }
 
-        if (currentBeginIndex < builder.length() - 1)
-        {
-            messages.add(build(currentBeginIndex, builder.length() - 1));
-        }
+        if (currentBeginIndex < builder.length())
+            messages.add(build(currentBeginIndex, builder.length()));
 
-        if (this.embed != null)
-        {
-            ((DataMessage) messages.get(messages.size() - 1)).setEmbed(embed);
-        }
+        if (!this.embeds.isEmpty())
+            ((DataMessage) messages.get(messages.size() - 1)).setEmbeds(embeds);
 
         return messages;
     }

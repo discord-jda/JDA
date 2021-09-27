@@ -15,12 +15,17 @@
  */
 package net.dv8tion.jda.api.entities;
 
+import net.dv8tion.jda.annotations.DeprecatedSince;
+import net.dv8tion.jda.annotations.ForRemoval;
+import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.exceptions.HttpException;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
+import net.dv8tion.jda.api.interactions.InteractionType;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.Button;
+import net.dv8tion.jda.api.interactions.components.ComponentLayout;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
@@ -212,16 +217,36 @@ public interface Message extends ISnowflake, Formattable
             Pattern.CASE_INSENSITIVE);
 
     /**
+     * Returns the {@link MessageReference} for this Message. This will be null if this Message has no reference.
+     *
+     * <p>You can access all the information about a reference through this object.
+     * Additionally, you can retrieve the referenced Message if discord did not load it in time. This can be done with {@link MessageReference#resolve()}.
+     *
+     * @return The message reference, or null.
+     */
+    @Nullable
+    MessageReference getMessageReference();
+
+    /**
      * Referenced message.
      *
      * <p>This will have different meaning depending on the {@link #getType() type} of message.
      * Usually, this is a {@link MessageType#INLINE_REPLY INLINE_REPLY} reference.
      * This can be null even if the type is {@link MessageType#INLINE_REPLY INLINE_REPLY}, when the message it references doesn't exist or discord wasn't able to resolve it in time.
      *
+     * <p>This differs from a {@link MessageReference}, which contains the raw IDs attached to the reference, and allows you to retrieve the referenced message
+     *
      * @return The referenced message, or null
+     *
+     * @see #getMessageReference()
      */
     @Nullable
-    Message getReferencedMessage();
+    default Message getReferencedMessage()
+    {
+        return getMessageReference() != null
+                ? getMessageReference().getMessage()
+                : null;
+    }
 
     /**
      * An immutable list of all mentioned {@link net.dv8tion.jda.api.entities.User Users}.
@@ -229,7 +254,7 @@ public interface Message extends ISnowflake, Formattable
      * counts direct mentions of the user and not mentions through roles or the everyone tag.
      *
      * @throws java.lang.UnsupportedOperationException
-     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     *         If this is a system message
      *
      * @return immutable list of mentioned users
      */
@@ -260,7 +285,7 @@ public interface Message extends ISnowflake, Formattable
      * }</pre>
      *
      * @throws java.lang.UnsupportedOperationException
-     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     *         If this is a system message
      *
      * @return {@link org.apache.commons.collections4.Bag Bag} of mentioned users
      *
@@ -276,7 +301,7 @@ public interface Message extends ISnowflake, Formattable
      * <p><b>This may include TextChannels from other {@link net.dv8tion.jda.api.entities.Guild Guilds}</b>
      *
      * @throws java.lang.UnsupportedOperationException
-     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     *         If this is a system message
      *
      * @return immutable list of mentioned TextChannels
      */
@@ -307,7 +332,7 @@ public interface Message extends ISnowflake, Formattable
      * }</pre>
      *
      * @throws java.lang.UnsupportedOperationException
-     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     *         If this is a system message
      *
      * @return {@link org.apache.commons.collections4.Bag Bag} of mentioned channels
      *
@@ -324,7 +349,7 @@ public interface Message extends ISnowflake, Formattable
      * <p><b>This may include Roles from other {@link net.dv8tion.jda.api.entities.Guild Guilds}</b>
      *
      * @throws java.lang.UnsupportedOperationException
-     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     *         If this is a system message
      *
      * @return immutable list of mentioned Roles
      */
@@ -356,7 +381,7 @@ public interface Message extends ISnowflake, Formattable
      * }</pre>
      *
      * @throws java.lang.UnsupportedOperationException
-     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     *         If this is a system message
      *
      * @return {@link org.apache.commons.collections4.Bag Bag} of mentioned roles
      *
@@ -377,7 +402,7 @@ public interface Message extends ISnowflake, Formattable
      *         that will be used to retrieve Members.
      *
      * @throws java.lang.UnsupportedOperationException
-     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     *         If this is a system message
      * @throws java.lang.IllegalArgumentException
      *         If the specified Guild is {@code null}
      *
@@ -396,7 +421,7 @@ public interface Message extends ISnowflake, Formattable
      * <br>It will provide the {@link #getGuild()} output Guild to {@link #getMentionedMembers(Guild)}.
      *
      * @throws java.lang.UnsupportedOperationException
-     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     *         If this is a system message
      * @throws java.lang.IllegalStateException
      *         If this message was not sent in a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
      *
@@ -419,7 +444,7 @@ public interface Message extends ISnowflake, Formattable
      *         to include in the list of mentions
      *
      * @throws java.lang.UnsupportedOperationException
-     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     *         If this is a system message
      * @throws java.lang.IllegalArgumentException
      *         If provided with {@code null}
      *
@@ -448,7 +473,7 @@ public interface Message extends ISnowflake, Formattable
      *         This will be used with {@link #getMentions(Message.MentionType...) getMentions(MentionType...)}
      *
      * @throws java.lang.UnsupportedOperationException
-     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     *         If this is a system message
      *
      * @return True, if the given mentionable was mentioned in this message
      */
@@ -458,7 +483,7 @@ public interface Message extends ISnowflake, Formattable
      * Indicates if this Message mentions everyone using @everyone or @here.
      *
      * @throws java.lang.UnsupportedOperationException
-     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     *         If this is a system message
      *
      * @return True, if message is mentioning everyone
      */
@@ -468,7 +493,7 @@ public interface Message extends ISnowflake, Formattable
      * Returns whether or not this Message has been edited before.
      *
      * @throws java.lang.UnsupportedOperationException
-     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     *         If this is a system message
      *
      * @return True if this message has been edited.
      */
@@ -480,7 +505,7 @@ public interface Message extends ISnowflake, Formattable
      * will return {@code null}.
      *
      * @throws java.lang.UnsupportedOperationException
-     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     *         If this is a system message
      *
      * @return Time of the most recent edit, or {@code null} if the Message has never been edited.
      */
@@ -491,7 +516,7 @@ public interface Message extends ISnowflake, Formattable
      * The author of this Message
      *
      * @throws java.lang.UnsupportedOperationException
-     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     *         If this is a system message
      *
      * @return Message author
      */
@@ -509,7 +534,7 @@ public interface Message extends ISnowflake, Formattable
      * unless the member is already cached.
      *
      * @throws java.lang.UnsupportedOperationException
-     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     *         If this is a system message
      *
      * @return Message author, or {@code null} if the message was not sent in a TextChannel, or if the message was sent by a Webhook.
      *
@@ -523,7 +548,7 @@ public interface Message extends ISnowflake, Formattable
      * jump to the specified message.
      *
      * @throws java.lang.UnsupportedOperationException
-     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     *         If this is a system message
      *
      * @return A String representing the jump-to URL for the message
      */
@@ -545,7 +570,7 @@ public interface Message extends ISnowflake, Formattable
      * <p>If you want the actual Content (mentions as {@literal <@id>}), use {@link #getContentRaw()} instead
      *
      * @throws java.lang.UnsupportedOperationException
-     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     *         If this is a system message
      *
      * @return The textual content of the message with mentions resolved to be visually like the Discord client.
      */
@@ -569,7 +594,7 @@ public interface Message extends ISnowflake, Formattable
      * for formatting are escaped to prevent possible formatting.
      *
      * @throws java.lang.UnsupportedOperationException
-     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     *         If this is a system message
      *
      * @return The textual content from {@link #getContentDisplay()} with all text formatting characters removed or escaped.
      */
@@ -587,7 +612,7 @@ public interface Message extends ISnowflake, Formattable
      * {@link net.dv8tion.jda.api.entities.Invite#resolve(JDA, String) Invite.resolve(JDA, String)}
      *
      * @throws java.lang.UnsupportedOperationException
-     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     *         If this is a system message
      *
      * @return Immutable list of invite codes
      */
@@ -621,7 +646,7 @@ public interface Message extends ISnowflake, Formattable
      *         The {@link net.dv8tion.jda.api.entities.ChannelType ChannelType} to check against.
      *
      * @throws java.lang.UnsupportedOperationException
-     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     *         If this is a system message
      *
      * @return True if the {@link net.dv8tion.jda.api.entities.ChannelType ChannelType} which this message was received
      *         from is the same as the one specified by {@code type}.
@@ -645,7 +670,7 @@ public interface Message extends ISnowflake, Formattable
      * {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels}.
      *
      * @throws java.lang.UnsupportedOperationException
-     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     *         If this is a system message
      *
      * @return The ChannelType which this message was received from.
      */
@@ -658,7 +683,7 @@ public interface Message extends ISnowflake, Formattable
      * <br>Useful if you want to ignore non-users.
      *
      * @throws java.lang.UnsupportedOperationException
-     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     *         If this is a system message
      *
      * @return True if this message was sent by a {@link net.dv8tion.jda.api.entities.Webhook Webhook}.
      */
@@ -668,7 +693,7 @@ public interface Message extends ISnowflake, Formattable
      * Returns the {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel} that this message was sent in.
      *
      * @throws java.lang.UnsupportedOperationException
-     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     *         If this is a system message
      *
      * @return The MessageChannel of this Message
      */
@@ -684,7 +709,7 @@ public interface Message extends ISnowflake, Formattable
      * if you do not need functionality specific to {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}.
      *
      * @throws java.lang.UnsupportedOperationException
-     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     *         If this is a system message
      * @throws java.lang.IllegalStateException
      *         If this was not sent in a {@link net.dv8tion.jda.api.entities.PrivateChannel}.
      *
@@ -706,7 +731,7 @@ public interface Message extends ISnowflake, Formattable
      * if you do not need functionality specific to {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}.
      *
      * @throws java.lang.UnsupportedOperationException
-     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     *         If this is a system message
      * @throws java.lang.IllegalStateException
      *         If this was not sent in a {@link net.dv8tion.jda.api.entities.TextChannel}.
      *
@@ -725,7 +750,7 @@ public interface Message extends ISnowflake, Formattable
      * <br>Equivalent to {@code getTextChannel().getParent()} if this was sent in a {@link net.dv8tion.jda.api.entities.TextChannel}.
      *
      * @throws java.lang.UnsupportedOperationException
-     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     *         If this is a system message
      *
      * @return {@link net.dv8tion.jda.api.entities.Category Category} for this message
      */
@@ -739,7 +764,7 @@ public interface Message extends ISnowflake, Formattable
      * <br>You can check the type of channel this message was sent from using {@link #isFromType(ChannelType)} or {@link #getChannelType()}.
      *
      * @throws java.lang.UnsupportedOperationException
-     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     *         If this is a system message
      * @throws java.lang.IllegalStateException
      *         If this was not sent in a {@link net.dv8tion.jda.api.entities.TextChannel}.
      *
@@ -757,7 +782,7 @@ public interface Message extends ISnowflake, Formattable
      * <br>Most likely this will only ever be 1 {@link net.dv8tion.jda.api.entities.Message.Attachment Attachment} at most.
      *
      * @throws java.lang.UnsupportedOperationException
-     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     *         If this is a system message
      *
      * @return Immutable list of {@link net.dv8tion.jda.api.entities.Message.Attachment Attachments}.
      */
@@ -769,7 +794,7 @@ public interface Message extends ISnowflake, Formattable
      * Message.
      *
      * @throws java.lang.UnsupportedOperationException
-     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     *         If this is a system message
      *
      * @return Immutable list of all given MessageEmbeds.
      */
@@ -858,7 +883,7 @@ public interface Message extends ISnowflake, Formattable
      * <p><b><u>Unicode emojis are not included as {@link net.dv8tion.jda.api.entities.Emote Emote}!</u></b>
      *
      * @throws java.lang.UnsupportedOperationException
-     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     *         If this is a system message
      *
      * @return An immutable list of the Emotes used in this message (example match {@literal <:jda:230988580904763393>})
      */
@@ -888,7 +913,7 @@ public interface Message extends ISnowflake, Formattable
      * }</pre>
      *
      * @throws java.lang.UnsupportedOperationException
-     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     *         If this is a system message
      *
      * @return {@link org.apache.commons.collections4.Bag Bag} of used emotes
      *
@@ -901,7 +926,7 @@ public interface Message extends ISnowflake, Formattable
      * All {@link net.dv8tion.jda.api.entities.MessageReaction MessageReactions} that are on this Message.
      *
      * @throws java.lang.UnsupportedOperationException
-     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     *         If this is a system message
      *
      * @return Immutable list of all MessageReactions on this message.
      */
@@ -910,9 +935,10 @@ public interface Message extends ISnowflake, Formattable
 
     /**
      * All {@link net.dv8tion.jda.api.entities.MessageSticker MessageStickers} that are in this Message.
+     * <br>The returned MessageStickers may only contain necessary information such as the sticker id, format type, name, and icon url.
      *
      * @throws java.lang.UnsupportedOperationException
-     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     *         If this is a system message
      *
      * @return Immutable list of all MessageStickers in this message.
      */
@@ -951,14 +977,14 @@ public interface Message extends ISnowflake, Formattable
      *         the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
-     *     <br>The edit was attempted after the Message had been deleted.</li>
+     *     <br>If the message has already been deleted. This might also be triggered for ephemeral messages.</li>
      * </ul>
      *
      * @param  newContent
      *         the new content of the Message
      *
      * @throws java.lang.UnsupportedOperationException
-     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     *         If this is a system message
      * @throws java.lang.IllegalStateException
      *         If the message attempting to be edited was not created by the currently logged in account, or if
      *         {@code newContent}'s length is 0 or greater than 2000.
@@ -987,14 +1013,14 @@ public interface Message extends ISnowflake, Formattable
      *         the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
-     *     <br>The edit was attempted after the Message had been deleted.</li>
+     *     <br>If the message has already been deleted. This might also be triggered for ephemeral messages.</li>
      * </ul>
      *
      * @param  newContent
      *         the new content of the Message
      *
      * @throws java.lang.UnsupportedOperationException
-     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     *         If this is a system message
      * @throws java.lang.IllegalStateException
      *         If the message attempting to be edited was not created by the currently logged in account, or
      *         if the passed-in embed is {@code null}
@@ -1002,10 +1028,208 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return {@link MessageAction MessageAction}
      *         <br>The {@link net.dv8tion.jda.api.entities.Message Message} with the updated content
+     *
+     * @deprecated Use {@link #editMessageEmbeds(MessageEmbed...)} instead
      */
     @Nonnull
     @CheckReturnValue
-    MessageAction editMessage(@Nonnull MessageEmbed newContent);
+    @Deprecated
+    @ForRemoval(deadline = "5.0.0")
+    @ReplaceWith("editMessageEmbeds(newEmbed)")
+    @DeprecatedSince("4.4.0")
+    default MessageAction editMessage(@Nonnull MessageEmbed newContent)
+    {
+        return editMessageEmbeds(newContent);
+    }
+
+    /**
+     * Edits this Message's content to the provided {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbeds}.
+     * <br><b>Messages can only be edited by the account that sent them!</b>.
+     *
+     * <p>This message instance will not be updated by this operation, please use the response message instead.
+     *
+     * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>The edit was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
+     *         typically due to being kicked or removed.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The edit was attempted after the account lost {@link net.dv8tion.jda.api.Permission#MESSAGE_WRITE Permission.MESSAGE_WRITE} in
+     *         the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>If the message has already been deleted. This might also be triggered for ephemeral messages.</li>
+     * </ul>
+     *
+     * @param  embeds
+     *         the new embeds of the Message (up to 10)
+     *
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     * @throws java.lang.IllegalStateException
+     *         If the message attempting to be edited was not created by the currently logged in account
+     * @throws IllegalArgumentException
+     *         if any of the passed-in embeds is {@code null} or not {@link net.dv8tion.jda.api.entities.MessageEmbed#isSendable() sendable}.
+     *
+     * @return {@link MessageAction MessageAction}
+     *         <br>The {@link net.dv8tion.jda.api.entities.Message Message} with the updated content
+     */
+    @Nonnull
+    @CheckReturnValue
+    MessageAction editMessageEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds);
+
+    /**
+     * Edits this Message's content to the provided {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbeds}.
+     * <br><b>Messages can only be edited by the account that sent them!</b>.
+     *
+     * <p>This message instance will not be updated by this operation, please use the response message instead.
+     *
+     * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>The edit was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
+     *         typically due to being kicked or removed.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The edit was attempted after the account lost {@link net.dv8tion.jda.api.Permission#MESSAGE_WRITE Permission.MESSAGE_WRITE} in
+     *         the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>If the message has already been deleted. This might also be triggered for ephemeral messages.</li>
+     * </ul>
+     *
+     * @param  embeds
+     *         the new embeds of the Message (up to 10)
+     *
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     * @throws java.lang.IllegalStateException
+     *         If the message attempting to be edited was not created by the currently logged in account
+     * @throws IllegalArgumentException
+     *         if any of the passed-in embeds is {@code null} or not {@link net.dv8tion.jda.api.entities.MessageEmbed#isSendable() sendable}.
+     *
+     * @return {@link MessageAction MessageAction}
+     *         <br>The {@link net.dv8tion.jda.api.entities.Message Message} with the updated content
+     */
+    @Nonnull
+    @CheckReturnValue
+    default MessageAction editMessageEmbeds(@Nonnull MessageEmbed... embeds)
+    {
+        Checks.noneNull(embeds, "MessageEmbeds");
+        return editMessageEmbeds(Arrays.asList(embeds));
+    }
+
+    /**
+     * Edits this Message's content to the provided {@link net.dv8tion.jda.api.interactions.components.ComponentLayout ComponentLayouts}.
+     * <br><b>Messages can only be edited by the account that sent them!</b>.
+     * <br>This will replace all the current {@link net.dv8tion.jda.api.interactions.components.Component Components},
+     * such as {@link net.dv8tion.jda.api.interactions.components.Button Buttons} or {@link net.dv8tion.jda.api.interactions.components.selections.SelectionMenu SelectionMenus} on this message.
+     * The provided parameters are {@link ComponentLayout ComponentLayout} such as {@link ActionRow} which contain a list of components to arrange in the respective layout.
+     *
+     * <p>This message instance will not be updated by this operation, please use the response message instead.
+     *
+     * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#INVALID_AUTHOR_EDIT INVALID_AUTHOR_EDIT}
+     *     <br>Attempted to edit a message that was not sent by the currently logged in account.
+     *         Discord does not allow editing of other users' Messages!</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>The request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
+     *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ}
+     *         was revoked in the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>If the message has already been deleted. This might also be triggered for ephemeral messages.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
+     *     <br>The request was attempted after the channel was deleted.</li>
+     * </ul>
+     *
+     * <h2>Example</h2>
+     * <pre>{@code
+     * List<ActionRow> rows = Arrays.asList(
+     *   ActionRow.of(Button.success("prompt:accept", "Accept"), Button.danger("prompt:reject", "Reject")), // 1st row below message
+     *   ActionRow.of(Button.link(url, "Help")) // 2nd row below message
+     * );
+     * message.editMessageComponents(rows).queue();
+     * }</pre>
+     *
+     * @param  components
+     *         Up to 5 new {@link net.dv8tion.jda.api.interactions.components.ComponentLayout ComponentLayouts} for the edited message, such as {@link ActionRow}
+     *
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     *         or any of the component layouts is a custom implementation that is not supported by this interface
+     * @throws IllegalArgumentException
+     *         If null is provided, or more than 5 layouts are added
+     * @throws java.lang.IllegalStateException
+     *         If the message attempting to be edited was not created by the currently logged in account
+     *
+     * @return {@link MessageAction MessageAction}
+     *         <br>The {@link net.dv8tion.jda.api.entities.Message Message} with the updated components
+     */
+    @Nonnull
+    @CheckReturnValue
+    MessageAction editMessageComponents(@Nonnull Collection<? extends ComponentLayout> components);
+
+    /**
+     * Edits this Message's content to the provided {@link net.dv8tion.jda.api.interactions.components.ComponentLayout ComponentLayouts}.
+     * <br><b>Messages can only be edited by the account that sent them!</b>.
+     * <br>This will replace all the current {@link net.dv8tion.jda.api.interactions.components.Component Components},
+     * such as {@link net.dv8tion.jda.api.interactions.components.Button Buttons} or {@link net.dv8tion.jda.api.interactions.components.selections.SelectionMenu SelectionMenus} on this message.
+     * The provided parameters are {@link ComponentLayout ComponentLayout} such as {@link ActionRow} which contain a list of components to arrange in the respective layout.
+     *
+     * <p>This message instance will not be updated by this operation, please use the response message instead.
+     *
+     * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#INVALID_AUTHOR_EDIT INVALID_AUTHOR_EDIT}
+     *     <br>Attempted to edit a message that was not sent by the currently logged in account.
+     *         Discord does not allow editing of other users' Messages!</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>The request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
+     *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ}
+     *         was revoked in the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>If the message has already been deleted. This might also be triggered for ephemeral messages.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
+     *     <br>The request was attempted after the channel was deleted.</li>
+     * </ul>
+     *
+     * <h2>Example</h2>
+     * <pre>{@code
+     * message.editMessageComponents(
+     *   ActionRow.of(Button.success("prompt:accept", "Accept"), Button.danger("prompt:reject", "Reject")), // 1st row below message
+     *   ActionRow.of(Button.link(url, "Help")) // 2nd row below message
+     * ).queue();
+     * }</pre>
+     *
+     * @param  components
+     *         Up to 5 new {@link net.dv8tion.jda.api.interactions.components.ComponentLayout ComponentLayouts} for the edited message, such as {@link ActionRow}
+     *
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     *         or any of the component layouts is a custom implementation that is not supported by this interface
+     * @throws IllegalArgumentException
+     *         If null is provided, or more than 5 layouts are added
+     * @throws java.lang.IllegalStateException
+     *         If the message attempting to be edited was not created by the currently logged in account
+     *
+     * @return {@link MessageAction MessageAction}
+     *         <br>The {@link net.dv8tion.jda.api.entities.Message Message} with the updated components
+     */
+    @Nonnull
+    @CheckReturnValue
+    default MessageAction editMessageComponents(@Nonnull ComponentLayout... components)
+    {
+        Checks.noneNull(components, "Components");
+        return editMessageComponents(Arrays.asList(components));
+    }
 
     /**
      * Edits this Message's content to the provided format.
@@ -1025,7 +1249,7 @@ public interface Message extends ISnowflake, Formattable
      *         the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
-     *     <br>The edit was attempted after the Message had been deleted.</li>
+     *     <br>If the message has already been deleted. This might also be triggered for ephemeral messages.</li>
      * </ul>
      *
      * @param  format
@@ -1035,7 +1259,7 @@ public interface Message extends ISnowflake, Formattable
      *         The arguments to use in order to be converted in the format string
      *
      * @throws java.lang.UnsupportedOperationException
-     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     *         If this is a system message
      * @throws IllegalArgumentException
      *         If the provided format String is {@code null} or blank, or if
      *         the created message exceeds the 2000 character limit
@@ -1073,14 +1297,14 @@ public interface Message extends ISnowflake, Formattable
      *         the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
-     *     <br>The edit was attempted after the Message had been deleted.</li>
+     *     <br>If the message has already been deleted. This might also be triggered for ephemeral messages.</li>
      * </ul>
      *
      * @param  newContent
      *         the new content of the Message
      *
      * @throws java.lang.UnsupportedOperationException
-     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     *         If this is a system message
      * @throws java.lang.IllegalStateException
      *         <ul>
      *             <li>If the message attempting to be edited was not created by the currently logged in account</li>
@@ -1125,7 +1349,7 @@ public interface Message extends ISnowflake, Formattable
      * <br>By default there won't be any error thrown if the referenced message does not exist.
      * This behavior can be changed with {@link MessageAction#failOnInvalidReply(boolean)}.
      *
-     * <p>For further info, see {@link MessageChannel#sendMessage(MessageEmbed)} and {@link MessageAction#reference(Message)}.
+     * <p>For further info, see {@link MessageChannel#sendMessageEmbeds(MessageEmbed, MessageEmbed...)} and {@link MessageAction#reference(Message)}.
      *
      * @param  content
      *         The content of the reply message
@@ -1133,12 +1357,75 @@ public interface Message extends ISnowflake, Formattable
      * @return {@link MessageAction} Providing the {@link Message} created from this upload.
      *
      * @since  4.2.1
+     *
+     * @deprecated Use {@link #replyEmbeds(MessageEmbed, MessageEmbed...)} instead
      */
     @Nonnull
     @CheckReturnValue
+    @Deprecated
+    @ForRemoval(deadline = "5.0.0")
+    @ReplaceWith("replyEmbeds(content)")
+    @DeprecatedSince("4.4.0")
     default MessageAction reply(@Nonnull MessageEmbed content)
     {
         return getChannel().sendMessage(content).reference(this);
+    }
+
+    /**
+     * Replies and references this message.
+     * <br>This is identical to {@code message.getChannel().sendMessageEmbeds(embeds).reference(message)}.
+     * You can use {@link MessageAction#mentionRepliedUser(boolean) mentionRepliedUser(false)} to not mention the author of the message.
+     * <br>By default there won't be any error thrown if the referenced message does not exist.
+     * This behavior can be changed with {@link MessageAction#failOnInvalidReply(boolean)}.
+     *
+     * <p>For further info, see {@link MessageChannel#sendMessageEmbeds(MessageEmbed, MessageEmbed...)} and {@link MessageAction#reference(Message)}.
+     *
+     * @param  embed
+     *         The embed to reply with
+     * @param  other
+     *         Additional embeds to reply with
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided, any of the embeds are not {@link MessageEmbed#isSendable() sendable}, more than 10 embeds are provided,
+     *         or the sum of {@link MessageEmbed#getLength()} is greater than {@link MessageEmbed#EMBED_MAX_LENGTH_BOT}
+     *
+     * @return {@link MessageAction} Providing the {@link Message} created from this upload.
+     */
+    @Nonnull
+    @CheckReturnValue
+    default MessageAction replyEmbeds(@Nonnull MessageEmbed embed, @Nonnull MessageEmbed... other)
+    {
+        Checks.notNull(embed, "MessageEmbeds");
+        Checks.noneNull(other, "MessageEmbeds");
+        List<MessageEmbed> embeds = new ArrayList<>(1 + other.length);
+        embeds.add(embed);
+        Collections.addAll(embeds, other);
+        return replyEmbeds(embeds);
+    }
+
+    /**
+     * Replies and references this message.
+     * <br>This is identical to {@code message.getChannel().sendMessageEmbeds(embeds).reference(message)}.
+     * You can use {@link MessageAction#mentionRepliedUser(boolean) mentionRepliedUser(false)} to not mention the author of the message.
+     * <br>By default there won't be any error thrown if the referenced message does not exist.
+     * This behavior can be changed with {@link MessageAction#failOnInvalidReply(boolean)}.
+     *
+     * <p>For further info, see {@link MessageChannel#sendMessageEmbeds(MessageEmbed, MessageEmbed...)} and {@link MessageAction#reference(Message)}.
+     *
+     * @param  embeds
+     *         The embeds to reply with
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided, any of the embeds are not {@link MessageEmbed#isSendable() sendable}, more than 10 embeds are provided,
+     *         or the sum of {@link MessageEmbed#getLength()} is greater than {@link MessageEmbed#EMBED_MAX_LENGTH_BOT}
+     *
+     * @return {@link MessageAction} Providing the {@link Message} created from this upload.
+     */
+    @Nonnull
+    @CheckReturnValue
+    default MessageAction replyEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
+    {
+        return getChannel().sendMessageEmbeds(embeds).reference(this);
     }
 
     /**
@@ -1318,7 +1605,7 @@ public interface Message extends ISnowflake, Formattable
      *         or lost {@link net.dv8tion.jda.api.Permission#MESSAGE_MANAGE}.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
-     *         The message was already deleted at the time the request was sent.</li>
+     *     <br>If the message has already been deleted. This might also be triggered for ephemeral messages.</li>
      * </ul>
      *
      * @throws java.lang.UnsupportedOperationException
@@ -1329,8 +1616,11 @@ public interface Message extends ISnowflake, Formattable
      *         does not have {@link net.dv8tion.jda.api.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE} in
      *         the channel.
      * @throws java.lang.IllegalStateException
-     *         If this Message was not sent by the currently logged in account and it was <b>not</b> sent in a
-     *         {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}.
+     *         <ul>
+     *              <li>If this Message was not sent by the currently logged in account and it was <b>not</b> sent in a
+     *              {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}.</li>
+     *              <li>If this Message is ephemeral</li>
+     *         </ul>
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      *
@@ -1345,7 +1635,7 @@ public interface Message extends ISnowflake, Formattable
      * Returns the {@link net.dv8tion.jda.api.JDA JDA} instance related to this Message.
      *
      * @throws java.lang.UnsupportedOperationException
-     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     *         If this is a system message
      *
      * @return  the corresponding JDA instance
      */
@@ -1356,7 +1646,7 @@ public interface Message extends ISnowflake, Formattable
      * Whether or not this Message has been pinned in its parent channel.
      *
      * @throws java.lang.UnsupportedOperationException
-     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     *         If this is a system message
      *
      * @return True - if this message has been pinned.
      */
@@ -1381,11 +1671,11 @@ public interface Message extends ISnowflake, Formattable
      *         the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
-     *         The pin request was attempted after the Message had been deleted.</li>
+     *     <br>If the message has already been deleted. This might also be triggered for ephemeral messages.</li>
      * </ul>
      *
      * @throws java.lang.UnsupportedOperationException
-     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     *         If this is a system message
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If this Message is from a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} and:
      *         <br><ul>
@@ -1394,6 +1684,8 @@ public interface Message extends ISnowflake, Formattable
      *             <li>Missing {@link net.dv8tion.jda.api.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE}.
      *             <br>Required to actually pin the Message.</li>
      *         </ul>
+     * @throws IllegalStateException
+     *         If this Message is ephemeral
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link java.lang.Void}
      */
@@ -1420,11 +1712,11 @@ public interface Message extends ISnowflake, Formattable
      *         the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
-     *         The unpin request was attempted after the Message had been deleted.</li>
+     *     <br>If the message has already been deleted. This might also be triggered for ephemeral messages.</li>
      * </ul>
      *
      * @throws java.lang.UnsupportedOperationException
-     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     *         If this is a system message
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If this Message is from a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} and:
      *         <br><ul>
@@ -1433,6 +1725,8 @@ public interface Message extends ISnowflake, Formattable
      *             <li>Missing {@link net.dv8tion.jda.api.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE}.
      *             <br>Required to actually pin the Message.</li>
      *         </ul>
+     * @throws IllegalStateException
+     *         If this Message is ephemeral
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link java.lang.Void}
      */
@@ -1474,14 +1768,14 @@ public interface Message extends ISnowflake, Formattable
      *     <br>The provided emote was deleted, doesn't exist, or is not available to the currently logged-in account in this channel.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
-     *         The reaction request was attempted after the Message had been deleted.</li>
+     *     <br>If the message has already been deleted. This might also be triggered for ephemeral messages.</li>
      * </ul>
      *
      * @param  emote
      *         The {@link net.dv8tion.jda.api.entities.Emote Emote} to add as a reaction to this Message.
      *
      * @throws java.lang.UnsupportedOperationException
-     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     *         If this is a system message
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the MessageChannel this message was sent in was a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
      *         and the logged in account does not have
@@ -1495,6 +1789,8 @@ public interface Message extends ISnowflake, Formattable
      *             <li>If the provided {@link net.dv8tion.jda.api.entities.Emote Emote} cannot be used in the current channel.
      *                 See {@link Emote#canInteract(User, MessageChannel)} or {@link Emote#canInteract(Member)} for more information.</li>
      *         </ul>
+     * @throws IllegalStateException
+     *         If this message is ephemeral
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link java.lang.Void}
      */
@@ -1547,14 +1843,14 @@ public interface Message extends ISnowflake, Formattable
      *         <a href="https://unicode.org/emoji/charts/full-emoji-list.html" target="_blank">Emoji Table</a></li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
-     *         The reaction request was attempted after the Message had been deleted.</li>
+     *     <br>If the message has already been deleted. This might also be triggered for ephemeral messages.</li>
      * </ul>
      *
      * @param  unicode
      *         The unicode emoji to add as a reaction to this Message.
      *
      * @throws java.lang.UnsupportedOperationException
-     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     *         If this is a system message
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the MessageChannel this message was sent in was a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
      *         and the logged in account does not have
@@ -1564,6 +1860,8 @@ public interface Message extends ISnowflake, Formattable
      *         </ul>
      * @throws java.lang.IllegalArgumentException
      *         If the provided unicode emoji is null or empty.
+     * @throws IllegalStateException
+     *         If this Message is ephemeral
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link java.lang.Void}
      */
@@ -1592,18 +1890,21 @@ public interface Message extends ISnowflake, Formattable
      *         in the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} when adding the reaction.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
-     *         The clear-reactions request was attempted after the Message had been deleted.</li>
+     *     <br>If the message has already been deleted. This might also be triggered for ephemeral messages.</li>
      * </ul>
      *
      * @throws java.lang.UnsupportedOperationException
-     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     *         If this is a system message
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the MessageChannel this message was sent in was a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
      *         and the currently logged in account does not have {@link net.dv8tion.jda.api.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE}
      *         in the channel.
      * @throws java.lang.IllegalStateException
-     *         If this message was <b>not</b> sent in a
-     *         {@link net.dv8tion.jda.api.entities.Guild Guild}.
+     *         <ul>
+     *             <li>If this message was <b>not</b> sent in a {@link net.dv8tion.jda.api.entities.Guild Guild}.</li>
+     *             <li>If this message is ephemeral</li>
+     *         </ul>
+     *         
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link java.lang.Void}
      */
@@ -1638,21 +1939,24 @@ public interface Message extends ISnowflake, Formattable
      *         <a href="https://unicode.org/emoji/charts/full-emoji-list.html" target="_blank">Emoji Table</a></li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
-     *     <br>The message was deleted.</li>
+     *     <br>If the message has already been deleted. This might also be triggered for ephemeral messages.</li>
      * </ul>
      *
      * @param  unicode
      *         The unicode emoji to remove reactions for
      *
      * @throws java.lang.UnsupportedOperationException
-     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     *         If this is a system message
      * @throws InsufficientPermissionException
      *         If the currently logged in account does not have {@link Permission#MESSAGE_MANAGE} in the channel
      * @throws IllegalArgumentException
      *         If provided with null
      * @throws java.lang.IllegalStateException
-     *         If this message was <b>not</b> sent in a
-     *         {@link net.dv8tion.jda.api.entities.Guild Guild}.
+     *         <ul>
+     *             <li>If this message was <b>not</b> sent in a {@link net.dv8tion.jda.api.entities.Guild Guild}.</li>
+     *             <li>If this message is ephemeral</li>
+     *         </ul>
+     *         
      *
      * @return {@link RestAction}
      *
@@ -1677,21 +1981,23 @@ public interface Message extends ISnowflake, Formattable
      *     <br>The provided emote was deleted, doesn't exist, or is not available to the currently logged-in account in this channel.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
-     *     <br>The message was deleted.</li>
+     *     <br>If the message has already been deleted. This might also be triggered for ephemeral messages.</li>
      * </ul>
      *
      * @param  emote
      *         The {@link Emote} to remove reactions for
      *
      * @throws java.lang.UnsupportedOperationException
-     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     *         If this is a system message
      * @throws InsufficientPermissionException
      *         If the currently logged in account does not have {@link Permission#MESSAGE_MANAGE} in the channel
      * @throws IllegalArgumentException
      *         If provided with null
      * @throws java.lang.IllegalStateException
-     *         If this message was <b>not</b> sent in a
-     *         {@link net.dv8tion.jda.api.entities.Guild Guild}.
+     *         <ul>
+     *             <li>If this message was <b>not</b> sent in a {@link net.dv8tion.jda.api.entities.Guild Guild}.</li>
+     *             <li>If this message is ephemeral</li>
+     *         </ul>
      *
      * @return {@link RestAction}
      *
@@ -1724,14 +2030,14 @@ public interface Message extends ISnowflake, Formattable
      *     <br>The provided emote was deleted, doesn't exist, or is not available to the currently logged-in account in this channel.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
-     *         The reaction request was attempted after the Message had been deleted.</li>
+     *     <br>If the message has already been deleted. This might also be triggered for ephemeral messages.</li>
      * </ul>
      *
      * @param  emote
      *         The {@link net.dv8tion.jda.api.entities.Emote Emote} to remove as a reaction from this Message.
      *
      * @throws java.lang.UnsupportedOperationException
-     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     *         If this is a system message
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the MessageChannel this message was sent in was a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
      *         and the logged in account does not have {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}
@@ -1741,6 +2047,8 @@ public interface Message extends ISnowflake, Formattable
      *             <li>If the provided {@link net.dv8tion.jda.api.entities.Emote Emote} cannot be used in the current channel.
      *                 See {@link Emote#canInteract(User, MessageChannel)} or {@link Emote#canInteract(Member)} for more information.</li>
      *         </ul>
+     * @throws IllegalStateException
+     *         If this is an ephemeral message
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link java.lang.Void}
      *
@@ -1779,7 +2087,7 @@ public interface Message extends ISnowflake, Formattable
      *     <br>The provided emote was deleted, doesn't exist, or is not available to the currently logged-in account in this channel.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
-     *         The reaction request was attempted after the Message had been deleted.</li>
+     *     <br>If the message has already been deleted. This might also be triggered for ephemeral messages.</li>
      * </ul>
      *
      * @param  emote
@@ -1788,7 +2096,7 @@ public interface Message extends ISnowflake, Formattable
      *         The {@link net.dv8tion.jda.api.entities.User User} to remove the reaction for.
      *
      * @throws java.lang.UnsupportedOperationException
-     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     *         If this is a system message
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the MessageChannel this message was sent in was a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
      *         and the logged in account does not have {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}.
@@ -1800,9 +2108,13 @@ public interface Message extends ISnowflake, Formattable
      *             <li>If the provided user is null</li>
      *         </ul>
      * @throws java.lang.IllegalStateException
-     *         If this message was <b>not</b> sent in a
+     * <ul>
+     *     <li>If this message was <b>not</b> sent in a
      *         {@link net.dv8tion.jda.api.entities.Guild Guild}
-     *         <b>and</b> the given user is <b>not</b> the {@link net.dv8tion.jda.api.entities.SelfUser SelfUser}.
+     *         <b>and</b> the given user is <b>not</b> the {@link net.dv8tion.jda.api.entities.SelfUser SelfUser}.</li>
+     *     <li>If this message is ephemeral</li>
+     * </ul>
+     *        
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link java.lang.Void}
      *
@@ -1847,19 +2159,21 @@ public interface Message extends ISnowflake, Formattable
      *         <a href="https://unicode.org/emoji/charts/full-emoji-list.html" target="_blank">Emoji Table</a></li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
-     *         The reaction request was attempted after the Message had been deleted.</li>
+     *     <br>If the message has already been deleted. This might also be triggered for ephemeral messages.</li>
      * </ul>
      *
      * @param  unicode
      *         The unicode emoji to add as a reaction to this Message.
      *
      * @throws java.lang.UnsupportedOperationException
-     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     *         If this is a system message
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the MessageChannel this message was sent in was a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
      *         and the logged in account does not have {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}
      * @throws java.lang.IllegalArgumentException
      *         If the provided unicode emoji is null or empty.
+     * @throws IllegalStateException
+     *         If this is an ephemeral message
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link java.lang.Void}
      *
@@ -1900,7 +2214,7 @@ public interface Message extends ISnowflake, Formattable
      *         in the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} when removing the reaction.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
-     *         The reaction request was attempted after the Message had been deleted.</li>
+     *     <br>If the message has already been deleted. This might also be triggered for ephemeral messages.</li>
      * </ul>
      *
      * @param  unicode
@@ -1909,7 +2223,7 @@ public interface Message extends ISnowflake, Formattable
      *         The {@link net.dv8tion.jda.api.entities.User User} to remove the reaction for.
      *
      * @throws java.lang.UnsupportedOperationException
-     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     *         If this is a system message
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the MessageChannel this message was sent in was a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
      *         and the logged in account does not have
@@ -1920,9 +2234,14 @@ public interface Message extends ISnowflake, Formattable
      * @throws java.lang.IllegalArgumentException
      *         If the provided unicode emoji is null or empty or if the provided user is null.
      * @throws java.lang.IllegalStateException
-     *         If this message was <b>not</b> sent in a
-     *         {@link net.dv8tion.jda.api.entities.Guild Guild}
-     *         <b>and</b> the given user is <b>not</b> the {@link net.dv8tion.jda.api.entities.SelfUser SelfUser}.
+     *         If this message:
+     *         <ul>
+     *             <li>Was <b>not</b> sent in a
+     *                 {@link net.dv8tion.jda.api.entities.Guild Guild}
+     *                 <b>and</b> the given user is <b>not</b> the {@link net.dv8tion.jda.api.entities.SelfUser SelfUser}.</li>
+     *             <li>Is ephemeral</li>
+     *         </ul>
+     *         
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link java.lang.Void}
      *
@@ -1951,20 +2270,21 @@ public interface Message extends ISnowflake, Formattable
      *     <br>The provided emote was deleted, doesn't exist, or is not available to the currently logged-in account in this channel.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
-     *         The reaction request was attempted after the Message had been deleted.</li>
+     *     <br>If the message has already been deleted. This might also be triggered for ephemeral messages.</li>
      * </ul>
      *
      * @param  emote
      *         The {@link net.dv8tion.jda.api.entities.Emote emote} to retrieve users for.
      *
      * @throws java.lang.UnsupportedOperationException
-     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     *         If this is a system message
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the MessageChannel this message was sent in was a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} and the
      *         logged in account does not have {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY} in the channel.
      * @throws java.lang.IllegalArgumentException
      *         If the provided {@link net.dv8tion.jda.api.entities.Emote Emote} is null.
-     *
+     * @throws IllegalStateException
+     *         If this Message is ephemeral
      * @return The {@link net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationAction ReactionPaginationAction} of the emote's users.
      *
      * @since  4.1.0
@@ -1994,20 +2314,21 @@ public interface Message extends ISnowflake, Formattable
      *         <a href="https://unicode.org/emoji/charts/full-emoji-list.html" target="_blank">Emoji Table</a></li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
-     *         The reaction request was attempted after the Message had been deleted.</li>
+     *     <br>If the message has already been deleted. This might also be triggered for ephemeral messages.</li>
      * </ul>
      *
      * @param  unicode
      *         The unicode emote to retrieve users for.
      *
      * @throws java.lang.UnsupportedOperationException
-     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     *         If this is a system message
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the MessageChannel this message was sent in was a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} and the
      *         logged in account does not have {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY} in the channel.
      * @throws java.lang.IllegalArgumentException
      *         If the provided unicode emoji is null or empty.
-     *
+     * @throws IllegalStateException
+     *         If this Message is ephemeral
      * @return The {@link net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationAction ReactionPaginationAction} of the emoji's users.
      *
      * @since  4.1.0
@@ -2028,7 +2349,7 @@ public interface Message extends ISnowflake, Formattable
      *         The unicode value of the reaction emoji.
      *
      * @throws java.lang.UnsupportedOperationException
-     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     *         If this is a system message
      * @throws java.lang.IllegalArgumentException
      *         If the provided unicode value is null or empty.
      *
@@ -2052,7 +2373,7 @@ public interface Message extends ISnowflake, Formattable
      *         The string id of the reaction emote.
      *
      * @throws java.lang.UnsupportedOperationException
-     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     *         If this is a system message
      * @throws java.lang.IllegalArgumentException
      *         If the provided id is not a valid snowflake.
      *
@@ -2076,7 +2397,7 @@ public interface Message extends ISnowflake, Formattable
      *         The long id of the reaction emote.
      *
      * @throws java.lang.UnsupportedOperationException
-     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     *         If this is a system message
      *
      * @return The {@link net.dv8tion.jda.api.entities.MessageReaction.ReactionEmote ReactionEmote} of this message or null if not present.
      *
@@ -2103,13 +2424,13 @@ public interface Message extends ISnowflake, Formattable
      *         in the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} when adding the reaction.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
-     *         The suppress-embeds request was attempted after the Message had been deleted.</li>
+     *     <br>If the message has already been deleted. This might also be triggered for ephemeral messages.</li>
      * </ul>
      *
      * @param  suppressed
      *         Whether or not the embed should be suppressed
      * @throws java.lang.UnsupportedOperationException
-     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     *         If this is a system message
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the MessageChannel this message was sent in was a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
      *         and the currently logged in account does not have
@@ -2117,6 +2438,8 @@ public interface Message extends ISnowflake, Formattable
      * @throws net.dv8tion.jda.api.exceptions.PermissionException
      *         If the MessageChannel this message was sent in was a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}
      *         and the message was not sent by the currently logged in account.
+     * @throws IllegalStateException 
+     *         If this Message is ephemeral
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction} - Type: {@link java.lang.Void}
      * @see    #isSuppressedEmbeds()
      */
@@ -2143,17 +2466,19 @@ public interface Message extends ISnowflake, Formattable
      *         {@link net.dv8tion.jda.api.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE} in the TextChannel.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
-     *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or
-     *         the message it referred to has already been deleted.</li>
+     *     <br>If the message has already been deleted. This might also be triggered for ephemeral messages.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
      *     <br>The request was attempted after the channel was deleted.</li>
      * </ul>
      *
      * @throws java.lang.UnsupportedOperationException
-     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     *         If this is a system message
      * @throws IllegalStateException
-     *         If the channel is not a text or news channel. See {@link TextChannel#isNews()}.
+     *         <ul>
+     *             <li>If the channel is not a text or news channel. See {@link TextChannel#isNews()}.</li>
+     *             <li>If the message is ephemeral.</li>
+     *         </ul>
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have
      *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} in this channel
@@ -2174,7 +2499,7 @@ public interface Message extends ISnowflake, Formattable
      * {@link net.dv8tion.jda.api.entities.Message.MessageFlag#EMBEDS_SUPPRESSED MessageFlag#EMBEDS_SUPPRESSED}
      *
      * @throws java.lang.UnsupportedOperationException
-     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     *         If this is a system message
      * @return Whether or not Embeds are suppressed for this Message.
      * @see    #suppressEmbeds(boolean)
      */
@@ -2184,12 +2509,33 @@ public interface Message extends ISnowflake, Formattable
      * Returns an EnumSet of all {@link Message.MessageFlag MessageFlags} present for this Message.
      *
      * @throws java.lang.UnsupportedOperationException
-     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     *         If this is a system message
      * @return Never-Null EnumSet of present {@link Message.MessageFlag MessageFlags}
      * @see    Message.MessageFlag
      */
     @Nonnull
     EnumSet<MessageFlag> getFlags();
+
+    /**
+     * Returns the raw message flags of this message
+     * 
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is a system message
+     * @return The raw message flags
+     * @see    #getFlags()
+     */
+    long getFlagsRaw();
+
+    /**
+     * Whether this message is ephemeral.
+     * <br>The message being ephemeral means it is only visible to the bot and the interacting user
+     * <br>This is a shortcut method for checking if {@link #getFlags()} contains {@link MessageFlag#EPHEMERAL}
+     * 
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is a system message
+     * @return Whether the message is ephemeral
+     */
+    boolean isEphemeral();
 
     /**
      * This specifies the {@link net.dv8tion.jda.api.entities.MessageType MessageType} of this Message.
@@ -2199,12 +2545,25 @@ public interface Message extends ISnowflake, Formattable
      * or special messages like {@link net.dv8tion.jda.api.entities.MessageType#GUILD_MEMBER_JOIN welcome messages}.
      *
      * @throws java.lang.UnsupportedOperationException
-     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     *         If this is a system message
      *
      * @return The {@link net.dv8tion.jda.api.entities.MessageType MessageType} of this message.
      */
     @Nonnull
     MessageType getType();
+
+    /**
+     * This is sent on the message object when the message is a response to an {@link net.dv8tion.jda.api.interactions.Interaction Interaction} without an existing message.
+     *
+     * <p>This means responses to Message Components do not include this property, instead including a message reference object as components always exist on preexisting messages.
+     *
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is a system message
+     *
+     * @return The {@link net.dv8tion.jda.api.entities.Message.Interaction Interaction} of this message.
+     */
+    @Nullable
+    Interaction getInteraction();
 
     /**
      * Mention constants, useful for use with {@link java.util.regex.Pattern Patterns}
@@ -2298,7 +2657,16 @@ public interface Message extends ISnowflake, Formattable
         /**
          * Indicates, that this Message came from the urgent message system
          */
-        URGENT(4);
+        URGENT(4),
+        /**
+         * Indicates, that this Message is ephemeral, the Message is only visible to the bot and the interacting user
+         * @see Message#isEphemeral
+         */
+        EPHEMERAL(6),
+        /**
+         * Indicates, that this Message is an interaction response and the bot is "thinking"
+         */
+        LOADING(7);
 
         private final int value;
 
@@ -2370,10 +2738,11 @@ public interface Message extends ISnowflake, Formattable
         private final int size;
         private final int height;
         private final int width;
+        private final boolean ephemeral;
 
         private final JDAImpl jda;
 
-        public Attachment(long id, String url, String proxyUrl, String fileName, String contentType, int size, int height, int width, JDAImpl jda)
+        public Attachment(long id, String url, String proxyUrl, String fileName, String contentType, int size, int height, int width, boolean ephemeral, JDAImpl jda)
         {
             this.id = id;
             this.url = url;
@@ -2383,6 +2752,7 @@ public interface Message extends ISnowflake, Formattable
             this.size = size;
             this.height = height;
             this.width = width;
+            this.ephemeral = ephemeral;
             this.jda = jda;
         }
 
@@ -2731,6 +3101,17 @@ public interface Message extends ISnowflake, Formattable
         }
 
         /**
+         * Whether or not this attachment is from an ephemeral Message.
+         * <br>If this Attachment is ephemeral, it will automatically be removed after 2 weeks. The attachment is guaranteed to be available as long as the message itself exists.
+         *
+         * @return True if this attachment is from an ephemeral message
+         */
+        public boolean isEphemeral()
+        {
+            return ephemeral;
+        }
+
+        /**
          * Whether or not this attachment is an Image,
          * based on {@link #getWidth()}, {@link #getHeight()}, and {@link #getFileExtension()}.
          *
@@ -2769,5 +3150,88 @@ public interface Message extends ISnowflake, Formattable
             return getFileName().startsWith("SPOILER_");
         }
 
+    }
+
+    /**
+     * Represents an {@link net.dv8tion.jda.api.interactions.Interaction Interaction} provided with a {@link net.dv8tion.jda.api.entities.Message Message}.
+     */
+    class Interaction implements ISnowflake
+    {
+        private final long id;
+        private final int type;
+        private final String name;
+        private final User user;
+        private final Member member;
+
+        public Interaction(long id, int type, String name, User user, Member member)
+        {
+            this.id = id;
+            this.type = type;
+            this.name = name;
+            this.user = user;
+            this.member = member;
+        }
+
+        @Override
+        public long getIdLong()
+        {
+            return id;
+        }
+
+        /**
+         * The raw interaction type.
+         * <br>It is recommended to use {@link #getType()} instead.
+         *
+         * @return The raw interaction type
+         */
+        public int getTypeRaw()
+        {
+            return type;
+        }
+
+        /**
+         * The {@link net.dv8tion.jda.api.interactions.InteractionType} for this interaction.
+         *
+         * @return The {@link net.dv8tion.jda.api.interactions.InteractionType} or {@link net.dv8tion.jda.api.interactions.InteractionType#UNKNOWN}
+         */
+        @Nonnull
+        public InteractionType getType()
+        {
+            return InteractionType.fromKey(getTypeRaw());
+        }
+
+        /**
+         * The command name.
+         *
+         * @return The command name
+         */
+        @Nonnull
+        public String getName()
+        {
+            return name;
+        }
+
+        /**
+         * The {@link User} who caused this interaction.
+         *
+         * @return The {@link User}
+         */
+        @Nonnull
+        public User getUser()
+        {
+            return user;
+        }
+
+        /**
+         * The {@link Member} who caused this interaction.
+         * <br>This is null if the interaction is not from a guild.
+         *
+         * @return The {@link Member}
+         */
+        @Nullable
+        public Member getMember()
+        {
+            return member;
+        }
     }
 }

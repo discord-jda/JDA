@@ -22,7 +22,9 @@ import net.dv8tion.jda.api.requests.RestAction;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * Interaction on a {@link Button} component.
@@ -51,7 +53,6 @@ public interface ButtonInteraction extends ComponentInteraction
 
     /**
      * Update the button with a new button instance.
-     * <br>This only works for non-ephemeral messages where {@link #getMessage()} is available!
      *
      * <p>If this interaction is already acknowledged this will use {@link #getHook()}
      * and otherwise {@link #editComponents(Collection)} directly to acknowledge the interaction.
@@ -69,28 +70,8 @@ public interface ButtonInteraction extends ComponentInteraction
     default RestAction<Void> editButton(@Nullable Button newButton)
     {
         Message message = getMessage();
-        if (message == null)
-            throw new IllegalStateException("Cannot update button for ephemeral messages! Discord does not provide enough information to perform the update.");
         List<ActionRow> components = new ArrayList<>(message.getActionRows());
-        String id = getComponentId();
-        find: for (Iterator<ActionRow> rows = components.iterator(); rows.hasNext();)
-        {
-            List<Component> row = rows.next().getComponents();
-            for (ListIterator<Component> it = row.listIterator(); it.hasNext();)
-            {
-                Component component = it.next();
-                if (id.equals(component.getId()))
-                {
-                    if (newButton == null)
-                        it.remove();
-                    else
-                        it.set(newButton);
-                    if (row.isEmpty())
-                        rows.remove();
-                    break find;
-                }
-            }
-        }
+        ComponentLayout.updateComponent(components, getComponentId(), newButton);
 
         if (isAcknowledged())
             return getHook().editMessageComponentsById(message.getId(), components).map(it -> null);

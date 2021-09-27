@@ -959,12 +959,13 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         }
         catch (ParsingException ex)
         {
-            LOG.warn("Got an unexpected Json-parse error. Please redirect following message to the devs:\n\t{}\n\t{} -> {}",
-                ex.getMessage(), type, content, ex);
+            LOG.warn("Got an unexpected Json-parse error. Please redirect the following message to the devs:\n\tJDA {}\n\t{}\n\t{} -> {}",
+                JDAInfo.VERSION, ex.getMessage(), type, content, ex);
         }
         catch (Exception ex)
         {
-            LOG.error("Got an unexpected error. Please redirect following message to the devs:\n\t{} -> {}", type, content, ex);
+            LOG.error("Got an unexpected error. Please redirect the following message to the devs:\n\tJDA {}\n\t{} -> {}",
+                JDAInfo.VERSION, type, content, ex);
         }
 
         if (responseTotal % EventCache.TIMEOUT_AMOUNT == 0)
@@ -1348,6 +1349,9 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         handlers.put("MESSAGE_REACTION_REMOVE_EMOTE", new MessageReactionClearEmoteHandler(api));
         handlers.put("MESSAGE_UPDATE",                new MessageUpdateHandler(api));
         handlers.put("READY",                         new ReadyHandler(api));
+        handlers.put("STAGE_INSTANCE_CREATE",         new StageInstanceCreateHandler(api));
+        handlers.put("STAGE_INSTANCE_DELETE",         new StageInstanceDeleteHandler(api));
+        handlers.put("STAGE_INSTANCE_UPDATE",         new StageInstanceUpdateHandler(api));
         handlers.put("USER_UPDATE",                   new UserUpdateHandler(api));
         handlers.put("VOICE_SERVER_UPDATE",           new VoiceServerUpdateHandler(api));
         handlers.put("VOICE_STATE_UPDATE",            new VoiceStateUpdateHandler(api));

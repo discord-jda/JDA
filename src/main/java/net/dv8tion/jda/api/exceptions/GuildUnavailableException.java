@@ -25,7 +25,7 @@ import net.dv8tion.jda.annotations.ForRemoval;
  * @deprecated This will be removed in favor of a better system which does not keep unavailable guilds in cache in the first place.
  */
 @Deprecated
-@ForRemoval
+@ForRemoval(deadline = "4.4.0")
 @DeprecatedSince("4.1.0")
 public class GuildUnavailableException extends RuntimeException
 {

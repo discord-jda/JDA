@@ -123,9 +123,11 @@ public interface UpdateInteractionAction extends InteractionCallbackAction
      *         The action row components, such as {@link net.dv8tion.jda.api.interactions.components.Button Buttons}
      *
      * @throws IllegalArgumentException
-     *         If null or more than 5 components are provided
+     *         If null or an invalid number of components are provided
      *
      * @return The same update action, for chaining convenience
+     *
+     * @see    ActionRow#of(Component...)
      */
     @Nonnull
     @CheckReturnValue
@@ -141,9 +143,11 @@ public interface UpdateInteractionAction extends InteractionCallbackAction
      *         The action row components, such as {@link net.dv8tion.jda.api.interactions.components.Button Buttons}
      *
      * @throws IllegalArgumentException
-     *         If null or more than 5 components are provided
+     *         If null or an invalid number of components are provided
      *
      * @return The same update action, for chaining convenience
+     *
+     * @see    ActionRow#of(Collection)
      */
     @Nonnull
     @CheckReturnValue

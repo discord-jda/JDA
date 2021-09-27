@@ -17,11 +17,14 @@
 package net.dv8tion.jda.api.interactions.commands;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.ISnowflake;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.privileges.CommandPrivilege;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.CommandEditAction;
+import net.dv8tion.jda.api.utils.TimeUtil;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.DataType;
@@ -33,6 +36,7 @@ import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
+import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -58,7 +62,7 @@ public class Command implements ISnowflake
     private final List<Option> options;
     private final List<SubcommandGroup> groups;
     private final List<Subcommand> subcommands;
-    private final long id, guildId, applicationId;
+    private final long id, guildId, applicationId, version;
     private final boolean defaultEnabled;
 
     public Command(JDAImpl api, Guild guild, DataObject json)
@@ -74,6 +78,7 @@ public class Command implements ISnowflake
         this.options = parseOptions(json, OPTION_TEST, Option::new);
         this.groups = parseOptions(json, GROUP_TEST, SubcommandGroup::new);
         this.subcommands = parseOptions(json, SUBCOMMAND_TEST, Subcommand::new);
+        this.version = json.getUnsignedLong("version", id);
     }
 
     protected static <T> List<T> parseOptions(DataObject json, Predicate<DataObject> test, Function<DataObject, T> transform)
@@ -310,6 +315,33 @@ public class Command implements ISnowflake
         return Long.toUnsignedString(applicationId);
     }
 
+    /**
+     * The version of this command.
+     * <br>This changes when a command is updated through {@link net.dv8tion.jda.api.JDA#upsertCommand(CommandData) upsertCommand}, {@link net.dv8tion.jda.api.JDA#updateCommands() updateCommands}, or {@link net.dv8tion.jda.api.JDA#editCommandById(String) editCommandById}
+     * <br>Useful for checking if command cache is outdated
+     *
+     * @return The version of the command as a snowflake id.
+     *
+     * @see #getTimeModified()
+     */
+    public long getVersion()
+    {
+        return version;
+    }
+
+    /**
+     * The time this command was updated last.
+     *
+     * @return Time this command was updated last.
+     *
+     * @see #getVersion()
+     */
+    @Nonnull
+    public OffsetDateTime getTimeModified()
+    {
+        return TimeUtil.getTimeCreated(getVersion());
+    }
+
     @Override
     public long getIdLong()
     {
@@ -340,15 +372,16 @@ public class Command implements ISnowflake
 
     /**
      * Predefined choice used for options.
-     * 
+     *
      * @see net.dv8tion.jda.api.interactions.commands.build.OptionData#addChoices(Command.Choice...)
      * @see net.dv8tion.jda.api.interactions.commands.build.OptionData#addChoices(Collection)
      */
     public static class Choice
     {
         private final String name;
-        private final long intValue;
-        private final String stringValue;
+        private long intValue = 0;
+        private double doubleValue = Double.NaN;
+        private String stringValue = null;
 
         /**
          * Create a Choice tuple
@@ -361,8 +394,21 @@ public class Command implements ISnowflake
         public Choice(@Nonnull String name, long value)
         {
             this.name = name;
-            this.intValue = value;
-            this.stringValue = Long.toString(value);
+            setIntValue(value);
+        }
+
+        /**
+         * Create a Choice tuple
+         *
+         * @param name
+         *        The display name of this choice
+         * @param value
+         *        The double value you receive in a command option
+         */
+        public Choice(@Nonnull String name, double value)
+        {
+            this.name = name;
+            setDoubleValue(value);
         }
 
         /**
@@ -376,8 +422,7 @@ public class Command implements ISnowflake
         public Choice(@Nonnull String name, @Nonnull String value)
         {
             this.name = name;
-            this.intValue = 0;
-            this.stringValue = value;
+            setStringValue(value);
         }
 
         /**
@@ -397,13 +442,15 @@ public class Command implements ISnowflake
             this.name = json.getString("name");
             if (json.isType("value", DataType.INT))
             {
-                this.intValue = json.getLong("value");
-                this.stringValue = Long.toString(intValue); // does this make sense?
+                setIntValue(json.getLong("value"));
+            }
+            else if (json.isType("value", DataType.FLOAT))
+            {
+                setDoubleValue(json.getDouble("value"));
             }
             else
             {
-                this.intValue = 0;
-                this.stringValue = json.getString("value");
+                setStringValue(json.getString("value"));
             }
         }
 
@@ -417,6 +464,16 @@ public class Command implements ISnowflake
         public String getName()
         {
             return name;
+        }
+
+        /**
+         * The value of this choice.
+         *
+         * @return The double value, or NaN if this is not a numeric choice value
+         */
+        public double getAsDouble()
+        {
+            return doubleValue;
         }
 
         /**
@@ -460,6 +517,27 @@ public class Command implements ISnowflake
         {
             return "Choice(" + name + "," + stringValue + ")";
         }
+
+        private void setIntValue(long value)
+        {
+            this.doubleValue = value;
+            this.intValue = value;
+            this.stringValue = Long.toString(value);
+        }
+
+        private void setDoubleValue(double value)
+        {
+            this.doubleValue = value;
+            this.intValue = (long) value;
+            this.stringValue = Double.toString(value);
+        }
+
+        private void setStringValue(@Nonnull String value)
+        {
+            this.doubleValue = Double.NaN;
+            this.intValue = 0;
+            this.stringValue = value;
+        }
     }
 
     /**
@@ -469,6 +547,8 @@ public class Command implements ISnowflake
     {
         private final String name, description;
         private final int type;
+        private final boolean required;
+        private final Set<ChannelType> channelTypes;
         private final List<Choice> choices;
 
         public Option(@Nonnull DataObject json)
@@ -476,6 +556,10 @@ public class Command implements ISnowflake
             this.name = json.getString("name");
             this.description = json.getString("description");
             this.type = json.getInt("type");
+            this.required = json.getBoolean("required");
+            this.channelTypes = Collections.unmodifiableSet(json.optArray("channel_types")
+                    .map(it -> it.stream(DataArray::getInt).map(ChannelType::fromId).collect(Collectors.toSet()))
+                    .orElse(Collections.emptySet()));
             this.choices = json.optArray("choices")
                 .map(it -> it.stream(DataArray::getObject).map(Choice::new).collect(Collectors.toList()))
                 .orElse(Collections.emptyList());
@@ -514,6 +598,16 @@ public class Command implements ISnowflake
         }
 
         /**
+         * Whether this option is required
+         *
+         * @return True if this option is required
+         */
+        public boolean isRequired()
+        {
+            return required;
+        }
+
+        /**
          * The {@link OptionType}.
          *
          * @return The type
@@ -522,6 +616,18 @@ public class Command implements ISnowflake
         public OptionType getType()
         {
             return OptionType.fromKey(type);
+        }
+
+        /**
+         * The {@link ChannelType ChannelTypes} this option is restricted to.
+         * <br>This is empty if the option is not of type {@link OptionType#CHANNEL CHANNEL} or not restricted to specific types.
+         *
+         * @return Immutable {@link Set} of {@link ChannelType}
+         */
+        @Nonnull
+        public Set<ChannelType> getChannelTypes()
+        {
+            return channelTypes;
         }
 
         /**
@@ -539,7 +645,7 @@ public class Command implements ISnowflake
         @Override
         public int hashCode()
         {
-            return Objects.hash(name, description, type, choices);
+            return Objects.hash(name, description, type, choices, channelTypes);
         }
 
         @Override
@@ -551,6 +657,7 @@ public class Command implements ISnowflake
             return Objects.equals(other.name, name)
                 && Objects.equals(other.description, description)
                 && Objects.equals(other.choices, choices)
+                && Objects.equals(other.channelTypes, channelTypes)
                 && other.type == type;
         }
 
@@ -599,7 +706,7 @@ public class Command implements ISnowflake
         }
 
         /**
-         * The options for this subcommand, or the subcommands whtin this group.
+         * The options for this subcommand, or the subcommands within this group.
          *
          * @return Immutable list of Options
          */

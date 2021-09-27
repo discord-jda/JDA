@@ -26,7 +26,9 @@ import net.dv8tion.jda.internal.entities.GuildVoiceStateImpl;
 import net.dv8tion.jda.internal.entities.MemberImpl;
 import net.dv8tion.jda.internal.entities.VoiceChannelImpl;
 import net.dv8tion.jda.internal.managers.AudioManagerImpl;
+import net.dv8tion.jda.internal.requests.WebSocketClient;
 
+import java.time.OffsetDateTime;
 import java.util.Objects;
 
 public class VoiceStateUpdateHandler extends SocketHandler
@@ -44,6 +46,14 @@ public class VoiceStateUpdateHandler extends SocketHandler
             return null; //unhandled for calls
         if (getJDA().getGuildSetupController().isLocked(guildId))
             return guildId;
+
+        // TODO: Handle these voice states properly
+        if (content.isNull("member"))
+        {
+            WebSocketClient.LOG.debug("Discarding VOICE_STATE_UPDATE with missing member. JSON: {}", content);
+            return null;
+        }
+
         handleGuildVoiceState(content);
         return null;
     }
@@ -60,6 +70,15 @@ public class VoiceStateUpdateHandler extends SocketHandler
         boolean guildDeafened = content.getBoolean("deaf");
         boolean suppressed = content.getBoolean("suppress");
         boolean stream = content.getBoolean("self_stream");
+        boolean video = content.getBoolean("self_video", false);
+        String requestToSpeak = content.getString("request_to_speak_timestamp", null);
+        OffsetDateTime requestToSpeakTime = null;
+        long requestToSpeakTimestamp = 0L;
+        if (requestToSpeak != null)
+        {
+            requestToSpeakTime = OffsetDateTime.parse(requestToSpeak);
+            requestToSpeakTimestamp = requestToSpeakTime.toInstant().toEpochMilli();
+        }
 
         Guild guild = getJDA().getGuildById(guildId);
         if (guild == null)
@@ -128,10 +147,22 @@ public class VoiceStateUpdateHandler extends SocketHandler
             getJDA().getEntityBuilder().updateMemberCache(member);
             getJDA().handleEvent(new GuildVoiceStreamEvent(getJDA(), responseNumber, member, stream));
         }
+        if (video != vState.isSendingVideo())
+        {
+            vState.setVideo(video);
+            getJDA().getEntityBuilder().updateMemberCache(member);
+            getJDA().handleEvent(new GuildVoiceVideoEvent(getJDA(), responseNumber, member, video));
+        }
         if (wasMute != vState.isMuted())
             getJDA().handleEvent(new GuildVoiceMuteEvent(getJDA(), responseNumber, member));
         if (wasDeaf != vState.isDeafened())
             getJDA().handleEvent(new GuildVoiceDeafenEvent(getJDA(), responseNumber, member));
+        if (requestToSpeakTimestamp != vState.getRequestToSpeak())
+        {
+            OffsetDateTime oldRequestToSpeak = vState.getRequestToSpeakTimestamp();
+            vState.setRequestToSpeak(requestToSpeakTime);
+            getJDA().handleEvent(new GuildVoiceRequestToSpeakEvent(getJDA(), responseNumber, member, oldRequestToSpeak, requestToSpeakTime));
+        }
 
         if (!Objects.equals(channel, vState.getChannel()))
         {
@@ -152,7 +183,7 @@ public class VoiceStateUpdateHandler extends SocketHandler
                 oldChannel.getConnectedMembersMap().remove(userId);
                 if (isSelf)
                     getJDA().getDirectAudioController().update(guild, null);
-                getJDA().getEntityBuilder().updateMemberCache(member);
+                getJDA().getEntityBuilder().updateMemberCache(member, memberJson.isNull("joined_at"));
                 getJDA().handleEvent(
                     new GuildVoiceLeaveEvent(
                         getJDA(), responseNumber,
@@ -193,5 +224,7 @@ public class VoiceStateUpdateHandler extends SocketHandler
             if (voiceInterceptor.onVoiceStateUpdate(new VoiceDispatchInterceptor.VoiceStateUpdate(channel, vState, allContent)))
                 getJDA().getDirectAudioController().update(guild, channel);
         }
+
+        ((GuildImpl) guild).updateRequestToSpeak();
     }
 }

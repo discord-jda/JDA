@@ -114,7 +114,7 @@ public class GenericGuildInviteEvent extends GenericGuildEvent
      * The {@link VoiceChannel} this invite points to.
      *
      * @throws IllegalStateException
-     *         If this did not happen in a channel of type {@link ChannelType#VOICE ChannelType.VOICE}
+     *         If this did not happen in a voice channel or stage channel
      *
      * @return {@link VoiceChannel}
      *
@@ -124,9 +124,28 @@ public class GenericGuildInviteEvent extends GenericGuildEvent
     @Nonnull
     public VoiceChannel getVoiceChannel()
     {
-        if (getChannelType() != ChannelType.VOICE)
-            throw new IllegalStateException("The channel is not of type VOICE");
+        if (!(channel instanceof VoiceChannel))
+            throw new IllegalStateException("The channel is not of type VOICE or STAGE");
         return (VoiceChannel) getChannel();
+    }
+
+    /**
+     * The {@link StageChannel} this invite points to.
+     *
+     * @throws IllegalStateException
+     *         If this did not happen in a channel of type {@link ChannelType#STAGE ChannelType.STAGE}
+     *
+     * @return {@link StageChannel}
+     *
+     * @see    #getChannel()
+     * @see    #getChannelType()
+     */
+    @Nonnull
+    public StageChannel getStageChannel()
+    {
+        if (getChannelType() != ChannelType.STAGE)
+            throw new IllegalStateException("The channel is not of type STAGE");
+        return (StageChannel) getChannel();
     }
 
     /**

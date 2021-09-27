@@ -39,5 +39,6 @@ public enum TargetType
     WEBHOOK,
     EMOTE,
     INTEGRATION,
+    STAGE_INSTANCE,
     UNKNOWN
 }

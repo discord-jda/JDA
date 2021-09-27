@@ -19,6 +19,7 @@ package net.dv8tion.jda.internal.entities;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
+import net.dv8tion.jda.api.interactions.components.ComponentLayout;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
@@ -27,13 +28,11 @@ import net.dv8tion.jda.internal.utils.Helpers;
 import org.apache.commons.collections4.Bag;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.time.OffsetDateTime;
-import java.util.EnumSet;
-import java.util.FormattableFlags;
-import java.util.Formatter;
-import java.util.List;
+import java.util.*;
 
 public abstract class AbstractMessage implements Message
 {
@@ -107,9 +106,11 @@ public abstract class AbstractMessage implements Message
         }
     }
 
+    @Nullable
     @Override
-    public Message getReferencedMessage()
+    public MessageReference getMessageReference()
     {
+        unsupported();
         return null;
     }
 
@@ -387,7 +388,15 @@ public abstract class AbstractMessage implements Message
 
     @Nonnull
     @Override
-    public MessageAction editMessage(@Nonnull MessageEmbed newContent)
+    public MessageAction editMessageEmbeds(@Nonnull Collection<? extends MessageEmbed> newContent)
+    {
+        unsupported();
+        return null;
+    }
+
+    @Nonnull
+    @Override
+    public MessageAction editMessageComponents(@Nonnull Collection<? extends ComponentLayout> components)
     {
         unsupported();
         return null;
@@ -588,9 +597,31 @@ public abstract class AbstractMessage implements Message
         return null;
     }
 
+    @Override
+    public long getFlagsRaw()
+    {
+        unsupported();
+        return 0;
+    }
+
+    @Override
+    public boolean isEphemeral()
+    {
+        unsupported();
+        return false;
+    }
+
     @Nonnull
     @Override
     public MessageType getType()
+    {
+        unsupported();
+        return null;
+    }
+
+    @Nullable
+    @Override
+    public Message.Interaction getInteraction()
     {
         unsupported();
         return null;

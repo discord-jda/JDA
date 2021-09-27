@@ -41,6 +41,7 @@ import javax.annotation.Nullable;
 import java.io.InputStream;
 import java.util.*;
 import java.util.function.Function;
+import java.util.stream.Stream;
 
 public class WebhookMessageActionImpl<T>
     extends TriggerRestAction<T>
@@ -128,8 +129,14 @@ public class WebhookMessageActionImpl<T>
     @Override
     public WebhookMessageActionImpl<T> addEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
     {
-        Checks.noneNull(embeds, "Message Embeds");
+        Checks.noneNull(embeds, "MessageEmbeds");
+        embeds.forEach(embed ->
+            Checks.check(embed.isSendable(),
+                "Provided Message contains an empty embed or an embed with a length greater than %d characters, which is the max for bot accounts!",
+                MessageEmbed.EMBED_MAX_LENGTH_BOT)
+        );
         Checks.check(this.embeds.size() + embeds.size() <= 10, "Cannot have more than 10 embeds in a message!");
+        Checks.check(Stream.concat(embeds.stream(), this.embeds.stream()).mapToInt(MessageEmbed::getLength).sum() <= MessageEmbed.EMBED_MAX_LENGTH_BOT, "The sum of all MessageEmbeds may not exceed %d!", MessageEmbed.EMBED_MAX_LENGTH_BOT);
         this.embeds.addAll(embeds);
         return this;
     }
