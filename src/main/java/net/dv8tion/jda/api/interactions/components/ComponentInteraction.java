@@ -62,11 +62,10 @@ public interface ComponentInteraction extends Interaction
 
     /**
      * The {@link Message} instance.
-     * <br>This is null on interactions for ephemeral messages.
      *
-     * @return The {@link Message}, or null if this message is ephemeral
+     * @return The {@link Message}
      */
-    @Nullable
+    @Nonnull
     Message getMessage();
 
     /**
