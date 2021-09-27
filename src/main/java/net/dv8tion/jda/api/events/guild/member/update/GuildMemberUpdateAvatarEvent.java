@@ -18,8 +18,9 @@ package net.dv8tion.jda.api.events.guild.member.update;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Member;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Indicates that a {@link net.dv8tion.jda.api.entities.Member Member} updated their {@link net.dv8tion.jda.api.entities.Guild Guild} avatar.
@@ -43,7 +44,7 @@ public class GuildMemberUpdateAvatarEvent extends GenericGuildMemberUpdateEvent<
 {
     public static final String IDENTIFIER = "member_avatar";
 
-    public GuildMemberUpdateAvatarEvent(@NotNull JDA api, long responseNumber, @NotNull Member member, @Nullable String oldAvatarId)
+    public GuildMemberUpdateAvatarEvent(@Nonnull JDA api, long responseNumber, @Nonnull Member member, @Nullable String oldAvatarId)
     {
         super(api, responseNumber, member, oldAvatarId, member.getAvatarId(), IDENTIFIER);
     }
@@ -53,9 +54,20 @@ public class GuildMemberUpdateAvatarEvent extends GenericGuildMemberUpdateEvent<
      *
      * @return The old avatar id
      */
+    @Nullable
     public String getOldAvatarId()
     {
         return getOldValue();
+    }
+
+    /**
+     * The previous avatar url
+     *
+     * @return The previous avatar url
+     */
+    @Nullable
+    public String getOldAvatarUrl() {
+        return previous == null ? null : String.format(Member.AVATAR_URL, getMember().getGuild().getId(), getMember().getId(), previous, previous.startsWith("a_") ? "gif" : "png");
     }
 
     /**
@@ -63,8 +75,19 @@ public class GuildMemberUpdateAvatarEvent extends GenericGuildMemberUpdateEvent<
      *
      * @return The new avatar id
      */
+    @Nullable
     public String getNewAvatarId()
     {
         return getNewValue();
+    }
+
+    /**
+     * The url of the new avatar
+     *
+     * @return The url of the new avatar
+     */
+    @Nullable
+    public String getNewAvatarUrl() {
+        return next == null ? null : String.format(Member.AVATAR_URL, getMember().getGuild().getId(), getMember().getId(), next, next.startsWith("a_") ? "gif" : "png");
     }
 }
