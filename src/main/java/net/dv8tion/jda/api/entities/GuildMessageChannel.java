@@ -9,6 +9,7 @@ import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 /**
@@ -339,7 +340,14 @@ public interface GuildMessageChannel extends GuildChannel, MessageChannel
      */
     @Nonnull
     @CheckReturnValue
-    RestAction<Void> deleteMessages(@Nonnull Collection<Message> messages);
+    default RestAction<Void> deleteMessages(@Nonnull Collection<Message> messages)
+    {
+        Checks.notEmpty(messages, "Messages collection");
+
+        return deleteMessagesByIds(messages.stream()
+                .map(ISnowflake::getId)
+                .collect(Collectors.toList()));
+    }
 
     /**
      * Bulk deletes a list of messages.
@@ -538,7 +546,11 @@ public interface GuildMessageChannel extends GuildChannel, MessageChannel
      */
     @Nonnull
     @CheckReturnValue
-    RestAction<Void> clearReactionsById(@Nonnull String messageId, @Nonnull Emote emote);
+    default RestAction<Void> clearReactionsById(@Nonnull String messageId, @Nonnull Emote emote)
+    {
+        Checks.notNull(emote, "Emote");
+        return clearReactionsById(messageId, emote.getName() + ":" + emote.getId());
+    }
 
     /**
      * Removes all reactions for the specified emoji.

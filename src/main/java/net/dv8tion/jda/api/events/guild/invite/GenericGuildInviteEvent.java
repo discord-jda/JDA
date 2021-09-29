@@ -111,6 +111,25 @@ public class GenericGuildInviteEvent extends GenericGuildEvent
     }
 
     /**
+     * The {@link NewsChannel} this invite points to.
+     *
+     * @throws IllegalStateException
+     *         If this did not happen in a channel of type {@link ChannelType#NEWS ChannelType.NEWS}
+     *
+     * @return {@link NewsChannel}
+     *
+     * @see    #getChannel()
+     * @see    #getChannelType()
+     */
+    @Nonnull
+    public NewsChannel getNewsChannel()
+    {
+        if (getChannelType() != ChannelType.NEWS)
+            throw new IllegalStateException("The channel is not of type NEWS");
+        return (NewsChannel) getChannel();
+    }
+
+    /**
      * The {@link VoiceChannel} this invite points to.
      *
      * @throws IllegalStateException

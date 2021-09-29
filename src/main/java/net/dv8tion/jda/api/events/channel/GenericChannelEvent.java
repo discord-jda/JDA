@@ -23,6 +23,7 @@ import net.dv8tion.jda.api.events.Event;
 
 import javax.annotation.Nonnull;
 
+//TODO-v5: Docs
 public class GenericChannelEvent extends Event
 {
     protected final Channel channel;

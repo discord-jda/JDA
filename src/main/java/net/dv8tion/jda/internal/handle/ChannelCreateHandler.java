@@ -64,6 +64,14 @@ public class ChannelCreateHandler extends SocketHandler
                         builder.createTextChannel(content, guildId)));
                 break;
             }
+            case NEWS:
+            {
+                jda.handleEvent(
+                    new ChannelCreateEvent(
+                        jda, responseNumber,
+                        builder.createNewsChannel(content, guildId)));
+                break;
+            }
             case VOICE:
             {
                 jda.handleEvent(

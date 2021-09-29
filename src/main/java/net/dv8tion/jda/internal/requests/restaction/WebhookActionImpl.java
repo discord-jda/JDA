@@ -17,8 +17,8 @@
 package net.dv8tion.jda.internal.requests.restaction;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.BaseGuildMessageChannel;
 import net.dv8tion.jda.api.entities.Icon;
-import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.Webhook;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
@@ -39,11 +39,11 @@ import java.util.function.BooleanSupplier;
  */
 public class WebhookActionImpl extends AuditableRestActionImpl<Webhook> implements WebhookAction
 {
-    protected final TextChannel channel;
+    protected final BaseGuildMessageChannel channel;
     protected String name;
     protected Icon avatar = null;
 
-    public WebhookActionImpl(JDA api, TextChannel channel, String name)
+    public WebhookActionImpl(JDA api, BaseGuildMessageChannel channel, String name)
     {
         super(api, Route.Channels.CREATE_WEBHOOK.compile(channel.getId()));
         this.channel = channel;
@@ -73,7 +73,7 @@ public class WebhookActionImpl extends AuditableRestActionImpl<Webhook> implemen
 
     @Nonnull
     @Override
-    public TextChannel getChannel()
+    public BaseGuildMessageChannel getChannel()
     {
         return channel;
     }

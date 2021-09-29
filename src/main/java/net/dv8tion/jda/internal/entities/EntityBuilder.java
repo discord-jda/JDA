@@ -313,6 +313,9 @@ public class EntityBuilder
         case TEXT:
             createTextChannel(guildObj, channelData, guildObj.getIdLong());
             break;
+        case NEWS:
+            createNewsChannel(guildObj, channelData, guildObj.getIdLong());
+            break;
         case STAGE:
             createStageChannel(guildObj, channelData, guildObj.getIdLong());
             break;
@@ -970,8 +973,49 @@ public class EntityBuilder
             .setTopic(json.getString("topic", null))
             .setPosition(json.getInt("position"))
             .setNSFW(json.getBoolean("nsfw"))
-            .setNews(json.getInt("type") == 5)
             .setSlowmode(json.getInt("rate_limit_per_user", 0));
+
+        createOverridesPass(channel, json.getArray("permission_overwrites"));
+        if (playbackCache)
+            getJDA().getEventCache().playbackCache(EventCache.Type.CHANNEL, id);
+        return channel;
+    }
+
+    public NewsChannel createNewsChannel(DataObject json, long guildId)
+    {
+        return createNewsChannel(null, json, guildId);
+
+    }
+
+    public NewsChannel createNewsChannel(GuildImpl guildObj, DataObject json, long guildId)
+    {
+        boolean playbackCache = false;
+        final long id = json.getLong("id");
+        NewsChannelImpl channel = (NewsChannelImpl) getJDA().getNewsChannelView().get(id);
+        if (channel == null)
+        {
+            if (guildObj == null)
+                guildObj = (GuildImpl) getJDA().getGuildsView().get(guildId);
+            SnowflakeCacheViewImpl<NewsChannel>
+                    guildNewsView = guildObj.getNewsChannelView(),
+                    newsView = getJDA().getNewsChannelView();
+            try (
+                    UnlockHook glock = guildNewsView.writeLock();
+                    UnlockHook jlock = newsView.writeLock())
+            {
+                channel = new NewsChannelImpl(id, guildObj);
+                guildNewsView.getMap().put(id, channel);
+                playbackCache = newsView.getMap().put(id, channel) == null;
+            }
+        }
+
+        channel
+                .setParent(json.getLong("parent_id", 0))
+                .setLastMessageId(json.getLong("last_message_id", 0))
+                .setName(json.getString("name"))
+                .setTopic(json.getString("topic", null))
+                .setPosition(json.getInt("position"))
+                .setNSFW(json.getBoolean("nsfw"));
 
         createOverridesPass(channel, json.getArray("permission_overwrites"));
         if (playbackCache)

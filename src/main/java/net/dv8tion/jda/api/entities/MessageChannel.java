@@ -98,9 +98,44 @@ public interface MessageChannel extends Channel, Formattable
      * @return The most recent message's id
      */
     @Nonnull
+    //TODO-v5: Revisit this. Surely this should be Nullable instead of throw an exception...
     default String getLatestMessageId()
     {
         return Long.toUnsignedString(getLatestMessageIdLong());
+    }
+
+
+    /**
+     * The id for the most recent message sent
+     * in this current MessageChannel.
+     * <br>This should only be used if {@link #hasLatestMessage()} returns {@code true}!
+     *
+     * <p>This value is updated on each {@link net.dv8tion.jda.api.events.message.MessageReceivedEvent MessageReceivedEvent}
+     * and <u><b>will be reset to {@code null} if the message associated with this ID gets deleted</b></u>
+     *
+     * @throws java.lang.IllegalStateException
+     *         If no message id is available
+     *
+     * @return The most recent message's id
+     */
+    long getLatestMessageIdLong();
+
+    /**
+     * Whether this MessageChannel contains a tracked most recent
+     * message or not.
+     *
+     * <p>This does not directly mean that {@link #getHistory()} will be unable to retrieve past messages,
+     * it merely means that the latest message is untracked by our internal cache meaning that
+     * if this returns {@code false} the {@link #getLatestMessageId()}
+     * method will throw an {@link java.util.NoSuchElementException NoSuchElementException}
+     *
+     * @return True, if a latest message id is available for retrieval by {@link #getLatestMessageId()}
+     *
+     * @see    #getLatestMessageId()
+     */
+    default boolean hasLatestMessage()
+    {
+        return getLatestMessageIdLong() != 0;
     }
 
     /**
@@ -255,41 +290,11 @@ public interface MessageChannel extends Channel, Formattable
     }
 
     /**
-     * The id for the most recent message sent
-     * in this current MessageChannel.
-     * <br>This should only be used if {@link #hasLatestMessage()} returns {@code true}!
-     *
-     * <p>This value is updated on each {@link net.dv8tion.jda.api.events.message.MessageReceivedEvent MessageReceivedEvent}
-     * and <u><b>will be reset to {@code null} if the message associated with this ID gets deleted</b></u>
-     *
-     * @throws java.lang.IllegalStateException
-     *         If no message id is available
-     *
-     * @return The most recent message's id
-     */
-    long getLatestMessageIdLong();
-
-    /**
-     * Whether this MessageChannel contains a tracked most recent
-     * message or not.
-     *
-     * <p>This does not directly mean that {@link #getHistory()} will be unable to retrieve past messages,
-     * it merely means that the latest message is untracked by our internal cache meaning that
-     * if this returns {@code false} the {@link #getLatestMessageId()}
-     * method will throw an {@link java.util.NoSuchElementException NoSuchElementException}
-     *
-     * @return True, if a latest message id is available for retrieval by {@link #getLatestMessageId()}
-     *
-     * @see    #getLatestMessageId()
-     */
-    boolean hasLatestMessage();
-
-    /**
      * Sends a plain text message to this channel.
      * <br>This will fail if this channel is an instance of {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} and
      * the currently logged in account does not have permissions to send a message to this channel.
      * <br>To determine if you are able to send a message in a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} use
-     * {@link net.dv8tion.jda.api.entities.Member#hasPermission(GuildChannel, net.dv8tion.jda.api.Permission...)
+     * {@link net.dv8tion.jda.api.entities.Member#hasPermission(IPermissionContainer, net.dv8tion.jda.api.Permission...)
      *  guild.getSelfMember().hasPermission(channel, Permission.MESSAGE_SEND)}.
      *
      * <p>For {@link net.dv8tion.jda.api.requests.ErrorResponse} information, refer to {@link #sendMessage(Message)}.
@@ -329,7 +334,7 @@ public interface MessageChannel extends Channel, Formattable
      * <br>This will fail if this channel is an instance of {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} and
      * the currently logged in account does not have permissions to send a message to this channel.
      * <br>To determine if you are able to send a message in a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} use
-     * {@link net.dv8tion.jda.api.entities.Member#hasPermission(GuildChannel, net.dv8tion.jda.api.Permission...)
+     * {@link net.dv8tion.jda.api.entities.Member#hasPermission(IPermissionContainer, net.dv8tion.jda.api.Permission...)
      *  guild.getSelfMember().hasPermission(channel, Permission.MESSAGE_SEND)}.
      *
      * <p>For {@link net.dv8tion.jda.api.requests.ErrorResponse} information, refer to {@link #sendMessage(Message)}.
@@ -377,7 +382,7 @@ public interface MessageChannel extends Channel, Formattable
      * <br>This will fail if this channel is an instance of {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} and
      * the currently logged in account does not have permissions to send a message to this channel.
      * <br>To determine if you are able to send a message in a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} use
-     * {@link net.dv8tion.jda.api.entities.Member#hasPermission(GuildChannel, net.dv8tion.jda.api.Permission...)
+     * {@link net.dv8tion.jda.api.entities.Member#hasPermission(IPermissionContainer, net.dv8tion.jda.api.Permission...)
      *  guild.getSelfMember().hasPermission(channel, Permission.MESSAGE_SEND)}.
      *
      * <p>For {@link net.dv8tion.jda.api.requests.ErrorResponse} information, refer to {@link #sendMessage(Message)}.
@@ -427,7 +432,7 @@ public interface MessageChannel extends Channel, Formattable
      * <br>This will fail if this channel is an instance of {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} and
      * the currently logged in account does not have permissions to send a message to this channel.
      * <br>To determine if you are able to send a message in a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} use
-     * {@link net.dv8tion.jda.api.entities.Member#hasPermission(GuildChannel, net.dv8tion.jda.api.Permission...)
+     * {@link net.dv8tion.jda.api.entities.Member#hasPermission(IPermissionContainer, net.dv8tion.jda.api.Permission...)
      *  guild.getSelfMember().hasPermission(channel, Permission.MESSAGE_SEND)}.
      *
      * <p>For {@link net.dv8tion.jda.api.requests.ErrorResponse} information, refer to {@link #sendMessage(Message)}.
@@ -476,7 +481,7 @@ public interface MessageChannel extends Channel, Formattable
      * <br>This will fail if this channel is an instance of {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} and
      * the currently logged in account does not have permissions to send a message to this channel.
      * <br>To determine if you are able to send a message in a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} use
-     * {@link net.dv8tion.jda.api.entities.Member#hasPermission(GuildChannel, net.dv8tion.jda.api.Permission...)
+     * {@link net.dv8tion.jda.api.entities.Member#hasPermission(IPermissionContainer, net.dv8tion.jda.api.Permission...)
      *  guild.getSelfMember().hasPermission(channel, Permission.MESSAGE_SEND)}.
      *
      * <p>For {@link net.dv8tion.jda.api.requests.ErrorResponse} information, refer to {@link #sendMessage(Message)}.
@@ -512,13 +517,12 @@ public interface MessageChannel extends Channel, Formattable
         return new MessageActionImpl(getJDA(), null, this).setEmbeds(embeds);
     }
 
-
     /**
      * Sends a specified {@link net.dv8tion.jda.api.entities.Message Message} to this channel.
      * <br>This will fail if this channel is an instance of {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} and
      * the currently logged in account does not have permissions to send a message to this channel.
      * <br>To determine if you are able to send a message in a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} use
-     * {@link net.dv8tion.jda.api.entities.Member#hasPermission(GuildChannel, net.dv8tion.jda.api.Permission...)
+     * {@link net.dv8tion.jda.api.entities.Member#hasPermission(IPermissionContainer, net.dv8tion.jda.api.Permission...)
      *  guild.getSelfMember().hasPermission(channel, Permission.MESSAGE_SEND)}.
      *
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:

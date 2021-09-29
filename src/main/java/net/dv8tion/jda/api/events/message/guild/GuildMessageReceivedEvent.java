@@ -33,6 +33,7 @@ import javax.annotation.Nullable;
  *
  * <p>This event requires the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MESSAGES GUILD_MESSAGES} intent to be enabled.
  */
+//TODO-v5: directly relies on TextChannel but actually should rely on GuildMessageChannel. However, we're likely killing the Guild/Private specific events, so not gonna update for now.
 public class GuildMessageReceivedEvent extends GenericGuildMessageEvent
 {
     private final Message message;

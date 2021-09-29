@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.entities.ChannelField;
 
 import javax.annotation.Nonnull;
 
+//TODO-v5: Docs
 public class ChannelUpdateNSFWEvent extends GenericChannelUpdateEvent<Boolean>
 {
     public static ChannelField FIELD = ChannelField.NSFW;
