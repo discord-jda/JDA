@@ -329,7 +329,7 @@ public interface MessageAction extends RestAction<Message>, Appendable, AllowedM
     }
 
     /**
-     * Whether to mention the used, when replying to a message.
+     * Whether to mention the user when replying to a message.
      * <br>This only matters in combination with {@link #reference(Message)} and {@link #referenceById(long)}!
      *
      * <p>This is true by default but can be configured using {@link #setDefaultMentionRepliedUser(boolean)}!
