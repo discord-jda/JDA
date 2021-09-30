@@ -61,9 +61,9 @@ public class RoleUpdateIconEvent extends GenericRoleUpdateEvent<String>
     }
 
     /**
-     * The old icon id
+     * The new icon id
      *
-     * @return The old icon id, or null
+     * @return The new icon id, or null
      */
     @Nullable
     public String getNewIconId()

@@ -45,6 +45,7 @@ public class RoleManagerImpl extends ManagerBase<RoleManager> implements RoleMan
     protected boolean hoist;
     protected boolean mentionable;
     protected Icon icon;
+    protected String emoji;
 
     /**
      * Creates a new RoleManager instance
@@ -183,6 +184,16 @@ public class RoleManagerImpl extends ManagerBase<RoleManager> implements RoleMan
     @Nonnull
     @Override
     @CheckReturnValue
+    public RoleManagerImpl setEmoji(String emoji)
+    {
+        this.emoji = emoji;
+        set |= EMOJI;
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    @CheckReturnValue
     public RoleManagerImpl givePermissions(@Nonnull Collection<Permission> perms)
     {
         Checks.noneNull(perms, "Permissions");
@@ -216,6 +227,8 @@ public class RoleManagerImpl extends ManagerBase<RoleManager> implements RoleMan
             object.put("color", color == Role.DEFAULT_COLOR_RAW ? 0 : color & 0xFFFFFF);
         if (shouldUpdate(ICON))
             object.put("icon", icon == null ? null : icon.getEncoding());
+        if (shouldUpdate(EMOJI))
+            object.put("unicode_emoji", emoji);
         reset();
         return getRequestBody(object);
     }

@@ -63,6 +63,7 @@ public class RoleImpl implements Role
     private int color;
     private int rawPosition;
     private String iconId;
+    private String emoji;
 
     public RoleImpl(long id, Guild guild)
     {
@@ -290,7 +291,8 @@ public class RoleImpl implements Role
                     .setHoisted(hoisted)
                     .setMentionable(mentionable)
                     .setName(name)
-                    .setPermissions(rawPermissions);
+                    .setPermissions(rawPermissions)
+                    .setEmoji(emoji); // the icon is not cloneable, we don't have access to it
     }
 
     @Nonnull
@@ -337,6 +339,13 @@ public class RoleImpl implements Role
     public String getIconId()
     {
         return iconId;
+    }
+
+    @Nullable
+    @Override
+    public String getEmoji()
+    {
+        return emoji;
     }
 
     @Nonnull
@@ -456,6 +465,12 @@ public class RoleImpl implements Role
     public RoleImpl setIconId(String iconId)
     {
         this.iconId = iconId;
+        return this;
+    }
+
+    public RoleImpl setEmoji(String emoji)
+    {
+        this.emoji = emoji;
         return this;
     }
 

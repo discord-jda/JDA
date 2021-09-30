@@ -65,6 +65,7 @@ public class GuildRoleUpdateHandler extends SocketHandler
         boolean hoisted = rolejson.getBoolean("hoist");
         boolean mentionable = rolejson.getBoolean("mentionable");
         String iconId = rolejson.getString("icon", null);
+        String emoji = rolejson.getString("unicode_emoji", null);
 
         if (!Objects.equals(name, role.getName()))
         {
@@ -130,6 +131,15 @@ public class GuildRoleUpdateHandler extends SocketHandler
                     new RoleUpdateIconEvent(
                             getJDA(), responseNumber,
                             role, oldIconId));
+        }
+        if (!Objects.equals(emoji, role.getEmoji()))
+        {
+            String oldEmoji = role.getEmoji();
+            role.setEmoji(emoji);
+            getJDA().handleEvent(
+                    new RoleUpdateEmojiEvent(
+                            getJDA(), responseNumber,
+                            role, oldEmoji));
         }
         return null;
     }
