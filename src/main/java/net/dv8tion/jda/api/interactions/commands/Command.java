@@ -54,11 +54,11 @@ public class Command implements ISnowflake
     private static final Predicate<DataObject> SUBCOMMAND_TEST = it -> OptionType.fromKey(it.getInt("type")) == OptionType.SUB_COMMAND;
     private static final Predicate<DataObject> GROUP_TEST = it -> OptionType.fromKey(it.getInt("type")) == OptionType.SUB_COMMAND_GROUP;
 
-    private final JDAImpl api;
-    private final Guild guild;
-    private final String name;
-    private final long id, guildId, applicationId, version;
-    private final boolean defaultEnabled;
+    protected final JDAImpl api;
+    protected final Guild guild;
+    protected final String name;
+    protected final long id, guildId, applicationId, version;
+    protected final boolean defaultEnabled;
 
     public Command(JDAImpl api, Guild guild, DataObject json)
     {
