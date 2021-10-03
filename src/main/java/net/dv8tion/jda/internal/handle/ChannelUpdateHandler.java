@@ -20,11 +20,7 @@ import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import net.dv8tion.jda.api.Region;
 import net.dv8tion.jda.api.entities.*;
-import net.dv8tion.jda.api.events.channel.category.update.CategoryUpdatePermissionsEvent;
-import net.dv8tion.jda.api.events.channel.store.update.StoreChannelUpdatePermissionsEvent;
-import net.dv8tion.jda.api.events.channel.text.update.TextChannelUpdatePermissionsEvent;
 import net.dv8tion.jda.api.events.channel.update.*;
-import net.dv8tion.jda.api.events.channel.voice.update.VoiceChannelUpdatePermissionsEvent;
 import net.dv8tion.jda.api.events.guild.override.PermissionOverrideCreateEvent;
 import net.dv8tion.jda.api.events.guild.override.PermissionOverrideDeleteEvent;
 import net.dv8tion.jda.api.events.guild.override.PermissionOverrideUpdateEvent;
@@ -468,42 +464,6 @@ public class ChannelUpdateHandler extends SocketHandler
                     channel, override));
             return true;
         });
-
-        if (changed.isEmpty())
-            return;
-        switch (channel.getType())
-        {
-        case CATEGORY:
-            api.handleEvent(
-                new CategoryUpdatePermissionsEvent(
-                    api, responseNumber,
-                    (Category) channel, changed));
-            break;
-        case STORE:
-            api.handleEvent(
-                new StoreChannelUpdatePermissionsEvent(
-                    api, responseNumber,
-                    (StoreChannel) channel, changed));
-            break;
-        case VOICE:
-            api.handleEvent(
-                new VoiceChannelUpdatePermissionsEvent(
-                    api, responseNumber,
-                    (VoiceChannel) channel, changed));
-            break;
-        case STAGE:
-            //TODO-v5: We are killing all of these events in v5, so don't add new event here
-            break;
-        case NEWS:
-            //TODO-v5: We are killing all of these events in v5, so don't add new event here
-            break;
-        case TEXT:
-            api.handleEvent(
-                new TextChannelUpdatePermissionsEvent(
-                    api, responseNumber,
-                    (TextChannel) channel, changed));
-            break;
-        }
     }
 
     private void addPermissionHolder(List<IPermissionHolder> changed, Guild guild, long id)

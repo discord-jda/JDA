@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.internal.handle;
 
+import net.dv8tion.jda.api.entities.Channel;
 import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.events.channel.ChannelCreateEvent;
 import net.dv8tion.jda.api.utils.data.DataObject;
@@ -44,64 +45,31 @@ public class ChannelCreateHandler extends SocketHandler
                 return guildId;
         }
 
-        EntityBuilder builder = jda.getEntityBuilder();
+        Channel channel = buildChannel(type, content, guildId);
+        if (channel == null) {
+            WebSocketClient.LOG.debug("Discord provided an CREATE_CHANNEL event with an unknown channel type! JSON: {}", content);
+            return null;
+        }
+
+        jda.handleEvent(new ChannelCreateEvent(jda, responseNumber, channel));
+
+        return null;
+    }
+
+    private Channel buildChannel(ChannelType type, DataObject content, long guildId)
+    {
+        EntityBuilder builder = getJDA().getEntityBuilder();
         switch (type)
         {
-            case STORE:
-            {
-                builder.createStoreChannel(content, guildId);
-                jda.handleEvent(
-                    new ChannelCreateEvent(
-                        jda, responseNumber,
-                        builder.createStoreChannel(content, guildId)));
-                break;
-            }
-            case TEXT:
-            {
-                jda.handleEvent(
-                    new ChannelCreateEvent(
-                        jda, responseNumber,
-                        builder.createTextChannel(content, guildId)));
-                break;
-            }
-            case NEWS:
-            {
-                jda.handleEvent(
-                    new ChannelCreateEvent(
-                        jda, responseNumber,
-                        builder.createNewsChannel(content, guildId)));
-                break;
-            }
-            case VOICE:
-            {
-                jda.handleEvent(
-                    new ChannelCreateEvent(
-                        jda, responseNumber,
-                        builder.createVoiceChannel(content, guildId)));
-                break;
-            }
-            case STAGE:
-            {
-                jda.handleEvent(
-                    new ChannelCreateEvent(
-                        jda, responseNumber,
-                        builder.createStageChannel(content, guildId)));
-                break;
-            }
-            case CATEGORY:
-            {
-                jda.handleEvent(
-                    new ChannelCreateEvent(
-                        jda, responseNumber,
-                        builder.createCategory(content, guildId)));
-                break;
-            }
-            case GROUP:
-                WebSocketClient.LOG.warn("Received a CREATE_CHANNEL for a group which is not supported");
-                return null;
+            case TEXT: return builder.createTextChannel(content, guildId);
+            case NEWS: return builder.createNewsChannel(content, guildId);
+            case STORE: return builder.createStoreChannel(content, guildId);
+            case VOICE: return builder.createVoiceChannel(content, guildId);
+            case STAGE: return builder.createStageChannel(content, guildId);
+            case CATEGORY: return builder.createCategory(content, guildId);
+
             default:
-                WebSocketClient.LOG.debug("Discord provided an CREATE_CHANNEL event with an unknown channel type! JSON: {}", content);
+                return null;
         }
-        return null;
     }
 }

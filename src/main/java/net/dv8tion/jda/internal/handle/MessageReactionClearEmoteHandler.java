@@ -16,8 +16,10 @@
 
 package net.dv8tion.jda.internal.handle;
 
-import net.dv8tion.jda.api.entities.*;
-import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionRemoveEmoteEvent;
+import net.dv8tion.jda.api.entities.Emote;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.GuildMessageChannel;
+import net.dv8tion.jda.api.entities.MessageReaction;
 import net.dv8tion.jda.api.events.message.react.MessageReactionRemoveEmoteEvent;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
@@ -80,8 +82,6 @@ public class MessageReactionClearEmoteHandler extends SocketHandler
 
         MessageReaction reaction = new MessageReaction(channel, reactionEmote, messageId, false, 0);
 
-        //TODO-v5: remove the Guild specific event
-//        getJDA().handleEvent(new GuildMessageReactionRemoveEmoteEvent(getJDA(), responseNumber, channel, reaction, messageId));
         getJDA().handleEvent(new MessageReactionRemoveEmoteEvent(getJDA(), responseNumber, messageId, channel, reaction));
         return null;
     }
