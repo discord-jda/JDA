@@ -56,7 +56,7 @@ public class MessageReactionClearEmoteHandler extends SocketHandler
             return null;
         }
 
-        long messageId = content.getUnsignedInt("message_id");
+        long messageId = content.getUnsignedLong("message_id");
         DataObject emoji = content.getObject("emoji");
         MessageReaction.ReactionEmote reactionEmote = null;
         if (emoji.isNull("id"))
