@@ -69,6 +69,7 @@ public abstract class BaseCommand<T extends BaseCommand<T>> implements Serializa
      *                 <li>The name is null</li>
      *                 <li>The name is not between 1-32 characters</li>
      *             </ul>
+     *         </p>
      *
      * @return The builder, for chaining
      */
