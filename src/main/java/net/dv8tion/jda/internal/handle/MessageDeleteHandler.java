@@ -39,11 +39,12 @@ public class MessageDeleteHandler extends SocketHandler
         final long messageId = content.getLong("id");
         final long channelId = content.getLong("channel_id");
 
+        //TODO-v5-unified-channel-cache
         MessageChannel channel = getJDA().getTextChannelById(channelId);
         if (channel == null)
-        {
+            channel = getJDA().getNewsChannelById(channelId);
+        if (channel == null)
             channel = getJDA().getPrivateChannelById(channelId);
-        }
         if (channel == null)
         {
             getJDA().getEventCache().cache(EventCache.Type.CHANNEL, channelId, responseNumber, allContent, this::handle);
@@ -51,6 +52,7 @@ public class MessageDeleteHandler extends SocketHandler
             return null;
         }
 
+        //TODO-v5: Remove these events
         if (channel instanceof TextChannel)
         {
             TextChannelImpl tChan = (TextChannelImpl) channel;

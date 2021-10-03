@@ -1227,7 +1227,10 @@ public class EntityBuilder
     {
         final long channelId = jsonObject.getLong("channel_id");
 
+        //TODO-v5-unified-channel-cache
         MessageChannel chan = getJDA().getTextChannelById(channelId);
+        if (chan == null)
+            chan = getJDA().getNewsChannelById(channelId);
         if (chan == null)
             chan = getJDA().getPrivateChannelById(channelId);
         if (chan == null && !jsonObject.isNull("guild_id"))
@@ -1240,7 +1243,10 @@ public class EntityBuilder
         long channelId = jsonObject.getUnsignedLong("channel_id");
         if (channel != null && channelId != channel.getIdLong())
         {
+            //TODO-v5-unified-channel-cache
             channel = api.getTextChannelById(channelId);
+            if (channel == null)
+                channel = api.getNewsChannelById(channelId);
             if (channel == null)
                 channel = api.getPrivateChannelById(channelId);
         }
@@ -1295,30 +1301,25 @@ public class EntityBuilder
             activity = createMessageActivity(jsonObject);
 
         User user;
-        switch (channel.getType())
-        {
-            case PRIVATE:
-                if (authorId == getJDA().getSelfUser().getIdLong())
-                    user = getJDA().getSelfUser();
+        if (channel.getType().isGuild()) {
+            Guild guild = ((GuildChannel) channel).getGuild();
+            if (member == null)
+                member = (MemberImpl) guild.getMemberById(authorId);
+            user = member != null ? member.getUser() : null;
+            if (user == null)
+            {
+                if (fromWebhook || !modifyCache)
+                    user = createUser(author);
                 else
-                    user = ((PrivateChannel) channel).getUser();
-                break;
-            case GROUP:
-                throw new IllegalStateException("Cannot build a message for a group channel, how did this even get here?");
-            case TEXT:
-                Guild guild = ((TextChannel) channel).getGuild();
-                if (member == null)
-                    member = (MemberImpl) guild.getMemberById(authorId);
-                user = member != null ? member.getUser() : null;
-                if (user == null)
-                {
-                    if (fromWebhook || !modifyCache)
-                        user = createUser(author);
-                    else
-                        throw new IllegalArgumentException(MISSING_USER); // Specifically for MESSAGE_CREATE
-                }
-                break;
-            default: throw new IllegalArgumentException("Invalid Channel for creating a Message [" + channel.getType() + ']');
+                    throw new IllegalArgumentException(MISSING_USER); // Specifically for MESSAGE_CREATE
+            }
+        }
+        else {
+            //Assume private channel
+            if (authorId == getJDA().getSelfUser().getIdLong())
+                user = getJDA().getSelfUser();
+            else
+                user = ((PrivateChannel) channel).getUser();
         }
 
         if (modifyCache && !fromWebhook) // update the user information on message receive
@@ -1710,9 +1711,12 @@ public class EntityBuilder
         final String token = object.getString("token", null);
         final WebhookType type = WebhookType.fromKey(object.getInt("type", -1));
 
-        TextChannel channel = getJDA().getTextChannelById(channelId);
+        //TODO-v5-unified-channel-cache
+        BaseGuildMessageChannel channel = getJDA().getTextChannelById(channelId);
+        if (channel == null)
+            channel = getJDA().getNewsChannelById(channelId);
         if (channel == null && !allowMissingChannel)
-            throw new NullPointerException(String.format("Tried to create Webhook for an un-cached TextChannel! WebhookId: %s ChannelId: %s GuildId: %s",
+            throw new NullPointerException(String.format("Tried to create Webhook for an un-cached Guild MessageChannel! WebhookId: %s ChannelId: %s GuildId: %s",
                     id, channelId, guildId));
 
         Object name = !object.isNull("name") ? object.get("name") : null;

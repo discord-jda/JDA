@@ -1337,6 +1337,7 @@ public interface JDA
     @Nullable
     default GuildChannel getGuildChannelById(long id)
     {
+        //TODO-v5-unified-channel-cache
         GuildChannel channel = getTextChannelById(id);
         if (channel == null)
             channel = getNewsChannelById(id);

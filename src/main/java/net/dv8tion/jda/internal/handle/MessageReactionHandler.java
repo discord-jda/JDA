@@ -120,7 +120,10 @@ public class MessageReactionHandler extends SocketHandler
             }
         }
 
+        //TODO-v5-unified-channel-cache
         MessageChannel channel = getJDA().getTextChannelById(channelId);
+        if (channel == null)
+            channel = getJDA().getNewsChannelById(channelId);
         if (channel == null)
             channel = getJDA().getPrivateChannelById(channelId);
         if (channel == null)
@@ -165,6 +168,8 @@ public class MessageReactionHandler extends SocketHandler
     private void onAdd(MessageReaction reaction, User user, Member member, long userId)
     {
         JDAImpl jda = getJDA();
+
+        //TODO-v5: Remove these events
         switch (reaction.getChannelType())
         {
             case TEXT:
@@ -194,6 +199,7 @@ public class MessageReactionHandler extends SocketHandler
     private void onRemove(MessageReaction reaction, User user, Member member, long userId)
     {
         JDAImpl jda = getJDA();
+        //TODO-v5: Remove these events
         switch (reaction.getChannelType())
         {
             case TEXT:

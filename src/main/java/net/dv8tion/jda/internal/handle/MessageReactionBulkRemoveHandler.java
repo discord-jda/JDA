@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.internal.handle;
 
+import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionRemoveAllEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionRemoveAllEvent;
@@ -36,7 +37,11 @@ public class MessageReactionBulkRemoveHandler extends SocketHandler
         final long messageId = content.getLong("message_id");
         final long channelId = content.getLong("channel_id");
         JDAImpl jda = getJDA();
-        TextChannel channel = jda.getTextChannelById(channelId);
+
+        //TODO-v5-unified-channel-cache
+        MessageChannel channel = jda.getTextChannelById(channelId);
+        if (channel == null)
+            channel = jda.getNewsChannelById(channelId);
         if (channel == null)
         {
             jda.getEventCache().cache(EventCache.Type.CHANNEL, channelId, responseNumber, allContent, this::handle);
@@ -44,13 +49,14 @@ public class MessageReactionBulkRemoveHandler extends SocketHandler
             return null;
         }
 
+        //TODO-v5: Remove these events
         switch (channel.getType())
         {
             case TEXT:
                jda.handleEvent(
                    new GuildMessageReactionRemoveAllEvent(
                        jda, responseNumber,
-                       messageId, channel));
+                       messageId, (TextChannel) channel));
                break;
             case GROUP:
                 WebSocketClient.LOG.error("Received a reaction bulk delete for a group which should not be possible");

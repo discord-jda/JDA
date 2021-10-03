@@ -16,10 +16,7 @@
 
 package net.dv8tion.jda.internal.handle;
 
-import net.dv8tion.jda.api.entities.Emote;
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.MessageReaction;
-import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionRemoveEmoteEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionRemoveEmoteEvent;
 import net.dv8tion.jda.api.utils.data.DataObject;
@@ -48,7 +45,12 @@ public class MessageReactionClearEmoteHandler extends SocketHandler
         }
 
         long channelId = content.getUnsignedLong("channel_id");
-        TextChannel channel = guild.getTextChannelById(channelId);
+
+        //TODO-v5-unified-channel-cache
+        GuildMessageChannel channel = guild.getTextChannelById(channelId);
+        if (channel == null)
+            channel = guild.getNewsChannelById(channelId);
+
         if (channel == null)
         {
             EventCache.LOG.debug("Caching MESSAGE_REACTION_REMOVE_EMOJI event for unknown channel {}", channelId);
@@ -77,7 +79,9 @@ public class MessageReactionClearEmoteHandler extends SocketHandler
         }
 
         MessageReaction reaction = new MessageReaction(channel, reactionEmote, messageId, false, 0);
-        getJDA().handleEvent(new GuildMessageReactionRemoveEmoteEvent(getJDA(), responseNumber, channel, reaction, messageId));
+
+        //TODO-v5: remove the Guild specific event
+//        getJDA().handleEvent(new GuildMessageReactionRemoveEmoteEvent(getJDA(), responseNumber, channel, reaction, messageId));
         getJDA().handleEvent(new MessageReactionRemoveEmoteEvent(getJDA(), responseNumber, messageId, channel, reaction));
         return null;
     }

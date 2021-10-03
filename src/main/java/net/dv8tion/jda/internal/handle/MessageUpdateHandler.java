@@ -148,7 +148,11 @@ public class MessageUpdateHandler extends SocketHandler
         final long messageId = content.getLong("id");
         final long channelId = content.getLong("channel_id");
         LinkedList<MessageEmbed> embeds = new LinkedList<>();
+
+        //TODO-v5-unified-channel-cache
         MessageChannel channel = getJDA().getTextChannelsView().get(channelId);
+        if (channel == null)
+            channel = getJDA().getNewsChannelById(channelId);
         if (channel == null)
             channel = getJDA().getPrivateChannelsView().get(channelId);
         if (channel == null)
@@ -162,6 +166,7 @@ public class MessageUpdateHandler extends SocketHandler
         for (int i = 0; i < embedsJson.length(); i++)
             embeds.add(builder.createMessageEmbed(embedsJson.getObject(i)));
 
+        //TODO-v5: Remove these events
         switch (channel.getType())
         {
             case TEXT:
@@ -182,8 +187,8 @@ public class MessageUpdateHandler extends SocketHandler
             case GROUP:
                 WebSocketClient.LOG.error("Received a message update for a group which should not be possible");
                 return null;
-            default:
-                WebSocketClient.LOG.warn("No event handled for message update of type {}", channel.getType());
+//            default:
+//                WebSocketClient.LOG.warn("No event handled for message update of type {}", channel.getType());
 
         }
         //Combo event

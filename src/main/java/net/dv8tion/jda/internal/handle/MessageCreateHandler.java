@@ -86,6 +86,7 @@ public class MessageCreateHandler extends SocketHandler
             }
         }
 
+        //TODO-v5: Remove these events
         switch (message.getChannelType())
         {
             case TEXT:
@@ -114,9 +115,9 @@ public class MessageCreateHandler extends SocketHandler
             case GROUP:
                 WebSocketClient.LOG.error("Received a MESSAGE_CREATE for a group channel which should not be possible");
                 return null;
-            default:
-                WebSocketClient.LOG.warn("Received a MESSAGE_CREATE with a unknown MessageChannel ChannelType. JSON: {}", content);
-                return null;
+//            default:
+//                WebSocketClient.LOG.warn("Received a MESSAGE_CREATE with a unknown MessageChannel ChannelType. JSON: {}", content);
+//                return null;
         }
 
         //Combo event
