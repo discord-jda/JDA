@@ -140,6 +140,11 @@ public enum MessageType
     GUILD_INVITE_REMINDER(22),
 
     /**
+     * The message sent when responding to a context menu command interaction
+     */
+    CONTEXT_MENU_COMMAND(23),
+
+    /**
      * Unknown MessageType.
      */
     UNKNOWN(-1);
