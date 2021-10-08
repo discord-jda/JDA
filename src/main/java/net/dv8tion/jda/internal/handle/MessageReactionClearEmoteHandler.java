@@ -65,7 +65,7 @@ public class MessageReactionClearEmoteHandler extends SocketHandler
         }
         else
         {
-            long emoteId = emoji.getUnsignedLong("emoji");
+            long emoteId = emoji.getUnsignedLong("id");
             Emote emote = getJDA().getEmoteById(emoteId);
             if (emote == null)
             {
