@@ -89,13 +89,6 @@ public abstract class AbstractChannelImpl<T extends GuildChannel, M extends Abst
 
     @Nonnull
     @Override
-    public String getAsMention()
-    {
-        return "<#" + id + '>';
-    }
-
-    @Nonnull
-    @Override
     //TODO-v5; These are untyped for now. We're likely removing this class so maybe nbd.
     public abstract ChannelAction createCopy(@Nonnull Guild guild);
 
