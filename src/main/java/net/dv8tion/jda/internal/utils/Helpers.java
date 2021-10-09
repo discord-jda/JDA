@@ -19,6 +19,8 @@ package net.dv8tion.jda.internal.utils;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAccessor;
 import java.util.*;
 import java.util.function.Consumer;
 
@@ -42,6 +44,12 @@ public final class Helpers
     public static OffsetDateTime toOffset(long instant)
     {
         return OffsetDateTime.ofInstant(Instant.ofEpochMilli(instant), OFFSET);
+    }
+
+    public static long toTimestamp(String iso8601String)
+    {
+        TemporalAccessor joinedAt = DateTimeFormatter.ISO_OFFSET_DATE_TIME.parse(iso8601String);
+        return Instant.from(joinedAt).toEpochMilli();
     }
 
     // locale-safe String#format
