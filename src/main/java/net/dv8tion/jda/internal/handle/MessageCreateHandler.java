@@ -15,6 +15,7 @@
  */
 package net.dv8tion.jda.internal.handle;
 
+import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.MessageType;
@@ -23,6 +24,7 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.BaseGuildMessageChannelImpl;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
+import net.dv8tion.jda.internal.entities.GuildThreadImpl;
 import net.dv8tion.jda.internal.entities.PrivateChannelImpl;
 import net.dv8tion.jda.internal.requests.WebSocketClient;
 
@@ -85,11 +87,28 @@ public class MessageCreateHandler extends SocketHandler
         }
 
         MessageChannel channel = message.getChannel();
-        if (channel.getType().isGuild())
+        ChannelType channelType = channel.getType();
+        if (channelType.isGuild())
         {
-            //TODO-v5-threads: This wont work for threads as threads aren't a BaseGuildMessageChannelImpl!
-            BaseGuildMessageChannelImpl<?, ?> gChannel = (BaseGuildMessageChannelImpl<?, ?>) channel;
-            gChannel.setLastMessageId(message.getIdLong());
+            if (channelType.isThread())
+            {
+                GuildThreadImpl gThread = (GuildThreadImpl) channel;
+                gThread.setLastMessageId(message.getIdLong());
+
+                //Discord will only ever allow this property to show up to 50,
+                // so we don't want to update it to be over 50 because we don't want users to use it incorrectly.
+                //TODO-threads: Honestly, should we even expose this? if we're updating it here then we should
+                // make sure that it stays correct when a MESSAGE_DELETE is sent for a thread right? but unless the value
+                // is currently below we cannot confidently know that it can be decremented.
+                // Plus, im not sure that this is actually valuable to _anyone_.
+                int newMessageCount = Math.max(gThread.getMessageCount() + 1, 50);
+                gThread.setMessageCount(newMessageCount);
+            }
+            else
+            {
+                BaseGuildMessageChannelImpl<?, ?> gChannel = (BaseGuildMessageChannelImpl<?, ?>) channel;
+                gChannel.setLastMessageId(message.getIdLong());
+            }
         }
         else
         {

@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.events.message.MessageDeleteEvent;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.BaseGuildMessageChannelImpl;
+import net.dv8tion.jda.internal.entities.GuildThreadImpl;
 import net.dv8tion.jda.internal.entities.PrivateChannelImpl;
 
 public class MessageDeleteHandler extends SocketHandler
@@ -48,6 +49,8 @@ public class MessageDeleteHandler extends SocketHandler
         if (channel == null)
             channel = getJDA().getNewsChannelById(channelId);
         if (channel == null)
+            channel = getJDA().getGuildThreadById(channelId);
+        if (channel == null)
             channel = getJDA().getPrivateChannelById(channelId);
         if (channel == null)
         {
@@ -56,19 +59,29 @@ public class MessageDeleteHandler extends SocketHandler
             return null;
         }
 
-        if (channel.getType().isGuild())
+        // Reset the latest message id as it was deleted.
+        if (channel.hasLatestMessage() & messageId == channel.getLatestMessageIdLong())
         {
-            //TODO-v5-threads: This wont work for threads as threads aren't a BaseGuildMessageChannelImpl!
-            BaseGuildMessageChannelImpl<?, ?> gChannel = (BaseGuildMessageChannelImpl<?, ?>) channel;
-            if (channel.hasLatestMessage() & messageId == channel.getLatestMessageIdLong())
-                gChannel.setLastMessageId(0); // Reset latest message id as it was deleted.
+            if (channel.getType().isGuild())
+            {
+                if (channel.getType().isThread())
+                {
+                    GuildThreadImpl gThread = (GuildThreadImpl) channel;
+                    gThread.setLastMessageId(0);
+                }
+                else
+                {
+                    BaseGuildMessageChannelImpl<?, ?> gChannel = (BaseGuildMessageChannelImpl<?, ?>) channel;
+                    gChannel.setLastMessageId(0);
+                }
+            }
+            else
+            {
+                PrivateChannelImpl pChannel = (PrivateChannelImpl) channel;
+                pChannel.setLastMessageId(0);
+            }
         }
-        else
-        {
-            PrivateChannelImpl pChannel = (PrivateChannelImpl) channel;
-            if (channel.hasLatestMessage() & messageId == channel.getLatestMessageIdLong())
-                pChannel.setLastMessageId(0); // Reset latest message id as it was deleted.
-        }
+
 
         getJDA().handleEvent(new MessageDeleteEvent(getJDA(), responseNumber, messageId, channel));
         return null;

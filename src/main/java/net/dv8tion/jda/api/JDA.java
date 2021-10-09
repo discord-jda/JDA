@@ -1349,6 +1349,8 @@ public interface JDA
             channel = getStoreChannelById(id);
         if (channel == null)
             channel = getCategoryById(id);
+
+        //TODO-threads: Should we expose the threads type to look up here too?
         return channel;
     }
 
@@ -1428,6 +1430,8 @@ public interface JDA
         case CATEGORY:
             return getCategoryById(id);
         }
+        //TODO-threads: should we expose the threads lookup here?
+        //TODO-threads: Also, with threads being 3 separate channel types.. this gets annoying tbh. I wonder if JDA should compress to a single type?
         return null;
     }
 
@@ -1507,6 +1511,84 @@ public interface JDA
     default List<StageChannel> getStageChannelsByName(@Nonnull String name, boolean ignoreCase)
     {
         return getStageChannelCache().getElementsByName(name, ignoreCase);
+    }
+
+    /**
+     * {@link net.dv8tion.jda.api.utils.cache.SnowflakeCacheView SnowflakeCacheView} of
+     * all cached {@link net.dv8tion.jda.api.entities.GuildThread GuildThreads} visible to this JDA session.
+     *
+     * @return {@link net.dv8tion.jda.api.utils.cache.SnowflakeCacheView SnowflakeCacheView}
+     */
+    @Nonnull
+    SnowflakeCacheView<GuildThread> getGuildThreadCache();
+
+    /**
+     * An unmodifiable list of all {@link net.dv8tion.jda.api.entities.GuildThread GuildThreads} of all connected
+     * {@link net.dv8tion.jda.api.entities.Guild Guilds}.
+     *
+     * <p>This copies the backing store into a list. This means every call
+     * creates a new list with O(n) complexity. It is recommended to store this into
+     * a local variable or use {@link #getGuildThreadCache()} and use its more efficient
+     * versions of handling these values.
+     *
+     * @return Possible-empty list of all known {@link net.dv8tion.jda.api.entities.GuildThread GuildThreads}.
+     */
+    @Nonnull
+    default List<GuildThread> getGuildThreads()
+    {
+        return getGuildThreadCache().asList();
+    }
+
+    /**
+     * This returns the {@link net.dv8tion.jda.api.entities.GuildThread GuildThread} which has the same id as the one provided.
+     * <br>If there is no known {@link net.dv8tion.jda.api.entities.GuildThread GuildThread} with an id that matches the provided
+     * one, then this returns {@code null}.
+     *
+     * @param  id
+     *         The id of the {@link net.dv8tion.jda.api.entities.GuildThread GuildThread}.
+     * @throws java.lang.NumberFormatException
+     *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
+     *
+     * @return Possibly-null {@link net.dv8tion.jda.api.entities.GuildThread GuildThread} with matching id.
+     */
+    @Nullable
+    default GuildThread getGuildThreadById(@Nonnull String id)
+    {
+        return getGuildThreadCache().getElementById(id);
+    }
+
+    /**
+     * This returns the {@link net.dv8tion.jda.api.entities.GuildThread GuildThread} which has the same id as the one provided.
+     * <br>If there is no known {@link net.dv8tion.jda.api.entities.GuildThread GuildThread} with an id that matches the provided
+     * one, then this returns {@code null}.
+     *
+     * @param  id
+     *         The id of the {@link net.dv8tion.jda.api.entities.GuildThread GuildThread}.
+     *
+     * @return Possibly-null {@link net.dv8tion.jda.api.entities.GuildThread GuildThread} with matching id.
+     */
+    @Nullable
+    default GuildThread getGuildThreadById(long id)
+    {
+        return getGuildThreadCache().getElementById(id);
+    }
+
+    /**
+     * An unmodifiable list of all {@link net.dv8tion.jda.api.entities.GuildThread GuildThreads} that have the same name as the one provided.
+     * <br>If there are no {@link net.dv8tion.jda.api.entities.GuildThread GuildThreads} with the provided name, then this returns an empty list.
+     *
+     * @param  name
+     *         The name of the requested {@link net.dv8tion.jda.api.entities.GuildThread GuildThreads}.
+     * @param  ignoreCase
+     *         Whether to ignore case or not when comparing the provided name to each {@link net.dv8tion.jda.api.entities.GuildThread#getName()}.
+     *
+     * @return Possibly-empty list of all the {@link net.dv8tion.jda.api.entities.GuildThread GuildThreads} that all have the
+     *         same name as the provided name.
+     */
+    @Nonnull
+    default List<GuildThread> getGuildThreadByName(@Nonnull String name, boolean ignoreCase)
+    {
+        return getGuildThreadCache().getElementsByName(name, ignoreCase);
     }
 
     /**

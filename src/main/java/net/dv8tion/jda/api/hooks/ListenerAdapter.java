@@ -204,6 +204,10 @@ public abstract class ListenerAdapter implements EventListener
     public void onChannelUpdateTopic(@Nonnull ChannelUpdateTopicEvent event) {}
     public void onChannelUpdateType(@Nonnull ChannelUpdateTypeEvent event) {}
     public void onChannelUpdateUserLimit(@Nonnull ChannelUpdateUserLimitEvent event) {}
+    public void onChannelUpdateArchived(@Nonnull ChannelUpdateArchivedEvent event) {}
+    public void onChannelUpdateArchiveTimestamp(@Nonnull ChannelUpdateArchiveTimestampEvent event) {}
+    public void onChannelUpdateAutoArchiveDuration(@Nonnull ChannelUpdateAutoArchiveDurationEvent event) {}
+    public void onChannelUpdateLocked(@Nonnull ChannelUpdateLockedEvent event) {}
 
     //Guild Events
     public void onGuildReady(@Nonnull GuildReadyEvent event) {}

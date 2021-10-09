@@ -51,6 +51,7 @@ import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.handle.EventCache;
+import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.JDALogger;
 import net.dv8tion.jda.internal.utils.UnlockHook;
 import net.dv8tion.jda.internal.utils.cache.MemberCacheViewImpl;
@@ -186,6 +187,7 @@ public class EntityBuilder
         final String locale = guildJson.getString("preferred_locale", "en");
         final DataArray roleArray = guildJson.getArray("roles");
         final DataArray channelArray = guildJson.getArray("channels");
+        final DataArray threadArray = guildJson.getArray("threads");
         final DataArray emotesArray = guildJson.getArray("emojis");
         final DataArray voiceStateArray = guildJson.getArray("voice_states");
         final Optional<DataArray> featuresArray = guildJson.optArray("features");
@@ -258,6 +260,12 @@ public class EntityBuilder
         {
             DataObject channelJson = channelArray.getObject(i);
             createGuildChannel(guildObj, channelJson);
+        }
+
+        for (int i = 0; i < threadArray.length(); i++)
+        {
+            DataObject threadJson = threadArray.getObject(i);
+            createGuildThread(guildObj, threadJson, guildObj.getIdLong());
         }
 
         TLongObjectMap<DataObject> voiceStates = convertToUserMap((o) -> o.getUnsignedLong("user_id", 0L), voiceStateArray);
@@ -533,10 +541,7 @@ public class EntityBuilder
         // Load joined_at if necessary
         if (!memberJson.isNull("joined_at") && !member.hasTimeJoined())
         {
-            String joinedAtRaw = memberJson.getString("joined_at");
-            TemporalAccessor joinedAt = DateTimeFormatter.ISO_OFFSET_DATE_TIME.parse(joinedAtRaw);
-            long joinEpoch = Instant.from(joinedAt).toEpochMilli();
-            member.setJoinDate(joinEpoch);
+            member.setJoinDate(Helpers.toTimestamp(memberJson.getString("joined_at")));
         }
 
         // Load voice state and presence if necessary
@@ -1104,6 +1109,55 @@ public class EntityBuilder
         return channel;
     }
 
+    public GuildThread createGuildThread(DataObject json, long guildId)
+    {
+        return createGuildThread(null, json, guildId);
+    }
+
+    public GuildThread createGuildThread(GuildImpl guild, DataObject json, long guildId)
+    {
+        boolean playbackCache = false;
+        final long id = json.getLong("id");
+        final ChannelType type = ChannelType.fromId(json.getInt("type"));
+
+        GuildThreadImpl thread = ((GuildThreadImpl) getJDA().getGuildThreadView().get(id));
+        if (thread == null)
+        {
+            if (guild == null)
+                guild = (GuildImpl) getJDA().getGuildsView().get(guildId);
+            SnowflakeCacheViewImpl<GuildThread>
+                    guildThreadView = guild.getGuildThreadsView(),
+                    threadView = getJDA().getGuildThreadView();
+            try (
+                    UnlockHook vlock = guildThreadView.writeLock();
+                    UnlockHook jlock = threadView.writeLock())
+            {
+                thread = new GuildThreadImpl(id, type, guild);
+                guildThreadView.getMap().put(id, thread);
+                playbackCache = threadView.getMap().put(id, thread) == null;
+            }
+        }
+
+        DataObject threadMetadata = json.getObject("thread_metadata");
+
+        thread
+                .setName(json.getString("name"))
+                .setParentChannelId(json.getLong("parent_id"))
+                .setOwnerId(json.getLong("owner_id"))
+                .setMemberCount(json.getInt("member_count"))
+                .setMessageCount(json.getInt("message_count"))
+                .setLastMessageId(json.getLong("last_message_id", 0))
+                .setSlowmode(json.getInt("rate_limit_per_user"))
+                .setLocked(threadMetadata.getBoolean("locked"))
+                .setArchived(threadMetadata.getBoolean("archived"))
+                .setArchiveTimestamp(Helpers.toTimestamp(threadMetadata.getString("archive_timestamp"))) //TODO-threads: This value clearly needs to be renamed because it looks like it represents when it was _updated_. Not when it happened.
+                .setAutoArchiveDuration(GuildThread.AutoArchiveDuration.fromKey(threadMetadata.getInt("auto_archive_duration")));
+
+        if (playbackCache)
+            getJDA().getEventCache().playbackCache(EventCache.Type.CHANNEL, id);
+        return thread;
+    }
+
     public PrivateChannel createPrivateChannel(DataObject json)
     {
         final long channelId = json.getUnsignedLong("id");
@@ -1233,6 +1287,8 @@ public class EntityBuilder
             chan = getJDA().getNewsChannelById(channelId);
         if (chan == null)
             chan = getJDA().getPrivateChannelById(channelId);
+        if (chan == null)
+            chan = getJDA().getGuildThreadById(channelId);
         if (chan == null && !jsonObject.isNull("guild_id"))
             throw new IllegalArgumentException(MISSING_CHANNEL);
 

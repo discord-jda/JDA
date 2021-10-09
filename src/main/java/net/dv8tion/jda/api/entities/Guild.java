@@ -1478,6 +1478,8 @@ public interface Guild extends ISnowflake
             channel = getStoreChannelById(id);
         if (channel == null)
             channel = getCategoryById(id);
+
+        //TODO-threads: should we expose threads in this?
         return channel;
     }
 
@@ -1549,6 +1551,7 @@ public interface Guild extends ISnowflake
             case CATEGORY:
                 return getCategoryById(id);
         }
+        //TODO-threads: should we expose threads in this?
         return null;
     }
 
@@ -1634,6 +1637,89 @@ public interface Guild extends ISnowflake
     default List<StageChannel> getStageChannels()
     {
        return getStageChannelCache().asList();
+    }
+
+    /**
+     * Sorted {@link net.dv8tion.jda.api.utils.cache.SnowflakeCacheView SnowflakeCacheView} of
+     * all cached {@link net.dv8tion.jda.api.entities.GuildThread GuildThread} of this Guild.
+     * <br>StageChannel are sorted according to their position.
+     *
+     * @return {@link net.dv8tion.jda.api.utils.cache.SortedSnowflakeCacheView SortedSnowflakeCacheView}
+     */
+    @Nonnull
+    SortedSnowflakeCacheView<GuildThread> getGuildThreadCache();
+
+    /**
+     * Gets a list of all {@link net.dv8tion.jda.api.entities.GuildThread GuildThread} in this Guild that have the same
+     * name as the one provided.
+     * <br>If there are no {@link net.dv8tion.jda.api.entities.GuildThread GuildThreads} with the provided name, then this returns an empty list.
+     *
+     * @param  name
+     *         The name used to filter the returned {@link net.dv8tion.jda.api.entities.GuildThread GuildThreads}.
+     * @param  ignoreCase
+     *         Determines if the comparison ignores case when comparing. True - case insensitive.
+     *
+     * @return Possibly-empty immutable list of all GuildThread names that match the provided name.
+     */
+    @Nonnull
+    default List<GuildThread> getGuildThreadsByName(@Nonnull String name, boolean ignoreCase)
+    {
+        return getGuildThreadCache().getElementsByName(name, ignoreCase);
+    }
+
+    /**
+     * Gets a {@link net.dv8tion.jda.api.entities.GuildThread GuildThread} from this guild that has the same id as the
+     * one provided. This method is similar to {@link net.dv8tion.jda.api.JDA#getGuildThreadById(String)}, but it only
+     * checks this specific Guild for a GuildThread.
+     * <br>If there is no {@link net.dv8tion.jda.api.entities.GuildThread GuildThread} with an id that matches the provided
+     * one, then this returns {@code null}.
+     *
+     * @param  id
+     *         The id of the {@link net.dv8tion.jda.api.entities.GuildThread GuildThread}.
+     *
+     * @throws java.lang.NumberFormatException
+     *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
+     *
+     * @return Possibly-null {@link net.dv8tion.jda.api.entities.GuildThread GuildThread} with matching id.
+     */
+    @Nullable
+    default GuildThread getGuildThreadById(@Nonnull String id)
+    {
+        return getGuildThreadCache().getElementById(id);
+    }
+
+    /**
+     * Gets a {@link net.dv8tion.jda.api.entities.GuildThread GuildThread} from this guild that has the same id as the
+     * one provided. This method is similar to {@link net.dv8tion.jda.api.JDA#getGuildThreadById(long)}, but it only
+     * checks this specific Guild for a GuildThread.
+     * <br>If there is no {@link net.dv8tion.jda.api.entities.GuildThread GuildThread} with an id that matches the provided
+     * one, then this returns {@code null}.
+     *
+     * @param  id
+     *         The id of the {@link net.dv8tion.jda.api.entities.GuildThread GuildThread}.
+     *
+     * @return Possibly-null {@link net.dv8tion.jda.api.entities.GuildThread GuildThread} with matching id.
+     */
+    @Nullable
+    default GuildThread getGuildThreadById(long id)
+    {
+        return getGuildThreadCache().getElementById(id);
+    }
+
+    /**
+     * Gets all {@link net.dv8tion.jda.api.entities.GuildThread GuildThread} in this {@link net.dv8tion.jda.api.entities.Guild Guild}.
+     *
+     * <p>This copies the backing store into a list. This means every call
+     * creates a new list with O(n) complexity. It is recommended to store this into
+     * a local variable or use {@link #getGuildThreadCache()} and use its more efficient
+     * versions of handling these values.
+     *
+     * @return An immutable List of {@link net.dv8tion.jda.api.entities.GuildThread GuildThreads}.
+     */
+    @Nonnull
+    default List<GuildThread> getGuildThreads()
+    {
+        return getGuildThreadCache().asList();
     }
 
     /**

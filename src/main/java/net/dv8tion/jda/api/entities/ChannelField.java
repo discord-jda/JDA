@@ -41,7 +41,14 @@ public enum ChannelField
 
     BITRATE("bitrate", AuditLogKey.CHANNEL_BITRATE),
     REGION("region", null), //TODO-v5: JDA needs to add support for channel-specific audit log tracking
-    USER_LIMIT("userlimit", AuditLogKey.CHANNEL_USER_LIMIT)
+    USER_LIMIT("userlimit", AuditLogKey.CHANNEL_USER_LIMIT),
+
+    //Thread Specific
+    AUTO_ARCHIVE_DURATION("autoArchiveDuration", null), //TODO-threads: Check for auditlog keys
+    ARCHIVED("archived", null),
+    ARCHIVED_TIMESTAMP("archiveTimestamp", null), //TODO-threads: check for audit log key. ALSO: might need to rename this as we don't actually expose "timestamp".
+    LOCKED("locked", null), //TODO-threads: Check for audit log key
+
     ;
 
     private final String fieldName;
