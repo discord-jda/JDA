@@ -581,10 +581,7 @@ public interface Invite
     }
 
     /**
-     * A TargetType indicates additional action to be taken by the client on accepting the invite,
-     * typically connecting external services or launching external applications depending on the specific TargetType.
-     *
-     * Some actions might not be available or show up on certain devices.
+     * Enum representing the type of an invite.
      *
      * @see #getType()
      */
@@ -596,12 +593,20 @@ public interface Invite
     }
 
     /**
-     * Enum representing the target type of an invite.
+     * A TargetType indicates additional action to be taken by the client on accepting the invite,
+     * typically connecting external services or launching external applications depending on the specific TargetType.
+     *
+     * Some actions might not be available or show up on certain devices.
      *
      * @see #getTargetType()
      */
     enum TargetType
     {
+        /**
+         * This invite does not have a target type.
+         */
+        NONE(0),
+
         /**
          * The invite points to a user's stream in a voice channel.
          * The user to whose stream the invite goes can be get with {@link Invite#getTargetUser() Invite.getTargetUser} and is not {@code null}.
@@ -617,11 +622,6 @@ public interface Invite
          * @see Invite#getTargetApplication()
          */
         EMBEDDED_APPLICATION(2),
-
-        /**
-         * This invite does not have a target type.
-         */
-        NONE(0),
 
         /**
          * Unknown Discord invite target type. Should never happen and would only possibly happen if Discord implemented a new

@@ -142,7 +142,7 @@ public class InviteActionImpl extends AuditableRestActionImpl<Invite> implements
 
     @Nonnull
     @Override
-    public InviteAction setTargetUser(final long userId)
+    public InviteAction setTargetStream(final long userId)
     {
         if (userId == 0)
         {

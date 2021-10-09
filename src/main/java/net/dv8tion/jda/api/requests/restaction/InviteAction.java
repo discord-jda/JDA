@@ -18,8 +18,10 @@ package net.dv8tion.jda.api.requests.restaction;
 
 import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.Invite;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.utils.MiscUtil;
+import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -123,7 +125,7 @@ public interface InviteAction extends AuditableRestAction<Invite>
 
     /**
      * Sets the id of the targeted application.
-     * The invite has to point to a voice channel.
+     * <br>The invite has to point to a voice channel.
      * The invite will have the {@link Invite.TargetType#EMBEDDED_APPLICATION} target.
      *
      * @param applicationId
@@ -137,7 +139,7 @@ public interface InviteAction extends AuditableRestAction<Invite>
 
     /**
      * Sets the id of the targeted application.
-     * The invite has to point to a voice channel.
+     * <br>The invite has to point to a voice channel.
      * The invite will have the {@link Invite.TargetType#EMBEDDED_APPLICATION} target.
      *
      * @param applicationId
@@ -159,7 +161,7 @@ public interface InviteAction extends AuditableRestAction<Invite>
 
     /**
      * Sets the user whose stream to target for this invite.
-     * The user must be streaming in the same channel.
+     * <br>The user must be streaming in the same channel.
      * The invite will have the {@link Invite.TargetType#STREAM} target.
      *
      * @param userId
@@ -169,11 +171,11 @@ public interface InviteAction extends AuditableRestAction<Invite>
      */
     @Nonnull
     @CheckReturnValue
-    InviteAction setTargetUser(final long userId);
+    InviteAction setTargetStream(final long userId);
 
     /**
      * Sets the user whose stream to display for this invite.
-     * The user must be streaming in the same channel.
+     * <br>The user must be streaming in the same channel.
      * The invite will have the {@link Invite.TargetType#STREAM} target.
      *
      * @param userId
@@ -188,26 +190,51 @@ public interface InviteAction extends AuditableRestAction<Invite>
      */
     @Nonnull
     @CheckReturnValue
-    default InviteAction setTargetUser(@Nonnull final String userId)
+    default InviteAction setTargetStream(@Nonnull final String userId)
     {
-        return setTargetUser(MiscUtil.parseSnowflake(userId));
+        return setTargetStream(MiscUtil.parseSnowflake(userId));
     }
 
     /**
      * Sets the user whose stream to display for this invite.
-     * The user must be streaming in the same channel.
+     * <br>The user must be streaming in the same channel.
      * The invite will have the {@link Invite.TargetType#STREAM} target.
      *
      * @param user
      *        The user whose stream to target.
      *
+     * @throws IllegalArgumentException
+     *         If the provided user is {@code null}
+     *
      * @return The current InviteAction for chaining.
      */
     @Nonnull
     @CheckReturnValue
-    default InviteAction setTargetUser(@Nonnull final User user)
+    default InviteAction setTargetStream(@Nonnull final User user)
     {
-        return setTargetUser(user.getIdLong());
+        Checks.notNull(user, "User");
+        return setTargetStream(user.getIdLong());
+    }
+
+    /**
+     * Sets the user whose stream to display for this invite.
+     * <br>The user must be streaming in the same channel.
+     * The invite will have the {@link Invite.TargetType#STREAM} target.
+     *
+     * @param member
+     *        The member whose stream to target.
+     *
+     * @throws IllegalArgumentException
+     *         If the provided member is {@code null}
+     *
+     * @return The current InviteAction for chaining.
+     */
+    @Nonnull
+    @CheckReturnValue
+    default InviteAction setTargetStream(@Nonnull final Member member)
+    {
+        Checks.notNull(member, "Member");
+        return setTargetStream(member.getIdLong());
     }
 
 }
