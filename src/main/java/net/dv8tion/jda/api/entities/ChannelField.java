@@ -98,7 +98,11 @@ public enum ChannelField
 
 
     /**
-     * The bitrate of the channel.
+     * The bitrate (in bits per second) of the audio in this channel.
+     *
+     * For standard channels this is between 8000 and 96000.
+     *
+     * VIP servers extend this limit to 128000.
      *
      * Limited to {@link AudioChannel Audio Channels}.
      *
@@ -112,13 +116,14 @@ public enum ChannelField
      * Limited to {@link AudioChannel Audio Channels}.
      *
      * @see AudioChannel#getRegion()
+     * @see net.dv8tion.jda.api.Region
      */
     REGION("region", null), //TODO-v5: JDA needs to add support for channel-specific audit log tracking
 
     /**
      * The maximum user count of this channel.
      *
-     * Limited to {@link VoiceChannel Vocie Channels}.
+     * Limited to {@link VoiceChannel Voice Channels}.
      *
      * @see VoiceChannel#getUserLimit()
      */
