@@ -250,6 +250,11 @@ public class GuildThreadImpl implements GuildThread
         return archiveTimestamp;
     }
 
+    public CacheView.SimpleCacheView<GuildThreadMember> getThreadMemberView()
+    {
+        return threadMembers;
+    }
+
     // ====== Setters ======
 
     public GuildThreadImpl setName(String name)

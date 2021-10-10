@@ -18,18 +18,22 @@ package net.dv8tion.jda.internal.handle;
 
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.Region;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.channel.update.*;
 import net.dv8tion.jda.api.events.guild.override.PermissionOverrideCreateEvent;
 import net.dv8tion.jda.api.events.guild.override.PermissionOverrideDeleteEvent;
 import net.dv8tion.jda.api.events.guild.override.PermissionOverrideUpdateEvent;
+import net.dv8tion.jda.api.events.thread.ThreadHiddenEvent;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.*;
 import net.dv8tion.jda.internal.requests.WebSocketClient;
+import net.dv8tion.jda.internal.utils.UnlockHook;
+import net.dv8tion.jda.internal.utils.cache.SnowflakeCacheViewImpl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -98,8 +102,6 @@ public class ChannelUpdateHandler extends SocketHandler
                             getJDA(), responseNumber,
                             storeChannel, oldPosition, position));
                 }
-
-                applyPermissions(storeChannel, permOverwrites);
                 break;
             }
             case TEXT:
@@ -166,9 +168,7 @@ public class ChannelUpdateHandler extends SocketHandler
                                     getJDA(), responseNumber,
                                     textChannel, oldSlowmode, slowmode));
                 }
-
-                applyPermissions(textChannel, permOverwrites);
-                break;  //Finish the TextChannelUpdate case
+                break;
             }
             case NEWS:
             {
@@ -224,9 +224,7 @@ public class ChannelUpdateHandler extends SocketHandler
                                     getJDA(), responseNumber,
                                     newsChannel, oldNsfw, nsfw));
                 }
-
-                applyPermissions(newsChannel, permOverwrites);
-                break;  //Finish the TextChannelUpdate case
+                break;
             }
             case VOICE:
             {
@@ -294,8 +292,7 @@ public class ChannelUpdateHandler extends SocketHandler
                                     voiceChannel, oldBitrate, bitrate));
                 }
 
-                applyPermissions(voiceChannel, permOverwrites);
-                break;  //Finish the VoiceChannelUpdate case
+                break;
             }
             case STAGE:
             {
@@ -353,8 +350,7 @@ public class ChannelUpdateHandler extends SocketHandler
                                     stageChannel, oldBitrate, bitrate));
                 }
 
-                applyPermissions(stageChannel, permOverwrites);
-                break;  //Finish the StageChannelUpdate case
+                break;
             }
             case CATEGORY:
             {
@@ -380,12 +376,20 @@ public class ChannelUpdateHandler extends SocketHandler
                                 category, oldPosition, position));
                 }
 
-                applyPermissions(category, permOverwrites);
-                break;  //Finish the CategoryUpdate case
+                break;
             }
             default:
                 WebSocketClient.LOG.debug("CHANNEL_UPDATE provided an unrecognized channel type JSON: {}", content);
         }
+
+        applyPermissions((AbstractChannelImpl<?, ?>) channel, permOverwrites);
+
+        boolean hasAccessToChannel = channel.getGuild().getSelfMember().hasPermission((IPermissionContainer) channel, Permission.VIEW_CHANNEL);
+        if (channel.getType().isMessage() && !hasAccessToChannel)
+        {
+            handleHideChildThreads((BaseGuildMessageChannel) channel);
+        }
+
         return null;
     }
 
@@ -539,5 +543,35 @@ public class ChannelUpdateHandler extends SocketHandler
         }
 
         return true;
+    }
+
+    private void handleHideChildThreads(BaseGuildMessageChannel channel)
+    {
+        List<GuildThread> threads = channel.getGuildThreads();
+        if (threads.isEmpty())
+            return;
+
+        for (GuildThread thread : threads)
+        {
+            GuildImpl guild = (GuildImpl) channel.getGuild();
+            SnowflakeCacheViewImpl<GuildThread>
+                    guildThreadView = guild.getGuildThreadsView(),
+                    threadView = getJDA().getGuildThreadView();
+            try (
+                    UnlockHook vlock = guildThreadView.writeLock();
+                    UnlockHook jlock = threadView.writeLock())
+            {
+                //TODO-threads: When we figure out how member chunking is going to work for thread related members
+                // we may need to revisit this to ensure they kicked out of the cache if needed.
+                threadView.getMap().remove(thread.getIdLong());
+                guildThreadView.getMap().remove(thread.getIdLong());
+            }
+        }
+
+        //Fire these events outside the write locks
+        for (GuildThread thread : threads)
+        {
+            api.handleEvent(new ThreadHiddenEvent(api, responseNumber, thread));
+        }
     }
 }

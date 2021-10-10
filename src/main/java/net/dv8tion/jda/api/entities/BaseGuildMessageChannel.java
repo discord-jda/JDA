@@ -9,6 +9,7 @@ import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.stream.Collectors;
 
 //TODO-v5: Docs
 public interface BaseGuildMessageChannel extends GuildMessageChannel, GuildChannel, ICategorizableChannel, ICopyableChannel, IPermissionContainer, IMemberContainer, IInviteContainer, IPositionableChannel
@@ -115,6 +116,15 @@ public interface BaseGuildMessageChannel extends GuildMessageChannel, GuildChann
     @Nonnull
     @CheckReturnValue
     AuditableRestAction<Void> deleteWebhookById(@Nonnull String id);
+
+    //TODO-v5 - Docs
+    default List<GuildThread> getGuildThreads()
+    {
+        return getGuild().getGuildThreads()
+            .stream()
+            .filter(thread -> thread.getParentChannel() == this)
+            .collect(Collectors.toList());
+    }
 
     @Override
     ChannelAction<? extends BaseGuildMessageChannel> createCopy(@Nonnull Guild guild);

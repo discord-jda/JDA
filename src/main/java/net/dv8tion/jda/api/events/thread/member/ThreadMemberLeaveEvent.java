@@ -14,40 +14,20 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.entities;
+package net.dv8tion.jda.api.events.thread.member;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.GuildThread;
+import net.dv8tion.jda.api.entities.GuildThreadMember;
+import net.dv8tion.jda.api.entities.Member;
 
 import javax.annotation.Nonnull;
-import java.time.OffsetDateTime;
 
-public interface GuildThreadMember extends IMentionable
+//TODO-v5: Docs
+public class ThreadMemberLeaveEvent extends GenericThreadMemberEvent
 {
-    @Nonnull
-    JDA getJDA();
-
-    @Nonnull
-    Guild getGuild();
-
-    @Nonnull
-    GuildThread getThread();
-
-    //We might not actually be able to provide a user because we only get the `userId` in the ThreadMember object.
-    @Nonnull
-    User getUser();
-
-    @Nonnull
-    Member getMember();
-
-    @Nonnull
-    OffsetDateTime getTimeJoined();
-
-    //TODO | Set<ThreadMemberFlags> getFlags();
-
-    long getFlagsRaw();
-
-    default boolean isThreadOwner()
+    public ThreadMemberLeaveEvent(@Nonnull JDA api, long responseNumber, GuildThread thread, long threadMemberId, GuildThreadMember threadMember)
     {
-        return getThread().getOwnerIdLong() == getIdLong();
+        super(api, responseNumber, thread, threadMemberId, threadMember);
     }
 }

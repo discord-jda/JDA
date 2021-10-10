@@ -21,7 +21,6 @@ import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.time.OffsetDateTime;
 
 public class GuildThreadMemberImpl implements GuildThreadMember
@@ -29,14 +28,14 @@ public class GuildThreadMemberImpl implements GuildThreadMember
     private final JDA api;
     private final GuildThreadImpl thread;
     
-    private User user;
+    private Member member;
     private long joinedTimestamp;
     private long flags;
 
-    public GuildThreadMemberImpl(User user, GuildThreadImpl thread)
+    public GuildThreadMemberImpl(Member member, GuildThreadImpl thread)
     {
-        this.api = user.getJDA();
-        this.user = user;
+        this.api = member.getJDA();
+        this.member = member;
         this.thread = thread;
     }
 
@@ -66,18 +65,14 @@ public class GuildThreadMemberImpl implements GuildThreadMember
     @Override
     public User getUser()
     {
-        // Load user from cache if one exists, ideally two members with the same id should wrap the same user object
-        User realUser = getJDA().getUserById(user.getIdLong());
-        if (realUser != null)
-            this.user = realUser;
-        return user;
+        return member.getUser();
     }
 
-    @Nullable
+    @Nonnull
     @Override
     public Member getMember()
     {
-        return getGuild().getMember(getUser());
+        return member;
     }
 
     @Nonnull
@@ -97,14 +92,13 @@ public class GuildThreadMemberImpl implements GuildThreadMember
     @Override
     public String getAsMention()
     {
-        //TODO: should this try to use the member instead of nickname resolution? Member could be null though...
-        return user.getAsMention();
+        return member.getAsMention();
     }
 
     @Override
     public long getIdLong()
     {
-        return user.getIdLong();
+        return member.getIdLong();
     }
 
     // ===== Setters =======

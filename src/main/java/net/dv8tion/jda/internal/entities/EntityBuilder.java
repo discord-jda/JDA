@@ -262,12 +262,6 @@ public class EntityBuilder
             createGuildChannel(guildObj, channelJson);
         }
 
-        for (int i = 0; i < threadArray.length(); i++)
-        {
-            DataObject threadJson = threadArray.getObject(i);
-            createGuildThread(guildObj, threadJson, guildObj.getIdLong());
-        }
-
         TLongObjectMap<DataObject> voiceStates = convertToUserMap((o) -> o.getUnsignedLong("user_id", 0L), voiceStateArray);
         TLongObjectMap<DataObject> presences = presencesArray.map(o1 -> convertToUserMap(o2 -> o2.getObject("user").getUnsignedLong("id"), o1)).orElseGet(TLongObjectHashMap::new);
         try (UnlockHook h1 = guildObj.getMembersView().writeLock();
@@ -299,6 +293,11 @@ public class EntityBuilder
             });
         }
 
+        for (int i = 0; i < threadArray.length(); i++)
+        {
+            DataObject threadJson = threadArray.getObject(i);
+            createGuildThread(guildObj, threadJson, guildObj.getIdLong());
+        }
 
         createGuildEmotePass(guildObj, emotesArray);
         guildJson.optArray("stage_instances")
@@ -506,13 +505,11 @@ public class EntityBuilder
             // Create a brand new member
             member = new MemberImpl(guild, user);
             member.setNickname(memberJson.getString("nick", null));
-            long epoch = 0;
-            if (!memberJson.isNull("premium_since"))
-            {
-                TemporalAccessor date = DateTimeFormatter.ISO_OFFSET_DATE_TIME.parse(memberJson.getString("premium_since"));
-                epoch = Instant.from(date).toEpochMilli();
-            }
-            member.setBoostDate(epoch);
+            long boostTimestamp = memberJson.isNull("premium_since")
+                ? 0
+                : Helpers.toTimestamp(memberJson.getString("premium_since"));
+            member.setBoostDate(boostTimestamp);
+
             if (!memberJson.isNull("pending"))
                 member.setPending(memberJson.getBoolean("pending"));
             Set<Role> roles = member.getRoleSet();
@@ -1153,9 +1150,39 @@ public class EntityBuilder
                 .setArchiveTimestamp(Helpers.toTimestamp(threadMetadata.getString("archive_timestamp"))) //TODO-threads: This value clearly needs to be renamed because it looks like it represents when it was _updated_. Not when it happened.
                 .setAutoArchiveDuration(GuildThread.AutoArchiveDuration.fromKey(threadMetadata.getInt("auto_archive_duration")));
 
+        //If the bot in the thread already, then create a thread member for the bot.
+        if (!json.isNull("member"))
+        {
+            GuildThreadMember selfThreadMember = createGuildThreadMember(thread, guild.getSelfMember(), json.getObject("member"));
+            CacheView.SimpleCacheView<GuildThreadMember> view = thread.getThreadMemberView();
+            try (UnlockHook lock = view.writeLock())
+            {
+                view.getMap().put(selfThreadMember.getIdLong(), selfThreadMember);
+            }
+        }
+
         if (playbackCache)
             getJDA().getEventCache().playbackCache(EventCache.Type.CHANNEL, id);
         return thread;
+    }
+
+    public GuildThreadMember createGuildThreadMember(GuildImpl guild, GuildThreadImpl guildThread, DataObject json)
+    {
+        DataObject memberJson = json.getObject("member");
+        DataObject presenceJson = json.getObject("presence");
+
+        Member member = createMember(guild, memberJson, null, presenceJson);
+        return createGuildThreadMember(guildThread, member, json);
+    }
+
+    private GuildThreadMember createGuildThreadMember(GuildThreadImpl guildThread, Member member, DataObject json)
+    {
+        GuildThreadMemberImpl threadMember = new GuildThreadMemberImpl(member, guildThread);
+        threadMember
+                .setJoinedTimestamp(Helpers.toTimestamp(json.getString("join_timestamp")))
+                .setFlags(json.getInt("flags"));
+
+        return threadMember;
     }
 
     public PrivateChannel createPrivateChannel(DataObject json)
