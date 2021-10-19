@@ -198,7 +198,7 @@ public class OptionData implements SerializableData
      * @return Immutable list of {@link net.dv8tion.jda.api.interactions.commands.Command.Choice Choices}
      *
      * @see #addChoice(String, int)
-     * @see #addChoice(String, long) 
+     * @see #addChoice(String, long)
      * @see #addChoice(String, String)
      */
     @Nonnull
@@ -581,6 +581,9 @@ public class OptionData implements SerializableData
         OptionType type = OptionType.fromKey(json.getInt("type"));
         OptionData option = new OptionData(type, name, description);
         option.setRequired(json.getBoolean("required"));
+        option.setChannelTypes(json.optArray("channel_types")
+                .map(it -> it.stream(DataArray::getInt).map(ChannelType::fromId).collect(Collectors.toSet()))
+                .orElse(Collections.emptySet()));
         json.optArray("choices").ifPresent(choices1 ->
                 choices1.stream(DataArray::getObject).forEach(o ->
                 {
