@@ -212,6 +212,7 @@ public interface RoleAction extends AuditableRestAction<Role>
 
     /**
      * Sets the {@link net.dv8tion.jda.api.entities.Icon Icon} of this {@link net.dv8tion.jda.api.entities.Role Role}.
+     * This icon will be displayed next to the role's name in the members tab and in chat.
      *
      * @param  icon
      *         The new icon for this {@link net.dv8tion.jda.api.entities.Role Role}
@@ -224,7 +225,8 @@ public interface RoleAction extends AuditableRestAction<Role>
     RoleAction setIcon(@Nullable Icon icon);
 
     /**
-     * Sets the Unicode Emoji of this {@link net.dv8tion.jda.api.entities.Role Role}.
+     * Sets the Unicode Emoji of this {@link net.dv8tion.jda.api.entities.Role Role} instead of a custom image.
+     * This emoji will be displayed next to the role's name in the members tab and in chat.
      *
      * @param  emoji
      *         The Unicode Emoji for this {@link net.dv8tion.jda.api.entities.Role Role}

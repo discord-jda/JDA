@@ -322,7 +322,7 @@ public interface Role extends IMentionable, IPermissionHolder, Comparable<Role>
     }
 
     /**
-     * The Unicode Emoji of this {@link net.dv8tion.jda.api.entities.Role Role}.
+     * The Unicode Emoji of this {@link net.dv8tion.jda.api.entities.Role Role} that is used instead of a custom image.
      * If no emoji has been set, this returns {@code null}.
      * <p>The Role emoji can be modified using {@link RoleManager#setEmoji(String)}.
      *
