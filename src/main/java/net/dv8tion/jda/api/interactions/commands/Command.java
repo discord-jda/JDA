@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.ISnowflake;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.privileges.CommandPrivilege;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.CommandEditAction;
@@ -549,6 +550,8 @@ public class Command implements ISnowflake
         private final int type;
         private final boolean required;
         private final Set<ChannelType> channelTypes;
+        private final double minValue;
+        private final double maxValue;
         private final List<Choice> choices;
 
         public Option(@Nonnull DataObject json)
@@ -557,6 +560,8 @@ public class Command implements ISnowflake
             this.description = json.getString("description");
             this.type = json.getInt("type");
             this.required = json.getBoolean("required");
+            this.minValue = json.getDouble("min_value", OptionData.MIN_NEGATIVE_NUMBER);
+            this.maxValue = json.getDouble("max_value", OptionData.MAX_POSITIVE_NUMBER);
             this.channelTypes = Collections.unmodifiableSet(json.optArray("channel_types")
                     .map(it -> it.stream(DataArray::getInt).map(ChannelType::fromId).collect(Collectors.toSet()))
                     .orElse(Collections.emptySet()));
@@ -631,6 +636,30 @@ public class Command implements ISnowflake
         }
 
         /**
+         * The minimal value which can be provided for this option.
+         * <br>This returns {@link OptionData#MIN_NEGATIVE_NUMBER OptionData#MIN_NEGATIVE_NUMBER} if the option is not of type
+         * {@link OptionType#INTEGER INTEGER} or {@link OptionType#NUMBER NUMBER}.
+         *
+         * @return The minimal value for this option
+         */
+        public double getMinValue()
+        {
+            return minValue;
+        }
+
+        /**
+         * The maximal value which can be provided for this option.
+         * <br>This returns {@link OptionData#MAX_POSITIVE_NUMBER OptionData#MAX_POSITIVE_NUMBER} if the option is not of type
+         * {@link OptionType#INTEGER INTEGER} or {@link OptionType#NUMBER NUMBER}.
+         *
+         * @return The maximal value for this option
+         */
+        public double getMaxValue()
+        {
+            return maxValue;
+        }
+
+        /**
          * The predefined choices available for this option.
          * <br>If no choices are defined, this returns an empty list.
          *
@@ -645,7 +674,7 @@ public class Command implements ISnowflake
         @Override
         public int hashCode()
         {
-            return Objects.hash(name, description, type, choices, channelTypes);
+            return Objects.hash(name, description, type, choices, channelTypes, minValue, maxValue);
         }
 
         @Override
@@ -658,6 +687,8 @@ public class Command implements ISnowflake
                 && Objects.equals(other.description, description)
                 && Objects.equals(other.choices, choices)
                 && Objects.equals(other.channelTypes, channelTypes)
+                && Objects.equals(other.minValue, minValue)
+                && Objects.equals(other.maxValue, maxValue)
                 && other.type == type;
         }
 

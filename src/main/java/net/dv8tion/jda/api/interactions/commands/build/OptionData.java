@@ -73,6 +73,8 @@ public class OptionData implements SerializableData
     private String name, description;
     private boolean isRequired;
     private final EnumSet<ChannelType> channelTypes = EnumSet.noneOf(ChannelType.class);
+    private double minValue = MIN_NEGATIVE_NUMBER;
+    private double maxValue = MAX_POSITIVE_NUMBER;
     private Map<String, Object> choices;
 
     /**
@@ -192,13 +194,37 @@ public class OptionData implements SerializableData
     }
 
     /**
+     * The minimal value which can be provided for this option.
+     * <br>This returns {@link OptionData#MIN_NEGATIVE_NUMBER OptionData#MIN_NEGATIVE_NUMBER} if the option is not of type
+     * {@link OptionType#INTEGER INTEGER} or {@link OptionType#NUMBER NUMBER}.
+     *
+     * @return The minimal value for this option
+     */
+    public double getMinValue()
+    {
+        return minValue;
+    }
+
+    /**
+     * The maximal value which can be provided for this option.
+     * <br>This returns {@link OptionData#MAX_POSITIVE_NUMBER OptionData#MAX_POSITIVE_NUMBER} if the option is not of type
+     * {@link OptionType#INTEGER INTEGER} or {@link OptionType#NUMBER NUMBER}.
+     *
+     * @return The maximal value for this option
+     */
+    public double getMaxValue()
+    {
+        return maxValue;
+    }
+
+    /**
      * The choices for this option.
      * <br>This is empty by default and can only be configured for specific option types.
      *
      * @return Immutable list of {@link net.dv8tion.jda.api.interactions.commands.Command.Choice Choices}
      *
      * @see #addChoice(String, int)
-     * @see #addChoice(String, long) 
+     * @see #addChoice(String, long)
      * @see #addChoice(String, String)
      */
     @Nonnull
@@ -336,6 +362,54 @@ public class OptionData implements SerializableData
         }
         this.channelTypes.clear();
         this.channelTypes.addAll(channelTypes);
+        return this;
+    }
+
+    /**
+     * Configure the minimal value which can be provided for this option.
+     *
+     * @param  value
+     *         The minimal value which can be provided for this option.
+     * @throws IllegalArgumentException
+     *         If any of the following checks fail
+     *         <ul>
+     *             <li>{@link OptionType type of this option} is {@link OptionType#INTEGER INTEGER} or {@link OptionType#NUMBER NUMBER}</li>
+     *             <li>{@code value} is larger than or equal to {@link OptionData#MIN_NEGATIVE_NUMBER MIN_NEGATIVE_NUMBER}</li>
+     *         </ul>
+     *
+     * @return The OptionData instance, for chaining
+     */
+    @Nonnull
+    public OptionData setMinValue(double value)
+    {
+        if (type != OptionType.INTEGER && type != OptionType.NUMBER)
+            throw new IllegalArgumentException("Can only set min value for options of type INTEGER or NUMBER");
+        Checks.check(value >= MIN_NEGATIVE_NUMBER, "Double value may not be lower than %f", MIN_NEGATIVE_NUMBER);
+        this.minValue = value;
+        return this;
+    }
+
+    /**
+     * Configure the maximal value which can be provided for this option.
+     *
+     * @param  value
+     *         The maximal value which can be provided for this option.
+     * @throws IllegalArgumentException
+     *         If any of the following checks fail
+     *         <ul>
+     *             <li>{@link OptionType type of this option} is {@link OptionType#INTEGER INTEGER} or {@link OptionType#NUMBER NUMBER}</li>
+     *             <li>{@code value} is lower than or equal to {@link OptionData#MAX_POSITIVE_NUMBER MAX_POSITIVE_NUMBER}</li>
+     *         </ul>
+     *
+     * @return The OptionData instance, for chaining
+     */
+    @Nonnull
+    public OptionData setMaxValue(double value)
+    {
+        if (type != OptionType.INTEGER && type != OptionType.NUMBER)
+            throw new IllegalArgumentException("Can only set max value for options of type INTEGER or NUMBER");
+        Checks.check(value <= MAX_POSITIVE_NUMBER, "Double value may not be larger than %f", MAX_POSITIVE_NUMBER);
+        this.maxValue = value;
         return this;
     }
 
@@ -556,6 +630,11 @@ public class OptionData implements SerializableData
         }
         if (type == OptionType.CHANNEL && !channelTypes.isEmpty())
             json.put("channel_types", channelTypes.stream().map(ChannelType::getId).collect(Collectors.toList()));
+        if (type == OptionType.INTEGER || type == OptionType.NUMBER)
+        {
+            json.put("min_value", minValue);
+            json.put("max_value", maxValue);
+        }
         return json;
     }
 
@@ -581,6 +660,8 @@ public class OptionData implements SerializableData
         OptionType type = OptionType.fromKey(json.getInt("type"));
         OptionData option = new OptionData(type, name, description);
         option.setRequired(json.getBoolean("required"));
+        option.setMinValue(json.getDouble("min_value", MIN_NEGATIVE_NUMBER));
+        option.setMaxValue(json.getDouble("max_value", MAX_POSITIVE_NUMBER));
         json.optArray("choices").ifPresent(choices1 ->
                 choices1.stream(DataArray::getObject).forEach(o ->
                 {
