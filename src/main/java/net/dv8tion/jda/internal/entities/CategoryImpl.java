@@ -151,6 +151,15 @@ public class CategoryImpl extends AbstractChannelImpl<Category, CategoryImpl> im
 
     @Nonnull
     @Override
+    public List<NewsChannel> getNewsChannels()
+    {
+        return Collections.unmodifiableList(getGuild().getNewsChannelCache().stream()
+                .filter(channel -> equals(channel.getParentCategory()))
+                .sorted().collect(Collectors.toList()));
+    }
+
+    @Nonnull
+    @Override
     public List<VoiceChannel> getVoiceChannels()
     {
         return Collections.unmodifiableList(getGuild().getVoiceChannelsView().stream()

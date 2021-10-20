@@ -167,8 +167,8 @@ public class EmoteImpl implements ListedEmote
             throw new IllegalStateException("The emote you are trying to delete is not an actual emote we have access to (it is from a message)!");
         if (managed)
             throw new UnsupportedOperationException("You cannot delete a managed emote!");
-        if (!getGuild().getSelfMember().hasPermission(Permission.MANAGE_EMOTES))
-            throw new InsufficientPermissionException(getGuild(), Permission.MANAGE_EMOTES);
+        if (!getGuild().getSelfMember().hasPermission(Permission.MANAGE_EMOTES_AND_STICKERS))
+            throw new InsufficientPermissionException(getGuild(), Permission.MANAGE_EMOTES_AND_STICKERS);
 
         Route.CompiledRoute route = Route.Emotes.DELETE_EMOTE.compile(getGuild().getId(), getId());
         return new AuditableRestActionImpl<>(getJDA(), route);

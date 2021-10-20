@@ -73,12 +73,6 @@ public class PrivateChannelImpl implements PrivateChannel
         return messageId;
     }
 
-    @Override
-    public boolean hasLatestMessage()
-    {
-        return lastMessageId > 0;
-    }
-
     @Nonnull
     @Override
     public String getName()

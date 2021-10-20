@@ -40,7 +40,7 @@ import javax.annotation.Nonnull;
  */
 public class WebhookImpl extends AbstractWebhookClient<Void> implements Webhook
 {
-    private final TextChannel channel;
+    private final BaseGuildMessageChannel channel;
     private final WebhookType type;
     private WebhookManager manager;
 
@@ -49,12 +49,12 @@ public class WebhookImpl extends AbstractWebhookClient<Void> implements Webhook
     private ChannelReference sourceChannel;
     private GuildReference sourceGuild;
 
-    public WebhookImpl(TextChannel channel, long id, WebhookType type)
+    public WebhookImpl(BaseGuildMessageChannel channel, long id, WebhookType type)
     {
         this(channel, channel.getJDA(), id, type);
     }
 
-    public WebhookImpl(TextChannel channel, JDA api, long id, WebhookType type)
+    public WebhookImpl(BaseGuildMessageChannel channel, JDA api, long id, WebhookType type)
     {
         super(id, null, api);
         this.channel = channel;
@@ -92,7 +92,7 @@ public class WebhookImpl extends AbstractWebhookClient<Void> implements Webhook
 
     @Nonnull
     @Override
-    public TextChannel getChannel()
+    public BaseGuildMessageChannel getChannel()
     {
         if (channel == null)
             throw new IllegalStateException("Cannot provide channel for this Webhook instance because it does not belong to this shard");

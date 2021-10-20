@@ -1337,7 +1337,10 @@ public interface JDA
     @Nullable
     default GuildChannel getGuildChannelById(long id)
     {
+        //TODO-v5-unified-channel-cache
         GuildChannel channel = getTextChannelById(id);
+        if (channel == null)
+            channel = getNewsChannelById(id);
         if (channel == null)
             channel = getVoiceChannelById(id);
         if (channel == null)
@@ -1411,9 +1414,11 @@ public interface JDA
         Checks.notNull(type, "ChannelType");
         switch (type)
         {
-            //TODO-v5: Add support for NEWS and THREAD here
+            //TODO-v5: Add support THREAD here
         case TEXT:
             return getTextChannelById(id);
+        case NEWS:
+            return getNewsChannelById(id);
         case VOICE:
             return getVoiceChannelById(id);
         case STAGE:
@@ -1680,7 +1685,7 @@ public interface JDA
      * not mean that you will be able to send messages to it. Furthermore, if you log into this account on the discord
      * client, it is possible that you will see fewer channels than this returns. This is because the discord
      * client hides any {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} that you don't have the
-     * {@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ} permission in.
+     * {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} permission in.
      *
      * <p>This copies the backing store into a list. This means every call
      * creates a new list with O(n) complexity. It is recommended to store this into
@@ -1704,7 +1709,7 @@ public interface JDA
      * not mean that you will be able to send messages to it. Furthermore, if you log into this account on the discord
      * client, it is you will not see the channel that this returns. This is because the discord client
      * hides any {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} that you don't have the
-     * {@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ} permission in.
+     * {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} permission in.
      *
      * @param  id
      *         The id of the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}.
@@ -1728,7 +1733,7 @@ public interface JDA
      * not mean that you will be able to send messages to it. Furthermore, if you log into this account on the discord
      * client, it is you will not see the channel that this returns. This is because the discord client
      * hides any {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} that you don't have the
-     * {@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ} permission in.
+     * {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} permission in.
      *
      * @param  id
      *         The id of the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}.
@@ -1749,7 +1754,7 @@ public interface JDA
      * not mean that you will be able to send messages to it. Furthermore, if you log into this account on the discord
      * client, it is possible that you will see fewer channels than this returns. This is because the discord client
      * hides any {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} that you don't have the
-     * {@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ} permission in.
+     * {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} permission in.
      *
      * @param  name
      *         The name of the requested {@link net.dv8tion.jda.api.entities.TextChannel TextChannels}.
@@ -1763,6 +1768,108 @@ public interface JDA
     default List<TextChannel> getTextChannelsByName(@Nonnull String name, boolean ignoreCase)
     {
         return getTextChannelCache().getElementsByName(name, ignoreCase);
+    }
+
+    /**
+     * {@link net.dv8tion.jda.api.utils.cache.SnowflakeCacheView SnowflakeCacheView} of
+     * all cached {@link net.dv8tion.jda.api.entities.NewsChannel NewsChannel} visible to this JDA session.
+     *
+     * @return {@link net.dv8tion.jda.api.utils.cache.SnowflakeCacheView SnowflakeCacheView}
+     */
+    @Nonnull
+    SnowflakeCacheView<NewsChannel> getNewsChannelCache();
+
+    /**
+     * An unmodifiable List of all {@link net.dv8tion.jda.api.entities.NewsChannel NewsChannels} of all connected
+     * {@link net.dv8tion.jda.api.entities.Guild Guilds}.
+     *
+     * <p><b>Note:</b> just because a {@link net.dv8tion.jda.api.entities.NewsChannel NewsChannel} is present in this list does
+     * not mean that you will be able to send messages to it. Furthermore, if you log into this account on the discord
+     * client, it is possible that you will see fewer channels than this returns. This is because the discord
+     * client hides any {@link net.dv8tion.jda.api.entities.NewsChannel NewsChannel} that you don't have the
+     * {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} permission in.
+     *
+     * <p>This copies the backing store into a list. This means every call
+     * creates a new list with O(n) complexity. It is recommended to store this into
+     * a local variable or use {@link #getNewsChannelCache()} and use its more efficient
+     * versions of handling these values.
+     *
+     * @return Possibly-empty list of all known {@link net.dv8tion.jda.api.entities.NewsChannel NewsChannels}.
+     */
+    @Nonnull
+    default List<NewsChannel> getNewsChannels()
+    {
+        return getNewsChannelCache().asList();
+    }
+
+    /**
+     * This returns the {@link net.dv8tion.jda.api.entities.NewsChannel NewsChannel} which has the same id as the one provided.
+     * <br>If there is no known {@link net.dv8tion.jda.api.entities.NewsChannel NewsChannel} with an id that matches the
+     * provided one, then this returns {@code null}.
+     *
+     * <p><b>Note:</b> just because a {@link net.dv8tion.jda.api.entities.NewsChannel NewsChannel} is present does
+     * not mean that you will be able to send messages to it. Furthermore, if you log into this account on the discord
+     * client, it is you will not see the channel that this returns. This is because the discord client
+     * hides any {@link net.dv8tion.jda.api.entities.NewsChannel NewsChannel} that you don't have the
+     * {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} permission in.
+     *
+     * @param  id
+     *         The id of the {@link net.dv8tion.jda.api.entities.NewsChannel NewsChannel}.
+     * @throws java.lang.NumberFormatException
+     *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
+     *
+     * @return Possibly-null {@link net.dv8tion.jda.api.entities.NewsChannel NewsChannel} with matching id.
+     */
+    @Nullable
+    default NewsChannel getNewsChannelById(@Nonnull String id)
+    {
+        return getNewsChannelCache().getElementById(id);
+    }
+
+    /**
+     * This returns the {@link net.dv8tion.jda.api.entities.NewsChannel NewsChannel} which has the same id as the one provided.
+     * <br>If there is no known {@link net.dv8tion.jda.api.entities.NewsChannel NewsChannel} with an id that matches the
+     * provided one, then this returns {@code null}.
+     *
+     * <p><b>Note:</b> just because a {@link net.dv8tion.jda.api.entities.NewsChannel NewsChannel} is present does
+     * not mean that you will be able to send messages to it. Furthermore, if you log into this account on the discord
+     * client, it is you will not see the channel that this returns. This is because the discord client
+     * hides any {@link net.dv8tion.jda.api.entities.NewsChannel NewsChannel} that you don't have the
+     * {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} permission in.
+     *
+     * @param  id
+     *         The id of the {@link net.dv8tion.jda.api.entities.NewsChannel NewsChannel}.
+     *
+     * @return Possibly-null {@link net.dv8tion.jda.api.entities.NewsChannel NewsChannel} with matching id.
+     */
+    @Nullable
+    default NewsChannel getNewsChannelById(long id)
+    {
+        return getNewsChannelCache().getElementById(id);
+    }
+
+    /**
+     * An unmodifiable list of all {@link net.dv8tion.jda.api.entities.NewsChannel NewsChannels} that have the same name as the one provided.
+     * <br>If there are no {@link net.dv8tion.jda.api.entities.NewsChannel NewsChannel} with the provided name, then this returns an empty list.
+     *
+     * <p><b>Note:</b> just because a {@link net.dv8tion.jda.api.entities.NewsChannel NewsChannel} is present in this list does
+     * not mean that you will be able to send messages to it. Furthermore, if you log into this account on the discord
+     * client, it is possible that you will see fewer channels than this returns. This is because the discord client
+     * hides any {@link net.dv8tion.jda.api.entities.NewsChannel NewsChannel} that you don't have the
+     * {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} permission in.
+     *
+     * @param  name
+     *         The name of the requested {@link net.dv8tion.jda.api.entities.NewsChannel NewsChannels}.
+     * @param  ignoreCase
+     *         Whether to ignore case or not when comparing the provided name to each {@link net.dv8tion.jda.api.entities.NewsChannel#getName()}.
+     *
+     * @return Possibly-empty list of all the {@link net.dv8tion.jda.api.entities.NewsChannel NewsChannels} that all have the
+     *         same name as the provided name.
+     */
+    @Nonnull
+    default List<NewsChannel> getNewsChannelsByName(@Nonnull String name, boolean ignoreCase)
+    {
+        return getNewsChannelCache().getElementsByName(name, ignoreCase);
     }
 
     /**

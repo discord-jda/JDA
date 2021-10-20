@@ -415,7 +415,7 @@ public class MemberImpl implements Member
     {
         return getGuild().getTextChannelsView().stream()
                  .sorted(Comparator.reverseOrder())
-                 .filter(c -> hasPermission(c, Permission.MESSAGE_READ))
+                 .filter(c -> hasPermission(c, Permission.VIEW_CHANNEL))
                  .findFirst().orElse(null);
     }
 }

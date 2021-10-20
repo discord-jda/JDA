@@ -71,11 +71,12 @@ public class GuildImpl implements Guild
     private final long id;
     private final JDAImpl api;
 
-    private final SortedSnowflakeCacheViewImpl<Category> categoryCache = new SortedSnowflakeCacheViewImpl<>(Category.class, GuildChannel::getName, Comparator.naturalOrder());
-    private final SortedSnowflakeCacheViewImpl<VoiceChannel> voiceChannelCache = new SortedSnowflakeCacheViewImpl<>(VoiceChannel.class, GuildChannel::getName, Comparator.naturalOrder());
-    private final SortedSnowflakeCacheViewImpl<StoreChannel> storeChannelCache = new SortedSnowflakeCacheViewImpl<>(StoreChannel.class, StoreChannel::getName, Comparator.naturalOrder());
-    private final SortedSnowflakeCacheViewImpl<TextChannel> textChannelCache = new SortedSnowflakeCacheViewImpl<>(TextChannel.class, GuildChannel::getName, Comparator.naturalOrder());
-    private final SortedSnowflakeCacheViewImpl<StageChannel> stageChannelCache = new SortedSnowflakeCacheViewImpl<>(StageChannel.class, GuildChannel::getName, Comparator.naturalOrder());
+    private final SortedSnowflakeCacheViewImpl<Category> categoryCache = new SortedSnowflakeCacheViewImpl<>(Category.class, Channel::getName, Comparator.naturalOrder());
+    private final SortedSnowflakeCacheViewImpl<VoiceChannel> voiceChannelCache = new SortedSnowflakeCacheViewImpl<>(VoiceChannel.class, Channel::getName, Comparator.naturalOrder());
+    private final SortedSnowflakeCacheViewImpl<StoreChannel> storeChannelCache = new SortedSnowflakeCacheViewImpl<>(StoreChannel.class, Channel::getName, Comparator.naturalOrder());
+    private final SortedSnowflakeCacheViewImpl<TextChannel> textChannelCache = new SortedSnowflakeCacheViewImpl<>(TextChannel.class, Channel::getName, Comparator.naturalOrder());
+    private final SortedSnowflakeCacheViewImpl<NewsChannel> newsChannelCache = new SortedSnowflakeCacheViewImpl<>(NewsChannel.class, Channel::getName, Comparator.naturalOrder());
+    private final SortedSnowflakeCacheViewImpl<StageChannel> stageChannelCache = new SortedSnowflakeCacheViewImpl<>(StageChannel.class, Channel::getName, Comparator.naturalOrder());
     private final SortedSnowflakeCacheViewImpl<Role> roleCache = new SortedSnowflakeCacheViewImpl<>(Role.class, Role::getName, Comparator.reverseOrder());
     private final SnowflakeCacheViewImpl<Emote> emoteCache = new SnowflakeCacheViewImpl<>(Emote.class, Emote::getName);
     private final MemberCacheViewImpl memberCache = new MemberCacheViewImpl();
@@ -103,6 +104,7 @@ public class GuildImpl implements Guild
     private NotificationLevel defaultNotificationLevel = NotificationLevel.UNKNOWN;
     private MFALevel mfaLevel = MFALevel.UNKNOWN;
     private ExplicitContentLevel explicitContentLevel = ExplicitContentLevel.UNKNOWN;
+    private NSFWLevel nsfwLevel = NSFWLevel.UNKNOWN;
     private Timeout afkTimeout;
     private BoostTier boostTier = BoostTier.NONE;
     private Locale preferredLocale = Locale.ENGLISH;
@@ -581,6 +583,13 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
+    public SortedSnowflakeCacheView<NewsChannel> getNewsChannelCache()
+    {
+        return newsChannelCache;
+    }
+
+    @Nonnull
+    @Override
     public SortedSnowflakeCacheView<VoiceChannel> getVoiceChannelCache()
     {
         return voiceChannelCache;
@@ -625,8 +634,10 @@ public class GuildImpl implements Guild
         SnowflakeCacheViewImpl<VoiceChannel> voiceView = getVoiceChannelsView();
         SnowflakeCacheViewImpl<StageChannel> stageView = getStageChannelsView();
         SnowflakeCacheViewImpl<TextChannel> textView = getTextChannelsView();
+        SnowflakeCacheViewImpl<NewsChannel> newsView = getNewsChannelView();
         SnowflakeCacheViewImpl<StoreChannel> storeView = getStoreChannelView();
         List<TextChannel> textChannels;
+        List<NewsChannel> newsChannels;
         List<StoreChannel> storeChannels;
         List<VoiceChannel> voiceChannels;
         List<StageChannel> stageChannels;
@@ -634,6 +645,7 @@ public class GuildImpl implements Guild
         try (UnlockHook categoryHook = categoryView.readLock();
              UnlockHook voiceHook = voiceView.readLock();
              UnlockHook textHook = textView.readLock();
+             UnlockHook newsHook = newsView.readLock();
              UnlockHook storeHook = storeView.readLock();
              UnlockHook stageHook = stageView.readLock())
         {
@@ -641,6 +653,7 @@ public class GuildImpl implements Guild
             {
                 storeChannels = storeView.asList();
                 textChannels = textView.asList();
+                newsChannels = newsView.asList();
                 voiceChannels = voiceView.asList();
                 stageChannels = stageView.asList();
             }
@@ -648,15 +661,17 @@ public class GuildImpl implements Guild
             {
                 storeChannels = storeView.stream().filter(filterHidden).collect(Collectors.toList());
                 textChannels = textView.stream().filter(filterHidden).collect(Collectors.toList());
+                newsChannels = newsView.stream().filter(filterHidden).collect(Collectors.toList());
                 voiceChannels = voiceView.stream().filter(filterHidden).collect(Collectors.toList());
                 stageChannels = stageView.stream().filter(filterHidden).collect(Collectors.toList());
             }
             categories = categoryView.asList(); // we filter categories out when they are empty (no visible channels inside)
-            channels = new ArrayList<>((int) categoryView.size() + voiceChannels.size() + textChannels.size() + storeChannels.size() + stageChannels.size());
+            channels = new ArrayList<>((int) categoryView.size() + voiceChannels.size() + textChannels.size() + newsChannels.size() + storeChannels.size() + stageChannels.size());
         }
 
         storeChannels.stream().filter(it -> it.getParentCategory() == null).forEach(channels::add);
         textChannels.stream().filter(it -> it.getParentCategory() == null).forEach(channels::add);
+        newsChannels.stream().filter(it -> it.getParentCategory() == null).forEach(channels::add);
         voiceChannels.stream().filter(it -> it.getParentCategory() == null).forEach(channels::add);
         stageChannels.stream().filter(it -> it.getParentCategory() == null).forEach(channels::add);
         Collections.sort(channels);
@@ -716,7 +731,7 @@ public class GuildImpl implements Guild
             if (emote != null)
             {
                 ListedEmote listedEmote = (ListedEmote) emote;
-                if (listedEmote.hasUser() || !getSelfMember().hasPermission(Permission.MANAGE_EMOTES))
+                if (listedEmote.hasUser() || !getSelfMember().hasPermission(Permission.MANAGE_EMOTES_AND_STICKERS))
                     return listedEmote;
             }
             return null;
@@ -800,7 +815,7 @@ public class GuildImpl implements Guild
     {
         final Role role = getPublicRole();
         return getTextChannelsView().stream()
-                                    .filter(c -> role.hasPermission(c, Permission.MESSAGE_READ))
+                                    .filter(c -> role.hasPermission(c, Permission.VIEW_CHANNEL))
                                     .min(Comparator.naturalOrder()).orElse(null);
     }
 
@@ -1039,8 +1054,9 @@ public class GuildImpl implements Guild
                 result.complete(collect);
         });
 
-        result.exceptionally(ex -> {
+        handle.exceptionally(ex -> {
             WebSocketClient.LOG.error("Encountered exception trying to handle member chunk response", ex);
+            result.completeExceptionally(ex);
             return null;
         });
 
@@ -1065,8 +1081,9 @@ public class GuildImpl implements Guild
                 result.complete(collect);
         });
 
-        result.exceptionally(ex -> {
+        handle.exceptionally(ex -> {
             WebSocketClient.LOG.error("Encountered exception trying to handle member chunk response", ex);
+            result.completeExceptionally(ex);
             return null;
         });
 
@@ -1087,7 +1104,6 @@ public class GuildImpl implements Guild
             throw new InsufficientPermissionException(this, Permission.MANAGE_SERVER);
 
         final Route.CompiledRoute route = Route.Invites.GET_GUILD_INVITES.compile(getId());
-
         return new RestActionImpl<>(getJDA(), route, (response, request) ->
         {
             EntityBuilder entityBuilder = api.getEntityBuilder();
@@ -1369,7 +1385,7 @@ public class GuildImpl implements Guild
         {
             if (voiceState.getChannel() == null)
                 throw new IllegalStateException("Can only mute members who are currently in a voice channel");
-            if (voiceState.isGuildMuted() == mute)
+            if (voiceState.isGuildMuted() == mute && (mute || !voiceState.isSuppressed()))
                 return new CompletedRestAction<>(getJDA(), null);
         }
 
@@ -1502,16 +1518,7 @@ public class GuildImpl implements Guild
     @Override
     public ChannelAction<TextChannel> createTextChannel(@Nonnull String name, Category parent)
     {
-        if (parent != null)
-        {
-            Checks.check(parent.getGuild().equals(this), "Category is not from the same guild!");
-            if (!getSelfMember().hasPermission(parent, Permission.MANAGE_CHANNEL))
-                throw new InsufficientPermissionException(parent, Permission.MANAGE_CHANNEL);
-        }
-        else
-        {
-            checkPermission(Permission.MANAGE_CHANNEL);
-        }
+        checkCanCreateChannel(parent);
 
         Checks.notBlank(name, "Name");
         name = name.trim();
@@ -1521,18 +1528,21 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
+    public ChannelAction<NewsChannel> createNewsChannel(@Nonnull String name, Category parent)
+    {
+        checkCanCreateChannel(parent);
+
+        Checks.notBlank(name, "Name");
+        name = name.trim();
+        Checks.notLonger(name, 100, "Name");
+        return new ChannelActionImpl<>(NewsChannel.class, name, this, ChannelType.NEWS).setParent(parent);
+    }
+
+    @Nonnull
+    @Override
     public ChannelAction<VoiceChannel> createVoiceChannel(@Nonnull String name, Category parent)
     {
-        if (parent != null)
-        {
-            Checks.check(parent.getGuild().equals(this), "Category is not from the same guild!");
-            if (!getSelfMember().hasPermission(parent, Permission.MANAGE_CHANNEL))
-                throw new InsufficientPermissionException(parent, Permission.MANAGE_CHANNEL);
-        }
-        else
-        {
-            checkPermission(Permission.MANAGE_CHANNEL);
-        }
+        checkCanCreateChannel(parent);
 
         Checks.notBlank(name, "Name");
         name = name.trim();
@@ -1544,16 +1554,7 @@ public class GuildImpl implements Guild
     @Override
     public ChannelAction<StageChannel> createStageChannel(@Nonnull String name, Category parent)
     {
-        if (parent != null)
-        {
-            Checks.check(parent.getGuild().equals(this), "Category is not from the same guild!");
-            if (!getSelfMember().hasPermission(parent, Permission.MANAGE_CHANNEL))
-                throw new InsufficientPermissionException(parent, Permission.MANAGE_CHANNEL);
-        }
-        else
-        {
-            checkPermission(Permission.MANAGE_CHANNEL);
-        }
+        checkCanCreateChannel(parent);
 
         Checks.notBlank(name, "Name");
         name = name.trim();
@@ -1585,7 +1586,7 @@ public class GuildImpl implements Guild
     @Override
     public AuditableRestAction<Emote> createEmote(@Nonnull String name, @Nonnull Icon icon, @Nonnull Role... roles)
     {
-        checkPermission(Permission.MANAGE_EMOTES);
+        checkPermission(Permission.MANAGE_EMOTES_AND_STICKERS);
         Checks.inRange(name, 2, 32, "Emote name");
         Checks.notNull(icon, "Emote icon");
         Checks.notNull(roles, "Roles");
@@ -1869,6 +1870,12 @@ public class GuildImpl implements Guild
         return this;
     }
 
+    public GuildImpl setNSFWLevel(NSFWLevel nsfwLevel)
+    {
+        this.nsfwLevel = nsfwLevel;
+        return this;
+    }
+
     // -- Map getters --
 
     public SortedSnowflakeCacheViewImpl<Category> getCategoriesView()
@@ -1884,6 +1891,11 @@ public class GuildImpl implements Guild
     public SortedSnowflakeCacheViewImpl<TextChannel> getTextChannelsView()
     {
         return textChannelCache;
+    }
+
+    public SortedSnowflakeCacheViewImpl<NewsChannel> getNewsChannelView()
+    {
+        return newsChannelCache;
     }
 
     public SortedSnowflakeCacheViewImpl<VoiceChannel> getVoiceChannelsView()
@@ -1909,6 +1921,13 @@ public class GuildImpl implements Guild
     public MemberCacheViewImpl getMembersView()
     {
         return memberCache;
+    }
+
+    @Nonnull
+    @Override
+    public NSFWLevel getNSFWLevel()
+    {
+        return nsfwLevel;
     }
 
     @Nullable
@@ -1952,5 +1971,19 @@ public class GuildImpl implements Guild
     public String toString()
     {
         return "G:" + getName() + '(' + id + ')';
+    }
+
+    private void checkCanCreateChannel(Category parent)
+    {
+        if (parent != null)
+        {
+            Checks.check(parent.getGuild().equals(this), "Category is not from the same guild!");
+            if (!getSelfMember().hasPermission(parent, Permission.MANAGE_CHANNEL))
+                throw new InsufficientPermissionException(parent, Permission.MANAGE_CHANNEL);
+        }
+        else
+        {
+            checkPermission(Permission.MANAGE_CHANNEL);
+        }
     }
 }
