@@ -82,13 +82,14 @@ dependencies {
     //we use this only together with opus-java
     // if that dependency is excluded it also doesn't need jna anymore
     // since jna is a transitive runtime dependency of opus-java we don't include it explicitly as dependency
-    compileOnly("net.java.dev.jna:jna:5.9.0")
+    compileOnly("net.java.dev.jna:jna:4.4.0")
 
     /* Internal dependencies */
 
     //General Utility
     implementation("net.sf.trove4j:trove4j:3.0.3")
-    implementation("com.fasterxml.jackson.core:jackson-databind:2.12.5")
+    // Match the dependency version of lavaplayer
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.10.1")
 
     //Sets the dependencies for the examples
     configurations["examplesImplementation"].withDependencies {
