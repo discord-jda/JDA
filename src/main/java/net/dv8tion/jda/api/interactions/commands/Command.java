@@ -636,7 +636,7 @@ public class Command implements ISnowflake
         }
 
         /**
-         * The minimal value which can be provided for this option.
+         * The minimum value which can be provided for this option.
          * <br>This returns {@link OptionData#MIN_NEGATIVE_NUMBER OptionData#MIN_NEGATIVE_NUMBER} if the option is not of type
          * {@link OptionType#INTEGER INTEGER} or {@link OptionType#NUMBER NUMBER}.
          *
@@ -648,7 +648,7 @@ public class Command implements ISnowflake
         }
 
         /**
-         * The maximal value which can be provided for this option.
+         * The maximum value which can be provided for this option.
          * <br>This returns {@link OptionData#MAX_POSITIVE_NUMBER OptionData#MAX_POSITIVE_NUMBER} if the option is not of type
          * {@link OptionType#INTEGER INTEGER} or {@link OptionType#NUMBER NUMBER}.
          *
