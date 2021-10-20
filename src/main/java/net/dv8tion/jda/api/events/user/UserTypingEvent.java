@@ -119,6 +119,18 @@ public class UserTypingEvent extends GenericUserEvent
     }
 
     /**
+     * {@link net.dv8tion.jda.api.entities.NewsChannel NewsChannel} in which this users started typing,
+     * or {@code null} if this was not in a NewsChannel.
+     *
+     * @return Possibly-null {@link net.dv8tion.jda.api.entities.NewsChannel NewsChannel}
+     */
+    @Nullable
+    public NewsChannel getNewsChannel()
+    {
+        return isFromType(ChannelType.NEWS) ? (NewsChannel) channel : null;
+    }
+
+    /**
      * {@link net.dv8tion.jda.api.entities.Guild Guild} in which this users started typing,
      * or {@code null} if this was not in a Guild.
      *
@@ -127,7 +139,7 @@ public class UserTypingEvent extends GenericUserEvent
     @Nullable
     public Guild getGuild()
     {
-        return isFromType(ChannelType.TEXT) ? member.getGuild() : null;
+        return getType().isGuild() ? member.getGuild() : null;
     }
 
     /**

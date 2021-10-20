@@ -58,6 +58,7 @@ public class GenericPermissionOverrideEvent extends GenericGuildEvent
      * @return The {@link GuildChannel}
      */
     @Nonnull
+    //TODO-v5: Make this IPermissionContainer?
     public GuildChannel getChannel()
     {
         return channel;
@@ -79,6 +80,25 @@ public class GenericPermissionOverrideEvent extends GenericGuildEvent
     {
         if (channel instanceof TextChannel)
             return (TextChannel) channel;
+        throw new IllegalStateException("This override is for a channel of type " + getChannelType());
+    }
+
+    /**
+     * The {@link NewsChannel} this override belongs to.
+     *
+     * @throws IllegalStateException
+     *         If the override does not belong to a NewsChannel
+     *
+     * @return {@link NewsChannel}
+     *
+     * @see    #getChannel()
+     * @see    #getChannelType()
+     */
+    @Nonnull
+    public NewsChannel getNewsChannel()
+    {
+        if (channel instanceof NewsChannel)
+            return (NewsChannel) channel;
         throw new IllegalStateException("This override is for a channel of type " + getChannelType());
     }
 

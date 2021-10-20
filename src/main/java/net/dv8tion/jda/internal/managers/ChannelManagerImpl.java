@@ -44,6 +44,7 @@ public class ChannelManagerImpl<T extends GuildChannel> extends ManagerBase<Chan
     protected T channel;
 
     protected String name;
+    protected ChannelType type;
     protected String parent;
     protected String topic;
     protected String region;
@@ -52,7 +53,6 @@ public class ChannelManagerImpl<T extends GuildChannel> extends ManagerBase<Chan
     protected int slowmode;
     protected int userlimit;
     protected int bitrate;
-    protected boolean news;
 
     protected final Object lock = new Object();
     protected final TLongObjectHashMap<PermOverrideData> overridesAdd;
@@ -67,11 +67,10 @@ public class ChannelManagerImpl<T extends GuildChannel> extends ManagerBase<Chan
      */
     public ChannelManagerImpl(T channel)
     {
-        super(channel.getJDA(),
-              Route.Channels.MODIFY_CHANNEL.compile(channel.getId()));
-        JDA jda = channel.getJDA();
-        ChannelType type = channel.getType();
+        super(channel.getJDA(), Route.Channels.MODIFY_CHANNEL.compile(channel.getId()));
         this.channel = channel;
+        this.type = channel.getType();
+
         if (isPermissionChecksEnabled())
             checkPermissions();
         this.overridesAdd = new TLongObjectHashMap<>();
@@ -96,12 +95,12 @@ public class ChannelManagerImpl<T extends GuildChannel> extends ManagerBase<Chan
         super.reset(fields);
         if ((fields & NAME) == NAME)
             this.name = null;
+        if ((fields & TYPE) == TYPE)
+            this.type = this.channel.getType();
         if ((fields & PARENT) == PARENT)
             this.parent = null;
         if ((fields & TOPIC) == TOPIC)
             this.topic = null;
-        if ((fields & NEWS) == NEWS)
-            this.news = false;
         if ((fields & REGION) == REGION)
             this.region = null;
         if ((fields & PERMISSION) == PERMISSION)
@@ -131,10 +130,10 @@ public class ChannelManagerImpl<T extends GuildChannel> extends ManagerBase<Chan
     {
         super.reset();
         this.name = null;
+        this.type = this.channel.getType();
         this.parent = null;
         this.topic = null;
         this.region = null;
-        this.news = false;
         withLock(lock, (lock) ->
         {
             this.overridesRem.clear();
@@ -183,6 +182,32 @@ public class ChannelManagerImpl<T extends GuildChannel> extends ManagerBase<Chan
 
         Checks.notNull(permHolder, "PermissionHolder");
         Checks.check(permHolder.getGuild().equals(getGuild()), "PermissionHolder is not from the same Guild!");
+        final long id = permHolder.getIdLong();
+        final int type = permHolder instanceof Role ? PermOverrideData.ROLE_TYPE : PermOverrideData.MEMBER_TYPE;
+        putPermissionOverride(new PermOverrideData(type, id, allow, deny));
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    @CheckReturnValue
+    public ChannelManagerImpl putMemberPermissionOverride(long memberId, long allow, long deny)
+    {
+        putPermissionOverride(new PermOverrideData(PermOverrideData.MEMBER_TYPE, memberId, allow, deny));
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    @CheckReturnValue
+    public ChannelManagerImpl putRolePermissionOverride(long roleId, long allow, long deny)
+    {
+        putPermissionOverride(new PermOverrideData(PermOverrideData.ROLE_TYPE, roleId, allow, deny));
+        return this;
+    }
+
+    private void checkCanPutPermissions(long allow, long deny)
+    {
         Member selfMember = getGuild().getSelfMember();
 
         if (isPermissionChecksEnabled() && !selfMember.hasPermission(Permission.ADMINISTRATOR))
@@ -204,15 +229,17 @@ public class ChannelManagerImpl<T extends GuildChannel> extends ManagerBase<Chan
                     throw new InsufficientPermissionException(permChannel, Permission.MANAGE_PERMISSIONS, "You must have Permission.MANAGE_PERMISSIONS on the channel explicitly in order to set permissions you don't already have!");
             }
         }
-        final long id = getId(permHolder);
-        final int type = permHolder instanceof Role ? PermOverrideData.ROLE_TYPE : PermOverrideData.MEMBER_TYPE;
+    }
+
+    private void putPermissionOverride(@Nonnull final PermOverrideData overrideData)
+    {
+        checkCanPutPermissions(overrideData.allow, overrideData.deny);
         withLock(lock, (lock) ->
         {
-            this.overridesRem.remove(id);
-            this.overridesAdd.put(id, new PermOverrideData(type, id, allow, deny));
+            this.overridesRem.remove(overrideData.id);
+            this.overridesAdd.put(overrideData.id, overrideData);
             set |= PERMISSION;
         });
-        return this;
     }
 
     @Nonnull
@@ -227,9 +254,16 @@ public class ChannelManagerImpl<T extends GuildChannel> extends ManagerBase<Chan
 
         Checks.notNull(permHolder, "PermissionHolder");
         Checks.check(permHolder.getGuild().equals(getGuild()), "PermissionHolder is not from the same Guild!");
+        return removePermissionOverride(permHolder.getIdLong());
+    }
+
+    @Nonnull
+    @Override
+    @CheckReturnValue
+    public ChannelManagerImpl removePermissionOverride(final long id)
+    {
         if (isPermissionChecksEnabled() && !getGuild().getSelfMember().hasPermission((IPermissionContainer) getChannel(), Permission.MANAGE_PERMISSIONS))
             throw new InsufficientPermissionException(getChannel(), Permission.MANAGE_PERMISSIONS);
-        final long id = getId(permHolder);
         withLock(lock, (lock) ->
         {
             this.overridesRem.add(id);
@@ -310,10 +344,38 @@ public class ChannelManagerImpl<T extends GuildChannel> extends ManagerBase<Chan
     @Nonnull
     @Override
     @CheckReturnValue
+    public ChannelManagerImpl<T> setType(@Nonnull ChannelType type)
+    {
+        Checks.check(type == ChannelType.TEXT || type == ChannelType.NEWS, "Can only change ChannelType to TEXT or NEWS");
+
+        if (this.type != ChannelType.TEXT && this.type != ChannelType.NEWS)
+            throw new UnsupportedOperationException("Can only set ChannelType for TextChannel and NewsChannels");
+        if (type == ChannelType.NEWS && !getGuild().getFeatures().contains("NEWS"))
+            throw new IllegalStateException("Can only set ChannelType to NEWS for guilds with NEWS feature");
+
+        this.type = type;
+
+        //If we've just set the type to be what the channel type already is, then treat it as a reset, not a set.
+        if (this.type == this.channel.getType())
+            reset(TYPE);
+        else
+            set |= TYPE;
+
+
+        //After the type is changed, be sure to clean up any properties that are exclusive to a specific channel type
+        if (type != ChannelType.TEXT)
+            reset(SLOWMODE);
+
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    @CheckReturnValue
     public ChannelManagerImpl<T> setRegion(@Nonnull Region region)
     {
         Checks.notNull(region, "Region");
-        if (!getType().isAudio())
+        if (!type.isAudio())
             throw new IllegalStateException("Can only change region on voice channels!");
         Checks.check(Region.VOICE_CHANNEL_REGIONS.contains(region), "Region is not usable for VoiceChannel region overrides!");
         this.region = region == Region.AUTOMATIC ? null : region.getKey();
@@ -326,12 +388,11 @@ public class ChannelManagerImpl<T extends GuildChannel> extends ManagerBase<Chan
     @CheckReturnValue
     public ChannelManagerImpl<T> setParent(Category category)
     {
-        if (category != null)
-        {
-            if (getType() == ChannelType.CATEGORY)
-                throw new IllegalStateException("Cannot set the parent of a category");
-            Checks.check(category.getGuild().equals(getGuild()), "Category is not from the same guild");
-        }
+        if (type == ChannelType.CATEGORY)
+            throw new IllegalStateException("Cannot set the parent of a category");
+
+        Checks.check(category == null || category.getGuild().equals(getGuild()), "Category is not from the same guild");
+
         this.parent = category == null ? null : category.getId();
         set |= PARENT;
         return this;
@@ -352,8 +413,8 @@ public class ChannelManagerImpl<T extends GuildChannel> extends ManagerBase<Chan
     @CheckReturnValue
     public ChannelManagerImpl<T> setTopic(String topic)
     {
-        if (getType() != ChannelType.TEXT)
-            throw new IllegalStateException("Can only set topic on text channels");
+        if (type != ChannelType.TEXT && type != ChannelType.NEWS)
+            throw new IllegalStateException("Can only set topic on text and news channels");
         if (topic != null)
             Checks.notLonger(topic, 1024, "Topic");
         this.topic = topic;
@@ -366,8 +427,8 @@ public class ChannelManagerImpl<T extends GuildChannel> extends ManagerBase<Chan
     @CheckReturnValue
     public ChannelManagerImpl<T> setNSFW(boolean nsfw)
     {
-        if (getType() != ChannelType.TEXT)
-            throw new IllegalStateException("Can only set nsfw on text channels");
+        if (type != ChannelType.TEXT && type != ChannelType.NEWS)
+            throw new IllegalStateException("Can only set nsfw on text and news channels");
         this.nsfw = nsfw;
         set |= NSFW;
         return this;
@@ -378,7 +439,7 @@ public class ChannelManagerImpl<T extends GuildChannel> extends ManagerBase<Chan
     @CheckReturnValue
     public ChannelManagerImpl<T> setSlowmode(int slowmode)
     {
-        if (getType() != ChannelType.TEXT)
+        if (type != ChannelType.TEXT)
             throw new IllegalStateException("Can only set slowmode on text channels");
         Checks.check(slowmode <= TextChannel.MAX_SLOWMODE && slowmode >= 0, "Slowmode per user must be between 0 and %d (seconds)!", TextChannel.MAX_SLOWMODE);
         this.slowmode = slowmode;
@@ -391,7 +452,7 @@ public class ChannelManagerImpl<T extends GuildChannel> extends ManagerBase<Chan
     @CheckReturnValue
     public ChannelManagerImpl<T> setUserLimit(int userLimit)
     {
-        if (getType() != ChannelType.VOICE)
+        if (type != ChannelType.VOICE)
             throw new IllegalStateException("Can only set userlimit on voice channels");
         Checks.notNegative(userLimit, "Userlimit");
         Checks.check(userLimit <= 99, "Userlimit may not be greater than 99");
@@ -405,7 +466,7 @@ public class ChannelManagerImpl<T extends GuildChannel> extends ManagerBase<Chan
     @CheckReturnValue
     public ChannelManagerImpl<T> setBitrate(int bitrate)
     {
-        if (!getType().isAudio())
+        if (!type.isAudio())
             throw new IllegalStateException("Can only set bitrate on voice channels");
         final int maxBitrate = getGuild().getMaxBitrate();
         Checks.check(bitrate >= 8000, "Bitrate must be greater or equal to 8000");
@@ -415,27 +476,14 @@ public class ChannelManagerImpl<T extends GuildChannel> extends ManagerBase<Chan
         return this;
     }
 
-    //TODO-v5: Determine how we are going to convert from TextChannel -> NextChannel
-//    @Nonnull
-//    @Override
-//    @CheckReturnValue
-//    public ChannelManagerImpl<T> setNews(boolean news)
-//    {
-//        if (getType() != ChannelType.TEXT)
-//            throw new IllegalStateException("Can only set channel as news on text channels");
-//        if (news && !getGuild().getFeatures().contains("NEWS"))
-//            throw new IllegalStateException("Can only set channel as news for guilds with NEWS feature");
-//        this.news = news;
-//        set |= NEWS;
-//        return this;
-//    }
-
     @Override
     protected RequestBody finalizeData()
     {
         DataObject frame = DataObject.empty().put("name", getChannel().getName());
         if (shouldUpdate(NAME))
             frame.put("name", name);
+        if (shouldUpdate(TYPE))
+            frame.put("type", type);
         if (shouldUpdate(POSITION))
             frame.put("position", position);
         if (shouldUpdate(TOPIC))
@@ -450,8 +498,6 @@ public class ChannelManagerImpl<T extends GuildChannel> extends ManagerBase<Chan
             frame.put("bitrate", bitrate);
         if (shouldUpdate(PARENT))
             frame.put("parent_id", parent);
-        if (shouldUpdate(NEWS))
-            frame.put("type", news ? 5 : 0);
         if (shouldUpdate(REGION))
             frame.put("rtc_region", region);
         withLock(lock, (lock) ->
@@ -497,13 +543,5 @@ public class ChannelManagerImpl<T extends GuildChannel> extends ManagerBase<Chan
             return true;
         });
         return data.valueCollection();
-    }
-
-    protected long getId(IPermissionHolder holder)
-    {
-        if (holder instanceof Role)
-            return ((Role) holder).getIdLong();
-        else
-            return ((Member) holder).getUser().getIdLong();
     }
 }

@@ -253,7 +253,7 @@ public class PermissionUtil
      * <p><b>Note:</b> this is based on effective permissions, not literal permissions. If a member has permissions that would
      * enable them to do something without the literal permission to do it, this will still return true.
      * <br>Example: If a member has the {@link net.dv8tion.jda.api.Permission#ADMINISTRATOR} permission, they will be able to
-     * {@link net.dv8tion.jda.api.Permission#MESSAGE_WRITE} in every channel.
+     * {@link net.dv8tion.jda.api.Permission#MESSAGE_SEND} in every channel.
      *
      * @param  member
      *         The {@link net.dv8tion.jda.api.entities.Member Member} whose permissions are being checked.

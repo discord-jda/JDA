@@ -160,16 +160,15 @@ public class MessageReaction
     }
 
     /**
-     * The {@link net.dv8tion.jda.api.entities.Guild Guild} this Reaction was used in,
-     * this might return {@code null} when this Reaction was not used in a MessageChannel
-     * from the ChannelType {@link net.dv8tion.jda.api.entities.ChannelType#TEXT TEXT}!
+     * The {@link net.dv8tion.jda.api.entities.Guild Guild} this Reaction was used in.
+     * This will return null if the channel this Reaction was used in is not part of a Guild.
      *
      * @return {@link net.dv8tion.jda.api.entities.Guild Guild} this Reaction was used in, or {@code null}
      */
     @Nullable
     public Guild getGuild()
     {
-        TextChannel channel = getTextChannel();
+        GuildMessageChannel channel = getGuildChannel();
         return channel != null ? channel.getGuild() : null;
     }
 
@@ -207,6 +206,18 @@ public class MessageReaction
     public MessageChannel getChannel()
     {
         return channel;
+    }
+
+    /**
+     * The {@link net.dv8tion.jda.api.entities.GuildMessageChannel GuildMessageChannel}
+     * this Reaction was used in.
+     *
+     * @return The channel this Reaction was used in or null if it wasn't used in a Guild
+     */
+    @Nullable
+    public GuildMessageChannel getGuildChannel()
+    {
+        return getChannel() instanceof GuildMessageChannel ? (GuildMessageChannel) getChannel() : null;
     }
 
     /**
@@ -389,13 +400,8 @@ public class MessageReaction
         // Requires permission, only works in guilds
         if (!getChannelType().isGuild())
             throw new UnsupportedOperationException("Cannot clear reactions on a message sent from a private channel");
-        TextChannel guildChannel = Objects.requireNonNull(getTextChannel());
-        if (!guildChannel.getGuild().getSelfMember().hasPermission(guildChannel, Permission.MESSAGE_MANAGE))
-            throw new InsufficientPermissionException(guildChannel, Permission.MESSAGE_MANAGE);
-
-        String code = getReactionCode();
-        Route.CompiledRoute route = Route.Messages.CLEAR_EMOTE_REACTIONS.compile(channel.getId(), getMessageId(), code);
-        return new RestActionImpl<>(getJDA(), route);
+        GuildMessageChannel guildChannel = Objects.requireNonNull(getGuildChannel());
+        return guildChannel.clearReactionsById(getMessageId(), getReactionCode());
     }
 
     private String getReactionCode()

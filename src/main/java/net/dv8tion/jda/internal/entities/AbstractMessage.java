@@ -293,6 +293,14 @@ public abstract class AbstractMessage implements Message
 
     @Nonnull
     @Override
+    public GuildMessageChannel getGuildChannel()
+    {
+        unsupported();
+        return null;
+    }
+
+    @Nonnull
+    @Override
     public PrivateChannel getPrivateChannel()
     {
         unsupported();
@@ -302,6 +310,14 @@ public abstract class AbstractMessage implements Message
     @Nonnull
     @Override
     public TextChannel getTextChannel()
+    {
+        unsupported();
+        return null;
+    }
+
+    @Nonnull
+    @Override
+    public NewsChannel getNewsChannel()
     {
         unsupported();
         return null;
@@ -597,9 +613,31 @@ public abstract class AbstractMessage implements Message
         return null;
     }
 
+    @Override
+    public long getFlagsRaw()
+    {
+        unsupported();
+        return 0;
+    }
+
+    @Override
+    public boolean isEphemeral()
+    {
+        unsupported();
+        return false;
+    }
+
     @Nonnull
     @Override
     public MessageType getType()
+    {
+        unsupported();
+        return null;
+    }
+
+    @Nullable
+    @Override
+    public Message.Interaction getInteraction()
     {
         unsupported();
         return null;
