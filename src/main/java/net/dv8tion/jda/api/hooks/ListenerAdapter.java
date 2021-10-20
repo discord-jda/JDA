@@ -15,8 +15,6 @@
  */
 package net.dv8tion.jda.api.hooks;
 
-import net.dv8tion.jda.annotations.DeprecatedSince;
-import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.events.*;
 import net.dv8tion.jda.api.events.application.ApplicationCommandCreateEvent;
@@ -106,24 +104,6 @@ import java.util.concurrent.ConcurrentMap;
  */
 public abstract class ListenerAdapter implements EventListener
 {
-    @Deprecated
-    @ForRemoval(deadline = "4.4.0")
-    @DeprecatedSince("4.2.0")
-    @ReplaceWith("onGuildMemberRemove(GuildMemberRemoveEvent)")
-    public void onGuildMemberLeave(@Nonnull GuildMemberLeaveEvent event) {}
-
-    @Deprecated
-    @ForRemoval(deadline = "4.4.0")
-    @DeprecatedSince("4.2.1")
-    @ReplaceWith("onResumed(ResumedEvent)")
-    public void onResume(@Nonnull ResumedEvent event) {}
-
-    @Deprecated
-    @ForRemoval(deadline = "4.4.0")
-    @DeprecatedSince("4.2.1")
-    @ReplaceWith("onReconnected(ReconnectedEvent)")
-    public void onReconnect(@Nonnull ReconnectedEvent event) {}
-
     public void onGenericEvent(@Nonnull GenericEvent event) {}
     public void onGenericUpdate(@Nonnull UpdateEvent<?, ?> event) {}
     public void onRawGateway(@Nonnull RawGatewayEvent event) {}
