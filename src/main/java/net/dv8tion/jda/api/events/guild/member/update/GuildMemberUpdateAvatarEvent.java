@@ -42,7 +42,7 @@ import javax.annotation.Nullable;
  */
 public class GuildMemberUpdateAvatarEvent extends GenericGuildMemberUpdateEvent<String>
 {
-    public static final String IDENTIFIER = "member_avatar";
+    public static final String IDENTIFIER = "avatar";
 
     public GuildMemberUpdateAvatarEvent(@Nonnull JDA api, long responseNumber, @Nonnull Member member, @Nullable String oldAvatarId)
     {
