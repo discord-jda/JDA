@@ -349,17 +349,17 @@ public interface User extends IMentionable
      */
     enum UserFlag
     {
-        STAFF(                0,  "Discord Employee"),
-        PARTNER(              1,  "Partnered Server Owner"),
-        HYPESQUAD(            2,  "HypeSquad Events"),
-        BUG_HUNTER_LEVEL_1(   3,  "Bug Hunter Level 1"),
+        STAFF(                 0, "Discord Employee"),
+        PARTNER(               1, "Partnered Server Owner"),
+        HYPESQUAD(             2, "HypeSquad Events"),
+        BUG_HUNTER_LEVEL_1(    3, "Bug Hunter Level 1"),
 
         // HypeSquad
-        HYPESQUAD_BRAVERY(    6,  "HypeSquad Bravery"),
-        HYPESQUAD_BRILLIANCE( 7,  "HypeSquad Brilliance"),
-        HYPESQUAD_BALANCE(    8,  "HypeSquad Balance"),
+        HYPESQUAD_BRAVERY(     6, "HypeSquad Bravery"),
+        HYPESQUAD_BRILLIANCE(  7, "HypeSquad Brilliance"),
+        HYPESQUAD_BALANCE(     8, "HypeSquad Balance"),
 
-        EARLY_SUPPORTER(      9,  "Early Supporter"),
+        EARLY_SUPPORTER(       9, "Early Supporter"),
         TEAM_USER(            10, "Team User"),
         @Deprecated
         @ForRemoval(deadline = "4.4.0")
