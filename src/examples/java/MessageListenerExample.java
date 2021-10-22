@@ -272,5 +272,16 @@ public class MessageListenerExample extends ListenerAdapter
                 e.printStackTrace();
             }
         }
+        else if (msg.equals("!whoami"))
+        {
+            // This example sends a message wich contains id, display name, nickname and user mention to the text channel
+
+            Member member = event.getMember(); //This Member that sent the message. Contains Guild specific information about the User!
+
+            channel.sendMessage("Your ID: " + member.getId() + // Get ID from User
+                    "\n Your EffectiveName: " + member.getEffectiveName() + // Get Display Name from User
+                    "\n Your Nickname: " + member.getNickname() + // Get Nickname from User
+                    "\n As Mention" + member.getAsMention()).queue(); // Get User Mention
+        }
     }
 }
