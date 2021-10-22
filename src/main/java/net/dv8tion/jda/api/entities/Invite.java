@@ -143,16 +143,6 @@ public interface Invite
     Invite.InviteType getType();
 
     /**
-     * The target type of this invite.
-     *
-     * @return The invite's target type or {@link TargetType#NONE}
-     *
-     * @see    net.dv8tion.jda.api.entities.Invite.TargetType
-     */
-    @Nonnull
-    Invite.TargetType getTargetType();
-
-    /**
      * An {@link net.dv8tion.jda.api.entities.Invite.Channel Invite.Channel} object
      * containing information about this invite's origin channel.
      *
@@ -175,23 +165,15 @@ public interface Invite
     Group getGroup();
 
     /**
-     * An {@link net.dv8tion.jda.api.entities.Invite.EmbeddedApplication Invite.EmbeddedApplication} object
-     * containing information about this invite's application.
+     * An {@link Invite.InviteTarget Invite.InviteTarget} object
+     * containing information about this invite's target.
      *
-     * @return Information about this invite's application or {@code null} if this invite's {@link #getTargetType() Invite.TargetType} is not {@link Invite.TargetType#EMBEDDED_APPLICATION}
+     * @return Information about this invite's target
      *
-     * @see    net.dv8tion.jda.api.entities.Invite.EmbeddedApplication
+     * @see    net.dv8tion.jda.api.entities.Invite.InviteTarget
      */
-    @Nullable
-    EmbeddedApplication getTargetApplication();
-
-    /**
-     * The user to whose stream this invite goes.
-     *
-     * @return The user to whose stream this invite goes or {@code null} if this invite's {@link #getTargetType() Invite.TargetType} is not {@link Invite.TargetType#STREAM Invite.TargetType.STREAM}
-     */
-    @Nullable
-    User getTargetUser();
+    @Nonnull
+    InviteTarget getTarget();
 
     /**
      * The invite code
@@ -522,9 +504,67 @@ public interface Invite
     }
 
     /**
+     * POJO for the target of this invite.
+     *
+     * @see #getTarget()
+     */
+    interface InviteTarget {
+
+        /**
+         * The type of this invite target or {@link TargetType#NONE} if none is given.
+         *
+         * @return The type of this invite target
+         */
+        @Nonnull
+        TargetType getType();
+
+        /**
+         * The Snowflake id of the target entity of this invite.
+         *
+         * @return The id of the target entity
+         *
+         * @throws IllegalStateException
+         *         If there is no target entity, {@link #getType() TargetType} is {@link TargetType#NONE}
+         */
+        @Nonnull
+        String getId();
+
+        /**
+         * The Snowflake id of the target entity of this invite.
+         *
+         * @return The id of the target entity
+         *
+         * @throws IllegalStateException
+         *         If there is no target entity, {@link #getType() TargetType} is {@link TargetType#NONE}
+         */
+        long getIdLong();
+
+        /**
+         * The target user of this invite or {@code null} if the {@link #getType() TargeType} is not {@link TargetType#STREAM}
+         *
+         * @return The target user of this invite
+         *
+         * @see    net.dv8tion.jda.api.entities.User
+         */
+        @Nullable
+        User getUser();
+
+        /**
+         * The target application of this invite or {@code null} if the {@link #getType() TargeType} is not {@link TargetType#EMBEDDED_APPLICATION}
+         *
+         * @return The target application of this invite
+         *
+         * @see    net.dv8tion.jda.api.entities.Invite.EmbeddedApplication
+         */
+        @Nullable
+        EmbeddedApplication getApplication();
+
+    }
+
+    /**
      * POJO for the target application information provided by an invite.
      *
-     * @see #getTargetApplication()
+     * @see InviteTarget#getApplication()
      */
     interface EmbeddedApplication extends ISnowflake
     {
@@ -598,7 +638,7 @@ public interface Invite
      *
      * Some actions might not be available or show up on certain devices.
      *
-     * @see #getTargetType()
+     * @see InviteTarget#getType()
      */
     enum TargetType
     {
@@ -609,17 +649,17 @@ public interface Invite
 
         /**
          * The invite points to a user's stream in a voice channel.
-         * The user to whose stream the invite goes can be get with {@link Invite#getTargetUser() Invite.getTargetUser} and is not {@code null}.
+         * The user to whose stream the invite goes can be get with {@link InviteTarget#getUser() InviteTarget.getUser} and is not {@code null}.
          *
-         * @see Invite#getTargetUser()
+         * @see InviteTarget#getUser()
          */
         STREAM(1),
 
         /**
          * The invite points to an application in a voice channel.
-         * The application to which the invite goes can be get with {@link Invite#getTargetApplication() Invite.getTargetApplication} and is not {@code null}.
+         * The application to which the invite goes can be get with {@link InviteTarget#getApplication() InviteTarget.getApplication} and is not {@code null}.
          *
-         * @see Invite#getTargetApplication()
+         * @see InviteTarget#getApplication()
          */
         EMBEDDED_APPLICATION(2),
 

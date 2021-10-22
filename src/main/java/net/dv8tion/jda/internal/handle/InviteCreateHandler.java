@@ -75,30 +75,29 @@ public class InviteCreateHandler extends SocketHandler
         InviteImpl.GuildImpl guild = new InviteImpl.GuildImpl(realGuild);
 
         final Invite.TargetType targetType = Invite.TargetType.fromId(content.getInt("target_type", 0));
-        final User targetUser;
-        final InviteImpl.EmbeddedApplicationImpl application;
+        final Invite.InviteTarget target;
 
         switch (targetType)
         {
         case STREAM:
             DataObject targetUserObject = content.getObject("target_user");
-            targetUser = getJDA().getEntityBuilder().createUser(targetUserObject);
-            application = null;
+            target = new InviteImpl.InviteTargetImpl(targetType, null, getJDA().getEntityBuilder().createUser(targetUserObject));
             break;
         case EMBEDDED_APPLICATION:
             DataObject applicationObject = content.getObject("target_application");
-            application = new InviteImpl.EmbeddedApplicationImpl(
+            Invite.EmbeddedApplication application = new InviteImpl.EmbeddedApplicationImpl(
                     applicationObject.getString("icon", null), applicationObject.getString("name"), applicationObject.getString("description"),
                     applicationObject.getString("summary"), applicationObject.getLong("id"), applicationObject.getInt("max_participants", -1)
             );
-            targetUser = null;
+            target = new InviteImpl.InviteTargetImpl(targetType, application, null);
             break;
         default:
-            application = null;
-            targetUser = null;
+            target = new InviteImpl.InviteTargetImpl(targetType, null, null);
         }
 
-        Invite invite = new InviteImpl(getJDA(), code, expanded, inviter, maxAge, maxUses, temporary, creationTime, 0, channel, guild, null, application, targetUser, Invite.InviteType.GUILD, targetType);
+        Invite invite = new InviteImpl(getJDA(), code, expanded, inviter,
+                                       maxAge, maxUses, temporary, creationTime,
+                                      0, channel, guild, null, target, Invite.InviteType.GUILD);
         getJDA().handleEvent(
             new GuildInviteCreateEvent(
                 getJDA(), responseNumber,

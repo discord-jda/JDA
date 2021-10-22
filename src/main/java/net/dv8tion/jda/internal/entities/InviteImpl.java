@@ -48,8 +48,7 @@ public class InviteImpl implements Invite
     private final boolean expanded;
     private final Guild guild;
     private final Group group;
-    private final EmbeddedApplication application;
-    private final User targetUser;
+    private final InviteTarget target;
     private final User inviter;
     private final int maxAge;
     private final int maxUses;
@@ -57,12 +56,10 @@ public class InviteImpl implements Invite
     private final OffsetDateTime timeCreated;
     private final int uses;
     private final Invite.InviteType type;
-    private final Invite.TargetType targetType;
 
     public InviteImpl(final JDAImpl api, final String code, final boolean expanded, final User inviter,
             final int maxAge, final int maxUses, final boolean temporary, final OffsetDateTime timeCreated, final int uses,
-            final Channel channel, final Guild guild, final Group group, final EmbeddedApplication application, final User targetUser,
-            final Invite.InviteType type, Invite.TargetType targetType)
+            final Channel channel, final Guild guild, final Group group, final InviteTarget target, final Invite.InviteType type)
     {
         this.api = api;
         this.code = code;
@@ -76,10 +73,8 @@ public class InviteImpl implements Invite
         this.channel = channel;
         this.guild = guild;
         this.group = group;
-        this.application = application;
-        this.targetUser = targetUser;
+        this.target = target;
         this.type = type;
-        this.targetType = targetType;
     }
 
     public static RestAction<Invite> resolve(final JDA api, final String code, final boolean withCounts)
@@ -165,13 +160,6 @@ public class InviteImpl implements Invite
         return this.type;
     }
 
-    @Nonnull
-    @Override
-    public TargetType getTargetType()
-    {
-        return this.targetType;
-    }
-
     @Override
     public Channel getChannel()
     {
@@ -207,18 +195,11 @@ public class InviteImpl implements Invite
         return this.group;
     }
 
-    @Nullable
+    @Nonnull
     @Override
-    public EmbeddedApplication getTargetApplication()
+    public InviteTarget getTarget()
     {
-        return this.application;
-    }
-
-    @Nullable
-    @Override
-    public User getTargetUser()
-    {
-        return this.targetUser;
+        return target;
     }
 
     @Override
@@ -480,6 +461,63 @@ public class InviteImpl implements Invite
         {
             return users;
         }
+    }
+
+    public static class InviteTargetImpl implements InviteTarget
+    {
+        private final TargetType type;
+        private final EmbeddedApplication targetApplication;
+        private final User targetUser;
+
+        public InviteTargetImpl(TargetType type, EmbeddedApplication targetApplication, User targetUser)
+        {
+            this.type = type;
+            this.targetApplication = targetApplication;
+            this.targetUser = targetUser;
+        }
+
+        @Nonnull
+        @Override
+        public TargetType getType()
+        {
+            return type;
+        }
+
+        @Nonnull
+        @Override
+        public String getId()
+        {
+            return getTargetEntity().getId();
+        }
+
+        @Override
+        public long getIdLong()
+        {
+            return getTargetEntity().getIdLong();
+        }
+
+        @Nullable
+        @Override
+        public User getUser()
+        {
+            return targetUser;
+        }
+
+        @Nullable
+        @Override
+        public EmbeddedApplication getApplication()
+        {
+            return targetApplication;
+        }
+
+        @Nonnull
+        private ISnowflake getTargetEntity()
+        {
+            if (targetUser != null) return targetUser;
+            if (targetApplication != null) return targetApplication;
+            throw new IllegalStateException("No target entity");
+        }
+
     }
 
     public static class EmbeddedApplicationImpl implements EmbeddedApplication

@@ -1562,8 +1562,7 @@ public class EntityBuilder
         final Invite.Guild guild;
         final Invite.Channel channel;
         final Invite.Group group;
-        final Invite.EmbeddedApplication application;
-        final User targetUser;
+        final Invite.InviteTarget target;
 
         if (channelType == ChannelType.GROUP)
         {
@@ -1624,26 +1623,20 @@ public class EntityBuilder
         switch (targetType)
         {
         case EMBEDDED_APPLICATION:
-             final DataObject applicationObject = object.getObject("target_application");
+            final DataObject applicationObject = object.getObject("target_application");
 
-             final String applicationIconId = applicationObject.getString("icon", null);
-             final String applicationName = applicationObject.getString("name");
-             final String applicationDescription = applicationObject.getString("description");
-             final String applicationSummary = applicationObject.getString("summary");
-             final long applicationId = applicationObject.getLong("id");
-             final int maxApplicationParticipants = applicationObject.getInt("max_participants", -1);
-
-             application = new InviteImpl.EmbeddedApplicationImpl(applicationIconId, applicationName, applicationDescription, applicationSummary, applicationId, maxApplicationParticipants);
-             targetUser = null;
-             break;
+            Invite.EmbeddedApplication application = new InviteImpl.EmbeddedApplicationImpl(
+                    applicationObject.getString("icon", null), applicationObject.getString("name"), applicationObject.getString("description"),
+                    applicationObject.getString("summary"), applicationObject.getLong("id"), applicationObject.getInt("max_participants", -1)
+            );
+            target = new InviteImpl.InviteTargetImpl(targetType, application, null);
+            break;
         case STREAM:
             final DataObject targetUserObject = object.getObject("target_user");
-            targetUser = createUser(targetUserObject);
-            application = null;
+            target = new InviteImpl.InviteTargetImpl(targetType, null, createUser(targetUserObject));
             break;
         default:
-            application = null;
-            targetUser = null;
+            target = new InviteImpl.InviteTargetImpl(targetType, null, null);
         }
 
         final int maxAge;
@@ -1673,8 +1666,8 @@ public class EntityBuilder
         }
 
         return new InviteImpl(getJDA(), code, expanded, inviter,
-                              maxAge, maxUses, temporary,
-                              timeCreated, uses, channel, guild, group, application, targetUser, type, targetType);
+                              maxAge, maxUses, temporary, timeCreated,
+                              uses, channel, guild, group, target, type);
     }
 
     public ApplicationInfo createApplicationInfo(DataObject object)
