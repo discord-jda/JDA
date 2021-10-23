@@ -17,6 +17,7 @@
 package net.dv8tion.jda.api.events.guild.update;
 
 import net.dv8tion.jda.annotations.DeprecatedSince;
+import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
@@ -71,6 +72,7 @@ public class GuildUpdateBannerEvent extends GenericGuildUpdateEvent<String>
      */
     @Nullable
     @Deprecated
+    @ForRemoval(deadline = "5.0.0")
     @DeprecatedSince("4.2.0")
     @ReplaceWith("getNewBannerUrl()")
     public String getNewBannerIdUrl()
