@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.internal.requests;
 
+import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
 
@@ -136,7 +137,7 @@ public class Route
         public static final Route MODIFY_MEMBER =      new Route(PATCH,  "guilds/{guild_id}/members/{user_id}");
         public static final Route ADD_MEMBER =         new Route(PUT,    "guilds/{guild_id}/members/{user_id}");
         public static final Route GET_MEMBER =         new Route(GET,    "guilds/{guild_id}/members/{user_id}");
-        public static final Route MODIFY_SELF_NICK =   new Route(PATCH,  "guilds/{guild_id}/members/@me/nick");
+        public static final Route MODIFY_SELF =        new Route(PATCH,  "guilds/{guild_id}/members/@me");
         public static final Route PRUNABLE_COUNT =     new Route(GET,    "guilds/{guild_id}/prune");
         public static final Route PRUNE_MEMBERS =      new Route(POST,   "guilds/{guild_id}/prune");
         public static final Route GET_WEBHOOKS =       new Route(GET,    "guilds/{guild_id}/webhooks");
