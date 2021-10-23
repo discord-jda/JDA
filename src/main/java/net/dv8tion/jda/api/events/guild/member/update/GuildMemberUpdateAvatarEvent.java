@@ -27,7 +27,7 @@ import javax.annotation.Nullable;
  *
  * <p>Can be used to retrieve members who change their per guild avatar, triggering guild, the old avatar id and the new avatar id.
  *
- * <p>Identifier: {@code member_avatar}
+ * <p>Identifier: {@code avatar}
  *
  * <h2>Requirements</h2>
  *
