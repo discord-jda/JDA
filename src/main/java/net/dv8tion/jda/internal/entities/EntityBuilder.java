@@ -1117,11 +1117,12 @@ public class EntityBuilder
         final long id = json.getLong("id");
         final ChannelType type = ChannelType.fromId(json.getInt("type"));
 
+        if (guild == null)
+            guild = (GuildImpl) getJDA().getGuildsView().get(guildId);
+
         GuildThreadImpl thread = ((GuildThreadImpl) getJDA().getGuildThreadView().get(id));
         if (thread == null)
         {
-            if (guild == null)
-                guild = (GuildImpl) getJDA().getGuildsView().get(guildId);
             SnowflakeCacheViewImpl<GuildThread>
                     guildThreadView = guild.getGuildThreadsView(),
                     threadView = getJDA().getGuildThreadView();

@@ -1222,7 +1222,7 @@ public class GuildImpl implements Guild
                     threadObj.put("member", selfThreadMemberObj);
                 }
 
-                GuildThread thread = builder.createGuildThread(this, threadObj, this.getIdLong());
+                GuildThread thread = builder.createGuildThread(threadObj, this.getIdLong());
                 list.add(thread);
             }
 
