@@ -166,13 +166,14 @@ public interface Invite
 
     /**
      * An {@link Invite.InviteTarget Invite.InviteTarget} object
-     * containing information about this invite's target.
+     * containing information about this invite's target or {@code null}
+     * if this invite does not have a target.
      *
-     * @return Information about this invite's target
+     * @return Information about this invite's target or {@code null}
      *
      * @see    net.dv8tion.jda.api.entities.Invite.InviteTarget
      */
-    @Nonnull
+    @Nullable
     InviteTarget getTarget();
 
     /**
@@ -511,7 +512,7 @@ public interface Invite
     interface InviteTarget {
 
         /**
-         * The type of this invite target or {@link TargetType#NONE} if none is given.
+         * The type of this invite target.
          *
          * @return The type of this invite target
          */
@@ -643,7 +644,7 @@ public interface Invite
     enum TargetType
     {
         /**
-         * This invite does not have a target type.
+         * The invite does not have a target type, {@link Invite#getTarget()} will return {@code null}.
          */
         NONE(0),
 

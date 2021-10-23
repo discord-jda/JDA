@@ -195,7 +195,7 @@ public class InviteImpl implements Invite
         return this.group;
     }
 
-    @Nonnull
+    @Nullable
     @Override
     public InviteTarget getTarget()
     {

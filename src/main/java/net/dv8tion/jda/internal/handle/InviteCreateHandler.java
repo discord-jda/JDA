@@ -91,6 +91,9 @@ public class InviteCreateHandler extends SocketHandler
             );
             target = new InviteImpl.InviteTargetImpl(targetType, application, null);
             break;
+        case NONE:
+            target = null;
+            break;
         default:
             target = new InviteImpl.InviteTargetImpl(targetType, null, null);
         }

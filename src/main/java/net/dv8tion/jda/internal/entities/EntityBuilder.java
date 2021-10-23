@@ -1635,6 +1635,9 @@ public class EntityBuilder
             final DataObject targetUserObject = object.getObject("target_user");
             target = new InviteImpl.InviteTargetImpl(targetType, null, createUser(targetUserObject));
             break;
+        case NONE:
+            target = null;
+            break;
         default:
             target = new InviteImpl.InviteTargetImpl(targetType, null, null);
         }
