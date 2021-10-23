@@ -143,6 +143,16 @@ public interface Invite
     Invite.InviteType getType();
 
     /**
+     * The target type of this invite or {@link TargetType#NONE} if this invite does not have a {@link #getTarget() InviteTarget}.
+     *
+     * @return The invite's target type or {@link TargetType#NONE}
+     *
+     * @see    Invite.TargetType
+     */
+    @Nonnull
+    Invite.TargetType getTargetType();
+
+    /**
      * An {@link net.dv8tion.jda.api.entities.Invite.Channel Invite.Channel} object
      * containing information about this invite's origin channel.
      *
@@ -509,7 +519,8 @@ public interface Invite
      *
      * @see #getTarget()
      */
-    interface InviteTarget {
+    interface InviteTarget
+    {
 
         /**
          * The type of this invite target.
@@ -522,10 +533,10 @@ public interface Invite
         /**
          * The Snowflake id of the target entity of this invite.
          *
-         * @return The id of the target entity
-         *
          * @throws IllegalStateException
-         *         If there is no target entity, {@link #getType() TargetType} is {@link TargetType#NONE}
+         *         If there is no target entity, {@link #getType() TargetType} is {@link TargetType#UNKNOWN}
+         *
+         * @return The id of the target entity
          */
         @Nonnull
         String getId();
@@ -533,15 +544,15 @@ public interface Invite
         /**
          * The Snowflake id of the target entity of this invite.
          *
-         * @return The id of the target entity
-         *
          * @throws IllegalStateException
-         *         If there is no target entity, {@link #getType() TargetType} is {@link TargetType#NONE}
+         *         If there is no target entity, {@link #getType() TargetType} is {@link TargetType#UNKNOWN}
+         *
+         * @return The id of the target entity
          */
         long getIdLong();
 
         /**
-         * The target user of this invite or {@code null} if the {@link #getType() TargeType} is not {@link TargetType#STREAM}
+         * The target {@link User} of this invite or {@code null} if the {@link #getType() TargeType} is not {@link TargetType#STREAM}
          *
          * @return The target user of this invite
          *
@@ -551,7 +562,7 @@ public interface Invite
         User getUser();
 
         /**
-         * The target application of this invite or {@code null} if the {@link #getType() TargeType} is not {@link TargetType#EMBEDDED_APPLICATION}
+         * The target {@link EmbeddedApplication} of this invite or {@code null} if the {@link #getType() TargeType} is not {@link TargetType#EMBEDDED_APPLICATION}
          *
          * @return The target application of this invite
          *
@@ -559,7 +570,6 @@ public interface Invite
          */
         @Nullable
         EmbeddedApplication getApplication();
-
     }
 
     /**
@@ -705,6 +715,5 @@ public interface Invite
             }
             return UNKNOWN;
         }
-
     }
 }

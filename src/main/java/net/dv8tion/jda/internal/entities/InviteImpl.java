@@ -160,6 +160,13 @@ public class InviteImpl implements Invite
         return this.type;
     }
 
+    @Nonnull
+    @Override
+    public TargetType getTargetType()
+    {
+        return target == null ? TargetType.NONE : target.getType();
+    }
+
     @Override
     public Channel getChannel()
     {
