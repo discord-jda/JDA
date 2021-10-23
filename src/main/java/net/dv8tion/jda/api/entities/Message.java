@@ -2601,6 +2601,10 @@ public interface Message extends ISnowflake, Formattable
     @Nullable
     Interaction getInteraction();
 
+    //TODO-v5: Docs
+    @CheckReturnValue
+    RestAction<GuildThread> createThread(String name);
+
     /**
      * Mention constants, useful for use with {@link java.util.regex.Pattern Patterns}
      */

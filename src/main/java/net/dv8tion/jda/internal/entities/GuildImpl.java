@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.internal.entities;
 
+import gnu.trove.map.TLongObjectMap;
+import gnu.trove.map.hash.TLongObjectHashMap;
 import net.dv8tion.jda.api.AccountType;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.Region;
@@ -1183,6 +1185,49 @@ public class GuildImpl implements Guild
         });
 
         return new GatewayTask<>(result, () -> handle.cancel(false));
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<List<GuildThread>> retrieveActiveThreads()
+    {
+        Route.CompiledRoute route = Route.Guilds.LIST_ACTIVE_THREADS.compile(getId());
+        return new RestActionImpl<>(api, route, (response, request) ->
+        {
+            DataObject obj = response.getObject();
+            DataArray selfThreadMembers = obj.getArray("members");
+            DataArray threads = obj.getArray("threads");
+
+            List<GuildThread> list = new ArrayList<>(threads.length());
+            EntityBuilder builder = api.getEntityBuilder();
+
+            TLongObjectMap<DataObject> selfThreadMemberMap = new TLongObjectHashMap<>();
+            for (int i = 0; i < selfThreadMembers.length(); i++)
+            {
+                DataObject selfThreadMember = selfThreadMembers.getObject(i);
+
+                //Store the thread member based on the "id" which is the _thread's_ id, not the member's id (which would be our id)
+                selfThreadMemberMap.put(selfThreadMember.getLong("id"), selfThreadMember);
+            }
+
+            for (int i = 0; i < threads.length(); i++)
+            {
+                DataObject threadObj = threads.getObject(i);
+                DataObject selfThreadMemberObj = selfThreadMemberMap.get(threadObj.getLong("id", 0));
+
+                if (selfThreadMemberObj != null)
+                {
+                    //Combine the thread and self thread-member into a single object to model what we get from
+                    // thread payloads (like from Gateway, etc)
+                    threadObj.put("member", selfThreadMemberObj);
+                }
+
+                GuildThread thread = builder.createGuildThread(this, threadObj, this.getIdLong());
+                list.add(thread);
+            }
+
+            return Collections.unmodifiableList(list);
+        });
     }
 
     @Override

@@ -3,6 +3,7 @@ package net.dv8tion.jda.api.entities;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.api.requests.restaction.pagination.PaginationAction;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.CheckReturnValue;
@@ -20,9 +21,14 @@ public interface GuildMessageChannel extends GuildChannel, MessageChannel
      * <br>Checks for both {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} and
      * {@link net.dv8tion.jda.api.Permission#MESSAGE_SEND Permission.MESSAGE_SEND}.
      *
+     * For {@link GuildThread} this method checks for {@link Permission#MESSAGE_SEND_IN_THREADS} instead of {@link Permission#MESSAGE_SEND}.
+     *
      * @return True, if we are able to read and send messages in this channel
      */
-    boolean canTalk();
+    default boolean canTalk()
+    {
+        return canTalk(getGuild().getSelfMember());
+    }
 
     /**
      * Whether the specified {@link net.dv8tion.jda.api.entities.Member}

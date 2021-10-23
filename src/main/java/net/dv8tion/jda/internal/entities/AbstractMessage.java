@@ -642,4 +642,11 @@ public abstract class AbstractMessage implements Message
         unsupported();
         return null;
     }
+
+    @Override
+    public RestAction<GuildThread> createThread(String name)
+    {
+        unsupported();
+        return null;
+    }
 }

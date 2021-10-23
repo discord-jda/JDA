@@ -23,6 +23,7 @@ import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import net.dv8tion.jda.api.requests.restaction.WebhookAction;
+import net.dv8tion.jda.api.requests.restaction.pagination.GuildThreadPaginationAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationAction;
 import net.dv8tion.jda.api.utils.AttachmentOption;
 import net.dv8tion.jda.api.utils.MiscUtil;
@@ -34,6 +35,7 @@ import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.WebhookActionImpl;
+import net.dv8tion.jda.internal.requests.restaction.pagination.GuildThreadPaginationActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.pagination.ReactionPaginationActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.EncodingUtil;
@@ -84,12 +86,6 @@ public abstract class BaseGuildMessageChannelImpl<T extends BaseGuildMessageChan
         return Collections.unmodifiableList(getGuild().getMembersView().stream()
             .filter(m -> m.hasPermission(this, Permission.VIEW_CHANNEL))
             .collect(Collectors.toList()));
-    }
-
-    @Override
-    public boolean canTalk()
-    {
-        return canTalk(getGuild().getSelfMember());
     }
 
     @Override
@@ -218,6 +214,81 @@ public abstract class BaseGuildMessageChannelImpl<T extends BaseGuildMessageChan
 
         final Route.CompiledRoute route = Route.Messages.REMOVE_REACTION.compile(getId(), messageId, encoded, targetUser);
         return new RestActionImpl<>(getJDA(), route);
+    }
+
+    @Override
+    public RestAction<GuildThread> createThread(String name, boolean isPrivate)
+    {
+        checkPermission(Permission.VIEW_CHANNEL);
+        if (isPrivate)
+            checkPermission(Permission.CREATE_PRIVATE_THREADS);
+        else
+            checkPermission(Permission.CREATE_PUBLIC_THREADS);
+
+        ChannelType threadType = isPrivate
+            ? ChannelType.GUILD_PRIVATE_THREAD
+            : getType() == ChannelType.TEXT
+                ? ChannelType.GUILD_PUBLIC_THREAD
+                : ChannelType.GUILD_NEWS_THREAD;
+
+        //TODO: need to include "invitable" which is only valid for private threads
+        //TODO: this needs to be a ThreadAction
+        DataObject data = DataObject.empty()
+            .put("name", name)
+            .put("type", threadType.getId())
+            .put("auto_archive_duration", GuildThread.AutoArchiveDuration.TIME_24_HOURS.getMinutes());
+
+        Route.CompiledRoute route = Route.Channels.CREATE_THREAD_WITHOUT_MESSAGE.compile(getId());
+        return new RestActionImpl<>(api, route, data, (response, request) -> {
+            DataObject threadObj = response.getObject();
+            return api.getEntityBuilder().createGuildThread(threadObj, getGuild().getIdLong());
+        });
+    }
+
+    @Override
+    public RestAction<GuildThread> createThread(String name, long messageId)
+    {
+        checkPermission(Permission.VIEW_CHANNEL);
+        checkPermission(Permission.CREATE_PUBLIC_THREADS);
+
+        //TODO-threads: This needs to be a ThreadAction
+        DataObject data = DataObject.empty()
+            .put("name", name)
+            .put("auto_archive_duration", GuildThread.AutoArchiveDuration.TIME_24_HOURS.getMinutes());
+
+        Route.CompiledRoute route = Route.Channels.CREATE_THREAD_WITH_MESSAGE.compile(getId(), Long.toUnsignedString(messageId));
+        return new RestActionImpl<>(api, route, data, (response, request) -> {
+            DataObject threadObj = response.getObject();
+            return api.getEntityBuilder().createGuildThread(threadObj, getGuild().getIdLong());
+        });
+    }
+
+    @Override
+    public GuildThreadPaginationActionImpl retrieveArchivedPublicThreads()
+    {
+        checkPermission(Permission.MESSAGE_HISTORY);
+
+        Route.CompiledRoute route = Route.Channels.LIST_PUBLIC_ARCHIVED_THREADS.compile(getId());
+        return new GuildThreadPaginationActionImpl(api, route, this);
+    }
+
+    @Override
+    public GuildThreadPaginationActionImpl retrieveArchivedPrivateThreads()
+    {
+        checkPermission(Permission.MESSAGE_HISTORY);
+        checkPermission(Permission.MANAGE_THREADS);
+
+        Route.CompiledRoute route = Route.Channels.LIST_PRIVATE_ARCHIVED_THREADS.compile(getId());
+        return new GuildThreadPaginationActionImpl(api, route, this);
+    }
+
+    @Override
+    public GuildThreadPaginationAction retrieveArchivedPrivateJoinedThreads()
+    {
+        checkPermission(Permission.MESSAGE_HISTORY);
+
+        Route.CompiledRoute route = Route.Channels.LIST_JOINED_PRIVATE_ARCHIVED_THREADS.compile(getId());
+        return new GuildThreadPaginationActionImpl(api, route, this);
     }
 
     // ---- Overrides for Permission Injection ----

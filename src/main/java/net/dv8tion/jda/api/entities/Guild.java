@@ -3915,6 +3915,10 @@ public interface Guild extends ISnowflake
     @CheckReturnValue
     Task<List<Member>> retrieveMembersByPrefix(@Nonnull String prefix, int limit);
 
+    @Nonnull
+    @CheckReturnValue
+    RestAction<List<GuildThread>> retrieveActiveThreads();
+
     /* From GuildController */
 
     /**

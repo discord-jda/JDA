@@ -16,8 +16,11 @@
 
 package net.dv8tion.jda.api.entities;
 
+import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
+import net.dv8tion.jda.internal.utils.Checks;
 
+import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.time.OffsetDateTime;
@@ -39,9 +42,6 @@ public interface GuildThread extends GuildMessageChannel, IMemberContainer
     //TODO fields that need to be researched:
     // - rate_limit_per_user
     // - last_pin_timestamp (do we even use this for Text/News channels?)
-
-    //TODO evaluate if Threads support webhooks in the same way that BaseGuildMessageChannel does (Text/News)
-    // - Docs makes me think it does: https://discord.com/developers/docs/topics/threads#webhooks
 
     default boolean isPublic()
     {
@@ -102,6 +102,9 @@ public interface GuildThread extends GuildMessageChannel, IMemberContainer
     @Nullable
     GuildThreadMember getThreadMemberById(long id);
 
+    @CheckReturnValue
+    RestAction<List<GuildThreadMember>> retrieveThreadMembers();
+
     long getOwnerIdLong();
 
     @Nullable
@@ -131,6 +134,58 @@ public interface GuildThread extends GuildMessageChannel, IMemberContainer
     AutoArchiveDuration getAutoArchiveDuration();
 
     int getSlowmode();
+
+    @CheckReturnValue
+    RestAction<Void> join();
+
+    @CheckReturnValue
+    RestAction<Void> leave();
+
+    @CheckReturnValue
+    RestAction<Void> addThreadMemberById(long id);
+
+    @CheckReturnValue
+    default RestAction<Void> addThreadMemberById(@Nonnull String id)
+    {
+        return addThreadMemberById(MiscUtil.parseSnowflake(id));
+    }
+
+    @CheckReturnValue
+    default RestAction<Void> addThreadMember(@Nonnull User user)
+    {
+        Checks.notNull(user, "User");
+        return addThreadMemberById(user.getIdLong());
+    }
+
+    @CheckReturnValue
+    default RestAction<Void> addThreadMember(@Nonnull Member member)
+    {
+        Checks.notNull(member, "Member");
+        return addThreadMemberById(member.getIdLong());
+    }
+
+    @CheckReturnValue
+    RestAction<Void> removeThreadMemberById(long id);
+
+    @CheckReturnValue
+    default RestAction<Void> removeThreadMemberById(@Nonnull String id)
+    {
+        return removeThreadMemberById(MiscUtil.parseSnowflake(id));
+    }
+
+    @CheckReturnValue
+    default RestAction<Void> removeThreadMember(@Nonnull User user)
+    {
+        Checks.notNull(user, "User");
+        return removeThreadMemberById(user.getId());
+    }
+
+    @CheckReturnValue
+    default RestAction<Void> removeThreadMember(@Nonnull Member member)
+    {
+        Checks.notNull(member, "Member");
+        return removeThreadMemberById(member.getIdLong());
+    }
 
     @Override
     default void formatTo(Formatter formatter, int flags, int width, int precision)
