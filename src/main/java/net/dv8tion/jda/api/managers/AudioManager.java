@@ -189,7 +189,7 @@ public interface AudioManager
      * @deprecated The internals have changed and this is no longer used
      */
     @Deprecated
-    @ForRemoval
+    @ForRemoval(deadline = "5.0.0")
     @DeprecatedSince("4.2.0")
     boolean isAttemptingToConnect();
 
@@ -207,7 +207,7 @@ public interface AudioManager
      */
     @Nullable
     @Deprecated
-    @ForRemoval
+    @ForRemoval(deadline = "5.0.0")
     @DeprecatedSince("4.2.0")
     VoiceChannel getQueuedAudioConnection();
 
