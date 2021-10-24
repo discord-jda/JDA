@@ -85,7 +85,7 @@ public class ChoiceActionImpl extends InteractionCallbackActionImpl implements C
     public ChoiceAction respondChoices(@Nonnull Command.Choice... choices)
     {
         Checks.noneNull(choices, "Choices");
-        Checks.check(choices.length + this.choices.size() <= OptionData.MAX_CHOICES, "Cannot have more than 25 choices for one option!");
+        Checks.check(choices.length + this.choices.size() <= OptionData.MAX_CHOICES, "Cannot have more than 25 choices for an option!");
 
         for (Command.Choice choice : choices)
             respondChoice(choice.getName(), choice.getAsString());

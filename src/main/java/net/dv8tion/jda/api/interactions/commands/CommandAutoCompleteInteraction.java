@@ -6,6 +6,7 @@ import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Collection;
 
 /**
@@ -49,5 +50,11 @@ public interface CommandAutoCompleteInteraction extends CommandInteraction
         return respondChoices(choices.toArray(new Command.Choice[0]));
     }
 
-    OptionMapping getFocusedOptionType();
+    /**
+     * Gets the option currently focused by the user.
+     *
+     * @return The focused option
+     */
+    @Nullable
+    OptionMapping getFocusedOption();
 }

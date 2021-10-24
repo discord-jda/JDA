@@ -63,7 +63,6 @@ public class CommandAutoCompleteEvent extends GenericInteractionCreateEvent impl
         return commandAutoCompleteInteraction.getOptions();
     }
 
-
     @NotNull
     @Override
     public ChoiceAction respondChoice(@NotNull String name, @NotNull String value)
@@ -79,9 +78,9 @@ public class CommandAutoCompleteEvent extends GenericInteractionCreateEvent impl
     }
 
     @Override
-    public OptionMapping getFocusedOptionType()
+    public OptionMapping getFocusedOption()
     {
-        return commandAutoCompleteInteraction.getFocusedOptionType();
+        return commandAutoCompleteInteraction.getFocusedOption();
     }
 
     @Nonnull

@@ -88,7 +88,8 @@ public class OptionMapping
     /**
      * Indicates if the option is focused by the user when autocomplete is enabled
      *
-     * @return True, if the user is focusing the option
+     * @return True, if the user is focusing the option. Will always be false if autocomplete is not enabled
+     * for the option
      */
     public boolean isFocused() { return focused; }
 

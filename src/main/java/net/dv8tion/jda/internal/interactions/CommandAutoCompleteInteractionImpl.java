@@ -33,7 +33,7 @@ public class CommandAutoCompleteInteractionImpl extends CommandInteractionImpl i
     }
 
     @Override
-    public OptionMapping getFocusedOptionType()
+    public OptionMapping getFocusedOption()
     {
         return getOptions().stream()
                 .filter(OptionMapping::isFocused)
