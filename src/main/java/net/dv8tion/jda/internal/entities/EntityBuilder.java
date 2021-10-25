@@ -37,7 +37,6 @@ import net.dv8tion.jda.api.entities.templates.TemplateGuild;
 import net.dv8tion.jda.api.entities.templates.TemplateRole;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleAddEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleRemoveEvent;
-import net.dv8tion.jda.api.events.guild.member.update.GuildMemberUpdateAvatarEvent;
 import net.dv8tion.jda.api.events.guild.member.update.GuildMemberUpdateBoostTimeEvent;
 import net.dv8tion.jda.api.events.guild.member.update.GuildMemberUpdateNicknameEvent;
 import net.dv8tion.jda.api.events.guild.member.update.GuildMemberUpdatePendingEvent;
@@ -499,8 +498,6 @@ public class EntityBuilder
             // Create a brand new member
             member = new MemberImpl(guild, user);
             member.setNickname(memberJson.getString("nick", null));
-            member.setAvatarId(memberJson.getString("avatar", null));
-
             long epoch = 0;
             if (!memberJson.isNull("premium_since"))
             {
@@ -599,19 +596,6 @@ public class EntityBuilder
                     new GuildMemberUpdateNicknameEvent(
                         getJDA(), responseNumber,
                         member, oldNick));
-            }
-        }
-        if (content.hasKey("avatar"))
-        {
-            String oldAvatarId = member.getAvatarId();
-            String newAvatarId = content.getString("avatar", null);
-            if (!Objects.equals(oldAvatarId, newAvatarId))
-            {
-                member.setAvatarId(newAvatarId);
-                getJDA().handleEvent(
-                        new GuildMemberUpdateAvatarEvent(
-                                getJDA(), responseNumber,
-                                member, oldAvatarId));
             }
         }
         if (content.hasKey("premium_since"))
