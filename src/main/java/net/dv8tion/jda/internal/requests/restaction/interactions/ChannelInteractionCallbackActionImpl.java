@@ -1,13 +1,29 @@
+/*
+ * Copyright 2015 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package net.dv8tion.jda.internal.requests.restaction.interactions;
 
 import net.dv8tion.jda.api.exceptions.InteractionFailureException;
-import net.dv8tion.jda.api.interactions.InteractionHook;
+import net.dv8tion.jda.api.interactions.ChannelInteractionHook;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.RestAction;
-import net.dv8tion.jda.api.requests.restaction.interactions.InteractionCallbackAction;
+import net.dv8tion.jda.api.requests.restaction.interactions.ChannelInteractionCallbackAction;
 import net.dv8tion.jda.api.utils.data.DataObject;
-import net.dv8tion.jda.internal.interactions.InteractionHookImpl;
+import net.dv8tion.jda.internal.interactions.ChannelInteractionHookImpl;
 import net.dv8tion.jda.internal.requests.Requester;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
@@ -22,12 +38,12 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
-public abstract class InteractionCallbackActionImpl extends RestActionImpl<InteractionHook> implements InteractionCallbackAction
+public abstract class ChannelInteractionCallbackActionImpl extends RestActionImpl<ChannelInteractionHook> implements ChannelInteractionCallbackAction
 {
-    protected final InteractionHookImpl hook;
+    protected final ChannelInteractionHookImpl hook;
     protected final Map<String, InputStream> files = new HashMap<>();
 
-    public InteractionCallbackActionImpl(InteractionHookImpl hook)
+    public ChannelInteractionCallbackActionImpl(ChannelInteractionHookImpl hook)
     {
         super(hook.getJDA(), Route.Interactions.CALLBACK.compile(hook.getInteraction().getId(), hook.getInteraction().getToken()));
         this.hook = hook;
@@ -55,14 +71,14 @@ public abstract class InteractionCallbackActionImpl extends RestActionImpl<Inter
     }
 
     @Override
-    protected void handleSuccess(Response response, Request<InteractionHook> request)
+    protected void handleSuccess(Response response, Request<ChannelInteractionHook> request)
     {
         hook.ready();
         request.onSuccess(hook);
     }
 
     @Override
-    public void handleResponse(Response response, Request<InteractionHook> request)
+    public void handleResponse(Response response, Request<ChannelInteractionHook> request)
     {
         if (!response.isOk())
             hook.fail(new InteractionFailureException());
@@ -82,7 +98,7 @@ public abstract class InteractionCallbackActionImpl extends RestActionImpl<Inter
     }
 
     @Override
-    public void queue(Consumer<? super InteractionHook> success, Consumer<? super Throwable> failure)
+    public void queue(Consumer<? super ChannelInteractionHook> success, Consumer<? super Throwable> failure)
     {
         IllegalStateException exception = tryAck();
         if (exception != null)
@@ -99,12 +115,12 @@ public abstract class InteractionCallbackActionImpl extends RestActionImpl<Inter
 
     @Nonnull
     @Override
-    public CompletableFuture<InteractionHook> submit(boolean shouldQueue)
+    public CompletableFuture<ChannelInteractionHook> submit(boolean shouldQueue)
     {
         IllegalStateException exception = tryAck();
         if (exception != null)
         {
-            CompletableFuture<InteractionHook> future = new CompletableFuture<>();
+            CompletableFuture<ChannelInteractionHook> future = new CompletableFuture<>();
             future.completeExceptionally(exception);
             return future;
         }

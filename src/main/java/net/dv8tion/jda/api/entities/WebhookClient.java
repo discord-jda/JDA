@@ -16,7 +16,8 @@
 
 package net.dv8tion.jda.api.entities;
 
-import net.dv8tion.jda.api.interactions.Interaction;
+import net.dv8tion.jda.api.interactions.ChannelInteraction;
+import net.dv8tion.jda.api.interactions.ChannelInteractionHook;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.ComponentLayout;
 import net.dv8tion.jda.api.requests.RestAction;
@@ -32,17 +33,17 @@ import java.util.*;
 
 /**
  * Interface which allows sending messages through the webhooks API.
- * <br>Interactions can use these through {@link Interaction#getHook()}.
+ * <br>Interactions can use these through {@link ChannelInteraction#getHook()}.
  *
  * @see Webhook
- * @see net.dv8tion.jda.api.interactions.InteractionHook
+ * @see ChannelInteractionHook
  */
 public interface WebhookClient<T>
 {
     /**
      * Send a message to this webhook.
      *
-     * <p>If this is an {@link net.dv8tion.jda.api.interactions.InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
+     * <p>If this is an {@link ChannelInteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
      * <ul>
@@ -65,7 +66,7 @@ public interface WebhookClient<T>
     /**
      * Send a message to this webhook.
      *
-     * <p>If this is an {@link net.dv8tion.jda.api.interactions.InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
+     * <p>If this is an {@link ChannelInteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
      * <ul>
@@ -88,7 +89,7 @@ public interface WebhookClient<T>
     /**
      * Send a message to this webhook.
      *
-     * <p>If this is an {@link net.dv8tion.jda.api.interactions.InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
+     * <p>If this is an {@link ChannelInteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
      * <ul>
@@ -117,7 +118,7 @@ public interface WebhookClient<T>
     /**
      * Send a message to this webhook.
      *
-     * <p>If this is an {@link net.dv8tion.jda.api.interactions.InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
+     * <p>If this is an {@link ChannelInteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
      * <ul>
@@ -140,7 +141,7 @@ public interface WebhookClient<T>
     /**
      * Send a message to this webhook.
      *
-     * <p>If this is an {@link net.dv8tion.jda.api.interactions.InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
+     * <p>If this is an {@link ChannelInteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
      * <ul>
@@ -173,7 +174,7 @@ public interface WebhookClient<T>
     /**
      * Send a message to this webhook.
      *
-     * <p>If this is an {@link net.dv8tion.jda.api.interactions.InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
+     * <p>If this is an {@link ChannelInteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
      *
      * <p><b>Uploading images with Embeds</b>
      * <br>When uploading an <u>image</u> you can reference said image using the specified filename as URI {@code attachment://filename.ext}.
@@ -216,7 +217,7 @@ public interface WebhookClient<T>
     /**
      * Send a message to this webhook.
      *
-     * <p>If this is an {@link net.dv8tion.jda.api.interactions.InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
+     * <p>If this is an {@link ChannelInteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
      *
      * <p>This is a shortcut to {@link #sendFile(java.io.File, String, AttachmentOption...)} by way of using {@link java.io.File#getName()}.
      * <pre>sendFile(file, file.getName())</pre>
@@ -263,7 +264,7 @@ public interface WebhookClient<T>
     /**
      * Send a message to this webhook.
      *
-     * <p>If this is an {@link net.dv8tion.jda.api.interactions.InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
+     * <p>If this is an {@link ChannelInteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
      *
      * <p>The {@code name} parameter is used to inform Discord about what the file should be called. This is 2 fold:
      * <ol>
@@ -332,7 +333,7 @@ public interface WebhookClient<T>
     /**
      * Send a message to this webhook.
      *
-     * <p>If this is an {@link net.dv8tion.jda.api.interactions.InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
+     * <p>If this is an {@link ChannelInteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
      *
      * <p><b>Uploading images with Embeds</b>
      * <br>When uploading an <u>image</u> you can reference said image using the specified filename as URI {@code attachment://filename.ext}.
@@ -380,7 +381,7 @@ public interface WebhookClient<T>
     /**
      * Edit an existing message sent by this webhook.
      *
-     * <p>If this is an {@link net.dv8tion.jda.api.interactions.InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
+     * <p>If this is an {@link ChannelInteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
      * <ul>
@@ -407,7 +408,7 @@ public interface WebhookClient<T>
     /**
      * Edit an existing message sent by this webhook.
      *
-     * <p>If this is an {@link net.dv8tion.jda.api.interactions.InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
+     * <p>If this is an {@link ChannelInteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
      * <ul>
@@ -437,7 +438,7 @@ public interface WebhookClient<T>
     /**
      * Edit an existing message sent by this webhook.
      *
-     * <p>If this is an {@link net.dv8tion.jda.api.interactions.InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
+     * <p>If this is an {@link ChannelInteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
      * <ul>
@@ -464,7 +465,7 @@ public interface WebhookClient<T>
     /**
      * Edit an existing message sent by this webhook.
      *
-     * <p>If this is an {@link net.dv8tion.jda.api.interactions.InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
+     * <p>If this is an {@link ChannelInteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
      * <ul>
@@ -494,7 +495,7 @@ public interface WebhookClient<T>
     /**
      * Edit an existing message sent by this webhook.
      *
-     * <p>If this is an {@link net.dv8tion.jda.api.interactions.InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
+     * <p>If this is an {@link ChannelInteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
      * <ul>
@@ -527,7 +528,7 @@ public interface WebhookClient<T>
     /**
      * Edit an existing message sent by this webhook.
      *
-     * <p>If this is an {@link net.dv8tion.jda.api.interactions.InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
+     * <p>If this is an {@link ChannelInteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
      * <ul>
@@ -559,7 +560,7 @@ public interface WebhookClient<T>
     /**
      * Edit an existing message sent by this webhook.
      *
-     * <p>If this is an {@link net.dv8tion.jda.api.interactions.InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
+     * <p>If this is an {@link ChannelInteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
      * <ul>
@@ -586,7 +587,7 @@ public interface WebhookClient<T>
     /**
      * Edit an existing message sent by this webhook.
      *
-     * <p>If this is an {@link net.dv8tion.jda.api.interactions.InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
+     * <p>If this is an {@link ChannelInteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
      * <ul>
@@ -616,7 +617,7 @@ public interface WebhookClient<T>
     /**
      * Edit an existing message sent by this webhook.
      *
-     * <p>If this is an {@link net.dv8tion.jda.api.interactions.InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
+     * <p>If this is an {@link ChannelInteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
      * <ul>
@@ -647,7 +648,7 @@ public interface WebhookClient<T>
     /**
      * Edit an existing message sent by this webhook.
      *
-     * <p>If this is an {@link net.dv8tion.jda.api.interactions.InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
+     * <p>If this is an {@link ChannelInteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
      * <ul>
@@ -677,7 +678,7 @@ public interface WebhookClient<T>
     /**
      * Edit an existing message sent by this webhook.
      *
-     * <p>If this is an {@link net.dv8tion.jda.api.interactions.InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
+     * <p>If this is an {@link ChannelInteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
      * <ul>
@@ -704,7 +705,7 @@ public interface WebhookClient<T>
     /**
      * Edit an existing message sent by this webhook.
      *
-     * <p>If this is an {@link net.dv8tion.jda.api.interactions.InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
+     * <p>If this is an {@link ChannelInteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
      * <ul>
@@ -734,7 +735,7 @@ public interface WebhookClient<T>
     /**
      * Edit an existing message sent by this webhook.
      *
-     * <p>If this is an {@link net.dv8tion.jda.api.interactions.InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
+     * <p>If this is an {@link ChannelInteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
      * <ul>
@@ -765,7 +766,7 @@ public interface WebhookClient<T>
     /**
      * Edit an existing message sent by this webhook.
      *
-     * <p>If this is an {@link net.dv8tion.jda.api.interactions.InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
+     * <p>If this is an {@link ChannelInteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
      * <ul>
@@ -797,7 +798,7 @@ public interface WebhookClient<T>
      * Edit an existing message sent by this webhook.
      * <br>The provided file will be appended to the message. You cannot delete or edit existing files on a message.
      *
-     * <p>If this is an {@link net.dv8tion.jda.api.interactions.InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
+     * <p>If this is an {@link ChannelInteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
      *
      * <p><b>Uploading images with Embeds</b>
      * <br>When uploading an <u>image</u> you can reference said image using the specified filename as URI {@code attachment://filename.ext}.
@@ -843,7 +844,7 @@ public interface WebhookClient<T>
      * Edit an existing message sent by this webhook.
      * <br>The provided file will be appended to the message. You cannot delete or edit existing files on a message.
      *
-     * <p>If this is an {@link net.dv8tion.jda.api.interactions.InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
+     * <p>If this is an {@link ChannelInteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
      *
      * <p>This is a shortcut to {@link #editMessageById(java.lang.String, java.io.File, String, AttachmentOption...)} by way of using {@link java.io.File#getName()}.
      * <pre>editMessageById(messageId, file, file.getName())</pre>
@@ -893,7 +894,7 @@ public interface WebhookClient<T>
      * Edit an existing message sent by this webhook.
      * <br>The provided file will be appended to the message. You cannot delete or edit existing files on a message.
      *
-     * <p>If this is an {@link net.dv8tion.jda.api.interactions.InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
+     * <p>If this is an {@link ChannelInteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
      *
      * <p><b>Uploading images with Embeds</b>
      * <br>When uploading an <u>image</u> you can reference said image using the specified filename as URI {@code attachment://filename.ext}.
@@ -954,7 +955,7 @@ public interface WebhookClient<T>
      * Edit an existing message sent by this webhook.
      * <br>The provided file will be appended to the message. You cannot delete or edit existing files on a message.
      *
-     * <p>If this is an {@link net.dv8tion.jda.api.interactions.InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
+     * <p>If this is an {@link ChannelInteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
      *
      * <p><b>Uploading images with Embeds</b>
      * <br>When uploading an <u>image</u> you can reference said image using the specified filename as URI {@code attachment://filename.ext}.
@@ -1006,7 +1007,7 @@ public interface WebhookClient<T>
      * Edit an existing message sent by this webhook.
      * <br>The provided file will be appended to the message. You cannot delete or edit existing files on a message.
      *
-     * <p>If this is an {@link net.dv8tion.jda.api.interactions.InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
+     * <p>If this is an {@link ChannelInteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
      *
      * <p><b>Uploading images with Embeds</b>
      * <br>When uploading an <u>image</u> you can reference said image using the specified filename as URI {@code attachment://filename.ext}.
@@ -1055,7 +1056,7 @@ public interface WebhookClient<T>
      * Edit an existing message sent by this webhook.
      * <br>The provided file will be appended to the message. You cannot delete or edit existing files on a message.
      *
-     * <p>If this is an {@link net.dv8tion.jda.api.interactions.InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
+     * <p>If this is an {@link ChannelInteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
      *
      * <p>This is a shortcut to {@link #sendFile(java.io.File, String, AttachmentOption...)} by way of using {@link java.io.File#getName()}.
      * <pre>sendFile(file, file.getName())</pre>
@@ -1104,7 +1105,7 @@ public interface WebhookClient<T>
      * Edit an existing message sent by this webhook.
      * <br>The provided file will be appended to the message. You cannot delete or edit existing files on a message.
      *
-     * <p>If this is an {@link net.dv8tion.jda.api.interactions.InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
+     * <p>If this is an {@link ChannelInteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
      *
      * <p><b>Uploading images with Embeds</b>
      * <br>When uploading an <u>image</u> you can reference said image using the specified filename as URI {@code attachment://filename.ext}.
@@ -1153,7 +1154,7 @@ public interface WebhookClient<T>
      * Edit an existing message sent by this webhook.
      * <br>The provided file will be appended to the message. You cannot delete or edit existing files on a message.
      *
-     * <p>If this is an {@link net.dv8tion.jda.api.interactions.InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
+     * <p>If this is an {@link ChannelInteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
      *
      * <p><b>Uploading images with Embeds</b>
      * <br>When uploading an <u>image</u> you can reference said image using the specified filename as URI {@code attachment://filename.ext}.
@@ -1202,7 +1203,7 @@ public interface WebhookClient<T>
     /**
      * Delete a message from this webhook.
      *
-     * <p>If this is an {@link net.dv8tion.jda.api.interactions.InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
+     * <p>If this is an {@link ChannelInteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
      * <ul>
@@ -1227,7 +1228,7 @@ public interface WebhookClient<T>
     /**
      * Delete a message from this webhook.
      *
-     * <p>If this is an {@link net.dv8tion.jda.api.interactions.InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
+     * <p>If this is an {@link ChannelInteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
      * <ul>

@@ -20,11 +20,12 @@ import net.dv8tion.jda.api.entities.IMentionable;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
+import net.dv8tion.jda.api.requests.restaction.interactions.InteractionCallbackAction;
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyAction;
 import net.dv8tion.jda.api.utils.AttachmentOption;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
-import net.dv8tion.jda.internal.interactions.InteractionHookImpl;
+import net.dv8tion.jda.internal.interactions.ChannelInteractionHookImpl;
 import net.dv8tion.jda.internal.utils.AllowedMentionsImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
@@ -39,7 +40,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 
-public class ReplyActionImpl extends InteractionCallbackActionImpl implements ReplyAction
+public class ReplyActionImpl extends ChannelInteractionCallbackActionImpl implements ReplyAction
 {
     private final List<MessageEmbed> embeds = new ArrayList<>();
     private final AllowedMentionsImpl allowedMentions = new AllowedMentionsImpl();
@@ -49,7 +50,7 @@ public class ReplyActionImpl extends InteractionCallbackActionImpl implements Re
     private int flags;
     private boolean tts;
 
-    public ReplyActionImpl(InteractionHookImpl hook)
+    public ReplyActionImpl(ChannelInteractionHookImpl hook)
     {
         super(hook);
     }
@@ -69,7 +70,7 @@ public class ReplyActionImpl extends InteractionCallbackActionImpl implements Re
         DataObject json = DataObject.empty();
         if (isEmpty())
         {
-            json.put("type", ResponseType.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE.getRaw());
+            json.put("type", InteractionCallbackAction.ResponseType.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE.getRaw());
             if (flags != 0)
                 json.put("data", DataObject.empty().put("flags", flags));
         }
@@ -86,7 +87,7 @@ public class ReplyActionImpl extends InteractionCallbackActionImpl implements Re
                 payload.put("components", DataArray.fromCollection(components));
             json.put("data", payload);
 
-            json.put("type", ResponseType.CHANNEL_MESSAGE_WITH_SOURCE.getRaw()); // This type seemingly makes no difference right now, idk why it exists
+            json.put("type", InteractionCallbackAction.ResponseType.CHANNEL_MESSAGE_WITH_SOURCE.getRaw()); // This type seemingly makes no difference right now, idk why it exists
         }
         return json;
     }

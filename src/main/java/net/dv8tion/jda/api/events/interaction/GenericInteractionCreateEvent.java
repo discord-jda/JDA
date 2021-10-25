@@ -23,15 +23,18 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.Event;
+import net.dv8tion.jda.api.interactions.ChannelInteraction;
+import net.dv8tion.jda.api.interactions.ChannelInteractionHook;
 import net.dv8tion.jda.api.interactions.Interaction;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyAction;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
- * Indicates that an {@link Interaction} was created in a channel.
+ * Indicates that an {@link Interaction} was created.
  * <br>Every interaction event is derived from this event.
  *
  * <h2>Requirements</h2>
@@ -83,23 +86,22 @@ public class GenericInteractionCreateEvent extends Event implements Interaction
 
     @Nullable
     @Override
-    public Channel getChannel()
+    public Member getMember()
     {
-        return interaction.getChannel();
+        return interaction.getMember();
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public InteractionHook getHook()
     {
         return interaction.getHook();
     }
 
-    @Nullable
     @Override
-    public Member getMember()
+    public boolean isAcknowledged()
     {
-        return interaction.getMember();
+        return false;
     }
 
     @Nonnull
@@ -113,18 +115,5 @@ public class GenericInteractionCreateEvent extends Event implements Interaction
     public long getIdLong()
     {
         return interaction.getIdLong();
-    }
-
-    @Override
-    public boolean isAcknowledged()
-    {
-        return interaction.isAcknowledged();
-    }
-
-    @Nonnull
-    @Override
-    public ReplyAction deferReply()
-    {
-        return interaction.deferReply();
     }
 }

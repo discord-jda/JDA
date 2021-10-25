@@ -23,7 +23,7 @@ import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import net.dv8tion.jda.api.interactions.InteractionHook;
+import net.dv8tion.jda.api.interactions.ChannelInteractionHook;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
@@ -134,7 +134,7 @@ public class SlashBotExample extends ListenerAdapter
     public void ban(SlashCommandEvent event, User user, Member member)
     {
         event.deferReply(true).queue(); // Let the user know we received the command before doing anything else
-        InteractionHook hook = event.getHook(); // This is a special webhook that allows you to send messages without having permissions in the channel and also allows ephemeral messages
+        ChannelInteractionHook hook = event.getHook(); // This is a special webhook that allows you to send messages without having permissions in the channel and also allows ephemeral messages
         hook.setEphemeral(true); // All messages here will now be ephemeral implicitly
         if (!event.getMember().hasPermission(Permission.BAN_MEMBERS))
         {

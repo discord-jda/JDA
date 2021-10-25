@@ -36,7 +36,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class CommandInteractionImpl extends InteractionImpl implements CommandInteraction
+public class CommandInteractionImpl extends ChannelInteractionImpl implements CommandInteraction
 {
     private final long commandId;
     private final List<OptionMapping> options = new ArrayList<>();

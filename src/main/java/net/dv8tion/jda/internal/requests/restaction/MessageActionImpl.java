@@ -21,7 +21,7 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.exceptions.MissingAccessException;
-import net.dv8tion.jda.api.interactions.InteractionHook;
+import net.dv8tion.jda.api.interactions.ChannelInteractionHook;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
@@ -68,7 +68,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
     protected long messageReference;
 
     protected final String messageId;
-    private InteractionHook hook = null;
+    private ChannelInteractionHook hook = null;
 
     public static void setDefaultFailOnInvalidReply(boolean fail)
     {
@@ -102,7 +102,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
         this.messageId = messageId;
     }
 
-    public MessageActionImpl withHook(InteractionHook hook)
+    public MessageActionImpl withHook(ChannelInteractionHook hook)
     {
         this.hook = hook;
         return this;

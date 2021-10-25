@@ -23,7 +23,7 @@ import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.exceptions.MissingAccessException;
 import net.dv8tion.jda.api.exceptions.PermissionException;
-import net.dv8tion.jda.api.interactions.InteractionHook;
+import net.dv8tion.jda.api.interactions.ChannelInteractionHook;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.ComponentLayout;
 import net.dv8tion.jda.api.requests.RestAction;
@@ -77,7 +77,7 @@ public class ReceivedMessage extends AbstractMessage
     protected final int flags;
     protected final Message.Interaction interaction;
 
-    protected InteractionHook interactionHook = null; // late-init
+    protected ChannelInteractionHook interactionHook = null; // late-init
 
     // LAZY EVALUATED
     protected String altContent = null;
@@ -120,7 +120,7 @@ public class ReceivedMessage extends AbstractMessage
         this.interaction = interaction;
     }
 
-    public ReceivedMessage withHook(InteractionHook hook)
+    public ReceivedMessage withHook(ChannelInteractionHook hook)
     {
         this.interactionHook = hook;
         return this;

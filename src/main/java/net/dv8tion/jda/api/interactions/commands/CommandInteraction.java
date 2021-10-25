@@ -17,10 +17,7 @@
 package net.dv8tion.jda.api.interactions.commands;
 
 import net.dv8tion.jda.api.entities.*;
-import net.dv8tion.jda.api.interactions.Interaction;
-import net.dv8tion.jda.internal.entities.MemberImpl;
-import net.dv8tion.jda.internal.entities.RoleImpl;
-import net.dv8tion.jda.internal.entities.UserImpl;
+import net.dv8tion.jda.api.interactions.ChannelInteraction;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
@@ -33,7 +30,7 @@ import java.util.stream.Collectors;
  *
  * @see net.dv8tion.jda.api.events.interaction.SlashCommandEvent
  */
-public interface CommandInteraction extends Interaction
+public interface CommandInteraction extends ChannelInteraction
 {
     /**
      * The command name.

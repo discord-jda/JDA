@@ -1,7 +1,7 @@
 package net.dv8tion.jda.api.events.interaction;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.CommandAutoCompleteInteraction;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
@@ -10,6 +10,7 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Collection;
 import java.util.List;
 
 public class CommandAutoCompleteEvent extends GenericInteractionCreateEvent implements CommandAutoCompleteInteraction
@@ -20,13 +21,6 @@ public class CommandAutoCompleteEvent extends GenericInteractionCreateEvent impl
     {
         super(api, responseNumber, interaction);
         this.commandAutoCompleteInteraction = interaction;
-    }
-
-    @Nonnull
-    @Override
-    public MessageChannel getChannel()
-    {
-        return commandAutoCompleteInteraction.getChannel();
     }
 
     @Nonnull
@@ -72,7 +66,28 @@ public class CommandAutoCompleteEvent extends GenericInteractionCreateEvent impl
 
     @NotNull
     @Override
+    public ChoiceAction respondChoice(@NotNull String name, double value)
+    {
+        return commandAutoCompleteInteraction.respondChoice(name, value);
+    }
+
+    @NotNull
+    @Override
+    public ChoiceAction respondChoice(@NotNull String name, long value)
+    {
+        return commandAutoCompleteInteraction.respondChoice(name, value);
+    }
+
+    @NotNull
+    @Override
     public ChoiceAction respondChoices(@Nonnull Command.Choice... choices)
+    {
+        return commandAutoCompleteInteraction.respondChoices(choices);
+    }
+
+    @NotNull
+    @Override
+    public ChoiceAction respondChoices(@Nonnull Collection<? extends Command.Choice> choices)
     {
         return commandAutoCompleteInteraction.respondChoices(choices);
     }
@@ -88,5 +103,18 @@ public class CommandAutoCompleteEvent extends GenericInteractionCreateEvent impl
     public String getCommandString()
     {
         return commandAutoCompleteInteraction.getCommandString();
+    }
+
+    @NotNull
+    @Override
+    public InteractionHook getHook()
+    {
+        return commandAutoCompleteInteraction.getHook();
+    }
+
+    @Override
+    public boolean isAcknowledged()
+    {
+        return commandAutoCompleteInteraction.isAcknowledged();
     }
 }

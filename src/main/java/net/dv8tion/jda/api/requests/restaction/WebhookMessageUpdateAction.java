@@ -18,6 +18,7 @@ package net.dv8tion.jda.api.requests.restaction;
 
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.interactions.ChannelInteractionHook;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.Component;
 import net.dv8tion.jda.api.requests.RestAction;
@@ -33,12 +34,12 @@ import java.util.Collection;
 import java.util.stream.Collectors;
 
 /**
- * Specialized {@link RestAction} used to update an existing message sent by a {@link net.dv8tion.jda.api.entities.Webhook Webhook} or {@link net.dv8tion.jda.api.interactions.InteractionHook InteractionHook}.
+ * Specialized {@link RestAction} used to update an existing message sent by a {@link net.dv8tion.jda.api.entities.Webhook Webhook} or {@link ChannelInteractionHook InteractionHook}.
  *
  * @param <T>
  *        The type of message that will be returned
  *
- * @see   net.dv8tion.jda.api.interactions.InteractionHook#editOriginal(String)
+ * @see   ChannelInteractionHook#editOriginal(String)
  * @see   net.dv8tion.jda.api.entities.WebhookClient#editMessageById(long, String)
  */
 // TODO: WebhookMessage type (no channel/guild attached)

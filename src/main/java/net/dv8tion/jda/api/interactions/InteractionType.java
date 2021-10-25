@@ -22,7 +22,7 @@ import javax.annotation.Nonnull;
 /**
  * Enum for interaction types.
  *
- * @see Interaction#getType()
+ * @see ChannelInteraction#getType()
  */
 public enum InteractionType
 {

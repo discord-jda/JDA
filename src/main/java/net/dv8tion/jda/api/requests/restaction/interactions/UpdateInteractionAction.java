@@ -30,9 +30,9 @@ import java.util.Arrays;
 import java.util.Collection;
 
 /**
- * A {@link InteractionCallbackAction} which can be used to edit the message for an interaction.
+ * A {@link ChannelInteractionCallbackAction} which can be used to edit the message for an interaction.
  */
-public interface UpdateInteractionAction extends InteractionCallbackAction
+public interface UpdateInteractionAction extends ChannelInteractionCallbackAction
 {
     /**
      * Set the new content for this message.

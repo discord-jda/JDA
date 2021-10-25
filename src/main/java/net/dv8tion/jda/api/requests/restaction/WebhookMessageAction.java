@@ -18,6 +18,7 @@ package net.dv8tion.jda.api.requests.restaction;
 
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.interactions.ChannelInteractionHook;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.Component;
 import net.dv8tion.jda.api.requests.RestAction;
@@ -92,7 +93,7 @@ public interface WebhookMessageAction<T> extends RestAction<T>, AllowedMentions<
      *     <li>Cannot be retrieved</li>
      * </ul>
      *
-     * <p>This only works on {@link net.dv8tion.jda.api.interactions.InteractionHook InteractionHooks}!
+     * <p>This only works on {@link ChannelInteractionHook InteractionHooks}!
      *
      * @param  ephemeral
      *         True, if this message should be invisible for other users

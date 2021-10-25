@@ -19,7 +19,7 @@ package net.dv8tion.jda.api.interactions.components;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.interactions.Interaction;
+import net.dv8tion.jda.api.interactions.ChannelInteraction;
 import net.dv8tion.jda.api.requests.restaction.interactions.UpdateInteractionAction;
 import net.dv8tion.jda.internal.requests.restaction.interactions.UpdateInteractionActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -38,7 +38,7 @@ import java.util.stream.Collectors;
  * <p>Instead of {@link #deferReply()} and {@link #reply(String)} you can use {@link #deferEdit()} and {@link #editMessage(String)} with these interactions!
  * <b>You can only acknowledge an interaction once!</b>
  */
-public interface ComponentInteraction extends Interaction
+public interface ComponentInteraction extends ChannelInteraction
 {
     /**
      * The custom component Id provided to the component when it was originally created.

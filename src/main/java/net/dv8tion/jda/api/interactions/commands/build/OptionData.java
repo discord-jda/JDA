@@ -278,10 +278,22 @@ public class OptionData implements SerializableData
      *         True, if this option can be autocompleted
      *
      * @return The OptionData instance, for chaining
+     * @throws IllegalArgumentException
+     *         If the option type isn't one of the following
+     *         <ui>
+     *             <li>{@link OptionType#INTEGER Integer}</li>
+     *             <li>{@link OptionType#NUMBER Number}</li>
+     *             <li>{@link OptionType#STRING String}</li>
+ *             </ul>
      */
     @Nonnull
     public OptionData setAutoComplete(boolean autocomplete)
     {
+        Checks.check(
+                type == OptionType.INTEGER ||
+                        type == OptionType.NUMBER ||
+                        type == OptionType.STRING,
+                "Cannot enable autocomplete for OptionType." + type);
         this.isAutoComplete = autocomplete;
         return this;
     }

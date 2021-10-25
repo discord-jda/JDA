@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.exceptions.HttpException;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
+import net.dv8tion.jda.api.interactions.ChannelInteraction;
 import net.dv8tion.jda.api.interactions.InteractionType;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.Button;
@@ -2553,7 +2554,7 @@ public interface Message extends ISnowflake, Formattable
     MessageType getType();
 
     /**
-     * This is sent on the message object when the message is a response to an {@link net.dv8tion.jda.api.interactions.Interaction Interaction} without an existing message.
+     * This is sent on the message object when the message is a response to an {@link ChannelInteraction Interaction} without an existing message.
      *
      * <p>This means responses to Message Components do not include this property, instead including a message reference object as components always exist on preexisting messages.
      *
@@ -3153,7 +3154,7 @@ public interface Message extends ISnowflake, Formattable
     }
 
     /**
-     * Represents an {@link net.dv8tion.jda.api.interactions.Interaction Interaction} provided with a {@link net.dv8tion.jda.api.entities.Message Message}.
+     * Represents an {@link ChannelInteraction Interaction} provided with a {@link net.dv8tion.jda.api.entities.Message Message}.
      */
     class Interaction implements ISnowflake
     {

@@ -19,11 +19,12 @@ package net.dv8tion.jda.internal.requests.restaction.interactions;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
+import net.dv8tion.jda.api.requests.restaction.interactions.InteractionCallbackAction;
 import net.dv8tion.jda.api.requests.restaction.interactions.UpdateInteractionAction;
 import net.dv8tion.jda.api.utils.AttachmentOption;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
-import net.dv8tion.jda.internal.interactions.InteractionHookImpl;
+import net.dv8tion.jda.internal.interactions.ChannelInteractionHookImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
@@ -35,14 +36,14 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class UpdateInteractionActionImpl extends InteractionCallbackActionImpl implements UpdateInteractionAction
+public class UpdateInteractionActionImpl extends ChannelInteractionCallbackActionImpl implements UpdateInteractionAction
 {
     private List<String> retainedFiles = null;
     private List<MessageEmbed> embeds = null;
     private List<ActionRow> components = null;
     private String content = null;
 
-    public UpdateInteractionActionImpl(InteractionHookImpl hook)
+    public UpdateInteractionActionImpl(ChannelInteractionHookImpl hook)
     {
         super(hook);
     }
@@ -57,8 +58,8 @@ public class UpdateInteractionActionImpl extends InteractionCallbackActionImpl i
     {
         DataObject json = DataObject.empty();
         if (isEmpty())
-            return json.put("type", ResponseType.DEFERRED_MESSAGE_UPDATE.getRaw());
-        json.put("type", ResponseType.MESSAGE_UPDATE.getRaw());
+            return json.put("type", InteractionCallbackAction.ResponseType.DEFERRED_MESSAGE_UPDATE.getRaw());
+        json.put("type", InteractionCallbackAction.ResponseType.MESSAGE_UPDATE.getRaw());
         DataObject data = DataObject.empty();
         if (content != null)
             data.put("content", content);

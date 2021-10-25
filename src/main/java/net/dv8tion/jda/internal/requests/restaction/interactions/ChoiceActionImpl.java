@@ -1,8 +1,10 @@
 package net.dv8tion.jda.internal.requests.restaction.interactions;
 
 import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.requests.restaction.interactions.ChoiceAction;
+import net.dv8tion.jda.api.requests.restaction.interactions.InteractionCallbackAction;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.interactions.InteractionHookImpl;
@@ -19,11 +21,13 @@ import java.util.stream.Collectors;
 public class ChoiceActionImpl extends InteractionCallbackActionImpl implements ChoiceAction
 {
     private final Map<String, Object> choices;
+    private final OptionType type;
 
-    public ChoiceActionImpl(InteractionHookImpl hook)
+    public ChoiceActionImpl(InteractionHookImpl hook, OptionType optionType)
     {
         super(hook);
         this.choices = new LinkedHashMap<>();
+        this.type = optionType;
     }
 
     protected DataObject toData()
@@ -37,8 +41,7 @@ public class ChoiceActionImpl extends InteractionCallbackActionImpl implements C
                     .collect(Collectors.toList())));
         json.put("data", payload);
 
-        json.put("type", ResponseType.COMMAND_AUTOCOMPLETE_RESULT.getRaw());
-        System.out.println(json.toPrettyString());
+        json.put("type", InteractionCallbackAction.ResponseType.COMMAND_AUTOCOMPLETE_RESULT.getRaw());
         return json;
     }
 
@@ -76,6 +79,36 @@ public class ChoiceActionImpl extends InteractionCallbackActionImpl implements C
         Checks.notLonger(name, OptionData.MAX_CHOICE_NAME_LENGTH, "Name");
         Checks.notLonger(value, OptionData.MAX_CHOICE_VALUE_LENGTH, "Value");
         Checks.check(choices.size() < OptionData.MAX_CHOICES, "Cannot have more than 25 choices for an option!");
+        if (type != OptionType.STRING)
+            throw new IllegalArgumentException("Cannot add string choice for OptionType." + type);
+        choices.put(name, value);
+        return this;
+    }
+
+    @Nonnull
+    public ChoiceAction respondChoice(@Nonnull String name, double value)
+    {
+        Checks.notEmpty(name, "Name");
+        Checks.notLonger(name, OptionData.MAX_CHOICE_NAME_LENGTH, "Name");
+        Checks.check(value >= OptionData.MIN_NEGATIVE_NUMBER, "Double value may not be lower than %f", OptionData.MIN_NEGATIVE_NUMBER);
+        Checks.check(value <= OptionData.MAX_POSITIVE_NUMBER, "Double value may not be larger than %f", OptionData.MAX_POSITIVE_NUMBER);
+        Checks.check(choices.size() < OptionData.MAX_CHOICES, "Cannot have more than 25 choices for an option!");
+        if (type != OptionType.NUMBER)
+            throw new IllegalArgumentException("Cannot add double choice for OptionType." + type);
+        choices.put(name, value);
+        return this;
+    }
+
+    @Nonnull
+    public ChoiceAction respondChoice(@Nonnull String name, long value)
+    {
+        Checks.notEmpty(name, "Name");
+        Checks.notLonger(name, OptionData.MAX_CHOICE_NAME_LENGTH, "Name");
+        Checks.check(value >= OptionData.MIN_NEGATIVE_NUMBER, "Long value may not be lower than %f", OptionData.MIN_NEGATIVE_NUMBER);
+        Checks.check(value <= OptionData.MAX_POSITIVE_NUMBER, "Long value may not be larger than %f", OptionData.MAX_POSITIVE_NUMBER);
+        Checks.check(choices.size() < OptionData.MAX_CHOICES, "Cannot have more than 25 choices for an option!");
+        if (type != OptionType.INTEGER)
+            throw new IllegalArgumentException("Cannot add long choice for OptionType." + type);
         choices.put(name, value);
         return this;
     }
@@ -87,9 +120,16 @@ public class ChoiceActionImpl extends InteractionCallbackActionImpl implements C
         Checks.noneNull(choices, "Choices");
         Checks.check(choices.length + this.choices.size() <= OptionData.MAX_CHOICES, "Cannot have more than 25 choices for an option!");
 
-        for (Command.Choice choice : choices)
-            respondChoice(choice.getName(), choice.getAsString());
-
+        for (Command.Choice choice : choices) {
+            if (type == OptionType.INTEGER)
+                respondChoice(choice.getName(), choice.getAsLong());
+            else if (type == OptionType.STRING)
+                respondChoice(choice.getName(), choice.getAsString());
+            else if (type == OptionType.NUMBER)
+                respondChoice(choice.getName(), choice.getAsDouble());
+            else
+                throw new IllegalArgumentException("Cannot add choice for type " + type);
+        }
         return this;
     }
 }

@@ -25,7 +25,7 @@ import net.dv8tion.jda.internal.requests.restaction.interactions.UpdateInteracti
 
 import javax.annotation.Nonnull;
 
-public abstract class ComponentInteractionImpl extends InteractionImpl implements ComponentInteraction
+public abstract class ComponentInteractionImpl extends ChannelInteractionImpl implements ComponentInteraction
 {
     protected final String customId;
     protected final Message message;
