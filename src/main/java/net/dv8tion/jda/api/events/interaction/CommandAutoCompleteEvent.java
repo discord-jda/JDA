@@ -93,6 +93,7 @@ public class CommandAutoCompleteEvent extends GenericInteractionCreateEvent impl
     }
 
     @Override
+    @Nonnull
     public OptionMapping getFocusedOption()
     {
         return commandAutoCompleteInteraction.getFocusedOption();

@@ -357,6 +357,6 @@ public interface CommandAutoCompleteInteraction extends Interaction
      *
      * @return The focused option
      */
-    @Nullable
+    @Nonnull
     OptionMapping getFocusedOption();
 }
