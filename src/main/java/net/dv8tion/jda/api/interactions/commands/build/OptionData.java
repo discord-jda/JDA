@@ -288,22 +288,23 @@ public class OptionData implements SerializableData
      *
      * @return The OptionData instance, for chaining
      * @throws IllegalArgumentException
-     *         If the option type isn't one of the following
+     *         If choices are already present or the option type isn't one of the following
      *         <ui>
      *             <li>{@link OptionType#INTEGER Integer}</li>
      *             <li>{@link OptionType#NUMBER Number}</li>
      *             <li>{@link OptionType#STRING String}</li>
- *             </ul>
+     *         </ul>
+     *
      */
     @Nonnull
     public OptionData setAutoComplete(boolean autocomplete)
     {
+        Checks.check(choices.isEmpty(), "Cannot enable autocomplete if choices are present");
         Checks.check(
                 type == OptionType.INTEGER ||
                         type == OptionType.NUMBER ||
                         type == OptionType.STRING,
                 "Cannot enable autocomplete for OptionType." + type);
-        Checks.check(choices.isEmpty(), "Cannot enable autocomplete if choices are present");
         this.isAutoComplete = autocomplete;
         return this;
     }
