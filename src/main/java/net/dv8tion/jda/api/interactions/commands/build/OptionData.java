@@ -303,6 +303,7 @@ public class OptionData implements SerializableData
                         type == OptionType.NUMBER ||
                         type == OptionType.STRING,
                 "Cannot enable autocomplete for OptionType." + type);
+        Checks.check(choices.isEmpty(), "Cannot enable autocomplete if choices are present");
         this.isAutoComplete = autocomplete;
         return this;
     }
