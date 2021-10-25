@@ -20,11 +20,7 @@ import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import net.dv8tion.jda.api.Region;
 import net.dv8tion.jda.api.entities.*;
-import net.dv8tion.jda.api.events.channel.category.update.CategoryUpdatePermissionsEvent;
-import net.dv8tion.jda.api.events.channel.store.update.StoreChannelUpdatePermissionsEvent;
-import net.dv8tion.jda.api.events.channel.text.update.TextChannelUpdatePermissionsEvent;
 import net.dv8tion.jda.api.events.channel.update.*;
-import net.dv8tion.jda.api.events.channel.voice.update.VoiceChannelUpdatePermissionsEvent;
 import net.dv8tion.jda.api.events.guild.override.PermissionOverrideCreateEvent;
 import net.dv8tion.jda.api.events.guild.override.PermissionOverrideDeleteEvent;
 import net.dv8tion.jda.api.events.guild.override.PermissionOverrideUpdateEvent;
@@ -49,9 +45,7 @@ public class ChannelUpdateHandler extends SocketHandler
     @Override
     protected Long handleInternally(DataObject content)
     {
-        int rawType = content.getInt("type");
-        boolean news = rawType == 5;
-        ChannelType type = ChannelType.fromId(rawType);
+        final ChannelType type = ChannelType.fromId(content.getInt("type"));
         if (type == ChannelType.GROUP)
         {
             WebSocketClient.LOG.warn("Ignoring CHANNEL_UPDATE for a group which we don't support");
@@ -64,18 +58,26 @@ public class ChannelUpdateHandler extends SocketHandler
         final String name = content.getString("name");
         final boolean nsfw = content.getBoolean("nsfw");
         final int slowmode = content.getInt("rate_limit_per_user", 0);
-        DataArray permOverwrites = content.getArray("permission_overwrites");
+        final DataArray permOverwrites = content.getArray("permission_overwrites");
+
+        //We assume the CHANNEL_UPDATE was for a GuildChannel because PrivateChannels don't emit CHANNEL_UPDATE for 1:1 DMs, only Groups.
+        GuildChannel channel = getJDA().getGuildChannelById(channelId);
+        if (channel == null)
+        {
+            getJDA().getEventCache().cache(EventCache.Type.CHANNEL, channelId, responseNumber, allContent, this::handle);
+            EventCache.LOG.debug("CHANNEL_UPDATE attempted to update a channel that does not exist. JSON: {}", content);
+            return null;
+        }
+
+        //Detect if we changed the channel type at all and reconstruct the channel entity if needed
+        channel = handleChannelTypeChange(channel, content, type);
+
         switch (type)
         {
             case STORE:
             {
-                StoreChannelImpl storeChannel = (StoreChannelImpl) getJDA().getStoreChannelById(channelId);
-                if (storeChannel == null)
-                {
-                    getJDA().getEventCache().cache(EventCache.Type.CHANNEL, channelId, responseNumber, allContent, this::handle);
-                    EventCache.LOG.debug("CHANNEL_UPDATE attempted to update a StoreChannel that does not exist. JSON: {}", content);
-                    return null;
-                }
+                StoreChannelImpl storeChannel = (StoreChannelImpl) channel;
+
                 final String oldName = storeChannel.getName();
                 final int oldPosition = storeChannel.getPositionRaw();
 
@@ -102,14 +104,9 @@ public class ChannelUpdateHandler extends SocketHandler
             }
             case TEXT:
             {
-                String topic = content.getString("topic", null);
-                TextChannelImpl textChannel = (TextChannelImpl) getJDA().getTextChannelsView().get(channelId);
-                if (textChannel == null)
-                {
-                    getJDA().getEventCache().cache(EventCache.Type.CHANNEL, channelId, responseNumber, allContent, this::handle);
-                    EventCache.LOG.debug("CHANNEL_UPDATE attempted to update a TextChannel that does not exist. JSON: {}", content);
-                    return null;
-                }
+                final String topic = content.getString("topic", null);
+
+                TextChannelImpl textChannel = (TextChannelImpl) channel;
 
                 //If any properties changed, update the values and fire the proper events.
                 final long oldParentId = textChannel.getParentCategoryIdLong();
@@ -170,32 +167,75 @@ public class ChannelUpdateHandler extends SocketHandler
                                     textChannel, oldSlowmode, slowmode));
                 }
 
-                //TODO-v5: Address this event as TextChannels no longer have isNews on them.
-                //TODO-v5: This probably needs to be some form of ChannelUpdateTypeEvent
-//                if (news != textChannel.isNews())
-//                {
-//                    textChannel.setNews(news);
-//                    getJDA().handleEvent(
-//                        new TextChannelUpdateNewsEvent(
-//                            getJDA(), responseNumber,
-//                            textChannel));
-//                }
-
                 applyPermissions(textChannel, permOverwrites);
+                break;  //Finish the TextChannelUpdate case
+            }
+            case NEWS:
+            {
+                final String topic = content.getString("topic", null);
+
+                NewsChannelImpl newsChannel = (NewsChannelImpl) channel;
+
+                //If any properties changed, update the values and fire the proper events.
+                final long oldParentId = newsChannel.getParentCategoryIdLong();
+                final String oldName = newsChannel.getName();
+                final String oldTopic = newsChannel.getTopic();
+                final int oldPosition = newsChannel.getPositionRaw();
+                final boolean oldNsfw = newsChannel.isNSFW();
+                if (!Objects.equals(oldName, name))
+                {
+                    newsChannel.setName(name);
+                    getJDA().handleEvent(
+                            new ChannelUpdateNameEvent(
+                                    getJDA(), responseNumber,
+                                    newsChannel, oldName, name));
+                }
+                if (oldParentId != parentId)
+                {
+                    final Category oldParent = newsChannel.getParentCategory();
+                    newsChannel.setParent(parentId);
+                    getJDA().handleEvent(
+                            new ChannelUpdateParentEvent(
+                                    getJDA(), responseNumber,
+                                    newsChannel, oldParent, newsChannel.getParentCategory()));
+                }
+                if (!Objects.equals(oldTopic, topic))
+                {
+                    newsChannel.setTopic(topic);
+                    getJDA().handleEvent(
+                            new ChannelUpdateTopicEvent(
+                                    getJDA(), responseNumber,
+                                    newsChannel, oldTopic, topic));
+                }
+                if (oldPosition != position)
+                {
+                    newsChannel.setPosition(position);
+                    getJDA().handleEvent(
+                            new ChannelUpdatePositionEvent(
+                                    getJDA(), responseNumber,
+                                    newsChannel, oldPosition, position));
+                }
+
+                if (oldNsfw != nsfw)
+                {
+                    newsChannel.setNSFW(nsfw);
+                    getJDA().handleEvent(
+                            new ChannelUpdateNSFWEvent(
+                                    getJDA(), responseNumber,
+                                    newsChannel, oldNsfw, nsfw));
+                }
+
+                applyPermissions(newsChannel, permOverwrites);
                 break;  //Finish the TextChannelUpdate case
             }
             case VOICE:
             {
-                VoiceChannelImpl voiceChannel = (VoiceChannelImpl) getJDA().getVoiceChannelsView().get(channelId);
-                int userLimit = content.getInt("user_limit");
-                int bitrate = content.getInt("bitrate");
+                final int userLimit = content.getInt("user_limit");
+                final int bitrate = content.getInt("bitrate");
                 final String regionRaw = content.getString("rtc_region", null);
-                if (voiceChannel == null)
-                {
-                    getJDA().getEventCache().cache(EventCache.Type.CHANNEL, channelId, responseNumber, allContent, this::handle);
-                    EventCache.LOG.debug("CHANNEL_UPDATE attempted to update a VoiceChannel that does not exist. JSON: {}", content);
-                    return null;
-                }
+
+                VoiceChannelImpl voiceChannel = (VoiceChannelImpl) channel;
+
                 //If any properties changed, update the values and fire the proper events.
                 final long oldParentId = voiceChannel.getParentCategoryIdLong();
                 final String oldName = voiceChannel.getName();
@@ -259,16 +299,11 @@ public class ChannelUpdateHandler extends SocketHandler
             }
             case STAGE:
             {
-                StageChannelImpl stageChannel = (StageChannelImpl) getJDA().getStageChannelView().get(channelId);
-                int bitrate = content.getInt("bitrate");
+                final int bitrate = content.getInt("bitrate");
                 final String regionRaw = content.getString("rtc_region", null);
-                if (stageChannel == null)
-                {
-                    getJDA().getEventCache().cache(EventCache.Type.CHANNEL, channelId, responseNumber, allContent, this::handle);
-                    EventCache.LOG.debug("CHANNEL_UPDATE attempted to update a StageChannel that does not exist. JSON: {}", content);
-                    return null;
-                }
-                //TODO-v5: Restore these events for StageChannels once we decide how we're going to handle XChannelUpdateYEvent
+
+                StageChannelImpl stageChannel = (StageChannelImpl) channel;
+
                 //If any properties changed, update the values and fire the proper events.
                 final long oldParentId = stageChannel.getParentCategoryIdLong();
                 final String oldName = stageChannel.getName();
@@ -323,13 +358,8 @@ public class ChannelUpdateHandler extends SocketHandler
             }
             case CATEGORY:
             {
-                CategoryImpl category = (CategoryImpl) getJDA().getCategoryById(channelId);
-                if (category == null)
-                {
-                    getJDA().getEventCache().cache(EventCache.Type.CHANNEL, channelId, responseNumber, allContent, this::handle);
-                    EventCache.LOG.debug("CHANNEL_UPDATE attempted to update a Category that does not exist. JSON: {}", content);
-                    return null;
-                }
+                CategoryImpl category = (CategoryImpl) channel;
+
                 final String oldName = category.getName();
                 final int oldPosition = category.getPositionRaw();
 
@@ -359,6 +389,58 @@ public class ChannelUpdateHandler extends SocketHandler
         return null;
     }
 
+    private GuildChannel handleChannelTypeChange(GuildChannel channel, DataObject content, ChannelType newChannelType)
+    {
+        if (channel.getType() == newChannelType) {
+            return channel;
+        }
+
+        EntityBuilder builder = getJDA().getEntityBuilder();
+        GuildImpl guild = (GuildImpl) channel.getGuild();
+
+        if (newChannelType == ChannelType.TEXT)
+        {
+            //This assumes that if we're moving to a TextChannel that we're transitioning from a NewsChannel
+            NewsChannel newsChannel = (NewsChannel) channel;
+            getJDA().getNewsChannelView().remove(newsChannel.getIdLong());
+            guild.getNewsChannelView().remove(newsChannel.getIdLong());
+
+            TextChannelImpl textChannel = (TextChannelImpl) builder.createTextChannel(guild, content, guild.getIdLong());
+
+            //CHANNEL_UPDATE doesn't track last_message_id, so make sure to copy it over.
+            textChannel.setLastMessageId(newsChannel.getLatestMessageIdLong());
+
+            getJDA().handleEvent(
+                new ChannelUpdateTypeEvent(
+                    getJDA(), responseNumber,
+                    textChannel, ChannelType.NEWS, ChannelType.TEXT));
+
+            return textChannel;
+        }
+
+        if (newChannelType == ChannelType.NEWS)
+        {
+            //This assumes that if we're moving to a NewsChannel that we're transitioning from a TextChannel
+            TextChannel textChannel = (TextChannel) channel;
+            getJDA().getTextChannelsView().remove(textChannel.getIdLong());
+            guild.getTextChannelsView().remove(textChannel.getIdLong());
+
+            NewsChannelImpl newsChannel = (NewsChannelImpl) builder.createNewsChannel(guild, content, guild.getIdLong());
+
+            //CHANNEL_UPDATE doesn't track last_message_id, so make sure to copy it over.
+            newsChannel.setLastMessageId(textChannel.getLatestMessageIdLong());
+
+            getJDA().handleEvent(
+                new ChannelUpdateTypeEvent(
+                    getJDA(), responseNumber,
+                    newsChannel, ChannelType.TEXT, ChannelType.NEWS));
+
+            return newsChannel;
+        }
+
+        return channel;
+    }
+
     @SuppressWarnings("deprecation")
     private void applyPermissions(AbstractChannelImpl<?,?> channel, DataArray permOverwrites)
     {
@@ -382,39 +464,6 @@ public class ChannelUpdateHandler extends SocketHandler
                     channel, override));
             return true;
         });
-
-        if (changed.isEmpty())
-            return;
-        switch (channel.getType())
-        {
-        case CATEGORY:
-            api.handleEvent(
-                new CategoryUpdatePermissionsEvent(
-                    api, responseNumber,
-                    (Category) channel, changed));
-            break;
-        case STORE:
-            api.handleEvent(
-                new StoreChannelUpdatePermissionsEvent(
-                    api, responseNumber,
-                    (StoreChannel) channel, changed));
-            break;
-        case VOICE:
-            api.handleEvent(
-                new VoiceChannelUpdatePermissionsEvent(
-                    api, responseNumber,
-                    (VoiceChannel) channel, changed));
-            break;
-        case STAGE:
-            //TODO-v5: We are killing all of these events in v5, so don't add new event here
-            break;
-        case TEXT:
-            api.handleEvent(
-                new TextChannelUpdatePermissionsEvent(
-                    api, responseNumber,
-                    (TextChannel) channel, changed));
-            break;
-        }
     }
 
     private void addPermissionHolder(List<IPermissionHolder> changed, Guild guild, long id)

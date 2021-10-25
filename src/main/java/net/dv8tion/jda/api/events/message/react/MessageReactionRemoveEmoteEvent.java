@@ -38,6 +38,7 @@ import javax.annotation.Nonnull;
  *
  * @since  4.2.0
  */
+//TODO-v5: Consider renaming to 'MessageReactionRemoveEmojiEvent' to match actual event name
 public class MessageReactionRemoveEmoteEvent extends GenericMessageEvent
 {
     private final MessageReaction reaction;

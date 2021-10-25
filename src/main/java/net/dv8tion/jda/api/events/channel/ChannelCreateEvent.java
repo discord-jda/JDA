@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.entities.Channel;
 
 import javax.annotation.Nonnull;
 
+//TODO-v5: Docs
 public class ChannelCreateEvent extends GenericChannelEvent
 {
     public ChannelCreateEvent(@Nonnull JDA api, long responseNumber, Channel channel)

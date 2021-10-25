@@ -43,30 +43,31 @@ import java.util.Collection;
  *
  * @see GuildChannel#getManager()
  */
+//TODO-v5: Revisit all usages of IllegalStateException in the setX methods in this class to see if they should be UnsupportedOperationException like in ChannelAction
 public interface ChannelManager<T extends GuildChannel> extends Manager<ChannelManager<T>>
 {
     /** Used to reset the name field */
-    long NAME       = 0x1;
+    long NAME       = 1;
     /** Used to reset the parent field */
-    long PARENT     = 0x2;
+    long PARENT     = 1 << 1;
     /** Used to reset the topic field */
-    long TOPIC      = 0x4;
+    long TOPIC      = 1 << 2;
     /** Used to reset the position field */
-    long POSITION   = 0x8;
+    long POSITION   = 1 << 3;
     /** Used to reset the nsfw field */
-    long NSFW       = 0x10;
+    long NSFW       = 1 << 4;
     /** Used to reset the userlimit field */
-    long USERLIMIT  = 0x20;
+    long USERLIMIT  = 1 << 5;
     /** Used to reset the bitrate field */
-    long BITRATE    = 0x40;
+    long BITRATE    = 1 << 6;
     /** Used to reset the permission field */
-    long PERMISSION = 0x80;
+    long PERMISSION = 1 << 7;
     /** Used to reset the rate-limit per user field */
-    long SLOWMODE   = 0x100;
+    long SLOWMODE   = 1 << 8;
     /** Used to reset the channel type field */
-    long NEWS       = 0x200;
+    long TYPE       = 1 << 9;
     /** Used to reset the region field */
-    long REGION     = 0x400;
+    long REGION     = 1 << 10;
 
     /**
      * Resets the fields specified by the provided bit-flag pattern.
@@ -84,7 +85,7 @@ public interface ChannelManager<T extends GuildChannel> extends Manager<ChannelM
      *     <li>{@link #USERLIMIT}</li>
      *     <li>{@link #BITRATE}</li>
      *     <li>{@link #PERMISSION}</li>
-     *     <li>{@link #NEWS}</li>
+     *     <li>{@link #TYPE}</li>
      *     <li>{@link #REGION}</li>
      * </ul>
      *
@@ -111,7 +112,7 @@ public interface ChannelManager<T extends GuildChannel> extends Manager<ChannelM
      *     <li>{@link #USERLIMIT}</li>
      *     <li>{@link #BITRATE}</li>
      *     <li>{@link #PERMISSION}</li>
-     *     <li>{@link #NEWS}</li>
+     *     <li>{@link #TYPE}</li>
      *     <li>{@link #REGION}</li>
      * </ul>
      *
@@ -132,17 +133,6 @@ public interface ChannelManager<T extends GuildChannel> extends Manager<ChannelM
      */
     @Nonnull
     T getChannel();
-
-    /**
-     * The {@link net.dv8tion.jda.api.entities.ChannelType ChannelType}
-     *
-     * @return The ChannelType
-     */
-    @Nonnull
-    default ChannelType getType()
-    {
-        return getChannel().getType();
-    }
 
     /**
      * The {@link net.dv8tion.jda.api.entities.Guild Guild} this Manager's
@@ -519,7 +509,7 @@ public interface ChannelManager<T extends GuildChannel> extends Manager<ChannelM
     ChannelManager<T> setTopic(@Nullable String topic);
 
     /**
-     * Sets the <b><u>nsfw flag</u></b> of the selected {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}.
+     * Sets the <b><u>nsfw flag</u></b> of the selected {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} or {@link NewsChannel}.
      *
      * @param  nsfw
      *         The new nsfw flag for the selected {@link net.dv8tion.jda.api.entities.TextChannel TextChannel},
@@ -639,26 +629,45 @@ public interface ChannelManager<T extends GuildChannel> extends Manager<ChannelM
     @CheckReturnValue
     ChannelManager<T> setRegion(Region region);
 
-    //TODO-v5: Determine how we are going to convert from TextChannel -> NextChannel
-//    /**
-//     * Sets the <b><u>news flag</u></b> of the selected {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}.
-//     * Announcement-/News-Channels can be used to crosspost messages to other guilds.
-//     *
-//     * @param  news
-//     *         The new news flag for the selected {@link net.dv8tion.jda.api.entities.TextChannel TextChannel},
-//     *
-//     * @throws IllegalStateException
-//     *         If the selected {@link StandardGuildChannel GuildChannel}'s type is not {@link net.dv8tion.jda.api.entities.ChannelType#TEXT TEXT}
-//     * @throws IllegalStateException
-//     *         If {@code news} is {@code true} and the guild doesn't have the NEWS feature
-//     *
-//     * @return ChannelManager for chaining convenience
-//     *
-//     * @see    net.dv8tion.jda.api.entities.Guild#getFeatures()
-//     *
-//     * @since  4.2.1
-//     */
-//    @Nonnull
-//    @CheckReturnValue
-//    ChannelManager<T> setNews(boolean news);
+    /**
+     * Converts the selected channel to a different {@link ChannelType}.
+     *
+     * <br /><br />
+     * This can only be done in the follow situations:
+     * <table>
+     *     <thead>
+     *         <tr>
+     *             <th>Current Channel Type</th>
+     *             <th></th>
+     *             <th>New Channel Type</th>
+     *         </tr>
+     *     </thead>
+     *     <tbody>
+     *         <tr>
+     *             <td>{@link ChannelType#NEWS}</td>
+     *             <td> -> </td>
+     *             <td>{@link ChannelType#TEXT}</td>
+     *         </tr>
+     *         <tr>
+     *             <td>{@link ChannelType#TEXT}</td>
+     *             <td> -> </td>
+     *             <td>{@link ChannelType#NEWS}</td>
+     *         </tr>
+     *     </tbody>
+     * </table>
+     *
+     * @throws IllegalArgumentException
+     *         If {@code channelType} is not {@link ChannelType#TEXT} or {@link ChannelType#NEWS}
+     * @throws UnsupportedOperationException
+     *         If this ChannelAction is not for a {@link TextChannel} or {@link NewsChannel}
+     * @throws IllegalStateException
+     *         If {@code channelType} is {@link ChannelType#NEWS} and the guild doesn't have the {@code NEWS} feature in {@link Guild#getFeatures()}.
+     *
+     * @return ChannelManager for chaining convenience
+     *
+     * @see    net.dv8tion.jda.api.entities.Guild#getFeatures()
+     */
+    @Nonnull
+    @CheckReturnValue
+    ChannelManager<T> setType(@Nonnull ChannelType type);
 }

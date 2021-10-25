@@ -702,6 +702,20 @@ public interface Message extends ISnowflake, Formattable
     MessageChannel getChannel();
 
     /**
+     * Returns the {@link net.dv8tion.jda.api.entities.GuildMessageChannel GuildMessageChannel} that this message was sent in
+     *  if it was sent in a Guild.
+     *
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is a system message
+     * @throws java.lang.IllegalStateException
+     *         If this was not sent in a {@link net.dv8tion.jda.api.entities.Guild}.
+     *
+     * @return The MessageChannel of this Message
+     */
+    @Nonnull
+    GuildMessageChannel getGuildChannel();
+
+    /**
      * Returns the {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel} that this message was sent in.
      * <br><b>This is only valid if the Message was actually sent in a PrivateChannel.</b>
      * <br>You can check the type of channel this message was sent from using {@link #isFromType(ChannelType)} or {@link #getChannelType()}.
@@ -744,6 +758,28 @@ public interface Message extends ISnowflake, Formattable
      */
     @Nonnull
     TextChannel getTextChannel();
+
+    /**
+     * Returns the {@link net.dv8tion.jda.api.entities.NewsChannel NewsChannel} that this message was sent in.
+     * <br><b>This is only valid if the Message was actually sent in a NewsChannel.</b>
+     * <br>You can check the type of channel this message was sent from using {@link #isFromType(ChannelType)} or {@link #getChannelType()}.
+     *
+     * <p>Use {@link #getChannel()} for an ambiguous {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel}
+     * if you do not need functionality specific to {@link net.dv8tion.jda.api.entities.NewsChannel NewsChannel}.
+     *
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is a system message
+     * @throws java.lang.IllegalStateException
+     *         If this was not sent in a {@link net.dv8tion.jda.api.entities.NewsChannel}.
+     *
+     * @return The NewsChannel this message was sent in
+     *
+     * @see    #isFromGuild()
+     * @see    #isFromType(ChannelType)
+     * @see    #getChannelType()
+     */
+    @Nonnull
+    NewsChannel getNewsChannel();
 
     /**
      * The {@link net.dv8tion.jda.api.entities.Category Category} this

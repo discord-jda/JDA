@@ -39,6 +39,7 @@ import javax.annotation.Nullable;
  * </ul>
 
  */
+//TODO-v5: Consider renaming this to MessageCreateEvent to match standard event naming (and to match Discord naming!)
 public class MessageReceivedEvent extends GenericMessageEvent
 {
     private final Message message;

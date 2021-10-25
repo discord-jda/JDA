@@ -51,6 +51,7 @@ public class ChannelDeleteHandler extends SocketHandler
         {
             case STORE:
             {
+                //TODO-v5-unified-channel-cache: We can put all the removals at the top once we have a unified channel cache
                 StoreChannel channel = getJDA().getStoreChannelsView().remove(channelId);
                 if (channel == null || guild == null)
                 {
@@ -79,6 +80,22 @@ public class ChannelDeleteHandler extends SocketHandler
                     new ChannelDeleteEvent(
                         getJDA(), responseNumber,
                         channel));
+                break;
+            }
+            case NEWS:
+            {
+                NewsChannel channel = getJDA().getNewsChannelView().remove(channelId);
+                if (channel == null || guild == null)
+                {
+                    WebSocketClient.LOG.debug("CHANNEL_DELETE attempted to delete a news channel that is not yet cached. JSON: {}", content);
+                    return null;
+                }
+
+                guild.getNewsChannelView().remove(channel.getIdLong());
+                getJDA().handleEvent(
+                        new ChannelDeleteEvent(
+                                getJDA(), responseNumber,
+                                channel));
                 break;
             }
             case VOICE:

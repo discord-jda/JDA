@@ -37,6 +37,7 @@ import net.dv8tion.jda.api.entities.templates.TemplateGuild;
 import net.dv8tion.jda.api.entities.templates.TemplateRole;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleAddEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleRemoveEvent;
+import net.dv8tion.jda.api.events.guild.member.update.GuildMemberUpdateAvatarEvent;
 import net.dv8tion.jda.api.events.guild.member.update.GuildMemberUpdateBoostTimeEvent;
 import net.dv8tion.jda.api.events.guild.member.update.GuildMemberUpdateNicknameEvent;
 import net.dv8tion.jda.api.events.guild.member.update.GuildMemberUpdatePendingEvent;
@@ -313,6 +314,9 @@ public class EntityBuilder
         case TEXT:
             createTextChannel(guildObj, channelData, guildObj.getIdLong());
             break;
+        case NEWS:
+            createNewsChannel(guildObj, channelData, guildObj.getIdLong());
+            break;
         case STAGE:
             createStageChannel(guildObj, channelData, guildObj.getIdLong());
             break;
@@ -495,6 +499,8 @@ public class EntityBuilder
             // Create a brand new member
             member = new MemberImpl(guild, user);
             member.setNickname(memberJson.getString("nick", null));
+            member.setAvatarId(memberJson.getString("avatar", null));
+
             long epoch = 0;
             if (!memberJson.isNull("premium_since"))
             {
@@ -593,6 +599,19 @@ public class EntityBuilder
                     new GuildMemberUpdateNicknameEvent(
                         getJDA(), responseNumber,
                         member, oldNick));
+            }
+        }
+        if (content.hasKey("avatar"))
+        {
+            String oldAvatarId = member.getAvatarId();
+            String newAvatarId = content.getString("avatar", null);
+            if (!Objects.equals(oldAvatarId, newAvatarId))
+            {
+                member.setAvatarId(newAvatarId);
+                getJDA().handleEvent(
+                        new GuildMemberUpdateAvatarEvent(
+                                getJDA(), responseNumber,
+                                member, oldAvatarId));
             }
         }
         if (content.hasKey("premium_since"))
@@ -970,8 +989,49 @@ public class EntityBuilder
             .setTopic(json.getString("topic", null))
             .setPosition(json.getInt("position"))
             .setNSFW(json.getBoolean("nsfw"))
-            .setNews(json.getInt("type") == 5)
             .setSlowmode(json.getInt("rate_limit_per_user", 0));
+
+        createOverridesPass(channel, json.getArray("permission_overwrites"));
+        if (playbackCache)
+            getJDA().getEventCache().playbackCache(EventCache.Type.CHANNEL, id);
+        return channel;
+    }
+
+    public NewsChannel createNewsChannel(DataObject json, long guildId)
+    {
+        return createNewsChannel(null, json, guildId);
+
+    }
+
+    public NewsChannel createNewsChannel(GuildImpl guildObj, DataObject json, long guildId)
+    {
+        boolean playbackCache = false;
+        final long id = json.getLong("id");
+        NewsChannelImpl channel = (NewsChannelImpl) getJDA().getNewsChannelView().get(id);
+        if (channel == null)
+        {
+            if (guildObj == null)
+                guildObj = (GuildImpl) getJDA().getGuildsView().get(guildId);
+            SnowflakeCacheViewImpl<NewsChannel>
+                    guildNewsView = guildObj.getNewsChannelView(),
+                    newsView = getJDA().getNewsChannelView();
+            try (
+                    UnlockHook glock = guildNewsView.writeLock();
+                    UnlockHook jlock = newsView.writeLock())
+            {
+                channel = new NewsChannelImpl(id, guildObj);
+                guildNewsView.getMap().put(id, channel);
+                playbackCache = newsView.getMap().put(id, channel) == null;
+            }
+        }
+
+        channel
+                .setParent(json.getLong("parent_id", 0))
+                .setLastMessageId(json.getLong("last_message_id", 0))
+                .setName(json.getString("name"))
+                .setTopic(json.getString("topic", null))
+                .setPosition(json.getInt("position"))
+                .setNSFW(json.getBoolean("nsfw"));
 
         createOverridesPass(channel, json.getArray("permission_overwrites"));
         if (playbackCache)
@@ -1183,7 +1243,10 @@ public class EntityBuilder
     {
         final long channelId = jsonObject.getLong("channel_id");
 
+        //TODO-v5-unified-channel-cache
         MessageChannel chan = getJDA().getTextChannelById(channelId);
+        if (chan == null)
+            chan = getJDA().getNewsChannelById(channelId);
         if (chan == null)
             chan = getJDA().getPrivateChannelById(channelId);
         if (chan == null && !jsonObject.isNull("guild_id"))
@@ -1196,7 +1259,10 @@ public class EntityBuilder
         long channelId = jsonObject.getUnsignedLong("channel_id");
         if (channel != null && channelId != channel.getIdLong())
         {
+            //TODO-v5-unified-channel-cache
             channel = api.getTextChannelById(channelId);
+            if (channel == null)
+                channel = api.getNewsChannelById(channelId);
             if (channel == null)
                 channel = api.getPrivateChannelById(channelId);
         }
@@ -1251,30 +1317,25 @@ public class EntityBuilder
             activity = createMessageActivity(jsonObject);
 
         User user;
-        switch (channel.getType())
-        {
-            case PRIVATE:
-                if (authorId == getJDA().getSelfUser().getIdLong())
-                    user = getJDA().getSelfUser();
+        if (channel.getType().isGuild()) {
+            Guild guild = ((GuildChannel) channel).getGuild();
+            if (member == null)
+                member = (MemberImpl) guild.getMemberById(authorId);
+            user = member != null ? member.getUser() : null;
+            if (user == null)
+            {
+                if (fromWebhook || !modifyCache)
+                    user = createUser(author);
                 else
-                    user = ((PrivateChannel) channel).getUser();
-                break;
-            case GROUP:
-                throw new IllegalStateException("Cannot build a message for a group channel, how did this even get here?");
-            case TEXT:
-                Guild guild = ((TextChannel) channel).getGuild();
-                if (member == null)
-                    member = (MemberImpl) guild.getMemberById(authorId);
-                user = member != null ? member.getUser() : null;
-                if (user == null)
-                {
-                    if (fromWebhook || !modifyCache)
-                        user = createUser(author);
-                    else
-                        throw new IllegalArgumentException(MISSING_USER); // Specifically for MESSAGE_CREATE
-                }
-                break;
-            default: throw new IllegalArgumentException("Invalid Channel for creating a Message [" + channel.getType() + ']');
+                    throw new IllegalArgumentException(MISSING_USER); // Specifically for MESSAGE_CREATE
+            }
+        }
+        else {
+            //Assume private channel
+            if (authorId == getJDA().getSelfUser().getIdLong())
+                user = getJDA().getSelfUser();
+            else
+                user = ((PrivateChannel) channel).getUser();
         }
 
         if (modifyCache && !fromWebhook) // update the user information on message receive
@@ -1666,9 +1727,12 @@ public class EntityBuilder
         final String token = object.getString("token", null);
         final WebhookType type = WebhookType.fromKey(object.getInt("type", -1));
 
-        TextChannel channel = getJDA().getTextChannelById(channelId);
+        //TODO-v5-unified-channel-cache
+        BaseGuildMessageChannel channel = getJDA().getTextChannelById(channelId);
+        if (channel == null)
+            channel = getJDA().getNewsChannelById(channelId);
         if (channel == null && !allowMissingChannel)
-            throw new NullPointerException(String.format("Tried to create Webhook for an un-cached TextChannel! WebhookId: %s ChannelId: %s GuildId: %s",
+            throw new NullPointerException(String.format("Tried to create Webhook for an un-cached Guild MessageChannel! WebhookId: %s ChannelId: %s GuildId: %s",
                     id, channelId, guildId));
 
         Object name = !object.isNull("name") ? object.get("name") : null;
@@ -1724,11 +1788,13 @@ public class EntityBuilder
 
         final DataObject channelObject = object.getObject("channel");
         final ChannelType channelType = ChannelType.fromId(channelObject.getInt("type"));
+        final Invite.TargetType targetType = Invite.TargetType.fromId(object.getInt("target_type", 0));
 
         final Invite.InviteType type;
         final Invite.Guild guild;
         final Invite.Channel channel;
         final Invite.Group group;
+        final Invite.InviteTarget target;
 
         if (channelType == ChannelType.GROUP)
         {
@@ -1786,6 +1852,28 @@ public class EntityBuilder
             group = null;
         }
 
+        switch (targetType)
+        {
+        case EMBEDDED_APPLICATION:
+            final DataObject applicationObject = object.getObject("target_application");
+
+            Invite.EmbeddedApplication application = new InviteImpl.EmbeddedApplicationImpl(
+                    applicationObject.getString("icon", null), applicationObject.getString("name"), applicationObject.getString("description"),
+                    applicationObject.getString("summary"), applicationObject.getLong("id"), applicationObject.getInt("max_participants", -1)
+            );
+            target = new InviteImpl.InviteTargetImpl(targetType, application, null);
+            break;
+        case STREAM:
+            final DataObject targetUserObject = object.getObject("target_user");
+            target = new InviteImpl.InviteTargetImpl(targetType, null, createUser(targetUserObject));
+            break;
+        case NONE:
+            target = null;
+            break;
+        default:
+            target = new InviteImpl.InviteTargetImpl(targetType, null, null);
+        }
+
         final int maxAge;
         final int maxUses;
         final boolean temporary;
@@ -1813,8 +1901,8 @@ public class EntityBuilder
         }
 
         return new InviteImpl(getJDA(), code, expanded, inviter,
-                              maxAge, maxUses, temporary,
-                              timeCreated, uses, channel, guild, group, type);
+                              maxAge, maxUses, temporary, timeCreated,
+                              uses, channel, guild, group, target, type);
     }
 
     public Template createTemplate(DataObject object)

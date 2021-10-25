@@ -18,6 +18,10 @@ package net.dv8tion.jda.api.requests.restaction;
 
 import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.Invite;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.utils.MiscUtil;
+import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -118,4 +122,119 @@ public interface InviteAction extends AuditableRestAction<Invite>
     @Nonnull
     @CheckReturnValue
     InviteAction setUnique(@Nullable final Boolean unique);
+
+    /**
+     * Sets the id of the targeted application.
+     * <br>The invite has to point to a voice channel.
+     * The invite will have the {@link Invite.TargetType#EMBEDDED_APPLICATION} target.
+     *
+     * @param applicationId
+     *        The id of the embedded application to target or {@code 0} to remove
+     *
+     * @return The current InviteAction for chaining.
+     */
+    @Nonnull
+    @CheckReturnValue
+    InviteAction setTargetApplication(final long applicationId);
+
+    /**
+     * Sets the id of the targeted application.
+     * <br>The invite has to point to a voice channel.
+     * The invite will have the {@link Invite.TargetType#EMBEDDED_APPLICATION} target.
+     *
+     * @param applicationId
+     *        The id of the embedded application to target
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided ID is null
+     * @throws java.lang.NumberFormatException
+     *         If the provided ID is not a snowflake
+     *
+     * @return The current InviteAction for chaining.
+     */
+    @Nonnull
+    @CheckReturnValue
+    default InviteAction setTargetApplication(@Nonnull final String applicationId)
+    {
+        return setTargetApplication(MiscUtil.parseSnowflake(applicationId));
+    }
+
+    /**
+     * Sets the user whose stream to target for this invite.
+     * <br>The user must be streaming in the same channel.
+     * The invite will have the {@link Invite.TargetType#STREAM} target.
+     *
+     * @param userId
+     *        The id of the user whose stream to target or {@code 0} to remove.
+     *
+     * @return The current InviteAction for chaining.
+     */
+    @Nonnull
+    @CheckReturnValue
+    InviteAction setTargetStream(final long userId);
+
+    /**
+     * Sets the user whose stream to display for this invite.
+     * <br>The user must be streaming in the same channel.
+     * The invite will have the {@link Invite.TargetType#STREAM} target.
+     *
+     * @param userId
+     *        The id of the user whose stream to target.
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided ID is null
+     * @throws java.lang.NumberFormatException
+     *         If the provided ID is not a snowflake
+     *
+     * @return The current InviteAction for chaining.
+     */
+    @Nonnull
+    @CheckReturnValue
+    default InviteAction setTargetStream(@Nonnull final String userId)
+    {
+        return setTargetStream(MiscUtil.parseSnowflake(userId));
+    }
+
+    /**
+     * Sets the user whose stream to display for this invite.
+     * <br>The user must be streaming in the same channel.
+     * The invite will have the {@link Invite.TargetType#STREAM} target.
+     *
+     * @param user
+     *        The user whose stream to target.
+     *
+     * @throws IllegalArgumentException
+     *         If the provided user is {@code null}
+     *
+     * @return The current InviteAction for chaining.
+     */
+    @Nonnull
+    @CheckReturnValue
+    default InviteAction setTargetStream(@Nonnull final User user)
+    {
+        Checks.notNull(user, "User");
+        return setTargetStream(user.getIdLong());
+    }
+
+    /**
+     * Sets the user whose stream to display for this invite.
+     * <br>The user must be streaming in the same channel.
+     * The invite will have the {@link Invite.TargetType#STREAM} target.
+     *
+     * @param member
+     *        The member whose stream to target.
+     *
+     * @throws IllegalArgumentException
+     *         If the provided member is {@code null}
+     *
+     * @return The current InviteAction for chaining.
+     */
+    @Nonnull
+    @CheckReturnValue
+    default InviteAction setTargetStream(@Nonnull final Member member)
+    {
+        Checks.notNull(member, "Member");
+        return setTargetStream(member.getIdLong());
+    }
+
 }

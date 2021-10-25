@@ -44,6 +44,10 @@ public enum ChannelType
      */
     CATEGORY(4, 2, true),
     /**
+     * A {@link net.dv8tion.jda.api.entities.NewsChannel NewsChannel}, Guild-Only.
+     */
+    NEWS(5, 0, true),
+    /**
      * A {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannel}, Guild-Only.
      */
     STORE(6, 0, true),
@@ -150,8 +154,6 @@ public enum ChannelType
     @Nonnull
     public static ChannelType fromId(int id)
     {
-        if (id == 5) // NEWS = TEXT
-            return TEXT;
         for (ChannelType type : values())
         {
             if (type.id == id)

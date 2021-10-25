@@ -17,6 +17,7 @@ package net.dv8tion.jda.api;
 
 import com.neovisionaries.ws.client.WebSocketFactory;
 import net.dv8tion.jda.annotations.DeprecatedSince;
+import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.audio.factory.IAudioSendFactory;
 import net.dv8tion.jda.api.entities.Activity;
@@ -567,6 +568,7 @@ public class JDABuilder
      */
     @Nonnull
     @Deprecated
+    @ForRemoval(deadline = "5.0.0")
     @ReplaceWith("enableCache(flags) and disableCache(flags)")
     @DeprecatedSince("4.2.0")
     public JDABuilder setEnabledCacheFlags(@Nullable EnumSet<CacheFlag> flags)
@@ -640,6 +642,7 @@ public class JDABuilder
      */
     @Nonnull
     @Deprecated
+    @ForRemoval(deadline = "5.0.0")
     @ReplaceWith("enableCache(flags) and disableCache(flags)")
     @DeprecatedSince("4.2.0")
     public JDABuilder setDisabledCacheFlags(@Nullable EnumSet<CacheFlag> flags)
@@ -1506,6 +1509,7 @@ public class JDABuilder
      */
     @Nonnull
     @Deprecated
+    @ForRemoval(deadline = "5.0.0")
     @ReplaceWith("setDisabledIntents(...).setMemberCachePolicy(...)")
     @DeprecatedSince("4.2.0")
     public JDABuilder setGuildSubscriptionsEnabled(boolean enabled)
