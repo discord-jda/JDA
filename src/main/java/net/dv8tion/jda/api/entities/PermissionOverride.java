@@ -29,14 +29,14 @@ import java.util.EnumSet;
  * Represents the specific {@link net.dv8tion.jda.api.entities.Member Member} or {@link net.dv8tion.jda.api.entities.Role Role}
  * permission overrides that can be set for channels.
  *
- * @see GuildChannel#upsertPermissionOverride(IPermissionHolder)
- * @see GuildChannel#createPermissionOverride(IPermissionHolder)
- * @see GuildChannel#putPermissionOverride(IPermissionHolder)
+ * @see IPermissionContainer#upsertPermissionOverride(IPermissionHolder)
+ * @see IPermissionContainer#createPermissionOverride(IPermissionHolder)
+ * @see IPermissionContainer#putPermissionOverride(IPermissionHolder)
  *
- * @see GuildChannel#getPermissionOverrides()
- * @see GuildChannel#getPermissionOverride(IPermissionHolder)
- * @see GuildChannel#getMemberPermissionOverrides()
- * @see GuildChannel#getRolePermissionOverrides()
+ * @see IPermissionContainer#getPermissionOverrides()
+ * @see IPermissionContainer#getPermissionOverride(IPermissionHolder)
+ * @see IPermissionContainer#getMemberPermissionOverrides()
+ * @see IPermissionContainer#getRolePermissionOverrides()
  */
 public interface PermissionOverride extends ISnowflake
 {
@@ -138,15 +138,15 @@ public interface PermissionOverride extends ISnowflake
     Role getRole();
 
     /**
-     * The {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel} that this PermissionOverride affects.
+     * The {@link IPermissionContainer GuildChannel} that this PermissionOverride affects.
      *
-     * @return Never-null related {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel} that this override is part of.
+     * @return Never-null related {@link IPermissionContainer GuildChannel} that this override is part of.
      */
     @Nonnull
-    GuildChannel getChannel();
+    IPermissionContainer getChannel();
 
     /**
-     * The {@link net.dv8tion.jda.api.entities.Guild Guild} that the {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel}
+     * The {@link net.dv8tion.jda.api.entities.Guild Guild} that the {@link GuildChannel GuildChannel}
      * returned from {@link net.dv8tion.jda.api.entities.PermissionOverride#getChannel()} is a part of.
      * By inference, this is the {@link net.dv8tion.jda.api.entities.Guild Guild} that this PermissionOverride is part of.
      *

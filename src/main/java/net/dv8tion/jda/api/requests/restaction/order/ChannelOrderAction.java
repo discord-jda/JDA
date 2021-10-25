@@ -25,7 +25,7 @@ import java.util.EnumSet;
 
 /**
  * Implementation of {@link OrderAction OrderAction}
- * to modify the order of {@link net.dv8tion.jda.api.entities.GuildChannel Channels} for a {@link net.dv8tion.jda.api.entities.Guild Guild}.
+ * to modify the order of {@link GuildChannel Channels} for a {@link net.dv8tion.jda.api.entities.Guild Guild}.
  * <br>To apply the changes you must finish the {@link net.dv8tion.jda.api.requests.RestAction RestAction}.
  *
  * <p>Before you can use any of the {@code move} methods

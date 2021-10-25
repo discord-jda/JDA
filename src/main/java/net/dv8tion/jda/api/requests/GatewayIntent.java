@@ -27,10 +27,6 @@ import net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent;
 import net.dv8tion.jda.api.events.guild.voice.GenericGuildVoiceEvent;
 import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 import net.dv8tion.jda.api.events.message.MessageBulkDeleteEvent;
-import net.dv8tion.jda.api.events.message.guild.GenericGuildMessageEvent;
-import net.dv8tion.jda.api.events.message.guild.react.GenericGuildMessageReactionEvent;
-import net.dv8tion.jda.api.events.message.priv.GenericPrivateMessageEvent;
-import net.dv8tion.jda.api.events.message.priv.react.GenericPrivateMessageReactionEvent;
 import net.dv8tion.jda.api.events.message.react.GenericMessageReactionEvent;
 import net.dv8tion.jda.api.events.user.UserTypingEvent;
 import net.dv8tion.jda.api.events.user.update.GenericUserPresenceEvent;
@@ -362,15 +358,8 @@ public enum GatewayIntent
             else if (GenericGuildVoiceEvent.class.isAssignableFrom(event))
                 intents.add(GUILD_VOICE_STATES);
 
-            else if (GenericGuildMessageReactionEvent.class.isAssignableFrom(event))
-                intents.add(GUILD_MESSAGE_REACTIONS);
-            else if (GenericGuildMessageEvent.class.isAssignableFrom(event) || MessageBulkDeleteEvent.class.isAssignableFrom(event))
+            else if (MessageBulkDeleteEvent.class.isAssignableFrom(event))
                 intents.add(GUILD_MESSAGES);
-
-            else if (GenericPrivateMessageReactionEvent.class.isAssignableFrom(event))
-                intents.add(DIRECT_MESSAGE_REACTIONS);
-            else if (GenericPrivateMessageEvent.class.isAssignableFrom(event))
-                intents.add(DIRECT_MESSAGES);
 
             else if (GenericMessageReactionEvent.class.isAssignableFrom(event))
                 Collections.addAll(intents, GUILD_MESSAGE_REACTIONS, DIRECT_MESSAGE_REACTIONS);

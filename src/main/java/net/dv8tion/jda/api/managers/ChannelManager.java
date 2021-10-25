@@ -26,7 +26,7 @@ import javax.annotation.Nullable;
 import java.util.Collection;
 
 /**
- * Manager providing functionality to update one or more fields for a {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel}.
+ * Manager providing functionality to update one or more fields for a {@link GuildChannel GuildChannel}.
  *
  * <p><b>Example</b>
  * <pre>{@code
@@ -41,32 +41,33 @@ import java.util.Collection;
  *        .queue();
  * }</pre>
  *
- * @see net.dv8tion.jda.api.entities.GuildChannel#getManager()
+ * @see GuildChannel#getManager()
  */
-public interface ChannelManager extends Manager<ChannelManager>
+//TODO-v5: Revisit all usages of IllegalStateException in the setX methods in this class to see if they should be UnsupportedOperationException like in ChannelAction
+public interface ChannelManager<T extends GuildChannel> extends Manager<ChannelManager<T>>
 {
     /** Used to reset the name field */
-    long NAME       = 0x1;
+    long NAME       = 1;
     /** Used to reset the parent field */
-    long PARENT     = 0x2;
+    long PARENT     = 1 << 1;
     /** Used to reset the topic field */
-    long TOPIC      = 0x4;
+    long TOPIC      = 1 << 2;
     /** Used to reset the position field */
-    long POSITION   = 0x8;
+    long POSITION   = 1 << 3;
     /** Used to reset the nsfw field */
-    long NSFW       = 0x10;
+    long NSFW       = 1 << 4;
     /** Used to reset the userlimit field */
-    long USERLIMIT  = 0x20;
+    long USERLIMIT  = 1 << 5;
     /** Used to reset the bitrate field */
-    long BITRATE    = 0x40;
+    long BITRATE    = 1 << 6;
     /** Used to reset the permission field */
-    long PERMISSION = 0x80;
+    long PERMISSION = 1 << 7;
     /** Used to reset the rate-limit per user field */
-    long SLOWMODE   = 0x100;
+    long SLOWMODE   = 1 << 8;
     /** Used to reset the channel type field */
-    long NEWS       = 0x200;
+    long TYPE       = 1 << 9;
     /** Used to reset the region field */
-    long REGION     = 0x400;
+    long REGION     = 1 << 10;
 
     /**
      * Resets the fields specified by the provided bit-flag pattern.
@@ -84,7 +85,7 @@ public interface ChannelManager extends Manager<ChannelManager>
      *     <li>{@link #USERLIMIT}</li>
      *     <li>{@link #BITRATE}</li>
      *     <li>{@link #PERMISSION}</li>
-     *     <li>{@link #NEWS}</li>
+     *     <li>{@link #TYPE}</li>
      *     <li>{@link #REGION}</li>
      * </ul>
      *
@@ -95,7 +96,7 @@ public interface ChannelManager extends Manager<ChannelManager>
      */
     @Nonnull
     @Override
-    ChannelManager reset(long fields);
+    ChannelManager<T> reset(long fields);
 
     /**
      * Resets the fields specified by the provided bit-flag patterns.
@@ -111,7 +112,7 @@ public interface ChannelManager extends Manager<ChannelManager>
      *     <li>{@link #USERLIMIT}</li>
      *     <li>{@link #BITRATE}</li>
      *     <li>{@link #PERMISSION}</li>
-     *     <li>{@link #NEWS}</li>
+     *     <li>{@link #TYPE}</li>
      *     <li>{@link #REGION}</li>
      * </ul>
      *
@@ -122,31 +123,20 @@ public interface ChannelManager extends Manager<ChannelManager>
      */
     @Nonnull
     @Override
-    ChannelManager reset(long... fields);
+    ChannelManager<T> reset(long... fields);
 
     /**
-     * The {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel} that will
+     * The {@link GuildChannel GuildChannel} that will
      * be modified by this Manager instance
      *
-     * @return The {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel}
+     * @return The {@link GuildChannel GuildChannel}
      */
     @Nonnull
-    GuildChannel getChannel();
-
-    /**
-     * The {@link net.dv8tion.jda.api.entities.ChannelType ChannelType}
-     *
-     * @return The ChannelType
-     */
-    @Nonnull
-    default ChannelType getType()
-    {
-        return getChannel().getType();
-    }
+    T getChannel();
 
     /**
      * The {@link net.dv8tion.jda.api.entities.Guild Guild} this Manager's
-     * {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel} is in.
+     * {@link GuildChannel GuildChannel} is in.
      * <br>This is logically the same as calling {@code getChannel().getGuild()}
      *
      * @return The parent {@link net.dv8tion.jda.api.entities.Guild Guild}
@@ -164,7 +154,7 @@ public interface ChannelManager extends Manager<ChannelManager>
      */
     @Nonnull
     @CheckReturnValue
-    ChannelManager clearOverridesAdded();
+    ChannelManager<T> clearOverridesAdded();
 
     /**
      * Clears the overrides removed via {@link #removePermissionOverride(IPermissionHolder)}.
@@ -173,7 +163,7 @@ public interface ChannelManager extends Manager<ChannelManager>
      */
     @Nonnull
     @CheckReturnValue
-    ChannelManager clearOverridesRemoved();
+    ChannelManager<T> clearOverridesRemoved();
 
     /**
      * Adds an override for the specified {@link net.dv8tion.jda.api.entities.IPermissionHolder IPermissionHolder}
@@ -200,13 +190,13 @@ public interface ChannelManager extends Manager<ChannelManager>
      */
     @Nonnull
     @CheckReturnValue
-    ChannelManager putPermissionOverride(@Nonnull IPermissionHolder permHolder, long allow, long deny);
+    ChannelManager<T> putPermissionOverride(@Nonnull IPermissionHolder permHolder, long allow, long deny);
 
     /**
      * Adds an override for the specified {@link net.dv8tion.jda.api.entities.IPermissionHolder IPermissionHolder}
      * with the provided permission sets as allowed and denied permissions. If the permission holder already
      * had an override on this channel it will be replaced instead.
-     * <br>Example: {@code putPermissionOverride(guild.getSelfMember(), EnumSet.of(Permission.MESSAGE_WRITE, Permission.MESSAGE_READ), null)}
+     * <br>Example: {@code putPermissionOverride(guild.getSelfMember(), EnumSet.of(Permission.MESSAGE_SEND, Permission.VIEW_CHANNEL), null)}
      *
      * @param  permHolder
      *         The permission holder
@@ -228,7 +218,7 @@ public interface ChannelManager extends Manager<ChannelManager>
      */
     @Nonnull
     @CheckReturnValue
-    default ChannelManager putPermissionOverride(@Nonnull IPermissionHolder permHolder, @Nullable Collection<Permission> allow, @Nullable Collection<Permission> deny)
+    default ChannelManager<T> putPermissionOverride(@Nonnull IPermissionHolder permHolder, @Nullable Collection<Permission> allow, @Nullable Collection<Permission> deny)
     {
         long allowRaw = allow == null ? 0 : Permission.getRaw(allow);
         long denyRaw  = deny  == null ? 0 : Permission.getRaw(deny);
@@ -359,7 +349,7 @@ public interface ChannelManager extends Manager<ChannelManager>
      */
     @Nonnull
     @CheckReturnValue
-    ChannelManager removePermissionOverride(@Nonnull IPermissionHolder permHolder);
+    ChannelManager<T> removePermissionOverride(@Nonnull IPermissionHolder permHolder);
 
     /**
      * Removes the {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverride} for the specified
@@ -386,13 +376,13 @@ public interface ChannelManager extends Manager<ChannelManager>
      * will be exactly the same as the ones from the parent.
      * <br><b>That means that all current PermissionOverrides are lost!</b>
      *
-     * <p>This behaves as if calling {@link #sync(net.dv8tion.jda.api.entities.GuildChannel)} with this GuildChannel's {@link net.dv8tion.jda.api.entities.GuildChannel#getParent() Parent}.
+     * <p>This behaves as if calling {@link #sync(IPermissionContainer)} with this GuildChannel's {@link ICategorizableChannel#getParentCategory()} Parent}.
      *
      * @throws  java.lang.IllegalStateException
      *          If this GuildChannel has no parent
      * @throws  net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *          If the currently logged in account does not have {@link net.dv8tion.jda.api.Permission#MANAGE_PERMISSIONS Permission.MANAGE_PERMISSIONS}
-     *          in this channel or {@link IPermissionHolder#canSync(GuildChannel, GuildChannel)} is false for the self member.
+     *          in this channel or {@link IPermissionHolder#canSync(IPermissionContainer, IPermissionContainer)} is false for the self member.
      *
      * @return  ChannelManager for chaining convenience
      *
@@ -400,16 +390,20 @@ public interface ChannelManager extends Manager<ChannelManager>
      */
     @Nonnull
     @CheckReturnValue
-    default ChannelManager sync()
+    default ChannelManager<T> sync()
     {
-        if (getChannel().getParent() == null)
+        if (!(getChannel() instanceof ICategorizableChannel))
+            throw new IllegalStateException("sync() requires that the channel be categorizable as it syncs the channel to the parent category.");
+
+        ICategorizableChannel categorizableChannel = (ICategorizableChannel) getChannel();
+        if (categorizableChannel.getParentCategory() == null)
             throw new IllegalStateException("sync() requires a parent category");
-        return sync(getChannel().getParent());
+        return sync(categorizableChannel.getParentCategory());
     }
 
     /**
      * Syncs all {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverrides} of this GuildChannel with
-     * the given ({@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel}).
+     * the given ({@link GuildChannel GuildChannel}).
      *
      * <p>After this operation, all {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverrides}
      * will be exactly the same as the ones from the syncSource.
@@ -424,7 +418,7 @@ public interface ChannelManager extends Manager<ChannelManager>
      *          If the given snySource is {@code null}, this GuildChannel or from a different Guild.
      * @throws  net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *          If the currently logged in account does not have {@link net.dv8tion.jda.api.Permission#MANAGE_PERMISSIONS Permission.MANAGE_PERMISSIONS}
-     *          in this channel or {@link IPermissionHolder#canSync(GuildChannel, GuildChannel)} is false for the self member.
+     *          in this channel or {@link IPermissionHolder#canSync(IPermissionContainer, IPermissionContainer)} is false for the self member.
      *
      * @return  ChannelManager for chaining convenience
      *
@@ -432,10 +426,10 @@ public interface ChannelManager extends Manager<ChannelManager>
      */
     @Nonnull
     @CheckReturnValue
-    ChannelManager sync(@Nonnull GuildChannel syncSource);
+    ChannelManager<T> sync(@Nonnull IPermissionContainer syncSource);
 
     /**
-     * Sets the <b><u>name</u></b> of the selected {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel}.
+     * Sets the <b><u>name</u></b> of the selected {@link GuildChannel GuildChannel}.
      *
      * <p>A channel name <b>must not</b> be {@code null} nor empty or more than 100 characters long!
      * <br>TextChannel names may only be populated with alphanumeric (with underscore and dash).
@@ -444,7 +438,7 @@ public interface ChannelManager extends Manager<ChannelManager>
      * <br>Characters will automatically be lowercased by Discord for text channels!
      *
      * @param  name
-     *         The new name for the selected {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel}
+     *         The new name for the selected {@link GuildChannel GuildChannel}
      *
      * @throws IllegalArgumentException
      *         If the provided name is {@code null} or not between 1-100 characters long
@@ -453,15 +447,15 @@ public interface ChannelManager extends Manager<ChannelManager>
      */
     @Nonnull
     @CheckReturnValue
-    ChannelManager setName(@Nonnull String name);
+    ChannelManager<T> setName(@Nonnull String name);
 
     /**
      * Sets the <b><u>{@link net.dv8tion.jda.api.entities.Category Parent Category}</u></b>
-     * of the selected {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel}.
+     * of the selected {@link GuildChannel GuildChannel}.
      *
      *
      * @param  category
-     *         The new parent for the selected {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel}
+     *         The new parent for the selected {@link GuildChannel GuildChannel}
      *
      * @throws IllegalStateException
      *         If the target is a category itself
@@ -474,23 +468,23 @@ public interface ChannelManager extends Manager<ChannelManager>
      */
     @Nonnull
     @CheckReturnValue
-    ChannelManager setParent(@Nullable Category category);
+    ChannelManager<T> setParent(@Nullable Category category);
 
     /**
-     * Sets the <b><u>position</u></b> of the selected {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel}.
+     * Sets the <b><u>position</u></b> of the selected {@link GuildChannel GuildChannel}.
      *
      * <p><b>To modify multiple channels you should use
      * <code>Guild.{@link net.dv8tion.jda.api.entities.Guild#modifyTextChannelPositions() modifyTextChannelPositions()}</code>
      * instead! This is not the same as looping through channels and using this to update positions!</b>
      *
      * @param  position
-     *         The new position for the selected {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel}
+     *         The new position for the selected {@link GuildChannel GuildChannel}
      *
      * @return ChannelManager for chaining convenience
      */
     @Nonnull
     @CheckReturnValue
-    ChannelManager setPosition(int position);
+    ChannelManager<T> setPosition(int position);
 
     /**
      * Sets the <b><u>topic</u></b> of the selected
@@ -504,7 +498,7 @@ public interface ChannelManager extends Manager<ChannelManager>
      *         {@code null} or empty String to reset
      *
      * @throws UnsupportedOperationException
-     *         If the selected {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel}'s type is not {@link net.dv8tion.jda.api.entities.ChannelType#TEXT TEXT}
+     *         If the selected {@link GuildChannel GuildChannel}'s type is not {@link net.dv8tion.jda.api.entities.ChannelType#TEXT TEXT}
      * @throws IllegalArgumentException
      *         If the provided topic is greater than {@code 1024} in length
      *
@@ -512,22 +506,22 @@ public interface ChannelManager extends Manager<ChannelManager>
      */
     @Nonnull
     @CheckReturnValue
-    ChannelManager setTopic(@Nullable String topic);
+    ChannelManager<T> setTopic(@Nullable String topic);
 
     /**
-     * Sets the <b><u>nsfw flag</u></b> of the selected {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}.
+     * Sets the <b><u>nsfw flag</u></b> of the selected {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} or {@link NewsChannel}.
      *
      * @param  nsfw
      *         The new nsfw flag for the selected {@link net.dv8tion.jda.api.entities.TextChannel TextChannel},
      *
      * @throws IllegalStateException
-     *         If the selected {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel}'s type is not {@link net.dv8tion.jda.api.entities.ChannelType#TEXT TEXT}
+     *         If the selected {@link GuildChannel GuildChannel}'s type is not {@link net.dv8tion.jda.api.entities.ChannelType#TEXT TEXT}
      *
      * @return ChannelManager for chaining convenience
      */
     @Nonnull
     @CheckReturnValue
-    ChannelManager setNSFW(boolean nsfw);
+    ChannelManager<T> setNSFW(boolean nsfw);
 
     /**
      * Sets the <b><u>slowmode</u></b> of the selected {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}.
@@ -545,7 +539,7 @@ public interface ChannelManager extends Manager<ChannelManager>
      *         The new slowmode for the selected {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
      *
      * @throws IllegalStateException
-     *         If the selected {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel}'s type is not {@link net.dv8tion.jda.api.entities.ChannelType#TEXT TEXT}
+     *         If the selected {@link GuildChannel GuildChannel}'s type is not {@link net.dv8tion.jda.api.entities.ChannelType#TEXT TEXT}
      * @throws IllegalArgumentException
      *         If the provided slowmode is negative or greater than {@link net.dv8tion.jda.api.entities.TextChannel#MAX_SLOWMODE TextChannel.MAX_SLOWMODE}
      *
@@ -553,7 +547,7 @@ public interface ChannelManager extends Manager<ChannelManager>
      */
     @Nonnull
     @CheckReturnValue
-    ChannelManager setSlowmode(int slowmode);
+    ChannelManager<T> setSlowmode(int slowmode);
 
     /**
      * Sets the <b><u>user-limit</u></b> of the selected {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel}.
@@ -566,7 +560,7 @@ public interface ChannelManager extends Manager<ChannelManager>
      *         The new user-limit for the selected {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel}
      *
      * @throws IllegalStateException
-     *         If the selected {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel}'s type is not {@link net.dv8tion.jda.api.entities.ChannelType#VOICE VOICE}
+     *         If the selected {@link GuildChannel GuildChannel}'s type is not {@link net.dv8tion.jda.api.entities.ChannelType#VOICE VOICE}
      * @throws IllegalArgumentException
      *         If the provided user-limit is negative or greater than {@code 99}
      *
@@ -574,7 +568,7 @@ public interface ChannelManager extends Manager<ChannelManager>
      */
     @Nonnull
     @CheckReturnValue
-    ChannelManager setUserLimit(int userLimit);
+    ChannelManager<T> setUserLimit(int userLimit);
 
     /**
      * Sets the <b><u>bitrate</u></b> of the selected {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel}.
@@ -587,7 +581,7 @@ public interface ChannelManager extends Manager<ChannelManager>
      *         The new bitrate for the selected {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel}
      *
      * @throws IllegalStateException
-     *         If the selected {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel}'s type is not {@link net.dv8tion.jda.api.entities.ChannelType#VOICE VOICE}
+     *         If the selected {@link GuildChannel GuildChannel}'s type is not {@link net.dv8tion.jda.api.entities.ChannelType#VOICE VOICE}
      * @throws IllegalArgumentException
      *         If the provided bitrate is less than 8000 or greater than {@link net.dv8tion.jda.api.entities.Guild#getMaxBitrate()}.
      *
@@ -597,7 +591,7 @@ public interface ChannelManager extends Manager<ChannelManager>
      */
     @Nonnull
     @CheckReturnValue
-    ChannelManager setBitrate(int bitrate);
+    ChannelManager<T> setBitrate(int bitrate);
 
     /**
      * Sets the {@link net.dv8tion.jda.api.Region Region} of the selected {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel}.
@@ -626,35 +620,54 @@ public interface ChannelManager extends Manager<ChannelManager>
      * @param region
      *        The new {@link net.dv8tion.jda.api.Region Region}
      * @throws IllegalStateException
-     *         If the selected {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel}'s type is not {@link net.dv8tion.jda.api.entities.ChannelType#VOICE VOICE}
+     *         If the selected {@link GuildChannel GuildChannel}'s type is not {@link net.dv8tion.jda.api.entities.ChannelType#VOICE VOICE}
      * @throws IllegalArgumentException
      *         If the provided Region is not in the list of usable values
      * @return ChannelManager for chaining convenience
      */
     @Nonnull
     @CheckReturnValue
-    ChannelManager setRegion(Region region);
+    ChannelManager<T> setRegion(Region region);
 
     /**
-     * Sets the <b><u>news flag</u></b> of the selected {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}.
-     * Announcement-/News-Channels can be used to crosspost messages to other guilds.
+     * Converts the selected channel to a different {@link ChannelType}.
      *
-     * @param  news
-     *         The new news flag for the selected {@link net.dv8tion.jda.api.entities.TextChannel TextChannel},
+     * <br /><br />
+     * This can only be done in the follow situations:
+     * <table>
+     *     <thead>
+     *         <tr>
+     *             <th>Current Channel Type</th>
+     *             <th></th>
+     *             <th>New Channel Type</th>
+     *         </tr>
+     *     </thead>
+     *     <tbody>
+     *         <tr>
+     *             <td>{@link ChannelType#NEWS}</td>
+     *             <td> -> </td>
+     *             <td>{@link ChannelType#TEXT}</td>
+     *         </tr>
+     *         <tr>
+     *             <td>{@link ChannelType#TEXT}</td>
+     *             <td> -> </td>
+     *             <td>{@link ChannelType#NEWS}</td>
+     *         </tr>
+     *     </tbody>
+     * </table>
      *
+     * @throws IllegalArgumentException
+     *         If {@code channelType} is not {@link ChannelType#TEXT} or {@link ChannelType#NEWS}
+     * @throws UnsupportedOperationException
+     *         If this ChannelAction is not for a {@link TextChannel} or {@link NewsChannel}
      * @throws IllegalStateException
-     *         If the selected {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel}'s type is not {@link net.dv8tion.jda.api.entities.ChannelType#TEXT TEXT}
-     * @throws IllegalStateException
-     *         If {@code news} is {@code true} and the guild doesn't have the NEWS feature
+     *         If {@code channelType} is {@link ChannelType#NEWS} and the guild doesn't have the {@code NEWS} feature in {@link Guild#getFeatures()}.
      *
      * @return ChannelManager for chaining convenience
      *
      * @see    net.dv8tion.jda.api.entities.Guild#getFeatures()
-     * @see    net.dv8tion.jda.api.entities.TextChannel#isNews()
-     *
-     * @since  4.2.1
      */
     @Nonnull
     @CheckReturnValue
-    ChannelManager setNews(boolean news);
+    ChannelManager<T> setType(@Nonnull ChannelType type);
 }

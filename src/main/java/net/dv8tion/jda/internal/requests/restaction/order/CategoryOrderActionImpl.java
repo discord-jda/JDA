@@ -18,6 +18,7 @@ package net.dv8tion.jda.internal.requests.restaction.order;
 
 import net.dv8tion.jda.api.entities.Category;
 import net.dv8tion.jda.api.entities.GuildChannel;
+import net.dv8tion.jda.api.entities.ICategorizableChannel;
 import net.dv8tion.jda.api.requests.restaction.order.CategoryOrderAction;
 import net.dv8tion.jda.internal.utils.Checks;
 
@@ -57,7 +58,8 @@ public class CategoryOrderActionImpl
     protected void validateInput(GuildChannel entity)
     {
         Checks.notNull(entity, "Provided channel");
-        Checks.check(getCategory().equals(entity.getParent()), "Provided channel's Category is not this Category!");
+        Checks.check(entity instanceof ICategorizableChannel, "Provided channel is not an ICategorizableChannel");
+        Checks.check(getCategory().equals(((ICategorizableChannel) entity).getParentCategory()), "Provided channel's Category is not this Category!");
         Checks.check(orderList.contains(entity), "Provided channel is not in the list of orderable channels!");
     }
 
@@ -66,7 +68,9 @@ public class CategoryOrderActionImpl
     {
         Checks.notNull(category, "Category");
         return ChannelOrderActionImpl.getChannelsOfType(category.getGuild(), bucket).stream()
-             .filter(it -> category.equals(it.getParent()))
+             .filter(ICategorizableChannel.class::isInstance)
+             .map(ICategorizableChannel.class::cast)
+             .filter(it -> category.equals(it.getParentCategory()))
              .sorted()
              .collect(Collectors.toList());
     }

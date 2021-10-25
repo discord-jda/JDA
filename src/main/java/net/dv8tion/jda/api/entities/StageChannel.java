@@ -17,6 +17,8 @@
 package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.managers.ChannelManager;
+import net.dv8tion.jda.api.requests.restaction.ChannelAction;
 import net.dv8tion.jda.api.requests.restaction.StageInstanceAction;
 import net.dv8tion.jda.internal.utils.Checks;
 
@@ -27,10 +29,9 @@ import javax.annotation.Nullable;
 /**
  * Represents a Stage Channel.
  *
- * <p>This is a more advanced version of a {@link VoiceChannel}
- * that can be used to host events with speakers and listeners.
+ * <p>This is a specialized AudioChannel that can be used to host events with speakers and listeners.
  */
-public interface StageChannel extends VoiceChannel
+public interface StageChannel extends GuildChannel, AudioChannel, ICategorizableChannel, ICopyableChannel, IPositionableChannel, IPermissionContainer, IMemberContainer, IInviteContainer
 {
     /**
      * {@link StageInstance} attached to this stage channel.
@@ -93,4 +94,16 @@ public interface StageChannel extends VoiceChannel
         Checks.notNull(member, "Member");
         return member.hasPermission(this, Permission.MANAGE_CHANNEL, Permission.VOICE_MUTE_OTHERS, Permission.VOICE_MOVE_OTHERS);
     }
+
+    @Nonnull
+    @Override
+    ChannelAction<StageChannel> createCopy(@Nonnull Guild guild);
+
+    @Nonnull
+    @Override
+    ChannelAction<StageChannel> createCopy();
+
+    @Nonnull
+    @Override
+    ChannelManager<StageChannel> getManager();
 }

@@ -363,7 +363,7 @@ public interface Member extends IMentionable, IPermissionHolder
      * <br>This is the channel that the Discord client will default to opening when a Guild is opened for the first time
      * after joining the guild.
      * <br>The default channel is the channel with the highest position in which the member has
-     * {@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ} permissions. If this requirement doesn't apply for
+     * {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} permissions. If this requirement doesn't apply for
      * any channel in the guild, this method returns {@code null}.
      *
      * @return The {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} representing the default channel for this member

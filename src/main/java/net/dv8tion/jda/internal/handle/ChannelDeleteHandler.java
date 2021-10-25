@@ -17,10 +17,7 @@
 package net.dv8tion.jda.internal.handle;
 
 import net.dv8tion.jda.api.entities.*;
-import net.dv8tion.jda.api.events.channel.category.CategoryDeleteEvent;
-import net.dv8tion.jda.api.events.channel.store.StoreChannelDeleteEvent;
-import net.dv8tion.jda.api.events.channel.text.TextChannelDeleteEvent;
-import net.dv8tion.jda.api.events.channel.voice.VoiceChannelDeleteEvent;
+import net.dv8tion.jda.api.events.channel.ChannelDeleteEvent;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.GuildImpl;
@@ -54,6 +51,7 @@ public class ChannelDeleteHandler extends SocketHandler
         {
             case STORE:
             {
+                //TODO-v5-unified-channel-cache: We can put all the removals at the top once we have a unified channel cache
                 StoreChannel channel = getJDA().getStoreChannelsView().remove(channelId);
                 if (channel == null || guild == null)
                 {
@@ -63,7 +61,7 @@ public class ChannelDeleteHandler extends SocketHandler
 
                 guild.getStoreChannelView().remove(channelId);
                 getJDA().handleEvent(
-                    new StoreChannelDeleteEvent(
+                    new ChannelDeleteEvent(
                         getJDA(), responseNumber,
                         channel));
                 break;
@@ -79,12 +77,27 @@ public class ChannelDeleteHandler extends SocketHandler
 
                 guild.getTextChannelsView().remove(channel.getIdLong());
                 getJDA().handleEvent(
-                    new TextChannelDeleteEvent(
+                    new ChannelDeleteEvent(
                         getJDA(), responseNumber,
                         channel));
                 break;
             }
-            case STAGE:
+            case NEWS:
+            {
+                NewsChannel channel = getJDA().getNewsChannelView().remove(channelId);
+                if (channel == null || guild == null)
+                {
+                    WebSocketClient.LOG.debug("CHANNEL_DELETE attempted to delete a news channel that is not yet cached. JSON: {}", content);
+                    return null;
+                }
+
+                guild.getNewsChannelView().remove(channel.getIdLong());
+                getJDA().handleEvent(
+                        new ChannelDeleteEvent(
+                                getJDA(), responseNumber,
+                                channel));
+                break;
+            }
             case VOICE:
             {
                 VoiceChannel channel = getJDA().getVoiceChannelsView().remove(channelId);
@@ -104,11 +117,27 @@ public class ChannelDeleteHandler extends SocketHandler
 //                }
                 guild.getVoiceChannelsView().remove(channel.getIdLong());
                 getJDA().handleEvent(
-                    new VoiceChannelDeleteEvent(
+                    new ChannelDeleteEvent(
                         getJDA(), responseNumber,
                         channel));
                 break;
             }
+            case STAGE:
+            {
+                StageChannel channel = getJDA().getStageChannelView().remove(channelId);
+                if (channel == null || guild == null)
+                {
+                    WebSocketClient.LOG.debug("CHANNEL_DELETE attempted to delete a stage channel that is not yet cached. JSON: {}", content);
+                    return null;
+                }
+
+                guild.getStageChannelsView().remove(channel.getIdLong());
+                getJDA().handleEvent(
+                    new ChannelDeleteEvent(
+                        getJDA(), responseNumber,
+                        channel));
+            }
+
             case CATEGORY:
             {
                 Category category = getJDA().getCategoriesView().remove(channelId);
@@ -120,7 +149,7 @@ public class ChannelDeleteHandler extends SocketHandler
 
                 guild.getCategoriesView().remove(channelId);
                 getJDA().handleEvent(
-                    new CategoryDeleteEvent(
+                    new ChannelDeleteEvent(
                         getJDA(), responseNumber,
                         category));
                 break;

@@ -121,7 +121,7 @@ public class CommandCreateActionImpl extends RestActionImpl<Command> implements 
 
     @Nonnull
     @Override
-    public CommandCreateAction addSubcommands(@Nonnull SubcommandData subcommand)
+    public CommandCreateAction addSubcommands(@Nonnull SubcommandData... subcommand)
     {
         data.addSubcommands(subcommand);
         return this;
@@ -129,7 +129,7 @@ public class CommandCreateActionImpl extends RestActionImpl<Command> implements 
 
     @Nonnull
     @Override
-    public CommandCreateAction addSubcommandGroups(@Nonnull SubcommandGroupData group)
+    public CommandCreateAction addSubcommandGroups(@Nonnull SubcommandGroupData... group)
     {
         data.addSubcommandGroups(group);
         return this;

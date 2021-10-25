@@ -30,17 +30,19 @@ import java.util.function.BooleanSupplier;
 
 /**
  * Extension of {@link net.dv8tion.jda.api.requests.RestAction RestAction} specifically
- * designed to create a {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel}.
+ * designed to create a {@link GuildChannel GuildChannel}.
  * This extension allows setting properties before executing the action.
  *
  * @since  3.0
  *
  * @see    net.dv8tion.jda.api.entities.Guild
  * @see    net.dv8tion.jda.api.entities.Guild#createTextChannel(String)
+ * @see    net.dv8tion.jda.api.entities.Guild#createNewsChannel(String)
  * @see    net.dv8tion.jda.api.entities.Guild#createVoiceChannel(String)
+ * @see    net.dv8tion.jda.api.entities.Guild#createStageChannel(String)
  * @see    net.dv8tion.jda.api.entities.Guild#createCategory(String)
- * @see    GuildChannel#createCopy()
- * @see    GuildChannel#createCopy(Guild)
+ * @see    ICopyableChannel#createCopy()
+ * @see    ICopyableChannel#createCopy(Guild)
  *
  * @param <T>
  *        The type of channel to create
@@ -89,6 +91,49 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
     @Nonnull
     @CheckReturnValue
     ChannelAction<T> setName(@Nonnull String name);
+
+    /**
+     * Converts the channel to a different {@link ChannelType}.
+     *
+     * <br /><br />
+     * This can only be done in the follow situations:
+     * <table>
+     *     <thead>
+     *         <tr>
+     *             <th>Current Channel Type</th>
+     *             <th></th>
+     *             <th>New Channel Type</th>
+     *         </tr>
+     *     </thead>
+     *     <tbody>
+     *         <tr>
+     *             <td>{@link ChannelType#NEWS}</td>
+     *             <td> -> </td>
+     *             <td>{@link ChannelType#TEXT}</td>
+     *         </tr>
+     *         <tr>
+     *             <td>{@link ChannelType#TEXT}</td>
+     *             <td> -> </td>
+     *             <td>{@link ChannelType#NEWS}</td>
+     *         </tr>
+     *     </tbody>
+     * </table>
+     *
+     * @param  type
+     *         The not-null {@link ChannelType} of the new channel
+     *
+     * @throws IllegalArgumentException
+     *         If {@code channelType} is not {@link ChannelType#TEXT} or {@link ChannelType#NEWS}
+     * @throws UnsupportedOperationException
+     *         If this ChannelAction is not for a {@link TextChannel} or {@link NewsChannel}
+     * @throws java.lang.IllegalStateException
+     *         If {@code channelType} is {@link ChannelType#NEWS} and the guild doesn't have the {@code NEWS} feature in {@link Guild#getFeatures()}.
+     *
+     * @return The current ChannelAction, for chaining convenience
+     */
+    @Nonnull
+    @CheckReturnValue
+    ChannelAction<T> setType(@Nonnull ChannelType type);
 
     /**
      * Sets the {@link net.dv8tion.jda.api.entities.Category Category} for the new GuildChannel.
@@ -191,28 +236,6 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
     ChannelAction<T> setSlowmode(int slowmode);
 
     /**
-     * Sets the news flag for the new TextChannel.
-     * Announcement-/News-Channels can be used to crosspost messages to other guilds.
-     *
-     * @param  news
-     *         The news flag for the new GuildChannel
-     *
-     * @throws UnsupportedOperationException
-     *         If this ChannelAction is not for a TextChannel
-     * @throws java.lang.IllegalStateException
-     *         If {@code news} is {@code true} and the guild doesn't have the NEWS feature
-     *
-     * @return The current ChannelAction, for chaining convenience
-     *
-     * @see    net.dv8tion.jda.api.entities.TextChannel#isNews()
-     *
-     * @since  4.2.1
-     */
-    @Nonnull
-    @CheckReturnValue
-    ChannelAction<T> setNews(boolean news);
-
-    /**
      * Adds a new Role or Member {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverride}
      * for the new GuildChannel.
      *
@@ -221,8 +244,8 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
      * <p>Example:
      * <pre>{@code
      * Role role = guild.getPublicRole();
-     * EnumSet<Permission> allow = EnumSet.of(Permission.MESSAGE_READ);
-     * EnumSet<Permission> deny = EnumSet.of(Permission.MESSAGE_WRITE);
+     * EnumSet<Permission> allow = EnumSet.of(Permission.VIEW_CHANNEL);
+     * EnumSet<Permission> deny = EnumSet.of(Permission.MESSAGE_SEND);
      * channelAction.addPermissionOverride(role, allow, deny);
      * }</pre>
      *
@@ -262,8 +285,8 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
      * <p>Example:
      * <pre>{@code
      * Role role = guild.getPublicRole();
-     * long allow = Permission.MESSAGE_READ.getRawValue();
-     * long deny = Permission.MESSAGE_WRITE.getRawValue() | Permission.MESSAGE_ADD_REACTION.getRawValue();
+     * long allow = Permission.VIEW_CHANNEL.getRawValue();
+     * long deny = Permission.MESSAGE_SEND.getRawValue() | Permission.MESSAGE_ADD_REACTION.getRawValue();
      * channelAction.addPermissionOverride(role, allow, deny);
      * }</pre>
      *
@@ -313,8 +336,8 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
      * <p>Example:
      * <pre>{@code
      * long userId = user.getIdLong();
-     * EnumSet<Permission> allow = EnumSet.of(Permission.MESSAGE_READ);
-     * EnumSet<Permission> deny = EnumSet.of(Permission.MESSAGE_WRITE);
+     * EnumSet<Permission> allow = EnumSet.of(Permission.VIEW_CHANNEL);
+     * EnumSet<Permission> deny = EnumSet.of(Permission.MESSAGE_SEND);
      * channelAction.addMemberPermissionOverride(userId, allow, deny);
      * }</pre>
      *
@@ -352,8 +375,8 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
      * <p>Example:
      * <pre>{@code
      * long roleId = role.getIdLong();
-     * EnumSet<Permission> allow = EnumSet.of(Permission.MESSAGE_READ);
-     * EnumSet<Permission> deny = EnumSet.of(Permission.MESSAGE_WRITE);
+     * EnumSet<Permission> allow = EnumSet.of(Permission.VIEW_CHANNEL);
+     * EnumSet<Permission> deny = EnumSet.of(Permission.MESSAGE_SEND);
      * channelAction.addRolePermissionOverride(roleId, allow, deny);
      * }</pre>
      *
@@ -390,8 +413,8 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
      * <p>Example:
      * <pre>{@code
      * long userId = user.getIdLong();
-     * long allow = Permission.MESSAGE_READ.getRawValue();
-     * long deny = Permission.MESSAGE_WRITE.getRawValue() | Permission.MESSAGE_ADD_REACTION.getRawValue();
+     * long allow = Permission.VIEW_CHANNEL.getRawValue();
+     * long deny = Permission.MESSAGE_SEND.getRawValue() | Permission.MESSAGE_ADD_REACTION.getRawValue();
      * channelAction.addMemberPermissionOverride(userId, allow, deny);
      * }</pre>
      *
@@ -428,8 +451,8 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
      * <p>Example:
      * <pre>{@code
      * long roleId = role.getIdLong();
-     * long allow = Permission.MESSAGE_READ.getRawValue();
-     * long deny = Permission.MESSAGE_WRITE.getRawValue() | Permission.MESSAGE_ADD_REACTION.getRawValue();
+     * long allow = Permission.VIEW_CHANNEL.getRawValue();
+     * long deny = Permission.MESSAGE_SEND.getRawValue() | Permission.MESSAGE_ADD_REACTION.getRawValue();
      * channelAction.addMemberPermissionOverride(roleId, allow, deny);
      * }</pre>
      *

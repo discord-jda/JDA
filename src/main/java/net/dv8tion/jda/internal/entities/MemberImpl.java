@@ -214,7 +214,7 @@ public class MemberImpl implements Member
 
     @Nonnull
     @Override
-    public EnumSet<Permission> getPermissions(@Nonnull GuildChannel channel)
+    public EnumSet<Permission> getPermissions(@Nonnull IPermissionContainer channel)
     {
         Checks.notNull(channel, "Channel");
         if (!getGuild().equals(channel.getGuild()))
@@ -232,7 +232,7 @@ public class MemberImpl implements Member
 
     @Nonnull
     @Override
-    public EnumSet<Permission> getPermissionsExplicit(@Nonnull GuildChannel channel)
+    public EnumSet<Permission> getPermissionsExplicit(@Nonnull IPermissionContainer channel)
     {
         return Permission.getPermissions(PermissionUtil.getExplicitPermission(channel, this));
     }
@@ -252,13 +252,13 @@ public class MemberImpl implements Member
     }
 
     @Override
-    public boolean hasPermission(@Nonnull GuildChannel channel, @Nonnull Permission... permissions)
+    public boolean hasPermission(@Nonnull IPermissionContainer channel, @Nonnull Permission... permissions)
     {
         return PermissionUtil.checkPermission(channel, this, permissions);
     }
 
     @Override
-    public boolean hasPermission(@Nonnull GuildChannel channel, @Nonnull Collection<Permission> permissions)
+    public boolean hasPermission(@Nonnull IPermissionContainer channel, @Nonnull Collection<Permission> permissions)
     {
         Checks.notNull(permissions, "Permission Collection");
 
@@ -266,7 +266,7 @@ public class MemberImpl implements Member
     }
 
     @Override
-    public boolean canSync(@Nonnull GuildChannel targetChannel, @Nonnull GuildChannel syncSource)
+    public boolean canSync(@Nonnull IPermissionContainer targetChannel, @Nonnull IPermissionContainer syncSource)
     {
         Checks.notNull(targetChannel, "Channel");
         Checks.notNull(syncSource, "Channel");
@@ -301,7 +301,7 @@ public class MemberImpl implements Member
     }
 
     @Override
-    public boolean canSync(@Nonnull GuildChannel channel)
+    public boolean canSync(@Nonnull IPermissionContainer channel)
     {
         Checks.notNull(channel, "Channel");
         Checks.check(channel.getGuild().equals(getGuild()), "Channels must be from the same guild!");
@@ -428,7 +428,7 @@ public class MemberImpl implements Member
     {
         return getGuild().getTextChannelsView().stream()
                  .sorted(Comparator.reverseOrder())
-                 .filter(c -> hasPermission(c, Permission.MESSAGE_READ))
+                 .filter(c -> hasPermission(c, Permission.VIEW_CHANNEL))
                  .findFirst().orElse(null);
     }
 }

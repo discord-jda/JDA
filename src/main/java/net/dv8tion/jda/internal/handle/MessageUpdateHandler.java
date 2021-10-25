@@ -18,10 +18,6 @@ package net.dv8tion.jda.internal.handle;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.message.MessageEmbedEvent;
 import net.dv8tion.jda.api.events.message.MessageUpdateEvent;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageEmbedEvent;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageUpdateEvent;
-import net.dv8tion.jda.api.events.message.priv.PrivateMessageEmbedEvent;
-import net.dv8tion.jda.api.events.message.priv.PrivateMessageUpdateEvent;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
@@ -101,40 +97,9 @@ public class MessageUpdateHandler extends SocketHandler
             }
         }
 
-        switch (message.getChannelType())
-        {
-            case TEXT:
-            {
-                TextChannel channel = message.getTextChannel();
-                if (getJDA().getGuildSetupController().isLocked(channel.getGuild().getIdLong()))
-                    return channel.getGuild().getIdLong();
-                getJDA().handleEvent(
-                        new GuildMessageUpdateEvent(
-                                getJDA(), responseNumber,
-                                message));
-                break;
-            }
-            case PRIVATE:
-            {
-                getJDA().usedPrivateChannel(message.getChannel().getIdLong());
-                getJDA().handleEvent(
-                        new PrivateMessageUpdateEvent(
-                                getJDA(), responseNumber,
-                                message));
-                break;
-            }
-            case GROUP:
-            {
-                WebSocketClient.LOG.warn("Received a MESSAGE_UPDATE for a group which is not supported");
-                break;
-            }
+        if (message.getChannelType() == ChannelType.PRIVATE)
+            getJDA().usedPrivateChannel(message.getChannel().getIdLong());
 
-            default:
-                WebSocketClient.LOG.warn("Received a MESSAGE_UPDATE with a unknown MessageChannel ChannelType. JSON: {}", content);
-                return null;
-        }
-
-        //Combo event
         getJDA().handleEvent(
                 new MessageUpdateEvent(
                         getJDA(), responseNumber,
@@ -148,7 +113,11 @@ public class MessageUpdateHandler extends SocketHandler
         final long messageId = content.getLong("id");
         final long channelId = content.getLong("channel_id");
         LinkedList<MessageEmbed> embeds = new LinkedList<>();
+
+        //TODO-v5-unified-channel-cache
         MessageChannel channel = getJDA().getTextChannelsView().get(channelId);
+        if (channel == null)
+            channel = getJDA().getNewsChannelById(channelId);
         if (channel == null)
             channel = getJDA().getPrivateChannelsView().get(channelId);
         if (channel == null)
@@ -162,31 +131,6 @@ public class MessageUpdateHandler extends SocketHandler
         for (int i = 0; i < embedsJson.length(); i++)
             embeds.add(builder.createMessageEmbed(embedsJson.getObject(i)));
 
-        switch (channel.getType())
-        {
-            case TEXT:
-                TextChannel tChannel = (TextChannel) channel;
-                if (getJDA().getGuildSetupController().isLocked(tChannel.getGuild().getIdLong()))
-                    return tChannel.getGuild().getIdLong();
-                getJDA().handleEvent(
-                    new GuildMessageEmbedEvent(
-                        getJDA(), responseNumber,
-                        messageId, tChannel, embeds));
-                break;
-            case PRIVATE:
-                getJDA().handleEvent(
-                    new PrivateMessageEmbedEvent(
-                        getJDA(), responseNumber,
-                        messageId, (PrivateChannel) channel, embeds));
-                break;
-            case GROUP:
-                WebSocketClient.LOG.error("Received a message update for a group which should not be possible");
-                return null;
-            default:
-                WebSocketClient.LOG.warn("No event handled for message update of type {}", channel.getType());
-
-        }
-        //Combo event
         getJDA().handleEvent(
                 new MessageEmbedEvent(
                         getJDA(), responseNumber,

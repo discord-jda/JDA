@@ -206,7 +206,7 @@ public class ReceivedMessage extends AbstractMessage
             throw new IllegalStateException("Cannot clear reactions from ephemeral messages.");
         if (!isFromGuild())
             throw new IllegalStateException("Cannot clear reactions from a message in a Group or PrivateChannel.");
-        return getTextChannel().clearReactionsById(getId());
+        return getGuildChannel().clearReactionsById(getId());
     }
 
     @Nonnull
@@ -217,7 +217,7 @@ public class ReceivedMessage extends AbstractMessage
             throw new IllegalStateException("Cannot clear reactions from ephemeral messages.");
         if (!isFromGuild())
             throw new IllegalStateException("Cannot clear reactions from a message in a Group or PrivateChannel.");
-        return getTextChannel().clearReactionsById(getId(), unicode);
+        return getGuildChannel().clearReactionsById(getId(), unicode);
     }
 
     @Nonnull
@@ -228,7 +228,7 @@ public class ReceivedMessage extends AbstractMessage
             throw new IllegalStateException("Cannot clear reactions from ephemeral messages.");
         if (!isFromGuild())
             throw new IllegalStateException("Cannot clear reactions from a message in a Group or PrivateChannel.");
-        return getTextChannel().clearReactionsById(getId(), emote);
+        return getGuildChannel().clearReactionsById(getId(), emote);
     }
 
     @Nonnull
@@ -255,7 +255,7 @@ public class ReceivedMessage extends AbstractMessage
 
         if (!isFromGuild())
             throw new IllegalStateException("Cannot remove reactions of others from a message in a Group or PrivateChannel.");
-        return getTextChannel().removeReactionById(getIdLong(), emote, user);
+        return getGuildChannel().removeReactionById(getIdLong(), emote, user);
     }
 
     @Nonnull
@@ -280,7 +280,7 @@ public class ReceivedMessage extends AbstractMessage
             throw new IllegalStateException("Cannot remove reactions from ephemeral messages.");
         if (!isFromGuild())
             throw new IllegalStateException("Cannot remove reactions of others from a message in a Group or PrivateChannel.");
-        return getTextChannel().removeReactionById(getId(), unicode, user);
+        return getGuildChannel().removeReactionById(getId(), unicode, user);
     }
 
     @Nonnull
@@ -394,6 +394,7 @@ public class ReceivedMessage extends AbstractMessage
     @Override
     public synchronized List<TextChannel> getMentionedChannels()
     {
+        //TODO-v5: This needs to be updated as you can match.. quie a few more chanels than just TextChannels
         if (channelMentions == null)
             channelMentions = Collections.unmodifiableList(processMentions(MentionType.CHANNEL, new ArrayList<>(), true, this::matchTextChannel));
         return channelMentions;
@@ -737,6 +738,15 @@ public class ReceivedMessage extends AbstractMessage
 
     @Nonnull
     @Override
+    public GuildMessageChannel getGuildChannel()
+    {
+        if (!isFromGuild())
+            throw new IllegalStateException("This message was not sent in a guild.");
+        return (GuildMessageChannel) channel;
+    }
+
+    @Nonnull
+    @Override
     public PrivateChannel getPrivateChannel()
     {
         if (!isFromType(ChannelType.PRIVATE))
@@ -748,8 +758,6 @@ public class ReceivedMessage extends AbstractMessage
     @Override
     public TextChannel getTextChannel()
     {
-        // might be the reason why other methods calling this throw that exception
-        // in case of other GuildChannels being able to receive messages in the future
         if (!isFromType(ChannelType.TEXT))
             throw new IllegalStateException("This message was not sent in a text channel");
         return (TextChannel) channel;
@@ -758,14 +766,18 @@ public class ReceivedMessage extends AbstractMessage
     @Override
     public Category getCategory()
     {
-        return isFromGuild() ? getTextChannel().getParent() : null;
+        //TODO-v5: Should this actually throw an error here if the GuildMessageChannel doesn't implement ICategorizableChannel?
+        GuildMessageChannel chan = getGuildChannel();
+        return chan instanceof ICategorizableChannel
+            ? ((ICategorizableChannel) chan).getParentCategory()
+            : null;
     }
 
     @Nonnull
     @Override
     public Guild getGuild()
     {
-        return getTextChannel().getGuild();
+        return getGuildChannel().getGuild();
     }
 
     @Nonnull
@@ -906,11 +918,12 @@ public class ReceivedMessage extends AbstractMessage
         {
             if (isFromType(ChannelType.PRIVATE))
                 throw new IllegalStateException("Cannot delete another User's messages in a PrivateChannel.");
-            else if (!getGuild().getSelfMember().hasAccess(getTextChannel()))
-                throw new MissingAccessException(getTextChannel(), Permission.VIEW_CHANNEL);
-            else if (!getGuild().getSelfMember()
-                    .hasPermission((TextChannel) getChannel(), Permission.MESSAGE_MANAGE))
-                throw new InsufficientPermissionException(getTextChannel(), Permission.MESSAGE_MANAGE);
+
+            IPermissionContainer permChan = (IPermissionContainer) channel;
+            if (!getGuild().getSelfMember().hasAccess(permChan))
+                throw new MissingAccessException(permChan, Permission.VIEW_CHANNEL);
+            else if (!getGuild().getSelfMember().hasPermission(permChan, Permission.MESSAGE_MANAGE))
+                throw new InsufficientPermissionException(permChan, Permission.MESSAGE_MANAGE);
         }
         return channel.deleteMessageById(getIdLong());
     }
@@ -926,8 +939,10 @@ public class ReceivedMessage extends AbstractMessage
         {
             if (isFromType(ChannelType.PRIVATE))
                 throw new PermissionException("Cannot suppress embeds of others in a PrivateChannel.");
-            else if (!getGuild().getSelfMember().hasPermission(getTextChannel(), Permission.MESSAGE_MANAGE))
-                throw new InsufficientPermissionException(getTextChannel(), Permission.MESSAGE_MANAGE);
+
+            IPermissionContainer permChan = (IPermissionContainer) channel;
+            if (!getGuild().getSelfMember().hasPermission(permChan, Permission.MESSAGE_MANAGE))
+                throw new InsufficientPermissionException(permChan, Permission.MESSAGE_MANAGE);
         }
         JDAImpl jda = (JDAImpl) getJDA();
         Route.CompiledRoute route = Route.Messages.EDIT_MESSAGE.compile(getChannel().getId(), getId());
@@ -949,12 +964,18 @@ public class ReceivedMessage extends AbstractMessage
         
         if (getFlags().contains(MessageFlag.CROSSPOSTED))
             return new CompletedRestAction<>(getJDA(), this);
-        TextChannel textChannel = getTextChannel();
-        if (!getGuild().getSelfMember().hasAccess(textChannel))
-            throw new MissingAccessException(textChannel, Permission.VIEW_CHANNEL);
-        if (!getAuthor().equals(getJDA().getSelfUser()) && !getGuild().getSelfMember().hasPermission(textChannel, Permission.MESSAGE_MANAGE))
-            throw new InsufficientPermissionException(textChannel, Permission.MESSAGE_MANAGE);
-        return textChannel.crosspostMessageById(getId());
+
+        //TODO-v5: Maybe we'll have a `getNewsChannel()` getter that will do this check there?
+        if (!(getChannel() instanceof NewsChannel))
+            throw new IllegalStateException("This message was not sent in a news channel");
+
+        //TODO-v5: Double check: Is this actually how we crosspost? This, to me, reads as "take the message we just received and crosspost it to the _same exact channel we just received it in_. Makes no sense.
+        NewsChannel newsChannel = (NewsChannel) getChannel();
+        if (!getGuild().getSelfMember().hasAccess(newsChannel))
+            throw new MissingAccessException(newsChannel, Permission.VIEW_CHANNEL);
+        if (!getAuthor().equals(getJDA().getSelfUser()) && !getGuild().getSelfMember().hasPermission(newsChannel, Permission.MESSAGE_MANAGE))
+            throw new InsufficientPermissionException(newsChannel, Permission.MESSAGE_MANAGE);
+        return newsChannel.crosspostMessageById(getId());
     }
 
     @Override

@@ -293,6 +293,14 @@ public abstract class AbstractMessage implements Message
 
     @Nonnull
     @Override
+    public GuildMessageChannel getGuildChannel()
+    {
+        unsupported();
+        return null;
+    }
+
+    @Nonnull
+    @Override
     public PrivateChannel getPrivateChannel()
     {
         unsupported();
@@ -302,6 +310,14 @@ public abstract class AbstractMessage implements Message
     @Nonnull
     @Override
     public TextChannel getTextChannel()
+    {
+        unsupported();
+        return null;
+    }
+
+    @Nonnull
+    @Override
+    public NewsChannel getNewsChannel()
     {
         unsupported();
         return null;

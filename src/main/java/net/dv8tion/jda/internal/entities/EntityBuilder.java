@@ -314,7 +314,12 @@ public class EntityBuilder
         case TEXT:
             createTextChannel(guildObj, channelData, guildObj.getIdLong());
             break;
+        case NEWS:
+            createNewsChannel(guildObj, channelData, guildObj.getIdLong());
+            break;
         case STAGE:
+            createStageChannel(guildObj, channelData, guildObj.getIdLong());
+            break;
         case VOICE:
             createVoiceChannel(guildObj, channelData, guildObj.getIdLong());
             break;
@@ -550,9 +555,9 @@ public class EntityBuilder
         GuildVoiceStateImpl voiceState = (GuildVoiceStateImpl) member.getVoiceState();
 
         final long channelId = voiceStateJson.getLong("channel_id");
-        VoiceChannelImpl voiceChannel = (VoiceChannelImpl) guild.getVoiceChannelsView().get(channelId);
-        if (voiceChannel != null)
-            voiceChannel.getConnectedMembersMap().put(member.getIdLong(), member);
+        AudioChannel audioChannel = (AudioChannel) guild.getGuildChannelById(channelId);
+        if (audioChannel != null)
+            ((AbstractGuildAudioChannelImpl<?, ?>) audioChannel).getConnectedMembersMap().put(member.getIdLong(), member);
         else
             LOG.error("Received a GuildVoiceState with a channel ID for a non-existent channel! ChannelId: {} GuildId: {} UserId: {}",
                       channelId, guild.getId(), user.getId());
@@ -571,7 +576,7 @@ public class EntityBuilder
                   .setSessionId(voiceStateJson.getString("session_id"))
                   .setStream(voiceStateJson.getBoolean("self_stream"))
                   .setRequestToSpeak(timestamp)
-                  .setConnectedChannel(voiceChannel);
+                  .setConnectedChannel(audioChannel);
     }
 
     public void updateMember(GuildImpl guild, MemberImpl member, DataObject content, List<Role> newRoles)
@@ -763,12 +768,12 @@ public class EntityBuilder
         try
         {
             type = gameJson.isNull("type")
-                ? Activity.ActivityType.DEFAULT
+                ? Activity.ActivityType.PLAYING
                 : Activity.ActivityType.fromKey(Integer.parseInt(gameJson.get("type").toString()));
         }
         catch (NumberFormatException e)
         {
-            type = Activity.ActivityType.DEFAULT;
+            type = Activity.ActivityType.PLAYING;
         }
 
         RichPresence.Timestamps timestamps = null;
@@ -984,8 +989,49 @@ public class EntityBuilder
             .setTopic(json.getString("topic", null))
             .setPosition(json.getInt("position"))
             .setNSFW(json.getBoolean("nsfw"))
-            .setNews(json.getInt("type") == 5)
             .setSlowmode(json.getInt("rate_limit_per_user", 0));
+
+        createOverridesPass(channel, json.getArray("permission_overwrites"));
+        if (playbackCache)
+            getJDA().getEventCache().playbackCache(EventCache.Type.CHANNEL, id);
+        return channel;
+    }
+
+    public NewsChannel createNewsChannel(DataObject json, long guildId)
+    {
+        return createNewsChannel(null, json, guildId);
+
+    }
+
+    public NewsChannel createNewsChannel(GuildImpl guildObj, DataObject json, long guildId)
+    {
+        boolean playbackCache = false;
+        final long id = json.getLong("id");
+        NewsChannelImpl channel = (NewsChannelImpl) getJDA().getNewsChannelView().get(id);
+        if (channel == null)
+        {
+            if (guildObj == null)
+                guildObj = (GuildImpl) getJDA().getGuildsView().get(guildId);
+            SnowflakeCacheViewImpl<NewsChannel>
+                    guildNewsView = guildObj.getNewsChannelView(),
+                    newsView = getJDA().getNewsChannelView();
+            try (
+                    UnlockHook glock = guildNewsView.writeLock();
+                    UnlockHook jlock = newsView.writeLock())
+            {
+                channel = new NewsChannelImpl(id, guildObj);
+                guildNewsView.getMap().put(id, channel);
+                playbackCache = newsView.getMap().put(id, channel) == null;
+            }
+        }
+
+        channel
+                .setParent(json.getLong("parent_id", 0))
+                .setLastMessageId(json.getLong("last_message_id", 0))
+                .setName(json.getString("name"))
+                .setTopic(json.getString("topic", null))
+                .setPosition(json.getInt("position"))
+                .setNSFW(json.getBoolean("nsfw"));
 
         createOverridesPass(channel, json.getArray("permission_overwrites"));
         if (playbackCache)
@@ -1014,10 +1060,7 @@ public class EntityBuilder
                 UnlockHook vlock = guildVoiceView.writeLock();
                 UnlockHook jlock = voiceView.writeLock())
             {
-                if (json.getInt("type") == ChannelType.STAGE.getId())
-                    channel = new StageChannelImpl(id, guild);
-                else
-                    channel = new VoiceChannelImpl(id, guild);
+                channel = new VoiceChannelImpl(id, guild);
                 guildVoiceView.getMap().put(id, channel);
                 playbackCache = voiceView.getMap().put(id, channel) == null;
             }
@@ -1028,6 +1071,46 @@ public class EntityBuilder
             .setName(json.getString("name"))
             .setPosition(json.getInt("position"))
             .setUserLimit(json.getInt("user_limit"))
+            .setBitrate(json.getInt("bitrate"))
+            .setRegion(json.getString("rtc_region", null));
+
+        createOverridesPass(channel, json.getArray("permission_overwrites"));
+        if (playbackCache)
+            getJDA().getEventCache().playbackCache(EventCache.Type.CHANNEL, id);
+        return channel;
+    }
+
+    public StageChannel createStageChannel(DataObject json, long guildId)
+    {
+        return createStageChannel(null, json, guildId);
+    }
+
+    public StageChannel createStageChannel(GuildImpl guild, DataObject json, long guildId)
+    {
+        boolean playbackCache = false;
+        final long id = json.getLong("id");
+        StageChannelImpl channel = ((StageChannelImpl) getJDA().getStageChannelView().get(id));
+        if (channel == null)
+        {
+            if (guild == null)
+                guild = (GuildImpl) getJDA().getGuildsView().get(guildId);
+            SnowflakeCacheViewImpl<StageChannel>
+                    guildStageView = guild.getStageChannelsView(),
+                    stageView = getJDA().getStageChannelView();
+            try (
+                    UnlockHook vlock = guildStageView.writeLock();
+                    UnlockHook jlock = stageView.writeLock())
+            {
+                channel = new StageChannelImpl(id, guild);
+                guildStageView.getMap().put(id, channel);
+                playbackCache = stageView.getMap().put(id, channel) == null;
+            }
+        }
+
+        channel
+            .setParent(json.getLong("parent_id", 0))
+            .setName(json.getString("name"))
+            .setPosition(json.getInt("position"))
             .setBitrate(json.getInt("bitrate"))
             .setRegion(json.getString("rtc_region", null));
 
@@ -1160,7 +1243,10 @@ public class EntityBuilder
     {
         final long channelId = jsonObject.getLong("channel_id");
 
+        //TODO-v5-unified-channel-cache
         MessageChannel chan = getJDA().getTextChannelById(channelId);
+        if (chan == null)
+            chan = getJDA().getNewsChannelById(channelId);
         if (chan == null)
             chan = getJDA().getPrivateChannelById(channelId);
         if (chan == null && !jsonObject.isNull("guild_id"))
@@ -1173,7 +1259,10 @@ public class EntityBuilder
         long channelId = jsonObject.getUnsignedLong("channel_id");
         if (channel != null && channelId != channel.getIdLong())
         {
+            //TODO-v5-unified-channel-cache
             channel = api.getTextChannelById(channelId);
+            if (channel == null)
+                channel = api.getNewsChannelById(channelId);
             if (channel == null)
                 channel = api.getPrivateChannelById(channelId);
         }
@@ -1228,30 +1317,25 @@ public class EntityBuilder
             activity = createMessageActivity(jsonObject);
 
         User user;
-        switch (channel.getType())
-        {
-            case PRIVATE:
-                if (authorId == getJDA().getSelfUser().getIdLong())
-                    user = getJDA().getSelfUser();
+        if (channel.getType().isGuild()) {
+            Guild guild = ((GuildChannel) channel).getGuild();
+            if (member == null)
+                member = (MemberImpl) guild.getMemberById(authorId);
+            user = member != null ? member.getUser() : null;
+            if (user == null)
+            {
+                if (fromWebhook || !modifyCache)
+                    user = createUser(author);
                 else
-                    user = ((PrivateChannel) channel).getUser();
-                break;
-            case GROUP:
-                throw new IllegalStateException("Cannot build a message for a group channel, how did this even get here?");
-            case TEXT:
-                Guild guild = ((TextChannel) channel).getGuild();
-                if (member == null)
-                    member = (MemberImpl) guild.getMemberById(authorId);
-                user = member != null ? member.getUser() : null;
-                if (user == null)
-                {
-                    if (fromWebhook || !modifyCache)
-                        user = createUser(author);
-                    else
-                        throw new IllegalArgumentException(MISSING_USER); // Specifically for MESSAGE_CREATE
-                }
-                break;
-            default: throw new IllegalArgumentException("Invalid Channel for creating a Message [" + channel.getType() + ']');
+                    throw new IllegalArgumentException(MISSING_USER); // Specifically for MESSAGE_CREATE
+            }
+        }
+        else {
+            //Assume private channel
+            if (authorId == getJDA().getSelfUser().getIdLong())
+                user = getJDA().getSelfUser();
+            else
+                user = ((PrivateChannel) channel).getUser();
         }
 
         if (modifyCache && !fromWebhook) // update the user information on message receive
@@ -1643,9 +1727,12 @@ public class EntityBuilder
         final String token = object.getString("token", null);
         final WebhookType type = WebhookType.fromKey(object.getInt("type", -1));
 
-        TextChannel channel = getJDA().getTextChannelById(channelId);
+        //TODO-v5-unified-channel-cache
+        BaseGuildMessageChannel channel = getJDA().getTextChannelById(channelId);
+        if (channel == null)
+            channel = getJDA().getNewsChannelById(channelId);
         if (channel == null && !allowMissingChannel)
-            throw new NullPointerException(String.format("Tried to create Webhook for an un-cached TextChannel! WebhookId: %s ChannelId: %s GuildId: %s",
+            throw new NullPointerException(String.format("Tried to create Webhook for an un-cached Guild MessageChannel! WebhookId: %s ChannelId: %s GuildId: %s",
                     id, channelId, guildId));
 
         Object name = !object.isNull("name") ? object.get("name") : null;

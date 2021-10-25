@@ -17,6 +17,8 @@
 package net.dv8tion.jda.api.audit;
 
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.GuildChannel;
+import net.dv8tion.jda.api.entities.ICategorizableChannel;
 
 /**
  * Enum of possible/expected keys that can be provided
@@ -193,14 +195,14 @@ public enum AuditLogKey
 
     // CHANNEL
     /**
-     * Change of the {@link net.dv8tion.jda.api.entities.GuildChannel#getName() GuildChannel.getName()} value.
+     * Change of the {@link GuildChannel#getName() GuildChannel.getName()} value.
      *
      * <p>Expected type: <b>String</b>
      */
     CHANNEL_NAME("name"),
 
     /**
-     * Change of the {@link net.dv8tion.jda.api.entities.GuildChannel#getParent() GuildChannel.getParent()} value.
+     * Change of the {@link ICategorizableChannel#getParentCategory()} ICategorizable.getParentCategory()} value.
      * <br>Use with {@link net.dv8tion.jda.api.entities.Guild#getCategoryById(String) Guild.getCategoryById(String)}
      *
      * <p>Expected type: <b>String</b>
