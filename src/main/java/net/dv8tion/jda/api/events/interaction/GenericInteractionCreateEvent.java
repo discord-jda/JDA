@@ -101,7 +101,7 @@ public class GenericInteractionCreateEvent extends Event implements Interaction
     @Override
     public boolean isAcknowledged()
     {
-        return false;
+        return interaction.isAcknowledged();
     }
 
     @Nonnull

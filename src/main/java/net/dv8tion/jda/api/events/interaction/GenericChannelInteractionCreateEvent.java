@@ -41,12 +41,6 @@ public class GenericChannelInteractionCreateEvent extends GenericInteractionCrea
         return interaction.getHook();
     }
 
-    @Override
-    public boolean isAcknowledged()
-    {
-        return interaction.isAcknowledged();
-    }
-
     @NotNull
     @Override
     public ReplyAction deferReply()
