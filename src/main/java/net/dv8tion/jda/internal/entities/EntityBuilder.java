@@ -37,6 +37,7 @@ import net.dv8tion.jda.api.entities.templates.TemplateGuild;
 import net.dv8tion.jda.api.entities.templates.TemplateRole;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleAddEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleRemoveEvent;
+import net.dv8tion.jda.api.events.guild.member.update.GuildMemberUpdateAvatarEvent;
 import net.dv8tion.jda.api.events.guild.member.update.GuildMemberUpdateBoostTimeEvent;
 import net.dv8tion.jda.api.events.guild.member.update.GuildMemberUpdateNicknameEvent;
 import net.dv8tion.jda.api.events.guild.member.update.GuildMemberUpdatePendingEvent;
@@ -493,6 +494,8 @@ public class EntityBuilder
             // Create a brand new member
             member = new MemberImpl(guild, user);
             member.setNickname(memberJson.getString("nick", null));
+            member.setAvatarId(memberJson.getString("avatar", null));
+
             long epoch = 0;
             if (!memberJson.isNull("premium_since"))
             {
@@ -591,6 +594,19 @@ public class EntityBuilder
                     new GuildMemberUpdateNicknameEvent(
                         getJDA(), responseNumber,
                         member, oldNick));
+            }
+        }
+        if (content.hasKey("avatar"))
+        {
+            String oldAvatarId = member.getAvatarId();
+            String newAvatarId = content.getString("avatar", null);
+            if (!Objects.equals(oldAvatarId, newAvatarId))
+            {
+                member.setAvatarId(newAvatarId);
+                getJDA().handleEvent(
+                        new GuildMemberUpdateAvatarEvent(
+                                getJDA(), responseNumber,
+                                member, oldAvatarId));
             }
         }
         if (content.hasKey("premium_since"))
@@ -1685,11 +1701,13 @@ public class EntityBuilder
 
         final DataObject channelObject = object.getObject("channel");
         final ChannelType channelType = ChannelType.fromId(channelObject.getInt("type"));
+        final Invite.TargetType targetType = Invite.TargetType.fromId(object.getInt("target_type", 0));
 
         final Invite.InviteType type;
         final Invite.Guild guild;
         final Invite.Channel channel;
         final Invite.Group group;
+        final Invite.InviteTarget target;
 
         if (channelType == ChannelType.GROUP)
         {
@@ -1747,6 +1765,28 @@ public class EntityBuilder
             group = null;
         }
 
+        switch (targetType)
+        {
+        case EMBEDDED_APPLICATION:
+            final DataObject applicationObject = object.getObject("target_application");
+
+            Invite.EmbeddedApplication application = new InviteImpl.EmbeddedApplicationImpl(
+                    applicationObject.getString("icon", null), applicationObject.getString("name"), applicationObject.getString("description"),
+                    applicationObject.getString("summary"), applicationObject.getLong("id"), applicationObject.getInt("max_participants", -1)
+            );
+            target = new InviteImpl.InviteTargetImpl(targetType, application, null);
+            break;
+        case STREAM:
+            final DataObject targetUserObject = object.getObject("target_user");
+            target = new InviteImpl.InviteTargetImpl(targetType, null, createUser(targetUserObject));
+            break;
+        case NONE:
+            target = null;
+            break;
+        default:
+            target = new InviteImpl.InviteTargetImpl(targetType, null, null);
+        }
+
         final int maxAge;
         final int maxUses;
         final boolean temporary;
@@ -1774,8 +1814,8 @@ public class EntityBuilder
         }
 
         return new InviteImpl(getJDA(), code, expanded, inviter,
-                              maxAge, maxUses, temporary,
-                              timeCreated, uses, channel, guild, group, type);
+                              maxAge, maxUses, temporary, timeCreated,
+                              uses, channel, guild, group, target, type);
     }
 
     public Template createTemplate(DataObject object)

@@ -662,6 +662,12 @@ public class OptionData implements SerializableData
         option.setRequired(json.getBoolean("required"));
         option.setMinValue(json.getDouble("min_value", MIN_NEGATIVE_NUMBER));
         option.setMaxValue(json.getDouble("max_value", MAX_POSITIVE_NUMBER));
+        if (type == OptionType.CHANNEL)
+        {
+            option.setChannelTypes(json.optArray("channel_types")
+                    .map(it -> it.stream(DataArray::getInt).map(ChannelType::fromId).collect(Collectors.toSet()))
+                    .orElse(Collections.emptySet()));
+        }
         json.optArray("choices").ifPresent(choices1 ->
                 choices1.stream(DataArray::getObject).forEach(o ->
                 {
