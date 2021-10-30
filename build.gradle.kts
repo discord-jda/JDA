@@ -270,6 +270,25 @@ publishing {
             artifact(javadocJar)
             artifact(sourcesJar)
 
+            pom {
+                name.set("JDA")
+                issueManagement {
+                    url.set("https://github.com/DV8FromTheWorld/JDA/issues")
+                    system.set("Github")
+                }
+                scm {
+                    url.set("https://github.com/DV8FromTheWorld/JDA")
+                    connection.set("scm:git:git://github.com/DV8FromTheWorld/JDA")
+                    developerConnection.set("scm:git:ssh://github.com/DV8FromTheWorld/JDA.git")
+                }
+                licenses {
+                    license {
+                        name.set("Apache-2.0")
+                        url.set("https://www.apache.org/licenses/LICENSE-2.0.txt")
+                    }
+                }
+            }
+
             repositories {
                 maven {
                     url = uri(s3PublishingUrl)
