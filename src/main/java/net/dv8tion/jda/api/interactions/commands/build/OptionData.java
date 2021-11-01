@@ -710,8 +710,10 @@ public class OptionData implements SerializableData
         OptionType type = OptionType.fromKey(json.getInt("type"));
         OptionData option = new OptionData(type, name, description);
         option.setRequired(json.getBoolean("required"));
-        option.setMinValue(json.getDouble("min_value", MIN_NEGATIVE_NUMBER));
-        option.setMaxValue(json.getDouble("max_value", MAX_POSITIVE_NUMBER));
+        if (!json.isNull("min_value"))
+            option.setMinValue(json.getDouble("min_value"));
+        if (!json.isNull("max_value"))
+            option.setMaxValue(json.getDouble("max_value"));
         if (type == OptionType.CHANNEL)
         {
             option.setChannelTypes(json.optArray("channel_types")
