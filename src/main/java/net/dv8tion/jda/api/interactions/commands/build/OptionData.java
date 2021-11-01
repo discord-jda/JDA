@@ -462,6 +462,64 @@ public class OptionData implements SerializableData
     }
 
     /**
+     * Configure the minimal and maximal value which can be provided for this option.
+     *
+     * @param  minValue
+     *         The minimal value which can be provided for this option.
+     * @param  maxValue
+     *         The maximal value which can be provided for this option.
+     * @throws IllegalArgumentException
+     *         If any of the following checks fail
+     *         <ul>
+     *             <li>{@link OptionType type of this option} is {@link OptionType#NUMBER NUMBER}</li>
+     *             <li>{@code minValue} is larger than or equal to {@link OptionData#MIN_NEGATIVE_NUMBER MIN_NEGATIVE_NUMBER}</li>
+     *             <li>{@code maxValue} is lower than or equal to {@link OptionData#MAX_POSITIVE_NUMBER MAX_POSITIVE_NUMBER}</li>
+     *         </ul>
+     *
+     * @return The OptionData instance, for chaining
+     */
+    @Nonnull
+    public OptionData setRequiredRange(long minValue, long maxValue)
+    {
+        if (type != OptionType.INTEGER)
+            throw new IllegalArgumentException("Can only set min and max long value for options of type INTEGER");
+        Checks.check(minValue >= MIN_NEGATIVE_NUMBER, "Long value may not be lower than %f", MIN_NEGATIVE_NUMBER);
+        Checks.check(maxValue <= MAX_POSITIVE_NUMBER, "Long value may not be larger than %f", MAX_POSITIVE_NUMBER);
+        this.minValue = minValue;
+        this.maxValue = maxValue;
+        return this;
+    }
+
+    /**
+     * Configure the minimal and maximal value which can be provided for this option.
+     *
+     * @param  minValue
+     *         The minimal value which can be provided for this option.
+     * @param  maxValue
+     *         The maximal value which can be provided for this option.
+     * @throws IllegalArgumentException
+     *         If any of the following checks fail
+     *         <ul>
+     *             <li>{@link OptionType type of this option} is {@link OptionType#NUMBER NUMBER}</li>
+     *             <li>{@code minValue} is larger than or equal to {@link OptionData#MIN_NEGATIVE_NUMBER MIN_NEGATIVE_NUMBER}</li>
+     *             <li>{@code maxValue} is lower than or equal to {@link OptionData#MAX_POSITIVE_NUMBER MAX_POSITIVE_NUMBER}</li>
+     *         </ul>
+     *
+     * @return The OptionData instance, for chaining
+     */
+    @Nonnull
+    public OptionData setRequiredRange(double minValue, double maxValue)
+    {
+        if (type != OptionType.NUMBER)
+            throw new IllegalArgumentException("Can only set min and max floating value for options of type NUMBER");
+        Checks.check(minValue >= MIN_NEGATIVE_NUMBER, "Double value may not be lower than %f", MIN_NEGATIVE_NUMBER);
+        Checks.check(maxValue <= MAX_POSITIVE_NUMBER, "Double value may not be larger than %f", MAX_POSITIVE_NUMBER);
+        this.minValue = minValue;
+        this.maxValue = maxValue;
+        return this;
+    }
+
+    /**
      * Add a predefined choice for this option.
      * <br>The user can only provide one of the choices and cannot specify any other value.
      *
