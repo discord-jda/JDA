@@ -644,6 +644,7 @@ public class Command implements ISnowflake
          *
          * @return The minimum value for this option or {@code null}
          */
+        @Nullable
         public Double getMinValue()
         {
             return minValue;
@@ -656,6 +657,7 @@ public class Command implements ISnowflake
          *
          * @return The maximum value for this option or {@code null}
          */
+        @Nullable
         public Double getMaxValue()
         {
             return maxValue;

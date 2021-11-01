@@ -200,6 +200,7 @@ public class OptionData implements SerializableData
      *
      * @return The minimum value for this option
      */
+    @Nullable
     public Number getMinValue()
     {
         return minValue;
@@ -212,6 +213,7 @@ public class OptionData implements SerializableData
      *
      * @return The maximum value for this option
      */
+    @Nullable
     public Number getMaxValue()
     {
         return maxValue;
