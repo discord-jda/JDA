@@ -410,7 +410,7 @@ public class OptionData implements SerializableData
     public OptionData setMinValue(double value)
     {
         if (type != OptionType.NUMBER)
-            throw new IllegalArgumentException("Can only set min floating value for options of type NUMBER");
+            throw new IllegalArgumentException("Can only set min double value for options of type NUMBER");
         Checks.check(value >= MIN_NEGATIVE_NUMBER, "Double value may not be lower than %f", MIN_NEGATIVE_NUMBER);
         this.minValue = value;
         return this;
@@ -458,7 +458,7 @@ public class OptionData implements SerializableData
     public OptionData setMaxValue(double value)
     {
         if (type != OptionType.NUMBER)
-            throw new IllegalArgumentException("Can only set max floating value for options of type NUMBER");
+            throw new IllegalArgumentException("Can only set max double value for options of type NUMBER");
         Checks.check(value <= MAX_POSITIVE_NUMBER, "Double value may not be larger than %f", MAX_POSITIVE_NUMBER);
         this.maxValue = value;
         return this;
@@ -514,7 +514,7 @@ public class OptionData implements SerializableData
     public OptionData setRequiredRange(double minValue, double maxValue)
     {
         if (type != OptionType.NUMBER)
-            throw new IllegalArgumentException("Can only set min and max floating value for options of type NUMBER");
+            throw new IllegalArgumentException("Can only set min and max double value for options of type NUMBER");
         Checks.check(minValue >= MIN_NEGATIVE_NUMBER, "Double value may not be lower than %f", MIN_NEGATIVE_NUMBER);
         Checks.check(maxValue <= MAX_POSITIVE_NUMBER, "Double value may not be larger than %f", MAX_POSITIVE_NUMBER);
         this.minValue = minValue;
