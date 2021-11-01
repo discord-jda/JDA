@@ -550,9 +550,9 @@ public class Command implements ISnowflake
         private final int type;
         private final boolean required;
         private final Set<ChannelType> channelTypes;
-        private final double minValue;
-        private final double maxValue;
         private final List<Choice> choices;
+        private Double minValue;
+        private Double maxValue;
 
         public Option(@Nonnull DataObject json)
         {
@@ -560,14 +560,16 @@ public class Command implements ISnowflake
             this.description = json.getString("description");
             this.type = json.getInt("type");
             this.required = json.getBoolean("required");
-            this.minValue = json.getDouble("min_value", OptionData.MIN_NEGATIVE_NUMBER);
-            this.maxValue = json.getDouble("max_value", OptionData.MAX_POSITIVE_NUMBER);
             this.channelTypes = Collections.unmodifiableSet(json.optArray("channel_types")
                     .map(it -> it.stream(DataArray::getInt).map(ChannelType::fromId).collect(Collectors.toSet()))
                     .orElse(Collections.emptySet()));
             this.choices = json.optArray("choices")
                 .map(it -> it.stream(DataArray::getObject).map(Choice::new).collect(Collectors.toList()))
                 .orElse(Collections.emptyList());
+            if (!json.isNull("min_value"))
+                this.minValue = json.getDouble("min_value");
+            if (!json.isNull("max_value"))
+                this.maxValue = json.getDouble("max_value");
         }
 
         /**
@@ -637,24 +639,24 @@ public class Command implements ISnowflake
 
         /**
          * The minimum value which can be provided for this option.
-         * <br>This returns {@link OptionData#MIN_NEGATIVE_NUMBER OptionData#MIN_NEGATIVE_NUMBER} if the option is not of type
-         * {@link OptionType#INTEGER INTEGER} or {@link OptionType#NUMBER NUMBER}.
+         * <br>This returns {@code null} if the value is not set or if the option
+         * is not of type {@link OptionType#INTEGER INTEGER} or {@link OptionType#NUMBER NUMBER}.
          *
-         * @return The minimal value for this option
+         * @return The minimum value for this option or {@code null}
          */
-        public double getMinValue()
+        public Double getMinValue()
         {
             return minValue;
         }
 
         /**
          * The maximum value which can be provided for this option.
-         * <br>This returns {@link OptionData#MAX_POSITIVE_NUMBER OptionData#MAX_POSITIVE_NUMBER} if the option is not of type
-         * {@link OptionType#INTEGER INTEGER} or {@link OptionType#NUMBER NUMBER}.
+         * <br>This returns {@code null} if the value is not set or if the option
+         * is not of type {@link OptionType#INTEGER INTEGER} or {@link OptionType#NUMBER NUMBER}.
          *
-         * @return The maximal value for this option
+         * @return The maximum value for this option or {@code null}
          */
-        public double getMaxValue()
+        public Double getMaxValue()
         {
             return maxValue;
         }
