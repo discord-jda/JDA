@@ -4,17 +4,14 @@ import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.ChannelAction;
 import net.dv8tion.jda.api.requests.restaction.WebhookAction;
-import net.dv8tion.jda.api.requests.restaction.pagination.GuildThreadPaginationAction;
-import net.dv8tion.jda.api.utils.MiscUtil;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
-import java.util.stream.Collectors;
 
 //TODO-v5: Docs
-public interface BaseGuildMessageChannel extends GuildMessageChannel, GuildChannel, ICategorizableChannel, ICopyableChannel, IPermissionContainer, IMemberContainer, IInviteContainer, IPositionableChannel
+public interface BaseGuildMessageChannel extends GuildMessageChannel, IGuildThreadContainer, GuildChannel, ICategorizableChannel, ICopyableChannel, IPermissionContainer, IMemberContainer, IInviteContainer, IPositionableChannel
 {
     /**
      * The topic set for this TextChannel.
@@ -118,53 +115,6 @@ public interface BaseGuildMessageChannel extends GuildMessageChannel, GuildChann
     @Nonnull
     @CheckReturnValue
     AuditableRestAction<Void> deleteWebhookById(@Nonnull String id);
-
-    //TODO-threads: Move all thread related methods to a ThreadParentChannel type as, in the future, there will be
-    // a channel type that doesn't support messages but does support threads.
-
-    //TODO-v5 - Docs
-    default List<GuildThread> getGuildThreads()
-    {
-        return getGuild().getGuildThreads()
-            .stream()
-            .filter(thread -> thread.getParentChannel() == this)
-            .collect(Collectors.toList());
-    }
-
-    //TODO-v5: Docs
-    @CheckReturnValue
-    default RestAction<GuildThread> createThread(String name)
-    {
-        return createThread(name, false);
-    }
-
-    //TODO-v5: Docs
-    @CheckReturnValue
-    RestAction<GuildThread> createThread(String name, boolean isPrivate);
-
-
-    //TODO-v5: Docs
-    @CheckReturnValue
-    RestAction<GuildThread> createThread(String name, long messageId);
-
-    //TODO-v5: Docs
-    @CheckReturnValue
-    default RestAction<GuildThread> createThread(String name, String messageId)
-    {
-        return createThread(name, MiscUtil.parseSnowflake(messageId));
-    }
-
-    //TODO-v5: Docs
-    @CheckReturnValue
-    GuildThreadPaginationAction retrieveArchivedPublicThreads();
-
-    //TODO-v5: Docs
-    @CheckReturnValue
-    GuildThreadPaginationAction retrieveArchivedPrivateThreads();
-
-    //TODO-v5: Docs
-    @CheckReturnValue
-    GuildThreadPaginationAction retrieveArchivedPrivateJoinedThreads();
 
     @Override
     ChannelAction<? extends BaseGuildMessageChannel> createCopy(@Nonnull Guild guild);

@@ -25,8 +25,7 @@ import javax.annotation.Nonnull;
  * <br>Note that this implementation is not considered thread-safe as modifications to the cache are not done
  * with a lock. Calling methods on this class from multiple threads is not recommended.
  *
- * //TODO-threads: This should reference the ThreadParentChannel instead.
- * <p><b>Must provide not-null {@link BaseGuildMessageChannel BaseGuildMessageChannel} to compile a valid
+ * <p><b>Must provide not-null {@link IGuildThreadContainer IGuildThreadContainer} to compile a valid
  * pagination route.</b>
  *
  * <h2>Limits:</h2>
@@ -51,19 +50,15 @@ import javax.annotation.Nonnull;
  * }
  * }</pre>
  *
- * @since  3.1
- *
- * //TODO-threads: Use ThreadParentChannel
- * @see    BaseGuildMessageChannel#retrieveArchivedPublicThreads()
- * @see    BaseGuildMessageChannel#retrieveArchivedPrivateThreads()
- * @see    BaseGuildMessageChannel#retrieveArchivedPrivateJoinedThreads()
+ * @see    IGuildThreadContainer#retrieveArchivedPublicThreads()
+ * @see    IGuildThreadContainer#retrieveArchivedPrivateThreads()
+ * @see    IGuildThreadContainer#retrieveArchivedPrivateJoinedThreads()
  */
 public interface GuildThreadPaginationAction extends PaginationAction<GuildThread, GuildThreadPaginationAction>
 {
     //TODO-v5: Docs
-    //TODO-threads: Replace with ThreadParentChannel
     @Nonnull
-    BaseGuildMessageChannel getChannel();
+    IGuildThreadContainer getChannel();
 
     /**
      * The current target {@link net.dv8tion.jda.api.entities.Guild Guild} for this GuildThreadPaginationAction.

@@ -17,6 +17,7 @@
 package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.api.requests.restaction.PermissionOverrideAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.utils.Checks;
 
@@ -28,17 +29,8 @@ import java.util.FormattableFlags;
 import java.util.Formatter;
 import java.util.List;
 
-public interface GuildThread extends GuildMessageChannel, IMemberContainer
+public interface GuildThread extends GuildMessageChannel, IMemberContainer, IPermissionContainer
 {
-    //Stuff needed from GuildChannel
-    // - Interface: Mentionable
-    // - getJDA
-    // - getName
-    // - getGuild
-    // - getChannelType
-    // - getManager //TODO will need to be ThreadManager, not ChannelManager
-    // - getMembers //TODO might not need this as we'll have getThreadMembers()
-
     //TODO fields that need to be researched:
     // - rate_limit_per_user
     // - last_pin_timestamp (do we even use this for Text/News channels?)
@@ -55,13 +47,8 @@ public interface GuildThread extends GuildMessageChannel, IMemberContainer
     //TODO docs | Max returned amount is capped at 50 regardless of actual count
     int getMemberCount();
 
-    default boolean isNSFW()
-    {
-        return getParentChannel().isNSFW();
-    }
-
     //TODO | This name is bad. Looking for alternatives.
-    default boolean isSubscribedToThread()
+    default boolean isJoined()
     {
         return getSelfThreadMember() != null;
     }
@@ -69,7 +56,17 @@ public interface GuildThread extends GuildMessageChannel, IMemberContainer
     boolean isLocked();
 
     @Nonnull
-    BaseGuildMessageChannel getParentChannel();
+    IGuildThreadContainer getParentChannel();
+
+    @Nonnull
+    default GuildMessageChannel getParentMessageChannel()
+    {
+        if (getParentChannel() instanceof GuildMessageChannel) {
+            return (GuildMessageChannel) getParentChannel();
+        }
+
+        throw new UnsupportedOperationException("Parent of this thread is not a MessageChannel. Parent is type: " + getParentChannel().getType().getId());
+    }
 
     @Nullable
     default GuildThreadMember getSelfThreadMember()
@@ -186,6 +183,28 @@ public interface GuildThread extends GuildMessageChannel, IMemberContainer
         Checks.notNull(member, "Member");
         return removeThreadMemberById(member.getIdLong());
     }
+
+    // ==== Proxied IPermissionContainer methods
+    @Override
+    default PermissionOverride getPermissionOverride(@Nonnull IPermissionHolder permissionHolder)
+    {
+        return getParentChannel().getPermissionOverride(permissionHolder);
+    }
+
+    @Nonnull
+    @Override
+    default List<PermissionOverride> getPermissionOverrides()
+    {
+        return getParentChannel().getPermissionOverrides();
+    }
+
+    @Nonnull
+    @Override
+    default PermissionOverrideAction putPermissionOverride(@Nonnull IPermissionHolder permissionHolder)
+    {
+        return getParentChannel().putPermissionOverride(permissionHolder);
+    }
+
 
     @Override
     default void formatTo(Formatter formatter, int flags, int width, int precision)

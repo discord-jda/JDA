@@ -6,6 +6,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.BaseGuildMessageChannel;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.GuildThread;
+import net.dv8tion.jda.api.entities.IGuildThreadContainer;
 import net.dv8tion.jda.api.exceptions.ParsingException;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
@@ -21,8 +22,7 @@ import java.util.List;
 
 public class GuildThreadPaginationActionImpl extends PaginationActionImpl<GuildThread, GuildThreadPaginationAction> implements GuildThreadPaginationAction
 {
-    //TODO-threads: Replace with ThreadParentChannel
-    protected final BaseGuildMessageChannel channel;
+    protected final IGuildThreadContainer channel;
 
     public GuildThreadPaginationActionImpl(JDA api, Route.CompiledRoute route, BaseGuildMessageChannel channel)
     {
@@ -30,10 +30,9 @@ public class GuildThreadPaginationActionImpl extends PaginationActionImpl<GuildT
         this.channel = channel;
     }
 
-    //TODO-threads: Replace with ThreadParentChannel
     @Nonnull
     @Override
-    public BaseGuildMessageChannel getChannel()
+    public IGuildThreadContainer getChannel()
     {
         return channel;
     }

@@ -387,7 +387,7 @@ public class ChannelUpdateHandler extends SocketHandler
         boolean hasAccessToChannel = channel.getGuild().getSelfMember().hasPermission((IPermissionContainer) channel, Permission.VIEW_CHANNEL);
         if (channel.getType().isMessage() && !hasAccessToChannel)
         {
-            handleHideChildThreads((BaseGuildMessageChannel) channel);
+            handleHideChildThreads((IGuildThreadContainer) channel);
         }
 
         return null;
@@ -545,7 +545,7 @@ public class ChannelUpdateHandler extends SocketHandler
         return true;
     }
 
-    private void handleHideChildThreads(BaseGuildMessageChannel channel)
+    private void handleHideChildThreads(IGuildThreadContainer channel)
     {
         List<GuildThread> threads = channel.getGuildThreads();
         if (threads.isEmpty())

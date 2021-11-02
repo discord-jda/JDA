@@ -124,10 +124,10 @@ public class GuildThreadImpl implements GuildThread
 
     @Override
     @Nonnull
-    public BaseGuildMessageChannel getParentChannel()
+    public IGuildThreadContainer getParentChannel()
     {
         //noinspection ConstantConditions
-        return (BaseGuildMessageChannel) guild.getGuildChannelById(parentChannelId);
+        return (IGuildThreadContainer) guild.getGuildChannelById(parentChannelId);
     }
 
     @Override
