@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 //TODO-v5: Docs
-public interface GuildMessageChannel extends GuildChannel, MessageChannel
+public interface GuildMessageChannel extends GuildChannel, MessageChannel, IPermissionContainer
 {
     /**
      * Whether we can send messages in this channel.

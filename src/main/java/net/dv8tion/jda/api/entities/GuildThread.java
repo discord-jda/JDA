@@ -29,7 +29,7 @@ import java.util.FormattableFlags;
 import java.util.Formatter;
 import java.util.List;
 
-public interface GuildThread extends GuildMessageChannel, IMemberContainer, IPermissionContainer
+public interface GuildThread extends GuildMessageChannel, IMemberContainer
 {
     //TODO fields that need to be researched:
     // - rate_limit_per_user
