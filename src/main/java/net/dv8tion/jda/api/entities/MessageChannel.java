@@ -316,7 +316,7 @@ public interface MessageChannel extends AbstractChannel, Formattable
     default MessageAction sendMessage(@Nonnull CharSequence text)
     {
         Checks.notEmpty(text, "Provided text for message");
-        Checks.check(text.length() <= Message.MAX_CONTENT_LENGTH, "Provided text for message must be less than " + Message.MAX_CONTENT_LENGTH + " characters in length");
+        Checks.check(text.length() <= Message.MAX_CONTENT_LENGTH, "Provided text for message must be less than %d characters in length", Message.MAX_CONTENT_LENGTH);
 
         if (text instanceof StringBuilder)
             return new MessageActionImpl(getJDA(), null, this, (StringBuilder) text);
@@ -2731,7 +2731,7 @@ public interface MessageChannel extends AbstractChannel, Formattable
     {
         Checks.isSnowflake(messageId, "Message ID");
         Checks.notEmpty(newContent, "Provided message content");
-        Checks.check(newContent.length() <= Message.MAX_CONTENT_LENGTH, "Provided newContent length must be " + Message.MAX_CONTENT_LENGTH + " or less characters.");
+        Checks.check(newContent.length() <= Message.MAX_CONTENT_LENGTH, "Provided newContent length must be %d or less characters.", Message.MAX_CONTENT_LENGTH);
         if (newContent instanceof StringBuilder)
             return new MessageActionImpl(getJDA(), messageId, this, (StringBuilder) newContent);
         else
