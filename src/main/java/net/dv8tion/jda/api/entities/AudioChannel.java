@@ -22,7 +22,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 //TODO-v5: Docs
-public interface AudioChannel extends GuildChannel, IMemberContainer
+public interface AudioChannel extends GuildChannel, IMemberContainer, IPermissionContainer
 {
     /**
      * The audio bitrate of the voice audio that is transmitted in this channel. While higher bitrates can be sent to
