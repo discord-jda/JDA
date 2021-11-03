@@ -179,7 +179,6 @@ public class EntityBuilder
         final String name = guildJson.getString("name", "");
         final String iconId = guildJson.getString("icon", null);
         final String splashId = guildJson.getString("splash", null);
-        final String region = guildJson.getString("region", null);
         final String description = guildJson.getString("description", null);
         final String vanityCode = guildJson.getString("vanity_url_code", null);
         final String bannerId = guildJson.getString("banner", null);
@@ -209,7 +208,6 @@ public class EntityBuilder
         guildObj.setName(name)
                 .setIconId(iconId)
                 .setSplashId(splashId)
-                .setRegion(region)
                 .setDescription(description)
                 .setBannerId(bannerId)
                 .setVanityCode(vanityCode)

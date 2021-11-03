@@ -106,6 +106,7 @@ public class TemplateGuild implements ISnowflake
      * @return The the audio Region this Guild is using for audio connections. Can return Region.UNKNOWN.
      */
     @Nonnull
+    //TODO remove-old-deprecations This should be marked for removal and deleted in v5
     public Region getRegion()
     {
         return Region.fromKey(region);
@@ -118,6 +119,7 @@ public class TemplateGuild implements ISnowflake
      * @return Raw region name
      */
     @Nonnull
+    //TODO remove-old-deprecations This should be marked for removal and deleted in v5
     public String getRegionRaw()
     {
         return region;

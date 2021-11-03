@@ -15,8 +15,6 @@
  */
 package net.dv8tion.jda.api.entities;
 
-import net.dv8tion.jda.annotations.DeprecatedSince;
-import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.Region;
@@ -450,6 +448,7 @@ public interface Guild extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
+    //TODO remove-old-deprecations This should be marked for removal and deleted in v5
     default RestAction<EnumSet<Region>> retrieveRegions()
     {
         return retrieveRegions(true);
@@ -465,6 +464,7 @@ public interface Guild extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
+    //TODO remove-old-deprecations This should be marked for removal and deleted in v5
     RestAction<EnumSet<Region>> retrieveRegions(boolean includeDeprecated);
 
     /**
@@ -1017,46 +1017,6 @@ public interface Guild extends ISnowflake
      */
     @Nonnull
     Timeout getAfkTimeout();
-
-    /**
-     * The Voice {@link net.dv8tion.jda.api.Region Region} that this Guild is
-     * using for audio connections.
-     * <br>If the Region is not recognized, returns {@link net.dv8tion.jda.api.Region#UNKNOWN UNKNOWN} but you
-     * can still use the {@link #getRegionRaw()} to retrieve the raw name this region has.
-     *
-     * <p>This value can be modified using {@link GuildManager#setRegion(net.dv8tion.jda.api.Region)}.
-     *
-     * @return The the audio Region this Guild is using for audio connections. Can return Region.UNKNOWN.
-     *
-     * @deprecated Guilds no longer have the {@link net.dv8tion.jda.api.Region Region} option. Use {@link VoiceChannel#getRegion()} instead.
-     */
-    @Deprecated
-    @ForRemoval(deadline = "5.0.0")
-    @ReplaceWith("VoiceChannel.getRegion()")
-    @DeprecatedSince("4.3.0")
-    @Nonnull
-    default Region getRegion()
-    {
-        return Region.fromKey(getRegionRaw());
-    }
-
-    /**
-     * The raw voice region name that this Guild is using
-     * for audio connections.
-     * <br>This is resolved to an enum constant of {@link net.dv8tion.jda.api.Region Region} by {@link #getRegion()}!
-     *
-     * <p>This value can be modified using {@link GuildManager#setRegion(net.dv8tion.jda.api.Region)}.
-     *
-     * @return Raw region name
-     *
-     * @deprecated Guilds no longer have the {@link net.dv8tion.jda.api.Region Region} option. Use {@link VoiceChannel#getRegion()} instead.
-     */
-    @Deprecated
-    @ForRemoval(deadline = "5.0.0")
-    @ReplaceWith("VoiceChannel.getRegionRaw()")
-    @DeprecatedSince("4.3.0")
-    @Nonnull
-    String getRegionRaw();
 
     /**
      * Used to determine if the provided {@link net.dv8tion.jda.api.entities.User User} is a member of this Guild.

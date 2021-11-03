@@ -15,7 +15,6 @@
  */
 package net.dv8tion.jda.api.hooks;
 
-import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.events.*;
 import net.dv8tion.jda.api.events.application.ApplicationCommandCreateEvent;
 import net.dv8tion.jda.api.events.application.ApplicationCommandDeleteEvent;
@@ -210,13 +209,6 @@ public abstract class ListenerAdapter implements EventListener
     public void onGuildUpdateNotificationLevel(@Nonnull GuildUpdateNotificationLevelEvent event) {}
     public void onGuildUpdateOwner(@Nonnull GuildUpdateOwnerEvent event) {}
 
-    /**
-     * @deprecated This event is no longer supported by discord, use {@link #onChannelUpdateRegion(ChannelUpdateRegionEvent)} instead.
-     */
-    @Deprecated
-    @ForRemoval(deadline = "5.0.0")
-    @ReplaceWith("VoiceChannelUpdateRegionEvent")
-    public void onGuildUpdateRegion(@Nonnull GuildUpdateRegionEvent event) {}
     public void onGuildUpdateSplash(@Nonnull GuildUpdateSplashEvent event) {}
     public void onGuildUpdateVerificationLevel(@Nonnull GuildUpdateVerificationLevelEvent event) {}
     public void onGuildUpdateLocale(@Nonnull GuildUpdateLocaleEvent event) {}

@@ -16,10 +16,6 @@
 
 package net.dv8tion.jda.api.managers;
 
-import net.dv8tion.jda.annotations.DeprecatedSince;
-import net.dv8tion.jda.annotations.ForRemoval;
-import net.dv8tion.jda.annotations.ReplaceWith;
-import net.dv8tion.jda.api.Region;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Icon;
 import net.dv8tion.jda.api.entities.TextChannel;
@@ -165,31 +161,6 @@ public interface GuildManager extends Manager<GuildManager>
     @Nonnull
     @CheckReturnValue
     GuildManager setName(@Nonnull String name);
-
-    /**
-     * Sets the {@link net.dv8tion.jda.api.Region Region} of this {@link net.dv8tion.jda.api.entities.Guild Guild}.
-     *
-     * @param  region
-     *         The new region for this {@link net.dv8tion.jda.api.entities.Guild Guild}
-     *
-     * @throws IllegalArgumentException
-     *         If the provided region is a {@link net.dv8tion.jda.api.Region#isVip() VIP Region} but the guild does not support VIP regions.
-     *         Use {@link net.dv8tion.jda.api.entities.Guild#getFeatures() Guild#getFeatures()} to check if VIP regions are supported.
-     *
-     * @return GuildManager for chaining convenience
-     *
-     * @see    net.dv8tion.jda.api.Region#isVip()
-     * @see    net.dv8tion.jda.api.entities.Guild#getFeatures()
-     * 
-     * @deprecated Guilds no longer have the {@link net.dv8tion.jda.api.Region Region} option. Use {@link ChannelManager#setRegion(Region)} instead.
-     */
-    @Nonnull
-    @CheckReturnValue
-    @Deprecated
-    @ForRemoval(deadline = "5.0.0")
-    @ReplaceWith("ChannelManager.setRegion()")
-    @DeprecatedSince("4.3.0")
-    GuildManager setRegion(@Nonnull Region region);
 
     /**
      * Sets the {@link net.dv8tion.jda.api.entities.Icon Icon} of this {@link net.dv8tion.jda.api.entities.Guild Guild}.

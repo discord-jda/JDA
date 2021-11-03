@@ -88,7 +88,6 @@ public class GuildImpl implements Guild
     private Member owner;
     private String name;
     private String iconId, splashId;
-    private String region;
     private String vanityCode;
     private String description, banner;
     private int maxPresences, maxMembers;
@@ -260,6 +259,7 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
+    //TODO remove-old-deprecations This should be marked for removal and deleted in v5
     public RestAction<EnumSet<Region>> retrieveRegions(boolean includeDeprecated)
     {
         Route.CompiledRoute route = Route.Guilds.GET_VOICE_REGIONS.compile(getId());
@@ -521,13 +521,6 @@ public class GuildImpl implements Guild
     public Timeout getAfkTimeout()
     {
         return afkTimeout;
-    }
-
-    @Nonnull
-    @Override
-    public String getRegionRaw()
-    {
-        return region;
     }
 
     @Override
@@ -1741,12 +1734,6 @@ public class GuildImpl implements Guild
     public GuildImpl setSplashId(String splashId)
     {
         this.splashId = splashId;
-        return this;
-    }
-
-    public GuildImpl setRegion(String region)
-    {
-        this.region = region;
         return this;
     }
 
