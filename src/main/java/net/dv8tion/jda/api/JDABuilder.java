@@ -16,9 +16,6 @@
 package net.dv8tion.jda.api;
 
 import com.neovisionaries.ws.client.WebSocketFactory;
-import net.dv8tion.jda.annotations.DeprecatedSince;
-import net.dv8tion.jda.annotations.ForRemoval;
-import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.audio.factory.IAudioSendFactory;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.hooks.IEventManager;
@@ -549,35 +546,6 @@ public class JDABuilder
     }
 
     /**
-     * Flags used to enable selective parts of the JDA cache to reduce the runtime memory footprint.
-     * <br><b>It is highly recommended to use {@link #setDisabledCacheFlags(EnumSet)} instead
-     * for backwards compatibility</b>. We might add more flags in the future which you then effectively disable
-     * when updating and not changing your setting here.
-     *
-     * @param  flags
-     *         EnumSet containing the flags for cache services that should be <b>enabled</b>
-     *
-     * @return The JDABuilder instance. Useful for chaining.
-     *
-     * @see    #setDisabledCacheFlags(EnumSet)
-     *
-     * @deprecated We add CacheFlags to the enum over time which will be disabled when using this method.
-     *             This introduces breaking changes due to the way the setter works.
-     *             You should use {@link #enableCache(Collection)} and {@link #disableCache(Collection)} instead,
-     *             to disable and enable cache flags without side-effects that may break in future versions.
-     */
-    @Nonnull
-    @Deprecated
-    @ForRemoval(deadline = "5.0.0")
-    @ReplaceWith("enableCache(flags) and disableCache(flags)")
-    @DeprecatedSince("4.2.0")
-    public JDABuilder setEnabledCacheFlags(@Nullable EnumSet<CacheFlag> flags)
-    {
-        this.cacheFlags = flags == null ? EnumSet.noneOf(CacheFlag.class) : EnumSet.copyOf(flags);
-        return this;
-    }
-
-    /**
      * Enable specific cache flags.
      * <br>This will not disable any currently set cache flags.
      *
@@ -624,30 +592,6 @@ public class JDABuilder
         Checks.noneNull(flags, "CacheFlag");
         cacheFlags.addAll(EnumSet.of(flag, flags));
         return this;
-    }
-
-    /**
-     * Flags used to disable parts of the JDA cache to reduce the runtime memory footprint.
-     * <br>Shortcut for {@code setEnabledCacheFlags(EnumSet.complementOf(flags))}
-     *
-     * @param  flags
-     *         EnumSet containing the flags for cache services that should be <b>disabled</b>
-     *
-     * @return The JDABuilder instance. Useful for chaining.
-     *
-     * @deprecated We add CacheFlags to the enum over time which will be disabled when using this method.
-     *             This introduces breaking changes due to the way the setter works.
-     *             You should use {@link #enableCache(Collection)} and {@link #disableCache(Collection)} instead,
-     *             to disable and enable cache flags without side-effects that may break in future versions.
-     */
-    @Nonnull
-    @Deprecated
-    @ForRemoval(deadline = "5.0.0")
-    @ReplaceWith("enableCache(flags) and disableCache(flags)")
-    @DeprecatedSince("4.2.0")
-    public JDABuilder setDisabledCacheFlags(@Nullable EnumSet<CacheFlag> flags)
-    {
-        return setEnabledCacheFlags(flags == null ? EnumSet.allOf(CacheFlag.class) : EnumSet.complementOf(flags));
     }
 
     /**
@@ -1483,42 +1427,6 @@ public class JDABuilder
     public JDABuilder setChunkingFilter(@Nullable ChunkingFilter filter)
     {
         this.chunkingFilter = filter == null ? ChunkingFilter.ALL : filter;
-        return this;
-    }
-
-    /**
-     * Enable typing and presence update events.
-     * <br>These events cover the majority of traffic happening on the gateway and thus cause a lot
-     * of bandwidth usage. Disabling these events means the cache for users might become outdated since
-     * user properties are only updated by presence updates.
-     * <br>Default: true
-     *
-     * <h2>Notice</h2>
-     * This disables the majority of member cache and related events. If anything in your project
-     * relies on member state you should keep this enabled.
-     *
-     * @param  enabled
-     *         True, if guild subscriptions should be enabled
-     *
-     * @return The JDABuilder instance. Useful for chaining.
-     *
-     * @since  4.1.0
-     *
-     * @deprecated This is now superseded by {@link #setDisabledIntents(Collection)} and {@link #setMemberCachePolicy(MemberCachePolicy)}.
-     *             To get identical behavior you can do {@code setMemberCachePolicy(VOICE).setDisabledIntents(GatewayIntent.GUILD_PRESENCES, GatewayIntent.GUILD_MESSAGE_TYPING, GatewayIntent.GUILD_MEMBERS)}
-     */
-    @Nonnull
-    @Deprecated
-    @ForRemoval(deadline = "5.0.0")
-    @ReplaceWith("setDisabledIntents(...).setMemberCachePolicy(...)")
-    @DeprecatedSince("4.2.0")
-    public JDABuilder setGuildSubscriptionsEnabled(boolean enabled)
-    {
-        if (!enabled)
-        {
-            setMemberCachePolicy(MemberCachePolicy.VOICE);
-            intents &= ~GUILD_SUBSCRIPTIONS;
-        }
         return this;
     }
 

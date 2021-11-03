@@ -16,8 +16,6 @@
 
 package net.dv8tion.jda.api.entities;
 
-import net.dv8tion.jda.annotations.DeprecatedSince;
-import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.managers.EmoteManager;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
@@ -78,24 +76,6 @@ public interface Emote extends IMentionable
      */
     @Nonnull
     List<Role> getRoles();
-
-    /**
-     * Whether this Emote has attached roles. This might not be the case when the emote
-     * is retrieved through special cases like audit-logs.
-     *
-     * <p>If this is not true then {@link #getRoles()} will throw {@link IllegalStateException}.
-     *
-     * @return True, if this emote has roles attached
-     *
-     * @deprecated This will be replaced by {@link #canProvideRoles()}
-     */
-    @Deprecated
-    @DeprecatedSince("3.8.0")
-    @ReplaceWith("canProvideRoles()")
-    default boolean hasRoles()
-    {
-        return canProvideRoles();
-    }
 
     /**
      * Whether this Emote has an attached roles list. This might not be the case when the emote

@@ -482,17 +482,6 @@ public abstract class BaseGuildMessageChannelImpl<T extends BaseGuildMessageChan
 
     @Nonnull
     @Override
-    @Deprecated
-    public MessageAction editMessageById(@Nonnull String messageId, @Nonnull MessageEmbed newEmbed)
-    {
-        checkPermission(Permission.VIEW_CHANNEL);
-        checkPermission(Permission.MESSAGE_SEND);
-        checkPermission(Permission.MESSAGE_EMBED_LINKS);
-        return BaseGuildMessageChannel.super.editMessageById(messageId, newEmbed);
-    }
-
-    @Nonnull
-    @Override
     public MessageAction editMessageEmbedsById(@Nonnull String messageId, @Nonnull Collection<? extends MessageEmbed> newEmbeds)
     {
         checkPermission(Permission.VIEW_CHANNEL);

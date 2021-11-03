@@ -104,13 +104,6 @@ public class PrivateChannelImpl implements PrivateChannel
 
     @Nonnull
     @Override
-    public RestAction<Void> close()
-    {
-        return this.delete();
-    }
-
-    @Nonnull
-    @Override
     public List<CompletableFuture<Void>> purgeMessages(@Nonnull List<? extends Message> messages)
     {
         if (messages == null || messages.isEmpty())
