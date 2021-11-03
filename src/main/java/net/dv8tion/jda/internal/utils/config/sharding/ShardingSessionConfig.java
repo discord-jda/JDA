@@ -20,6 +20,8 @@ import com.neovisionaries.ws.client.WebSocketFactory;
 import net.dv8tion.jda.api.audio.factory.IAudioSendFactory;
 import net.dv8tion.jda.api.hooks.VoiceDispatchInterceptor;
 import net.dv8tion.jda.api.utils.SessionController;
+import net.dv8tion.jda.internal.requests.RateLimiter;
+import net.dv8tion.jda.internal.requests.Requester;
 import net.dv8tion.jda.internal.utils.IOUtil;
 import net.dv8tion.jda.internal.utils.config.SessionConfig;
 import net.dv8tion.jda.internal.utils.config.flags.ConfigFlag;
@@ -29,6 +31,7 @@ import okhttp3.OkHttpClient;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.EnumSet;
+import java.util.function.Function;
 
 public class ShardingSessionConfig extends SessionConfig
 {
@@ -41,9 +44,10 @@ public class ShardingSessionConfig extends SessionConfig
         @Nullable OkHttpClient httpClient, @Nullable OkHttpClient.Builder httpClientBuilder,
         @Nullable WebSocketFactory webSocketFactory, @Nullable IAudioSendFactory audioSendFactory,
         EnumSet<ConfigFlag> flags, EnumSet<ShardingConfigFlag> shardingFlags,
-        int maxReconnectDelay, int largeThreshold)
+        int maxReconnectDelay, int largeThreshold, @Nullable Function<Requester, RateLimiter> rateLimiter,
+        @Nullable String endpoint)
     {
-        super(sessionController, httpClient, webSocketFactory, interceptor, flags, maxReconnectDelay, largeThreshold);
+        super(sessionController, httpClient, webSocketFactory, interceptor, flags, maxReconnectDelay, largeThreshold, rateLimiter, endpoint);
         if (httpClient == null)
             this.builder = httpClientBuilder == null ? IOUtil.newHttpClientBuilder() : httpClientBuilder;
         else
@@ -54,7 +58,7 @@ public class ShardingSessionConfig extends SessionConfig
 
     public SessionConfig toSessionConfig(OkHttpClient client)
     {
-        return new SessionConfig(getSessionController(), client, getWebSocketFactory(), getVoiceDispatchInterceptor(), getFlags(), getMaxReconnectDelay(), getLargeThreshold());
+        return new SessionConfig(getSessionController(), client, getWebSocketFactory(), getVoiceDispatchInterceptor(), getFlags(), getMaxReconnectDelay(), getLargeThreshold(), getRateLimiter(), getEndpoint());
     }
 
     public EnumSet<ShardingConfigFlag> getShardingFlags()
@@ -77,6 +81,6 @@ public class ShardingSessionConfig extends SessionConfig
     @Nonnull
     public static ShardingSessionConfig getDefault()
     {
-        return new ShardingSessionConfig(null, null, new OkHttpClient(), null, null, null, ConfigFlag.getDefault(), ShardingConfigFlag.getDefault(), 900, 250);
+        return new ShardingSessionConfig(null, null, new OkHttpClient(), null, null, null, ConfigFlag.getDefault(), ShardingConfigFlag.getDefault(), 900, 250, null, null);
     }
 }

@@ -50,8 +50,8 @@ import java.util.List;
  */
 public class WidgetUtil 
 {
-    public static final String WIDGET_PNG = Requester.DISCORD_API_PREFIX + "guilds/%s/widget.png?style=%s";
-    public static final String WIDGET_URL = Requester.DISCORD_API_PREFIX + "guilds/%s/widget.json";
+    public static final String WIDGET_PNG = Requester.getDiscordApiPrefix() + "guilds/%s/widget.png?style=%s";
+    public static final String WIDGET_URL = Requester.getDiscordApiPrefix() + "guilds/%s/widget.json";
     public static final String WIDGET_HTML = "<iframe src=\"https://discord.com/widget?id=%s&theme=%s\" width=\"%d\" height=\"%d\" allowtransparency=\"true\" frameborder=\"0\"></iframe>";
     
     /**
@@ -210,7 +210,7 @@ public class WidgetUtil
         Request request = new Request.Builder()
                     .url(String.format(WIDGET_URL, guildId))
                     .method("GET", null)
-                    .header("user-agent", Requester.USER_AGENT)
+                    .header("user-agent", Requester.getUserAgent())
                     .header("accept-encoding", "gzip")
                     .build();
 

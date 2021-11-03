@@ -25,6 +25,7 @@ import net.dv8tion.jda.internal.requests.ratelimit.BotRateLimiter;
 import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.JDALogger;
 import net.dv8tion.jda.internal.utils.config.AuthorizationConfig;
+import net.dv8tion.jda.internal.utils.config.SessionConfig;
 import okhttp3.Call;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -33,6 +34,7 @@ import okhttp3.internal.http.HttpMethod;
 import org.slf4j.Logger;
 import org.slf4j.MDC;
 
+import javax.annotation.Nonnull;
 import javax.net.ssl.SSLPeerUnverifiedException;
 import java.io.IOException;
 import java.net.SocketException;
@@ -48,11 +50,11 @@ import java.util.concurrent.RejectedExecutionException;
 public class Requester
 {
     public static final Logger LOG = JDALogger.getLog(Requester.class);
-    public static final String DISCORD_API_PREFIX = Helpers.format("https://discord.com/api/v%d/", JDAInfo.DISCORD_REST_VERSION);
-    public static final String USER_AGENT = "DiscordBot (" + JDAInfo.GITHUB + ", " + JDAInfo.VERSION + ")";
     public static final RequestBody EMPTY_BODY = RequestBody.create(null, new byte[0]);
     public static final MediaType MEDIA_TYPE_JSON  = MediaType.parse("application/json; charset=utf-8");
     public static final MediaType MEDIA_TYPE_OCTET = MediaType.parse("application/octet-stream; charset=utf-8");
+    private static String DISCORD_API_PREFIX = Helpers.format("https://discord.com/api/v%d/", JDAInfo.DISCORD_REST_VERSION);
+    private static String USER_AGENT = "DiscordBot (" + JDAInfo.GITHUB + ", " + JDAInfo.VERSION + ")";
 
     protected final JDAImpl api;
     protected final AuthorizationConfig authConfig;
@@ -66,20 +68,32 @@ public class Requester
 
     private volatile boolean retryOnTimeout = false;
 
-    public Requester(JDA api)
+    public Requester(JDA api, SessionConfig sessionConfig)
     {
-        this(api, ((JDAImpl) api).getAuthorizationConfig());
+        this(api, ((JDAImpl) api).getAuthorizationConfig(), sessionConfig);
     }
 
-    public Requester(JDA api, AuthorizationConfig authConfig)
+    public Requester(JDA api, AuthorizationConfig authConfig, SessionConfig sessionConfig)
     {
         if (authConfig == null)
             throw new NullPointerException("Provided config was null!");
 
         this.authConfig = authConfig;
         this.api = (JDAImpl) api;
-        this.rateLimiter = new BotRateLimiter(this);
         this.httpClient = this.api.getHttpClient();
+        if (sessionConfig.getRateLimiter() != null)
+        {
+            this.rateLimiter = sessionConfig.getRateLimiter().apply(this);
+            USER_AGENT = "DiscordBot (" + JDAInfo.GITHUB + ", " + JDAInfo.VERSION + ", Custom RateLimiter)";
+        }
+        else
+        {
+            this.rateLimiter = new BotRateLimiter(this);
+        }
+        if (sessionConfig.getEndpoint() != null)
+        {
+            DISCORD_API_PREFIX = sessionConfig.getEndpoint();
+        }
     }
 
     public void setContextReady(boolean ready)
@@ -300,6 +314,16 @@ public class Requester
             for (Entry<String, String> header : apiRequest.getHeaders().entrySet())
                 builder.addHeader(header.getKey(), header.getValue());
         }
+    }
+
+    @Nonnull
+    public static String getUserAgent() {
+        return USER_AGENT;
+    }
+
+    @Nonnull
+    public static String getDiscordApiPrefix() {
+        return DISCORD_API_PREFIX;
     }
 
     public OkHttpClient getHttpClient()

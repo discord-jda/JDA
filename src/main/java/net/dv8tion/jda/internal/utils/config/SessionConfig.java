@@ -20,12 +20,15 @@ import com.neovisionaries.ws.client.WebSocketFactory;
 import net.dv8tion.jda.api.hooks.VoiceDispatchInterceptor;
 import net.dv8tion.jda.api.utils.ConcurrentSessionController;
 import net.dv8tion.jda.api.utils.SessionController;
+import net.dv8tion.jda.internal.requests.RateLimiter;
+import net.dv8tion.jda.internal.requests.Requester;
 import net.dv8tion.jda.internal.utils.config.flags.ConfigFlag;
 import okhttp3.OkHttpClient;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.EnumSet;
+import java.util.function.Function;
 
 public class SessionConfig
 {
@@ -36,11 +39,14 @@ public class SessionConfig
     private final int largeThreshold;
     private EnumSet<ConfigFlag> flags;
     private int maxReconnectDelay;
+    private final Function<Requester, RateLimiter> rateLimiter;
+    private final String endpoint;
 
     public SessionConfig(
         @Nullable SessionController sessionController, @Nullable OkHttpClient httpClient,
         @Nullable WebSocketFactory webSocketFactory, @Nullable VoiceDispatchInterceptor interceptor,
-        EnumSet<ConfigFlag> flags, int maxReconnectDelay, int largeThreshold)
+        EnumSet<ConfigFlag> flags, int maxReconnectDelay, int largeThreshold,
+        @Nullable Function<Requester, RateLimiter> rateLimiter, @Nullable String endpoint)
     {
         this.sessionController = sessionController == null ? new ConcurrentSessionController() : sessionController;
         this.httpClient = httpClient;
@@ -49,6 +55,8 @@ public class SessionConfig
         this.flags = flags;
         this.maxReconnectDelay = maxReconnectDelay;
         this.largeThreshold = largeThreshold;
+        this.rateLimiter = rateLimiter;
+        this.endpoint = endpoint;
     }
 
     private static WebSocketFactory newWebSocketFactory()
@@ -128,9 +136,21 @@ public class SessionConfig
         return flags;
     }
 
+    @Nullable
+    public Function<Requester, RateLimiter> getRateLimiter()
+    {
+        return rateLimiter;
+    }
+
+    @Nullable
+    public String getEndpoint() {
+        return this.endpoint;
+    }
+
     @Nonnull
     public static SessionConfig getDefault()
     {
-        return new SessionConfig(null, new OkHttpClient(), null, null, ConfigFlag.getDefault(), 900, 250);
+        return new SessionConfig(null, new OkHttpClient(), null, null, ConfigFlag.getDefault(), 900, 250, null, null);
     }
+
 }

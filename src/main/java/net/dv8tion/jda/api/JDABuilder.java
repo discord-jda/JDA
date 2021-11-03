@@ -29,6 +29,8 @@ import net.dv8tion.jda.api.utils.*;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.managers.PresenceImpl;
+import net.dv8tion.jda.internal.requests.RateLimiter;
+import net.dv8tion.jda.internal.requests.Requester;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.IOUtil;
 import net.dv8tion.jda.internal.utils.config.AuthorizationConfig;
@@ -44,6 +46,7 @@ import javax.annotation.Nullable;
 import javax.security.auth.login.LoginException;
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -95,6 +98,8 @@ public class JDABuilder
     protected ChunkingFilter chunkingFilter = ChunkingFilter.ALL;
     protected MemberCachePolicy memberCachePolicy = MemberCachePolicy.ALL;
     protected GatewayEncoding encoding = GatewayEncoding.JSON;
+    protected Function<Requester, RateLimiter> rateLimiter = null;
+    protected String endpoint = null;
 
     private JDABuilder(@Nullable String token, int intents)
     {
@@ -140,7 +145,7 @@ public class JDABuilder
      *
      * <p>You can omit intents in this method to use {@link GatewayIntent#DEFAULT} and enable additional intents with
      * {@link #enableIntents(Collection)}.
-     * 
+     *
      * <p>If you don't enable certain intents, the cache will be disabled.
      * For instance, if the {@link GatewayIntent#GUILD_MEMBERS GUILD_MEMBERS} intent is disabled, then members will only
      * be cached when a voice state is available.
@@ -589,7 +594,7 @@ public class JDABuilder
      *
      * @return The JDABuilder instance. Useful for chaining.
      *
-     * @see    #enableCache(CacheFlag, CacheFlag...) 
+     * @see    #enableCache(CacheFlag, CacheFlag...)
      * @see    #disableCache(Collection)
      */
     @Nonnull
@@ -614,7 +619,7 @@ public class JDABuilder
      *
      * @return The JDABuilder instance. Useful for chaining.
      *
-     * @see    #enableCache(Collection) 
+     * @see    #enableCache(Collection)
      * @see    #disableCache(CacheFlag, CacheFlag...)
      */
     @Nonnull
@@ -662,7 +667,7 @@ public class JDABuilder
      *
      * @return The JDABuilder instance. Useful for chaining.
      *
-     * @see    #disableCache(CacheFlag, CacheFlag...) 
+     * @see    #disableCache(CacheFlag, CacheFlag...)
      * @see    #enableCache(Collection)
      */
     @Nonnull
@@ -688,7 +693,7 @@ public class JDABuilder
      *
      * @return The JDABuilder instance. Useful for chaining.
      *
-     * @see    #disableCache(Collection) 
+     * @see    #disableCache(Collection)
      * @see    #enableCache(CacheFlag, CacheFlag...)
      */
     @Nonnull
@@ -903,6 +908,40 @@ public class JDABuilder
     public JDABuilder setWebsocketFactory(@Nullable WebSocketFactory factory)
     {
         this.wsFactory = factory;
+        return this;
+    }
+
+    /**
+     * Sets the {@link RateLimiter RateLimiter} that will be used by JDAs requester.
+     * <br>This is useful if you are running an external proxy software that handles rate limits
+     * or want to implement your own rate limiter.
+     *
+     * @param rateLimiter
+     *        The new {@link RateLimiter RateLimiter} to use.
+     *
+     * @return The DefaultShardManagerBuilder instance. Useful for chaining.
+     */
+    @Nonnull
+    public JDABuilder setRateLimiter(@Nullable Function<Requester, RateLimiter> rateLimiter)
+    {
+        this.rateLimiter = rateLimiter;
+        return this;
+    }
+
+    /**
+     * Sets the endpoint that will be used for restful API calls.
+     * <br>This can be used when running an external proxy software or for integration testing. <b>This
+     * variable MUST contain the full path including API version and MUST end with a trailing slash.</b>
+     *
+     * @param endpoint
+     *        The new discord endpoint to use.
+     *
+     * @return The DefaultShardManagerBuilder instance. Useful for chaining.
+     */
+    @Nonnull
+    public JDABuilder setEndpoint(@Nullable String endpoint)
+    {
+        this.endpoint = endpoint;
         return this;
     }
 
@@ -1846,7 +1885,7 @@ public class JDABuilder
         threadingConfig.setRateLimitPool(rateLimitPool, shutdownRateLimitPool);
         threadingConfig.setEventPool(eventPool, shutdownEventPool);
         threadingConfig.setAudioPool(audioPool, shutdownAudioPool);
-        SessionConfig sessionConfig = new SessionConfig(controller, httpClient, wsFactory, voiceDispatchInterceptor, flags, maxReconnectDelay, largeThreshold);
+        SessionConfig sessionConfig = new SessionConfig(controller, httpClient, wsFactory, voiceDispatchInterceptor, flags, maxReconnectDelay, largeThreshold, rateLimiter, endpoint);
         MetaConfig metaConfig = new MetaConfig(maxBufferSize, contextMap, cacheFlags, flags);
 
         JDAImpl jda = new JDAImpl(authConfig, sessionConfig, threadingConfig, metaConfig);

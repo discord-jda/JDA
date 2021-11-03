@@ -32,6 +32,7 @@ import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.api.utils.cache.CacheView;
 import net.dv8tion.jda.api.utils.cache.SnowflakeCacheView;
 import net.dv8tion.jda.internal.requests.CompletedRestAction;
+import net.dv8tion.jda.internal.requests.RateLimiter;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -380,6 +381,14 @@ public interface JDA
      * @see    RestAction#setCheck(BooleanSupplier)
      */
     int cancelRequests();
+
+    /**
+     * The rate limiter used by JDA for handling rate limit responses from discord.
+     *
+     * @return {@link RateLimiter} currently in use for this jda connection.
+     */
+    @Nonnull
+    RateLimiter getRateLimiter();
 
     /**
      * {@link ScheduledExecutorService} used to handle rate-limits for {@link RestAction}

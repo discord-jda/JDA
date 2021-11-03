@@ -147,7 +147,7 @@ public class JDAImpl implements JDA
         this.metaConfig = metaConfig == null ? MetaConfig.getDefault() : metaConfig;
         this.shutdownHook = this.metaConfig.isUseShutdownHook() ? new Thread(this::shutdown, "JDA Shutdown Hook") : null;
         this.presence = new PresenceImpl(this);
-        this.requester = new Requester(this);
+        this.requester = new Requester(this, this.sessionConfig);
         this.requester.setRetryOnTimeout(this.sessionConfig.isRetryOnTimeout());
         this.guildSetupController = new GuildSetupController(this);
         this.audioController = new DirectAudioControllerImpl(this);
@@ -488,6 +488,13 @@ public class JDAImpl implements JDA
     public int cancelRequests()
     {
         return requester.getRateLimiter().cancelRequests();
+    }
+
+    @Nonnull
+    @Override
+    public RateLimiter getRateLimiter()
+    {
+        return requester.getRateLimiter();
     }
 
     @Nonnull

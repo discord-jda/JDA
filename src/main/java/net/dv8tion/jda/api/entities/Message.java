@@ -3062,7 +3062,7 @@ public interface Message extends ISnowflake, Formattable
         {
             return new Request.Builder()
                 .url(getUrl())
-                .addHeader("user-agent", Requester.USER_AGENT)
+                .addHeader("user-agent", Requester.getUserAgent())
                 .addHeader("accept-encoding", "gzip, deflate")
                 .build();
         }

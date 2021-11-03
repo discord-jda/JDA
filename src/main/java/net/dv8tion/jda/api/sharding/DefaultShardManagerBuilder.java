@@ -34,6 +34,8 @@ import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import net.dv8tion.jda.api.utils.SessionController;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.internal.JDAImpl;
+import net.dv8tion.jda.internal.requests.RateLimiter;
+import net.dv8tion.jda.internal.requests.Requester;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.config.flags.ConfigFlag;
 import net.dv8tion.jda.internal.utils.config.flags.ShardingConfigFlag;
@@ -46,6 +48,7 @@ import javax.annotation.Nullable;
 import javax.security.auth.login.LoginException;
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.function.Function;
 import java.util.function.IntFunction;
 import java.util.stream.Collectors;
 
@@ -94,6 +97,8 @@ public class  DefaultShardManagerBuilder
     protected IAudioSendFactory audioSendFactory = null;
     protected ThreadFactory threadFactory = null;
     protected ChunkingFilter chunkingFilter;
+    protected Function<Requester, RateLimiter> rateLimiter = null;
+    protected String endpoint = null;
     protected MemberCachePolicy memberCachePolicy = MemberCachePolicy.ALL;
 
     private DefaultShardManagerBuilder(@Nullable String token, int intents)
@@ -1318,6 +1323,40 @@ public class  DefaultShardManagerBuilder
     }
 
     /**
+     * Sets the {@link RateLimiter RateLimiter} that will be used by JDAs requester.
+     * <br>This is useful if you are running an external proxy software or want to implement
+     * your own rate limiter.
+     *
+     * @param rateLimiter
+     *        The new {@link RateLimiter RateLimiter} to use.
+     *
+     * @return The DefaultShardManagerBuilder instance. Useful for chaining.
+     */
+    @Nonnull
+    public DefaultShardManagerBuilder setRateLimiter(@Nullable Function<Requester, RateLimiter> rateLimiter)
+    {
+        this.rateLimiter = rateLimiter;
+        return this;
+    }
+
+    /**
+     * Sets the endpoint that will be used for restful API calls.
+     * <br>This can be used when running an external proxy software or for integration testing. <b>This
+     * variable MUST contain the full path including API version and MUST end with a trailing slash.</b>
+     *
+     * @param endpoint
+     *        The new discord endpoint to use.
+     *
+     * @return The DefaultShardManagerBuilder instance. Useful for chaining.
+     */
+    @Nonnull
+    public DefaultShardManagerBuilder setEndpoint(@Nullable String endpoint)
+    {
+        this.endpoint = endpoint;
+        return this;
+    }
+
+    /**
      * Sets the {@link ScheduledExecutorService ScheduledExecutorService} that should be used in
      * the JDA rate-limit handler. Changing this can drastically change the JDA behavior for RestAction execution
      * and should be handled carefully. <b>Only change this pool if you know what you're doing.</b>
@@ -2297,7 +2336,7 @@ public class  DefaultShardManagerBuilder
         presenceConfig.setStatusProvider(statusProvider);
         presenceConfig.setIdleProvider(idleProvider);
         final ThreadingProviderConfig threadingConfig = new ThreadingProviderConfig(rateLimitPoolProvider, gatewayPoolProvider, callbackPoolProvider, eventPoolProvider, audioPoolProvider, threadFactory);
-        final ShardingSessionConfig sessionConfig = new ShardingSessionConfig(sessionController, voiceDispatchInterceptor, httpClient, httpClientBuilder, wsFactory, audioSendFactory, flags, shardingFlags, maxReconnectDelay, largeThreshold);
+        final ShardingSessionConfig sessionConfig = new ShardingSessionConfig(sessionController, voiceDispatchInterceptor, httpClient, httpClientBuilder, wsFactory, audioSendFactory, flags, shardingFlags, maxReconnectDelay, largeThreshold, rateLimiter, endpoint);
         final ShardingMetaConfig metaConfig = new ShardingMetaConfig(maxBufferSize, contextProvider, cacheFlags, flags, compression, encoding);
         final DefaultShardManager manager = new DefaultShardManager(this.token, this.shards, shardingConfig, eventConfig, presenceConfig, threadingConfig, sessionConfig, metaConfig, chunkingFilter);
 

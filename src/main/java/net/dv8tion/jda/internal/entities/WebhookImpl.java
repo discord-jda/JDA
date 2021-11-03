@@ -137,7 +137,7 @@ public class WebhookImpl extends AbstractWebhookClient<Void> implements Webhook
     @Override
     public String getUrl()
     {
-        return Requester.DISCORD_API_PREFIX + "webhooks/" + getId() + (getToken() == null ? "" : "/" + getToken());
+        return Requester.getDiscordApiPrefix() + "webhooks/" + getId() + (getToken() == null ? "" : "/" + getToken());
     }
 
     @Override
