@@ -17,7 +17,6 @@
 package net.dv8tion.jda.internal.entities;
 
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.Region;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.templates.Template;
 import net.dv8tion.jda.api.exceptions.HierarchyException;
@@ -255,30 +254,6 @@ public class GuildImpl implements Guild
         CommandPrivilege.Type type = CommandPrivilege.Type.fromKey(data.getInt("type", 1));
         boolean enabled = data.getBoolean("permission");
         return new CommandPrivilege(type, enabled, data.getUnsignedLong("id"));
-    }
-
-    @Nonnull
-    @Override
-    //TODO remove-old-deprecations This should be marked for removal and deleted in v5
-    public RestAction<EnumSet<Region>> retrieveRegions(boolean includeDeprecated)
-    {
-        Route.CompiledRoute route = Route.Guilds.GET_VOICE_REGIONS.compile(getId());
-        return new RestActionImpl<>(getJDA(), route, (response, request) ->
-        {
-            EnumSet<Region> set = EnumSet.noneOf(Region.class);
-            DataArray arr = response.getArray();
-            for (int i = 0; i < arr.length(); i++)
-            {
-                DataObject obj = arr.getObject(i);
-                if (!includeDeprecated && obj.getBoolean("deprecated"))
-                    continue;
-                String id = obj.getString("id", "");
-                Region region = Region.fromKey(id);
-                if (region != Region.UNKNOWN)
-                    set.add(region);
-            }
-            return set;
-        });
     }
 
     @Nonnull

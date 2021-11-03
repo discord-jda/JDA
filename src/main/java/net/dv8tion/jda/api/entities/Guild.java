@@ -17,7 +17,6 @@ package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.Region;
 import net.dv8tion.jda.api.entities.templates.Template;
 import net.dv8tion.jda.api.exceptions.HierarchyException;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
@@ -438,34 +437,6 @@ public interface Guild extends ISnowflake
     @Nonnull
     @CheckReturnValue
     RestAction<Map<String, List<CommandPrivilege>>> updateCommandPrivileges(@Nonnull Map<String, Collection<? extends CommandPrivilege>> privileges);
-
-    /**
-     * Retrieves the available regions for this Guild
-     * <br>Shortcut for {@link #retrieveRegions(boolean) retrieveRegions(true)}
-     * <br>This will include deprecated voice regions by default.
-     *
-     * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type {@link java.util.EnumSet EnumSet}
-     */
-    @Nonnull
-    @CheckReturnValue
-    //TODO remove-old-deprecations This should be marked for removal and deleted in v5
-    default RestAction<EnumSet<Region>> retrieveRegions()
-    {
-        return retrieveRegions(true);
-    }
-
-    /**
-     * Retrieves the available regions for this Guild
-     *
-     * @param  includeDeprecated
-     *         Whether to include deprecated regions
-     *
-     * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type {@link java.util.EnumSet EnumSet}
-     */
-    @Nonnull
-    @CheckReturnValue
-    //TODO remove-old-deprecations This should be marked for removal and deleted in v5
-    RestAction<EnumSet<Region>> retrieveRegions(boolean includeDeprecated);
 
     /**
      * Adds the user represented by the provided id to this guild.

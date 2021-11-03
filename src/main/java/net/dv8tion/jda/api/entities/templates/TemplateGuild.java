@@ -16,7 +16,6 @@
 
 package net.dv8tion.jda.api.entities.templates;
 
-import net.dv8tion.jda.api.Region;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Guild.ExplicitContentLevel;
 import net.dv8tion.jda.api.entities.Guild.NotificationLevel;
@@ -96,33 +95,6 @@ public class TemplateGuild implements ISnowflake
     public String getDescription()
     {
         return this.description;
-    }
-
-    /**
-     * The Voice {@link net.dv8tion.jda.api.Region Region} that this Guild is using for audio connections.
-     * <br>If the Region is not recognized, this returns {@link net.dv8tion.jda.api.Region#UNKNOWN UNKNOWN} but you
-     * can still use the {@link #getRegionRaw()} to retrieve the raw name this region has.
-     *
-     * @return The the audio Region this Guild is using for audio connections. Can return Region.UNKNOWN.
-     */
-    @Nonnull
-    //TODO remove-old-deprecations This should be marked for removal and deleted in v5
-    public Region getRegion()
-    {
-        return Region.fromKey(region);
-    }
-
-    /**
-     * The raw voice region name that this Guild is using for audio connections.
-     * <br>This is resolved to an enum constant of {@link Region Region} by {@link #getRegion()}!
-     *
-     * @return Raw region name
-     */
-    @Nonnull
-    //TODO remove-old-deprecations This should be marked for removal and deleted in v5
-    public String getRegionRaw()
-    {
-        return region;
     }
 
     /**
