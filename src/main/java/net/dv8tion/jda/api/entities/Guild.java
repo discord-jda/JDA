@@ -1031,6 +1031,7 @@ public interface Guild extends ISnowflake
      * @deprecated Guilds no longer have the {@link net.dv8tion.jda.api.Region Region} option. Use {@link VoiceChannel#getRegion()} instead.
      */
     @Deprecated
+    @ForRemoval(deadline = "5.0.0")
     @ReplaceWith("VoiceChannel.getRegion()")
     @DeprecatedSince("4.3.0")
     @Nonnull
@@ -1051,6 +1052,7 @@ public interface Guild extends ISnowflake
      * @deprecated Guilds no longer have the {@link net.dv8tion.jda.api.Region Region} option. Use {@link VoiceChannel#getRegion()} instead.
      */
     @Deprecated
+    @ForRemoval(deadline = "5.0.0")
     @ReplaceWith("VoiceChannel.getRegionRaw()")
     @DeprecatedSince("4.3.0")
     @Nonnull
@@ -2523,8 +2525,8 @@ public interface Guild extends ISnowflake
 
     /**
      * Retrieves a {@link net.dv8tion.jda.api.entities.Guild.Ban Ban} of the provided ID
-     * <br>If you wish to ban or unban a user, use either {@link #ban(String, int)} ban(id, int)} or
-     * {@link #unban(String)} unban(id)}.
+     * <br>If you wish to ban or unban a user, use either {@link #ban(String, int) ban(id, int)} or
+     * {@link #unban(String) unban(id)}.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
      * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
@@ -6021,12 +6023,12 @@ public interface Guild extends ISnowflake
         TIER_1(1, 128000, 100),
         /**
          * The second tier.
-         * <br>Unlocked at 15 boosters.
+         * <br>Unlocked at 7 boosters.
          */
         TIER_2(2, 256000, 150),
         /**
          * The third tier.
-         * <br>Unlocked at 30 boosters.
+         * <br>Unlocked at 14 boosters.
          */
         TIER_3(3, 384000, 250),
         /**
@@ -6071,10 +6073,10 @@ public interface Guild extends ISnowflake
          * The maximum amount of emotes a guild can have when this tier is reached.
          *
          * @return The maximum emotes
-         * 
+         *
          * @see    net.dv8tion.jda.api.entities.Guild#getMaxEmotes()
          */
-        public int getMaxEmotes() 
+        public int getMaxEmotes()
         {
             return maxEmotes;
         }
