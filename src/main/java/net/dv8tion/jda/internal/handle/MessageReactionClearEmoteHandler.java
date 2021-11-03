@@ -60,7 +60,7 @@ public class MessageReactionClearEmoteHandler extends SocketHandler
             return null;
         }
 
-        long messageId = content.getUnsignedInt("message_id");
+        long messageId = content.getUnsignedLong("message_id");
         DataObject emoji = content.getObject("emoji");
         MessageReaction.ReactionEmote reactionEmote = null;
         if (emoji.isNull("id"))
@@ -69,7 +69,7 @@ public class MessageReactionClearEmoteHandler extends SocketHandler
         }
         else
         {
-            long emoteId = emoji.getUnsignedLong("emoji");
+            long emoteId = emoji.getUnsignedLong("id");
             Emote emote = getJDA().getEmoteById(emoteId);
             if (emote == null)
             {

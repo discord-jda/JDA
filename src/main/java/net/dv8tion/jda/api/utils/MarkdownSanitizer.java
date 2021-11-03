@@ -189,6 +189,95 @@ public class MarkdownSanitizer
     }
 
     /**
+     * Escapes every single markdown formatting token found in the provided string.
+     * <br>Example: {@code escape("**Hello _World_", true)}
+     *
+     * @param sequence
+     *        The string to sanitize
+     * @param single
+     *        Whether it should scape single tokens or not.
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If provided with null sequence
+     *
+     * @return The string with escaped markdown
+     */
+    @Nonnull
+    public static String escape(@Nonnull String sequence, boolean single)
+    {
+        Checks.notNull(sequence, "Input");
+        if(!single) return escape(sequence);
+
+        StringBuilder builder = new StringBuilder();
+        boolean escaped = false;
+        boolean newline = true;
+        for (int i = 0; i < sequence.length(); i++)
+        {
+            char current = sequence.charAt(i);
+            if (newline)
+            {
+                newline = Character.isWhitespace(current); // might still be a quote if prefixed by whitespace
+                if (current == '>')
+                {
+                    // Check for quote if line starts with angle bracket
+                    if (i + 1 < sequence.length() && Character.isWhitespace(sequence.charAt(i+1)))
+                    {
+                        builder.append("\\>"); // simple quote
+                    }
+                    else if (i + 3 < sequence.length() && sequence.startsWith(">>>", i) && Character.isWhitespace(sequence.charAt(i+3)))
+                    {
+                        builder.append("\\>\\>\\>").append(sequence.charAt(i+3)); // block quote
+                        i += 3; // since we include 3 angle brackets AND whitespace
+                    }
+                    else
+                    {
+                        builder.append(current); // just a normal angle bracket
+                    }
+                    continue;
+                }
+            }
+
+            if (escaped)
+            {
+                builder.append(current);
+                escaped = false;
+                continue;
+            }
+            // Handle average case
+            switch (current)
+            {
+            case '*': // simple markdown escapes for single characters
+            case '_':
+            case '`':
+                builder.append('\\').append(current);
+                break;
+            case '|': // cases that require at least 2 characters in sequence
+            case '~':
+                if (i + 1 < sequence.length() && sequence.charAt(i+1) == current)
+                {
+                    builder.append('\\').append(current)
+                            .append('\\').append(current);
+                    i++;
+                }
+                else
+                    builder.append(current);
+                break;
+            case '\\': // escape character
+                builder.append(current);
+                escaped = true;
+                break;
+            case '\n': // linefeed is a special case for quotes
+                builder.append(current);
+                newline = true;
+                break;
+            default:
+                builder.append(current);
+            }
+        }
+        return builder.toString();
+    }
+
+    /**
      * Switches the used {@link net.dv8tion.jda.api.utils.MarkdownSanitizer.SanitizationStrategy}.
      *
      * @param  strategy

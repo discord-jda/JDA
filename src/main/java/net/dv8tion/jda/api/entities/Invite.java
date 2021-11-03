@@ -17,6 +17,7 @@
 package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.annotations.DeprecatedSince;
+import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild.VerificationLevel;
@@ -202,6 +203,7 @@ public interface Invite
      */
     @Nonnull
     @Deprecated
+    @ForRemoval(deadline = "5.0.0")
     @DeprecatedSince("4.0.0")
     @ReplaceWith("getTimeCreated()")
     OffsetDateTime getCreationTime();
@@ -303,19 +305,24 @@ public interface Invite
      *
      * <p>There is a convenience method {@link #expand()} to get the expanded invite for an unexpanded one.
      *
-     * @return Whether is invite expanded or not
+     * @return Whether this invite is expanded or not
      *
      * @see    #expand()
      */
     boolean isExpanded();
 
     /**
-     * Whether this Invite grants only temporary access or not
+     * Whether this Invite grants only temporary access or not.
+     *
+     * <p>This works only for expanded invites and will throw a {@link IllegalStateException} otherwise!
      *
      * @throws IllegalStateException
      *         if this invite is not expanded
      *
-     * @return Whether is invite expanded or not
+     * @return Whether this invite is temporary or not
+     *
+     * @see    #expand()
+     * @see    #isExpanded()
      */
     boolean isTemporary();
 
