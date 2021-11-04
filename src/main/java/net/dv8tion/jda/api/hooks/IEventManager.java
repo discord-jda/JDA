@@ -49,13 +49,13 @@ public interface IEventManager
      * Registers the specified listener
      * <br>Accepted types may be specified by implementations
      *
-     * @param listener
-     *        A listener object
+     * @param pListeners
+     *        Listener objects
      *
      * @throws java.lang.UnsupportedOperationException
      *         If the implementation does not support this method
      */
-    void register(@Nonnull Object listener);
+    void register(@Nonnull Object...pListeners);
 
     /**
      * Removes the specified listener

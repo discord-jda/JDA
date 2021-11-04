@@ -48,9 +48,9 @@ public class EventManagerProxy implements IEventManager
     }
 
     @Override
-    public void register(@Nonnull Object listener)
+    public void register(@Nonnull Object...listeners)
     {
-        this.subject.register(listener);
+        this.subject.register(listeners);
     }
 
     @Override

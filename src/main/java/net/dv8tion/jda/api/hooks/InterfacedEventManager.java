@@ -55,13 +55,16 @@ public class InterfacedEventManager implements IEventManager
      *         If the provided listener does not implement {@link net.dv8tion.jda.api.hooks.EventListener EventListener}
      */
     @Override
-    public void register(@Nonnull Object listener)
+    public void register(@Nonnull Object...pListeners)
     {
-        if (!(listener instanceof EventListener))
+        for (Object listener : pListeners)
         {
-            throw new IllegalArgumentException("Listener must implement EventListener");
+            if (!(listener instanceof EventListener))
+            {
+                throw new IllegalArgumentException("Listener must implement EventListener");
+            }
+            listeners.add((EventListener) listener);
         }
-        listeners.add((EventListener) listener);
     }
 
     @Override
