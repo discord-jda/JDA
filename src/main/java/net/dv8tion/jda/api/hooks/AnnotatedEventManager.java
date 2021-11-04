@@ -57,14 +57,10 @@ public class AnnotatedEventManager implements IEventManager
     @Override
     public void register(@Nonnull Object...pListeners)
     {
-        if (pListeners.length > 1)
+        for (Object listenerObj : pListeners)
         {
-            Collections.addAll(listeners, pListeners);
-            updateMethods();
-        } else
-        {
-            listeners.add(pListeners);
-            addMethod(pListeners);
+            listeners.add(listenerObj);
+            addMethod(listenerObj);
         }
     }
 
@@ -119,32 +115,7 @@ public class AnnotatedEventManager implements IEventManager
         methods.clear();
         for (Object listener : listeners)
         {
-            boolean isClass = listener instanceof Class;
-            Class<?> c = isClass ? (Class<?>) listener : listener.getClass();
-            Method[] allMethods = c.getDeclaredMethods();
-            for (Method m : allMethods)
-            {
-                if (!m.isAnnotationPresent(SubscribeEvent.class) || (isClass && !Modifier.isStatic(m.getModifiers())))
-                {
-                    continue;
-                }
-                Class<?>[] pType  = m.getParameterTypes();
-                if (pType.length == 1 && GenericEvent.class.isAssignableFrom(pType[0]))
-                {
-                    Class<?> eventClass = pType[0];
-                    if (!methods.containsKey(eventClass))
-                    {
-                        methods.put(eventClass, new ConcurrentHashMap<>());
-                    }
-
-                    if (!methods.get(eventClass).containsKey(listener))
-                    {
-                        methods.get(eventClass).put(listener, new CopyOnWriteArrayList<>());
-                    }
-
-                    methods.get(eventClass).get(listener).add(m);
-                }
-            }
+            addMethod(listener);
         }
     }
 
