@@ -278,7 +278,7 @@ public class JDAImpl implements JDA
 
         String token = authConfig.getToken();
         setStatus(Status.LOGGING_IN);
-        if (token == null || token.isEmpty())
+        if (token.isEmpty())
             throw new LoginException("Provided token was null or empty!");
 
         Map<String, String> previousContext = null;
