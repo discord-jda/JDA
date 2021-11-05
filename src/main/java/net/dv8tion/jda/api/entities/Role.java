@@ -295,7 +295,7 @@ public interface Role extends IMentionable, IPermissionHolder, Comparable<Role>
 
     /**
      * The Discord hash-id of the {@link net.dv8tion.jda.api.entities.Role Role} icon image.
-     * If no icon has been set, this returns {@code null}.
+     * If no icon has been set or an emoji is used in its place, this returns {@code null}.
      * <p>The Role icon can be modified using {@link RoleManager#setIcon(Icon)}.
      *
      * @return Possibly-null String containing the Role's icon hash-id.
@@ -307,7 +307,7 @@ public interface Role extends IMentionable, IPermissionHolder, Comparable<Role>
 
     /**
      * The URL of the {@link net.dv8tion.jda.api.entities.Role Role} icon image.
-     * If no icon has been set, this returns {@code null}.
+     * If no icon has been set or an emoji is used in its place, this returns {@code null}.
      * <p>The Role icon can be modified using {@link RoleManager#setIcon(Icon)} (Icon)}.
      *
      * @return Possibly-null String containing the Role's icon URL.
