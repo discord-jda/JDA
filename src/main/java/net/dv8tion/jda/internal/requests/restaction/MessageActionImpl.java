@@ -522,7 +522,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
         if (override)
         {
             if (embeds == null)
-                obj.putNull("embeds");
+                obj.put("embeds", DataArray.empty());
             else
                 obj.put("embeds", DataArray.fromCollection(embeds));
             if (content.length() == 0)
@@ -534,7 +534,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
             else
                 obj.put("nonce", nonce);
             if (components == null)
-                obj.putNull("components");
+                obj.put("components", DataArray.empty());
             else
                 obj.put("components", DataArray.fromCollection(components));
             if (retainedAttachments != null)
