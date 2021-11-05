@@ -55,13 +55,10 @@ public class AnnotatedEventManager implements IEventManager
     private final Map<Class<?>, Map<Object, List<Method>>> methods = new ConcurrentHashMap<>();
 
     @Override
-    public void register(@Nonnull Object...pListeners)
+    public void register(@Nonnull Object listener)
     {
-        for (Object listenerObj : pListeners)
-        {
-            listeners.add(listenerObj);
-            addMethod(listenerObj);
-        }
+        listeners.add(listener);
+        addMethod(listener);
     }
 
     @Override
