@@ -1004,9 +1004,9 @@ public class ReceivedMessage extends AbstractMessage
     }
 
     @Override
-    public RestAction<GuildThread> createThread(String name)
+    public RestAction<ThreadChannel> createThreadChannel(String name)
     {
-        return ((IGuildThreadContainer) getGuildChannel()).createThread(name, this.getIdLong());
+        return ((IThreadContainer) getGuildChannel()).createThreadChannel(name, this.getIdLong());
     }
 
     @Override

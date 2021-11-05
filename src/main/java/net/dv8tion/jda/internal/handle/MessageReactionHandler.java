@@ -121,7 +121,7 @@ public class MessageReactionHandler extends SocketHandler
         if (channel == null)
             channel = api.getNewsChannelById(channelId);
         if (channel == null)
-            channel = api.getGuildThreadById(channelId);
+            channel = api.getThreadChannelById(channelId);
         if (channel == null)
             channel = api.getPrivateChannelById(channelId);
         if (channel == null)

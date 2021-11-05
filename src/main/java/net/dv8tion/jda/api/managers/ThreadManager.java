@@ -1,5 +1,5 @@
 package net.dv8tion.jda.api.managers;
 
-public class GuildThreadManager
+public class ThreadManager
 {
 }

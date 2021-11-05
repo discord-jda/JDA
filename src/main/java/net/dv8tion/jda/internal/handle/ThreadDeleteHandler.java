@@ -22,7 +22,6 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.requests.WebSocketClient;
-import net.dv8tion.jda.internal.utils.cache.SnowflakeCacheViewImpl;
 
 public class ThreadDeleteHandler extends SocketHandler
 {
@@ -41,14 +40,14 @@ public class ThreadDeleteHandler extends SocketHandler
         GuildImpl guild = (GuildImpl) getJDA().getGuildById(guildId);
         final long threadId = content.getLong("id");
 
-        GuildThread thread = getJDA().getGuildThreadView().remove(threadId);
+        ThreadChannel thread = getJDA().getThreadChannelsView().remove(threadId);
         if (thread == null || guild == null)
         {
             WebSocketClient.LOG.debug("THREAD_DELETE attempted to delete a thread that is not yet cached. JSON: {}", content);
             return null;
         }
 
-        guild.getGuildThreadsView().remove(threadId);
+        guild.getThreadChannelsView().remove(threadId);
 
         //TODO-threads: Should these be thread specific events?
         getJDA().handleEvent(

@@ -18,7 +18,7 @@ package net.dv8tion.jda.api.events.thread;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.GuildThread;
+import net.dv8tion.jda.api.entities.ThreadChannel;
 import net.dv8tion.jda.api.events.Event;
 
 import javax.annotation.Nonnull;
@@ -26,9 +26,9 @@ import javax.annotation.Nonnull;
 //TODO-v5: Docs
 public class GenericThreadEvent extends Event
 {
-    protected final GuildThread thread;
+    protected final ThreadChannel thread;
 
-    public GenericThreadEvent(@Nonnull JDA api, long responseNumber, GuildThread thread)
+    public GenericThreadEvent(@Nonnull JDA api, long responseNumber, ThreadChannel thread)
     {
         super(api, responseNumber);
 
@@ -36,7 +36,7 @@ public class GenericThreadEvent extends Event
     }
 
     @Nonnull
-    public GuildThread getThread()
+    public ThreadChannel getThread()
     {
         return thread;
     }

@@ -17,7 +17,6 @@
 package net.dv8tion.jda.internal.handle;
 
 import net.dv8tion.jda.api.entities.GuildMessageChannel;
-import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.MessageBulkDeleteEvent;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
@@ -63,7 +62,7 @@ public class MessageBulkDeleteHandler extends SocketHandler
             if (channel == null)
                 channel = getJDA().getNewsChannelById(channelId);
             if (channel == null)
-                channel = getJDA().getGuildThreadById(channelId);
+                channel = getJDA().getThreadChannelById(channelId);
 
             if (channel == null)
             {

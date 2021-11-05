@@ -53,7 +53,7 @@ public class MessageReactionClearEmoteHandler extends SocketHandler
         if (channel == null)
             channel = guild.getNewsChannelById(channelId);
         if (channel == null)
-            channel = guild.getGuildThreadById(channelId);
+            channel = guild.getThreadChannelById(channelId);
 
         if (channel == null)
         {

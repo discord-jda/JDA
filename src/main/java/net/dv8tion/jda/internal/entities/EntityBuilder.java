@@ -296,7 +296,7 @@ public class EntityBuilder
         for (int i = 0; i < threadArray.length(); i++)
         {
             DataObject threadJson = threadArray.getObject(i);
-            createGuildThread(guildObj, threadJson, guildObj.getIdLong());
+            createThreadChannel(guildObj, threadJson, guildObj.getIdLong());
         }
 
         createGuildEmotePass(guildObj, emotesArray);
@@ -1106,12 +1106,12 @@ public class EntityBuilder
         return channel;
     }
 
-    public GuildThread createGuildThread(DataObject json, long guildId)
+    public ThreadChannel createThreadChannel(DataObject json, long guildId)
     {
-        return createGuildThread(null, json, guildId);
+        return createThreadChannel(null, json, guildId);
     }
 
-    public GuildThread createGuildThread(GuildImpl guild, DataObject json, long guildId)
+    public ThreadChannel createThreadChannel(GuildImpl guild, DataObject json, long guildId)
     {
         boolean playbackCache = false;
         final long id = json.getLong("id");
@@ -1120,25 +1120,25 @@ public class EntityBuilder
         if (guild == null)
             guild = (GuildImpl) getJDA().getGuildsView().get(guildId);
 
-        GuildThreadImpl thread = ((GuildThreadImpl) getJDA().getGuildThreadView().get(id));
-        if (thread == null)
+        ThreadChannelImpl channel = ((ThreadChannelImpl) getJDA().getThreadChannelsView().get(id));
+        if (channel == null)
         {
-            SnowflakeCacheViewImpl<GuildThread>
-                    guildThreadView = guild.getGuildThreadsView(),
-                    threadView = getJDA().getGuildThreadView();
+            SnowflakeCacheViewImpl<ThreadChannel>
+                    guildThreadView = guild.getThreadChannelsView(),
+                    threadView = getJDA().getThreadChannelsView();
             try (
                     UnlockHook vlock = guildThreadView.writeLock();
                     UnlockHook jlock = threadView.writeLock())
             {
-                thread = new GuildThreadImpl(id, type, guild);
-                guildThreadView.getMap().put(id, thread);
-                playbackCache = threadView.getMap().put(id, thread) == null;
+                channel = new ThreadChannelImpl(id, type, guild);
+                guildThreadView.getMap().put(id, channel);
+                playbackCache = threadView.getMap().put(id, channel) == null;
             }
         }
 
         DataObject threadMetadata = json.getObject("thread_metadata");
 
-        thread
+        channel
                 .setName(json.getString("name"))
                 .setParentChannelId(json.getLong("parent_id"))
                 .setOwnerId(json.getLong("owner_id"))
@@ -1149,13 +1149,13 @@ public class EntityBuilder
                 .setLocked(threadMetadata.getBoolean("locked"))
                 .setArchived(threadMetadata.getBoolean("archived"))
                 .setArchiveTimestamp(Helpers.toTimestamp(threadMetadata.getString("archive_timestamp"))) //TODO-threads: This value clearly needs to be renamed because it looks like it represents when it was _updated_. Not when it happened.
-                .setAutoArchiveDuration(GuildThread.AutoArchiveDuration.fromKey(threadMetadata.getInt("auto_archive_duration")));
+                .setAutoArchiveDuration(ThreadChannel.AutoArchiveDuration.fromKey(threadMetadata.getInt("auto_archive_duration")));
 
         //If the bot in the thread already, then create a thread member for the bot.
         if (!json.isNull("member"))
         {
-            GuildThreadMember selfThreadMember = createGuildThreadMember(thread, guild.getSelfMember(), json.getObject("member"));
-            CacheView.SimpleCacheView<GuildThreadMember> view = thread.getThreadMemberView();
+            ThreadMember selfThreadMember = createThreadMember(channel, guild.getSelfMember(), json.getObject("member"));
+            CacheView.SimpleCacheView<ThreadMember> view = channel.getThreadMemberView();
             try (UnlockHook lock = view.writeLock())
             {
                 view.getMap().put(selfThreadMember.getIdLong(), selfThreadMember);
@@ -1164,24 +1164,24 @@ public class EntityBuilder
 
         if (playbackCache)
             getJDA().getEventCache().playbackCache(EventCache.Type.CHANNEL, id);
-        return thread;
+        return channel;
     }
 
-    public GuildThreadMember createGuildThreadMember(GuildImpl guild, GuildThreadImpl guildThread, DataObject json)
+    public ThreadMember createThreadMember(GuildImpl guild, ThreadChannelImpl threadChannel, DataObject json)
     {
         DataObject memberJson = json.getObject("member");
         DataObject presenceJson = json.getObject("presence");
 
         Member member = createMember(guild, memberJson, null, presenceJson);
-        return createGuildThreadMember(guildThread, member, json);
+        return createThreadMember(threadChannel, member, json);
     }
 
-    private GuildThreadMember createGuildThreadMember(GuildThreadImpl guildThread, Member member, DataObject json)
+    private ThreadMember createThreadMember(ThreadChannelImpl threadChannel, Member member, DataObject json)
     {
-        GuildThreadMemberImpl threadMember = new GuildThreadMemberImpl(member, guildThread);
+        ThreadMemberImpl threadMember = new ThreadMemberImpl(member, threadChannel);
         threadMember
-                .setJoinedTimestamp(Helpers.toTimestamp(json.getString("join_timestamp")))
-                .setFlags(json.getInt("flags"));
+            .setJoinedTimestamp(Helpers.toTimestamp(json.getString("join_timestamp")))
+            .setFlags(json.getInt("flags"));
 
         return threadMember;
     }
@@ -1316,7 +1316,7 @@ public class EntityBuilder
         if (chan == null)
             chan = getJDA().getPrivateChannelById(channelId);
         if (chan == null)
-            chan = getJDA().getGuildThreadById(channelId);
+            chan = getJDA().getThreadChannelById(channelId);
         if (chan == null && !jsonObject.isNull("guild_id"))
             throw new IllegalArgumentException(MISSING_CHANNEL);
 

@@ -17,16 +17,15 @@
 package net.dv8tion.jda.api.events.thread.member;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.GuildThread;
-import net.dv8tion.jda.api.entities.GuildThreadMember;
-import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.ThreadChannel;
+import net.dv8tion.jda.api.entities.ThreadMember;
 
 import javax.annotation.Nonnull;
 
 //TODO-v5: Docs
 public class ThreadMemberLeaveEvent extends GenericThreadMemberEvent
 {
-    public ThreadMemberLeaveEvent(@Nonnull JDA api, long responseNumber, GuildThread thread, long threadMemberId, GuildThreadMember threadMember)
+    public ThreadMemberLeaveEvent(@Nonnull JDA api, long responseNumber, ThreadChannel thread, long threadMemberId, ThreadMember threadMember)
     {
         super(api, responseNumber, thread, threadMemberId, threadMember);
     }

@@ -4,13 +4,12 @@ import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.BaseGuildMessageChannel;
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.GuildThread;
-import net.dv8tion.jda.api.entities.IGuildThreadContainer;
+import net.dv8tion.jda.api.entities.ThreadChannel;
+import net.dv8tion.jda.api.entities.IThreadContainer;
 import net.dv8tion.jda.api.exceptions.ParsingException;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
-import net.dv8tion.jda.api.requests.restaction.pagination.GuildThreadPaginationAction;
+import net.dv8tion.jda.api.requests.restaction.pagination.ThreadChannelPaginationAction;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
@@ -20,11 +19,11 @@ import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GuildThreadPaginationActionImpl extends PaginationActionImpl<GuildThread, GuildThreadPaginationAction> implements GuildThreadPaginationAction
+public class ThreadChannelPaginationActionImpl extends PaginationActionImpl<ThreadChannel, ThreadChannelPaginationAction> implements ThreadChannelPaginationAction
 {
-    protected final IGuildThreadContainer channel;
+    protected final IThreadContainer channel;
 
-    public GuildThreadPaginationActionImpl(JDA api, Route.CompiledRoute route, BaseGuildMessageChannel channel)
+    public ThreadChannelPaginationActionImpl(JDA api, Route.CompiledRoute route, BaseGuildMessageChannel channel)
     {
         super(api, route, 1, 100, 100);
         this.channel = channel;
@@ -32,7 +31,7 @@ public class GuildThreadPaginationActionImpl extends PaginationActionImpl<GuildT
 
     @Nonnull
     @Override
-    public IGuildThreadContainer getChannel()
+    public IThreadContainer getChannel()
     {
         return channel;
     }
@@ -54,13 +53,13 @@ public class GuildThreadPaginationActionImpl extends PaginationActionImpl<GuildT
     }
 
     @Override
-    protected void handleSuccess(Response response, Request<List<GuildThread>> request)
+    protected void handleSuccess(Response response, Request<List<ThreadChannel>> request)
     {
         DataObject obj = response.getObject();
         DataArray selfThreadMembers = obj.getArray("members");
         DataArray threads = obj.getArray("threads");
 
-        List<GuildThread> list = new ArrayList<>(threads.length());
+        List<ThreadChannel> list = new ArrayList<>(threads.length());
         EntityBuilder builder = api.getEntityBuilder();
 
         TLongObjectMap<DataObject> selfThreadMemberMap = new TLongObjectHashMap<>();
@@ -86,7 +85,7 @@ public class GuildThreadPaginationActionImpl extends PaginationActionImpl<GuildT
                     threadObj.put("member", selfThreadMemberObj);
                 }
 
-                GuildThread thread = builder.createGuildThread(threadObj, getGuild().getIdLong());
+                ThreadChannel thread = builder.createThreadChannel(threadObj, getGuild().getIdLong());
                 list.add(thread);
 
                 if (this.useCache)
@@ -96,7 +95,7 @@ public class GuildThreadPaginationActionImpl extends PaginationActionImpl<GuildT
             }
             catch (ParsingException | NullPointerException e)
             {
-                LOG.warn("Encountered exception in GuildThreadPagination", e);
+                LOG.warn("Encountered exception in ThreadChannelPagination", e);
             }
         }
 
@@ -104,7 +103,7 @@ public class GuildThreadPaginationActionImpl extends PaginationActionImpl<GuildT
     }
 
     @Override
-    protected long getKey(GuildThread it)
+    protected long getKey(ThreadChannel it)
     {
         return it.getIdLong();
     }

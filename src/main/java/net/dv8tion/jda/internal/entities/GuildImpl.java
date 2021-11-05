@@ -82,7 +82,7 @@ public class GuildImpl implements Guild
     private final SortedSnowflakeCacheViewImpl<TextChannel> textChannelCache = new SortedSnowflakeCacheViewImpl<>(TextChannel.class, Channel::getName, Comparator.naturalOrder());
     private final SortedSnowflakeCacheViewImpl<NewsChannel> newsChannelCache = new SortedSnowflakeCacheViewImpl<>(NewsChannel.class, Channel::getName, Comparator.naturalOrder());
     private final SortedSnowflakeCacheViewImpl<StageChannel> stageChannelCache = new SortedSnowflakeCacheViewImpl<>(StageChannel.class, Channel::getName, Comparator.naturalOrder());
-    private final SortedSnowflakeCacheViewImpl<GuildThread> guildThreadCache = new SortedSnowflakeCacheViewImpl<>(GuildThread.class, Channel::getName, Comparator.naturalOrder());
+    private final SortedSnowflakeCacheViewImpl<ThreadChannel> threadChannelCache = new SortedSnowflakeCacheViewImpl<>(ThreadChannel.class, Channel::getName, Comparator.naturalOrder());
     private final SortedSnowflakeCacheViewImpl<Role> roleCache = new SortedSnowflakeCacheViewImpl<>(Role.class, Role::getName, Comparator.reverseOrder());
     private final SnowflakeCacheViewImpl<Emote> emoteCache = new SnowflakeCacheViewImpl<>(Emote.class, Emote::getName);
     private final MemberCacheViewImpl memberCache = new MemberCacheViewImpl();
@@ -628,9 +628,9 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public SortedSnowflakeCacheView<GuildThread> getGuildThreadCache()
+    public SortedSnowflakeCacheView<ThreadChannel> getThreadChannelCache()
     {
-        return guildThreadCache;
+        return threadChannelCache;
     }
 
     @Nonnull
@@ -1189,7 +1189,7 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public RestAction<List<GuildThread>> retrieveActiveThreads()
+    public RestAction<List<ThreadChannel>> retrieveActiveThreads()
     {
         Route.CompiledRoute route = Route.Guilds.LIST_ACTIVE_THREADS.compile(getId());
         return new RestActionImpl<>(api, route, (response, request) ->
@@ -1198,7 +1198,7 @@ public class GuildImpl implements Guild
             DataArray selfThreadMembers = obj.getArray("members");
             DataArray threads = obj.getArray("threads");
 
-            List<GuildThread> list = new ArrayList<>(threads.length());
+            List<ThreadChannel> list = new ArrayList<>(threads.length());
             EntityBuilder builder = api.getEntityBuilder();
 
             TLongObjectMap<DataObject> selfThreadMemberMap = new TLongObjectHashMap<>();
@@ -1222,7 +1222,7 @@ public class GuildImpl implements Guild
                     threadObj.put("member", selfThreadMemberObj);
                 }
 
-                GuildThread thread = builder.createGuildThread(threadObj, this.getIdLong());
+                ThreadChannel thread = builder.createThreadChannel(threadObj, this.getIdLong());
                 list.add(thread);
             }
 
@@ -2055,9 +2055,9 @@ public class GuildImpl implements Guild
         return stageChannelCache;
     }
 
-    public SortedSnowflakeCacheViewImpl<GuildThread> getGuildThreadsView()
+    public SortedSnowflakeCacheViewImpl<ThreadChannel> getThreadChannelsView()
     {
-        return guildThreadCache;
+        return threadChannelCache;
     }
 
     public SortedSnowflakeCacheViewImpl<Role> getRolesView()

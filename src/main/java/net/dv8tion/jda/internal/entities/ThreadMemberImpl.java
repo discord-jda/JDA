@@ -23,16 +23,16 @@ import net.dv8tion.jda.internal.utils.Helpers;
 import javax.annotation.Nonnull;
 import java.time.OffsetDateTime;
 
-public class GuildThreadMemberImpl implements GuildThreadMember
+public class ThreadMemberImpl implements ThreadMember
 {
     private final JDA api;
-    private final GuildThreadImpl thread;
+    private final ThreadChannelImpl thread;
     
     private Member member;
     private long joinedTimestamp;
     private long flags;
 
-    public GuildThreadMemberImpl(Member member, GuildThreadImpl thread)
+    public ThreadMemberImpl(Member member, ThreadChannelImpl thread)
     {
         this.api = member.getJDA();
         this.member = member;
@@ -56,7 +56,7 @@ public class GuildThreadMemberImpl implements GuildThreadMember
     
     @Nonnull
     @Override
-    public GuildThread getThread()
+    public ThreadChannel getThread()
     {
         return this.thread;
     }
@@ -103,13 +103,13 @@ public class GuildThreadMemberImpl implements GuildThreadMember
 
     // ===== Setters =======
 
-    public GuildThreadMemberImpl setJoinedTimestamp(long joinedTimestamp)
+    public ThreadMemberImpl setJoinedTimestamp(long joinedTimestamp)
     {
         this.joinedTimestamp = joinedTimestamp;
         return this;
     }
 
-    public GuildThreadMemberImpl setFlags(long flags)
+    public ThreadMemberImpl setFlags(long flags)
     {
         this.flags = flags;
         return this;

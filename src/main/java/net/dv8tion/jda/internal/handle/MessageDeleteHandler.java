@@ -20,7 +20,7 @@ import net.dv8tion.jda.api.events.message.MessageDeleteEvent;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.BaseGuildMessageChannelImpl;
-import net.dv8tion.jda.internal.entities.GuildThreadImpl;
+import net.dv8tion.jda.internal.entities.ThreadChannelImpl;
 import net.dv8tion.jda.internal.entities.PrivateChannelImpl;
 
 public class MessageDeleteHandler extends SocketHandler
@@ -49,7 +49,7 @@ public class MessageDeleteHandler extends SocketHandler
         if (channel == null)
             channel = getJDA().getNewsChannelById(channelId);
         if (channel == null)
-            channel = getJDA().getGuildThreadById(channelId);
+            channel = getJDA().getThreadChannelById(channelId);
         if (channel == null)
             channel = getJDA().getPrivateChannelById(channelId);
         if (channel == null)
@@ -66,7 +66,7 @@ public class MessageDeleteHandler extends SocketHandler
             {
                 if (channel.getType().isThread())
                 {
-                    GuildThreadImpl gThread = (GuildThreadImpl) channel;
+                    ThreadChannelImpl gThread = (ThreadChannelImpl) channel;
                     gThread.setLastMessageId(0);
                 }
                 else

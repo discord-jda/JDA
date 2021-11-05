@@ -25,7 +25,7 @@ import javax.annotation.Nonnull;
  * <br>Note that this implementation is not considered thread-safe as modifications to the cache are not done
  * with a lock. Calling methods on this class from multiple threads is not recommended.
  *
- * <p><b>Must provide not-null {@link IGuildThreadContainer IGuildThreadContainer} to compile a valid
+ * <p><b>Must provide not-null {@link IThreadContainer IThreadContainer} to compile a valid
  * pagination route.</b>
  *
  * <h2>Limits:</h2>
@@ -39,7 +39,7 @@ import javax.annotation.Nonnull;
  *     // get 2-week offset
  *     long 2WeekAgoTimestamp = System.currentTimeMillis() - (14 * 24 * 60 * 60 * 1000);
  *     // get paginator
- *     GuildThreadPaginationAction threads = channel.retrieveArchivedPrivateThreads();
+ *     ThreadChannelPaginationAction threads = channel.retrieveArchivedPrivateThreadChannels();
  *     // remove each thread older than 2 weeks
  *     threads.forEachAsync((thread) ->
  *         long threadArchiveTimestamp = thread.getTimeArchive().toInstant().toEpochMilli();
@@ -50,18 +50,18 @@ import javax.annotation.Nonnull;
  * }
  * }</pre>
  *
- * @see    IGuildThreadContainer#retrieveArchivedPublicThreads()
- * @see    IGuildThreadContainer#retrieveArchivedPrivateThreads()
- * @see    IGuildThreadContainer#retrieveArchivedPrivateJoinedThreads()
+ * @see    IThreadContainer#retrieveArchivedPublicThreadChannels()
+ * @see    IThreadContainer#retrieveArchivedPrivateThreadChannels()
+ * @see    IThreadContainer#retrieveArchivedPrivateJoinedThreadChannels()
  */
-public interface GuildThreadPaginationAction extends PaginationAction<GuildThread, GuildThreadPaginationAction>
+public interface ThreadChannelPaginationAction extends PaginationAction<ThreadChannel, ThreadChannelPaginationAction>
 {
     //TODO-v5: Docs
     @Nonnull
-    IGuildThreadContainer getChannel();
+    IThreadContainer getChannel();
 
     /**
-     * The current target {@link net.dv8tion.jda.api.entities.Guild Guild} for this GuildThreadPaginationAction.
+     * The current target {@link net.dv8tion.jda.api.entities.Guild Guild} for this ThreadChannelPaginationAction.
      *
      * @return The never-null target Guild
      */

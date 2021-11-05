@@ -40,7 +40,7 @@ public class MessageReactionBulkRemoveHandler extends SocketHandler
         if (channel == null)
             channel = jda.getNewsChannelById(channelId);
         if (channel == null)
-            channel = jda.getGuildThreadById(channelId);
+            channel = jda.getThreadChannelById(channelId);
         if (channel == null)
         {
             jda.getEventCache().cache(EventCache.Type.CHANNEL, channelId, responseNumber, allContent, this::handle);

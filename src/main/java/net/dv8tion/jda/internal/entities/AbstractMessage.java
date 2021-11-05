@@ -644,7 +644,7 @@ public abstract class AbstractMessage implements Message
     }
 
     @Override
-    public RestAction<GuildThread> createThread(String name)
+    public RestAction<ThreadChannel> createThreadChannel(String name)
     {
         unsupported();
         return null;

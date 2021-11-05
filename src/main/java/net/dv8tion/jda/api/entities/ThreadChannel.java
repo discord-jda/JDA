@@ -29,7 +29,7 @@ import java.util.FormattableFlags;
 import java.util.Formatter;
 import java.util.List;
 
-public interface GuildThread extends GuildMessageChannel, IMemberContainer
+public interface ThreadChannel extends GuildMessageChannel, IMemberContainer
 {
     //TODO fields that need to be researched:
     // - rate_limit_per_user
@@ -56,7 +56,7 @@ public interface GuildThread extends GuildMessageChannel, IMemberContainer
     boolean isLocked();
 
     @Nonnull
-    IGuildThreadContainer getParentChannel();
+    IThreadContainer getParentChannel();
 
     @Nonnull
     default GuildMessageChannel getParentMessageChannel()
@@ -69,38 +69,38 @@ public interface GuildThread extends GuildMessageChannel, IMemberContainer
     }
 
     @Nullable
-    default GuildThreadMember getSelfThreadMember()
+    default ThreadMember getSelfThreadMember()
     {
         return getThreadMember(getJDA().getSelfUser());
     }
 
     //Only have access to this with GUILD_MEMBERS
     @Nonnull
-    List<GuildThreadMember> getThreadMembers();
+    List<ThreadMember> getThreadMembers();
 
     @Nullable
-    default GuildThreadMember getThreadMember(Member member)
+    default ThreadMember getThreadMember(Member member)
     {
         return getThreadMemberById(member.getId());
     }
 
     @Nullable
-    default GuildThreadMember getThreadMember(User user)
+    default ThreadMember getThreadMember(User user)
     {
         return getThreadMemberById(user.getId());
     }
 
     @Nullable
-    default GuildThreadMember getThreadMemberById(String id)
+    default ThreadMember getThreadMemberById(String id)
     {
         return getThreadMemberById(MiscUtil.parseSnowflake(id));
     }
 
     @Nullable
-    GuildThreadMember getThreadMemberById(long id);
+    ThreadMember getThreadMemberById(long id);
 
     @CheckReturnValue
-    RestAction<List<GuildThreadMember>> retrieveThreadMembers();
+    RestAction<List<ThreadMember>> retrieveThreadMembers();
 
     long getOwnerIdLong();
 
@@ -117,7 +117,7 @@ public interface GuildThread extends GuildMessageChannel, IMemberContainer
     }
 
     @Nullable
-    default GuildThreadMember getOwnerThreadMember()
+    default ThreadMember getOwnerThreadMember()
     {
         return getThreadMemberById(getOwnerIdLong());
     }

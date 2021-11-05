@@ -24,7 +24,7 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.BaseGuildMessageChannelImpl;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
-import net.dv8tion.jda.internal.entities.GuildThreadImpl;
+import net.dv8tion.jda.internal.entities.ThreadChannelImpl;
 import net.dv8tion.jda.internal.entities.PrivateChannelImpl;
 import net.dv8tion.jda.internal.requests.WebSocketClient;
 
@@ -92,7 +92,7 @@ public class MessageCreateHandler extends SocketHandler
         {
             if (channelType.isThread())
             {
-                GuildThreadImpl gThread = (GuildThreadImpl) channel;
+                ThreadChannelImpl gThread = (ThreadChannelImpl) channel;
                 gThread.setLastMessageId(message.getIdLong());
 
                 //Discord will only ever allow this property to show up to 50,

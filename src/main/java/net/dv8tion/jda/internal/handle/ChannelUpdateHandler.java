@@ -387,7 +387,7 @@ public class ChannelUpdateHandler extends SocketHandler
         boolean hasAccessToChannel = channel.getGuild().getSelfMember().hasPermission((IPermissionContainer) channel, Permission.VIEW_CHANNEL);
         if (channel.getType().isMessage() && !hasAccessToChannel)
         {
-            handleHideChildThreads((IGuildThreadContainer) channel);
+            handleHideChildThreads((IThreadContainer) channel);
         }
 
         return null;
@@ -545,18 +545,18 @@ public class ChannelUpdateHandler extends SocketHandler
         return true;
     }
 
-    private void handleHideChildThreads(IGuildThreadContainer channel)
+    private void handleHideChildThreads(IThreadContainer channel)
     {
-        List<GuildThread> threads = channel.getGuildThreads();
+        List<ThreadChannel> threads = channel.getThreadChannels();
         if (threads.isEmpty())
             return;
 
-        for (GuildThread thread : threads)
+        for (ThreadChannel thread : threads)
         {
             GuildImpl guild = (GuildImpl) channel.getGuild();
-            SnowflakeCacheViewImpl<GuildThread>
-                    guildThreadView = guild.getGuildThreadsView(),
-                    threadView = getJDA().getGuildThreadView();
+            SnowflakeCacheViewImpl<ThreadChannel>
+                    guildThreadView = guild.getThreadChannelsView(),
+                    threadView = getJDA().getThreadChannelsView();
             try (
                     UnlockHook vlock = guildThreadView.writeLock();
                     UnlockHook jlock = threadView.writeLock())
@@ -569,7 +569,7 @@ public class ChannelUpdateHandler extends SocketHandler
         }
 
         //Fire these events outside the write locks
-        for (GuildThread thread : threads)
+        for (ThreadChannel thread : threads)
         {
             api.handleEvent(new ThreadHiddenEvent(api, responseNumber, thread));
         }

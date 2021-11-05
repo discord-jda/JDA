@@ -21,7 +21,7 @@ import net.dv8tion.jda.api.JDA;
 import javax.annotation.Nonnull;
 import java.time.OffsetDateTime;
 
-public interface GuildThreadMember extends IMentionable
+public interface ThreadMember extends IMentionable
 {
     @Nonnull
     JDA getJDA();
@@ -30,7 +30,7 @@ public interface GuildThreadMember extends IMentionable
     Guild getGuild();
 
     @Nonnull
-    GuildThread getThread();
+    ThreadChannel getThread();
 
     //We might not actually be able to provide a user because we only get the `userId` in the ThreadMember object.
     @Nonnull

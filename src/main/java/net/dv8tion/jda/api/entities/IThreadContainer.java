@@ -17,19 +17,19 @@
 package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.requests.RestAction;
-import net.dv8tion.jda.api.requests.restaction.pagination.GuildThreadPaginationAction;
+import net.dv8tion.jda.api.requests.restaction.pagination.ThreadChannelPaginationAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
 
 import javax.annotation.CheckReturnValue;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public interface IGuildThreadContainer extends GuildChannel, IPermissionContainer
+public interface IThreadContainer extends GuildChannel, IPermissionContainer
 {
     //TODO-v5 - Docs
-    default List<GuildThread> getGuildThreads()
+    default List<ThreadChannel> getThreadChannels()
     {
-        return getGuild().getGuildThreads()
+        return getGuild().getThreadChannels()
             .stream()
             .filter(thread -> thread.getParentChannel() == this)
             .collect(Collectors.toList());
@@ -37,36 +37,36 @@ public interface IGuildThreadContainer extends GuildChannel, IPermissionContaine
 
     //TODO-v5: Docs
     @CheckReturnValue
-    default RestAction<GuildThread> createThread(String name)
+    default RestAction<ThreadChannel> createThreadChannel(String name)
     {
-        return createThread(name, false);
+        return createThreadChannel(name, false);
     }
 
     //TODO-v5: Docs
     @CheckReturnValue
-    RestAction<GuildThread> createThread(String name, boolean isPrivate);
+    RestAction<ThreadChannel> createThreadChannel(String name, boolean isPrivate);
 
 
     //TODO-v5: Docs
     @CheckReturnValue
-    RestAction<GuildThread> createThread(String name, long messageId);
+    RestAction<ThreadChannel> createThreadChannel(String name, long messageId);
 
     //TODO-v5: Docs
     @CheckReturnValue
-    default RestAction<GuildThread> createThread(String name, String messageId)
+    default RestAction<ThreadChannel> createThreadChannel(String name, String messageId)
     {
-        return createThread(name, MiscUtil.parseSnowflake(messageId));
+        return createThreadChannel(name, MiscUtil.parseSnowflake(messageId));
     }
 
     //TODO-v5: Docs
     @CheckReturnValue
-    GuildThreadPaginationAction retrieveArchivedPublicThreads();
+    ThreadChannelPaginationAction retrieveArchivedPublicThreadChannels();
 
     //TODO-v5: Docs
     @CheckReturnValue
-    GuildThreadPaginationAction retrieveArchivedPrivateThreads();
+    ThreadChannelPaginationAction retrieveArchivedPrivateThreadChannels();
 
     //TODO-v5: Docs
     @CheckReturnValue
-    GuildThreadPaginationAction retrieveArchivedPrivateJoinedThreads();
+    ThreadChannelPaginationAction retrieveArchivedPrivateJoinedThreadChannels();
 }

@@ -17,8 +17,8 @@
 package net.dv8tion.jda.api.events.thread.member;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.GuildThread;
-import net.dv8tion.jda.api.entities.GuildThreadMember;
+import net.dv8tion.jda.api.entities.ThreadChannel;
+import net.dv8tion.jda.api.entities.ThreadMember;
 import net.dv8tion.jda.api.entities.Member;
 
 import javax.annotation.Nonnull;
@@ -26,14 +26,14 @@ import javax.annotation.Nonnull;
 //TODO-v5: Docs
 public class ThreadMemberJoinEvent extends GenericThreadMemberEvent
 {
-    public ThreadMemberJoinEvent(@Nonnull JDA api, long responseNumber, GuildThread thread, GuildThreadMember threadMember)
+    public ThreadMemberJoinEvent(@Nonnull JDA api, long responseNumber, ThreadChannel thread, ThreadMember threadMember)
     {
         super(api, responseNumber, thread, threadMember.getIdLong(), threadMember);
     }
 
     @Nonnull
     @Override
-    public GuildThreadMember getThreadMember()
+    public ThreadMember getThreadMember()
     {
         return super.getThreadMember();
     }

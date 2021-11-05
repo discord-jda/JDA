@@ -16,7 +16,7 @@
 
 package net.dv8tion.jda.internal.handle;
 
-import net.dv8tion.jda.api.entities.GuildThread;
+import net.dv8tion.jda.api.entities.ThreadChannel;
 import net.dv8tion.jda.api.events.thread.ThreadRevealedEvent;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
@@ -42,7 +42,7 @@ public class ThreadListSyncHandler extends SocketHandler
         for (int i = 0; i < threadsArrayJson.length(); i++)
         {
             DataObject threadJson = threadsArrayJson.getObject(i);
-            GuildThread thread = entityBuilder.createGuildThread(threadJson, guildId);
+            ThreadChannel thread = entityBuilder.createThreadChannel(threadJson, guildId);
 
             api.handleEvent(new ThreadRevealedEvent(api, responseNumber, thread));
         }

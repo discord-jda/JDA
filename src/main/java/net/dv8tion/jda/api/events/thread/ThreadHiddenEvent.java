@@ -17,14 +17,14 @@
 package net.dv8tion.jda.api.events.thread;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.GuildThread;
+import net.dv8tion.jda.api.entities.ThreadChannel;
 
 import javax.annotation.Nonnull;
 
 //TODO-v5: Docs
 public class ThreadHiddenEvent extends GenericThreadEvent
 {
-    public ThreadHiddenEvent(@Nonnull JDA api, long responseNumber, GuildThread thread)
+    public ThreadHiddenEvent(@Nonnull JDA api, long responseNumber, ThreadChannel thread)
     {
         super(api, responseNumber, thread);
     }

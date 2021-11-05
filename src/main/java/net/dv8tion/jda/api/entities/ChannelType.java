@@ -149,10 +149,10 @@ public enum ChannelType
     }
 
     /**
-     * Whether channels of this type are {@link GuildThread GuildThreads}.
+     * Whether channels of this type are {@link ThreadChannel ThreadChannels}.
      * This mostly exists to make handling threads simpler than having to check 3 separate ChannelTypes every time.
      *
-     * @return True, if channels of this type are {@link GuildThread GuildThreads}
+     * @return True, if channels of this type are {@link ThreadChannel ThreadChannel}
      */
     public boolean isThread() {
         switch (this)

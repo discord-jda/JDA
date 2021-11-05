@@ -23,7 +23,7 @@ import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import net.dv8tion.jda.api.requests.restaction.WebhookAction;
-import net.dv8tion.jda.api.requests.restaction.pagination.GuildThreadPaginationAction;
+import net.dv8tion.jda.api.requests.restaction.pagination.ThreadChannelPaginationAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationAction;
 import net.dv8tion.jda.api.utils.AttachmentOption;
 import net.dv8tion.jda.api.utils.MiscUtil;
@@ -35,7 +35,7 @@ import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.WebhookActionImpl;
-import net.dv8tion.jda.internal.requests.restaction.pagination.GuildThreadPaginationActionImpl;
+import net.dv8tion.jda.internal.requests.restaction.pagination.ThreadChannelPaginationActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.pagination.ReactionPaginationActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.EncodingUtil;
@@ -217,7 +217,7 @@ public abstract class BaseGuildMessageChannelImpl<T extends BaseGuildMessageChan
     }
 
     @Override
-    public RestAction<GuildThread> createThread(String name, boolean isPrivate)
+    public RestAction<ThreadChannel> createThreadChannel(String name, boolean isPrivate)
     {
         checkPermission(Permission.VIEW_CHANNEL);
         if (isPrivate)
@@ -236,17 +236,17 @@ public abstract class BaseGuildMessageChannelImpl<T extends BaseGuildMessageChan
         DataObject data = DataObject.empty()
             .put("name", name)
             .put("type", threadType.getId())
-            .put("auto_archive_duration", GuildThread.AutoArchiveDuration.TIME_24_HOURS.getMinutes());
+            .put("auto_archive_duration", ThreadChannel.AutoArchiveDuration.TIME_24_HOURS.getMinutes());
 
         Route.CompiledRoute route = Route.Channels.CREATE_THREAD_WITHOUT_MESSAGE.compile(getId());
         return new RestActionImpl<>(api, route, data, (response, request) -> {
             DataObject threadObj = response.getObject();
-            return api.getEntityBuilder().createGuildThread(threadObj, getGuild().getIdLong());
+            return api.getEntityBuilder().createThreadChannel(threadObj, getGuild().getIdLong());
         });
     }
 
     @Override
-    public RestAction<GuildThread> createThread(String name, long messageId)
+    public RestAction<ThreadChannel> createThreadChannel(String name, long messageId)
     {
         checkPermission(Permission.VIEW_CHANNEL);
         checkPermission(Permission.CREATE_PUBLIC_THREADS);
@@ -254,41 +254,41 @@ public abstract class BaseGuildMessageChannelImpl<T extends BaseGuildMessageChan
         //TODO-threads: This needs to be a ThreadAction
         DataObject data = DataObject.empty()
             .put("name", name)
-            .put("auto_archive_duration", GuildThread.AutoArchiveDuration.TIME_24_HOURS.getMinutes());
+            .put("auto_archive_duration", ThreadChannel.AutoArchiveDuration.TIME_24_HOURS.getMinutes());
 
         Route.CompiledRoute route = Route.Channels.CREATE_THREAD_WITH_MESSAGE.compile(getId(), Long.toUnsignedString(messageId));
         return new RestActionImpl<>(api, route, data, (response, request) -> {
             DataObject threadObj = response.getObject();
-            return api.getEntityBuilder().createGuildThread(threadObj, getGuild().getIdLong());
+            return api.getEntityBuilder().createThreadChannel(threadObj, getGuild().getIdLong());
         });
     }
 
     @Override
-    public GuildThreadPaginationActionImpl retrieveArchivedPublicThreads()
+    public ThreadChannelPaginationActionImpl retrieveArchivedPublicThreadChannels()
     {
         checkPermission(Permission.MESSAGE_HISTORY);
 
         Route.CompiledRoute route = Route.Channels.LIST_PUBLIC_ARCHIVED_THREADS.compile(getId());
-        return new GuildThreadPaginationActionImpl(api, route, this);
+        return new ThreadChannelPaginationActionImpl(api, route, this);
     }
 
     @Override
-    public GuildThreadPaginationActionImpl retrieveArchivedPrivateThreads()
+    public ThreadChannelPaginationActionImpl retrieveArchivedPrivateThreadChannels()
     {
         checkPermission(Permission.MESSAGE_HISTORY);
         checkPermission(Permission.MANAGE_THREADS);
 
         Route.CompiledRoute route = Route.Channels.LIST_PRIVATE_ARCHIVED_THREADS.compile(getId());
-        return new GuildThreadPaginationActionImpl(api, route, this);
+        return new ThreadChannelPaginationActionImpl(api, route, this);
     }
 
     @Override
-    public GuildThreadPaginationAction retrieveArchivedPrivateJoinedThreads()
+    public ThreadChannelPaginationAction retrieveArchivedPrivateJoinedThreadChannels()
     {
         checkPermission(Permission.MESSAGE_HISTORY);
 
         Route.CompiledRoute route = Route.Channels.LIST_JOINED_PRIVATE_ARCHIVED_THREADS.compile(getId());
-        return new GuildThreadPaginationActionImpl(api, route, this);
+        return new ThreadChannelPaginationActionImpl(api, route, this);
     }
 
     // ---- Overrides for Permission Injection ----

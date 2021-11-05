@@ -50,12 +50,12 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
-public class GuildThreadImpl implements GuildThread
+public class ThreadChannelImpl implements ThreadChannel
 {
     private final long id;
     private final ChannelType type;
     private final JDAImpl api;
-    private final CacheView.SimpleCacheView<GuildThreadMember> threadMembers = new CacheView.SimpleCacheView<>(GuildThreadMember.class, null);
+    private final CacheView.SimpleCacheView<ThreadMember> threadMembers = new CacheView.SimpleCacheView<>(ThreadMember.class, null);
 
     private GuildImpl guild;
     private String name;
@@ -70,7 +70,7 @@ public class GuildThreadImpl implements GuildThread
     private int memberCount;
     private int slowmode;
 
-    public GuildThreadImpl(long id, ChannelType type, GuildImpl guild)
+    public ThreadChannelImpl(long id, ChannelType type, GuildImpl guild)
     {
         this.id = id;
         this.type = type;
@@ -124,10 +124,10 @@ public class GuildThreadImpl implements GuildThread
 
     @Override
     @Nonnull
-    public IGuildThreadContainer getParentChannel()
+    public IThreadContainer getParentChannel()
     {
         //noinspection ConstantConditions
-        return (IGuildThreadContainer) guild.getGuildChannelById(parentChannelId);
+        return (IThreadContainer) guild.getGuildChannelById(parentChannelId);
     }
 
     @Override
@@ -144,13 +144,13 @@ public class GuildThreadImpl implements GuildThread
 
     @Override
     @Nullable
-    public List<GuildThreadMember> getThreadMembers()
+    public List<ThreadMember> getThreadMembers()
     {
         return threadMembers.asList();
     }
 
     @Override
-    public GuildThreadMember getThreadMemberById(long id)
+    public ThreadMember getThreadMemberById(long id)
     {
         return threadMembers.get(id);
     }
@@ -235,7 +235,7 @@ public class GuildThreadImpl implements GuildThread
     }
 
     @Override
-    public RestAction<List<GuildThreadMember>> retrieveThreadMembers()
+    public RestAction<List<ThreadMember>> retrieveThreadMembers()
     {
         //TODO-threads: This interacts with GUILD_MEMBERS in some way. Need to test and document how.
 
@@ -243,15 +243,15 @@ public class GuildThreadImpl implements GuildThread
         return new RestActionImpl<>(getJDA(), route, (response, request) ->
         {
             EntityBuilder builder = api.getEntityBuilder();
-            List<GuildThreadMember> threadMembers = new LinkedList<>();
+            List<ThreadMember> threadMembers = new LinkedList<>();
             DataArray memberArr = response.getArray();
 
             for (int i = 0; i < memberArr.length(); i++)
             {
                 final DataObject object = memberArr.getObject(i);
                 //Very possible this is gonna break because we don't get user/member info with threadmembers
-                //TODO revisit the @Nonnull annotations in GuildThreadMember due to the lack of user/member info. Might be a time to introduce RestX entities?
-                threadMembers.add(builder.createGuildThreadMember((GuildImpl) this.getGuild(), this, object));
+                //TODO revisit the @Nonnull annotations in ThreadMember due to the lack of user/member info. Might be a time to introduce RestX entities?
+                threadMembers.add(builder.createThreadMember((GuildImpl) this.getGuild(), this, object));
             }
             return Collections.unmodifiableList(threadMembers);
         });
@@ -261,7 +261,7 @@ public class GuildThreadImpl implements GuildThread
     @Override
     public List<Member> getMembers()
     {
-        return threadMembers.stream().map(GuildThreadMember::getMember).collect(Collectors.toList());
+        return threadMembers.stream().map(ThreadMember::getMember).collect(Collectors.toList());
     }
 
     @Override
@@ -376,7 +376,7 @@ public class GuildThreadImpl implements GuildThread
                 throw new InsufficientPermissionException(this, Permission.MESSAGE_MANAGE, "Cannot delete messages of other users");
             }
         }
-        return GuildThread.super.purgeMessages(messages);
+        return ThreadChannel.super.purgeMessages(messages);
     }
 
     @Nonnull
@@ -389,7 +389,7 @@ public class GuildThreadImpl implements GuildThread
 
         //If we can't use the bulk delete system, then use the standard purge defined in MessageChannel
         if (!getGuild().getSelfMember().hasPermission(this.getParentChannel(), Permission.MESSAGE_MANAGE))
-            return GuildThread.super.purgeMessagesById(messageIds);
+            return ThreadChannel.super.purgeMessagesById(messageIds);
 
         // remove duplicates and sort messages
         List<CompletableFuture<Void>> list = new LinkedList<>();
@@ -438,7 +438,7 @@ public class GuildThreadImpl implements GuildThread
     {
         checkPermission(Permission.VIEW_CHANNEL);
         checkPermission(Permission.MESSAGE_SEND_IN_THREADS);
-        return GuildThread.super.sendMessage(text);
+        return ThreadChannel.super.sendMessage(text);
     }
 
     @Nonnull
@@ -449,7 +449,7 @@ public class GuildThreadImpl implements GuildThread
         checkPermission(Permission.MESSAGE_SEND_IN_THREADS);
         // this is checked because you cannot send an empty message
         checkPermission(Permission.MESSAGE_EMBED_LINKS);
-        return GuildThread.super.sendMessage(embed);
+        return ThreadChannel.super.sendMessage(embed);
     }
 
     @Nonnull
@@ -464,7 +464,7 @@ public class GuildThreadImpl implements GuildThread
             checkPermission(Permission.MESSAGE_EMBED_LINKS);
 
         //Call MessageChannel's default
-        return GuildThread.super.sendMessage(msg);
+        return ThreadChannel.super.sendMessage(msg);
     }
 
     @Nonnull
@@ -480,7 +480,7 @@ public class GuildThreadImpl implements GuildThread
                 "File may not exceed the maximum file length of %d bytes!", maxSize);
 
         //Call MessageChannel's default method
-        return GuildThread.super.sendFile(file, fileName, options);
+        return ThreadChannel.super.sendFile(file, fileName, options);
     }
 
     @Nonnull
@@ -492,7 +492,7 @@ public class GuildThreadImpl implements GuildThread
         checkPermission(Permission.MESSAGE_ATTACH_FILES);
 
         //Call MessageChannel's default method
-        return GuildThread.super.sendFile(data, fileName, options);
+        return ThreadChannel.super.sendFile(data, fileName, options);
     }
 
     @Nonnull
@@ -507,7 +507,7 @@ public class GuildThreadImpl implements GuildThread
         Checks.check(data == null || data.length <= maxSize, "File is too big! Max file-size is %d bytes", maxSize);
 
         //Call MessageChannel's default method
-        return GuildThread.super.sendFile(data, fileName, options);
+        return ThreadChannel.super.sendFile(data, fileName, options);
     }
 
     @Nonnull
@@ -518,7 +518,7 @@ public class GuildThreadImpl implements GuildThread
         checkPermission(Permission.MESSAGE_HISTORY);
 
         //Call MessageChannel's default method
-        return GuildThread.super.retrieveMessageById(messageId);
+        return ThreadChannel.super.retrieveMessageById(messageId);
     }
 
     @Nonnull
@@ -529,7 +529,7 @@ public class GuildThreadImpl implements GuildThread
         checkPermission(Permission.VIEW_CHANNEL);
 
         //Call MessageChannel's default method
-        return GuildThread.super.deleteMessageById(messageId);
+        return ThreadChannel.super.deleteMessageById(messageId);
     }
 
     @Nonnull
@@ -540,7 +540,7 @@ public class GuildThreadImpl implements GuildThread
         checkPermission(Permission.MESSAGE_MANAGE, "You need MESSAGE_MANAGE to pin or unpin messages.");
 
         //Call MessageChannel's default method
-        return GuildThread.super.pinMessageById(messageId);
+        return ThreadChannel.super.pinMessageById(messageId);
     }
 
     @Nonnull
@@ -551,7 +551,7 @@ public class GuildThreadImpl implements GuildThread
         checkPermission(Permission.MESSAGE_MANAGE, "You need MESSAGE_MANAGE to pin or unpin messages.");
 
         //Call MessageChannel's default method
-        return GuildThread.super.unpinMessageById(messageId);
+        return ThreadChannel.super.unpinMessageById(messageId);
     }
 
     @Nonnull
@@ -561,7 +561,7 @@ public class GuildThreadImpl implements GuildThread
         checkPermission(Permission.VIEW_CHANNEL, "Cannot get the pinned message of a channel without VIEW_CHANNEL access.");
 
         //Call MessageChannel's default method
-        return GuildThread.super.retrievePinnedMessages();
+        return ThreadChannel.super.retrievePinnedMessages();
     }
 
     @Nonnull
@@ -571,7 +571,7 @@ public class GuildThreadImpl implements GuildThread
         checkPermission(Permission.MESSAGE_HISTORY);
 
         //Call MessageChannel's default method
-        return GuildThread.super.addReactionById(messageId, unicode);
+        return ThreadChannel.super.addReactionById(messageId, unicode);
     }
 
     @Nonnull
@@ -581,7 +581,7 @@ public class GuildThreadImpl implements GuildThread
         checkPermission(Permission.MESSAGE_HISTORY);
 
         //Call MessageChannel's default method
-        return GuildThread.super.addReactionById(messageId, emote);
+        return ThreadChannel.super.addReactionById(messageId, emote);
     }
 
     @Nonnull
@@ -615,7 +615,7 @@ public class GuildThreadImpl implements GuildThread
     {
         checkPermission(Permission.VIEW_CHANNEL);
         checkPermission(Permission.MESSAGE_SEND_IN_THREADS);
-        return GuildThread.super.editMessageById(messageId, newContent);
+        return ThreadChannel.super.editMessageById(messageId, newContent);
     }
 
     @Nonnull
@@ -626,7 +626,7 @@ public class GuildThreadImpl implements GuildThread
         checkPermission(Permission.VIEW_CHANNEL);
         checkPermission(Permission.MESSAGE_SEND_IN_THREADS);
         checkPermission(Permission.MESSAGE_EMBED_LINKS);
-        return GuildThread.super.editMessageById(messageId, newEmbed);
+        return ThreadChannel.super.editMessageById(messageId, newEmbed);
     }
 
     @Nonnull
@@ -636,7 +636,7 @@ public class GuildThreadImpl implements GuildThread
         checkPermission(Permission.VIEW_CHANNEL);
         checkPermission(Permission.MESSAGE_SEND_IN_THREADS);
         checkPermission(Permission.MESSAGE_EMBED_LINKS);
-        return GuildThread.super.editMessageEmbedsById(messageId, newEmbeds);
+        return ThreadChannel.super.editMessageEmbedsById(messageId, newEmbeds);
     }
 
     @Nonnull
@@ -652,7 +652,7 @@ public class GuildThreadImpl implements GuildThread
             checkPermission(Permission.MESSAGE_EMBED_LINKS);
 
         //Call MessageChannel's default
-        return GuildThread.super.editMessageById(id, newContent);
+        return ThreadChannel.super.editMessageById(id, newContent);
     }
 
     // ====== Non-API getters =====
@@ -662,74 +662,74 @@ public class GuildThreadImpl implements GuildThread
         return archiveTimestamp;
     }
 
-    public CacheView.SimpleCacheView<GuildThreadMember> getThreadMemberView()
+    public CacheView.SimpleCacheView<ThreadMember> getThreadMemberView()
     {
         return threadMembers;
     }
 
     // ====== Setters ======
 
-    public GuildThreadImpl setName(String name)
+    public ThreadChannelImpl setName(String name)
     {
         this.name = name;
         return this;
     }
 
-    public GuildThreadImpl setAutoArchiveDuration(AutoArchiveDuration autoArchiveDuration)
+    public ThreadChannelImpl setAutoArchiveDuration(AutoArchiveDuration autoArchiveDuration)
     {
         this.autoArchiveDuration = autoArchiveDuration;
         return this;
     }
 
-    public GuildThreadImpl setParentChannelId(long parentChannelId)
+    public ThreadChannelImpl setParentChannelId(long parentChannelId)
     {
         this.parentChannelId = parentChannelId;
         return this;
     }
 
-    public GuildThreadImpl setLocked(boolean locked)
+    public ThreadChannelImpl setLocked(boolean locked)
     {
         this.locked = locked;
         return this;
     }
 
-    public GuildThreadImpl setArchived(boolean archived)
+    public ThreadChannelImpl setArchived(boolean archived)
     {
         this.archived = archived;
         return this;
     }
 
-    public GuildThreadImpl setArchiveTimestamp(long archiveTimestamp)
+    public ThreadChannelImpl setArchiveTimestamp(long archiveTimestamp)
     {
         this.archiveTimestamp = archiveTimestamp;
         return this;
     }
 
-    public GuildThreadImpl setOwnerId(long ownerId)
+    public ThreadChannelImpl setOwnerId(long ownerId)
     {
         this.ownerId = ownerId;
         return this;
     }
 
-    public GuildThreadImpl setMessageCount(int messageCount)
+    public ThreadChannelImpl setMessageCount(int messageCount)
     {
         this.messageCount = messageCount;
         return this;
     }
 
-    public GuildThreadImpl setMemberCount(int memberCount)
+    public ThreadChannelImpl setMemberCount(int memberCount)
     {
         this.memberCount = memberCount;
         return this;
     }
 
-    public GuildThreadImpl setLastMessageId(long lastMessageId)
+    public ThreadChannelImpl setLastMessageId(long lastMessageId)
     {
         this.lastMessageId = lastMessageId;
         return this;
     }
 
-    public GuildThreadImpl setSlowmode(int slowmode)
+    public ThreadChannelImpl setSlowmode(int slowmode)
     {
         this.slowmode = slowmode;
         return this;
@@ -748,7 +748,7 @@ public class GuildThreadImpl implements GuildThread
     private void checkUnarchived()
     {
         if (archived) {
-            throw new IllegalStateException("Cannot modify a GuildThread while it is archived!");
+            throw new IllegalStateException("Cannot modify a ThreadChannel while it is archived!");
         }
     }
 

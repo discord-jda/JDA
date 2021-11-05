@@ -11,7 +11,7 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 //TODO-v5: Docs
-public interface BaseGuildMessageChannel extends GuildMessageChannel, IGuildThreadContainer, GuildChannel, ICategorizableChannel, ICopyableChannel, IPermissionContainer, IMemberContainer, IInviteContainer, IPositionableChannel
+public interface BaseGuildMessageChannel extends GuildMessageChannel, IThreadContainer, GuildChannel, ICategorizableChannel, ICopyableChannel, IPermissionContainer, IMemberContainer, IInviteContainer, IPositionableChannel
 {
     /**
      * The topic set for this TextChannel.

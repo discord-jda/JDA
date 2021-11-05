@@ -16,11 +16,11 @@
 
 package net.dv8tion.jda.internal.handle;
 
-import net.dv8tion.jda.api.entities.GuildThread;
+import net.dv8tion.jda.api.entities.ThreadChannel;
 import net.dv8tion.jda.api.events.channel.update.*;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
-import net.dv8tion.jda.internal.entities.GuildThreadImpl;
+import net.dv8tion.jda.internal.entities.ThreadChannelImpl;
 import net.dv8tion.jda.internal.utils.Helpers;
 
 import java.util.Objects;
@@ -40,7 +40,7 @@ public class ThreadUpdateHandler extends SocketHandler
             return guildId;
 
         final long threadId = content.getLong("id");
-        GuildThreadImpl thread = (GuildThreadImpl) getJDA().getGuildThreadById(threadId);
+        ThreadChannelImpl thread = (ThreadChannelImpl) getJDA().getThreadChannelById(threadId);
         if (thread == null)
         {
             getJDA().getEventCache().cache(EventCache.Type.CHANNEL, threadId, responseNumber, allContent, this::handle);
@@ -50,14 +50,14 @@ public class ThreadUpdateHandler extends SocketHandler
 
         final DataObject threadMetadata = content.getObject("thread_metadata");
         final String name = content.getString("name");
-        final GuildThread.AutoArchiveDuration autoArchiveDuration = GuildThread.AutoArchiveDuration.fromKey(threadMetadata.getInt("auto_archive_duration"));
+        final ThreadChannel.AutoArchiveDuration autoArchiveDuration = ThreadChannel.AutoArchiveDuration.fromKey(threadMetadata.getInt("auto_archive_duration"));
         final boolean locked = threadMetadata.getBoolean("locked");
         final boolean archived = threadMetadata.getBoolean("archived");
         final long archiveTimestamp = Helpers.toTimestamp(threadMetadata.getString("archive_timestamp"));
         final int slowmode = content.getInt("rate_limit_per_user", 0);
 
         final String oldName = thread.getName();
-        final GuildThread.AutoArchiveDuration oldAutoArchiveDuration = thread.getAutoArchiveDuration();
+        final ThreadChannel.AutoArchiveDuration oldAutoArchiveDuration = thread.getAutoArchiveDuration();
         final boolean oldLocked = thread.isLocked();
         final boolean oldArchived = thread.isArchived();
         final long oldArchiveTimestamp = thread.getArchiveTimestamp();

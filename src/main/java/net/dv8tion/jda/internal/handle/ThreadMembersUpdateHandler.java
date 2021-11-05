@@ -18,9 +18,7 @@ package net.dv8tion.jda.internal.handle;
 
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
-import net.dv8tion.jda.api.entities.GuildThread;
-import net.dv8tion.jda.api.entities.GuildThreadMember;
-import net.dv8tion.jda.api.events.channel.update.*;
+import net.dv8tion.jda.api.entities.ThreadMember;
 import net.dv8tion.jda.api.events.thread.member.ThreadMemberJoinEvent;
 import net.dv8tion.jda.api.events.thread.member.ThreadMemberLeaveEvent;
 import net.dv8tion.jda.api.utils.MiscUtil;
@@ -30,16 +28,12 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.entities.GuildImpl;
-import net.dv8tion.jda.internal.entities.GuildThreadImpl;
-import net.dv8tion.jda.internal.utils.Helpers;
+import net.dv8tion.jda.internal.entities.ThreadChannelImpl;
 import net.dv8tion.jda.internal.utils.UnlockHook;
 
-import javax.swing.text.html.parser.Entity;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 public class ThreadMembersUpdateHandler extends SocketHandler
 {
@@ -56,7 +50,7 @@ public class ThreadMembersUpdateHandler extends SocketHandler
             return guildId;
 
         final long threadId = content.getLong("id");
-        GuildThreadImpl thread = (GuildThreadImpl) getJDA().getGuildThreadById(threadId);
+        ThreadChannelImpl thread = (ThreadChannelImpl) getJDA().getThreadChannelById(threadId);
         if (thread == null)
         {
             getJDA().getEventCache().cache(EventCache.Type.CHANNEL, threadId, responseNumber, allContent, this::handle);
@@ -67,7 +61,7 @@ public class ThreadMembersUpdateHandler extends SocketHandler
         //TODO-Threads: this handler could check for member_count changing to emit the event. Not sure it is useful tho given we're already saying people left.
 
         EntityBuilder entityBuilder = api.getEntityBuilder();
-        CacheView.SimpleCacheView<GuildThreadMember> view = thread.getThreadMemberView();
+        CacheView.SimpleCacheView<ThreadMember> view = thread.getThreadMemberView();
 
         if (!content.isNull("added_members"))
         {
@@ -87,25 +81,25 @@ public class ThreadMembersUpdateHandler extends SocketHandler
         return null;
     }
 
-    private void handleAddedThreadMembers(GuildThreadImpl thread, DataArray addedMembersJson)
+    private void handleAddedThreadMembers(ThreadChannelImpl thread, DataArray addedMembersJson)
     {
         EntityBuilder entityBuilder = api.getEntityBuilder();
-        CacheView.SimpleCacheView<GuildThreadMember> view = thread.getThreadMemberView();
+        CacheView.SimpleCacheView<ThreadMember> view = thread.getThreadMemberView();
 
-        List<GuildThreadMember> addedThreadMembers = new ArrayList<>();
+        List<ThreadMember> addedThreadMembers = new ArrayList<>();
         for (int i = 0; i < addedMembersJson.length(); i++)
         {
             DataObject threadMemberJson = addedMembersJson.getObject(i);
-            GuildThreadMember threadMember = entityBuilder.createGuildThreadMember((GuildImpl) thread.getGuild(), thread, threadMemberJson);
+            ThreadMember threadMember = entityBuilder.createThreadMember((GuildImpl) thread.getGuild(), thread, threadMemberJson);
             addedThreadMembers.add(threadMember);
         }
 
         //TODO-Threads: We assume here that we are allowed to cache these, however, we probably need to check the ChunkFilter first as the
-        // underlying Member object might have been created when creating the GuildThreadMember and it might not be being updated. We don't
+        // underlying Member object might have been created when creating the ThreadMember and it might not be being updated. We don't
         // want to cache ThreadMembers if the Members they're based on aren't being cached.
         try (UnlockHook lock = view.writeLock())
         {
-            for (GuildThreadMember threadMember : addedThreadMembers)
+            for (ThreadMember threadMember : addedThreadMembers)
             {
                 view.getMap().put(threadMember.getIdLong(), threadMember);
             }
@@ -113,7 +107,7 @@ public class ThreadMembersUpdateHandler extends SocketHandler
 
         //TODO-Threads: Should we emit a single event for all add/remove at the same time instead of individual ones?
         //Emit the events from outside the writeLock
-        for (GuildThreadMember threadMember : addedThreadMembers)
+        for (ThreadMember threadMember : addedThreadMembers)
         {
             api.handleEvent(
                 new ThreadMemberJoinEvent(
@@ -122,18 +116,18 @@ public class ThreadMembersUpdateHandler extends SocketHandler
         }
     }
 
-    private void handleRemovedThreadMembers(GuildThreadImpl thread, List<Long> removedMemberIds)
+    private void handleRemovedThreadMembers(ThreadChannelImpl thread, List<Long> removedMemberIds)
     {
-        CacheView.SimpleCacheView<GuildThreadMember> view = thread.getThreadMemberView();
+        CacheView.SimpleCacheView<ThreadMember> view = thread.getThreadMemberView();
 
         //Store the removed threads into a map so that we can provide them in the events later.
         //We don't want to dispatch the events from inside the writeLock
-        TLongObjectMap<GuildThreadMember> removedThreadMembers = new TLongObjectHashMap<>();
+        TLongObjectMap<ThreadMember> removedThreadMembers = new TLongObjectHashMap<>();
         try (UnlockHook lock = view.writeLock())
         {
             for (long threadMemberId : removedMemberIds)
             {
-                GuildThreadMember threadMember = view.getMap().remove(threadMemberId);
+                ThreadMember threadMember = view.getMap().remove(threadMemberId);
                 removedThreadMembers.put(threadMemberId, threadMember);
             }
         }
