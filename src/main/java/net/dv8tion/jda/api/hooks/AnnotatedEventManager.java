@@ -57,8 +57,10 @@ public class AnnotatedEventManager implements IEventManager
     @Override
     public void register(@Nonnull Object listener)
     {
-        listeners.add(listener);
-        addMethod(listener);
+        if (listeners.add(listener))
+        {
+            addMethod(listener);
+        }
     }
 
     @Override
