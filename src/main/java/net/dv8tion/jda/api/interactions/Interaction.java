@@ -271,7 +271,7 @@ public interface Interaction extends ISnowflake
     @CheckReturnValue
     default ReplyAction replyEphemeral(@Nonnull String content) {
         Checks.notNull(content, "Content");
-        return deferReply().setContent(content).setEphemeral(true);
+        return reply(content).setEphemeral(true);
     }
 
     /**
