@@ -255,6 +255,27 @@ public interface Interaction extends ISnowflake
 
     /**
      * Reply to this interaction and acknowledge it.
+     * <br>This will send an ephemeral reply message for this interaction.
+     * <p><b>You only have 3 seconds to acknowledge an interaction!</b>
+     *
+     *<br>When the acknowledgement is sent after the interaction expired, you will receive {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_INTERACTION ErrorResponse.UNKNOWN_INTERACTION}.
+     * <p>If your handling can take longer than 3 seconds, due to various rate limits or other conditions, you should use {@link #deferReply()} instead.
+     * @param content
+     *        The message to be sent.
+     * @throws IllegalArgumentException
+     *         If null is provided or the content is empty or longer than {@link Message#MAX_CONTENT_LENGTH}
+     *
+     *@return {@link ReplyAction}
+     */
+    @Nonnull
+    @CheckReturnValue
+    default ReplyAction replyEphemeral(@Nonnull String content) {
+        Checks.notNull(content, "Content");
+        return deferReply().setContent(content).setEphemeral(true);
+    }
+
+    /**
+     * Reply to this interaction and acknowledge it.
      * <br>This will send a reply message for this interaction.
      * You can use {@link ReplyAction#setEphemeral(boolean) setEphemeral(true)} to only let the target user see the message.
      * Replies are non-ephemeral by default.
