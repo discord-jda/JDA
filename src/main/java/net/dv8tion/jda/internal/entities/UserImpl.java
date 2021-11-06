@@ -211,16 +211,6 @@ public class UserImpl extends UserById implements User
         return this;
     }
 
-    public UserImpl setBannerId(String bannerId)
-    {
-        return this;
-    }
-
-    public UserImpl setAccentColor(int accentColor)
-    {
-        return this;
-    }
-
     public UserImpl setPrivateChannel(PrivateChannel privateChannel)
     {
         if (privateChannel != null)
