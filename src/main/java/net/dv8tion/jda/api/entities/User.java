@@ -360,6 +360,9 @@ public interface User extends IMentionable
         HYPESQUAD_BALANCE(     8, "HypeSquad Balance"),
 
         EARLY_SUPPORTER(       9, "Early Supporter"),
+        /**
+         * User is a {@link ApplicationTeam team}
+         */
         TEAM_USER(            10, "Team User"),
         @Deprecated
         @ForRemoval(deadline = "4.4.0")
@@ -370,6 +373,9 @@ public interface User extends IMentionable
         VERIFIED_BOT(         16, "Verified Bot"),
         VERIFIED_DEVELOPER(   17, "Early Verified Bot Developer"),
         CERTIFIED_MODERATOR(  18, "Discord Certified Moderator"),
+        /**
+         * Bot uses only HTTP interactions and is shown in the online member list
+         */
         BOT_HTTP_INTERACTIONS(19, "HTTP Interactions Bot"),
 
         UNKNOWN(-1, "Unknown");
