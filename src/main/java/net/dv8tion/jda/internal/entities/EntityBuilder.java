@@ -1145,7 +1145,7 @@ public class EntityBuilder
                 .setMemberCount(json.getInt("member_count"))
                 .setMessageCount(json.getInt("message_count"))
                 .setLastMessageId(json.getLong("last_message_id", 0))
-                .setSlowmode(json.getInt("rate_limit_per_user"))
+                .setSlowmode(json.getInt("rate_limit_per_user", 0))
                 .setLocked(threadMetadata.getBoolean("locked"))
                 .setArchived(threadMetadata.getBoolean("archived"))
                 .setArchiveTimestamp(Helpers.toTimestamp(threadMetadata.getString("archive_timestamp"))) //TODO-threads: This value clearly needs to be renamed because it looks like it represents when it was _updated_. Not when it happened.
