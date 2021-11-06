@@ -775,16 +775,16 @@ public class OptionData implements SerializableData
         {
             if (!json.isNull("min_value"))
             {
-                if (type == OptionType.INTEGER)
+                if (json.isType("min_value", DataType.INT))
                     option.setMinValue(json.getLong("min_value"));
-                else
+                else if (json.isType("min_value", DataType.FLOAT))
                     option.setMinValue(json.getDouble("min_value"));
             }
             if (!json.isNull("max_value"))
             {
-                if (type == OptionType.INTEGER)
+                if (json.isType("max_value", DataType.INT))
                     option.setMaxValue(json.getLong("max_value"));
-                else
+                else if (json.isType("max_value", DataType.FLOAT))
                     option.setMaxValue(json.getDouble("max_value"));
             }
         }
