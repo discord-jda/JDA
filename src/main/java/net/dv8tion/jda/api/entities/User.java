@@ -415,6 +415,7 @@ public interface User extends IMentionable
          *
          * @return Possibly-null {@link java.awt.Color} containing the {@link User User} accent color.
          */
+        @Nullable
         public Color getAccentColor()
         {
             return accentColor == DEFAULT_ACCENT_COLOR_RAW ? null : new Color(accentColor);
