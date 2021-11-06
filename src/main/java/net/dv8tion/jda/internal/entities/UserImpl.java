@@ -83,7 +83,7 @@ public class UserImpl extends UserById implements User
             return new RestActionImpl<>(getJDA(), route, (response, request) -> {
                 DataObject json = response.getObject();
 
-                String bannerId = json.getString("banner");
+                String bannerId = json.getString("banner", null);
                 int accentColor = json.getInt("accent_color", User.DEFAULT_ACCENT_COLOR_RAW);
 
                 return new Profile(getIdLong(), bannerId, accentColor);

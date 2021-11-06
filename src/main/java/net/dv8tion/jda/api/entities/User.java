@@ -437,11 +437,11 @@ public interface User extends IMentionable
         @Override
         public String toString()
         {
-            return "Profile{" +
+            return "UserProfile(" +
                     "userId=" + userId +
-                    ", bannerId='" + bannerId + '\'' +
+                    ", bannerId='" + bannerId + "'" +
                     ", accentColor=" + accentColor +
-                    '}';
+                    ')';
         }
     }
 
