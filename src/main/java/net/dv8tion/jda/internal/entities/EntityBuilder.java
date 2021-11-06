@@ -345,8 +345,9 @@ public class EntityBuilder
             }
         }
 
-        User.Profile profile = user.hasKey("banner") ? new User.Profile(id, user.getString("banner"),
-                user.getInt("accent_color", User.DEFAULT_ACCENT_COLOR_RAW)) : null;
+        User.Profile profile = user.hasKey("banner")
+            ? new User.Profile(id, user.getString("banner", null), user.getInt("accent_color", User.DEFAULT_ACCENT_COLOR_RAW))
+            : null;
 
         if (newUser)
         {
