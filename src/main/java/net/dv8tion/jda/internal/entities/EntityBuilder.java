@@ -415,8 +415,8 @@ public class EntityBuilder
             userObj.setFlags(newFlags);
             jda.handleEvent(
                     new UserUpdateFlagsEvent(
-                            jda, responseNumber,
-                            userObj, User.UserFlag.getFlags(oldFlags)));
+                        jda, responseNumber,
+                        userObj, User.UserFlag.getFlags(oldFlags)));
         }
     }
 
