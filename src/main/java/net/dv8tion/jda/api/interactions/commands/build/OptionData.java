@@ -385,7 +385,7 @@ public class OptionData implements SerializableData
     @Nonnull
     public OptionData setMinValue(long value)
     {
-        if (type != OptionType.INTEGER || type != OptionType.NUMBER)
+        if (type != OptionType.INTEGER && type != OptionType.NUMBER)
             throw new IllegalArgumentException("Can only set min and max long value for options of type INTEGER or NUMBER");
         Checks.check(value >= MIN_NEGATIVE_NUMBER, "Long value may not be lower than %f", MIN_NEGATIVE_NUMBER);
         this.minValue = value;
@@ -433,7 +433,7 @@ public class OptionData implements SerializableData
     @Nonnull
     public OptionData setMaxValue(long value)
     {
-        if (type != OptionType.INTEGER || type != OptionType.NUMBER)
+        if (type != OptionType.INTEGER && type != OptionType.NUMBER)
             throw new IllegalArgumentException("Can only set min and max long value for options of type INTEGER or NUMBER");
         Checks.check(value <= MAX_POSITIVE_NUMBER, "Long value may not be larger than %f", MAX_POSITIVE_NUMBER);
         this.maxValue = value;
@@ -484,7 +484,7 @@ public class OptionData implements SerializableData
     @Nonnull
     public OptionData setRequiredRange(long minValue, long maxValue)
     {
-        if (type != OptionType.INTEGER || type != OptionType.NUMBER)
+        if (type != OptionType.INTEGER && type != OptionType.NUMBER)
             throw new IllegalArgumentException("Can only set min and max long value for options of type INTEGER or NUMBER");
         Checks.check(minValue >= MIN_NEGATIVE_NUMBER, "Long value may not be lower than %f", MIN_NEGATIVE_NUMBER);
         Checks.check(maxValue <= MAX_POSITIVE_NUMBER, "Long value may not be larger than %f", MAX_POSITIVE_NUMBER);
