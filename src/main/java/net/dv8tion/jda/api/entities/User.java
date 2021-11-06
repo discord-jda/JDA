@@ -389,6 +389,7 @@ public interface User extends IMentionable
          *
          * @return Possibly-null String containing the {@link User User} banner id.
          */
+        @Nullable
         public String getBannerId()
         {
             return bannerId;
