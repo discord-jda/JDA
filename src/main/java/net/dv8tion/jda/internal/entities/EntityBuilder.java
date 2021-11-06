@@ -354,8 +354,6 @@ public class EntityBuilder
             userObj.setName(user.getString("username"))
                    .setDiscriminator(user.get("discriminator").toString())
                    .setAvatarId(user.getString("avatar", null))
-                   .setBannerId(user.getString("banner", null))
-                   .setAccentColor(user.getInt("accent_color", User.DEFAULT_ACCENT_COLOR_RAW))
                    .setBot(user.getBoolean("bot"))
                    .setSystem(user.getBoolean("system"))
                    .setFlags(user.getInt("public_flags", 0))
