@@ -402,9 +402,10 @@ public interface User extends IMentionable
          *
          * @see User#BANNER_URL
          */
+        @Nullable
         public String getBannerUrl()
         {
-            return String.format(BANNER_URL, Long.toUnsignedString(userId), bannerId, bannerId.startsWith("a_") ? "gif" : "png");
+            return bannerId == null ? null : String.format(BANNER_URL, Long.toUnsignedString(userId), bannerId, bannerId.startsWith("a_") ? "gif" : "png");
         }
 
         /**
