@@ -226,8 +226,8 @@ public class Route
         public static final Route REMOVE_THREAD_MEMBER =                    new Route(DELETE,   "channels/{channel_id}/thread-members/{user_id}");
         public static final Route LIST_THREAD_MEMBERS =                     new Route(GET,      "channels/{channel_id}/thread-members");
         public static final Route LIST_PUBLIC_ARCHIVED_THREADS =            new Route(GET,      "channels/{channel_id}/threads/archived/public");
-        public static final Route LIST_PRIVATE_ARCHIVED_THREADS =           new Route(GET,      "channels/{channel_id}/thread-members/{user_id}");
-        public static final Route LIST_JOINED_PRIVATE_ARCHIVED_THREADS =    new Route(GET,      "channels/{channel_id}/thread-members/@me");
+        public static final Route LIST_PRIVATE_ARCHIVED_THREADS =           new Route(GET,      "channels/{channel_id}/threads/archived/private");
+        public static final Route LIST_JOINED_PRIVATE_ARCHIVED_THREADS =    new Route(GET,      "channels/{channel_id}/users/@me/threads/archived/private");
 
         // Client Only
         public static final Route GET_RECIPIENTS =   new Route(GET,    "channels/{channel_id}/recipients");
