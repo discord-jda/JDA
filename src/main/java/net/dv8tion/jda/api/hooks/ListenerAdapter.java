@@ -163,7 +163,7 @@ public abstract class ListenerAdapter implements EventListener
 
     //Self Events. Fires only in relation to the currently logged in account.
     public void onSelfUpdateAvatar(@Nonnull SelfUpdateAvatarEvent event) {}
-    public void onSelfUpdateDisciminator(@Nonnull SelfUpdateDiscriminatorEvent event) {}
+    public void onSelfUpdateDiscriminator(@Nonnull SelfUpdateDiscriminatorEvent event) {}
     public void onSelfUpdateMFA(@Nonnull SelfUpdateMFAEvent event) {}
     public void onSelfUpdateName(@Nonnull SelfUpdateNameEvent event) {}
     public void onSelfUpdateVerified(@Nonnull SelfUpdateVerifiedEvent event) {}
