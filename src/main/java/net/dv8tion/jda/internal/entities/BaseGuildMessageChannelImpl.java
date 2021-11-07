@@ -225,7 +225,7 @@ public abstract class BaseGuildMessageChannelImpl<T extends BaseGuildMessageChan
         if (isPrivate)
         {
             if (!guild.getFeatures().contains("PRIVATE_THREADS"))
-                throw new IllegalStateException("Can only set use private threads in Guilds with the PRIVATE_THREADS feature");
+                throw new IllegalStateException("Can only use private threads in Guilds with the PRIVATE_THREADS feature");
             checkPermission(Permission.CREATE_PRIVATE_THREADS);
         }
         else
