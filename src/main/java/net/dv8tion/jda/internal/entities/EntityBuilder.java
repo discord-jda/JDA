@@ -346,6 +346,10 @@ public class EntityBuilder
             }
         }
 
+        User.Profile profile = user.hasKey("banner")
+            ? new User.Profile(id, user.getString("banner", null), user.getInt("accent_color", User.DEFAULT_ACCENT_COLOR_RAW))
+            : null;
+
         if (newUser)
         {
             // Initial creation
@@ -354,7 +358,8 @@ public class EntityBuilder
                    .setAvatarId(user.getString("avatar", null))
                    .setBot(user.getBoolean("bot"))
                    .setSystem(user.getBoolean("system"))
-                   .setFlags(user.getInt("public_flags", 0));
+                   .setFlags(user.getInt("public_flags", 0))
+                   .setProfile(profile);
         }
         else
         {

@@ -28,6 +28,7 @@ import net.dv8tion.jda.internal.utils.Checks;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.awt.Color;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
@@ -84,6 +85,11 @@ public interface User extends IMentionable
     String AVATAR_URL = "https://cdn.discordapp.com/avatars/%s/%s.%s";
     /** Template for {@link #getDefaultAvatarUrl()} */
     String DEFAULT_AVATAR_URL = "https://cdn.discordapp.com/embed/avatars/%s.png";
+    /** Template for {@link Profile#getBannerUrl()} */
+    String BANNER_URL = "https://cdn.discordapp.com/banners/%s/%s.%s";
+
+    /** Used to keep consistency between color values used in the API */
+    int DEFAULT_ACCENT_COLOR_RAW = 0x1FFFFFFF; // java.awt.Color fills the MSB with FF, we just use 1F to provide better consistency
 
     /**
      * Creates a User instance which only wraps an ID.
@@ -221,6 +227,21 @@ public interface User extends IMentionable
     }
 
     /**
+     * Loads the user's {@link User.Profile} data.
+     * Returns a completed RestAction if this User has been retrieved using {@link JDA#retrieveUserById(long)}.
+     *
+     * @throws UnsupportedOperationException
+     *         If this User was created with {@link #fromId(long)}
+     *
+     * @return {@link RestAction} - Type: {@link User.Profile}
+     *
+     * @since 4.3.0
+     */
+    @Nonnull
+    @CheckReturnValue
+    RestAction<Profile> retrieveProfile();
+
+    /**
      * The "tag" for this user
      * <p>This is the equivalent of calling {@link java.lang.String#format(String, Object...) String.format}("%#s", user)
      *
@@ -343,6 +364,86 @@ public interface User extends IMentionable
      * @return bitmask representation of the user's flags.
      */
     int getFlagsRaw();
+
+    /**
+     * Represents the information contained in a {@link User User}'s profile.
+     *
+     * @since 4.3.0
+     */
+    class Profile
+    {
+        private final long userId;
+        private final String bannerId;
+        private final int accentColor;
+
+        public Profile(long userId, String bannerId, int accentColor)
+        {
+            this.userId = userId;
+            this.bannerId = bannerId;
+            this.accentColor = accentColor;
+        }
+
+        /**
+         * The Discord Id for this user's banner image.
+         * If the user has not set a banner, this will return null.
+         *
+         * @return Possibly-null String containing the {@link User User} banner id.
+         */
+        @Nullable
+        public String getBannerId()
+        {
+            return bannerId;
+        }
+
+        /**
+         * The URL for the user's banner image.
+         * If the user has not set a banner, this will return null.
+         *
+         * @return Possibly-null String containing the {@link User User} banner url.
+         *
+         * @see User#BANNER_URL
+         */
+        @Nullable
+        public String getBannerUrl()
+        {
+            return bannerId == null ? null : String.format(BANNER_URL, Long.toUnsignedString(userId), bannerId, bannerId.startsWith("a_") ? "gif" : "png");
+        }
+
+        /**
+         * The user's accent color.
+         * If the user has not set an accent color, this will return null.
+         * The automatically calculated color is not returned.
+         * The accent color is not shown in the client if the user has set a banner.
+         *
+         * @return Possibly-null {@link java.awt.Color} containing the {@link User User} accent color.
+         */
+        @Nullable
+        public Color getAccentColor()
+        {
+            return accentColor == DEFAULT_ACCENT_COLOR_RAW ? null : new Color(accentColor);
+        }
+
+        /**
+         * The raw RGB value of this user's accent color.
+         * <br>Defaults to {@link #DEFAULT_ACCENT_COLOR_RAW} if this user's banner color is not available.
+         *
+         * @return The raw RGB color value or {@link User#DEFAULT_ACCENT_COLOR_RAW}
+         */
+        public int getAccentColorRaw()
+        {
+            return accentColor;
+        }
+
+        @Override
+        public String toString()
+        {
+            return "UserProfile(" +
+                    "userId=" + userId +
+                    ", bannerId='" + bannerId + "'" +
+                    ", accentColor=" + accentColor +
+                    ')';
+        }
+    }
 
     /**
      * Represents the bit offsets used by Discord for public flags
