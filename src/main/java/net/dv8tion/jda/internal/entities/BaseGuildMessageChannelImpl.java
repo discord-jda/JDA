@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
+import net.dv8tion.jda.api.requests.restaction.ThreadAction;
 import net.dv8tion.jda.api.requests.restaction.WebhookAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.ThreadChannelPaginationAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationAction;
@@ -34,6 +35,7 @@ import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
+import net.dv8tion.jda.internal.requests.restaction.ThreadActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.WebhookActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.pagination.ThreadChannelPaginationActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.pagination.ReactionPaginationActionImpl;
@@ -217,13 +219,20 @@ public abstract class BaseGuildMessageChannelImpl<T extends BaseGuildMessageChan
     }
 
     @Override
-    public RestAction<ThreadChannel> createThreadChannel(String name, boolean isPrivate)
+    public ThreadAction createThreadChannel(String name, boolean isPrivate)
     {
         checkPermission(Permission.VIEW_CHANNEL);
         if (isPrivate)
+        {
+            if (!guild.getFeatures().contains("PRIVATE_THREADS"))
+                throw new IllegalStateException("Can only set use private threads in Guilds with the PRIVATE_THREADS feature");
             checkPermission(Permission.CREATE_PRIVATE_THREADS);
+        }
         else
+        {
             checkPermission(Permission.CREATE_PUBLIC_THREADS);
+        }
+
 
         ChannelType threadType = isPrivate
             ? ChannelType.GUILD_PRIVATE_THREAD
@@ -231,36 +240,16 @@ public abstract class BaseGuildMessageChannelImpl<T extends BaseGuildMessageChan
                 ? ChannelType.GUILD_PUBLIC_THREAD
                 : ChannelType.GUILD_NEWS_THREAD;
 
-        //TODO: need to include "invitable" which is only valid for private threads
-        //TODO: this needs to be a ThreadAction
-        DataObject data = DataObject.empty()
-            .put("name", name)
-            .put("type", threadType.getId())
-            .put("auto_archive_duration", ThreadChannel.AutoArchiveDuration.TIME_24_HOURS.getMinutes());
-
-        Route.CompiledRoute route = Route.Channels.CREATE_THREAD_WITHOUT_MESSAGE.compile(getId());
-        return new RestActionImpl<>(api, route, data, (response, request) -> {
-            DataObject threadObj = response.getObject();
-            return api.getEntityBuilder().createThreadChannel(threadObj, getGuild().getIdLong());
-        });
+        return new ThreadActionImpl(this, name, threadType);
     }
 
     @Override
-    public RestAction<ThreadChannel> createThreadChannel(String name, long messageId)
+    public ThreadAction createThreadChannel(String name, long messageId)
     {
         checkPermission(Permission.VIEW_CHANNEL);
         checkPermission(Permission.CREATE_PUBLIC_THREADS);
 
-        //TODO-threads: This needs to be a ThreadAction
-        DataObject data = DataObject.empty()
-            .put("name", name)
-            .put("auto_archive_duration", ThreadChannel.AutoArchiveDuration.TIME_24_HOURS.getMinutes());
-
-        Route.CompiledRoute route = Route.Channels.CREATE_THREAD_WITH_MESSAGE.compile(getId(), Long.toUnsignedString(messageId));
-        return new RestActionImpl<>(api, route, data, (response, request) -> {
-            DataObject threadObj = response.getObject();
-            return api.getEntityBuilder().createThreadChannel(threadObj, getGuild().getIdLong());
-        });
+        return new ThreadActionImpl(this, name, Long.toUnsignedString(messageId));
     }
 
     @Override

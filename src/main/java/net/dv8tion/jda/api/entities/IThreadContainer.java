@@ -16,7 +16,7 @@
 
 package net.dv8tion.jda.api.entities;
 
-import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.api.requests.restaction.ThreadAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.ThreadChannelPaginationAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
 
@@ -37,23 +37,23 @@ public interface IThreadContainer extends GuildChannel, IPermissionContainer
 
     //TODO-v5: Docs
     @CheckReturnValue
-    default RestAction<ThreadChannel> createThreadChannel(String name)
+    default ThreadAction createThreadChannel(String name)
     {
         return createThreadChannel(name, false);
     }
 
     //TODO-v5: Docs
     @CheckReturnValue
-    RestAction<ThreadChannel> createThreadChannel(String name, boolean isPrivate);
+    ThreadAction createThreadChannel(String name, boolean isPrivate);
 
 
     //TODO-v5: Docs
     @CheckReturnValue
-    RestAction<ThreadChannel> createThreadChannel(String name, long messageId);
+    ThreadAction createThreadChannel(String name, long messageId);
 
     //TODO-v5: Docs
     @CheckReturnValue
-    default RestAction<ThreadChannel> createThreadChannel(String name, String messageId)
+    default ThreadAction createThreadChannel(String name, String messageId)
     {
         return createThreadChannel(name, MiscUtil.parseSnowflake(messageId));
     }
