@@ -328,7 +328,7 @@ public interface User extends IMentionable
      *
      * @throws UnsupportedOperationException
      *         If this User was created with {@link #fromId(long)}
-     * 
+     *
      * @return EnumSet containing the flags of the user.
      */
     @Nonnull
@@ -339,7 +339,7 @@ public interface User extends IMentionable
      *
      * @throws UnsupportedOperationException
      *         If this User was created with {@link #fromId(long)}
-     * 
+     *
      * @return bitmask representation of the user's flags.
      */
     int getFlagsRaw();
@@ -349,35 +349,42 @@ public interface User extends IMentionable
      */
     enum UserFlag
     {
-        STAFF(               0, "Discord Employee"),
-        PARTNER(             1, "Partnered Server Owner"),
-        HYPESQUAD(           2, "HypeSquad Events"),
-        BUG_HUNTER_LEVEL_1(  3, "Bug Hunter Level 1"),
+        STAFF(                 0, "Discord Employee"),
+        PARTNER(               1, "Partnered Server Owner"),
+        HYPESQUAD(             2, "HypeSquad Events"),
+        BUG_HUNTER_LEVEL_1(    3, "Bug Hunter Level 1"),
 
         // HypeSquad
-        HYPESQUAD_BRAVERY(   6, "HypeSquad Bravery"),
-        HYPESQUAD_BRILLIANCE(7, "HypeSquad Brilliance"),
-        HYPESQUAD_BALANCE(   8, "HypeSquad Balance"),
+        HYPESQUAD_BRAVERY(     6, "HypeSquad Bravery"),
+        HYPESQUAD_BRILLIANCE(  7, "HypeSquad Brilliance"),
+        HYPESQUAD_BALANCE(     8, "HypeSquad Balance"),
 
-        EARLY_SUPPORTER(     9, "Early Supporter"),
-        TEAM_USER(          10, "Team User"),
+        EARLY_SUPPORTER(       9, "Early Supporter"),
+        /**
+         * User is a {@link ApplicationTeam team}
+         */
+        TEAM_USER(            10, "Team User"),
         @Deprecated
         @ForRemoval(deadline = "4.4.0")
         @ReplaceWith("User.isSystem()")
         @DeprecatedSince("4.3.0")
-        SYSTEM(             12, "System User"),
-        BUG_HUNTER_LEVEL_2( 14, "Bug Hunter Level 2"),
-        VERIFIED_BOT(       16, "Verified Bot"),
-        VERIFIED_DEVELOPER( 17, "Early Verified Bot Developer"),
-        CERTIFIED_MODERATOR(18, "Discord Certified Moderator"),
-        
+        SYSTEM(               12, "System User"),
+        BUG_HUNTER_LEVEL_2(   14, "Bug Hunter Level 2"),
+        VERIFIED_BOT(         16, "Verified Bot"),
+        VERIFIED_DEVELOPER(   17, "Early Verified Bot Developer"),
+        CERTIFIED_MODERATOR(  18, "Discord Certified Moderator"),
+        /**
+         * Bot uses only HTTP interactions and is shown in the online member list
+         */
+        BOT_HTTP_INTERACTIONS(19, "HTTP Interactions Bot"),
+
         UNKNOWN(-1, "Unknown");
 
         /**
          * Empty array of UserFlag enum, useful for optimized use in {@link java.util.Collection#toArray(Object[])}.
          */
         public static final UserFlag[] EMPTY_FLAGS = new UserFlag[0];
-        
+
         private final int offset;
         private final int raw;
         private final String name;
@@ -391,7 +398,7 @@ public interface User extends IMentionable
 
         /**
          * The readable name as used in the Discord Client.
-         * 
+         *
          * @return The readable name of this UserFlag.
          */
         @Nonnull
@@ -402,7 +409,7 @@ public interface User extends IMentionable
 
         /**
          * The binary offset of the flag.
-         * 
+         *
          * @return The offset that represents this UserFlag.
          */
         public int getOffset()
@@ -413,7 +420,7 @@ public interface User extends IMentionable
         /**
          * The value of this flag when viewed as raw value.
          * <br>This is equivalent to: <code>1 {@literal <<} {@link #getOffset()}</code>
-         * 
+         *
          * @return The raw value of this specific flag.
          */
         public int getRawValue()
@@ -425,10 +432,10 @@ public interface User extends IMentionable
          * Gets the first UserFlag relating to the provided offset.
          * <br>If there is no UserFlag that matches the provided offset,
          * {@link #UNKNOWN} is returned.
-         * 
+         *
          * @param  offset
          *         The offset to match a UserFlag to.
-         *         
+         *
          * @return UserFlag relating to the provided offset.
          */
         @Nonnull
@@ -441,55 +448,55 @@ public interface User extends IMentionable
             }
             return UNKNOWN;
         }
-        
+
         /**
          * A set of all UserFlags that are specified by this raw int representation of
          * flags.
-         * 
+         *
          * @param  flags
          *         The raw {@code int} representation if flags.
-         *         
+         *
          * @return Possibly-empty EnumSet of UserFlags.
          */
         @Nonnull
         public static EnumSet<UserFlag> getFlags(int flags)
         {
             final EnumSet<UserFlag> foundFlags = EnumSet.noneOf(UserFlag.class);
-            
+
             if (flags == 0)
                 return foundFlags; //empty
-            
+
             for (UserFlag flag : values())
             {
                 if (flag != UNKNOWN && (flags & flag.raw) == flag.raw)
                     foundFlags.add(flag);
             }
-                    
+
             return foundFlags;
         }
 
         /**
          * This is effectively the opposite of {@link #getFlags(int)}, this takes 1 or more UserFlags
          * and returns the bitmask representation of the flags.
-         * 
+         *
          * @param  flags
          *         The array of flags of which to form into the raw int representation.
          *
          * @throws java.lang.IllegalArgumentException
          *         When the provided UserFlags are null.
-         *         
+         *
          * @return bitmask representing the provided flags.
          */
         public static int getRaw(@Nonnull UserFlag... flags){
             Checks.noneNull(flags, "UserFlags");
-            
+
             int raw = 0;
             for (UserFlag flag : flags)
             {
                 if (flag != null && flag != UNKNOWN)
                     raw |= flag.raw;
             }
-            
+
             return raw;
         }
 
@@ -505,13 +512,13 @@ public interface User extends IMentionable
          *         When the provided UserFLags are null.
          *
          * @return bitmask representing the provided flags.
-         * 
+         *
          * @see java.util.EnumSet EnumSet
          */
         public static int getRaw(@Nonnull Collection<UserFlag> flags)
         {
             Checks.notNull(flags, "Flag Collection");
-            
+
             return getRaw(flags.toArray(EMPTY_FLAGS));
         }
     }
