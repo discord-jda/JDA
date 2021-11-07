@@ -1363,7 +1363,7 @@ public class GuildImpl implements Guild
 
             Route.CompiledRoute route;
             if (member.equals(getSelfMember()))
-                route = Route.Guilds.MODIFY_SELF_NICK.compile(getId());
+                route = Route.Guilds.MODIFY_SELF.compile(getId());
             else
                 route = Route.Guilds.MODIFY_MEMBER.compile(getId(), member.getUser().getId());
 

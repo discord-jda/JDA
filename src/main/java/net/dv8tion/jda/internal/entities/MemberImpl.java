@@ -45,6 +45,7 @@ public class MemberImpl implements Member
     private GuildImpl guild;
     private User user;
     private String nickname;
+    private String avatarId;
     private long joinDate, boostDate;
     private boolean pending = false;
 
@@ -160,6 +161,12 @@ public class MemberImpl implements Member
     public String getNickname()
     {
         return nickname;
+    }
+
+    @Override
+    public String getAvatarId()
+    {
+        return avatarId;
     }
 
     @Nonnull
@@ -346,6 +353,12 @@ public class MemberImpl implements Member
     public MemberImpl setNickname(String nickname)
     {
         this.nickname = nickname;
+        return this;
+    }
+
+    public MemberImpl setAvatarId(String avatarId)
+    {
+        this.avatarId = avatarId;
         return this;
     }
 
