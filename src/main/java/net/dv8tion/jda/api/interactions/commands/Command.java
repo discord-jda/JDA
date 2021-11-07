@@ -552,8 +552,8 @@ public class Command implements ISnowflake
         private final boolean required;
         private final Set<ChannelType> channelTypes;
         private final List<Choice> choices;
-        private Double minValue;
-        private Double maxValue;
+        private Number minValue;
+        private Number maxValue;
 
         public Option(@Nonnull DataObject json)
         {
@@ -646,7 +646,7 @@ public class Command implements ISnowflake
          * @return The minimum value for this option or {@code null}
          */
         @Nullable
-        public Double getMinValue()
+        public Number getMinValue()
         {
             return minValue;
         }
@@ -659,7 +659,7 @@ public class Command implements ISnowflake
          * @return The maximum value for this option or {@code null}
          */
         @Nullable
-        public Double getMaxValue()
+        public Number getMaxValue()
         {
             return maxValue;
         }
