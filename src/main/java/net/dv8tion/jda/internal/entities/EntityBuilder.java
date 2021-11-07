@@ -1907,6 +1907,8 @@ public class EntityBuilder
     public ApplicationInfo createApplicationInfo(DataObject object)
     {
         final String description = object.getString("description");
+        final String termsOfServiceUrl = object.getString("terms_of_service_url", null);
+        final String privacyPolicyUrl = object.getString("privacy_policy_url", null);
         final boolean doesBotRequireCodeGrant = object.getBoolean("bot_require_code_grant");
         final String iconId = object.getString("icon", null);
         final long id = object.getLong("id");
@@ -1915,7 +1917,8 @@ public class EntityBuilder
         final User owner = createUser(object.getObject("owner"));
         final ApplicationTeam team = !object.isNull("team") ? createApplicationTeam(object.getObject("team")) : null;
 
-        return new ApplicationInfoImpl(getJDA(), description, doesBotRequireCodeGrant, iconId, id, isBotPublic, name, owner, team);
+        return new ApplicationInfoImpl(getJDA(), description, doesBotRequireCodeGrant, iconId, id, isBotPublic, name,
+                termsOfServiceUrl, privacyPolicyUrl, owner, team);
     }
 
     public ApplicationTeam createApplicationTeam(DataObject object)
