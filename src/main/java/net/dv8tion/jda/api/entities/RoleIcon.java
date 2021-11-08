@@ -3,6 +3,7 @@ package net.dv8tion.jda.api.entities;
 import net.dv8tion.jda.api.managers.RoleManager;
 
 import javax.annotation.Nullable;
+import java.util.Objects;
 
 /**
  * An object representing a Role's icon.
@@ -69,5 +70,23 @@ public class RoleIcon
     public String getEmoji()
     {
         return emoji;
+    }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (obj == this)
+            return true;
+        if (!(obj instanceof RoleIcon))
+            return false;
+        RoleIcon icon = (RoleIcon) obj;
+        return Objects.equals(icon.iconId, iconId)
+            && Objects.equals(icon.emoji, emoji);
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return Objects.hash(iconId, emoji);
     }
 }
