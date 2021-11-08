@@ -19,10 +19,7 @@ package net.dv8tion.jda.internal.entities;
 import gnu.trove.map.TLongObjectMap;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.GuildChannel;
-import net.dv8tion.jda.api.entities.PermissionOverride;
-import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.exceptions.HierarchyException;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.RoleManager;
@@ -62,8 +59,7 @@ public class RoleImpl implements Role
     private long rawPermissions;
     private int color;
     private int rawPosition;
-    private String iconId;
-    private String emoji;
+    private RoleIcon icon;
 
     public RoleImpl(long id, Guild guild)
     {
@@ -292,7 +288,7 @@ public class RoleImpl implements Role
                     .setMentionable(mentionable)
                     .setName(name)
                     .setPermissions(rawPermissions)
-                    .setEmoji(emoji); // the icon is not cloneable, we don't have access to it
+                    .setEmoji(icon.getEmoji());
     }
 
     @Nonnull
@@ -336,16 +332,9 @@ public class RoleImpl implements Role
 
     @Nullable
     @Override
-    public String getIconId()
+    public RoleIcon getIcon()
     {
-        return iconId;
-    }
-
-    @Nullable
-    @Override
-    public String getEmoji()
-    {
-        return emoji;
+        return icon;
     }
 
     @Nonnull
@@ -462,15 +451,9 @@ public class RoleImpl implements Role
         return this;
     }
 
-    public RoleImpl setIconId(String iconId)
+    public RoleImpl setIcon(RoleIcon icon)
     {
-        this.iconId = iconId;
-        return this;
-    }
-
-    public RoleImpl setEmoji(String emoji)
-    {
-        this.emoji = emoji;
+        this.icon = icon;
         return this;
     }
 

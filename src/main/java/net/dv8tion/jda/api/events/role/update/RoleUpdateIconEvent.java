@@ -18,6 +18,7 @@ package net.dv8tion.jda.api.events.role.update;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.RoleIcon;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -25,60 +26,38 @@ import javax.annotation.Nullable;
 /**
  * Indicates that the Icon of a {@link net.dv8tion.jda.api.entities.Role Role} changed.
  *
- * <p>Can be used to detect when a role icon changes and retrieve the old one
+ * <p>Can be used to detect when a role's icon or emoji changes and retrieve the old one
  *
  * <p>Identifier: {@code icon}
  */
-public class RoleUpdateIconEvent extends GenericRoleUpdateEvent<String>
+public class RoleUpdateIconEvent extends GenericRoleUpdateEvent<RoleIcon>
 {
     public static final String IDENTIFIER = "icon";
 
-    public RoleUpdateIconEvent(@Nonnull JDA api, long responseNumber, @Nonnull Role role, @Nullable String oldIconId)
+    public RoleUpdateIconEvent(@Nonnull JDA api, long responseNumber, @Nonnull Role role, @Nullable RoleIcon oldIcon)
     {
-        super(api, responseNumber, role, oldIconId, role.getIconId(), IDENTIFIER);
+        super(api, responseNumber, role, oldIcon, role.getIcon(), IDENTIFIER);
     }
 
     /**
-     * The old icon id
+     * The old icon
      *
-     * @return The old icon id, or null
+     * @return The old icon
      */
-    @Nullable
-    public String getOldIconId()
+    @Nonnull
+    public RoleIcon getOldIcon()
     {
         return getOldValue();
     }
 
     /**
-     * The url of the old icon
+     * The new icon
      *
-     * @return The url of the old icon, or null
+     * @return The new icon
      */
-    @Nullable
-    public String getOldIconUrl()
-    {
-        return previous == null ? null : String.format(Role.ICON_URL, role.getId(), previous);
-    }
-
-    /**
-     * The new icon id
-     *
-     * @return The new icon id, or null
-     */
-    @Nullable
-    public String getNewIconId()
+    @Nonnull
+    public RoleIcon getNewIcon()
     {
         return getNewValue();
-    }
-
-    /**
-     * The url of the new icon
-     *
-     * @return The url of the new icon, or null
-     */
-    @Nullable
-    public String getNewIconUrl()
-    {
-        return next == null ? null : String.format(Role.ICON_URL, role.getId(), next);
     }
 }

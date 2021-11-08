@@ -43,8 +43,6 @@ public interface Role extends IMentionable, IPermissionHolder, Comparable<Role>
 {
     /** Used to keep consistency between color values used in the API */
     int DEFAULT_COLOR_RAW = 0x1FFFFFFF; // java.awt.Color fills the MSB with FF, we just use 1F to provide better consistency
-    /** Template for {@link #getIconUrl()}. */
-    String ICON_URL = "https://cdn.discordapp.com/role-icons/%s/%s.png";
 
     /**
      * The hierarchical position of this {@link net.dv8tion.jda.api.entities.Role Role}
@@ -294,44 +292,15 @@ public interface Role extends IMentionable, IPermissionHolder, Comparable<Role>
     RoleTags getTags();
 
     /**
-     * The Discord hash-id of the {@link net.dv8tion.jda.api.entities.Role Role} icon image.
-     * If no icon has been set or an emoji is used in its place, this returns {@code null}.
-     * <p>The Role icon can be modified using {@link RoleManager#setIcon(Icon)}.
+     * The {@link RoleIcon Icon} of this role.
+     * This icon will be displayed next to the role's name in the members tab and in chat.
      *
-     * @return Possibly-null String containing the Role's icon hash-id.
-     *
-     * @since  4.3.1
-     */
-    @Nullable
-    String getIconId();
-
-    /**
-     * The URL of the {@link net.dv8tion.jda.api.entities.Role Role} icon image.
-     * If no icon has been set or an emoji is used in its place, this returns {@code null}.
-     * <p>The Role icon can be modified using {@link RoleManager#setIcon(Icon)} (Icon)}.
-     *
-     * @return Possibly-null String containing the Role's icon URL.
+     * @return The {@link RoleIcon Icon} of this role
      *
      * @since  4.3.1
      */
-    @Nullable
-    default String getIconUrl()
-    {
-        String iconId = getIconId();
-        return iconId == null ? null : String.format(ICON_URL, getId(), iconId);
-    }
-
-    /**
-     * The Unicode Emoji of this {@link net.dv8tion.jda.api.entities.Role Role} that is used instead of a custom image.
-     * If no emoji has been set, this returns {@code null}.
-     * <p>The Role emoji can be modified using {@link RoleManager#setEmoji(String)}.
-     *
-     * @return Possibly-null String containing the Role's Unicode Emoji.
-     *
-     * @since  4.3.1
-     */
-    @Nullable
-    String getEmoji();
+    @Nonnull
+    RoleIcon getIcon();
 
     /**
      * Tags associated with this role.
