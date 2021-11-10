@@ -342,7 +342,7 @@ public class OptionData implements SerializableData
      * @throws IllegalArgumentException
      *         If any of the following checks fail
      *         <ul>
-     *             <li>{@link OptionType type of this option} is {@link OptionType#CHANNEL CHANNEL}</li>
+     *             <li>{@link OptionType type of this option} is {@link OptionType#CHANNEL CHANNEL} and the collection is not empty</li>
      *             <li>{@code channelTypes} is not null</li>
      *             <li>{@code channelTypes} doesn't contain {@code null}</li>
      *             <li>{@code channelTypes} only contains guild channels</li>
@@ -353,10 +353,15 @@ public class OptionData implements SerializableData
     @Nonnull
     public OptionData setChannelTypes(@Nonnull Collection<ChannelType> channelTypes)
     {
-        if (type != OptionType.CHANNEL)
-            throw new IllegalArgumentException("Can only apply channel type restriction to options of type CHANNEL");
         Checks.notNull(channelTypes, "ChannelType collection");
         Checks.noneNull(channelTypes, "ChannelType");
+        
+        if (channelTypes.isEmpty())
+            return this;
+            
+        if (type != OptionType.CHANNEL)
+            throw new IllegalArgumentException("Can only apply channel type restriction to options of type CHANNEL");    
+            
 
         for (ChannelType channelType : channelTypes)
         {
@@ -666,7 +671,7 @@ public class OptionData implements SerializableData
      * @throws IllegalArgumentException
      *         If any of the following checks fail
      *         <ul>
-     *             <li>The {@link OptionType} does {@link OptionType#canSupportChoices() support choices}</li>
+     *             <li>The {@link OptionType} does {@link OptionType#canSupportChoices() support choices} and some are provided.</li>
      *             <li>The provided {@code choices} are not null</li>
      *             <li>The amount of {@code choices} provided is smaller than {@link #MAX_CHOICES} when combined with already set choices</li>
      *             <li>The {@link OptionType} of the choices is either {@link OptionType#INTEGER}, {@link OptionType#STRING} or {@link OptionType#NUMBER}</li>
@@ -677,6 +682,8 @@ public class OptionData implements SerializableData
     @Nonnull
     public OptionData addChoices(@Nonnull Command.Choice... choices)
     {
+        if (choices.length == 0)
+            return this;
         if (this.choices == null)
             throw new IllegalStateException("Cannot add choices for an option of type " + type);
         Checks.noneNull(choices, "Choices");
