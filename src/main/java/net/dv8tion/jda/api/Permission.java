@@ -54,6 +54,7 @@ public enum Permission
     MESSAGE_EXT_EMOJI(       18, true, true, "Use External Emojis"),
     MESSAGE_EXT_STICKER(     37, true, true, "Use External Stickers"),
     USE_SLASH_COMMANDS(      31, true, true, "Use Slash Commands"),
+    SEND_MESSAGES_IN_THREADS(38, true, true, "Send Messages in Threads"),
 
     MANAGE_THREADS(     34, true, true, "Manage Threads"),
     USE_PUBLIC_THREADS( 35, true, true, "Use Public Threads"),
