@@ -80,7 +80,7 @@ public interface GuildManager extends Manager<GuildManager>
     /** Used to reset the community updates channel field */
     long COMMUNITY_UPDATES_CHANNEL  = 0x8000;
     /** Used to reset the premium progress bar enabled field */
-    long BOOST_PROGRESS_BAR_ENABLED = 0x16000;
+    long BOOST_PROGRESS_BAR_ENABLED = 0x10000;
 
     /**
      * Resets the fields specified by the provided bit-flag pattern.
