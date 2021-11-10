@@ -114,6 +114,7 @@ public class GuildImpl implements Guild
     private boolean available;
     private boolean canSendVerification = false;
     private int memberCount;
+    private boolean boostProgressBarEnabled;
 
     public GuildImpl(JDAImpl api, long id)
     {
@@ -847,6 +848,12 @@ public class GuildImpl implements Guild
         if (manager == null)
             return manager = new GuildManagerImpl(this);
         return manager;
+    }
+
+    @Override
+    public boolean isBoostProgressBarEnabled()
+    {
+        return boostProgressBarEnabled;
     }
 
     @Nonnull
@@ -1967,6 +1974,12 @@ public class GuildImpl implements Guild
     public GuildImpl setNSFWLevel(NSFWLevel nsfwLevel)
     {
         this.nsfwLevel = nsfwLevel;
+        return this;
+    }
+
+    public GuildImpl setBoostProgressBarEnabled(boolean enabled)
+    {
+        this.boostProgressBarEnabled = enabled;
         return this;
     }
 
