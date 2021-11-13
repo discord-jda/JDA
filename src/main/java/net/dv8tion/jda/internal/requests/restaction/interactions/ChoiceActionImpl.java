@@ -121,14 +121,19 @@ public class ChoiceActionImpl extends InteractionCallbackActionImpl implements C
         Checks.check(choices.length + this.choices.size() <= OptionData.MAX_CHOICES, "Cannot have more than 25 choices for an option!");
 
         for (Command.Choice choice : choices) {
-            if (type == OptionType.INTEGER)
-                respondChoice(choice.getName(), choice.getAsLong());
-            else if (type == OptionType.STRING)
-                respondChoice(choice.getName(), choice.getAsString());
-            else if (type == OptionType.NUMBER)
-                respondChoice(choice.getName(), choice.getAsDouble());
-            else
-                throw new IllegalArgumentException("Cannot add choice for type " + type);
+            switch(type) {
+                case INTEGER:
+                    respondChoice(choice.getName(), choice.getAsLong());
+                    break;
+                case STRING:
+                    respondChoice(choice.getName(), choice.getAsString());
+                    break;
+                case NUMBER:
+                    respondChoice(choice.getName(), choice.getAsDouble());
+                    break;
+                default:
+                    throw new IllegalArgumentException("Cannot add choice for type " + type);
+            }
         }
         return this;
     }

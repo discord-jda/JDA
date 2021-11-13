@@ -33,6 +33,8 @@ public class CommandAutoCompleteInteractionImpl extends InteractionImpl implemen
     private String subcommand;
     private String group;
 
+    private final OptionMapping focusedOption;
+
     public CommandAutoCompleteInteractionImpl(JDAImpl jda, DataObject data)
     {
         super(jda, data);
@@ -61,6 +63,11 @@ public class CommandAutoCompleteInteractionImpl extends InteractionImpl implemen
 
         parseResolved(jda, resolveJson);
         parseOptions(options);
+
+        focusedOption = getOptions().stream()
+                .filter(OptionMapping::isFocused)
+                .findFirst()
+                .get();
     }
 
     private void parseOptions(DataArray options)
@@ -146,42 +153,39 @@ public class CommandAutoCompleteInteractionImpl extends InteractionImpl implemen
     @Nonnull
     public ChoiceAction respondChoice(@Nonnull String name, @Nonnull String value)
     {
-        return new ChoiceActionImpl(this.hook, getFocusedOption().getType()).respondChoice(name, value);
+        return new ChoiceActionImpl(this.hook, focusedOption.getType()).respondChoice(name, value);
     }
 
     @Nonnull
     public ChoiceAction respondChoice(@Nonnull String name, double value)
     {
-        return new ChoiceActionImpl(this.hook, getFocusedOption().getType()).respondChoice(name, value);
+        return new ChoiceActionImpl(this.hook, focusedOption.getType()).respondChoice(name, value);
     }
 
     @Nonnull
     public ChoiceAction respondChoice(@Nonnull String name, long value)
     {
-        return new ChoiceActionImpl(this.hook, getFocusedOption().getType()).respondChoice(name, value);
+        return new ChoiceActionImpl(this.hook, focusedOption.getType()).respondChoice(name, value);
     }
 
     @NotNull
     @Override
     public ChoiceAction respondChoices(@Nonnull Command.Choice... choices)
     {
-        return new ChoiceActionImpl(this.hook, getFocusedOption().getType()).respondChoices(choices);
+        return new ChoiceActionImpl(this.hook, focusedOption.getType()).respondChoices(choices);
     }
 
     @NotNull
     @Override
     public ChoiceAction respondChoices(@Nonnull Collection<? extends Command.Choice> choices)
     {
-        return new ChoiceActionImpl(this.hook, getFocusedOption().getType()).respondChoices(choices);
+        return new ChoiceActionImpl(this.hook, focusedOption.getType()).respondChoices(choices);
     }
 
     @Override
     @Nonnull
     public OptionMapping getFocusedOption()
     {
-        return getOptions().stream()
-                .filter(OptionMapping::isFocused)
-                .findFirst()
-                .get();
+        return focusedOption;
     }
 }
