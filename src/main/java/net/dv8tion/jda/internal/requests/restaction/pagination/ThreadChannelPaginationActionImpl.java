@@ -23,7 +23,7 @@ public class ThreadChannelPaginationActionImpl extends PaginationActionImpl<Thre
 {
     protected final IThreadContainer channel;
 
-    public ThreadChannelPaginationActionImpl(JDA api, Route.CompiledRoute route, BaseGuildMessageChannel channel)
+    public ThreadChannelPaginationActionImpl(JDA api, Route.CompiledRoute route, IThreadContainer channel)
     {
         super(api, route, 1, 100, 100);
         this.channel = channel;

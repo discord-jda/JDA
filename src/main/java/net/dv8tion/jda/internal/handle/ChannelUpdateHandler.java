@@ -31,6 +31,7 @@ import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.*;
+import net.dv8tion.jda.internal.entities.mixin.channel.attribute.IPermissionContainerMixin;
 import net.dv8tion.jda.internal.requests.WebSocketClient;
 import net.dv8tion.jda.internal.utils.UnlockHook;
 import net.dv8tion.jda.internal.utils.cache.SnowflakeCacheViewImpl;
@@ -128,7 +129,7 @@ public class ChannelUpdateHandler extends SocketHandler
                 if (oldParentId != parentId)
                 {
                     final Category oldParent = textChannel.getParentCategory();
-                    textChannel.setParent(parentId);
+                    textChannel.setParentCategory(parentId);
                     getJDA().handleEvent(
                            new ChannelUpdateParentEvent(
                                getJDA(), responseNumber,
@@ -193,7 +194,7 @@ public class ChannelUpdateHandler extends SocketHandler
                 if (oldParentId != parentId)
                 {
                     final Category oldParent = newsChannel.getParentCategory();
-                    newsChannel.setParent(parentId);
+                    newsChannel.setParentCategory(parentId);
                     getJDA().handleEvent(
                             new ChannelUpdateParentEvent(
                                     getJDA(), responseNumber,
@@ -261,7 +262,7 @@ public class ChannelUpdateHandler extends SocketHandler
                 if (oldParentId != parentId)
                 {
                     final Category oldParent = voiceChannel.getParentCategory();
-                    voiceChannel.setParent(parentId);
+                    voiceChannel.setParentCategory(parentId);
                     getJDA().handleEvent(
                             new ChannelUpdateParentEvent(
                                     getJDA(), responseNumber,
@@ -327,7 +328,7 @@ public class ChannelUpdateHandler extends SocketHandler
                 if (oldParentId != parentId)
                 {
                     final Category oldParent = stageChannel.getParentCategory();
-                    stageChannel.setParent(parentId);
+                    stageChannel.setParentCategory(parentId);
                     getJDA().handleEvent(
                             new ChannelUpdateParentEvent(
                                     getJDA(), responseNumber,
@@ -382,7 +383,7 @@ public class ChannelUpdateHandler extends SocketHandler
                 WebSocketClient.LOG.debug("CHANNEL_UPDATE provided an unrecognized channel type JSON: {}", content);
         }
 
-        applyPermissions((AbstractChannelImpl<?, ?>) channel, permOverwrites);
+        applyPermissions((IPermissionContainerMixin<?>) channel, permOverwrites);
 
         boolean hasAccessToChannel = channel.getGuild().getSelfMember().hasPermission((IPermissionContainer) channel, Permission.VIEW_CHANNEL);
         if (channel.getType().isMessage() && !hasAccessToChannel)
@@ -412,7 +413,7 @@ public class ChannelUpdateHandler extends SocketHandler
             TextChannelImpl textChannel = (TextChannelImpl) builder.createTextChannel(guild, content, guild.getIdLong());
 
             //CHANNEL_UPDATE doesn't track last_message_id, so make sure to copy it over.
-            textChannel.setLastMessageId(newsChannel.getLatestMessageIdLong());
+            textChannel.setLatestMessageIdLong(newsChannel.getLatestMessageIdLong());
 
             getJDA().handleEvent(
                 new ChannelUpdateTypeEvent(
@@ -432,7 +433,7 @@ public class ChannelUpdateHandler extends SocketHandler
             NewsChannelImpl newsChannel = (NewsChannelImpl) builder.createNewsChannel(guild, content, guild.getIdLong());
 
             //CHANNEL_UPDATE doesn't track last_message_id, so make sure to copy it over.
-            newsChannel.setLastMessageId(textChannel.getLatestMessageIdLong());
+            newsChannel.setLatestMessageIdLong(textChannel.getLatestMessageIdLong());
 
             getJDA().handleEvent(
                 new ChannelUpdateTypeEvent(
@@ -446,9 +447,9 @@ public class ChannelUpdateHandler extends SocketHandler
     }
 
     @SuppressWarnings("deprecation")
-    private void applyPermissions(AbstractChannelImpl<?,?> channel, DataArray permOverwrites)
+    private void applyPermissions(IPermissionContainerMixin<?> channel, DataArray permOverwrites)
     {
-        TLongObjectMap<PermissionOverride> currentOverrides = new TLongObjectHashMap<>(channel.getOverrideMap());
+        TLongObjectMap<PermissionOverride> currentOverrides = new TLongObjectHashMap<>(channel.getPermissionOverrideMap());
         List<IPermissionHolder> changed = new ArrayList<>(currentOverrides.size());
         Guild guild = channel.getGuild();
         for (int i = 0; i < permOverwrites.length(); i++)
@@ -460,7 +461,7 @@ public class ChannelUpdateHandler extends SocketHandler
         }
 
         currentOverrides.forEachValue(override -> {
-            channel.getOverrideMap().remove(override.getIdLong());
+            channel.getPermissionOverrideMap().remove(override.getIdLong());
             addPermissionHolder(changed, guild, override.getIdLong());
             api.handleEvent(
                 new PermissionOverrideDeleteEvent(
@@ -481,7 +482,7 @@ public class ChannelUpdateHandler extends SocketHandler
 
     // True => override status changed (created/deleted/updated)
     // False => nothing changed, ignore
-    private boolean handlePermissionOverride(PermissionOverride currentOverride, DataObject override, long overrideId, AbstractChannelImpl<?,?> channel)
+    private boolean handlePermissionOverride(PermissionOverride currentOverride, DataObject override, long overrideId, IPermissionContainerMixin<?> channel)
     {
         final long allow = override.getLong("allow");
         final long deny = override.getLong("deny");
@@ -511,7 +512,7 @@ public class ChannelUpdateHandler extends SocketHandler
             if (overrideId == channel.getGuild().getIdLong() && (allow | deny) == 0L)
             {
                 // We delete empty overrides for the @everyone role because that's what the client also does, otherwise our sync checks don't work!
-                channel.getOverrideMap().remove(overrideId);
+                channel.getPermissionOverrideMap().remove(overrideId);
                 api.handleEvent(
                     new PermissionOverrideDeleteEvent(
                         api, responseNumber,
@@ -535,7 +536,7 @@ public class ChannelUpdateHandler extends SocketHandler
             currentOverride = impl = new PermissionOverrideImpl(channel, overrideId, isRole);
             impl.setAllow(allow);
             impl.setDeny(deny);
-            channel.getOverrideMap().put(overrideId, currentOverride);
+            channel.getPermissionOverrideMap().put(overrideId, currentOverride);
             api.handleEvent(
                 new PermissionOverrideCreateEvent(
                     api, responseNumber,

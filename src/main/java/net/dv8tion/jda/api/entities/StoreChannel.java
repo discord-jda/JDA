@@ -17,6 +17,10 @@
 package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.managers.channel.concrete.StoreChannelManager;
+import net.dv8tion.jda.api.requests.restaction.ChannelAction;
+
+import javax.annotation.Nonnull;
 
 /**
  * Represents a Discord Store GuildChannel.
@@ -35,4 +39,20 @@ import net.dv8tion.jda.api.JDA;
  */
 //TODO-v5: We're probably going to remove this entity as Discord has deprecated it.
 public interface StoreChannel extends GuildChannel, ICategorizableChannel, IPositionableChannel, ICopyableChannel, IPermissionContainer, IMemberContainer
-{}
+{
+
+    @Nonnull
+    @Override
+    ChannelAction<StoreChannel> createCopy(@Nonnull Guild guild);
+
+    @Nonnull
+    @Override
+    default ChannelAction<StoreChannel> createCopy()
+    {
+        return createCopy(getGuild());
+    }
+
+    @Override
+    @Nonnull
+    StoreChannelManager getManager();
+}

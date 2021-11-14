@@ -18,6 +18,7 @@ package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.managers.ChannelManager;
+import net.dv8tion.jda.api.managers.channel.concrete.CategoryManager;
 import net.dv8tion.jda.api.requests.restaction.ChannelAction;
 import net.dv8tion.jda.api.requests.restaction.order.CategoryOrderAction;
 import net.dv8tion.jda.api.requests.restaction.order.ChannelOrderAction;
@@ -25,7 +26,10 @@ import net.dv8tion.jda.api.requests.restaction.order.OrderAction;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Represents a channel category in the official Discord API.
@@ -55,7 +59,17 @@ public interface Category extends GuildChannel, ICopyableChannel, IPositionableC
      * @return Immutable list of all child channels
      */
     @Nonnull
-    List<GuildChannel> getChannels();
+    default List<GuildChannel> getChannels()
+    {
+        List<GuildChannel> channels = new ArrayList<>();
+        channels.addAll(getStoreChannels());
+        channels.addAll(getTextChannels());
+        channels.addAll(getVoiceChannels());
+        channels.addAll(getStageChannels());
+        Collections.sort(channels);
+
+        return Collections.unmodifiableList(channels);
+    }
 
     /**
      * All {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannels}
@@ -66,7 +80,12 @@ public interface Category extends GuildChannel, ICopyableChannel, IPositionableC
      * @since  4.0.0
      */
     @Nonnull
-    List<StoreChannel> getStoreChannels();
+    default List<StoreChannel> getStoreChannels()
+    {
+        return Collections.unmodifiableList(getGuild().getStoreChannelCache().stream()
+            .filter(channel -> equals(channel.getParentCategory()))
+            .sorted().collect(Collectors.toList()));
+    }
 
     /**
      * All {@link net.dv8tion.jda.api.entities.TextChannel TextChannels}
@@ -75,7 +94,12 @@ public interface Category extends GuildChannel, ICopyableChannel, IPositionableC
      * @return Immutable list of all child TextChannels
      */
     @Nonnull
-    List<TextChannel> getTextChannels();
+    default List<TextChannel> getTextChannels()
+    {
+        return Collections.unmodifiableList(getGuild().getTextChannelCache().stream()
+            .filter(channel -> equals(channel.getParentCategory()))
+            .sorted().collect(Collectors.toList()));
+    }
 
     /**
      * All {@link net.dv8tion.jda.api.entities.NewsChannel NewsChannels}
@@ -84,7 +108,12 @@ public interface Category extends GuildChannel, ICopyableChannel, IPositionableC
      * @return Immutable list of all child NewsChannels
      */
     @Nonnull
-    List<NewsChannel> getNewsChannels();
+    default List<NewsChannel> getNewsChannels()
+    {
+        return Collections.unmodifiableList(getGuild().getNewsChannelCache().stream()
+            .filter(channel -> equals(channel.getParentCategory()))
+            .sorted().collect(Collectors.toList()));
+    }
 
     /**
      * All {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels}
@@ -93,7 +122,12 @@ public interface Category extends GuildChannel, ICopyableChannel, IPositionableC
      * @return Immutable list of all child VoiceChannels
      */
     @Nonnull
-    List<VoiceChannel> getVoiceChannels();
+    default List<VoiceChannel> getVoiceChannels()
+    {
+        return Collections.unmodifiableList(getGuild().getVoiceChannelCache().stream()
+            .filter(channel -> equals(channel.getParentCategory()))
+            .sorted().collect(Collectors.toList()));
+    }
 
     /**
      * All {@link net.dv8tion.jda.api.entities.StageChannel StageChannel}
@@ -102,7 +136,12 @@ public interface Category extends GuildChannel, ICopyableChannel, IPositionableC
      * @return Immutable list of all child StageChannel
      */
     @Nonnull
-    List<StageChannel> getStageChannels();
+    default List<StageChannel> getStageChannels()
+    {
+        return Collections.unmodifiableList(getGuild().getStageChannelCache().stream()
+            .filter(channel -> equals(channel.getParentCategory()))
+            .sorted().collect(Collectors.toList()));
+    }
 
     /**
      * Creates a new {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} with this Category as parent.
@@ -272,6 +311,19 @@ public interface Category extends GuildChannel, ICopyableChannel, IPositionableC
 
     @Nonnull
     @Override
+    default List<Member> getMembers()
+    {
+        return Collections.unmodifiableList(getChannels().stream()
+            .filter(IMemberContainer.class::isInstance)
+            .map(IMemberContainer.class::cast)
+            .map(IMemberContainer::getMembers)
+            .flatMap(List::stream)
+            .distinct()
+            .collect(Collectors.toList()));
+    }
+
+    @Nonnull
+    @Override
     ChannelAction<Category> createCopy(@Nonnull Guild guild);
 
     @Nonnull
@@ -280,5 +332,5 @@ public interface Category extends GuildChannel, ICopyableChannel, IPositionableC
 
     @Nonnull
     @Override
-    ChannelManager<Category> getManager();
+    CategoryManager getManager();
 }

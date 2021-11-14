@@ -16,11 +16,19 @@
 
 package net.dv8tion.jda.api.entities;
 
+import net.dv8tion.jda.api.managers.channel.attribute.ICategorizableChannelManager;
+
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 //TODO-v5: Need Docs
-public interface ICategorizableChannel extends GuildChannel
+public interface ICategorizableChannel extends GuildChannel, IPermissionContainer
 {
+    //TODO-v5: Docs
+    @Override
+    @Nonnull
+    ICategorizableChannelManager<?, ?> getManager();
+
     //TODO-v5: Docs
     long getParentCategoryIdLong();
 

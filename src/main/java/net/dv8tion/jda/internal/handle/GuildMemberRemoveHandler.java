@@ -26,6 +26,7 @@ import net.dv8tion.jda.api.utils.cache.CacheView;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.*;
+import net.dv8tion.jda.internal.entities.mixin.channel.middleman.AudioChannelMixin;
 import net.dv8tion.jda.internal.utils.UnlockHook;
 import net.dv8tion.jda.internal.utils.cache.SnowflakeCacheViewImpl;
 
@@ -98,7 +99,7 @@ public class GuildMemberRemoveHandler extends SocketHandler
         {
             AudioChannel channel = voiceState.getChannel();
             voiceState.setConnectedChannel(null);
-            ((AbstractGuildAudioChannelImpl<?, ?>) channel).getConnectedMembersMap().remove(userId);
+            ((AudioChannelMixin<?>) channel).getConnectedMembersMap().remove(userId);
 
             getJDA().handleEvent(
                 new GuildVoiceLeaveEvent(

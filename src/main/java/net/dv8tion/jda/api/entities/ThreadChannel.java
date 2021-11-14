@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.entities;
 
+import net.dv8tion.jda.api.managers.channel.concrete.ThreadChannelManager;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.PermissionOverrideAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
@@ -184,27 +185,9 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer
         return removeThreadMemberById(member.getIdLong());
     }
 
-    // ==== Proxied IPermissionContainer methods
     @Override
-    default PermissionOverride getPermissionOverride(@Nonnull IPermissionHolder permissionHolder)
-    {
-        return getParentChannel().getPermissionOverride(permissionHolder);
-    }
-
     @Nonnull
-    @Override
-    default List<PermissionOverride> getPermissionOverrides()
-    {
-        return getParentChannel().getPermissionOverrides();
-    }
-
-    @Nonnull
-    @Override
-    default PermissionOverrideAction putPermissionOverride(@Nonnull IPermissionHolder permissionHolder)
-    {
-        return getParentChannel().putPermissionOverride(permissionHolder);
-    }
-
+    ThreadChannelManager getManager();
 
     @Override
     default void formatTo(Formatter formatter, int flags, int width, int precision)

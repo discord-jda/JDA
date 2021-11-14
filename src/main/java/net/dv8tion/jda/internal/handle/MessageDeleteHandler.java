@@ -19,9 +19,9 @@ import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.events.message.MessageDeleteEvent;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
-import net.dv8tion.jda.internal.entities.BaseGuildMessageChannelImpl;
 import net.dv8tion.jda.internal.entities.ThreadChannelImpl;
 import net.dv8tion.jda.internal.entities.PrivateChannelImpl;
+import net.dv8tion.jda.internal.entities.mixin.channel.middleman.MessageChannelMixin;
 
 public class MessageDeleteHandler extends SocketHandler
 {
@@ -62,24 +62,7 @@ public class MessageDeleteHandler extends SocketHandler
         // Reset the latest message id as it was deleted.
         if (channel.hasLatestMessage() & messageId == channel.getLatestMessageIdLong())
         {
-            if (channel.getType().isGuild())
-            {
-                if (channel.getType().isThread())
-                {
-                    ThreadChannelImpl gThread = (ThreadChannelImpl) channel;
-                    gThread.setLastMessageId(0);
-                }
-                else
-                {
-                    BaseGuildMessageChannelImpl<?, ?> gChannel = (BaseGuildMessageChannelImpl<?, ?>) channel;
-                    gChannel.setLastMessageId(0);
-                }
-            }
-            else
-            {
-                PrivateChannelImpl pChannel = (PrivateChannelImpl) channel;
-                pChannel.setLastMessageId(0);
-            }
+            ((MessageChannelMixin<?>) channel).setLatestMessageIdLong(0);
         }
 
 

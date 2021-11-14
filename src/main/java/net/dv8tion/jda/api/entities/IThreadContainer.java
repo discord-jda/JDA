@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.requests.restaction.pagination.ThreadChannelPaginatio
 import net.dv8tion.jda.api.utils.MiscUtil;
 
 import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -36,6 +37,7 @@ public interface IThreadContainer extends GuildChannel, IPermissionContainer
     }
 
     //TODO-v5: Docs
+    @Nonnull
     @CheckReturnValue
     default ThreadAction createThreadChannel(String name)
     {
@@ -43,15 +45,18 @@ public interface IThreadContainer extends GuildChannel, IPermissionContainer
     }
 
     //TODO-v5: Docs
+    @Nonnull
     @CheckReturnValue
     ThreadAction createThreadChannel(String name, boolean isPrivate);
 
 
     //TODO-v5: Docs
+    @Nonnull
     @CheckReturnValue
     ThreadAction createThreadChannel(String name, long messageId);
 
     //TODO-v5: Docs
+    @Nonnull
     @CheckReturnValue
     default ThreadAction createThreadChannel(String name, String messageId)
     {
@@ -59,14 +64,17 @@ public interface IThreadContainer extends GuildChannel, IPermissionContainer
     }
 
     //TODO-v5: Docs
+    @Nonnull
     @CheckReturnValue
     ThreadChannelPaginationAction retrieveArchivedPublicThreadChannels();
 
     //TODO-v5: Docs
+    @Nonnull
     @CheckReturnValue
     ThreadChannelPaginationAction retrieveArchivedPrivateThreadChannels();
 
     //TODO-v5: Docs
+    @Nonnull
     @CheckReturnValue
     ThreadChannelPaginationAction retrieveArchivedPrivateJoinedThreadChannels();
 }

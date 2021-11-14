@@ -1,7 +1,7 @@
 package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.managers.ChannelManager;
+import net.dv8tion.jda.api.managers.channel.ChannelManager;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 
 import javax.annotation.CheckReturnValue;
@@ -27,7 +27,7 @@ public interface GuildChannel extends Channel, Comparable<GuildChannel>
     Guild getGuild();
 
     /**
-     * Returns the {@link ChannelManager ChannelManager} for this GuildChannel.
+     * Returns the {@link net.dv8tion.jda.api.managers.ChannelManager ChannelManager} for this GuildChannel.
      * <br>In the ChannelManager, you can modify the name, topic and position of this GuildChannel.
      * You modify multiple fields in one request by chaining setters before calling {@link net.dv8tion.jda.api.requests.RestAction#queue() RestAction.queue()}.
      *
@@ -40,7 +40,8 @@ public interface GuildChannel extends Channel, Comparable<GuildChannel>
      * @return The ChannelManager of this GuildChannel
      */
     @Nonnull
-    ChannelManager<? extends GuildChannel> getManager();
+//    ChannelManager<? extends GuildChannel> getManager();
+    ChannelManager<?, ?> getManager();
 
     /**
      * TODO-v5: this override might not be needed anymore if we remove AuditableRestAction and instead place auditable hooks onto RestAction itself.

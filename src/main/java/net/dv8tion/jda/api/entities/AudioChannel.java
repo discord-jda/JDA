@@ -17,6 +17,7 @@
 package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.Region;
+import net.dv8tion.jda.api.managers.channel.middleman.AudioChannelManager;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -24,6 +25,11 @@ import javax.annotation.Nullable;
 //TODO-v5: Docs
 public interface AudioChannel extends GuildChannel, IMemberContainer, IPermissionContainer
 {
+    //TODO-v5: Docs
+    @Override
+    @Nonnull
+    AudioChannelManager<?, ?> getManager();
+
     /**
      * The audio bitrate of the voice audio that is transmitted in this channel. While higher bitrates can be sent to
      * this channel, it will be scaled down by the client.

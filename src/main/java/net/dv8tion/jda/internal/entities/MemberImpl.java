@@ -24,6 +24,7 @@ import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.api.utils.cache.CacheView;
 import net.dv8tion.jda.internal.JDAImpl;
+import net.dv8tion.jda.internal.entities.mixin.channel.attribute.IPermissionContainerMixin;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.PermissionUtil;
@@ -282,7 +283,7 @@ public class MemberImpl implements Member
         if (hasLocalAdmin)
             return true;
 
-        TLongObjectMap<PermissionOverride> existingOverrides = ((AbstractChannelImpl<?, ?>) targetChannel).getOverrideMap();
+        TLongObjectMap<PermissionOverride> existingOverrides = ((IPermissionContainerMixin<?>) targetChannel).getPermissionOverrideMap();
         for (PermissionOverride override : syncSource.getPermissionOverrides())
         {
             PermissionOverride existing = existingOverrides.get(override.getIdLong());

@@ -2410,7 +2410,7 @@ public interface MessageChannel extends Channel, Formattable
         Checks.isSnowflake(messageId, "Message ID");
         Checks.notNull(emote, "Emote");
 
-        return new ReactionPaginationActionImpl(this, messageId, String.format("%s:%s", emote, emote.getId()));
+        return retrieveReactionUsersById(messageId, String.format("%s:%s", emote.getName(), emote.getId()));
     }
 
     /**

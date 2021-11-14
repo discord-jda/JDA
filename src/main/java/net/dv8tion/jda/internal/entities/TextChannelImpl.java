@@ -16,19 +16,49 @@
 
 package net.dv8tion.jda.internal.entities;
 
+import gnu.trove.map.TLongObjectMap;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.managers.channel.concrete.TextChannelManager;
 import net.dv8tion.jda.api.requests.restaction.ChannelAction;
+import net.dv8tion.jda.api.utils.MiscUtil;
+import net.dv8tion.jda.internal.entities.mixin.channel.middleman.BaseGuildMessageChannelMixin;
+import net.dv8tion.jda.internal.managers.channel.concrete.TextChannelManagerImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
-public class TextChannelImpl extends BaseGuildMessageChannelImpl<TextChannel, TextChannelImpl> implements TextChannel
+public class TextChannelImpl extends AbstractGuildChannelImpl<TextChannelImpl> implements TextChannel, BaseGuildMessageChannelMixin<TextChannelImpl>
 {
+    private final TLongObjectMap<PermissionOverride> overrides = MiscUtil.newLongMap();
+
+    private String topic;
+    private long parentCategoryId;
+    private long latestMessageId;
+    private int position;
     private int slowmode;
+    private boolean nsfw;
 
     public TextChannelImpl(long id, GuildImpl guild)
     {
         super(id, guild);
+    }
+
+    @Nullable
+    @Override
+    public String getTopic()
+    {
+        return topic;
+    }
+
+    @Override
+    public boolean isNSFW()
+    {
+        return nsfw;
     }
 
     @Nonnull
@@ -36,6 +66,33 @@ public class TextChannelImpl extends BaseGuildMessageChannelImpl<TextChannel, Te
     public ChannelType getType()
     {
         return ChannelType.TEXT;
+    }
+
+    @Override
+    public long getParentCategoryIdLong()
+    {
+        return parentCategoryId;
+    }
+
+    @Nonnull
+    @Override
+    public List<Member> getMembers()
+    {
+        return Collections.unmodifiableList(getGuild().getMembersView().stream()
+            .filter(m -> m.hasPermission(this, Permission.VIEW_CHANNEL))
+            .collect(Collectors.toList()));
+    }
+
+    @Override
+    public int getPositionRaw()
+    {
+        return position;
+    }
+
+    @Override
+    public long getLatestMessageIdLong()
+    {
+        return latestMessageId;
     }
 
     @Override
@@ -66,13 +123,53 @@ public class TextChannelImpl extends BaseGuildMessageChannelImpl<TextChannel, Te
         return action;
     }
 
-    // -- Setters --
+    @Nonnull
+    @Override
+    public TextChannelManager getManager()
+    {
+        return new TextChannelManagerImpl(this);
+    }
 
     @Override
-    public TextChannelImpl setPosition(int rawPosition)
+    public TLongObjectMap<PermissionOverride> getPermissionOverrideMap()
+    {
+        return overrides;
+    }
+
+    @Override
+    public TextChannelImpl setParentCategory(long parentCategoryId)
+    {
+        this.parentCategoryId = parentCategoryId;
+        return this;
+    }
+
+    @Override
+    public TextChannelImpl setPosition(int position)
     {
         getGuild().getTextChannelsView().clearCachedLists();
-        return super.setPosition(rawPosition);
+        this.position = position;
+        return this;
+    }
+
+    @Override
+    public TextChannelImpl setTopic(String topic)
+    {
+        this.topic = topic;
+        return this;
+    }
+
+    @Override
+    public TextChannelImpl setNSFW(boolean nsfw)
+    {
+        this.nsfw = nsfw;
+        return this;
+    }
+
+    @Override
+    public TextChannelImpl setLatestMessageIdLong(long latestMessageId)
+    {
+        this.latestMessageId = latestMessageId;
+        return this;
     }
 
     public TextChannelImpl setSlowmode(int slowmode)
@@ -88,5 +185,4 @@ public class TextChannelImpl extends BaseGuildMessageChannelImpl<TextChannel, Te
     {
         return "TC:" + getName() + '(' + id + ')';
     }
-
 }

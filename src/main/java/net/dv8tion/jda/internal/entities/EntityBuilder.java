@@ -51,6 +51,8 @@ import net.dv8tion.jda.api.utils.cache.CacheView;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
+import net.dv8tion.jda.internal.entities.mixin.channel.attribute.IPermissionContainerMixin;
+import net.dv8tion.jda.internal.entities.mixin.channel.middleman.AudioChannelMixin;
 import net.dv8tion.jda.internal.handle.EventCache;
 import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.JDALogger;
@@ -564,7 +566,7 @@ public class EntityBuilder
         final long channelId = voiceStateJson.getLong("channel_id");
         AudioChannel audioChannel = (AudioChannel) guild.getGuildChannelById(channelId);
         if (audioChannel != null)
-            ((AbstractGuildAudioChannelImpl<?, ?>) audioChannel).getConnectedMembersMap().put(member.getIdLong(), member);
+            ((AudioChannelMixin<?>) audioChannel).getConnectedMembersMap().put(member.getIdLong(), member);
         else
             LOG.error("Received a GuildVoiceState with a channel ID for a non-existent channel! ChannelId: {} GuildId: {} UserId: {}",
                       channelId, guild.getId(), user.getId());
@@ -951,7 +953,7 @@ public class EntityBuilder
         }
 
         channel
-            .setParent(json.getLong("parent_id", 0))
+            .setParentCategory(json.getLong("parent_id", 0))
             .setName(json.getString("name"))
             .setPosition(json.getInt("position"));
 
@@ -990,8 +992,8 @@ public class EntityBuilder
         }
 
         channel
-            .setParent(json.getLong("parent_id", 0))
-            .setLastMessageId(json.getLong("last_message_id", 0))
+            .setParentCategory(json.getLong("parent_id", 0))
+            .setLatestMessageIdLong(json.getLong("last_message_id", 0))
             .setName(json.getString("name"))
             .setTopic(json.getString("topic", null))
             .setPosition(json.getInt("position"))
@@ -1033,8 +1035,8 @@ public class EntityBuilder
         }
 
         channel
-                .setParent(json.getLong("parent_id", 0))
-                .setLastMessageId(json.getLong("last_message_id", 0))
+                .setParentCategory(json.getLong("parent_id", 0))
+                .setLatestMessageIdLong(json.getLong("last_message_id", 0))
                 .setName(json.getString("name"))
                 .setTopic(json.getString("topic", null))
                 .setPosition(json.getInt("position"))
@@ -1074,7 +1076,7 @@ public class EntityBuilder
         }
 
         channel
-            .setParent(json.getLong("parent_id", 0))
+            .setParentCategory(json.getLong("parent_id", 0))
             .setName(json.getString("name"))
             .setPosition(json.getInt("position"))
             .setUserLimit(json.getInt("user_limit"))
@@ -1115,7 +1117,7 @@ public class EntityBuilder
         }
 
         channel
-            .setParent(json.getLong("parent_id", 0))
+            .setParentCategory(json.getLong("parent_id", 0))
             .setName(json.getString("name"))
             .setPosition(json.getInt("position"))
             .setBitrate(json.getInt("bitrate"))
@@ -1151,7 +1153,7 @@ public class EntityBuilder
                     UnlockHook vlock = guildThreadView.writeLock();
                     UnlockHook jlock = threadView.writeLock())
             {
-                channel = new ThreadChannelImpl(id, type, guild);
+                channel = new ThreadChannelImpl(id, guild, type);
                 guildThreadView.getMap().put(id, channel);
                 playbackCache = threadView.getMap().put(id, channel) == null;
             }
@@ -1165,7 +1167,7 @@ public class EntityBuilder
                 .setOwnerId(json.getLong("owner_id"))
                 .setMemberCount(json.getInt("member_count"))
                 .setMessageCount(json.getInt("message_count"))
-                .setLastMessageId(json.getLong("last_message_id", 0))
+                .setLatestMessageIdLong(json.getLong("last_message_id", 0))
                 .setSlowmode(json.getInt("rate_limit_per_user", 0))
                 .setLocked(threadMetadata.getBoolean("locked"))
                 .setArchived(threadMetadata.getBoolean("archived"))
@@ -1233,7 +1235,7 @@ public class EntityBuilder
     {
         final long channelId = json.getLong("id");
         PrivateChannelImpl priv = new PrivateChannelImpl(channelId, user)
-                .setLastMessageId(json.getLong("last_message_id", 0));
+                .setLatestMessageIdLong(json.getLong("last_message_id", 0));
         user.setPrivateChannel(priv);
 
         // only add channels to cache when they come from an event, otherwise we would never remove the channel
@@ -1274,7 +1276,7 @@ public class EntityBuilder
                 .setTopic(topic);
     }
 
-    public void createOverridesPass(AbstractChannelImpl<?,?> channel, DataArray overrides)
+    public void createOverridesPass(IPermissionContainerMixin<?> channel, DataArray overrides)
     {
         for (int i = 0; i < overrides.length(); i++)
         {
@@ -1775,7 +1777,7 @@ public class EntityBuilder
     }
 
     @Nullable
-    public PermissionOverride createPermissionOverride(DataObject override, AbstractChannelImpl<?, ?> chan)
+    public PermissionOverride createPermissionOverride(DataObject override, IPermissionContainerMixin<?> chan)
     {
         int type = override.getInt("type");
         final long id = override.getLong("id");
@@ -1793,11 +1795,11 @@ public class EntityBuilder
         if (id == chan.getGuild().getIdLong() && (allow | deny) == 0L)
             return null;
 
-        PermissionOverrideImpl permOverride = (PermissionOverrideImpl) chan.getOverrideMap().get(id);
+        PermissionOverrideImpl permOverride = (PermissionOverrideImpl) chan.getPermissionOverrideMap().get(id);
         if (permOverride == null)
         {
             permOverride = new PermissionOverrideImpl(chan, id, role);
-            chan.getOverrideMap().put(id, permOverride);
+            chan.getPermissionOverrideMap().put(id, permOverride);
         }
 
         return permOverride.setAllow(allow).setDeny(deny);
