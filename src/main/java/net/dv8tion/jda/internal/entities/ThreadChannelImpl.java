@@ -16,7 +16,6 @@
 
 package net.dv8tion.jda.internal.entities;
 
-import gnu.trove.map.TLongObjectMap;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.managers.channel.concrete.ThreadChannelManager;
@@ -24,8 +23,6 @@ import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.cache.CacheView;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
-import net.dv8tion.jda.internal.JDAImpl;
-import net.dv8tion.jda.internal.entities.mixin.channel.attribute.IPermissionContainerMixin;
 import net.dv8tion.jda.internal.entities.mixin.channel.middleman.GuildMessageChannelMixin;
 import net.dv8tion.jda.internal.managers.channel.concrete.ThreadChannelManagerImpl;
 import net.dv8tion.jda.internal.requests.RestActionImpl;

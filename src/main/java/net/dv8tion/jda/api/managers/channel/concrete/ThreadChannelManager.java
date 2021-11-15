@@ -20,7 +20,21 @@ import net.dv8tion.jda.api.entities.ThreadChannel;
 import net.dv8tion.jda.api.managers.channel.ChannelManager;
 import net.dv8tion.jda.api.managers.channel.attribute.IPermissionContainerManager;
 
+//TODO-v5: Docs
 public interface ThreadChannelManager extends ChannelManager<ThreadChannel, ThreadChannelManager>
 {
-    //TODO - Thread stuff
+    //TODO-v5: Docs
+    ThreadChannelManager setSlowmode(int slowmode);
+
+    //TODO-v5: Docs
+    ThreadChannelManager setAutoArchiveDuration(ThreadChannel.AutoArchiveDuration autoArchiveDuration);
+
+    //TODO-v5: Docs
+    ThreadChannelManager setArchived(boolean archived);
+
+    //TODO-v5: Docs
+    ThreadChannelManager setLocked(boolean locked);
+
+    //TODO-v5: Docs
+    ThreadChannelManager setInvitable(boolean invitable);
 }

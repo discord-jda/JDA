@@ -66,6 +66,14 @@ public interface ChannelManager<T extends GuildChannel, M extends ChannelManager
     long TYPE       = 1 << 9;
     /** Used to reset the region field */
     long REGION     = 1 << 10;
+    /** Used to reset the auto-archive-duration field */
+    long AUTO_ARCHIVE_DURATION = 1 << 11;
+    /** Used to reset the archived field */
+    long ARCHIVED   = 1 << 12;
+    /** Used to reset the locked field */
+    long LOCKED     = 1 << 13;
+    /** Used to reset the invitable field */
+    long INVITEABLE = 1 << 14;
 
     /**
      * Resets the fields specified by the provided bit-flag pattern.

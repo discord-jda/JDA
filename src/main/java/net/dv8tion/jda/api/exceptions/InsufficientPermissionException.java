@@ -30,7 +30,7 @@ import javax.annotation.Nullable;
  * Indicates that the user is missing a {@link Permission} for some action.
  *
  * @see   net.dv8tion.jda.api.entities.IPermissionHolder#hasPermission(Permission...) IPermissionHolder.hasPermission(Permission...)
- * @see   net.dv8tion.jda.api.entities.IPermissionHolder#hasPermission(net.dv8tion.jda.api.entities.IPermissionContainer, Permission...) IPermissionHolder.hasPermission(GuildChannel, Permission...)
+ * @see   net.dv8tion.jda.api.entities.IPermissionHolder#hasPermission(net.dv8tion.jda.api.entities.GuildChannel, Permission...) IPermissionHolder.hasPermission(GuildChannel, Permission...)
  */
 public class InsufficientPermissionException extends PermissionException
 {

@@ -38,18 +38,23 @@ import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.EnumSet;
+import java.util.Set;
 
 public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager<T, M>> extends ManagerBase<M> implements ChannelManager<T, M>
 {
     protected T channel;
 
-    protected String name;
+    protected ThreadChannel.AutoArchiveDuration autoArchiveDuration;
     protected ChannelType type;
+    protected String name;
     protected String parent;
     protected String topic;
     protected String region;
-    protected int position;
     protected boolean nsfw;
+    protected boolean archived;
+    protected boolean locked;
+    protected boolean invitable;
+    protected int position;
     protected int slowmode;
     protected int userlimit;
     protected int bitrate;
@@ -424,8 +429,8 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
     @CheckReturnValue
     public M setSlowmode(int slowmode)
     {
-        if (type != ChannelType.TEXT)
-            throw new IllegalStateException("Can only set slowmode on text channels");
+        if (type != ChannelType.TEXT && !type.isThread())
+            throw new IllegalStateException("Can only set slowmode on text channels and threads");
         Checks.check(slowmode <= TextChannel.MAX_SLOWMODE && slowmode >= 0, "Slowmode per user must be between 0 and %d (seconds)!", TextChannel.MAX_SLOWMODE);
         this.slowmode = slowmode;
         set |= SLOWMODE;
@@ -459,6 +464,76 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
         return (M) this;
     }
 
+    public M setAutoArchiveDuration(ThreadChannel.AutoArchiveDuration autoArchiveDuration)
+    {
+        Checks.notNull(autoArchiveDuration, "autoArchiveDuration");
+
+        if (!type.isThread())
+            throw new IllegalStateException("Can only set autoArchiveDuration on threads");
+
+        Set<String> features = getGuild().getFeatures();
+        if (autoArchiveDuration == ThreadChannel.AutoArchiveDuration.TIME_3_DAYS && !features.contains("THREE_DAY_THREAD_ARCHIVE"))
+            throw new IllegalArgumentException("Cannot use TIME_3_DAYS archive duration because feature isn't supported on this Guild." +
+                    " Missing THREE_DAY_THREAD_ARCHIVE feature due to boost level being too low.");
+
+        if (autoArchiveDuration == ThreadChannel.AutoArchiveDuration.TIME_1_WEEK && !features.contains("SEVEN_DAY_THREAD_ARCHIVE"))
+            throw new IllegalArgumentException("Cannot use TIME_1_WEEK archive duration because feature isn't supported on this Guild." +
+                    " Missing SEVEN_DAY_THREAD_ARCHIVE feature due to boost level being too low.");
+
+        this.autoArchiveDuration = autoArchiveDuration;
+        set |= AUTO_ARCHIVE_DURATION;
+        return (M) this;
+    }
+
+    public M setArchived(boolean archived)
+    {
+        if (!type.isThread())
+            throw new IllegalStateException("Can only set archived on threads");
+
+        if (isPermissionChecksEnabled()) {
+            ThreadChannel thread = (ThreadChannel) channel;
+            if (!thread.isOwner())
+                checkPermission(Permission.MANAGE_THREADS, "Cannot unarchive a thread without MANAGE_THREADS if not the thread owner");
+
+            if (thread.isLocked())
+                checkPermission(Permission.MANAGE_THREADS, "Cannot unarchive a thread that is locked without MANAGE_THREADS");
+        }
+
+        this.archived = archived;
+        set |= ARCHIVED;
+        return (M) this;
+    }
+
+    public M setLocked(boolean locked)
+    {
+        if (!type.isThread())
+            throw new IllegalStateException("Can only set locked on threads");
+
+        if (isPermissionChecksEnabled()) {
+            checkPermission(Permission.MANAGE_THREADS, "Cannot modified a thread's locked status without MANAGE_THREADS");
+        }
+
+        this.locked = locked;
+        set |= LOCKED;
+        return (M) this;
+    }
+
+    public M setInvitable(boolean invitable)
+    {
+        if (type != ChannelType.GUILD_PRIVATE_THREAD)
+            throw new IllegalStateException("Can only set invitable on private threads.")
+
+        if (isPermissionChecksEnabled()) {
+            ThreadChannel thread = (ThreadChannel) channel;
+            if (!thread.isOwner())
+                checkPermission(Permission.MANAGE_THREADS, "Cannot modify a thread's invitable status without MANAGE_THREADS if not the thread owner");
+        }
+
+        this.invitable = invitable;
+        set |= LOCKED;
+        return (M) this;
+    }
+
     @Override
     protected RequestBody finalizeData()
     {
@@ -483,6 +558,15 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
             frame.put("parent_id", parent);
         if (shouldUpdate(REGION))
             frame.put("rtc_region", region);
+        if (shouldUpdate(AUTO_ARCHIVE_DURATION))
+            frame.put("auto_archive_duration", autoArchiveDuration.getMinutes());
+        if (shouldUpdate(ARCHIVED))
+            frame.put("archived", archived);
+        if (shouldUpdate(LOCKED))
+            frame.put("locked", locked);
+        if (shouldUpdate(INVITEABLE))
+            frame.put("invitable", invitable);
+
         withLock(lock, (lock) ->
         {
             if (shouldUpdate(PERMISSION))
@@ -509,6 +593,13 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
         }
 
         return super.checkPermissions();
+    }
+
+    protected void checkPermission(Permission permission, String errMessage)
+    {
+        if (!getGuild().getSelfMember().hasPermission(getChannel(), permission)) {
+            throw new InsufficientPermissionException(getChannel(), permission, errMessage);
+        }
     }
 
     protected Collection<PermOverrideData> getOverrides()

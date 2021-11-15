@@ -103,6 +103,11 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer
     @CheckReturnValue
     RestAction<List<ThreadMember>> retrieveThreadMembers();
 
+    default boolean isOwner()
+    {
+        return getJDA().getSelfUser().getIdLong() == getOwnerIdLong();
+    }
+
     long getOwnerIdLong();
 
     @Nullable
