@@ -1348,8 +1348,9 @@ public interface JDA
             channel = getStoreChannelById(id);
         if (channel == null)
             channel = getCategoryById(id);
+        if (channel == null)
+            channel = getThreadChannelById(id);
 
-        //TODO-threads: Should we expose the threads type to look up here too?
         return channel;
     }
 
@@ -1415,22 +1416,23 @@ public interface JDA
         Checks.notNull(type, "ChannelType");
         switch (type)
         {
-            //TODO-v5: Add support THREAD here
-        case TEXT:
-            return getTextChannelById(id);
-        case NEWS:
-            return getNewsChannelById(id);
-        case VOICE:
-            return getVoiceChannelById(id);
-        case STAGE:
-            return getStageChannelById(id);
-        case STORE:
-            return getStoreChannelById(id);
-        case CATEGORY:
-            return getCategoryById(id);
+            case TEXT:
+                return getTextChannelById(id);
+            case NEWS:
+                return getNewsChannelById(id);
+            case VOICE:
+                return getVoiceChannelById(id);
+            case STAGE:
+                return getStageChannelById(id);
+            case STORE:
+                return getStoreChannelById(id);
+            case CATEGORY:
+                return getCategoryById(id);
         }
-        //TODO-threads: should we expose the threads lookup here?
-        //TODO-threads: Also, with threads being 3 separate channel types.. this gets annoying tbh. I wonder if JDA should compress to a single type?
+
+        if (type.isThread())
+            return getThreadChannelById(id);
+
         return null;
     }
 

@@ -1479,8 +1479,9 @@ public interface Guild extends ISnowflake
             channel = getStoreChannelById(id);
         if (channel == null)
             channel = getCategoryById(id);
+        if (channel == null)
+            channel = getThreadChannelById(id);
 
-        //TODO-threads: should we expose threads in this?
         return channel;
     }
 
@@ -1552,7 +1553,10 @@ public interface Guild extends ISnowflake
             case CATEGORY:
                 return getCategoryById(id);
         }
-        //TODO-threads: should we expose threads in this?
+
+        if (type.isThread())
+            return getThreadChannelById(id);
+
         return null;
     }
 
