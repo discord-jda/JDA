@@ -521,7 +521,7 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
     public M setInvitable(boolean invitable)
     {
         if (type != ChannelType.GUILD_PRIVATE_THREAD)
-            throw new IllegalStateException("Can only set invitable on private threads.")
+            throw new IllegalStateException("Can only set invitable on private threads.");
 
         if (isPermissionChecksEnabled()) {
             ThreadChannel thread = (ThreadChannel) channel;
