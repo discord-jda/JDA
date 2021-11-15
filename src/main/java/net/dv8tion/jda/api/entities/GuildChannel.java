@@ -40,7 +40,6 @@ public interface GuildChannel extends Channel, Comparable<GuildChannel>
      * @return The ChannelManager of this GuildChannel
      */
     @Nonnull
-//    ChannelManager<? extends GuildChannel> getManager();
     ChannelManager<?, ?> getManager();
 
     /**
@@ -70,4 +69,7 @@ public interface GuildChannel extends Channel, Comparable<GuildChannel>
     @Nonnull
     @CheckReturnValue
     AuditableRestAction<Void> delete();
+
+    //TODO-v5: Docs
+    IPermissionContainer getPermissionContainer();
 }

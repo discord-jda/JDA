@@ -20,9 +20,7 @@ import net.dv8tion.jda.api.entities.ThreadChannel;
 import net.dv8tion.jda.api.managers.channel.ChannelManager;
 import net.dv8tion.jda.api.managers.channel.attribute.IPermissionContainerManager;
 
-public interface ThreadChannelManager extends
-        ChannelManager<ThreadChannel, ThreadChannelManager>,
-        IPermissionContainerManager<ThreadChannel, ThreadChannelManager> //Only here to satisfy the proxied IPermissionContainer on ThreadChannel. All methods are disabled.
+public interface ThreadChannelManager extends ChannelManager<ThreadChannel, ThreadChannelManager>
 {
     //TODO - Thread stuff
 }

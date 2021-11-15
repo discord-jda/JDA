@@ -132,9 +132,9 @@ public class RoleImpl implements Role
 
     @Nonnull
     @Override
-    public EnumSet<Permission> getPermissions(@Nonnull IPermissionContainer channel)
+    public EnumSet<Permission> getPermissions(@Nonnull GuildChannel channel)
     {
-        return Permission.getPermissions(PermissionUtil.getEffectivePermission(channel, this));
+        return Permission.getPermissions(PermissionUtil.getEffectivePermission(channel.getPermissionContainer(), this));
     }
 
     @Nonnull
@@ -146,9 +146,9 @@ public class RoleImpl implements Role
 
     @Nonnull
     @Override
-    public EnumSet<Permission> getPermissionsExplicit(@Nonnull IPermissionContainer channel)
+    public EnumSet<Permission> getPermissionsExplicit(@Nonnull GuildChannel channel)
     {
-        return Permission.getPermissions(PermissionUtil.getExplicitPermission(channel, this));
+        return Permission.getPermissions(PermissionUtil.getExplicitPermission(channel.getPermissionContainer(), this));
     }
 
     @Override
@@ -191,9 +191,9 @@ public class RoleImpl implements Role
     }
 
     @Override
-    public boolean hasPermission(@Nonnull IPermissionContainer channel, @Nonnull Permission... permissions)
+    public boolean hasPermission(@Nonnull GuildChannel channel, @Nonnull Permission... permissions)
     {
-        long effectivePerms = PermissionUtil.getEffectivePermission(channel, this);
+        long effectivePerms = PermissionUtil.getEffectivePermission(channel.getPermissionContainer(), this);
         for (Permission perm : permissions)
         {
             final long rawValue = perm.getRawValue();
@@ -204,7 +204,7 @@ public class RoleImpl implements Role
     }
 
     @Override
-    public boolean hasPermission(@Nonnull IPermissionContainer channel, @Nonnull Collection<Permission> permissions)
+    public boolean hasPermission(@Nonnull GuildChannel channel, @Nonnull Collection<Permission> permissions)
     {
         Checks.notNull(permissions, "Permission Collection");
 

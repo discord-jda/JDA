@@ -42,8 +42,7 @@ import java.util.List;
 
 public class ThreadChannelImpl extends AbstractGuildChannelImpl<ThreadChannelImpl> implements 
         ThreadChannel, 
-        GuildMessageChannelMixin<ThreadChannelImpl>,
-        IPermissionContainerMixin<ThreadChannelImpl>
+        GuildMessageChannelMixin<ThreadChannelImpl>
 {
     private final ChannelType type;
     private final CacheView.SimpleCacheView<ThreadMember> threadMembers = new CacheView.SimpleCacheView<>(ThreadMember.class, null);
@@ -116,6 +115,12 @@ public class ThreadChannelImpl extends AbstractGuildChannelImpl<ThreadChannelImp
     public IThreadContainer getParentChannel()
     {
         return (IThreadContainer) guild.getGuildChannelById(parentChannelId);
+    }
+
+    @Override
+    public IPermissionContainer getPermissionContainer()
+    {
+        return getParentChannel();
     }
 
     @Nonnull
@@ -232,12 +237,6 @@ public class ThreadChannelImpl extends AbstractGuildChannelImpl<ThreadChannelImp
     public ThreadChannelManager getManager()
     {
         return new ThreadChannelManagerImpl(this);
-    }
-
-    @Override
-    public TLongObjectMap<PermissionOverride> getPermissionOverrideMap()
-    {
-        return ((IPermissionContainerMixin<?>) getParentChannel()).getPermissionOverrideMap();
     }
 
     public CacheView.SimpleCacheView<ThreadMember> getThreadMemberView()

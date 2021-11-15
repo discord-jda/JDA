@@ -18,12 +18,12 @@ package net.dv8tion.jda.api.managers.channel.middleman;
 
 import net.dv8tion.jda.api.Region;
 import net.dv8tion.jda.api.entities.*;
-import net.dv8tion.jda.api.managers.channel.attribute.IPermissionContainerManager;
+import net.dv8tion.jda.api.managers.channel.ChannelManager;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 
-public interface AudioChannelManager<T extends AudioChannel, M extends AudioChannelManager<T, M>> extends IPermissionContainerManager<T, M>
+public interface AudioChannelManager<T extends AudioChannel, M extends AudioChannelManager<T, M>> extends ChannelManager<T, M>
 {
     /**
      * Sets the <b><u>bitrate</u></b> of the selected {@link VoiceChannel VoiceChannel}.

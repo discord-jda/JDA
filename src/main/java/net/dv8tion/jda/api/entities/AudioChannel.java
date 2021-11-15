@@ -23,7 +23,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 //TODO-v5: Docs
-public interface AudioChannel extends GuildChannel, IMemberContainer, IPermissionContainer
+public interface AudioChannel extends GuildChannel, IMemberContainer
 {
     //TODO-v5: Docs
     @Override
