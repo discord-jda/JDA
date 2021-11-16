@@ -1200,7 +1200,7 @@ public class EntityBuilder
         return createThreadMember(threadChannel, member, json);
     }
 
-    private ThreadMember createThreadMember(ThreadChannelImpl threadChannel, Member member, DataObject json)
+    public ThreadMember createThreadMember(ThreadChannelImpl threadChannel, Member member, DataObject json)
     {
         ThreadMemberImpl threadMember = new ThreadMemberImpl(member, threadChannel);
         threadMember

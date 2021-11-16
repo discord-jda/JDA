@@ -41,10 +41,22 @@ public class ThreadUpdateHandler extends SocketHandler
 
         final long threadId = content.getLong("id");
         ThreadChannelImpl thread = (ThreadChannelImpl) getJDA().getThreadChannelById(threadId);
+
+
+        //If the thread is missing then that means that the bot started up while the thread was archived
+        // thus it didn't get the thread. Now that it's been unarchived we've been given the entire thread and need to build it.
+        //Refer to the documentation for more info: https://discord.com/developers/docs/topics/threads#unarchiving-a-thread
         if (thread == null)
         {
-            getJDA().getEventCache().cache(EventCache.Type.CHANNEL, threadId, responseNumber, allContent, this::handle);
-            EventCache.LOG.debug("THREAD_UPDATE attempted to update a thread that does not exist. JSON: {}", content);
+            //Technically, when the ThreadChannel is unarchived the archive_timestamp (getTimeArchiveInfoLastModified) changes
+            // as well, but we don't have the original value because we didn't have the thread in memory, so we can't
+            // provide an entirely accurate ChannelUpdateArchiveTimestampEvent. Not sure how much that'll matter.
+            thread = (ThreadChannelImpl) api.getEntityBuilder().createThreadChannel(content, guildId);
+            api.handleEvent(
+                new ChannelUpdateArchivedEvent(
+                    api, responseNumber,
+                    thread, true, false));
+
             return null;
         }
 
