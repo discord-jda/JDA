@@ -44,10 +44,11 @@ public enum ChannelField
     USER_LIMIT("userlimit", AuditLogKey.CHANNEL_USER_LIMIT),
 
     //Thread Specific
-    AUTO_ARCHIVE_DURATION("autoArchiveDuration", null), //TODO-threads: Check for auditlog keys
-    ARCHIVED("archived", null),
-    ARCHIVED_TIMESTAMP("archiveTimestamp", null), //TODO-threads: check for audit log key. ALSO: might need to rename this as we don't actually expose "timestamp".
-    LOCKED("locked", null), //TODO-threads: Check for audit log key
+    AUTO_ARCHIVE_DURATION("autoArchiveDuration", AuditLogKey.THREAD_AUTO_ARCHIVE_DURATION),
+    ARCHIVED("archived", AuditLogKey.THREAD_ARCHIVED),
+    ARCHIVED_TIMESTAMP("archiveTimestamp", null),
+    LOCKED("locked", AuditLogKey.THREAD_LOCKED),
+    INVITABLE("invitable", AuditLogKey.THREAD_INVITABLE)
 
     ;
 
