@@ -211,6 +211,7 @@ public abstract class ListenerAdapter implements EventListener
     public void onChannelUpdateArchiveTimestamp(@Nonnull ChannelUpdateArchiveTimestampEvent event) {}
     public void onChannelUpdateAutoArchiveDuration(@Nonnull ChannelUpdateAutoArchiveDurationEvent event) {}
     public void onChannelUpdateLocked(@Nonnull ChannelUpdateLockedEvent event) {}
+    public void onChannelUpdateInvitable(@Nonnull ChannelUpdateInvitableEvent event) {}
 
     //Thread Events
     public void onThreadRevealed(@Nonnull ThreadRevealedEvent event) {}

@@ -53,6 +53,7 @@ public class ThreadUpdateHandler extends SocketHandler
         final ThreadChannel.AutoArchiveDuration autoArchiveDuration = ThreadChannel.AutoArchiveDuration.fromKey(threadMetadata.getInt("auto_archive_duration"));
         final boolean locked = threadMetadata.getBoolean("locked");
         final boolean archived = threadMetadata.getBoolean("archived");
+        final boolean invitable = threadMetadata.getBoolean("invitable");
         final long archiveTimestamp = Helpers.toTimestamp(threadMetadata.getString("archive_timestamp"));
         final int slowmode = content.getInt("rate_limit_per_user", 0);
 
@@ -60,6 +61,7 @@ public class ThreadUpdateHandler extends SocketHandler
         final ThreadChannel.AutoArchiveDuration oldAutoArchiveDuration = thread.getAutoArchiveDuration();
         final boolean oldLocked = thread.isLocked();
         final boolean oldArchived = thread.isArchived();
+        final boolean oldInvitable = !thread.isPublic() && thread.isInvitable();
         final long oldArchiveTimestamp = thread.getArchiveTimestamp();
         final int oldSlowmode = thread.getSlowmode();
 
@@ -111,6 +113,14 @@ public class ThreadUpdateHandler extends SocketHandler
                 new ChannelUpdateArchiveTimestampEvent(
                     api, responseNumber,
                     thread, oldArchiveTimestamp, archiveTimestamp));
+        }
+        if (oldInvitable != invitable)
+        {
+            thread.setInvitable(invitable);
+            api.handleEvent(
+                new ChannelUpdateInvitableEvent(
+                    api, responseNumber,
+                    thread, oldInvitable, invitable));
         }
 
         return null;
