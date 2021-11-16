@@ -100,7 +100,6 @@ public class ThreadMembersUpdateHandler extends SocketHandler
             }
         }
 
-        //TODO-Threads: Should we emit a single event for all add/remove at the same time instead of individual ones?
         //Emit the events from outside the writeLock
         for (ThreadMember threadMember : addedThreadMembers)
         {
@@ -127,7 +126,6 @@ public class ThreadMembersUpdateHandler extends SocketHandler
             }
         }
 
-        //TODO-Threads: Should we emit a single event for all add/remove at the same time instead of individual ones?
         for (long threadMemberId : removedMemberIds)
         {
             api.handleEvent(
