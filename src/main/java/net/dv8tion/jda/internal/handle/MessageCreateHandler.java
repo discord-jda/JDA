@@ -100,10 +100,6 @@ public class MessageCreateHandler extends SocketHandler
 
                 //Discord will only ever allow this property to show up to 50,
                 // so we don't want to update it to be over 50 because we don't want users to use it incorrectly.
-                //TODO-threads: Honestly, should we even expose this? if we're updating it here then we should
-                // make sure that it stays correct when a MESSAGE_DELETE is sent for a thread right? but unless the value
-                // is currently below we cannot confidently know that it can be decremented.
-                // Plus, im not sure that this is actually valuable to _anyone_.
                 int newMessageCount = Math.max(gThread.getMessageCount() + 1, 50);
                 gThread.setMessageCount(newMessageCount);
             }
