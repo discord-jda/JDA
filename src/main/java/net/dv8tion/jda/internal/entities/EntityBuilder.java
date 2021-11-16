@@ -1171,6 +1171,7 @@ public class EntityBuilder
                 .setSlowmode(json.getInt("rate_limit_per_user", 0))
                 .setLocked(threadMetadata.getBoolean("locked"))
                 .setArchived(threadMetadata.getBoolean("archived"))
+                .setInvitable(threadMetadata.getBoolean("invitable"))
                 .setArchiveTimestamp(Helpers.toTimestamp(threadMetadata.getString("archive_timestamp"))) //TODO-threads: This value clearly needs to be renamed because it looks like it represents when it was _updated_. Not when it happened.
                 .setAutoArchiveDuration(ThreadChannel.AutoArchiveDuration.fromKey(threadMetadata.getInt("auto_archive_duration")));
 

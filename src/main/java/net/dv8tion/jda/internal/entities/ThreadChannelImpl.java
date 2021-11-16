@@ -47,6 +47,7 @@ public class ThreadChannelImpl extends AbstractGuildChannelImpl<ThreadChannelImp
     private AutoArchiveDuration autoArchiveDuration;
     private boolean locked;
     private boolean archived;
+    private boolean invitable;
     private long parentChannelId;
     private long archiveTimestamp;
     private long ownerId;
@@ -170,6 +171,15 @@ public class ThreadChannelImpl extends AbstractGuildChannelImpl<ThreadChannelImp
     }
 
     @Override
+    public boolean isInvitable()
+    {
+        if (type != ChannelType.GUILD_PRIVATE_THREAD)
+            throw new UnsupportedOperationException("Only private threads support the concept of invitable.");
+
+        return invitable;
+    }
+
+    @Override
     public OffsetDateTime getTimeArchive()
     {
         return Helpers.toOffset(archiveTimestamp);
@@ -269,6 +279,12 @@ public class ThreadChannelImpl extends AbstractGuildChannelImpl<ThreadChannelImp
     public ThreadChannelImpl setArchived(boolean archived)
     {
         this.archived = archived;
+        return this;
+    }
+
+    public ThreadChannelImpl setInvitable(boolean invitable)
+    {
+        this.invitable = invitable;
         return this;
     }
 

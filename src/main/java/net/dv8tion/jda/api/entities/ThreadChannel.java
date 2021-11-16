@@ -56,6 +56,8 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer
 
     boolean isLocked();
 
+    boolean isInvitable();
+
     @Nonnull
     IThreadContainer getParentChannel();
 
