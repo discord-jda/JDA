@@ -60,7 +60,7 @@ public class GuildUpdateBannerEvent extends GenericGuildUpdateEvent<String>
     @Nullable
     public String getNewBannerUrl()
     {
-        return next == null ? null : String.format(Guild.BANNER_URL, guild.getId(), next);
+        return next == null ? null : String.format(Guild.BANNER_URL, guild.getId(), next, next.startsWith("a_") ? "gif" : "png");
     }
 
     /**
@@ -99,6 +99,6 @@ public class GuildUpdateBannerEvent extends GenericGuildUpdateEvent<String>
     @Nullable
     public String getOldBannerUrl()
     {
-        return previous == null ? null : String.format(Guild.BANNER_URL, guild.getId(), previous);
+        return previous == null ? null : String.format(Guild.BANNER_URL, guild.getId(), previous, previous.startsWith("a_") ? "gif" : "png");
     }
 }

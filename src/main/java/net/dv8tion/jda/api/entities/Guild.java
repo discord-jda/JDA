@@ -75,7 +75,7 @@ public interface Guild extends ISnowflake
     /** Template for {@link #getSplashUrl()}. */
     String SPLASH_URL = "https://cdn.discordapp.com/splashes/%s/%s.png";
     /** Template for {@link #getBannerUrl()}. */
-    String BANNER_URL = "https://cdn.discordapp.com/banners/%s/%s.png";
+    String BANNER_URL = "https://cdn.discordapp.com/banners/%s/%s.%s";
 
     /**
      * Retrieves the list of guild commands.
@@ -844,7 +844,7 @@ public interface Guild extends ISnowflake
     default String getBannerUrl()
     {
         String bannerId = getBannerId();
-        return bannerId == null ? null : String.format(BANNER_URL, getId(), bannerId);
+        return bannerId == null ? null : String.format(BANNER_URL, getId(), bannerId, bannerId.startsWith("a_") ? "gif" : "png");
     }
 
     /**
