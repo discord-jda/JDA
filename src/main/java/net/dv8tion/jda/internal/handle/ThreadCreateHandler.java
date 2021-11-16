@@ -37,7 +37,6 @@ public class ThreadCreateHandler extends SocketHandler
 
         ThreadChannel thread = api.getEntityBuilder().createThreadChannel(content, guildId);
 
-        //TODO-threads: Should these be thread specific events?
         api.handleEvent(new ChannelCreateEvent(api, responseNumber, thread));
 
         return null;

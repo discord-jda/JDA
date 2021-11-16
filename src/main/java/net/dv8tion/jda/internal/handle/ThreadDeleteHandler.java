@@ -49,11 +49,10 @@ public class ThreadDeleteHandler extends SocketHandler
 
         guild.getThreadChannelsView().remove(threadId);
 
-        //TODO-threads: Should these be thread specific events?
         getJDA().handleEvent(
-                new ChannelDeleteEvent(
-                        getJDA(), responseNumber,
-                        thread));
+            new ChannelDeleteEvent(
+                getJDA(), responseNumber,
+                thread));
 
         getJDA().getEventCache().clear(EventCache.Type.CHANNEL, threadId);
         return null;

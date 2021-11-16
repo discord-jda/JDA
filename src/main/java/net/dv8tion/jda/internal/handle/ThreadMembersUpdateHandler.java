@@ -58,11 +58,6 @@ public class ThreadMembersUpdateHandler extends SocketHandler
             return null;
         }
 
-        //TODO-Threads: this handler could check for member_count changing to emit the event. Not sure it is useful tho given we're already saying people left.
-
-        EntityBuilder entityBuilder = api.getEntityBuilder();
-        CacheView.SimpleCacheView<ThreadMember> view = thread.getThreadMemberView();
-
         if (!content.isNull("added_members"))
         {
             DataArray addedMembersJson = content.getArray("added_members");

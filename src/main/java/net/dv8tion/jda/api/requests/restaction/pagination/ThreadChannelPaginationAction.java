@@ -42,7 +42,7 @@ import javax.annotation.Nonnull;
  *     ThreadChannelPaginationAction threads = channel.retrieveArchivedPrivateThreadChannels();
  *     // remove each thread older than 2 weeks
  *     threads.forEachAsync((thread) ->
- *         long threadArchiveTimestamp = thread.getTimeArchive().toInstant().toEpochMilli();
+ *         long threadArchiveTimestamp = thread.getTimeArchiveInfoLastModified().toInstant().toEpochMilli();
  *         if (threadArchiveTimestamp < 2WeeksAgoTimestamp) {
  *            thread.delete().reason("Cleaning up old private threads").queue();
  *         }
