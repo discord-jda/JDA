@@ -180,7 +180,7 @@ public class ThreadChannelImpl extends AbstractGuildChannelImpl<ThreadChannelImp
     }
 
     @Override
-    public OffsetDateTime getTimeArchive()
+    public OffsetDateTime getTimeArchiveInfoLastModified()
     {
         return Helpers.toOffset(archiveTimestamp);
     }

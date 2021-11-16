@@ -132,8 +132,7 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer
 
     boolean isArchived();
 
-    //TODO This name sucks.
-    OffsetDateTime getTimeArchive();
+    OffsetDateTime getTimeArchiveInfoLastModified();
 
     @Nonnull
     AutoArchiveDuration getAutoArchiveDuration();
