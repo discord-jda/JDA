@@ -288,7 +288,7 @@ public class RoleImpl implements Role
                     .setMentionable(mentionable)
                     .setName(name)
                     .setPermissions(rawPermissions)
-                    .setEmoji(icon.getEmoji()); // we can only copy the emoji as we don't have access to the Icon instance
+                    .setIcon(icon.getEmoji()); // we can only copy the emoji as we don't have access to the Icon instance
     }
 
     @Nonnull
