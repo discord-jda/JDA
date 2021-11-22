@@ -180,11 +180,11 @@ public class Route
 
     public static class Webhooks
     {
-        public static final Route GET_WEBHOOK          = new Route(GET,    "webhooks/{webhook_id}", false);
+        public static final Route GET_WEBHOOK          = new Route(GET,    "webhooks/{webhook_id}");
         public static final Route GET_TOKEN_WEBHOOK    = new Route(GET,    "webhooks/{webhook_id}/{token}", false);
-        public static final Route DELETE_WEBHOOK       = new Route(DELETE, "webhooks/{webhook_id}", false);
+        public static final Route DELETE_WEBHOOK       = new Route(DELETE, "webhooks/{webhook_id}");
         public static final Route DELETE_TOKEN_WEBHOOK = new Route(DELETE, "webhooks/{webhook_id}/{token}", false);
-        public static final Route MODIFY_WEBHOOK       = new Route(PATCH,  "webhooks/{webhook_id}", false);
+        public static final Route MODIFY_WEBHOOK       = new Route(PATCH,  "webhooks/{webhook_id}");
         public static final Route MODIFY_TOKEN_WEBHOOK = new Route(PATCH,  "webhooks/{webhook_id}/{token}", false);
 
         // Separate
