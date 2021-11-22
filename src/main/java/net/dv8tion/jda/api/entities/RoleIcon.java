@@ -95,7 +95,7 @@ public class RoleIcon
      */
     public boolean isEmoji()
     {
-        return emoji != null && iconId == null; // both fields can be set at the same time
+        return emoji != null;
     }
 
     @Override
