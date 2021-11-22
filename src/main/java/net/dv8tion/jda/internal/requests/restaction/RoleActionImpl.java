@@ -148,15 +148,17 @@ public class RoleActionImpl extends AuditableRestActionImpl<Role> implements Rol
     public RoleActionImpl setIcon(Icon icon)
     {
         this.icon = icon;
+        this.emoji = null;
         return this;
     }
 
     @Nonnull
     @Override
     @CheckReturnValue
-    public RoleActionImpl setEmoji(String emoji)
+    public RoleActionImpl setIcon(String emoji)
     {
         this.emoji = emoji;
+        this.icon = null;
         return this;
     }
 

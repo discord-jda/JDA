@@ -44,7 +44,7 @@ public class RoleUpdateIconEvent extends GenericRoleUpdateEvent<RoleIcon>
      *
      * @return The old icon
      */
-    @Nonnull
+    @Nullable
     public RoleIcon getOldIcon()
     {
         return getOldValue();
@@ -55,7 +55,7 @@ public class RoleUpdateIconEvent extends GenericRoleUpdateEvent<RoleIcon>
      *
      * @return The new icon
      */
-    @Nonnull
+    @Nullable
     public RoleIcon getNewIcon()
     {
         return getNewValue();

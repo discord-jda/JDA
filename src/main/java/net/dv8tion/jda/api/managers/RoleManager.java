@@ -59,8 +59,6 @@ public interface RoleManager extends Manager<RoleManager>
     long MENTIONABLE = 0x10;
     /** Used to reset the icon field */
     long ICON        = 0x20;
-    /** Used to reset the unicode_emoji field */
-    long EMOJI       = 0x40;
 
     /**
      * Resets the fields specified by the provided bit-flag pattern.
@@ -75,7 +73,6 @@ public interface RoleManager extends Manager<RoleManager>
      *     <li>{@link #HOIST}</li>
      *     <li>{@link #MENTIONABLE}</li>
      *     <li>{@link #ICON}</li>
-     *     <li>{@link #EMOJI}</li>
      * </ul>
      *
      * @param  fields
@@ -100,7 +97,6 @@ public interface RoleManager extends Manager<RoleManager>
      *     <li>{@link #HOIST}</li>
      *     <li>{@link #MENTIONABLE}</li>
      *     <li>{@link #ICON}</li>
-     *     <li>{@link #EMOJI}</li>
      * </ul>
      *
      * @param  fields
@@ -296,17 +292,17 @@ public interface RoleManager extends Manager<RoleManager>
     RoleManager setIcon(@Nullable Icon icon);
 
     /**
-     * Sets the Unicode Emoji of this {@link net.dv8tion.jda.api.entities.Role Role}.
+     * Sets the Unicode Emoji of this {@link net.dv8tion.jda.api.entities.Role Role} instead of a custom image.
      *
      * @param  emoji
-     *         The Unicode Emoji for this {@link net.dv8tion.jda.api.entities.Role Role}
+     *         The new Unicode Emoji for this {@link net.dv8tion.jda.api.entities.Role Role}
      *         or {@code null} to reset
      *
      * @return RoleManager for chaining convenience
      */
     @Nonnull
     @CheckReturnValue
-    RoleManager setEmoji(@Nullable String emoji);
+    RoleManager setIcon(@Nullable String emoji);
 
     /**
      * Adds the specified {@link net.dv8tion.jda.api.Permission Permissions} to the selected {@link net.dv8tion.jda.api.entities.Role Role}.

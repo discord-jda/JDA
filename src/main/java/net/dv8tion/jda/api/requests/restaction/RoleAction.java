@@ -229,12 +229,12 @@ public interface RoleAction extends AuditableRestAction<Role>
      * This emoji will be displayed next to the role's name in the members tab and in chat.
      *
      * @param  emoji
-     *         The Unicode Emoji for this {@link net.dv8tion.jda.api.entities.Role Role}
+     *         The new Unicode emoji for this {@link net.dv8tion.jda.api.entities.Role Role}
      *         or {@code null} to reset
      *
      * @return RoleManager for chaining convenience
      */
     @Nonnull
     @CheckReturnValue
-    RoleAction setEmoji(@Nullable String emoji);
+    RoleAction setIcon(@Nullable String emoji);
 }

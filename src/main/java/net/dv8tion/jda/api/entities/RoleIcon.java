@@ -76,7 +76,7 @@ public class RoleIcon
     /**
      * The Unicode Emoji of this {@link net.dv8tion.jda.api.entities.Role Role} that is used instead of a custom image.
      * If no emoji has been set, this returns {@code null}.
-     * <p>The Role emoji can be modified using {@link RoleManager#setEmoji(String)}.
+     * <p>The Role emoji can be modified using {@link RoleManager#setIcon(String)}.
      *
      * @return Possibly-null String containing the Role's Unicode Emoji.
      *
@@ -86,6 +86,16 @@ public class RoleIcon
     public String getEmoji()
     {
         return emoji;
+    }
+
+    /**
+     * Whether this {@link RoleIcon} is an emoji instead of a custom image.
+     *
+     * @return True, if this {@link RoleIcon} is an emoji
+     */
+    public boolean isEmoji()
+    {
+        return emoji != null && iconId == null; // both fields can be set at the same time
     }
 
     @Override

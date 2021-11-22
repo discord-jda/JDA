@@ -1121,8 +1121,15 @@ public class EntityBuilder
             .setHoisted(roleJson.getBoolean("hoist"))
             .setColor(color == 0 ? Role.DEFAULT_COLOR_RAW : color)
             .setMentionable(roleJson.getBoolean("mentionable"))
-            .setTags(roleJson.optObject("tags").orElseGet(DataObject::empty))
-            .setIcon(new RoleIcon(roleJson.getString("icon", null), roleJson.getString("unicode_emoji", null), id));
+            .setTags(roleJson.optObject("tags").orElseGet(DataObject::empty));
+
+        final String iconId = roleJson.getString("icon", null);
+        final String emoji = roleJson.getString("unicode_emoji", null);
+        if (iconId == null && emoji == null)
+            role.setIcon(null);
+        else
+            role.setIcon(new RoleIcon(iconId, emoji, id));
+
         if (playbackCache)
             getJDA().getEventCache().playbackCache(EventCache.Type.ROLE, id);
         return role;

@@ -177,6 +177,7 @@ public class RoleManagerImpl extends ManagerBase<RoleManager> implements RoleMan
     public RoleManagerImpl setIcon(Icon icon)
     {
         this.icon = icon;
+        this.emoji = null;
         set |= ICON;
         return this;
     }
@@ -184,10 +185,11 @@ public class RoleManagerImpl extends ManagerBase<RoleManager> implements RoleMan
     @Nonnull
     @Override
     @CheckReturnValue
-    public RoleManagerImpl setEmoji(String emoji)
+    public RoleManagerImpl setIcon(String emoji)
     {
         this.emoji = emoji;
-        set |= EMOJI;
+        this.icon = null;
+        set |= ICON;
         return this;
     }
 
@@ -226,9 +228,10 @@ public class RoleManagerImpl extends ManagerBase<RoleManager> implements RoleMan
         if (shouldUpdate(COLOR))
             object.put("color", color == Role.DEFAULT_COLOR_RAW ? 0 : color & 0xFFFFFF);
         if (shouldUpdate(ICON))
+        {
             object.put("icon", icon == null ? null : icon.getEncoding());
-        if (shouldUpdate(EMOJI))
             object.put("unicode_emoji", emoji);
+        }
         reset();
         return getRequestBody(object);
     }
