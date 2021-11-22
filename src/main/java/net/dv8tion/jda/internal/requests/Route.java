@@ -81,7 +81,7 @@ public class Route
         public static final Route GET_COMMAND_PERMISSIONS =      new Route(GET, "applications/{application_id}/guilds/{guild_id}/commands/{command_id}/permissions");
         public static final Route EDIT_COMMAND_PERMISSIONS =     new Route(PUT, "applications/{application_id}/guilds/{guild_id}/commands/{command_id}/permissions");
 
-        public static final Route CALLBACK =        new Route(POST,   "interactions/{interaction_id}/{interaction_token}/callback");
+        public static final Route CALLBACK =        new Route(POST,   "interactions/{interaction_id}/{interaction_token}/callback", false);
         public static final Route CREATE_FOLLOWUP = new Route(POST,   "webhooks/{application_id}/{interaction_token}");
         public static final Route EDIT_FOLLOWUP =   new Route(PATCH,  "webhooks/{application_id}/{interaction_token}/messages/{message_id}");
         public static final Route DELETE_FOLLOWUP = new Route(DELETE, "webhooks/{application_id}/{interaction_token}/messages/{message_id}");
@@ -336,12 +336,19 @@ public class Route
     private static final String majorParameters = "guild_id:channel_id:webhook_id:interaction_token";
     private final String route;
     private final Method method;
+    private final boolean needsAuth;
     private final int paramCount;
 
     private Route(Method method, String route)
     {
+        this(method, route, true);
+    }
+
+    private Route(Method method, String route, boolean needsAuth)
+    {
         this.method = method;
         this.route = route;
+        this.needsAuth = needsAuth;
         this.paramCount = Helpers.countMatches(route, '{'); //All parameters start with {
 
         if (paramCount != Helpers.countMatches(route, '}'))
@@ -356,6 +363,11 @@ public class Route
     public String getRoute()
     {
         return route;
+    }
+
+    public boolean needsAuth()
+    {
+        return needsAuth;
     }
 
     public int getParamCount()
