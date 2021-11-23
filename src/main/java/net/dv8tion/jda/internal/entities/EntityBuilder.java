@@ -1927,7 +1927,6 @@ public class EntityBuilder
         final DataObject guildObject = object.getObject("serialized_source_guild");
         final String guildName = guildObject.getString("name");
         final String guildDescription = guildObject.getString("description", null);
-        final String region = guildObject.getString("region", null);
         final String guildIconId = guildObject.getString("icon_hash", null);
         final VerificationLevel guildVerificationLevel = VerificationLevel.fromKey(guildObject.getInt("verification_level", -1));
         final NotificationLevel notificationLevel = NotificationLevel.fromKey(guildObject.getInt("default_message_notifications", 0));
@@ -1990,7 +1989,7 @@ public class EntityBuilder
         TemplateChannel systemChannel = channels.stream().filter(templateChannel -> templateChannel.getIdLong() == systemChannelId)
                 .findFirst().orElse(null);
 
-        final TemplateGuild guild = new TemplateGuild(guildId, guildName, guildDescription, region, guildIconId, guildVerificationLevel, notificationLevel, explicitContentLevel, locale,
+        final TemplateGuild guild = new TemplateGuild(guildId, guildName, guildDescription, guildIconId, guildVerificationLevel, notificationLevel, explicitContentLevel, locale,
                 afkTimeout, afkChannel, systemChannel, roles, channels);
 
         final boolean synced = !object.getBoolean("is_dirty", false);

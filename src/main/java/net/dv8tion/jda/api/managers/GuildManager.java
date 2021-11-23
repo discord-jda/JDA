@@ -45,8 +45,6 @@ public interface GuildManager extends Manager<GuildManager>
 {
     /** Used to reset the name field */
     long NAME   = 0x1;
-    /** Used to reset the region field */
-    long REGION = 0x2;
     /** Used to reset the icon field */
     long ICON   = 0x4;
     /** Used to reset the splash field */
@@ -85,7 +83,6 @@ public interface GuildManager extends Manager<GuildManager>
      * <ul>
      *     <li>{@link #NAME}</li>
      *     <li>{@link #ICON}</li>
-     *     <li>{@link #REGION}</li>
      *     <li>{@link #SPLASH}</li>
      *     <li>{@link #AFK_CHANNEL}</li>
      *     <li>{@link #AFK_TIMEOUT}</li>
@@ -116,7 +113,6 @@ public interface GuildManager extends Manager<GuildManager>
      * <ul>
      *     <li>{@link #NAME}</li>
      *     <li>{@link #ICON}</li>
-     *     <li>{@link #REGION}</li>
      *     <li>{@link #SPLASH}</li>
      *     <li>{@link #AFK_CHANNEL}</li>
      *     <li>{@link #AFK_TIMEOUT}</li>

@@ -22,7 +22,6 @@ import net.dv8tion.jda.api.entities.Guild.NotificationLevel;
 import net.dv8tion.jda.api.entities.Guild.Timeout;
 import net.dv8tion.jda.api.entities.Guild.VerificationLevel;
 import net.dv8tion.jda.api.entities.ISnowflake;
-import net.dv8tion.jda.api.entities.VoiceChannel;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -38,7 +37,7 @@ import java.util.Locale;
 public class TemplateGuild implements ISnowflake
 {
     private final long id;
-    private final String name, description, region, iconId;
+    private final String name, description, iconId;
     private final VerificationLevel verificationLevel;
     private final NotificationLevel notificationLevel;
     private final ExplicitContentLevel explicitContentLevel;
@@ -49,14 +48,13 @@ public class TemplateGuild implements ISnowflake
     private final List<TemplateRole> roles;
     private final List<TemplateChannel> channels;
 
-    public TemplateGuild(final long id, final String name, final String description, final String region, final String iconId, final VerificationLevel verificationLevel,
+    public TemplateGuild(final long id, final String name, final String description, final String iconId, final VerificationLevel verificationLevel,
                          final NotificationLevel notificationLevel, final ExplicitContentLevel explicitContentLevel, final Locale locale, final Timeout afkTimeout,
                          final TemplateChannel afkChannel, final TemplateChannel systemChannel, final List<TemplateRole> roles, final List<TemplateChannel> channels)
     {
         this.id = id;
         this.name = name;
         this.description = description;
-        this.region = region;
         this.iconId = iconId;
         this.verificationLevel = verificationLevel;
         this.notificationLevel = notificationLevel;
