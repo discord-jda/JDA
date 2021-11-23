@@ -33,6 +33,7 @@ import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Set;
@@ -45,6 +46,7 @@ public class InviteImpl implements Invite
     private final boolean expanded;
     private final Guild guild;
     private final Group group;
+    private final InviteTarget target;
     private final User inviter;
     private final int maxAge;
     private final int maxUses;
@@ -54,8 +56,8 @@ public class InviteImpl implements Invite
     private final Invite.InviteType type;
 
     public InviteImpl(final JDAImpl api, final String code, final boolean expanded, final User inviter,
-            final int maxAge, final int maxUses, final boolean temporary, final OffsetDateTime timeCreated,
-            final int uses, final Channel channel, final Guild guild, final Group group, final Invite.InviteType type)
+            final int maxAge, final int maxUses, final boolean temporary, final OffsetDateTime timeCreated, final int uses,
+            final Channel channel, final Guild guild, final Group group, final InviteTarget target, final Invite.InviteType type)
     {
         this.api = api;
         this.code = code;
@@ -69,6 +71,7 @@ public class InviteImpl implements Invite
         this.channel = channel;
         this.guild = guild;
         this.group = group;
+        this.target = target;
         this.type = type;
     }
 
@@ -156,6 +159,13 @@ public class InviteImpl implements Invite
         return this.type;
     }
 
+    @Nonnull
+    @Override
+    public TargetType getTargetType()
+    {
+        return target == null ? TargetType.NONE : target.getType();
+    }
+
     @Override
     public Channel getChannel()
     {
@@ -179,6 +189,13 @@ public class InviteImpl implements Invite
     public Group getGroup()
     {
         return this.group;
+    }
+
+    @Nullable
+    @Override
+    public InviteTarget getTarget()
+    {
+        return target;
     }
 
     @Override
@@ -301,7 +318,6 @@ public class InviteImpl implements Invite
         {
             return this.type;
         }
-
     }
 
     public static class GuildImpl implements Guild
@@ -399,7 +415,6 @@ public class InviteImpl implements Invite
 
     public static class GroupImpl implements Group
     {
-
         private final String iconId, name;
         private final long id;
         private final List<String> users;
@@ -441,6 +456,128 @@ public class InviteImpl implements Invite
         public List<String> getUsers()
         {
             return users;
+        }
+    }
+
+    public static class InviteTargetImpl implements InviteTarget
+    {
+        private final TargetType type;
+        private final EmbeddedApplication targetApplication;
+        private final User targetUser;
+
+        public InviteTargetImpl(TargetType type, EmbeddedApplication targetApplication, User targetUser)
+        {
+            this.type = type;
+            this.targetApplication = targetApplication;
+            this.targetUser = targetUser;
+        }
+
+        @Nonnull
+        @Override
+        public TargetType getType()
+        {
+            return type;
+        }
+
+        @Nonnull
+        @Override
+        public String getId()
+        {
+            return getTargetEntity().getId();
+        }
+
+        @Override
+        public long getIdLong()
+        {
+            return getTargetEntity().getIdLong();
+        }
+
+        @Nullable
+        @Override
+        public User getUser()
+        {
+            return targetUser;
+        }
+
+        @Nullable
+        @Override
+        public EmbeddedApplication getApplication()
+        {
+            return targetApplication;
+        }
+
+        @Nonnull
+        private ISnowflake getTargetEntity()
+        {
+            if (targetUser != null) return targetUser;
+            if (targetApplication != null) return targetApplication;
+            throw new IllegalStateException("No target entity");
+        }
+
+    }
+
+    public static class EmbeddedApplicationImpl implements EmbeddedApplication
+    {
+        private final String iconId, name, description, summary;
+        private final long id;
+        private final int maxParticipants;
+
+        public EmbeddedApplicationImpl(final String iconId, final String name, final String description, final String summary, final long id, final int maxParticipants)
+        {
+            this.iconId = iconId;
+            this.name = name;
+            this.description = description;
+            this.summary = summary;
+            this.id = id;
+            this.maxParticipants = maxParticipants;
+        }
+
+        @Override
+        public long getIdLong()
+        {
+            return this.id;
+        }
+
+        @Nonnull
+        @Override
+        public String getName()
+        {
+            return this.name;
+        }
+
+        @Nonnull
+        @Override
+        public String getDescription()
+        {
+            return this.description;
+        }
+
+        @Nullable
+        @Override
+        public String getSummary()
+        {
+            return this.summary;
+        }
+
+        @Nullable
+        @Override
+        public String getIconId()
+        {
+            return this.iconId;
+        }
+
+        @Nullable
+        @Override
+        public String getIconUrl()
+        {
+            return this.iconId == null ? null
+                    : "https://cdn.discordapp.com/app-icons/" + this.id + '/' + this.iconId + ".png";
+        }
+
+        @Override
+        public int getMaxParticipants()
+        {
+            return maxParticipants;
         }
     }
 }

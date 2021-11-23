@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.entities.Guild.NotificationLevel;
 import net.dv8tion.jda.api.entities.Guild.Timeout;
 import net.dv8tion.jda.api.entities.Guild.VerificationLevel;
 import net.dv8tion.jda.api.entities.ISnowflake;
+import net.dv8tion.jda.api.entities.VoiceChannel;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
