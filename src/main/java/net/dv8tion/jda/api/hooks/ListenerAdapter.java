@@ -38,10 +38,7 @@ import net.dv8tion.jda.api.events.guild.invite.GenericGuildInviteEvent;
 import net.dv8tion.jda.api.events.guild.invite.GuildInviteCreateEvent;
 import net.dv8tion.jda.api.events.guild.invite.GuildInviteDeleteEvent;
 import net.dv8tion.jda.api.events.guild.member.*;
-import net.dv8tion.jda.api.events.guild.member.update.GenericGuildMemberUpdateEvent;
-import net.dv8tion.jda.api.events.guild.member.update.GuildMemberUpdateBoostTimeEvent;
-import net.dv8tion.jda.api.events.guild.member.update.GuildMemberUpdateNicknameEvent;
-import net.dv8tion.jda.api.events.guild.member.update.GuildMemberUpdatePendingEvent;
+import net.dv8tion.jda.api.events.guild.member.update.*;
 import net.dv8tion.jda.api.events.guild.override.GenericPermissionOverrideEvent;
 import net.dv8tion.jda.api.events.guild.override.PermissionOverrideCreateEvent;
 import net.dv8tion.jda.api.events.guild.override.PermissionOverrideDeleteEvent;
@@ -263,6 +260,7 @@ public abstract class ListenerAdapter implements EventListener
     //Guild Member Update Events
     public void onGuildMemberUpdate(@Nonnull GuildMemberUpdateEvent event) {}
     public void onGuildMemberUpdateNickname(@Nonnull GuildMemberUpdateNicknameEvent event) {}
+    public void onGuildMemberUpdateAvatar(@Nonnull GuildMemberUpdateAvatarEvent event) {}
     public void onGuildMemberUpdateBoostTime(@Nonnull GuildMemberUpdateBoostTimeEvent event) {}
     public void onGuildMemberUpdatePending(@Nonnull GuildMemberUpdatePendingEvent event) {}
 
@@ -289,6 +287,7 @@ public abstract class ListenerAdapter implements EventListener
     //Role Update Events
     public void onRoleUpdateColor(@Nonnull RoleUpdateColorEvent event) {}
     public void onRoleUpdateHoisted(@Nonnull RoleUpdateHoistedEvent event) {}
+    public void onRoleUpdateIcon(@Nonnull RoleUpdateIconEvent event) {}
     public void onRoleUpdateMentionable(@Nonnull RoleUpdateMentionableEvent event) {}
     public void onRoleUpdateName(@Nonnull RoleUpdateNameEvent event) {}
     public void onRoleUpdatePermissions(@Nonnull RoleUpdatePermissionsEvent event) {}

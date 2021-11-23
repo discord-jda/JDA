@@ -41,6 +41,7 @@ public class UserImpl extends UserById implements User
     protected short discriminator;
     protected String name;
     protected String avatarId;
+    protected Profile profile;
     protected long privateChannel = 0L;
     protected boolean bot;
     protected boolean system;
@@ -71,6 +72,28 @@ public class UserImpl extends UserById implements User
     public String getAvatarId()
     {
         return avatarId;
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<Profile> retrieveProfile()
+    {
+        return new DeferredRestAction<>(getJDA(), Profile.class, this::getProfile, () -> {
+            Route.CompiledRoute route = Route.Users.GET_USER.compile(getId());
+            return new RestActionImpl<>(getJDA(), route, (response, request) -> {
+                DataObject json = response.getObject();
+
+                String bannerId = json.getString("banner", null);
+                int accentColor = json.getInt("accent_color", User.DEFAULT_ACCENT_COLOR_RAW);
+
+                return new Profile(getIdLong(), bannerId, accentColor);
+            });
+        });
+    }
+
+    public Profile getProfile()
+    {
+        return profile;
     }
 
     @Nonnull
@@ -179,6 +202,12 @@ public class UserImpl extends UserById implements User
     public UserImpl setAvatarId(String avatarId)
     {
         this.avatarId = avatarId;
+        return this;
+    }
+
+    public UserImpl setProfile(Profile profile)
+    {
+        this.profile = profile;
         return this;
     }
 
