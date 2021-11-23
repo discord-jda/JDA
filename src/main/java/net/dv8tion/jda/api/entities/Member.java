@@ -540,6 +540,69 @@ public interface Member extends IMentionable, IPermissionHolder
     }
 
     /**
+     * Puts a timeout on this Member in this {@link net.dv8tion.jda.api.entities.Guild Guild} until the specified date.
+     * <br>While a Member is timed out, they cannot post or react to messages.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
+     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The target Member cannot be kicked due to a permission discrepancy</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MEMBER UNKNOWN_MEMBER}
+     *     <br>The specified Member was removed from the Guild before finishing the task</li>
+     * </ul>
+     *
+     * @param  date
+     *         The date this Member should be timed out until
+     *
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MODERATE_MEMBERS} permission.
+     * @throws net.dv8tion.jda.api.exceptions.HierarchyException
+     *         If the logged in account cannot put a timeout on the other Member due to permission hierarchy position.
+     *         <br>See {@link Member#canInteract(Member)}
+     * @throws IllegalArgumentException
+     *         If any of the following checks fail
+     *         <ul>
+     *             <li>The provided {@code date} is not null</li>
+     *             <li>The provided {@code date} is not in the past</li>
+     *             <li>The provided {@code date} is not more than 28 days in the future</li>
+     *         </ul>
+     *
+     * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
+     */
+    default AuditableRestAction<Void> timeoutUntil(@Nonnull OffsetDateTime date)
+    {
+        return getGuild().timeoutUntil(this, date);
+    }
+
+    /**
+     * Removes a timeout from this Member in this {@link net.dv8tion.jda.api.entities.Guild Guild}.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
+     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The target Member cannot be kicked due to a permission discrepancy</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MEMBER UNKNOWN_MEMBER}
+     *     <br>The specified Member was removed from the Guild before finishing the task</li>
+     * </ul>
+     *
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MODERATE_MEMBERS} permission.
+     * @throws net.dv8tion.jda.api.exceptions.HierarchyException
+     *         If the logged in account cannot remove the timeout from the other Member due to permission hierarchy position.
+     *         <br>See {@link Member#canInteract(Member)}
+     *
+     * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
+     */
+    default AuditableRestAction<Void> untimeout()
+    {
+        return getGuild().untimeout(this);
+    }
+
+    /**
      * Sets the Guild Muted state state of this Member based on the provided
      * boolean.
      *

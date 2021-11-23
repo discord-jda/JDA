@@ -60,10 +60,14 @@ import okhttp3.RequestBody;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalAccessor;
+import java.time.temporal.TemporalUnit;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -1435,6 +1439,50 @@ public class GuildImpl implements Guild
 
         Route.CompiledRoute route = Route.Guilds.UNBAN.compile(getId(), userId);
         return new AuditableRestActionImpl<>(getJDA(), route);
+    }
+
+    @Nonnull
+    @Override
+    public AuditableRestAction<Void> timeoutUntil(@Nonnull Member member, @Nonnull OffsetDateTime date)
+    {
+        Checks.notNull(member, "Member");
+        checkPosition(member);
+        return timeoutUntilById(member.getId(), date);
+    }
+
+    @Nonnull
+    @Override
+    public AuditableRestAction<Void> timeoutUntilById(String userId, @Nonnull OffsetDateTime date)
+    {
+        Checks.isSnowflake(userId, "User ID");
+        Checks.notNull(date, "Date");
+        Checks.check(date.isBefore(OffsetDateTime.now()), "Cannot time out a member until a date in the past");
+        Checks.check(date.isBefore(OffsetDateTime.now().plusDays(28)), "Cannot time out a member for more than 28 days");
+        checkPermission(Permission.MODERATE_MEMBERS);
+
+        DataObject body = DataObject.empty().put("communication_disabled_until", date.toString());
+        Route.CompiledRoute route = Route.Guilds.MODIFY_MEMBER.compile(getId(), userId);
+        return new AuditableRestActionImpl<>(getJDA(), route, body);
+    }
+
+    @Nonnull
+    @Override
+    public AuditableRestAction<Void> untimeout(@Nonnull Member member)
+    {
+        Checks.notNull(member, "Member");
+        checkPosition(member);
+        return untimeoutById(member.getUser().getId());
+    }
+
+    @Nonnull
+    @Override
+    public AuditableRestAction<Void> untimeoutById(@Nonnull String userId)
+    {
+        Checks.isSnowflake(userId, "User ID");
+        checkPermission(Permission.MODERATE_MEMBERS);
+        DataObject body = DataObject.empty().put("communication_disabled_until", null);
+        Route.CompiledRoute route = Route.Guilds.MODIFY_MEMBER.compile(getId(), userId);
+        return new AuditableRestActionImpl<>(getJDA(), route, body);
     }
 
     @Nonnull

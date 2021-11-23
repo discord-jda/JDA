@@ -52,6 +52,7 @@ import net.dv8tion.jda.internal.utils.concurrent.task.GatewayTask;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
@@ -4545,6 +4546,128 @@ public interface Guild extends ISnowflake
     @Nonnull
     @CheckReturnValue
     AuditableRestAction<Void> unban(@Nonnull String userId);
+
+    /**
+     * Puts a timeout on the specified Member in this {@link net.dv8tion.jda.api.entities.Guild Guild} until the specified date.
+     * <br>While a Member is timed out, they cannot post or react to messages.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
+     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The target Member cannot be kicked due to a permission discrepancy</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MEMBER UNKNOWN_MEMBER}
+     *     <br>The specified Member was removed from the Guild before finishing the task</li>
+     * </ul>
+     *
+     * @param  member
+     *         The member to put a timeout on
+     * @param  date
+     *         The date the specified Member should be timed out until
+     *
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MODERATE_MEMBERS} permission.
+     * @throws net.dv8tion.jda.api.exceptions.HierarchyException
+     *         If the logged in account cannot put a timeout on the other Member due to permission hierarchy position.
+     *         <br>See {@link Member#canInteract(Member)}
+     * @throws IllegalArgumentException
+     *         If any of the following checks fail
+     *         <ul>
+     *             <li>The provided {@code member} is not null</li>
+     *             <li>The provided {@code date} is not null</li>
+     *             <li>The provided {@code date} is not in the past</li>
+     *             <li>The provided {@code date} is not more than 28 days in the future</li>
+     *         </ul>
+     *
+     * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
+     */
+    AuditableRestAction<Void> timeoutUntil(@Nonnull Member member, @Nonnull OffsetDateTime date);
+
+    /**
+     * Puts a timeout on a Member specified by the id in this {@link net.dv8tion.jda.api.entities.Guild Guild} until the specified date.
+     * <br>While a Member is timed out, they cannot post or react to messages.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
+     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The target Member cannot be kicked due to a permission discrepancy</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MEMBER UNKNOWN_MEMBER}
+     *     <br>The specified Member was removed from the Guild before finishing the task</li>
+     * </ul>
+     *
+     * @param  userId
+     *         The user id of the Member to put a timeout on
+     * @param  date
+     *         The date the specified Member should be timed out until
+     *
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MODERATE_MEMBERS} permission.
+     * @throws net.dv8tion.jda.api.exceptions.HierarchyException
+     *         If the logged in account cannot put a timeout on the other Member due to permission hierarchy position.
+     *         <br>See {@link Member#canInteract(Member)}
+     * @throws IllegalArgumentException
+     *         If any of the following checks fail
+     *         <ul>
+     *             <li>The provided {@code userId} is a valid snowflake</li>
+     *             <li>The provided {@code date} is not null</li>
+     *             <li>The provided {@code date} is not in the past</li>
+     *             <li>The provided {@code date} is not more than 28 days in the future</li>
+     *         </ul>
+     *
+     * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
+     */
+    AuditableRestAction<Void> timeoutUntilById(@Nonnull String userId, @Nonnull OffsetDateTime date);
+
+    /**
+     * Removes a timeout from the specified Member in this {@link net.dv8tion.jda.api.entities.Guild Guild}.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
+     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The target Member cannot be kicked due to a permission discrepancy</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MEMBER UNKNOWN_MEMBER}
+     *     <br>The specified Member was removed from the Guild before finishing the task</li>
+     * </ul>
+     *
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MODERATE_MEMBERS} permission.
+     * @throws net.dv8tion.jda.api.exceptions.HierarchyException
+     *         If the logged in account cannot remove the timeout from the other Member due to permission hierarchy position.
+     *         <br>See {@link Member#canInteract(Member)}
+     *
+     * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
+     */
+    AuditableRestAction<Void> untimeout(@Nonnull Member member);
+
+    /**
+     * Removes a timeout from a Member specified by the id in this {@link net.dv8tion.jda.api.entities.Guild Guild}.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
+     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The target Member cannot be kicked due to a permission discrepancy</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MEMBER UNKNOWN_MEMBER}
+     *     <br>The specified Member was removed from the Guild before finishing the task</li>
+     * </ul>
+     *
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MODERATE_MEMBERS} permission.
+     * @throws net.dv8tion.jda.api.exceptions.HierarchyException
+     *         If the logged in account cannot remove the timeout from the other Member due to permission hierarchy position.
+     *         <br>See {@link Member#canInteract(Member)}
+     * @throws IllegalArgumentException
+     *         If the specified user id is not a valid snowflake
+     *
+     * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
+     */
+    AuditableRestAction<Void> untimeoutById(@Nonnull String userId);
 
     /**
      * Sets the Guild Deafened state state of the {@link net.dv8tion.jda.api.entities.Member Member} based on the provided
