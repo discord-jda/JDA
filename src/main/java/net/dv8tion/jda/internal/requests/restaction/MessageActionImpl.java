@@ -284,7 +284,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
     public MessageActionImpl append(final CharSequence csq, final int start, final int end)
     {
         if (content.length() + end - start > Message.MAX_CONTENT_LENGTH)
-            throw new IllegalArgumentException("A message may not exceed 2000 characters. Please limit your input!");
+            throw new IllegalArgumentException("A message may not exceed " + Message.MAX_CONTENT_LENGTH + " characters. Please limit your input!");
         content.append(csq, start, end);
         return this;
     }
@@ -295,7 +295,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
     public MessageActionImpl append(final char c)
     {
         if (content.length() == Message.MAX_CONTENT_LENGTH)
-            throw new IllegalArgumentException("A message may not exceed 2000 characters. Please limit your input!");
+            throw new IllegalArgumentException("A message may not exceed " + Message.MAX_CONTENT_LENGTH + " characters. Please limit your input!");
         content.append(c);
         return this;
     }
@@ -522,7 +522,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
         if (override)
         {
             if (embeds == null)
-                obj.putNull("embeds");
+                obj.put("embeds", DataArray.empty());
             else
                 obj.put("embeds", DataArray.fromCollection(embeds));
             if (content.length() == 0)
@@ -534,7 +534,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
             else
                 obj.put("nonce", nonce);
             if (components == null)
-                obj.putNull("components");
+                obj.put("components", DataArray.empty());
             else
                 obj.put("components", DataArray.fromCollection(components));
             if (retainedAttachments != null)

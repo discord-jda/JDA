@@ -350,6 +350,10 @@ public class EntityBuilder
             }
         }
 
+        User.Profile profile = user.hasKey("banner")
+            ? new User.Profile(id, user.getString("banner", null), user.getInt("accent_color", User.DEFAULT_ACCENT_COLOR_RAW))
+            : null;
+
         if (newUser)
         {
             // Initial creation
@@ -358,7 +362,8 @@ public class EntityBuilder
                    .setAvatarId(user.getString("avatar", null))
                    .setBot(user.getBoolean("bot"))
                    .setSystem(user.getBoolean("system"))
-                   .setFlags(user.getInt("public_flags", 0));
+                   .setFlags(user.getInt("public_flags", 0))
+                   .setProfile(profile);
         }
         else
         {
@@ -1217,6 +1222,14 @@ public class EntityBuilder
             .setColor(color == 0 ? Role.DEFAULT_COLOR_RAW : color)
             .setMentionable(roleJson.getBoolean("mentionable"))
             .setTags(roleJson.optObject("tags").orElseGet(DataObject::empty));
+
+        final String iconId = roleJson.getString("icon", null);
+        final String emoji = roleJson.getString("unicode_emoji", null);
+        if (iconId == null && emoji == null)
+            role.setIcon(null);
+        else
+            role.setIcon(new RoleIcon(iconId, emoji, id));
+
         if (playbackCache)
             getJDA().getEventCache().playbackCache(EventCache.Type.ROLE, id);
         return role;
@@ -1954,6 +1967,8 @@ public class EntityBuilder
     public ApplicationInfo createApplicationInfo(DataObject object)
     {
         final String description = object.getString("description");
+        final String termsOfServiceUrl = object.getString("terms_of_service_url", null);
+        final String privacyPolicyUrl = object.getString("privacy_policy_url", null);
         final boolean doesBotRequireCodeGrant = object.getBoolean("bot_require_code_grant");
         final String iconId = object.getString("icon", null);
         final long id = object.getLong("id");
@@ -1962,7 +1977,8 @@ public class EntityBuilder
         final User owner = createUser(object.getObject("owner"));
         final ApplicationTeam team = !object.isNull("team") ? createApplicationTeam(object.getObject("team")) : null;
 
-        return new ApplicationInfoImpl(getJDA(), description, doesBotRequireCodeGrant, iconId, id, isBotPublic, name, owner, team);
+        return new ApplicationInfoImpl(getJDA(), description, doesBotRequireCodeGrant, iconId, id, isBotPublic, name,
+                termsOfServiceUrl, privacyPolicyUrl, owner, team);
     }
 
     public ApplicationTeam createApplicationTeam(DataObject object)

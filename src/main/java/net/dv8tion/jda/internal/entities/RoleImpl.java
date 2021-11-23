@@ -36,6 +36,7 @@ import net.dv8tion.jda.internal.utils.PermissionUtil;
 import net.dv8tion.jda.internal.utils.cache.SortedSnowflakeCacheViewImpl;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.awt.*;
 import java.time.OffsetDateTime;
 import java.util.Collection;
@@ -58,6 +59,7 @@ public class RoleImpl implements Role
     private long rawPermissions;
     private int color;
     private int rawPosition;
+    private RoleIcon icon;
 
     public RoleImpl(long id, Guild guild)
     {
@@ -285,7 +287,8 @@ public class RoleImpl implements Role
                     .setHoisted(hoisted)
                     .setMentionable(mentionable)
                     .setName(name)
-                    .setPermissions(rawPermissions);
+                    .setPermissions(rawPermissions)
+                    .setIcon(icon.getEmoji()); // we can only copy the emoji as we don't have access to the Icon instance
     }
 
     @Nonnull
@@ -325,6 +328,13 @@ public class RoleImpl implements Role
     public RoleTags getTags()
     {
         return tags == null ? RoleTagsImpl.EMPTY : tags;
+    }
+
+    @Nonnull
+    @Override
+    public RoleIcon getIcon()
+    {
+        return icon;
     }
 
     @Nonnull
@@ -438,6 +448,12 @@ public class RoleImpl implements Role
         if (this.tags == null)
             return this;
         this.tags = new RoleTagsImpl(tags);
+        return this;
+    }
+
+    public RoleImpl setIcon(RoleIcon icon)
+    {
+        this.icon = icon;
         return this;
     }
 
