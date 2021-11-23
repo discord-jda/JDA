@@ -1452,8 +1452,8 @@ public class GuildImpl implements Guild
     {
         Checks.isSnowflake(userId, "User ID");
         Checks.notNull(date, "Date");
-        Checks.check(date.isBefore(OffsetDateTime.now()), "Cannot time out a member until a date in the past");
-        Checks.check(date.isBefore(OffsetDateTime.now().plusDays(28)), "Cannot time out a member for more than 28 days");
+        Checks.check(!date.isBefore(OffsetDateTime.now()), "Cannot time out a member until a date in the past");
+        Checks.check(!date.isBefore(OffsetDateTime.now().plusDays(28)), "Cannot time out a member for more than 28 days");
         checkPermission(Permission.MODERATE_MEMBERS);
 
         DataObject body = DataObject.empty().put("communication_disabled_until", date.toString());
