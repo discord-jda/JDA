@@ -4584,6 +4584,48 @@ public interface Guild extends ISnowflake
     @Nonnull
     AuditableRestAction<Void> timeoutUntil(@Nonnull Member member, @Nonnull OffsetDateTime date);
 
+
+    /**
+     * Puts a Member specified by the id in time out in this {@link net.dv8tion.jda.api.entities.Guild Guild} until the specified date.
+     * <br>While a Member is in time out, they cannot reply, send messages, react and speak in voice channels.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
+     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The target Member cannot be timed out due to a permission discrepancy</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MEMBER UNKNOWN_MEMBER}
+     *     <br>The specified Member was removed from the Guild before finishing the task</li>
+     * </ul>
+     *
+     * @param  userId
+     *         The user id of the Member to put in time out
+     * @param  date
+     *         The date until which the specified Member should be in time out
+     *
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MODERATE_MEMBERS} permission.
+     * @throws net.dv8tion.jda.api.exceptions.HierarchyException
+     *         If the logged in account cannot put a timeout on the other Member due to permission hierarchy position.
+     *         <br>See {@link Member#canInteract(Member)}
+     * @throws IllegalArgumentException
+     *         If any of the following checks fail
+     *         <ul>
+     *             <li>The provided {@code userId} is a valid snowflake</li>
+     *             <li>The provided {@code date} is not null</li>
+     *             <li>The provided {@code date} is not in the past</li>
+     *             <li>The provided {@code date} is not more than 28 days in the future</li>
+     *         </ul>
+     *
+     * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
+     */
+    @Nonnull
+    default AuditableRestAction<Void> timeoutUntilById(long userId, @Nonnull OffsetDateTime date)
+    {
+        return timeoutUntilById(Long.toUnsignedString(userId), date);
+    }
+
     /**
      * Puts a Member specified by the id in time out in this {@link net.dv8tion.jda.api.entities.Guild Guild} until the specified date.
      * <br>While a Member is in time out, they cannot reply, send messages, react and speak in voice channels.
@@ -4645,6 +4687,35 @@ public interface Guild extends ISnowflake
      */
     @Nonnull
     AuditableRestAction<Void> removeTimeout(@Nonnull Member member);
+
+    /**
+     * Removes a time out from a Member specified by the id in this {@link net.dv8tion.jda.api.entities.Guild Guild}.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
+     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The time out cannot be removed due to a permission discrepancy</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MEMBER UNKNOWN_MEMBER}
+     *     <br>The specified Member was removed from the Guild before finishing the task</li>
+     * </ul>
+     *
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MODERATE_MEMBERS} permission.
+     * @throws net.dv8tion.jda.api.exceptions.HierarchyException
+     *         If the logged in account cannot remove the timeout from the other Member due to permission hierarchy position.
+     *         <br>See {@link Member#canInteract(Member)}
+     * @throws IllegalArgumentException
+     *         If the specified user id is not a valid snowflake
+     *
+     * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
+     */
+    @Nonnull
+    default AuditableRestAction<Void> removeTimeoutById(long userId)
+    {
+        return removeTimeoutById(Long.toUnsignedString(userId));
+    }
 
     /**
      * Removes a time out from a Member specified by the id in this {@link net.dv8tion.jda.api.entities.Guild Guild}.
