@@ -4554,7 +4554,7 @@ public interface Guild extends ISnowflake
      * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
-     *     <br>The target Member cannot be timed out due to a permission discrepancy</li>
+     *     <br>The target Member cannot be put into time out due to a permission discrepancy</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MEMBER UNKNOWN_MEMBER}
      *     <br>The specified Member was removed from the Guild before finishing the task</li>
@@ -4593,7 +4593,7 @@ public interface Guild extends ISnowflake
      * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
-     *     <br>The target Member cannot be timed out due to a permission discrepancy</li>
+     *     <br>The target Member cannot be put into time out due to a permission discrepancy</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MEMBER UNKNOWN_MEMBER}
      *     <br>The specified Member was removed from the Guild before finishing the task</li>
@@ -4602,7 +4602,7 @@ public interface Guild extends ISnowflake
      * @param  userId
      *         The user id of the Member to put in time out
      * @param  date
-     *         The date until which the specified Member should be in time out
+     *         The time the specified Member will be released from time out
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MODERATE_MEMBERS} permission.
@@ -4643,7 +4643,7 @@ public interface Guild extends ISnowflake
      * @param  userId
      *         The user id of the Member to put in time out
      * @param  date
-     *         The date until which the specified Member should be in time out
+     *         The time the specified Member will be released from time out
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MODERATE_MEMBERS} permission.

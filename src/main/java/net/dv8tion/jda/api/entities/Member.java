@@ -115,10 +115,10 @@ public interface Member extends IMentionable, IPermissionHolder
     OffsetDateTime getTimeBoosted();
 
     /**
-     * The time until which this Member is in time out.
+     * The time that a Member will be released from time out.
      * <br>If this Member is not in time out, this returns {@code null}.
      *
-     * @return The time until which this Member is in time out or {@code null} if not in time out
+     * @return The time that a Member will be released from time out or {@code null} if not in time out
      */
     @Nullable
     OffsetDateTime getTimeUntilTimedOut();
@@ -567,14 +567,14 @@ public interface Member extends IMentionable, IPermissionHolder
      * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
-     *     <br>The target Member cannot be timed out due to a permission discrepancy</li>
+     *     <br>The target Member cannot be put into time out due to a permission discrepancy</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MEMBER UNKNOWN_MEMBER}
      *     <br>The specified Member was removed from the Guild before finishing the task</li>
      * </ul>
      *
      * @param  date
-     *         The date until which this Member should be in time out
+     *         The time this Member will be released from time out
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MODERATE_MEMBERS} permission.
