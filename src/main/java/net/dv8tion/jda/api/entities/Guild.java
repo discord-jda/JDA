@@ -4644,7 +4644,7 @@ public interface Guild extends ISnowflake
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      */
     @Nonnull
-    AuditableRestAction<Void> untimeout(@Nonnull Member member);
+    AuditableRestAction<Void> removeTimeout(@Nonnull Member member);
 
     /**
      * Removes a time out from a Member specified by the id in this {@link net.dv8tion.jda.api.entities.Guild Guild}.
@@ -4670,7 +4670,7 @@ public interface Guild extends ISnowflake
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      */
     @Nonnull
-    AuditableRestAction<Void> untimeoutById(@Nonnull String userId);
+    AuditableRestAction<Void> removeTimeoutById(@Nonnull String userId);
 
     /**
      * Sets the Guild Deafened state state of the {@link net.dv8tion.jda.api.entities.Member Member} based on the provided

@@ -619,9 +619,9 @@ public interface Member extends IMentionable, IPermissionHolder
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      */
     @Nonnull
-    default AuditableRestAction<Void> untimeout()
+    default AuditableRestAction<Void> removeTimeout()
     {
-        return getGuild().untimeout(this);
+        return getGuild().removeTimeout(this);
     }
 
     /**
