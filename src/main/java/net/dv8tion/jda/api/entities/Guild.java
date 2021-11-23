@@ -4581,6 +4581,7 @@ public interface Guild extends ISnowflake
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      */
+    @Nonnull
     AuditableRestAction<Void> timeoutUntil(@Nonnull Member member, @Nonnull OffsetDateTime date);
 
     /**
@@ -4618,6 +4619,7 @@ public interface Guild extends ISnowflake
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      */
+    @Nonnull
     AuditableRestAction<Void> timeoutUntilById(@Nonnull String userId, @Nonnull OffsetDateTime date);
 
     /**
@@ -4641,6 +4643,7 @@ public interface Guild extends ISnowflake
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      */
+    @Nonnull
     AuditableRestAction<Void> untimeout(@Nonnull Member member);
 
     /**
@@ -4666,6 +4669,7 @@ public interface Guild extends ISnowflake
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      */
+    @Nonnull
     AuditableRestAction<Void> untimeoutById(@Nonnull String userId);
 
     /**
