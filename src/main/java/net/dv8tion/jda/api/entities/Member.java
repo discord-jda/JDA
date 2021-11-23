@@ -115,10 +115,10 @@ public interface Member extends IMentionable, IPermissionHolder
     OffsetDateTime getTimeBoosted();
 
     /**
-     * The time that a Member will be released from time out.
+     * The time this Member will be released from time out.
      * <br>If this Member is not in time out, this returns {@code null}.
      *
-     * @return The time that a Member will be released from time out or {@code null} if not in time out
+     * @return The time this Member will be released from time out or {@code null} if not in time out
      */
     @Nullable
     OffsetDateTime getTimeUntilTimedOut();
