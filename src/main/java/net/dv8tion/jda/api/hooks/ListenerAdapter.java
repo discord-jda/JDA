@@ -287,6 +287,7 @@ public abstract class ListenerAdapter implements EventListener
     //Role Update Events
     public void onRoleUpdateColor(@Nonnull RoleUpdateColorEvent event) {}
     public void onRoleUpdateHoisted(@Nonnull RoleUpdateHoistedEvent event) {}
+    public void onRoleUpdateIcon(@Nonnull RoleUpdateIconEvent event) {}
     public void onRoleUpdateMentionable(@Nonnull RoleUpdateMentionableEvent event) {}
     public void onRoleUpdateName(@Nonnull RoleUpdateNameEvent event) {}
     public void onRoleUpdatePermissions(@Nonnull RoleUpdatePermissionsEvent event) {}
