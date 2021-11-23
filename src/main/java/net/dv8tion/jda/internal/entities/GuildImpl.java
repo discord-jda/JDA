@@ -1454,15 +1454,6 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public AuditableRestAction<Void> removeTimeout(@Nonnull Member member)
-    {
-        Checks.notNull(member, "Member");
-        checkPosition(member);
-        return removeTimeoutById(member.getUser().getId());
-    }
-
-    @Nonnull
-    @Override
     public AuditableRestAction<Void> removeTimeoutById(@Nonnull String userId)
     {
         Checks.isSnowflake(userId, "User ID");

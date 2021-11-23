@@ -4958,7 +4958,13 @@ public interface Guild extends ISnowflake
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      */
     @Nonnull
-    AuditableRestAction<Void> removeTimeout(@Nonnull Member member);
+    default AuditableRestAction<Void> removeTimeout(@Nonnull Member member)
+    {
+        Checks.notNull(member, "Member");
+        if (!getSelfMember().canInteract(member))
+            throw new HierarchyException("Can't modify a member with higher or equal highest role than yourself!");
+        return removeTimeoutById(member.getUser().getId());
+    }
 
     /**
      * Removes a time out from a Member specified by the id in this {@link net.dv8tion.jda.api.entities.Guild Guild}.
