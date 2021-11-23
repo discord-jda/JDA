@@ -666,11 +666,11 @@ public interface Member extends IMentionable, IPermissionHolder
      *         If the logged in account cannot put a timeout on the other Member due to permission hierarchy position.
      *         <br>See {@link Member#canInteract(Member)}
      * @throws IllegalArgumentException
-     *         If any of the following checks fail
+     *         If any of the following checks are true
      *         <ul>
-     *             <li>The provided {@code date} is not null</li>
-     *             <li>The provided {@code date} is not in the past</li>
-     *             <li>The provided {@code date} is not more than 28 days in the future</li>
+     *             <li>The provided {@code date} is null</li>
+     *             <li>The provided {@code date} is in the past</li>
+     *             <li>The provided {@code date} is more than 28 days in the future</li>
      *         </ul>
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
