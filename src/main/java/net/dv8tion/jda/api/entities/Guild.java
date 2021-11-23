@@ -4771,6 +4771,7 @@ public interface Guild extends ISnowflake
     @CheckReturnValue
     default AuditableRestAction<Void> timeoutForById(@Nonnull String userId, long amount, @Nonnull TimeUnit unit)
     {
+        Checks.check(amount >= 1, "The amount must be more than 0");
         Checks.notNull(unit, "TimeUnit");
         return timeoutUntilById(userId, Helpers.toOffset(System.currentTimeMillis() + unit.toMillis(amount)));
     }
