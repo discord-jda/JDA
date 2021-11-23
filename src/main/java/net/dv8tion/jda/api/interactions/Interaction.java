@@ -451,6 +451,24 @@ public interface Interaction extends ISnowflake
     }
 
     /**
+     * The {@link NewsChannel} this interaction happened in.
+     * <br>If {@link #getChannelType()} is not {@link ChannelType#NEWS}, this throws {@link IllegalStateException}!
+     *
+     * @throws IllegalStateException
+     *         If {@link #getChannel()} is not a news channel
+     *
+     * @return The {@link NewsChannel}
+     */
+    @Nonnull
+    default NewsChannel getNewsChannel()
+    {
+        Channel channel = getChannel();
+        if (channel instanceof NewsChannel)
+            return (NewsChannel) channel;
+        throw new IllegalStateException("Cannot convert channel of type " + getChannelType() + " to NewsChannel");
+    }
+
+    /**
      * The {@link VoiceChannel} this interaction happened in.
      * <br>If {@link #getChannelType()} is not {@link ChannelType#VOICE}, this throws {@link IllegalStateException}!
      *

@@ -25,32 +25,8 @@ import net.dv8tion.jda.api.events.application.ApplicationCommandUpdateEvent;
 import net.dv8tion.jda.api.events.application.GenericApplicationCommandEvent;
 import net.dv8tion.jda.api.events.channel.ChannelCreateEvent;
 import net.dv8tion.jda.api.events.channel.ChannelDeleteEvent;
-import net.dv8tion.jda.api.events.channel.update.*;
 import net.dv8tion.jda.api.events.channel.GenericChannelEvent;
-import net.dv8tion.jda.api.events.channel.category.CategoryCreateEvent;
-import net.dv8tion.jda.api.events.channel.category.CategoryDeleteEvent;
-import net.dv8tion.jda.api.events.channel.category.GenericCategoryEvent;
-import net.dv8tion.jda.api.events.channel.category.update.CategoryUpdateNameEvent;
-import net.dv8tion.jda.api.events.channel.category.update.CategoryUpdatePermissionsEvent;
-import net.dv8tion.jda.api.events.channel.category.update.CategoryUpdatePositionEvent;
-import net.dv8tion.jda.api.events.channel.category.update.GenericCategoryUpdateEvent;
-import net.dv8tion.jda.api.events.channel.priv.PrivateChannelCreateEvent;
-import net.dv8tion.jda.api.events.channel.priv.PrivateChannelDeleteEvent;
-import net.dv8tion.jda.api.events.channel.store.GenericStoreChannelEvent;
-import net.dv8tion.jda.api.events.channel.store.StoreChannelCreateEvent;
-import net.dv8tion.jda.api.events.channel.store.StoreChannelDeleteEvent;
-import net.dv8tion.jda.api.events.channel.store.update.GenericStoreChannelUpdateEvent;
-import net.dv8tion.jda.api.events.channel.store.update.StoreChannelUpdateNameEvent;
-import net.dv8tion.jda.api.events.channel.store.update.StoreChannelUpdatePermissionsEvent;
-import net.dv8tion.jda.api.events.channel.store.update.StoreChannelUpdatePositionEvent;
-import net.dv8tion.jda.api.events.channel.text.GenericTextChannelEvent;
-import net.dv8tion.jda.api.events.channel.text.TextChannelCreateEvent;
-import net.dv8tion.jda.api.events.channel.text.TextChannelDeleteEvent;
-import net.dv8tion.jda.api.events.channel.text.update.*;
-import net.dv8tion.jda.api.events.channel.voice.GenericVoiceChannelEvent;
-import net.dv8tion.jda.api.events.channel.voice.VoiceChannelCreateEvent;
-import net.dv8tion.jda.api.events.channel.voice.VoiceChannelDeleteEvent;
-import net.dv8tion.jda.api.events.channel.voice.update.*;
+import net.dv8tion.jda.api.events.channel.update.*;
 import net.dv8tion.jda.api.events.emote.EmoteAddedEvent;
 import net.dv8tion.jda.api.events.emote.EmoteRemovedEvent;
 import net.dv8tion.jda.api.events.emote.GenericEmoteEvent;
@@ -62,10 +38,7 @@ import net.dv8tion.jda.api.events.guild.invite.GenericGuildInviteEvent;
 import net.dv8tion.jda.api.events.guild.invite.GuildInviteCreateEvent;
 import net.dv8tion.jda.api.events.guild.invite.GuildInviteDeleteEvent;
 import net.dv8tion.jda.api.events.guild.member.*;
-import net.dv8tion.jda.api.events.guild.member.update.GenericGuildMemberUpdateEvent;
-import net.dv8tion.jda.api.events.guild.member.update.GuildMemberUpdateBoostTimeEvent;
-import net.dv8tion.jda.api.events.guild.member.update.GuildMemberUpdateNicknameEvent;
-import net.dv8tion.jda.api.events.guild.member.update.GuildMemberUpdatePendingEvent;
+import net.dv8tion.jda.api.events.guild.member.update.*;
 import net.dv8tion.jda.api.events.guild.override.GenericPermissionOverrideEvent;
 import net.dv8tion.jda.api.events.guild.override.PermissionOverrideCreateEvent;
 import net.dv8tion.jda.api.events.guild.override.PermissionOverrideDeleteEvent;
@@ -79,12 +52,6 @@ import net.dv8tion.jda.api.events.interaction.commands.MessageContextCommandEven
 import net.dv8tion.jda.api.events.interaction.commands.SlashCommandEvent;
 import net.dv8tion.jda.api.events.interaction.commands.UserContextCommandEvent;
 import net.dv8tion.jda.api.events.message.*;
-import net.dv8tion.jda.api.events.message.guild.*;
-import net.dv8tion.jda.api.events.message.guild.react.*;
-import net.dv8tion.jda.api.events.message.priv.*;
-import net.dv8tion.jda.api.events.message.priv.react.GenericPrivateMessageReactionEvent;
-import net.dv8tion.jda.api.events.message.priv.react.PrivateMessageReactionAddEvent;
-import net.dv8tion.jda.api.events.message.priv.react.PrivateMessageReactionRemoveEvent;
 import net.dv8tion.jda.api.events.message.react.*;
 import net.dv8tion.jda.api.events.role.GenericRoleEvent;
 import net.dv8tion.jda.api.events.role.RoleCreateEvent;
@@ -141,31 +108,6 @@ import java.util.concurrent.ConcurrentMap;
 @SuppressWarnings("deprecation")
 public abstract class ListenerAdapter implements EventListener
 {
-    //Deprecated/Unused events
-    @Deprecated
-    @ForRemoval(deadline = "4.4.0")
-    @DeprecatedSince("4.2.0")
-    @ReplaceWith("onPermissionOverrideUpdate(), onPermissionOverrideCreate(), and onPermissionOverrideDelete()")
-    public void onTextChannelUpdatePermissions(@Nonnull TextChannelUpdatePermissionsEvent event) {}
-
-    @Deprecated
-    @ForRemoval(deadline = "4.4.0")
-    @DeprecatedSince("4.2.0")
-    @ReplaceWith("onPermissionOverrideUpdate(), onPermissionOverrideCreate(), and onPermissionOverrideDelete()")
-    public void onStoreChannelUpdatePermissions(@Nonnull StoreChannelUpdatePermissionsEvent event) {}
-
-    @Deprecated
-    @ForRemoval(deadline = "4.4.0")
-    @DeprecatedSince("4.2.0")
-    @ReplaceWith("onPermissionOverrideUpdate(), onPermissionOverrideCreate(), and onPermissionOverrideDelete()")
-    public void onVoiceChannelUpdatePermissions(@Nonnull VoiceChannelUpdatePermissionsEvent event) {}
-
-    @Deprecated
-    @ForRemoval(deadline = "4.4.0")
-    @DeprecatedSince("4.2.0")
-    @ReplaceWith("onPermissionOverrideUpdate(), onPermissionOverrideCreate(), and onPermissionOverrideDelete()")
-    public void onCategoryUpdatePermissions(@Nonnull CategoryUpdatePermissionsEvent event) {}
-
     @Deprecated
     @ForRemoval(deadline = "4.4.0")
     @DeprecatedSince("4.2.0")
@@ -229,25 +171,6 @@ public abstract class ListenerAdapter implements EventListener
     public void onSelfUpdateVerified(@Nonnull SelfUpdateVerifiedEvent event) {}
 
     //Message Events
-    //Guild (TextChannel) Message Events
-    public void onGuildMessageReceived(@Nonnull GuildMessageReceivedEvent event) {}
-    public void onGuildMessageUpdate(@Nonnull GuildMessageUpdateEvent event) {}
-    public void onGuildMessageDelete(@Nonnull GuildMessageDeleteEvent event) {}
-    public void onGuildMessageEmbed(@Nonnull GuildMessageEmbedEvent event) {}
-    public void onGuildMessageReactionAdd(@Nonnull GuildMessageReactionAddEvent event) {}
-    public void onGuildMessageReactionRemove(@Nonnull GuildMessageReactionRemoveEvent event) {}
-    public void onGuildMessageReactionRemoveAll(@Nonnull GuildMessageReactionRemoveAllEvent event) {}
-    public void onGuildMessageReactionRemoveEmote(@Nonnull GuildMessageReactionRemoveEmoteEvent event) {}
-
-    //Private Message Events
-    public void onPrivateMessageReceived(@Nonnull PrivateMessageReceivedEvent event) {}
-    public void onPrivateMessageUpdate(@Nonnull PrivateMessageUpdateEvent event) {}
-    public void onPrivateMessageDelete(@Nonnull PrivateMessageDeleteEvent event) {}
-    public void onPrivateMessageEmbed(@Nonnull PrivateMessageEmbedEvent event) {}
-    public void onPrivateMessageReactionAdd(@Nonnull PrivateMessageReactionAddEvent event) {}
-    public void onPrivateMessageReactionRemove(@Nonnull PrivateMessageReactionRemoveEvent event) {}
-
-    //Combined Message Events (Combines Guild and Private message into 1 event)
     public void onMessageReceived(@Nonnull MessageReceivedEvent event) {}
     public void onMessageUpdate(@Nonnull MessageUpdateEvent event) {}
     public void onMessageDelete(@Nonnull MessageDeleteEvent event) {}
@@ -262,53 +185,6 @@ public abstract class ListenerAdapter implements EventListener
     public void onPermissionOverrideDelete(@Nonnull PermissionOverrideDeleteEvent event) {}
     public void onPermissionOverrideUpdate(@Nonnull PermissionOverrideUpdateEvent event) {}
     public void onPermissionOverrideCreate(@Nonnull PermissionOverrideCreateEvent event) {}
-
-    //StoreChannel Events
-    public void onStoreChannelDelete(@Nonnull StoreChannelDeleteEvent event) {}
-    public void onStoreChannelUpdateName(@Nonnull StoreChannelUpdateNameEvent event) {}
-    public void onStoreChannelUpdatePosition(@Nonnull StoreChannelUpdatePositionEvent event) {}
-    public void onStoreChannelCreate(@Nonnull StoreChannelCreateEvent event) {}
-
-    //TextChannel Events
-    public void onTextChannelDelete(@Nonnull TextChannelDeleteEvent event) {}
-    public void onTextChannelUpdateName(@Nonnull TextChannelUpdateNameEvent event) {}
-    public void onTextChannelUpdateTopic(@Nonnull TextChannelUpdateTopicEvent event) {}
-    public void onTextChannelUpdatePosition(@Nonnull TextChannelUpdatePositionEvent event) {}
-    public void onTextChannelUpdateNSFW(@Nonnull TextChannelUpdateNSFWEvent event) {}
-    public void onTextChannelUpdateParent(@Nonnull TextChannelUpdateParentEvent event) {}
-    public void onTextChannelUpdateSlowmode(@Nonnull TextChannelUpdateSlowmodeEvent event) {}
-    public void onTextChannelUpdateNews(@Nonnull TextChannelUpdateNewsEvent event) {}
-    public void onTextChannelCreate(@Nonnull TextChannelCreateEvent event) {}
-
-    //VoiceChannel Events
-    public void onVoiceChannelDelete(@Nonnull VoiceChannelDeleteEvent event) {}
-    public void onVoiceChannelUpdateName(@Nonnull VoiceChannelUpdateNameEvent event) {}
-    public void onVoiceChannelUpdatePosition(@Nonnull VoiceChannelUpdatePositionEvent event) {}
-    public void onVoiceChannelUpdateUserLimit(@Nonnull VoiceChannelUpdateUserLimitEvent event) {}
-    public void onVoiceChannelUpdateBitrate(@Nonnull VoiceChannelUpdateBitrateEvent event) {}
-    public void onVoiceChannelUpdateParent(@Nonnull VoiceChannelUpdateParentEvent event) {}
-    public void onVoiceChannelUpdateRegion(@Nonnull VoiceChannelUpdateRegionEvent event) {}
-    public void onVoiceChannelCreate(@Nonnull VoiceChannelCreateEvent event) {}
-
-    //Category Events
-    public void onCategoryDelete(@Nonnull CategoryDeleteEvent event) {}
-    public void onCategoryUpdateName(@Nonnull CategoryUpdateNameEvent event) {}
-    public void onCategoryUpdatePosition(@Nonnull CategoryUpdatePositionEvent event) {}
-    public void onCategoryCreate(@Nonnull CategoryCreateEvent event) {}
-
-    //PrivateChannel Events
-
-    /**
-     * @deprecated This event is no longer supported by discord
-     */
-    @Deprecated
-    @ForRemoval(deadline = "4.4.0")
-    @DeprecatedSince("4.3.0")
-    public void onPrivateChannelCreate(@Nonnull PrivateChannelCreateEvent event) {}
-    @Deprecated
-    @ForRemoval(deadline = "4.4.0")
-    @DeprecatedSince("4.3.0")
-    public void onPrivateChannelDelete(@Nonnull PrivateChannelDeleteEvent event) {}
 
     //StageInstance Event
     public void onStageInstanceDelete(@Nonnull StageInstanceDeleteEvent event) {}
@@ -359,9 +235,10 @@ public abstract class ListenerAdapter implements EventListener
     public void onGuildUpdateOwner(@Nonnull GuildUpdateOwnerEvent event) {}
 
     /**
-     * @deprecated This event is no longer supported by discord, use {@link #onVoiceChannelUpdateRegion(VoiceChannelUpdateRegionEvent)} instead.
+     * @deprecated This event is no longer supported by discord, use {@link #onChannelUpdateRegion(ChannelUpdateRegionEvent)} instead.
      */
     @Deprecated
+    @ForRemoval(deadline = "5.0.0")
     @ReplaceWith("VoiceChannelUpdateRegionEvent")
     public void onGuildUpdateRegion(@Nonnull GuildUpdateRegionEvent event) {}
     public void onGuildUpdateSplash(@Nonnull GuildUpdateSplashEvent event) {}
@@ -389,6 +266,7 @@ public abstract class ListenerAdapter implements EventListener
     //Guild Member Update Events
     public void onGuildMemberUpdate(@Nonnull GuildMemberUpdateEvent event) {}
     public void onGuildMemberUpdateNickname(@Nonnull GuildMemberUpdateNicknameEvent event) {}
+    public void onGuildMemberUpdateAvatar(@Nonnull GuildMemberUpdateAvatarEvent event) {}
     public void onGuildMemberUpdateBoostTime(@Nonnull GuildMemberUpdateBoostTimeEvent event) {}
     public void onGuildMemberUpdatePending(@Nonnull GuildMemberUpdatePendingEvent event) {}
 
@@ -415,6 +293,7 @@ public abstract class ListenerAdapter implements EventListener
     //Role Update Events
     public void onRoleUpdateColor(@Nonnull RoleUpdateColorEvent event) {}
     public void onRoleUpdateHoisted(@Nonnull RoleUpdateHoistedEvent event) {}
+    public void onRoleUpdateIcon(@Nonnull RoleUpdateIconEvent event) {}
     public void onRoleUpdateMentionable(@Nonnull RoleUpdateMentionableEvent event) {}
     public void onRoleUpdateName(@Nonnull RoleUpdateNameEvent event) {}
     public void onRoleUpdatePermissions(@Nonnull RoleUpdatePermissionsEvent event) {}
@@ -437,21 +316,9 @@ public abstract class ListenerAdapter implements EventListener
     public void onGenericComponentInteractionCreate(@Nonnull GenericComponentInteractionCreateEvent event) {}
     public void onGenericMessage(@Nonnull GenericMessageEvent event) {}
     public void onGenericMessageReaction(@Nonnull GenericMessageReactionEvent event) {}
-    public void onGenericGuildMessage(@Nonnull GenericGuildMessageEvent event) {}
-    public void onGenericGuildMessageReaction(@Nonnull GenericGuildMessageReactionEvent event) {}
-    public void onGenericPrivateMessage(@Nonnull GenericPrivateMessageEvent event) {}
-    public void onGenericPrivateMessageReaction(@Nonnull GenericPrivateMessageReactionEvent event) {}
     public void onGenericUser(@Nonnull GenericUserEvent event) {}
     public void onGenericUserPresence(@Nonnull GenericUserPresenceEvent event) {}
     public void onGenericSelfUpdate(@Nonnull GenericSelfUpdateEvent event) {}
-    public void onGenericStoreChannel(@Nonnull GenericStoreChannelEvent event) {}
-    public void onGenericStoreChannelUpdate(@Nonnull GenericStoreChannelUpdateEvent event) {}
-    public void onGenericTextChannel(@Nonnull GenericTextChannelEvent event) {}
-    public void onGenericTextChannelUpdate(@Nonnull GenericTextChannelUpdateEvent event) {}
-    public void onGenericVoiceChannel(@Nonnull GenericVoiceChannelEvent event) {}
-    public void onGenericVoiceChannelUpdate(@Nonnull GenericVoiceChannelUpdateEvent event) {}
-    public void onGenericCategory(@Nonnull GenericCategoryEvent event) {}
-    public void onGenericCategoryUpdate(@Nonnull GenericCategoryUpdateEvent event) {}
     public void onGenericStageInstance(@Nonnull GenericStageInstanceEvent event) {}
     public void onGenericStageInstanceUpdate(@Nonnull GenericStageInstanceUpdateEvent event) {}
     public void onGenericChannel(@Nonnull GenericChannelEvent event) {}

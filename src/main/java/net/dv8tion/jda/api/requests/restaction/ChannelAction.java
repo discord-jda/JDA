@@ -37,10 +37,12 @@ import java.util.function.BooleanSupplier;
  *
  * @see    net.dv8tion.jda.api.entities.Guild
  * @see    net.dv8tion.jda.api.entities.Guild#createTextChannel(String)
+ * @see    net.dv8tion.jda.api.entities.Guild#createNewsChannel(String)
  * @see    net.dv8tion.jda.api.entities.Guild#createVoiceChannel(String)
+ * @see    net.dv8tion.jda.api.entities.Guild#createStageChannel(String)
  * @see    net.dv8tion.jda.api.entities.Guild#createCategory(String)
- * @see    GuildChannel#createCopy()
- * @see    GuildChannel#createCopy(Guild)
+ * @see    ICopyableChannel#createCopy()
+ * @see    ICopyableChannel#createCopy(Guild)
  *
  * @param <T>
  *        The type of channel to create
@@ -89,6 +91,49 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
     @Nonnull
     @CheckReturnValue
     ChannelAction<T> setName(@Nonnull String name);
+
+    /**
+     * Converts the channel to a different {@link ChannelType}.
+     *
+     * <br /><br />
+     * This can only be done in the follow situations:
+     * <table>
+     *     <thead>
+     *         <tr>
+     *             <th>Current Channel Type</th>
+     *             <th></th>
+     *             <th>New Channel Type</th>
+     *         </tr>
+     *     </thead>
+     *     <tbody>
+     *         <tr>
+     *             <td>{@link ChannelType#NEWS}</td>
+     *             <td> -> </td>
+     *             <td>{@link ChannelType#TEXT}</td>
+     *         </tr>
+     *         <tr>
+     *             <td>{@link ChannelType#TEXT}</td>
+     *             <td> -> </td>
+     *             <td>{@link ChannelType#NEWS}</td>
+     *         </tr>
+     *     </tbody>
+     * </table>
+     *
+     * @param  type
+     *         The not-null {@link ChannelType} of the new channel
+     *
+     * @throws IllegalArgumentException
+     *         If {@code channelType} is not {@link ChannelType#TEXT} or {@link ChannelType#NEWS}
+     * @throws UnsupportedOperationException
+     *         If this ChannelAction is not for a {@link TextChannel} or {@link NewsChannel}
+     * @throws java.lang.IllegalStateException
+     *         If {@code channelType} is {@link ChannelType#NEWS} and the guild doesn't have the {@code NEWS} feature in {@link Guild#getFeatures()}.
+     *
+     * @return The current ChannelAction, for chaining convenience
+     */
+    @Nonnull
+    @CheckReturnValue
+    ChannelAction<T> setType(@Nonnull ChannelType type);
 
     /**
      * Sets the {@link net.dv8tion.jda.api.entities.Category Category} for the new GuildChannel.
@@ -189,30 +234,6 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
     @Nonnull
     @CheckReturnValue
     ChannelAction<T> setSlowmode(int slowmode);
-
-    //TODO-v5: Introduce a way to create the new NewsChannel class.
-    //TODO-v5: Do we need to add a way to _convert_ TextChannel to NewsChannel because it seems people might have done that before.
-//    /**
-//     * Sets the news flag for the new TextChannel.
-//     * Announcement-/News-Channels can be used to crosspost messages to other guilds.
-//     *
-//     * @param  news
-//     *         The news flag for the new GuildChannel
-//     *
-//     * @throws UnsupportedOperationException
-//     *         If this ChannelAction is not for a TextChannel
-//     * @throws java.lang.IllegalStateException
-//     *         If {@code news} is {@code true} and the guild doesn't have the NEWS feature
-//     *
-//     * @return The current ChannelAction, for chaining convenience
-//     *
-//     * @see    net.dv8tion.jda.api.entities.TextChannel#isNews()
-//     *
-//     * @since  4.2.1
-//     */
-//    @Nonnull
-//    @CheckReturnValue
-//    ChannelAction<T> setNews(boolean news);
 
     /**
      * Adds a new Role or Member {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverride}

@@ -17,16 +17,18 @@
 package net.dv8tion.jda.internal.entities;
 
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.ChannelAction;
+import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.internal.requests.RestActionImpl;
+import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
 
-public class TextChannelImpl extends BaseGuildMessageChannelImpl<TextChannel, TextChannelImpl> implements TextChannel
+public class NewsChannelImpl extends BaseGuildMessageChannelImpl<NewsChannel, NewsChannelImpl> implements NewsChannel
 {
-    private int slowmode;
-
-    public TextChannelImpl(long id, GuildImpl guild)
+    public NewsChannelImpl(long id, GuildImpl guild)
     {
         super(id, guild);
     }
@@ -35,21 +37,29 @@ public class TextChannelImpl extends BaseGuildMessageChannelImpl<TextChannel, Te
     @Override
     public ChannelType getType()
     {
-        return ChannelType.TEXT;
-    }
-
-    @Override
-    public int getSlowmode()
-    {
-        return slowmode;
+        return ChannelType.NEWS;
     }
 
     @Nonnull
     @Override
-    public ChannelAction<TextChannel> createCopy(@Nonnull Guild guild)
+    public RestAction<Webhook.WebhookReference> follow(@Nonnull String targetChannelId)
+    {
+        Checks.notNull(targetChannelId, "Target Channel ID");
+        
+        Route.CompiledRoute route = Route.Channels.FOLLOW_CHANNEL.compile(getId());
+        DataObject body = DataObject.empty().put("webhook_channel_id", targetChannelId);
+        return new RestActionImpl<>(getJDA(), route, body, (response, request) -> {
+            DataObject json = response.getObject();
+            return new Webhook.WebhookReference(request.getJDA(), json.getUnsignedLong("webhook_id") , json.getUnsignedLong("channel_id"));
+        });
+    }
+
+    @Nonnull
+    @Override
+    public ChannelAction<NewsChannel> createCopy(@Nonnull Guild guild)
     {
         Checks.notNull(guild, "Guild");
-        ChannelAction<TextChannel> action = guild.createTextChannel(name).setNSFW(nsfw).setTopic(topic).setSlowmode(slowmode);
+        ChannelAction<NewsChannel> action = guild.createNewsChannel(name).setNSFW(nsfw).setTopic(topic);
         if (guild.equals(getGuild()))
         {
             Category parent = getParentCategory();
@@ -69,24 +79,16 @@ public class TextChannelImpl extends BaseGuildMessageChannelImpl<TextChannel, Te
     // -- Setters --
 
     @Override
-    public TextChannelImpl setPosition(int rawPosition)
+    public NewsChannelImpl setPosition(int rawPosition)
     {
-        getGuild().getTextChannelsView().clearCachedLists();
+        getGuild().getNewsChannelView().clearCachedLists();
         return super.setPosition(rawPosition);
     }
 
-    public TextChannelImpl setSlowmode(int slowmode)
-    {
-        this.slowmode = slowmode;
-        return this;
-    }
-
-    // -- Object overrides --
-
+    // -- Object Overrides --
     @Override
     public String toString()
     {
-        return "TC:" + getName() + '(' + id + ')';
+        return "NC:" + getName() + '(' + id + ')';
     }
-
 }

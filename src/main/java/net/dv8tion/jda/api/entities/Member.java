@@ -50,6 +50,9 @@ import java.util.List;
  */
 public interface Member extends IMentionable, IPermissionHolder
 {
+    /** Template for {@link #getAvatarUrl()}. */
+    String AVATAR_URL = "https://cdn.discordapp.com/guilds/%s/users/%s/avatars/%s.%s";
+
     /**
      * The user wrapped by this Entity.
      *
@@ -206,6 +209,42 @@ public interface Member extends IMentionable, IPermissionHolder
      */
     @Nonnull
     String getEffectiveName();
+
+    /**
+     * The Discord Id for this member's per guild avatar image.
+     * If the member has not set a per guild avatar, this will return null.
+     *
+     * @return Possibly-null String containing the {@link net.dv8tion.jda.api.entities.Member} per guild avatar id.
+     */
+    @Nullable
+    String getAvatarId();
+
+    /**
+     * The URL for the member's per guild avatar image.
+     * If the member has not set a per guild avatar, this will return null.
+     *
+     * @return Possibly-null String containing the {@link net.dv8tion.jda.api.entities.Member} per guild avatar url.
+     */
+    @Nullable
+    default String getAvatarUrl()
+    {
+        String avatarId = getAvatarId();
+        return avatarId == null ? null : String.format(AVATAR_URL, getGuild().getId(), getId(), avatarId, avatarId.startsWith("a_") ? "gif" : "png");
+    }
+
+    /**
+     * The URL for the member's effective avatar image.
+     * If they do not have a per guild avatar set, this will return the URL of
+     * their effective {@link User} avatar.
+     *
+     * @return Never-null String containing the {@link net.dv8tion.jda.api.entities.Member} avatar url.
+     */
+    @Nonnull
+    default String getEffectiveAvatarUrl()
+    {
+        String avatarUrl = getAvatarUrl();
+        return avatarUrl == null ? getUser().getEffectiveAvatarUrl() : avatarUrl;
+    }
 
     /**
      * The roles applied to this Member.

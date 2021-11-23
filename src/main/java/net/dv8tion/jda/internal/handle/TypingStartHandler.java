@@ -52,7 +52,11 @@ public class TypingStartHandler extends SocketHandler
         }
 
         final long channelId = content.getLong("channel_id");
+
+        //TODO-v5-unified-channel-cache
         MessageChannel channel = getJDA().getTextChannelsView().get(channelId);
+        if (channel == null)
+            channel = getJDA().getNewsChannelView().get(channelId);
         if (channel == null)
             channel = getJDA().getPrivateChannelsView().get(channelId);
         if (channel == null)

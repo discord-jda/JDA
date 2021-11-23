@@ -104,6 +104,14 @@ public class UserById implements User
 
     @Nonnull
     @Override
+    public RestAction<Profile> retrieveProfile()
+    {
+        unsupported();
+        return null;
+    }
+
+    @Nonnull
+    @Override
     public String getDefaultAvatarId()
     {
         unsupported();

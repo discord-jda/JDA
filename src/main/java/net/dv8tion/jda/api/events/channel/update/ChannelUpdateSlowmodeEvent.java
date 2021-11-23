@@ -19,13 +19,15 @@ package net.dv8tion.jda.api.events.channel.update;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Channel;
 import net.dv8tion.jda.api.entities.ChannelField;
-import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nonnull;
+
+//TODO-v5: Docs
 public class ChannelUpdateSlowmodeEvent extends GenericChannelUpdateEvent<Integer>
 {
     public static final ChannelField FIELD = ChannelField.SLOWMODE;
 
-    public ChannelUpdateSlowmodeEvent(@NotNull JDA api, long responseNumber, Channel channel, Integer oldValue, Integer newValue)
+    public ChannelUpdateSlowmodeEvent(@Nonnull JDA api, long responseNumber, Channel channel, Integer oldValue, Integer newValue)
     {
         super(api, responseNumber, channel, FIELD, oldValue, newValue);
     }

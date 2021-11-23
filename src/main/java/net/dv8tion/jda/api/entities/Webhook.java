@@ -111,8 +111,7 @@ public interface Webhook extends ISnowflake
     Guild getGuild();
 
     /**
-     * The {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} instance
-     * this Webhook is attached to.
+     * The {@link net.dv8tion.jda.api.entities.BaseGuildMessageChannel BaseGuildMessageChannel} instance this Webhook is attached to.
      *
      * @throws IllegalStateException
      *         If this webhooks {@link #isPartial() is partial}
@@ -120,7 +119,8 @@ public interface Webhook extends ISnowflake
      * @return The current TextChannel of this Webhook
      */
     @Nonnull
-    TextChannel getChannel();
+    //TODO-v5: might be a problem exposing the Base class here as something like Threads could get Webhook support and break our stuff..
+    BaseGuildMessageChannel getChannel();
 
     /**
      * The owner of this Webhook. This will be null for some Webhooks, such as those retrieved from Audit Logs.

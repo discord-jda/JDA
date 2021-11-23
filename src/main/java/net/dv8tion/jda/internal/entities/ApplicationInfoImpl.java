@@ -35,13 +35,15 @@ public class ApplicationInfoImpl implements ApplicationInfo
     private final long id;
     private final String iconId;
     private final String description;
+    private final String termsOfServiceUrl;
+    private final String privacyPolicyUrl;
     private final String name;
     private final User owner;
     private final ApplicationTeam team;
     private String scopes = "bot";
 
     public ApplicationInfoImpl(JDA api, String description, boolean doesBotRequireCodeGrant, String iconId, long id,
-            boolean isBotPublic, String name, User owner, ApplicationTeam team)
+            boolean isBotPublic, String name, String termsOfServiceUrl, String privacyPolicyUrl, User owner, ApplicationTeam team)
     {
         this.api = api;
         this.description = description;
@@ -50,6 +52,8 @@ public class ApplicationInfoImpl implements ApplicationInfo
         this.id = id;
         this.isBotPublic = isBotPublic;
         this.name = name;
+        this.termsOfServiceUrl = termsOfServiceUrl;
+        this.privacyPolicyUrl = privacyPolicyUrl;
         this.owner = owner;
         this.team = team;
     }
@@ -71,6 +75,18 @@ public class ApplicationInfoImpl implements ApplicationInfo
     public String getDescription()
     {
         return this.description;
+    }
+
+    @Override
+    public String getTermsOfServiceUrl()
+    {
+        return this.termsOfServiceUrl;
+    }
+
+    @Override
+    public String getPrivacyPolicyUrl()
+    {
+        return this.privacyPolicyUrl;
     }
 
     @Override

@@ -13,48 +13,50 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.dv8tion.jda.api.events.channel.text.update;
+
+package net.dv8tion.jda.api.events.role.update;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.RoleIcon;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
- * Indicates that a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}'s topic changed.
+ * Indicates that the Icon of a {@link net.dv8tion.jda.api.entities.Role Role} changed.
  *
- * <p>Can be used to detect when a TextChannel topic changes and get its previous topic.
+ * <p>Can be used to detect when a role's icon or emoji changes and retrieve the old one
  *
- * <p>Identifier: {@code topic}
+ * <p>Identifier: {@code icon}
  */
-public class TextChannelUpdateTopicEvent extends GenericTextChannelUpdateEvent<String>
+public class RoleUpdateIconEvent extends GenericRoleUpdateEvent<RoleIcon>
 {
-    public static final String IDENTIFIER = "topic";
+    public static final String IDENTIFIER = "icon";
 
-    public TextChannelUpdateTopicEvent(@Nonnull JDA api, long responseNumber, @Nonnull TextChannel channel, @Nullable String oldTopic)
+    public RoleUpdateIconEvent(@Nonnull JDA api, long responseNumber, @Nonnull Role role, @Nonnull RoleIcon oldIcon)
     {
-        super(api, responseNumber, channel, oldTopic, channel.getTopic(), IDENTIFIER);
+        super(api, responseNumber, role, oldIcon, role.getIcon(), IDENTIFIER);
     }
 
     /**
-     * The old topic
+     * The old icon
      *
-     * @return The old topic, or null
+     * @return The old icon
      */
     @Nullable
-    public String getOldTopic()
+    public RoleIcon getOldIcon()
     {
         return getOldValue();
     }
 
     /**
-     * The new topic
+     * The new icon
      *
-     * @return The new topic, or null
+     * @return The new icon
      */
     @Nullable
-    public String getNewTopic()
+    public RoleIcon getNewIcon()
     {
         return getNewValue();
     }

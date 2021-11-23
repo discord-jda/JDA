@@ -84,6 +84,25 @@ public class GenericPermissionOverrideEvent extends GenericGuildEvent
     }
 
     /**
+     * The {@link NewsChannel} this override belongs to.
+     *
+     * @throws IllegalStateException
+     *         If the override does not belong to a NewsChannel
+     *
+     * @return {@link NewsChannel}
+     *
+     * @see    #getChannel()
+     * @see    #getChannelType()
+     */
+    @Nonnull
+    public NewsChannel getNewsChannel()
+    {
+        if (channel instanceof NewsChannel)
+            return (NewsChannel) channel;
+        throw new IllegalStateException("This override is for a channel of type " + getChannelType());
+    }
+
+    /**
      * The {@link VoiceChannel} this override belongs to.
      *
      * @throws IllegalStateException

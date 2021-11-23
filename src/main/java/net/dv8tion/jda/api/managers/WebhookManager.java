@@ -16,10 +16,7 @@
 
 package net.dv8tion.jda.api.managers;
 
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Icon;
-import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.entities.Webhook;
+import net.dv8tion.jda.api.entities.*;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -102,14 +99,14 @@ public interface WebhookManager extends Manager<WebhookManager>
     Webhook getWebhook();
 
     /**
-     * The {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} this Manager's
+     * The {@link net.dv8tion.jda.api.entities.BaseGuildMessageChannel BaseGuildMessageChannel} this Manager's
      * {@link net.dv8tion.jda.api.entities.Webhook Webhook} is in.
      * <br>This is logically the same as calling {@code getWebhook().getChannel()}
      *
-     * @return The parent {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
+     * @return The parent {@link net.dv8tion.jda.api.entities.BaseGuildMessageChannel BaseGuildMessageChannel}
      */
     @Nonnull
-    default TextChannel getChannel()
+    default BaseGuildMessageChannel getChannel()
     {
         return getWebhook().getChannel();
     }
