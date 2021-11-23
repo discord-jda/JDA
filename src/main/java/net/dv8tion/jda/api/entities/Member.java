@@ -115,6 +115,26 @@ public interface Member extends IMentionable, IPermissionHolder
     OffsetDateTime getTimeBoosted();
 
     /**
+     * The time until which this Member is in time out.
+     * <br>If this Member is not in time out, this returns {@code null}.
+     *
+     * @return The time until which this Member is in time out or {@code null} if not in time out
+     */
+    @Nullable
+    OffsetDateTime getTimeUntilTimedOut();
+
+    /**
+     * Whether this Member is in time out.
+     * <br>While a Member is in time out, they cannot reply, send messages, react and speak in voice channels.
+     *
+     * @return True, if this Member is in time out
+     */
+    default boolean isTimedOut()
+    {
+        return getTimeUntilTimedOut() != null;
+    }
+
+    /**
      * The {@link net.dv8tion.jda.api.entities.GuildVoiceState VoiceState} of this Member.
      * <br><b>This will be null when the {@link net.dv8tion.jda.api.utils.cache.CacheFlag#VOICE_STATE} is disabled manually</b>
      *

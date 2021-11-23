@@ -46,7 +46,7 @@ public class MemberImpl implements Member
     private User user;
     private String nickname;
     private String avatarId;
-    private long joinDate, boostDate;
+    private long joinDate, boostDate, timeUntilTimedOut;
     private boolean pending = false;
 
     public MemberImpl(GuildImpl guild, User user)
@@ -113,6 +113,13 @@ public class MemberImpl implements Member
     public OffsetDateTime getTimeBoosted()
     {
         return boostDate != 0 ? Helpers.toOffset(boostDate) : null;
+    }
+
+    @Nullable
+    @Override
+    public OffsetDateTime getTimeUntilTimedOut()
+    {
+        return timeUntilTimedOut != 0 ? Helpers.toOffset(timeUntilTimedOut) : null;
     }
 
     @Override
@@ -374,6 +381,12 @@ public class MemberImpl implements Member
         return this;
     }
 
+    public MemberImpl setTimeUntilTimedOut(long time)
+    {
+        this.timeUntilTimedOut = time;
+        return this;
+    }
+
     public MemberImpl setPending(boolean pending)
     {
         this.pending = pending;
@@ -388,6 +401,11 @@ public class MemberImpl implements Member
     public long getBoostDateRaw()
     {
         return boostDate;
+    }
+
+    public long getTimeUntilTimedOutRaw()
+    {
+        return timeUntilTimedOut;
     }
 
     @Override

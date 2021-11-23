@@ -37,10 +37,7 @@ import net.dv8tion.jda.api.entities.templates.TemplateGuild;
 import net.dv8tion.jda.api.entities.templates.TemplateRole;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleAddEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleRemoveEvent;
-import net.dv8tion.jda.api.events.guild.member.update.GuildMemberUpdateAvatarEvent;
-import net.dv8tion.jda.api.events.guild.member.update.GuildMemberUpdateBoostTimeEvent;
-import net.dv8tion.jda.api.events.guild.member.update.GuildMemberUpdateNicknameEvent;
-import net.dv8tion.jda.api.events.guild.member.update.GuildMemberUpdatePendingEvent;
+import net.dv8tion.jda.api.events.guild.member.update.*;
 import net.dv8tion.jda.api.events.user.update.UserUpdateAvatarEvent;
 import net.dv8tion.jda.api.events.user.update.UserUpdateDiscriminatorEvent;
 import net.dv8tion.jda.api.events.user.update.UserUpdateFlagsEvent;
@@ -513,6 +510,15 @@ public class EntityBuilder
                 epoch = Instant.from(date).toEpochMilli();
             }
             member.setBoostDate(epoch);
+
+            long timedOutEpoch = 0;
+            if (!memberJson.isNull("communication_disabled_until"))
+            {
+                TemporalAccessor date = DateTimeFormatter.ISO_OFFSET_DATE_TIME.parse(memberJson.getString("communication_disabled_until"));
+                timedOutEpoch = Instant.from(date).toEpochMilli();
+            }
+            member.setTimeUntilTimedOut(timedOutEpoch);
+
             if (!memberJson.isNull("pending"))
                 member.setPending(memberJson.getBoolean("pending"));
             Set<Role> roles = member.getRoleSet();
@@ -635,6 +641,25 @@ public class EntityBuilder
                     new GuildMemberUpdateBoostTimeEvent(
                         getJDA(), responseNumber,
                         member, oldTime));
+            }
+        }
+
+        if (content.hasKey("communication_disabled_until"))
+        {
+            long epoch = 0;
+            if (!content.isNull("communication_disabled_until"))
+            {
+                TemporalAccessor date = DateTimeFormatter.ISO_OFFSET_DATE_TIME.parse(content.getString("communication_disabled_until"));
+                epoch = Instant.from(date).toEpochMilli();
+            }
+            if (epoch != member.getTimeUntilTimedOutRaw())
+            {
+                OffsetDateTime oldTime = member.getTimeUntilTimedOut();
+                member.setTimeUntilTimedOut(epoch);
+                getJDA().handleEvent(
+                        new GuildMemberUpdateTimedOutTime(
+                                getJDA(), responseNumber,
+                                member, oldTime));
             }
         }
 
