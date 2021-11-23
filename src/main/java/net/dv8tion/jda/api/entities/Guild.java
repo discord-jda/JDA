@@ -4588,6 +4588,7 @@ public interface Guild extends ISnowflake
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      */
     @Nonnull
+    @CheckReturnValue
     default AuditableRestAction<Void> timeoutFor(@Nonnull Member member, long amount, @Nonnull TimeUnit unit)
     {
         Checks.check(amount >= 1, "The amount must be more than 0");
@@ -4631,6 +4632,7 @@ public interface Guild extends ISnowflake
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      */
     @Nonnull
+    @CheckReturnValue
     default AuditableRestAction<Void> timeoutFor(@Nonnull Member member, @Nonnull Duration duration)
     {
         Checks.notNull(duration, "Duration");
@@ -4673,6 +4675,7 @@ public interface Guild extends ISnowflake
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      */
     @Nonnull
+    @CheckReturnValue
     default AuditableRestAction<Void> timeoutUntil(@Nonnull Member member, @Nonnull OffsetDateTime date)
     {
         Checks.notNull(member, "Member");
@@ -4720,6 +4723,7 @@ public interface Guild extends ISnowflake
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      */
     @Nonnull
+    @CheckReturnValue
     default AuditableRestAction<Void> timeoutForById(long userId, long amount, @Nonnull TimeUnit unit)
     {
         return timeoutForById(Long.toUnsignedString(userId), amount, unit);
@@ -4764,6 +4768,7 @@ public interface Guild extends ISnowflake
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      */
     @Nonnull
+    @CheckReturnValue
     default AuditableRestAction<Void> timeoutForById(@Nonnull String userId, long amount, @Nonnull TimeUnit unit)
     {
         Checks.notNull(unit, "TimeUnit");
@@ -4803,6 +4808,7 @@ public interface Guild extends ISnowflake
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      */
     @Nonnull
+    @CheckReturnValue
     default AuditableRestAction<Void> timeoutForById(long userId, @Nonnull Duration duration)
     {
         return timeoutForById(Long.toUnsignedString(userId), duration);
@@ -4841,6 +4847,7 @@ public interface Guild extends ISnowflake
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      */
     @Nonnull
+    @CheckReturnValue
     default AuditableRestAction<Void> timeoutForById(@Nonnull String userId, @Nonnull Duration duration)
     {
         Checks.notNull(duration, "Duration");
@@ -4883,6 +4890,7 @@ public interface Guild extends ISnowflake
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      */
     @Nonnull
+    @CheckReturnValue
     default AuditableRestAction<Void> timeoutUntilById(long userId, @Nonnull OffsetDateTime date)
     {
         return timeoutUntilById(Long.toUnsignedString(userId), date);
@@ -4924,6 +4932,7 @@ public interface Guild extends ISnowflake
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      */
     @Nonnull
+    @CheckReturnValue
     AuditableRestAction<Void> timeoutUntilById(@Nonnull String userId, @Nonnull OffsetDateTime date);
 
     /**

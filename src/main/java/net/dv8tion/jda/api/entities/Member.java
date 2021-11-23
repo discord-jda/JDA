@@ -597,6 +597,7 @@ public interface Member extends IMentionable, IPermissionHolder
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      */
     @Nonnull
+    @CheckReturnValue
     default AuditableRestAction<Void> timeoutFor(long amount, @Nonnull TimeUnit unit)
     {
         return getGuild().timeoutFor(this, amount, unit);
@@ -636,6 +637,7 @@ public interface Member extends IMentionable, IPermissionHolder
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      */
     @Nonnull
+    @CheckReturnValue
     default AuditableRestAction<Void> timeoutFor(@Nonnull Duration duration)
     {
         return getGuild().timeoutFor(this, duration);
@@ -674,6 +676,7 @@ public interface Member extends IMentionable, IPermissionHolder
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      */
     @Nonnull
+    @CheckReturnValue
     default AuditableRestAction<Void> timeoutUntil(@Nonnull OffsetDateTime date)
     {
         return getGuild().timeoutUntil(this, date);
@@ -701,6 +704,7 @@ public interface Member extends IMentionable, IPermissionHolder
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      */
     @Nonnull
+    @CheckReturnValue
     default AuditableRestAction<Void> removeTimeout()
     {
         return getGuild().removeTimeout(this);
