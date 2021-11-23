@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.interactions.commands;
 
+import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
@@ -24,6 +25,7 @@ import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -311,7 +313,10 @@ public class SlashCommand extends Command
         private final String name, description;
         private final int type;
         private final boolean required;
+        private final Set<ChannelType> channelTypes;
         private final List<Choice> choices;
+        private Number minValue;
+        private Number maxValue;
 
         public Option(@Nonnull DataObject json)
         {
@@ -319,9 +324,16 @@ public class SlashCommand extends Command
             this.description = json.getString("description");
             this.type = json.getInt("type");
             this.required = json.getBoolean("required");
+            this.channelTypes = Collections.unmodifiableSet(json.optArray("channel_types")
+                    .map(it -> it.stream(DataArray::getInt).map(ChannelType::fromId).collect(Collectors.toSet()))
+                    .orElse(Collections.emptySet()));
             this.choices = json.optArray("choices")
                     .map(it -> it.stream(DataArray::getObject).map(Choice::new).collect(Collectors.toList()))
                     .orElse(Collections.emptyList());
+            if (!json.isNull("min_value"))
+                this.minValue = json.getDouble("min_value");
+            if (!json.isNull("max_value"))
+                this.maxValue = json.getDouble("max_value");
         }
 
         /**
@@ -378,6 +390,44 @@ public class SlashCommand extends Command
         }
 
         /**
+         * The {@link ChannelType ChannelTypes} this option is restricted to.
+         * <br>This is empty if the option is not of type {@link OptionType#CHANNEL CHANNEL} or not restricted to specific types.
+         *
+         * @return Immutable {@link Set} of {@link ChannelType}
+         */
+        @Nonnull
+        public Set<ChannelType> getChannelTypes()
+        {
+            return channelTypes;
+        }
+
+        /**
+         * The minimum value which can be provided for this option.
+         * <br>This returns {@code null} if the value is not set or if the option
+         * is not of type {@link OptionType#INTEGER INTEGER} or {@link OptionType#NUMBER NUMBER}.
+         *
+         * @return The minimum value for this option or {@code null}
+         */
+        @Nullable
+        public Number getMinValue()
+        {
+            return minValue;
+        }
+
+        /**
+         * The maximum value which can be provided for this option.
+         * <br>This returns {@code null} if the value is not set or if the option
+         * is not of type {@link OptionType#INTEGER INTEGER} or {@link OptionType#NUMBER NUMBER}.
+         *
+         * @return The maximum value for this option or {@code null}
+         */
+        @Nullable
+        public Number getMaxValue()
+        {
+            return maxValue;
+        }
+
+        /**
          * The predefined choices available for this option.
          * <br>If no choices are defined, this returns an empty list.
          *
@@ -392,7 +442,7 @@ public class SlashCommand extends Command
         @Override
         public int hashCode()
         {
-            return Objects.hash(name, description, type, choices);
+            return Objects.hash(name, description, type, choices, channelTypes, minValue, maxValue);
         }
 
         @Override
@@ -404,6 +454,9 @@ public class SlashCommand extends Command
             return Objects.equals(other.name, name)
                     && Objects.equals(other.description, description)
                     && Objects.equals(other.choices, choices)
+                    && Objects.equals(other.channelTypes, channelTypes)
+                    && Objects.equals(other.minValue, minValue)
+                    && Objects.equals(other.maxValue, maxValue)
                     && other.type == type;
         }
 
