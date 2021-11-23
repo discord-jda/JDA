@@ -540,8 +540,8 @@ public interface Member extends IMentionable, IPermissionHolder
     }
 
     /**
-     * Puts a timeout on this Member in this {@link net.dv8tion.jda.api.entities.Guild Guild} until the specified date.
-     * <br>While a Member is timed out, they cannot post or react to messages.
+     * Puts this Member in time out in this {@link net.dv8tion.jda.api.entities.Guild Guild} until the specified date.
+     * <br>While a Member is in time out, they cannot reply, send messages, react and speak in voice channels.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
      * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
@@ -554,7 +554,7 @@ public interface Member extends IMentionable, IPermissionHolder
      * </ul>
      *
      * @param  date
-     *         The date this Member should be timed out until
+     *         The date until which this Member should be in time out
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MODERATE_MEMBERS} permission.
@@ -577,7 +577,7 @@ public interface Member extends IMentionable, IPermissionHolder
     }
 
     /**
-     * Removes a timeout from this Member in this {@link net.dv8tion.jda.api.entities.Guild Guild}.
+     * Removes a time out from this Member in this {@link net.dv8tion.jda.api.entities.Guild Guild}.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
      * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:

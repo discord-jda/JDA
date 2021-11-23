@@ -4547,8 +4547,8 @@ public interface Guild extends ISnowflake
     AuditableRestAction<Void> unban(@Nonnull String userId);
 
     /**
-     * Puts a timeout on the specified Member in this {@link net.dv8tion.jda.api.entities.Guild Guild} until the specified date.
-     * <br>While a Member is timed out, they cannot post or react to messages.
+     * Puts the specified Member in time out in this {@link net.dv8tion.jda.api.entities.Guild Guild} until the specified date.
+     * <br>While a Member is in time out, they cannot reply, send messages, react and speak in voice channels.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
      * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
@@ -4561,9 +4561,9 @@ public interface Guild extends ISnowflake
      * </ul>
      *
      * @param  member
-     *         The member to put a timeout on
+     *         The member to put in time out
      * @param  date
-     *         The date the specified Member should be timed out until
+     *         The date until which the specified Member should be in time out
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MODERATE_MEMBERS} permission.
@@ -4584,8 +4584,8 @@ public interface Guild extends ISnowflake
     AuditableRestAction<Void> timeoutUntil(@Nonnull Member member, @Nonnull OffsetDateTime date);
 
     /**
-     * Puts a timeout on a Member specified by the id in this {@link net.dv8tion.jda.api.entities.Guild Guild} until the specified date.
-     * <br>While a Member is timed out, they cannot post or react to messages.
+     * Puts a Member specified by the id in time out in this {@link net.dv8tion.jda.api.entities.Guild Guild} until the specified date.
+     * <br>While a Member is in time out, they cannot reply, send messages, react and speak in voice channels.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
      * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
@@ -4598,9 +4598,9 @@ public interface Guild extends ISnowflake
      * </ul>
      *
      * @param  userId
-     *         The user id of the Member to put a timeout on
+     *         The user id of the Member to put in time out
      * @param  date
-     *         The date the specified Member should be timed out until
+     *         The date until which the specified Member should be in time out
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MODERATE_MEMBERS} permission.
@@ -4621,7 +4621,7 @@ public interface Guild extends ISnowflake
     AuditableRestAction<Void> timeoutUntilById(@Nonnull String userId, @Nonnull OffsetDateTime date);
 
     /**
-     * Removes a timeout from the specified Member in this {@link net.dv8tion.jda.api.entities.Guild Guild}.
+     * Removes a time out from the specified Member in this {@link net.dv8tion.jda.api.entities.Guild Guild}.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
      * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
@@ -4644,7 +4644,7 @@ public interface Guild extends ISnowflake
     AuditableRestAction<Void> untimeout(@Nonnull Member member);
 
     /**
-     * Removes a timeout from a Member specified by the id in this {@link net.dv8tion.jda.api.entities.Guild Guild}.
+     * Removes a time out from a Member specified by the id in this {@link net.dv8tion.jda.api.entities.Guild Guild}.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
      * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
