@@ -7,11 +7,11 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.time.OffsetDateTime;
 
-public class GuildMemberUpdateTimedOutTime extends GenericGuildMemberUpdateEvent<OffsetDateTime>
+public class GuildMemberUpdateTimedOutTimeEvent extends GenericGuildMemberUpdateEvent<OffsetDateTime>
 {
     public static final String IDENTIFIER = "timedout_time";
 
-    public GuildMemberUpdateTimedOutTime(@Nonnull JDA api, long responseNumber, @Nonnull Member member, @Nullable OffsetDateTime previous)
+    public GuildMemberUpdateTimedOutTimeEvent(@Nonnull JDA api, long responseNumber, @Nonnull Member member, @Nullable OffsetDateTime previous)
     {
         super(api, responseNumber, member, previous, member.getTimeUntilTimedOut(), IDENTIFIER);
     }

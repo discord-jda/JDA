@@ -657,7 +657,7 @@ public class EntityBuilder
                 OffsetDateTime oldTime = member.getTimeUntilTimedOut();
                 member.setTimeUntilTimedOut(epoch);
                 getJDA().handleEvent(
-                        new GuildMemberUpdateTimedOutTime(
+                        new GuildMemberUpdateTimedOutTimeEvent(
                                 getJDA(), responseNumber,
                                 member, oldTime));
             }
