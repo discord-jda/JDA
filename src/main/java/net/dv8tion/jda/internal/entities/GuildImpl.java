@@ -64,6 +64,7 @@ import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -1435,15 +1436,6 @@ public class GuildImpl implements Guild
 
         Route.CompiledRoute route = Route.Guilds.UNBAN.compile(getId(), userId);
         return new AuditableRestActionImpl<>(getJDA(), route);
-    }
-
-    @Nonnull
-    @Override
-    public AuditableRestAction<Void> timeoutUntil(@Nonnull Member member, @Nonnull OffsetDateTime date)
-    {
-        Checks.notNull(member, "Member");
-        checkPosition(member);
-        return timeoutUntilById(member.getId(), date);
     }
 
     @Nonnull
