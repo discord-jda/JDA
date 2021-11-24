@@ -330,7 +330,7 @@ public class RoleImpl implements Role
         return tags == null ? RoleTagsImpl.EMPTY : tags;
     }
 
-    @Nonnull
+    @Nullable
     @Override
     public RoleIcon getIcon()
     {
