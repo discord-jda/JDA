@@ -126,12 +126,12 @@ public class GuildRoleUpdateHandler extends SocketHandler
         }
 
         RoleIcon oldIcon = role.getIcon();
-        if (oldIcon == null || !Objects.equals(oldIcon.getIconId(), iconId) || !Objects.equals(oldIcon.getEmoji(), emoji))
+        RoleIcon newIcon = iconId == null && emoji == null
+                ? null
+                : new RoleIcon(iconId, emoji, roleId);
+        if (!Objects.equals(oldIcon, newIcon))
         {
-            if (iconId == null && emoji == null)
-                role.setIcon(null);
-            else
-                role.setIcon(new RoleIcon(iconId, emoji, roleId));
+            role.setIcon(newIcon);
             getJDA().handleEvent(
                     new RoleUpdateIconEvent(
                             getJDA(), responseNumber,
