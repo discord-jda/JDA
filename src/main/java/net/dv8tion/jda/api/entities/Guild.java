@@ -961,6 +961,107 @@ public interface Guild extends ISnowflake
     RestAction<MetaData> retrieveMetaData();
 
     /**
+     * Retrieves a {@link GuildScheduledEvent} by its ID
+     *
+     * @param id
+     *        The ID of the {@link GuildScheduledEvent}
+     * @return A {@link RestAction} containing a {@link GuildScheduledEvent} object, or {@code null} if an event with that ID does not exist in this guild,
+     *         or the currently logged in user account does not have access to it.
+     *
+     * @see #getScheduledEventById(long)
+     */
+    @Nullable
+    @CheckReturnValue
+    RestAction<GuildScheduledEvent> retrieveScheduledEventById(long id);
+
+    /**
+     * Returns a {@link GuildScheduledEvent} from cache by its ID
+     *
+     * @param id
+     *        The ID of the {@link GuildScheduledEvent}
+     *
+     * @return A {@link GuildScheduledEvent} object, or {@code null} if an event with that ID does not exist on this guild,
+     *        is not cached, or the currently logged in user account does not have access to it.
+     *
+     * @see #retrieveScheduledEventById(long)
+     */
+    @Nullable
+    GuildScheduledEvent getScheduledEventById(long id);
+
+    /**
+     * Returns a cached list of {@link GuildScheduledEvent GuildScheduledEvents} from this guild that is accessible to the
+     * currently logged in user.
+     *
+     * @return A list of {@link GuildScheduledEvent GuildScheduledEvent} objects
+     *
+     * @see #retrieveScheduledEvents()
+     */
+    @Nonnull
+    List<GuildScheduledEvent> getScheduledEvents();
+
+    /**
+     * Retrieves a list of {@link GuildScheduledEvent GuildScheduledEvents} from this guild that is accessible to the
+     * currently logged in user.
+     *
+     * @return A {@link RestAction} containing a list of {@link GuildScheduledEvent GuildScheduledEvent} objects
+     *
+     * @see #getScheduledEvents()
+     */
+    @Nonnull
+    @CheckReturnValue
+    RestAction<List<GuildScheduledEvent>> retrieveScheduledEvents();
+
+    /**
+     * Creates a new {@link GuildScheduledEvent}.
+     * <p><b>Requirements</b></p>
+     * Events that are created are required to have a name, a location, and a start time. Depending on the
+     * type of location provided, an event will be of one of three different {@link GuildScheduledEvent.Type Types}:
+     * <ol>
+     *     <li>
+     *         <p><b>{@link GuildScheduledEvent.Type#STAGE_INSTANCE Type.STAGE_INSTANCE}</b></p>
+     *         <p>These events are set to take place inside of a {@link net.dv8tion.jda.api.entities.StageChannel}. The
+     *         following permissions are required in the specified stage channel in order to create an event there:
+     *          <ul>
+     *              <li>{@link net.dv8tion.jda.api.Permission#MANAGE_EVENTS Permission.MANAGE_EVENTS}</li>
+     *              <li>{@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL Permission.MANAGE_CHANNEL}</li>
+     *              <li>{@link net.dv8tion.jda.api.Permission#VOICE_MUTE_OTHERS Permission.VOICE_MUTE_OTHERS}</li>
+     *              <li>{@link net.dv8tion.jda.api.Permission#VOICE_MOVE_OTHERS Permission.VOICE_MOVE_OTHERS}}</li>
+     *         </ul></p>
+     *     </li>
+     *     <li>
+     *         <p><b>{@link GuildScheduledEvent.Type#VOICE Type.VOICE}</b></p>
+     *         <p>These events are set to take place inside of a {@link net.dv8tion.jda.api.entities.VoiceChannel}. The
+     *         following permissions are required in the specified voice channel in order to create an event there:
+     *         <ul>
+     *             <li>{@link net.dv8tion.jda.api.Permission#MANAGE_EVENTS Permission.MANAGE_EVENTS}</li>
+     *             <li>{@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}</li>
+     *             <li>{@link net.dv8tion.jda.api.Permission#VOICE_CONNECT Permission.VOICE_CONNECT}</li>
+     *         </ul></p>
+     *     </li>
+     *     <li>
+     *         <p><b>{@link GuildScheduledEvent.Type#EXTERNAL Type.EXTERNAL}</b></p>
+     *         <p>These events are set to take place at a custom location. {@link net.dv8tion.jda.api.Permission#MANAGE_EVENTS Permission.MANAGE_EVENTS}
+     *         is required on the guild level in order to create this type of event. Additionally, an end time <i>must</i>
+     *         also be specified.</p>
+     *     </li>
+     * </ol>
+     * <p><b>Example</b></p>
+     * <pre>{@code
+     *     guild.createScheduledEvent()
+     *          .setName("Cactus Beauty Contest")
+     *          .setDescription("Come and have your cacti judged! _Must be spikey to enter_")
+     *          .setStartTime(OffsetDateTime.parse("2023-11-15T03:00:00+01:00"))
+     *          .setEndTime(OffsetDateTime.parse("2023-11-15T05:45:00+01:00"))
+     *          .setLocation("Mike's Backyard")
+     *          .queue();
+     * }</pre>
+     * @return A GuildScheduledEventAction object
+     */
+    @Nonnull
+    @CheckReturnValue
+    GuildScheduledEventAction createScheduledEvent();
+
+    /**
      * Provides the {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel} that has been set as the channel
      * which {@link net.dv8tion.jda.api.entities.Member Members} will be moved to after they have been inactive in a
      * {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel} for longer than {@link #getAfkTimeout()}.

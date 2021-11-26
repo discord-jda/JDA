@@ -470,6 +470,49 @@ public class GuildImpl implements Guild
         });
     }
 
+    @Nullable
+    @Override
+    @CheckReturnValue
+    public RestAction<GuildScheduledEvent> retrieveScheduledEventById(long id)
+    {
+        // TODO: Implement
+        return null;
+    }
+
+    @Nullable
+    @Override
+    public GuildScheduledEvent getScheduledEventById(long id)
+    {
+        // TODO: Implement
+        return null;
+    }
+
+    @Override
+    @Nullable
+    public List<GuildScheduledEvent> getScheduledEvents()
+    {
+        // TODO: Implement
+        return null;
+    }
+
+    @Override
+    @Nonnull
+    @CheckReturnValue
+    public RestAction<List<GuildScheduledEvent>> retrieveScheduledEvents()
+    {
+        // TODO: Implement
+        return null;
+    }
+
+    @Override
+    @Nonnull
+    @CheckReturnValue
+    public GuildScheduledEventAction createScheduledEvent()
+    {
+        // TODO: Implement
+        return null;
+    }
+
     @Override
     public VoiceChannel getAfkChannel()
     {
