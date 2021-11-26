@@ -158,7 +158,7 @@ public interface GuildScheduledEventManager extends Manager<GuildScheduledEventM
     /**
      * Sets the location of the selected {@link GuildScheduledEvent} to take place in a specified stage channel.
      * <p>This will also change the event's type to {@link GuildScheduledEvent.Type#STAGE_INSTANCE}, and any previously set external location or
-     * voice channel info will be lost!</p>
+     * voice channel info will be lost!
      *
      * @param stageChannel
      *        The Stage Channel that the selected {@link GuildScheduledEvent} is set to take place in.
@@ -182,7 +182,7 @@ public interface GuildScheduledEventManager extends Manager<GuildScheduledEventM
     /**
      * Sets the location of the selected {@link GuildScheduledEvent GuildScheduledEvent} to take place in a specified voice channel.
      * <p>This will also change the event's type to {@link GuildScheduledEvent.Type#VOICE Type.VOICE}, and any previously
-     * set external location or stage channel info will be lost!</p>
+     * set external location or stage channel info will be lost!
      *
      * @param voiceChannel
      *        The Voice Channel that the selected {@link GuildScheduledEvent} is set to take place at.
@@ -207,7 +207,7 @@ public interface GuildScheduledEventManager extends Manager<GuildScheduledEventM
      * or not in a specific Voice or Stage Channel. <u>Please note that an event is required to have an end time set before
      * this method is called.</u>
      * <p>This will also change the event's type to {@link GuildScheduledEvent.Type#EXTERNAL}, and any previously set voice or
-     * stage channel info will be lost!</p>
+     * stage channel info will be lost!
      *
      * @param externalLocation
      *        The location that the selected {@link GuildScheduledEvent} is set to take place at.

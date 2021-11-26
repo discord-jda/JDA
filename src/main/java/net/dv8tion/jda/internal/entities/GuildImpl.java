@@ -488,7 +488,7 @@ public class GuildImpl implements Guild
     }
 
     @Override
-    @Nullable
+    @Nonnull
     public List<GuildScheduledEvent> getScheduledEvents()
     {
         // TODO: Implement

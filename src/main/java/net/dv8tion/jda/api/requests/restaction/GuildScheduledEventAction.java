@@ -63,7 +63,7 @@ import java.util.function.BooleanSupplier;
  *         <p><b>{@link GuildScheduledEvent.Type#EXTERNAL Type.EXTERNAL}</b></p>
  *         <p>These events are set to take place at a custom location. {@link net.dv8tion.jda.api.Permission#MANAGE_EVENTS Permission.MANAGE_EVENTS}
  *         is required on the guild level in order to create this type of event. Additionally, an end time <i>must</i>
- *         also be specified.</p>
+ *         also be specified.
  *     </li>
  * </ol>
  * <p><b>Example</b></p>
@@ -141,7 +141,7 @@ public interface GuildScheduledEventAction extends AuditableRestAction<GuildSche
      * This will also change the event's type to {@link GuildScheduledEvent.Type#STAGE_INSTANCE Type#STAGE_INSTANCE}, and any previously set external location or
      * voice channel info will be lost!
      * <p><b>Note:</b> A location is required to be set by either this method, {@link #setLocation(VoiceChannel)} or
-     * {@link #setLocation(String)} before the event is created.</p>
+     * {@link #setLocation(String)} before the event is created.
      *
      * @param stageChannel
      *        The Stage Channel that the new {@link GuildScheduledEvent} is set to take place in.
@@ -167,7 +167,7 @@ public interface GuildScheduledEventAction extends AuditableRestAction<GuildSche
      * also change the event's type to {@link GuildScheduledEvent.Type#VOICE}, and any previously set external location
      * or stage channel info will be lost!
      * <p><b>Note:</b> A location is required to be set by either this method, {@link #setLocation(StageChannel)} or {@link #setLocation(String)} before the
-     * event is created.</p>
+     * event is created.
      *
      * @param voiceChannel
      *        The Voice Channel that the selected {@link GuildScheduledEvent} is set to take place at.
@@ -192,9 +192,9 @@ public interface GuildScheduledEventAction extends AuditableRestAction<GuildSche
      * or at a custom location opposed to a specific Voice or Stage Channel. <u>Please note that it is required to set an end time using
      * {@link #setEndTime(OffsetDateTime)} before this method is called.</u>
      * <p>This will also change the event's type to {@link GuildScheduledEvent.Type#EXTERNAL}, and any previously set voice or
-     * stage channel info will be lost!</p>
+     * stage channel info will be lost!
      * <p><b>Note:</b> A location is required to be sent by either this method, {@link #setLocation(StageChannel)} or {@link #setLocation(VoiceChannel)} before the
-     * event is created.</p>
+     * event is created.
      *
      * @param externalLocation
      *        The location that the new {@link GuildScheduledEvent} is set to take place at.
@@ -222,8 +222,8 @@ public interface GuildScheduledEventAction extends AuditableRestAction<GuildSche
      * Events of {@link GuildScheduledEvent.Type#EXTERNAL Type.EXTERNAL} will automatically
      * start at this time, but events of {@link GuildScheduledEvent.Type#STAGE_INSTANCE Type.STAGE_INSTANCE}
      * and {@link GuildScheduledEvent.Type#VOICE Type.VOICE} will need to be manually started,
-     * and will automatically be cancelled a few hours after the start time if not.</p>
-     * <p><b>Note:</b> A start time is required to be set before the event is created.</p>
+     * and will automatically be cancelled a few hours after the start time if not.
+     * <p><b>Note:</b> A start time is required to be set before the event is created.
      *
      * @param startTime The time that the new {@link GuildScheduledEvent} should start at
      *
@@ -244,7 +244,7 @@ public interface GuildScheduledEventAction extends AuditableRestAction<GuildSche
      * person has left the channel.
      * <p><b>Note:</b> The end time is required to be set if the event is taking place at a custom/external location, and
      * this method must be called before {@link #setLocation(String)} if so. Otherwise, setting the end time is optional
-     * for events of {@link GuildScheduledEvent.Type#STAGE_INSTANCE Type.STAGE_INSTANCE} and {@link GuildScheduledEvent.Type#VOICE Type.VOICE}.</p>
+     * for events of {@link GuildScheduledEvent.Type#STAGE_INSTANCE Type.STAGE_INSTANCE} and {@link GuildScheduledEvent.Type#VOICE Type.VOICE}.
      *
      * @param endTime
      *        The time that the new {@link GuildScheduledEvent} is set to end at,

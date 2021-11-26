@@ -1014,7 +1014,7 @@ public interface Guild extends ISnowflake
     /**
      * Creates a new {@link GuildScheduledEvent}.
      * <p><b>Requirements</b></p>
-     * Events that are created are required to have a name, a location, and a start time. Depending on the
+     * <p>Events that are created are required to have a name, a location, and a start time. Depending on the
      * type of location provided, an event will be of one of three different {@link GuildScheduledEvent.Type Types}:
      * <ol>
      *     <li>
@@ -1042,7 +1042,7 @@ public interface Guild extends ISnowflake
      *         <p><b>{@link GuildScheduledEvent.Type#EXTERNAL Type.EXTERNAL}</b></p>
      *         <p>These events are set to take place at a custom location. {@link net.dv8tion.jda.api.Permission#MANAGE_EVENTS Permission.MANAGE_EVENTS}
      *         is required on the guild level in order to create this type of event. Additionally, an end time <i>must</i>
-     *         also be specified.</p>
+     *         also be specified.
      *     </li>
      * </ol>
      * <p><b>Example</b></p>
