@@ -772,6 +772,16 @@ public class JDAImpl implements JDA
     }
 
     @Override
+    public void restart()
+    {
+        if (status == Status.SHUTDOWN || status == Status.SHUTTING_DOWN)
+            throw new IllegalStateException("Cannot restart a JDA session after shutdown!");
+        eventManager.prepareRestart(); // stop handling events
+        cancelRequests(); // stop executing any pending requests
+        getClient().close(1000, WebSocketClient.INVALIDATE_REASON); // drop session and start over
+    }
+
+    @Override
     public long getResponseTotal()
     {
         return responseTotal;

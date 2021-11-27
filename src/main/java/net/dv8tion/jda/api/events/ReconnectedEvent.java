@@ -26,7 +26,7 @@ import javax.annotation.Nonnull;
  * <p>Can be used to mark the continuation of event flow which was stopped by the {@link net.dv8tion.jda.api.events.DisconnectEvent DisconnectEvent}.
  * User should replace any cached Objects (like User/Guild objects).
  */
-public class ReconnectedEvent extends Event
+public class ReconnectedEvent extends Event implements LifecycleEvent
 {
     public ReconnectedEvent(@Nonnull JDA api, long responseNumber)
     {

@@ -75,7 +75,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     public static final int IDENTIFY_DELAY = 5;
     public static final int ZLIB_SUFFIX = 0x0000FFFF;
 
-    protected static final String INVALIDATE_REASON = "INVALIDATE_SESSION";
+    public static final String INVALIDATE_REASON = "INVALIDATE_SESSION";
     protected static final long IDENTIFY_BACKOFF = TimeUnit.SECONDS.toMillis(SessionController.IDENTIFY_DELAY); // same as 1000 * IDENTIFY_DELAY
 
     protected final JDAImpl api;

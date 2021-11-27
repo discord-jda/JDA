@@ -2189,6 +2189,23 @@ public interface JDA
      */
     void shutdownNow();
 
+    /**
+     * Restarts this JDA session.
+     * <br>This will not restart the process, you cannot use this to update the your code.
+     *
+     * <p>This method is a last measure to fix a broken session. It will do the following:
+     * <ol>
+     *     <li>Stop listening to events except for {@link net.dv8tion.jda.api.events.LifecycleEvent LifecycleEvents} until the session has reconnected.</li>
+     *     <li>Stop all currently queued requests with {@link #cancelRequests()}</li>
+     *     <li>Invalidate and restart the gateway connection</li>
+     * </ol>
+     * It is not recommended to do this under normal operation, or in any regular intervals. This is truly supposed to be a panic button.
+     *
+     * @throws IllegalStateException
+     *         If this JDA session was shutdown. You cannot recover after shutting down!
+     */
+    void restart();
+
     ///**
     // * Installs an auxiliary cable into the given port of your system.
     // *

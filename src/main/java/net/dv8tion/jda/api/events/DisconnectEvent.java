@@ -32,7 +32,7 @@ import java.time.OffsetDateTime;
  * <p>When reconnecting was successful either a {@link net.dv8tion.jda.api.events.ReconnectedEvent ReconnectEvent}
  * <b>or</b> {@link net.dv8tion.jda.api.events.ResumedEvent ResumedEvent} is fired.
  */
-public class DisconnectEvent extends Event
+public class DisconnectEvent extends Event implements LifecycleEvent
 {
     protected final WebSocketFrame serverCloseFrame;
     protected final WebSocketFrame clientCloseFrame;

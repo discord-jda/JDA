@@ -28,7 +28,7 @@ import javax.annotation.Nonnull;
  * <p>Can be used to indicate when JDA finished populating internal objects and is ready to be used.
  * When this is fired all <b>available</b> entities are cached and accessible.
  */
-public class ReadyEvent extends Event
+public class ReadyEvent extends Event implements LifecycleEvent
 {
     private final int availableGuilds;
     private final int unavailableGuilds;
