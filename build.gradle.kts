@@ -402,6 +402,11 @@ fun generatePom(pom: Pom) {
 
 // Publish
 
+// Skip fat jar publication (See https://github.com/johnrengelman/shadow/issues/586)
+components.java.withVariantsFromConfiguration(configurations.shadowRuntimeElements.get()) { skip() }
+val SoftwareComponentContainer.java
+    get() = components.getByName("java") as AdhocComponentWithVariants
+
 publishing {
     publications {
         register("Release", MavenPublication::class) {
@@ -449,18 +454,11 @@ publishing {
             artifact(javadocJar)
 
             generatePom(pom)
-
-            artifacts.forEach {
-                println("Added artifact ${it.file}")
-            }
         }
     }
 }
 
-// Skip fat jar publication (See https://github.com/johnrengelman/shadow/issues/586)
-components.java.withVariantsFromConfiguration(configurations.shadowRuntimeElements.get()) { skip() }
-val SoftwareComponentContainer.java
-    get() = components.getByName("java") as AdhocComponentWithVariants
+
 
 
 
