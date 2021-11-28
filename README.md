@@ -437,13 +437,6 @@ Be sure to replace the **VERSION** key below with the one of the versions shown 
     <version>VERSION</version>
 </dependency>
 ```
-```xml
-<repository>
-    <id>dv8tion</id>
-    <name>m2-dv8tion</name>
-    <url>https://m2.dv8tion.net/releases</url>
-</repository>
-```
 
 **Maven without Audio**
 ```xml
@@ -462,17 +455,13 @@ Be sure to replace the **VERSION** key below with the one of the versions shown 
 
 **Gradle**
 ```gradle
+repositories {
+    mavenCentral()
+}
+
 dependencies {
     //Change 'implementation' to 'compile' in old Gradle versions
     implementation("net.dv8tion:JDA:VERSION")
-}
-
-repositories {
-    mavenCentral() // for transitive dependencies
-    maven {
-      name 'm2-dv8tion'
-      url 'https://m2.dv8tion.net/releases'
-    }
 }
 ```
 
