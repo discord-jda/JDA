@@ -15,7 +15,7 @@
  */
 
 //to build everything:             "gradlew build"
-//to build and upload everything:  "gradlew publish"
+//to build and upload everything:  "gradlew release"
 
 import Build_gradle.Pom
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
@@ -47,6 +47,7 @@ val isCI = System.getProperty("BUILD_NUMBER") != null // jenkins
 // Check the commit hash and version information
 val commitHash: String by lazy {
     val file = File(".git/refs/heads/master")
+    // We only set the commit hash on CI builds since we don't want dirty local repos to set a wrong commit
     if (isCI && file.canRead())
         file.readText().substring(0, 7)
     else
@@ -159,6 +160,10 @@ val sourcesForRelease = task<Copy>("sourcesForRelease") {
                 "versionClassifier" to nullable(versionObj.classifier),
                 "commitHash" to nullable(commitHash)
         )
+        // Allow for setting null on some strings without breaking the source
+        // for this, we have special tokens marked with "!@...@!" which are replaced to @...@
+        filter { it.replace(Regex("\"!@|@!\""), "@") }
+        // Then we can replace the @...@ with the respective values here
         filter<ReplaceTokens>(mapOf("tokens" to tokens))
     }
     into("build/filteredSrc")
@@ -172,7 +177,6 @@ val generateJavaSources = task<SourceTask>("generateJavaSources") {
     }.asFileTree
 
     source = javaSources + fileTree(sourcesForRelease.destinationDir)
-
     dependsOn(sourcesForRelease)
 }
 
