@@ -73,7 +73,7 @@ public enum Region
      * This {@link java.util.Set Set} represents all regions that can be used for VoiceChannel region overrides.
      */
     public static final Set<Region> VOICE_CHANNEL_REGIONS =
-            Collections.unmodifiableSet(EnumSet.of(AUTOMATIC, US_WEST, US_EAST, US_CENTRAL, US_SOUTH, SINGAPORE, SOUTH_AFRICA, SYDNEY, EUROPE, INDIA, SOUTH_KOREA, BRAZIL, JAPAN, RUSSIA));
+            Collections.unmodifiableSet(EnumSet.of(AUTOMATIC, US_WEST, US_EAST, US_CENTRAL, US_SOUTH, SINGAPORE, SOUTH_AFRICA, SYDNEY, ROTTERDAM, HONG_KONG, INDIA, SOUTH_KOREA, BRAZIL, JAPAN, RUSSIA));
 
     private final String key;
     private final String name;
