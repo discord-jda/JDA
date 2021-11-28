@@ -38,6 +38,7 @@ public enum Region
     JAPAN("japan", "Japan", "\uD83C\uDDEF\uD83C\uDDF5", false),
     SOUTH_KOREA("south-korea", "South Korea", "\uD83C\uDDF0\uD83C\uDDF7", false),
     LONDON("london", "London", "\uD83C\uDDEC\uD83C\uDDE7", false),
+    ROTTERDAM("rotterdam", "Rotterdam", "\uD83C\uDDF3\uD83C\uDDF1", false),
     RUSSIA("russia", "Russia", "\uD83C\uDDF7\uD83C\uDDFA", false),
     INDIA("india", "India", "\uD83C\uDDEE\uD83C\uDDF3", false),
     SINGAPORE("singapore", "Singapore", "\uD83C\uDDF8\uD83C\uDDEC", false),
