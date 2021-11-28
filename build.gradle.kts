@@ -158,7 +158,7 @@ val sourcesForRelease = task<Copy>("sourcesForRelease") {
                 "versionMinor" to versionObj.minor,
                 "versionRevision" to versionObj.revision,
                 "versionClassifier" to nullable(versionObj.classifier),
-                "commitHash" to nullable(commitHash)
+                "commitHash" to commitHash
         )
         // Allow for setting null on some strings without breaking the source
         // for this, we have special tokens marked with "!@...@!" which are replaced to @...@
