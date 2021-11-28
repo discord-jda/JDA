@@ -140,6 +140,11 @@ val check: Task by tasks
 
 shadowJar.archiveClassifier.set("withDependencies")
 
+fun nullable(string: String?): String {
+    return if (string == null) "null"
+           else "\"$string\""
+}
+
 val sourcesForRelease = task<Copy>("sourcesForRelease") {
     from("src/main/java") {
         include("**/JDAInfo.java")
@@ -147,8 +152,8 @@ val sourcesForRelease = task<Copy>("sourcesForRelease") {
                 "versionMajor" to versionObj.major,
                 "versionMinor" to versionObj.minor,
                 "versionRevision" to versionObj.revision,
-                "versionClassifier" to versionObj.classifier.toString(),
-                "commitHash" to commitHash
+                "versionClassifier" to nullable(versionObj.classifier),
+                "commitHash" to nullable(commitHash)
         )
         filter<ReplaceTokens>(mapOf("tokens" to tokens))
     }
@@ -262,6 +267,10 @@ javadoc.apply {
         }
     }
 
+    dependsOn(sourcesJar)
+    source = sourcesJar.source.asFileTree
+    exclude("MANIFEST.MF")
+
     //### excludes ###
 
     //jda internals
@@ -280,8 +289,6 @@ build.apply {
     dependsOn(minimalJar)
 
     jar.mustRunAfter(clean)
-    javadocJar.mustRunAfter(jar)
-    sourcesJar.mustRunAfter(javadocJar)
     shadowJar.mustRunAfter(sourcesJar)
 }
 
