@@ -437,8 +437,30 @@ publishing {
 
             generatePom(pom)
         }
+
+        register("Local", MavenPublication::class) {
+            from(components["java"])
+
+            artifactId = project.name
+            groupId = project.group as String
+            version = project.version as String
+
+            artifact(sourcesJar)
+            artifact(javadocJar)
+
+            generatePom(pom)
+
+            artifacts.forEach {
+                println("Added artifact ${it.file}")
+            }
+        }
     }
 }
+
+// Skip fat jar publication (See https://github.com/johnrengelman/shadow/issues/586)
+components.java.withVariantsFromConfiguration(configurations.shadowRuntimeElements.get()) { skip() }
+val SoftwareComponentContainer.java
+    get() = components.getByName("java") as AdhocComponentWithVariants
 
 
 
@@ -519,3 +541,9 @@ tasks.withType<AbstractPublishToMaven> {
 tasks.withType<Copy> {
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
 }
+
+// Allow local publishing
+val publishToMavenLocal: Task by tasks
+val publishLocalPublicationToMavenLocal: Task by tasks
+publishToMavenLocal.enabled = true
+publishLocalPublicationToMavenLocal.enabled = true
