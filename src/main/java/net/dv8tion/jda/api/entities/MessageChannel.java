@@ -2410,7 +2410,7 @@ public interface MessageChannel extends Channel, Formattable
         Checks.isSnowflake(messageId, "Message ID");
         Checks.notNull(emote, "Emote");
 
-        return new ReactionPaginationActionImpl(this, messageId, String.format("%s:%s", emote, emote.getId()));
+        return retrieveReactionUsersById(messageId, String.format("%s:%s", emote.getName(), emote.getId()));
     }
 
     /**
@@ -3553,21 +3553,5 @@ public interface MessageChannel extends Channel, Formattable
     {
         Checks.noneNull(components, "Components");
         return editMessageComponentsById(messageId, Arrays.asList(components));
-    }
-
-
-    @Override
-    default void formatTo(Formatter formatter, int flags, int width, int precision)
-    {
-        boolean leftJustified = (flags & FormattableFlags.LEFT_JUSTIFY) == FormattableFlags.LEFT_JUSTIFY;
-        boolean upper = (flags & FormattableFlags.UPPERCASE) == FormattableFlags.UPPERCASE;
-        boolean alt = (flags & FormattableFlags.ALTERNATE) == FormattableFlags.ALTERNATE;
-        String out;
-
-        out = upper ?  getName().toUpperCase(formatter.locale()) : getName();
-        if (alt)
-            out = "#" + out;
-
-        MiscUtil.appendTo(formatter, width, precision, leftJustified, out);
     }
 }

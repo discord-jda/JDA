@@ -18,6 +18,7 @@ package net.dv8tion.jda.api.managers;
 
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Icon;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.internal.utils.Checks;
 
@@ -56,6 +57,8 @@ public interface RoleManager extends Manager<RoleManager>
     long HOIST       = 0x8;
     /** Used to reset the mentionable field */
     long MENTIONABLE = 0x10;
+    /** Used to reset the icon field */
+    long ICON        = 0x20;
 
     /**
      * Resets the fields specified by the provided bit-flag pattern.
@@ -69,6 +72,7 @@ public interface RoleManager extends Manager<RoleManager>
      *     <li>{@link #PERMISSION}</li>
      *     <li>{@link #HOIST}</li>
      *     <li>{@link #MENTIONABLE}</li>
+     *     <li>{@link #ICON}</li>
      * </ul>
      *
      * @param  fields
@@ -92,6 +96,7 @@ public interface RoleManager extends Manager<RoleManager>
      *     <li>{@link #PERMISSION}</li>
      *     <li>{@link #HOIST}</li>
      *     <li>{@link #MENTIONABLE}</li>
+     *     <li>{@link #ICON}</li>
      * </ul>
      *
      * @param  fields
@@ -272,6 +277,32 @@ public interface RoleManager extends Manager<RoleManager>
     @Nonnull
     @CheckReturnValue
     RoleManager setMentionable(boolean mentionable);
+
+    /**
+     * Sets the {@link net.dv8tion.jda.api.entities.Icon Icon} of this {@link net.dv8tion.jda.api.entities.Role Role}.
+     *
+     * @param  icon
+     *         The new icon for this {@link net.dv8tion.jda.api.entities.Role Role}
+     *         or {@code null} to reset
+     *
+     * @return RoleManager for chaining convenience
+     */
+    @Nonnull
+    @CheckReturnValue
+    RoleManager setIcon(@Nullable Icon icon);
+
+    /**
+     * Sets the Unicode Emoji of this {@link net.dv8tion.jda.api.entities.Role Role} instead of a custom image.
+     *
+     * @param  emoji
+     *         The new Unicode Emoji for this {@link net.dv8tion.jda.api.entities.Role Role}
+     *         or {@code null} to reset
+     *
+     * @return RoleManager for chaining convenience
+     */
+    @Nonnull
+    @CheckReturnValue
+    RoleManager setIcon(@Nullable String emoji);
 
     /**
      * Adds the specified {@link net.dv8tion.jda.api.Permission Permissions} to the selected {@link net.dv8tion.jda.api.entities.Role Role}.

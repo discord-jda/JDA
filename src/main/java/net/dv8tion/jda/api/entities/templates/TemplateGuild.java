@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.entities.templates;
 
+import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.api.Region;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Guild.ExplicitContentLevel;
@@ -23,6 +24,7 @@ import net.dv8tion.jda.api.entities.Guild.NotificationLevel;
 import net.dv8tion.jda.api.entities.Guild.Timeout;
 import net.dv8tion.jda.api.entities.Guild.VerificationLevel;
 import net.dv8tion.jda.api.entities.ISnowflake;
+import net.dv8tion.jda.api.entities.VoiceChannel;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -104,8 +106,12 @@ public class TemplateGuild implements ISnowflake
      * can still use the {@link #getRegionRaw()} to retrieve the raw name this region has.
      *
      * @return The the audio Region this Guild is using for audio connections. Can return Region.UNKNOWN.
+     *
+     * @deprecated Guilds no longer have the {@link net.dv8tion.jda.api.Region Region} option. Use {@link VoiceChannel#getRegion()} instead.
      */
     @Nonnull
+    @Deprecated
+    @ForRemoval(deadline = "5.0.0")
     public Region getRegion()
     {
         return Region.fromKey(region);
@@ -116,8 +122,12 @@ public class TemplateGuild implements ISnowflake
      * <br>This is resolved to an enum constant of {@link Region Region} by {@link #getRegion()}!
      *
      * @return Raw region name
+     *
+     * @deprecated Guilds no longer have the {@link net.dv8tion.jda.api.Region Region} option. Use {@link VoiceChannel#getRegion()} instead.
      */
     @Nonnull
+    @Deprecated
+    @ForRemoval(deadline = "5.0.0")
     public String getRegionRaw()
     {
         return region;

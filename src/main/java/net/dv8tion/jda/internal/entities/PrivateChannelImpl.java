@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import net.dv8tion.jda.api.utils.AttachmentOption;
+import net.dv8tion.jda.internal.entities.mixin.channel.middleman.MessageChannelMixin;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -33,24 +34,22 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-public class PrivateChannelImpl implements PrivateChannel
+public class PrivateChannelImpl extends AbstractChannelImpl<PrivateChannelImpl> implements PrivateChannel, MessageChannelMixin<PrivateChannelImpl>
 {
-    private final long id;
     private User user;
-    private long lastMessageId;
+    private long latestMessageId;
 
     public PrivateChannelImpl(long id, User user)
     {
-        this.id = id;
+        super(id, user.getJDA());
         this.user = user;
     }
 
-    private void updateUser()
+    @Nonnull
+    @Override
+    public ChannelType getType()
     {
-        // Load user from cache if one exists, otherwise we might have an outdated user instance
-        User realUser = getJDA().getUserById(user.getIdLong());
-        if (realUser != null)
-            this.user = realUser;
+        return ChannelType.PRIVATE;
     }
 
     @Nonnull
@@ -61,27 +60,11 @@ public class PrivateChannelImpl implements PrivateChannel
         return user;
     }
 
-    @Override
-    public long getLatestMessageIdLong()
-    {
-        final long messageId = lastMessageId;
-        if (messageId < 0)
-            throw new IllegalStateException("No last message id found.");
-        return messageId;
-    }
-
     @Nonnull
     @Override
     public String getName()
     {
         return getUser().getName();
-    }
-
-    @Nonnull
-    @Override
-    public ChannelType getType()
-    {
-        return ChannelType.PRIVATE;
     }
 
     @Nonnull
@@ -106,95 +89,52 @@ public class PrivateChannelImpl implements PrivateChannel
         return this.delete();
     }
 
-    @Nonnull
     @Override
-    public List<CompletableFuture<Void>> purgeMessages(@Nonnull List<? extends Message> messages)
+    public long getLatestMessageIdLong()
     {
-        if (messages == null || messages.isEmpty())
-            return Collections.emptyList();
-        for (Message m : messages)
-        {
-            if (m.getAuthor().equals(getJDA().getSelfUser()))
-                continue;
-            throw new IllegalArgumentException("Cannot delete messages of other users in a private channel");
-        }
-        return PrivateChannel.super.purgeMessages(messages);
+        return latestMessageId;
     }
 
     @Override
-    public long getIdLong()
-    {
-        return id;
-    }
+    public void checkCanAccessChannel() {}
 
-    @Nonnull
     @Override
-    public String getAsMention()
-    {
-        return "<#" + id + '>';
-    }
-
-    @Nonnull
-    @Override
-    public MessageAction sendMessage(@Nonnull CharSequence text)
-    {
+    public void checkCanSendMessage() {
         checkBot();
-        return PrivateChannel.super.sendMessage(text);
     }
 
-    @Nonnull
     @Override
-    public MessageAction sendMessage(@Nonnull MessageEmbed embed)
-    {
-        checkBot();
-        return PrivateChannel.super.sendMessage(embed);
-    }
+    public void checkCanSendMessageEmbeds() {}
 
-    @Nonnull
     @Override
-    public MessageAction sendMessage(@Nonnull Message msg)
-    {
-        checkBot();
-        return PrivateChannel.super.sendMessage(msg);
-    }
+    public void checkCanSendFiles() {}
 
-    @Nonnull
     @Override
-    public MessageAction sendFile(@Nonnull InputStream data, @Nonnull String fileName, @Nonnull AttachmentOption... options)
-    {
-        checkBot();
-        return PrivateChannel.super.sendFile(data, fileName, options);
-    }
+    public void checkCanViewHistory() {}
 
-    @Nonnull
     @Override
-    public MessageAction sendFile(@Nonnull File file, @Nonnull String fileName, @Nonnull AttachmentOption... options)
-    {
-        checkBot();
-        final long maxSize = getJDA().getSelfUser().getAllowedFileSize();
-        Checks.check(file == null || file.length() <= maxSize,
-                    "File may not exceed the maximum file length of %d bytes!", maxSize);
-        return PrivateChannel.super.sendFile(file, fileName, options);
-    }
+    public void checkCanAddReactions() {}
 
-    @Nonnull
     @Override
-    public MessageAction sendFile(@Nonnull byte[] data, @Nonnull String fileName, @Nonnull AttachmentOption... options)
+    public void checkCanRemoveReactions() {}
+
+    @Override
+    public void checkCanControlMessagePins() {}
+
+    @Override
+    public boolean canDeleteOtherUsersMessages()
     {
-        checkBot();
-        final long maxSize = getJDA().getSelfUser().getAllowedFileSize();
-        Checks.check(data == null || data.length <= maxSize, "File is too big! Max file-size is %d bytes", maxSize);
-        return PrivateChannel.super.sendFile(data, fileName, options);
+        return false;
     }
 
-    public PrivateChannelImpl setLastMessageId(long id)
+    @Override
+    public PrivateChannelImpl setLatestMessageIdLong(long latestMessageId)
     {
-        this.lastMessageId = id;
+        this.latestMessageId = latestMessageId;
         return this;
     }
 
     // -- Object --
-
 
     @Override
     public int hashCode()
@@ -217,6 +157,14 @@ public class PrivateChannelImpl implements PrivateChannel
     public String toString()
     {
         return "PC:" + getUser().getName() + '(' + getId() + ')';
+    }
+
+    private void updateUser()
+    {
+        // Load user from cache if one exists, otherwise we might have an outdated user instance
+        User realUser = getJDA().getUserById(user.getIdLong());
+        if (realUser != null)
+            this.user = realUser;
     }
 
     private void checkBot()

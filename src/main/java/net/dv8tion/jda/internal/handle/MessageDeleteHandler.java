@@ -19,8 +19,9 @@ import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.events.message.MessageDeleteEvent;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
-import net.dv8tion.jda.internal.entities.BaseGuildMessageChannelImpl;
+import net.dv8tion.jda.internal.entities.ThreadChannelImpl;
 import net.dv8tion.jda.internal.entities.PrivateChannelImpl;
+import net.dv8tion.jda.internal.entities.mixin.channel.middleman.MessageChannelMixin;
 
 public class MessageDeleteHandler extends SocketHandler
 {
@@ -48,6 +49,8 @@ public class MessageDeleteHandler extends SocketHandler
         if (channel == null)
             channel = getJDA().getNewsChannelById(channelId);
         if (channel == null)
+            channel = getJDA().getThreadChannelById(channelId);
+        if (channel == null)
             channel = getJDA().getPrivateChannelById(channelId);
         if (channel == null)
         {
@@ -56,18 +59,23 @@ public class MessageDeleteHandler extends SocketHandler
             return null;
         }
 
-        if (channel.getType().isGuild())
+        // Reset the latest message id as it was deleted.
+        if (channel.hasLatestMessage() & messageId == channel.getLatestMessageIdLong())
         {
-            //TODO-v5-threads: This wont work for threads as threads aren't a BaseGuildMessageChannelImpl!
-            BaseGuildMessageChannelImpl<?, ?> gChannel = (BaseGuildMessageChannelImpl<?, ?>) channel;
-            if (channel.hasLatestMessage() & messageId == channel.getLatestMessageIdLong())
-                gChannel.setLastMessageId(0); // Reset latest message id as it was deleted.
+            ((MessageChannelMixin<?>) channel).setLatestMessageIdLong(0);
         }
-        else
+
+        if (channel.getType().isThread())
         {
-            PrivateChannelImpl pChannel = (PrivateChannelImpl) channel;
-            if (channel.hasLatestMessage() & messageId == channel.getLatestMessageIdLong())
-                pChannel.setLastMessageId(0); // Reset latest message id as it was deleted.
+            ThreadChannelImpl gThread = (ThreadChannelImpl) channel;
+
+            //If we have less than 50 messages then we can still accurately track how many messages are in the message count.
+            //Once we exceed 50 messages Discord caps this value, so we cannot confidently decrement it.
+            int messageCount = gThread.getMessageCount();
+            if (messageCount < 50 && messageCount > 0)
+            {
+                gThread.setMessageCount(messageCount - 1);
+            }
         }
 
         getJDA().handleEvent(new MessageDeleteEvent(getJDA(), responseNumber, messageId, channel));

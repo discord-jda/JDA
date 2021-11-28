@@ -52,6 +52,8 @@ public class MessageReactionClearEmoteHandler extends SocketHandler
         GuildMessageChannel channel = guild.getTextChannelById(channelId);
         if (channel == null)
             channel = guild.getNewsChannelById(channelId);
+        if (channel == null)
+            channel = guild.getThreadChannelById(channelId);
 
         if (channel == null)
         {

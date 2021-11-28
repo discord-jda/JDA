@@ -18,6 +18,7 @@ package net.dv8tion.jda.internal.managers;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.Icon;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.exceptions.HierarchyException;
@@ -43,6 +44,8 @@ public class RoleManagerImpl extends ManagerBase<RoleManager> implements RoleMan
     protected long permissions;
     protected boolean hoist;
     protected boolean mentionable;
+    protected Icon icon;
+    protected String emoji;
 
     /**
      * Creates a new RoleManager instance
@@ -171,6 +174,28 @@ public class RoleManagerImpl extends ManagerBase<RoleManager> implements RoleMan
     @Nonnull
     @Override
     @CheckReturnValue
+    public RoleManagerImpl setIcon(Icon icon)
+    {
+        this.icon = icon;
+        this.emoji = null;
+        set |= ICON;
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    @CheckReturnValue
+    public RoleManagerImpl setIcon(String emoji)
+    {
+        this.emoji = emoji;
+        this.icon = null;
+        set |= ICON;
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    @CheckReturnValue
     public RoleManagerImpl givePermissions(@Nonnull Collection<Permission> perms)
     {
         Checks.noneNull(perms, "Permissions");
@@ -202,6 +227,11 @@ public class RoleManagerImpl extends ManagerBase<RoleManager> implements RoleMan
             object.put("mentionable", mentionable);
         if (shouldUpdate(COLOR))
             object.put("color", color == Role.DEFAULT_COLOR_RAW ? 0 : color & 0xFFFFFF);
+        if (shouldUpdate(ICON))
+        {
+            object.put("icon", icon == null ? null : icon.getEncoding());
+            object.put("unicode_emoji", emoji);
+        }
         reset();
         return getRequestBody(object);
     }

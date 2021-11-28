@@ -19,6 +19,7 @@ package net.dv8tion.jda.api.audit;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.ICategorizableChannel;
+import net.dv8tion.jda.api.entities.ThreadChannel;
 
 /**
  * Enum of possible/expected keys that can be provided
@@ -271,6 +272,51 @@ public enum AuditLogKey
      * <p>Expected type: <b>List{@literal <Map<String, Object>>}</b>
      */
     CHANNEL_OVERRIDES("permission_overwrites"),
+
+    // THREADS
+
+    /**
+     * Change of the {@link net.dv8tion.jda.api.entities.ThreadChannel#getName() ThreadChannel.getName()} value.
+     *
+     * <p>Expected type: <b>String</b>
+     */
+    THREAD_NAME("name"),
+
+    /**
+     * Change of the {@link net.dv8tion.jda.api.entities.ThreadChannel#getSlowmode() ThreadChannel.getSlowmode()} value.
+     *
+     * <p>Expected type: <b>Integer</b>
+     */
+    THREAD_SLOWMODE("rate_limit_per_user"),
+
+    /**
+     * Change of the {@link ThreadChannel#getAutoArchiveDuration() ThreadChannel.getAutoArchiveDuration()} value.
+     *
+     * <p>Expected type: <b>Integer</b>
+     */
+    THREAD_AUTO_ARCHIVE_DURATION("auto_archive_duration"),
+
+    /**
+     * Change of the {@link ThreadChannel#isArchived() ThreadChannel.isArchived()} value.
+     *
+     * <p>Expected type: <b>Boolean</b>
+     */
+    THREAD_ARCHIVED("archived"),
+
+    /**
+     * Change of the {@link ThreadChannel#isLocked() ThreadChannel.isLocked()} value.
+     *
+     * <p>Expected type: <b>Boolean</b>
+     */
+    THREAD_LOCKED("locked"),
+
+    /**
+     * Change of the {@link ThreadChannel#isInvitable() ThreadChannel.isInvitable()} value.
+     * This can only be set/modified on a {@link ThreadChannel#isPublic() private thread}.
+     *
+     * <p>Expected type: <b>Boolean</b>
+     */
+    THREAD_INVITABLE("invitable"),
 
     // STAGE_INSTANCE
 

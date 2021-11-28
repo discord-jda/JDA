@@ -453,9 +453,13 @@ public interface Guild extends ISnowflake
      * <br>This will include deprecated voice regions by default.
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type {@link java.util.EnumSet EnumSet}
+     *
+     * @deprecated Guilds no longer have the {@link net.dv8tion.jda.api.Region Region} option. Use {@link VoiceChannel#getRegion()} instead.
      */
     @Nonnull
     @CheckReturnValue
+    @Deprecated
+    @ForRemoval(deadline = "5.0.0")
     default RestAction<EnumSet<Region>> retrieveRegions()
     {
         return retrieveRegions(true);
@@ -468,9 +472,13 @@ public interface Guild extends ISnowflake
      *         Whether to include deprecated regions
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type {@link java.util.EnumSet EnumSet}
+     *
+     * @deprecated Guilds no longer have the {@link net.dv8tion.jda.api.Region Region} option. Use {@link VoiceChannel#getRegion()} instead.
      */
     @Nonnull
     @CheckReturnValue
+    @Deprecated
+    @ForRemoval(deadline = "5.0.0")
     RestAction<EnumSet<Region>> retrieveRegions(boolean includeDeprecated);
 
     /**
@@ -1483,6 +1491,9 @@ public interface Guild extends ISnowflake
             channel = getStoreChannelById(id);
         if (channel == null)
             channel = getCategoryById(id);
+        if (channel == null)
+            channel = getThreadChannelById(id);
+
         return channel;
     }
 
@@ -1554,6 +1565,10 @@ public interface Guild extends ISnowflake
             case CATEGORY:
                 return getCategoryById(id);
         }
+
+        if (type.isThread())
+            return getThreadChannelById(id);
+
         return null;
     }
 
@@ -1639,6 +1654,89 @@ public interface Guild extends ISnowflake
     default List<StageChannel> getStageChannels()
     {
        return getStageChannelCache().asList();
+    }
+
+    /**
+     * Sorted {@link net.dv8tion.jda.api.utils.cache.SnowflakeCacheView SnowflakeCacheView} of
+     * all cached {@link ThreadChannel ThreadChannel} of this Guild.
+     * <br>StageChannel are sorted according to their position.
+     *
+     * @return {@link net.dv8tion.jda.api.utils.cache.SortedSnowflakeCacheView SortedSnowflakeCacheView}
+     */
+    @Nonnull
+    SortedSnowflakeCacheView<ThreadChannel> getThreadChannelCache();
+
+    /**
+     * Gets a list of all {@link ThreadChannel ThreadChannel} in this Guild that have the same
+     * name as the one provided.
+     * <br>If there are no {@link ThreadChannel ThreadChannels} with the provided name, then this returns an empty list.
+     *
+     * @param  name
+     *         The name used to filter the returned {@link ThreadChannel ThreadChannels}.
+     * @param  ignoreCase
+     *         Determines if the comparison ignores case when comparing. True - case insensitive.
+     *
+     * @return Possibly-empty immutable list of all ThreadChannel names that match the provided name.
+     */
+    @Nonnull
+    default List<ThreadChannel> getThreadChannelsByName(@Nonnull String name, boolean ignoreCase)
+    {
+        return getThreadChannelCache().getElementsByName(name, ignoreCase);
+    }
+
+    /**
+     * Gets a {@link ThreadChannel ThreadChannel} from this guild that has the same id as the
+     * one provided. This method is similar to {@link net.dv8tion.jda.api.JDA#getThreadChannelById(String)}, but it only
+     * checks this specific Guild for a ThreadChannel.
+     * <br>If there is no {@link ThreadChannel ThreadChannel} with an id that matches the provided
+     * one, then this returns {@code null}.
+     *
+     * @param  id
+     *         The id of the {@link ThreadChannel ThreadChannel}.
+     *
+     * @throws java.lang.NumberFormatException
+     *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
+     *
+     * @return Possibly-null {@link ThreadChannel ThreadChannel} with matching id.
+     */
+    @Nullable
+    default ThreadChannel getThreadChannelById(@Nonnull String id)
+    {
+        return getThreadChannelCache().getElementById(id);
+    }
+
+    /**
+     * Gets a {@link ThreadChannel ThreadChannel} from this guild that has the same id as the
+     * one provided. This method is similar to {@link net.dv8tion.jda.api.JDA#getThreadChannelById(long)}, but it only
+     * checks this specific Guild for a ThreadChannel.
+     * <br>If there is no {@link ThreadChannel ThreadChannel} with an id that matches the provided
+     * one, then this returns {@code null}.
+     *
+     * @param  id
+     *         The id of the {@link ThreadChannel ThreadChannel}.
+     *
+     * @return Possibly-null {@link ThreadChannel ThreadChannel} with matching id.
+     */
+    @Nullable
+    default ThreadChannel getThreadChannelById(long id)
+    {
+        return getThreadChannelCache().getElementById(id);
+    }
+
+    /**
+     * Gets all {@link ThreadChannel ThreadChannel} in this {@link net.dv8tion.jda.api.entities.Guild Guild}.
+     *
+     * <p>This copies the backing store into a list. This means every call
+     * creates a new list with O(n) complexity. It is recommended to store this into
+     * a local variable or use {@link #getThreadChannelCache()} and use its more efficient
+     * versions of handling these values.
+     *
+     * @return An immutable List of {@link ThreadChannel ThreadChannels}.
+     */
+    @Nonnull
+    default List<ThreadChannel> getThreadChannels()
+    {
+        return getThreadChannelCache().asList();
     }
 
     /**
@@ -3831,6 +3929,10 @@ public interface Guild extends ISnowflake
     @Nonnull
     @CheckReturnValue
     Task<List<Member>> retrieveMembersByPrefix(@Nonnull String prefix, int limit);
+
+    @Nonnull
+    @CheckReturnValue
+    RestAction<List<ThreadChannel>> retrieveActiveThreads();
 
     /* From GuildController */
 

@@ -1004,6 +1004,12 @@ public class ReceivedMessage extends AbstractMessage
     }
 
     @Override
+    public RestAction<ThreadChannel> createThreadChannel(String name)
+    {
+        return ((IThreadContainer) getGuildChannel()).createThreadChannel(name, this.getIdLong());
+    }
+
+    @Override
     public boolean equals(Object o)
     {
         if (o == this)
