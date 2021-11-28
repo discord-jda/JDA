@@ -39,11 +39,15 @@ plugins {
 }
 
 val versionObj = Version(major = "4", minor = "4", revision = "0")
+val isCI = System.getProperty("BUILD_NUMBER") != null // jenkins
+        || System.getenv("BUILD_NUMBER") != null
+        || System.getProperty("GIT_COMMIT") != null // jitpack
+        || System.getenv("GIT_COMMIT") != null
 
 // Check the commit hash and version information
 val commitHash: String by lazy {
     val file = File(".git/refs/heads/master")
-    if (file.canRead())
+    if (isCI && file.canRead())
         file.readText().substring(0, 7)
     else
         "DEV"
