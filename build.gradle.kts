@@ -33,9 +33,9 @@ plugins {
     `java-library`
     `maven-publish`
 
-    id("io.codearte.nexus-staging") version "0.22.0"
+    id("io.codearte.nexus-staging") version "0.30.0"
     id("de.marcphilipp.nexus-publish") version "0.4.0"
-    id("com.github.johnrengelman.shadow") version "6.1.0"
+    id("com.github.johnrengelman.shadow") version "7.1.0"
 }
 
 val versionObj = Version(major = "4", minor = "4", revision = "0")
@@ -236,7 +236,7 @@ compileJava.apply {
 jar.apply {
     archiveBaseName.set(project.name)
     manifest.attributes(mapOf(
-            "Implementation-Version" to version,
+            "Implementation-Version" to project.version,
             "Automatic-Module-Name" to "net.dv8tion.jda"))
 }
 
