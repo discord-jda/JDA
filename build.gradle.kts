@@ -19,6 +19,7 @@
 
 import Build_gradle.Pom
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import de.marcphilipp.gradle.nexus.InitializeNexusStagingRepository
 import de.marcphilipp.gradle.nexus.NexusPublishExtension
 import io.codearte.gradle.nexus.BaseStagingTask
 import io.codearte.gradle.nexus.NexusStagingExtension
@@ -342,42 +343,6 @@ class Version(
 ////////////////////////////////////////
 ////////////////////////////////////////
 
-val signJar = tasks.create("signJar", Sign::class.java) {
-    dependsOn(jar)
-    sign(jar)
-}
-
-val signJavadocJar = tasks.create("signJavadocJar", Sign::class.java) {
-    dependsOn(javadocJar)
-    sign(javadocJar)
-}
-
-val signSourcesJar = tasks.create("signSourcesJar", Sign::class.java) {
-    dependsOn(sourcesJar)
-    sign(sourcesJar)
-}
-
-
-val signPom = tasks.create("signPom", Sign::class.java) {
-    val pom = file("${buildDir}/publications/Release/pom-default.xml")
-    sign(pom)
-}
-
-val signModule = tasks.create("signModule", Sign::class.java) {
-    val module = file("${buildDir}/publications/Release/module.json")
-    sign(module)
-}
-
-val signFiles = tasks.create("signFiles") {
-    dependsOn(signJar, signJavadocJar, signSourcesJar, signPom, signModule)
-}
-
-// Turn off sign tasks if we don't have a key
-val canSign = getProjectProperty("signing.keyId") != null
-tasks.withType<Sign> {
-    enabled = canSign
-}
-
 // Generate pom file for maven central
 
 fun generatePom(pom: Pom) {
@@ -431,58 +396,19 @@ publishing {
             artifact(sourcesJar)
             artifact(javadocJar)
 
-            artifact(signJar.signatureFiles.first()) {
-                classifier = null
-                extension = "jar.asc"
-            }
-            artifact(signJavadocJar.signatureFiles.first()) {
-                classifier = "javadoc"
-                extension = "jar.asc"
-            }
-            artifact(signSourcesJar.signatureFiles.first()) {
-                classifier = "sources"
-                extension = "jar.asc"
-            }
-            artifact(signPom.signatureFiles.first()) {
-                classifier = null
-                extension = "pom.asc"
-            }
-            artifact(signModule.signatureFiles.first()) {
-                classifier = null
-                extension = "module.asc"
-            }
-
-            generatePom(pom)
-        }
-
-        register("Local", MavenPublication::class) {
-            from(components["java"])
-
-            artifactId = project.name
-            groupId = project.group as String
-            version = project.version as String
-
-            artifact(sourcesJar)
-            artifact(javadocJar)
-
             generatePom(pom)
         }
     }
 }
 
 
-
-
-
-// Prepare for publish
-
-val generateMetadataFileForReleasePublication: Task by tasks
-signModule.dependsOn(generateMetadataFileForReleasePublication)
-signModule.mustRunAfter(generateMetadataFileForReleasePublication)
-
-val generatePomFileForReleasePublication: GenerateMavenPom by tasks
-signPom.dependsOn(generatePomFileForReleasePublication)
-signPom.mustRunAfter(generatePomFileForReleasePublication)
+// Turn off sign tasks if we don't have a key
+val canSign = getProjectProperty("signing.keyId") != null
+if (canSign) {
+    signing {
+        sign(publishing.publications.getByName("Release"))
+    }
+}
 
 // Staging and Promotion
 
@@ -507,43 +433,40 @@ configure<NexusPublishExtension> {
 
 // This links the close/release tasks to the right repository (from the publication above)
 
-val shouldPublish = isNewVersion && canSign && getProjectProperty("ossrhUser") != null
+val ossrhConfigured = getProjectProperty("ossrhUser") != null
+val shouldPublish = isNewVersion && canSign && ossrhConfigured
 
-val publish: Task by tasks
-val publishToSonatype: Task by tasks
-val initializeSonatypeStagingRepository: Task by tasks
-val closeAndReleaseRepository: Task by tasks
-initializeSonatypeStagingRepository.enabled = shouldPublish
-closeAndReleaseRepository.enabled = shouldPublish
-publish.dependsOn(publishToSonatype)
-closeAndReleaseRepository.mustRunAfter(publish)
+// Turn off the staging tasks if we don't want to publish
+tasks.withType<InitializeNexusStagingRepository> {
+    enabled = shouldPublish
+}
 
 tasks.withType<BaseStagingTask> {
-    dependsOn(publishToSonatype)
-    mustRunAfter(publishToSonatype)
     enabled = shouldPublish
     // We give each step an hour because it takes very long sometimes ...
     numberOfRetries = 30 // 30 tries
     delayBetweenRetriesInMillis = 2 * 60 * 1000 // 2 minutes
 }
 
+// Getting staging profile is fine though
+tasks.getByName("getStagingProfile").enabled = ossrhConfigured
+
 tasks.create("release") {
-    mustRunAfter(publish)
-    dependsOn(publish)
-    dependsOn(closeAndReleaseRepository)
-    dependsOn(build)
+    val closeAndReleaseRepository: Task by tasks
+    dependsOn(tasks.withType<PublishToMavenRepository>()) // uploads artifacts to sonatype
+    dependsOn(closeAndReleaseRepository) // does the maven central sync
+    dependsOn(build) // builds all jars for jenkins
     enabled = shouldPublish
 
-    doLast {
+    doLast { // Only runs when shouldPublish = true
+        println("Saving version $versionObj to .version")
         val file = File(".version")
         file.createNewFile()
         file.writeText(versionObj.toString())
     }
 }
 
-tasks.withType<AbstractPublishToMaven> {
-    dependsOn(signFiles)
-    mustRunAfter(signFiles)
+tasks.withType<PublishToMavenRepository> {
     enabled = shouldPublish
 }
 
@@ -551,9 +474,3 @@ tasks.withType<AbstractPublishToMaven> {
 tasks.withType<Copy> {
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
 }
-
-// Allow local publishing
-val publishToMavenLocal: Task by tasks
-val publishLocalPublicationToMavenLocal: Task by tasks
-publishToMavenLocal.enabled = true
-publishLocalPublicationToMavenLocal.enabled = true
