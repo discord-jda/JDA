@@ -1,4 +1,5 @@
-[version]: https://shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Fm2.dv8tion.net%2Freleases%2Fnet%2Fdv8tion%2FJDA%2Fmaven-metadata.xml&color=informational&label=Download
+[maven-central]: https://img.shields.io/maven-central/v/net.dv8tion/JDA
+[jitpack]: https://img.shields.io/jitpack/v/github/DV8FromTheWorld/JDA?label=Snapshots
 [download]: #download
 [discord-invite]: https://discord.gg/0hMr4ce0tIl3SLv5
 [migration]: https://github.com/DV8FromTheWorld/JDA/wiki/0\)-Migrating-to-V4
@@ -12,7 +13,8 @@
 [jenkins-shield]: https://img.shields.io/badge/Download-Jenkins-brightgreen.svg
 [license-shield]: https://img.shields.io/badge/License-Apache%202.0-lightgrey.svg
 [migration-shield]: https://img.shields.io/badge/Wiki-Migrating%20from%20V3-green.svg
-[ ![version][] ][download]
+[ ![maven-central][] ][download]
+[ ![jitpack][] ](https://jitpack.io/#DV8FromtheWorld/JDA)
 [ ![jenkins-shield][] ][jenkins]
 [ ![license-shield][] ][license]
 [ ![discord-shield][] ][discord-invite]
@@ -423,11 +425,12 @@ public class UserLogger extends ListenerAdapter
 
 ## Download
 
-Latest Stable Version: [GitHub Release](https://github.com/DV8FromTheWorld/JDA/releases/latest)
-Latest Version:
-[ ![version][] ][download]
+[ ![maven-central][] ](https://mvnrepository.com/artifact/net.dv8tion/JDA/latest)
+[ ![jitpack][] ](https://jitpack.io/#DV8FromtheWorld/JDA)
 
-Be sure to replace the **VERSION** key below with the one of the versions shown above!
+Latest Release: [GitHub Release](https://github.com/DV8FromTheWorld/JDA/releases/latest) <br>
+
+Be sure to replace the **VERSION** key below with the one of the versions shown above! For snapshots, please use the instructions provided by [JitPack](https://jitpack.io/#DV8FromTheWorld/JDA).
 
 **Maven**
 ```xml
@@ -475,7 +478,8 @@ dependencies {
 }
 ```
 
-The builds are distributed using a custom S3 instance.
+The snapshot builds are only available via JitPack and require adding the JitPack resolver, you need to specify specific commits to access those builds.
+Stable releases are published to [maven-central](https://mvnrepository.com/artifact/net.dv8tion/JDA).
 
 If you do not need any opus de-/encoding done by JDA (voice receive/send with PCM) you can exclude `opus-java` entirely.
 This can be done if you only send audio with an `AudioSendHandler` which only sends opus (`isOpus() = true`). (See [lavaplayer](https://github.com/sedmelluq/lavaplayer))
