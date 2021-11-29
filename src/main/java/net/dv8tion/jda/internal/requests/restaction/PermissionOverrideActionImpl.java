@@ -25,8 +25,8 @@ import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.restaction.PermissionOverrideAction;
 import net.dv8tion.jda.api.utils.data.DataObject;
-import net.dv8tion.jda.internal.entities.AbstractChannelImpl;
 import net.dv8tion.jda.internal.entities.PermissionOverrideImpl;
+import net.dv8tion.jda.internal.entities.mixin.channel.attribute.IPermissionContainerMixin;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.PermissionUtil;
 import okhttp3.RequestBody;
@@ -47,7 +47,7 @@ public class PermissionOverrideActionImpl
 
     private long allow = 0;
     private long deny = 0;
-    private final AbstractChannelImpl<?, ?> channel;
+    private final IPermissionContainerMixin<?> channel;
     private final IPermissionHolder permissionHolder;
     private final boolean isRole;
     private final long id;
@@ -55,7 +55,7 @@ public class PermissionOverrideActionImpl
     public PermissionOverrideActionImpl(PermissionOverride override)
     {
         super(override.getJDA(), Route.Channels.MODIFY_PERM_OVERRIDE.compile(override.getChannel().getId(), override.getId()));
-        this.channel = (AbstractChannelImpl<?, ?>) override.getChannel();
+        this.channel = (IPermissionContainerMixin<?>) override.getChannel();
         this.permissionHolder = override.getPermissionHolder();
         this.isRole = override.isRoleOverride();
         this.id = override.getIdLong();
@@ -64,7 +64,7 @@ public class PermissionOverrideActionImpl
     public PermissionOverrideActionImpl(JDA api, GuildChannel channel, IPermissionHolder permissionHolder)
     {
         super(api, Route.Channels.CREATE_PERM_OVERRIDE.compile(channel.getId(), permissionHolder.getId()));
-        this.channel = (AbstractChannelImpl<?, ?>) channel;
+        this.channel = (IPermissionContainerMixin<?>) channel;
         this.permissionHolder = permissionHolder;
         this.isRole = permissionHolder instanceof Role;
         this.id = permissionHolder.getIdLong();
@@ -267,13 +267,13 @@ public class PermissionOverrideActionImpl
 
     private long getOriginalDeny()
     {
-        PermissionOverride override = channel.getOverrideMap().get(id);
+        PermissionOverride override = channel.getPermissionOverrideMap().get(id);
         return override == null ? 0 : override.getDeniedRaw();
     }
 
     private long getOriginalAllow()
     {
-        PermissionOverride override = channel.getOverrideMap().get(id);
+        PermissionOverride override = channel.getPermissionOverrideMap().get(id);
         return override == null ? 0 : override.getAllowedRaw();
     }
 

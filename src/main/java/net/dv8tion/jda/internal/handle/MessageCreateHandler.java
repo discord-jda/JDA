@@ -15,15 +15,17 @@
  */
 package net.dv8tion.jda.internal.handle;
 
+import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.MessageType;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
-import net.dv8tion.jda.internal.entities.BaseGuildMessageChannelImpl;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
+import net.dv8tion.jda.internal.entities.ThreadChannelImpl;
 import net.dv8tion.jda.internal.entities.PrivateChannelImpl;
+import net.dv8tion.jda.internal.entities.mixin.channel.middleman.MessageChannelMixin;
 import net.dv8tion.jda.internal.requests.WebSocketClient;
 
 public class MessageCreateHandler extends SocketHandler
@@ -85,16 +87,25 @@ public class MessageCreateHandler extends SocketHandler
         }
 
         MessageChannel channel = message.getChannel();
-        if (channel.getType().isGuild())
+        ChannelType channelType = channel.getType();
+
+        //Update the variable that tracks the latest message received in the channel
+        ((MessageChannelMixin<?>) channel).setLatestMessageIdLong(message.getIdLong());
+
+        if (channelType.isGuild())
         {
-            //TODO-v5-threads: This wont work for threads as threads aren't a BaseGuildMessageChannelImpl!
-            BaseGuildMessageChannelImpl<?, ?> gChannel = (BaseGuildMessageChannelImpl<?, ?>) channel;
-            gChannel.setLastMessageId(message.getIdLong());
+            if (channelType.isThread())
+            {
+                ThreadChannelImpl gThread = (ThreadChannelImpl) channel;
+
+                //Discord will only ever allow this property to show up to 50,
+                // so we don't want to update it to be over 50 because we don't want users to use it incorrectly.
+                int newMessageCount = Math.max(gThread.getMessageCount() + 1, 50);
+                gThread.setMessageCount(newMessageCount);
+            }
         }
         else
         {
-            PrivateChannelImpl pChannel = (PrivateChannelImpl) channel;
-            pChannel.setLastMessageId(message.getIdLong());
             api.usedPrivateChannel(channel.getIdLong());
         }
 

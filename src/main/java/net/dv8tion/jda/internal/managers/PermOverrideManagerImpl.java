@@ -17,7 +17,6 @@
 package net.dv8tion.jda.internal.managers;
 
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.IPermissionContainer;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.PermissionOverride;
@@ -25,7 +24,7 @@ import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.exceptions.MissingAccessException;
 import net.dv8tion.jda.api.managers.PermOverrideManager;
 import net.dv8tion.jda.api.utils.data.DataObject;
-import net.dv8tion.jda.internal.entities.AbstractChannelImpl;
+import net.dv8tion.jda.internal.entities.mixin.channel.attribute.IPermissionContainerMixin;
 import net.dv8tion.jda.internal.requests.Route;
 import okhttp3.RequestBody;
 
@@ -71,8 +70,8 @@ public class PermOverrideManagerImpl extends ManagerBase<PermOverrideManager> im
     @Override
     public PermissionOverride getPermissionOverride()
     {
-        AbstractChannelImpl<?, ?> channel = (AbstractChannelImpl<?, ?>) override.getChannel();
-        PermissionOverride realOverride = channel.getOverrideMap().get(override.getIdLong());
+        IPermissionContainerMixin<?> channel = (IPermissionContainerMixin<?>) override.getChannel();
+        PermissionOverride realOverride = channel.getPermissionOverrideMap().get(override.getIdLong());
         if (realOverride != null)
             override = realOverride;
         return override;

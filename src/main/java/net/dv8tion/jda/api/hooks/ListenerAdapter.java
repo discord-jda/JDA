@@ -60,6 +60,12 @@ import net.dv8tion.jda.api.events.stage.StageInstanceDeleteEvent;
 import net.dv8tion.jda.api.events.stage.update.GenericStageInstanceUpdateEvent;
 import net.dv8tion.jda.api.events.stage.update.StageInstanceUpdatePrivacyLevelEvent;
 import net.dv8tion.jda.api.events.stage.update.StageInstanceUpdateTopicEvent;
+import net.dv8tion.jda.api.events.thread.GenericThreadEvent;
+import net.dv8tion.jda.api.events.thread.ThreadHiddenEvent;
+import net.dv8tion.jda.api.events.thread.ThreadRevealedEvent;
+import net.dv8tion.jda.api.events.thread.member.GenericThreadMemberEvent;
+import net.dv8tion.jda.api.events.thread.member.ThreadMemberJoinEvent;
+import net.dv8tion.jda.api.events.thread.member.ThreadMemberLeaveEvent;
 import net.dv8tion.jda.api.events.user.GenericUserEvent;
 import net.dv8tion.jda.api.events.user.UserActivityEndEvent;
 import net.dv8tion.jda.api.events.user.UserActivityStartEvent;
@@ -201,6 +207,19 @@ public abstract class ListenerAdapter implements EventListener
     public void onChannelUpdateTopic(@Nonnull ChannelUpdateTopicEvent event) {}
     public void onChannelUpdateType(@Nonnull ChannelUpdateTypeEvent event) {}
     public void onChannelUpdateUserLimit(@Nonnull ChannelUpdateUserLimitEvent event) {}
+    public void onChannelUpdateArchived(@Nonnull ChannelUpdateArchivedEvent event) {}
+    public void onChannelUpdateArchiveTimestamp(@Nonnull ChannelUpdateArchiveTimestampEvent event) {}
+    public void onChannelUpdateAutoArchiveDuration(@Nonnull ChannelUpdateAutoArchiveDurationEvent event) {}
+    public void onChannelUpdateLocked(@Nonnull ChannelUpdateLockedEvent event) {}
+    public void onChannelUpdateInvitable(@Nonnull ChannelUpdateInvitableEvent event) {}
+
+    //Thread Events
+    public void onThreadRevealed(@Nonnull ThreadRevealedEvent event) {}
+    public void onThreadHidden(@Nonnull ThreadHiddenEvent event) {}
+
+    //Thread Member Events
+    public void onThreadMemberJoin(@Nonnull ThreadMemberJoinEvent event) {}
+    public void onThreadMemberLeave(@Nonnull ThreadMemberLeaveEvent event) {}
 
     //Guild Events
     public void onGuildReady(@Nonnull GuildReadyEvent event) {}
@@ -317,6 +336,8 @@ public abstract class ListenerAdapter implements EventListener
     public void onGenericStageInstanceUpdate(@Nonnull GenericStageInstanceUpdateEvent event) {}
     public void onGenericChannel(@Nonnull GenericChannelEvent event) {}
     public void onGenericChannelUpdate(@Nonnull GenericChannelUpdateEvent<?> event) {}
+    public void onGenericThread(@Nonnull GenericThreadEvent event) {}
+    public void onGenericThreadMember(@Nonnull GenericThreadMemberEvent event) {}
     public void onGenericGuild(@Nonnull GenericGuildEvent event) {}
     public void onGenericGuildUpdate(@Nonnull GenericGuildUpdateEvent event) {}
     public void onGenericGuildInvite(@Nonnull GenericGuildInviteEvent event) {}

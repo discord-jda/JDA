@@ -17,14 +17,18 @@
 package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.ChannelManager;
+import net.dv8tion.jda.api.managers.channel.concrete.StageChannelManager;
 import net.dv8tion.jda.api.requests.restaction.ChannelAction;
 import net.dv8tion.jda.api.requests.restaction.StageInstanceAction;
+import net.dv8tion.jda.internal.requests.restaction.StageInstanceActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.EnumSet;
 
 /**
  * Represents a Stage Channel.
@@ -66,7 +70,18 @@ public interface StageChannel extends GuildChannel, AudioChannel, ICategorizable
      */
     @Nonnull
     @CheckReturnValue
-    StageInstanceAction createStageInstance(@Nonnull String topic);
+    default StageInstanceAction createStageInstance(@Nonnull String topic)
+    {
+        EnumSet<Permission> permissions = getGuild().getSelfMember().getPermissions(this);
+        EnumSet<Permission> required = EnumSet.of(Permission.MANAGE_CHANNEL, Permission.VOICE_MUTE_OTHERS, Permission.VOICE_MOVE_OTHERS);
+        for (Permission perm : required)
+        {
+            if (!permissions.contains(perm))
+                throw new InsufficientPermissionException(this, perm, "You must be a stage moderator to create a stage instance! Missing Permission: " + perm);
+        }
+
+        return new StageInstanceActionImpl(this).setTopic(topic);
+    }
 
     /**
      * Whether this member is considered a moderator for this stage channel.
@@ -101,9 +116,12 @@ public interface StageChannel extends GuildChannel, AudioChannel, ICategorizable
 
     @Nonnull
     @Override
-    ChannelAction<StageChannel> createCopy();
+    default ChannelAction<StageChannel> createCopy()
+    {
+        return createCopy(getGuild());
+    }
 
     @Nonnull
     @Override
-    ChannelManager<StageChannel> getManager();
+    StageChannelManager getManager();
 }

@@ -71,6 +71,8 @@ public class MessageHistory
     {
         Checks.notNull(channel, "Channel");
         this.channel = channel;
+
+        //TODO-v5: Fix permissions here.
         if (channel instanceof TextChannel)
         {
             TextChannel tc = (TextChannel) channel;
