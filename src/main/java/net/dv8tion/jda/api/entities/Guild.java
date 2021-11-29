@@ -444,6 +444,32 @@ public interface Guild extends ISnowflake
     RestAction<Map<String, List<CommandPrivilege>>> updateCommandPrivileges(@Nonnull Map<String, Collection<? extends CommandPrivilege>> privileges);
 
     /**
+     * Retrieves the available regions for this Guild
+     * <br>Shortcut for {@link #retrieveRegions(boolean) retrieveRegions(true)}
+     * <br>This will include deprecated voice regions by default.
+     *
+     * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type {@link java.util.EnumSet EnumSet}
+     */
+    @Nonnull
+    @CheckReturnValue
+    default RestAction<EnumSet<Region>> retrieveRegions()
+    {
+        return retrieveRegions(true);
+    }
+
+    /**
+     * Retrieves the available regions for this Guild
+     *
+     * @param  includeDeprecated
+     *         Whether to include deprecated regions
+     *
+     * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type {@link java.util.EnumSet EnumSet}
+     */
+    @Nonnull
+    @CheckReturnValue
+    RestAction<EnumSet<Region>> retrieveRegions(boolean includeDeprecated);
+
+    /**
      * Adds the user represented by the provided id to this guild.
      * <br>This requires an <b>OAuth2 Access Token</b> with the scope {@code guilds.join}.
      *

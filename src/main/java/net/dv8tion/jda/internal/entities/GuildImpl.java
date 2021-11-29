@@ -266,6 +266,29 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
+    public RestAction<EnumSet<Region>> retrieveRegions(boolean includeDeprecated)
+    {
+        Route.CompiledRoute route = Route.Guilds.GET_VOICE_REGIONS.compile(getId());
+        return new RestActionImpl<>(getJDA(), route, (response, request) ->
+        {
+            EnumSet<Region> set = EnumSet.noneOf(Region.class);
+            DataArray arr = response.getArray();
+            for (int i = 0; i < arr.length(); i++)
+            {
+                DataObject obj = arr.getObject(i);
+                if (!includeDeprecated && obj.getBoolean("deprecated"))
+                    continue;
+                String id = obj.getString("id", "");
+                Region region = Region.fromKey(id);
+                if (region != Region.UNKNOWN)
+                    set.add(region);
+            }
+            return set;
+        });
+    }
+
+    @Nonnull
+    @Override
     public MemberAction addMember(@Nonnull String accessToken, @Nonnull String userId)
     {
         Checks.notBlank(accessToken, "Access-Token");
