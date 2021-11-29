@@ -1,5 +1,5 @@
-[maven-central]: https://img.shields.io/maven-central/v/net.dv8tion/JDA
-[jitpack]: https://img.shields.io/jitpack/v/github/DV8FromTheWorld/JDA?label=Snapshots
+[maven-central]: https://img.shields.io/maven-central/v/net.dv8tion/JDA?color=blue
+[jitpack]: https://img.shields.io/jitpack/v/github/DV8FromTheWorld/JDA?label=Snapshots&color=blue
 [download]: #download
 [discord-invite]: https://discord.gg/0hMr4ce0tIl3SLv5
 [migration]: https://github.com/DV8FromTheWorld/JDA/wiki/0\)-Migrating-to-V4
@@ -9,14 +9,15 @@
 [troubleshooting]: https://github.com/DV8FromTheWorld/JDA/wiki/19\)-Troubleshooting
 [discord-shield]: https://discord.com/api/guilds/125227483518861312/widget.png
 [faq-shield]: https://img.shields.io/badge/Wiki-FAQ-blue.svg
-[troubleshooting-shield]: https://img.shields.io/badge/Wiki-Troubleshooting-red.svg
-[jenkins-shield]: https://img.shields.io/badge/Download-Jenkins-brightgreen.svg
-[license-shield]: https://img.shields.io/badge/License-Apache%202.0-lightgrey.svg
-[migration-shield]: https://img.shields.io/badge/Wiki-Migrating%20from%20V3-green.svg
+[troubleshooting-shield]: https://img.shields.io/badge/Wiki-Troubleshooting-darkgreen.svg
+[jenkins-shield]: https://img.shields.io/badge/Download-Jenkins-purple.svg
+[license-shield]: https://img.shields.io/badge/License-Apache%202.0-white.svg
+[migration-shield]: https://img.shields.io/badge/Wiki-Migrating%20from%20V3-darkgreen.svg
 [ ![maven-central][] ][download]
 [ ![jitpack][] ](https://jitpack.io/#DV8FromtheWorld/JDA)
 [ ![jenkins-shield][] ][jenkins]
 [ ![license-shield][] ][license]
+
 [ ![discord-shield][] ][discord-invite]
 [ ![faq-shield] ][faq]
 [ ![troubleshooting-shield] ][troubleshooting]
