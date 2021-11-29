@@ -105,9 +105,7 @@ dependencies {
     api("com.squareup.okhttp3:okhttp:3.13.0")
 
     //Opus library support
-    api("club.minnced:opus-java:1.1.0@pom") {
-        isTransitive = true
-    }
+    api("club.minnced:opus-java:1.1.1")
 
     //Collections Utility
     api("org.apache.commons:commons-collections4:4.1")
