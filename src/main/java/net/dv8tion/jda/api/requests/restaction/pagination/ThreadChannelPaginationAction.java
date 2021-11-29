@@ -16,7 +16,9 @@
 
 package net.dv8tion.jda.api.requests.restaction.pagination;
 
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.IThreadContainer;
+import net.dv8tion.jda.api.entities.ThreadChannel;
 
 import javax.annotation.Nonnull;
 

@@ -15,10 +15,6 @@
  */
 package net.dv8tion.jda.api.entities;
 
-import net.dv8tion.jda.annotations.ReplaceWith;
-import net.dv8tion.jda.api.requests.RestAction;
-
-import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 
 /**

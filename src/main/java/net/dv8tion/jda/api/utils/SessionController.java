@@ -16,11 +16,7 @@
 
 package net.dv8tion.jda.api.utils;
 
-import net.dv8tion.jda.annotations.DeprecatedSince;
-import net.dv8tion.jda.annotations.ForRemoval;
-import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.internal.utils.tuple.Pair;
 
 import javax.annotation.Nonnull;
 

@@ -19,7 +19,6 @@ package net.dv8tion.jda.internal.entities.mixin.channel.middleman;
 import gnu.trove.map.TLongObjectMap;
 import net.dv8tion.jda.api.entities.AudioChannel;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.internal.entities.mixin.channel.attribute.IPermissionContainerMixin;
 
 public interface AudioChannelMixin<T extends AudioChannelMixin<T>> extends AudioChannel, GuildChannelMixin<T>
 {
