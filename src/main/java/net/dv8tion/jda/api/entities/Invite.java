@@ -208,29 +208,6 @@ public interface Invite
     }
 
     /**
-     * Returns creation date of this invite.
-     *
-     * <p>This works only for expanded invites and will throw a {@link IllegalStateException} otherwise!
-     *
-     * @throws IllegalStateException
-     *         if this invite is not expanded
-     *
-     * @return The creation date of this invite
-     *
-     * @see    #expand()
-     * @see    #isExpanded()
-     *
-     * @deprecated
-     *         Use {@link #getTimeCreated()} instead
-     */
-    @Nonnull
-    @Deprecated
-    @ForRemoval(deadline = "5.0.0")
-    @DeprecatedSince("4.0.0")
-    @ReplaceWith("getTimeCreated()")
-    OffsetDateTime getCreationTime();
-
-    /**
      * An {@link net.dv8tion.jda.api.entities.Invite.Guild Invite.Guild} object
      * containing information about this invite's origin guild.
      *

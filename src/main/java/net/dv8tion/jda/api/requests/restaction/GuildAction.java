@@ -66,28 +66,6 @@ public interface GuildAction extends RestAction<Void>
     GuildAction deadline(long timestamp);
 
     /**
-     * Sets the voice {@link net.dv8tion.jda.api.Region Region} of
-     * the resulting {@link net.dv8tion.jda.api.entities.Guild Guild}.
-     *
-     * @param  region
-     *         The {@link net.dv8tion.jda.api.Region Region} to use
-     *
-     * @throws java.lang.IllegalArgumentException
-     *         If the provided region is a VIP region as per {@link net.dv8tion.jda.api.Region#isVip() Region.isVip()}
-     *
-     * @return The current GuildAction for chaining convenience
-     * 
-     * @deprecated Guilds no longer have the {@link net.dv8tion.jda.api.Region Region} option. Use {@link net.dv8tion.jda.api.managers.ChannelManager#setRegion(Region)} instead.
-     */
-    @Nonnull
-    @CheckReturnValue
-    @Deprecated
-    @ForRemoval(deadline = "5.0.0")
-    @ReplaceWith("ChannelManager.setRegion()")
-    @DeprecatedSince("4.3.0")
-    GuildAction setRegion(@Nullable Region region);
-
-    /**
      * Sets the {@link net.dv8tion.jda.api.entities.Icon Icon}
      * for the resulting {@link net.dv8tion.jda.api.entities.Guild Guild}
      *

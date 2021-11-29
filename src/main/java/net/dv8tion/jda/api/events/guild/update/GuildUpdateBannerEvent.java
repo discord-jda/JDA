@@ -64,23 +64,6 @@ public class GuildUpdateBannerEvent extends GenericGuildUpdateEvent<String>
     }
 
     /**
-     * The new banner url
-     *
-     * @return The new banner url, or null if the banner was removed
-     *
-     * @deprecated This will be replaced by {@link #getNewBannerUrl()}
-     */
-    @Nullable
-    @Deprecated
-    @ForRemoval(deadline = "5.0.0")
-    @DeprecatedSince("4.2.0")
-    @ReplaceWith("getNewBannerUrl()")
-    public String getNewBannerIdUrl()
-    {
-        return getNewBannerUrl();
-    }
-
-    /**
      * The old banner id
      *
      * @return The old banner id, or null if the banner didn't exist

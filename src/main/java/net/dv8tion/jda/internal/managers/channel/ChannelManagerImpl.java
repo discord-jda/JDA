@@ -45,6 +45,7 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
 {
     protected T channel;
 
+    //TODO handle reset correctly
     protected ThreadChannel.AutoArchiveDuration autoArchiveDuration;
     protected ChannelType type;
     protected String name;

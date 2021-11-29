@@ -82,13 +82,6 @@ public class PrivateChannelImpl extends AbstractChannelImpl<PrivateChannelImpl> 
         return new RestActionImpl<>(getJDA(), route);
     }
 
-    @Nonnull
-    @Override
-    public RestAction<Void> close()
-    {
-        return this.delete();
-    }
-
     @Override
     public long getLatestMessageIdLong()
     {

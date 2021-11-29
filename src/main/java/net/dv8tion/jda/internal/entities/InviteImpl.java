@@ -181,16 +181,6 @@ public class InviteImpl implements Invite
         return this.code;
     }
 
-    @Nonnull
-    @Override
-    @Deprecated
-    @DeprecatedSince("4.BETA.0")
-    @ReplaceWith("getTimeCreated()")
-    public OffsetDateTime getCreationTime()
-    {
-        return getTimeCreated();
-    }
-
     @Override
     public Guild getGuild()
     {

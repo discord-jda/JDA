@@ -177,38 +177,6 @@ public interface AudioManager
     Guild getGuild();
 
     /**
-     * This can be used to find out if JDA is currently attempting to setup an audio connection.
-     * <br>If this returns true then {@link #getQueuedAudioConnection()} will return the
-     * {@link net.dv8tion.jda.api.entities.AudioChannel AudioChannel} that JDA is attempting to setup an audio connection to.
-     *
-     * @return True, if JDA is currently attempting to create an audio connection.
-     *
-     * @deprecated The internals have changed and this is no longer used
-     */
-    @Deprecated
-    @ForRemoval(deadline = "5.0.0")
-    @DeprecatedSince("4.2.0")
-    boolean isAttemptingToConnect();
-
-    /**
-     * This can be used to find out what {@link net.dv8tion.jda.api.entities.AudioChannel AudioChannel} JDA is currently
-     * attempting to setup an audio connection for. If JDA isn't trying to create an audio connection this will return
-     * null.
-     * <br>In addition, if JDA is already connected, this will return null. To determine if JDA is already has an audio connection
-     * with a {@link net.dv8tion.jda.api.entities.AudioChannel AudioChannel} use {@link #isConnected()}
-     *
-     * @return The {@link net.dv8tion.jda.api.entities.AudioChannel AudioChannel} that JDA is attempting to create an
-     *         audio connection with, or {@code null} if JDA isn't attempting to create a connection.
-     *
-     * @deprecated The internals have changed and this is no longer used
-     */
-    @Nullable
-    @Deprecated
-    @ForRemoval(deadline = "5.0.0")
-    @DeprecatedSince("4.2.0")
-    AudioChannel getQueuedAudioConnection();
-
-    /**
      * The {@link net.dv8tion.jda.api.entities.AudioChannel AudioChannel} that JDA currently has an audio connection
      * to. If JDA currently doesn't have an audio connection to an {@link net.dv8tion.jda.api.entities.AudioChannel AudioChannel}
      * this will return {@code null}.

@@ -18,7 +18,6 @@ package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
-import net.dv8tion.jda.api.managers.ChannelManager;
 import net.dv8tion.jda.api.managers.channel.concrete.StageChannelManager;
 import net.dv8tion.jda.api.requests.restaction.ChannelAction;
 import net.dv8tion.jda.api.requests.restaction.StageInstanceAction;

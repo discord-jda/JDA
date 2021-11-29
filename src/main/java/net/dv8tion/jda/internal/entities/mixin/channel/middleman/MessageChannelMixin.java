@@ -128,20 +128,6 @@ public interface MessageChannelMixin<T extends MessageChannelMixin<T>> extends M
 
     @Nonnull
     @CheckReturnValue
-    @Deprecated
-    @ForRemoval(deadline="5.0.0")
-    @ReplaceWith("sendMessageEmbeds(embed)")
-    @DeprecatedSince("4.4.0")
-    default MessageAction sendMessage(@Nonnull MessageEmbed embed)
-    {
-        checkCanAccessChannel();
-        checkCanSendMessage();
-        checkCanSendMessageEmbeds();
-        return MessageChannel.super.sendMessage(embed);
-    }
-
-    @Nonnull
-    @CheckReturnValue
     default MessageAction sendMessageEmbeds(@Nonnull MessageEmbed embed, @Nonnull MessageEmbed... other)
     {
         checkCanAccessChannel();
@@ -330,18 +316,6 @@ public interface MessageChannelMixin<T extends MessageChannelMixin<T>> extends M
        return MessageChannel.super.editMessageById(messageId, newContent);
     }
 
-    @Nonnull
-    @CheckReturnValue
-    @Deprecated
-    @ForRemoval(deadline = "5.0.0")
-    @ReplaceWith("editMessageEmbedsById(messageId, newEmbed)")
-    @DeprecatedSince("4.4.0")
-    default MessageAction editMessageById(@Nonnull String messageId, @Nonnull MessageEmbed newEmbed)
-    {
-        checkCanAccessChannel();
-        checkCanSendMessage();
-        return MessageChannel.super.editMessageById(messageId, newEmbed);
-    }
 
     @Nonnull
     @CheckReturnValue

@@ -128,27 +128,6 @@ public class MessageBuilder implements Appendable
     }
 
     /**
-     * Adds a {@link net.dv8tion.jda.api.entities.MessageEmbed} to the Message. Embeds can be built using
-     * the {@link net.dv8tion.jda.api.EmbedBuilder} and offer specialized formatting.
-     *
-     * @param  embed
-     *         the embed to add, or null to remove
-     *
-     * @return The MessageBuilder instance. Useful for chaining.
-     *
-     * @deprecated Use {@link #setEmbeds(MessageEmbed...)} instead
-     */
-    @Nonnull
-    @Deprecated
-    @ForRemoval(deadline = "5.0.0")
-    @ReplaceWith("setEmbeds(embed)")
-    @DeprecatedSince("4.4.0")
-    public MessageBuilder setEmbed(@Nullable MessageEmbed embed)
-    {
-        return embed == null ? setEmbeds() : setEmbeds(embed);
-    }
-
-    /**
      * Adds up to 10 {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbeds} to the Message. Embeds can be built using
      * the {@link net.dv8tion.jda.api.EmbedBuilder} and offer specialized formatting.
      *
@@ -854,112 +833,6 @@ public class MessageBuilder implements Appendable
         return mentionRoles(toStringArray(roles));
     }
 
-    /**
-     * Removes all mentions and replaces them with the closest looking textual representation.
-     *
-     * <p>Use this over {@link #stripMentions(Guild)} if {@link net.dv8tion.jda.api.entities.User User} mentions
-     * should be replaced with their {@link net.dv8tion.jda.api.entities.User#getName()} instead of their Nicknames.
-     *
-     * @param jda
-     *        The JDA instance used to resolve the mentions.
-     *
-     * @return The MessageBuilder instance. Useful for chaining.
-     *
-     * @deprecated This is not a reliable way to remove mentions from the content,
-     *             you should use {@link #setAllowedMentions(Collection)} instead.
-     */
-    @Nonnull
-    @Deprecated
-    @ForRemoval(deadline = "4.4.0")
-    @ReplaceWith("setAllowedMentions(Collections.emptyList())")
-    @DeprecatedSince("4.2.0")
-    public MessageBuilder stripMentions(@Nonnull JDA jda)
-    {
-        // Note: Users can rename to "everyone" or "here", so those
-        // should be stripped after the USER mention is stripped.
-        return this.stripMentions(jda, null, Message.MentionType.values());
-    }
-
-    /**
-     * Removes all mentions and replaces them with the closest looking textual representation.
-     *
-     * <p>Use this over {@link #stripMentions(JDA)} if {@link net.dv8tion.jda.api.entities.User User} mentions should
-     * be replaced with their nicknames in a specific guild based.
-     * <br>Uses {@link net.dv8tion.jda.api.entities.Member#getEffectiveName()}
-     *
-     * @param  guild
-     *         the guild for {@link net.dv8tion.jda.api.entities.User User} mentions
-     *
-     * @return The MessageBuilder instance. Useful for chaining.
-     *
-     * @deprecated This is not a reliable way to remove mentions from the content,
-     *             you should use {@link #setAllowedMentions(Collection)} instead.
-     */
-    @Nonnull
-    @Deprecated
-    @ForRemoval(deadline = "4.4.0")
-    @ReplaceWith("setAllowedMentions(Collections.emptyList())")
-    @DeprecatedSince("4.2.0")
-    public MessageBuilder stripMentions(@Nonnull Guild guild)
-    {
-        // Note: Users can rename to "everyone" or "here", so those
-        // should be stripped after the USER mention is stripped.
-        return this.stripMentions(guild.getJDA(), guild, Message.MentionType.values());
-    }
-
-    /**
-     * Removes all mentions of the specified types and replaces them with the closest looking textual representation.
-     *
-     * <p>Use this over {@link #stripMentions(JDA, Message.MentionType...)} if {@link net.dv8tion.jda.api.entities.User User} mentions should
-     * be replaced with their nicknames in a specific guild based.
-     * <br>Uses {@link net.dv8tion.jda.api.entities.Member#getEffectiveName()}
-     *
-     * @param  guild
-     *         the guild for {@link net.dv8tion.jda.api.entities.User User} mentions
-     * @param  types
-     *         the {@link net.dv8tion.jda.api.entities.Message.MentionType MentionTypes} that should be stripped
-     *
-     * @return The MessageBuilder instance. Useful for chaining.
-     *
-     * @deprecated This is not a reliable way to remove mentions from the content,
-     *             you should use {@link #setAllowedMentions(Collection)} instead.
-     */
-    @Nonnull
-    @Deprecated
-    @ForRemoval(deadline = "4.4.0")
-    @ReplaceWith("denyMentions(types)")
-    @DeprecatedSince("4.2.0")
-    public MessageBuilder stripMentions(@Nonnull Guild guild, @Nonnull Message.MentionType... types)
-    {
-        return this.stripMentions(guild.getJDA(), guild, types);
-    }
-
-    /**
-     * Removes all mentions of the specified types and replaces them with the closest looking textual representation.
-     *
-     * <p>Use this over {@link #stripMentions(Guild, Message.MentionType...)} if {@link net.dv8tion.jda.api.entities.User User}
-     * mentions should be replaced with their {@link net.dv8tion.jda.api.entities.User#getName()}.
-     *
-     * @param  jda
-     *         The JDA instance used to resolve the mentions.
-     * @param  types
-     *         the {@link net.dv8tion.jda.api.entities.Message.MentionType MentionTypes} that should be stripped
-     *
-     * @return The MessageBuilder instance. Useful for chaining.
-     *
-     * @deprecated This is not a reliable way to remove mentions from the content,
-     *             you should use {@link #setAllowedMentions(Collection)} instead.
-     */
-    @Nonnull
-    @Deprecated
-    @ForRemoval(deadline = "4.4.0")
-    @ReplaceWith("denyMentions(types)")
-    @DeprecatedSince("4.2.0")
-    public MessageBuilder stripMentions(@Nonnull JDA jda, @Nonnull Message.MentionType... types)
-    {
-        return this.stripMentions(jda, null, types);
-    }
-
     @Nonnull
     private MessageBuilder stripMentions(JDA jda, Guild guild, Message.MentionType... types)
     {
@@ -1231,7 +1104,7 @@ public class MessageBuilder implements Appendable
      * @throws java.lang.IllegalStateException
      *         <ul>
      *             <li>If you attempt to build() an empty Message ({@link #length()} is {@code 0} and no
-     *             {@link net.dv8tion.jda.api.entities.MessageEmbed} was provided to {@link #setEmbed(net.dv8tion.jda.api.entities.MessageEmbed)})</li>
+     *             {@link net.dv8tion.jda.api.entities.MessageEmbed} was provided to {@link #setEmbeds(MessageEmbed...)} </li>
      *             <li>If you attempt to build() a Message with more than 2000 characters of content.</li>
      *         </ul>
      *

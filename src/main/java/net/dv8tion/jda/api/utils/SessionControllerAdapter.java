@@ -119,15 +119,6 @@ public class SessionControllerAdapter implements SessionController
         }.priority().complete();
     }
 
-    @Nonnull
-    @Override
-    @SuppressWarnings({"deprecation", "RedundantSuppression"})
-    public Pair<String, Integer> getGatewayBot(@Nonnull JDA api)
-    {
-        ShardedGateway bot = getShardedGateway(api);
-        return Pair.of(bot.getUrl(), bot.getShardTotal());
-    }
-
     protected void runWorker()
     {
         synchronized (lock)

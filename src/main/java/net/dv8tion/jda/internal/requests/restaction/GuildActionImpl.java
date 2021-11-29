@@ -17,7 +17,6 @@
 package net.dv8tion.jda.internal.requests.restaction;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.Region;
 import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Icon;
@@ -39,7 +38,6 @@ import java.util.function.BooleanSupplier;
 public class GuildActionImpl extends RestActionImpl<Void> implements GuildAction
 {
     protected String name;
-    protected Region region;
     protected Icon icon;
     protected Guild.VerificationLevel verificationLevel;
     protected Guild.NotificationLevel notificationLevel;
@@ -78,16 +76,6 @@ public class GuildActionImpl extends RestActionImpl<Void> implements GuildAction
     public GuildActionImpl deadline(long timestamp)
     {
         return (GuildActionImpl) super.deadline(timestamp);
-    }
-
-    @Nonnull
-    @Override
-    @CheckReturnValue
-    public GuildActionImpl setRegion(Region region)
-    {
-        Checks.check(region == null || !region.isVip(), "Cannot create a Guild with a VIP voice region!");
-        this.region = region;
-        return this;
     }
 
     @Nonnull
@@ -230,8 +218,6 @@ public class GuildActionImpl extends RestActionImpl<Void> implements GuildAction
             object.put("default_message_notifications", notificationLevel.getKey());
         if (explicitContentLevel != null)
             object.put("explicit_content_filter", explicitContentLevel.getKey());
-        if (region != null)
-            object.put("region", region.getKey());
         return getRequestBody(object);
     }
 }

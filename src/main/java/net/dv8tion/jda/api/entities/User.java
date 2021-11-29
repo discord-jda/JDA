@@ -465,11 +465,6 @@ public interface User extends IMentionable
          * User is a {@link ApplicationTeam team}
          */
         TEAM_USER(            10, "Team User"),
-        @Deprecated
-        @ForRemoval(deadline = "4.4.0")
-        @ReplaceWith("User.isSystem()")
-        @DeprecatedSince("4.3.0")
-        SYSTEM(               12, "System User"),
         BUG_HUNTER_LEVEL_2(   14, "Bug Hunter Level 2"),
         VERIFIED_BOT(         16, "Verified Bot"),
         VERIFIED_DEVELOPER(   17, "Early Verified Bot Developer"),

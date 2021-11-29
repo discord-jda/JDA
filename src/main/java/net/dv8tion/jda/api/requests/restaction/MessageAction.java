@@ -425,32 +425,6 @@ public interface MessageAction extends RestAction<Message>, Appendable, AllowedM
     MessageAction content(@Nullable final String content);
 
     /**
-     * Sets the {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbed}
-     * that should be used for this Message.
-     * Refer to {@link net.dv8tion.jda.api.EmbedBuilder EmbedBuilder} for more information.
-     *
-     * @param  embed
-     *         The {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbed} that should
-     *         be attached to this message, {@code null} to use no embed.
-     *
-     * @throws java.lang.IllegalArgumentException
-     *         If the provided MessageEmbed is not sendable according to
-     *         {@link net.dv8tion.jda.api.entities.MessageEmbed#isSendable() MessageEmbed.isSendable()}!
-     *         If the provided MessageEmbed is an unknown implementation this operation will fail as we are unable to deserialize it.
-     *
-     * @return Updated MessageAction for chaining convenience
-     *
-     * @deprecated This is deprecated in favor of {@link #setEmbeds(MessageEmbed...)}
-     */
-    @Nonnull
-    @CheckReturnValue
-    @Deprecated
-    @ForRemoval(deadline="5.0.0")
-    @ReplaceWith("setEmbeds(embed)")
-    @DeprecatedSince("4.4.0")
-    MessageAction embed(@Nullable final MessageEmbed embed);
-
-    /**
      * Sets up to 10 {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbeds}
      * that should be used for this Message.
      * Refer to {@link net.dv8tion.jda.api.EmbedBuilder EmbedBuilder} for more information.

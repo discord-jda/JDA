@@ -48,37 +48,36 @@ import javax.annotation.Nullable;
 public interface GuildManager extends Manager<GuildManager>
 {
     /** Used to reset the name field */
-    long NAME   = 0x1;
-    /** Used to reset the region field */
-    long REGION = 0x2;
+    long NAME   = 1;
+    //Bitmap gap due to removed REGION field
     /** Used to reset the icon field */
-    long ICON   = 0x4;
+    long ICON   = 1 << 2;
     /** Used to reset the splash field */
-    long SPLASH = 0x8;
+    long SPLASH = 1 << 3;
     /** Used to reset the afk channel field */
-    long AFK_CHANNEL    = 0x10;
+    long AFK_CHANNEL    = 1 << 4;
     /** Used to reset the afk timeout field */
-    long AFK_TIMEOUT    = 0x20;
+    long AFK_TIMEOUT    = 1 << 5;
     /** Used to reset the system channel field */
-    long SYSTEM_CHANNEL = 0x40;
+    long SYSTEM_CHANNEL = 1 << 6;
     /** Used to reset the mfa level field */
-    long MFA_LEVEL      = 0x80;
+    long MFA_LEVEL      = 1 << 7;
     /** Used to reset the default notification level field */
-    long NOTIFICATION_LEVEL     = 0x100;
+    long NOTIFICATION_LEVEL     = 1 << 8;
     /** Used to reset the explicit content level field */
-    long EXPLICIT_CONTENT_LEVEL = 0x200;
+    long EXPLICIT_CONTENT_LEVEL = 1 << 9;
     /** Used to reset the verification level field */
-    long VERIFICATION_LEVEL     = 0x400;
+    long VERIFICATION_LEVEL     = 1 << 10;
     /** Used to reset the banner field */
-    long BANNER                 = 0x800;
+    long BANNER                 = 1 << 11;
     /** Used to reset the vanity code field */
-    long VANITY_URL                 = 0x1000;
+    long VANITY_URL                 = 1 << 12;
     /** Used to reset the description field */
-    long DESCRIPTION                = 0x2000;
+    long DESCRIPTION                = 1 << 13;
     /** Used to reset the rules channel field */
-    long RULES_CHANNEL              = 0x4000;
+    long RULES_CHANNEL              = 1 << 14;
     /** Used to reset the community updates channel field */
-    long COMMUNITY_UPDATES_CHANNEL  = 0x8000;
+    long COMMUNITY_UPDATES_CHANNEL  = 1 << 15;
 
     /**
      * Resets the fields specified by the provided bit-flag pattern.
@@ -89,7 +88,6 @@ public interface GuildManager extends Manager<GuildManager>
      * <ul>
      *     <li>{@link #NAME}</li>
      *     <li>{@link #ICON}</li>
-     *     <li>{@link #REGION}</li>
      *     <li>{@link #SPLASH}</li>
      *     <li>{@link #AFK_CHANNEL}</li>
      *     <li>{@link #AFK_TIMEOUT}</li>
@@ -120,7 +118,6 @@ public interface GuildManager extends Manager<GuildManager>
      * <ul>
      *     <li>{@link #NAME}</li>
      *     <li>{@link #ICON}</li>
-     *     <li>{@link #REGION}</li>
      *     <li>{@link #SPLASH}</li>
      *     <li>{@link #AFK_CHANNEL}</li>
      *     <li>{@link #AFK_TIMEOUT}</li>
@@ -165,31 +162,6 @@ public interface GuildManager extends Manager<GuildManager>
     @Nonnull
     @CheckReturnValue
     GuildManager setName(@Nonnull String name);
-
-    /**
-     * Sets the {@link net.dv8tion.jda.api.Region Region} of this {@link net.dv8tion.jda.api.entities.Guild Guild}.
-     *
-     * @param  region
-     *         The new region for this {@link net.dv8tion.jda.api.entities.Guild Guild}
-     *
-     * @throws IllegalArgumentException
-     *         If the provided region is a {@link net.dv8tion.jda.api.Region#isVip() VIP Region} but the guild does not support VIP regions.
-     *         Use {@link net.dv8tion.jda.api.entities.Guild#getFeatures() Guild#getFeatures()} to check if VIP regions are supported.
-     *
-     * @return GuildManager for chaining convenience
-     *
-     * @see    net.dv8tion.jda.api.Region#isVip()
-     * @see    net.dv8tion.jda.api.entities.Guild#getFeatures()
-     * 
-     * @deprecated Guilds no longer have the {@link net.dv8tion.jda.api.Region Region} option. Use {@link ChannelManager#setRegion(Region)} instead.
-     */
-    @Nonnull
-    @CheckReturnValue
-    @Deprecated
-    @ForRemoval(deadline = "5.0.0")
-    @ReplaceWith("ChannelManager.setRegion()")
-    @DeprecatedSince("4.3.0")
-    GuildManager setRegion(@Nonnull Region region);
 
     /**
      * Sets the {@link net.dv8tion.jda.api.entities.Icon Icon} of this {@link net.dv8tion.jda.api.entities.Guild Guild}.

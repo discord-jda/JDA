@@ -16,14 +16,10 @@
 package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.managers.ChannelManager;
 import net.dv8tion.jda.api.managers.channel.concrete.TextChannelManager;
 import net.dv8tion.jda.api.requests.restaction.ChannelAction;
-import net.dv8tion.jda.api.utils.MiscUtil;
 
 import javax.annotation.Nonnull;
-import java.util.FormattableFlags;
-import java.util.Formatter;
 
 /**
  * Represents a Discord Text GuildChannel.
