@@ -56,6 +56,7 @@ public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> impl
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public T setName(String name)
     {
         this.name = name;

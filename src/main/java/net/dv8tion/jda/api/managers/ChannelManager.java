@@ -617,8 +617,9 @@ public interface ChannelManager<T extends GuildChannel> extends Manager<ChannelM
      *
      * <br><b>This is only available to {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels}!</b>
      *
-     * @param region
-     *        The new {@link net.dv8tion.jda.api.Region Region}
+     * @param  region
+     *         The new {@link net.dv8tion.jda.api.Region Region}
+     *
      * @throws IllegalStateException
      *         If the selected {@link GuildChannel GuildChannel}'s type is not {@link net.dv8tion.jda.api.entities.ChannelType#VOICE VOICE}
      * @throws IllegalArgumentException
@@ -632,9 +633,10 @@ public interface ChannelManager<T extends GuildChannel> extends Manager<ChannelM
     /**
      * Converts the selected channel to a different {@link ChannelType}.
      *
-     * <br /><br />
+     * <br><br>
      * This can only be done in the follow situations:
      * <table>
+     *     <caption style="display: none">Javadoc is stupid, this is not a required tag</caption>
      *     <thead>
      *         <tr>
      *             <th>Current Channel Type</th>
@@ -645,16 +647,19 @@ public interface ChannelManager<T extends GuildChannel> extends Manager<ChannelM
      *     <tbody>
      *         <tr>
      *             <td>{@link ChannelType#NEWS}</td>
-     *             <td> -> </td>
+     *             <td> -&gt; </td>
      *             <td>{@link ChannelType#TEXT}</td>
      *         </tr>
      *         <tr>
      *             <td>{@link ChannelType#TEXT}</td>
-     *             <td> -> </td>
+     *             <td> -&gt; </td>
      *             <td>{@link ChannelType#NEWS}</td>
      *         </tr>
      *     </tbody>
      * </table>
+     *
+     * @param type
+     *        The new not-null {@link ChannelType} of the channel
      *
      * @throws IllegalArgumentException
      *         If {@code channelType} is not {@link ChannelType#TEXT} or {@link ChannelType#NEWS}

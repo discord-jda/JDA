@@ -2512,7 +2512,7 @@ public interface Message extends ISnowflake, Formattable
      *         If this is a system message
      * @throws IllegalStateException
      *         <ul>
-     *             <li>If the channel is not a text or news channel. See {@link TextChannel#isNews()}.</li>
+     *             <li>If the channel is not a {@link NewsChannel}.</li>
      *             <li>If the message is ephemeral.</li>
      *         </ul>
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException

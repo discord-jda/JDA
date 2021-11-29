@@ -294,7 +294,7 @@ public interface MessageChannel extends Channel, Formattable
      * <br>This will fail if this channel is an instance of {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} and
      * the currently logged in account does not have permissions to send a message to this channel.
      * <br>To determine if you are able to send a message in a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} use
-     * {@link net.dv8tion.jda.api.entities.Member#hasPermission(IPermissionContainer, net.dv8tion.jda.api.Permission...)
+     * {@link net.dv8tion.jda.api.entities.Member#hasPermission(GuildChannel, net.dv8tion.jda.api.Permission...)
      *  guild.getSelfMember().hasPermission(channel, Permission.MESSAGE_SEND)}.
      *
      * <p>For {@link net.dv8tion.jda.api.requests.ErrorResponse} information, refer to {@link #sendMessage(Message)}.
@@ -334,7 +334,7 @@ public interface MessageChannel extends Channel, Formattable
      * <br>This will fail if this channel is an instance of {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} and
      * the currently logged in account does not have permissions to send a message to this channel.
      * <br>To determine if you are able to send a message in a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} use
-     * {@link net.dv8tion.jda.api.entities.Member#hasPermission(IPermissionContainer, net.dv8tion.jda.api.Permission...)
+     * {@link net.dv8tion.jda.api.entities.Member#hasPermission(GuildChannel, net.dv8tion.jda.api.Permission...)
      *  guild.getSelfMember().hasPermission(channel, Permission.MESSAGE_SEND)}.
      *
      * <p>For {@link net.dv8tion.jda.api.requests.ErrorResponse} information, refer to {@link #sendMessage(Message)}.
@@ -382,7 +382,7 @@ public interface MessageChannel extends Channel, Formattable
      * <br>This will fail if this channel is an instance of {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} and
      * the currently logged in account does not have permissions to send a message to this channel.
      * <br>To determine if you are able to send a message in a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} use
-     * {@link net.dv8tion.jda.api.entities.Member#hasPermission(IPermissionContainer, net.dv8tion.jda.api.Permission...)
+     * {@link net.dv8tion.jda.api.entities.Member#hasPermission(GuildChannel, net.dv8tion.jda.api.Permission...)
      *  guild.getSelfMember().hasPermission(channel, Permission.MESSAGE_SEND)}.
      *
      * <p>For {@link net.dv8tion.jda.api.requests.ErrorResponse} information, refer to {@link #sendMessage(Message)}.
@@ -432,7 +432,7 @@ public interface MessageChannel extends Channel, Formattable
      * <br>This will fail if this channel is an instance of {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} and
      * the currently logged in account does not have permissions to send a message to this channel.
      * <br>To determine if you are able to send a message in a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} use
-     * {@link net.dv8tion.jda.api.entities.Member#hasPermission(IPermissionContainer, net.dv8tion.jda.api.Permission...)
+     * {@link net.dv8tion.jda.api.entities.Member#hasPermission(GuildChannel, net.dv8tion.jda.api.Permission...)
      *  guild.getSelfMember().hasPermission(channel, Permission.MESSAGE_SEND)}.
      *
      * <p>For {@link net.dv8tion.jda.api.requests.ErrorResponse} information, refer to {@link #sendMessage(Message)}.
@@ -481,7 +481,7 @@ public interface MessageChannel extends Channel, Formattable
      * <br>This will fail if this channel is an instance of {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} and
      * the currently logged in account does not have permissions to send a message to this channel.
      * <br>To determine if you are able to send a message in a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} use
-     * {@link net.dv8tion.jda.api.entities.Member#hasPermission(IPermissionContainer, net.dv8tion.jda.api.Permission...)
+     * {@link net.dv8tion.jda.api.entities.Member#hasPermission(GuildChannel, net.dv8tion.jda.api.Permission...)
      *  guild.getSelfMember().hasPermission(channel, Permission.MESSAGE_SEND)}.
      *
      * <p>For {@link net.dv8tion.jda.api.requests.ErrorResponse} information, refer to {@link #sendMessage(Message)}.
@@ -522,7 +522,7 @@ public interface MessageChannel extends Channel, Formattable
      * <br>This will fail if this channel is an instance of {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} and
      * the currently logged in account does not have permissions to send a message to this channel.
      * <br>To determine if you are able to send a message in a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} use
-     * {@link net.dv8tion.jda.api.entities.Member#hasPermission(IPermissionContainer, net.dv8tion.jda.api.Permission...)
+     * {@link net.dv8tion.jda.api.entities.Member#hasPermission(GuildChannel, net.dv8tion.jda.api.Permission...)
      *  guild.getSelfMember().hasPermission(channel, Permission.MESSAGE_SEND)}.
      *
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:

@@ -33,7 +33,7 @@ import java.util.function.BooleanSupplier;
  * {@link net.dv8tion.jda.api.entities.Invite Invite} Builder system created as an extension of {@link net.dv8tion.jda.api.requests.RestAction}
  * <br>Provides an easy way to gather and deliver information to Discord to create {@link net.dv8tion.jda.api.entities.Invite Invites}.
  *
- * @see GuildChannel#createInvite()
+ * @see net.dv8tion.jda.api.entities.IInviteContainer#createInvite()
  */
 public interface InviteAction extends AuditableRestAction<Invite>
 {
