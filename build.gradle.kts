@@ -451,6 +451,7 @@ tasks.getByName("getStagingProfile").enabled = ossrhConfigured
 
 tasks.create("release") {
     val closeAndReleaseRepository: Task by tasks
+    closeAndReleaseRepository.mustRunAfter(tasks.withType<PublishToMavenRepository>())
     dependsOn(tasks.withType<PublishToMavenRepository>()) // uploads artifacts to sonatype
     dependsOn(closeAndReleaseRepository) // does the maven central sync
     dependsOn(build) // builds all jars for jenkins
