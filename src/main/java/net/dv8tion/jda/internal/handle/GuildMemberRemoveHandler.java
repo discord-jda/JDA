@@ -36,7 +36,6 @@ public class GuildMemberRemoveHandler extends SocketHandler
         super(api);
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     protected Long handleInternally(DataObject content)
     {

@@ -348,7 +348,7 @@ public class AudioManagerImpl implements AudioManager
     }
 
     @Override
-    @SuppressWarnings("deprecation")
+    @SuppressWarnings("deprecation") /* If this was in JDK9 we would be using java.lang.ref.Cleaner instead! */
     protected void finalize()
     {
         if (audioConnection != null)

@@ -113,7 +113,6 @@ public class GuildImpl implements Guild
     private Timeout afkTimeout;
     private BoostTier boostTier = BoostTier.NONE;
     private Locale preferredLocale = Locale.ENGLISH;
-    private boolean canSendVerification = false;
     private int memberCount;
 
     public GuildImpl(JDAImpl api, long id)
@@ -1856,7 +1855,6 @@ public class GuildImpl implements Guild
     public GuildImpl setVerificationLevel(VerificationLevel level)
     {
         this.verificationLevel = level;
-        this.canSendVerification = false;   //recalc on next send
         return this;
     }
 
