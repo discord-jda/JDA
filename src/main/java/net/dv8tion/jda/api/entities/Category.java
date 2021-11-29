@@ -17,7 +17,6 @@
 package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.managers.ChannelManager;
 import net.dv8tion.jda.api.managers.channel.concrete.CategoryManager;
 import net.dv8tion.jda.api.requests.restaction.ChannelAction;
 import net.dv8tion.jda.api.requests.restaction.order.CategoryOrderAction;

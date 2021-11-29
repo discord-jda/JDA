@@ -16,9 +16,6 @@
 
 package net.dv8tion.jda.internal.entities.mixin.channel.middleman;
 
-import net.dv8tion.jda.annotations.DeprecatedSince;
-import net.dv8tion.jda.annotations.ForRemoval;
-import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
@@ -36,7 +33,7 @@ import net.dv8tion.jda.internal.requests.Route;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
-import java.io.*;
+import java.io.InputStream;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
@@ -124,20 +121,6 @@ public interface MessageChannelMixin<T extends MessageChannelMixin<T>> extends M
         checkCanAccessChannel();
         checkCanSendMessage();
         return MessageChannel.super.sendMessage(text);
-    }
-
-    @Nonnull
-    @CheckReturnValue
-    @Deprecated
-    @ForRemoval(deadline="5.0.0")
-    @ReplaceWith("sendMessageEmbeds(embed)")
-    @DeprecatedSince("4.4.0")
-    default MessageAction sendMessage(@Nonnull MessageEmbed embed)
-    {
-        checkCanAccessChannel();
-        checkCanSendMessage();
-        checkCanSendMessageEmbeds();
-        return MessageChannel.super.sendMessage(embed);
     }
 
     @Nonnull
@@ -330,18 +313,6 @@ public interface MessageChannelMixin<T extends MessageChannelMixin<T>> extends M
        return MessageChannel.super.editMessageById(messageId, newContent);
     }
 
-    @Nonnull
-    @CheckReturnValue
-    @Deprecated
-    @ForRemoval(deadline = "5.0.0")
-    @ReplaceWith("editMessageEmbedsById(messageId, newEmbed)")
-    @DeprecatedSince("4.4.0")
-    default MessageAction editMessageById(@Nonnull String messageId, @Nonnull MessageEmbed newEmbed)
-    {
-        checkCanAccessChannel();
-        checkCanSendMessage();
-        return MessageChannel.super.editMessageById(messageId, newEmbed);
-    }
 
     @Nonnull
     @CheckReturnValue

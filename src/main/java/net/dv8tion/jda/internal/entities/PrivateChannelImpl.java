@@ -18,21 +18,15 @@ package net.dv8tion.jda.internal.entities;
 
 import net.dv8tion.jda.api.AccountType;
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.ChannelType;
+import net.dv8tion.jda.api.entities.PrivateChannel;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.requests.RestAction;
-import net.dv8tion.jda.api.requests.restaction.MessageAction;
-import net.dv8tion.jda.api.utils.AttachmentOption;
 import net.dv8tion.jda.internal.entities.mixin.channel.middleman.MessageChannelMixin;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
-import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
-import java.io.File;
-import java.io.InputStream;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 public class PrivateChannelImpl extends AbstractChannelImpl<PrivateChannelImpl> implements PrivateChannel, MessageChannelMixin<PrivateChannelImpl>
 {
@@ -80,13 +74,6 @@ public class PrivateChannelImpl extends AbstractChannelImpl<PrivateChannelImpl> 
     {
         Route.CompiledRoute route = Route.Channels.DELETE_CHANNEL.compile(getId());
         return new RestActionImpl<>(getJDA(), route);
-    }
-
-    @Nonnull
-    @Override
-    public RestAction<Void> close()
-    {
-        return this.delete();
     }
 
     @Override

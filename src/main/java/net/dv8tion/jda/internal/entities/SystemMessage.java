@@ -64,13 +64,6 @@ public class SystemMessage extends ReceivedMessage
 
     @Nonnull
     @Override
-    public MessageAction editMessage(@Nonnull MessageEmbed newContent)
-    {
-        throw new UnsupportedOperationException("Cannot edit message of this Message Type. MessageType: " + getType());
-    }
-
-    @Nonnull
-    @Override
     public MessageAction editMessageEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
     {
         throw new UnsupportedOperationException("Cannot edit message of this Message Type. MessageType: " + getType());

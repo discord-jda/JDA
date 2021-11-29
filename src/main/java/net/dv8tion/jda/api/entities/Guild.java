@@ -15,9 +15,6 @@
  */
 package net.dv8tion.jda.api.entities;
 
-import net.dv8tion.jda.annotations.DeprecatedSince;
-import net.dv8tion.jda.annotations.ForRemoval;
-import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.Region;
@@ -54,7 +51,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Future;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
@@ -449,13 +445,9 @@ public interface Guild extends ISnowflake
      * <br>This will include deprecated voice regions by default.
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type {@link java.util.EnumSet EnumSet}
-     *
-     * @deprecated Guilds no longer have the {@link net.dv8tion.jda.api.Region Region} option. Use {@link VoiceChannel#getRegion()} instead.
      */
     @Nonnull
     @CheckReturnValue
-    @Deprecated
-    @ForRemoval(deadline = "5.0.0")
     default RestAction<EnumSet<Region>> retrieveRegions()
     {
         return retrieveRegions(true);
@@ -468,13 +460,9 @@ public interface Guild extends ISnowflake
      *         Whether to include deprecated regions
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type {@link java.util.EnumSet EnumSet}
-     *
-     * @deprecated Guilds no longer have the {@link net.dv8tion.jda.api.Region Region} option. Use {@link VoiceChannel#getRegion()} instead.
      */
     @Nonnull
     @CheckReturnValue
-    @Deprecated
-    @ForRemoval(deadline = "5.0.0")
     RestAction<EnumSet<Region>> retrieveRegions(boolean includeDeprecated);
 
     /**
@@ -700,42 +688,6 @@ public interface Guild extends ISnowflake
         String splashId = getSplashId();
         return splashId == null ? null : String.format(SPLASH_URL, getId(), splashId);
     }
-
-    /**
-     * Gets the vanity url for this Guild. The vanity url is the custom invite code of partnered / official Guilds.
-     * The returned String will be the code that can be provided to {@code discord.gg/{code}} to get the invite link.
-     * <br>You can check {@link #getFeatures()} to see if this Guild has a vanity url
-     * <p>
-     * This action requires the {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} permission.
-     * <p>
-     * Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#INVITE_CODE_INVALID INVITE_CODE_INVALID}
-     *     <br>If this guild does not have a vanity invite</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
-     *     <br>The vanity url cannot be fetched due to a permission discrepancy</li>
-     * </ul>
-     *
-     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} permission.
-     * @throws java.lang.IllegalStateException
-     *         If the guild doesn't have the VANITY_URL feature
-     *
-     * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: String
-     *         <br>The vanity url of this server
-     *
-     * @see    #getFeatures()
-     * @see    #getVanityCode()
-     */
-    @Nonnull
-    @Deprecated
-    @ForRemoval(deadline = "4.4.0")
-    @DeprecatedSince("4.0.0")
-    @ReplaceWith("getVanityCode()")
-    @CheckReturnValue
-    RestAction<String> retrieveVanityUrl();
 
     /**
      * The vanity url code for this Guild. The vanity url is the custom invite code of partnered / official / boosted Guilds.
@@ -1063,46 +1015,6 @@ public interface Guild extends ISnowflake
      */
     @Nonnull
     Timeout getAfkTimeout();
-
-    /**
-     * The Voice {@link net.dv8tion.jda.api.Region Region} that this Guild is
-     * using for audio connections.
-     * <br>If the Region is not recognized, returns {@link net.dv8tion.jda.api.Region#UNKNOWN UNKNOWN} but you
-     * can still use the {@link #getRegionRaw()} to retrieve the raw name this region has.
-     *
-     * <p>This value can be modified using {@link GuildManager#setRegion(net.dv8tion.jda.api.Region)}.
-     *
-     * @return The the audio Region this Guild is using for audio connections. Can return Region.UNKNOWN.
-     *
-     * @deprecated Guilds no longer have the {@link net.dv8tion.jda.api.Region Region} option. Use {@link VoiceChannel#getRegion()} instead.
-     */
-    @Deprecated
-    @ForRemoval(deadline = "5.0.0")
-    @ReplaceWith("VoiceChannel.getRegion()")
-    @DeprecatedSince("4.3.0")
-    @Nonnull
-    default Region getRegion()
-    {
-        return Region.fromKey(getRegionRaw());
-    }
-
-    /**
-     * The raw voice region name that this Guild is using
-     * for audio connections.
-     * <br>This is resolved to an enum constant of {@link net.dv8tion.jda.api.Region Region} by {@link #getRegion()}!
-     *
-     * <p>This value can be modified using {@link GuildManager#setRegion(net.dv8tion.jda.api.Region)}.
-     *
-     * @return Raw region name
-     *
-     * @deprecated Guilds no longer have the {@link net.dv8tion.jda.api.Region Region} option. Use {@link VoiceChannel#getRegion()} instead.
-     */
-    @Deprecated
-    @ForRemoval(deadline = "5.0.0")
-    @ReplaceWith("VoiceChannel.getRegionRaw()")
-    @DeprecatedSince("4.3.0")
-    @Nonnull
-    String getRegionRaw();
 
     /**
      * Used to determine if the provided {@link net.dv8tion.jda.api.entities.User User} is a member of this Guild.
@@ -3105,61 +3017,6 @@ public interface Guild extends ISnowflake
      */
     @Nonnull
     ExplicitContentLevel getExplicitContentLevel();
-
-    /**
-     * Checks if the current Verification-level of this guild allows JDA to send messages to it.
-     *
-     * @return True if Verification-level allows sending of messages, false if not.
-     *
-     * @see    net.dv8tion.jda.api.entities.Guild.VerificationLevel
-     *         VerificationLevel Enum with a list of possible verification-levels and their requirements
-     *
-     * @deprecated Bots don't need to check this and client accounts are not supported
-     */
-    @Deprecated
-    @ForRemoval(deadline = "4.4.0")
-    @DeprecatedSince("4.2.0")
-    boolean checkVerification();
-
-    /**
-     * Whether or not this Guild is available. A Guild can be unavailable, if the Discord server has problems.
-     * <br>If a Guild is unavailable, it will be removed from the guild cache. You cannot receive events for unavailable guilds.
-     *
-     * @return If the Guild is available
-     *
-     * @deprecated This will be removed in a future version,
-     *             unavailable guilds are now removed from cache.
-     *             Replace with {@link JDA#isUnavailable(long)}
-     */
-    @ForRemoval(deadline = "4.4.0")
-    @Deprecated
-    @DeprecatedSince("4.1.0")
-    @ReplaceWith("getJDA().isUnavailable(guild.getIdLong())")
-    boolean isAvailable();
-
-    /**
-     * Requests member chunks for this guild.
-     * <br>This returns a completed future if the member demand is already matched.
-     * When {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MEMBERS GatewayIntent.GUILD_MEMBERS} is disabled
-     * this will do nothing since {@link #getMemberCount()} cannot be tracked.
-     *
-     * <p>Calling {@link CompletableFuture#cancel(boolean)} will not cancel the chunking process.
-     *
-     * <p><b>You MUST NOT use blocking operations such as {@link CompletableFuture#join()} or {@link Future#get()}!</b>
-     * The response handling happens on the event thread by default.
-     *
-     * @return {@link CompletableFuture} representing the chunking task
-     *
-     * @see    #pruneMemberCache()
-     *
-     * @deprecated Replace with {@link #loadMembers()}, {@link #loadMembers(Consumer)}, or {@link #findMembers(Predicate)}
-     */
-    @Nonnull
-    @Deprecated
-    @ForRemoval(deadline = "5.0.0")
-    @DeprecatedSince("4.2.0")
-    @ReplaceWith("loadMembers(Consumer<Member>) or loadMembers()")
-    CompletableFuture<Void> retrieveMembers();
 
     /**
      * Retrieves and collects members of this guild into a list.

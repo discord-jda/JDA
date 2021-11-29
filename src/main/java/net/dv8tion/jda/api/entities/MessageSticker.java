@@ -15,9 +15,6 @@
  */
 package net.dv8tion.jda.api.entities;
 
-import net.dv8tion.jda.annotations.DeprecatedSince;
-import net.dv8tion.jda.annotations.ForRemoval;
-import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.Nonnull;
@@ -34,30 +31,18 @@ public class MessageSticker implements ISnowflake
     private final String name;
     private final String description;
     private final long packId;
-    private final String asset;
     private final StickerFormat formatType;
     private final Set<String> tags;
 
-    /**
-     * Template for {@link #getAssetUrl()}
-     *
-     * @deprecated Use {@link #ICON_URL} instead
-     */
-    @Deprecated
-    @ForRemoval(deadline = "5.0.0")
-    @ReplaceWith("ICON_URL")
-    @DeprecatedSince("4.3.1")
-    public static final String ASSET_URL = "https://cdn.discordapp.com/stickers/%s/%s.%s";
     /** Template for {@link #getIconUrl()} */
     public static final String ICON_URL = "https://cdn.discordapp.com/stickers/%s.%s";
 
-    public MessageSticker(final long id, final String name, final String description, final long packId, final String asset, final StickerFormat formatType, final Set<String> tags)
+    public MessageSticker(final long id, final String name, final String description, final long packId, final StickerFormat formatType, final Set<String> tags)
     {
         this.id = id;
         this.name = name;
         this.description = description;
         this.packId = packId;
-        this.asset = asset;
         this.formatType = formatType;
         this.tags = tags;
     }
@@ -113,44 +98,6 @@ public class MessageSticker implements ISnowflake
     public long getPackIdLong()
     {
         return packId;
-    }
-
-    /**
-     * The Discord hash-id of the sticker. This represents the actual asset file in the CDN for the sticker.
-     * <br><b>The URL for fetching sticker assets is currently private.</b>
-     *
-     * @return the Discord hash-id of the sticker
-     *
-     * @deprecated Use {@link #getIconUrl()} instead
-     */
-    @Nonnull
-    @Deprecated
-    @ForRemoval(deadline = "5.0.0")
-    @ReplaceWith("getIconUrl()")
-    @DeprecatedSince("4.3.1")
-    public String getAssetHash()
-    {
-        return asset;
-    }
-
-    /**
-     * The url of the sticker asset.
-     *
-     * @throws java.lang.IllegalStateException
-     *         If the {@link StickerFormat StickerFormat} of this sticker is {@link StickerFormat#UNKNOWN UNKNOWN}
-     *
-     * @return the url of the sticker
-     *
-     * @deprecated Use {@link #getIconUrl()} instead
-     */
-    @Nonnull
-    @Deprecated
-    @ForRemoval(deadline = "5.0.0")
-    @ReplaceWith("getIconUrl()")
-    @DeprecatedSince("4.3.1")
-    public String getAssetUrl()
-    {
-        return String.format(ASSET_URL, id, asset, formatType.getExtension());
     }
 
     /**

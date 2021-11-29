@@ -18,7 +18,6 @@ package net.dv8tion.jda.api.managers.channel.concrete;
 
 import net.dv8tion.jda.api.entities.ThreadChannel;
 import net.dv8tion.jda.api.managers.channel.ChannelManager;
-import net.dv8tion.jda.api.managers.channel.attribute.IPermissionContainerManager;
 
 //TODO-v5: Docs
 public interface ThreadChannelManager extends ChannelManager<ThreadChannel, ThreadChannelManager>

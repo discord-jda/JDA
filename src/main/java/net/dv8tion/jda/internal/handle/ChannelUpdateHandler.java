@@ -446,7 +446,6 @@ public class ChannelUpdateHandler extends SocketHandler
         return channel;
     }
 
-    @SuppressWarnings("deprecation")
     private void applyPermissions(IPermissionContainerMixin<?> channel, DataArray permOverwrites)
     {
         TLongObjectMap<PermissionOverride> currentOverrides = new TLongObjectHashMap<>(channel.getPermissionOverrideMap());
