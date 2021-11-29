@@ -18,7 +18,6 @@ package net.dv8tion.jda.internal.entities;
 
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
-import net.dv8tion.jda.api.AccountType;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.Region;
 import net.dv8tion.jda.api.entities.*;
@@ -62,8 +61,6 @@ import okhttp3.RequestBody;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.time.OffsetDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
@@ -94,7 +91,6 @@ public class GuildImpl implements Guild
     private Member owner;
     private String name;
     private String iconId, splashId;
-    private String region;
     private String vanityCode;
     private String description, banner;
     private int maxPresences, maxMembers;
@@ -114,8 +110,6 @@ public class GuildImpl implements Guild
     private Timeout afkTimeout;
     private BoostTier boostTier = BoostTier.NONE;
     private Locale preferredLocale = Locale.ENGLISH;
-    private boolean available;
-    private boolean canSendVerification = false;
     private int memberCount;
 
     public GuildImpl(JDAImpl api, long id)
@@ -364,22 +358,6 @@ public class GuildImpl implements Guild
         return splashId;
     }
 
-    @Nonnull
-    @Override
-    @Deprecated
-    public RestAction<String> retrieveVanityUrl()
-    {
-        if (!getSelfMember().hasPermission(Permission.MANAGE_SERVER))
-            throw new InsufficientPermissionException(this, Permission.MANAGE_SERVER);
-        if (!getFeatures().contains("VANITY_URL"))
-            throw new IllegalStateException("This guild doesn't have a vanity url");
-
-        Route.CompiledRoute route = Route.Guilds.GET_VANITY_URL.compile(getId());
-
-        return new RestActionImpl<>(getJDA(), route,
-            (response, request) -> response.getObject().getString("code"));
-    }
-
     @Nullable
     @Override
     public String getVanityCode()
@@ -545,13 +523,6 @@ public class GuildImpl implements Guild
     public Timeout getAfkTimeout()
     {
         return afkTimeout;
-    }
-
-    @Nonnull
-    @Override
-    public String getRegionRaw()
-    {
-        return region;
     }
 
     @Override
@@ -1006,72 +977,6 @@ public class GuildImpl implements Guild
     public ExplicitContentLevel getExplicitContentLevel()
     {
         return explicitContentLevel;
-    }
-
-    @Override
-    @Deprecated
-    public boolean checkVerification()
-    {
-        if (getJDA().getAccountType() == AccountType.BOT)
-            return true;
-        if(canSendVerification)
-            return true;
-
-        switch (verificationLevel)
-        {
-            case VERY_HIGH:
-                break; // we already checked for a verified phone number
-            case HIGH:
-                if (ChronoUnit.MINUTES.between(getSelfMember().getTimeJoined(), OffsetDateTime.now()) < 10)
-                    break;
-            case MEDIUM:
-                if (ChronoUnit.MINUTES.between(getJDA().getSelfUser().getTimeCreated(), OffsetDateTime.now()) < 5)
-                    break;
-            case LOW:
-                if (!getJDA().getSelfUser().isVerified())
-                    break;
-            case NONE:
-                canSendVerification = true;
-                return true;
-            case UNKNOWN:
-                return true; // try and let discord decide
-        }
-        return false;
-    }
-
-    @Override
-    @Deprecated
-    public boolean isAvailable()
-    {
-        return available;
-    }
-
-    @Nonnull
-    @Override
-    @Deprecated
-    public CompletableFuture<Void> retrieveMembers()
-    {
-        if (!getJDA().isIntent(GatewayIntent.GUILD_MEMBERS))
-        {
-            CompletableFuture<Void> future = new CompletableFuture<>();
-            future.completeExceptionally(new IllegalStateException("Unable to start member chunking on a guild with disabled GUILD_MEMBERS intent!"));
-            return future;
-        }
-
-        if (isLoaded())
-            return CompletableFuture.completedFuture(null);
-        Task<List<Member>> task = loadMembers();
-        CompletableFuture<Void> future = new CompletableFuture<>();
-        task.onError(future::completeExceptionally);
-        task.onSuccess((members) -> {
-            try (UnlockHook hook = memberCache.writeLock())
-            {
-                members.forEach((it) -> memberCache.getMap().put(it.getIdLong(), it));
-            }
-            future.complete(null);
-        });
-
-        return future;
     }
 
     @Nonnull
@@ -1852,12 +1757,6 @@ public class GuildImpl implements Guild
 
     // ---- Setters -----
 
-    public GuildImpl setAvailable(boolean available)
-    {
-        this.available = available;
-        return this;
-    }
-
     public GuildImpl setOwner(Member owner)
     {
         // Only cache owner if user cache is enabled
@@ -1887,12 +1786,6 @@ public class GuildImpl implements Guild
     public GuildImpl setSplashId(String splashId)
     {
         this.splashId = splashId;
-        return this;
-    }
-
-    public GuildImpl setRegion(String region)
-    {
-        this.region = region;
         return this;
     }
 
@@ -1959,7 +1852,6 @@ public class GuildImpl implements Guild
     public GuildImpl setVerificationLevel(VerificationLevel level)
     {
         this.verificationLevel = level;
-        this.canSendVerification = false;   //recalc on next send
         return this;
     }
 

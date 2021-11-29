@@ -15,9 +15,6 @@
  */
 package net.dv8tion.jda.api.sharding;
 
-import net.dv8tion.jda.annotations.DeprecatedSince;
-import net.dv8tion.jda.annotations.ForRemoval;
-import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDA.Status;
 import net.dv8tion.jda.api.OnlineStatus;
@@ -1301,32 +1298,6 @@ public interface ShardManager
      *         If {@link #shutdown()} has already been invoked
      */
     void restart(int id);
-
-    /**
-     * Sets the {@link net.dv8tion.jda.api.entities.Activity Activity} for all shards.
-     * <br>A Activity can be retrieved via {@link net.dv8tion.jda.api.entities.Activity#playing(String)}.
-     * For streams you provide a valid streaming url as second parameter.
-     *
-     * <p>This will also change the game for shards that are created in the future.
-     *
-     * @param  game
-     *         A {@link net.dv8tion.jda.api.entities.Activity Activity} instance or null to reset
-     *
-     * @see    net.dv8tion.jda.api.entities.Activity#playing(String)
-     * @see    net.dv8tion.jda.api.entities.Activity#streaming(String, String)
-     *
-     * @deprecated
-     *         Use {@link #setActivity(net.dv8tion.jda.api.entities.Activity)} instead
-     */
-    @Deprecated
-    @ForRemoval(deadline = "5.0.0")
-    @DeprecatedSince("4.0.0")
-    @ReplaceWith("setActivity()")
-    default void setGame(@Nullable final Activity game)
-    {
-        this.setActivityProvider(id -> game);
-    }
-
 
     /**
      * Sets the {@link net.dv8tion.jda.api.entities.Activity Activity} for all shards.

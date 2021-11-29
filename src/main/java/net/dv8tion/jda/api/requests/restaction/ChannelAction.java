@@ -95,9 +95,10 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
     /**
      * Converts the channel to a different {@link ChannelType}.
      *
-     * <br /><br />
+     * <br><br>
      * This can only be done in the follow situations:
      * <table>
+     *     <caption style="display: none">Javadoc is stupid, this is not a required tag</caption>
      *     <thead>
      *         <tr>
      *             <th>Current Channel Type</th>
@@ -108,12 +109,12 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
      *     <tbody>
      *         <tr>
      *             <td>{@link ChannelType#NEWS}</td>
-     *             <td> -> </td>
+     *             <td> -&gt; </td>
      *             <td>{@link ChannelType#TEXT}</td>
      *         </tr>
      *         <tr>
      *             <td>{@link ChannelType#TEXT}</td>
-     *             <td> -> </td>
+     *             <td> -&gt; </td>
      *             <td>{@link ChannelType#NEWS}</td>
      *         </tr>
      *     </tbody>

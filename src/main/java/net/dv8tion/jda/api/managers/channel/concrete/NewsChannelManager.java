@@ -30,9 +30,10 @@ public interface NewsChannelManager extends BaseGuildMessageChannelManager<NewsC
     /**
      * Converts the selected channel to a different {@link ChannelType}.
      *
-     * <br /><br />
+     * <br><br>
      * This can only be done in the follow situations:
      * <table>
+     *     <caption style="display: none">Javadoc is stupid, this is not a required tag</caption>
      *     <thead>
      *         <tr>
      *             <th>Current Channel Type</th>
@@ -43,16 +44,19 @@ public interface NewsChannelManager extends BaseGuildMessageChannelManager<NewsC
      *     <tbody>
      *         <tr>
      *             <td>{@link ChannelType#NEWS}</td>
-     *             <td> -> </td>
+     *             <td> -&gt; </td>
      *             <td>{@link ChannelType#TEXT}</td>
      *         </tr>
      *         <tr>
      *             <td>{@link ChannelType#TEXT}</td>
-     *             <td> -> </td>
+     *             <td> -&gt; </td>
      *             <td>{@link ChannelType#NEWS}</td>
      *         </tr>
      *     </tbody>
      * </table>
+     *
+     * @param  type
+     *         The new not-null {@link ChannelType} of the channel
      *
      * @throws IllegalArgumentException
      *         If {@code channelType} is not {@link ChannelType#TEXT} or {@link ChannelType#NEWS}

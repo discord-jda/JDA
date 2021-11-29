@@ -24,8 +24,6 @@ import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.entities.mixin.channel.attribute.ICategorizableChannelMixin;
 import net.dv8tion.jda.internal.entities.mixin.channel.attribute.IPermissionContainerMixin;
 import net.dv8tion.jda.internal.entities.mixin.channel.attribute.IPositionableChannelMixin;
-import org.jetbrains.annotations.NotNull;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import javax.annotation.Nonnull;
 import java.util.Collections;
@@ -43,7 +41,7 @@ public class StoreChannelImpl extends AbstractGuildChannelImpl<StoreChannelImpl>
         super(id, guild);
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public ChannelType getType()
     {
@@ -62,25 +60,25 @@ public class StoreChannelImpl extends AbstractGuildChannelImpl<StoreChannelImpl>
         return 0;
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public List<Member> getMembers()
     {
         return Collections.emptyList();
     }
 
-    @NotNull
+    @Nonnull
     @Override
-    public ChannelAction<StoreChannel> createCopy(@NotNull Guild guild)
+    public ChannelAction<StoreChannel> createCopy(@Nonnull Guild guild)
     {
-        throw new NotImplementedException();
+        throw new UnsupportedOperationException();
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public StoreChannelManager getManager()
     {
-        throw new NotImplementedException();
+        throw new UnsupportedOperationException();
     }
 
     @Override
