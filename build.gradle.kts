@@ -47,10 +47,10 @@ val isCI = System.getProperty("BUILD_NUMBER") != null // jenkins
 
 // Check the commit hash and version information
 val commitHash: String by lazy {
-    val file = File(".git/refs/heads/master")
+    val commit = System.getenv("GIT_COMMIT") ?: System.getProperty("GIT_COMMIT")
     // We only set the commit hash on CI builds since we don't want dirty local repos to set a wrong commit
-    if (isCI && file.canRead())
-        file.readText().substring(0, 7)
+    if (isCI && commit != null)
+        commit.substring(0, 7)
     else
         "DEV"
 }
