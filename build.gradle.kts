@@ -76,12 +76,11 @@ java {
 }
 
 configure<SourceSetContainer> {
-// FIXME These examples are broken yo
-//    register("examples") {
-//        java.srcDir("src/examples/java")
-//        compileClasspath += sourceSets["main"].output
-//        runtimeClasspath += sourceSets["main"].output
-//    }
+    register("examples") {
+        java.srcDir("src/examples/java")
+        compileClasspath += sourceSets["main"].output
+        runtimeClasspath += sourceSets["main"].output
+    }
 }
 
 
@@ -124,11 +123,10 @@ dependencies {
     implementation("com.fasterxml.jackson.core:jackson-databind:2.10.1")
 
     //Sets the dependencies for the examples
-    // FIXME These examples are broken yo
-//    configurations["examplesImplementation"].withDependencies {
-//        addAll(configurations["api"].allDependencies)
-//        addAll(configurations["implementation"].allDependencies)
-//    }
+    configurations["examplesImplementation"].withDependencies {
+        addAll(configurations["api"].allDependencies)
+        addAll(configurations["implementation"].allDependencies)
+    }
 
     testImplementation("org.junit.jupiter:junit-jupiter:5.4.0")
 }
