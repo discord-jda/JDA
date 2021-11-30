@@ -26,6 +26,7 @@ public interface BaseGuildMessageChannel extends GuildMessageChannel, IThreadCon
     @Override
     @Nonnull
     BaseGuildMessageChannelManager<?, ?> getManager();
+
     /**
      * The topic set for this TextChannel.
      * <br>If no topic has been set, this returns null.
