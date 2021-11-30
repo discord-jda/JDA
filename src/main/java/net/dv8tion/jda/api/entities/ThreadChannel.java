@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.managers.channel.concrete.ThreadChannelManager;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.utils.Checks;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -100,6 +101,27 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer
 
     @Nullable
     ThreadMember getThreadMemberById(long id);
+
+    @NotNull
+    default RestAction<ThreadMember> retrieveThreadMember(Member member)
+    {
+        return retrieveThreadMemberById(member.getId());
+    }
+
+    @NotNull
+    default RestAction<ThreadMember> retrieveThreadMember(User user)
+    {
+        return retrieveThreadMemberById(user.getId());
+    }
+
+    @NotNull
+    default RestAction<ThreadMember> retrieveThreadMemberById(String id)
+    {
+        return retrieveThreadMemberById(MiscUtil.parseSnowflake(id));
+    }
+
+    @NotNull
+    RestAction<ThreadMember> retrieveThreadMemberById(long id);
 
     @CheckReturnValue
     RestAction<List<ThreadMember>> retrieveThreadMembers();
