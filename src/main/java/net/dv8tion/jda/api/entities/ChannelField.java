@@ -34,6 +34,7 @@ public enum ChannelField
     //TODO-v5: Should these be the REST JSON names (camelCase), the AuditLogKey names (snake_case), or JDA's generic naming (Event.IDENTIFIER)
     //TODO-v5: Current using JDA's generic namings
 
+    //Generic
 
     /**
      * The {@link ChannelType type} of the channel.
@@ -49,6 +50,14 @@ public enum ChannelField
      */
     NAME("name", AuditLogKey.CHANNEL_NAME),
 
+    /**
+     * The {@link Category parent} of the channel.
+     *
+     * Limited to {@link BaseGuildMessageChannel Base Guild Channels} (and implementations).
+     *
+     * @see BaseGuildMessageChannel#getParentCategory()
+     */
+    PARENT("parent", AuditLogKey.CHANNEL_PARENT),
 
     /**
      * The position of this channel relative to other channels in the guild.
@@ -58,6 +67,8 @@ public enum ChannelField
      */
     POSITION("position", null), //Discord doesn't track Channel position changes in AuditLog.
 
+
+    //Text Specific
 
     /**
      * The topic of the channel.
@@ -87,15 +98,7 @@ public enum ChannelField
     SLOWMODE("slowmode", AuditLogKey.CHANNEL_SLOWMODE),
 
 
-    /**
-     * The {@link Category parent} of the channel.
-     *
-     * Limited to {@link BaseGuildMessageChannel Base Guild Channels} (and implementations).
-     *
-     * @see BaseGuildMessageChannel#getParentCategory()
-     */
-    PARENT("parent", AuditLogKey.CHANNEL_PARENT),
-
+    //Voice Specific
 
     /**
      * The bitrate (in bits per second) of the audio in this channel.
@@ -129,11 +132,63 @@ public enum ChannelField
      */
     USER_LIMIT("userlimit", AuditLogKey.CHANNEL_USER_LIMIT),
 
+
     //Thread Specific
+
+    /**
+     * The auto archive duration of this channel.
+     *
+     * If the thread is inactive for this long, it becomes auto-archived.
+     *
+     * Limited to {@link ThreadChannel Thread Channels}.
+     *
+     * @see ThreadChannel#getAutoArchiveDuration()
+     */
     AUTO_ARCHIVE_DURATION("autoArchiveDuration", AuditLogKey.THREAD_AUTO_ARCHIVE_DURATION),
+
+    /**
+     * The archive state of this channel.
+     *
+     * If the channel is archived, this is true.
+     *
+     * Limited to {@link ThreadChannel Thread Channels}.
+     *
+     * @see ThreadChannel#isArchived()
+     */
     ARCHIVED("archived", AuditLogKey.THREAD_ARCHIVED),
+
+    /**
+     * The archive time of this channel.
+     *
+     * If the channel is archived, this timestamp will be when it was archived.
+     *
+     * Limited to {@link ThreadChannel Thread Channels}.
+     *
+     * //todo-v5: Docs - check if this is actually correct
+     * @see ThreadChannel#getTimeArchiveInfoLastModified()
+     */
     ARCHIVED_TIMESTAMP("archiveTimestamp", null),
+
+    /**
+     * The locked state of this channel.
+     *
+     * If the channel is locked, this is true.
+     *
+     * Limited to {@link ThreadChannel Thread Channels}.
+     *
+     * @see ThreadChannel#isLocked() ()
+     */
     LOCKED("locked", AuditLogKey.THREAD_LOCKED),
+
+    /**
+     * The invite state of this channel.
+     *
+     * If the channel is invitable, this is true.
+     *
+     * Limited to {@link ThreadChannel Thread Channels}.
+     *
+     * @see ThreadChannel#isInvitable()
+     */
     INVITABLE("invitable", AuditLogKey.THREAD_INVITABLE)
     ;
 
