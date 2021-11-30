@@ -103,24 +103,28 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer
     ThreadMember getThreadMemberById(long id);
 
     @NotNull
+    @CheckReturnValue
     default RestAction<ThreadMember> retrieveThreadMember(Member member)
     {
         return retrieveThreadMemberById(member.getId());
     }
 
     @NotNull
+    @CheckReturnValue
     default RestAction<ThreadMember> retrieveThreadMember(User user)
     {
         return retrieveThreadMemberById(user.getId());
     }
 
     @NotNull
+    @CheckReturnValue
     default RestAction<ThreadMember> retrieveThreadMemberById(String id)
     {
         return retrieveThreadMemberById(MiscUtil.parseSnowflake(id));
     }
 
     @NotNull
+    @CheckReturnValue
     RestAction<ThreadMember> retrieveThreadMemberById(long id);
 
     @CheckReturnValue
