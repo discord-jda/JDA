@@ -16,6 +16,9 @@
 
 package net.dv8tion.jda.api.entities;
 
+import net.dv8tion.jda.api.managers.channel.attribute.IPositionableChannelManager;
+
+import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -28,6 +31,11 @@ import java.util.stream.Collectors;
  */
 public interface IPositionableChannel extends GuildChannel
 {
+    //TODO-v5: Docs
+    @Override
+    @Nonnull
+    IPositionableChannelManager<?, ?> getManager();
+
     //TODO-v5: We should probably reconsider how getPosition is calculated as it isn't particularly useful anymore...
     //TODO-v5: We should probably introduce getPositionAbsolute that returns the index of the channel in Guild#getChannels
     //TODO-v5: We should probably introduce getPositionInCategory (name pending) that returns index in Category#getChannels or -1

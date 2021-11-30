@@ -51,6 +51,7 @@ public class ChannelDeleteHandler extends SocketHandler
         {
             case STORE:
             {
+                //TODO-v5-unified-channel-cache: We can put all the removals at the top once we have a unified channel cache
                 StoreChannel channel = getJDA().getStoreChannelsView().remove(channelId);
                 if (channel == null || guild == null)
                 {

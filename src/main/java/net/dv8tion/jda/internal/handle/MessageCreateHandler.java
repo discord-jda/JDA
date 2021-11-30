@@ -15,16 +15,16 @@
  */
 package net.dv8tion.jda.internal.handle;
 
+import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.MessageType;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-import net.dv8tion.jda.api.events.message.priv.PrivateMessageReceivedEvent;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
-import net.dv8tion.jda.internal.entities.PrivateChannelImpl;
-import net.dv8tion.jda.internal.entities.TextChannelImpl;
+import net.dv8tion.jda.internal.entities.ThreadChannelImpl;
+import net.dv8tion.jda.internal.entities.mixin.channel.middleman.MessageChannelMixin;
 import net.dv8tion.jda.internal.requests.WebSocketClient;
 
 public class MessageCreateHandler extends SocketHandler
@@ -38,7 +38,6 @@ public class MessageCreateHandler extends SocketHandler
     protected Long handleInternally(DataObject content)
     {
         MessageType type = MessageType.fromId(content.getInt("type"));
-
         if (type == MessageType.UNKNOWN)
         {
             WebSocketClient.LOG.debug("JDA received a message of unknown type. Type: {}  JSON: {}", type, content);
@@ -86,44 +85,30 @@ public class MessageCreateHandler extends SocketHandler
             }
         }
 
-        switch (message.getChannelType())
+        MessageChannel channel = message.getChannel();
+        ChannelType channelType = channel.getType();
+
+        //Update the variable that tracks the latest message received in the channel
+        ((MessageChannelMixin<?>) channel).setLatestMessageIdLong(message.getIdLong());
+
+        if (channelType.isGuild())
         {
-            case TEXT:
+            if (channelType.isThread())
             {
-                TextChannelImpl channel = (TextChannelImpl) message.getTextChannel();
-                if (jda.getGuildSetupController().isLocked(channel.getGuild().getIdLong()))
-                    return channel.getGuild().getIdLong();
-                channel.setLastMessageId(message.getIdLong());
-                jda.handleEvent(
-                    new GuildMessageReceivedEvent(
-                        jda, responseNumber,
-                        message));
-                break;
+                ThreadChannelImpl gThread = (ThreadChannelImpl) channel;
+
+                //Discord will only ever allow this property to show up to 50,
+                // so we don't want to update it to be over 50 because we don't want users to use it incorrectly.
+                int newMessageCount = Math.max(gThread.getMessageCount() + 1, 50);
+                gThread.setMessageCount(newMessageCount);
             }
-            case PRIVATE:
-            {
-                PrivateChannelImpl channel = (PrivateChannelImpl) message.getPrivateChannel();
-                channel.setLastMessageId(message.getIdLong());
-                api.usedPrivateChannel(channel.getIdLong());
-                jda.handleEvent(
-                    new PrivateMessageReceivedEvent(
-                        jda, responseNumber,
-                        message));
-                break;
-            }
-            case GROUP:
-                WebSocketClient.LOG.error("Received a MESSAGE_CREATE for a group channel which should not be possible");
-                return null;
-            default:
-                WebSocketClient.LOG.warn("Received a MESSAGE_CREATE with a unknown MessageChannel ChannelType. JSON: {}", content);
-                return null;
+        }
+        else
+        {
+            api.usedPrivateChannel(channel.getIdLong());
         }
 
-        //Combo event
-        jda.handleEvent(
-            new MessageReceivedEvent(
-                jda, responseNumber,
-                message));
+        jda.handleEvent(new MessageReceivedEvent( jda, responseNumber, message));
         return null;
     }
 }

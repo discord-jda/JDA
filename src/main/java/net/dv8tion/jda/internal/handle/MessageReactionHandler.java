@@ -17,10 +17,6 @@
 package net.dv8tion.jda.internal.handle;
 
 import net.dv8tion.jda.api.entities.*;
-import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionAddEvent;
-import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionRemoveEvent;
-import net.dv8tion.jda.api.events.message.priv.react.PrivateMessageReactionAddEvent;
-import net.dv8tion.jda.api.events.message.priv.react.PrivateMessageReactionRemoveEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionRemoveEvent;
 import net.dv8tion.jda.api.utils.data.DataArray;
@@ -54,7 +50,7 @@ public class MessageReactionHandler extends SocketHandler
         if (!content.isNull("guild_id"))
         {
             long guildId = content.getLong("guild_id");
-            if (getJDA().getGuildSetupController().isLocked(guildId))
+            if (api.getGuildSetupController().isLocked(guildId))
                 return guildId;
         }
 
@@ -75,7 +71,7 @@ public class MessageReactionHandler extends SocketHandler
             return null;
         }
 
-        Guild guild = getJDA().getGuildById(content.getUnsignedLong("guild_id", 0));
+        Guild guild = api.getGuildById(content.getUnsignedLong("guild_id", 0));
         MemberImpl member = null;
         if (guild != null)
         {
@@ -86,7 +82,7 @@ public class MessageReactionHandler extends SocketHandler
             {
                 DataObject json = memberJson.get();
                 if (member == null || !member.hasTimeJoined()) // do we need to load a member?
-                    member = getJDA().getEntityBuilder().createMember((GuildImpl) guild, json);
+                    member = api.getEntityBuilder().createMember((GuildImpl) guild, json);
                 else // otherwise update the cache
                 {
                     List<Role> roles = json.getArray("roles")
@@ -94,10 +90,10 @@ public class MessageReactionHandler extends SocketHandler
                             .map(guild::getRoleById)
                             .filter(Objects::nonNull)
                             .collect(Collectors.toList());
-                    getJDA().getEntityBuilder().updateMember((GuildImpl) guild, member, json, roles);
+                    api.getEntityBuilder().updateMember((GuildImpl) guild, member, json, roles);
                 }
                 // update internal references
-                getJDA().getEntityBuilder().updateMemberCache(member);
+                api.getEntityBuilder().updateMemberCache(member);
             }
             if (member == null && add && guild.isLoaded())
             {
@@ -106,26 +102,31 @@ public class MessageReactionHandler extends SocketHandler
             }
         }
 
-        User user = getJDA().getUserById(userId);
+        User user = api.getUserById(userId);
         if (user == null && member != null)
             user = member.getUser(); // this happens when we have guild subscriptions disabled
         if (user == null)
         {
             if (add && guild != null)
             {
-                getJDA().getEventCache().cache(EventCache.Type.USER, userId, responseNumber, allContent, this::handle);
+                api.getEventCache().cache(EventCache.Type.USER, userId, responseNumber, allContent, this::handle);
                 EventCache.LOG.debug("Received a reaction for a user that JDA does not currently have cached. " +
                         "UserID: {} ChannelId: {} MessageId: {}", userId, channelId, messageId);
                 return null;
             }
         }
 
-        MessageChannel channel = getJDA().getTextChannelById(channelId);
+        //TODO-v5-unified-channel-cache
+        MessageChannel channel = api.getTextChannelById(channelId);
         if (channel == null)
-            channel = getJDA().getPrivateChannelById(channelId);
+            channel = api.getNewsChannelById(channelId);
+        if (channel == null)
+            channel = api.getThreadChannelById(channelId);
+        if (channel == null)
+            channel = api.getPrivateChannelById(channelId);
         if (channel == null)
         {
-            getJDA().getEventCache().cache(EventCache.Type.CHANNEL, channelId, responseNumber, allContent, this::handle);
+            api.getEventCache().cache(EventCache.Type.CHANNEL, channelId, responseNumber, allContent, this::handle);
             EventCache.LOG.debug("Received a reaction for a channel that JDA does not currently have cached");
             return null;
         }
@@ -133,12 +134,12 @@ public class MessageReactionHandler extends SocketHandler
         MessageReaction.ReactionEmote rEmote;
         if (emojiId != null)
         {
-            Emote emote = getJDA().getEmoteById(emojiId);
+            Emote emote = api.getEmoteById(emojiId);
             if (emote == null)
             {
                 if (emojiName != null)
                 {
-                    emote = new EmoteImpl(emojiId, getJDA()).setAnimated(emojiAnimated).setName(emojiName);
+                    emote = new EmoteImpl(emojiId, api).setAnimated(emojiAnimated).setName(emojiName);
                 }
                 else
                 {
@@ -151,72 +152,27 @@ public class MessageReactionHandler extends SocketHandler
         }
         else
         {
-            rEmote = MessageReaction.ReactionEmote.fromUnicode(emojiName, getJDA());
+            rEmote = MessageReaction.ReactionEmote.fromUnicode(emojiName, api);
         }
-        MessageReaction reaction = new MessageReaction(channel, rEmote, messageId, userId == getJDA().getSelfUser().getIdLong(), -1);
+        MessageReaction reaction = new MessageReaction(channel, rEmote, messageId, userId == api.getSelfUser().getIdLong(), -1);
+
+        if (channel.getType() == ChannelType.PRIVATE)
+            api.usedPrivateChannel(reaction.getChannel().getIdLong());
 
         if (add)
-            onAdd(reaction, user, member, userId);
+        {
+            api.handleEvent(
+                new MessageReactionAddEvent(
+                    api, responseNumber,
+                    user, member, reaction, userId));
+        }
         else
-            onRemove(reaction, user, member, userId);
+        {
+            api.handleEvent(
+                new MessageReactionRemoveEvent(
+                    api, responseNumber,
+                    user, member, reaction, userId));
+        }
         return null;
-    }
-
-    private void onAdd(MessageReaction reaction, User user, Member member, long userId)
-    {
-        JDAImpl jda = getJDA();
-        switch (reaction.getChannelType())
-        {
-            case TEXT:
-                jda.handleEvent(
-                    new GuildMessageReactionAddEvent(
-                        jda, responseNumber,
-                        Objects.requireNonNull(member), reaction));
-                break;
-            case PRIVATE:
-                jda.usedPrivateChannel(reaction.getChannel().getIdLong());
-                jda.handleEvent(
-                    new PrivateMessageReactionAddEvent(
-                        jda, responseNumber,
-                        reaction, userId));
-                break;
-            case GROUP:
-                WebSocketClient.LOG.debug("Received a reaction add for a group which should not be possible");
-                return;
-        }
-
-        jda.handleEvent(
-            new MessageReactionAddEvent(
-                jda, responseNumber,
-                user, member, reaction, userId));
-    }
-
-    private void onRemove(MessageReaction reaction, User user, Member member, long userId)
-    {
-        JDAImpl jda = getJDA();
-        switch (reaction.getChannelType())
-        {
-            case TEXT:
-                jda.handleEvent(
-                    new GuildMessageReactionRemoveEvent(
-                        jda, responseNumber,
-                        member, reaction, userId));
-                break;
-            case PRIVATE:
-                jda.usedPrivateChannel(reaction.getChannel().getIdLong());
-                jda.handleEvent(
-                    new PrivateMessageReactionRemoveEvent(
-                        jda, responseNumber,
-                        reaction, userId));
-                break;
-            case GROUP:
-                WebSocketClient.LOG.debug("Received a reaction remove for a group which should not be possible");
-                return;
-        }
-
-        jda.handleEvent(
-            new MessageReactionRemoveEvent(
-                jda, responseNumber,
-                user, member, reaction, userId));
     }
 }

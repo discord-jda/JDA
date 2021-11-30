@@ -37,6 +37,9 @@ public class InviteActionImpl extends AuditableRestActionImpl<Invite> implements
     private Integer maxUses = null;
     private Boolean temporary = null;
     private Boolean unique = null;
+    private Long targetApplication = null;
+    private Long targetUser = null;
+    private Invite.TargetType targetType = null;
 
     public InviteActionImpl(final JDA api, final String channelId)
     {
@@ -120,6 +123,38 @@ public class InviteActionImpl extends AuditableRestActionImpl<Invite> implements
         return this;
     }
 
+    @Nonnull
+    @Override
+    public InviteAction setTargetApplication(final long applicationId)
+    {
+        if (applicationId == 0)
+        {
+            this.targetType = null;
+            this.targetApplication = null;
+            return this;
+        }
+
+        this.targetType = Invite.TargetType.EMBEDDED_APPLICATION;
+        this.targetApplication = applicationId;
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    public InviteAction setTargetStream(final long userId)
+    {
+        if (userId == 0)
+        {
+            this.targetType = null;
+            this.targetUser = null;
+            return this;
+        }
+
+        this.targetType = Invite.TargetType.STREAM;
+        this.targetUser = userId;
+        return this;
+    }
+
     @Override
     protected RequestBody finalizeData()
     {
@@ -133,6 +168,12 @@ public class InviteActionImpl extends AuditableRestActionImpl<Invite> implements
             object.put("temporary", this.temporary);
         if (this.unique != null)
             object.put("unique", this.unique);
+        if (this.targetType != null)
+            object.put("target_type", targetType.getId());
+        if (this.targetUser != null)
+            object.put("target_user_id", targetUser);
+        if (this.targetApplication != null)
+            object.put("target_application_id", targetApplication);
 
         return getRequestBody(object);
     }

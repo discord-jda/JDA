@@ -55,7 +55,6 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
-import java.util.stream.Collectors;
 
 /**
  * The core of JDA. Acts as a registry system of JDA. All parts of the the API can be accessed starting from this class.
@@ -1337,6 +1336,7 @@ public interface JDA
     @Nullable
     default GuildChannel getGuildChannelById(long id)
     {
+        //TODO-v5-unified-channel-cache
         GuildChannel channel = getTextChannelById(id);
         if (channel == null)
             channel = getNewsChannelById(id);
@@ -1348,6 +1348,9 @@ public interface JDA
             channel = getStoreChannelById(id);
         if (channel == null)
             channel = getCategoryById(id);
+        if (channel == null)
+            channel = getThreadChannelById(id);
+
         return channel;
     }
 
@@ -1413,20 +1416,23 @@ public interface JDA
         Checks.notNull(type, "ChannelType");
         switch (type)
         {
-            //TODO-v5: Add support THREAD here
-        case TEXT:
-            return getTextChannelById(id);
-        case NEWS:
-            return getNewsChannelById(id);
-        case VOICE:
-            return getVoiceChannelById(id);
-        case STAGE:
-            return getStageChannelById(id);
-        case STORE:
-            return getStoreChannelById(id);
-        case CATEGORY:
-            return getCategoryById(id);
+            case TEXT:
+                return getTextChannelById(id);
+            case NEWS:
+                return getNewsChannelById(id);
+            case VOICE:
+                return getVoiceChannelById(id);
+            case STAGE:
+                return getStageChannelById(id);
+            case STORE:
+                return getStoreChannelById(id);
+            case CATEGORY:
+                return getCategoryById(id);
         }
+
+        if (type.isThread())
+            return getThreadChannelById(id);
+
         return null;
     }
 
@@ -1506,6 +1512,84 @@ public interface JDA
     default List<StageChannel> getStageChannelsByName(@Nonnull String name, boolean ignoreCase)
     {
         return getStageChannelCache().getElementsByName(name, ignoreCase);
+    }
+
+    /**
+     * {@link net.dv8tion.jda.api.utils.cache.SnowflakeCacheView SnowflakeCacheView} of
+     * all cached {@link ThreadChannel ThreadChannels} visible to this JDA session.
+     *
+     * @return {@link net.dv8tion.jda.api.utils.cache.SnowflakeCacheView SnowflakeCacheView}
+     */
+    @Nonnull
+    SnowflakeCacheView<ThreadChannel> getThreadChannelCache();
+
+    /**
+     * An unmodifiable list of all {@link ThreadChannel ThreadChannels} of all connected
+     * {@link net.dv8tion.jda.api.entities.Guild Guilds}.
+     *
+     * <p>This copies the backing store into a list. This means every call
+     * creates a new list with O(n) complexity. It is recommended to store this into
+     * a local variable or use {@link #getThreadChannelCache()} and use its more efficient
+     * versions of handling these values.
+     *
+     * @return Possible-empty list of all known {@link ThreadChannel ThreadChannels}.
+     */
+    @Nonnull
+    default List<ThreadChannel> getThreadChannels()
+    {
+        return getThreadChannelCache().asList();
+    }
+
+    /**
+     * This returns the {@link ThreadChannel ThreadChannel} which has the same id as the one provided.
+     * <br>If there is no known {@link ThreadChannel ThreadChannel} with an id that matches the provided
+     * one, then this returns {@code null}.
+     *
+     * @param  id
+     *         The id of the {@link ThreadChannel ThreadChannel}.
+     * @throws java.lang.NumberFormatException
+     *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
+     *
+     * @return Possibly-null {@link ThreadChannel ThreadChannel} with matching id.
+     */
+    @Nullable
+    default ThreadChannel getThreadChannelById(@Nonnull String id)
+    {
+        return getThreadChannelCache().getElementById(id);
+    }
+
+    /**
+     * This returns the {@link ThreadChannel ThreadChannel} which has the same id as the one provided.
+     * <br>If there is no known {@link ThreadChannel ThreadChannel} with an id that matches the provided
+     * one, then this returns {@code null}.
+     *
+     * @param  id
+     *         The id of the {@link ThreadChannel ThreadChannel}.
+     *
+     * @return Possibly-null {@link ThreadChannel ThreadChannel} with matching id.
+     */
+    @Nullable
+    default ThreadChannel getThreadChannelById(long id)
+    {
+        return getThreadChannelCache().getElementById(id);
+    }
+
+    /**
+     * An unmodifiable list of all {@link ThreadChannel ThreadChannels} that have the same name as the one provided.
+     * <br>If there are no {@link ThreadChannel ThreadChannels} with the provided name, then this returns an empty list.
+     *
+     * @param  name
+     *         The name of the requested {@link ThreadChannel ThreadChannels}.
+     * @param  ignoreCase
+     *         Whether to ignore case or not when comparing the provided name to each {@link ThreadChannel#getName()}.
+     *
+     * @return Possibly-empty list of all the {@link ThreadChannel ThreadChannels} that all have the
+     *         same name as the provided name.
+     */
+    @Nonnull
+    default List<ThreadChannel> getThreadChannelByName(@Nonnull String name, boolean ignoreCase)
+    {
+        return getThreadChannelCache().getElementsByName(name, ignoreCase);
     }
 
     /**

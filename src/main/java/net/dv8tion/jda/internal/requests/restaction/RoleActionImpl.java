@@ -18,6 +18,7 @@ package net.dv8tion.jda.internal.requests.restaction;
 
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Icon;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.requests.Request;
@@ -42,6 +43,8 @@ public class RoleActionImpl extends AuditableRestActionImpl<Role> implements Rol
     protected Integer color = null;
     protected Boolean hoisted = null;
     protected Boolean mentionable = null;
+    protected Icon icon = null;
+    protected String emoji = null;
 
     /**
      * Creates a new RoleAction instance
@@ -138,6 +141,26 @@ public class RoleActionImpl extends AuditableRestActionImpl<Role> implements Rol
         return this;
     }
 
+    @Nonnull
+    @Override
+    @CheckReturnValue
+    public RoleActionImpl setIcon(Icon icon)
+    {
+        this.icon = icon;
+        this.emoji = null;
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    @CheckReturnValue
+    public RoleActionImpl setIcon(String emoji)
+    {
+        this.emoji = emoji;
+        this.icon = null;
+        return this;
+    }
+
     @Override
     protected RequestBody finalizeData()
     {
@@ -152,6 +175,10 @@ public class RoleActionImpl extends AuditableRestActionImpl<Role> implements Rol
             object.put("hoist", hoisted);
         if (mentionable != null)
             object.put("mentionable", mentionable);
+        if (icon != null)
+            object.put("icon", icon.getEncoding());
+        if (emoji != null)
+            object.put("unicode_emoji", emoji);
 
         return getRequestBody(object);
     }

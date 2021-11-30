@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.entities;
 
+import net.dv8tion.jda.api.managers.channel.attribute.IPermissionContainerManager;
 import net.dv8tion.jda.api.requests.restaction.PermissionOverrideAction;
 import net.dv8tion.jda.internal.utils.Checks;
 
@@ -33,6 +34,11 @@ import java.util.stream.Collectors;
  */
 public interface IPermissionContainer extends GuildChannel
 {
+    //TODO-v5: Docs
+    @Override
+    @Nonnull
+    IPermissionContainerManager<?, ?> getManager();
+
     /**
      * The {@link PermissionOverride} relating to the specified {@link net.dv8tion.jda.api.entities.Member Member} or {@link net.dv8tion.jda.api.entities.Role Role}.
      * If there is no {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverride} for this {@link GuildChannel GuildChannel}

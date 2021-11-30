@@ -28,9 +28,14 @@ public interface GuildMessageChannel extends GuildChannel, MessageChannel
      * <br>Checks for both {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} and
      * {@link net.dv8tion.jda.api.Permission#MESSAGE_SEND Permission.MESSAGE_SEND}.
      *
+     * For {@link ThreadChannel} this method checks for {@link Permission#MESSAGE_SEND_IN_THREADS} instead of {@link Permission#MESSAGE_SEND}.
+     *
      * @return True, if we are able to read and send messages in this channel
      */
-    boolean canTalk();
+    default boolean canTalk()
+    {
+        return canTalk(getGuild().getSelfMember());
+    }
 
     /**
      * Whether the specified {@link net.dv8tion.jda.api.entities.Member}

@@ -136,7 +136,7 @@ public class Route
         public static final Route MODIFY_MEMBER =      new Route(PATCH,  "guilds/{guild_id}/members/{user_id}");
         public static final Route ADD_MEMBER =         new Route(PUT,    "guilds/{guild_id}/members/{user_id}");
         public static final Route GET_MEMBER =         new Route(GET,    "guilds/{guild_id}/members/{user_id}");
-        public static final Route MODIFY_SELF_NICK =   new Route(PATCH,  "guilds/{guild_id}/members/@me/nick");
+        public static final Route MODIFY_SELF =        new Route(PATCH,  "guilds/{guild_id}/members/@me");
         public static final Route PRUNABLE_COUNT =     new Route(GET,    "guilds/{guild_id}/prune");
         public static final Route PRUNE_MEMBERS =      new Route(POST,   "guilds/{guild_id}/prune");
         public static final Route GET_WEBHOOKS =       new Route(GET,    "guilds/{guild_id}/webhooks");
@@ -221,14 +221,14 @@ public class Route
         public static final Route CREATE_THREAD_WITH_MESSAGE =              new Route(POST,     "channels/{channel_id}/messages/{message_id}/threads");
         public static final Route CREATE_THREAD_WITHOUT_MESSAGE =           new Route(POST,     "channels/{channel_id}/threads");
         public static final Route JOIN_THREAD =                             new Route(PUT,      "channels/{channel_id}/thread-members/@me");
-        public static final Route ADD_THREAD_MEMBER =                       new Route(PUT,      "channels/{channel.id}/thread-members/{user.id}");
+        public static final Route ADD_THREAD_MEMBER =                       new Route(PUT,      "channels/{channel_id}/thread-members/{user_id}");
         public static final Route LEAVE_THREAD =                            new Route(DELETE,   "channels/{channel_id}/thread-members/@me");
         public static final Route REMOVE_THREAD_MEMBER =                    new Route(DELETE,   "channels/{channel_id}/thread-members/{user_id}");
+        public static final Route GET_THREAD_MEMBER =                       new Route(GET,      "channels/{channel_id}/thread-members/{user_id}");
         public static final Route LIST_THREAD_MEMBERS =                     new Route(GET,      "channels/{channel_id}/thread-members");
-        public static final Route LIST_ACTIVE_THREADS =                     new Route(GET,      "channels/{channel_id}/threads/active");
         public static final Route LIST_PUBLIC_ARCHIVED_THREADS =            new Route(GET,      "channels/{channel_id}/threads/archived/public");
-        public static final Route LIST_PRIVATE_ARCHIVED_THREADS =           new Route(GET,      "channels/{channel_id}/thread-members/{user_id}");
-        public static final Route LIST_JOINED_PRIVATE_ARCHIVED_THREADS =    new Route(GET,      "channels/{channel_id}/thread-members/@me");
+        public static final Route LIST_PRIVATE_ARCHIVED_THREADS =           new Route(GET,      "channels/{channel_id}/threads/archived/private");
+        public static final Route LIST_JOINED_PRIVATE_ARCHIVED_THREADS =    new Route(GET,      "channels/{channel_id}/users/@me/threads/archived/private");
 
         // Client Only
         public static final Route GET_RECIPIENTS =   new Route(GET,    "channels/{channel_id}/recipients");

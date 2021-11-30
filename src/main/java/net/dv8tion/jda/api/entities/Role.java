@@ -161,6 +161,7 @@ public interface Role extends IMentionable, IPermissionHolder, Comparable<Role>
      * Creates a new {@link net.dv8tion.jda.api.entities.Role Role} in the specified {@link net.dv8tion.jda.api.entities.Guild Guild}
      * with the same settings as the given {@link net.dv8tion.jda.api.entities.Role Role}.
      * <br>The position of the specified Role does not matter in this case!
+     * <br><b>If this {@link Role} has an {@link RoleIcon Icon} set, only its emoji can be copied over.</b>
      *
      * <p>It will be placed at the bottom (just over the Public Role) to avoid permission hierarchy conflicts.
      * <br>For this to be successful, the logged in account has to have the {@link net.dv8tion.jda.api.Permission#MANAGE_ROLES MANAGE_ROLES} Permission
@@ -195,6 +196,7 @@ public interface Role extends IMentionable, IPermissionHolder, Comparable<Role>
      * Creates a new {@link net.dv8tion.jda.api.entities.Role Role} in this {@link net.dv8tion.jda.api.entities.Guild Guild}
      * with the same settings as the given {@link net.dv8tion.jda.api.entities.Role Role}.
      * <br>The position of the specified Role does not matter in this case!
+     * <br><b>If this {@link Role} has an {@link RoleIcon Icon} set, only its emoji can be copied over.</b>
      *
      * <p>It will be placed at the bottom (just over the Public Role) to avoid permission hierarchy conflicts.
      * <br>For this to be successful, the logged in account has to have the {@link net.dv8tion.jda.api.Permission#MANAGE_ROLES MANAGE_ROLES} Permission
@@ -290,6 +292,17 @@ public interface Role extends IMentionable, IPermissionHolder, Comparable<Role>
      */
     @Nonnull
     RoleTags getTags();
+
+    /**
+     * The {@link RoleIcon Icon} of this role or {@code null} if no custom image or emoji is set.
+     * This icon will be displayed next to the role's name in the members tab and in chat.
+     *
+     * @return Possibly-null {@link RoleIcon Icon} of this role
+     *
+     * @since  4.3.1
+     */
+    @Nullable
+    RoleIcon getIcon();
 
     /**
      * Tags associated with this role.

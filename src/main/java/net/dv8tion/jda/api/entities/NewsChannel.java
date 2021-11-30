@@ -3,7 +3,7 @@ package net.dv8tion.jda.api.entities;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.exceptions.MissingAccessException;
-import net.dv8tion.jda.api.managers.ChannelManager;
+import net.dv8tion.jda.api.managers.channel.concrete.NewsChannelManager;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.ChannelAction;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
@@ -230,9 +230,12 @@ public interface NewsChannel extends BaseGuildMessageChannel
 
     @Nonnull
     @Override
-    ChannelAction<NewsChannel> createCopy();
+    default ChannelAction<NewsChannel> createCopy()
+    {
+        return createCopy(getGuild());
+    }
 
     @Nonnull
     @Override
-    ChannelManager<NewsChannel> getManager();
+    NewsChannelManager getManager();
 }

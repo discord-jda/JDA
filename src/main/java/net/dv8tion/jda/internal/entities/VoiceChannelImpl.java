@@ -16,14 +16,38 @@
 
 package net.dv8tion.jda.internal.entities;
 
+import gnu.trove.map.TLongObjectMap;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.managers.channel.concrete.VoiceChannelManager;
 import net.dv8tion.jda.api.requests.restaction.ChannelAction;
+import net.dv8tion.jda.api.utils.MiscUtil;
+import net.dv8tion.jda.internal.entities.mixin.channel.attribute.ICategorizableChannelMixin;
+import net.dv8tion.jda.internal.entities.mixin.channel.attribute.IInviteContainerMixin;
+import net.dv8tion.jda.internal.entities.mixin.channel.attribute.IPositionableChannelMixin;
+import net.dv8tion.jda.internal.entities.mixin.channel.middleman.AudioChannelMixin;
+import net.dv8tion.jda.internal.managers.channel.concrete.VoiceChannelManagerImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
-public class VoiceChannelImpl extends AbstractGuildAudioChannelImpl<VoiceChannel, VoiceChannelImpl> implements VoiceChannel
+public class VoiceChannelImpl extends AbstractGuildChannelImpl<VoiceChannelImpl> implements
+        VoiceChannel,
+        AudioChannelMixin<VoiceChannelImpl>,
+        ICategorizableChannelMixin<VoiceChannelImpl>,
+        IPositionableChannelMixin<VoiceChannelImpl>,
+        IInviteContainerMixin<VoiceChannelImpl>
 {
+    private final TLongObjectMap<Member> connectedMembers = MiscUtil.newLongMap();
+    private final TLongObjectMap<PermissionOverride> overrides = MiscUtil.newLongMap();
+
+    private String region;
+    private long parentCategoryId;
+    private int bitrate;
+    private int position;
     private int userLimit;
 
     public VoiceChannelImpl(long id, GuildImpl guild)
@@ -31,11 +55,36 @@ public class VoiceChannelImpl extends AbstractGuildAudioChannelImpl<VoiceChannel
         super(id, guild);
     }
 
+    @Nonnull
     @Override
-    public VoiceChannelImpl setPosition(int rawPosition)
+    public ChannelType getType()
     {
-        getGuild().getVoiceChannelsView().clearCachedLists();
-        return super.setPosition(rawPosition);
+        return ChannelType.VOICE;
+    }
+    
+    @Override
+    public int getBitrate()
+    {
+        return bitrate;
+    }
+
+    @Nullable
+    @Override
+    public String getRegionRaw()
+    {
+        return region;
+    }
+
+    @Override
+    public long getParentCategoryIdLong()
+    {
+        return parentCategoryId;
+    }
+
+    @Override
+    public int getPositionRaw()
+    {
+        return position;
     }
 
     @Override
@@ -46,9 +95,9 @@ public class VoiceChannelImpl extends AbstractGuildAudioChannelImpl<VoiceChannel
 
     @Nonnull
     @Override
-    public ChannelType getType()
+    public List<Member> getMembers()
     {
-        return ChannelType.VOICE;
+        return Collections.unmodifiableList(new ArrayList<>(connectedMembers.valueCollection()));
     }
 
     @Nonnull
@@ -74,22 +123,53 @@ public class VoiceChannelImpl extends AbstractGuildAudioChannelImpl<VoiceChannel
         return action;
     }
 
+    @Nonnull
     @Override
-    public boolean equals(Object o)
+    public VoiceChannelManager getManager()
     {
-        if (!(o instanceof VoiceChannel))
-            return false;
-        VoiceChannel oVChannel = (VoiceChannel) o;
-        return this == oVChannel || this.getIdLong() == oVChannel.getIdLong();
+        return new VoiceChannelManagerImpl(this);
     }
 
     @Override
-    public String toString()
+    public TLongObjectMap<PermissionOverride> getPermissionOverrideMap()
     {
-        return "VC:" + getName() + '(' + id + ')';
+        return overrides;
     }
 
-    // -- Setters --
+    @Override
+    public TLongObjectMap<Member> getConnectedMembersMap()
+    {
+        return connectedMembers;
+    }
+
+    @Override
+    public VoiceChannelImpl setParentCategory(long parentCategoryId)
+    {
+        this.parentCategoryId = parentCategoryId;
+        return this;
+    }
+
+    @Override
+    public VoiceChannelImpl setBitrate(int bitrate)
+    {
+        this.bitrate = bitrate;
+        return this;
+    }
+
+    @Override
+    public VoiceChannelImpl setRegion(String region)
+    {
+        this.region = region;
+        return this;
+    }
+
+    @Override
+    public VoiceChannelImpl setPosition(int position)
+    {
+        getGuild().getVoiceChannelsView().clearCachedLists();
+        this.position = position;
+        return this;
+    }
 
     public VoiceChannelImpl setUserLimit(int userLimit)
     {

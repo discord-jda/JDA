@@ -99,8 +99,5 @@ public interface ICopyableChannel extends GuildChannel
      */
     @Nonnull
     @CheckReturnValue
-    default ChannelAction<? extends ICopyableChannel> createCopy()
-    {
-        return createCopy(getGuild());
-    }
+    ChannelAction<? extends ICopyableChannel> createCopy();
 }

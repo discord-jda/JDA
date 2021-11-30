@@ -16,7 +16,7 @@
 
 package net.dv8tion.jda.internal.handle;
 
-import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.GuildMessageChannel;
 import net.dv8tion.jda.api.events.message.MessageBulkDeleteEvent;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
@@ -57,11 +57,17 @@ public class MessageBulkDeleteHandler extends SocketHandler
         }
         else
         {
-            TextChannel channel = getJDA().getTextChannelById(channelId);
+            //TODO-v5-unified-channel-cache
+            GuildMessageChannel channel = getJDA().getTextChannelById(channelId);
+            if (channel == null)
+                channel = getJDA().getNewsChannelById(channelId);
+            if (channel == null)
+                channel = getJDA().getThreadChannelById(channelId);
+
             if (channel == null)
             {
                 getJDA().getEventCache().cache(EventCache.Type.CHANNEL, channelId, responseNumber, allContent, this::handle);
-                EventCache.LOG.debug("Received a Bulk Message Delete for a TextChannel that is not yet cached.");
+                EventCache.LOG.debug("Received a Bulk Message Delete for a GuildMessageChannel that is not yet cached.");
                 return null;
             }
 

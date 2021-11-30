@@ -239,28 +239,6 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
 
     @Nonnull
     @Override
-    @Deprecated
-    @CheckReturnValue
-    public MessageActionImpl embed(final MessageEmbed embed)
-    {
-        if (embed != null)
-        {
-            Checks.check(embed.isSendable(),
-               "Provided Message contains an empty embed or an embed with a length greater than %d characters, which is the max for bot accounts!",
-               MessageEmbed.EMBED_MAX_LENGTH_BOT);
-            if (this.embeds == null)
-                this.embeds = new ArrayList<>();
-            this.embeds.add(embed);
-        }
-        else
-        {
-            this.embeds = null;
-        }
-        return this;
-    }
-
-    @Nonnull
-    @Override
     public MessageActionImpl setEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
     {
         Checks.noneNull(embeds, "MessageEmbeds");
@@ -284,7 +262,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
     public MessageActionImpl append(final CharSequence csq, final int start, final int end)
     {
         if (content.length() + end - start > Message.MAX_CONTENT_LENGTH)
-            throw new IllegalArgumentException("A message may not exceed 2000 characters. Please limit your input!");
+            throw new IllegalArgumentException("A message may not exceed " + Message.MAX_CONTENT_LENGTH + " characters. Please limit your input!");
         content.append(csq, start, end);
         return this;
     }
@@ -295,7 +273,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
     public MessageActionImpl append(final char c)
     {
         if (content.length() == Message.MAX_CONTENT_LENGTH)
-            throw new IllegalArgumentException("A message may not exceed 2000 characters. Please limit your input!");
+            throw new IllegalArgumentException("A message may not exceed " + Message.MAX_CONTENT_LENGTH + " characters. Please limit your input!");
         content.append(c);
         return this;
     }
@@ -522,7 +500,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
         if (override)
         {
             if (embeds == null)
-                obj.putNull("embeds");
+                obj.put("embeds", DataArray.empty());
             else
                 obj.put("embeds", DataArray.fromCollection(embeds));
             if (content.length() == 0)
@@ -534,7 +512,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
             else
                 obj.put("nonce", nonce);
             if (components == null)
-                obj.putNull("components");
+                obj.put("components", DataArray.empty());
             else
                 obj.put("components", DataArray.fromCollection(components));
             if (retainedAttachments != null)

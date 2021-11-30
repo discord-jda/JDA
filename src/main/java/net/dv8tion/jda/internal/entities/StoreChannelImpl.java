@@ -16,26 +16,29 @@
 
 package net.dv8tion.jda.internal.entities;
 
+import gnu.trove.map.TLongObjectMap;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.managers.channel.concrete.StoreChannelManager;
 import net.dv8tion.jda.api.requests.restaction.ChannelAction;
+import net.dv8tion.jda.api.utils.MiscUtil;
+import net.dv8tion.jda.internal.entities.mixin.channel.attribute.ICategorizableChannelMixin;
+import net.dv8tion.jda.internal.entities.mixin.channel.attribute.IPermissionContainerMixin;
+import net.dv8tion.jda.internal.entities.mixin.channel.attribute.IPositionableChannelMixin;
 
 import javax.annotation.Nonnull;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class StoreChannelImpl extends AbstractChannelImpl<StoreChannel, StoreChannelImpl> implements StoreChannel
+//TODO-v5: Remove this class entirely.
+public class StoreChannelImpl extends AbstractGuildChannelImpl<StoreChannelImpl> implements
+        StoreChannel,
+        IPermissionContainerMixin<StoreChannelImpl>,
+        IPositionableChannelMixin<StoreChannelImpl>,
+        ICategorizableChannelMixin<StoreChannelImpl>
 {
     public StoreChannelImpl(long id, GuildImpl guild)
     {
         super(id, guild);
-    }
-
-    @Override
-    public StoreChannelImpl setPosition(int rawPosition)
-    {
-        getGuild().getStoreChannelView().clearCachedLists();
-        return super.setPosition(rawPosition);
     }
 
     @Nonnull
@@ -43,6 +46,18 @@ public class StoreChannelImpl extends AbstractChannelImpl<StoreChannel, StoreCha
     public ChannelType getType()
     {
         return ChannelType.STORE;
+    }
+
+    @Override
+    public long getParentCategoryIdLong()
+    {
+        return 0;
+    }
+
+    @Override
+    public int getPositionRaw()
+    {
+        return 0;
     }
 
     @Nonnull
@@ -56,7 +71,32 @@ public class StoreChannelImpl extends AbstractChannelImpl<StoreChannel, StoreCha
     @Override
     public ChannelAction<StoreChannel> createCopy(@Nonnull Guild guild)
     {
-        throw new UnsupportedOperationException("Bots cannot create store channels");
+        throw new UnsupportedOperationException();
+    }
+
+    @Nonnull
+    @Override
+    public StoreChannelManager getManager()
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public TLongObjectMap<PermissionOverride> getPermissionOverrideMap()
+    {
+        return MiscUtil.newLongMap();
+    }
+
+    @Override
+    public StoreChannelImpl setParentCategory(long parentCategoryId)
+    {
+        return this;
+    }
+
+    @Override
+    public StoreChannelImpl setPosition(int position)
+    {
+        return this;
     }
 
     @Override

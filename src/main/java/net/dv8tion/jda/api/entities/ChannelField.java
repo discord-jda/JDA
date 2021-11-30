@@ -127,7 +127,14 @@ public enum ChannelField
      *
      * @see VoiceChannel#getUserLimit()
      */
-    USER_LIMIT("userlimit", AuditLogKey.CHANNEL_USER_LIMIT)
+    USER_LIMIT("userlimit", AuditLogKey.CHANNEL_USER_LIMIT),
+
+    //Thread Specific
+    AUTO_ARCHIVE_DURATION("autoArchiveDuration", AuditLogKey.THREAD_AUTO_ARCHIVE_DURATION),
+    ARCHIVED("archived", AuditLogKey.THREAD_ARCHIVED),
+    ARCHIVED_TIMESTAMP("archiveTimestamp", null),
+    LOCKED("locked", AuditLogKey.THREAD_LOCKED),
+    INVITABLE("invitable", AuditLogKey.THREAD_INVITABLE)
     ;
 
     private final String fieldName;

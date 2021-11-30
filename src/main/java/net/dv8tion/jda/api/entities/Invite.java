@@ -16,8 +16,6 @@
 
 package net.dv8tion.jda.api.entities;
 
-import net.dv8tion.jda.annotations.DeprecatedSince;
-import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild.VerificationLevel;
 import net.dv8tion.jda.api.requests.RestAction;
@@ -42,7 +40,7 @@ import java.util.Set;
  * @see    #resolve(JDA, String, boolean)
  *
  * @see    net.dv8tion.jda.api.entities.Guild#retrieveInvites() Guild.retrieveInvites()
- * @see    GuildChannel#retrieveInvites()
+ * @see    IInviteContainer#retrieveInvites()
  */
 public interface Invite
 {
@@ -137,10 +135,20 @@ public interface Invite
     /**
      * The type of this invite.
      *
-     * @return The invites's type
+     * @return The invite's type
      */
     @Nonnull
     Invite.InviteType getType();
+
+    /**
+     * The target type of this invite or {@link TargetType#NONE} if this invite does not have a {@link #getTarget() InviteTarget}.
+     *
+     * @return The invite's target type or {@link TargetType#NONE}
+     *
+     * @see    Invite.TargetType
+     */
+    @Nonnull
+    Invite.TargetType getTargetType();
 
     /**
      * An {@link net.dv8tion.jda.api.entities.Invite.Channel Invite.Channel} object
@@ -154,14 +162,6 @@ public interface Invite
     Channel getChannel();
 
     /**
-     * The invite code
-     *
-     * @return the invite code
-     */
-    @Nonnull
-    String getCode();
-
-    /**
      * An {@link net.dv8tion.jda.api.entities.Invite.Group Invite.Group} object
      * containing information about this invite's origin group.
      *
@@ -171,6 +171,26 @@ public interface Invite
      */
     @Nullable
     Group getGroup();
+
+    /**
+     * An {@link Invite.InviteTarget Invite.InviteTarget} object
+     * containing information about this invite's target or {@code null}
+     * if this invite does not have a target.
+     *
+     * @return Information about this invite's target or {@code null}
+     *
+     * @see    net.dv8tion.jda.api.entities.Invite.InviteTarget
+     */
+    @Nullable
+    InviteTarget getTarget();
+
+    /**
+     * The invite code
+     *
+     * @return the invite code
+     */
+    @Nonnull
+    String getCode();
 
     /**
      * The invite URL for this invite in the format of:
@@ -183,28 +203,6 @@ public interface Invite
     {
         return "https://discord.gg/" + getCode();
     }
-
-    /**
-     * Returns creation date of this invite.
-     *
-     * <p>This works only for expanded invites and will throw a {@link IllegalStateException} otherwise!
-     *
-     * @throws IllegalStateException
-     *         if this invite is not expanded
-     *
-     * @return The creation date of this invite
-     *
-     * @see    #expand()
-     * @see    #isExpanded()
-     *
-     * @deprecated
-     *         Use {@link #getTimeCreated()} instead
-     */
-    @Nonnull
-    @Deprecated
-    @DeprecatedSince("4.0.0")
-    @ReplaceWith("getTimeCreated()")
-    OffsetDateTime getCreationTime();
 
     /**
      * An {@link net.dv8tion.jda.api.entities.Invite.Guild Invite.Guild} object
@@ -298,24 +296,29 @@ public interface Invite
      * Whether this Invite is expanded or not. Expanded invites contain more information, but they can only be
      * obtained by {@link net.dv8tion.jda.api.entities.Guild#retrieveInvites() Guild#retrieveInvites()} (requires
      * {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER Permission.MANAGE_SERVER}) or
-     * {@link GuildChannel#retrieveInvites() GuildChannel#retrieveInvites()} (requires
+     * {@link IInviteContainer#retrieveInvites() IInviteContainer#retrieveInvites()} (requires
      * {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL Permission.MANAGE_CHANNEL}).
      *
      * <p>There is a convenience method {@link #expand()} to get the expanded invite for an unexpanded one.
      *
-     * @return Whether is invite expanded or not
+     * @return Whether this invite is expanded or not
      *
      * @see    #expand()
      */
     boolean isExpanded();
 
     /**
-     * Whether this Invite grants only temporary access or not
+     * Whether this Invite grants only temporary access or not.
+     *
+     * <p>This works only for expanded invites and will throw a {@link IllegalStateException} otherwise!
      *
      * @throws IllegalStateException
      *         if this invite is not expanded
      *
-     * @return Whether is invite expanded or not
+     * @return Whether this invite is temporary or not
+     *
+     * @see    #expand()
+     * @see    #isExpanded()
      */
     boolean isTemporary();
 
@@ -329,7 +332,7 @@ public interface Invite
         /**
          * The name of this channel.
          *
-         * @return The channels's name
+         * @return The channel's name
          */
         @Nonnull
         String getName();
@@ -374,7 +377,7 @@ public interface Invite
         /**
          * The name of this guild.
          *
-         * @return The guilds's name
+         * @return The guild's name
          */
         @Nonnull
         String getName();
@@ -486,10 +489,127 @@ public interface Invite
          * {@link #resolve(net.dv8tion.jda.api.JDA, java.lang.String, boolean) Invite.resolve()} method with the
          * {@code withCounts} boolean set to {@code true}.
          *
-         * @return The names of the groups's users or null if not preset in the invite
+         * @return The names of the group's users or null if not preset in the invite
          */
         @Nullable
         List<String> getUsers();
+    }
+
+    /**
+     * POJO for the target of this invite.
+     *
+     * @see #getTarget()
+     */
+    interface InviteTarget
+    {
+
+        /**
+         * The type of this invite target.
+         *
+         * @return The type of this invite target
+         */
+        @Nonnull
+        TargetType getType();
+
+        /**
+         * The Snowflake id of the target entity of this invite.
+         *
+         * @throws IllegalStateException
+         *         If there is no target entity, {@link #getType() TargetType} is {@link TargetType#UNKNOWN}
+         *
+         * @return The id of the target entity
+         */
+        @Nonnull
+        String getId();
+
+        /**
+         * The Snowflake id of the target entity of this invite.
+         *
+         * @throws IllegalStateException
+         *         If there is no target entity, {@link #getType() TargetType} is {@link TargetType#UNKNOWN}
+         *
+         * @return The id of the target entity
+         */
+        long getIdLong();
+
+        /**
+         * The target {@link User} of this invite or {@code null} if the {@link #getType() TargeType} is not {@link TargetType#STREAM}
+         *
+         * @return The target user of this invite
+         *
+         * @see    net.dv8tion.jda.api.entities.User
+         */
+        @Nullable
+        User getUser();
+
+        /**
+         * The target {@link EmbeddedApplication} of this invite or {@code null} if the {@link #getType() TargeType} is not {@link TargetType#EMBEDDED_APPLICATION}
+         *
+         * @return The target application of this invite
+         *
+         * @see    net.dv8tion.jda.api.entities.Invite.EmbeddedApplication
+         */
+        @Nullable
+        EmbeddedApplication getApplication();
+    }
+
+    /**
+     * POJO for the target application information provided by an invite.
+     *
+     * @see InviteTarget#getApplication()
+     */
+    interface EmbeddedApplication extends ISnowflake
+    {
+        /**
+         * The name of this application.
+         *
+         * @return The name of this application.
+         */
+        @Nonnull
+        String getName();
+
+        /**
+         * The description of this application.
+         *
+         * @return The description of this application.
+         */
+        @Nonnull
+        String getDescription();
+
+        /**
+         * The summary of this application or {@code null} if this application has no summary.
+         *
+         * @return The summary of this application.
+         */
+        @Nullable
+        String getSummary();
+
+        /**
+         * The icon id of this application or {@code null} if the application has no icon.
+         *
+         * @return The application's icon id
+         *
+         * @see    #getIconUrl()
+         */
+        @Nullable
+        String getIconId();
+
+        /**
+         * The icon url of this application or {@code null} if the application has no icon.
+         *
+         * @return The application's icon url
+         *
+         * @see    #getIconId()
+         */
+        @Nullable
+        String getIconUrl();
+
+        /**
+         * The max participant count of this application or {@code -1} if no max participant count is set
+         *
+         * @return {@code -1} if this application does not have a max participant count
+         */
+        int getMaxParticipants();
     }
 
     /**
@@ -502,5 +622,79 @@ public interface Invite
         GUILD,
         GROUP,
         UNKNOWN
+    }
+
+    /**
+     * A TargetType indicates additional action to be taken by the client on accepting the invite,
+     * typically connecting external services or launching external applications depending on the specific TargetType.
+     *
+     * Some actions might not be available or show up on certain devices.
+     *
+     * @see InviteTarget#getType()
+     */
+    enum TargetType
+    {
+        /**
+         * The invite does not have a target type, {@link Invite#getTarget()} will return {@code null}.
+         */
+        NONE(0),
+
+        /**
+         * The invite points to a user's stream in a voice channel.
+         * The user to whose stream the invite goes can be get with {@link InviteTarget#getUser() InviteTarget.getUser} and is not {@code null}.
+         *
+         * @see InviteTarget#getUser()
+         */
+        STREAM(1),
+
+        /**
+         * The invite points to an application in a voice channel.
+         * The application to which the invite goes can be get with {@link InviteTarget#getApplication() InviteTarget.getApplication} and is not {@code null}.
+         *
+         * @see InviteTarget#getApplication()
+         */
+        EMBEDDED_APPLICATION(2),
+
+        /**
+         * Unknown Discord invite target type. Should never happen and would only possibly happen if Discord implemented a new
+         * target type and JDA had yet to implement support for it.
+         */
+        UNKNOWN(-1);
+
+        private final int id;
+
+        TargetType(int id)
+        {
+            this.id = id;
+        }
+
+        /**
+         * The Discord id key used to represent the target type.
+         *
+         * @return The id key used by discord for this channel type.
+         */
+        public int getId()
+        {
+            return id;
+        }
+
+        /**
+         * Static accessor for retrieving a target type based on its Discord id key.
+         *
+         * @param  id
+         *         The id key of the requested target type.
+         *
+         * @return The TargetType that is referred to by the provided key. If the id key is unknown, {@link #UNKNOWN} is returned.
+         */
+        @Nonnull
+        public static TargetType fromId(int id)
+        {
+            for (TargetType type : values())
+            {
+                if (type.id == id)
+                    return type;
+            }
+            return UNKNOWN;
+        }
     }
 }

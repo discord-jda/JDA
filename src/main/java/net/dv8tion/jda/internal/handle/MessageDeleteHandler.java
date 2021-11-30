@@ -16,14 +16,11 @@
 package net.dv8tion.jda.internal.handle;
 
 import net.dv8tion.jda.api.entities.MessageChannel;
-import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.MessageDeleteEvent;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageDeleteEvent;
-import net.dv8tion.jda.api.events.message.priv.PrivateMessageDeleteEvent;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
-import net.dv8tion.jda.internal.entities.PrivateChannelImpl;
-import net.dv8tion.jda.internal.entities.TextChannelImpl;
+import net.dv8tion.jda.internal.entities.ThreadChannelImpl;
+import net.dv8tion.jda.internal.entities.mixin.channel.middleman.MessageChannelMixin;
 
 public class MessageDeleteHandler extends SocketHandler
 {
@@ -36,14 +33,24 @@ public class MessageDeleteHandler extends SocketHandler
     @Override
     protected Long handleInternally(DataObject content)
     {
+        if (!content.isNull("guild_id"))
+        {
+            long guildId = content.getLong("guild_id");
+            if (getJDA().getGuildSetupController().isLocked(guildId))
+                return guildId;
+        }
+
         final long messageId = content.getLong("id");
         final long channelId = content.getLong("channel_id");
 
+        //TODO-v5-unified-channel-cache
         MessageChannel channel = getJDA().getTextChannelById(channelId);
         if (channel == null)
-        {
+            channel = getJDA().getNewsChannelById(channelId);
+        if (channel == null)
+            channel = getJDA().getThreadChannelById(channelId);
+        if (channel == null)
             channel = getJDA().getPrivateChannelById(channelId);
-        }
         if (channel == null)
         {
             getJDA().getEventCache().cache(EventCache.Type.CHANNEL, channelId, responseNumber, allContent, this::handle);
@@ -51,34 +58,26 @@ public class MessageDeleteHandler extends SocketHandler
             return null;
         }
 
-        if (channel instanceof TextChannel)
+        // Reset the latest message id as it was deleted.
+        if (channel.hasLatestMessage() & messageId == channel.getLatestMessageIdLong())
         {
-            TextChannelImpl tChan = (TextChannelImpl) channel;
-            if (getJDA().getGuildSetupController().isLocked(tChan.getGuild().getIdLong()))
-                return tChan.getGuild().getIdLong();
-            if (tChan.hasLatestMessage() && messageId == channel.getLatestMessageIdLong())
-                tChan.setLastMessageId(0); // Reset latest message id as it was deleted.
-            getJDA().handleEvent(
-                    new GuildMessageDeleteEvent(
-                            getJDA(), responseNumber,
-                            messageId, tChan));
-        }
-        else
-        {
-            PrivateChannelImpl pChan = (PrivateChannelImpl) channel;
-            if (channel.hasLatestMessage() && messageId == channel.getLatestMessageIdLong())
-                pChan.setLastMessageId(0); // Reset latest message id as it was deleted.
-            getJDA().handleEvent(
-                    new PrivateMessageDeleteEvent(
-                            getJDA(), responseNumber,
-                            messageId, pChan));
+            ((MessageChannelMixin<?>) channel).setLatestMessageIdLong(0);
         }
 
-        //Combo event
-        getJDA().handleEvent(
-                new MessageDeleteEvent(
-                        getJDA(), responseNumber,
-                        messageId, channel));
+        if (channel.getType().isThread())
+        {
+            ThreadChannelImpl gThread = (ThreadChannelImpl) channel;
+
+            //If we have less than 50 messages then we can still accurately track how many messages are in the message count.
+            //Once we exceed 50 messages Discord caps this value, so we cannot confidently decrement it.
+            int messageCount = gThread.getMessageCount();
+            if (messageCount < 50 && messageCount > 0)
+            {
+                gThread.setMessageCount(messageCount - 1);
+            }
+        }
+
+        getJDA().handleEvent(new MessageDeleteEvent(getJDA(), responseNumber, messageId, channel));
         return null;
     }
 }

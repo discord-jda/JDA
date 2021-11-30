@@ -55,6 +55,11 @@ public enum ChannelType
      * A {@link StageChannel StageChannel}, Guild-Only.
      */
     STAGE(13, 1, true),
+
+    GUILD_NEWS_THREAD(10, -1, true),
+    GUILD_PUBLIC_THREAD(11, -1, true),
+    GUILD_PRIVATE_THREAD(12, -1, true),
+
     /**
      * Unknown Discord channel type. Should never happen and would only possibly happen if Discord implemented a new
      * channel type and JDA had yet to implement support for it.
@@ -133,10 +138,28 @@ public enum ChannelType
     {
         switch (this)
         {
-            //case NEWS: TODO
             case TEXT:
+            case NEWS:
             case PRIVATE:
             case GROUP:
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    /**
+     * Whether channels of this type are {@link ThreadChannel ThreadChannels}.
+     * This mostly exists to make handling threads simpler than having to check 3 separate ChannelTypes every time.
+     *
+     * @return True, if channels of this type are {@link ThreadChannel ThreadChannel}
+     */
+    public boolean isThread() {
+        switch (this)
+        {
+            case GUILD_NEWS_THREAD:
+            case GUILD_PUBLIC_THREAD:
+            case GUILD_PRIVATE_THREAD:
                 return true;
             default:
                 return false;

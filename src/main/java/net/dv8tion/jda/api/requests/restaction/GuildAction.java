@@ -16,14 +16,11 @@
 
 package net.dv8tion.jda.api.requests.restaction;
 
-import net.dv8tion.jda.annotations.DeprecatedSince;
-import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.Region;
 import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Icon;
 import net.dv8tion.jda.api.entities.GuildChannel;
+import net.dv8tion.jda.api.entities.Icon;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.SerializableData;
@@ -63,27 +60,6 @@ public interface GuildAction extends RestAction<Void>
     @Nonnull
     @Override
     GuildAction deadline(long timestamp);
-
-    /**
-     * Sets the voice {@link net.dv8tion.jda.api.Region Region} of
-     * the resulting {@link net.dv8tion.jda.api.entities.Guild Guild}.
-     *
-     * @param  region
-     *         The {@link net.dv8tion.jda.api.Region Region} to use
-     *
-     * @throws java.lang.IllegalArgumentException
-     *         If the provided region is a VIP region as per {@link net.dv8tion.jda.api.Region#isVip() Region.isVip()}
-     *
-     * @return The current GuildAction for chaining convenience
-     * 
-     * @deprecated Guilds no longer have the {@link net.dv8tion.jda.api.Region Region} option. Use {@link net.dv8tion.jda.api.managers.ChannelManager#setRegion(Region)} instead.
-     */
-    @Nonnull
-    @CheckReturnValue
-    @Deprecated
-    @ReplaceWith("ChannelManager.setRegion()")
-    @DeprecatedSince("4.3.0")
-    GuildAction setRegion(@Nullable Region region);
 
     /**
      * Sets the {@link net.dv8tion.jda.api.entities.Icon Icon}
