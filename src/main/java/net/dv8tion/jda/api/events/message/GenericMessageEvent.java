@@ -235,13 +235,25 @@ public abstract class GenericMessageEvent extends Event
      * @see    #isFromGuild()
      * @see    #isFromType(ChannelType)
      * @see    #getChannelType()
-     * @see    ChannelType#isThread()
+     * @see    #isFromThread()
      */
     @Nonnull
     public ThreadChannel getThreadChannel()
     {
-        if (!getChannelType().isThread())
+        if (!isFromThread())
             throw new IllegalStateException("This message event did not happen in a thread channel");
         return (ThreadChannel) channel;
+    }
+
+    /**
+     * If the message event was from a {@link net.dv8tion.jda.api.entities.ThreadChannel ThreadChannel}
+     *
+     * @return If the message event was from a ThreadChannel
+     *
+     * @see ChannelType#isThread()
+     */
+    public boolean isFromThread()
+    {
+        return getChannelType().isThread();
     }
 }
