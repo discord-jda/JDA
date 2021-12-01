@@ -235,6 +235,7 @@ public abstract class GenericMessageEvent extends Event
      * @see    #isFromGuild()
      * @see    #isFromType(ChannelType)
      * @see    #getChannelType()
+     * @see    ChannelType#isThread()
      */
     @Nonnull
     public ThreadChannel getThreadChannel()
