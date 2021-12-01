@@ -239,28 +239,6 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
 
     @Nonnull
     @Override
-    @Deprecated
-    @CheckReturnValue
-    public MessageActionImpl embed(final MessageEmbed embed)
-    {
-        if (embed != null)
-        {
-            Checks.check(embed.isSendable(),
-               "Provided Message contains an empty embed or an embed with a length greater than %d characters, which is the max for bot accounts!",
-               MessageEmbed.EMBED_MAX_LENGTH_BOT);
-            if (this.embeds == null)
-                this.embeds = new ArrayList<>();
-            this.embeds.add(embed);
-        }
-        else
-        {
-            this.embeds = null;
-        }
-        return this;
-    }
-
-    @Nonnull
-    @Override
     public MessageActionImpl setEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
     {
         Checks.noneNull(embeds, "MessageEmbeds");

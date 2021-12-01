@@ -16,11 +16,7 @@
 package net.dv8tion.jda.api.sharding;
 
 import com.neovisionaries.ws.client.WebSocketFactory;
-import net.dv8tion.jda.annotations.DeprecatedSince;
-import net.dv8tion.jda.annotations.ForRemoval;
-import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.GatewayEncoding;
-import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.audio.factory.IAudioSendFactory;
 import net.dv8tion.jda.api.entities.Activity;
@@ -548,33 +544,6 @@ public class  DefaultShardManagerBuilder
     }
 
     /**
-     * Flags used to enable parts of the JDA cache to reduce the runtime memory footprint.
-     * <br><b>It is highly recommended to use {@link #setDisabledCacheFlags(EnumSet)} instead
-     * for backwards compatibility</b>. We might add more flags in the future which you then effectively disable
-     * when updating and not changing your setting here.
-     *
-     * @param  flags
-     *         EnumSet containing the flags for cache services that should be <b>enabled</b>
-     *
-     * @return The DefaultShardManagerBuilder instance. Useful for chaining.
-     *
-     * @deprecated We add CacheFlags to the enum over time which will be disabled when using this method.
-     *             This introduces breaking changes due to the way the setter works.
-     *             You should use {@link #enableCache(Collection)} and {@link #disableCache(Collection)} instead,
-     *             to disable and enable cache flags without side-effects that may break in future versions.
-     */
-    @Nonnull
-    @Deprecated
-    @ForRemoval(deadline = "5.0.0")
-    @ReplaceWith("enableCache(flags) and disableCache(flags)")
-    @DeprecatedSince("4.2.0")
-    public DefaultShardManagerBuilder setEnabledCacheFlags(@Nullable EnumSet<CacheFlag> flags)
-    {
-        this.cacheFlags = flags == null ? EnumSet.noneOf(CacheFlag.class) : EnumSet.copyOf(flags);
-        return this;
-    }
-
-    /**
      * Enable specific cache flags.
      * <br>This will not disable any currently set cache flags.
      *
@@ -621,30 +590,6 @@ public class  DefaultShardManagerBuilder
         Checks.noneNull(flags, "CacheFlag");
         cacheFlags.addAll(EnumSet.of(flag, flags));
         return this;
-    }
-
-    /**
-     * Flags used to disable parts of the JDA cache to reduce the runtime memory footprint.
-     * <br>Shortcut for {@code setEnabledCacheFlags(EnumSet.complementOf(flags))}
-     *
-     * @param  flags
-     *         EnumSet containing the flags for cache services that should be <b>disabled</b>
-     *
-     * @return The DefaultShardManagerBuilder instance. Useful for chaining.
-     *
-     * @deprecated We add CacheFlags to the enum over time which will be disabled when using this method.
-     *             This introduces breaking changes due to the way the setter works.
-     *             You should use {@link #enableCache(Collection)} and {@link #disableCache(Collection)} instead,
-     *             to disable and enable cache flags without side-effects that may break in future versions.
-     */
-    @Nonnull
-    @Deprecated
-    @ForRemoval(deadline = "5.0.0")
-    @ReplaceWith("enableCache(flags) and disableCache(flags)")
-    @DeprecatedSince("4.2.0")
-    public DefaultShardManagerBuilder setDisabledCacheFlags(@Nullable EnumSet<CacheFlag> flags)
-    {
-        return setEnabledCacheFlags(flags == null ? EnumSet.allOf(CacheFlag.class) : EnumSet.complementOf(flags));
     }
 
     /**
@@ -1084,38 +1029,6 @@ public class  DefaultShardManagerBuilder
     public DefaultShardManagerBuilder setEnableShutdownHook(final boolean enable)
     {
         return setFlag(ConfigFlag.SHUTDOWN_HOOK, enable);
-    }
-
-    /**
-     * Changes the internally used EventManager.
-     * <br>There are 2 provided Implementations:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.hooks.InterfacedEventManager InterfacedEventManager} which uses the Interface
-     *     {@link net.dv8tion.jda.api.hooks.EventListener EventListener} (tip: use the {@link net.dv8tion.jda.api.hooks.ListenerAdapter ListenerAdapter}).
-     *     <br>This is the default EventManager.</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.hooks.AnnotatedEventManager AnnotatedEventManager} which uses the Annotation
-     *         {@link net.dv8tion.jda.api.hooks.SubscribeEvent @SubscribeEvent} to mark the methods that listen for events.</li>
-     * </ul>
-     * <br>You can also create your own EventManager (See {@link net.dv8tion.jda.api.hooks.IEventManager}).
-     *
-     * @param  manager
-     *         The new {@link net.dv8tion.jda.api.hooks.IEventManager} to use.
-     *
-     * @return The DefaultShardManagerBuilder instance. Useful for chaining.
-     *
-     * @deprecated Use {@link #setEventManagerProvider(IntFunction)} instead
-     */
-    @Nonnull
-    @Deprecated
-    @ForRemoval(deadline = "5.0.0")
-    @DeprecatedSince("3.8.1")
-    @ReplaceWith("setEventManagerProvider((id) -> manager)")
-    public DefaultShardManagerBuilder setEventManager(@Nonnull final IEventManager manager)
-    {
-        Checks.notNull(manager, "manager");
-
-        return setEventManagerProvider((id) -> manager);
     }
 
     /**
@@ -1918,42 +1831,6 @@ public class  DefaultShardManagerBuilder
     public DefaultShardManagerBuilder setChunkingFilter(@Nullable ChunkingFilter filter)
     {
         this.chunkingFilter = filter;
-        return this;
-    }
-
-    /**
-     * Enable typing and presence update events.
-     * <br>These events cover the majority of traffic happening on the gateway and thus cause a lot
-     * of bandwidth usage. Disabling these events means the cache for users might become outdated since
-     * user properties are only updated by presence updates.
-     * <br>Default: true
-     *
-     * <h2>Notice</h2>
-     * This disables the majority of member cache and related events. If anything in your project
-     * relies on member state you should keep this enabled.
-     *
-     * @param  enabled
-     *         True, if guild subscriptions should be enabled
-     *
-     * @return The DefaultShardManagerBuilder instance. Useful for chaining.
-     *
-     * @since  4.1.0
-     *
-     * @deprecated This is now superceded by {@link #setDisabledIntents(Collection)} and {@link #setMemberCachePolicy(MemberCachePolicy)}.
-     *             To get identical behavior you can do {@code setMemberCachePolicy(VOICE).setDisabledIntents(GatewayIntent.GUILD_PRESENCES, GatewayIntent.GUILD_MESSAGE_TYPING, GatewayIntent.GUILD_MEMBERS)}
-     */
-    @Nonnull
-    @Deprecated
-    @ForRemoval(deadline = "5.0.0")
-    @ReplaceWith("setDisabledIntents(...).setMemberCachePolicy(...)")
-    @DeprecatedSince("4.2.0")
-    public DefaultShardManagerBuilder setGuildSubscriptionsEnabled(boolean enabled)
-    {
-        if (!enabled)
-        {
-            setMemberCachePolicy(MemberCachePolicy.VOICE);
-            intents &= ~JDABuilder.GUILD_SUBSCRIPTIONS;
-        }
         return this;
     }
 

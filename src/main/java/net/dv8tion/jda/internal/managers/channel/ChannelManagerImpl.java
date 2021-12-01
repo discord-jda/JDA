@@ -40,6 +40,7 @@ import java.util.Collection;
 import java.util.EnumSet;
 import java.util.Set;
 
+@SuppressWarnings("unchecked") //We do a lot of (M) and (T) casting that we know is correct but the compiler warns about.
 public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager<T, M>> extends ManagerBase<M> implements ChannelManager<T, M>
 {
     protected T channel;

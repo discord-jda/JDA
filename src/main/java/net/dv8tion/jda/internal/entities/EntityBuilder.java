@@ -180,7 +180,6 @@ public class EntityBuilder
         final String name = guildJson.getString("name", "");
         final String iconId = guildJson.getString("icon", null);
         final String splashId = guildJson.getString("splash", null);
-        final String region = guildJson.getString("region", null);
         final String description = guildJson.getString("description", null);
         final String vanityCode = guildJson.getString("vanity_url_code", null);
         final String bannerId = guildJson.getString("banner", null);
@@ -208,11 +207,9 @@ public class EntityBuilder
         final int explicitContentLevel = guildJson.getInt("explicit_content_filter", 0);
         final int nsfwLevel = guildJson.getInt("nsfw_level", -1);
 
-        guildObj.setAvailable(true)
-                .setName(name)
+        guildObj.setName(name)
                 .setIconId(iconId)
                 .setSplashId(splashId)
-                .setRegion(region)
                 .setDescription(description)
                 .setBannerId(bannerId)
                 .setVanityCode(vanityCode)
@@ -1767,7 +1764,6 @@ public class EntityBuilder
         final String name = content.getString("name");
         final String description = content.getString("description", "");
         final long packId = content.getLong("pack_id", content.getLong("guild_id", 0L));
-        final String asset = content.getString("asset", "");
         final MessageSticker.StickerFormat format = MessageSticker.StickerFormat.fromId(content.getInt("format_type"));
         final Set<String> tags;
         if (content.isNull("tags"))
@@ -1780,7 +1776,7 @@ public class EntityBuilder
             final Set<String> tmp = new HashSet<>(Arrays.asList(split));
             tags = Collections.unmodifiableSet(tmp);
         }
-        return new MessageSticker(id, name, description, packId, asset, format, tags);
+        return new MessageSticker(id, name, description, packId, format, tags);
     }
 
     public Message.Interaction createMessageInteraction(GuildImpl guildImpl, DataObject content)
@@ -2039,7 +2035,6 @@ public class EntityBuilder
         final DataObject guildObject = object.getObject("serialized_source_guild");
         final String guildName = guildObject.getString("name");
         final String guildDescription = guildObject.getString("description", null);
-        final String region = guildObject.getString("region", null);
         final String guildIconId = guildObject.getString("icon_hash", null);
         final VerificationLevel guildVerificationLevel = VerificationLevel.fromKey(guildObject.getInt("verification_level", -1));
         final NotificationLevel notificationLevel = NotificationLevel.fromKey(guildObject.getInt("default_message_notifications", 0));
@@ -2102,7 +2097,7 @@ public class EntityBuilder
         TemplateChannel systemChannel = channels.stream().filter(templateChannel -> templateChannel.getIdLong() == systemChannelId)
                 .findFirst().orElse(null);
 
-        final TemplateGuild guild = new TemplateGuild(guildId, guildName, guildDescription, region, guildIconId, guildVerificationLevel, notificationLevel, explicitContentLevel, locale,
+        final TemplateGuild guild = new TemplateGuild(guildId, guildName, guildDescription, guildIconId, guildVerificationLevel, notificationLevel, explicitContentLevel, locale,
                 afkTimeout, afkChannel, systemChannel, roles, channels);
 
         final boolean synced = !object.getBoolean("is_dirty", false);

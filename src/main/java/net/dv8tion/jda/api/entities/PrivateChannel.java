@@ -15,10 +15,6 @@
  */
 package net.dv8tion.jda.api.entities;
 
-import net.dv8tion.jda.annotations.ReplaceWith;
-import net.dv8tion.jda.api.requests.RestAction;
-
-import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 
 /**
@@ -35,17 +31,4 @@ public interface PrivateChannel extends MessageChannel
      */
     @Nonnull
     User getUser();
-
-    /**
-     * Closes a PrivateChannel. After being closed successfully the PrivateChannel is removed from the JDA mapping.
-     * <br>As a note, this does not remove the history of the PrivateChannel. If the channel is reopened the history will
-     * still be present.
-     *
-     * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: Void
-     */
-    @Nonnull
-    @CheckReturnValue
-    @Deprecated
-    @ReplaceWith("delete")
-    RestAction<Void> close();
 }

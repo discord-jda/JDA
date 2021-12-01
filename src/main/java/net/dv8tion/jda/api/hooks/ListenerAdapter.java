@@ -15,9 +15,6 @@
  */
 package net.dv8tion.jda.api.hooks;
 
-import net.dv8tion.jda.annotations.DeprecatedSince;
-import net.dv8tion.jda.annotations.ForRemoval;
-import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.events.*;
 import net.dv8tion.jda.api.events.application.ApplicationCommandCreateEvent;
 import net.dv8tion.jda.api.events.application.ApplicationCommandDeleteEvent;
@@ -107,27 +104,8 @@ import java.util.concurrent.ConcurrentMap;
  * @see net.dv8tion.jda.api.hooks.EventListener EventListener
  * @see net.dv8tion.jda.api.hooks.InterfacedEventManager InterfacedEventManager
  */
-@SuppressWarnings("deprecation")
 public abstract class ListenerAdapter implements EventListener
 {
-    @Deprecated
-    @ForRemoval(deadline = "4.4.0")
-    @DeprecatedSince("4.2.0")
-    @ReplaceWith("onGuildMemberRemove(GuildMemberRemoveEvent)")
-    public void onGuildMemberLeave(@Nonnull GuildMemberLeaveEvent event) {}
-
-    @Deprecated
-    @ForRemoval(deadline = "4.4.0")
-    @DeprecatedSince("4.2.1")
-    @ReplaceWith("onResumed(ResumedEvent)")
-    public void onResume(@Nonnull ResumedEvent event) {}
-
-    @Deprecated
-    @ForRemoval(deadline = "4.4.0")
-    @DeprecatedSince("4.2.1")
-    @ReplaceWith("onReconnected(ReconnectedEvent)")
-    public void onReconnect(@Nonnull ReconnectedEvent event) {}
-
     public void onGenericEvent(@Nonnull GenericEvent event) {}
     public void onGenericUpdate(@Nonnull UpdateEvent<?, ?> event) {}
     public void onRawGateway(@Nonnull RawGatewayEvent event) {}
@@ -246,14 +224,6 @@ public abstract class ListenerAdapter implements EventListener
     public void onGuildUpdateName(@Nonnull GuildUpdateNameEvent event){}
     public void onGuildUpdateNotificationLevel(@Nonnull GuildUpdateNotificationLevelEvent event) {}
     public void onGuildUpdateOwner(@Nonnull GuildUpdateOwnerEvent event) {}
-
-    /**
-     * @deprecated This event is no longer supported by discord, use {@link #onChannelUpdateRegion(ChannelUpdateRegionEvent)} instead.
-     */
-    @Deprecated
-    @ForRemoval(deadline = "5.0.0")
-    @ReplaceWith("VoiceChannelUpdateRegionEvent")
-    public void onGuildUpdateRegion(@Nonnull GuildUpdateRegionEvent event) {}
     public void onGuildUpdateSplash(@Nonnull GuildUpdateSplashEvent event) {}
     public void onGuildUpdateVerificationLevel(@Nonnull GuildUpdateVerificationLevelEvent event) {}
     public void onGuildUpdateLocale(@Nonnull GuildUpdateLocaleEvent event) {}
@@ -371,12 +341,6 @@ public abstract class ListenerAdapter implements EventListener
         onGenericEvent(event);
         if (event instanceof UpdateEvent)
             onGenericUpdate((UpdateEvent<?, ?>) event);
-
-        //TODO: Remove once deprecated methods are removed
-        if (event instanceof ResumedEvent)
-            onResume((ResumedEvent) event);
-        else if (event instanceof ReconnectedEvent)
-            onReconnect((ReconnectedEvent) event);
 
         for (Class<?> clazz : ClassWalker.range(event.getClass(), GenericEvent.class))
         {

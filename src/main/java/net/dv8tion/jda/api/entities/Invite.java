@@ -16,9 +16,6 @@
 
 package net.dv8tion.jda.api.entities;
 
-import net.dv8tion.jda.annotations.DeprecatedSince;
-import net.dv8tion.jda.annotations.ForRemoval;
-import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild.VerificationLevel;
 import net.dv8tion.jda.api.requests.RestAction;
@@ -43,7 +40,7 @@ import java.util.Set;
  * @see    #resolve(JDA, String, boolean)
  *
  * @see    net.dv8tion.jda.api.entities.Guild#retrieveInvites() Guild.retrieveInvites()
- * @see    GuildChannel#retrieveInvites()
+ * @see    IInviteContainer#retrieveInvites()
  */
 public interface Invite
 {
@@ -208,29 +205,6 @@ public interface Invite
     }
 
     /**
-     * Returns creation date of this invite.
-     *
-     * <p>This works only for expanded invites and will throw a {@link IllegalStateException} otherwise!
-     *
-     * @throws IllegalStateException
-     *         if this invite is not expanded
-     *
-     * @return The creation date of this invite
-     *
-     * @see    #expand()
-     * @see    #isExpanded()
-     *
-     * @deprecated
-     *         Use {@link #getTimeCreated()} instead
-     */
-    @Nonnull
-    @Deprecated
-    @ForRemoval(deadline = "5.0.0")
-    @DeprecatedSince("4.0.0")
-    @ReplaceWith("getTimeCreated()")
-    OffsetDateTime getCreationTime();
-
-    /**
      * An {@link net.dv8tion.jda.api.entities.Invite.Guild Invite.Guild} object
      * containing information about this invite's origin guild.
      *
@@ -322,7 +296,7 @@ public interface Invite
      * Whether this Invite is expanded or not. Expanded invites contain more information, but they can only be
      * obtained by {@link net.dv8tion.jda.api.entities.Guild#retrieveInvites() Guild#retrieveInvites()} (requires
      * {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER Permission.MANAGE_SERVER}) or
-     * {@link GuildChannel#retrieveInvites() GuildChannel#retrieveInvites()} (requires
+     * {@link IInviteContainer#retrieveInvites() IInviteContainer#retrieveInvites()} (requires
      * {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL Permission.MANAGE_CHANNEL}).
      *
      * <p>There is a convenience method {@link #expand()} to get the expanded invite for an unexpanded one.
