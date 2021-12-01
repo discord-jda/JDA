@@ -1092,7 +1092,7 @@ public class ReceivedMessage extends AbstractMessage
         IPermissionContainer permChan;
 
         // Check if the channel is a thread
-        if (isFromType(ChannelType.GUILD_NEWS_THREAD) || isFromType(ChannelType.GUILD_PUBLIC_THREAD) || isFromType(ChannelType.GUILD_PRIVATE_THREAD))
+        if (getChannelType().isThread())
         {
             // Get the parent channel for permissions if we are using a thread
             permChan = ((ThreadChannel) channel).getParentChannel();
