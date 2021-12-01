@@ -1492,12 +1492,12 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public AuditableRestAction<Void> timeoutUntilById(String userId, @Nonnull OffsetDateTime date)
+    public AuditableRestAction<Void> timeoutUntilById(@Nonnull String userId, @Nonnull OffsetDateTime date)
     {
         Checks.isSnowflake(userId, "User ID");
         Checks.notNull(date, "Date");
-        Checks.check(!date.isBefore(OffsetDateTime.now()), "Cannot put a member in time out until a date in the past");
-        Checks.check(date.isBefore(OffsetDateTime.now().plusDays(28)), "Cannot put a member in time out for more than 28 days");
+        Checks.check(date.isAfter(OffsetDateTime.now()), "Cannot put a member in time out with date in the past. Provided: %s", date);
+        Checks.check(date.isBefore(OffsetDateTime.now().plusDays(28)), "Cannot put a member in time out for more than 28 days. Provided: %s", date);
         checkPermission(Permission.MODERATE_MEMBERS);
 
         DataObject body = DataObject.empty().put("communication_disabled_until", date.toString());
