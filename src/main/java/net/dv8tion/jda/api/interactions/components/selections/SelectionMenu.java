@@ -84,7 +84,8 @@ public interface SelectionMenu extends Component
      * An <b>unmodifiable</b> list of up to 25 available options to choose from.
      *
      * @return The {@link SelectOption SelectOptions} this menu provides
-     * @see Builder#getOptions()
+     *
+     * @see    Builder#getOptions()
      */
     @Nonnull
     List<SelectOption> getOptions();
