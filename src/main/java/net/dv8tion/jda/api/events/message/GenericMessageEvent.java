@@ -239,7 +239,7 @@ public abstract class GenericMessageEvent extends Event
     @Nonnull
     public ThreadChannel getThreadChannel()
     {
-        if (!isFromType(ChannelType.GUILD_NEWS_THREAD) && !isFromType(ChannelType.GUILD_PUBLIC_THREAD) && !isFromType(ChannelType.GUILD_PRIVATE_THREAD))
+        if (!getChannelType().isThread())
             throw new IllegalStateException("This message event did not happen in a thread channel");
         return (ThreadChannel) channel;
     }
