@@ -221,4 +221,26 @@ public abstract class GenericMessageEvent extends Event
             throw new IllegalStateException("This message event did not happen in a private channel");
         return (PrivateChannel) channel;
     }
+
+    /**
+     * The {@link net.dv8tion.jda.api.entities.ThreadChannel ThreadChannel} the Message was received in.
+     * <br>If this Message was not received in a {@link net.dv8tion.jda.api.entities.ThreadChannel ThreadChannel},
+     * this will throw an {@link java.lang.IllegalStateException}.
+     *
+     * @throws java.lang.IllegalStateException
+     *         If this was not sent in a {@link net.dv8tion.jda.api.entities.ThreadChannel}.
+     *
+     * @return The ThreadChannel the Message was received in
+     *
+     * @see    #isFromGuild()
+     * @see    #isFromType(ChannelType)
+     * @see    #getChannelType()
+     */
+    @Nonnull
+    public ThreadChannel getThreadChannel()
+    {
+        if (!isFromType(ChannelType.GUILD_NEWS_THREAD) && !isFromType(ChannelType.GUILD_PUBLIC_THREAD) && !isFromType(ChannelType.GUILD_PRIVATE_THREAD))
+            throw new IllegalStateException("This message event did not happen in a thread channel");
+        return (ThreadChannel) channel;
+    }
 }
