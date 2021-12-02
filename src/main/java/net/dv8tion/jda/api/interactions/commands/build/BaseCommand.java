@@ -44,9 +44,9 @@ public abstract class BaseCommand<T extends BaseCommand<T>> implements Serializa
             Checks.notLonger(description, 100, "Description");
             Checks.isLowercase(name, "Name");
             Checks.matches(name, Checks.ALPHANUMERIC_WITH_DASH, "Name");
+            this.description = description;
         }
         this.name = name;
-        this.description = description;
     }
 
     /**
@@ -105,7 +105,7 @@ public abstract class BaseCommand<T extends BaseCommand<T>> implements Serializa
     @SuppressWarnings("unchecked")
     public T setDescription(@Nonnull String description)
     {
-        Checks.check(commandType == CommandType.SLASH, "You cannot modify this command's description");
+        Checks.check(commandType == CommandType.SLASH, "You can only modify the descriptions of slash commands");
         Checks.notEmpty(description, "Description");
         Checks.notLonger(description, 100, "Description");
         this.description = description;

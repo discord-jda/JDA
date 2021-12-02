@@ -33,10 +33,6 @@ import java.util.stream.Collectors;
  */
 public class CommandData extends BaseCommand<CommandData> implements SerializableData
 {
-    public static final int SLASH_COMMAND_LIMIT = 100;
-    public static final int USER_COMMAND_LIMIT = 5;
-    public static final int MESSAGE_COMMAND_LIMIT = 5;
-
     private boolean allowSubcommands = true;
     private boolean allowGroups = true;
     private boolean allowOption = true;

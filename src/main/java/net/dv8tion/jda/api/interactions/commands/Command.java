@@ -49,6 +49,19 @@ import java.util.function.Predicate;
  */
 public class Command implements ISnowflake
 {
+    /**
+     * The maximum possible amount of slash commands that may be created
+     */
+    public static final int SLASH_COMMAND_LIMIT = 100;
+    /**
+     * The maximum possible amount of user context menu commands that may be created
+     */
+    public static final int USER_COMMAND_LIMIT = 5;
+    /**
+     * The maximum possible amount of message context menu commands that may be created
+     */
+    public static final int MESSAGE_COMMAND_LIMIT = 5;
+
     private static final EnumSet<OptionType> OPTIONS = EnumSet.complementOf(EnumSet.of(OptionType.SUB_COMMAND, OptionType.SUB_COMMAND_GROUP));
     private static final Predicate<DataObject> OPTION_TEST = it -> OPTIONS.contains(OptionType.fromKey(it.getInt("type")));
     private static final Predicate<DataObject> SUBCOMMAND_TEST = it -> OptionType.fromKey(it.getInt("type")) == OptionType.SUB_COMMAND;

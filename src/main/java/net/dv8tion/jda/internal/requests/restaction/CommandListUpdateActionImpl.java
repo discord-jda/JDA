@@ -102,9 +102,9 @@ public class CommandListUpdateActionImpl extends RestActionImpl<List<Command>> i
             }
         }
 
-        Checks.check(slashCommandCount <= CommandData.SLASH_COMMAND_LIMIT, "Cannot have more than 100 slash commands! Try using subcommands instead.");
-        Checks.check(userCommandCount <= CommandData.USER_COMMAND_LIMIT, "Cannot have more than 5 user context menu commands!");
-        Checks.check(messageCommandCount <= CommandData.MESSAGE_COMMAND_LIMIT, "Cannot have more than 5 message context menu commands!");
+        Checks.check(slashCommandCount <= Command.SLASH_COMMAND_LIMIT, "Cannot have more than" + Command.SLASH_COMMAND_LIMIT + " slash commands! Try using subcommands instead.");
+        Checks.check(userCommandCount <= Command.USER_COMMAND_LIMIT, "Cannot have more than " + Command.USER_COMMAND_LIMIT + " user context menu commands!");
+        Checks.check(messageCommandCount <= Command.MESSAGE_COMMAND_LIMIT, "Cannot have more than "+ Command.USER_COMMAND_LIMIT + " message context menu commands!");
         this.commands.addAll(commands);
         return this;
     }
