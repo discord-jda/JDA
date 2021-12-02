@@ -2797,7 +2797,7 @@ public interface Message extends ISnowflake, Formattable
         }
 
         /**
-         * The description of this attachment.
+         * The description (alt text) of this attachment.
          * <br>This description is shown when hovering over the attachment in the client.
          *
          * @return The description, or null if this isn't provided
