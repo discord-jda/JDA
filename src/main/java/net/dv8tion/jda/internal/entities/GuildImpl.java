@@ -1215,31 +1215,31 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public RestAction<Void> moveVoiceMember(@Nonnull Member member, @Nullable VoiceChannel voiceChannel)
+    public RestAction<Void> moveVoiceMember(@Nonnull Member member, @Nullable AudioChannel audioChannel)
     {
         Checks.notNull(member, "Member");
         checkGuild(member.getGuild(), "Member");
-        if (voiceChannel != null)
-            checkGuild(voiceChannel.getGuild(), "VoiceChannel");
+        if (audioChannel != null)
+            checkGuild(audioChannel.getGuild(), "AudioChannel");
 
         GuildVoiceState vState = member.getVoiceState();
         if (vState == null)
             throw new IllegalStateException("Cannot move a Member with disabled CacheFlag.VOICE_STATE");
         AudioChannel channel = vState.getChannel();
         if (channel == null)
-            throw new IllegalStateException("You cannot move a Member who isn't in a VoiceChannel!");
+            throw new IllegalStateException("You cannot move a Member who isn't in an AudioChannel!");
 
         if (!PermissionUtil.checkPermission((IPermissionContainer) channel, getSelfMember(), Permission.VOICE_MOVE_OTHERS))
             throw new InsufficientPermissionException(channel, Permission.VOICE_MOVE_OTHERS, "This account does not have Permission to MOVE_OTHERS out of the channel that the Member is currently in.");
 
-        if (voiceChannel != null
-            && !PermissionUtil.checkPermission(voiceChannel, getSelfMember(), Permission.VOICE_CONNECT)
-            && !PermissionUtil.checkPermission(voiceChannel, member, Permission.VOICE_CONNECT))
-            throw new InsufficientPermissionException(voiceChannel, Permission.VOICE_CONNECT,
+        if (audioChannel != null
+            && !getSelfMember().hasPermission(audioChannel, Permission.VOICE_CONNECT)
+            && !member.hasPermission(audioChannel, Permission.VOICE_CONNECT))
+            throw new InsufficientPermissionException(audioChannel, Permission.VOICE_CONNECT,
                                                       "Neither this account nor the Member that is attempting to be moved have the VOICE_CONNECT permission " +
-                                                      "for the destination VoiceChannel, so the move cannot be done.");
+                                                      "for the destination AudioChannel, so the move cannot be done.");
 
-        DataObject body = DataObject.empty().put("channel_id", voiceChannel == null ? null : voiceChannel.getId());
+        DataObject body = DataObject.empty().put("channel_id", audioChannel == null ? null : audioChannel.getId());
         Route.CompiledRoute route = Route.Guilds.MODIFY_MEMBER.compile(getId(), member.getUser().getId());
         return new RestActionImpl<>(getJDA(), route, body);
     }
