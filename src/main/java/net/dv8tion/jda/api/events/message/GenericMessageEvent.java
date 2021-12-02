@@ -24,7 +24,7 @@ import javax.annotation.Nonnull;
 /**
  * Indicates that a {@link net.dv8tion.jda.api.entities.Message Message} was created/deleted/changed.
  * <br>Every MessageEvent is an instance of this event and can be casted.
- * 
+ *
  * <p>Can be used to detect any MessageEvent.
  *
  * <h2>Requirements</h2>
@@ -72,7 +72,7 @@ public abstract class GenericMessageEvent extends Event
     @Nonnull
     public GuildMessageChannel getGuildChannel()
     {
-        if (isFromGuild())
+        if (!isFromGuild())
             throw new IllegalStateException("This message event did not happen in a guild");
         return (GuildMessageChannel) channel;
     }
