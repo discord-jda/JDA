@@ -617,7 +617,7 @@ public interface JDA
      */
     @Nonnull
     @CheckReturnValue
-    default CommandCreateAction upsertCommand(CommandType commandType, @Nonnull String name)
+    default CommandCreateAction upsertCommand(@Nonnull CommandType commandType, @Nonnull String name)
     {
         Checks.check(commandType != CommandType.SLASH, "This command may not be of type slash command");
         return upsertCommand(new CommandData(commandType, name));

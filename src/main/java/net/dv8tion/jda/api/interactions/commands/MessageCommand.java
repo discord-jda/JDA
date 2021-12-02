@@ -33,7 +33,8 @@ public class MessageCommand extends Command
 
     @Nonnull
     @Override
-    public CommandEditAction editCommand() {
+    public CommandEditAction editCommand()
+    {
         if (applicationId != api.getSelfUser().getApplicationIdLong())
             throw new IllegalStateException("Cannot edit a command from another bot!");
         return guild == null ?
