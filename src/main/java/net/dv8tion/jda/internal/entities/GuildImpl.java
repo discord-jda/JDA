@@ -1233,8 +1233,8 @@ public class GuildImpl implements Guild
             throw new InsufficientPermissionException(channel, Permission.VOICE_MOVE_OTHERS, "This account does not have Permission to MOVE_OTHERS out of the channel that the Member is currently in.");
 
         if (audioChannel != null
-            && !PermissionUtil.checkPermission((IPermissionContainer) audioChannel, getSelfMember(), Permission.VOICE_CONNECT)
-            && !PermissionUtil.checkPermission((IPermissionContainer) audioChannel, member, Permission.VOICE_CONNECT))
+            && !getSelfMember().hasPermission(audioChannel, Permission.VOICE_CONNECT)
+            && !member.hasPermission(audioChannel, Permission.VOICE_CONNECT))
             throw new InsufficientPermissionException(audioChannel, Permission.VOICE_CONNECT,
                                                       "Neither this account nor the Member that is attempting to be moved have the VOICE_CONNECT permission " +
                                                       "for the destination AudioChannel, so the move cannot be done.");
