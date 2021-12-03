@@ -2105,9 +2105,7 @@ public class EntityBuilder
                 ? Collections.unmodifiableList(object.getArray("tags").stream(DataArray::getString).collect(Collectors.toList()))
                 : Collections.emptyList();
 
-        final long defaultAuthUrlPerms = !object.isNull("install_params")
-                ? Long.parseLong(object.getObject("install_params").getString("permissions"))
-                : 0L;
+        final long defaultAuthUrlPerms = object.optObject("install_params").map(o -> o.getLong("permissions")).orElse(0);
 
         final List<String> defaultAuthUrlScopes = !object.isNull("install_params")
                 ? Collections.unmodifiableList(object.getObject("install_params").getArray("scopes").stream(DataArray::getString).collect(Collectors.toList()))
