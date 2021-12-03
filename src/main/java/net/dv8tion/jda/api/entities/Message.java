@@ -144,10 +144,10 @@ public interface Message extends ISnowflake, Formattable
      * @see MessageAction#append(CharSequence) MessageAction.append(...)
      */
     int MAX_CONTENT_LENGTH = 2000;
-    
+
    /**
     * The maximum amount of reactions that can be added to one message ({@value})
-    * 
+    *
     * @see Message#addReaction(String)
     * @see Message#addReaction(net.dv8tion.jda.api.entities.Emote)
     */
@@ -1862,7 +1862,7 @@ public interface Message extends ISnowflake, Formattable
      *             <li>If this message was <b>not</b> sent in a {@link net.dv8tion.jda.api.entities.Guild Guild}.</li>
      *             <li>If this message is ephemeral</li>
      *         </ul>
-     *         
+     *
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link java.lang.Void}
      */
@@ -1914,7 +1914,7 @@ public interface Message extends ISnowflake, Formattable
      *             <li>If this message was <b>not</b> sent in a {@link net.dv8tion.jda.api.entities.Guild Guild}.</li>
      *             <li>If this message is ephemeral</li>
      *         </ul>
-     *         
+     *
      *
      * @return {@link RestAction}
      *
@@ -2072,7 +2072,7 @@ public interface Message extends ISnowflake, Formattable
      *         <b>and</b> the given user is <b>not</b> the {@link net.dv8tion.jda.api.entities.SelfUser SelfUser}.</li>
      *     <li>If this message is ephemeral</li>
      * </ul>
-     *        
+     *
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link java.lang.Void}
      *
@@ -2199,7 +2199,7 @@ public interface Message extends ISnowflake, Formattable
      *                 <b>and</b> the given user is <b>not</b> the {@link net.dv8tion.jda.api.entities.SelfUser SelfUser}.</li>
      *             <li>Is ephemeral</li>
      *         </ul>
-     *         
+     *
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link java.lang.Void}
      *
@@ -2396,7 +2396,7 @@ public interface Message extends ISnowflake, Formattable
      * @throws net.dv8tion.jda.api.exceptions.PermissionException
      *         If the MessageChannel this message was sent in was a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}
      *         and the message was not sent by the currently logged in account.
-     * @throws IllegalStateException 
+     * @throws IllegalStateException
      *         If this Message is ephemeral
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction} - Type: {@link java.lang.Void}
      * @see    #isSuppressedEmbeds()
@@ -2476,7 +2476,7 @@ public interface Message extends ISnowflake, Formattable
 
     /**
      * Returns the raw message flags of this message
-     * 
+     *
      * @throws java.lang.UnsupportedOperationException
      *         If this is a system message
      * @return The raw message flags
@@ -2488,7 +2488,7 @@ public interface Message extends ISnowflake, Formattable
      * Whether this message is ephemeral.
      * <br>The message being ephemeral means it is only visible to the bot and the interacting user
      * <br>This is a shortcut method for checking if {@link #getFlags()} contains {@link MessageFlag#EPHEMERAL}
-     * 
+     *
      * @throws java.lang.UnsupportedOperationException
      *         If this is a system message
      * @return Whether the message is ephemeral
@@ -2697,6 +2697,7 @@ public interface Message extends ISnowflake, Formattable
         private final String proxyUrl;
         private final String fileName;
         private final String contentType;
+        private final String description;
         private final int size;
         private final int height;
         private final int width;
@@ -2704,13 +2705,14 @@ public interface Message extends ISnowflake, Formattable
 
         private final JDAImpl jda;
 
-        public Attachment(long id, String url, String proxyUrl, String fileName, String contentType, int size, int height, int width, boolean ephemeral, JDAImpl jda)
+        public Attachment(long id, String url, String proxyUrl, String fileName, String contentType, String description, int size, int height, int width, boolean ephemeral, JDAImpl jda)
         {
             this.id = id;
             this.url = url;
             this.proxyUrl = proxyUrl;
             this.fileName = fileName;
             this.contentType = contentType;
+            this.description = description;
             this.size = size;
             this.height = height;
             this.width = width;
@@ -2792,6 +2794,18 @@ public interface Message extends ISnowflake, Formattable
         public String getContentType()
         {
             return contentType;
+        }
+
+        /**
+         * The description (alt text) of this attachment.
+         * <br>This description is shown when hovering over the attachment in the client.
+         *
+         * @return The description, or null if this isn't provided
+         */
+        @Nullable
+        public String getDescription()
+        {
+            return description;
         }
 
         /**
