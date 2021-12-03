@@ -693,8 +693,6 @@ public interface Guild extends ISnowflake
      * The vanity url code for this Guild. The vanity url is the custom invite code of partnered / official / boosted Guilds.
      * <br>The returned String will be the code that can be provided to {@code discord.gg/{code}} to get the invite link.
      *
-     * <p>The Vanity Code can be modified using {@link GuildManager#setVanityCode(String)}.
-     *
      * @return The vanity code or null
      *
      * @since  4.0.0
@@ -707,8 +705,6 @@ public interface Guild extends ISnowflake
     /**
      * The vanity url for this Guild. The vanity url is the custom invite code of partnered / official / boosted Guilds.
      * <br>The returned String will be the vanity invite link to this guild.
-     *
-     * <p>The Vanity Code can be modified using {@link GuildManager#setVanityCode(String)}.
      *
      * @return The vanity url or null
      *
