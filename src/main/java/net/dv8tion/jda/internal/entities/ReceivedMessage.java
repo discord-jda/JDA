@@ -919,11 +919,10 @@ public class ReceivedMessage extends AbstractMessage
             if (isFromType(ChannelType.PRIVATE))
                 throw new IllegalStateException("Cannot delete another User's messages in a PrivateChannel.");
 
-            IPermissionContainer permChan = getPermissionContainer();
-            if (!getGuild().getSelfMember().hasAccess(permChan))
-                throw new MissingAccessException(permChan, Permission.VIEW_CHANNEL);
-            else if (!getGuild().getSelfMember().hasPermission(permChan, Permission.MESSAGE_MANAGE))
-                throw new InsufficientPermissionException(permChan, Permission.MESSAGE_MANAGE);
+            if (!getGuild().getSelfMember().hasAccess(getGuildChannel()))
+                throw new MissingAccessException(getGuildChannel(), Permission.VIEW_CHANNEL);
+            else if (!getGuild().getSelfMember().hasPermission(getGuildChannel(), Permission.MESSAGE_MANAGE))
+                throw new InsufficientPermissionException(getGuildChannel(), Permission.MESSAGE_MANAGE);
         }
         return channel.deleteMessageById(getIdLong());
     }
@@ -940,9 +939,8 @@ public class ReceivedMessage extends AbstractMessage
             if (isFromType(ChannelType.PRIVATE))
                 throw new PermissionException("Cannot suppress embeds of others in a PrivateChannel.");
 
-            IPermissionContainer permChan = getPermissionContainer();
-            if (!getGuild().getSelfMember().hasPermission(permChan, Permission.MESSAGE_MANAGE))
-                throw new InsufficientPermissionException(permChan, Permission.MESSAGE_MANAGE);
+            if (!getGuild().getSelfMember().hasPermission(getGuildChannel(), Permission.MESSAGE_MANAGE))
+                throw new InsufficientPermissionException(getGuildChannel(), Permission.MESSAGE_MANAGE);
         }
         JDAImpl jda = (JDAImpl) getJDA();
         Route.CompiledRoute route = Route.Messages.EDIT_MESSAGE.compile(getChannel().getId(), getId());
@@ -1085,24 +1083,6 @@ public class ReceivedMessage extends AbstractMessage
             catch (NumberFormatException ignored) {}
         }
         return collection;
-    }
-
-    private IPermissionContainer getPermissionContainer()
-    {
-        IPermissionContainer permChan;
-
-        // Check if the channel is a thread
-        if (getChannelType().isThread())
-        {
-            // Get the parent channel for permissions if we are using a thread
-            permChan = ((ThreadChannel) channel).getParentChannel();
-        }
-        else
-        {
-            permChan = (IPermissionContainer) channel;
-        }
-
-        return permChan;
     }
 
     private static class FormatToken
