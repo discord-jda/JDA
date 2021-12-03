@@ -26,6 +26,7 @@ import net.dv8tion.jda.internal.utils.Checks;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 
@@ -45,12 +46,12 @@ public class ApplicationInfoImpl implements ApplicationInfo
     private final ApplicationTeam team;
     private final List<String> tags;
     private final String customAuthUrl;
-    private final EnumSet<Permission> defaultAuthUrlPerms;
+    private final long defaultAuthUrlPerms;
     private final List<String> defaultAuthUrlScopes;
     private String scopes = "bot";
 
     public ApplicationInfoImpl(JDA api, String description, boolean doesBotRequireCodeGrant, String iconId, long id,
-            boolean isBotPublic, String name, String termsOfServiceUrl, String privacyPolicyUrl, User owner, ApplicationTeam team, List<String> tags, String customAuthUrl, EnumSet<Permission> defaultAuthUrlPerms, List<String> defaultAuthUrlScopes)
+            boolean isBotPublic, String name, String termsOfServiceUrl, String privacyPolicyUrl, User owner, ApplicationTeam team, List<String> tags, String customAuthUrl, long defaultAuthUrlPerms, List<String> defaultAuthUrlScopes)
     {
         this.api = api;
         this.description = description;
@@ -66,7 +67,7 @@ public class ApplicationInfoImpl implements ApplicationInfo
         this.tags = Collections.unmodifiableList(tags);
         this.customAuthUrl = customAuthUrl;
         this.defaultAuthUrlPerms = defaultAuthUrlPerms;
-        this.defaultAuthUrlScopes = Collection.unmodifiableList(defaultAuthUrlScopes);
+        this.defaultAuthUrlScopes = Collections.unmodifiableList(defaultAuthUrlScopes);
 
     }
 
@@ -214,7 +215,7 @@ public class ApplicationInfoImpl implements ApplicationInfo
     @Override
     public EnumSet<Permission> getPermissions()
     {
-        return defaultAuthUrlPerms;
+        return Permission.getPermissions(defaultAuthUrlPerms);
     }
 
     @Nonnull

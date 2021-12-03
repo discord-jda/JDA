@@ -2101,19 +2101,22 @@ public class EntityBuilder
         final User owner = createUser(object.getObject("owner"));
         final ApplicationTeam team = !object.isNull("team") ? createApplicationTeam(object.getObject("team")) : null;
         final String customAuthUrl = object.getString("custom_install_url", null);
-        final List<String> tags = object.optArray("tags").orElseGet(DataArray::empty())
+        final List<String> tags = object.optArray("tags").orElseGet(DataArray::empty)
                     .stream(DataArray::getString)
-                    .collect(Collectors.toList()));
+                    .collect(Collectors.toList());
 
-        final long defaultAuthUrlPerms = object.optObject("install_params").map(o -> o.getLong("permissions")).orElse(0);
+        final long defaultAuthUrlPerms = object.optObject("install_params")
+                    .map(o -> o.getLong("permissions"))
+                    .orElse(0L);
 
-        final List<String> defaultAuthUrlScopes = object.optObject("install_params").map(obj ->
-                    obj.getArray("scopes").stream(DataArray::getString).collect(Collectors.toList()))
-        ).orElse(Collections.emptyList());
-
+        final List<String> defaultAuthUrlScopes = object.optObject("install_params")
+                    .map(obj -> obj.getArray("scopes")
+                            .stream(DataArray::getString)
+                            .collect(Collectors.toList()))
+                    .orElse(Collections.emptyList());
 
         return new ApplicationInfoImpl(getJDA(), description, doesBotRequireCodeGrant, iconId, id, isBotPublic, name,
-                termsOfServiceUrl, privacyPolicyUrl, owner, team, tags, customAuthUrl, Permission.getPermissions(defaultAuthUrlPerms), defaultAuthUrlScopes);
+                termsOfServiceUrl, privacyPolicyUrl, owner, team, tags, customAuthUrl, defaultAuthUrlPerms, defaultAuthUrlScopes);
     }
 
     public ApplicationTeam createApplicationTeam(DataObject object)
