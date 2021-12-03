@@ -919,10 +919,12 @@ public class ReceivedMessage extends AbstractMessage
             if (isFromType(ChannelType.PRIVATE))
                 throw new IllegalStateException("Cannot delete another User's messages in a PrivateChannel.");
 
-            if (!getGuild().getSelfMember().hasAccess(getGuildChannel()))
-                throw new MissingAccessException(getGuildChannel(), Permission.VIEW_CHANNEL);
-            else if (!getGuild().getSelfMember().hasPermission(getGuildChannel(), Permission.MESSAGE_MANAGE))
-                throw new InsufficientPermissionException(getGuildChannel(), Permission.MESSAGE_MANAGE);
+            GuildMessageChannel gChan = getGuildChannel();
+            Member sMember = getGuild().getSelfMember();
+            if (!sMember.hasAccess(gChan))
+                throw new MissingAccessException(gChan, Permission.VIEW_CHANNEL);
+            else if (!sMember.hasPermission(gChan, Permission.MESSAGE_MANAGE))
+                throw new InsufficientPermissionException(gChan, Permission.MESSAGE_MANAGE);
         }
         return channel.deleteMessageById(getIdLong());
     }
@@ -939,8 +941,9 @@ public class ReceivedMessage extends AbstractMessage
             if (isFromType(ChannelType.PRIVATE))
                 throw new PermissionException("Cannot suppress embeds of others in a PrivateChannel.");
 
-            if (!getGuild().getSelfMember().hasPermission(getGuildChannel(), Permission.MESSAGE_MANAGE))
-                throw new InsufficientPermissionException(getGuildChannel(), Permission.MESSAGE_MANAGE);
+            GuildMessageChannel gChan = getGuildChannel();
+            if (!getGuild().getSelfMember().hasPermission(gChan, Permission.MESSAGE_MANAGE))
+                throw new InsufficientPermissionException(gChan, Permission.MESSAGE_MANAGE);
         }
         JDAImpl jda = (JDAImpl) getJDA();
         Route.CompiledRoute route = Route.Messages.EDIT_MESSAGE.compile(getChannel().getId(), getId());
