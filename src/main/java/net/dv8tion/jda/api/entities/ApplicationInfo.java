@@ -289,7 +289,9 @@ public interface ApplicationInfo extends ISnowflake
 
     /**
      * A {@link java.util.List} containing the tags of this bot's application.
+     *
      * This List is empty if no tags are set in the Developer Portal.
+     *
      * @return List containing the tags of this bot's application
      */
     @Nonnull
@@ -297,7 +299,9 @@ public interface ApplicationInfo extends ISnowflake
 
     /**
      * The custom Authorization URL of this bot's application.
+     *
      * This returns null if no custom URL is set in the Developer Portal or if In-app Authorization is enabled.
+     *
      * @return Custom Authorization URL, or null if it has not been set
      */
     @Nullable
@@ -305,6 +309,7 @@ public interface ApplicationInfo extends ISnowflake
 
     /**
      * A {@link java.util.List} of scopes the default authorization URL is set up with.
+     *
      * This is empty if you set a custom URL in the Developer Portal.
      *
      * @return List of scopes the default authorization URL is set up with.
@@ -314,6 +319,7 @@ public interface ApplicationInfo extends ISnowflake
 
     /**
      * A {@link java.util.EnumSet} of permissions the default authorization URL is set up with.
+     *
      * This is empty if you set a custom URL in the Developer Portal.
      *
      * @return Set of permissions the default authorization URL is set up with.
