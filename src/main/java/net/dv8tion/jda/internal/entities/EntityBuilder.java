@@ -2101,15 +2101,15 @@ public class EntityBuilder
         final User owner = createUser(object.getObject("owner"));
         final ApplicationTeam team = !object.isNull("team") ? createApplicationTeam(object.getObject("team")) : null;
         final String customAuthUrl = object.getString("custom_install_url", null);
-        final List<String> tags = !object.isNull("tags")
-                ? Collections.unmodifiableList(object.getArray("tags").stream(DataArray::getString).collect(Collectors.toList()))
-                : Collections.emptyList();
+        final List<String> tags = object.optArray("tags").orElseGet(DataArray::empty())
+                    .stream(DataArray::getString)
+                    .collect(Collectors.toList()));
 
         final long defaultAuthUrlPerms = object.optObject("install_params").map(o -> o.getLong("permissions")).orElse(0);
 
-        final List<String> defaultAuthUrlScopes = !object.isNull("install_params")
-                ? Collections.unmodifiableList(object.getObject("install_params").getArray("scopes").stream(DataArray::getString).collect(Collectors.toList()))
-                : Collections.emptyList();
+        final List<String> defaultAuthUrlScopes = object.optObject("install_params").map(obj ->
+                    obj.getArray("scopes").stream(DataArray::getString).collect(Collectors.toList()))
+        ).orElse(Collections.emptyList());
 
 
         return new ApplicationInfoImpl(getJDA(), description, doesBotRequireCodeGrant, iconId, id, isBotPublic, name,

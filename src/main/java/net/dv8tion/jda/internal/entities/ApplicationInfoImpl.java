@@ -63,10 +63,10 @@ public class ApplicationInfoImpl implements ApplicationInfo
         this.privacyPolicyUrl = privacyPolicyUrl;
         this.owner = owner;
         this.team = team;
-        this.tags = tags;
+        this.tags = Collections.unmodifiableList(tags);
         this.customAuthUrl = customAuthUrl;
         this.defaultAuthUrlPerms = defaultAuthUrlPerms;
-        this.defaultAuthUrlScopes = defaultAuthUrlScopes;
+        this.defaultAuthUrlScopes = Collection.unmodifiableList(defaultAuthUrlScopes);
 
     }
 
