@@ -45,33 +45,32 @@ public interface GuildManager extends Manager<GuildManager>
 {
     /** Used to reset the name field */
     long NAME   = 1;
-    //Bitmap gap due to removed REGION field
     /** Used to reset the icon field */
-    long ICON   = 1 << 2;
+    long ICON   = 1 << 1;
     /** Used to reset the splash field */
-    long SPLASH = 1 << 3;
+    long SPLASH = 1 << 2;
     /** Used to reset the afk channel field */
-    long AFK_CHANNEL    = 1 << 4;
+    long AFK_CHANNEL    = 1 << 3;
     /** Used to reset the afk timeout field */
-    long AFK_TIMEOUT    = 1 << 5;
+    long AFK_TIMEOUT    = 1 << 4;
     /** Used to reset the system channel field */
-    long SYSTEM_CHANNEL = 1 << 6;
+    long SYSTEM_CHANNEL = 1 << 5;
     /** Used to reset the mfa level field */
-    long MFA_LEVEL      = 1 << 7;
+    long MFA_LEVEL      = 1 << 6;
     /** Used to reset the default notification level field */
-    long NOTIFICATION_LEVEL     = 1 << 8;
+    long NOTIFICATION_LEVEL     = 1 << 7;
     /** Used to reset the explicit content level field */
-    long EXPLICIT_CONTENT_LEVEL = 1 << 9;
+    long EXPLICIT_CONTENT_LEVEL = 1 << 8;
     /** Used to reset the verification level field */
-    long VERIFICATION_LEVEL     = 1 << 10;
+    long VERIFICATION_LEVEL     = 1 << 9;
     /** Used to reset the banner field */
-    long BANNER                 = 1 << 11;
+    long BANNER                 = 1 << 10;
     /** Used to reset the description field */
-    long DESCRIPTION                = 1 << 12;
+    long DESCRIPTION                = 1 << 11;
     /** Used to reset the rules channel field */
-    long RULES_CHANNEL              = 1 << 13;
+    long RULES_CHANNEL              = 1 << 12;
     /** Used to reset the community updates channel field */
-    long COMMUNITY_UPDATES_CHANNEL  = 1 << 14;
+    long COMMUNITY_UPDATES_CHANNEL  = 1 << 13;
 
     /**
      * Resets the fields specified by the provided bit-flag pattern.
