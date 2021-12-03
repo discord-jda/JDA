@@ -22,9 +22,13 @@ import net.dv8tion.jda.api.entities.ApplicationInfo;
 import net.dv8tion.jda.api.entities.ApplicationTeam;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.internal.utils.Checks;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;
 import java.util.Collection;
+import java.util.EnumSet;
+import java.util.List;
 
 public class ApplicationInfoImpl implements ApplicationInfo
 {
@@ -40,10 +44,14 @@ public class ApplicationInfoImpl implements ApplicationInfo
     private final String name;
     private final User owner;
     private final ApplicationTeam team;
+    private final List<String> tags;
+    private final String customAuthUrl;
+    private final EnumSet<Permission> defaultAuthUrlPerms;
+    private final List<String> defaultAuthUrlScopes;
     private String scopes = "bot";
 
     public ApplicationInfoImpl(JDA api, String description, boolean doesBotRequireCodeGrant, String iconId, long id,
-            boolean isBotPublic, String name, String termsOfServiceUrl, String privacyPolicyUrl, User owner, ApplicationTeam team)
+            boolean isBotPublic, String name, String termsOfServiceUrl, String privacyPolicyUrl, User owner, ApplicationTeam team, List<String> tags, String customAuthUrl, EnumSet<Permission> defaultAuthUrlPerms, List<String> defaultAuthUrlScopes)
     {
         this.api = api;
         this.description = description;
@@ -56,6 +64,11 @@ public class ApplicationInfoImpl implements ApplicationInfo
         this.privacyPolicyUrl = privacyPolicyUrl;
         this.owner = owner;
         this.team = team;
+        this.tags = tags;
+        this.customAuthUrl = customAuthUrl;
+        this.defaultAuthUrlPerms = defaultAuthUrlPerms;
+        this.defaultAuthUrlScopes = defaultAuthUrlScopes;
+
     }
 
     @Override
@@ -182,6 +195,34 @@ public class ApplicationInfoImpl implements ApplicationInfo
     public final boolean isBotPublic()
     {
         return this.isBotPublic;
+    }
+
+    @NotNull
+    @Override
+    public List<String> getTags()
+    {
+        return tags;
+    }
+
+    @Nullable
+    @Override
+    public String getCustomAuthorizationUrl()
+    {
+        return customAuthUrl;
+    }
+
+    @NotNull
+    @Override
+    public EnumSet<Permission> getPermissions()
+    {
+        return defaultAuthUrlPerms;
+    }
+
+    @NotNull
+    @Override
+    public List<String> getScopes()
+    {
+        return defaultAuthUrlScopes;
     }
 
     @Override

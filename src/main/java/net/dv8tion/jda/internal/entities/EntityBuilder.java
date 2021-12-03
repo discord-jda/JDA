@@ -22,6 +22,7 @@ import gnu.trove.set.TLongSet;
 import gnu.trove.set.hash.TLongHashSet;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.OnlineStatus;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.audit.ActionType;
 import net.dv8tion.jda.api.audit.AuditLogChange;
 import net.dv8tion.jda.api.audit.AuditLogEntry;
@@ -2099,9 +2100,22 @@ public class EntityBuilder
         final boolean isBotPublic = object.getBoolean("bot_public");
         final User owner = createUser(object.getObject("owner"));
         final ApplicationTeam team = !object.isNull("team") ? createApplicationTeam(object.getObject("team")) : null;
+        final String customAuthUrl = object.getString("custom_install_url", null);
+        final List<String> tags = !object.isNull("tags")
+                ? Collections.unmodifiableList(object.getArray("tags").stream(DataArray::getString).collect(Collectors.toList()))
+                : Collections.emptyList();
+
+        final long defaultAuthUrlPerms = !object.isNull("install_params")
+                ? Long.parseLong(object.getObject("install_params").getString("permissions"))
+                : 0L;
+
+        final List<String> defaultAuthUrlScopes = !object.isNull("install_params")
+                ? Collections.unmodifiableList(object.getObject("install_params").getArray("scopes").stream(DataArray::getString).collect(Collectors.toList()))
+                : Collections.emptyList();
+
 
         return new ApplicationInfoImpl(getJDA(), description, doesBotRequireCodeGrant, iconId, id, isBotPublic, name,
-                termsOfServiceUrl, privacyPolicyUrl, owner, team);
+                termsOfServiceUrl, privacyPolicyUrl, owner, team, tags, customAuthUrl, Permission.getPermissions(defaultAuthUrlPerms), defaultAuthUrlScopes);
     }
 
     public ApplicationTeam createApplicationTeam(DataObject object)

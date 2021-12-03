@@ -22,8 +22,7 @@ import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Arrays;
-import java.util.Collection;
+import java.util.*;
 
 /**
  * Represents a Discord Application from its bot's point of view.
@@ -287,4 +286,38 @@ public interface ApplicationInfo extends ISnowflake
      * @return Whether the bot is public
      */
     boolean isBotPublic();
+
+    /**
+     * A {@link java.util.List} containing the tags of this bot's application.
+     * This List is empty if no tags are set in the Developer Portal.
+     * @return List containing the tags of this bot's application
+     */
+    @Nonnull
+    List<String> getTags();
+
+    /**
+     * The custom Authorization URL of this bot's application.
+     * This returns null if no custom URL is set in the Developer Portal or if In-app Authorization is enabled.
+     * @return Custom Authorization URL, or null if it has not been set
+     */
+    @Nullable
+    String getCustomAuthorizationUrl();
+
+    /**
+     * A {@link java.util.List} of scopes the default authorization URL is set up with.
+     * This is empty if you set a custom URL in the Developer Portal.
+     *
+     * @return List of scopes the default authorization URL is set up with.
+     */
+    @Nonnull
+    List<String> getScopes();
+
+    /**
+     * A {@link java.util.EnumSet} of permissions the default authorization URL is set up with.
+     * This is empty if you set a custom URL in the Developer Portal.
+     *
+     * @return Set of permissions the default authorization URL is set up with.
+     */
+    @Nonnull
+    EnumSet<Permission> getPermissions();
 }
