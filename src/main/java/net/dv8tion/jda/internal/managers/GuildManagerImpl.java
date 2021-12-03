@@ -46,6 +46,7 @@ public class GuildManagerImpl extends ManagerBase<GuildManager> implements Guild
     protected int notificationLevel;
     protected int explicitContentLevel;
     protected int verificationLevel;
+    protected boolean boostProgressBarEnabled;
 
     public GuildManagerImpl(Guild guild)
     {
@@ -274,6 +275,15 @@ public class GuildManagerImpl extends ManagerBase<GuildManager> implements Guild
         return this;
     }
 
+    @Nonnull
+    @Override
+    public GuildManager setBoostProgressBarEnabled(boolean enabled)
+    {
+        this.boostProgressBarEnabled = enabled;
+        set |= BOOST_PROGRESS_BAR_ENABLED;
+        return this;
+    }
+
     @Override
     protected RequestBody finalizeData()
     {
@@ -306,6 +316,8 @@ public class GuildManagerImpl extends ManagerBase<GuildManager> implements Guild
             body.put("banner", banner == null ? null : banner.getEncoding());
         if (shouldUpdate(DESCRIPTION))
             body.put("description", description);
+        if (shouldUpdate(BOOST_PROGRESS_BAR_ENABLED))
+            body.put("premium_progress_bar_enabled", boostProgressBarEnabled);
 
         reset(); //now that we've built our JSON object, reset the manager back to the non-modified state
         return getRequestBody(body);

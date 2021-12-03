@@ -209,6 +209,7 @@ public class EntityBuilder
         final int notificationLevel = guildJson.getInt("default_message_notifications", 0);
         final int explicitContentLevel = guildJson.getInt("explicit_content_filter", 0);
         final int nsfwLevel = guildJson.getInt("nsfw_level", -1);
+        final boolean boostProgressBarEnabled = guildJson.getBoolean("premium_progress_bar_enabled");
 
         guildObj.setName(name)
                 .setIconId(iconId)
@@ -228,7 +229,8 @@ public class EntityBuilder
                 .setBoostCount(boostCount)
                 .setBoostTier(boostTier)
                 .setMemberCount(memberCount)
-                .setNSFWLevel(Guild.NSFWLevel.fromKey(nsfwLevel));
+                .setNSFWLevel(Guild.NSFWLevel.fromKey(nsfwLevel))
+                .setBoostProgressBarEnabled(boostProgressBarEnabled);
 
         SnowflakeCacheViewImpl<Guild> guildView = getJDA().getGuildsView();
         try (UnlockHook hook = guildView.writeLock())

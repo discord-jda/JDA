@@ -71,6 +71,8 @@ public interface GuildManager extends Manager<GuildManager>
     long RULES_CHANNEL              = 1 << 12;
     /** Used to reset the community updates channel field */
     long COMMUNITY_UPDATES_CHANNEL  = 1 << 13;
+    /** Used to reset the premium progress bar enabled field */
+    long BOOST_PROGRESS_BAR_ENABLED = 1 << 14;
 
     /**
      * Resets the fields specified by the provided bit-flag pattern.
@@ -91,6 +93,7 @@ public interface GuildManager extends Manager<GuildManager>
      *     <li>{@link #NOTIFICATION_LEVEL}</li>
      *     <li>{@link #EXPLICIT_CONTENT_LEVEL}</li>
      *     <li>{@link #VERIFICATION_LEVEL}</li>
+     *     <li>{@link #BOOST_PROGRESS_BAR_ENABLED}</li>
      * </ul>
      *
      * @param  fields
@@ -121,6 +124,7 @@ public interface GuildManager extends Manager<GuildManager>
      *     <li>{@link #NOTIFICATION_LEVEL}</li>
      *     <li>{@link #EXPLICIT_CONTENT_LEVEL}</li>
      *     <li>{@link #VERIFICATION_LEVEL}</li>
+     *     <li>{@link #BOOST_PROGRESS_BAR_ENABLED}</li>
      * </ul>
      *
      * @param  fields
@@ -355,4 +359,17 @@ public interface GuildManager extends Manager<GuildManager>
     @Nonnull
     @CheckReturnValue
     GuildManager setDescription(@Nullable String description);
+
+    /**
+     * Sets whether this {@link net.dv8tion.jda.api.entities.Guild Guild} should have its boost progress bar shown.
+     *
+     * @param  boostProgressBarEnabled
+     *         Whether the boost progress bar should be shown
+     *         for this {@link net.dv8tion.jda.api.entities.Guild Guild}
+     *
+     * @return GuildManager for chaining convenience
+     */
+    @Nonnull
+    @CheckReturnValue
+    GuildManager setBoostProgressBarEnabled(boolean boostProgressBarEnabled);
 }

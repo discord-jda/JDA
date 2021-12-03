@@ -111,6 +111,7 @@ public class GuildImpl implements Guild
     private BoostTier boostTier = BoostTier.NONE;
     private Locale preferredLocale = Locale.ENGLISH;
     private int memberCount;
+    private boolean boostProgressBarEnabled;
 
     public GuildImpl(JDAImpl api, long id)
     {
@@ -828,6 +829,12 @@ public class GuildImpl implements Guild
         if (manager == null)
             return manager = new GuildManagerImpl(this);
         return manager;
+    }
+
+    @Override
+    public boolean isBoostProgressBarEnabled()
+    {
+        return boostProgressBarEnabled;
     }
 
     @Nonnull
@@ -1912,6 +1919,12 @@ public class GuildImpl implements Guild
     public GuildImpl setNSFWLevel(NSFWLevel nsfwLevel)
     {
         this.nsfwLevel = nsfwLevel;
+        return this;
+    }
+
+    public GuildImpl setBoostProgressBarEnabled(boolean enabled)
+    {
+        this.boostProgressBarEnabled = enabled;
         return this;
     }
 

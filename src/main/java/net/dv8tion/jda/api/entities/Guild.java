@@ -2727,6 +2727,13 @@ public interface Guild extends ISnowflake
     GuildManager getManager();
 
     /**
+     * Returns whether this Guild has its boost progress bar shown.
+     *
+     * @return True, if this Guild has its boost progress bar shown
+     */
+    boolean isBoostProgressBarEnabled();
+
+    /**
      * A {@link PaginationAction PaginationAction} implementation
      * that allows to {@link Iterable iterate} over all {@link net.dv8tion.jda.api.audit.AuditLogEntry AuditLogEntries} of
      * this Guild.
