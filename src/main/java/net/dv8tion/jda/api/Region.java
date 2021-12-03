@@ -23,8 +23,8 @@ import java.util.Set;
 
 /**
  * Represents the Regions used for Audio connections.
- * <br>This is used by {@link net.dv8tion.jda.api.entities.Guild Guild} to where the server that hosts the
- * {@link net.dv8tion.jda.api.entities.Guild Guild} is located.
+ * <br>This is used by {@link net.dv8tion.jda.api.entities.AudioChannel AudioChannels} to define where the audio server that hosts the
+ * {@link net.dv8tion.jda.api.entities.AudioChannel} is located.
  */
 public enum Region
 {

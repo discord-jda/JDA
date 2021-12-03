@@ -42,6 +42,7 @@ public class MessagePaginationActionImpl
     {
         super(channel.getJDA(), Route.Messages.GET_MESSAGE_HISTORY.compile(channel.getId()), 1, 100, 100);
 
+        //TODO-v5: Fix permissions here.
         if (channel.getType() == ChannelType.TEXT)
         {
             TextChannel textChannel = (TextChannel) channel;

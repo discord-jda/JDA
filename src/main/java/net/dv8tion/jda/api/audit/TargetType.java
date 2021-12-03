@@ -40,5 +40,6 @@ public enum TargetType
     EMOTE,
     INTEGRATION,
     STAGE_INSTANCE,
+    THREAD,
     UNKNOWN
 }

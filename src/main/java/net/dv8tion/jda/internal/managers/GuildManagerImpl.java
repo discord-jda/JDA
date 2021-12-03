@@ -18,7 +18,6 @@ package net.dv8tion.jda.internal.managers;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.Region;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Icon;
 import net.dv8tion.jda.api.entities.TextChannel;
@@ -39,10 +38,9 @@ public class GuildManagerImpl extends ManagerBase<GuildManager> implements Guild
     protected Guild guild;
 
     protected String name;
-    protected String region;
     protected Icon icon, splash, banner;
     protected String afkChannel, systemChannel, rulesChannel, communityUpdatesChannel;
-    protected String description, vanityCode;
+    protected String description;
     protected int afkTimeout;
     protected int mfaLevel;
     protected int notificationLevel;
@@ -77,8 +75,6 @@ public class GuildManagerImpl extends ManagerBase<GuildManager> implements Guild
         super.reset(fields);
         if ((fields & NAME) == NAME)
             this.name = null;
-        if ((fields & REGION) == REGION)
-            this.region = null;
         if ((fields & ICON) == ICON)
             this.icon = null;
         if ((fields & SPLASH) == SPLASH)
@@ -114,10 +110,8 @@ public class GuildManagerImpl extends ManagerBase<GuildManager> implements Guild
     {
         super.reset();
         this.name = null;
-        this.region = null;
         this.icon = null;
         this.splash = null;
-        this.vanityCode = null;
         this.description = null;
         this.banner = null;
         this.afkChannel = null;
@@ -134,19 +128,6 @@ public class GuildManagerImpl extends ManagerBase<GuildManager> implements Guild
         Checks.notLonger(name, 100, "Name");
         this.name = name;
         set |= NAME;
-        return this;
-    }
-
-    @Nonnull
-    @Override
-    @CheckReturnValue
-    public GuildManagerImpl setRegion(@Nonnull Region region)
-    {
-        Checks.notNull(region, "Region");
-        Checks.check(region != Region.UNKNOWN, "Region must not be UNKNOWN");
-        Checks.check(!region.isVip() || getGuild().getFeatures().contains("VIP_REGIONS"), "Cannot set a VIP voice region on this guild");
-        this.region = region.getKey();
-        set |= REGION;
         return this;
     }
 
@@ -286,16 +267,6 @@ public class GuildManagerImpl extends ManagerBase<GuildManager> implements Guild
 
     @Nonnull
     @Override
-    public GuildManager setVanityCode(@Nullable String code)
-    {
-        checkFeature("VANITY_URL");
-        this.vanityCode = code;
-        set |= VANITY_URL;
-        return this;
-    }
-
-    @Nonnull
-    @Override
     public GuildManager setDescription(@Nullable String description)
     {
         checkFeature("VERIFIED");
@@ -319,8 +290,6 @@ public class GuildManagerImpl extends ManagerBase<GuildManager> implements Guild
         DataObject body = DataObject.empty().put("name", getGuild().getName());
         if (shouldUpdate(NAME))
             body.put("name", name);
-        if (shouldUpdate(REGION))
-            body.put("region", region);
         if (shouldUpdate(AFK_TIMEOUT))
             body.put("afk_timeout", afkTimeout);
         if (shouldUpdate(ICON))
@@ -345,8 +314,6 @@ public class GuildManagerImpl extends ManagerBase<GuildManager> implements Guild
             body.put("explicit_content_filter", explicitContentLevel);
         if (shouldUpdate(BANNER))
             body.put("banner", banner == null ? null : banner.getEncoding());
-        if (shouldUpdate(VANITY_URL))
-            body.put("vanity_code", vanityCode);
         if (shouldUpdate(DESCRIPTION))
             body.put("description", description);
         if (shouldUpdate(BOOST_PROGRESS_BAR_ENABLED))

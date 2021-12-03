@@ -14,19 +14,21 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.exceptions;
+package net.dv8tion.jda.api.events.channel.update;
 
-import net.dv8tion.jda.annotations.DeprecatedSince;
-import net.dv8tion.jda.annotations.ForRemoval;
-import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.Channel;
+import net.dv8tion.jda.api.entities.ChannelField;
 
-@Deprecated
-@ForRemoval(deadline = "4.4.0")
-@DeprecatedSince("4.2.0")
-public class VerificationLevelException extends IllegalStateException
+import javax.annotation.Nonnull;
+
+//TODO-v5: Docs
+public class ChannelUpdateLockedEvent extends GenericChannelUpdateEvent<Boolean>
 {
-    public VerificationLevelException(Guild.VerificationLevel level)
+    public static final ChannelField FIELD = ChannelField.LOCKED;
+
+    public ChannelUpdateLockedEvent(@Nonnull JDA api, long responseNumber, Channel channel, Boolean oldValue, Boolean newValue)
     {
-        super("Messages to this Guild can not be sent due to the Guilds verification level. (" + level.toString() + ')');
+        super(api, responseNumber, channel, FIELD, oldValue, newValue);
     }
 }

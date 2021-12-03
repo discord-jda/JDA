@@ -15,9 +15,6 @@
  */
 package net.dv8tion.jda.api.hooks;
 
-import net.dv8tion.jda.annotations.DeprecatedSince;
-import net.dv8tion.jda.annotations.ForRemoval;
-import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.events.*;
 import net.dv8tion.jda.api.events.application.ApplicationCommandCreateEvent;
 import net.dv8tion.jda.api.events.application.ApplicationCommandDeleteEvent;
@@ -60,6 +57,12 @@ import net.dv8tion.jda.api.events.stage.StageInstanceDeleteEvent;
 import net.dv8tion.jda.api.events.stage.update.GenericStageInstanceUpdateEvent;
 import net.dv8tion.jda.api.events.stage.update.StageInstanceUpdatePrivacyLevelEvent;
 import net.dv8tion.jda.api.events.stage.update.StageInstanceUpdateTopicEvent;
+import net.dv8tion.jda.api.events.thread.GenericThreadEvent;
+import net.dv8tion.jda.api.events.thread.ThreadHiddenEvent;
+import net.dv8tion.jda.api.events.thread.ThreadRevealedEvent;
+import net.dv8tion.jda.api.events.thread.member.GenericThreadMemberEvent;
+import net.dv8tion.jda.api.events.thread.member.ThreadMemberJoinEvent;
+import net.dv8tion.jda.api.events.thread.member.ThreadMemberLeaveEvent;
 import net.dv8tion.jda.api.events.user.GenericUserEvent;
 import net.dv8tion.jda.api.events.user.UserActivityEndEvent;
 import net.dv8tion.jda.api.events.user.UserActivityStartEvent;
@@ -101,27 +104,8 @@ import java.util.concurrent.ConcurrentMap;
  * @see net.dv8tion.jda.api.hooks.EventListener EventListener
  * @see net.dv8tion.jda.api.hooks.InterfacedEventManager InterfacedEventManager
  */
-@SuppressWarnings("deprecation")
 public abstract class ListenerAdapter implements EventListener
 {
-    @Deprecated
-    @ForRemoval(deadline = "4.4.0")
-    @DeprecatedSince("4.2.0")
-    @ReplaceWith("onGuildMemberRemove(GuildMemberRemoveEvent)")
-    public void onGuildMemberLeave(@Nonnull GuildMemberLeaveEvent event) {}
-
-    @Deprecated
-    @ForRemoval(deadline = "4.4.0")
-    @DeprecatedSince("4.2.1")
-    @ReplaceWith("onResumed(ResumedEvent)")
-    public void onResume(@Nonnull ResumedEvent event) {}
-
-    @Deprecated
-    @ForRemoval(deadline = "4.4.0")
-    @DeprecatedSince("4.2.1")
-    @ReplaceWith("onReconnected(ReconnectedEvent)")
-    public void onReconnect(@Nonnull ReconnectedEvent event) {}
-
     public void onGenericEvent(@Nonnull GenericEvent event) {}
     public void onGenericUpdate(@Nonnull UpdateEvent<?, ?> event) {}
     public void onRawGateway(@Nonnull RawGatewayEvent event) {}
@@ -201,6 +185,19 @@ public abstract class ListenerAdapter implements EventListener
     public void onChannelUpdateTopic(@Nonnull ChannelUpdateTopicEvent event) {}
     public void onChannelUpdateType(@Nonnull ChannelUpdateTypeEvent event) {}
     public void onChannelUpdateUserLimit(@Nonnull ChannelUpdateUserLimitEvent event) {}
+    public void onChannelUpdateArchived(@Nonnull ChannelUpdateArchivedEvent event) {}
+    public void onChannelUpdateArchiveTimestamp(@Nonnull ChannelUpdateArchiveTimestampEvent event) {}
+    public void onChannelUpdateAutoArchiveDuration(@Nonnull ChannelUpdateAutoArchiveDurationEvent event) {}
+    public void onChannelUpdateLocked(@Nonnull ChannelUpdateLockedEvent event) {}
+    public void onChannelUpdateInvitable(@Nonnull ChannelUpdateInvitableEvent event) {}
+
+    //Thread Events
+    public void onThreadRevealed(@Nonnull ThreadRevealedEvent event) {}
+    public void onThreadHidden(@Nonnull ThreadHiddenEvent event) {}
+
+    //Thread Member Events
+    public void onThreadMemberJoin(@Nonnull ThreadMemberJoinEvent event) {}
+    public void onThreadMemberLeave(@Nonnull ThreadMemberLeaveEvent event) {}
 
     //Guild Events
     public void onGuildReady(@Nonnull GuildReadyEvent event) {}
@@ -227,14 +224,6 @@ public abstract class ListenerAdapter implements EventListener
     public void onGuildUpdateName(@Nonnull GuildUpdateNameEvent event){}
     public void onGuildUpdateNotificationLevel(@Nonnull GuildUpdateNotificationLevelEvent event) {}
     public void onGuildUpdateOwner(@Nonnull GuildUpdateOwnerEvent event) {}
-
-    /**
-     * @deprecated This event is no longer supported by discord, use {@link #onChannelUpdateRegion(ChannelUpdateRegionEvent)} instead.
-     */
-    @Deprecated
-    @ForRemoval(deadline = "5.0.0")
-    @ReplaceWith("VoiceChannelUpdateRegionEvent")
-    public void onGuildUpdateRegion(@Nonnull GuildUpdateRegionEvent event) {}
     public void onGuildUpdateSplash(@Nonnull GuildUpdateSplashEvent event) {}
     public void onGuildUpdateVerificationLevel(@Nonnull GuildUpdateVerificationLevelEvent event) {}
     public void onGuildUpdateLocale(@Nonnull GuildUpdateLocaleEvent event) {}
@@ -287,6 +276,7 @@ public abstract class ListenerAdapter implements EventListener
     //Role Update Events
     public void onRoleUpdateColor(@Nonnull RoleUpdateColorEvent event) {}
     public void onRoleUpdateHoisted(@Nonnull RoleUpdateHoistedEvent event) {}
+    public void onRoleUpdateIcon(@Nonnull RoleUpdateIconEvent event) {}
     public void onRoleUpdateMentionable(@Nonnull RoleUpdateMentionableEvent event) {}
     public void onRoleUpdateName(@Nonnull RoleUpdateNameEvent event) {}
     public void onRoleUpdatePermissions(@Nonnull RoleUpdatePermissionsEvent event) {}
@@ -316,6 +306,8 @@ public abstract class ListenerAdapter implements EventListener
     public void onGenericStageInstanceUpdate(@Nonnull GenericStageInstanceUpdateEvent event) {}
     public void onGenericChannel(@Nonnull GenericChannelEvent event) {}
     public void onGenericChannelUpdate(@Nonnull GenericChannelUpdateEvent<?> event) {}
+    public void onGenericThread(@Nonnull GenericThreadEvent event) {}
+    public void onGenericThreadMember(@Nonnull GenericThreadMemberEvent event) {}
     public void onGenericGuild(@Nonnull GenericGuildEvent event) {}
     public void onGenericGuildUpdate(@Nonnull GenericGuildUpdateEvent event) {}
     public void onGenericGuildInvite(@Nonnull GenericGuildInviteEvent event) {}
@@ -348,12 +340,6 @@ public abstract class ListenerAdapter implements EventListener
         onGenericEvent(event);
         if (event instanceof UpdateEvent)
             onGenericUpdate((UpdateEvent<?, ?>) event);
-
-        //TODO: Remove once deprecated methods are removed
-        if (event instanceof ResumedEvent)
-            onResume((ResumedEvent) event);
-        else if (event instanceof ReconnectedEvent)
-            onReconnect((ReconnectedEvent) event);
 
         for (Class<?> clazz : ClassWalker.range(event.getClass(), GenericEvent.class))
         {

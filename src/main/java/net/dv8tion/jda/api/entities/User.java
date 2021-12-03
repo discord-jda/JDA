@@ -16,9 +16,6 @@
 package net.dv8tion.jda.api.entities;
 
 
-import net.dv8tion.jda.annotations.DeprecatedSince;
-import net.dv8tion.jda.annotations.ForRemoval;
-import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
@@ -28,7 +25,7 @@ import net.dv8tion.jda.internal.utils.Checks;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.awt.Color;
+import java.awt.*;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
@@ -465,11 +462,6 @@ public interface User extends IMentionable
          * User is a {@link ApplicationTeam team}
          */
         TEAM_USER(            10, "Team User"),
-        @Deprecated
-        @ForRemoval(deadline = "4.4.0")
-        @ReplaceWith("User.isSystem()")
-        @DeprecatedSince("4.3.0")
-        SYSTEM(               12, "System User"),
         BUG_HUNTER_LEVEL_2(   14, "Bug Hunter Level 2"),
         VERIFIED_BOT(         16, "Verified Bot"),
         VERIFIED_DEVELOPER(   17, "Early Verified Bot Developer"),

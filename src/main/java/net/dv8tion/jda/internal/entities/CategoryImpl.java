@@ -16,39 +16,32 @@
 
 package net.dv8tion.jda.internal.entities;
 
+import gnu.trove.map.TLongObjectMap;
 import net.dv8tion.jda.api.entities.*;
-import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.api.managers.channel.concrete.CategoryManager;
 import net.dv8tion.jda.api.requests.restaction.ChannelAction;
-import net.dv8tion.jda.api.requests.restaction.InviteAction;
 import net.dv8tion.jda.api.requests.restaction.order.CategoryOrderAction;
-import net.dv8tion.jda.internal.requests.CompletedRestAction;
+import net.dv8tion.jda.api.utils.MiscUtil;
+import net.dv8tion.jda.internal.entities.mixin.channel.attribute.IPermissionContainerMixin;
+import net.dv8tion.jda.internal.entities.mixin.channel.attribute.IPositionableChannelMixin;
+import net.dv8tion.jda.internal.managers.channel.concrete.CategoryManagerImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.PermissionUtil;
 
 import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
 
-public class CategoryImpl extends AbstractChannelImpl<Category, CategoryImpl> implements Category
+public class CategoryImpl extends AbstractGuildChannelImpl<CategoryImpl> implements
+        Category,
+        IPositionableChannelMixin<CategoryImpl>,
+        IPermissionContainerMixin<CategoryImpl>
 {
+    private final TLongObjectMap<PermissionOverride> overrides = MiscUtil.newLongMap();
+
+    private int position;
+
     public CategoryImpl(long id, GuildImpl guild)
     {
         super(id, guild);
-    }
-
-    @Override
-    public CategoryImpl setPosition(int rawPosition)
-    {
-        getGuild().getCategoriesView().clearCachedLists();
-        return super.setPosition(rawPosition);
-    }
-
-    @Override
-    public Category getParentCategory()
-    {
-        return null;
     }
 
     @Nonnull
@@ -58,122 +51,10 @@ public class CategoryImpl extends AbstractChannelImpl<Category, CategoryImpl> im
         return ChannelType.CATEGORY;
     }
 
-    @Nonnull
     @Override
-    public List<Member> getMembers()
+    public int getPositionRaw()
     {
-        return Collections.unmodifiableList(getChannels().stream()
-                    .filter(IMemberContainer.class::isInstance)
-                    .map(IMemberContainer.class::cast)
-                    .map(IMemberContainer::getMembers)
-                    .flatMap(List::stream)
-                    .distinct()
-                    .collect(Collectors.toList()));
-    }
-
-    @Override
-    public int getPosition()
-    {
-        //We call getCategories instead of directly accessing the GuildImpl.getCategories because
-        // getCategories does the sorting logic.
-        List<Category> channels = getGuild().getCategories();
-        for (int i = 0; i < channels.size(); i++)
-        {
-            if (equals(channels.get(i)))
-                return i;
-        }
-        throw new IllegalStateException("Somehow when determining position we never found the Category in the Guild's channels? wtf?");
-    }
-
-    @Nonnull
-    @Override
-    public ChannelAction<Category> createCopy(@Nonnull Guild guild)
-    {
-        Checks.notNull(guild, "Guild");
-        ChannelAction<Category> action = guild.createCategory(name);
-        if (guild.equals(getGuild()))
-        {
-            for (PermissionOverride o : overrides.valueCollection())
-            {
-                if (o.isMemberOverride())
-                    action.addMemberPermissionOverride(o.getIdLong(), o.getAllowedRaw(), o.getDeniedRaw());
-                else
-                    action.addRolePermissionOverride(o.getIdLong(), o.getAllowedRaw(), o.getDeniedRaw());
-            }
-        }
-        return action;
-    }
-
-    @Nonnull
-    @Override
-    public InviteAction createInvite()
-    {
-        throw new UnsupportedOperationException("Cannot create invites for category!");
-    }
-
-    @Nonnull
-    @Override
-    public RestAction<List<Invite>> retrieveInvites()
-    {
-        return new CompletedRestAction<>(getJDA(), Collections.emptyList());
-    }
-
-    @Nonnull
-    @Override
-    public List<GuildChannel> getChannels()
-    {
-        List<GuildChannel> channels = new ArrayList<>();
-        channels.addAll(getStoreChannels());
-        channels.addAll(getTextChannels());
-        channels.addAll(getVoiceChannels());
-        channels.addAll(getStageChannels());
-        Collections.sort(channels);
-        return Collections.unmodifiableList(channels);
-    }
-
-    @Nonnull
-    @Override
-    public List<StoreChannel> getStoreChannels()
-    {
-        return Collections.unmodifiableList(getGuild().getStoreChannelCache().stream()
-                    .filter(channel -> equals(channel.getParentCategory()))
-                    .sorted().collect(Collectors.toList()));
-    }
-
-    @Nonnull
-    @Override
-    public List<TextChannel> getTextChannels()
-    {
-        return Collections.unmodifiableList(getGuild().getTextChannelCache().stream()
-                    .filter(channel -> equals(channel.getParentCategory()))
-                    .sorted().collect(Collectors.toList()));
-    }
-
-    @Nonnull
-    @Override
-    public List<NewsChannel> getNewsChannels()
-    {
-        return Collections.unmodifiableList(getGuild().getNewsChannelCache().stream()
-                .filter(channel -> equals(channel.getParentCategory()))
-                .sorted().collect(Collectors.toList()));
-    }
-
-    @Nonnull
-    @Override
-    public List<VoiceChannel> getVoiceChannels()
-    {
-        return Collections.unmodifiableList(getGuild().getVoiceChannelsView().stream()
-                    .filter(channel -> equals(channel.getParentCategory()))
-                    .sorted().collect(Collectors.toList()));
-    }
-
-    @Nonnull
-    @Override
-    public List<StageChannel> getStageChannels()
-    {
-        return Collections.unmodifiableList(getGuild().getStageChannelsView().stream()
-                .filter(channel -> equals(channel.getParentCategory()))
-                .sorted().collect(Collectors.toList()));
+        return position;
     }
 
     @Nonnull
@@ -200,22 +81,6 @@ public class CategoryImpl extends AbstractChannelImpl<Category, CategoryImpl> im
         return trySync(action);
     }
 
-    private <T extends GuildChannel> ChannelAction<T> trySync(ChannelAction<T> action)
-    {
-        Member selfMember = getGuild().getSelfMember();
-        if (!selfMember.canSync(this))
-        {
-            long botPerms = PermissionUtil.getEffectivePermission(this, selfMember);
-            for (PermissionOverride override : getPermissionOverrides())
-            {
-                long perms = override.getDeniedRaw() | override.getAllowedRaw();
-                if ((perms & ~botPerms) != 0)
-                    return action;
-            }
-        }
-        return action.syncPermissionOverrides();
-    }
-
     @Nonnull
     @Override
     public CategoryOrderAction modifyTextChannelPositions()
@@ -230,9 +95,71 @@ public class CategoryImpl extends AbstractChannelImpl<Category, CategoryImpl> im
         return getGuild().modifyVoiceChannelPositions(this);
     }
 
+    @Nonnull
+    @Override
+    public ChannelAction<Category> createCopy(@Nonnull Guild guild)
+    {
+        Checks.notNull(guild, "Guild");
+        ChannelAction<Category> action = guild.createCategory(name);
+        if (guild.equals(getGuild()))
+        {
+            for (PermissionOverride o : overrides.valueCollection())
+            {
+                if (o.isMemberOverride())
+                    action.addMemberPermissionOverride(o.getIdLong(), o.getAllowedRaw(), o.getDeniedRaw());
+                else
+                    action.addRolePermissionOverride(o.getIdLong(), o.getAllowedRaw(), o.getDeniedRaw());
+            }
+        }
+        return action;
+    }
+
+    @Nonnull
+    @Override
+    public ChannelAction<Category> createCopy()
+    {
+        return createCopy(getGuild());
+    }
+
+    @Nonnull
+    @Override
+    public CategoryManager getManager()
+    {
+        return new CategoryManagerImpl(this);
+    }
+
+    @Override
+    public TLongObjectMap<PermissionOverride> getPermissionOverrideMap()
+    {
+        return overrides;
+    }
+
+    @Override
+    public CategoryImpl setPosition(int position)
+    {
+        this.position = position;
+        return this;
+    }
+
     @Override
     public String toString()
     {
         return "GC:" + getName() + '(' + id + ')';
+    }
+
+    private <T extends GuildChannel> ChannelAction<T> trySync(ChannelAction<T> action)
+    {
+        Member selfMember = getGuild().getSelfMember();
+        if (!selfMember.canSync(this))
+        {
+            long botPerms = PermissionUtil.getEffectivePermission(this, selfMember);
+            for (PermissionOverride override : getPermissionOverrides())
+            {
+                long perms = override.getDeniedRaw() | override.getAllowedRaw();
+                if ((perms & ~botPerms) != 0)
+                    return action;
+            }
+        }
+        return action.syncPermissionOverrides();
     }
 }

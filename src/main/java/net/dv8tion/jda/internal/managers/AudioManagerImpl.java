@@ -23,7 +23,6 @@ import net.dv8tion.jda.api.audio.hooks.ConnectionListener;
 import net.dv8tion.jda.api.audio.hooks.ConnectionStatus;
 import net.dv8tion.jda.api.audio.hooks.ListenerProxy;
 import net.dv8tion.jda.api.entities.AudioChannel;
-import net.dv8tion.jda.api.entities.IPermissionContainer;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
@@ -97,9 +96,7 @@ public class AudioManagerImpl implements AudioManager
 
     private void checkChannel(AudioChannel channel, Member self)
     {
-        IPermissionContainer permChannel = (IPermissionContainer) channel;
-
-        EnumSet<Permission> perms = Permission.getPermissions(PermissionUtil.getEffectivePermission(permChannel, self));
+        EnumSet<Permission> perms = Permission.getPermissions(PermissionUtil.getEffectivePermission(channel.getPermissionContainer(), self));
         if (!perms.contains(Permission.VOICE_CONNECT))
             throw new InsufficientPermissionException(channel, Permission.VOICE_CONNECT);
 
@@ -179,20 +176,6 @@ public class AudioManagerImpl implements AudioManager
     public GuildImpl getGuild()
     {
         return guild;
-    }
-
-    @Override
-    @Deprecated
-    public boolean isAttemptingToConnect()
-    {
-        return false;
-    }
-
-    @Override
-    @Deprecated
-    public AudioChannel getQueuedAudioConnection()
-    {
-        return null;
     }
 
     @Override
@@ -364,7 +347,7 @@ public class AudioManagerImpl implements AudioManager
     }
 
     @Override
-    @SuppressWarnings("deprecation")
+    @SuppressWarnings("deprecation") /* If this was in JDK9 we would be using java.lang.ref.Cleaner instead! */
     protected void finalize()
     {
         if (audioConnection != null)

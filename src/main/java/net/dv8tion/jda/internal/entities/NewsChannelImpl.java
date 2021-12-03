@@ -16,18 +16,35 @@
 
 package net.dv8tion.jda.internal.entities;
 
+import gnu.trove.map.TLongObjectMap;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.managers.channel.concrete.NewsChannelManager;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.ChannelAction;
+import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.internal.entities.mixin.channel.middleman.BaseGuildMessageChannelMixin;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
-public class NewsChannelImpl extends BaseGuildMessageChannelImpl<NewsChannel, NewsChannelImpl> implements NewsChannel
+public class NewsChannelImpl extends AbstractGuildChannelImpl<NewsChannelImpl> implements NewsChannel, BaseGuildMessageChannelMixin<NewsChannelImpl>
 {
+    private final TLongObjectMap<PermissionOverride> overrides = MiscUtil.newLongMap();
+
+    private String topic;
+    private long parentCategoryId;
+    private long latestMessageId;
+    private int position;
+    private boolean nsfw;
+
     public NewsChannelImpl(long id, GuildImpl guild)
     {
         super(id, guild);
@@ -39,13 +56,53 @@ public class NewsChannelImpl extends BaseGuildMessageChannelImpl<NewsChannel, Ne
     {
         return ChannelType.NEWS;
     }
+    
+    @Nullable
+    @Override
+    public String getTopic()
+    {
+        return topic;
+    }
+
+    @Override
+    public boolean isNSFW()
+    {
+        return nsfw;
+    }
+
+    @Override
+    public long getParentCategoryIdLong()
+    {
+        return parentCategoryId;
+    }
+
+    @Nonnull
+    @Override
+    public List<Member> getMembers()
+    {
+        return Collections.unmodifiableList(getGuild().getMembersView().stream()
+            .filter(m -> m.hasPermission(this, Permission.VIEW_CHANNEL))
+            .collect(Collectors.toList()));
+    }
+
+    @Override
+    public int getPositionRaw()
+    {
+        return position;
+    }
+
+    @Override
+    public long getLatestMessageIdLong()
+    {
+        return latestMessageId;
+    }
 
     @Nonnull
     @Override
     public RestAction<Webhook.WebhookReference> follow(@Nonnull String targetChannelId)
     {
         Checks.notNull(targetChannelId, "Target Channel ID");
-        
+
         Route.CompiledRoute route = Route.Channels.FOLLOW_CHANNEL.compile(getId());
         DataObject body = DataObject.empty().put("webhook_channel_id", targetChannelId);
         return new RestActionImpl<>(getJDA(), route, body, (response, request) -> {
@@ -76,13 +133,53 @@ public class NewsChannelImpl extends BaseGuildMessageChannelImpl<NewsChannel, Ne
         return action;
     }
 
-    // -- Setters --
+    @Nonnull
+    @Override
+    public NewsChannelManager getManager()
+    {
+        return null;
+    }
 
     @Override
-    public NewsChannelImpl setPosition(int rawPosition)
+    public TLongObjectMap<PermissionOverride> getPermissionOverrideMap()
+    {
+        return overrides;
+    }
+
+    @Override
+    public NewsChannelImpl setParentCategory(long parentCategoryId)
+    {
+        this.parentCategoryId = parentCategoryId;
+        return this;
+    }
+
+    @Override
+    public NewsChannelImpl setPosition(int position)
     {
         getGuild().getNewsChannelView().clearCachedLists();
-        return super.setPosition(rawPosition);
+        this.position = position;
+        return this;
+    }
+
+    @Override
+    public NewsChannelImpl setTopic(String topic)
+    {
+        this.topic = topic;
+        return this;
+    }
+
+    @Override
+    public NewsChannelImpl setNSFW(boolean nsfw)
+    {
+        this.nsfw = nsfw;
+        return this;
+    }
+
+    @Override
+    public NewsChannelImpl setLatestMessageIdLong(long latestMessageId)
+    {
+        this.latestMessageId = latestMessageId;
+        return this;
     }
 
     // -- Object Overrides --
