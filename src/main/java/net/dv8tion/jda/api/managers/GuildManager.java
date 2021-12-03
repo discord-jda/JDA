@@ -359,4 +359,17 @@ public interface GuildManager extends Manager<GuildManager>
     @Nonnull
     @CheckReturnValue
     GuildManager setDescription(@Nullable String description);
+
+    /**
+     * Sets whether this {@link net.dv8tion.jda.api.entities.Guild Guild} should have its boost progress bar shown.
+     *
+     * @param  boostProgressBarEnabled
+     *         Whether the boost progress bar should be shown
+     *         for this {@link net.dv8tion.jda.api.entities.Guild Guild}
+     *
+     * @return GuildManager for chaining convenience
+     */
+    @Nonnull
+    @CheckReturnValue
+    GuildManager setBoostProgressBarEnabled(boolean boostProgressBarEnabled);
 }
