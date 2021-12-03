@@ -210,7 +210,7 @@ public class ApplicationInfoImpl implements ApplicationInfo
         return customAuthUrl;
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public EnumSet<Permission> getPermissions()
     {
