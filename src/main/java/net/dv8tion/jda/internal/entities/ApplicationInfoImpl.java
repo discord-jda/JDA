@@ -218,6 +218,12 @@ public class ApplicationInfoImpl implements ApplicationInfo
         return Permission.getPermissions(defaultAuthUrlPerms);
     }
 
+    @Override
+    public long getPermissionsRaw()
+    {
+        return defaultAuthUrlPerms;
+    }
+
     @Nonnull
     @Override
     public List<String> getScopes()

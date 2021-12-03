@@ -326,4 +326,11 @@ public interface ApplicationInfo extends ISnowflake
      */
     @Nonnull
     EnumSet<Permission> getPermissions();
+
+    /**
+     * The {@code long} representation of the literal permissions the default authorization URL is set up with.
+     *
+     * @return Never-negative long containing offset permissions the default authorization URL is set up with.
+     */
+    long getPermissionsRaw();
 }
