@@ -22,10 +22,9 @@ import net.dv8tion.jda.api.entities.ApplicationInfo;
 import net.dv8tion.jda.api.entities.ApplicationTeam;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.internal.utils.Checks;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
@@ -197,7 +196,7 @@ public class ApplicationInfoImpl implements ApplicationInfo
         return this.isBotPublic;
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public List<String> getTags()
     {
@@ -218,7 +217,7 @@ public class ApplicationInfoImpl implements ApplicationInfo
         return defaultAuthUrlPerms;
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public List<String> getScopes()
     {
