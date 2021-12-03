@@ -22,7 +22,7 @@ import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.ThreadChannel;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
-import net.dv8tion.jda.api.requests.restaction.ThreadAction;
+import net.dv8tion.jda.api.requests.restaction.ThreadChannelAction;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -34,7 +34,7 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 
-public class ThreadActionImpl extends AuditableRestActionImpl<ThreadChannel> implements ThreadAction
+public class ThreadChannelActionImpl extends AuditableRestActionImpl<ThreadChannel> implements ThreadChannelAction
 {
     protected final Guild guild;
     protected final ChannelType type;
@@ -44,7 +44,7 @@ public class ThreadActionImpl extends AuditableRestActionImpl<ThreadChannel> imp
     protected ThreadChannel.AutoArchiveDuration autoArchiveDuration = null;
     protected Boolean invitable = null;
 
-    public ThreadActionImpl(GuildChannel channel, String name, ChannelType type)
+    public ThreadChannelActionImpl(GuildChannel channel, String name, ChannelType type)
     {
         super(channel.getJDA(), Route.Channels.CREATE_THREAD_WITHOUT_MESSAGE.compile(channel.getId()));
         this.guild = channel.getGuild();
@@ -54,7 +54,7 @@ public class ThreadActionImpl extends AuditableRestActionImpl<ThreadChannel> imp
         this.name = name;
     }
 
-    public ThreadActionImpl(GuildChannel channel, String name, String parentMessageId)
+    public ThreadChannelActionImpl(GuildChannel channel, String name, String parentMessageId)
     {
         super(channel.getJDA(), Route.Channels.CREATE_THREAD_WITH_MESSAGE.compile(channel.getId(), parentMessageId));
         this.guild = channel.getGuild();
@@ -66,23 +66,23 @@ public class ThreadActionImpl extends AuditableRestActionImpl<ThreadChannel> imp
 
     @Nonnull
     @Override
-    public ThreadActionImpl setCheck(BooleanSupplier checks)
+    public ThreadChannelActionImpl setCheck(BooleanSupplier checks)
     {
-        return (ThreadActionImpl) super.setCheck(checks);
+        return (ThreadChannelActionImpl) super.setCheck(checks);
     }
 
     @Nonnull
     @Override
-    public ThreadActionImpl timeout(long timeout, @Nonnull TimeUnit unit)
+    public ThreadChannelActionImpl timeout(long timeout, @Nonnull TimeUnit unit)
     {
-        return (ThreadActionImpl) super.timeout(timeout, unit);
+        return (ThreadChannelActionImpl) super.timeout(timeout, unit);
     }
 
     @Nonnull
     @Override
-    public ThreadActionImpl deadline(long timestamp)
+    public ThreadChannelActionImpl deadline(long timestamp)
     {
-        return (ThreadActionImpl) super.deadline(timestamp);
+        return (ThreadChannelActionImpl) super.deadline(timestamp);
     }
 
     @Nonnull
@@ -102,7 +102,7 @@ public class ThreadActionImpl extends AuditableRestActionImpl<ThreadChannel> imp
     @Nonnull
     @Override
     @CheckReturnValue
-    public ThreadActionImpl setName(@Nonnull String name)
+    public ThreadChannelActionImpl setName(@Nonnull String name)
     {
         Checks.notEmpty(name, "Name");
         Checks.notLonger(name, 100, "Name");
@@ -112,7 +112,7 @@ public class ThreadActionImpl extends AuditableRestActionImpl<ThreadChannel> imp
 
     @Nonnull
     @Override
-    public ThreadAction setAutoArchiveDuration(@Nonnull ThreadChannel.AutoArchiveDuration autoArchiveDuration)
+    public ThreadChannelAction setAutoArchiveDuration(@Nonnull ThreadChannel.AutoArchiveDuration autoArchiveDuration)
     {
         Checks.notNull(autoArchiveDuration, "autoArchiveDuration");
 
@@ -131,7 +131,7 @@ public class ThreadActionImpl extends AuditableRestActionImpl<ThreadChannel> imp
 
     @Nonnull
     @Override
-    public ThreadAction setInvitable(boolean invitable)
+    public ThreadChannelAction setInvitable(boolean invitable)
     {
         if (type != ChannelType.GUILD_PRIVATE_THREAD)
             throw new UnsupportedOperationException("Can only set invitable on private threads");
@@ -155,7 +155,7 @@ public class ThreadActionImpl extends AuditableRestActionImpl<ThreadChannel> imp
             object.put("auto_archive_duration", autoArchiveDuration.getMinutes());
         if (invitable != null)
             object.put("invitable", invitable);
-        
+
         return getRequestBody(object);
     }
 

@@ -35,19 +35,19 @@ import java.util.function.BooleanSupplier;
  * @see    IThreadContainer#createThreadChannel(String, long)
  * @see    IThreadContainer#createThreadChannel(String, String)
  */
-public interface ThreadAction extends AuditableRestAction<ThreadChannel>
+public interface ThreadChannelAction extends AuditableRestAction<ThreadChannel>
 {
     @Nonnull
     @Override
-    ThreadAction setCheck(@Nullable BooleanSupplier checks);
+    ThreadChannelAction setCheck(@Nullable BooleanSupplier checks);
 
     @Nonnull
     @Override
-    ThreadAction timeout(long timeout, @Nonnull TimeUnit unit);
+    ThreadChannelAction timeout(long timeout, @Nonnull TimeUnit unit);
 
     @Nonnull
     @Override
-    ThreadAction deadline(long timestamp);
+    ThreadChannelAction deadline(long timestamp);
 
     /**
      * The guild to create this {@link GuildChannel} in
@@ -78,15 +78,15 @@ public interface ThreadAction extends AuditableRestAction<ThreadChannel>
      */
     @Nonnull
     @CheckReturnValue
-    ThreadAction setName(@Nonnull String name);
+    ThreadChannelAction setName(@Nonnull String name);
 
     //TODO-v5: Docs
     @Nonnull
     @CheckReturnValue
-    ThreadAction setAutoArchiveDuration(@Nonnull ThreadChannel.AutoArchiveDuration autoArchiveDuration);
+    ThreadChannelAction setAutoArchiveDuration(@Nonnull ThreadChannel.AutoArchiveDuration autoArchiveDuration);
 
     //TODO-v5: Docs
     @Nonnull
     @CheckReturnValue
-    ThreadAction setInvitable(boolean isInvitable);
+    ThreadChannelAction setInvitable(boolean isInvitable);
 }
