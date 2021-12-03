@@ -66,14 +66,12 @@ public interface GuildManager extends Manager<GuildManager>
     long VERIFICATION_LEVEL     = 1 << 10;
     /** Used to reset the banner field */
     long BANNER                 = 1 << 11;
-    /** Used to reset the vanity code field */
-    long VANITY_URL                 = 1 << 12;
     /** Used to reset the description field */
-    long DESCRIPTION                = 1 << 13;
+    long DESCRIPTION                = 1 << 12;
     /** Used to reset the rules channel field */
-    long RULES_CHANNEL              = 1 << 14;
+    long RULES_CHANNEL              = 1 << 13;
     /** Used to reset the community updates channel field */
-    long COMMUNITY_UPDATES_CHANNEL  = 1 << 15;
+    long COMMUNITY_UPDATES_CHANNEL  = 1 << 14;
 
     /**
      * Resets the fields specified by the provided bit-flag pattern.
@@ -342,22 +340,6 @@ public interface GuildManager extends Manager<GuildManager>
     @Nonnull
     @CheckReturnValue
     GuildManager setBanner(@Nullable Icon banner);
-
-    /**
-     * Sets the Vanity Code {@link net.dv8tion.jda.api.entities.Icon Icon} of this {@link net.dv8tion.jda.api.entities.Guild Guild}.
-     *
-     * @param  code
-     *         The new vanity code for this {@link net.dv8tion.jda.api.entities.Guild Guild}
-     *         or {@code null} to reset
-     *
-     * @throws java.lang.IllegalStateException
-     *         If the guild's {@link net.dv8tion.jda.api.entities.Guild#getFeatures() features} do not include {@code VANITY_URL}
-     *
-     * @return GuildManager for chaining convenience
-     */
-    @Nonnull
-    @CheckReturnValue
-    GuildManager setVanityCode(@Nullable String code);
 
     /**
      * Sets the Description {@link net.dv8tion.jda.api.entities.Icon Icon} of this {@link net.dv8tion.jda.api.entities.Guild Guild}.
