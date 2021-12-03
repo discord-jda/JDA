@@ -15,7 +15,7 @@ body:
     options:
       - label: I have checked for similar issues on the Issue-tracker.
         required: true
-      - label: I have updated to the [latest JDA version](https://bintray.com/dv8fromtheworld/maven/JDA/_latestVersion) # TODO: Update to new URL once changed.
+      - label: I have updated to the [latest JDA version](https://ci.dv8tion.net/job/JDA/lastSuccessfulBuild/)
         required: true
       - label: I have checked the branches or the maintainers' PRs for upcoming bug fixes.
         required: true
