@@ -1,13 +1,10 @@
-#
 # Workflow to push changes from the "wiki" folder in the repository towards the actual wiki itself.
-#
+
 name: 'Push to wiki'
 
 on:
   push:
-    #
     # Only push when changed files are in the wiki/ folder and on the master branch.
-    #
     paths:
     - 'wiki/**'
     branches:
