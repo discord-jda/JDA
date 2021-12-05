@@ -29,15 +29,15 @@
 
 # JDA (Java Discord API)
 
-JDA strives to provide a clean and full wrapping of the Discord REST api and its Websocket-Events for Java.
-This library is a helpful tool that provides the functionality to create a discord bot in java.
+JDA strives to provide a clean and full wrapping of the Discord REST API and its websocket gateway events for the JVM.
+This library is a helpful tool that provides the functionality needed to create a Discord bot.
 
 ## Summary
 
 Due to official statements made by the Discord developers we will no longer support unofficial features. These features
 are undocumented API endpoints or protocols that are not available to bot-accounts.
 
-_Please see the [Discord docs](https://discord.com/developers/docs/reference) for more information about bot accounts._
+_Please see the [Discord documentation](https://discord.com/developers/docs/reference) for more information about bot accounts._
 
 1. [Introduction](#creating-the-jda-object)
 2. [Sharding](#sharding-a-bot)
@@ -54,7 +54,7 @@ _Please see the [Discord docs](https://discord.com/developers/docs/reference) fo
 
 Discord is currently prohibiting creation and usage of automated client accounts (AccountType.CLIENT).
 We have officially dropped support for client login as of version **4.2.0**!
-Note that JDA is not a good tool to build a custom discord client as it loads all servers/guilds on startup unlike
+Note that JDA is not a good tool to build a custom Discord client as it loads all servers/guilds on startup unlike
 a client which does this via lazy loading instead.
 If you need a bot, use a bot account from the [Application Dashboard](https://discord.com/developers/applications).
 
@@ -76,7 +76,7 @@ JDA jda = JDABuilder.createDefault("token").build();
 
 ### Configuration
 
-Both the `JDABuilder` and the `DefaultShardManagerBuilder` allow a set of configurations to improve the experience.
+Both the `JDABuilder` and the `DefaultShardManagerBuilder` allow a set of configurations to be made to improve use of the library.
 
 **Example**:
 
@@ -123,16 +123,16 @@ public void configureMemoryUsage(JDABuilder builder) {
 }
 ```
 
-### Listening to Events
+### Listening for Events
 
 The event system in JDA is configured through a hierarchy of classes/interfaces.
 We offer two implementations for the `IEventManager`:
 
-- **InterfacedEventManager** which uses an `EventListener` interface and the `ListenerAdapter` abstract class
-- **AnnotatedEventManager** which uses the `@SubscribeEvent` annotation that can be applied to methods
+- **InterfacedEventManager** which uses an `EventListener` interface and the `ListenerAdapter` abstract class.
+- **AnnotatedEventManager** which uses the `@SubscribeEvent` annotation which can be applied to methods.
 
 By default the **InterfacedEventManager** is used.
-Since you can create your own implementation of `IEventManager` this is a very versatile and configurable system.
+Since you can create your own implementation of `IEventManager`, this is a very versatile and configurable system.
 If the aforementioned implementations don't suit your use-case you can simply create a custom implementation and
 configure it on the `JDABuilder` with `setEventManager(...)`.
 
@@ -313,14 +313,15 @@ TODO: Find good examples
 
 ## Sharding a Bot
 
-Discord allows Bot-accounts to share load across sessions by limiting them to a fraction of the total connected Guilds/Servers of the bot.
-<br>This can be done using **sharding** which will limit JDA to only a certain amount of Guilds/Servers including events and entities.
-Sharding will limit the amount of Guilds/Channels/Users visible to the JDA session so it is recommended to have some kind of elevated management to
+Discord allows bot-accounts to share load across multiple sessions by limiting them to a fraction of the total connected guilds/servers of said bot.
+<br>This can be done using **sharding** which will limit JDA to only a certain amount of guilds/servers including events and entities.
+Sharding will limit the amount of guilds/channels/users visible to each JDA session so it is recommended to have some kind of elevated management to
 access information of other shards.
 
 To use sharding in JDA you will need to use `JDABuilder.useSharding(int shardId, int shardTotal)`. The **shardId** is 0-based which means the first shard
 has the ID 0. The **shardTotal** is the total amount of shards (not 0-based) which can be seen similar to the length of an array, the last shard has the ID of
 `shardTotal - 1`.
+Alternatively, you can use the `DefaultShardManagerBuilder`, which will automate the sharding process leaving you to only have to handle your code with access to each JDA instance seperately through the means of events. More on the `ShardManager` below.
 
 The [`SessionController`](https://ci.dv8tion.net/job/JDA5/javadoc/net/dv8tion/jda/api/utils/SessionController.html) is a tool of the JDABuilder
 that allows to control state and behaviour between shards (sessions). When using multiple builders to build shards you have to create one instance
@@ -360,7 +361,7 @@ public static void main(String[] args) throws Exception
 
 An **Entity** is the term used to describe types such as **GuildChannel**/**Message**/**User** and other entities that Discord provides.
 Instances of these entities are created and deleted by JDA when Discord instructs it. This means the lifetime depends on signals provided by the Discord API which are used to create/update/delete entities.
-This is done through Gateway Events known as "dispatches" that are handled by the JDA WebSocket handlers.
+This is done through gateway events known as "dispatches" that are handled by the JDA websocket handlers.
 When Discord instructs JDA to delete entities, they are simply removed from the JDA cache and lose their references.
 Once that happens, nothing in JDA interacts or updates the instances of those entities, and they become useless.
 Discord may instruct to delete these entities randomly for cache synchronization with the API.
@@ -487,7 +488,7 @@ Stable releases are published to [maven-central](https://mvnrepository.com/artif
 If you do not need any opus de-/encoding done by JDA (voice receive/send with PCM) you can exclude `opus-java` entirely.
 This can be done if you only send audio with an `AudioSendHandler` which only sends opus (`isOpus() = true`). (See [lavaplayer](https://github.com/sedmelluq/lavaplayer))
 
-If you want to use a custom opus library you can provide the absolute path to `OpusLibrary.loadFrom(String)` before using
+If you want to use a custom Opus library you can provide the absolute path to `OpusLibrary.loadFrom(String)` before using
 the audio api of JDA. This works without `opus-java-natives` as it only requires `opus-java-api`.
 <br>_For this setup you should only exclude `opus-java-natives` as `opus-java-api` is a requirement for en-/decoding._
 
