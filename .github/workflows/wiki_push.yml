@@ -1,0 +1,34 @@
+#
+# Workflow to push changes from the "wiki" folder in the repository towards the actual wiki itself.
+#
+name: 'Push to wiki'
+
+on:
+  push:
+    #
+    # Only push when changed files are in the wiki/ folder and on the master branch.
+    #
+    paths:
+    - 'wiki/**'
+    branches:
+    - 'master'
+    #
+    # Ignore any release to avoid accidental trigger of this action.
+    #
+    tags-ignore:
+    - '**'
+
+jobs:
+  push:
+    runs-on: ubuntu-latest
+    steps:
+    - name: 'Checkout Code'
+      uses: 'actions/checkout@v2'
+    - name: 'Push changes to the wiki'
+      uses: 'Andre-Chen-Wang/github-wiki-action@v2'
+      env:
+        WIKI_DIR: 'wiki/'
+        GH_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
+        GH_MAIL: 'actions@github.com'
+        GH_NAME: 'github-actions[bot]'
+        #EXCLUDED_FILES: 'README.md' # Maybe have a README to explain the purpose of this folder?
