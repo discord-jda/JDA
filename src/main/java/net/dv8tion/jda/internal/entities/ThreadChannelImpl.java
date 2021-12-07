@@ -31,10 +31,9 @@ import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -138,7 +137,7 @@ public class ThreadChannelImpl extends AbstractGuildChannelImpl<ThreadChannelImp
         return threadMembers.get(id);
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public RestAction<ThreadMember> retrieveThreadMemberById(long id)
     {
