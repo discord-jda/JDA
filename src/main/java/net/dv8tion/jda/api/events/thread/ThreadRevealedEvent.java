@@ -21,7 +21,13 @@ import net.dv8tion.jda.api.entities.ThreadChannel;
 
 import javax.annotation.Nonnull;
 
-//TODO-v5: Docs
+/**
+ * This event is dispatched when a {@link ThreadChannel} that JDA didn't previously have access to (due to permissions) is now visible.
+ *
+ * For example, if the bot is given the {@link net.dv8tion.jda.api.Permission.ADMINISTRATOR} permission, any thread channels that the bot could not previously see would be "revealed".
+ *
+ * @see ThreadHiddenEvent
+ */
 public class ThreadRevealedEvent extends GenericThreadEvent
 {
     public ThreadRevealedEvent(@Nonnull JDA api, long responseNumber, ThreadChannel thread)
