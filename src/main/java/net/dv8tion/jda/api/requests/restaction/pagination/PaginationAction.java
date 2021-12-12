@@ -114,7 +114,7 @@ public interface PaginationAction<T, M extends PaginationAction<T, M>> extends R
      *         The snowflake ID to skip before, this is exclusive rather than inclusive
      *
      * @throws IllegalArgumentException
-     *         If cache is enabled and you are attempting to skip forward in time {@literal (id > last)}
+     *         If cache is enabled, and you are attempting to skip forward in time {@literal (id > last)}
      *
      * @return The current PaginationAction for chaining convenience
      *
@@ -146,18 +146,60 @@ public interface PaginationAction<T, M extends PaginationAction<T, M>> extends R
     @Override
     M deadline(long timestamp);
 
+    /**
+     * The supported {@link PaginationOrder PaginationOrders} for this pagination action.
+     * <br>All enum values that are not returned will cause a throw for {@link #order(PaginationOrder)}.
+     *
+     * <p>Most pagination endpoints only support a single order, however some endpoints such as message pagination supports both.
+     *
+     * @return {@link EnumSet} of {@link PaginationOrder} (Modifying this set does not affect this class)
+     */
     @Nonnull
     default EnumSet<PaginationOrder> getSupportedOrders()
     {
         return EnumSet.allOf(PaginationOrder.class);
     }
 
+    /**
+     * The current iteration order.
+     * <br>This defaults to {@link PaginationOrder#BACKWARD}, meaning most recent first, for most pagination endpoints.
+     *
+     * @return The {@link PaginationOrder}
+     *
+     * @see    #order(PaginationOrder)
+     */
     @Nonnull
     PaginationOrder getOrder();
 
+    /**
+     * Configure the {@link PaginationOrder} of this pagination action.
+     *
+     * <p>You can only supply supported orders, see {@link #getSupportedOrders()}.
+     *
+     * @param  order
+     *         The pagination order
+     *
+     * @throws IllegalArgumentException
+     *         If the provided pagination order is null or unsupported
+     * @throws IllegalStateException
+     *         If this pagination action has already been used to retrieve entities
+     *
+     * @return The current PaginationAction implementation instance
+     *
+     * @see    #getSupportedOrders()
+     * @see    #reverse()
+     */
     @Nonnull
     M order(@Nonnull PaginationOrder order);
 
+    /**
+     * Flips the {@link #order(PaginationOrder)} of this pagination action.
+     *
+     * @throws IllegalArgumentException
+     *         If this pagination action does not support the reversed order
+     *
+     * @return The current PaginationAction implementation instance
+     */
     @Nonnull
     default M reverse()
     {
@@ -652,9 +694,19 @@ public interface PaginationAction<T, M extends PaginationAction<T, M>> extends R
     @Override
     PaginationIterator<T> iterator();
 
+    /**
+     * Defines the pagination order for a pagination endpoint.
+     */
     enum PaginationOrder
     {
-        BACKWARD("before"), FORWARD("after");
+        /**
+         * Iterates backwards in time, listing the most recent entities first.
+         */
+        BACKWARD("before"),
+        /**
+         * Iterates forward in time, listing the oldest entities first.
+         */
+        FORWARD("after");
 
         private final String key;
 

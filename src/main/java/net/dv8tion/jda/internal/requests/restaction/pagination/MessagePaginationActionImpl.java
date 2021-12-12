@@ -76,8 +76,6 @@ public class MessagePaginationActionImpl
             {
                 Message msg = builder.createMessage(array.getObject(i), channel, false);
                 messages.add(msg);
-                last = msg;
-                lastKey = last.getIdLong();
             }
             catch (ParsingException | NullPointerException e)
             {
@@ -96,6 +94,13 @@ public class MessagePaginationActionImpl
             Collections.reverse(messages);
         if (useCache)
             cached.addAll(messages);
+
+        if (!messages.isEmpty())
+        {
+            last = messages.get(messages.size() - 1);
+            lastKey = last.getIdLong();
+        }
+
         request.onSuccess(messages);
     }
 
