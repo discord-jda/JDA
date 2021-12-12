@@ -359,6 +359,8 @@ public abstract class PaginationActionImpl<T, M extends PaginationAction<T, M>>
 
         if (last != 0)
             route = route.withQueryParams(order.getKey(), Long.toUnsignedString(last));
+        else if (order == PaginationOrder.FORWARD)
+            route = route.withQueryParams("after", "0");
 
         return route;
     }
