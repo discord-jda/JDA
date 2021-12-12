@@ -16,6 +16,7 @@ import net.dv8tion.jda.internal.requests.Route;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 
 public class ThreadChannelPaginationActionImpl extends PaginationActionImpl<ThreadChannel, ThreadChannelPaginationAction> implements ThreadChannelPaginationAction
@@ -35,20 +36,11 @@ public class ThreadChannelPaginationActionImpl extends PaginationActionImpl<Thre
         return channel;
     }
 
+    @Nonnull
     @Override
-    protected Route.CompiledRoute finalizeRoute()
+    public EnumSet<PaginationOrder> getSupportedOrders()
     {
-        Route.CompiledRoute route = super.finalizeRoute();
-
-        final String limit = String.valueOf(this.limit.get());
-        final long last = this.lastKey;
-
-        route = route.withQueryParams("limit", limit);
-
-        if (last != 0)
-            route = route.withQueryParams("before", Long.toUnsignedString(last));
-
-        return route;
+        return EnumSet.of(PaginationOrder.BACKWARD);
     }
 
     @Override

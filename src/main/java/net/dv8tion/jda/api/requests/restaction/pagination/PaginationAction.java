@@ -146,6 +146,26 @@ public interface PaginationAction<T, M extends PaginationAction<T, M>> extends R
     @Override
     M deadline(long timestamp);
 
+    @Nonnull
+    default EnumSet<PaginationOrder> getSupportedOrders()
+    {
+        return EnumSet.allOf(PaginationOrder.class);
+    }
+
+    @Nonnull
+    PaginationOrder getOrder();
+
+    @Nonnull
+    M order(@Nonnull PaginationOrder order);
+
+    @Nonnull
+    default M reverse()
+    {
+        if (getOrder() == PaginationOrder.BACKWARD)
+            return order(PaginationOrder.FORWARD);
+        return order(PaginationOrder.BACKWARD);
+    }
+
     /**
      * The current amount of cached entities for this PaginationAction
      *
@@ -631,6 +651,29 @@ public interface PaginationAction<T, M extends PaginationAction<T, M>> extends R
     @Nonnull
     @Override
     PaginationIterator<T> iterator();
+
+    enum PaginationOrder
+    {
+        BACKWARD("before"), FORWARD("after");
+
+        private final String key;
+
+        PaginationOrder(String key)
+        {
+            this.key = key;
+        }
+
+        /**
+         * The API query parameter key
+         *
+         * @return The query key
+         */
+        @Nonnull
+        public String getKey()
+        {
+            return key;
+        }
+    }
 
     /**
      * Iterator implementation for a {@link PaginationAction PaginationAction}.

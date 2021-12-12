@@ -30,6 +30,7 @@ import net.dv8tion.jda.internal.requests.Route;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class MessagePaginationActionImpl
@@ -64,22 +65,6 @@ public class MessagePaginationActionImpl
     }
 
     @Override
-    protected Route.CompiledRoute finalizeRoute()
-    {
-        Route.CompiledRoute route = super.finalizeRoute();
-
-        final String limit = String.valueOf(this.getLimit());
-        final long last = this.lastKey;
-
-        route = route.withQueryParams("limit", limit);
-
-        if (last != 0)
-            route = route.withQueryParams("before", Long.toUnsignedString(last));
-
-        return route;
-    }
-
-    @Override
     protected void handleSuccess(Response response, Request<List<Message>> request)
     {
         DataArray array = response.getArray();
@@ -91,8 +76,6 @@ public class MessagePaginationActionImpl
             {
                 Message msg = builder.createMessage(array.getObject(i), channel, false);
                 messages.add(msg);
-                if (useCache)
-                    cached.add(msg);
                 last = msg;
                 lastKey = last.getIdLong();
             }
@@ -109,6 +92,10 @@ public class MessagePaginationActionImpl
             }
         }
 
+        if (order == PaginationOrder.FORWARD)
+            Collections.reverse(messages);
+        if (useCache)
+            cached.addAll(messages);
         request.onSuccess(messages);
     }
 
