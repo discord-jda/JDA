@@ -1193,7 +1193,7 @@ public class EntityBuilder
     public ThreadMember createThreadMember(GuildImpl guild, ThreadChannelImpl threadChannel, DataObject json)
     {
         DataObject memberJson = json.getObject("member");
-        DataObject presenceJson = json.getObject("presence");
+        DataObject presenceJson = json.isNull("presence") ? null : json.getObject("presence");
 
         Member member = createMember(guild, memberJson, null, presenceJson);
         return createThreadMember(threadChannel, member, json);
