@@ -16,8 +16,7 @@
 package net.dv8tion.jda.api.events.message;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.GuildMessageChannel;
+import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.Event;
 
 import javax.annotation.Nonnull;
@@ -51,14 +50,14 @@ public class MessageBulkDeleteEvent extends Event
     }
 
     /**
-     * The {@link net.dv8tion.jda.api.entities.GuildMessageChannel GuildMessageChannel} where the messages have been deleted
+     * List of messages that have been deleted.
      *
-     * @return The TextChannel
+     * @return The list of message ids
      */
     @Nonnull
-    public GuildMessageChannel getChannel()
+    public List<String> getMessageIds()
     {
-        return channel;
+        return messageIds;
     }
 
     /**
@@ -71,15 +70,115 @@ public class MessageBulkDeleteEvent extends Event
     {
         return channel.getGuild();
     }
-    
+
     /**
-     * List of messages that have been deleted.
+     * The {@link net.dv8tion.jda.api.entities.ChannelType ChannelType} for this message
      *
-     * @return The list of message ids
+     * @return The ChannelType
      */
     @Nonnull
-    public List<String> getMessageIds()
+    public ChannelType getChannelType()
     {
-        return messageIds;
+        return channel.getType();
+    }
+
+    /**
+     * Indicates whether the message is from the specified {@link net.dv8tion.jda.api.entities.ChannelType ChannelType}
+     *
+     * @param  type
+     *         The ChannelType
+     *
+     * @return True, if the message is from the specified channel type
+     */
+    public boolean isFromType(@Nonnull ChannelType type)
+    {
+        return getChannelType() == type;
+    }
+
+    /**
+     * If the message event was from a {@link net.dv8tion.jda.api.entities.ThreadChannel ThreadChannel}
+     *
+     * @return If the message event was from a ThreadChannel
+     *
+     * @see ChannelType#isThread()
+     */
+    public boolean isFromThread()
+    {
+        return getChannelType().isThread();
+    }
+
+    /**
+     * The {@link net.dv8tion.jda.api.entities.GuildMessageChannel GuildMessageChannel} where the messages have been deleted
+     *
+     * @return The TextChannel
+     */
+    @Nonnull
+    public GuildMessageChannel getChannel()
+    {
+        return channel;
+    }
+
+    /**
+     * The {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} the Message was received in.
+     * <br>If this Message was not received in a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel},
+     * this will throw an {@link java.lang.IllegalStateException}.
+     *
+     * @throws java.lang.IllegalStateException
+     *         If this was not sent in a {@link net.dv8tion.jda.api.entities.TextChannel}.
+     *
+     * @return The TextChannel the Message was received in
+     *
+     * @see    #isFromType(ChannelType)
+     * @see    #getChannelType()
+     */
+    @Nonnull
+    public TextChannel getTextChannel()
+    {
+        if (!isFromType(ChannelType.TEXT))
+            throw new IllegalStateException("This message event did not happen in a text channel");
+        return (TextChannel) channel;
+    }
+
+    /**
+     * The {@link net.dv8tion.jda.api.entities.NewsChannel NewsChannel} the Message was received in.
+     * <br>If this Message was not received in a {@link net.dv8tion.jda.api.entities.NewsChannel NewsChannel},
+     * this will throw an {@link java.lang.IllegalStateException}.
+     *
+     * @throws java.lang.IllegalStateException
+     *         If this was not sent in a {@link net.dv8tion.jda.api.entities.NewsChannel}.
+     *
+     * @return The NewsChannel the Message was received in
+     *
+     * @see    #isFromType(ChannelType)
+     * @see    #getChannelType()
+     */
+    @Nonnull
+    public NewsChannel getNewsChannel()
+    {
+        if (!isFromType(ChannelType.NEWS))
+            throw new IllegalStateException("This message event did not happen in a news channel");
+        return (NewsChannel) channel;
+    }
+
+    /**
+     * The {@link net.dv8tion.jda.api.entities.ThreadChannel ThreadChannel} the Message was received in.
+     * <br>If this Message was not received in a {@link net.dv8tion.jda.api.entities.ThreadChannel ThreadChannel},
+     * this will throw an {@link java.lang.IllegalStateException}.
+     *
+     * @throws java.lang.IllegalStateException
+     *         If this was not sent in a {@link net.dv8tion.jda.api.entities.ThreadChannel}.
+     *
+     * @return The ThreadChannel the Message was received in
+     *
+     * @see    #isFromType(ChannelType)
+     * @see    #getChannelType()
+     * @see    #isFromThread()
+     */
+    @Nonnull
+    public ThreadChannel getThreadChannel()
+    {
+        if (!isFromThread())
+            throw new IllegalStateException("This message event did not happen in a thread channel");
+        return (ThreadChannel) channel;
     }
 }

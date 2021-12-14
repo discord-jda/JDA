@@ -48,6 +48,27 @@ public abstract class GenericMessageEvent extends Event
     }
 
     /**
+     * The id for this message
+     *
+     * @return The id for this message
+     */
+    @Nonnull
+    public String getMessageId()
+    {
+        return Long.toUnsignedString(messageId);
+    }
+
+    /**
+     * The id for this message
+     *
+     * @return The id for this message
+     */
+    public long getMessageIdLong()
+    {
+        return messageId;
+    }
+
+    /**
      * The {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel} for this Message
      *
      * @return The MessageChannel
@@ -78,24 +99,14 @@ public abstract class GenericMessageEvent extends Event
     }
 
     /**
-     * The id for this message
+     * The {@link net.dv8tion.jda.api.entities.ChannelType ChannelType} for this message
      *
-     * @return The id for this message
+     * @return The ChannelType
      */
     @Nonnull
-    public String getMessageId()
+    public ChannelType getChannelType()
     {
-        return Long.toUnsignedString(messageId);
-    }
-
-    /**
-     * The id for this message
-     *
-     * @return The id for this message
-     */
-    public long getMessageIdLong()
-    {
-        return messageId;
+        return channel.getType();
     }
 
     /**
@@ -108,7 +119,7 @@ public abstract class GenericMessageEvent extends Event
      */
     public boolean isFromType(@Nonnull ChannelType type)
     {
-        return channel.getType() == type;
+        return getChannelType() == type;
     }
 
     /**
@@ -123,14 +134,15 @@ public abstract class GenericMessageEvent extends Event
     }
 
     /**
-     * The {@link net.dv8tion.jda.api.entities.ChannelType ChannelType} for this message
+     * If the message event was from a {@link net.dv8tion.jda.api.entities.ThreadChannel ThreadChannel}
      *
-     * @return The ChannelType
+     * @return If the message event was from a ThreadChannel
+     *
+     * @see ChannelType#isThread()
      */
-    @Nonnull
-    public ChannelType getChannelType()
+    public boolean isFromThread()
     {
-        return channel.getType();
+        return getChannelType().isThread();
     }
 
     /**
@@ -243,17 +255,5 @@ public abstract class GenericMessageEvent extends Event
         if (!isFromThread())
             throw new IllegalStateException("This message event did not happen in a thread channel");
         return (ThreadChannel) channel;
-    }
-
-    /**
-     * If the message event was from a {@link net.dv8tion.jda.api.entities.ThreadChannel ThreadChannel}
-     *
-     * @return If the message event was from a ThreadChannel
-     *
-     * @see ChannelType#isThread()
-     */
-    public boolean isFromThread()
-    {
-        return getChannelType().isThread();
     }
 }

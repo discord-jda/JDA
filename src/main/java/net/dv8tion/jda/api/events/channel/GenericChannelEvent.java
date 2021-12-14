@@ -23,15 +23,26 @@ import net.dv8tion.jda.api.events.Event;
 import javax.annotation.Nonnull;
 
 //TODO-v5: Docs
-public class GenericChannelEvent extends Event
+public abstract class GenericChannelEvent extends Event
 {
     protected final Channel channel;
 
-    public GenericChannelEvent(@Nonnull JDA api, long responseNumber, Channel channel)
+    public GenericChannelEvent(@Nonnull JDA api, long responseNumber, @Nonnull Channel channel)
     {
         super(api, responseNumber);
 
         this.channel = channel;
+    }
+
+    @Nonnull
+    public ChannelType getChannelType()
+    {
+        return this.channel.getType();
+    }
+
+    public boolean isFromType(@Nonnull ChannelType type)
+    {
+        return getChannelType() == type;
     }
 
     /**
@@ -45,30 +56,49 @@ public class GenericChannelEvent extends Event
         return getChannelType().isGuild();
     }
 
-    @Nonnull
-    public ChannelType getChannelType()
+    /**
+     * If the event was from a {@link ThreadChannel ThreadChannel}
+     *
+     * @return If the event was from a ThreadChannel
+     *
+     * @see    ChannelType#isThread()
+     */
+    public boolean isFromThread()
     {
-        return this.channel.getType();
+        return getChannelType().isThread();
     }
 
-    public boolean isFromType(ChannelType type)
+    /**
+     * If the event was from a {@link MessageChannel}
+     *
+     * @return If the event was from a MessageChannel
+     *
+     * @see    ChannelType#isMessage()
+     */
+    public boolean isFromMessage()
     {
-        return getChannelType() == type;
+        return getChannelType().isMessage();
     }
 
-    @Nonnull
-    public Channel getChannel()
+    /**
+     * If the event was from a {@link AudioChannel}
+     *
+     * @return If the event was from a AudioChannel
+     *
+     * @see    ChannelType#isAudio()
+     */
+    public boolean isFromAudio()
     {
-        return this.channel;
+        return getChannelType().isAudio();
     }
 
     /**
      * The {@link net.dv8tion.jda.api.entities.Guild Guild} in which this channel event happened.
-     * <br>If this channel event was not received in a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel},
+     * <br>If this channel event was not received in a {@link TextChannel TextChannel},
      * this will throw an {@link java.lang.IllegalStateException}.
      *
      * @throws java.lang.IllegalStateException
-     *         If this channel event did not happen in a {@link net.dv8tion.jda.api.entities.GuildChannel}.
+     *         If this channel event did not happen in a {@link GuildChannel}.
      *
      * @return The Guild in which this channel event happened
      *
@@ -83,5 +113,176 @@ public class GenericChannelEvent extends Event
         return ((GuildChannel) channel).getGuild();
     }
 
-    //TODO-v5: Add getters for all channel types
+    @Nonnull
+    public Channel getChannel()
+    {
+        return this.channel;
+    }
+
+    /**
+     * The {@link GuildChannel} this event was received for.
+     * <br>If this event was not received from a {@link net.dv8tion.jda.api.entities.Guild Guild},
+     * this will throw an {@link java.lang.IllegalStateException}.
+     *
+     * @throws java.lang.IllegalStateException
+     *         If this was not sent for a channel in a Guild.
+     *
+     * @return The GuildChannel
+     */
+    @Nonnull
+    public GuildChannel getGuildChannel()
+    {
+        if (!isFromGuild())
+            throw new IllegalStateException("This message event did not happen in a guild");
+        return (GuildChannel) channel;
+    }
+
+
+    // MessageChannel types
+
+
+    @Nonnull
+    public MessageChannel getMessageChannel()
+    {
+        if (!getChannelType().isMessage())
+            throw new IllegalStateException("This message event did not happen in a message channel");
+        return (MessageChannel) channel;
+    }
+
+    @Nonnull
+    public GuildMessageChannel getGuildMessageChannel()
+    {
+        if (!isFromGuild())
+            throw new IllegalStateException("This message event did not happen in a guild message channel");
+        return (GuildMessageChannel) getMessageChannel();
+    }
+
+    /**
+     * The {@link TextChannel} this event was received for.
+     * <br>If this event was not received in a {@link TextChannel},
+     * this will throw an {@link java.lang.IllegalStateException}.
+     *
+     * @throws java.lang.IllegalStateException
+     *         If this was not sent for a {@link TextChannel}.
+     *
+     * @return The TextChannel
+     *
+     * @see    #isFromGuild()
+     * @see    #isFromType(ChannelType)
+     * @see    #getChannelType()
+     */
+    @Nonnull
+    public TextChannel getTextChannel()
+    {
+        if (!isFromType(ChannelType.TEXT))
+            throw new IllegalStateException("This message event did not happen in a text channel");
+        return (TextChannel) channel;
+    }
+
+    /**
+     * The {@link NewsChannel} this event was received for.
+     * <br>If this event was not received in a {@link NewsChannel},
+     * this will throw an {@link java.lang.IllegalStateException}.
+     *
+     * @throws java.lang.IllegalStateException
+     *         If this was not sent for a {@link NewsChannel}.
+     *
+     * @return The NewsChannel
+     *
+     * @see    #isFromGuild()
+     * @see    #isFromType(ChannelType)
+     * @see    #getChannelType()
+     */
+    @Nonnull
+    public NewsChannel getNewsChannel()
+    {
+        if (!isFromType(ChannelType.NEWS))
+            throw new IllegalStateException("This message event did not happen in a news channel");
+        return (NewsChannel) channel;
+    }
+
+    /**
+     * The {@link PrivateChannel} this event was received for.
+     * <br>If this event was not received in a {@link PrivateChannel},
+     * this will throw an {@link java.lang.IllegalStateException}.
+     *
+     * @throws java.lang.IllegalStateException
+     *         If this was not sent for a {@link PrivateChannel}.
+     *
+     * @return The PrivateChannel
+     *
+     * @see    #isFromGuild()
+     * @see    #isFromType(ChannelType)
+     * @see    #getChannelType()
+     */
+    @Nonnull
+    public PrivateChannel getPrivateChannel()
+    {
+        if (!isFromType(ChannelType.PRIVATE))
+            throw new IllegalStateException("This message event did not happen in a private channel");
+        return (PrivateChannel) channel;
+    }
+
+    /**
+     * The {@link ThreadChannel} this event was received for.
+     * <br>If this event was not received in a {@link ThreadChannel},
+     * this will throw an {@link java.lang.IllegalStateException}.
+     *
+     * @throws java.lang.IllegalStateException
+     *         If this was not sent for a {@link ThreadChannel}.
+     *
+     * @return The ThreadChannel
+     *
+     * @see    #isFromGuild()
+     * @see    #isFromType(ChannelType)
+     * @see    #getChannelType()
+     * @see    #isFromThread()
+     */
+    @Nonnull
+    public ThreadChannel getThreadChannel()
+    {
+        if (!isFromThread())
+            throw new IllegalStateException("This message event did not happen in a thread channel");
+        return (ThreadChannel) channel;
+    }
+
+
+    // AudioChannel types
+
+
+    @Nonnull
+    public AudioChannel getAudioChannel()
+    {
+        if (!getChannelType().isAudio())
+            throw new IllegalStateException("This message event did not happen in an audio channel");
+        return (AudioChannel) channel;
+    }
+
+    @Nonnull
+    public VoiceChannel getVoiceChannel()
+    {
+        if (!isFromType(ChannelType.VOICE))
+            throw new IllegalStateException("This message event did not happen in a voice channel");
+        return (VoiceChannel) channel;
+    }
+
+    @Nonnull
+    public StageChannel getStageChannel()
+    {
+        if (!isFromType(ChannelType.STAGE))
+            throw new IllegalStateException("This message event did not happen in a stage channel");
+        return (StageChannel) channel;
+    }
+
+
+    // Misc types
+
+
+    @Nonnull
+    public StoreChannel getStoreChannel()
+    {
+        if (!isFromType(ChannelType.STORE))
+            throw new IllegalStateException("This message event did not happen in a store channel");
+        return (StoreChannel) channel;
+    }
 }
