@@ -244,6 +244,8 @@ public interface IGuildChannelContainer
         Checks.notNull(type, "ChannelType");
         switch (type)
         {
+        case NEWS:
+            return getNewsChannelById(id);
         case TEXT:
             return getTextChannelById(id);
         case VOICE:
