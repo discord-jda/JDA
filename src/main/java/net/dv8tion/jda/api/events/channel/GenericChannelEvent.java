@@ -133,7 +133,7 @@ public abstract class GenericChannelEvent extends Event
     public GuildChannel getGuildChannel()
     {
         if (!isFromGuild())
-            throw new IllegalStateException("This message event did not happen in a guild");
+            throw new IllegalStateException("This event did not happen for a guild");
         return (GuildChannel) channel;
     }
 
@@ -145,7 +145,7 @@ public abstract class GenericChannelEvent extends Event
     public MessageChannel getMessageChannel()
     {
         if (!getChannelType().isMessage())
-            throw new IllegalStateException("This message event did not happen in a message channel");
+            throw new IllegalStateException("This event did not happen for a message channel");
         return (MessageChannel) channel;
     }
 
@@ -153,7 +153,7 @@ public abstract class GenericChannelEvent extends Event
     public GuildMessageChannel getGuildMessageChannel()
     {
         if (!isFromGuild())
-            throw new IllegalStateException("This message event did not happen in a guild message channel");
+            throw new IllegalStateException("This event did not happen for a guild message channel");
         return (GuildMessageChannel) getMessageChannel();
     }
 
@@ -175,7 +175,7 @@ public abstract class GenericChannelEvent extends Event
     public TextChannel getTextChannel()
     {
         if (!isFromType(ChannelType.TEXT))
-            throw new IllegalStateException("This message event did not happen in a text channel");
+            throw new IllegalStateException("This event did not happen for a text channel");
         return (TextChannel) channel;
     }
 
@@ -197,7 +197,7 @@ public abstract class GenericChannelEvent extends Event
     public NewsChannel getNewsChannel()
     {
         if (!isFromType(ChannelType.NEWS))
-            throw new IllegalStateException("This message event did not happen in a news channel");
+            throw new IllegalStateException("This event did not happen for a news channel");
         return (NewsChannel) channel;
     }
 
@@ -219,7 +219,7 @@ public abstract class GenericChannelEvent extends Event
     public PrivateChannel getPrivateChannel()
     {
         if (!isFromType(ChannelType.PRIVATE))
-            throw new IllegalStateException("This message event did not happen in a private channel");
+            throw new IllegalStateException("This event did not happen for a private channel");
         return (PrivateChannel) channel;
     }
 
@@ -242,7 +242,7 @@ public abstract class GenericChannelEvent extends Event
     public ThreadChannel getThreadChannel()
     {
         if (!isFromThread())
-            throw new IllegalStateException("This message event did not happen in a thread channel");
+            throw new IllegalStateException("This event did not happen for a thread channel");
         return (ThreadChannel) channel;
     }
 
@@ -254,7 +254,7 @@ public abstract class GenericChannelEvent extends Event
     public AudioChannel getAudioChannel()
     {
         if (!getChannelType().isAudio())
-            throw new IllegalStateException("This message event did not happen in an audio channel");
+            throw new IllegalStateException("This event did not happen for an audio channel");
         return (AudioChannel) channel;
     }
 
@@ -262,7 +262,7 @@ public abstract class GenericChannelEvent extends Event
     public VoiceChannel getVoiceChannel()
     {
         if (!isFromType(ChannelType.VOICE))
-            throw new IllegalStateException("This message event did not happen in a voice channel");
+            throw new IllegalStateException("This event did not happen for a voice channel");
         return (VoiceChannel) channel;
     }
 
@@ -270,7 +270,7 @@ public abstract class GenericChannelEvent extends Event
     public StageChannel getStageChannel()
     {
         if (!isFromType(ChannelType.STAGE))
-            throw new IllegalStateException("This message event did not happen in a stage channel");
+            throw new IllegalStateException("This event did not happen for a stage channel");
         return (StageChannel) channel;
     }
 
@@ -279,10 +279,18 @@ public abstract class GenericChannelEvent extends Event
 
 
     @Nonnull
+    public Category getCategory()
+    {
+        if (!isFromType(ChannelType.CATEGORY))
+            throw new IllegalStateException("This event did not happen for a category");
+        return (Category) channel;
+    }
+    
+    @Nonnull
     public StoreChannel getStoreChannel()
     {
         if (!isFromType(ChannelType.STORE))
-            throw new IllegalStateException("This message event did not happen in a store channel");
+            throw new IllegalStateException("This event did not happen for a store channel");
         return (StoreChannel) channel;
     }
 }
