@@ -25,7 +25,9 @@ import net.dv8tion.jda.api.audio.hooks.ConnectionStatus;
 import net.dv8tion.jda.api.entities.AudioChannel;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.IPermissionContainer;
-import net.dv8tion.jda.api.events.*;
+import net.dv8tion.jda.api.events.ExceptionEvent;
+import net.dv8tion.jda.api.events.RawGatewayEvent;
+import net.dv8tion.jda.api.events.session.*;
 import net.dv8tion.jda.api.exceptions.ParsingException;
 import net.dv8tion.jda.api.managers.AudioManager;
 import net.dv8tion.jda.api.requests.CloseCode;
@@ -199,19 +201,19 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                     JDAImpl.LOG.warn("For more info see https://git.io/vrFWP");
                 }
                 JDAImpl.LOG.info("Finished Loading!");
-                api.handleEvent(new ReadyEvent(api, api.getResponseTotal()));
+                api.handleEvent(new ReadyEvent(api));
             }
             else
             {
                 updateAudioManagerReferences();
                 JDAImpl.LOG.info("Finished (Re)Loading!");
-                api.handleEvent(new ReconnectedEvent(api, api.getResponseTotal()));
+                api.handleEvent(new SessionRecreateEvent(api));
             }
         }
         else
         {
             JDAImpl.LOG.debug("Successfully resumed Session!");
-            api.handleEvent(new ResumedEvent(api, api.getResponseTotal()));
+            api.handleEvent(new SessionResumedEvent(api));
         }
         api.setStatus(JDA.Status.CONNECTED);
     }
@@ -510,7 +512,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             }
             if (isInvalidate)
                 invalidate(); // 1000 means our session is dropped so we cannot resume
-            api.handleEvent(new DisconnectEvent(api, serverCloseFrame, clientCloseFrame, closedByServer, OffsetDateTime.now()));
+            api.handleEvent(new SessionDisconnectEvent(api, serverCloseFrame, clientCloseFrame, closedByServer, OffsetDateTime.now()));
             try
             {
                 handleReconnect(rawCloseCode);
@@ -757,6 +759,8 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         api.getEventCache().clear();
         api.getGuildSetupController().clearCache();
         chunkManager.clear();
+
+        api.handleEvent(new SessionInvalidateEvent(api));
     }
 
     protected void updateAudioManagerReferences()

@@ -51,6 +51,7 @@ import net.dv8tion.jda.api.events.role.RoleCreateEvent;
 import net.dv8tion.jda.api.events.role.RoleDeleteEvent;
 import net.dv8tion.jda.api.events.role.update.*;
 import net.dv8tion.jda.api.events.self.*;
+import net.dv8tion.jda.api.events.session.*;
 import net.dv8tion.jda.api.events.stage.GenericStageInstanceEvent;
 import net.dv8tion.jda.api.events.stage.StageInstanceCreateEvent;
 import net.dv8tion.jda.api.events.stage.StageInstanceDeleteEvent;
@@ -111,12 +112,15 @@ public abstract class ListenerAdapter implements EventListener
     public void onRawGateway(@Nonnull RawGatewayEvent event) {}
     public void onGatewayPing(@Nonnull GatewayPingEvent event) {}
 
-    //JDA Events
+    //Session Events
     public void onReady(@Nonnull ReadyEvent event) {}
-    public void onResumed(@Nonnull ResumedEvent event) {}
-    public void onReconnected(@Nonnull ReconnectedEvent event) {}
-    public void onDisconnect(@Nonnull DisconnectEvent event) {}
+    public void onSessionInvalidate(@Nonnull SessionInvalidateEvent event) {}
+    public void onSessionDisconnect(@Nonnull SessionDisconnectEvent event) {}
+    public void onSessionResumed(@Nonnull SessionResumedEvent event) {}
+    public void onSessionRecreate(@Nonnull SessionRecreateEvent event) {}
     public void onShutdown(@Nonnull ShutdownEvent event) {}
+
+    //Status Events
     public void onStatusChange(@Nonnull StatusChangeEvent event) {}
     public void onException(@Nonnull ExceptionEvent event) {}
 
@@ -294,6 +298,7 @@ public abstract class ListenerAdapter implements EventListener
     public void onHttpRequest(@Nonnull HttpRequestEvent event) {}
 
     //Generic Events
+    public void onGenericSessionEvent(@Nonnull GenericSessionEvent event) {}
     public void onGenericApplicationCommand(@Nonnull GenericApplicationCommandEvent event) {}
     public void onGenericInteractionCreate(@Nonnull GenericInteractionCreateEvent event) {}
     public void onGenericComponentInteractionCreate(@Nonnull GenericComponentInteractionCreateEvent event) {}
