@@ -44,9 +44,9 @@ import java.util.Set;
 public interface EmoteManager extends Manager<EmoteManager>
 {
     /** Used to reset the name field */
-    long NAME = 0x1;
+    long NAME  = 1;
     /** Used to reset the roles field */
-    long ROLES = 0x2;
+    long ROLES = 1 << 1;
 
     /**
      * Resets the fields specified by the provided bit-flag pattern.

@@ -48,17 +48,17 @@ import java.util.Collection;
 public interface RoleManager extends Manager<RoleManager>
 {
     /** Used to reset the name field */
-    long NAME        = 0x1;
+    long NAME        = 1;
     /** Used to reset the color field */
-    long COLOR       = 0x2;
+    long COLOR       = 1 << 1;
     /** Used to reset the permission field */
-    long PERMISSION  = 0x4;
+    long PERMISSION  = 1 << 2;
     /** Used to reset the hoisted field */
-    long HOIST       = 0x8;
+    long HOIST       = 1 << 3;
     /** Used to reset the mentionable field */
-    long MENTIONABLE = 0x10;
+    long MENTIONABLE = 1 << 4;
     /** Used to reset the icon field */
-    long ICON        = 0x20;
+    long ICON        = 1 << 5;
 
     /**
      * Resets the fields specified by the provided bit-flag pattern.
