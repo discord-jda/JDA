@@ -259,9 +259,6 @@ public abstract class ListenerAdapter implements EventListener
 
     //Guild Voice Events
     public void onGuildVoiceUpdate(@Nonnull GuildVoiceUpdateEvent event) {}
-    public void onGuildVoiceJoin(@Nonnull GuildVoiceJoinEvent event) {}
-    public void onGuildVoiceMove(@Nonnull GuildVoiceMoveEvent event) {}
-    public void onGuildVoiceLeave(@Nonnull GuildVoiceLeaveEvent event) {}
     public void onGuildVoiceMute(@Nonnull GuildVoiceMuteEvent event) {}
     public void onGuildVoiceDeafen(@Nonnull GuildVoiceDeafenEvent event) {}
     public void onGuildVoiceGuildMute(@Nonnull GuildVoiceGuildMuteEvent event) {}
