@@ -17,6 +17,7 @@
 package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.managers.channel.concrete.ThreadChannelManager;
+import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -101,6 +102,20 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer
     @Nullable
     ThreadMember getThreadMemberById(long id);
 
+    /**
+     * Load the thread-member for the specified user.
+     * <br>If the thread-member is already loaded it will be retrieved from {@link #getThreadMemberById(long)}
+     * and immediately provided if the thread-member information is consistent. If the bot hasn't joined the thread,
+     * {@link GatewayIntent#GUILD_MEMBERS GatewayIntent.GUILD_MEMBERS} is required to keep the cache updated.
+     *
+     * @param  member
+     *         The member to load the thread-member from
+     *
+     * @throws IllegalArgumentException
+     *         If provided with null
+     *
+     * @return {@link RestAction} - Type: {@link ThreadMember}
+     */
     @Nonnull
     @CheckReturnValue
     default RestAction<ThreadMember> retrieveThreadMember(@Nonnull Member member)
@@ -109,6 +124,20 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer
         return retrieveThreadMemberById(member.getIdLong());
     }
 
+    /**
+     * Load the thread-member for the specified user.
+     * <br>If the thread-member is already loaded it will be retrieved from {@link #getThreadMemberById(long)}
+     * and immediately provided if the thread-member information is consistent. If the bot hasn't joined the thread,
+     * {@link GatewayIntent#GUILD_MEMBERS GatewayIntent.GUILD_MEMBERS} is required to keep the cache updated.
+     *
+     * @param  user
+     *         The user to load the thread-member from
+     *
+     * @throws IllegalArgumentException
+     *         If provided with null
+     *
+     * @return {@link RestAction} - Type: {@link ThreadMember}
+     */
     @Nonnull
     @CheckReturnValue
     default RestAction<ThreadMember> retrieveThreadMember(@Nonnull User user)
@@ -117,6 +146,22 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer
         return retrieveThreadMemberById(user.getIdLong());
     }
 
+    /**
+     * Load the thread-member for the specified user.
+     * <br>If the thread-member is already loaded it will be retrieved from {@link #getThreadMemberById(long)}
+     * and immediately provided if the thread-member information is consistent. If the bot hasn't joined the thread,
+     * {@link GatewayIntent#GUILD_MEMBERS GatewayIntent.GUILD_MEMBERS} is required to keep the cache updated.
+     *
+     * @param  id
+     *         The user id to load the thread-member from
+     *
+     * @throws IllegalArgumentException
+     *         If the provided id is empty or null
+     * @throws NumberFormatException
+     *         If the provided id is not a snowflake
+     *
+     * @return {@link RestAction} - Type: {@link ThreadMember}
+     */
     @Nonnull
     @CheckReturnValue
     default RestAction<ThreadMember> retrieveThreadMemberById(@Nonnull String id)
@@ -124,6 +169,17 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer
         return retrieveThreadMemberById(MiscUtil.parseSnowflake(id));
     }
 
+    /**
+     * Load the thread-member for the specified user.
+     * <br>If the thread-member is already loaded it will be retrieved from {@link #getThreadMemberById(long)}
+     * and immediately provided if the thread-member information is consistent. If the bot hasn't joined the thread,
+     * {@link GatewayIntent#GUILD_MEMBERS GatewayIntent.GUILD_MEMBERS} is required to keep the cache updated.
+     *
+     * @param  id
+     *         The user id to load the thread-member from
+     *
+     * @return {@link RestAction} - Type: {@link ThreadMember}
+     */
     @Nonnull
     @CheckReturnValue
     RestAction<ThreadMember> retrieveThreadMemberById(long id);
