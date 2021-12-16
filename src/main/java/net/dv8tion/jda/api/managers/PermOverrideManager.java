@@ -50,7 +50,7 @@ public interface PermOverrideManager extends Manager<PermOverrideManager>
     /** Used to reset the granted field */
     long ALLOWED     = 1 << 1;
     /** Used to reset <b>all</b> permissions to their original value */
-    long PERMISSIONS = 1 << 2;
+    long PERMISSIONS = ALLOWED | DENIED;
 
     /**
      * Resets the fields specified by the provided bit-flag pattern.
