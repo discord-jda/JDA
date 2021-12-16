@@ -17,7 +17,6 @@
 package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.managers.channel.concrete.ThreadChannelManager;
-import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -106,7 +105,7 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer
      * Load the thread-member for the specified user.
      * <br>If the thread-member is already loaded it will be retrieved from {@link #getThreadMemberById(long)}
      * and immediately provided if the thread-member information is consistent. If the bot hasn't joined the thread,
-     * {@link GatewayIntent#GUILD_MEMBERS GatewayIntent.GUILD_MEMBERS} is required to keep the cache updated.
+     * {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MEMBERS GatewayIntent.GUILD_MEMBERS} is required to keep the cache updated.
      *
      * @param  member
      *         The member to load the thread-member from
@@ -128,7 +127,7 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer
      * Load the thread-member for the specified user.
      * <br>If the thread-member is already loaded it will be retrieved from {@link #getThreadMemberById(long)}
      * and immediately provided if the thread-member information is consistent. If the bot hasn't joined the thread,
-     * {@link GatewayIntent#GUILD_MEMBERS GatewayIntent.GUILD_MEMBERS} is required to keep the cache updated.
+     * {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MEMBERS GatewayIntent.GUILD_MEMBERS} is required to keep the cache updated.
      *
      * @param  user
      *         The user to load the thread-member from
@@ -150,7 +149,7 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer
      * Load the thread-member for the specified user.
      * <br>If the thread-member is already loaded it will be retrieved from {@link #getThreadMemberById(long)}
      * and immediately provided if the thread-member information is consistent. If the bot hasn't joined the thread,
-     * {@link GatewayIntent#GUILD_MEMBERS GatewayIntent.GUILD_MEMBERS} is required to keep the cache updated.
+     * {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MEMBERS GatewayIntent.GUILD_MEMBERS} is required to keep the cache updated.
      *
      * @param  id
      *         The user id to load the thread-member from
@@ -173,7 +172,7 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer
      * Load the thread-member for the specified user.
      * <br>If the thread-member is already loaded it will be retrieved from {@link #getThreadMemberById(long)}
      * and immediately provided if the thread-member information is consistent. If the bot hasn't joined the thread,
-     * {@link GatewayIntent#GUILD_MEMBERS GatewayIntent.GUILD_MEMBERS} is required to keep the cache updated.
+     * {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MEMBERS GatewayIntent.GUILD_MEMBERS} is required to keep the cache updated.
      *
      * @param  id
      *         The user id to load the thread-member from
