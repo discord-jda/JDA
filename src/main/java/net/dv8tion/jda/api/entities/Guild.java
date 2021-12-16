@@ -693,8 +693,6 @@ public interface Guild extends ISnowflake
      * The vanity url code for this Guild. The vanity url is the custom invite code of partnered / official / boosted Guilds.
      * <br>The returned String will be the code that can be provided to {@code discord.gg/{code}} to get the invite link.
      *
-     * <p>The Vanity Code can be modified using {@link GuildManager#setVanityCode(String)}.
-     *
      * @return The vanity code or null
      *
      * @since  4.0.0
@@ -707,8 +705,6 @@ public interface Guild extends ISnowflake
     /**
      * The vanity url for this Guild. The vanity url is the custom invite code of partnered / official / boosted Guilds.
      * <br>The returned String will be the vanity invite link to this guild.
-     *
-     * <p>The Vanity Code can be modified using {@link GuildManager#setVanityCode(String)}.
      *
      * @return The vanity url or null
      *
@@ -2731,6 +2727,13 @@ public interface Guild extends ISnowflake
     GuildManager getManager();
 
     /**
+     * Returns whether this Guild has its boost progress bar shown.
+     *
+     * @return True, if this Guild has its boost progress bar shown
+     */
+    boolean isBoostProgressBarEnabled();
+
+    /**
      * A {@link PaginationAction PaginationAction} implementation
      * that allows to {@link Iterable iterate} over all {@link net.dv8tion.jda.api.audit.AuditLogEntry AuditLogEntries} of
      * this Guild.
@@ -3790,9 +3793,9 @@ public interface Guild extends ISnowflake
     /* From GuildController */
 
     /**
-     * Used to move a {@link net.dv8tion.jda.api.entities.Member Member} from one {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel}
-     * to another {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel}.
-     * <br>As a note, you cannot move a Member that isn't already in a VoiceChannel. Also they must be in a VoiceChannel
+     * Used to move a {@link net.dv8tion.jda.api.entities.Member Member} from one {@link net.dv8tion.jda.api.entities.AudioChannel AudioChannel}
+     * to another {@link net.dv8tion.jda.api.entities.AudioChannel AudioChannel}.
+     * <br>As a note, you cannot move a Member that isn't already in a AudioChannel. Also they must be in a AudioChannel
      * in the same Guild as the one that you are moving them to.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
@@ -3813,35 +3816,35 @@ public interface Guild extends ISnowflake
      *
      * @param  member
      *         The {@link net.dv8tion.jda.api.entities.Member Member} that you are moving.
-     * @param  voiceChannel
-     *         The destination {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel} to which the member is being
+     * @param  audioChannel
+     *         The destination {@link net.dv8tion.jda.api.entities.AudioChannel AudioChannel} to which the member is being
      *         moved to. Or null to perform a voice kick.
      *
      * @throws IllegalStateException
-     *         If the Member isn't currently in a VoiceChannel in this Guild, or {@link net.dv8tion.jda.api.utils.cache.CacheFlag#VOICE_STATE} is disabled.
+     *         If the Member isn't currently in a AudioChannel in this Guild, or {@link net.dv8tion.jda.api.utils.cache.CacheFlag#VOICE_STATE} is disabled.
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If the provided member is {@code null}</li>
      *             <li>If the provided Member isn't part of this {@link net.dv8tion.jda.api.entities.Guild Guild}</li>
-     *             <li>If the provided VoiceChannel isn't part of this {@link net.dv8tion.jda.api.entities.Guild Guild}</li>
+     *             <li>If the provided AudioChannel isn't part of this {@link net.dv8tion.jda.api.entities.Guild Guild}</li>
      *         </ul>
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         <ul>
      *             <li>If this account doesn't have {@link net.dv8tion.jda.api.Permission#VOICE_MOVE_OTHERS}
-     *                 in the VoiceChannel that the Member is currently in.</li>
+     *                 in the AudioChannel that the Member is currently in.</li>
      *             <li>If this account <b>AND</b> the Member being moved don't have
-     *                 {@link net.dv8tion.jda.api.Permission#VOICE_CONNECT} for the destination VoiceChannel.</li>
+     *                 {@link net.dv8tion.jda.api.Permission#VOICE_CONNECT} for the destination AudioChannel.</li>
      *         </ul>
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction}
      */
     @Nonnull
     @CheckReturnValue
-    RestAction<Void> moveVoiceMember(@Nonnull Member member, @Nullable VoiceChannel voiceChannel);
+    RestAction<Void> moveVoiceMember(@Nonnull Member member, @Nullable AudioChannel audioChannel);
 
     /**
-     * Used to kick a {@link net.dv8tion.jda.api.entities.Member Member} from a {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel}.
-     * <br>As a note, you cannot kick a Member that isn't already in a VoiceChannel. Also they must be in a VoiceChannel
+     * Used to kick a {@link net.dv8tion.jda.api.entities.Member Member} from a {@link net.dv8tion.jda.api.entities.AudioChannel AudioChannel}.
+     * <br>As a note, you cannot kick a Member that isn't already in a AudioChannel. Also they must be in a AudioChannel
      * in the same Guild.
      *
      * <p>Equivalent to {@code moveVoiceMember(member, null)}.
@@ -3863,16 +3866,16 @@ public interface Guild extends ISnowflake
      *         The {@link net.dv8tion.jda.api.entities.Member Member} that you are moving.
      *
      * @throws IllegalStateException
-     *         If the Member isn't currently in a VoiceChannel in this Guild, or {@link net.dv8tion.jda.api.utils.cache.CacheFlag#VOICE_STATE} is disabled.
+     *         If the Member isn't currently in a AudioChannel in this Guild, or {@link net.dv8tion.jda.api.utils.cache.CacheFlag#VOICE_STATE} is disabled.
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If any of the provided arguments is {@code null}</li>
      *             <li>If the provided Member isn't part of this {@link net.dv8tion.jda.api.entities.Guild Guild}</li>
-     *             <li>If the provided VoiceChannel isn't part of this {@link net.dv8tion.jda.api.entities.Guild Guild}</li>
+     *             <li>If the provided AudioChannel isn't part of this {@link net.dv8tion.jda.api.entities.Guild Guild}</li>
      *         </ul>
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If this account doesn't have {@link net.dv8tion.jda.api.Permission#VOICE_MOVE_OTHERS}
-     *         in the VoiceChannel that the Member is currently in.
+     *         in the AudioChannel that the Member is currently in.
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction}
      */

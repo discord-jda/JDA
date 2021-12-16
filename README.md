@@ -508,7 +508,7 @@ SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further detail
 JDA currently provides a fallback Logger in case that no SLF4J implementation is present.
 We strongly recommend to use one though, as that can improve speed and allows you to customize the Logger as well as log to files
 
-The most popular implementations are [Log4j 2](https://logging.apache.org/log4j/2.x/) and [Logback](https://logback.qos.ch/)
+There is a guide for logback-classic available in our wiki: [Logging Setup](https://github.com/DV8FromTheWorld/JDA/wiki/Logging-Setup)
 
 ## Documentation
 

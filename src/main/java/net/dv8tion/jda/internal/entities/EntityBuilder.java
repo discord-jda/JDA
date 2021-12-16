@@ -209,6 +209,7 @@ public class EntityBuilder
         final int notificationLevel = guildJson.getInt("default_message_notifications", 0);
         final int explicitContentLevel = guildJson.getInt("explicit_content_filter", 0);
         final int nsfwLevel = guildJson.getInt("nsfw_level", -1);
+        final boolean boostProgressBarEnabled = guildJson.getBoolean("premium_progress_bar_enabled");
 
         guildObj.setName(name)
                 .setIconId(iconId)
@@ -228,7 +229,8 @@ public class EntityBuilder
                 .setBoostCount(boostCount)
                 .setBoostTier(boostTier)
                 .setMemberCount(memberCount)
-                .setNSFWLevel(Guild.NSFWLevel.fromKey(nsfwLevel));
+                .setNSFWLevel(Guild.NSFWLevel.fromKey(nsfwLevel))
+                .setBoostProgressBarEnabled(boostProgressBarEnabled);
 
         SnowflakeCacheViewImpl<Guild> guildView = getJDA().getGuildsView();
         try (UnlockHook hook = guildView.writeLock())
@@ -1191,7 +1193,7 @@ public class EntityBuilder
     public ThreadMember createThreadMember(GuildImpl guild, ThreadChannelImpl threadChannel, DataObject json)
     {
         DataObject memberJson = json.getObject("member");
-        DataObject presenceJson = json.getObject("presence");
+        DataObject presenceJson = json.isNull("presence") ? null : json.getObject("presence");
 
         Member member = createMember(guild, memberJson, null, presenceJson);
         return createThreadMember(threadChannel, member, json);
@@ -1623,8 +1625,9 @@ public class EntityBuilder
         final String proxyUrl = jsonObject.getString("proxy_url");
         final String filename = jsonObject.getString("filename");
         final String contentType = jsonObject.getString("content_type", null);
+        final String description = jsonObject.getString("description", null);
         final long id = jsonObject.getLong("id");
-        return new Message.Attachment(id, url, proxyUrl, filename, contentType, size, height, width, ephemeral, getJDA());
+        return new Message.Attachment(id, url, proxyUrl, filename, contentType, description, size, height, width, ephemeral, getJDA());
     }
 
     public MessageEmbed createMessageEmbed(DataObject content)

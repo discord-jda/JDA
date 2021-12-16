@@ -40,12 +40,13 @@ public class GuildManagerImpl extends ManagerBase<GuildManager> implements Guild
     protected String name;
     protected Icon icon, splash, banner;
     protected String afkChannel, systemChannel, rulesChannel, communityUpdatesChannel;
-    protected String description, vanityCode;
+    protected String description;
     protected int afkTimeout;
     protected int mfaLevel;
     protected int notificationLevel;
     protected int explicitContentLevel;
     protected int verificationLevel;
+    protected boolean boostProgressBarEnabled;
 
     public GuildManagerImpl(Guild guild)
     {
@@ -111,7 +112,6 @@ public class GuildManagerImpl extends ManagerBase<GuildManager> implements Guild
         this.name = null;
         this.icon = null;
         this.splash = null;
-        this.vanityCode = null;
         this.description = null;
         this.banner = null;
         this.afkChannel = null;
@@ -267,21 +267,20 @@ public class GuildManagerImpl extends ManagerBase<GuildManager> implements Guild
 
     @Nonnull
     @Override
-    public GuildManager setVanityCode(@Nullable String code)
-    {
-        checkFeature("VANITY_URL");
-        this.vanityCode = code;
-        set |= VANITY_URL;
-        return this;
-    }
-
-    @Nonnull
-    @Override
     public GuildManager setDescription(@Nullable String description)
     {
         checkFeature("VERIFIED");
         this.description = description;
         set |= DESCRIPTION;
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    public GuildManager setBoostProgressBarEnabled(boolean enabled)
+    {
+        this.boostProgressBarEnabled = enabled;
+        set |= BOOST_PROGRESS_BAR_ENABLED;
         return this;
     }
 
@@ -315,10 +314,10 @@ public class GuildManagerImpl extends ManagerBase<GuildManager> implements Guild
             body.put("explicit_content_filter", explicitContentLevel);
         if (shouldUpdate(BANNER))
             body.put("banner", banner == null ? null : banner.getEncoding());
-        if (shouldUpdate(VANITY_URL))
-            body.put("vanity_code", vanityCode);
         if (shouldUpdate(DESCRIPTION))
             body.put("description", description);
+        if (shouldUpdate(BOOST_PROGRESS_BAR_ENABLED))
+            body.put("premium_progress_bar_enabled", boostProgressBarEnabled);
 
         reset(); //now that we've built our JSON object, reset the manager back to the non-modified state
         return getRequestBody(body);
