@@ -702,7 +702,7 @@ public interface Guild extends ISnowflake
 
     //TODO docs
     @Nullable
-    default ImageProxy getSlash()
+    default ImageProxy getSplash()
     {
         final String splashUrl = getSplashUrl();
         if (splashUrl == null) return null;
