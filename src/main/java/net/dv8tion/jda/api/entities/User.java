@@ -217,7 +217,7 @@ public interface User extends IMentionable
     }
 
     //TODO docs
-    @Nullable
+    @Nonnull
     default ImageProxy getDefaultAvatar()
     {
         final String defaultAvatarUrl = getDefaultAvatarUrl();
