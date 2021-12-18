@@ -31,6 +31,7 @@ import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -322,15 +323,17 @@ public class InviteImpl implements Invite
 
     public static class GuildImpl implements Guild
     {
+        private final JDA jda;
         private final String iconId, name, splashId;
         private final int presenceCount, memberCount;
         private final long id;
         private final VerificationLevel verificationLevel;
         private final Set<String> features;
 
-        public GuildImpl(final long id, final String iconId, final String name, final String splashId, 
+        public GuildImpl(JDA jda, final long id, final String iconId, final String name, final String splashId,
                          final VerificationLevel verificationLevel, final int presenceCount, final int memberCount, final Set<String> features)
         {
+            this.jda = jda;
             this.id = id;
             this.iconId = iconId;
             this.name = name;
@@ -343,7 +346,7 @@ public class InviteImpl implements Invite
 
         public GuildImpl(final net.dv8tion.jda.api.entities.Guild guild)
         {
-            this(guild.getIdLong(), guild.getIconId(), guild.getName(), guild.getSplashId(),
+            this(guild.getJDA(), guild.getIdLong(), guild.getIconId(), guild.getName(), guild.getSplashId(),
                  guild.getVerificationLevel(), -1, -1, guild.getFeatures());
         }
 
@@ -411,16 +414,25 @@ public class InviteImpl implements Invite
         {
             return features;
         }
+
+        @NotNull
+        @Override
+        public JDA getJDA()
+        {
+            return jda;
+        }
     }
 
     public static class GroupImpl implements Group
     {
+        private final JDA jda;
         private final String iconId, name;
         private final long id;
         private final List<String> users;
 
-        public GroupImpl(final String iconId, final String name, final long id, final List<String> users)
+        public GroupImpl(JDA jda, final String iconId, final String name, final long id, final List<String> users)
         {
+            this.jda = jda;
             this.iconId = iconId;
             this.name = name;
             this.id = id;
@@ -456,6 +468,13 @@ public class InviteImpl implements Invite
         public List<String> getUsers()
         {
             return users;
+        }
+
+        @NotNull
+        @Override
+        public JDA getJDA()
+        {
+            return jda;
         }
     }
 
@@ -518,12 +537,14 @@ public class InviteImpl implements Invite
 
     public static class EmbeddedApplicationImpl implements EmbeddedApplication
     {
+        private final JDA jda;
         private final String iconId, name, description, summary;
         private final long id;
         private final int maxParticipants;
 
-        public EmbeddedApplicationImpl(final String iconId, final String name, final String description, final String summary, final long id, final int maxParticipants)
+        public EmbeddedApplicationImpl(JDA jda, final String iconId, final String name, final String description, final String summary, final long id, final int maxParticipants)
         {
+            this.jda = jda;
             this.iconId = iconId;
             this.name = name;
             this.description = description;
@@ -578,6 +599,13 @@ public class InviteImpl implements Invite
         public int getMaxParticipants()
         {
             return maxParticipants;
+        }
+
+        @NotNull
+        @Override
+        public JDA getJDA()
+        {
+            return jda;
         }
     }
 }

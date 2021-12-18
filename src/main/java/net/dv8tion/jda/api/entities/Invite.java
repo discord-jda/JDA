@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild.VerificationLevel;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
+import net.dv8tion.jda.api.utils.ImageProxy;
 import net.dv8tion.jda.internal.entities.InviteImpl;
 
 import javax.annotation.CheckReturnValue;
@@ -374,6 +375,16 @@ public interface Invite
         @Nullable
         String getIconUrl();
 
+        //TODO docs
+        @Nullable
+        default ImageProxy getIcon()
+        {
+            final String iconUrl = getIconUrl();
+            if (iconUrl == null) return null;
+
+            return ImageProxy.fromUrl(getJDA(), iconUrl);
+        }
+
         /**
          * The name of this guild.
          *
@@ -401,6 +412,16 @@ public interface Invite
          */
         @Nullable
         String getSplashUrl();
+
+        //TODO docs
+        @Nullable
+        default ImageProxy getSplash()
+        {
+            final String splashUrl = getSplashUrl();
+            if (splashUrl == null) return null;
+
+            return ImageProxy.fromUrl(getJDA(), splashUrl);
+        }
         
         /**
          * Returns the {@link net.dv8tion.jda.api.entities.Guild.VerificationLevel VerificationLevel} of this guild.
@@ -446,6 +467,10 @@ public interface Invite
          */
         @Nonnull
         Set<String> getFeatures();
+
+        //TODO docs
+        @Nonnull
+        JDA getJDA();
     }
 
     /**
@@ -475,6 +500,16 @@ public interface Invite
         @Nullable
         String getIconUrl();
 
+        //TODO docs
+        @Nullable
+        default ImageProxy getIcon()
+        {
+            final String iconUrl = getIconUrl();
+            if (iconUrl == null) return null;
+
+            return ImageProxy.fromUrl(getJDA(), iconUrl);
+        }
+
         /**
          * The name of this group or {@code null} if the group has no name.
          *
@@ -493,6 +528,10 @@ public interface Invite
          */
         @Nullable
         List<String> getUsers();
+
+        //TODO docs
+        @Nonnull
+        JDA getJDA();
     }
 
     /**
@@ -604,12 +643,26 @@ public interface Invite
         @Nullable
         String getIconUrl();
 
+        //TODO docs
+        @Nullable
+        default ImageProxy getIcon()
+        {
+            final String iconUrl = getIconUrl();
+            if (iconUrl == null) return null;
+
+            return ImageProxy.fromUrl(getJDA(), iconUrl);
+        }
+
         /**
          * The max participant count of this application or {@code -1} if no max participant count is set
          *
          * @return {@code -1} if this application does not have a max participant count
          */
         int getMaxParticipants();
+
+        //TODO docs
+        @Nonnull
+        JDA getJDA();
     }
 
     /**

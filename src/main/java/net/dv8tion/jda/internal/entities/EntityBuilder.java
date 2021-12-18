@@ -1911,7 +1911,7 @@ public class EntityBuilder
             else
                 usernames = map(channelObject, "recipients", (json) -> json.getString("username"));
 
-            group = new InviteImpl.GroupImpl(groupIconId, groupName, groupId, usernames);
+            group = new InviteImpl.GroupImpl(getJDA(), groupIconId, groupName, groupId, usernames);
         }
         else if (channelType.isGuild())
         {
@@ -1933,7 +1933,7 @@ public class EntityBuilder
             else
                 guildFeatures = Collections.unmodifiableSet(StreamSupport.stream(guildObject.getArray("features").spliterator(), false).map(String::valueOf).collect(Collectors.toSet()));
 
-            guild = new InviteImpl.GuildImpl(guildId, guildIconId, guildName, guildSplashId, guildVerificationLevel, presenceCount, memberCount, guildFeatures);
+            guild = new InviteImpl.GuildImpl(getJDA(), guildId, guildIconId, guildName, guildSplashId, guildVerificationLevel, presenceCount, memberCount, guildFeatures);
 
             final String channelName = channelObject.getString("name");
             final long channelId = channelObject.getLong("id");
@@ -1957,7 +1957,7 @@ public class EntityBuilder
             final DataObject applicationObject = object.getObject("target_application");
 
             Invite.EmbeddedApplication application = new InviteImpl.EmbeddedApplicationImpl(
-                    applicationObject.getString("icon", null), applicationObject.getString("name"), applicationObject.getString("description"),
+                    getJDA(), applicationObject.getString("icon", null), applicationObject.getString("name"), applicationObject.getString("description"),
                     applicationObject.getString("summary"), applicationObject.getLong("id"), applicationObject.getInt("max_participants", -1)
             );
             target = new InviteImpl.InviteTargetImpl(targetType, application, null);

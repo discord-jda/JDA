@@ -86,7 +86,7 @@ public class InviteCreateHandler extends SocketHandler
         case EMBEDDED_APPLICATION:
             DataObject applicationObject = content.getObject("target_application");
             Invite.EmbeddedApplication application = new InviteImpl.EmbeddedApplicationImpl(
-                    applicationObject.getString("icon", null), applicationObject.getString("name"), applicationObject.getString("description"),
+		            getJDA(), applicationObject.getString("icon", null), applicationObject.getString("name"), applicationObject.getString("description"),
                     applicationObject.getString("summary"), applicationObject.getLong("id"), applicationObject.getInt("max_participants", -1)
             );
             target = new InviteImpl.InviteTargetImpl(targetType, application, null);
