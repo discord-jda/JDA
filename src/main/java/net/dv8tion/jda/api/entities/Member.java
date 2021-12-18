@@ -20,6 +20,7 @@ import net.dv8tion.jda.annotations.Incubating;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
+import net.dv8tion.jda.api.utils.ImageProxy;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -232,6 +233,16 @@ public interface Member extends IMentionable, IPermissionHolder
         return avatarId == null ? null : String.format(AVATAR_URL, getGuild().getId(), getId(), avatarId, avatarId.startsWith("a_") ? "gif" : "png");
     }
 
+    //TODO docs
+    @Nullable
+    default ImageProxy getAvatar()
+    {
+        final String avatarUrl = getAvatarUrl();
+        if (avatarUrl == null) return null;
+
+        return ImageProxy.fromUrl(getJDA(), avatarUrl);
+    }
+
     /**
      * The URL for the member's effective avatar image.
      * If they do not have a per guild avatar set, this will return the URL of
@@ -244,6 +255,15 @@ public interface Member extends IMentionable, IPermissionHolder
     {
         String avatarUrl = getAvatarUrl();
         return avatarUrl == null ? getUser().getEffectiveAvatarUrl() : avatarUrl;
+    }
+
+    //TODO docs
+    @Nonnull
+    default ImageProxy getEffectiveAvatar()
+    {
+        final String effectiveAvatarUrl = getEffectiveAvatarUrl();
+
+        return ImageProxy.fromUrl(getJDA(), effectiveAvatarUrl);
     }
 
     /**

@@ -18,6 +18,7 @@ package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.api.utils.ImageProxy;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.entities.UserById;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -181,6 +182,15 @@ public interface User extends IMentionable
         return avatarId == null ? null : String.format(AVATAR_URL, getId(), avatarId, avatarId.startsWith("a_") ? "gif" : "png");
     }
 
+    //TODO docs
+    @Nullable
+    default ImageProxy getAvatar()
+    {
+        final String avatarUrl = getAvatarUrl();
+
+        return avatarUrl == null ? null : ImageProxy.fromUrl(getJDA(), avatarUrl);
+    }
+
     /**
      * The Discord Id for this user's default avatar image.
      *
@@ -206,6 +216,15 @@ public interface User extends IMentionable
         return String.format(DEFAULT_AVATAR_URL, getDefaultAvatarId());
     }
 
+    //TODO docs
+    @Nullable
+    default ImageProxy getDefaultAvatar()
+    {
+        final String defaultAvatarUrl = getDefaultAvatarUrl();
+
+        return ImageProxy.fromUrl(getJDA(), defaultAvatarUrl);
+    }
+
     /**
      * The URL for the user's avatar image.
      * If they do not have an avatar set, this will return the URL of their
@@ -221,6 +240,15 @@ public interface User extends IMentionable
     {
         String avatarUrl = getAvatarUrl();
         return avatarUrl == null ? getDefaultAvatarUrl() : avatarUrl;
+    }
+
+    //TODO docs
+    @Nonnull
+    default ImageProxy getEffectiveAvatar()
+    {
+        final String effectiveAvatarUrl = getEffectiveAvatarUrl();
+
+        return ImageProxy.fromUrl(getJDA(), effectiveAvatarUrl);
     }
 
     /**

@@ -18,6 +18,7 @@ package net.dv8tion.jda.api.events.guild.update;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.utils.ImageProxy;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -60,6 +61,16 @@ public class GuildUpdateBannerEvent extends GenericGuildUpdateEvent<String>
         return next == null ? null : String.format(Guild.BANNER_URL, guild.getId(), next);
     }
 
+    //TODO docs
+    @Nullable
+    public ImageProxy getNewBanner()
+    {
+        final String newBannerUrl = getNewBannerUrl();
+        if (newBannerUrl == null) return null;
+
+        return ImageProxy.fromUrl(getJDA(), newBannerUrl);
+    }
+
     /**
      * The old banner id
      *
@@ -80,5 +91,15 @@ public class GuildUpdateBannerEvent extends GenericGuildUpdateEvent<String>
     public String getOldBannerUrl()
     {
         return previous == null ? null : String.format(Guild.BANNER_URL, guild.getId(), previous);
+    }
+
+    //TODO docs
+    @Nullable
+    public ImageProxy getOldBanner()
+    {
+        final String oldBannerUrl = getOldBannerUrl();
+        if (oldBannerUrl == null) return null;
+
+        return ImageProxy.fromUrl(getJDA(), oldBannerUrl);
     }
 }

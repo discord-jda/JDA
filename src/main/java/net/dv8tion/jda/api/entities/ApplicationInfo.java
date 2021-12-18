@@ -18,6 +18,7 @@ package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.utils.ImageProxy;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
@@ -87,6 +88,16 @@ public interface ApplicationInfo extends ISnowflake
      */
     @Nullable
     String getIconUrl();
+
+    //TODO docs
+    @Nullable
+    default ImageProxy getIcon()
+    {
+        final String iconUrl = getIconUrl();
+        if (iconUrl == null) return null;
+
+        return ImageProxy.fromUrl(getJDA(), iconUrl);
+    }
 
     /**
      * The team information for this application.

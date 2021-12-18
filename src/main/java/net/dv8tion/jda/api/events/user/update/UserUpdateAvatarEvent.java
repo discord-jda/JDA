@@ -18,6 +18,7 @@ package net.dv8tion.jda.api.events.user.update;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.utils.ImageProxy;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -71,6 +72,16 @@ public class UserUpdateAvatarEvent extends GenericUserUpdateEvent<String>
         return previous == null ? null : String.format(User.AVATAR_URL, getUser().getId(), previous, previous.startsWith("a_") ? "gif" : "png");
     }
 
+    //TODO docs
+    @Nullable
+    public ImageProxy getOldAvatar()
+    {
+        final String oldAvatarUrl = getOldAvatarUrl();
+        if (oldAvatarUrl == null) return null;
+
+        return ImageProxy.fromUrl(getJDA(), oldAvatarUrl);
+    }
+
     /**
      * The new avatar id
      *
@@ -91,5 +102,15 @@ public class UserUpdateAvatarEvent extends GenericUserUpdateEvent<String>
     public String getNewAvatarUrl()
     {
         return next == null ? null : String.format(User.AVATAR_URL, getUser().getId(), next, next.startsWith("a_") ? "gif" : "png");
+    }
+
+    //TODO docs
+    @Nullable
+    public ImageProxy getNewAvatar()
+    {
+        final String newAvatarUrl = getNewAvatarUrl();
+        if (newAvatarUrl == null) return null;
+
+        return ImageProxy.fromUrl(getJDA(), newAvatarUrl);
     }
 }

@@ -18,6 +18,7 @@ package net.dv8tion.jda.api.events.guild.update;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.utils.ImageProxy;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -60,6 +61,16 @@ public class GuildUpdateSplashEvent extends GenericGuildUpdateEvent<String>
         return previous == null ? null : String.format(Guild.SPLASH_URL, guild.getId(), previous);
     }
 
+    //TODO docs
+    @Nullable
+    public ImageProxy getOldSplash()
+    {
+        final String oldSplashUrl = getOldSplashUrl();
+        if (oldSplashUrl == null) return null;
+
+        return ImageProxy.fromUrl(getJDA(), oldSplashUrl);
+    }
+
     /**
      * The new splash id
      *
@@ -80,5 +91,15 @@ public class GuildUpdateSplashEvent extends GenericGuildUpdateEvent<String>
     public String getNewSplashUrl()
     {
         return next == null ? null : String.format(Guild.SPLASH_URL, guild.getId(), next);
+    }
+
+    //TODO docs
+    @Nullable
+    public ImageProxy getNewSplash()
+    {
+        final String newSplashUrl = getNewSplashUrl();
+        if (newSplashUrl == null) return null;
+
+        return ImageProxy.fromUrl(getJDA(), newSplashUrl);
     }
 }

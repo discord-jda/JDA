@@ -34,6 +34,7 @@ import net.dv8tion.jda.api.requests.restaction.order.ChannelOrderAction;
 import net.dv8tion.jda.api.requests.restaction.order.RoleOrderAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.AuditLogPaginationAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.PaginationAction;
+import net.dv8tion.jda.api.utils.ImageProxy;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.api.utils.cache.MemberCacheView;
@@ -648,6 +649,16 @@ public interface Guild extends ISnowflake
         return iconId == null ? null : String.format(ICON_URL, getId(), iconId, iconId.startsWith("a_") ? "gif" : "png");
     }
 
+    //TODO docs
+    @Nullable
+    default ImageProxy getIcon()
+    {
+        final String iconUrl = getIconUrl();
+        if (iconUrl == null) return null;
+
+        return ImageProxy.fromUrl(getJDA(), iconUrl);
+    }
+
     /**
      * The Features of the {@link net.dv8tion.jda.api.entities.Guild Guild}.
      * <p>
@@ -687,6 +698,16 @@ public interface Guild extends ISnowflake
     {
         String splashId = getSplashId();
         return splashId == null ? null : String.format(SPLASH_URL, getId(), splashId);
+    }
+
+    //TODO docs
+    @Nullable
+    default ImageProxy getSlash()
+    {
+        final String splashUrl = getSplashUrl();
+        if (splashUrl == null) return null;
+
+        return ImageProxy.fromUrl(getJDA(), splashUrl);
     }
 
     /**
@@ -800,6 +821,15 @@ public interface Guild extends ISnowflake
     {
         String bannerId = getBannerId();
         return bannerId == null ? null : String.format(BANNER_URL, getId(), bannerId);
+    }
+
+    //TODO docs
+    @Nullable
+    default ImageProxy getBanner() {
+        final String bannerUrl = getBannerUrl();
+        if (bannerUrl == null) return null;
+
+        return ImageProxy.fromUrl(getJDA(), bannerUrl);
     }
 
     /**

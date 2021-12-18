@@ -18,6 +18,7 @@ package net.dv8tion.jda.api.events.guild.update;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.utils.ImageProxy;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -60,6 +61,16 @@ public class GuildUpdateIconEvent extends GenericGuildUpdateEvent<String>
         return previous == null ? null : String.format(Guild.ICON_URL, guild.getId(), previous, previous.startsWith("a_") ? "gif" : "png");
     }
 
+    //TODO docs
+    @Nullable
+    public ImageProxy getOldIcon()
+    {
+        final String oldIconUrl = getOldIconUrl();
+        if (oldIconUrl == null) return null;
+
+        return ImageProxy.fromUrl(getJDA(), oldIconUrl);
+    }
+
     /**
      * The old icon id
      *
@@ -80,5 +91,15 @@ public class GuildUpdateIconEvent extends GenericGuildUpdateEvent<String>
     public String getNewIconUrl()
     {
         return next == null ? null : String.format(Guild.ICON_URL, guild.getId(), next, next.startsWith("a_") ? "gif" : "png");
+    }
+
+    //TODO docs
+    @Nullable
+    public ImageProxy getNewIcon()
+    {
+        final String newIconUrl = getNewIconUrl();
+        if (newIconUrl == null) return null;
+
+        return ImageProxy.fromUrl(getJDA(), newIconUrl);
     }
 }
