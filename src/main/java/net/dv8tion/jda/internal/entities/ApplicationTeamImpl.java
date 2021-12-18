@@ -16,8 +16,10 @@
 
 package net.dv8tion.jda.internal.entities;
 
+import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.ApplicationTeam;
 import net.dv8tion.jda.api.entities.TeamMember;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import java.util.Collections;
@@ -25,12 +27,14 @@ import java.util.List;
 
 public class ApplicationTeamImpl implements ApplicationTeam
 {
+    private final JDA jda;
     private final String iconId;
     private final List<TeamMember> members;
     private final long id, ownerId;
 
-    public ApplicationTeamImpl(String iconId, List<TeamMember> members, long id, long ownerId)
+    public ApplicationTeamImpl(JDA jda, String iconId, List<TeamMember> members, long id, long ownerId)
     {
+        this.jda = jda;
         this.iconId = iconId;
         this.members = Collections.unmodifiableList(members);
         this.id = id;
@@ -54,6 +58,13 @@ public class ApplicationTeamImpl implements ApplicationTeam
     public List<TeamMember> getMembers()
     {
         return members;
+    }
+
+    @NotNull
+    @Override
+    public JDA getJDA()
+    {
+        return jda;
     }
 
     @Override

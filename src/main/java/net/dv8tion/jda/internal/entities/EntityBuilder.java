@@ -2117,7 +2117,7 @@ public class EntityBuilder
             User user = createUser(userJson);
             return new TeamMemberImpl(user, state, id);
         });
-        return new ApplicationTeamImpl(iconId, members, id, ownerId);
+        return new ApplicationTeamImpl(getJDA(), iconId, members, id, ownerId);
     }
 
     public AuditLogEntry createAuditLogEntry(GuildImpl guild, DataObject entryJson, DataObject userJson, DataObject webhookJson)
