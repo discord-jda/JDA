@@ -397,12 +397,14 @@ public interface User extends IMentionable
      */
     class Profile
     {
+        private final JDA jda;
         private final long userId;
         private final String bannerId;
         private final int accentColor;
 
-        public Profile(long userId, String bannerId, int accentColor)
+        public Profile(JDA jda, long userId, String bannerId, int accentColor)
         {
+            this.jda = jda;
             this.userId = userId;
             this.bannerId = bannerId;
             this.accentColor = accentColor;
@@ -432,6 +434,16 @@ public interface User extends IMentionable
         public String getBannerUrl()
         {
             return bannerId == null ? null : String.format(BANNER_URL, Long.toUnsignedString(userId), bannerId, bannerId.startsWith("a_") ? "gif" : "png");
+        }
+
+        //TODO docs
+        @Nullable
+        public ImageProxy getBanner()
+        {
+            final String bannerUrl = getBannerUrl();
+            if (bannerUrl == null) return null;
+
+            return ImageProxy.fromUrl(getJDA(), bannerUrl);
         }
 
         /**
@@ -467,6 +479,13 @@ public interface User extends IMentionable
                     ", bannerId='" + bannerId + "'" +
                     ", accentColor=" + accentColor +
                     ')';
+        }
+
+        //TODO docs
+        @Nonnull
+        public JDA getJDA()
+        {
+            return jda;
         }
     }
 

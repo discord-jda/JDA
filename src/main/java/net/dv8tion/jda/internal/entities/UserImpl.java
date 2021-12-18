@@ -86,7 +86,7 @@ public class UserImpl extends UserById implements User
                 String bannerId = json.getString("banner", null);
                 int accentColor = json.getInt("accent_color", User.DEFAULT_ACCENT_COLOR_RAW);
 
-                return new Profile(getIdLong(), bannerId, accentColor);
+                return new Profile(getJDA(), getIdLong(), bannerId, accentColor);
             });
         });
     }
