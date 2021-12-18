@@ -16,12 +16,14 @@
 
 package net.dv8tion.jda.api.entities.templates;
 
+import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Guild.ExplicitContentLevel;
 import net.dv8tion.jda.api.entities.Guild.NotificationLevel;
 import net.dv8tion.jda.api.entities.Guild.Timeout;
 import net.dv8tion.jda.api.entities.Guild.VerificationLevel;
 import net.dv8tion.jda.api.entities.ISnowflake;
+import net.dv8tion.jda.api.utils.ImageProxy;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -36,6 +38,7 @@ import java.util.Locale;
  */
 public class TemplateGuild implements ISnowflake
 {
+    private final JDA jda;
     private final long id;
     private final String name, description, iconId;
     private final VerificationLevel verificationLevel;
@@ -48,10 +51,11 @@ public class TemplateGuild implements ISnowflake
     private final List<TemplateRole> roles;
     private final List<TemplateChannel> channels;
 
-    public TemplateGuild(final long id, final String name, final String description, final String iconId, final VerificationLevel verificationLevel,
+    public TemplateGuild(JDA jda, final long id, final String name, final String description, final String iconId, final VerificationLevel verificationLevel,
                          final NotificationLevel notificationLevel, final ExplicitContentLevel explicitContentLevel, final Locale locale, final Timeout afkTimeout,
                          final TemplateChannel afkChannel, final TemplateChannel systemChannel, final List<TemplateRole> roles, final List<TemplateChannel> channels)
     {
+        this.jda = jda;
         this.id = id;
         this.name = name;
         this.description = description;
@@ -121,6 +125,15 @@ public class TemplateGuild implements ISnowflake
     {
         return this.iconId == null ? null
                 : String.format(Guild.ICON_URL, this.id, this.iconId, iconId.startsWith("a_") ? "gif" : "png");
+    }
+
+    //TODO docs
+    @Nullable
+    public ImageProxy getIcon() {
+        final String iconUrl = getIconUrl();
+        if (iconUrl == null) return null;
+
+        return ImageProxy.fromUrl(getJDA(), iconUrl);
     }
 
     /**
@@ -225,5 +238,12 @@ public class TemplateGuild implements ISnowflake
     public List<TemplateChannel> getChannels()
     {
         return this.channels;
+    }
+
+    //TODO docs
+    @Nonnull
+    public JDA getJDA()
+    {
+        return jda;
     }
 }
