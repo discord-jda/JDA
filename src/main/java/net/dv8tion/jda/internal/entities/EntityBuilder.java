@@ -1328,7 +1328,7 @@ public class EntityBuilder
         if (iconId == null && emoji == null)
             role.setIcon(null);
         else
-            role.setIcon(new RoleIcon(iconId, emoji, id));
+            role.setIcon(new RoleIcon(getJDA(), iconId, emoji, id));
 
         if (playbackCache)
             getJDA().getEventCache().playbackCache(EventCache.Type.ROLE, id);
