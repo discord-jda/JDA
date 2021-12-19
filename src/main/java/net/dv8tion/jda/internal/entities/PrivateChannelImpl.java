@@ -85,7 +85,7 @@ public class PrivateChannelImpl extends AbstractChannelImpl<PrivateChannelImpl> 
     @Override
     public boolean canTalk()
     {
-        return !getUser().isBot() || getJDA().getAccountType() != AccountType.BOT;
+        return true;
     }
 
     @Override

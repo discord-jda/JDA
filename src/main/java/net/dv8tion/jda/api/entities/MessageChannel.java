@@ -135,12 +135,13 @@ public interface MessageChannel extends Channel, Formattable
     }
 
     /**
-     * Whether we can send messages in this channel.
+     * Whether we have the required permissions to send messages in this channel or not.
      * <br>For {@link GuildMessageChannel} this method checks for
      * both {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
      * and {@link net.dv8tion.jda.api.Permission#MESSAGE_SEND Permission.MESSAGE_SEND}.
      * <br>For {@link ThreadChannel} this method checks for {@link net.dv8tion.jda.api.Permission#MESSAGE_SEND_IN_THREADS} instead of {@link net.dv8tion.jda.api.Permission#MESSAGE_SEND}.
-     * <br>For {@link PrivateChannel} this method checks if the user that this PrivateChannel communicates with is not the self user
+     * <br>For {@link PrivateChannel} this method does <b>not</b> check if the currently logged in user is blocked
+     * by the user that this PrivateChannel communicates with, or if the said user has their DMs disabled.
      *
      * @return True, if we are able to read and send messages in this channel
      */
