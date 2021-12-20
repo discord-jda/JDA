@@ -138,7 +138,10 @@ public interface SessionController
     void setGlobalRatelimit(long ratelimit);
 
     /**
-     * Discords gateway URL
+     * Discord's gateway URL, which is used to receive events.
+     *
+     * Called by JDA when starting a new gateway session (Connecting, Reconnecting).
+     *
      * @return The gateway endpoint
      */
     @Nonnull
