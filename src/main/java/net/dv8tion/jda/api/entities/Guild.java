@@ -4750,6 +4750,8 @@ public interface Guild extends ISnowflake
      *     <br>The specified Member was removed from the Guild before finishing the task</li>
      * </ul>
      *
+     * @param  userId
+     *         The user id of the Member to put in time out
      * @param  duration
      *         The duration to put the specified Member in time out for
      *
@@ -4789,6 +4791,8 @@ public interface Guild extends ISnowflake
      *     <br>The specified Member was removed from the Guild before finishing the task</li>
      * </ul>
      *
+     * @param  userId
+     *         The user id of the Member to put in time out
      * @param  duration
      *         The duration to put the specified Member in time out for
      *
@@ -4909,6 +4913,8 @@ public interface Guild extends ISnowflake
      *     <br>The specified Member was removed from the Guild before finishing the task</li>
      * </ul>
      *
+     * @param  member
+     *         The {@link Member} to remove a time out from
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MODERATE_MEMBERS} permission.
      * @throws net.dv8tion.jda.api.exceptions.HierarchyException
@@ -4939,6 +4945,8 @@ public interface Guild extends ISnowflake
      *     <br>The specified Member was removed from the Guild before finishing the task</li>
      * </ul>
      *
+     * @param  userId
+     *         The user id of the Member to put in time out
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MODERATE_MEMBERS} permission.
      * @throws net.dv8tion.jda.api.exceptions.HierarchyException
@@ -4968,6 +4976,8 @@ public interface Guild extends ISnowflake
      *     <br>The specified Member was removed from the Guild before finishing the task</li>
      * </ul>
      *
+     * @param  userId
+     *         The user id of the Member to put in time out
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MODERATE_MEMBERS} permission.
      * @throws net.dv8tion.jda.api.exceptions.HierarchyException
