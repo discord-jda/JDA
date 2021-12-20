@@ -4914,7 +4914,7 @@ public interface Guild extends ISnowflake
      * </ul>
      *
      * @param  member
-     *         The {@link Member} to remove a time out from
+     *         The Member to remove a time out from
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MODERATE_MEMBERS} permission.
      * @throws net.dv8tion.jda.api.exceptions.HierarchyException
