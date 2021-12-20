@@ -51,10 +51,9 @@ import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.time.Duration;
-import java.time.OffsetDateTime;
+import java.time.temporal.TemporalAccessor;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -4531,7 +4530,7 @@ public interface Guild extends ISnowflake
      *         The {@link TimeUnit Unit} type of {@code amount}
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MODERATE_MEMBERS} permission.
+     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#TIMEOUT_MEMBERS} permission.
      * @throws net.dv8tion.jda.api.exceptions.HierarchyException
      *         If the logged in account cannot put a timeout on the other Member due to permission hierarchy position.
      *         <br>See {@link Member#canInteract(Member)}
@@ -4576,7 +4575,7 @@ public interface Guild extends ISnowflake
      *         The duration to put the specified Member in time out for
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MODERATE_MEMBERS} permission.
+     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#TIMEOUT_MEMBERS} permission.
      * @throws net.dv8tion.jda.api.exceptions.HierarchyException
      *         If the logged in account cannot put a timeout on the other Member due to permission hierarchy position.
      *         <br>See {@link Member#canInteract(Member)}
@@ -4615,11 +4614,11 @@ public interface Guild extends ISnowflake
      *
      * @param  member
      *         The member to put in time out
-     * @param  date
+     * @param  temporal
      *         The date until which the specified Member should be in time out
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MODERATE_MEMBERS} permission.
+     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#TIMEOUT_MEMBERS} permission.
      * @throws net.dv8tion.jda.api.exceptions.HierarchyException
      *         If the logged in account cannot put a timeout on the other Member due to permission hierarchy position.
      *         <br>See {@link Member#canInteract(Member)}
@@ -4627,21 +4626,21 @@ public interface Guild extends ISnowflake
      *         If any of the following are true
      *         <ul>
      *             <li>The provided {@code member} is null</li>
-     *             <li>The provided {@code date} is null</li>
-     *             <li>The provided {@code date} is in the past</li>
-     *             <li>The provided {@code date} is more than 28 days in the future</li>
+     *             <li>The provided {@code temporal} is null</li>
+     *             <li>The provided {@code temporal} is in the past</li>
+     *             <li>The provided {@code temporal} is more than 28 days in the future</li>
      *         </ul>
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      */
     @Nonnull
     @CheckReturnValue
-    default AuditableRestAction<Void> timeoutUntil(@Nonnull Member member, @Nonnull OffsetDateTime date)
+    default AuditableRestAction<Void> timeoutUntil(@Nonnull Member member, @Nonnull TemporalAccessor temporal)
     {
         Checks.notNull(member, "Member");
         if (!getSelfMember().canInteract(member))
             throw new HierarchyException("Can't modify a member with higher or equal highest role than yourself!");
-        return timeoutUntilById(member.getId(), date);
+        return timeoutUntilById(member.getId(), temporal);
     }
 
     /**
@@ -4666,7 +4665,7 @@ public interface Guild extends ISnowflake
      *         The {@link TimeUnit Unit} type of {@code amount}
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MODERATE_MEMBERS} permission.
+     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#TIMEOUT_MEMBERS} permission.
      * @throws net.dv8tion.jda.api.exceptions.HierarchyException
      *         If the logged in account cannot put a timeout on the other Member due to permission hierarchy position.
      *         <br>See {@link Member#canInteract(Member)}
@@ -4711,7 +4710,7 @@ public interface Guild extends ISnowflake
      *         The {@link TimeUnit Unit} type of {@code amount}
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MODERATE_MEMBERS} permission.
+     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#TIMEOUT_MEMBERS} permission.
      * @throws net.dv8tion.jda.api.exceptions.HierarchyException
      *         If the logged in account cannot put a timeout on the other Member due to permission hierarchy position.
      *         <br>See {@link Member#canInteract(Member)}
@@ -4756,7 +4755,7 @@ public interface Guild extends ISnowflake
      *         The duration to put the specified Member in time out for
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MODERATE_MEMBERS} permission.
+     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#TIMEOUT_MEMBERS} permission.
      * @throws net.dv8tion.jda.api.exceptions.HierarchyException
      *         If the logged in account cannot put a timeout on the other Member due to permission hierarchy position.
      *         <br>See {@link Member#canInteract(Member)}
@@ -4797,7 +4796,7 @@ public interface Guild extends ISnowflake
      *         The duration to put the specified Member in time out for
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MODERATE_MEMBERS} permission.
+     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#TIMEOUT_MEMBERS} permission.
      * @throws net.dv8tion.jda.api.exceptions.HierarchyException
      *         If the logged in account cannot put a timeout on the other Member due to permission hierarchy position.
      *         <br>See {@link Member#canInteract(Member)}
@@ -4835,11 +4834,11 @@ public interface Guild extends ISnowflake
      *
      * @param  userId
      *         The user id of the Member to put in time out
-     * @param  date
+     * @param  temporal
      *         The time the specified Member will be released from time out
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MODERATE_MEMBERS} permission.
+     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#TIMEOUT_MEMBERS} permission.
      * @throws net.dv8tion.jda.api.exceptions.HierarchyException
      *         If the logged in account cannot put a timeout on the other Member due to permission hierarchy position.
      *         <br>See {@link Member#canInteract(Member)}
@@ -4847,18 +4846,18 @@ public interface Guild extends ISnowflake
      *         If any of the following checks are true
      *         <ul>
      *             <li>The provided {@code userId} is not a valid snowflake</li>
-     *             <li>The provided {@code date} is null</li>
-     *             <li>The provided {@code date} is in the past</li>
-     *             <li>The provided {@code date} is more than 28 days in the future</li>
+     *             <li>The provided {@code temporal} is null</li>
+     *             <li>The provided {@code temporal} is in the past</li>
+     *             <li>The provided {@code temporal} is more than 28 days in the future</li>
      *         </ul>
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      */
     @Nonnull
     @CheckReturnValue
-    default AuditableRestAction<Void> timeoutUntilById(long userId, @Nonnull OffsetDateTime date)
+    default AuditableRestAction<Void> timeoutUntilById(long userId, @Nonnull TemporalAccessor temporal)
     {
-        return timeoutUntilById(Long.toUnsignedString(userId), date);
+        return timeoutUntilById(Long.toUnsignedString(userId), temporal);
     }
 
     /**
@@ -4877,11 +4876,11 @@ public interface Guild extends ISnowflake
      *
      * @param  userId
      *         The user id of the Member to put in time out
-     * @param  date
+     * @param  temporal
      *         The time the specified Member will be released from time out
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MODERATE_MEMBERS} permission.
+     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#TIMEOUT_MEMBERS} permission.
      * @throws net.dv8tion.jda.api.exceptions.HierarchyException
      *         If the logged in account cannot put a timeout on the other Member due to permission hierarchy position.
      *         <br>See {@link Member#canInteract(Member)}
@@ -4889,16 +4888,16 @@ public interface Guild extends ISnowflake
      *         If any of the following checks are true
      *         <ul>
      *             <li>The provided {@code userId} is not a valid snowflake</li>
-     *             <li>The provided {@code date} is null</li>
-     *             <li>The provided {@code date} is in the past</li>
-     *             <li>The provided {@code date} is more than 28 days in the future</li>
+     *             <li>The provided {@code temporal} is null</li>
+     *             <li>The provided {@code temporal} is in the past</li>
+     *             <li>The provided {@code temporal} is more than 28 days in the future</li>
      *         </ul>
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      */
     @Nonnull
     @CheckReturnValue
-    AuditableRestAction<Void> timeoutUntilById(@Nonnull String userId, @Nonnull OffsetDateTime date);
+    AuditableRestAction<Void> timeoutUntilById(@Nonnull String userId, @Nonnull TemporalAccessor temporal);
 
     /**
      * Removes a time out from the specified Member in this {@link net.dv8tion.jda.api.entities.Guild Guild}.
@@ -4916,7 +4915,7 @@ public interface Guild extends ISnowflake
      * @param  member
      *         The Member to remove a time out from
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MODERATE_MEMBERS} permission.
+     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#TIMEOUT_MEMBERS} permission.
      * @throws net.dv8tion.jda.api.exceptions.HierarchyException
      *         If the logged in account cannot remove the timeout from the other Member due to permission hierarchy position.
      *         <br>See {@link Member#canInteract(Member)}
@@ -4948,7 +4947,7 @@ public interface Guild extends ISnowflake
      * @param  userId
      *         The user id of the Member to put in time out
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MODERATE_MEMBERS} permission.
+     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#TIMEOUT_MEMBERS} permission.
      * @throws net.dv8tion.jda.api.exceptions.HierarchyException
      *         If the logged in account cannot remove the timeout from the other Member due to permission hierarchy position.
      *         <br>See {@link Member#canInteract(Member)}
@@ -4979,7 +4978,7 @@ public interface Guild extends ISnowflake
      * @param  userId
      *         The user id of the Member to put in time out
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MODERATE_MEMBERS} permission.
+     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#TIMEOUT_MEMBERS} permission.
      * @throws net.dv8tion.jda.api.exceptions.HierarchyException
      *         If the logged in account cannot remove the timeout from the other Member due to permission hierarchy position.
      *         <br>See {@link Member#canInteract(Member)}
