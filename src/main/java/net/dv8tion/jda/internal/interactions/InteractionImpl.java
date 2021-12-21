@@ -26,6 +26,7 @@ import net.dv8tion.jda.internal.entities.MemberImpl;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Locale;
 
 public class InteractionImpl implements Interaction
 {
@@ -36,6 +37,8 @@ public class InteractionImpl implements Interaction
     protected final Member member;
     protected final User user;
     protected final Channel channel;
+    protected final Locale userLocale;
+    protected final Locale guildLocale;
     protected final JDAImpl api;
 
     //This is used to give a proper error when an interaction is ack'd twice
@@ -49,6 +52,8 @@ public class InteractionImpl implements Interaction
         this.token = data.getString("token");
         this.type = data.getInt("type");
         this.guild = jda.getGuildById(data.getUnsignedLong("guild_id", 0L));
+        this.userLocale = data.isNull("locale") ? null : Locale.forLanguageTag(data.getString("locale"));
+        this.guildLocale = guild == null ? null : guild.getLocale();
         if (guild != null)
         {
             member = jda.getEntityBuilder().createMember((GuildImpl) guild, data.getObject("member"));
@@ -118,6 +123,20 @@ public class InteractionImpl implements Interaction
     public Channel getChannel()
     {
         return channel;
+    }
+
+    @Nullable
+    @Override
+    public Locale getUserLocale()
+    {
+        return userLocale;
+    }
+
+    @Nonnull
+    @Override
+    public Locale getGuildLocale()
+    {
+        return guildLocale;
     }
 
     @Nonnull

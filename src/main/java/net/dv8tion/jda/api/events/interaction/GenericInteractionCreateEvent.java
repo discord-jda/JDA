@@ -26,9 +26,10 @@ import net.dv8tion.jda.api.interactions.Interaction;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Locale;
 
 /**
- * Indicates that an {@link Interaction} was created.
+ * Indicates that an {@link Interaction} was created in a channel.
  * <br>Every interaction event is derived from this event.
  *
  * <h2>Requirements</h2>
@@ -84,6 +85,20 @@ public class GenericInteractionCreateEvent extends Event implements Interaction
     public Channel getChannel()
     {
         return interaction.getChannel();
+    }
+
+    @Nullable
+    @Override
+    public Locale getUserLocale()
+    {
+        return interaction.getUserLocale();
+    }
+
+    @Nonnull
+    @Override
+    public Locale getGuildLocale()
+    {
+        return interaction.getGuildLocale();
     }
 
     @Nullable
