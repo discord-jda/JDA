@@ -314,7 +314,8 @@ public class PermissionUtil
             if (isApplied(permission, Permission.ADMINISTRATOR.getRawValue()))
                 return Permission.ALL_PERMISSIONS;
         }
-
+        if (member.isTimedOut())
+            permission &= Permission.getRaw(Permission.VIEW_CHANNEL, Permission.MESSAGE_HISTORY);
         return permission;
     }
 
@@ -354,7 +355,7 @@ public class PermissionUtil
         final long admin = Permission.ADMINISTRATOR.getRawValue();
         if (isApplied(permission, admin))
             return Permission.ALL_PERMISSIONS;
-        
+
         // MANAGE_CHANNEL allows to delete channels within a category (this is undocumented behavior)
         if (channel instanceof ICategorizableChannel) {
             ICategorizableChannel categorizableChannel = (ICategorizableChannel) channel;

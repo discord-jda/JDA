@@ -1407,7 +1407,7 @@ public class GuildImpl implements Guild
         OffsetDateTime date = TimeUtil.toOffsetDateTime(temporal);
         Checks.check(date.isAfter(OffsetDateTime.now()), "Cannot put a member in time out with date in the past. Provided: %s", date);
         Checks.check(date.isBefore(OffsetDateTime.now().plusDays(28)), "Cannot put a member in time out for more than 28 days. Provided: %s", date);
-        checkPermission(Permission.TIMEOUT_MEMBERS);
+        checkPermission(Permission.MODERATE_MEMBERS);
 
         DataObject body = DataObject.empty().put("communication_disabled_until", date.toString());
         Route.CompiledRoute route = Route.Guilds.MODIFY_MEMBER.compile(getId(), userId);
@@ -1419,7 +1419,7 @@ public class GuildImpl implements Guild
     public AuditableRestAction<Void> removeTimeoutById(@Nonnull String userId)
     {
         Checks.isSnowflake(userId, "User ID");
-        checkPermission(Permission.TIMEOUT_MEMBERS);
+        checkPermission(Permission.MODERATE_MEMBERS);
         DataObject body = DataObject.empty().put("communication_disabled_until", null);
         Route.CompiledRoute route = Route.Guilds.MODIFY_MEMBER.compile(getId(), userId);
         return new AuditableRestActionImpl<>(getJDA(), route, body);

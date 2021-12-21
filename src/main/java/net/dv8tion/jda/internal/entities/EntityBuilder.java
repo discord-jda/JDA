@@ -651,10 +651,10 @@ public class EntityBuilder
             }
             if (epoch != member.getTimeUntilTimedOutRaw())
             {
-                OffsetDateTime oldTime = member.getTimeUntilTimedOut();
+                OffsetDateTime oldTime = member.getTimeOutEnd();
                 member.setTimeUntilTimedOut(epoch);
                 getJDA().handleEvent(
-                        new GuildMemberUpdateTimedOutTimeEvent(
+                        new GuildMemberUpdateTimeOutEvent(
                                 getJDA(), responseNumber,
                                 member, oldTime));
             }

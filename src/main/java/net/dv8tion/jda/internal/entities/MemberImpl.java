@@ -118,7 +118,7 @@ public class MemberImpl implements Member
 
     @Nullable
     @Override
-    public OffsetDateTime getTimeUntilTimedOut()
+    public OffsetDateTime getTimeOutEnd()
     {
         return timeUntilTimedOut != 0 ? Helpers.toOffset(timeUntilTimedOut) : null;
     }

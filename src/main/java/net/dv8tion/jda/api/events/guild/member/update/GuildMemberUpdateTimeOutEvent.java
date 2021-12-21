@@ -41,13 +41,13 @@ import java.time.OffsetDateTime;
  * member was updated and gives us the updated member object. In order to fire a specific event like this we
  * need to have the old member cached to compare against.
  */
-public class GuildMemberUpdateTimedOutTimeEvent extends GenericGuildMemberUpdateEvent<OffsetDateTime>
+public class GuildMemberUpdateTimeOutEvent extends GenericGuildMemberUpdateEvent<OffsetDateTime>
 {
     public static final String IDENTIFIER = "timeout_time";
 
-    public GuildMemberUpdateTimedOutTimeEvent(@Nonnull JDA api, long responseNumber, @Nonnull Member member, @Nullable OffsetDateTime previous)
+    public GuildMemberUpdateTimeOutEvent(@Nonnull JDA api, long responseNumber, @Nonnull Member member, @Nullable OffsetDateTime previous)
     {
-        super(api, responseNumber, member, previous, member.getTimeUntilTimedOut(), IDENTIFIER);
+        super(api, responseNumber, member, previous, member.getTimeOutEnd(), IDENTIFIER);
     }
 
     /**

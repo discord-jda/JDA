@@ -27,6 +27,7 @@ import javax.annotation.Nullable;
 import java.awt.*;
 import java.time.Duration;
 import java.time.OffsetDateTime;
+import java.time.temporal.TemporalAccessor;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
@@ -123,7 +124,7 @@ public interface Member extends IMentionable, IPermissionHolder
      * @return The time this Member will be released from time out or {@code null} if not in time out
      */
     @Nullable
-    OffsetDateTime getTimeUntilTimedOut();
+    OffsetDateTime getTimeOutEnd();
 
     /**
      * Whether this Member is in time out.
@@ -133,7 +134,7 @@ public interface Member extends IMentionable, IPermissionHolder
      */
     default boolean isTimedOut()
     {
-        return getTimeUntilTimedOut() != null;
+        return getTimeOutEnd() != null || getTimeOutEnd().isAfter(OffsetDateTime.now());
     }
 
     /**
@@ -581,7 +582,7 @@ public interface Member extends IMentionable, IPermissionHolder
      *         The {@link TimeUnit Unit} type of {@code amount}
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#TIMEOUT_MEMBERS} permission.
+     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MODERATE_MEMBERS} permission.
      * @throws net.dv8tion.jda.api.exceptions.HierarchyException
      *         If the logged in account cannot put a timeout on the other Member due to permission hierarchy position.
      *         <br>See {@link Member#canInteract(Member)}
@@ -590,8 +591,7 @@ public interface Member extends IMentionable, IPermissionHolder
      *         <ul>
      *             <li>The provided {@code amount} is lower than or equal to {@code 0}</li>
      *             <li>The provided {@code unit} is null</li>
-     *             <li>The provided {@code date} is in the past</li>
-     *             <li>The provided {@code date} is more than 28 days in the future</li>
+     *             <li>The provided {@code amount} with the {@code unit} results in a date that is more than 28 days in the future</li>
      *         </ul>
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
@@ -621,7 +621,7 @@ public interface Member extends IMentionable, IPermissionHolder
      *         The duration to put this Member in time out for
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#TIMEOUT_MEMBERS} permission.
+     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MODERATE_MEMBERS} permission.
      * @throws net.dv8tion.jda.api.exceptions.HierarchyException
      *         If the logged in account cannot put a timeout on the other Member due to permission hierarchy position.
      *         <br>See {@link Member#canInteract(Member)}
@@ -629,9 +629,7 @@ public interface Member extends IMentionable, IPermissionHolder
      *         If any of the following checks are true
      *         <ul>
      *             <li>The provided {@code duration} is null</li>
-     *             <li>The provided {@code date} is null</li>
-     *             <li>The provided {@code date} is in the past</li>
-     *             <li>The provided {@code date} is more than 28 days in the future</li>
+     *             <li>The provided {@code duration} results in a date that is more than 28 days in the future</li>
      *         </ul>
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
@@ -657,29 +655,29 @@ public interface Member extends IMentionable, IPermissionHolder
      *     <br>The specified Member was removed from the Guild before finishing the task</li>
      * </ul>
      *
-     * @param  date
+     * @param  temporal
      *         The time this Member will be released from time out
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#TIMEOUT_MEMBERS} permission.
+     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MODERATE_MEMBERS} permission.
      * @throws net.dv8tion.jda.api.exceptions.HierarchyException
      *         If the logged in account cannot put a timeout on the other Member due to permission hierarchy position.
      *         <br>See {@link Member#canInteract(Member)}
      * @throws IllegalArgumentException
      *         If any of the following checks are true
      *         <ul>
-     *             <li>The provided {@code date} is null</li>
-     *             <li>The provided {@code date} is in the past</li>
-     *             <li>The provided {@code date} is more than 28 days in the future</li>
+     *             <li>The provided {@code temporal} is null</li>
+     *             <li>The provided {@code temporal} is in the past</li>
+     *             <li>The provided {@code temporal} is more than 28 days in the future</li>
      *         </ul>
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      */
     @Nonnull
     @CheckReturnValue
-    default AuditableRestAction<Void> timeoutUntil(@Nonnull OffsetDateTime date)
+    default AuditableRestAction<Void> timeoutUntil(@Nonnull TemporalAccessor temporal)
     {
-        return getGuild().timeoutUntil(this, date);
+        return getGuild().timeoutUntil(this, temporal);
     }
 
     /**
@@ -696,7 +694,7 @@ public interface Member extends IMentionable, IPermissionHolder
      * </ul>
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#TIMEOUT_MEMBERS} permission.
+     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MODERATE_MEMBERS} permission.
      * @throws net.dv8tion.jda.api.exceptions.HierarchyException
      *         If the logged in account cannot remove the timeout from the other Member due to permission hierarchy position.
      *         <br>See {@link Member#canInteract(Member)}
