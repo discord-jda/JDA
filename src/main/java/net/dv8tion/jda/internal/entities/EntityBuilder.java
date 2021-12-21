@@ -626,10 +626,7 @@ public class EntityBuilder
         {
             long epoch = 0;
             if (!content.isNull("premium_since"))
-            {
-                TemporalAccessor date = DateTimeFormatter.ISO_OFFSET_DATE_TIME.parse(content.getString("premium_since"));
-                epoch = Instant.from(date).toEpochMilli();
-            }
+                epoch = Helpers.toTimestamp(content.getString("premium_since"));
             if (epoch != member.getBoostDateRaw())
             {
                 OffsetDateTime oldTime = member.getTimeBoosted();
@@ -645,10 +642,7 @@ public class EntityBuilder
         {
             long epoch = 0;
             if (!content.isNull("communication_disabled_until"))
-            {
-                TemporalAccessor date = DateTimeFormatter.ISO_OFFSET_DATE_TIME.parse(content.getString("communication_disabled_until"));
-                epoch = Instant.from(date).toEpochMilli();
-            }
+                epoch = Helpers.toTimestamp(content.getString("communication_disabled_until"));
             if (epoch != member.getTimeOutEndRaw())
             {
                 OffsetDateTime oldTime = member.getTimeOutEnd();

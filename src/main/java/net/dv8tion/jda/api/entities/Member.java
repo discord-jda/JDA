@@ -629,6 +629,7 @@ public interface Member extends IMentionable, IPermissionHolder
      *         If any of the following checks are true
      *         <ul>
      *             <li>The provided {@code duration} is null</li>
+     *             <li>The provided {@code duration} is not positive</li>
      *             <li>The provided {@code duration} results in a date that is more than 28 days in the future</li>
      *         </ul>
      *

@@ -4583,6 +4583,7 @@ public interface Guild extends ISnowflake
      *         <ul>
      *             <li>The provided {@code member} is null</li>
      *             <li>The provided {@code duration} is null</li>
+     *             <li>The provided {@code duration} is not positive</li>
      *             <li>The provided {@code duration} results in a date that is more than 28 days in the future</li>
      *         </ul>
      *
@@ -4613,7 +4614,7 @@ public interface Guild extends ISnowflake
      * @param  member
      *         The member to put in time out
      * @param  temporal
-     *         The date until which the specified Member should be in time out
+     *         The time the specified Member will be released from time out or null to remove the time out
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MODERATE_MEMBERS} permission.
@@ -4624,8 +4625,7 @@ public interface Guild extends ISnowflake
      *         If any of the following are true
      *         <ul>
      *             <li>The provided {@code member} is null</li>
-     *             <li>The provided {@code temporal} is null</li>
-     *             <li>The provided {@code temporal} is in the past</li>
+     *             <li>The provided {@code temporal} is not positive</li>
      *             <li>The provided {@code temporal} is more than 28 days in the future</li>
      *         </ul>
      *
@@ -4633,7 +4633,7 @@ public interface Guild extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    default AuditableRestAction<Void> timeoutUntil(@Nonnull Member member, @Nonnull TemporalAccessor temporal)
+    default AuditableRestAction<Void> timeoutUntil(@Nonnull Member member, @Nullable TemporalAccessor temporal)
     {
         Checks.notNull(member, "Member");
         if (!getSelfMember().canInteract(member))
@@ -4760,6 +4760,7 @@ public interface Guild extends ISnowflake
      *         <ul>
      *             <li>The provided {@code userId} is not a valid snowflake</li>
      *             <li>The provided {@code duration} is null</li>
+     *             <li>The provided {@code duration} is not positive</li>
      *             <li>The provided {@code duration} results in a date that is more than 28 days in the future</li>
      *         </ul>
      *
@@ -4801,6 +4802,7 @@ public interface Guild extends ISnowflake
      *         <ul>
      *             <li>The provided {@code userId} is not a valid snowflake</li>
      *             <li>The provided {@code duration} is null</li>
+     *             <li>The provided {@code duration} is not positive</li>
      *             <li>The provided {@code duration} results in a date that is more than 28 days in the future</li>
      *         </ul>
      *
@@ -4831,7 +4833,7 @@ public interface Guild extends ISnowflake
      * @param  userId
      *         The user id of the Member to put in time out
      * @param  temporal
-     *         The time the specified Member will be released from time out
+     *         The time the specified Member will be released from time out or null to remove the time out
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MODERATE_MEMBERS} permission.
@@ -4842,8 +4844,7 @@ public interface Guild extends ISnowflake
      *         If any of the following checks are true
      *         <ul>
      *             <li>The provided {@code userId} is not a valid snowflake</li>
-     *             <li>The provided {@code temporal} is null</li>
-     *             <li>The provided {@code temporal} is in the past</li>
+     *             <li>The provided {@code temporal} is not positive</li>
      *             <li>The provided {@code temporal} is more than 28 days in the future</li>
      *         </ul>
      *
@@ -4851,7 +4852,7 @@ public interface Guild extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    default AuditableRestAction<Void> timeoutUntilById(long userId, @Nonnull TemporalAccessor temporal)
+    default AuditableRestAction<Void> timeoutUntilById(long userId, @Nullable TemporalAccessor temporal)
     {
         return timeoutUntilById(Long.toUnsignedString(userId), temporal);
     }
@@ -4873,7 +4874,7 @@ public interface Guild extends ISnowflake
      * @param  userId
      *         The user id of the Member to put in time out
      * @param  temporal
-     *         The time the specified Member will be released from time out
+     *         The time the specified Member will be released from time out or null to remove the time out
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MODERATE_MEMBERS} permission.
@@ -4884,8 +4885,7 @@ public interface Guild extends ISnowflake
      *         If any of the following checks are true
      *         <ul>
      *             <li>The provided {@code userId} is not a valid snowflake</li>
-     *             <li>The provided {@code temporal} is null</li>
-     *             <li>The provided {@code temporal} is in the past</li>
+     *             <li>The provided {@code temporal} is not positive</li>
      *             <li>The provided {@code temporal} is more than 28 days in the future</li>
      *         </ul>
      *
@@ -4893,7 +4893,7 @@ public interface Guild extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    AuditableRestAction<Void> timeoutUntilById(@Nonnull String userId, @Nonnull TemporalAccessor temporal);
+    AuditableRestAction<Void> timeoutUntilById(@Nonnull String userId, @Nullable TemporalAccessor temporal);
 
     /**
      * Removes a time out from the specified Member in this {@link net.dv8tion.jda.api.entities.Guild Guild}.
@@ -4984,7 +4984,10 @@ public interface Guild extends ISnowflake
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      */
     @Nonnull
-    AuditableRestAction<Void> removeTimeoutById(@Nonnull String userId);
+    default AuditableRestAction<Void> removeTimeoutById(@Nonnull String userId)
+    {
+        return timeoutUntilById(userId, null);
+    }
 
     /**
      * Sets the Guild Deafened state state of the {@link net.dv8tion.jda.api.entities.Member Member} based on the provided
