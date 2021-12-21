@@ -134,7 +134,7 @@ public interface Member extends IMentionable, IPermissionHolder
      */
     default boolean isTimedOut()
     {
-        return getTimeOutEnd() != null || getTimeOutEnd().isAfter(OffsetDateTime.now());
+        return getTimeOutEnd() != null && getTimeOutEnd().isAfter(OffsetDateTime.now());
     }
 
     /**
