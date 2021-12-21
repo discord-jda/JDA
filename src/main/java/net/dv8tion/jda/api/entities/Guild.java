@@ -4625,7 +4625,7 @@ public interface Guild extends ISnowflake
      *         If any of the following are true
      *         <ul>
      *             <li>The provided {@code member} is null</li>
-     *             <li>The provided {@code temporal} is not positive</li>
+     *             <li>The provided {@code temporal} is in the past</li>
      *             <li>The provided {@code temporal} is more than 28 days in the future</li>
      *         </ul>
      *
@@ -4844,7 +4844,7 @@ public interface Guild extends ISnowflake
      *         If any of the following checks are true
      *         <ul>
      *             <li>The provided {@code userId} is not a valid snowflake</li>
-     *             <li>The provided {@code temporal} is not positive</li>
+     *             <li>The provided {@code temporal} is in the past</li>
      *             <li>The provided {@code temporal} is more than 28 days in the future</li>
      *         </ul>
      *
@@ -4885,7 +4885,7 @@ public interface Guild extends ISnowflake
      *         If any of the following checks are true
      *         <ul>
      *             <li>The provided {@code userId} is not a valid snowflake</li>
-     *             <li>The provided {@code temporal} is not positive</li>
+     *             <li>The provided {@code temporal} is in the past</li>
      *             <li>The provided {@code temporal} is more than 28 days in the future</li>
      *         </ul>
      *
