@@ -355,8 +355,6 @@ public class PermissionUtil
         final long admin = Permission.ADMINISTRATOR.getRawValue();
         if (isApplied(permission, admin))
             return Permission.ALL_PERMISSIONS;
-        if (member.isTimedOut())
-            return permission & Permission.getRaw(Permission.VIEW_CHANNEL, Permission.MESSAGE_HISTORY);
 
         // MANAGE_CHANNEL allows to delete channels within a category (this is undocumented behavior)
         if (channel instanceof ICategorizableChannel) {
@@ -376,6 +374,8 @@ public class PermissionUtil
         // This means that we have no access to this channel at all
         final boolean hasConnect = (channel.getType() != ChannelType.VOICE && channel.getType() != ChannelType.STAGE) || isApplied(permission, connectChannel);
         final boolean hasView = isApplied(permission, viewChannel);
+        if (member.isTimedOut())
+            permission &= Permission.getRaw(Permission.VIEW_CHANNEL, Permission.MESSAGE_HISTORY);
         return hasView && hasConnect ? permission : 0;
     }
 
