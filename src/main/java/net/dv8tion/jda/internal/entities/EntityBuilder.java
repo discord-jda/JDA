@@ -517,7 +517,7 @@ public class EntityBuilder
             long timeOutTimestamp = memberJson.isNull("communication_disabled_until")
                 ? 0
                 : Helpers.toTimestamp(memberJson.getString("communication_disabled_until"));
-            member.setTimeUntilTimedOut(timeOutTimestamp);
+            member.setTimeOutEnd(timeOutTimestamp);
 
             if (!memberJson.isNull("pending"))
                 member.setPending(memberJson.getBoolean("pending"));
@@ -649,10 +649,10 @@ public class EntityBuilder
                 TemporalAccessor date = DateTimeFormatter.ISO_OFFSET_DATE_TIME.parse(content.getString("communication_disabled_until"));
                 epoch = Instant.from(date).toEpochMilli();
             }
-            if (epoch != member.getTimeUntilTimedOutRaw())
+            if (epoch != member.getTimeOutEndRaw())
             {
                 OffsetDateTime oldTime = member.getTimeOutEnd();
-                member.setTimeUntilTimedOut(epoch);
+                member.setTimeOutEnd(epoch);
                 getJDA().handleEvent(
                         new GuildMemberUpdateTimeOutEvent(
                                 getJDA(), responseNumber,

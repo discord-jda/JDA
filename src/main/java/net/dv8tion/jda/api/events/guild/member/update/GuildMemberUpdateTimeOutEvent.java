@@ -24,7 +24,7 @@ import javax.annotation.Nullable;
 import java.time.OffsetDateTime;
 
 /**
- * Indicates that a {@link net.dv8tion.jda.api.entities.Member Member} updated had their time out changed.
+ * Indicates that a {@link net.dv8tion.jda.api.entities.Member Member} had their time out changed.
  *
  * <p>Can be used to retrieve members who had their time out changed, triggering guild.
  *
@@ -51,23 +51,23 @@ public class GuildMemberUpdateTimeOutEvent extends GenericGuildMemberUpdateEvent
     }
 
     /**
-     * The old time until in time out
+     * The old end of the time out
      *
-     * @return The old time until in time out
+     * @return The old end of the time out
      */
     @Nullable
-    public OffsetDateTime getOldTimeUntilTimedOut()
+    public OffsetDateTime getOldTimeOutEnd()
     {
         return getOldValue();
     }
 
     /**
-     * The mew time until in time out
+     * The new end of the time out
      *
-     * @return The new time until in time out
+     * @return The new end of the time out
      */
     @Nullable
-    public OffsetDateTime getNewTimeUntilTimedOut()
+    public OffsetDateTime getNewTimeOutEnd()
     {
         return getNewValue();
     }
