@@ -28,6 +28,7 @@ import net.dv8tion.jda.internal.requests.restaction.interactions.ReplyActionImpl
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Locale;
 
 public class InteractionImpl implements Interaction
 {
@@ -39,6 +40,8 @@ public class InteractionImpl implements Interaction
     protected final Member member;
     protected final User user;
     protected final Channel channel;
+    protected final Locale userLocale;
+    protected final Locale guildLocale;
     protected final JDAImpl api;
 
     public InteractionImpl(JDAImpl jda, DataObject data)
@@ -48,6 +51,8 @@ public class InteractionImpl implements Interaction
         this.token = data.getString("token");
         this.type = data.getInt("type");
         this.guild = jda.getGuildById(data.getUnsignedLong("guild_id", 0L));
+        this.userLocale = data.isNull("locale") ? null : Locale.forLanguageTag(data.getString("locale"));
+        this.guildLocale = guild == null ? null : guild.getLocale();
         this.hook = new InteractionHookImpl(this, jda);
         if (guild != null)
         {
@@ -74,7 +79,7 @@ public class InteractionImpl implements Interaction
         }
     }
 
-    public InteractionImpl(long id, int type, String token, Guild guild, Member member, User user, Channel channel)
+    public InteractionImpl(long id, int type, String token, Guild guild, Member member, User user, Channel channel, Locale userLocale, Locale guildLocale)
     {
         this.id = id;
         this.type = type;
@@ -83,6 +88,8 @@ public class InteractionImpl implements Interaction
         this.member = member;
         this.user = user;
         this.channel = channel;
+        this.userLocale = userLocale;
+        this.guildLocale = guildLocale;
         this.api = (JDAImpl) user.getJDA();
         this.hook = new InteractionHookImpl(this, api);
     }
@@ -118,6 +125,20 @@ public class InteractionImpl implements Interaction
     public Channel getChannel()
     {
         return channel;
+    }
+
+    @Nullable
+    @Override
+    public Locale getUserLocale()
+    {
+        return userLocale;
+    }
+
+    @Nonnull
+    @Override
+    public Locale getGuildLocale()
+    {
+        return guildLocale;
     }
 
     @Nonnull

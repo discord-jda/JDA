@@ -29,6 +29,7 @@ import net.dv8tion.jda.api.requests.restaction.interactions.ReplyAction;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Locale;
 
 /**
  * Indicates that an {@link Interaction} was created in a channel.
@@ -86,6 +87,20 @@ public class GenericInteractionCreateEvent extends Event implements Interaction
     public Channel getChannel()
     {
         return interaction.getChannel();
+    }
+
+    @Nullable
+    @Override
+    public Locale getUserLocale()
+    {
+        return interaction.getUserLocale();
+    }
+
+    @Nonnull
+    @Override
+    public Locale getGuildLocale()
+    {
+        return interaction.getGuildLocale();
     }
 
     @Nonnull
