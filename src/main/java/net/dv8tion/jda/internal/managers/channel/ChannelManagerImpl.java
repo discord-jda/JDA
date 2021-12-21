@@ -373,7 +373,6 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
         Checks.notNull(region, "Region");
         if (!type.isAudio())
             throw new IllegalStateException("Can only change region on voice channels!");
-        Checks.check(Region.VOICE_CHANNEL_REGIONS.contains(region), "Region is not usable for VoiceChannel region overrides!");
         this.region = region == Region.AUTOMATIC ? null : region.getKey();
         set |= REGION;
         return (M) this;
