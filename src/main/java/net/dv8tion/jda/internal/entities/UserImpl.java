@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.PrivateChannel;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.api.utils.ImageProxy;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
@@ -27,6 +28,7 @@ import net.dv8tion.jda.internal.requests.DeferredRestAction;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Helpers;
+import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;
 import java.util.EnumSet;
@@ -68,10 +70,16 @@ public class UserImpl extends UserById implements User
         return Helpers.format("%04d", discriminator);
     }
 
+    @Nullable
     @Override
-    public String getAvatarId()
+    public ImageProxy getAvatar()
     {
-        return avatarId;
+        if (avatarId == null) return null;
+
+        final String avatarExtension = avatarId.startsWith("a_") ? "gif" : "png";
+        final String avatarUrl = String.format(AVATAR_URL, getId(), avatarId, avatarExtension);
+
+        return new ImageProxy(getJDA(), avatarUrl, avatarId, avatarExtension);
     }
 
     @Nonnull
@@ -96,11 +104,14 @@ public class UserImpl extends UserById implements User
         return profile;
     }
 
+    //TODO docs
     @Nonnull
-    @Override
-    public String getDefaultAvatarId()
+    public ImageProxy getDefaultAvatar()
     {
-        return String.valueOf(discriminator % 5);
+        final String defaultAvatarId = String.valueOf(discriminator % 5);
+        final String defaultAvatarUrl = String.format(DEFAULT_AVATAR_URL, defaultAvatarId);
+
+        return new ImageProxy(getJDA(), defaultAvatarUrl, defaultAvatarId, "png");
     }
 
     @Nonnull

@@ -16,163 +16,86 @@
 package net.dv8tion.jda.api.utils;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.exceptions.HttpException;
-import net.dv8tion.jda.internal.requests.FunctionalCallback;
-import net.dv8tion.jda.internal.requests.Requester;
 import net.dv8tion.jda.internal.utils.Checks;
-import net.dv8tion.jda.internal.utils.IOUtil;
-import okhttp3.HttpUrl;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
 
 import javax.annotation.Nonnull;
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
-import java.io.UncheckedIOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-public class ImageProxy
+//TODO docs
+public class ImageProxy extends FileProxy
 {
-    private final JDA jda;
-    private final String url;
+    private final String id;
+    private final String extension;
 
-    private ImageProxy(JDA jda, String url)
+    public ImageProxy(JDA jda, String url, String id, String extension)
     {
-        this.jda = jda;
-        this.url = url;
-    }
+        super(jda, url);
 
-    //TODO docs
-    // maybe not used externally ?
-    @Nonnull
-    public static ImageProxy fromUrl(@Nonnull JDA jda, @Nonnull String url)
-    {
-        Checks.notNull(jda, "JDA");
-        Checks.notNull(url, "url");
+        Checks.notNull(id, "ID");
+        Checks.notNull(extension, "Extension");
 
-        return new ImageProxy(jda, url);
+        this.id = id;
+        this.extension = extension;
     }
 
     //TODO docs
     @Nonnull
-    public JDA getJDA()
+    public String getExtension()
     {
-        return jda;
+        return extension;
     }
 
     //TODO docs
     @Nonnull
-    public String getUrl()
+    public String getId()
     {
-        return url;
+        return id;
     }
 
-    protected Request getRequest()
+    @Nonnull
+    private String getUrl(int size)
     {
-        return new Request.Builder()
-                .url(getUrl())
-                .addHeader("user-agent", Requester.USER_AGENT)
-                .addHeader("accept-encoding", "gzip, deflate")
-                .build();
+        return getUrl() + "?size=" + size;
     }
 
     //TODO docs
     @Nonnull
-    public CompletableFuture<InputStream> download()
+    public CompletableFuture<InputStream> download(int size)
     {
-        CompletableFuture<InputStream> future = new CompletableFuture<>();
-        Request req = getRequest();
-        OkHttpClient httpClient = getJDA().getHttpClient();
-        httpClient.newCall(req).enqueue(FunctionalCallback
-                .onFailure((call, e) -> future.completeExceptionally(new UncheckedIOException(e)))
-                .onSuccess((call, response) ->
-                {
-                    if (response.isSuccessful())
-                    {
-                        InputStream body = IOUtil.getBody(response);
-                        if (!future.complete(body))
-                            IOUtil.silentClose(response);
-                    }
-                    else
-                    {
-                        future.completeExceptionally(new HttpException(response.code() + ": " + response.message()));
-                        IOUtil.silentClose(response);
-                    }
-                }).build());
-        return future;
+        Checks.positive(size, "Image size");
+
+        return download(getUrl(size));
     }
 
     //TODO docs
     @Nonnull
-    public CompletableFuture<Long> downloadToPath()
+    public CompletableFuture<Path> downloadToPath(int size)
     {
-        final HttpUrl parsedUrl = HttpUrl.parse(getUrl());
-        if (parsedUrl == null)
-        {
-            final CompletableFuture<Long> future = new CompletableFuture<>();
-            future.completeExceptionally(new IllegalArgumentException("URL '" + url + "' is not valid"));
+        Checks.positive(size, "Image size");
 
-            return future;
-        }
-
-        final List<String> segments = parsedUrl.pathSegments();
-        final String fileName = segments.get(segments.size() - 1);
-
-        //Download to a file named the same as the last segment of the URL
-        return downloadToPath(Paths.get(fileName));
+        return downloadToPath(getUrl(size));
     }
 
     //TODO docs
     @Nonnull
-    public CompletableFuture<Long> downloadToPath(@Nonnull String first, @Nonnull String... more)
-    {
-        Checks.notNull(first, "First path component");
-        Checks.noneNull(more, "Additional path components");
-
-        return downloadToPath(Paths.get(first, more));
-    }
-
-    //TODO docs
-    @Nonnull
-    public CompletableFuture<Long> downloadToFile(@Nonnull File file)
+    public CompletableFuture<File> downloadToFile(@Nonnull File file, int size)
     {
         Checks.notNull(file, "File");
+        Checks.positive(size, "Image size");
 
-        return downloadToPath(file.toPath());
+        return downloadToPath(getUrl(size), file.toPath()).thenApply(Path::toFile);
     }
 
     //TODO docs
     @Nonnull
-    public CompletableFuture<Long> downloadToPath(@Nonnull Path path)
+    public CompletableFuture<Path> downloadToPath(@Nonnull Path path, int size)
     {
         Checks.notNull(path, "Path");
+        Checks.positive(size, "Image size");
 
-        return download().thenApplyAsync(stream ->
-        {
-            try
-            {
-                final Path tmpPath = Files.createTempFile("image", null);
-
-                final long copiedBytes = Files.copy(stream, tmpPath, StandardCopyOption.REPLACE_EXISTING);
-
-                Files.move(tmpPath, path, StandardCopyOption.REPLACE_EXISTING);
-
-                return copiedBytes;
-            }
-            catch (IOException e)
-            {
-                throw new UncheckedIOException(e);
-            }
-            finally
-            {
-                IOUtil.silentClose(stream);
-            }
-        }, getJDA().getCallbackPool());
+        return downloadToPath(getUrl(size), path);
     }
 }
