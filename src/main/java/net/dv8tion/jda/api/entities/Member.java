@@ -217,7 +217,7 @@ public interface Member extends IMentionable, IPermissionHolder
      *
      * @return Possibly-null String containing the {@link net.dv8tion.jda.api.entities.Member} per guild avatar id.
      */
-    @Nullable
+    @Nullable //TODO remove
     String getAvatarId();
 
     /**
@@ -226,7 +226,7 @@ public interface Member extends IMentionable, IPermissionHolder
      *
      * @return Possibly-null String containing the {@link net.dv8tion.jda.api.entities.Member} per guild avatar url.
      */
-    @Nullable
+    @Nullable //TODO remove
     default String getAvatarUrl()
     {
         String avatarId = getAvatarId();
@@ -235,13 +235,7 @@ public interface Member extends IMentionable, IPermissionHolder
 
     //TODO docs
     @Nullable
-    default ImageProxy getAvatar()
-    {
-        final String avatarUrl = getAvatarUrl();
-        if (avatarUrl == null) return null;
-
-        return ImageProxy.fromUrl(getJDA(), avatarUrl);
-    }
+    ImageProxy getAvatar();
 
     /**
      * The URL for the member's effective avatar image.
