@@ -170,7 +170,7 @@ public class OptionMapping
      * <br>Note that {@link OptionType#USER OptionType.USER} can also accept users that are not members of a guild, in which case this will be null!
      *
      * @throws IllegalStateException
-     *         If this option is not of type {@link OptionType#USER USER}
+     *         If this option is not of type {@link OptionType#USER USER} or {@link OptionType#MENTIONABLE MENTIONABLE}
      *
      * @return The resolved {@link Member}, or null
      */
@@ -189,7 +189,8 @@ public class OptionMapping
      * The resolved {@link User} for this option value.
      *
      * @throws IllegalStateException
-     *         If this option is not of type {@link OptionType#USER USER}
+     *         If this option is not of type {@link OptionType#USER USER} or
+     *         {@link OptionType#MENTIONABLE MENTIONABLE} without a resolved user
      *
      * @return The resolved {@link User}
      */
@@ -210,7 +211,8 @@ public class OptionMapping
      * The resolved {@link Role} for this option value.
      *
      * @throws IllegalStateException
-     *         If this option is not of type {@link OptionType#ROLE ROLE}
+     *         If this option is not of type {@link OptionType#ROLE ROLE} or
+     *         {@link OptionType#MENTIONABLE MENTIONABLE} without a resolved role
      *
      * @return The resolved {@link Role}
      */
