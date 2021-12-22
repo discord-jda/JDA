@@ -177,7 +177,7 @@ public class OptionMapping
     @Nullable
     public Member getAsMember()
     {
-        if (type != OptionType.USER)
+        if (type != OptionType.USER && type != OptionType.MENTIONABLE)
             throw new IllegalStateException("Cannot resolve Member for option " + getName() + " of type " + type);
         Object object = resolved.get(getAsLong());
         if (object instanceof Member)
