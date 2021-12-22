@@ -422,6 +422,16 @@ public class GuildImpl implements Guild
         return banner;
     }
 
+    @Nullable
+    @Override
+    public ImageProxy getBanner()
+    {
+        final String bannerUrl = String.format(BANNER_URL, getId(), banner);
+        if (bannerUrl == null) return null;
+
+        return new ImageProxy(getJDA(), bannerUrl, banner, "png");
+    }
+
     @Nonnull
     @Override
     public BoostTier getBoostTier()

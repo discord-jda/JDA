@@ -795,7 +795,7 @@ public interface Guild extends ISnowflake
      *
      * @see    #getBannerUrl()
      */
-    @Nullable
+    @Nullable //TODO remove
     String getBannerId();
 
     /**
@@ -808,7 +808,7 @@ public interface Guild extends ISnowflake
      *
      * @since  4.0.0
      */
-    @Nullable
+    @Nullable //TODO remove
     default String getBannerUrl()
     {
         String bannerId = getBannerId();
@@ -817,12 +817,7 @@ public interface Guild extends ISnowflake
 
     //TODO docs
     @Nullable
-    default ImageProxy getBanner() {
-        final String bannerUrl = getBannerUrl();
-        if (bannerUrl == null) return null;
-
-        return ImageProxy.fromUrl(getJDA(), bannerUrl);
-    }
+    ImageProxy getBanner();
 
     /**
      * The boost tier for this guild.
