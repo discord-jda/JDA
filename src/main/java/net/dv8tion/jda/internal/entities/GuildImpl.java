@@ -372,6 +372,17 @@ public class GuildImpl implements Guild
         return splashId;
     }
 
+    @Override
+    @Nullable
+    public ImageProxy getSplash()
+    {
+        if (splashId == null) return null;
+
+        final String splashUrl = String.format(SPLASH_URL, getId(), splashId);
+
+        return new ImageProxy(getJDA(), splashUrl, splashUrl, splashId);
+    }
+
     @Nullable
     @Override
     public String getVanityCode()

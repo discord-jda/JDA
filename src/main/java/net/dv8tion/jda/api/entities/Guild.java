@@ -666,6 +666,7 @@ public interface Guild extends ISnowflake
     @Nonnull
     Set<String> getFeatures();
 
+    //TODO remove
     /**
      * The Discord hash-id of the splash image for this Guild. A Splash image is an image displayed when viewing a
      * Discord Guild Invite on the web or in client just before accepting or declining the invite.
@@ -679,6 +680,7 @@ public interface Guild extends ISnowflake
     @Nullable
     String getSplashId();
 
+    //TODO remove
     /**
      * The URL of the splash image for this Guild. A Splash image is an image displayed when viewing a
      * Discord Guild Invite on the web or in client just before accepting or declining the invite.
@@ -698,13 +700,7 @@ public interface Guild extends ISnowflake
 
     //TODO docs
     @Nullable
-    default ImageProxy getSplash()
-    {
-        final String splashUrl = getSplashUrl();
-        if (splashUrl == null) return null;
-
-        return ImageProxy.fromUrl(getJDA(), splashUrl);
-    }
+    ImageProxy getSplash();
 
     /**
      * The vanity url code for this Guild. The vanity url is the custom invite code of partnered / official / boosted Guilds.
