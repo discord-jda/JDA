@@ -244,20 +244,21 @@ public interface Member extends IMentionable, IPermissionHolder
      *
      * @return Never-null String containing the {@link net.dv8tion.jda.api.entities.Member} avatar url.
      */
-    @Nonnull
+    @Nonnull //TODO remove
     default String getEffectiveAvatarUrl()
     {
-        String avatarUrl = getAvatarUrl();
-        return avatarUrl == null ? getUser().getEffectiveAvatarUrl() : avatarUrl;
+//        String avatarUrl = getAvatarUrl();
+//        return avatarUrl == null ? getUser().getEffectiveAvatarUrl() : avatarUrl;
+        return null;
     }
 
     //TODO docs
     @Nonnull
     default ImageProxy getEffectiveAvatar()
     {
-        final String effectiveAvatarUrl = getEffectiveAvatarUrl();
+        final ImageProxy avatar = getAvatar();
 
-        return ImageProxy.fromUrl(getJDA(), effectiveAvatarUrl);
+        return avatar == null ? getUser().getEffectiveAvatar() : avatar;
     }
 
     /**
