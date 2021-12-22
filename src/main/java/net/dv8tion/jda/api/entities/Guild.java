@@ -623,6 +623,7 @@ public interface Guild extends ISnowflake
     @Nonnull
     String getName();
 
+    //TODO remove
     /**
      * The Discord hash-id of the {@link net.dv8tion.jda.api.entities.Guild Guild} icon image.
      * If no icon has been set, this returns {@code null}.
@@ -634,6 +635,7 @@ public interface Guild extends ISnowflake
     @Nullable
     String getIconId();
 
+    //TODO remove
     /**
      * The URL of the {@link net.dv8tion.jda.api.entities.Guild Guild} icon image.
      * If no icon has been set, this returns {@code null}.
@@ -651,13 +653,7 @@ public interface Guild extends ISnowflake
 
     //TODO docs
     @Nullable
-    default ImageProxy getIcon()
-    {
-        final String iconUrl = getIconUrl();
-        if (iconUrl == null) return null;
-
-        return ImageProxy.fromUrl(getJDA(), iconUrl);
-    }
+    ImageProxy getIcon();
 
     /**
      * The Features of the {@link net.dv8tion.jda.api.entities.Guild Guild}.

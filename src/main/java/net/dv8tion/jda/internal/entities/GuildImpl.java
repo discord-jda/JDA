@@ -37,6 +37,7 @@ import net.dv8tion.jda.api.requests.restaction.order.CategoryOrderAction;
 import net.dv8tion.jda.api.requests.restaction.order.ChannelOrderAction;
 import net.dv8tion.jda.api.requests.restaction.order.RoleOrderAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.AuditLogPaginationAction;
+import net.dv8tion.jda.api.utils.ImageProxy;
 import net.dv8tion.jda.api.utils.cache.*;
 import net.dv8tion.jda.api.utils.concurrent.Task;
 import net.dv8tion.jda.api.utils.data.DataArray;
@@ -340,10 +341,22 @@ public class GuildImpl implements Guild
         return name;
     }
 
+    //TODO remove
     @Override
     public String getIconId()
     {
         return iconId;
+    }
+
+    @Override
+    public ImageProxy getIcon()
+    {
+        if (iconId == null) return null;
+
+        final String extension = iconId.startsWith("a_") ? "gif" : "png";
+        final String iconUrl = String.format(ICON_URL, getId(), iconId, extension);
+
+        return new ImageProxy(getJDA(), iconUrl, iconId, extension);
     }
 
     @Nonnull
