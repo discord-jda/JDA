@@ -120,6 +120,7 @@ public interface Member extends IMentionable, IPermissionHolder
     /**
      * The time this Member will be released from time out.
      * <br>If this Member is not in time out, this returns {@code null}.
+     * This may also return dates in the past, in which case the time out has expired.
      *
      * @return The time this Member will be released from time out or {@code null} if not in time out
      */
@@ -657,7 +658,7 @@ public interface Member extends IMentionable, IPermissionHolder
      * </ul>
      *
      * @param  temporal
-     *         The time this Member will be released from time out
+     *         The time this Member will be released from time out, or null to remove the time out
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MODERATE_MEMBERS} permission.
@@ -667,7 +668,6 @@ public interface Member extends IMentionable, IPermissionHolder
      * @throws IllegalArgumentException
      *         If any of the following checks are true
      *         <ul>
-     *             <li>The provided {@code temporal} is null</li>
      *             <li>The provided {@code temporal} is in the past</li>
      *             <li>The provided {@code temporal} is more than 28 days in the future</li>
      *         </ul>
@@ -676,7 +676,7 @@ public interface Member extends IMentionable, IPermissionHolder
      */
     @Nonnull
     @CheckReturnValue
-    default AuditableRestAction<Void> timeoutUntil(@Nonnull TemporalAccessor temporal)
+    default AuditableRestAction<Void> timeoutUntil(@Nullable TemporalAccessor temporal)
     {
         return getGuild().timeoutUntil(this, temporal);
     }

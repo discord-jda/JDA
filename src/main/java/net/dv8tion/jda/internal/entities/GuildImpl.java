@@ -1404,7 +1404,8 @@ public class GuildImpl implements Guild
     {
         Checks.isSnowflake(userId, "User ID");
         OffsetDateTime date = TimeUtil.toOffsetDateTime(temporal);
-        if (date != null) {
+        if (date != null)
+        {
             Checks.check(date.isAfter(OffsetDateTime.now()), "Cannot put a member in time out with date in the past. Provided: %s", date);
             Checks.check(date.isBefore(OffsetDateTime.now().plusDays(28)), "Cannot put a member in time out for more than 28 days. Provided: %s", date);
         }
