@@ -177,6 +177,7 @@ public interface Emote extends IMentionable
     @Nonnull
     EmoteManager getManager();
 
+    //TODO remove
     /**
      * Whether or not this Emote is animated.
      *
@@ -202,9 +203,10 @@ public interface Emote extends IMentionable
     @Nonnull
     default ImageProxy getImage()
     {
-        final String imageUrl = getImageUrl();
+        final String extension = isAnimated() ? "gif" : "png";
+        final String imageUrl = String.format(ICON_URL, getId(), extension);
 
-        return ImageProxy.fromUrl(getJDA(), imageUrl);
+        return new ImageProxy(getJDA(), imageUrl, getId(), extension);
     }
 
     /**
