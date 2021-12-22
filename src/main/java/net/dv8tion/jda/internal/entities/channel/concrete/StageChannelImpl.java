@@ -218,6 +218,7 @@ public class StageChannelImpl extends AbstractStandardGuildChannelImpl<StageChan
     }
 
     // -- Object Overrides --
+
     @Override
     public String toString()
     {

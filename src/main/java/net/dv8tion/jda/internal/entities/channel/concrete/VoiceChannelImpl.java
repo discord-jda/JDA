@@ -197,4 +197,12 @@ public class VoiceChannelImpl extends AbstractStandardGuildChannelImpl<VoiceChan
     {
         getGuild().getVoiceChannelsView().clearCachedLists();
     }
+
+    // -- Object overrides --
+
+    @Override
+    public String toString()
+    {
+        return "VC:" + getName() + '(' + id + ')';
+    }
 }
