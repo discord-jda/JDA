@@ -216,4 +216,11 @@ public class StageChannelImpl extends AbstractStandardGuildChannelImpl<StageChan
     {
         getGuild().getStageChannelsView().clearCachedLists();
     }
+
+    // -- Object Overrides --
+    @Override
+    public String toString()
+    {
+        return "StaC:" + getName() + '(' + id + ')';
+    }
 }
