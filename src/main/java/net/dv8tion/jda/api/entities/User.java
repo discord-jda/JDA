@@ -154,7 +154,10 @@ public interface User extends IMentionable
     @Nonnull
     String getDiscriminator();
 
-    //TODO docs
+    @Nullable //TODO remove
+	String getAvatarId();
+
+	//TODO docs
     @Nullable
     ImageProxy getAvatar();
 

@@ -97,6 +97,14 @@ public class UserById implements User
 
     @Nullable
     @Override
+    public String getAvatarId()
+    {
+        unsupported();
+        return null;
+    }
+
+    @Nullable
+    @Override
     public ImageProxy getAvatar()
     {
         unsupported();

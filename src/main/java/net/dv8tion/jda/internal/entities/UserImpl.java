@@ -71,6 +71,13 @@ public class UserImpl extends UserById implements User
     }
 
     @Nullable
+    @Override //TODO remove
+    public String getAvatarId()
+    {
+        return avatarId;
+    }
+
+    @Nullable
     @Override
     public ImageProxy getAvatar()
     {
