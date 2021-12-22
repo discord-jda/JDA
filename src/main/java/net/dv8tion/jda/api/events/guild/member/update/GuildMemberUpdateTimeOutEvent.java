@@ -25,6 +25,7 @@ import java.time.OffsetDateTime;
 
 /**
  * Indicates that a {@link net.dv8tion.jda.api.entities.Member Member} had their time out changed.
+ * <br><b>This event does not fire for automatic time out expiration.</b>
  *
  * <p>Can be used to retrieve members who had their time out changed, triggering guild.
  *
