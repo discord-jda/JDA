@@ -48,6 +48,7 @@ public class MemberActionImpl extends RestActionImpl<Void> implements MemberActi
     private Set<Role> roles;
     private boolean mute;
     private boolean deaf;
+    private long communicationDisabledUntil;
 
     public MemberActionImpl(JDA api, Guild guild, String userId, String accessToken)
     {
@@ -187,6 +188,7 @@ public class MemberActionImpl extends RestActionImpl<Void> implements MemberActi
             obj.put("roles", roles.stream().map(Role::getId).collect(Collectors.toList()));
         obj.put("mute", mute);
         obj.put("deaf", deaf);
+        obj.put("communication_disabled_until", communicationDisabledUntil);
         return getRequestBody(obj);
     }
 

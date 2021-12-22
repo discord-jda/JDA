@@ -18,6 +18,11 @@ package net.dv8tion.jda.internal.entities;
 
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
+
+import java.time.Instant;
+import java.time.format.DateTimeFormatter;
+import java.util.concurrent.TimeUnit;
+
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.Region;
 import net.dv8tion.jda.api.entities.*;
@@ -1422,6 +1427,21 @@ public class GuildImpl implements Guild
         DataObject body = DataObject.empty().put("deaf", deafen);
         Route.CompiledRoute route = Route.Guilds.MODIFY_MEMBER.compile(getId(), member.getUser().getId());
         return new AuditableRestActionImpl<>(getJDA(), route, body);
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<Void> timeoutUser(@Nonnull Member member, long time)
+    {
+        Checks.notNull(member, "Member");
+        checkGuild(member.getGuild(), "Member");
+        checkPermission(Permission.MODERATE_MEMBERS);
+
+        long epoch = new Date(System.currentTimeMillis() + time).toInstant().toEpochMilli();
+
+        DataObject body = DataObject.empty().put("communication_disabled_until", Instant.ofEpochMilli(epoch).toString());
+        Route.CompiledRoute route = Route.Guilds.MODIFY_MEMBER.compile(getId(), member.getUser().getId());
+        return new RestActionImpl<>(getJDA(), route, body);
     }
 
     @Nonnull

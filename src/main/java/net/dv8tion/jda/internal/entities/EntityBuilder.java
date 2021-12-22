@@ -37,10 +37,7 @@ import net.dv8tion.jda.api.entities.templates.TemplateGuild;
 import net.dv8tion.jda.api.entities.templates.TemplateRole;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleAddEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleRemoveEvent;
-import net.dv8tion.jda.api.events.guild.member.update.GuildMemberUpdateAvatarEvent;
-import net.dv8tion.jda.api.events.guild.member.update.GuildMemberUpdateBoostTimeEvent;
-import net.dv8tion.jda.api.events.guild.member.update.GuildMemberUpdateNicknameEvent;
-import net.dv8tion.jda.api.events.guild.member.update.GuildMemberUpdatePendingEvent;
+import net.dv8tion.jda.api.events.guild.member.update.*;
 import net.dv8tion.jda.api.events.user.update.UserUpdateAvatarEvent;
 import net.dv8tion.jda.api.events.user.update.UserUpdateDiscriminatorEvent;
 import net.dv8tion.jda.api.events.user.update.UserUpdateFlagsEvent;
@@ -514,6 +511,11 @@ public class EntityBuilder
             member.setNickname(memberJson.getString("nick", null));
             member.setAvatarId(memberJson.getString("avatar", null));
 
+            long communicationDisabledUntil = memberJson.isNull("communication_disabled_until")
+                    ? 0
+                    : Helpers.toTimestamp(memberJson.getString("communication_disabled_until"));
+            member.setCommunicationDisabledUntil(communicationDisabledUntil);
+
             long boostTimestamp = memberJson.isNull("premium_since")
                 ? 0
                 : Helpers.toTimestamp(memberJson.getString("premium_since"));
@@ -541,6 +543,12 @@ public class EntityBuilder
                 if (role != null)
                     roles.add(role);
             }
+
+            long communicationDisabledUntil = memberJson.isNull("communication_disabled_until")
+                    ? 0
+                    : Helpers.toTimestamp(memberJson.getString("communication_disabled_until"));
+            member.setCommunicationDisabledUntil(communicationDisabledUntil);
+
             updateMember(guild, member, memberJson, roles);
         }
 
@@ -660,6 +668,25 @@ public class EntityBuilder
                     new GuildMemberUpdatePendingEvent(
                         getJDA(), responseNumber,
                         member, oldPending));
+            }
+        }
+
+        if (content.hasKey("communication_disabled_until"))
+        {
+            long epoch = 0;
+            if (!content.isNull("communication_disabled_until"))
+            {
+                TemporalAccessor date = DateTimeFormatter.ISO_OFFSET_DATE_TIME.parse(content.getString("communication_disabled_until"));
+                epoch = Instant.from(date).toEpochMilli();
+            }
+            if (epoch != member.getCommunicationDisabledUntil())
+            {
+                OffsetDateTime oldTime = member.getTimeCommunicationDisabledUntil();
+                member.setCommunicationDisabledUntil(epoch);
+                getJDA().handleEvent(
+                        new GuildMemberUpdateCommunicationDisabledUntilEvent(
+                                getJDA(), responseNumber,
+                                member, oldTime));
             }
         }
 

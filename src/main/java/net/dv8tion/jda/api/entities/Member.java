@@ -114,6 +114,9 @@ public interface Member extends IMentionable, IPermissionHolder
     @Nullable
     OffsetDateTime getTimeBoosted();
 
+    @Nullable
+    OffsetDateTime getTimeCommunicationDisabledUntil();
+
     /**
      * The {@link net.dv8tion.jda.api.entities.GuildVoiceState VoiceState} of this Member.
      * <br><b>This will be null when the {@link net.dv8tion.jda.api.utils.cache.CacheFlag#VOICE_STATE} is disabled manually</b>
@@ -659,4 +662,10 @@ public interface Member extends IMentionable, IPermissionHolder
     {
         return getGuild().modifyNickname(this, nickname);
     }
+
+    @CheckReturnValue
+    long getCommunicationDisabledUntil();
+
+    @CheckReturnValue
+    void setCommunicationDisabledUntil(long communicationDisabledUntil);
 }

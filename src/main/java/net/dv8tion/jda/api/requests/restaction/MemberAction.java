@@ -28,6 +28,8 @@ import java.util.Collection;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 
+import net.dv8tion.jda.internal.requests.restaction.MemberActionImpl;
+
 /**
  * {@link net.dv8tion.jda.api.requests.RestAction RestAction} extension
  * specifically designed to allow bots to add {@link net.dv8tion.jda.api.entities.User Users} to Guilds.

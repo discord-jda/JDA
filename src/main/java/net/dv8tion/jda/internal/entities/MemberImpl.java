@@ -47,7 +47,7 @@ public class MemberImpl implements Member
     private User user;
     private String nickname;
     private String avatarId;
-    private long joinDate, boostDate;
+    private long joinDate, boostDate, communicationDisabledUntil;
     private boolean pending = false;
 
     public MemberImpl(GuildImpl guild, User user)
@@ -58,6 +58,7 @@ public class MemberImpl implements Member
         this.joinDate = 0;
         boolean cacheState = api.isCacheFlagSet(CacheFlag.VOICE_STATE) || user.equals(api.getSelfUser());
         this.voiceState = cacheState ? new GuildVoiceStateImpl(this) : null;
+        this.communicationDisabledUntil = 0L;
     }
 
     public MemberPresenceImpl getPresence()
@@ -115,6 +116,12 @@ public class MemberImpl implements Member
     {
         return boostDate != 0 ? Helpers.toOffset(boostDate) : null;
     }
+
+    public OffsetDateTime getTimeCommunicationDisabledUntil()
+    {
+        return communicationDisabledUntil != 0 ? Helpers.toOffset(communicationDisabledUntil) : null;
+    }
+
 
     @Override
     public GuildVoiceState getVoiceState()
@@ -431,5 +438,17 @@ public class MemberImpl implements Member
                  .sorted(Comparator.reverseOrder())
                  .filter(c -> hasPermission(c, Permission.VIEW_CHANNEL))
                  .findFirst().orElse(null);
+    }
+
+    @Override
+    public long getCommunicationDisabledUntil()
+    {
+        return communicationDisabledUntil;
+    }
+
+    @Override
+    public void setCommunicationDisabledUntil(long communicationDisabledUntil)
+    {
+        this.communicationDisabledUntil = communicationDisabledUntil;
     }
 }

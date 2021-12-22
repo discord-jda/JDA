@@ -15,6 +15,8 @@
  */
 package net.dv8tion.jda.api.entities;
 
+import java.util.concurrent.TimeUnit;
+
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.Region;
@@ -1011,6 +1013,9 @@ public interface Guild extends ISnowflake
      */
     @Nonnull
     Timeout getAfkTimeout();
+
+    //TODO docs
+    RestAction<Void> timeoutUser(@Nonnull Member member, @Nonnull long time);
 
     /**
      * Used to determine if the provided {@link net.dv8tion.jda.api.entities.User User} is a member of this Guild.

@@ -27,7 +27,7 @@ import org.apache.tools.ant.filters.ReplaceTokens
 import java.time.Duration
 
 // Don't remove this, its needed for reasons....
-typealias Pom = org.gradle.api.publish.maven.MavenPom
+typealias Pom = MavenPom
 
 plugins {
     signing
