@@ -196,14 +196,14 @@ public class OptionMapping
     @Nonnull
     public User getAsUser()
     {
-        if (type != OptionType.USER)
+        if (type != OptionType.USER && type != OptionType.MENTIONABLE)
             throw new IllegalStateException("Cannot resolve User for option " + getName() + " of type " + type);
         Object object = resolved.get(getAsLong());
         if (object instanceof Member)
             return ((Member) object).getUser();
         if (object instanceof User)
             return (User) object;
-        throw new IllegalStateException("Could not resolve user!");
+        throw new IllegalStateException("Could not resolve User from option type " + type);
     }
 
     /**
@@ -217,12 +217,12 @@ public class OptionMapping
     @Nonnull
     public Role getAsRole()
     {
-        if (type != OptionType.ROLE)
+        if (type != OptionType.ROLE && type != OptionType.MENTIONABLE)
             throw new IllegalStateException("Cannot resolve Role for option " + getName() + " of type " + type);
         Object role = resolved.get(getAsLong());
         if (role instanceof Role)
             return (Role) role;
-        throw new IllegalStateException("Could not resolve role!");
+        throw new IllegalStateException("Could not resolve Role from option type " + type);
     }
 
     /**
