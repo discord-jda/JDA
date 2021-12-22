@@ -23,6 +23,7 @@ import net.dv8tion.jda.api.entities.Guild.VerificationLevel;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
+import net.dv8tion.jda.api.utils.ImageProxy;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
@@ -363,7 +364,17 @@ public class InviteImpl implements Invite
                     : "https://cdn.discordapp.com/icons/" + this.id + "/" + this.iconId + ".png";
         }
 
-        @Override
+	    @Nullable
+	    @Override
+	    public ImageProxy getIcon() {
+            if (iconId == null) return null;
+
+            final String iconUrl = "https://cdn.discordapp.com/icons/" + this.id + "/" + this.iconId + ".png";
+
+            return new ImageProxy(getJDA(), iconUrl, iconId, "png");
+        }
+
+	    @Override
         public long getIdLong()
         {
             return id;
@@ -387,6 +398,17 @@ public class InviteImpl implements Invite
         {
             return this.splashId == null ? null
                     : "https://cdn.discordapp.com/splashes/" + this.id + "/" + this.splashId + ".png";
+        }
+
+        @Nullable
+        @Override
+        public ImageProxy getSplash()
+        {
+            if (splashId == null) return null;
+
+            final String splashUrl = "https://cdn.discordapp.com/splashes/" + this.id + "/" + this.splashId + ".png";
+
+            return new ImageProxy(getJDA(), splashUrl, splashId, "png");
         }
 
         @Nonnull
@@ -450,6 +472,17 @@ public class InviteImpl implements Invite
         {
             return this.iconId == null ? null
                 : "https://cdn.discordapp.com/channel-icons/" + this.id + "/" + this.iconId + ".png";
+        }
+
+        @Nullable
+        @Override
+        public ImageProxy getIcon()
+        {
+            if (iconId == null) return null;
+
+            final String iconUrl = "https://cdn.discordapp.com/channel-icons/" + this.id + "/" + this.iconId + ".png";
+
+            return new ImageProxy(getJDA(), iconUrl, iconId, "png");
         }
 
         @Override
@@ -593,6 +626,17 @@ public class InviteImpl implements Invite
         {
             return this.iconId == null ? null
                     : "https://cdn.discordapp.com/app-icons/" + this.id + '/' + this.iconId + ".png";
+        }
+
+        @Nullable
+        @Override
+        public ImageProxy getIcon()
+        {
+            if (iconId == null) return null;
+
+            final String iconUrl = "https://cdn.discordapp.com/app-icons/" + this.id + '/' + this.iconId + ".png";
+
+            return new ImageProxy(getJDA(), iconUrl, iconId, "png");
         }
 
         @Override

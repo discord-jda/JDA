@@ -362,7 +362,7 @@ public interface Invite
          *
          * @see    #getIconUrl()
          */
-        @Nullable
+        @Nullable //TODO remove
         String getIconId();
 
         /**
@@ -372,18 +372,12 @@ public interface Invite
          *
          * @see    #getIconId()
          */
-        @Nullable
+        @Nullable //TODO remove
         String getIconUrl();
 
         //TODO docs
         @Nullable
-        default ImageProxy getIcon()
-        {
-            final String iconUrl = getIconUrl();
-            if (iconUrl == null) return null;
-
-            return ImageProxy.fromUrl(getJDA(), iconUrl);
-        }
+        ImageProxy getIcon();
 
         /**
          * The name of this guild.
@@ -400,7 +394,7 @@ public interface Invite
          *
          * @see    #getSplashUrl()
          */
-        @Nullable
+        @Nullable //TODO remove
         String getSplashId();
 
         /**
@@ -410,18 +404,12 @@ public interface Invite
          *
          * @see    #getSplashId()
          */
-        @Nullable
+        @Nullable //TODO remove
         String getSplashUrl();
 
         //TODO docs
         @Nullable
-        default ImageProxy getSplash()
-        {
-            final String splashUrl = getSplashUrl();
-            if (splashUrl == null) return null;
-
-            return ImageProxy.fromUrl(getJDA(), splashUrl);
-        }
+        ImageProxy getSplash();
         
         /**
          * Returns the {@link net.dv8tion.jda.api.entities.Guild.VerificationLevel VerificationLevel} of this guild.
@@ -487,7 +475,7 @@ public interface Invite
          *
          * @see    #getIconUrl()
          */
-        @Nullable
+        @Nullable //TODO remove
         String getIconId();
 
         /**
@@ -497,18 +485,12 @@ public interface Invite
          *
          * @see    #getIconId()
          */
-        @Nullable
+        @Nullable //TODO remove
         String getIconUrl();
 
         //TODO docs
         @Nullable
-        default ImageProxy getIcon()
-        {
-            final String iconUrl = getIconUrl();
-            if (iconUrl == null) return null;
-
-            return ImageProxy.fromUrl(getJDA(), iconUrl);
-        }
+        ImageProxy getIcon();
 
         /**
          * The name of this group or {@code null} if the group has no name.
@@ -630,7 +612,7 @@ public interface Invite
          *
          * @see    #getIconUrl()
          */
-        @Nullable
+        @Nullable //TODO remove
         String getIconId();
 
         /**
@@ -640,18 +622,12 @@ public interface Invite
          *
          * @see    #getIconId()
          */
-        @Nullable
+        @Nullable //TODO remove
         String getIconUrl();
 
         //TODO docs
         @Nullable
-        default ImageProxy getIcon()
-        {
-            final String iconUrl = getIconUrl();
-            if (iconUrl == null) return null;
-
-            return ImageProxy.fromUrl(getJDA(), iconUrl);
-        }
+        ImageProxy getIcon();
 
         /**
          * The max participant count of this application or {@code -1} if no max participant count is set
