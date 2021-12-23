@@ -77,7 +77,7 @@ public interface ApplicationInfo extends ISnowflake
      * 
      * @return The icon id of the bot's application or null if no icon is defined
      */
-    @Nullable
+    @Nullable //TODO remove
     String getIconId();
 
     /**
@@ -86,18 +86,12 @@ public interface ApplicationInfo extends ISnowflake
      * 
      * @return The icon-url of the bot's application or null if no icon is defined
      */
-    @Nullable
+    @Nullable //TODO remove
     String getIconUrl();
 
     //TODO docs
     @Nullable
-    default ImageProxy getIcon()
-    {
-        final String iconUrl = getIconUrl();
-        if (iconUrl == null) return null;
-
-        return ImageProxy.fromUrl(getJDA(), iconUrl);
-    }
+    ImageProxy getIcon();
 
     /**
      * The team information for this application.
