@@ -56,7 +56,7 @@ public class RoleIcon
      *
      * @since  4.3.1
      */
-    @Nullable
+    @Nullable //TODO remove
     public String getIconId()
     {
         return iconId;
@@ -71,7 +71,7 @@ public class RoleIcon
      *
      * @since  4.3.1
      */
-    @Nullable
+    @Nullable //TODO remove
     public String getIconUrl()
     {
         String iconId = getIconId();
@@ -82,10 +82,11 @@ public class RoleIcon
     @Nullable
     public ImageProxy getIcon()
     {
-        final String iconUrl = getIconUrl();
-        if (iconUrl == null) return null;
+        if (iconId == null) return null;
 
-        return ImageProxy.fromUrl(getJDA(), iconUrl);
+        final String iconUrl = String.format(ICON_URL, roleId, iconId);
+
+        return new ImageProxy(getJDA(), iconUrl, iconId, "png");
     }
 
     /**
