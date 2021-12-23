@@ -44,7 +44,7 @@ public class GuildUpdateBannerEvent extends GenericGuildUpdateEvent<String>
      *
      * @return The new banner id, or null if the banner was removed
      */
-    @Nullable
+    @Nullable //TODO remove
     public String getNewBannerId()
     {
         return getNewValue();
@@ -55,7 +55,7 @@ public class GuildUpdateBannerEvent extends GenericGuildUpdateEvent<String>
      *
      * @return The new banner url, or null if the banner was removed
      */
-    @Nullable
+    @Nullable //TODO remove
     public String getNewBannerUrl()
     {
         return next == null ? null : String.format(Guild.BANNER_URL, guild.getId(), next);
@@ -65,10 +65,11 @@ public class GuildUpdateBannerEvent extends GenericGuildUpdateEvent<String>
     @Nullable
     public ImageProxy getNewBanner()
     {
-        final String newBannerUrl = getNewBannerUrl();
-        if (newBannerUrl == null) return null;
+        if (next == null) return null;
 
-        return ImageProxy.fromUrl(getJDA(), newBannerUrl);
+        final String newBannerUrl = String.format(Guild.BANNER_URL, guild.getId(), next);
+
+        return new ImageProxy(getJDA(), newBannerUrl, next, "png");
     }
 
     /**
@@ -76,7 +77,7 @@ public class GuildUpdateBannerEvent extends GenericGuildUpdateEvent<String>
      *
      * @return The old banner id, or null if the banner didn't exist
      */
-    @Nullable
+    @Nullable //TODO remove
     public String getOldBannerId()
     {
         return getOldValue();
@@ -87,7 +88,7 @@ public class GuildUpdateBannerEvent extends GenericGuildUpdateEvent<String>
      *
      * @return The old banner url, or null if the banner didn't exist
      */
-    @Nullable
+    @Nullable //TODO remove
     public String getOldBannerUrl()
     {
         return previous == null ? null : String.format(Guild.BANNER_URL, guild.getId(), previous);
@@ -97,9 +98,10 @@ public class GuildUpdateBannerEvent extends GenericGuildUpdateEvent<String>
     @Nullable
     public ImageProxy getOldBanner()
     {
-        final String oldBannerUrl = getOldBannerUrl();
-        if (oldBannerUrl == null) return null;
+        if (previous == null) return null;
 
-        return ImageProxy.fromUrl(getJDA(), oldBannerUrl);
+        final String oldBannerUrl = String.format(Guild.BANNER_URL, guild.getId(), previous);
+
+        return new ImageProxy(getJDA(), oldBannerUrl, previous, "png");
     }
 }
