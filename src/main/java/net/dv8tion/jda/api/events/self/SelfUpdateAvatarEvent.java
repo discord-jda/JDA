@@ -44,7 +44,7 @@ public class SelfUpdateAvatarEvent extends GenericSelfUpdateEvent<String>
      *
      * @return The old avatar id
      */
-    @Nullable
+    @Nullable //TODO remove
     public String getOldAvatarId()
     {
         return getOldValue();
@@ -55,7 +55,7 @@ public class SelfUpdateAvatarEvent extends GenericSelfUpdateEvent<String>
      *
      * @return  The old avatar url
      */
-    @Nullable
+    @Nullable //TODO remove
     public String getOldAvatarUrl()
     {
         return previous == null ? null : String.format(AVATAR_URL, getSelfUser().getId(), previous, previous.startsWith("a_") ? ".gif" : ".png");
@@ -65,10 +65,12 @@ public class SelfUpdateAvatarEvent extends GenericSelfUpdateEvent<String>
     @Nullable
     public ImageProxy getOldAvatar()
     {
-        final String oldAvatarUrl = getOldAvatarUrl();
-        if (oldAvatarUrl == null) return null;
+        if (previous == null) return null;
 
-        return ImageProxy.fromUrl(getJDA(), oldAvatarUrl);
+        final String extension = previous.startsWith("a_") ? ".gif" : ".png";
+        final String oldAvatarUrl = String.format(AVATAR_URL, getSelfUser().getId(), previous, extension);
+
+        return new ImageProxy(getJDA(), oldAvatarUrl, previous, extension);
     }
 
     /**
@@ -76,7 +78,7 @@ public class SelfUpdateAvatarEvent extends GenericSelfUpdateEvent<String>
      *
      * @return The new avatar id
      */
-    @Nullable
+    @Nullable //TODO remove
     public String getNewAvatarId()
     {
         return getNewValue();
@@ -87,7 +89,7 @@ public class SelfUpdateAvatarEvent extends GenericSelfUpdateEvent<String>
      *
      * @return  The new avatar url
      */
-    @Nullable
+    @Nullable //TODO remove
     public String getNewAvatarUrl()
     {
         return next == null ? null : String.format(AVATAR_URL, getSelfUser().getId(), next, next.startsWith("a_") ? ".gif" : ".png");
@@ -97,9 +99,11 @@ public class SelfUpdateAvatarEvent extends GenericSelfUpdateEvent<String>
     @Nullable
     public ImageProxy getNewAvatar()
     {
-        final String newAvatarUrl = getNewAvatarUrl();
-        if (newAvatarUrl == null) return null;
+        if (next == null) return null;
 
-        return ImageProxy.fromUrl(getJDA(), newAvatarUrl);
+        final String extension = next.startsWith("a_") ? ".gif" : ".png";
+        final String newAvatarUrl = String.format(AVATAR_URL, getSelfUser().getId(), next, extension);
+
+        return new ImageProxy(getJDA(), newAvatarUrl, next, extension);
     }
 }
