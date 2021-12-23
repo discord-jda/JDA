@@ -19,7 +19,9 @@ package net.dv8tion.jda.internal.entities;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.ApplicationTeam;
 import net.dv8tion.jda.api.entities.TeamMember;
+import net.dv8tion.jda.api.utils.ImageProxy;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;
 import java.util.Collections;
@@ -53,7 +55,17 @@ public class ApplicationTeamImpl implements ApplicationTeam
         return iconId;
     }
 
-    @Nonnull
+	@Nullable
+	@Override
+	public ImageProxy getIcon() {
+        if (iconId == null) return null;
+
+        final String iconUrl = String.format(ICON_URL, getId(), iconId);
+
+        return new ImageProxy(getJDA(), iconUrl, iconId, "png");
+    }
+
+	@Nonnull
     @Override
     public List<TeamMember> getMembers()
     {
