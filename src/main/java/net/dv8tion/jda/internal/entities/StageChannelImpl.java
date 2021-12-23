@@ -16,27 +16,50 @@
 
 package net.dv8tion.jda.internal.entities;
 
+import gnu.trove.map.TLongObjectMap;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
+import net.dv8tion.jda.api.managers.channel.concrete.StageChannelManager;
 import net.dv8tion.jda.api.requests.restaction.ChannelAction;
 import net.dv8tion.jda.api.requests.restaction.StageInstanceAction;
+import net.dv8tion.jda.api.utils.MiscUtil;
+import net.dv8tion.jda.internal.entities.mixin.channel.attribute.ICategorizableChannelMixin;
+import net.dv8tion.jda.internal.entities.mixin.channel.attribute.IInviteContainerMixin;
+import net.dv8tion.jda.internal.entities.mixin.channel.attribute.IPositionableChannelMixin;
+import net.dv8tion.jda.internal.entities.mixin.channel.middleman.AudioChannelMixin;
+import net.dv8tion.jda.internal.managers.channel.concrete.StageChannelManagerImpl;
 import net.dv8tion.jda.internal.requests.restaction.StageInstanceActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.EnumSet;
+import java.util.List;
 
-public class StageChannelImpl extends AbstractGuildAudioChannelImpl<StageChannel, StageChannelImpl> implements StageChannel
+public class StageChannelImpl extends AbstractGuildChannelImpl<StageChannelImpl> implements 
+        StageChannel, 
+        AudioChannelMixin<StageChannelImpl>,
+        ICategorizableChannelMixin<StageChannelImpl>,
+        IPositionableChannelMixin<StageChannelImpl>,
+        IInviteContainerMixin<StageChannelImpl>
 {
+    private final TLongObjectMap<Member> connectedMembers = MiscUtil.newLongMap();
+    private final TLongObjectMap<PermissionOverride> overrides = MiscUtil.newLongMap();
+
     private StageInstance instance;
+    private String region;
+    private long parentCategoryId;
+    private int bitrate;
+    private int position;
 
     public StageChannelImpl(long id, GuildImpl guild)
     {
         super(id, guild);
     }
-
+    
     @Nonnull
     @Override
     public ChannelType getType()
@@ -44,11 +67,43 @@ public class StageChannelImpl extends AbstractGuildAudioChannelImpl<StageChannel
         return ChannelType.STAGE;
     }
 
+    @Override
+    public int getBitrate()
+    {
+        return bitrate;
+    }
+
+    @Nullable
+    @Override
+    public String getRegionRaw()
+    {
+        return region;
+    }
+
+    @Override
+    public long getParentCategoryIdLong()
+    {
+        return parentCategoryId;
+    }
+
+    @Override
+    public int getPositionRaw()
+    {
+        return position;
+    }
+
     @Nullable
     @Override
     public StageInstance getStageInstance()
     {
         return instance;
+    }
+
+    @Nonnull
+    @Override
+    public List<Member> getMembers()
+    {
+        return Collections.unmodifiableList(new ArrayList<>(connectedMembers.valueCollection()));
     }
 
     @Nonnull
@@ -87,6 +142,54 @@ public class StageChannelImpl extends AbstractGuildAudioChannelImpl<StageChannel
             }
         }
         return action;
+    }
+
+    @Nonnull
+    @Override
+    public StageChannelManager getManager()
+    {
+        return new StageChannelManagerImpl(this);
+    }
+
+    @Override
+    public TLongObjectMap<PermissionOverride> getPermissionOverrideMap()
+    {
+        return overrides;
+    }
+
+    @Override
+    public TLongObjectMap<Member> getConnectedMembersMap()
+    {
+        return connectedMembers;
+    }
+
+    @Override
+    public StageChannelImpl setParentCategory(long parentCategoryId)
+    {
+        this.parentCategoryId = parentCategoryId;
+        return this;
+    }
+
+    @Override
+    public StageChannelImpl setPosition(int position)
+    {
+        getGuild().getStageChannelsView().clearCachedLists();
+        this.position = position;
+        return this;
+    }
+
+    @Override
+    public StageChannelImpl setBitrate(int bitrate)
+    {
+        this.bitrate = bitrate;
+        return this;
+    }
+
+    @Override
+    public StageChannelImpl setRegion(String region)
+    {
+        this.region = region;
+        return this;
     }
 
     public StageChannelImpl setStageInstance(StageInstance instance)

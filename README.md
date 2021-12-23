@@ -1,26 +1,31 @@
-[version]: https://shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Fm2.dv8tion.net%2Freleases%2Fnet%2Fdv8tion%2FJDA%2Fmaven-metadata.xml&color=informational&label=Download
+[maven-central]: https://img.shields.io/maven-central/v/net.dv8tion/JDA?color=blue
+[jitpack]: https://img.shields.io/jitpack/v/github/DV8FromTheWorld/JDA?label=Snapshots&color=blue
 [download]: #download
 [discord-invite]: https://discord.gg/0hMr4ce0tIl3SLv5
 [migration]: https://github.com/DV8FromTheWorld/JDA/wiki/0\)-Migrating-to-V4
-[jenkins]: https://ci.dv8tion.net/job/JDA
+[jenkins]: https://ci.dv8tion.net/job/JDA5
 [license]: https://github.com/DV8FromTheWorld/JDA/tree/master/LICENSE
 [faq]: https://github.com/DV8FromTheWorld/JDA/wiki/10\)-FAQ
 [troubleshooting]: https://github.com/DV8FromTheWorld/JDA/wiki/19\)-Troubleshooting
 [discord-shield]: https://discord.com/api/guilds/125227483518861312/widget.png
 [faq-shield]: https://img.shields.io/badge/Wiki-FAQ-blue.svg
-[troubleshooting-shield]: https://img.shields.io/badge/Wiki-Troubleshooting-red.svg
-[jenkins-shield]: https://img.shields.io/badge/Download-Jenkins-brightgreen.svg
-[license-shield]: https://img.shields.io/badge/License-Apache%202.0-lightgrey.svg
-[migration-shield]: https://img.shields.io/badge/Wiki-Migrating%20from%20V3-green.svg
-[ ![version][] ][download]
+[troubleshooting-shield]: https://img.shields.io/badge/Wiki-Troubleshooting-darkgreen.svg
+[jenkins-shield]: https://img.shields.io/badge/Download-Jenkins-purple.svg
+[license-shield]: https://img.shields.io/badge/License-Apache%202.0-white.svg
+[migration-shield]: https://img.shields.io/badge/Wiki-Migrating%20from%20V3-darkgreen.svg
+
+<img align="right" src="https://github.com/DV8FromTheWorld/JDA/blob/assets/assets/readme/logo.png?raw=true" height="200" width="200">
+
+[ ![maven-central][] ][download]
+[ ![jitpack][] ](https://jitpack.io/#DV8FromtheWorld/JDA)
 [ ![jenkins-shield][] ][jenkins]
 [ ![license-shield][] ][license]
+
 [ ![discord-shield][] ][discord-invite]
 [ ![faq-shield] ][faq]
 [ ![troubleshooting-shield] ][troubleshooting]
 [ ![migration-shield][] ][migration]
 
-<img align="right" src="https://github.com/DV8FromTheWorld/JDA/blob/assets/assets/readme/logo.png?raw=true" height="200" width="200">
 
 # JDA (Java Discord API)
 
@@ -92,8 +97,8 @@ public static void main(String[] args) {
 }
 ```
 
-> See [JDABuilder](https://ci.dv8tion.net/job/JDA/javadoc/net/dv8tion/jda/api/JDABuilder.html)
-  and [DefaultShardManagerBuilder](https://ci.dv8tion.net/job/JDA/javadoc/net/dv8tion/jda/api/sharding/DefaultShardManagerBuilder.html)
+> See [JDABuilder](https://ci.dv8tion.net/job/JDA5/javadoc/net/dv8tion/jda/api/JDABuilder.html)
+  and [DefaultShardManagerBuilder](https://ci.dv8tion.net/job/JDA5/javadoc/net/dv8tion/jda/api/sharding/DefaultShardManagerBuilder.html)
 
 You can configure the memory usage by changing enabled `CacheFlags` on the `JDABuilder`.
 Additionally, you can change the handling of member/user cache by setting either a `ChunkingFilter`, disabling **intents**, or changing the **member cache policy**.
@@ -265,22 +270,22 @@ public class Bot extends ListenerAdapter
 
 ### RestAction
 
-Through [RestAction](https://ci.dv8tion.net/job/JDA/javadoc/net/dv8tion/jda/api/requests/RestAction.html) we provide request handling with
+Through [RestAction](https://ci.dv8tion.net/job/JDA5/javadoc/net/dv8tion/jda/api/requests/RestAction.html) we provide request handling with
  
- - [callbacks](https://ci.dv8tion.net/job/JDA/javadoc/net/dv8tion/jda/api/requests/RestAction.html#queue%28java.util.function.Consumer%29)
- - [promises](https://ci.dv8tion.net/job/JDA/javadoc/net/dv8tion/jda/api/requests/RestAction.html#submit%28%29)
- - and [sync](https://ci.dv8tion.net/job/JDA/javadoc/net/dv8tion/jda/api/requests/RestAction.html#complete%28%29)
+ - [callbacks](https://ci.dv8tion.net/job/JDA5/javadoc/net/dv8tion/jda/api/requests/RestAction.html#queue%28java.util.function.Consumer%29)
+ - [promises](https://ci.dv8tion.net/job/JDA5/javadoc/net/dv8tion/jda/api/requests/RestAction.html#submit%28%29)
+ - and [sync](https://ci.dv8tion.net/job/JDA5/javadoc/net/dv8tion/jda/api/requests/RestAction.html#complete%28%29)
 
 and it is up to the user to decide which pattern to utilize.
 It can be combined with reactive libraries such as [reactor-core](https://github.com/reactor/reactor-core) due to being lazy.
 
 The RestAction interface also supports a number of operators to avoid callback hell:
 
-- [`map`](https://ci.dv8tion.net/job/JDA/javadoc/net/dv8tion/jda/api/requests/RestAction.html#map%28java.util.function.Function%29)
+- [`map`](https://ci.dv8tion.net/job/JDA5/javadoc/net/dv8tion/jda/api/requests/RestAction.html#map%28java.util.function.Function%29)
     Convert the result of the `RestAction` to a different value
-- [`flatMap`](https://ci.dv8tion.net/job/JDA/javadoc/net/dv8tion/jda/api/requests/RestAction.html#flatMap%28java.util.function.Function%29)
+- [`flatMap`](https://ci.dv8tion.net/job/JDA5/javadoc/net/dv8tion/jda/api/requests/RestAction.html#flatMap%28java.util.function.Function%29)
     Chain another `RestAction` on the result
-- [`delay`](https://ci.dv8tion.net/job/JDA/javadoc/net/dv8tion/jda/api/requests/RestAction.html#delay%28java.time.Duration%29)
+- [`delay`](https://ci.dv8tion.net/job/JDA5/javadoc/net/dv8tion/jda/api/requests/RestAction.html#delay%28java.time.Duration%29)
     Delay the element of the previous step
 
 **Example**:
@@ -317,7 +322,7 @@ To use sharding in JDA you will need to use `JDABuilder.useSharding(int shardId,
 has the ID 0. The **shardTotal** is the total amount of shards (not 0-based) which can be seen similar to the length of an array, the last shard has the ID of
 `shardTotal - 1`.
 
-The [`SessionController`](https://ci.dv8tion.net/job/JDA/javadoc/net/dv8tion/jda/api/utils/SessionController.html) is a tool of the JDABuilder
+The [`SessionController`](https://ci.dv8tion.net/job/JDA5/javadoc/net/dv8tion/jda/api/utils/SessionController.html) is a tool of the JDABuilder
 that allows to control state and behaviour between shards (sessions). When using multiple builders to build shards you have to create one instance
 of this controller and add the same instance to each builder: `builder.setSessionController(controller)`
 
@@ -423,11 +428,12 @@ public class UserLogger extends ListenerAdapter
 
 ## Download
 
-Latest Stable Version: [GitHub Release](https://github.com/DV8FromTheWorld/JDA/releases/latest)
-Latest Version:
-[ ![version][] ][download]
+[ ![maven-central][] ](https://mvnrepository.com/artifact/net.dv8tion/JDA/latest)
+[ ![jitpack][] ](https://jitpack.io/#DV8FromtheWorld/JDA)
 
-Be sure to replace the **VERSION** key below with the one of the versions shown above!
+Latest Release: [GitHub Release](https://github.com/DV8FromTheWorld/JDA/releases/latest) <br>
+
+Be sure to replace the **VERSION** key below with the one of the versions shown above! For snapshots, please use the instructions provided by [JitPack](https://jitpack.io/#DV8FromTheWorld/JDA).
 
 **Maven**
 ```xml
@@ -436,13 +442,6 @@ Be sure to replace the **VERSION** key below with the one of the versions shown 
     <artifactId>JDA</artifactId>
     <version>VERSION</version>
 </dependency>
-```
-```xml
-<repository>
-    <id>dv8tion</id>
-    <name>m2-dv8tion</name>
-    <url>https://m2.dv8tion.net/releases</url>
-</repository>
 ```
 
 **Maven without Audio**
@@ -462,17 +461,13 @@ Be sure to replace the **VERSION** key below with the one of the versions shown 
 
 **Gradle**
 ```gradle
+repositories {
+    mavenCentral()
+}
+
 dependencies {
     //Change 'implementation' to 'compile' in old Gradle versions
     implementation("net.dv8tion:JDA:VERSION")
-}
-
-repositories {
-    mavenCentral() // for transitive dependencies
-    maven {
-      name 'm2-dv8tion'
-      url 'https://m2.dv8tion.net/releases'
-    }
 }
 ```
 
@@ -486,7 +481,8 @@ dependencies {
 }
 ```
 
-The builds are distributed using a custom S3 instance.
+The snapshot builds are only available via JitPack and require adding the JitPack resolver, you need to specify specific commits to access those builds.
+Stable releases are published to [maven-central](https://mvnrepository.com/artifact/net.dv8tion/JDA).
 
 If you do not need any opus de-/encoding done by JDA (voice receive/send with PCM) you can exclude `opus-java` entirely.
 This can be done if you only send audio with an `AudioSendHandler` which only sends opus (`isOpus() = true`). (See [lavaplayer](https://github.com/sedmelluq/lavaplayer))
@@ -512,11 +508,11 @@ SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further detail
 JDA currently provides a fallback Logger in case that no SLF4J implementation is present.
 We strongly recommend to use one though, as that can improve speed and allows you to customize the Logger as well as log to files
 
-The most popular implementations are [Log4j 2](https://logging.apache.org/log4j/2.x/) and [Logback](https://logback.qos.ch/)
+There is a guide for logback-classic available in our wiki: [Logging Setup](https://github.com/DV8FromTheWorld/JDA/wiki/Logging-Setup)
 
 ## Documentation
 
-Docs can be found on the [Jenkins][jenkins] or directly [here](https://ci.dv8tion.net/job/JDA/javadoc/)
+Docs can be found on the [Jenkins][jenkins] or directly [here](https://ci.dv8tion.net/job/JDA5/javadoc/)
 <br>A simple Wiki can also be found in this repository's [Wiki section](https://github.com/DV8FromTheWorld/JDA/wiki)
 
 ### Annotations
@@ -668,7 +664,7 @@ All dependencies are managed automatically by Gradle.
    * Version: **1.7.25**
    * [Website](https://www.slf4j.org/)
  * opus-java (optional)
-   * Version: **1.1.0**
+   * Version: **1.1.1**
    * [GitHub](https://github.com/discord-java/opus-java)
 
 ## Related Projects

@@ -16,15 +16,12 @@
 
 package net.dv8tion.jda.api.entities.templates;
 
-import net.dv8tion.jda.annotations.ForRemoval;
-import net.dv8tion.jda.api.Region;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Guild.ExplicitContentLevel;
 import net.dv8tion.jda.api.entities.Guild.NotificationLevel;
 import net.dv8tion.jda.api.entities.Guild.Timeout;
 import net.dv8tion.jda.api.entities.Guild.VerificationLevel;
 import net.dv8tion.jda.api.entities.ISnowflake;
-import net.dv8tion.jda.api.entities.VoiceChannel;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -40,7 +37,7 @@ import java.util.Locale;
 public class TemplateGuild implements ISnowflake
 {
     private final long id;
-    private final String name, description, region, iconId;
+    private final String name, description, iconId;
     private final VerificationLevel verificationLevel;
     private final NotificationLevel notificationLevel;
     private final ExplicitContentLevel explicitContentLevel;
@@ -51,14 +48,13 @@ public class TemplateGuild implements ISnowflake
     private final List<TemplateRole> roles;
     private final List<TemplateChannel> channels;
 
-    public TemplateGuild(final long id, final String name, final String description, final String region, final String iconId, final VerificationLevel verificationLevel,
+    public TemplateGuild(final long id, final String name, final String description, final String iconId, final VerificationLevel verificationLevel,
                          final NotificationLevel notificationLevel, final ExplicitContentLevel explicitContentLevel, final Locale locale, final Timeout afkTimeout,
                          final TemplateChannel afkChannel, final TemplateChannel systemChannel, final List<TemplateRole> roles, final List<TemplateChannel> channels)
     {
         this.id = id;
         this.name = name;
         this.description = description;
-        this.region = region;
         this.iconId = iconId;
         this.verificationLevel = verificationLevel;
         this.notificationLevel = notificationLevel;
@@ -98,39 +94,6 @@ public class TemplateGuild implements ISnowflake
     public String getDescription()
     {
         return this.description;
-    }
-
-    /**
-     * The Voice {@link net.dv8tion.jda.api.Region Region} that this Guild is using for audio connections.
-     * <br>If the Region is not recognized, this returns {@link net.dv8tion.jda.api.Region#UNKNOWN UNKNOWN} but you
-     * can still use the {@link #getRegionRaw()} to retrieve the raw name this region has.
-     *
-     * @return The the audio Region this Guild is using for audio connections. Can return Region.UNKNOWN.
-     *
-     * @deprecated Guilds no longer have the {@link net.dv8tion.jda.api.Region Region} option. Use {@link VoiceChannel#getRegion()} instead.
-     */
-    @Nonnull
-    @Deprecated
-    @ForRemoval(deadline = "5.0.0")
-    public Region getRegion()
-    {
-        return Region.fromKey(region);
-    }
-
-    /**
-     * The raw voice region name that this Guild is using for audio connections.
-     * <br>This is resolved to an enum constant of {@link Region Region} by {@link #getRegion()}!
-     *
-     * @return Raw region name
-     *
-     * @deprecated Guilds no longer have the {@link net.dv8tion.jda.api.Region Region} option. Use {@link VoiceChannel#getRegion()} instead.
-     */
-    @Nonnull
-    @Deprecated
-    @ForRemoval(deadline = "5.0.0")
-    public String getRegionRaw()
-    {
-        return region;
     }
 
     /**

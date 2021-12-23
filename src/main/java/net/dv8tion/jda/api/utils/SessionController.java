@@ -16,11 +16,7 @@
 
 package net.dv8tion.jda.api.utils;
 
-import net.dv8tion.jda.annotations.DeprecatedSince;
-import net.dv8tion.jda.annotations.ForRemoval;
-import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.internal.utils.tuple.Pair;
 
 import javax.annotation.Nonnull;
 
@@ -156,30 +152,6 @@ public interface SessionController
     /**
      * Called by {@link net.dv8tion.jda.api.sharding.DefaultShardManager DefaultShardManager}
      * when a new shards is starting.
-     * <br>Should provide a {@link net.dv8tion.jda.internal.utils.tuple.Pair Pair} with {@code (gateway, shardTotal)}.
-     *
-     * @param  api
-     *         The current JDA instance (used for RestActions and ShardInfo)
-     *
-     * @return The Pair consisting of the gateway endpoint to connect to and the shardTotal
-     *
-     * @see    #getGateway(net.dv8tion.jda.api.JDA)
-     *
-     * @deprecated
-     *         Use {@link #getShardedGateway(JDA)} instead, an implementation for this is ignored
-     *         if {@link #getShardedGateway(JDA)} is implemented instead.
-     */
-    @Nonnull
-    @Deprecated
-    @ForRemoval(deadline = "4.4.0")
-    @DeprecatedSince("4.0.0")
-    @ReplaceWith("getShardedGateway(api)")
-    @SuppressWarnings("DeprecatedIsStillUsed")
-    Pair<String, Integer> getGatewayBot(@Nonnull JDA api);
-
-    /**
-     * Called by {@link net.dv8tion.jda.api.sharding.DefaultShardManager DefaultShardManager}
-     * when a new shards is starting.
      * <br>Should provide a {@link ShardedGateway} with {@code (gateway, shardTotal)}.
      *
      * @param  api
@@ -190,12 +162,7 @@ public interface SessionController
      * @see    #getGateway(net.dv8tion.jda.api.JDA)
      */
     @Nonnull
-    @SuppressWarnings({"deprecation", "RedundantSuppression"})
-    default ShardedGateway getShardedGateway(@Nonnull JDA api)
-    {
-        Pair<String, Integer> tuple = getGatewayBot(api);
-        return new ShardedGateway(tuple.getLeft(), tuple.getRight());
-    }
+    ShardedGateway getShardedGateway(@Nonnull JDA api);
 
     /**
      * POJO containing the gateway endpoint and recommended shard total for a shard manager.

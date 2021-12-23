@@ -1,6 +1,8 @@
 # project files
 config.json
 tokens.json
+.version
+publishing-keyring.gpg
 
 # music files
 *.mp3

@@ -18,10 +18,12 @@ package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.requests.RestAction;
-import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
+import net.dv8tion.jda.api.utils.MiscUtil;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
+import java.util.FormattableFlags;
+import java.util.Formatter;
 
 /**
  * Abstract Channel interface for all {@link ChannelType ChannelTypes}.
@@ -67,4 +69,26 @@ public interface Channel extends IMentionable
     @Nonnull
     @CheckReturnValue
     RestAction<Void> delete();
+
+    @Override
+    default String getAsMention()
+    {
+        return "<#" + getId() + '>';
+    }
+
+    @Override
+    default void formatTo(Formatter formatter, int flags, int width, int precision)
+    {
+        boolean leftJustified = (flags & FormattableFlags.LEFT_JUSTIFY) == FormattableFlags.LEFT_JUSTIFY;
+        boolean upper = (flags & FormattableFlags.UPPERCASE) == FormattableFlags.UPPERCASE;
+        boolean alt = (flags & FormattableFlags.ALTERNATE) == FormattableFlags.ALTERNATE;
+        String out;
+
+        if (alt)
+            out = "#" + (upper ? getName().toUpperCase(formatter.locale()) : getName());
+        else
+            out = getAsMention();
+
+        MiscUtil.appendTo(formatter, width, precision, leftJustified, out);
+    }
 }

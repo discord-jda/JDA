@@ -75,7 +75,6 @@ public class GuildUpdateHandler extends SocketHandler
         String name = content.getString("name");
         String iconId = content.getString("icon", null);
         String splashId = content.getString("splash", null);
-        String region = content.getString("region");
         Guild.VerificationLevel verificationLevel = Guild.VerificationLevel.fromKey(content.getInt("verification_level"));
         Guild.NotificationLevel notificationLevel = Guild.NotificationLevel.fromKey(content.getInt("default_message_notifications"));
         Guild.MFALevel mfaLevel = Guild.MFALevel.fromKey(content.getInt("mfa_level"));
@@ -215,15 +214,6 @@ public class GuildUpdateHandler extends SocketHandler
                     new GuildUpdateSplashEvent(
                             getJDA(), responseNumber,
                             guild, oldSplashId));
-        }
-        if (!Objects.equals(region, guild.getRegionRaw()))
-        {
-            String oldRegion = guild.getRegionRaw();
-            guild.setRegion(region);
-            getJDA().handleEvent(
-                    new GuildUpdateRegionEvent(
-                            getJDA(), responseNumber,
-                            guild, oldRegion));
         }
         if (!Objects.equals(verificationLevel, guild.getVerificationLevel()))
         {

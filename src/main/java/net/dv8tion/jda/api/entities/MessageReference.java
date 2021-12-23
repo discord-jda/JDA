@@ -286,7 +286,7 @@ public class MessageReference
 
         Member selfMember = guild.getSelfMember();
 
-        //TODO-v5: What do we need to do to properly check perms for threads?
+
         IPermissionContainer permChannel = (IPermissionContainer) channel;
 
         if (!selfMember.hasAccess(permChannel))

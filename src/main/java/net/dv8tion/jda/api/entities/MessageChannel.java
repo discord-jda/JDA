@@ -15,9 +15,6 @@
  */
 package net.dv8tion.jda.api.entities;
 
-import net.dv8tion.jda.annotations.DeprecatedSince;
-import net.dv8tion.jda.annotations.ForRemoval;
-import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.AccountType;
 import net.dv8tion.jda.api.exceptions.AccountTypeException;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
@@ -294,7 +291,7 @@ public interface MessageChannel extends Channel, Formattable
      * <br>This will fail if this channel is an instance of {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} and
      * the currently logged in account does not have permissions to send a message to this channel.
      * <br>To determine if you are able to send a message in a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} use
-     * {@link net.dv8tion.jda.api.entities.Member#hasPermission(IPermissionContainer, net.dv8tion.jda.api.Permission...)
+     * {@link net.dv8tion.jda.api.entities.Member#hasPermission(GuildChannel, net.dv8tion.jda.api.Permission...)
      *  guild.getSelfMember().hasPermission(channel, Permission.MESSAGE_SEND)}.
      *
      * <p>For {@link net.dv8tion.jda.api.requests.ErrorResponse} information, refer to {@link #sendMessage(Message)}.
@@ -334,7 +331,7 @@ public interface MessageChannel extends Channel, Formattable
      * <br>This will fail if this channel is an instance of {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} and
      * the currently logged in account does not have permissions to send a message to this channel.
      * <br>To determine if you are able to send a message in a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} use
-     * {@link net.dv8tion.jda.api.entities.Member#hasPermission(IPermissionContainer, net.dv8tion.jda.api.Permission...)
+     * {@link net.dv8tion.jda.api.entities.Member#hasPermission(GuildChannel, net.dv8tion.jda.api.Permission...)
      *  guild.getSelfMember().hasPermission(channel, Permission.MESSAGE_SEND)}.
      *
      * <p>For {@link net.dv8tion.jda.api.requests.ErrorResponse} information, refer to {@link #sendMessage(Message)}.
@@ -377,62 +374,12 @@ public interface MessageChannel extends Channel, Formattable
     }
 
     /**
-     * Sends a specified {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbed} as a {@link net.dv8tion.jda.api.entities.Message Message}
-     * to this channel.
-     * <br>This will fail if this channel is an instance of {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} and
-     * the currently logged in account does not have permissions to send a message to this channel.
-     * <br>To determine if you are able to send a message in a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} use
-     * {@link net.dv8tion.jda.api.entities.Member#hasPermission(IPermissionContainer, net.dv8tion.jda.api.Permission...)
-     *  guild.getSelfMember().hasPermission(channel, Permission.MESSAGE_SEND)}.
-     *
-     * <p>For {@link net.dv8tion.jda.api.requests.ErrorResponse} information, refer to {@link #sendMessage(Message)}.
-     *
-     * @param  embed
-     *         the {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbed} to send
-     *
-     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If this is a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} and the logged in account does
-     *         not have
-     *         <ul>
-     *             <li>{@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}</li>
-     *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_SEND Permission.MESSAGE_SEND}</li>
-     *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_EMBED_LINKS Permission.MESSAGE_EMBED_LINKS}</li>
-     *         </ul>
-     * @throws java.lang.IllegalArgumentException
-     *         If the provided embed is {@code null} or if the provided {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbed}
-     *         is not {@link net.dv8tion.jda.api.entities.MessageEmbed#isSendable() sendable}
-     * @throws java.lang.UnsupportedOperationException
-     *         If this is a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}
-     *         and both the currently logged in account and the target user are bots.
-     *
-     * @return {@link MessageAction MessageAction}
-     *         <br>The newly created Message after it has been sent to Discord.
-     *
-     * @see    net.dv8tion.jda.api.MessageBuilder
-     * @see    net.dv8tion.jda.api.EmbedBuilder
-     * 
-     * @deprecated This is deprecated in favor of {@link #sendMessageEmbeds(MessageEmbed, MessageEmbed...)}
-     */
-    @Nonnull
-    @CheckReturnValue
-    @Deprecated
-    @ForRemoval(deadline="5.0.0")
-    @ReplaceWith("sendMessageEmbeds(embed)")
-    @DeprecatedSince("4.4.0")
-    default MessageAction sendMessage(@Nonnull MessageEmbed embed)
-    {
-        Checks.notNull(embed, "Provided embed");
-
-        return new MessageActionImpl(getJDA(), null, this).setEmbeds(embed);
-    }
-
-    /**
      * Sends up to 10 specified {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbeds} as a {@link net.dv8tion.jda.api.entities.Message Message}
      * to this channel.
      * <br>This will fail if this channel is an instance of {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} and
      * the currently logged in account does not have permissions to send a message to this channel.
      * <br>To determine if you are able to send a message in a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} use
-     * {@link net.dv8tion.jda.api.entities.Member#hasPermission(IPermissionContainer, net.dv8tion.jda.api.Permission...)
+     * {@link net.dv8tion.jda.api.entities.Member#hasPermission(GuildChannel, net.dv8tion.jda.api.Permission...)
      *  guild.getSelfMember().hasPermission(channel, Permission.MESSAGE_SEND)}.
      *
      * <p>For {@link net.dv8tion.jda.api.requests.ErrorResponse} information, refer to {@link #sendMessage(Message)}.
@@ -481,7 +428,7 @@ public interface MessageChannel extends Channel, Formattable
      * <br>This will fail if this channel is an instance of {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} and
      * the currently logged in account does not have permissions to send a message to this channel.
      * <br>To determine if you are able to send a message in a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} use
-     * {@link net.dv8tion.jda.api.entities.Member#hasPermission(IPermissionContainer, net.dv8tion.jda.api.Permission...)
+     * {@link net.dv8tion.jda.api.entities.Member#hasPermission(GuildChannel, net.dv8tion.jda.api.Permission...)
      *  guild.getSelfMember().hasPermission(channel, Permission.MESSAGE_SEND)}.
      *
      * <p>For {@link net.dv8tion.jda.api.requests.ErrorResponse} information, refer to {@link #sendMessage(Message)}.
@@ -522,7 +469,7 @@ public interface MessageChannel extends Channel, Formattable
      * <br>This will fail if this channel is an instance of {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} and
      * the currently logged in account does not have permissions to send a message to this channel.
      * <br>To determine if you are able to send a message in a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} use
-     * {@link net.dv8tion.jda.api.entities.Member#hasPermission(IPermissionContainer, net.dv8tion.jda.api.Permission...)
+     * {@link net.dv8tion.jda.api.entities.Member#hasPermission(GuildChannel, net.dv8tion.jda.api.Permission...)
      *  guild.getSelfMember().hasPermission(channel, Permission.MESSAGE_SEND)}.
      *
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
@@ -2410,7 +2357,7 @@ public interface MessageChannel extends Channel, Formattable
         Checks.isSnowflake(messageId, "Message ID");
         Checks.notNull(emote, "Emote");
 
-        return new ReactionPaginationActionImpl(this, messageId, String.format("%s:%s", emote, emote.getId()));
+        return retrieveReactionUsersById(messageId, String.format("%s:%s", emote.getName(), emote.getId()));
     }
 
     /**
@@ -3032,116 +2979,6 @@ public interface MessageChannel extends Channel, Formattable
      *
      * @param  messageId
      *         The id referencing the Message that should be edited
-     * @param  newEmbed
-     *         The new {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbed} for the edited message
-     *
-     * @throws IllegalArgumentException
-     *         <ul>
-     *             <li>If provided {@code messageId} is {@code null} or empty.</li>
-     *             <li>If provided {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbed}
-     *                 is not {@link net.dv8tion.jda.api.entities.MessageEmbed#isSendable() sendable}</li>
-     *         </ul>
-     * @throws IllegalStateException
-     *         If the provided MessageEmbed is {@code null}
-     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If this is a TextChannel and this account does not have
-     *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
-     *         or {@link net.dv8tion.jda.api.Permission#MESSAGE_SEND Permission.MESSAGE_SEND}
-     *
-     * @return {@link MessageAction MessageAction}
-     *         <br>The modified Message after it has been sent to discord
-     */
-    @Nonnull
-    @CheckReturnValue
-    @Deprecated
-    @ForRemoval(deadline = "5.0.0")
-    @ReplaceWith("editMessageEmbedsById(messageId, newEmbed)")
-    @DeprecatedSince("4.4.0")
-    default MessageAction editMessageById(@Nonnull String messageId, @Nonnull MessageEmbed newEmbed)
-    {
-        Checks.isSnowflake(messageId, "Message ID");
-        Checks.notNull(newEmbed, "MessageEmbed");
-        return new MessageActionImpl(getJDA(), messageId, this).setEmbeds(newEmbed);
-    }
-
-    /**
-     * Attempts to edit a message by its id in this MessageChannel.
-     *
-     * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#INVALID_AUTHOR_EDIT INVALID_AUTHOR_EDIT}
-     *     <br>Attempted to edit a message that was not sent by the currently logged in account.
-     *         Discord does not allow editing of other users' Messages!</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>The request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
-     *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
-     *         was revoked in the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
-     *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or
-     *         the message it referred to has already been deleted.</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
-     *     <br>The request was attempted after the channel was deleted.</li>
-     * </ul>
-     *
-     * @param  messageId
-     *         The id referencing the Message that should be edited
-     * @param  newEmbed
-     *         The new {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbed} for the edited message
-     *
-     * @throws IllegalArgumentException
-     *         <ul>
-     *             <li>If provided {@code messageId} is not positive.</li>
-     *             <li>If provided {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbed}
-     *                 is not {@link net.dv8tion.jda.api.entities.MessageEmbed#isSendable() sendable}</li>
-     *         </ul>
-     * @throws IllegalStateException
-     *         If the provided MessageEmbed is {@code null}
-     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If this is a TextChannel and this account does not have
-     *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
-     *         or {@link net.dv8tion.jda.api.Permission#MESSAGE_SEND Permission.MESSAGE_SEND}
-     *
-     * @return {@link MessageAction MessageAction}
-     *         <br>The modified Message after it has been sent to discord
-     */
-    @Nonnull
-    @CheckReturnValue
-    @Deprecated
-    @ForRemoval(deadline = "5.0.0")
-    @ReplaceWith("editMessageEmbedsById(messageId, newEmbed)")
-    @DeprecatedSince("4.4.0")
-    default MessageAction editMessageById(long messageId, @Nonnull MessageEmbed newEmbed)
-    {
-        return editMessageById(Long.toUnsignedString(messageId), newEmbed);
-    }
-
-    /**
-     * Attempts to edit a message by its id in this MessageChannel.
-     *
-     * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#INVALID_AUTHOR_EDIT INVALID_AUTHOR_EDIT}
-     *     <br>Attempted to edit a message that was not sent by the currently logged in account.
-     *         Discord does not allow editing of other users' Messages!</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>The request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
-     *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
-     *         was revoked in the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
-     *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or
-     *         the message it referred to has already been deleted.</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
-     *     <br>The request was attempted after the channel was deleted.</li>
-     * </ul>
-     *
-     * @param  messageId
-     *         The id referencing the Message that should be edited
      * @param  newEmbeds
      *         Up to 10 new {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbeds} for the edited message
      *
@@ -3553,21 +3390,5 @@ public interface MessageChannel extends Channel, Formattable
     {
         Checks.noneNull(components, "Components");
         return editMessageComponentsById(messageId, Arrays.asList(components));
-    }
-
-
-    @Override
-    default void formatTo(Formatter formatter, int flags, int width, int precision)
-    {
-        boolean leftJustified = (flags & FormattableFlags.LEFT_JUSTIFY) == FormattableFlags.LEFT_JUSTIFY;
-        boolean upper = (flags & FormattableFlags.UPPERCASE) == FormattableFlags.UPPERCASE;
-        boolean alt = (flags & FormattableFlags.ALTERNATE) == FormattableFlags.ALTERNATE;
-        String out;
-
-        out = upper ?  getName().toUpperCase(formatter.locale()) : getName();
-        if (alt)
-            out = "#" + out;
-
-        MiscUtil.appendTo(formatter, width, precision, leftJustified, out);
     }
 }

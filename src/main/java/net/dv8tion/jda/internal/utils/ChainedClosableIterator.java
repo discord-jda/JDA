@@ -124,7 +124,7 @@ public class ChainedClosableIterator<T> implements ClosableIterator<T>
     }
 
     @Override
-    @Deprecated
+    @Deprecated //Deprecated in Java 9 because the finalization system is being changed/removed
     protected void finalize()
     {
         if (currentIterator != null)

@@ -20,7 +20,7 @@ import net.dv8tion.jda.api.audio.AudioReceiveHandler;
 import net.dv8tion.jda.api.audio.AudioSendHandler;
 import net.dv8tion.jda.api.audio.CombinedAudio;
 import net.dv8tion.jda.api.entities.*;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.managers.AudioManager;
 import net.dv8tion.jda.api.requests.GatewayIntent;
@@ -62,7 +62,7 @@ public class AudioEchoExample extends ListenerAdapter
     }
 
     @Override
-    public void onGuildMessageReceived(GuildMessageReceivedEvent event)
+    public void onMessageReceived(MessageReceivedEvent event)
     {
         Message message = event.getMessage();
         User author = message.getAuthor();
@@ -72,6 +72,11 @@ public class AudioEchoExample extends ListenerAdapter
         // Ignore message if bot
         if (author.isBot())
             return;
+
+        // We only want to handle message in Guilds
+        if (!event.isFromGuild()) {
+            return;
+        }
 
         if (content.startsWith("!echo "))
         {
@@ -90,7 +95,7 @@ public class AudioEchoExample extends ListenerAdapter
      * @param event
      *        The event for this command
      */
-    private void onEchoCommand(GuildMessageReceivedEvent event)
+    private void onEchoCommand(MessageReceivedEvent event)
     {
         // Note: None of these can be null due to our configuration with the JDABuilder!
         Member member = event.getMember();                              // Member is the context of the user for the specific guild, containing voice state and roles
@@ -117,7 +122,7 @@ public class AudioEchoExample extends ListenerAdapter
      * @param arg
      *        The input argument
      */
-    private void onEchoCommand(GuildMessageReceivedEvent event, Guild guild, String arg)
+    private void onEchoCommand(MessageReceivedEvent event, Guild guild, String arg)
     {
         boolean isNumber = arg.matches("\\d+"); // This is a regular expression that ensures the input consists of digits
         VoiceChannel channel = null;
@@ -132,14 +137,14 @@ public class AudioEchoExample extends ListenerAdapter
                 channel = channels.get(0);      // We found a channel! This cannot be null.
         }
 
-        TextChannel textChannel = event.getChannel();
+        MessageChannel messageChannel = event.getChannel();
         if (channel == null)                    // I have no idea what you want mr user
         {
-            onUnknownChannel(textChannel, arg); // Let the user know about our failure
+            onUnknownChannel(messageChannel, arg); // Let the user know about our failure
             return;
         }
         connectTo(channel);                     // We found a channel to connect to!
-        onConnecting(channel, textChannel);     // Let the user know, we were successful!
+        onConnecting(channel, messageChannel);     // Let the user know, we were successful!
     }
 
     /**
@@ -147,12 +152,12 @@ public class AudioEchoExample extends ListenerAdapter
      *
      * @param channel
      *        The voice channel we connected to
-     * @param textChannel
+     * @param messageChannel
      *        The text channel to send the message in
      */
-    private void onConnecting(AudioChannel channel, TextChannel textChannel)
+    private void onConnecting(AudioChannel channel, MessageChannel messageChannel)
     {
-        textChannel.sendMessage("Connecting to " + channel.getName()).queue(); // never forget to queue()!
+        messageChannel.sendMessage("Connecting to " + channel.getName()).queue(); // never forget to queue()!
     }
 
     /**

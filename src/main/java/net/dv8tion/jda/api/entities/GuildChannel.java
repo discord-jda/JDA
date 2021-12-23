@@ -1,7 +1,7 @@
 package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.managers.ChannelManager;
+import net.dv8tion.jda.api.managers.channel.ChannelManager;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 
 import javax.annotation.CheckReturnValue;
@@ -40,7 +40,7 @@ public interface GuildChannel extends Channel, Comparable<GuildChannel>
      * @return The ChannelManager of this GuildChannel
      */
     @Nonnull
-    ChannelManager<? extends GuildChannel> getManager();
+    ChannelManager<?, ?> getManager();
 
     /**
      * TODO-v5: this override might not be needed anymore if we remove AuditableRestAction and instead place auditable hooks onto RestAction itself.
@@ -69,4 +69,7 @@ public interface GuildChannel extends Channel, Comparable<GuildChannel>
     @Nonnull
     @CheckReturnValue
     AuditableRestAction<Void> delete();
+
+    //TODO-v5: Docs
+    IPermissionContainer getPermissionContainer();
 }

@@ -1,5 +1,6 @@
 package net.dv8tion.jda.api.entities;
 
+import net.dv8tion.jda.api.managers.channel.middleman.BaseGuildMessageChannelManager;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.ChannelAction;
@@ -11,8 +12,13 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 //TODO-v5: Docs
-public interface BaseGuildMessageChannel extends GuildMessageChannel, GuildChannel, ICategorizableChannel, ICopyableChannel, IPermissionContainer, IMemberContainer, IInviteContainer, IPositionableChannel
+public interface BaseGuildMessageChannel extends GuildMessageChannel, IThreadContainer, GuildChannel, ICategorizableChannel, ICopyableChannel, IPermissionContainer, IMemberContainer, IInviteContainer, IPositionableChannel
 {
+    //TODO-v5: Docs
+    @Override
+    @Nonnull
+    BaseGuildMessageChannelManager<?, ?> getManager();
+
     /**
      * The topic set for this TextChannel.
      * <br>If no topic has been set, this returns null.
@@ -117,8 +123,12 @@ public interface BaseGuildMessageChannel extends GuildMessageChannel, GuildChann
     AuditableRestAction<Void> deleteWebhookById(@Nonnull String id);
 
     @Override
+    @Nonnull
+    @CheckReturnValue
     ChannelAction<? extends BaseGuildMessageChannel> createCopy(@Nonnull Guild guild);
 
     @Override
+    @Nonnull
+    @CheckReturnValue
     ChannelAction<? extends BaseGuildMessageChannel> createCopy();
 }

@@ -28,6 +28,7 @@ import net.dv8tion.jda.api.requests.restaction.RoleAction;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
+import net.dv8tion.jda.internal.entities.mixin.channel.attribute.IPermissionContainerMixin;
 import net.dv8tion.jda.internal.managers.RoleManagerImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
@@ -133,9 +134,9 @@ public class RoleImpl implements Role
 
     @Nonnull
     @Override
-    public EnumSet<Permission> getPermissions(@Nonnull IPermissionContainer channel)
+    public EnumSet<Permission> getPermissions(@Nonnull GuildChannel channel)
     {
-        return Permission.getPermissions(PermissionUtil.getEffectivePermission(channel, this));
+        return Permission.getPermissions(PermissionUtil.getEffectivePermission(channel.getPermissionContainer(), this));
     }
 
     @Nonnull
@@ -147,9 +148,9 @@ public class RoleImpl implements Role
 
     @Nonnull
     @Override
-    public EnumSet<Permission> getPermissionsExplicit(@Nonnull IPermissionContainer channel)
+    public EnumSet<Permission> getPermissionsExplicit(@Nonnull GuildChannel channel)
     {
-        return Permission.getPermissions(PermissionUtil.getExplicitPermission(channel, this));
+        return Permission.getPermissions(PermissionUtil.getExplicitPermission(channel.getPermissionContainer(), this));
     }
 
     @Override
@@ -192,9 +193,9 @@ public class RoleImpl implements Role
     }
 
     @Override
-    public boolean hasPermission(@Nonnull IPermissionContainer channel, @Nonnull Permission... permissions)
+    public boolean hasPermission(@Nonnull GuildChannel channel, @Nonnull Permission... permissions)
     {
-        long effectivePerms = PermissionUtil.getEffectivePermission(channel, this);
+        long effectivePerms = PermissionUtil.getEffectivePermission(channel.getPermissionContainer(), this);
         for (Permission perm : permissions)
         {
             final long rawValue = perm.getRawValue();
@@ -205,7 +206,7 @@ public class RoleImpl implements Role
     }
 
     @Override
-    public boolean hasPermission(@Nonnull IPermissionContainer channel, @Nonnull Collection<Permission> permissions)
+    public boolean hasPermission(@Nonnull GuildChannel channel, @Nonnull Collection<Permission> permissions)
     {
         Checks.notNull(permissions, "Permission Collection");
 
@@ -229,7 +230,7 @@ public class RoleImpl implements Role
         if (hasLocalAdmin)
             return true;
 
-        TLongObjectMap<PermissionOverride> existingOverrides = ((AbstractChannelImpl<?, ?>) targetChannel).getOverrideMap();
+        TLongObjectMap<PermissionOverride> existingOverrides = ((IPermissionContainerMixin<?>) targetChannel).getPermissionOverrideMap();
         for (PermissionOverride override : syncSource.getPermissionOverrides())
         {
             PermissionOverride existing = existingOverrides.get(override.getIdLong());
@@ -330,7 +331,7 @@ public class RoleImpl implements Role
         return tags == null ? RoleTagsImpl.EMPTY : tags;
     }
 
-    @Nonnull
+    @Nullable
     @Override
     public RoleIcon getIcon()
     {

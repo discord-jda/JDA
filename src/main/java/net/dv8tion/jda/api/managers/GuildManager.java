@@ -16,10 +16,6 @@
 
 package net.dv8tion.jda.api.managers;
 
-import net.dv8tion.jda.annotations.DeprecatedSince;
-import net.dv8tion.jda.annotations.ForRemoval;
-import net.dv8tion.jda.annotations.ReplaceWith;
-import net.dv8tion.jda.api.Region;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Icon;
 import net.dv8tion.jda.api.entities.TextChannel;
@@ -48,37 +44,35 @@ import javax.annotation.Nullable;
 public interface GuildManager extends Manager<GuildManager>
 {
     /** Used to reset the name field */
-    long NAME   = 0x1;
-    /** Used to reset the region field */
-    long REGION = 0x2;
+    long NAME   = 1;
     /** Used to reset the icon field */
-    long ICON   = 0x4;
+    long ICON   = 1 << 1;
     /** Used to reset the splash field */
-    long SPLASH = 0x8;
+    long SPLASH = 1 << 2;
     /** Used to reset the afk channel field */
-    long AFK_CHANNEL    = 0x10;
+    long AFK_CHANNEL    = 1 << 3;
     /** Used to reset the afk timeout field */
-    long AFK_TIMEOUT    = 0x20;
+    long AFK_TIMEOUT    = 1 << 4;
     /** Used to reset the system channel field */
-    long SYSTEM_CHANNEL = 0x40;
+    long SYSTEM_CHANNEL = 1 << 5;
     /** Used to reset the mfa level field */
-    long MFA_LEVEL      = 0x80;
+    long MFA_LEVEL      = 1 << 6;
     /** Used to reset the default notification level field */
-    long NOTIFICATION_LEVEL     = 0x100;
+    long NOTIFICATION_LEVEL     = 1 << 7;
     /** Used to reset the explicit content level field */
-    long EXPLICIT_CONTENT_LEVEL = 0x200;
+    long EXPLICIT_CONTENT_LEVEL = 1 << 8;
     /** Used to reset the verification level field */
-    long VERIFICATION_LEVEL     = 0x400;
+    long VERIFICATION_LEVEL     = 1 << 9;
     /** Used to reset the banner field */
-    long BANNER                 = 0x800;
-    /** Used to reset the vanity code field */
-    long VANITY_URL                 = 0x1000;
+    long BANNER                 = 1 << 10;
     /** Used to reset the description field */
-    long DESCRIPTION                = 0x2000;
+    long DESCRIPTION                = 1 << 11;
     /** Used to reset the rules channel field */
-    long RULES_CHANNEL              = 0x4000;
+    long RULES_CHANNEL              = 1 << 12;
     /** Used to reset the community updates channel field */
-    long COMMUNITY_UPDATES_CHANNEL  = 0x8000;
+    long COMMUNITY_UPDATES_CHANNEL  = 1 << 13;
+    /** Used to reset the premium progress bar enabled field */
+    long BOOST_PROGRESS_BAR_ENABLED = 1 << 14;
 
     /**
      * Resets the fields specified by the provided bit-flag pattern.
@@ -89,7 +83,6 @@ public interface GuildManager extends Manager<GuildManager>
      * <ul>
      *     <li>{@link #NAME}</li>
      *     <li>{@link #ICON}</li>
-     *     <li>{@link #REGION}</li>
      *     <li>{@link #SPLASH}</li>
      *     <li>{@link #AFK_CHANNEL}</li>
      *     <li>{@link #AFK_TIMEOUT}</li>
@@ -100,6 +93,7 @@ public interface GuildManager extends Manager<GuildManager>
      *     <li>{@link #NOTIFICATION_LEVEL}</li>
      *     <li>{@link #EXPLICIT_CONTENT_LEVEL}</li>
      *     <li>{@link #VERIFICATION_LEVEL}</li>
+     *     <li>{@link #BOOST_PROGRESS_BAR_ENABLED}</li>
      * </ul>
      *
      * @param  fields
@@ -120,7 +114,6 @@ public interface GuildManager extends Manager<GuildManager>
      * <ul>
      *     <li>{@link #NAME}</li>
      *     <li>{@link #ICON}</li>
-     *     <li>{@link #REGION}</li>
      *     <li>{@link #SPLASH}</li>
      *     <li>{@link #AFK_CHANNEL}</li>
      *     <li>{@link #AFK_TIMEOUT}</li>
@@ -131,6 +124,7 @@ public interface GuildManager extends Manager<GuildManager>
      *     <li>{@link #NOTIFICATION_LEVEL}</li>
      *     <li>{@link #EXPLICIT_CONTENT_LEVEL}</li>
      *     <li>{@link #VERIFICATION_LEVEL}</li>
+     *     <li>{@link #BOOST_PROGRESS_BAR_ENABLED}</li>
      * </ul>
      *
      * @param  fields
@@ -165,31 +159,6 @@ public interface GuildManager extends Manager<GuildManager>
     @Nonnull
     @CheckReturnValue
     GuildManager setName(@Nonnull String name);
-
-    /**
-     * Sets the {@link net.dv8tion.jda.api.Region Region} of this {@link net.dv8tion.jda.api.entities.Guild Guild}.
-     *
-     * @param  region
-     *         The new region for this {@link net.dv8tion.jda.api.entities.Guild Guild}
-     *
-     * @throws IllegalArgumentException
-     *         If the provided region is a {@link net.dv8tion.jda.api.Region#isVip() VIP Region} but the guild does not support VIP regions.
-     *         Use {@link net.dv8tion.jda.api.entities.Guild#getFeatures() Guild#getFeatures()} to check if VIP regions are supported.
-     *
-     * @return GuildManager for chaining convenience
-     *
-     * @see    net.dv8tion.jda.api.Region#isVip()
-     * @see    net.dv8tion.jda.api.entities.Guild#getFeatures()
-     * 
-     * @deprecated Guilds no longer have the {@link net.dv8tion.jda.api.Region Region} option. Use {@link ChannelManager#setRegion(Region)} instead.
-     */
-    @Nonnull
-    @CheckReturnValue
-    @Deprecated
-    @ForRemoval(deadline = "5.0.0")
-    @ReplaceWith("ChannelManager.setRegion()")
-    @DeprecatedSince("4.3.0")
-    GuildManager setRegion(@Nonnull Region region);
 
     /**
      * Sets the {@link net.dv8tion.jda.api.entities.Icon Icon} of this {@link net.dv8tion.jda.api.entities.Guild Guild}.
@@ -376,22 +345,6 @@ public interface GuildManager extends Manager<GuildManager>
     GuildManager setBanner(@Nullable Icon banner);
 
     /**
-     * Sets the Vanity Code {@link net.dv8tion.jda.api.entities.Icon Icon} of this {@link net.dv8tion.jda.api.entities.Guild Guild}.
-     *
-     * @param  code
-     *         The new vanity code for this {@link net.dv8tion.jda.api.entities.Guild Guild}
-     *         or {@code null} to reset
-     *
-     * @throws java.lang.IllegalStateException
-     *         If the guild's {@link net.dv8tion.jda.api.entities.Guild#getFeatures() features} do not include {@code VANITY_URL}
-     *
-     * @return GuildManager for chaining convenience
-     */
-    @Nonnull
-    @CheckReturnValue
-    GuildManager setVanityCode(@Nullable String code);
-
-    /**
      * Sets the Description {@link net.dv8tion.jda.api.entities.Icon Icon} of this {@link net.dv8tion.jda.api.entities.Guild Guild}.
      *
      * @param  description
@@ -406,4 +359,17 @@ public interface GuildManager extends Manager<GuildManager>
     @Nonnull
     @CheckReturnValue
     GuildManager setDescription(@Nullable String description);
+
+    /**
+     * Sets whether this {@link net.dv8tion.jda.api.entities.Guild Guild} should have its boost progress bar shown.
+     *
+     * @param  boostProgressBarEnabled
+     *         Whether the boost progress bar should be shown
+     *         for this {@link net.dv8tion.jda.api.entities.Guild Guild}
+     *
+     * @return GuildManager for chaining convenience
+     */
+    @Nonnull
+    @CheckReturnValue
+    GuildManager setBoostProgressBarEnabled(boolean boostProgressBarEnabled);
 }

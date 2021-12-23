@@ -15,9 +15,6 @@
  */
 package net.dv8tion.jda.api.entities;
 
-import net.dv8tion.jda.annotations.DeprecatedSince;
-import net.dv8tion.jda.annotations.ForRemoval;
-import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.exceptions.HttpException;
@@ -147,10 +144,10 @@ public interface Message extends ISnowflake, Formattable
      * @see MessageAction#append(CharSequence) MessageAction.append(...)
      */
     int MAX_CONTENT_LENGTH = 2000;
-    
+
    /**
     * The maximum amount of reactions that can be added to one message ({@value})
-    * 
+    *
     * @see Message#addReaction(String)
     * @see Message#addReaction(net.dv8tion.jda.api.entities.Emote)
     */
@@ -1033,52 +1030,6 @@ public interface Message extends ISnowflake, Formattable
     MessageAction editMessage(@Nonnull CharSequence newContent);
 
     /**
-     * Edits this Message's content to the provided {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbed}.
-     * <br><b>Messages can only be edited by the account that sent them!</b>.
-     *
-     * <p>This message instance will not be updated by this operation, please use the response message instead.
-     *
-     * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>The edit was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
-     *         typically due to being kicked or removed.</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
-     *     <br>The edit was attempted after the account lost {@link net.dv8tion.jda.api.Permission#MESSAGE_SEND Permission.MESSAGE_SEND} in
-     *         the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}.</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
-     *     <br>If the message has already been deleted. This might also be triggered for ephemeral messages.</li>
-     * </ul>
-     *
-     * @param  newContent
-     *         the new content of the Message
-     *
-     * @throws java.lang.UnsupportedOperationException
-     *         If this is a system message
-     * @throws java.lang.IllegalStateException
-     *         If the message attempting to be edited was not created by the currently logged in account, or
-     *         if the passed-in embed is {@code null}
-     *         or not {@link net.dv8tion.jda.api.entities.MessageEmbed#isSendable() sendable}
-     *
-     * @return {@link MessageAction MessageAction}
-     *         <br>The {@link net.dv8tion.jda.api.entities.Message Message} with the updated content
-     *
-     * @deprecated Use {@link #editMessageEmbeds(MessageEmbed...)} instead
-     */
-    @Nonnull
-    @CheckReturnValue
-    @Deprecated
-    @ForRemoval(deadline = "5.0.0")
-    @ReplaceWith("editMessageEmbeds(newEmbed)")
-    @DeprecatedSince("4.4.0")
-    default MessageAction editMessage(@Nonnull MessageEmbed newContent)
-    {
-        return editMessageEmbeds(newContent);
-    }
-
-    /**
      * Edits this Message's content to the provided {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbeds}.
      * <br><b>Messages can only be edited by the account that sent them!</b>.
      *
@@ -1374,35 +1325,6 @@ public interface Message extends ISnowflake, Formattable
     @Nonnull
     @CheckReturnValue
     default MessageAction reply(@Nonnull CharSequence content)
-    {
-        return getChannel().sendMessage(content).reference(this);
-    }
-
-    /**
-     * Replies and references this message.
-     * <br>This is identical to {@code message.getChannel().sendMessage(content).reference(message)}.
-     * You can use {@link MessageAction#mentionRepliedUser(boolean) mentionRepliedUser(false)} to not mention the author of the message.
-     * <br>By default there won't be any error thrown if the referenced message does not exist.
-     * This behavior can be changed with {@link MessageAction#failOnInvalidReply(boolean)}.
-     *
-     * <p>For further info, see {@link MessageChannel#sendMessageEmbeds(MessageEmbed, MessageEmbed...)} and {@link MessageAction#reference(Message)}.
-     *
-     * @param  content
-     *         The content of the reply message
-     *
-     * @return {@link MessageAction} Providing the {@link Message} created from this upload.
-     *
-     * @since  4.2.1
-     *
-     * @deprecated Use {@link #replyEmbeds(MessageEmbed, MessageEmbed...)} instead
-     */
-    @Nonnull
-    @CheckReturnValue
-    @Deprecated
-    @ForRemoval(deadline = "5.0.0")
-    @ReplaceWith("replyEmbeds(content)")
-    @DeprecatedSince("4.4.0")
-    default MessageAction reply(@Nonnull MessageEmbed content)
     {
         return getChannel().sendMessage(content).reference(this);
     }
@@ -1940,7 +1862,7 @@ public interface Message extends ISnowflake, Formattable
      *             <li>If this message was <b>not</b> sent in a {@link net.dv8tion.jda.api.entities.Guild Guild}.</li>
      *             <li>If this message is ephemeral</li>
      *         </ul>
-     *         
+     *
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link java.lang.Void}
      */
@@ -1992,7 +1914,7 @@ public interface Message extends ISnowflake, Formattable
      *             <li>If this message was <b>not</b> sent in a {@link net.dv8tion.jda.api.entities.Guild Guild}.</li>
      *             <li>If this message is ephemeral</li>
      *         </ul>
-     *         
+     *
      *
      * @return {@link RestAction}
      *
@@ -2150,7 +2072,7 @@ public interface Message extends ISnowflake, Formattable
      *         <b>and</b> the given user is <b>not</b> the {@link net.dv8tion.jda.api.entities.SelfUser SelfUser}.</li>
      *     <li>If this message is ephemeral</li>
      * </ul>
-     *        
+     *
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link java.lang.Void}
      *
@@ -2277,7 +2199,7 @@ public interface Message extends ISnowflake, Formattable
      *                 <b>and</b> the given user is <b>not</b> the {@link net.dv8tion.jda.api.entities.SelfUser SelfUser}.</li>
      *             <li>Is ephemeral</li>
      *         </ul>
-     *         
+     *
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link java.lang.Void}
      *
@@ -2474,7 +2396,7 @@ public interface Message extends ISnowflake, Formattable
      * @throws net.dv8tion.jda.api.exceptions.PermissionException
      *         If the MessageChannel this message was sent in was a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}
      *         and the message was not sent by the currently logged in account.
-     * @throws IllegalStateException 
+     * @throws IllegalStateException
      *         If this Message is ephemeral
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction} - Type: {@link java.lang.Void}
      * @see    #isSuppressedEmbeds()
@@ -2512,7 +2434,7 @@ public interface Message extends ISnowflake, Formattable
      *         If this is a system message
      * @throws IllegalStateException
      *         <ul>
-     *             <li>If the channel is not a text or news channel. See {@link TextChannel#isNews()}.</li>
+     *             <li>If the channel is not a {@link NewsChannel}.</li>
      *             <li>If the message is ephemeral.</li>
      *         </ul>
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
@@ -2554,7 +2476,7 @@ public interface Message extends ISnowflake, Formattable
 
     /**
      * Returns the raw message flags of this message
-     * 
+     *
      * @throws java.lang.UnsupportedOperationException
      *         If this is a system message
      * @return The raw message flags
@@ -2566,7 +2488,7 @@ public interface Message extends ISnowflake, Formattable
      * Whether this message is ephemeral.
      * <br>The message being ephemeral means it is only visible to the bot and the interacting user
      * <br>This is a shortcut method for checking if {@link #getFlags()} contains {@link MessageFlag#EPHEMERAL}
-     * 
+     *
      * @throws java.lang.UnsupportedOperationException
      *         If this is a system message
      * @return Whether the message is ephemeral
@@ -2600,6 +2522,10 @@ public interface Message extends ISnowflake, Formattable
      */
     @Nullable
     Interaction getInteraction();
+
+    //TODO-v5: Docs
+    @CheckReturnValue
+    RestAction<ThreadChannel> createThreadChannel(String name);
 
     /**
      * Mention constants, useful for use with {@link java.util.regex.Pattern Patterns}
@@ -2771,6 +2697,7 @@ public interface Message extends ISnowflake, Formattable
         private final String proxyUrl;
         private final String fileName;
         private final String contentType;
+        private final String description;
         private final int size;
         private final int height;
         private final int width;
@@ -2778,13 +2705,14 @@ public interface Message extends ISnowflake, Formattable
 
         private final JDAImpl jda;
 
-        public Attachment(long id, String url, String proxyUrl, String fileName, String contentType, int size, int height, int width, boolean ephemeral, JDAImpl jda)
+        public Attachment(long id, String url, String proxyUrl, String fileName, String contentType, String description, int size, int height, int width, boolean ephemeral, JDAImpl jda)
         {
             this.id = id;
             this.url = url;
             this.proxyUrl = proxyUrl;
             this.fileName = fileName;
             this.contentType = contentType;
+            this.description = description;
             this.size = size;
             this.height = height;
             this.width = width;
@@ -2866,6 +2794,18 @@ public interface Message extends ISnowflake, Formattable
         public String getContentType()
         {
             return contentType;
+        }
+
+        /**
+         * The description (alt text) of this attachment.
+         * <br>This description is shown when hovering over the attachment in the client.
+         *
+         * @return The description, or null if this isn't provided
+         */
+        @Nullable
+        public String getDescription()
+        {
+            return description;
         }
 
         /**

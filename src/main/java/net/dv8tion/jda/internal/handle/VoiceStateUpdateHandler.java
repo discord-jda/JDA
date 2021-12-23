@@ -18,12 +18,14 @@ package net.dv8tion.jda.internal.handle;
 
 import net.dv8tion.jda.api.entities.AudioChannel;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.events.guild.voice.*;
 import net.dv8tion.jda.api.hooks.VoiceDispatchInterceptor;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
-import net.dv8tion.jda.internal.entities.*;
+import net.dv8tion.jda.internal.entities.GuildImpl;
+import net.dv8tion.jda.internal.entities.GuildVoiceStateImpl;
+import net.dv8tion.jda.internal.entities.MemberImpl;
+import net.dv8tion.jda.internal.entities.mixin.channel.middleman.AudioChannelMixin;
 import net.dv8tion.jda.internal.managers.AudioManagerImpl;
 import net.dv8tion.jda.internal.requests.WebSocketClient;
 
@@ -174,7 +176,7 @@ public class VoiceStateUpdateHandler extends SocketHandler
 
             if (oldChannel == null)
             {
-                ((AbstractGuildAudioChannelImpl<?, ?>) channel).getConnectedMembersMap().put(userId, member);
+                ((AudioChannelMixin<?>) channel).getConnectedMembersMap().put(userId, member);
                 getJDA().getEntityBuilder().updateMemberCache(member);
 
                 getJDA().handleEvent(
@@ -184,7 +186,7 @@ public class VoiceStateUpdateHandler extends SocketHandler
             }
             else if (channel == null)
             {
-                ((AbstractGuildAudioChannelImpl<?, ?>) oldChannel).getConnectedMembersMap().remove(userId);
+                ((AudioChannelMixin<?>) oldChannel).getConnectedMembersMap().remove(userId);
                 if (isSelf)
                     getJDA().getDirectAudioController().update(guild, null);
                 getJDA().getEntityBuilder().updateMemberCache(member, memberJson.isNull("joined_at"));
@@ -214,8 +216,8 @@ public class VoiceStateUpdateHandler extends SocketHandler
                     //If we are not already connected this will be removed by VOICE_SERVER_UPDATE
                 }
 
-                ((AbstractGuildAudioChannelImpl<?, ?>) channel).getConnectedMembersMap().put(userId, member);
-                ((AbstractGuildAudioChannelImpl<?, ?>) oldChannel).getConnectedMembersMap().remove(userId);
+                ((AudioChannelMixin<?>) channel).getConnectedMembersMap().put(userId, member);
+                ((AudioChannelMixin<?>) oldChannel).getConnectedMembersMap().remove(userId);
                 getJDA().getEntityBuilder().updateMemberCache(member);
 
                 getJDA().handleEvent(

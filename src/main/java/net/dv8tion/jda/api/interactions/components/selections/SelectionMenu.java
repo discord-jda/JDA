@@ -59,6 +59,21 @@ import java.util.stream.Collectors;
 public interface SelectionMenu extends Component
 {
     /**
+     * The maximum length a selection menu id can have
+     */
+    int ID_MAX_LENGTH = 100;
+
+    /**
+     * The maximum length a selection menu placeholder can have
+     */
+    int PLACEHOLDER_MAX_LENGTH = 100;
+
+    /**
+     * The maximum amount of options a selection menu can have
+     */
+    int OPTIONS_MAX_AMOUNT = 25;
+
+    /**
      * Placeholder which is displayed when no selections have been made yet.
      *
      * @return The placeholder or null
@@ -81,9 +96,11 @@ public interface SelectionMenu extends Component
     int getMaxValues();
 
     /**
-     * Up to 25 available options to choose from.
+     * An <b>unmodifiable</b> list of up to {@value OPTIONS_MAX_AMOUNT} available options to choose from.
      *
      * @return The {@link SelectOption SelectOptions} this menu provides
+     *
+     * @see    Builder#getOptions()
      */
     @Nonnull
     List<SelectOption> getOptions();
@@ -169,7 +186,7 @@ public interface SelectionMenu extends Component
      *         The id used to identify this menu with {@link Component#getId()} for component interactions
      *
      * @throws IllegalArgumentException
-     *         If the provided id is null, empty, or longer than 100 characters
+     *         If the provided id is null, empty, or longer than {@value ID_MAX_LENGTH} characters
      *
      * @return The {@link Builder} used to create the selection menu
      */
@@ -224,7 +241,7 @@ public interface SelectionMenu extends Component
          *         The new custom id to use
          *
          * @throws IllegalArgumentException
-         *         If the provided id is null, empty, or longer than 100 characters
+         *         If the provided id is null, empty, or longer than {@value ID_MAX_LENGTH} characters
          *
          * @return The same builder instance for chaining
          */
@@ -232,7 +249,7 @@ public interface SelectionMenu extends Component
         public Builder setId(@Nonnull String customId)
         {
             Checks.notEmpty(customId, "Component ID");
-            Checks.notLonger(customId, 100, "Component ID");
+            Checks.notLonger(customId, ID_MAX_LENGTH, "Component ID");
             this.customId = customId;
             return this;
         }
@@ -244,7 +261,7 @@ public interface SelectionMenu extends Component
          *         The placeholder or null
          *
          * @throws IllegalArgumentException
-         *         If the provided placeholder is empty or longer than 100 characters
+         *         If the provided placeholder is empty or longer than {@value PLACEHOLDER_MAX_LENGTH} characters
          *
          * @return The same builder instance for chaining
          */
@@ -254,7 +271,7 @@ public interface SelectionMenu extends Component
             if (placeholder != null)
             {
                 Checks.notEmpty(placeholder, "Placeholder");
-                Checks.notLonger(placeholder, 100, "Placeholder");
+                Checks.notLonger(placeholder, PLACEHOLDER_MAX_LENGTH, "Placeholder");
             }
             this.placeholder = placeholder;
             return this;
@@ -270,7 +287,7 @@ public interface SelectionMenu extends Component
          *         The min values
          *
          * @throws IllegalArgumentException
-         *         If the provided amount is negative or greater than 25
+         *         If the provided amount is negative or greater than {@value OPTIONS_MAX_AMOUNT}
          *
          * @return The same builder instance for chaining
          */
@@ -278,7 +295,7 @@ public interface SelectionMenu extends Component
         public Builder setMinValues(int minValues)
         {
             Checks.notNegative(minValues, "Min Values");
-            Checks.check(minValues <= 25, "Min Values may not be greater than 25! Provided: %d", minValues);
+            Checks.check(minValues <= OPTIONS_MAX_AMOUNT, "Min Values may not be greater than %d! Provided: %d", OPTIONS_MAX_AMOUNT, minValues);
             this.minValues = minValues;
             return this;
         }
@@ -293,7 +310,7 @@ public interface SelectionMenu extends Component
          *         The max values
          *
          * @throws IllegalArgumentException
-         *         If the provided amount is less than 1 or greater than 25
+         *         If the provided amount is less than 1 or greater than {@value OPTIONS_MAX_AMOUNT}
          *
          * @return The same builder instance for chaining
          */
@@ -301,7 +318,7 @@ public interface SelectionMenu extends Component
         public Builder setMaxValues(int maxValues)
         {
             Checks.positive(maxValues, "Max Values");
-            Checks.check(maxValues <= 25, "Min Values may not be greater than 25! Provided: %d", maxValues);
+            Checks.check(maxValues <= OPTIONS_MAX_AMOUNT, "Min Values may not be greater than %d! Provided: %d", OPTIONS_MAX_AMOUNT, maxValues);
             this.maxValues = maxValues;
             return this;
         }
@@ -346,13 +363,13 @@ public interface SelectionMenu extends Component
         }
 
         /**
-         * Adds up to 25 possible options to this selection menu.
+         * Adds up to {@value OPTIONS_MAX_AMOUNT} possible options to this selection menu.
          *
          * @param  options
          *         The {@link SelectOption SelectOptions} to add
          *
          * @throws IllegalArgumentException
-         *         If the total amount of options is greater than 25 or null is provided
+         *         If the total amount of options is greater than {@value OPTIONS_MAX_AMOUNT} or null is provided
          *
          * @return The same builder instance for chaining
          *
@@ -362,19 +379,19 @@ public interface SelectionMenu extends Component
         public Builder addOptions(@Nonnull SelectOption... options)
         {
             Checks.noneNull(options, "Options");
-            Checks.check(this.options.size() + options.length <= 25, "Cannot have more than 25 options for a selection menu!");
+            Checks.check(this.options.size() + options.length <= OPTIONS_MAX_AMOUNT, "Cannot have more than %d options for a selection menu!", OPTIONS_MAX_AMOUNT);
             Collections.addAll(this.options, options);
             return this;
         }
 
         /**
-         * Adds up to 25 possible options to this selection menu.
+         * Adds up to {@value OPTIONS_MAX_AMOUNT} possible options to this selection menu.
          *
          * @param  options
          *         The {@link SelectOption SelectOptions} to add
          *
          * @throws IllegalArgumentException
-         *         If the total amount of options is greater than 25 or null is provided
+         *         If the total amount of options is greater than {@value OPTIONS_MAX_AMOUNT} or null is provided
          *
          * @return The same builder instance for chaining
          *
@@ -384,21 +401,23 @@ public interface SelectionMenu extends Component
         public Builder addOptions(@Nonnull Collection<? extends SelectOption> options)
         {
             Checks.noneNull(options, "Options");
-            Checks.check(this.options.size() + options.size() <= 25, "Cannot have more than 25 options for a selection menu!");
+            Checks.check(this.options.size() + options.size() <= OPTIONS_MAX_AMOUNT, "Cannot have more than %d options for a selection menu!", OPTIONS_MAX_AMOUNT);
             this.options.addAll(options);
             return this;
         }
 
         /**
-         * Adds up to 25 possible options to this selection menu.
+         * Adds up to {@value OPTIONS_MAX_AMOUNT} possible options to this selection menu.
          *
          * @param  label
-         *         The label for the option, up to 25 characters
+         *         The label for the option, up to {@value SelectOption#LABEL_MAX_LENGTH} characters
          * @param  value
-         *         The value for the option used to indicate which option was selected with {@link SelectionMenuInteraction#getValues()}, up to 100 characters
+         *         The value for the option used to indicate which option was selected with {@link SelectionMenuInteraction#getValues()},
+         *         up to {@value SelectOption#VALUE_MAX_LENGTH} characters
          *
          * @throws IllegalArgumentException
-         *         If the total amount of options is greater than 25, invalid null is provided, or any of the individual parameter requirements are violated.
+         *         If the total amount of options is greater than {@value OPTIONS_MAX_AMOUNT}, invalid null is provided,
+         *         or any of the individual parameter requirements are violated.
          *
          * @return The same builder instance for chaining
          */
@@ -409,17 +428,18 @@ public interface SelectionMenu extends Component
         }
 
         /**
-         * Adds up to 25 possible options to this selection menu.
+         * Adds up to {@value OPTIONS_MAX_AMOUNT} possible options to this selection menu.
          *
          * @param  label
-         *         The label for the option, up to 25 characters
+         *         The label for the option, up to {@value SelectOption#LABEL_MAX_LENGTH} characters
          * @param  value
-         *         The value for the option used to indicate which option was selected with {@link SelectionMenuInteraction#getValues()}, up to 100 characters
+         *         The value for the option used to indicate which option was selected with {@link SelectionMenuInteraction#getValues()},
+         *         up to {@value SelectOption#VALUE_MAX_LENGTH} characters
          * @param  emoji
          *         The {@link Emoji} shown next to this option, or null
          *
          * @throws IllegalArgumentException
-         *         If the total amount of options is greater than 25, invalid null is provided, or any of the individual parameter requirements are violated.
+         *         If the total amount of options is greater than {@value OPTIONS_MAX_AMOUNT}, invalid null is provided, or any of the individual parameter requirements are violated.
          *
          * @return The same builder instance for chaining
          */
@@ -430,17 +450,19 @@ public interface SelectionMenu extends Component
         }
 
         /**
-         * Adds up to 25 possible options to this selection menu.
+         * Adds up to {@value OPTIONS_MAX_AMOUNT} possible options to this selection menu.
          *
          * @param  label
-         *         The label for the option, up to 25 characters
+         *         The label for the option, up to {@value SelectOption#LABEL_MAX_LENGTH} characters
          * @param  value
-         *         The value for the option used to indicate which option was selected with {@link SelectionMenuInteraction#getValues()}, up to 100 characters
+         *         The value for the option used to indicate which option was selected with {@link SelectionMenuInteraction#getValues()},
+         *         up to {@value SelectOption#VALUE_MAX_LENGTH} characters
          * @param  description
          *         The description explaining the meaning of this option in more detail, up to 50 characters
          *
          * @throws IllegalArgumentException
-         *         If the total amount of options is greater than 25, invalid null is provided, or any of the individual parameter requirements are violated.
+         *         If the total amount of options is greater than {@value OPTIONS_MAX_AMOUNT}, invalid null is provided,
+         *         or any of the individual parameter requirements are violated.
          *
          * @return The same builder instance for chaining
          */
@@ -451,19 +473,21 @@ public interface SelectionMenu extends Component
         }
 
         /**
-         * Adds up to 25 possible options to this selection menu.
+         * Adds up to {@value OPTIONS_MAX_AMOUNT} possible options to this selection menu.
          *
          * @param  label
-         *         The label for the option, up to 25 characters
+         *         The label for the option, up to {@value SelectOption#LABEL_MAX_LENGTH} characters
          * @param  value
-         *         The value for the option used to indicate which option was selected with {@link SelectionMenuInteraction#getValues()}, up to 100 characters
+         *         The value for the option used to indicate which option was selected with {@link SelectionMenuInteraction#getValues()},
+         *         up to {@value SelectOption#VALUE_MAX_LENGTH} characters
          * @param  description
          *         The description explaining the meaning of this option in more detail, up to 50 characters
          * @param  emoji
          *         The {@link Emoji} shown next to this option, or null
          *
          * @throws IllegalArgumentException
-         *         If the total amount of options is greater than 25, invalid null is provided, or any of the individual parameter requirements are violated.
+         *         If the total amount of options is greater than {@value OPTIONS_MAX_AMOUNT}, invalid null is provided,
+         *         or any of the individual parameter requirements are violated.
          *
          * @return The same builder instance for chaining
          */
@@ -568,7 +592,7 @@ public interface SelectionMenu extends Component
         {
             return maxValues;
         }
-        
+
         /**
          * Whether the menu is disabled
          *
@@ -581,13 +605,13 @@ public interface SelectionMenu extends Component
 
         /**
          * Creates a new {@link SelectionMenu} instance if all requirements are satisfied.
-         * <br>A selection menu may not have more than 25 options at once.
+         * <br>A selection menu may not have more than {@value OPTIONS_MAX_AMOUNT} options at once.
          *
          * <p>The values for {@link #setMinValues(int)} and {@link #setMaxValues(int)} are bounded by the length of {@link #getOptions()}.
          * This means they will automatically be adjusted to not be greater than {@code getOptions().size()}.
          *
          * @throws IllegalArgumentException
-         *         Throws if {@link #getMinValues()} is greater than {@link #getMaxValues()} or more than 25 options are provided
+         *         Throws if {@link #getMinValues()} is greater than {@link #getMaxValues()} or more than {@value OPTIONS_MAX_AMOUNT} options are provided
          *
          * @return The new {@link SelectionMenu} instance
          */
@@ -595,7 +619,7 @@ public interface SelectionMenu extends Component
         public SelectionMenu build()
         {
             Checks.check(minValues <= maxValues, "Min values cannot be greater than max values!");
-            Checks.check(options.size() <= 25, "Cannot build a selection menu with more than 25 options.");
+            Checks.check(options.size() <= OPTIONS_MAX_AMOUNT, "Cannot build a selection menu with more than %d options.", OPTIONS_MAX_AMOUNT);
             int min = Math.min(minValues, options.size());
             int max = Math.min(maxValues, options.size());
             return new SelectionMenuImpl(customId, placeholder, min, max, disabled, options);
