@@ -203,6 +203,6 @@ public class StageChannelImpl extends AbstractGuildChannelImpl<StageChannelImpl>
     @Override
     public String toString()
     {
-        return "StaC:" + getName() + '(' + id + ')';
+        return "StaC:" + getName() + '(' + getId() + ')';
     }
 }

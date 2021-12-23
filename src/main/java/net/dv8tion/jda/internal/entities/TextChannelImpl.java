@@ -183,6 +183,6 @@ public class TextChannelImpl extends AbstractGuildChannelImpl<TextChannelImpl> i
     @Override
     public String toString()
     {
-        return "TC:" + getName() + '(' + id + ')';
+        return "TC:" + getName() + '(' + getId() + ')';
     }
 }
