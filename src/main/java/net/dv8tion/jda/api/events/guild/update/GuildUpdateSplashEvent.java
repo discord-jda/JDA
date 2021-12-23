@@ -44,7 +44,7 @@ public class GuildUpdateSplashEvent extends GenericGuildUpdateEvent<String>
      *
      * @return The old splash id, or null
      */
-    @Nullable
+    @Nullable //TODO remove
     public String getOldSplashId()
     {
         return getOldValue();
@@ -55,7 +55,7 @@ public class GuildUpdateSplashEvent extends GenericGuildUpdateEvent<String>
      *
      * @return The url of the old splash, or null
      */
-    @Nullable
+    @Nullable //TODO remove
     public String getOldSplashUrl()
     {
         return previous == null ? null : String.format(Guild.SPLASH_URL, guild.getId(), previous);
@@ -65,10 +65,11 @@ public class GuildUpdateSplashEvent extends GenericGuildUpdateEvent<String>
     @Nullable
     public ImageProxy getOldSplash()
     {
-        final String oldSplashUrl = getOldSplashUrl();
-        if (oldSplashUrl == null) return null;
+        if (previous == null) return null;
 
-        return ImageProxy.fromUrl(getJDA(), oldSplashUrl);
+        final String oldSplashUrl = String.format(Guild.SPLASH_URL, guild.getId(), previous);
+
+        return new ImageProxy(getJDA(), oldSplashUrl, previous, "png");
     }
 
     /**
@@ -76,7 +77,7 @@ public class GuildUpdateSplashEvent extends GenericGuildUpdateEvent<String>
      *
      * @return The new splash id, or null
      */
-    @Nullable
+    @Nullable //TODO remove
     public String getNewSplashId()
     {
         return getNewValue();
@@ -87,7 +88,7 @@ public class GuildUpdateSplashEvent extends GenericGuildUpdateEvent<String>
      *
      * @return The url of the new splash, or null
      */
-    @Nullable
+    @Nullable //TODO remove
     public String getNewSplashUrl()
     {
         return next == null ? null : String.format(Guild.SPLASH_URL, guild.getId(), next);
@@ -97,9 +98,10 @@ public class GuildUpdateSplashEvent extends GenericGuildUpdateEvent<String>
     @Nullable
     public ImageProxy getNewSplash()
     {
-        final String newSplashUrl = getNewSplashUrl();
-        if (newSplashUrl == null) return null;
+        if (next == null) return null;
 
-        return ImageProxy.fromUrl(getJDA(), newSplashUrl);
+        final String newSplashUrl = String.format(Guild.SPLASH_URL, guild.getId(), next);
+
+        return new ImageProxy(getJDA(), newSplashUrl, next, "png");
     }
 }
