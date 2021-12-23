@@ -120,6 +120,6 @@ public class NewsChannelImpl extends AbstractStandardGuildMessageChannelImpl<New
     @Override
     public String toString()
     {
-        return "NC:" + getName() + '(' + id + ')';
+        return "NC:" + getName() + '(' + getId() + ')';
     }
 }
