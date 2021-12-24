@@ -198,7 +198,7 @@ public class WebhookMessageActionImpl<T>
         for (Map.Entry<String, InputStream> file : files.entrySet())
         {
             RequestBody stream = IOUtil.createRequestBody(Requester.MEDIA_TYPE_OCTET, file.getValue());
-            body.addFormDataPart("file" + i++, file.getKey(), stream);
+            body.addFormDataPart("files[" + (i++) + "]", file.getKey(), stream);
         }
 
         body.addFormDataPart("payload_json", data.toString());
