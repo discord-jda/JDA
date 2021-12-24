@@ -23,22 +23,24 @@ import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.cache.CacheView;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.mixin.channel.middleman.GuildMessageChannelMixin;
 import net.dv8tion.jda.internal.managers.channel.concrete.ThreadChannelManagerImpl;
+import net.dv8tion.jda.internal.requests.DeferredRestAction;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
-import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-public class ThreadChannelImpl extends AbstractGuildChannelImpl<ThreadChannelImpl> implements 
-        ThreadChannel, 
+public class ThreadChannelImpl extends AbstractGuildChannelImpl<ThreadChannelImpl> implements
+        ThreadChannel,
         GuildMessageChannelMixin<ThreadChannelImpl>
 {
     private final ChannelType type;
@@ -133,6 +135,21 @@ public class ThreadChannelImpl extends AbstractGuildChannelImpl<ThreadChannelImp
     public ThreadMember getThreadMemberById(long id)
     {
         return threadMembers.get(id);
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<ThreadMember> retrieveThreadMemberById(long id)
+    {
+        JDAImpl jda = (JDAImpl) getJDA();
+        return new DeferredRestAction<>(jda, ThreadMember.class,
+                () -> getThreadMemberById(id),
+                () -> {
+                    Route.CompiledRoute route = Route.Channels.GET_THREAD_MEMBER.compile(getId(), Long.toUnsignedString(id));
+                    return new RestActionImpl<>(jda, route, (resp, req) -> {
+                        return jda.getEntityBuilder().createThreadMember(getGuild(), this, resp.getObject());
+                    });
+                });
     }
 
     @Override
