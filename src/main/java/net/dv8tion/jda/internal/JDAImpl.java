@@ -119,6 +119,8 @@ public class JDAImpl implements JDA
     protected final ThreadingConfig threadConfig;
     protected final SessionConfig sessionConfig;
     protected final MetaConfig metaConfig;
+    
+    protected final Object statusLock = new Object();
 
     protected WebSocketClient client;
     protected Requester requester;
@@ -347,7 +349,7 @@ public class JDAImpl implements JDA
     public void setStatus(Status status)
     {
         //noinspection SynchronizeOnNonFinalField
-        synchronized (this.status)
+        synchronized (statusLock)
         {
             Status oldStatus = this.status;
             this.status = status;
@@ -428,7 +430,9 @@ public class JDAImpl implements JDA
     @Override
     public Status getStatus()
     {
-        return status;
+    	synchronized (statusLock) {
+    		return status;
+    	}
     }
 
     @Nonnull
