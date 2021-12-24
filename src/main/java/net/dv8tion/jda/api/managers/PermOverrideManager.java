@@ -46,11 +46,11 @@ import java.util.Collection;
 public interface PermOverrideManager extends Manager<PermOverrideManager>
 {
     /** Used to reset the denied field */
-    long DENIED      = 0x1;
+    long DENIED      = 1;
     /** Used to reset the granted field */
-    long ALLOWED     = 0x2;
+    long ALLOWED     = 1 << 1;
     /** Used to reset <b>all</b> permissions to their original value */
-    long PERMISSIONS = 0x3;
+    long PERMISSIONS = ALLOWED | DENIED;
 
     /**
      * Resets the fields specified by the provided bit-flag pattern.
