@@ -355,6 +355,7 @@ public class JDAImpl implements JDA
             this.status = status;
 
             handleEvent(new StatusChangeEvent(this, status, oldStatus));
+            statusLock.notifyAll(); // notify threads awaiting status change for shutdown
         }
     }
 
@@ -430,9 +431,9 @@ public class JDAImpl implements JDA
     @Override
     public Status getStatus()
     {
-    	synchronized (statusLock) {
-    		return status;
-    	}
+        synchronized (statusLock) {
+            return status;
+        }
     }
 
     @Nonnull
@@ -756,6 +757,18 @@ public class JDAImpl implements JDA
         {
             client.getChunkManager().shutdown();
             client.shutdown();
+        }
+    }
+    
+    @Override
+    public synchronized void awaitShutdown() throws InterruptedException
+    {
+        synchronized (statusLock)
+        {
+            while (status != Status.SHUTDOWN)
+            {
+                statusLock.wait();
+            }
         }
     }
 

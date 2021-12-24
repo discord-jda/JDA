@@ -17,6 +17,7 @@
 package net.dv8tion.jda.api;
 
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.events.ShutdownEvent;
 import net.dv8tion.jda.api.hooks.IEventManager;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
@@ -2374,6 +2375,18 @@ public interface JDA
      * @see #shutdown()
      */
     void shutdownNow();
+    
+    /**
+     * Blocks until this JDA instance fully shuts down. <b>This method does not shut down JDA.</b>
+     * 
+     * <p>If you want to run code after shutting down async, use the {@link ShutdownEvent} in preference to this method.
+     * 
+     * @throws InterruptedException
+     * 			if the current thread is interrupted while waiting
+     * 
+     * @see ShutdownEvent
+     */
+    void awaitShutdown() throws InterruptedException;
 
     ///**
     // * Installs an auxiliary cable into the given port of your system.
