@@ -17,6 +17,7 @@
 package net.dv8tion.jda.internal.handle;
 
 import net.dv8tion.jda.api.events.interaction.GenericInteractionCreateEvent;
+import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteEvent;
 import net.dv8tion.jda.api.events.interaction.command.MessageContextEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandEvent;
 import net.dv8tion.jda.api.events.interaction.command.UserContextEvent;
@@ -28,6 +29,7 @@ import net.dv8tion.jda.api.interactions.components.Component;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.interactions.InteractionImpl;
+import net.dv8tion.jda.internal.interactions.command.AutoCompleteCommandInteractionImpl;
 import net.dv8tion.jda.internal.interactions.command.MessageContextInteractionImpl;
 import net.dv8tion.jda.internal.interactions.command.SlashCommandInteractionImpl;
 import net.dv8tion.jda.internal.interactions.command.UserContextInteractionImpl;
@@ -56,7 +58,7 @@ public class InteractionCreateHandler extends SocketHandler
         if (api.getGuildSetupController().isLocked(guildId))
             return guildId;
         if (guildId != 0 && api.getGuildById(guildId) == null)
-            return null; // discard event if its not from a guild we are currently in
+            return null; // discard event if it is not from a guild we are currently in
 
         switch (InteractionType.fromKey(type))
         {
@@ -65,6 +67,11 @@ public class InteractionCreateHandler extends SocketHandler
                 break;
             case COMPONENT: // buttons/components
                 handleAction(content);
+                break;
+            case COMMAND_AUTOCOMPLETE:
+                api.handleEvent(
+                    new CommandAutoCompleteEvent(api, responseNumber,
+                        new AutoCompleteCommandInteractionImpl(api, content)));
                 break;
             default:
                 api.handleEvent(
