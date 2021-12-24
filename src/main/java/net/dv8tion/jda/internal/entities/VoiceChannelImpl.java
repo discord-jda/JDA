@@ -176,12 +176,4 @@ public class VoiceChannelImpl extends AbstractGuildChannelImpl<VoiceChannelImpl>
         this.userLimit = userLimit;
         return this;
     }
-
-    // -- Object overrides --
-
-    @Override
-    public String toString()
-    {
-        return "VC:" + getName() + '(' + getId() + ')';
-    }
 }

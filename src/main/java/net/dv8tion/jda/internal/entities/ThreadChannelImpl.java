@@ -323,15 +323,6 @@ public class ThreadChannelImpl extends AbstractGuildChannelImpl<ThreadChannelImp
         return archiveTimestamp;
     }
 
-
-    // -- Object overrides --
-
-    @Override
-    public String toString()
-    {
-        return "ThC:" + getName() + '(' + getId() + ')';
-    }
-
     private void checkUnarchived()
     {
         if (archived) {

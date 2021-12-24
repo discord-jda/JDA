@@ -197,12 +197,4 @@ public class StageChannelImpl extends AbstractGuildChannelImpl<StageChannelImpl>
         this.instance = instance;
         return this;
     }
-
-    // -- Object Overrides --
-
-    @Override
-    public String toString()
-    {
-        return "StaC:" + getName() + '(' + getId() + ')';
-    }
 }

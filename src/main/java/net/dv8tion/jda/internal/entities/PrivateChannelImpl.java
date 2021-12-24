@@ -140,12 +140,6 @@ public class PrivateChannelImpl extends AbstractChannelImpl<PrivateChannelImpl> 
         return impl.id == this.id;
     }
 
-    @Override
-    public String toString()
-    {
-        return "PC:" + getUser().getName() + '(' + getId() + ')';
-    }
-
     private void updateUser()
     {
         // Load user from cache if one exists, otherwise we might have an outdated user instance
