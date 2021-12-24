@@ -348,7 +348,6 @@ public class JDAImpl implements JDA
 
     public void setStatus(Status status)
     {
-        //noinspection SynchronizeOnNonFinalField
         synchronized (statusLock)
         {
             Status oldStatus = this.status;
