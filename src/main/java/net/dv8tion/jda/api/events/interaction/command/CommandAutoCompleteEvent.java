@@ -18,11 +18,14 @@ package net.dv8tion.jda.api.events.interaction.command;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.events.interaction.GenericInteractionCreateEvent;
+import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.CommandAutoCompleteInteraction;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
+import net.dv8tion.jda.api.requests.restaction.interactions.ChoiceAction;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Collection;
 import java.util.List;
 
 public class CommandAutoCompleteEvent extends GenericInteractionCreateEvent implements CommandAutoCompleteInteraction
@@ -74,5 +77,12 @@ public class CommandAutoCompleteEvent extends GenericInteractionCreateEvent impl
     public List<OptionMapping> getOptions()
     {
         return interaction.getOptions();
+    }
+
+    @Nonnull
+    @Override
+    public ChoiceAction replyChoices(@Nonnull Collection<Command.Choice> choices)
+    {
+        return interaction.replyChoices(choices);
     }
 }
