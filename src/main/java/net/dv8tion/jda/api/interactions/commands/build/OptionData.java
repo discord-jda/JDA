@@ -72,7 +72,7 @@ public class OptionData implements SerializableData
 
     private final OptionType type;
     private String name, description;
-    private boolean isRequired;
+    private boolean isRequired, isAutoComplete;
     private final EnumSet<ChannelType> channelTypes = EnumSet.noneOf(ChannelType.class);
     private Number minValue;
     private Number maxValue;
@@ -180,6 +180,11 @@ public class OptionData implements SerializableData
     public boolean isRequired()
     {
         return isRequired;
+    }
+
+    public boolean isAutoComplete()
+    {
+        return isAutoComplete;
     }
 
     /**
@@ -302,6 +307,21 @@ public class OptionData implements SerializableData
     public OptionData setRequired(boolean required)
     {
         this.isRequired = required;
+        return this;
+    }
+
+    @Nonnull
+    public OptionData setAutoComplete(boolean autoComplete)
+    {
+        if (isAutoComplete)
+        {
+            if (choices == null)
+                throw new IllegalStateException("Cannot enable auto-complete for options of type " + type);
+            if (!choices.isEmpty())
+                throw new IllegalStateException("Cannot enable auto-complete for options with choices");
+        }
+
+        isAutoComplete = autoComplete;
         return this;
     }
 
@@ -550,6 +570,8 @@ public class OptionData implements SerializableData
         Checks.check(value >= MIN_NEGATIVE_NUMBER, "Double value may not be lower than %f", MIN_NEGATIVE_NUMBER);
         Checks.check(value <= MAX_POSITIVE_NUMBER, "Double value may not be larger than %f", MAX_POSITIVE_NUMBER);
         Checks.check(choices.size() < MAX_CHOICES, "Cannot have more than 25 choices for an option!");
+        if (isAutoComplete)
+            throw new IllegalStateException("Cannot add choices to auto-complete options");
         if (type != OptionType.NUMBER)
             throw new IllegalArgumentException("Cannot add double choice for OptionType." + type);
         choices.put(name, value);
@@ -584,6 +606,8 @@ public class OptionData implements SerializableData
         Checks.check(value >= MIN_NEGATIVE_NUMBER, "Long value may not be lower than %f", MIN_NEGATIVE_NUMBER);
         Checks.check(value <= MAX_POSITIVE_NUMBER, "Long value may not be larger than %f", MAX_POSITIVE_NUMBER);
         Checks.check(choices.size() < MAX_CHOICES, "Cannot have more than 25 choices for an option!");
+        if (isAutoComplete)
+            throw new IllegalStateException("Cannot add choices to auto-complete options");
         if (type != OptionType.INTEGER)
             throw new IllegalArgumentException("Cannot add long choice for OptionType." + type);
         choices.put(name, value);
@@ -618,6 +642,8 @@ public class OptionData implements SerializableData
         Checks.notLonger(name, MAX_CHOICE_NAME_LENGTH, "Name");
         Checks.notLonger(value, MAX_CHOICE_VALUE_LENGTH, "Value");
         Checks.check(choices.size() < MAX_CHOICES, "Cannot have more than 25 choices for an option!");
+        if (isAutoComplete)
+            throw new IllegalStateException("Cannot add choices to auto-complete options");
         if (type != OptionType.STRING)
             throw new IllegalArgumentException("Cannot add string choice for OptionType." + type);
         choices.put(name, value);
@@ -648,6 +674,8 @@ public class OptionData implements SerializableData
         if (this.choices == null)
             throw new IllegalStateException("Cannot add choices for an option of type " + type);
         Checks.noneNull(choices, "Choices");
+        if (isAutoComplete && choices.length > 0)
+            throw new IllegalStateException("Cannot add choices to auto-complete options");
         Checks.check(choices.length + this.choices.size() <= MAX_CHOICES, "Cannot have more than 25 choices for one option!");
         for (Command.Choice choice : choices)
         {
@@ -697,7 +725,10 @@ public class OptionData implements SerializableData
                 .put("name", name)
                 .put("description", description);
         if (type != OptionType.SUB_COMMAND && type != OptionType.SUB_COMMAND_GROUP)
+        {
             json.put("required", isRequired);
+            json.put("autocomplete", isAutoComplete);
+        }
         if (choices != null && !choices.isEmpty())
         {
             json.put("choices", DataArray.fromCollection(choices.entrySet()

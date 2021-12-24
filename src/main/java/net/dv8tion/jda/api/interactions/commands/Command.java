@@ -375,8 +375,8 @@ public class Command implements ISnowflake
     {
         UNKNOWN(-1),
         SLASH(1),
-        USER(2),
-        MESSAGE(3);
+        MESSAGE(2),
+        USER(3);
 
         private final int id;
 
@@ -394,6 +394,11 @@ public class Command implements ISnowflake
                     return type;
             }
             return UNKNOWN;
+        }
+
+        public int getId()
+        {
+            return id;
         }
     }
 

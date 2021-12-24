@@ -33,12 +33,12 @@ public class SubcommandData extends BaseCommand<CommandData> implements Serializ
     private boolean allowRequired = true;
 
     /**
-     * Create an subcommand builder.
+     * Create a subcommand builder.
      *
-     * @param name
-     *        The subcommand name, 1-32 lowercase alphanumeric characters
-     * @param description
-     *        The subcommand description, 1-100 characters
+     * @param  name
+     *         The subcommand name, 1-32 lowercase alphanumeric characters
+     * @param  description
+     *         The subcommand description, 1-100 characters
      *
      * @throws IllegalArgumentException
      *         If any of the following requirements are not met
@@ -50,6 +50,23 @@ public class SubcommandData extends BaseCommand<CommandData> implements Serializ
     public SubcommandData(@Nonnull String name, @Nonnull String description)
     {
         super(name, description);
+        checkName(name);
+        checkDescription(description);
+    }
+
+    @Override
+    protected void checkName(String name)
+    {
+        Checks.inRange(name, 1, 32, "Name");
+        Checks.matches(name, Checks.ALPHANUMERIC_WITH_DASH, "Name");
+        Checks.isLowercase(name, "Name");
+    }
+
+    @Override
+    protected void checkDescription(String description)
+    {
+        Checks.notEmpty(description, "Description");
+        Checks.notLonger(description, 100, "Description");
     }
 
     /**
