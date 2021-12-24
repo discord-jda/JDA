@@ -83,6 +83,12 @@ public class PrivateChannelImpl extends AbstractChannelImpl<PrivateChannelImpl> 
     }
 
     @Override
+    public boolean canTalk()
+    {
+        return !user.isBot();
+    }
+
+    @Override
     public void checkCanAccessChannel() {}
 
     @Override
