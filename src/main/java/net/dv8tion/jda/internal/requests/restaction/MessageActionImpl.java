@@ -479,7 +479,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
         for (Map.Entry<String, InputStream> entry : files.entrySet())
         {
             final RequestBody body = IOUtil.createRequestBody(Requester.MEDIA_TYPE_OCTET, entry.getValue());
-            builder.addFormDataPart("file" + index++, entry.getKey(), body);
+            builder.addFormDataPart("files[" + (index++) + "]", entry.getKey(), body);
         }
         if (messageReference != 0L || components != null || retainedAttachments != null || !isEmpty())
             builder.addFormDataPart("payload_json", getJSON().toString());
