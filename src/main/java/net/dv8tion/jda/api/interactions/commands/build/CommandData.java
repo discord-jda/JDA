@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.interactions.commands.build;
 
+import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
@@ -28,7 +29,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Builder for a Slash-Command.
+ * Builder for Application Commands.
  */
 public class CommandData extends BaseCommand<CommandData> implements SerializableData
 {
@@ -38,8 +39,10 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
     private boolean defaultPermissions = true; // whether the command uses default_permissions (blacklist/whitelist)
     private boolean allowRequired = true;
 
+    private final Command.Type type;
+
     /**
-     * Create an command builder.
+     * Create a command builder.
      *
      * @param name
      *        The command name, 1-32 lowercase alphanumeric characters
@@ -56,13 +59,65 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
     public CommandData(@Nonnull String name, @Nonnull String description)
     {
         super(name, description);
+        this.type = Command.Type.SLASH;
+        checkName(name);
+        checkDescription(description);
+    }
+
+    /**
+     * Create a command builder.
+     *
+     * @param  type
+     *         The command type, must not be {@link Command.Type#SLASH}
+     * @param  name
+     *         The command name, 1-32 characters
+     *
+     * @throws IllegalArgumentException
+     *         If the name is not between 1-32 characters long
+     *
+     */
+    public CommandData(@Nonnull Command.Type type, @Nonnull String name)
+    {
+        super(name, null);
+        Checks.check(type != Command.Type.SLASH, "Cannot create slash command without description. Use `new CommandData(name, description)` instead.");
+        this.type = type;
+    }
+
+    @Override
+    protected void checkName(String name)
+    {
+        Checks.inRange(name, 1, 32, "Name");
+        if (type == Command.Type.SLASH)
+        {
+            Checks.matches(name, Checks.ALPHANUMERIC_WITH_DASH, "Name");
+            Checks.isLowercase(name, "Name");
+        }
+    }
+
+    @Override
+    protected void checkDescription(String description)
+    {
+        if (type != Command.Type.SLASH)
+        {
+            if (description == null)
+                return;
+            throw new IllegalArgumentException("Cannot set descriptions for commands of type " + type);
+        }
+        Checks.notEmpty(description, "Description");
+        Checks.notLonger(description, 100, "Description");
+    }
+
+    protected void checkType(Command.Type required, String action)
+    {
+        if (required != type)
+            throw new IllegalStateException("Cannot " + action + " for commands of type " + type);
     }
 
     @Nonnull
     @Override
     public DataObject toData()
     {
-        return super.toData().put("default_permission", defaultPermissions);
+        return super.toData().put("default_permission", defaultPermissions).put("type", type.getId());
     }
 
     /**
@@ -139,6 +194,7 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
     @Nonnull
     public CommandData addOptions(@Nonnull OptionData... options)
     {
+        checkType(Command.Type.SLASH, "add options");
         Checks.noneNull(options, "Option");
         Checks.check(options.length + this.options.length() <= 25, "Cannot have more than 25 options for a command!");
         Checks.check(allowOption, "You cannot mix options with subcommands/groups.");
@@ -256,6 +312,7 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
     @Nonnull
     public CommandData addSubcommands(@Nonnull SubcommandData... subcommands)
     {
+        checkType(Command.Type.SLASH, "add subcommands");
         Checks.noneNull(subcommands, "Subcommands");
         if (!allowSubcommands)
             throw new IllegalArgumentException("You cannot mix options with subcommands/groups.");
@@ -300,6 +357,7 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
     @Nonnull
     public CommandData addSubcommandGroups(@Nonnull SubcommandGroupData... groups)
     {
+        checkType(Command.Type.SLASH, "add subcommand groups");
         Checks.noneNull(groups, "SubcommandGroups");
         if (!allowGroups)
             throw new IllegalArgumentException("You cannot mix options with subcommands/groups.");
@@ -348,6 +406,10 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
     {
         Checks.notNull(object, "DataObject");
         String name = object.getString("name");
+        Command.Type commandType = Command.Type.fromId(object.getInt("type", 1));
+        if (commandType != Command.Type.SLASH)
+            return new CommandData(commandType, name);
+
         String description = object.getString("description");
         DataArray options = object.optArray("options").orElseGet(DataArray::empty);
         CommandData command = new CommandData(name, description);

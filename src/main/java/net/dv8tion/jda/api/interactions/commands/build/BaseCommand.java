@@ -23,6 +23,7 @@ import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -31,17 +32,15 @@ public abstract class BaseCommand<T extends BaseCommand<T>> implements Serializa
     protected final DataArray options = DataArray.empty();
     protected String name, description;
 
-    public BaseCommand(@Nonnull String name, @Nonnull String description)
+    public BaseCommand(@Nonnull String name, @Nullable String description)
     {
         Checks.notEmpty(name, "Name");
-        Checks.notEmpty(description, "Description");
-        Checks.notLonger(name, 32, "Name");
-        Checks.notLonger(description, 100, "Description");
-        Checks.matches(name, Checks.ALPHANUMERIC_WITH_DASH, "Name");
-        Checks.isLowercase(name, "Name");
         this.name = name;
         this.description = description;
     }
+
+    protected abstract void checkName(String name);
+    protected abstract void checkDescription(String description);
 
     /**
      * Configure the name
@@ -58,10 +57,7 @@ public abstract class BaseCommand<T extends BaseCommand<T>> implements Serializa
     @SuppressWarnings("unchecked")
     public T setName(@Nonnull String name)
     {
-        Checks.notEmpty(name, "Name");
-        Checks.notLonger(name, 32, "Name");
-        Checks.isLowercase(name, "Name");
-        Checks.matches(name, Checks.ALPHANUMERIC_WITH_DASH, "Name");
+        checkName(name);
         this.name = name;
         return (T) this;
     }
@@ -81,8 +77,7 @@ public abstract class BaseCommand<T extends BaseCommand<T>> implements Serializa
     @SuppressWarnings("unchecked")
     public T setDescription(@Nonnull String description)
     {
-        Checks.notEmpty(description, "Description");
-        Checks.notLonger(description, 100, "Description");
+        checkDescription(description);
         this.description = description;
         return (T) this;
     }
@@ -106,7 +101,7 @@ public abstract class BaseCommand<T extends BaseCommand<T>> implements Serializa
     @Nonnull
     public String getDescription()
     {
-        return description;
+        return description == null ? "" : description;
     }
 
     /**
@@ -127,9 +122,11 @@ public abstract class BaseCommand<T extends BaseCommand<T>> implements Serializa
     @Override
     public DataObject toData()
     {
-        return DataObject.empty()
-                .put("name", name)
-                .put("description", description)
-                .put("options", options);
+        DataObject json = DataObject.empty().put("name", this.name);
+        if (description != null)
+            json.put("description", description);
+        if (!options.isEmpty())
+            json.put("options", options);
+        return json;
     }
 }
