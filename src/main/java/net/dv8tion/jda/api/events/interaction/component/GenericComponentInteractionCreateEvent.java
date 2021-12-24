@@ -14,13 +14,16 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.events.interaction;
+package net.dv8tion.jda.api.events.interaction.component;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.events.interaction.GenericInteractionCreateEvent;
+import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.components.Component;
 import net.dv8tion.jda.api.interactions.components.ComponentInteraction;
+import net.dv8tion.jda.api.requests.restaction.interactions.ReplyAction;
 import net.dv8tion.jda.api.requests.restaction.interactions.UpdateInteractionAction;
 
 import javax.annotation.Nonnull;
@@ -97,5 +100,19 @@ public class GenericComponentInteractionCreateEvent extends GenericInteractionCr
     public UpdateInteractionAction deferEdit()
     {
         return interaction.deferEdit();
+    }
+
+    @Nonnull
+    @Override
+    public InteractionHook getHook()
+    {
+        return interaction.getHook();
+    }
+
+    @Nonnull
+    @Override
+    public ReplyAction deferReply()
+    {
+        return interaction.deferReply();
     }
 }

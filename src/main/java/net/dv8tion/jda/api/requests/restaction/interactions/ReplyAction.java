@@ -17,6 +17,7 @@
 package net.dv8tion.jda.api.requests.restaction.interactions;
 
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.Component;
 import net.dv8tion.jda.api.utils.AllowedMentions;
@@ -36,7 +37,7 @@ import java.util.function.BooleanSupplier;
  * A {@link InteractionCallbackAction} which can be used to send a message reply for an interaction.
  * <br>You can use {@link #setEphemeral(boolean)} to hide this message from other users.
  */
-public interface ReplyAction extends InteractionCallbackAction, AllowedMentions<ReplyAction>
+public interface ReplyAction extends InteractionCallbackAction<InteractionHook>, AllowedMentions<ReplyAction>
 {
     @Nonnull
     @Override

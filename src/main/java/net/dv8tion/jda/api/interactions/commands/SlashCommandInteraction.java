@@ -16,15 +16,13 @@
 
 package net.dv8tion.jda.api.interactions.commands;
 
-import net.dv8tion.jda.api.events.interaction.command.SlashCommandEvent;
-import net.dv8tion.jda.api.interactions.Interaction;
-import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback;
+import net.dv8tion.jda.api.entities.MessageChannel;
 
-/**
- * Interaction of a Slash-Command.
- *
- * @see SlashCommandEvent
- */
-public interface CommandInteraction extends Interaction, IReplyCallback, CommandPayload
+import javax.annotation.Nonnull;
+
+public interface SlashCommandInteraction extends CommandInteraction
 {
+    @Nonnull
+    @Override
+    MessageChannel getChannel();
 }

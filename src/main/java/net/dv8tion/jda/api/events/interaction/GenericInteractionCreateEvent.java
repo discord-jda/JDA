@@ -24,8 +24,6 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.Event;
 import net.dv8tion.jda.api.interactions.Interaction;
-import net.dv8tion.jda.api.interactions.InteractionHook;
-import net.dv8tion.jda.api.requests.restaction.interactions.ReplyAction;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -88,13 +86,6 @@ public class GenericInteractionCreateEvent extends Event implements Interaction
         return interaction.getChannel();
     }
 
-    @Nonnull
-    @Override
-    public InteractionHook getHook()
-    {
-        return interaction.getHook();
-    }
-
     @Nullable
     @Override
     public Member getMember()
@@ -119,12 +110,5 @@ public class GenericInteractionCreateEvent extends Event implements Interaction
     public boolean isAcknowledged()
     {
         return interaction.isAcknowledged();
-    }
-
-    @Nonnull
-    @Override
-    public ReplyAction deferReply()
-    {
-        return interaction.deferReply();
     }
 }

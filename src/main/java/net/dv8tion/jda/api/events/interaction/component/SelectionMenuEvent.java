@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.events.interaction;
+package net.dv8tion.jda.api.events.interaction.component;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.interactions.components.selections.SelectionMenu;

@@ -14,10 +14,13 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.interactions.components;
+package net.dv8tion.jda.api.interactions.components.buttons;
 
 import net.dv8tion.jda.api.entities.Emoji;
-import net.dv8tion.jda.internal.interactions.ButtonImpl;
+import net.dv8tion.jda.api.events.interaction.component.ButtonClickEvent;
+import net.dv8tion.jda.api.interactions.components.ActionRow;
+import net.dv8tion.jda.api.interactions.components.Component;
+import net.dv8tion.jda.internal.interactions.component.ButtonImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.CheckReturnValue;
@@ -29,7 +32,7 @@ import javax.annotation.Nullable;
  * <br>These buttons are located below the message in {@link ActionRow ActionRows}.
  *
  * <p>Each button has either a {@code custom_id} or URL attached.
- * The id has to be provided by the user and can be used to identify the button in the {@link net.dv8tion.jda.api.events.interaction.ButtonClickEvent ButtonClickEvent}.
+ * The id has to be provided by the user and can be used to identify the button in the {@link ButtonClickEvent ButtonClickEvent}.
  *
  * <h2>Example Usage</h2>
  * <pre>{@code
@@ -531,7 +534,7 @@ public interface Button extends Component
      * <br>The button is enabled and has no emoji attached by default.
      * You can use {@link #asDisabled()} and {@link #withEmoji(Emoji)} to further configure it.
      *
-     * <p>Note that link buttons never send a {@link net.dv8tion.jda.api.events.interaction.ButtonClickEvent ButtonClickEvent}.
+     * <p>Note that link buttons never send a {@link ButtonClickEvent ButtonClickEvent}.
      * These buttons only open a link for the user.
      *
      * @param  url
@@ -567,7 +570,7 @@ public interface Button extends Component
      *
      * <p>To disable the button you can use {@link #asDisabled()}.
      *
-     * <p>Note that link buttons never send a {@link net.dv8tion.jda.api.events.interaction.ButtonClickEvent ButtonClickEvent}.
+     * <p>Note that link buttons never send a {@link ButtonClickEvent ButtonClickEvent}.
      * These buttons only open a link for the user.
      *
      * @param  url

@@ -14,9 +14,13 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.interactions.components;
+package net.dv8tion.jda.api.interactions.components.buttons;
 
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.events.interaction.component.ButtonClickEvent;
+import net.dv8tion.jda.api.interactions.components.ActionRow;
+import net.dv8tion.jda.api.interactions.components.ComponentInteraction;
+import net.dv8tion.jda.api.interactions.components.ComponentLayout;
 import net.dv8tion.jda.api.requests.RestAction;
 
 import javax.annotation.CheckReturnValue;
@@ -29,7 +33,7 @@ import java.util.List;
 /**
  * Interaction on a {@link Button} component.
  *
- * @see net.dv8tion.jda.api.events.interaction.ButtonClickEvent
+ * @see ButtonClickEvent
  */
 public interface ButtonInteraction extends ComponentInteraction
 {

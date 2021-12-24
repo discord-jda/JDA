@@ -44,7 +44,7 @@ import java.util.function.Function;
 public class InteractionHookImpl extends AbstractWebhookClient<Message> implements InteractionHook
 {
     public static final String TIMEOUT_MESSAGE = "Timed out waiting for interaction acknowledgement";
-    private final InteractionImpl interaction;
+    private final DeferrableInteractionImpl interaction;
     private final List<TriggerRestAction<?>> readyCallbacks = new LinkedList<>();
     private final Future<?> timeoutHandle;
     private final ReentrantLock mutex = new ReentrantLock();
@@ -56,7 +56,7 @@ public class InteractionHookImpl extends AbstractWebhookClient<Message> implemen
     // By default, discord only responds with "unknown interaction" which is horrible UX so we add a check manually here
     private volatile boolean isAck;
 
-    public InteractionHookImpl(@Nonnull InteractionImpl interaction, @Nonnull JDA api)
+    public InteractionHookImpl(@Nonnull DeferrableInteractionImpl interaction, @Nonnull JDA api)
     {
         super(api.getSelfUser().getApplicationIdLong(), interaction.getToken(), api);
         this.interaction = interaction;

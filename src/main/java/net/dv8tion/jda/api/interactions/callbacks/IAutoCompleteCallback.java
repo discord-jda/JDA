@@ -14,17 +14,9 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.interactions.commands;
+package net.dv8tion.jda.api.interactions.callbacks;
 
-import net.dv8tion.jda.api.events.interaction.command.SlashCommandEvent;
-import net.dv8tion.jda.api.interactions.Interaction;
-import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback;
-
-/**
- * Interaction of a Slash-Command.
- *
- * @see SlashCommandEvent
- */
-public interface CommandInteraction extends Interaction, IReplyCallback, CommandPayload
+public interface IAutoCompleteCallback
 {
+    // TODO: replyChoices
 }

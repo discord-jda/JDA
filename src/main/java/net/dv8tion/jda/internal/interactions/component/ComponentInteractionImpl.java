@@ -14,18 +14,21 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.internal.interactions;
+package net.dv8tion.jda.internal.interactions.component;
 
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.interactions.components.ComponentInteraction;
+import net.dv8tion.jda.api.requests.restaction.interactions.ReplyAction;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
+import net.dv8tion.jda.internal.interactions.DeferrableInteractionImpl;
+import net.dv8tion.jda.internal.requests.restaction.interactions.ReplyActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.interactions.UpdateInteractionActionImpl;
 
 import javax.annotation.Nonnull;
 
-public abstract class ComponentInteractionImpl extends InteractionImpl implements ComponentInteraction
+public abstract class ComponentInteractionImpl extends DeferrableInteractionImpl implements ComponentInteraction
 {
     protected final String customId;
     protected final Message message;
@@ -75,5 +78,12 @@ public abstract class ComponentInteractionImpl extends InteractionImpl implement
     public UpdateInteractionActionImpl deferEdit()
     {
         return new UpdateInteractionActionImpl(this.hook);
+    }
+
+    @Nonnull
+    @Override
+    public ReplyAction deferReply()
+    {
+        return new ReplyActionImpl(this.hook);
     }
 }

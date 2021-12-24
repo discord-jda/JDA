@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.interactions.components;
+package net.dv8tion.jda.api.interactions.components.buttons;
 
 import javax.annotation.Nonnull;
 

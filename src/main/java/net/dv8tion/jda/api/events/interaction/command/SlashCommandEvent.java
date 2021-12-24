@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.events.interaction;
+package net.dv8tion.jda.api.events.interaction.command;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.MessageChannel;
-import net.dv8tion.jda.api.interactions.commands.CommandInteraction;
+import net.dv8tion.jda.api.events.interaction.GenericInteractionCreateEvent;
+import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
-import net.dv8tion.jda.internal.interactions.CommandInteractionImpl;
+import net.dv8tion.jda.api.interactions.commands.SlashCommandInteraction;
+import net.dv8tion.jda.api.requests.restaction.interactions.ReplyAction;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -33,61 +35,75 @@ import java.util.List;
  * To receive these events, you must unset the <b>Interactions Endpoint URL</b> in your application dashboard.
  * You can simply remove the URL for this endpoint in your settings at the <a href="https://discord.com/developers/applications" target="_blank">Discord Developers Portal</a>.
  */
-public class SlashCommandEvent extends GenericInteractionCreateEvent implements CommandInteraction
+public class SlashCommandEvent extends GenericInteractionCreateEvent implements SlashCommandInteraction
 {
-    private final CommandInteractionImpl commandInteraction;
+    private final SlashCommandInteraction interaction;
 
-    public SlashCommandEvent(@Nonnull JDA api, long responseNumber, @Nonnull CommandInteractionImpl interaction)
+    public SlashCommandEvent(@Nonnull JDA api, long responseNumber, @Nonnull SlashCommandInteraction interaction)
     {
         super(api, responseNumber, interaction);
-        this.commandInteraction = interaction;
+        this.interaction = interaction;
     }
 
     @Nonnull
     @Override
     public MessageChannel getChannel()
     {
-        return commandInteraction.getChannel();
+        return interaction.getChannel();
     }
 
     @Nonnull
     @Override
     public String getName()
     {
-        return commandInteraction.getName();
+        return interaction.getName();
     }
 
     @Nullable
     @Override
     public String getSubcommandName()
     {
-        return commandInteraction.getSubcommandName();
+        return interaction.getSubcommandName();
     }
 
     @Nullable
     @Override
     public String getSubcommandGroup()
     {
-        return commandInteraction.getSubcommandGroup();
+        return interaction.getSubcommandGroup();
     }
 
     @Override
     public long getCommandIdLong()
     {
-        return commandInteraction.getCommandIdLong();
+        return interaction.getCommandIdLong();
     }
 
     @Nonnull
     @Override
     public List<OptionMapping> getOptions()
     {
-        return commandInteraction.getOptions();
+        return interaction.getOptions();
     }
 
     @Nonnull
     @Override
     public String getCommandString()
     {
-        return commandInteraction.getCommandString();
+        return interaction.getCommandString();
+    }
+
+    @Nonnull
+    @Override
+    public InteractionHook getHook()
+    {
+        return interaction.getHook();
+    }
+
+    @Nonnull
+    @Override
+    public ReplyAction deferReply()
+    {
+        return interaction.deferReply();
     }
 }

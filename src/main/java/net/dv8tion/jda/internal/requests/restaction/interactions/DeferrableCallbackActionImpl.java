@@ -21,53 +21,20 @@ import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.RestAction;
-import net.dv8tion.jda.api.requests.restaction.interactions.InteractionCallbackAction;
-import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.interactions.InteractionHookImpl;
-import net.dv8tion.jda.internal.requests.Requester;
-import net.dv8tion.jda.internal.requests.RestActionImpl;
-import net.dv8tion.jda.internal.requests.Route;
-import net.dv8tion.jda.internal.utils.IOUtil;
-import okhttp3.MultipartBody;
-import okhttp3.RequestBody;
 
 import javax.annotation.Nonnull;
-import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
-public abstract class InteractionCallbackActionImpl extends RestActionImpl<InteractionHook> implements InteractionCallbackAction
+public abstract class DeferrableCallbackActionImpl extends InteractionCallbackImpl<InteractionHook>
 {
     protected final InteractionHookImpl hook;
-    protected final Map<String, InputStream> files = new HashMap<>();
 
-    public InteractionCallbackActionImpl(InteractionHookImpl hook)
+    public DeferrableCallbackActionImpl(InteractionHookImpl hook)
     {
-        super(hook.getJDA(), Route.Interactions.CALLBACK.compile(hook.getInteraction().getId(), hook.getInteraction().getToken()));
+        super(hook.getInteraction());
         this.hook = hook;
-    }
-
-    protected abstract DataObject toData();
-
-    @Override
-    protected RequestBody finalizeData()
-    {
-        DataObject json = toData();
-        if (files.isEmpty())
-            return getRequestBody(json);
-
-        MultipartBody.Builder body = new MultipartBody.Builder().setType(MultipartBody.FORM);
-        int i = 0;
-        for (Map.Entry<String, InputStream> file : files.entrySet())
-        {
-            RequestBody stream = IOUtil.createRequestBody(Requester.MEDIA_TYPE_OCTET, file.getValue());
-            body.addFormDataPart("file" + i++, file.getKey(), stream);
-        }
-        body.addFormDataPart("payload_json", json.toString());
-        files.clear();
-        return body.build();
     }
 
     @Override
