@@ -138,16 +138,17 @@ public interface SessionController
     void setGlobalRatelimit(long ratelimit);
 
     /**
-     * Called by a JDA session when a new gateway session starts (Connecting, Reconnecting).
-     * <br>Should provide the gateway endpoint (wss) to connect to.
+     * Discord's gateway URL, which is used to receive events.
      *
-     * @param  api
-     *         The current JDA instance (used for RestActions and ShardInfo)
+     * Called by JDA when starting a new gateway session (Connecting, Reconnecting).
      *
      * @return The gateway endpoint
      */
     @Nonnull
-    String getGateway(@Nonnull JDA api);
+    default String getGateway()
+    {
+        return "wss://gateway.discord.gg/";
+    }
 
     /**
      * Called by {@link net.dv8tion.jda.api.sharding.DefaultShardManager DefaultShardManager}
@@ -159,7 +160,7 @@ public interface SessionController
      *
      * @return The ShardedGateway instance consisting of the gateway endpoint to connect to and the shardTotal
      *
-     * @see    #getGateway(net.dv8tion.jda.api.JDA)
+     * @see    #getGateway()
      */
     @Nonnull
     ShardedGateway getShardedGateway(@Nonnull JDA api);
