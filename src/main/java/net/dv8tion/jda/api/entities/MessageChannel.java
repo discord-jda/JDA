@@ -101,7 +101,6 @@ public interface MessageChannel extends Channel, Formattable
         return Long.toUnsignedString(getLatestMessageIdLong());
     }
 
-
     /**
      * The id for the most recent message sent
      * in this current MessageChannel.
@@ -134,6 +133,19 @@ public interface MessageChannel extends Channel, Formattable
     {
         return getLatestMessageIdLong() != 0;
     }
+
+    /**
+     * Whether the currently logged in user can send messages in this channel or not.
+     * <br>For {@link GuildMessageChannel} this method checks for
+     * both {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
+     * and {@link net.dv8tion.jda.api.Permission#MESSAGE_SEND Permission.MESSAGE_SEND}.
+     * <br>For {@link ThreadChannel} this method checks for {@link net.dv8tion.jda.api.Permission#MESSAGE_SEND_IN_THREADS} instead of {@link net.dv8tion.jda.api.Permission#MESSAGE_SEND}.
+     * <br>For {@link PrivateChannel} this method checks if the user that this PrivateChannel communicates with is not a bot,
+     * but it does <b>not</b> check if the said user blocked the currently logged in user or have their DMs disabled.
+     *
+     * @return True, if we are able to read and send messages in this channel
+     */
+    boolean canTalk();
 
     /**
      * Convenience method to delete messages in the most efficient way available.
