@@ -44,7 +44,7 @@ import net.dv8tion.jda.api.events.guild.update.*;
 import net.dv8tion.jda.api.events.guild.voice.*;
 import net.dv8tion.jda.api.events.http.HttpRequestEvent;
 import net.dv8tion.jda.api.events.interaction.GenericInteractionCreateEvent;
-import net.dv8tion.jda.api.events.interaction.command.SlashCommandEvent;
+import net.dv8tion.jda.api.events.interaction.command.*;
 import net.dv8tion.jda.api.events.interaction.component.ButtonClickEvent;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
 import net.dv8tion.jda.api.events.interaction.component.SelectionMenuEvent;
@@ -126,8 +126,11 @@ public abstract class ListenerAdapter implements EventListener
 
     //Interaction Events
     public void onSlashCommand(@Nonnull SlashCommandEvent event) {}
+    public void onUserContext(@Nonnull UserContextEvent event) {}
+    public void onMessageContext(@Nonnull MessageContextEvent event) {}
     public void onButtonClick(@Nonnull ButtonClickEvent event) {}
     public void onSelectionMenu(@Nonnull SelectionMenuEvent event) {}
+    public void onCommandAutoComplete(@Nonnull CommandAutoCompleteEvent event) {}
 
     //Application Events
     public void onApplicationCommandUpdate(@Nonnull ApplicationCommandUpdateEvent event) {}
@@ -301,6 +304,7 @@ public abstract class ListenerAdapter implements EventListener
     public void onGenericApplicationCommand(@Nonnull GenericApplicationCommandEvent event) {}
     public void onGenericInteractionCreate(@Nonnull GenericInteractionCreateEvent event) {}
     public void onGenericComponentInteractionCreate(@Nonnull GenericComponentInteractionCreateEvent event) {}
+    public void onGenericCommand(@Nonnull GenericCommandEvent event) {}
     public void onGenericMessage(@Nonnull GenericMessageEvent event) {}
     public void onGenericMessageReaction(@Nonnull GenericMessageReactionEvent event) {}
     public void onGenericUser(@Nonnull GenericUserEvent event) {}
