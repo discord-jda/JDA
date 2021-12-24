@@ -17,15 +17,20 @@
 package net.dv8tion.jda.internal.handle;
 
 import net.dv8tion.jda.api.events.interaction.GenericInteractionCreateEvent;
+import net.dv8tion.jda.api.events.interaction.command.MessageContextEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandEvent;
+import net.dv8tion.jda.api.events.interaction.command.UserContextEvent;
 import net.dv8tion.jda.api.events.interaction.component.ButtonClickEvent;
 import net.dv8tion.jda.api.events.interaction.component.SelectionMenuEvent;
 import net.dv8tion.jda.api.interactions.InteractionType;
+import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.components.Component;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.interactions.InteractionImpl;
+import net.dv8tion.jda.internal.interactions.command.MessageContextInteractionImpl;
 import net.dv8tion.jda.internal.interactions.command.SlashCommandInteractionImpl;
+import net.dv8tion.jda.internal.interactions.command.UserContextInteractionImpl;
 import net.dv8tion.jda.internal.interactions.component.ButtonInteractionImpl;
 import net.dv8tion.jda.internal.interactions.component.SelectionMenuInteractionImpl;
 import net.dv8tion.jda.internal.requests.WebSocketClient;
@@ -55,7 +60,7 @@ public class InteractionCreateHandler extends SocketHandler
 
         switch (InteractionType.fromKey(type))
         {
-            case SLASH_COMMAND: // slash commands
+            case COMMAND: // slash commands
                 handleCommand(content);
                 break;
             case COMPONENT: // buttons/components
@@ -72,9 +77,24 @@ public class InteractionCreateHandler extends SocketHandler
 
     private void handleCommand(DataObject content)
     {
-        api.handleEvent(
-            new SlashCommandEvent(api, responseNumber,
-                new SlashCommandInteractionImpl(api, content)));
+        switch (Command.Type.fromId(content.getObject("data").getInt("type")))
+        {
+        case SLASH:
+            api.handleEvent(
+                new SlashCommandEvent(api, responseNumber,
+                    new SlashCommandInteractionImpl(api, content)));
+            break;
+        case USER:
+            api.handleEvent(
+                new MessageContextEvent(api, responseNumber,
+                    new MessageContextInteractionImpl(api, content)));
+            break;
+        case MESSAGE:
+            api.handleEvent(
+                new UserContextEvent(api, responseNumber,
+                    new UserContextInteractionImpl(api, content)));
+            break;
+        }
     }
 
     private void handleAction(DataObject content)

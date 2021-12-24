@@ -19,10 +19,12 @@ package net.dv8tion.jda.api.interactions.commands.context;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public interface UserContextInteraction extends ContextInteraction<User>
 {
+    @Nonnull
     @Override
     default ContextTarget getTargetType()
     {

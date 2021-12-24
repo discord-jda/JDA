@@ -16,10 +16,16 @@
 
 package net.dv8tion.jda.api.interactions.commands.context;
 
-public interface ContextInteraction<T>
+import net.dv8tion.jda.api.interactions.commands.CommandInteraction;
+
+import javax.annotation.Nonnull;
+
+public interface ContextInteraction<T> extends CommandInteraction
 {
+    @Nonnull
     ContextTarget getTargetType();
 
+    @Nonnull
     T getTarget();
 
     enum ContextTarget {
