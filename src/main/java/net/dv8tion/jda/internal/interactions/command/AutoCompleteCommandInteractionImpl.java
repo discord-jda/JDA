@@ -16,10 +16,7 @@
 
 package net.dv8tion.jda.internal.interactions.command;
 
-import net.dv8tion.jda.api.interactions.commands.Command;
-import net.dv8tion.jda.api.interactions.commands.CommandAutoCompleteInteraction;
-import net.dv8tion.jda.api.interactions.commands.CommandPayload;
-import net.dv8tion.jda.api.interactions.commands.OptionMapping;
+import net.dv8tion.jda.api.interactions.commands.*;
 import net.dv8tion.jda.api.requests.restaction.interactions.ChoiceAction;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
@@ -42,18 +39,31 @@ public class AutoCompleteCommandInteractionImpl extends InteractionImpl implemen
         this.payload = new CommandPayloadImpl(jda, data);
 
         DataArray options = data.getObject("data").getArray("options");
-        for (int i = 0; i < options.length(); i++)
-        {
-            DataObject option = options.getObject(i);
-            if (option.getBoolean("focused"))
-            {
-                focused = getOption(option.getString("name"));
-                break;
-            }
-        }
+        findFocused(options);
 
         if (focused == null)
             throw new IllegalStateException("Failed to get focused option for auto complete interaction");
+    }
+
+    private void findFocused(DataArray options)
+    {
+        for (int i = 0; i < options.length(); i++)
+        {
+            DataObject option = options.getObject(i);
+            switch (OptionType.fromKey(option.getInt("type")))
+            {
+            case SUB_COMMAND:
+            case SUB_COMMAND_GROUP:
+                findFocused(option.getArray("options"));
+                break;
+            default:
+                if (option.getBoolean("focused"))
+                {
+                    focused = getOption(option.getString("name"));
+                    break;
+                }
+            }
+        }
     }
 
     @NotNull
