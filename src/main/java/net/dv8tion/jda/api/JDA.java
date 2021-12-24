@@ -2382,7 +2382,7 @@ public interface JDA
      * <p>If you want to run code after shutting down async, use the {@link ShutdownEvent} in preference to this method.
      * 
      * @throws InterruptedException
-     * 			if the current thread is interrupted while waiting
+     *          if the current thread is interrupted while waiting
      * 
      * @see ShutdownEvent
      */
