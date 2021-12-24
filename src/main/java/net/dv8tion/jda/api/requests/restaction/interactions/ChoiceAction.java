@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.interactions.callbacks;
+package net.dv8tion.jda.api.requests.restaction.interactions;
 
-import net.dv8tion.jda.api.interactions.Interaction;
 import net.dv8tion.jda.api.interactions.commands.Command;
-import net.dv8tion.jda.api.requests.restaction.interactions.ChoiceAction;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.CheckReturnValue;
@@ -27,91 +26,94 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
-public interface IAutoCompleteCallback extends Interaction
+public interface ChoiceAction extends InteractionCallbackAction<Void>
 {
     @Nonnull
-    @CheckReturnValue
-    ChoiceAction replyChoices(@Nonnull Collection<Command.Choice> choices);
+    OptionType getOptionType();
 
     @Nonnull
     @CheckReturnValue
-    default ChoiceAction replyChoices(@Nonnull Command.Choice... choices)
+    ChoiceAction addChoices(@Nonnull Collection<Command.Choice> choices);
+
+    @Nonnull
+    @CheckReturnValue
+    default ChoiceAction addChoices(@Nonnull Command.Choice... choices)
     {
-        Checks.noneNull(choices, "Choice");
-        return replyChoices(Arrays.asList(choices));
+        Checks.noneNull(choices, "Choices");
+        return addChoices(Arrays.asList(choices));
     }
 
     @Nonnull
     @CheckReturnValue
-    default ChoiceAction replyChoice(@Nonnull String name, @Nonnull String value)
+    default ChoiceAction addChoice(@Nonnull String name, @Nonnull String value)
     {
-        return replyChoices(new Command.Choice(name, value));
+        return addChoices(new Command.Choice(name, value));
     }
 
     @Nonnull
     @CheckReturnValue
-    default ChoiceAction replyChoice(@Nonnull String name, long value)
+    default ChoiceAction addChoice(@Nonnull String name, long value)
     {
-        return replyChoices(new Command.Choice(name, value));
+        return addChoices(new Command.Choice(name, value));
     }
 
     @Nonnull
     @CheckReturnValue
-    default ChoiceAction replyChoice(@Nonnull String name, double value)
+    default ChoiceAction addChoice(@Nonnull String name, double value)
     {
-        return replyChoices(new Command.Choice(name, value));
+        return addChoices(new Command.Choice(name, value));
     }
 
     @Nonnull
     @CheckReturnValue
-    default ChoiceAction replyChoiceStrings(@Nonnull String... choices)
+    default ChoiceAction addChoiceStrings(@Nonnull String... choices)
     {
-        return replyChoices(Arrays.stream(choices)
+        return addChoices(Arrays.stream(choices)
                 .map(it -> new Command.Choice(it, it))
                 .collect(Collectors.toList()));
     }
 
     @Nonnull
     @CheckReturnValue
-    default ChoiceAction replyChoiceStrings(@Nonnull Collection<String> choices)
+    default ChoiceAction addChoiceStrings(@Nonnull Collection<String> choices)
     {
-        return replyChoices(choices.stream()
+        return addChoices(choices.stream()
                 .map(it -> new Command.Choice(it, it))
                 .collect(Collectors.toList()));
     }
 
     @Nonnull
     @CheckReturnValue
-    default ChoiceAction replyChoiceLongs(@Nonnull long... choices)
+    default ChoiceAction addChoiceLongs(@Nonnull long... choices)
     {
-        return replyChoices(Arrays.stream(choices)
+        return addChoices(Arrays.stream(choices)
                 .mapToObj(it -> new Command.Choice(String.valueOf(it), it))
                 .collect(Collectors.toList()));
     }
 
     @Nonnull
     @CheckReturnValue
-    default ChoiceAction replyChoiceLongs(@Nonnull Collection<Long> choices)
+    default ChoiceAction addChoiceLongs(@Nonnull Collection<Long> choices)
     {
-        return replyChoices(choices.stream()
+        return addChoices(choices.stream()
                 .map(it -> new Command.Choice(String.valueOf(it), it))
                 .collect(Collectors.toList()));
     }
 
     @Nonnull
     @CheckReturnValue
-    default ChoiceAction replyChoiceDoubles(@Nonnull double... choices)
+    default ChoiceAction addChoiceDoubles(@Nonnull double... choices)
     {
-        return replyChoices(Arrays.stream(choices)
+        return addChoices(Arrays.stream(choices)
                 .mapToObj(it -> new Command.Choice(String.valueOf(it), it))
                 .collect(Collectors.toList()));
     }
 
     @Nonnull
     @CheckReturnValue
-    default ChoiceAction replyChoiceDoubles(@Nonnull Collection<Double> choices)
+    default ChoiceAction addChoiceDoubles(@Nonnull Collection<Double> choices)
     {
-        return replyChoices(choices.stream()
+        return addChoices(choices.stream()
                 .map(it -> new Command.Choice(String.valueOf(it), it))
                 .collect(Collectors.toList()));
     }

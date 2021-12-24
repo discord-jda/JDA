@@ -16,14 +16,20 @@
 
 package net.dv8tion.jda.internal.interactions.command;
 
+import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.CommandAutoCompleteInteraction;
 import net.dv8tion.jda.api.interactions.commands.CommandPayload;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
+import net.dv8tion.jda.api.requests.restaction.interactions.ChoiceAction;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.interactions.InteractionImpl;
+import net.dv8tion.jda.internal.requests.restaction.interactions.ChoiceActionImpl;
 import org.jetbrains.annotations.NotNull;
+
+import javax.annotation.Nonnull;
+import java.util.Collection;
 
 public class AutoCompleteCommandInteractionImpl extends InteractionImpl implements CommandPayloadMixin, CommandAutoCompleteInteraction
 {
@@ -61,5 +67,12 @@ public class AutoCompleteCommandInteractionImpl extends InteractionImpl implemen
     public CommandPayload getCommandPayload()
     {
         return payload;
+    }
+
+    @Nonnull
+    @Override
+    public ChoiceAction replyChoices(@Nonnull Collection<Command.Choice> choices)
+    {
+        return new ChoiceActionImpl(this, focused.getType()).addChoices(choices);
     }
 }

@@ -409,6 +409,7 @@ public class Command implements ISnowflake
         private long intValue = 0;
         private double doubleValue = Double.NaN;
         private String stringValue = null;
+        private OptionType type;
 
         /**
          * Create a Choice tuple
@@ -524,6 +525,12 @@ public class Command implements ISnowflake
             return stringValue;
         }
 
+        @Nonnull
+        public OptionType getType()
+        {
+            return type;
+        }
+
         @Override
         public int hashCode()
         {
@@ -550,6 +557,7 @@ public class Command implements ISnowflake
             this.doubleValue = value;
             this.intValue = value;
             this.stringValue = Long.toString(value);
+            this.type = OptionType.INTEGER;
         }
 
         private void setDoubleValue(double value)
@@ -557,6 +565,7 @@ public class Command implements ISnowflake
             this.doubleValue = value;
             this.intValue = (long) value;
             this.stringValue = Double.toString(value);
+            this.type = OptionType.NUMBER;
         }
 
         private void setStringValue(@Nonnull String value)
@@ -564,6 +573,7 @@ public class Command implements ISnowflake
             this.doubleValue = Double.NaN;
             this.intValue = 0;
             this.stringValue = value;
+            this.type = OptionType.STRING;
         }
     }
 
