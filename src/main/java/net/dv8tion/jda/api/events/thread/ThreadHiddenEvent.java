@@ -22,9 +22,9 @@ import net.dv8tion.jda.api.entities.ThreadChannel;
 import javax.annotation.Nonnull;
 
 /**
- * This event is dispatched when a {@link ThreadChannel} that JDA did have access to is now inaccessible (due to permissions)
- *
- * For example, if JDA can no longer access threads in a TextChannel, all ThreadChannel children of that channel will fire this event.
+ * This event is dispatched when a {@link ThreadChannel} that JDA did have access to is now inaccessible (due to permissions).
+ * <br>
+ * For example, if JDA can no longer access a TextChannel due to a change in permissions, this event will be dispatched for each child ThreadChannel of that channel.
  *
  * @see ThreadRevealedEvent
  */

@@ -29,7 +29,7 @@ import java.util.FormattableFlags;
 import java.util.Formatter;
 import java.util.List;
 
-//todo-v5: document all
+//TODO-v5: document all
 public interface ThreadChannel extends GuildMessageChannel, IMemberContainer
 {
     //TODO fields that need to be researched:

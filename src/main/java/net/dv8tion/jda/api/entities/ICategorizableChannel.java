@@ -38,12 +38,14 @@ public interface ICategorizableChannel extends GuildChannel, IPermissionContaine
 
     /**
      * Get the snowflake of the {@link Category} that contains this channel.
+     *
      * @return The Discord ID snowflake of the parent channel as a long.
      */
     long getParentCategoryIdLong();
 
     /**
      * Get the snowflake of the {@link Category} that contains this channel.
+     *
      * @return The Discord ID snowflake of the parent channel as a String.
      */
     default String getParentCategoryId()

@@ -22,7 +22,14 @@ import java.util.List;
 /**
  * Represents a {@link GuildChannel} that is capable of containing members.
  *
- * Implementations interpret this meaning as best applies to them.
+ * Implementations interpret this meaning as best applies to them:
+ *
+ * For example,
+ * <ul>
+ *   <li>{@link TextChannel TextChannels} implement this as the {@link Member members} that have {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL}</li>
+ *   <li>{@link VoiceChannel VoiceChannels} implement this as what {@link Member members} are currently connected to the channel.</li>
+ * </ul>
+ *
  *
  * @see IMemberContainer#getMembers()
  */

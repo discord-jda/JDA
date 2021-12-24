@@ -15,10 +15,10 @@ import java.util.stream.Collectors;
 /**
  * Represents all message channels present in guilds.
  *
- * This includes channels that are not included in {@link BaseGuildMessageChannel BaseGuildMessageChannel}, such as Threads.
+ * This includes channels that are not included in {@link BaseGuildMessageChannel BaseGuildMessageChannel}, such as {@link ThreadChannel}.
  *
  * @see BaseGuildMessageChannel
- * //todo-v5: Add links to MessageThreads
+ *
  */
 public interface GuildMessageChannel extends GuildChannel, MessageChannel
 {

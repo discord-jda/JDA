@@ -13,8 +13,9 @@ import java.util.List;
 
 
 /**
- * Represents a standard {@link Guild Guild} {@link MessageChannel MessageChannels}.
- * <br>These are the "<i>normal</i>" message channels, and do not include Threads.
+ * Represents a standard {@link Guild Guild} {@link MessageChannel MessageChannel}.
+ * <br>These are the "<i>normal</i>" message channels that are present in the channel sidebar.
+ * These are <b>not</b> {@link ThreadChannel ThreadChannels}.
  *
  * @see net.dv8tion.jda.api.entities.GuildMessageChannel
  * @see TextChannel

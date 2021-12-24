@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
  *
  * These channels can be re-ordered using a position value.
  *
- * In the case of identical permission values, the natural ordering of the channel snowflakes are used.
+ * In the case of identical position values, the natural order of the channel snowflakes is used.
  */
 public interface IPositionableChannel extends GuildChannel
 {

@@ -25,6 +25,8 @@ import javax.annotation.Nullable;
 /**
  * This enum represents the attributes of a channel that can be modified by events.
  * <br><b>Most</b> of these changes are tracked and reflected by {@link AuditLogKey Audit Log Entries}.
+ * <br>
+ * Values of this enum without an {@link AuditLogKey} are not tracked by the Audit Log.
  *
  * @see net.dv8tion.jda.api.events.channel.GenericChannelEvent
  * @see AuditLogKey
@@ -53,9 +55,9 @@ public enum ChannelField
     /**
      * The {@link Category parent} of the channel.
      *
-     * Limited to {@link BaseGuildMessageChannel Base Guild Channels} (and implementations).
+     * Limited to {@link ICategorizableChannel Categorizable Channels} (and implementations).
      *
-     * @see BaseGuildMessageChannel#getParentCategory()
+     * @see ICategorizableChannel#getParentCategory()
      */
     PARENT("parent", AuditLogKey.CHANNEL_PARENT),
 
@@ -63,8 +65,9 @@ public enum ChannelField
      * The position of this channel relative to other channels in the guild.
      *
      * @see IPositionableChannel#getPosition()
-     * //todo-v5 if the calculation of IPositionableChannel#getPosition() changes, this may need modification too.
+     *
      */
+    //TODO-v5 if the calculation of IPositionableChannel#getPosition() changes, this may need modification too.
     POSITION("position", null), //Discord doesn't track Channel position changes in AuditLog.
 
 
@@ -106,6 +109,8 @@ public enum ChannelField
      * For standard channels this is between 8000 and 96000.
      *
      * VIP servers extend this limit to 128000.
+     * <br>
+     * The bitrates of boost tiers may be found in {@link Guild.BoostTier the boost tiers}.
      *
      * Limited to {@link AudioChannel Audio Channels}.
      *
@@ -158,15 +163,21 @@ public enum ChannelField
     ARCHIVED("archived", AuditLogKey.THREAD_ARCHIVED),
 
     /**
-     * The archive time of this channel.
+     * The time this channel's archival information was last updated.
      *
-     * If the channel is archived, this timestamp will be when it was archived.
+     * This timestamp will be updated when any of the following happen:
+     * <ul>
+     *     <li>The channel is archived</li>
+     *     <li>The channel is unarchived</li>
+     *     <li>The AUTO_ARCHIVE_DURATION is changed.</li>
+     * </ul>
      *
      * Limited to {@link ThreadChannel Thread Channels}.
      *
-     * //todo-v5: Docs - check if this is actually correct
+     *
      * @see ThreadChannel#getTimeArchiveInfoLastModified()
      */
+    //todo-v5: Docs - check if this is actually correct
     ARCHIVED_TIMESTAMP("archiveTimestamp", null),
 
     /**

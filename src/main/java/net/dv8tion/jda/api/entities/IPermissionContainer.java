@@ -28,7 +28,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Represents a {@link GuildChannel} that is capable of holding {@link PermissionOverride Permission Overrides}.
+ * Represents a {@link GuildChannel} that uses {@link PermissionOverride Permission Overrides}.
+ *
+ * Channels that implement this interface can override permissions for specific users or roles.
  *
  * @see PermissionOverride
  */
