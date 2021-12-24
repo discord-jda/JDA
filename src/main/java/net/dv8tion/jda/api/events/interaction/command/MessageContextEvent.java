@@ -17,35 +17,21 @@
 package net.dv8tion.jda.api.events.interaction.command;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.interactions.InteractionHook;
-import net.dv8tion.jda.api.interactions.commands.SlashCommandInteraction;
+import net.dv8tion.jda.api.interactions.commands.context.MessageContextInteraction;
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyAction;
 
 import javax.annotation.Nonnull;
 
-/**
- * Indicates that a slash command was used in a {@link MessageChannel}.
- *
- * <h2>Requirements</h2>
- * To receive these events, you must unset the <b>Interactions Endpoint URL</b> in your application dashboard.
- * You can simply remove the URL for this endpoint in your settings at the <a href="https://discord.com/developers/applications" target="_blank">Discord Developers Portal</a>.
- */
-public class SlashCommandEvent extends GenericCommandEvent implements SlashCommandInteraction
+public class MessageContextEvent extends GenericCommandEvent implements MessageContextInteraction
 {
-    private final SlashCommandInteraction interaction;
+    private final MessageContextInteraction interaction;
 
-    public SlashCommandEvent(@Nonnull JDA api, long responseNumber, @Nonnull SlashCommandInteraction interaction)
+    public MessageContextEvent(@Nonnull JDA api, long responseNumber, @Nonnull MessageContextInteraction interaction)
     {
         super(api, responseNumber, interaction);
         this.interaction = interaction;
-    }
-
-    @Nonnull
-    @Override
-    public MessageChannel getChannel()
-    {
-        return interaction.getChannel();
     }
 
     @Nonnull
@@ -60,5 +46,12 @@ public class SlashCommandEvent extends GenericCommandEvent implements SlashComma
     public ReplyAction deferReply()
     {
         return interaction.deferReply();
+    }
+
+    @Nonnull
+    @Override
+    public Message getTarget()
+    {
+        return interaction.getTarget();
     }
 }

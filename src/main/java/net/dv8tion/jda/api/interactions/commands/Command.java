@@ -371,6 +371,32 @@ public class Command implements ISnowflake
         return Long.hashCode(id);
     }
 
+    public enum Type
+    {
+        UNKNOWN(-1),
+        SLASH(1),
+        USER(2),
+        MESSAGE(3);
+
+        private final int id;
+
+        Type(int id)
+        {
+            this.id = id;
+        }
+
+        @Nonnull
+        public static Type fromId(int id)
+        {
+            for (Type type : values())
+            {
+                if (type.id == id)
+                    return type;
+            }
+            return UNKNOWN;
+        }
+    }
+
     /**
      * Predefined choice used for options.
      *
