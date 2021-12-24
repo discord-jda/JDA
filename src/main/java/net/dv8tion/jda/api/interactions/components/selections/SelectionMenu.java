@@ -19,7 +19,7 @@ package net.dv8tion.jda.api.interactions.components.selections;
 import net.dv8tion.jda.api.entities.Emoji;
 import net.dv8tion.jda.api.interactions.components.Component;
 import net.dv8tion.jda.api.utils.data.DataObject;
-import net.dv8tion.jda.internal.interactions.SelectionMenuImpl;
+import net.dv8tion.jda.internal.interactions.component.SelectionMenuImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.CheckReturnValue;

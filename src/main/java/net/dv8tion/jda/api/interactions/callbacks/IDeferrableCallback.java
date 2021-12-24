@@ -14,17 +14,22 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.interactions.commands;
+package net.dv8tion.jda.api.interactions.callbacks;
 
-import net.dv8tion.jda.api.events.interaction.command.SlashCommandEvent;
-import net.dv8tion.jda.api.interactions.Interaction;
-import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback;
+import net.dv8tion.jda.api.interactions.InteractionHook;
 
-/**
- * Interaction of a Slash-Command.
- *
- * @see SlashCommandEvent
- */
-public interface CommandInteraction extends Interaction, IReplyCallback, CommandPayload
+import javax.annotation.Nonnull;
+
+public interface IDeferrableCallback
 {
+    /**
+     * The {@link InteractionHook} which can be used to send deferred replies or followup messages.
+     *
+     * @throws UnsupportedOperationException
+     *         If this interaction does not support deferred replies and followup messages
+     *
+     * @return The interaction hook
+     */
+    @Nonnull
+    InteractionHook getHook();
 }

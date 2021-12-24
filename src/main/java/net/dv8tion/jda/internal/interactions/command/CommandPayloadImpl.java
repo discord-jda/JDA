@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.internal.interactions;
+package net.dv8tion.jda.internal.interactions.command;
 
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import net.dv8tion.jda.api.entities.ISnowflake;
 import net.dv8tion.jda.api.entities.MessageChannel;
-import net.dv8tion.jda.api.interactions.commands.CommandInteraction;
+import net.dv8tion.jda.api.interactions.commands.CommandPayload;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.utils.data.DataArray;
@@ -30,13 +30,14 @@ import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.entities.MemberImpl;
 import net.dv8tion.jda.internal.entities.UserImpl;
+import net.dv8tion.jda.internal.interactions.InteractionImpl;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class CommandInteractionImpl extends InteractionImpl implements CommandInteraction
+public class CommandPayloadImpl extends InteractionImpl implements CommandPayload
 {
     private final long commandId;
     private final List<OptionMapping> options = new ArrayList<>();
@@ -45,7 +46,7 @@ public class CommandInteractionImpl extends InteractionImpl implements CommandIn
     private String subcommand;
     private String group;
 
-    public CommandInteractionImpl(JDAImpl jda, DataObject data)
+    public CommandPayloadImpl(JDAImpl jda, DataObject data)
     {
         super(jda, data);
         DataObject commandData = data.getObject("data");
@@ -60,14 +61,14 @@ public class CommandInteractionImpl extends InteractionImpl implements CommandIn
             DataObject option = options.getObject(0);
             switch (OptionType.fromKey(option.getInt("type")))
             {
-                case SUB_COMMAND_GROUP:
-                    group = option.getString("name");
-                    options = option.getArray("options");
-                    option = options.getObject(0);
-                case SUB_COMMAND:
-                    subcommand = option.getString("name");
-                    options = option.optArray("options").orElseGet(DataArray::empty); // Flatten options
-                    break;
+            case SUB_COMMAND_GROUP:
+                group = option.getString("name");
+                options = option.getArray("options");
+                option = options.getObject(0);
+            case SUB_COMMAND:
+                subcommand = option.getString("name");
+                options = option.optArray("options").orElseGet(DataArray::empty); // Flatten options
+                break;
             }
         }
 
@@ -78,8 +79,8 @@ public class CommandInteractionImpl extends InteractionImpl implements CommandIn
     private void parseOptions(DataArray options)
     {
         options.stream(DataArray::getObject)
-            .map(json -> new OptionMapping(json, resolved))
-            .forEach(this.options::add);
+                .map(json -> new OptionMapping(json, resolved))
+                .forEach(this.options::add);
     }
 
     private void parseResolved(JDAImpl jda, DataObject resolveJson)
@@ -87,31 +88,31 @@ public class CommandInteractionImpl extends InteractionImpl implements CommandIn
         EntityBuilder entityBuilder = jda.getEntityBuilder();
 
         resolveJson.optObject("users").ifPresent(users ->
-            users.keys().forEach(userId -> {
-                DataObject userJson = users.getObject(userId);
-                UserImpl userArg = entityBuilder.createUser(userJson);
-                resolved.put(userArg.getIdLong(), userArg);
-            })
+                users.keys().forEach(userId -> {
+                    DataObject userJson = users.getObject(userId);
+                    UserImpl userArg = entityBuilder.createUser(userJson);
+                    resolved.put(userArg.getIdLong(), userArg);
+                })
         );
 
         if (guild != null) // Technically these can function in DMs too ...
         {
             resolveJson.optObject("members").ifPresent(members ->
-                members.keys().forEach(memberId -> {
-                    DataObject userJson = resolveJson.getObject("users").getObject(memberId);
-                    DataObject memberJson = members.getObject(memberId);
-                    memberJson.put("user", userJson);
-                    MemberImpl optionMember = entityBuilder.createMember((GuildImpl) guild, memberJson);
-                    entityBuilder.updateMemberCache(optionMember);
-                    resolved.put(optionMember.getIdLong(), optionMember); // This basically upgrades user to member
-                })
+                    members.keys().forEach(memberId -> {
+                        DataObject userJson = resolveJson.getObject("users").getObject(memberId);
+                        DataObject memberJson = members.getObject(memberId);
+                        memberJson.put("user", userJson);
+                        MemberImpl optionMember = entityBuilder.createMember((GuildImpl) guild, memberJson);
+                        entityBuilder.updateMemberCache(optionMember);
+                        resolved.put(optionMember.getIdLong(), optionMember); // This basically upgrades user to member
+                    })
             );
             resolveJson.optObject("roles").ifPresent(roles ->
-                roles.keys()
-                    .stream()
-                    .map(guild::getRoleById)
-                    .filter(Objects::nonNull)
-                    .forEach(role -> resolved.put(role.getIdLong(), role))
+                    roles.keys()
+                            .stream()
+                            .map(guild::getRoleById)
+                            .filter(Objects::nonNull)
+                            .forEach(role -> resolved.put(role.getIdLong(), role))
             );
             resolveJson.optObject("channels").ifPresent(channels -> {
                 channels.keys().forEach(id -> {

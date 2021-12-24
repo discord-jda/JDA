@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.Component;
+import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.AllowedMentions;
 import net.dv8tion.jda.api.utils.AttachmentOption;
@@ -306,7 +307,7 @@ public interface WebhookMessageAction<T> extends RestAction<T>, AllowedMentions<
      * Add one {@link ActionRow ActionRow} for the message.
      *
      * @param  components
-     *         The components for the action row, such as {@link net.dv8tion.jda.api.interactions.components.Button Button}
+     *         The components for the action row, such as {@link Button Button}
      *
      * @throws IllegalArgumentException
      *         If null is provided or more than 5 actions rows are provided
@@ -324,7 +325,7 @@ public interface WebhookMessageAction<T> extends RestAction<T>, AllowedMentions<
      * Add one {@link ActionRow ActionRow} for the message.
      *
      * @param  components
-     *         The components for the action row, such as {@link net.dv8tion.jda.api.interactions.components.Button Button}
+     *         The components for the action row, such as {@link Button Button}
      *
      * @throws IllegalArgumentException
      *         If null is provided or more than 5 actions rows are provided

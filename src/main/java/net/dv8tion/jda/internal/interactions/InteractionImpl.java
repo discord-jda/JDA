@@ -19,20 +19,16 @@ package net.dv8tion.jda.internal.interactions;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.interactions.Interaction;
-import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.entities.MemberImpl;
-import net.dv8tion.jda.internal.requests.restaction.interactions.ReplyActionImpl;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Locale;
 
 public class InteractionImpl implements Interaction
 {
-    protected final InteractionHookImpl hook;
     protected final long id;
     protected final int type;
     protected final String token;
@@ -40,8 +36,8 @@ public class InteractionImpl implements Interaction
     protected final Member member;
     protected final User user;
     protected final Channel channel;
-    protected final Locale userLocale;
     protected final JDAImpl api;
+    protected boolean isAck;
 
     public InteractionImpl(JDAImpl jda, DataObject data)
     {
@@ -50,8 +46,6 @@ public class InteractionImpl implements Interaction
         this.token = data.getString("token");
         this.type = data.getInt("type");
         this.guild = jda.getGuildById(data.getUnsignedLong("guild_id", 0L));
-        this.userLocale = Locale.forLanguageTag(data.getString("locale"));
-        this.hook = new InteractionHookImpl(this, jda);
         if (guild != null)
         {
             member = jda.getEntityBuilder().createMember((GuildImpl) guild, data.getObject("member"));
@@ -77,18 +71,9 @@ public class InteractionImpl implements Interaction
         }
     }
 
-    public InteractionImpl(long id, int type, String token, Guild guild, Member member, User user, Channel channel, Locale userLocale)
+    public void ack()
     {
-        this.id = id;
-        this.type = type;
-        this.token = token;
-        this.guild = guild;
-        this.member = member;
-        this.user = user;
-        this.channel = channel;
-        this.userLocale = userLocale;
-        this.api = (JDAImpl) user.getJDA();
-        this.hook = new InteractionHookImpl(this, api);
+        this.isAck = true;
     }
 
     @Override
@@ -126,20 +111,6 @@ public class InteractionImpl implements Interaction
 
     @Nonnull
     @Override
-    public Locale getUserLocale()
-    {
-        return userLocale;
-    }
-
-    @Nonnull
-    @Override
-    public InteractionHook getHook()
-    {
-        return hook;
-    }
-
-    @Nonnull
-    @Override
     public User getUser()
     {
         return user;
@@ -155,14 +126,7 @@ public class InteractionImpl implements Interaction
     @Override
     public boolean isAcknowledged()
     {
-        return hook.isAck();
-    }
-
-    @Nonnull
-    @Override
-    public ReplyActionImpl deferReply()
-    {
-        return new ReplyActionImpl(this.hook);
+        return isAck;
     }
 
     @Nonnull

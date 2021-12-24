@@ -17,8 +17,10 @@
 package net.dv8tion.jda.api.requests.restaction.interactions;
 
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.Component;
+import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.utils.AttachmentOption;
 import net.dv8tion.jda.internal.utils.Checks;
 
@@ -32,7 +34,7 @@ import java.util.Collection;
 /**
  * A {@link InteractionCallbackAction} which can be used to edit the message for an interaction.
  */
-public interface UpdateInteractionAction extends InteractionCallbackAction
+public interface UpdateInteractionAction extends InteractionCallbackAction<InteractionHook>
 {
     /**
      * Set the new content for this message.
@@ -120,7 +122,7 @@ public interface UpdateInteractionAction extends InteractionCallbackAction
      * Set only one action row for convenience.
      *
      * @param  components
-     *         The action row components, such as {@link net.dv8tion.jda.api.interactions.components.Button Buttons}
+     *         The action row components, such as {@link Button Buttons}
      *
      * @throws IllegalArgumentException
      *         If null or an invalid number of components are provided
@@ -140,7 +142,7 @@ public interface UpdateInteractionAction extends InteractionCallbackAction
      * Set only one action row for convenience.
      *
      * @param  components
-     *         The action row components, such as {@link net.dv8tion.jda.api.interactions.components.Button Buttons}
+     *         The action row components, such as {@link Button Buttons}
      *
      * @throws IllegalArgumentException
      *         If null or an invalid number of components are provided

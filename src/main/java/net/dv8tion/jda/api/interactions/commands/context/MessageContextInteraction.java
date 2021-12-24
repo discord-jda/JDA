@@ -14,17 +14,15 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.interactions.commands;
+package net.dv8tion.jda.api.interactions.commands.context;
 
-import net.dv8tion.jda.api.events.interaction.command.SlashCommandEvent;
-import net.dv8tion.jda.api.interactions.Interaction;
-import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback;
+import net.dv8tion.jda.api.entities.Message;
 
-/**
- * Interaction of a Slash-Command.
- *
- * @see SlashCommandEvent
- */
-public interface CommandInteraction extends Interaction, IReplyCallback, CommandPayload
+public interface MessageContextInteraction extends ContextInteraction<Message>
 {
+    @Override
+    default ContextTarget getTargetType()
+    {
+        return ContextTarget.MESSAGE;
+    }
 }
