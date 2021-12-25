@@ -14,119 +14,61 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.requests.restaction;
+package net.dv8tion.jda.api.interactions.commands.build;
 
-import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.interactions.commands.build.OptionData;
-import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
-import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
-import net.dv8tion.jda.api.requests.RestAction;
-import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
-import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Collection;
-import java.util.concurrent.TimeUnit;
-import java.util.function.BooleanSupplier;
+import java.util.List;
 
 /**
- * Specialized {@link RestAction} used to edit an existing command.
+ * Extension of {@link CommandData} which allows setting slash-command specific settings such as options and subcommands.
  */
-public interface CommandEditAction extends RestAction<Command>
+public interface SlashCommandData extends CommandData
 {
-    @Nonnull
-    @Override
-    @CheckReturnValue
-    CommandEditAction setCheck(@Nullable BooleanSupplier checks);
-
-    @Nonnull
-    @Override
-    @CheckReturnValue
-    CommandEditAction addCheck(@Nonnull BooleanSupplier checks);
-
-    @Nonnull
-    @Override
-    @CheckReturnValue
-    CommandEditAction timeout(long timeout, @Nonnull TimeUnit unit);
-
-    @Nonnull
-    @Override
-    @CheckReturnValue
-    CommandEditAction deadline(long timestamp);
-
     /**
-     * Replace the command with the provided {@link CommandDataImpl}.
+     * The {@link SubcommandData Subcommands} in this command.
      *
-     * @param  commandData
-     *         The data for the command
-     *
-     * @throws IllegalArgumentException
-     *         If null is provided
-     *
-     * @return The CommandEditAction instance, for chaining
+     * @return Immutable list of {@link SubcommandData}
      */
     @Nonnull
-    @CheckReturnValue
-    CommandEditAction apply(@Nonnull CommandDataImpl commandData);
+    List<SubcommandData> getSubcommands();
 
     /**
-     * Whether this command is available to everyone by default.
-     * <br>If this is disabled, you need to explicitly whitelist users and roles per guild.
+     * The {@link SubcommandGroupData Subcommand Groups} in this command.
      *
-     * @param  enabled
-     *         True, if this command is enabled by default for everyone. (Default: true)
-     *
-     * @return The CommandEditAction instance, for chaining
+     * @return Immutable list of {@link SubcommandGroupData}
      */
     @Nonnull
-    @CheckReturnValue
-    CommandEditAction setDefaultEnabled(boolean enabled);
-
-    /**
-     * Configure the name
-     *
-     * @param  name
-     *         The lowercase alphanumeric (with dash) name, 1-32 characters. Use null to keep the current name.
-     *
-     * @throws IllegalArgumentException
-     *         If the name is not alphanumeric or not between 1-32 characters
-     *
-     * @return The CommandEditAction instance, for chaining
-     */
-    @Nonnull
-    @CheckReturnValue
-    CommandEditAction setName(@Nullable String name);
-
-    /**
-     * Configure the description
-     *
-     * @param  description
-     *         The description, 1-100 characters. Use null to keep the current description.
-     *
-     * @throws IllegalArgumentException
-     *         If the name is null or not between 1-100 characters
-     *
-     * @return The CommandEditAction instance, for chaining
-     */
-    @Nonnull
-    @CheckReturnValue
-    CommandEditAction setDescription(@Nullable String description);
-
-    /**
-     * Removes all existing options/subcommands/groups from this command.
-     *
-     * @return The CommandEditAction instance, for chaining
-     */
-    @Nonnull
-    @CheckReturnValue
-    CommandEditAction clearOptions();
+    List<SubcommandGroupData> getSubcommandGroups();
 
     /**
      * Adds up to 25 options to this command.
-     * <br>This will replace any existing options/subcommands/groups on the command.
+     *
+     * <p>Required options must be added before non-required options!
+     *
+     * @param  options
+     *          The {@link OptionData Options} to add
+     *
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If you try to mix subcommands/options/groups in one command.</li>
+     *             <li>If the option type is {@link OptionType#SUB_COMMAND} or {@link OptionType#SUB_COMMAND_GROUP}.</li>
+     *             <li>If this option is required and you already added a non-required option.</li>
+     *             <li>If more than 25 options are provided.</li>
+     *             <li>If null is provided</li>
+     *         </ul>
+     *
+     * @return The CommandData instance, for chaining
+     */
+    @Nonnull
+    SlashCommandData addOptions(@Nonnull OptionData... options);
+
+    /**
+     * Adds up to 25 options to this command.
      *
      * <p>Required options must be added before non-required options!
      *
@@ -142,43 +84,54 @@ public interface CommandEditAction extends RestAction<Command>
      *             <li>If null is provided</li>
      *         </ul>
      *
-     * @return The CommandEditAction instance, for chaining
+     * @return The CommandData instance, for chaining
      */
     @Nonnull
-    @CheckReturnValue
-    CommandEditAction addOptions(@Nonnull OptionData... options);
-
-    /**
-     * Adds up to 25 options to this command.
-     * <br>This will replace any existing options/subcommands/groups on the command.
-     *
-     * <p>Required options must be added before non-required options!
-     *
-     * @param  options
-     *         The {@link OptionData Options} to add
-     *
-     * @throws IllegalArgumentException
-     *         <ul>
-     *             <li>If you try to mix subcommands/options/groups in one command.</li>
-     *             <li>If the option type is {@link OptionType#SUB_COMMAND} or {@link OptionType#SUB_COMMAND_GROUP}.</li>
-     *             <li>If this option is required and you already added a non-required option.</li>
-     *             <li>If more than 25 options are provided.</li>
-     *             <li>If null is provided</li>
-     *         </ul>
-     *
-     * @return The CommandEditAction instance, for chaining
-     */
-    @Nonnull
-    @CheckReturnValue
-    default CommandEditAction addOptions(@Nonnull Collection<? extends OptionData> options)
+    default SlashCommandData addOptions(@Nonnull Collection<? extends OptionData> options)
     {
-        Checks.noneNull(options, "Options");
+        Checks.noneNull(options, "Option");
         return addOptions(options.toArray(new OptionData[0]));
     }
 
     /**
      * Adds an option to this command.
-     * <br>This will replace any existing options/subcommands/groups on the command.
+     *
+     * <p>Required options must be added before non-required options!
+     *
+     * @param  type
+     *         The {@link OptionType}
+     * @param  name
+     *         The lowercase option name, 1-32 characters
+     * @param  description
+     *         The option description, 1-100 characters
+     * @param  required
+     *         Whether this option is required (See {@link OptionData#setRequired(boolean)})
+     * @param  autoComplete
+     *         Whether this option supports auto-complete via {@link CommandAutoCompleteEvent},
+     *         only supported for option types which {@link OptionType#canSupportChoices() support choices}
+     *
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If you try to mix subcommands/options/groups in one command.</li>
+     *             <li>If the option type is {@link OptionType#SUB_COMMAND} or {@link OptionType#SUB_COMMAND_GROUP}.</li>
+     *             <li>If the provided option type does not support auto-complete</li>
+     *             <li>If this option is required and you already added a non-required option.</li>
+     *             <li>If more than 25 options are provided.</li>
+     *             <li>If null is provided</li>
+     *         </ul>
+     *
+     * @return The CommandData instance, for chaining
+     */
+    @Nonnull
+    default SlashCommandData addOption(@Nonnull OptionType type, @Nonnull String name, @Nonnull String description, boolean required, boolean autoComplete)
+    {
+        return addOptions(new OptionData(type, name, description)
+                .setRequired(required)
+                .setAutoComplete(autoComplete));
+    }
+
+    /**
+     * Adds an option to this command.
      *
      * <p>Required options must be added before non-required options!
      *
@@ -200,18 +153,17 @@ public interface CommandEditAction extends RestAction<Command>
      *             <li>If null is provided</li>
      *         </ul>
      *
-     * @return The CommandEditAction instance, for chaining
+     * @return The CommandData instance, for chaining
      */
     @Nonnull
-    @CheckReturnValue
-    default CommandEditAction addOption(@Nonnull OptionType type, @Nonnull String name, @Nonnull String description, boolean required)
+    default SlashCommandData addOption(@Nonnull OptionType type, @Nonnull String name, @Nonnull String description, boolean required)
     {
-        return addOptions(new OptionData(type, name, description).setRequired(required));
+        return addOption(type, name, description, required, false);
     }
 
     /**
      * Adds an option to this command.
-     * <br>This will replace any existing options/subcommands/groups on the command.
+     * <br>The option is set to be non-required! You can use {@link #addOption(OptionType, String, String, boolean)} to add a required option instead.
      *
      * <p>Required options must be added before non-required options!
      *
@@ -231,18 +183,16 @@ public interface CommandEditAction extends RestAction<Command>
      *             <li>If null is provided</li>
      *         </ul>
      *
-     * @return The CommandEditAction instance, for chaining
+     * @return The CommandData instance, for chaining
      */
     @Nonnull
-    @CheckReturnValue
-    default CommandEditAction addOption(@Nonnull OptionType type, @Nonnull String name, @Nonnull String description)
+    default SlashCommandData addOption(@Nonnull OptionType type, @Nonnull String name, @Nonnull String description)
     {
         return addOption(type, name, description, false);
     }
 
     /**
      * Add up to 25 {@link SubcommandData Subcommands} to this command.
-     * <br>This will replace any existing options/subcommands/groups on the command.
      *
      * @param  subcommands
      *         The subcommands to add
@@ -251,15 +201,13 @@ public interface CommandEditAction extends RestAction<Command>
      *         If null is provided, or more than 25 subcommands are provided.
      *         Also throws if you try to mix subcommands/options/groups in one command.
      *
-     * @return The CommandEditAction instance, for chaining
+     * @return The CommandData instance, for chaining
      */
     @Nonnull
-    @CheckReturnValue
-    CommandEditAction addSubcommands(@Nonnull SubcommandData... subcommands);
+    SlashCommandData addSubcommands(@Nonnull SubcommandData... subcommands);
 
     /**
      * Add up to 25 {@link SubcommandData Subcommands} to this command.
-     * <br>This will replace any existing options/subcommands/groups on the command.
      *
      * @param  subcommands
      *         The subcommands to add
@@ -268,11 +216,10 @@ public interface CommandEditAction extends RestAction<Command>
      *         If null is provided, or more than 25 subcommands are provided.
      *         Also throws if you try to mix subcommands/options/groups in one command.
      *
-     * @return The CommandEditAction instance, for chaining
+     * @return The CommandData instance, for chaining
      */
     @Nonnull
-    @CheckReturnValue
-    default CommandEditAction addSubcommands(@Nonnull Collection<? extends SubcommandData> subcommands)
+    default SlashCommandData addSubcommands(@Nonnull Collection<? extends SubcommandData> subcommands)
     {
         Checks.noneNull(subcommands, "Subcommands");
         return addSubcommands(subcommands.toArray(new SubcommandData[0]));
@@ -280,7 +227,6 @@ public interface CommandEditAction extends RestAction<Command>
 
     /**
      * Add up to 25 {@link SubcommandGroupData Subcommand-Groups} to this command.
-     * <br>This will replace any existing options/subcommands/groups on the command.
      *
      * @param  groups
      *         The subcommand groups to add
@@ -289,15 +235,13 @@ public interface CommandEditAction extends RestAction<Command>
      *         If null is provided, or more than 25 subcommand groups are provided.
      *         Also throws if you try to mix subcommands/options/groups in one command.
      *
-     * @return The CommandEditAction instance, for chaining
+     * @return The CommandData instance, for chaining
      */
     @Nonnull
-    @CheckReturnValue
-    CommandEditAction addSubcommandGroups(@Nonnull SubcommandGroupData... groups);
+    SlashCommandData addSubcommandGroups(@Nonnull SubcommandGroupData... groups);
 
     /**
      * Add up to 25 {@link SubcommandGroupData Subcommand-Groups} to this command.
-     * <br>This will replace any existing options/subcommands/groups on the command.
      *
      * @param  groups
      *         The subcommand groups to add
@@ -306,11 +250,10 @@ public interface CommandEditAction extends RestAction<Command>
      *         If null is provided, or more than 25 subcommand groups are provided.
      *         Also throws if you try to mix subcommands/options/groups in one command.
      *
-     * @return The CommandEditAction instance, for chaining
+     * @return The CommandData instance, for chaining
      */
     @Nonnull
-    @CheckReturnValue
-    default CommandEditAction addSubcommandGroups(@Nonnull Collection<? extends SubcommandGroupData> groups)
+    default SlashCommandData addSubcommandGroups(@Nonnull Collection<? extends SubcommandGroupData> groups)
     {
         Checks.noneNull(groups, "SubcommandGroups");
         return addSubcommandGroups(groups.toArray(new SubcommandGroupData[0]));

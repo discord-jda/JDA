@@ -25,7 +25,7 @@ import net.dv8tion.jda.api.events.interaction.component.ButtonClickEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.requests.GatewayIntent;
@@ -49,7 +49,7 @@ public class SlashBotExample extends ListenerAdapter
 
         // Moderation commands with required options
         commands.addCommands(
-            new CommandData("ban", "Ban a user from this server. Requires permission to ban users.")
+            Commands.slash("ban", "Ban a user from this server. Requires permission to ban users.")
                 .addOptions(new OptionData(USER, "user", "The user to ban") // USER type allows to include members of the server or other users by id
                     .setRequired(true)) // This command requires a parameter
                 .addOptions(new OptionData(INTEGER, "del_days", "Delete messages from the past days.")) // This is optional
@@ -57,18 +57,18 @@ public class SlashBotExample extends ListenerAdapter
 
         // Simple reply commands
         commands.addCommands(
-            new CommandData("say", "Makes the bot say what you tell it to")
+            Commands.slash("say", "Makes the bot say what you tell it to")
                 .addOptions(new OptionData(STRING, "content", "What the bot should say")
                     .setRequired(true))
         );
 
         // Commands without any inputs
         commands.addCommands(
-            new CommandData("leave", "Make the bot leave the server")
+            Commands.slash("leave", "Make the bot leave the server")
         );
 
         commands.addCommands(
-            new CommandData("prune", "Prune messages from this channel")
+            Commands.slash("prune", "Prune messages from this channel")
                 .addOptions(new OptionData(INTEGER, "amount", "How many messages to prune (Default 100)"))
         );
 

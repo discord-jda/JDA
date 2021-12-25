@@ -19,6 +19,7 @@ package net.dv8tion.jda.internal.requests.restaction;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
@@ -41,6 +42,7 @@ public class CommandListUpdateActionImpl extends RestActionImpl<List<Command>> i
 {
     private final List<CommandData> commands = new ArrayList<>();
     private final GuildImpl guild;
+    private int slash, user, message;
 
     public CommandListUpdateActionImpl(JDA api, GuildImpl guild, Route.CompiledRoute route)
     {
@@ -81,7 +83,33 @@ public class CommandListUpdateActionImpl extends RestActionImpl<List<Command>> i
     public CommandListUpdateAction addCommands(@Nonnull Collection<? extends CommandData> commands)
     {
         Checks.noneNull(commands, "Command");
-        Checks.check(this.commands.size() + commands.size() <= 100, "Cannot have more than 100 commands! Try using subcommands instead.");
+        int newSlash = 0, newUser = 0, newMessage = 0;
+        for (CommandData command : commands)
+        {
+            switch (command.getType())
+            {
+            case SLASH:
+                newSlash++;
+                break;
+            case MESSAGE:
+                newMessage++;
+                break;
+            case USER:
+                newUser++;
+                break;
+            }
+        }
+
+        Checks.check(slash + newSlash <= Commands.MAX_SLASH_COMMANDS,
+                "Cannot have more than %d slash commands! Try using subcommands instead.", Commands.MAX_SLASH_COMMANDS);
+        Checks.check(user + newUser <= Commands.MAX_USER_COMMANDS,
+                "Cannot have more than %d user context commands!", Commands.MAX_USER_COMMANDS);
+        Checks.check(message + newMessage <= Commands.MAX_MESSAGE_COMMANDS,
+                "Cannot have more than %d message context commands!", Commands.MAX_MESSAGE_COMMANDS);
+        slash += newSlash;
+        user += newUser;
+        message += newMessage;
+
         this.commands.addAll(commands);
         return this;
     }

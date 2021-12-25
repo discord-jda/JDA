@@ -40,6 +40,7 @@ import net.dv8tion.jda.api.utils.cache.MemberCacheView;
 import net.dv8tion.jda.api.utils.cache.SnowflakeCacheView;
 import net.dv8tion.jda.api.utils.cache.SortedSnowflakeCacheView;
 import net.dv8tion.jda.api.utils.concurrent.Task;
+import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 import net.dv8tion.jda.internal.requests.DeferredRestAction;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
@@ -132,14 +133,19 @@ public interface Guild extends ISnowflake
      * @throws IllegalArgumentException
      *         If null is provided
      *
-     * @return {@link CommandCreateAction}
+     * @return {@link RestAction} - Type: {@link Command}
+     *         <br>The RestAction used to create or update the command
+     *
+     * @see    net.dv8tion.jda.api.interactions.commands.build.Commands#slash(String, String) Commands.slash(...)
+     * @see    net.dv8tion.jda.api.interactions.commands.build.Commands#message(String) Commands.message(...)
+     * @see    net.dv8tion.jda.api.interactions.commands.build.Commands#user(String) Commands.user(...)
      */
     @Nonnull
     @CheckReturnValue
-    CommandCreateAction upsertCommand(@Nonnull CommandData command);
+    RestAction<Command> upsertCommand(@Nonnull CommandData command);
 
     /**
-     * Creates or updates a command.
+     * Creates or updates a slash command.
      * <br>If a command with the same name exists, it will be replaced.
      *
      * <p>To specify a complete list of all commands you can use {@link #updateCommands()} instead.
@@ -160,7 +166,7 @@ public interface Guild extends ISnowflake
     @CheckReturnValue
     default CommandCreateAction upsertCommand(@Nonnull String name, @Nonnull String description)
     {
-        return upsertCommand(new CommandData(name, description));
+        return (CommandCreateAction) upsertCommand(new CommandDataImpl(name, description));
     }
 
     /**
