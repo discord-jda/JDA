@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.interactions.commands.build;
 
+import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteEvent;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.utils.data.DataArray;
@@ -249,6 +250,43 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
      *         The option description, 1-100 characters
      * @param  required
      *         Whether this option is required (See {@link OptionData#setRequired(boolean)})
+     * @param  autoComplete
+     *         Whether this option supports auto-complete via {@link CommandAutoCompleteEvent},
+     *         only supported for option types which {@link OptionType#canSupportChoices() support choices}
+     *
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If you try to mix subcommands/options/groups in one command.</li>
+     *             <li>If the option type is {@link OptionType#SUB_COMMAND} or {@link OptionType#SUB_COMMAND_GROUP}.</li>
+     *             <li>If the provided option type does not support auto-complete</li>
+     *             <li>If this option is required and you already added a non-required option.</li>
+     *             <li>If more than 25 options are provided.</li>
+     *             <li>If null is provided</li>
+     *         </ul>
+     *
+     * @return The CommandData instance, for chaining
+     */
+    @Nonnull
+    public CommandData addOption(@Nonnull OptionType type, @Nonnull String name, @Nonnull String description, boolean required, boolean autoComplete)
+    {
+        return addOptions(new OptionData(type, name, description)
+                .setRequired(required)
+                .setAutoComplete(autoComplete));
+    }
+
+    /**
+     * Adds an option to this command.
+     *
+     * <p>Required options must be added before non-required options!
+     *
+     * @param  type
+     *         The {@link OptionType}
+     * @param  name
+     *         The lowercase option name, 1-32 characters
+     * @param  description
+     *         The option description, 1-100 characters
+     * @param  required
+     *         Whether this option is required (See {@link OptionData#setRequired(boolean)})
      *
      * @throws IllegalArgumentException
      *         <ul>
@@ -264,7 +302,7 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
     @Nonnull
     public CommandData addOption(@Nonnull OptionType type, @Nonnull String name, @Nonnull String description, boolean required)
     {
-        return addOptions(new OptionData(type, name, description).setRequired(required));
+        return addOption(type, name, description, required, false);
     }
 
     /**
