@@ -375,8 +375,8 @@ public class Command implements ISnowflake
     {
         UNKNOWN(-1),
         SLASH(1),
-        MESSAGE(2),
-        USER(3);
+        USER(2),
+        MESSAGE(3);
 
         private final int id;
 

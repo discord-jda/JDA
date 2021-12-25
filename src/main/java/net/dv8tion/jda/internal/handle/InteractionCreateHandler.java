@@ -91,12 +91,12 @@ public class InteractionCreateHandler extends SocketHandler
                 new SlashCommandEvent(api, responseNumber,
                     new SlashCommandInteractionImpl(api, content)));
             break;
-        case USER:
+        case MESSAGE:
             api.handleEvent(
                 new MessageContextEvent(api, responseNumber,
                     new MessageContextInteractionImpl(api, content)));
             break;
-        case MESSAGE:
+        case USER:
             api.handleEvent(
                 new UserContextEvent(api, responseNumber,
                     new UserContextInteractionImpl(api, content)));
