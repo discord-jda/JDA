@@ -48,8 +48,10 @@ public class CommandDataImpl extends BaseCommand<CommandDataImpl> implements Sla
     public CommandDataImpl(@Nonnull Command.Type type, @Nonnull String name)
     {
         super(name, null);
-        Checks.check(type != Command.Type.SLASH, "Cannot create slash command without description. Use `new CommandData(name, description)` instead.");
         this.type = type;
+        Checks.notNull(type, "Command Type");
+        Checks.check(type != Command.Type.SLASH, "Cannot create slash command without description. Use `new CommandData(name, description)` instead.");
+        checkName(name);
     }
 
     @Override

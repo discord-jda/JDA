@@ -104,6 +104,27 @@ public class Commands
         return new CommandDataImpl(Command.Type.USER, name);
     }
 
+    /**
+     * Create a context menu command builder for the specified command type.
+     * <br>This cannot be used for slash commands, because they require a description.
+     * Use {@link #slash(String, String)} to create a slash command.
+     *
+     * @param  type
+     *         The command type, must not be {@link Command.Type#SLASH SLASH}
+     * @param  name
+     *         The command name, 1-32 characters
+     *
+     * @throws IllegalArgumentException
+     *         If the name is not between 1-32 characters long, the type is {@link Command.Type#SLASH}, or the type is null.
+     *
+     * @return {@link CommandData}
+     */
+    @Nonnull
+    public static CommandData context(@Nonnull Command.Type type, @Nonnull String name)
+    {
+        return new CommandDataImpl(type, name);
+    }
+
 
     /**
      * Parses the provided serialization back into an CommandData instance.
