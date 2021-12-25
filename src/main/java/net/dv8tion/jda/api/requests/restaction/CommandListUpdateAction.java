@@ -18,6 +18,7 @@ package net.dv8tion.jda.api.requests.restaction;
 
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.internal.utils.Checks;
 
@@ -53,32 +54,54 @@ public interface CommandListUpdateAction extends RestAction<List<Command>>
     CommandListUpdateAction addCheck(@Nonnull BooleanSupplier checks);
 
     /**
-     * Adds up to 100 commands.
+     * Adds up to
+     * {@value Commands#MAX_SLASH_COMMANDS} slash commands,
+     * {@value Commands#MAX_USER_COMMANDS} user context commands, and
+     * {@value Commands#MAX_MESSAGE_COMMANDS} message context commands.
+     *
      * <p>When a command is not listed in this request, it will be deleted.
      *
      * @param  commands
      *         The {@link CommandData commands} to add
      *
      * @throws IllegalArgumentException
-     *         If null or more than 100 commands are provided
+     *         If null or more than
+     *         {@value Commands#MAX_SLASH_COMMANDS} slash commands,
+     *         {@value Commands#MAX_USER_COMMANDS} user context commands, and
+     *         {@value Commands#MAX_MESSAGE_COMMANDS} message context commands, are provided
      *
      * @return The CommandUpdateAction instance, for chaining
+     *
+     * @see    Commands#slash(String, String) Commands.slash(...)
+     * @see    Commands#message(String) Commands.message(...)
+     * @see    Commands#user(String) Commands.user(...)
      */
     @Nonnull
     @CheckReturnValue
     CommandListUpdateAction addCommands(@Nonnull Collection<? extends CommandData> commands);
 
     /**
-     * Adds up to 100 commands.
+     * Adds up to
+     * {@value Commands#MAX_SLASH_COMMANDS} slash commands,
+     * {@value Commands#MAX_USER_COMMANDS} user context commands, and
+     * {@value Commands#MAX_MESSAGE_COMMANDS} message context commands.
+     *
      * <p>When a command is not listed in this request, it will be deleted.
      *
      * @param  commands
      *         The {@link CommandData commands} to add
      *
      * @throws IllegalArgumentException
-     *         If null or more than 100 commands are provided
+     *         If null or more than
+     *         {@value Commands#MAX_SLASH_COMMANDS} slash commands,
+     *         {@value Commands#MAX_USER_COMMANDS} user context commands, and
+     *         {@value Commands#MAX_MESSAGE_COMMANDS} message context commands, are provided
      *
      * @return The CommandUpdateAction instance, for chaining
+     *
+     * @see    Commands#slash(String, String) Commands.slash(...)
+     * @see    Commands#message(String) Commands.message(...)
+     * @see    Commands#user(String) Commands.user(...)
      */
     @Nonnull
     @CheckReturnValue

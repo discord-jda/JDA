@@ -31,6 +31,7 @@ import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.api.utils.cache.CacheView;
 import net.dv8tion.jda.api.utils.cache.SnowflakeCacheView;
+import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 import net.dv8tion.jda.internal.requests.CompletedRestAction;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
@@ -551,16 +552,20 @@ public interface JDA
      * @throws IllegalArgumentException
      *         If null is provided
      *
-     * @return {@link CommandCreateAction}
+     * @return {@link RestAction} - Type: {@link Command}
+     *         <br>The RestAction used to create or update the command
      *
-     * @see net.dv8tion.jda.api.entities.Guild#upsertCommand(CommandData)
+     * @see    net.dv8tion.jda.api.interactions.commands.build.Commands#slash(String, String) Commands.slash(...)
+     * @see    net.dv8tion.jda.api.interactions.commands.build.Commands#message(String) Commands.message(...)
+     * @see    net.dv8tion.jda.api.interactions.commands.build.Commands#user(String) Commands.user(...)
+     * @see    net.dv8tion.jda.api.entities.Guild#upsertCommand(CommandData) Guild.upsertCommand(...)
      */
     @Nonnull
     @CheckReturnValue
-    CommandCreateAction upsertCommand(@Nonnull CommandData command);
+    RestAction<Command> upsertCommand(@Nonnull CommandData command);
 
     /**
-     * Creates or updates a global command.
+     * Creates or updates a global slash command.
      * <br>If a command with the same name exists, it will be replaced.
      *
      * <p>To specify a complete list of all commands you can use {@link #updateCommands()} instead.
@@ -586,7 +591,7 @@ public interface JDA
     @CheckReturnValue
     default CommandCreateAction upsertCommand(@Nonnull String name, @Nonnull String description)
     {
-        return upsertCommand(new CommandData(name, description));
+        return (CommandCreateAction) upsertCommand(new CommandDataImpl(name, description));
     }
 
     /**

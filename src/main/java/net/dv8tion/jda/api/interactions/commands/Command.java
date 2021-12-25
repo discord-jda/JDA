@@ -20,7 +20,6 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.ISnowflake;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.privileges.CommandPrivilege;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.CommandEditAction;
@@ -29,6 +28,7 @@ import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.DataType;
 import net.dv8tion.jda.internal.JDAImpl;
+import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.CommandEditActionImpl;
@@ -318,7 +318,7 @@ public class Command implements ISnowflake
 
     /**
      * The version of this command.
-     * <br>This changes when a command is updated through {@link net.dv8tion.jda.api.JDA#upsertCommand(CommandData) upsertCommand}, {@link net.dv8tion.jda.api.JDA#updateCommands() updateCommands}, or {@link net.dv8tion.jda.api.JDA#editCommandById(String) editCommandById}
+     * <br>This changes when a command is updated through {@link net.dv8tion.jda.api.JDA#upsertCommand(CommandDataImpl) upsertCommand}, {@link net.dv8tion.jda.api.JDA#updateCommands() updateCommands}, or {@link net.dv8tion.jda.api.JDA#editCommandById(String) editCommandById}
      * <br>Useful for checking if command cache is outdated
      *
      * @return The version of the command as a snowflake id.

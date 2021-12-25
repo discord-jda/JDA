@@ -26,6 +26,7 @@ import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.restaction.CommandCreateAction;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
+import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -38,20 +39,20 @@ import java.util.function.BooleanSupplier;
 public class CommandCreateActionImpl extends RestActionImpl<Command> implements CommandCreateAction
 {
     private final Guild guild;
-    private CommandData data;
+    private CommandDataImpl data;
 
     public CommandCreateActionImpl(JDAImpl api, CommandData command)
     {
         super(api, Route.Interactions.CREATE_COMMAND.compile(api.getSelfUser().getApplicationId()));
         this.guild = null;
-        this.data = command;
+        this.data = (CommandDataImpl) command;
     }
 
     public CommandCreateActionImpl(Guild guild, CommandData command)
     {
         super(guild.getJDA(), Route.Interactions.CREATE_GUILD_COMMAND.compile(guild.getJDA().getSelfUser().getApplicationId(), guild.getId()));
         this.guild = guild;
-        this.data = command;
+        this.data = (CommandDataImpl) command;
     }
 
     @Nonnull
