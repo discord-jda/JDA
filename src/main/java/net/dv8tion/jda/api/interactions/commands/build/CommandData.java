@@ -140,6 +140,8 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
     public CommandData addOptions(@Nonnull OptionData... options)
     {
         Checks.noneNull(options, "Option");
+        if (options.length == 0)
+            return this;
         Checks.check(options.length + this.options.length() <= 25, "Cannot have more than 25 options for a command!");
         Checks.check(allowOption, "You cannot mix options with subcommands/groups.");
         allowSubcommands = allowGroups = false;
@@ -257,8 +259,11 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
     public CommandData addSubcommands(@Nonnull SubcommandData... subcommands)
     {
         Checks.noneNull(subcommands, "Subcommands");
+        if (subcommands.length == 0)
+            return this;
         if (!allowSubcommands)
             throw new IllegalArgumentException("You cannot mix options with subcommands/groups.");
+        
         allowOption = false;
         Checks.check(subcommands.length + options.length() <= 25, "Cannot have more than 25 subcommands for a command!");
         for (SubcommandData data : subcommands)
@@ -301,6 +306,8 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
     public CommandData addSubcommandGroups(@Nonnull SubcommandGroupData... groups)
     {
         Checks.noneNull(groups, "SubcommandGroups");
+        if (groups.length == 0)
+            return this;
         if (!allowGroups)
             throw new IllegalArgumentException("You cannot mix options with subcommands/groups.");
         allowOption = false;
