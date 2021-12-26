@@ -27,8 +27,8 @@ import java.time.OffsetDateTime;
 
 
 /**
- * Manager providing functionality to update one or more fields for a {@link GuildScheduledEvent}. The manager
- * may also be used to start, cancel and end events.
+ * Manager providing functionality to update one or more fields for a {@link GuildScheduledEvent}.
+ * <br>The manager may also be used to start, cancel, or end events.
  *
  * <p><b>Example</b>
  * <pre>{@code
@@ -125,8 +125,8 @@ public interface GuildScheduledEventManager extends Manager<GuildScheduledEventM
     /**
      * Sets the name of the selected {@link GuildScheduledEvent GuildScheduledEvent}
      *
-     * @param name
-     *        The new name for the selected {@link GuildScheduledEvent GuildScheduledEvent}
+     * @param  name
+     *         The new name for the selected {@link GuildScheduledEvent GuildScheduledEvent}
      *
      * @throws java.lang.IllegalArgumentException
      *         If the new name is empty, {@code null}, or contains more than {@value GuildScheduledEvent#MAX_NAME_LENGTH}
@@ -142,9 +142,9 @@ public interface GuildScheduledEventManager extends Manager<GuildScheduledEventM
      * Sets the description of the selected {@link GuildScheduledEvent GuildScheduledEvent}.
      * This field may include markdown.
      *
-     * @param description
-     *        The new description for the selected {@link GuildScheduledEvent GuildScheduledEvent},
-     *        or {@code null} to reset the description
+     * @param  description
+     *         The new description for the selected {@link GuildScheduledEvent GuildScheduledEvent},
+     *         or {@code null} to reset the description
      *
      * @throws java.lang.IllegalArgumentException
      *         If the new description contains more than {@value GuildScheduledEvent#MAX_DESCRIPTION_LENGTH}
@@ -160,8 +160,8 @@ public interface GuildScheduledEventManager extends Manager<GuildScheduledEventM
      * <p>This will also change the event's type to {@link GuildScheduledEvent.Type#STAGE_INSTANCE}, and any previously set external location or
      * voice channel info will be lost!
      *
-     * @param stageChannel
-     *        The Stage Channel that the selected {@link GuildScheduledEvent} is set to take place in.
+     * @param  stageChannel
+     *         The Stage Channel that the selected {@link GuildScheduledEvent} is set to take place in.
      *
      * @return GuildScheduledEventManager for chaining convenience
      *
@@ -184,8 +184,8 @@ public interface GuildScheduledEventManager extends Manager<GuildScheduledEventM
      * <p>This will also change the event's type to {@link GuildScheduledEvent.Type#VOICE Type.VOICE}, and any previously
      * set external location or stage channel info will be lost!
      *
-     * @param voiceChannel
-     *        The Voice Channel that the selected {@link GuildScheduledEvent} is set to take place at.
+     * @param  voiceChannel
+     *         The Voice Channel that the selected {@link GuildScheduledEvent} is set to take place at.
      *
      * @return GuildScheduledEventManager for chaining convenience
      *
@@ -209,8 +209,8 @@ public interface GuildScheduledEventManager extends Manager<GuildScheduledEventM
      * <p>This will also change the event's type to {@link GuildScheduledEvent.Type#EXTERNAL}, and any previously set voice or
      * stage channel info will be lost!
      *
-     * @param externalLocation
-     *        The location that the selected {@link GuildScheduledEvent} is set to take place at.
+     * @param  externalLocation
+     *         The location that the selected {@link GuildScheduledEvent} is set to take place at.
      *
      * @return GuildScheduledEventManager for chaining convenience
      *
@@ -237,13 +237,13 @@ public interface GuildScheduledEventManager extends Manager<GuildScheduledEventM
      * and {@link GuildScheduledEvent.Type#VOICE Type.VOICE} will need to manually be started,
      * and will automatically be cancelled a few hours after the start time if not.
      *
-     * @param startTime The time that the selected {@link GuildScheduledEvent} is set to
-     *                  start at.
+     * @param  startTime
+     *         The time that the selected {@link GuildScheduledEvent} is set to start at.
      *
      * @return GuildScheduledEventManager for chaining convenience
      *
-     * @throws java.lang.IllegalArgumentException If the provided start time is {@code null}, or takes place after the
-     * end time.
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided start time is {@code null}, or takes place after the end time.
      *
      * @see #setEndTime(OffsetDateTime)
      */
@@ -256,9 +256,9 @@ public interface GuildScheduledEventManager extends Manager<GuildScheduledEventM
      * and {@link GuildScheduledEvent.Type#VOICE Type.VOICE} will end a few minutes after the last
      * person has left the channel.
      *
-     * @param endTime
-     *        The time that the selected {@link GuildScheduledEvent} is set to end at,
-     *        or {@code null} for no end time to be set.
+     * @param  endTime
+     *         The time that the selected {@link GuildScheduledEvent} is set to end at,
+     *         or {@code null} for no end time to be set.
      *
      * @return GuildScheduledEventManager for chaining convenience
      *
@@ -277,13 +277,13 @@ public interface GuildScheduledEventManager extends Manager<GuildScheduledEventM
      * Sets the status of the event. This method may be used to start, end or cancel an event but can only be used to
      * complete one of the following transitions:
      * <ol>
-     *     <li>{@link GuildScheduledEvent.Status#SCHEDULED Status.SCHEDULED} --> {@link GuildScheduledEvent.Status#SCHEDULED Status.ACTIVE}</li>
-     *     <li>{@link GuildScheduledEvent.Status#SCHEDULED Status.SCHEDULED} --> {@link GuildScheduledEvent.Status#CANCELED Status.CANCELED}</li>
-     *     <li>{@link GuildScheduledEvent.Status#ACTIVE Status.ACTIVE} &nbsp; &nbsp; &nbsp; --> {@link GuildScheduledEvent.Status#COMPLETED Status.COMPLETED}</li>
+     *     <li>{@link GuildScheduledEvent.Status#SCHEDULED Status.SCHEDULED} to {@link GuildScheduledEvent.Status#SCHEDULED Status.ACTIVE}</li>
+     *     <li>{@link GuildScheduledEvent.Status#SCHEDULED Status.SCHEDULED} to {@link GuildScheduledEvent.Status#CANCELED Status.CANCELED}</li>
+     *     <li>{@link GuildScheduledEvent.Status#ACTIVE Status.ACTIVE} to {@link GuildScheduledEvent.Status#COMPLETED Status.COMPLETED}</li>
      * </ol>
      *
-     * @param status
-     *        The new status
+     * @param  status
+     *         The new status
      *
      * @return GuildScheduledEventManager for chaining convenience
      *

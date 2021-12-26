@@ -25,9 +25,9 @@ import java.time.OffsetDateTime;
 import java.util.List;
 
 /**
- * A class representing a guild scheduled event (the ones that show up under the events tab in the Official
- * Discord Client). These events should not be confused with {@link net.dv8tion.jda.api.events Gateway Events}, which
- * are fired by Discord whenever something interesting happens
+ * A class representing a guild scheduled event (the ones that show up under the events tab in the Official Discord Client).
+ * These events should not be confused with {@link net.dv8tion.jda.api.events Gateway Events},
+ * which are fired by Discord whenever something interesting happens
  * (ie., a {@link net.dv8tion.jda.api.events.message.MessageDeleteEvent MessageDeleteEvent} gets fired whenever a message gets deleted).
  */
 public interface GuildScheduledEvent extends ISnowflake
@@ -96,11 +96,12 @@ public interface GuildScheduledEvent extends ISnowflake
     OffsetDateTime getStartTime();
 
     /**
-     * The time that the event is set to end at. The end time is only required for external events, which
-     * are events that are not associated with a stage or voice channel.
+     * The time that the event is set to end at.
+     * <br>The end time is only required for external events,
+     * which are events that are not associated with a stage or voice channel.
      *
      * @return The time that the event is set to end at. This will never be {@code null} for events of
-     *         {@link Type#EXTERNAL Type.EXTERNAL}, but may or may not be null for other types.
+     *         {@link Type#EXTERNAL Type.EXTERNAL}, but can be null for other types.
      *
      * @see #getType()
      * @see #getStartTime()
@@ -109,8 +110,8 @@ public interface GuildScheduledEvent extends ISnowflake
     OffsetDateTime getEndTime();
 
     /**
-     * The stage channel that the event is set to take place at. Note that this method is only applicable to
-     * events which are of {@link Type#STAGE_INSTANCE Type.STAGE_INSTANCE}.
+     * The stage channel that the event is set to take place at.
+     * <br>Note that this method is only applicable to events which are of {@link Type#STAGE_INSTANCE Type.STAGE_INSTANCE}.
      *
      * @return The stage channel, or {@code null} if the stage channel was deleted
      *         or if the event is not of {@link Type#STAGE_INSTANCE Type.STAGE_INSTANCE}
@@ -123,8 +124,8 @@ public interface GuildScheduledEvent extends ISnowflake
     StageChannel getStageChannel();
 
     /**
-     * The voice channel that the event is set to take place at. Note that this method is only applicable to
-     * events which are of {@link Type#VOICE Type.VOICE}.
+     * The voice channel that the event is set to take place at.
+     * <br>Note that this method is only applicable to events which are of {@link Type#VOICE Type.VOICE}.
      *
      * @return The voice channel, or {@code null} if the voice channel was deleted
      *         or if the event is not of {@link Type#STAGE_INSTANCE Type.VOICE}
@@ -137,8 +138,8 @@ public interface GuildScheduledEvent extends ISnowflake
     VoiceChannel getVoiceChannel();
 
     /**
-     * The external location that the event is set to take place at. Note that this method is only applicable to
-     * events which are of {@link Type#EXTERNAL Type.EXTERNAL}.
+     * The external location that the event is set to take place at.
+     * <br>Note that this method is only applicable to events which are of {@link Type#EXTERNAL Type.EXTERNAL}.
      *
      * @return The location, or {@code null} if the event is not of {@link Type#EXTERNAL Type.EXTERNAL}
      *
@@ -150,8 +151,8 @@ public interface GuildScheduledEvent extends ISnowflake
     String getExternalLocation();
 
     /**
-     * The amount of users who are interested in attending the event. This method should not be used for live counts
-     * as it returns the amount of people from cache.
+     * The amount of users who are interested in attending the event.
+     * <br>This method only returns the cached count, and may not be consistent with the live count.
      *
      * @return  The amount of users who are interested in attending the event
      */
@@ -160,20 +161,20 @@ public interface GuildScheduledEvent extends ISnowflake
     /**
      * Retrieves a list of users who are interested in attending the event.
      *
-     * @param max
-     *        The maximum amount of users to retrieve
+     * @param  max
+     *         The maximum amount of users to retrieve
      *
      * @throws java.lang.IllegalArgumentException
-     *         If the provided maximum amount of users to retrieve is less than or equal to zero
+     *         If the provided maximum amount of users to retrieve is not positive
      *
-     * @return A RestAction containing a list of interested users
+     * @return {@link RestAction} - Type: {@link List} or {@link User}
      */
     RestAction<List<User>> retrieveInterestedUsers(int max);
 
     /**
      * The {@link GuildScheduledEventManager} for this event.
-     * In the GuildScheduledEventManager, you can modify all its values, and can also start, end, or cancel events.
-     * <br>You modify multiple fields in one request by chaining setters before calling {@link net.dv8tion.jda.api.requests.RestAction#queue() RestAction.queue()}.
+     * <br>In the GuildScheduledEventManager, you can modify all its values, and can also start, end, or cancel events.
+     * You modify multiple fields in one request by chaining setters before calling {@link net.dv8tion.jda.api.requests.RestAction#queue() RestAction.queue()}.
      *
      * <p>This is a lazy idempotent getter. The manager is retained after the first call.
      * This getter is not thread-safe and would require guards by the user.
@@ -203,8 +204,7 @@ public interface GuildScheduledEvent extends ISnowflake
     JDA getJDA();
 
     /**
-     * Represents the status of a scheduled guild event.<br>
-     * Possible statuses are {@link #SCHEDULED}, {@link #ACTIVE}, {@link #COMPLETED}, {@link #CANCELED} and {@link #UNKNOWN}
+     * Represents the status of a scheduled guild event.
      * @see GuildScheduledEvent#getStatus
      */
     enum Status
@@ -233,8 +233,7 @@ public interface GuildScheduledEvent extends ISnowflake
         }
 
         /**
-         * Used to retrieve a {@link GuildScheduledEvent.Status Status} based
-         * on a Discord id key.
+         * Used to retrieve a Status based on a Discord id key.
          *
          * @param  key
          *         The Discord id key representing the requested Status.
@@ -247,9 +246,7 @@ public interface GuildScheduledEvent extends ISnowflake
             for (Status status : Status.values())
             {
                 if (status.getKey() == key)
-                {
                     return status;
-                }
             }
 
             return UNKNOWN;
@@ -257,11 +254,10 @@ public interface GuildScheduledEvent extends ISnowflake
     }
 
     /**
-     * Represents what type of event an event is, or where the event will be taking place at. Types include
-     * {@link #STAGE_INSTANCE}, {@link #VOICE}, {@link #EXTERNAL} (which indicates that the event's location was manually set
-     * to a custom location), as well as {@link #UNKNOWN}.
+     * Represents what type of event an event is, or where the event will be taking place at.
      */
-    enum Type {
+    enum Type
+    {
         UNKNOWN(-1),
         STAGE_INSTANCE(1),
         VOICE(2),
@@ -285,8 +281,7 @@ public interface GuildScheduledEvent extends ISnowflake
         }
 
         /**
-         * Used to retrieve a {@link GuildScheduledEvent.Type Type} based
-         * on a Discord id key.
+         * Used to retrieve a Type based on a Discord id key.
          *
          * @param  key
          *         The Discord id key representing the requested Type.
@@ -299,9 +294,7 @@ public interface GuildScheduledEvent extends ISnowflake
             for (Type type : Type.values())
             {
                 if (type.getKey() == key)
-                {
                     return type;
-                }
             }
 
             return UNKNOWN;

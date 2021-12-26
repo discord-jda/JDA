@@ -102,11 +102,11 @@ public interface GuildScheduledEventAction extends AuditableRestAction<GuildSche
     Guild getGuild();
 
     /**
-     * Sets the name for the new {@link GuildScheduledEvent GuildScheduledEvent}. <b>Note:</b>
-     * a name is required to be set before creating an event.
+     * Sets the name for the new {@link GuildScheduledEvent GuildScheduledEvent}.
+     * <br><b>Note:</b> A name is required to be set before creating an event.
      *
-     * @param name
-     *        The name for the new {@link GuildScheduledEvent GuildScheduledEvent}
+     * @param  name
+     *         The name for the new {@link GuildScheduledEvent GuildScheduledEvent}
      *
      * @throws java.lang.IllegalArgumentException
      *         If the new name is empty, {@code null}, or contains more than {@value GuildScheduledEvent#MAX_NAME_LENGTH}
@@ -122,9 +122,9 @@ public interface GuildScheduledEventAction extends AuditableRestAction<GuildSche
      * Sets the description for the new {@link GuildScheduledEvent GuildScheduledEvent}.
      * This field may include markdown.
      *
-     * @param description
-     *        The description for the new {@link GuildScheduledEvent GuildScheduledEvent},
-     *        or {@code null} for no description.
+     * @param  description
+     *         The description for the new {@link GuildScheduledEvent GuildScheduledEvent},
+     *         or {@code null} for no description.
      *
      * @throws java.lang.IllegalArgumentException
      *         If the new description contains more than {@value GuildScheduledEvent#MAX_DESCRIPTION_LENGTH}
@@ -143,8 +143,8 @@ public interface GuildScheduledEventAction extends AuditableRestAction<GuildSche
      * <p><b>Note:</b> A location is required to be set by either this method, {@link #setLocation(VoiceChannel)} or
      * {@link #setLocation(String)} before the event is created.
      *
-     * @param stageChannel
-     *        The Stage Channel that the new {@link GuildScheduledEvent} is set to take place in.
+     * @param  stageChannel
+     *         The Stage Channel that the new {@link GuildScheduledEvent} is set to take place in.
      *
      * @return The current GuildScheduledEventAction, for chaining convenience
      *
@@ -169,8 +169,8 @@ public interface GuildScheduledEventAction extends AuditableRestAction<GuildSche
      * <p><b>Note:</b> A location is required to be set by either this method, {@link #setLocation(StageChannel)} or {@link #setLocation(String)} before the
      * event is created.
      *
-     * @param voiceChannel
-     *        The Voice Channel that the selected {@link GuildScheduledEvent} is set to take place at.
+     * @param  voiceChannel
+     *         The Voice Channel that the selected {@link GuildScheduledEvent} is set to take place at.
      *
      * @return The current GuildScheduledEventAction, for chaining convenience
      *
@@ -196,8 +196,8 @@ public interface GuildScheduledEventAction extends AuditableRestAction<GuildSche
      * <p><b>Note:</b> A location is required to be sent by either this method, {@link #setLocation(StageChannel)} or {@link #setLocation(VoiceChannel)} before the
      * event is created.
      *
-     * @param externalLocation
-     *        The location that the new {@link GuildScheduledEvent} is set to take place at.
+     * @param  externalLocation
+     *         The location that the new {@link GuildScheduledEvent} is set to take place at.
      *
      * @return The current GuildScheduledEventAction, for chaining convenience
      *
@@ -225,7 +225,8 @@ public interface GuildScheduledEventAction extends AuditableRestAction<GuildSche
      * and will automatically be cancelled a few hours after the start time if not.
      * <p><b>Note:</b> A start time is required to be set before the event is created.
      *
-     * @param startTime The time that the new {@link GuildScheduledEvent} should start at
+     * @param  startTime
+     *         The time that the new {@link GuildScheduledEvent} should start at
      *
      * @return The current GuildScheduledEventAction, for chaining convenience
      *
@@ -246,9 +247,9 @@ public interface GuildScheduledEventAction extends AuditableRestAction<GuildSche
      * this method must be called before {@link #setLocation(String)} if so. Otherwise, setting the end time is optional
      * for events of {@link GuildScheduledEvent.Type#STAGE_INSTANCE Type.STAGE_INSTANCE} and {@link GuildScheduledEvent.Type#VOICE Type.VOICE}.
      *
-     * @param endTime
-     *        The time that the new {@link GuildScheduledEvent} is set to end at,
-     *        or {@code null} for no end time to be set.
+     * @param  endTime
+     *         The time that the new {@link GuildScheduledEvent} is set to end at,
+     *         or {@code null} for no end time to be set.
      *
      * @return The current GuildScheduledEventAction, for chaining convenience
      *

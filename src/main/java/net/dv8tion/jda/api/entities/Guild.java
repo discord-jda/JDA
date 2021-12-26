@@ -960,20 +960,22 @@ public interface Guild extends ISnowflake
 
     /**
      * Creates a new {@link GuildScheduledEvent}.
-     * <p><b>Requirements</b></p>
-     * <p>Events that are created are required to have a name, a location, and a start time. Depending on the
+     *
+     * <h2>Requirements</h2>
+     *
+     * Events that are created are required to have a name, a location, and a start time. Depending on the
      * type of location provided, an event will be of one of three different {@link GuildScheduledEvent.Type Types}:
      * <ol>
      *     <li>
-     *         <p><b>{@link GuildScheduledEvent.Type#STAGE_INSTANCE Type.STAGE_INSTANCE}</b></p>
-     *         <p>These events are set to take place inside of a {@link net.dv8tion.jda.api.entities.StageChannel}. The
+     *         {@link GuildScheduledEvent.Type#STAGE_INSTANCE Type.STAGE_INSTANCE}
+     *         <br>These events are set to take place inside of a {@link net.dv8tion.jda.api.entities.StageChannel}. The
      *         following permissions are required in the specified stage channel in order to create an event there:
      *          <ul>
      *              <li>{@link net.dv8tion.jda.api.Permission#MANAGE_EVENTS Permission.MANAGE_EVENTS}</li>
      *              <li>{@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL Permission.MANAGE_CHANNEL}</li>
      *              <li>{@link net.dv8tion.jda.api.Permission#VOICE_MUTE_OTHERS Permission.VOICE_MUTE_OTHERS}</li>
      *              <li>{@link net.dv8tion.jda.api.Permission#VOICE_MOVE_OTHERS Permission.VOICE_MOVE_OTHERS}}</li>
-     *         </ul></p>
+     *         </ul>
      *     </li>
      *     <li>
      *         <p><b>{@link GuildScheduledEvent.Type#VOICE Type.VOICE}</b></p>
@@ -988,20 +990,22 @@ public interface Guild extends ISnowflake
      *     <li>
      *         <p><b>{@link GuildScheduledEvent.Type#EXTERNAL Type.EXTERNAL}</b></p>
      *         <p>These events are set to take place at a custom location. {@link net.dv8tion.jda.api.Permission#MANAGE_EVENTS Permission.MANAGE_EVENTS}
-     *         is required on the guild level in order to create this type of event. Additionally, an end time <i>must</i>
+     *         is required on the guild level in order to create this type of event. Additionally, an end time <em>must</em>
      *         also be specified.
      *     </li>
      * </ol>
-     * <p><b>Example</b></p>
+     *
+     * <h2>Example</h2>
      * <pre>{@code
-     *     guild.createScheduledEvent()
-     *          .setName("Cactus Beauty Contest")
-     *          .setDescription("Come and have your cacti judged! _Must be spikey to enter_")
-     *          .setStartTime(OffsetDateTime.parse("2023-11-15T03:00:00+01:00"))
-     *          .setEndTime(OffsetDateTime.parse("2023-11-15T05:45:00+01:00"))
-     *          .setLocation("Mike's Backyard")
-     *          .queue();
+     * guild.createScheduledEvent()
+     *     .setName("Cactus Beauty Contest")
+     *     .setDescription("Come and have your cacti judged! _Must be spikey to enter_")
+     *     .setStartTime(OffsetDateTime.parse("2023-11-15T03:00:00+01:00"))
+     *     .setEndTime(OffsetDateTime.parse("2023-11-15T05:45:00+01:00"))
+     *     .setLocation("Mike's Backyard")
+     *     .queue();
      * }</pre>
+     *
      * @return A GuildScheduledEventAction object
      */
     @Nonnull
