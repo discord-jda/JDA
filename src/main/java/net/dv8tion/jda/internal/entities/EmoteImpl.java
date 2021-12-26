@@ -237,7 +237,7 @@ public class EmoteImpl implements ListedEmote
     @Override
     public String toString()
     {
-        return "E:" + getName() + '(' + getIdLong() + ')';
+        return "Emote:" + getName() + '(' + getIdLong() + ')';
     }
 
     @Override

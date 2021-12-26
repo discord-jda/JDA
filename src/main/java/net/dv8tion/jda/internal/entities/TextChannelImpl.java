@@ -177,4 +177,10 @@ public class TextChannelImpl extends AbstractGuildChannelImpl<TextChannelImpl> i
         this.slowmode = slowmode;
         return this;
     }
+
+    @Override
+    public String toString()
+    {
+        return "TextChannel:" + getName() + '(' + getId() + ')';
+    }
 }

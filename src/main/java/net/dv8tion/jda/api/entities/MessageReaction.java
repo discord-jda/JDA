@@ -423,7 +423,7 @@ public class MessageReaction
     @Override
     public String toString()
     {
-        return "MR:(M:(" + messageId + ") / " + emote + ")";
+        return "MessageReaction:" + messageId + '(' + emote + ')';
     }
 
     /**
@@ -603,8 +603,8 @@ public class MessageReaction
         public String toString()
         {
             if (isEmoji())
-                return "RE:" + getAsCodepoints();
-            return "RE:" + getName() + "(" + getId() + ")";
+                return "ReactionEmote:" + getAsCodepoints();
+            return "ReactionEmote:" + getName() + '(' + getId() + ')';
         }
     }
 }

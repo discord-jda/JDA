@@ -62,10 +62,4 @@ public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> impl
         this.name = name;
         return (T) this;
     }
-
-    @Override
-    public String toString()
-    {
-        return getType().name() + ':' + getName() + '(' + getId() + ')';
-    }
 }

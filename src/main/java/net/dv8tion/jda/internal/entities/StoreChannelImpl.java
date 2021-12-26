@@ -98,4 +98,10 @@ public class StoreChannelImpl extends AbstractGuildChannelImpl<StoreChannelImpl>
     {
         return this;
     }
+
+    @Override
+    public String toString()
+    {
+        return "StoreChannel:" + getName() + '(' + getId() + ')';
+    }
 }

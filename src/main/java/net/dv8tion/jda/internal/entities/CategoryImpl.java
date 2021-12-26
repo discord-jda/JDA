@@ -156,4 +156,10 @@ public class CategoryImpl extends AbstractGuildChannelImpl<CategoryImpl> impleme
         }
         return action.syncPermissionOverrides();
     }
+
+    @Override
+    public String toString()
+    {
+        return "Category:" + getName() + '(' + getId() + ')';
+    }
 }

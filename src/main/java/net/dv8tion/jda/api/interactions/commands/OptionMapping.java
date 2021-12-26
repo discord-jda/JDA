@@ -278,7 +278,7 @@ public class OptionMapping
     @Override
     public String toString()
     {
-        return "Option[" + getType() + "](" + getName() + "=" + getAsString() + ")";
+        return "Option[" + getType() + "](" + getName() + '=' + getAsString() + ')';
     }
 
     @Override

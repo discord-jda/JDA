@@ -182,7 +182,7 @@ public class UserImpl extends UserById implements User
     @Override
     public String toString()
     {
-        return "U:" + getName() + '(' + getId() + ')';
+        return "User:" + getName() + '(' + getId() + ')';
     }
 
     // -- Setters --

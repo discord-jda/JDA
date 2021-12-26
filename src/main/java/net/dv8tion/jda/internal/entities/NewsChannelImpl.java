@@ -181,4 +181,10 @@ public class NewsChannelImpl extends AbstractGuildChannelImpl<NewsChannelImpl> i
         this.latestMessageId = latestMessageId;
         return this;
     }
+
+    @Override
+    public String toString()
+    {
+        return "NewsChannel:" + getName() + '(' + getId() + ')';
+    }
 }
