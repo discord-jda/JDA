@@ -866,6 +866,17 @@ public class OptionData implements SerializableData
         return option;
     }
 
+    /**
+     * Converts the provided {@link Command.Option} into a OptionData instance.
+     *
+     * @param  option
+     *         The option to convert
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided or the option has illegal configuration
+     *
+     * @return An instance of OptionData
+     */
     @Nonnull
     public static OptionData fromOption(@Nonnull Command.Option option)
     {

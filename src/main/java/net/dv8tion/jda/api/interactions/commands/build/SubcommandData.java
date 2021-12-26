@@ -256,6 +256,17 @@ public class SubcommandData extends BaseCommand<CommandDataImpl> implements Seri
         return sub;
     }
 
+    /**
+     * Converts the provided {@link Command.Subcommand} into a SubCommandData instance.
+     *
+     * @param  subcommand
+     *         The subcommand to convert
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided or the subcommand has illegal configuration
+     *
+     * @return An instance of SubCommandData
+     */
     @Nonnull
     public static SubcommandData fromSubcommand(@Nonnull Command.Subcommand subcommand)
     {

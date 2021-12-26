@@ -17,8 +17,6 @@
 package net.dv8tion.jda.api.interactions.commands.build;
 
 import net.dv8tion.jda.api.interactions.commands.Command;
-import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
@@ -76,6 +74,19 @@ public interface CommandData extends SerializableData
     @Nonnull
     Command.Type getType();
 
+    /**
+     * Converts the provided {@link Command} into a CommandData instance.
+     *
+     * @param  command
+     *         The command to convert
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided or the command has illegal configuration
+     *
+     * @return An instance of CommandData
+     *
+     * @see    SlashCommandData#fromCommand(Command)
+     */
     @Nonnull
     static CommandData fromCommand(@Nonnull Command command)
     {
@@ -83,21 +94,7 @@ public interface CommandData extends SerializableData
         if (command.getType() != Command.Type.SLASH)
             return new CommandDataImpl(command.getType(), command.getName());
 
-        CommandDataImpl data = new CommandDataImpl(command.getName(), command.getDescription());
-        data.setDefaultEnabled(command.isDefaultEnabled());
-        command.getOptions()
-                .stream()
-                .map(OptionData::fromOption)
-                .forEach(data::addOptions);
-        command.getSubcommands()
-                .stream()
-                .map(SubcommandData::fromSubcommand)
-                .forEach(data::addSubcommands);
-        command.getSubcommandGroups()
-                .stream()
-                .map(SubcommandGroupData::fromGroup)
-                .forEach(data::addSubcommandGroups);
-        return data;
+        return SlashCommandData.fromCommand(command);
     }
 
     /**
@@ -113,6 +110,8 @@ public interface CommandData extends SerializableData
      *         If any of the values are failing the respective checks such as length
      *
      * @return The parsed CommandData instance, which can be further configured through setters
+     *
+     * @see    SlashCommandData#fromData(DataObject)
      */
     @Nonnull
     static CommandData fromData(@Nonnull DataObject object)
@@ -123,24 +122,6 @@ public interface CommandData extends SerializableData
         if (commandType != Command.Type.SLASH)
             return new CommandDataImpl(commandType, name);
 
-        String description = object.getString("description");
-        DataArray options = object.optArray("options").orElseGet(DataArray::empty);
-        CommandDataImpl command = new CommandDataImpl(name, description);
-        options.stream(DataArray::getObject).forEach(opt ->
-        {
-            OptionType type = OptionType.fromKey(opt.getInt("type"));
-            switch (type)
-            {
-            case SUB_COMMAND:
-                command.addSubcommands(SubcommandData.fromData(opt));
-                break;
-            case SUB_COMMAND_GROUP:
-                command.addSubcommandGroups(SubcommandGroupData.fromData(opt));
-                break;
-            default:
-                command.addOptions(OptionData.fromData(opt));
-            }
-        });
-        return command;
+        return SlashCommandData.fromData(object);
     }
 }
