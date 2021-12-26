@@ -19,10 +19,8 @@ package net.dv8tion.jda.api.events.interaction.command;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
-import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback;
 import net.dv8tion.jda.api.interactions.commands.context.MessageContextInteraction;
-import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction;
 import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;
@@ -52,20 +50,6 @@ public class MessageContextEvent extends GenericCommandEvent implements MessageC
     public MessageChannel getChannel()
     {
         return interaction.getChannel();
-    }
-
-    @Nonnull
-    @Override
-    public InteractionHook getHook()
-    {
-        return interaction.getHook();
-    }
-
-    @Nonnull
-    @Override
-    public ReplyCallbackAction deferReply()
-    {
-        return interaction.deferReply();
     }
 
     @Nonnull
