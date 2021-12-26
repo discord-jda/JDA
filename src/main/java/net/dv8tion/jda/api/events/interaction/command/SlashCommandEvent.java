@@ -18,9 +18,7 @@ package net.dv8tion.jda.api.events.interaction.command;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.MessageChannel;
-import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.commands.SlashCommandInteraction;
-import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction;
 
 import javax.annotation.Nonnull;
 
@@ -48,19 +46,5 @@ public class SlashCommandEvent extends GenericCommandEvent implements SlashComma
     public MessageChannel getChannel()
     {
         return interaction.getChannel();
-    }
-
-    @Nonnull
-    @Override
-    public InteractionHook getHook()
-    {
-        return interaction.getHook();
-    }
-
-    @Nonnull
-    @Override
-    public ReplyCallbackAction deferReply()
-    {
-        return interaction.deferReply();
     }
 }

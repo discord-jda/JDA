@@ -18,9 +18,10 @@ package net.dv8tion.jda.api.events.interaction.command;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.events.interaction.GenericInteractionCreateEvent;
+import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.commands.CommandInteraction;
-import net.dv8tion.jda.api.interactions.commands.CommandPayload;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
+import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -30,7 +31,7 @@ import java.util.List;
 /**
  * Indicates that a {@link CommandInteraction} was used.
  */
-public class GenericCommandEvent extends GenericInteractionCreateEvent implements CommandPayload
+public class GenericCommandEvent extends GenericInteractionCreateEvent implements CommandInteraction
 {
     public GenericCommandEvent(@Nonnull JDA api, long responseNumber, @Nonnull CommandInteraction interaction)
     {
@@ -76,5 +77,19 @@ public class GenericCommandEvent extends GenericInteractionCreateEvent implement
     public List<OptionMapping> getOptions()
     {
         return getInteraction().getOptions();
+    }
+
+    @Nonnull
+    @Override
+    public InteractionHook getHook()
+    {
+        return getInteraction().getHook();
+    }
+
+    @Nonnull
+    @Override
+    public ReplyCallbackAction deferReply()
+    {
+        return getInteraction().deferReply();
     }
 }
