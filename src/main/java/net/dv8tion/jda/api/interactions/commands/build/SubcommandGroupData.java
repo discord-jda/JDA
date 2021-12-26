@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.interactions.commands.build;
 
+import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
@@ -215,5 +216,17 @@ public class SubcommandGroupData implements SerializableData
                         .forEach(group::addSubcommands)
         );
         return group;
+    }
+
+    @Nonnull
+    public static SubcommandGroupData fromGroup(@Nonnull Command.SubcommandGroup group)
+    {
+        Checks.notNull(group, "Subcommand Group");
+        SubcommandGroupData data = new SubcommandGroupData(group.getName(), group.getDescription());
+        group.getSubcommands()
+                .stream()
+                .map(SubcommandData::fromSubcommand)
+                .forEach(data::addSubcommands);
+        return data;
     }
 }

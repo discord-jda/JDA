@@ -860,4 +860,31 @@ public class OptionData implements SerializableData
         );
         return option;
     }
+
+    @Nonnull
+    public static OptionData fromOption(@Nonnull Command.Option option)
+    {
+        OptionData data = new OptionData(option.getType(), option.getName(), option.getDescription());
+        data.setRequired(option.isRequired());
+        data.setAutoComplete(option.isAutoComplete());
+        data.addChoices(option.getChoices());
+        Number min = option.getMinValue(), max = option.getMaxValue();
+        if (option.getType() == OptionType.CHANNEL)
+            data.setChannelTypes(option.getChannelTypes());
+        if (option.getType() == OptionType.NUMBER)
+        {
+            if (min != null)
+                data.setMinValue(min.doubleValue());
+            if (max != null)
+                data.setMaxValue(max.doubleValue());
+        }
+        if (option.getType() == OptionType.INTEGER)
+        {
+            if (min != null)
+                data.setMinValue(min.longValue());
+            if (max != null)
+                data.setMaxValue(max.longValue());
+        }
+        return data;
+    }
 }
