@@ -18,8 +18,14 @@ package net.dv8tion.jda.api.interactions.commands.context;
 
 import net.dv8tion.jda.api.entities.Message;
 
+import javax.annotation.Nonnull;
+
+/**
+ * Interaction with a message context menu command
+ */
 public interface MessageContextInteraction extends ContextInteraction<Message>
 {
+    @Nonnull
     @Override
     default ContextTarget getTargetType()
     {

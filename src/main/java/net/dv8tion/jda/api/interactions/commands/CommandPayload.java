@@ -27,6 +27,10 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Interactions which provide command data.
+ * <br>This is an abstraction for {@link CommandAutoCompleteInteraction} and {@link CommandInteraction}.
+ */
 public interface CommandPayload extends Interaction // TODO: Consider naming
 {
     /**

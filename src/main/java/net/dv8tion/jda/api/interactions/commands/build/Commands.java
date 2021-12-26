@@ -31,6 +31,9 @@ import java.util.stream.Collectors;
 /**
  * Provides various static factory methods for building commands of different types.
  * This also includes context menu items.
+ *
+ * @see #slash(String, String)
+ * @see #context(Command.Type, String)
  */
 public class Commands
 {

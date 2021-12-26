@@ -23,6 +23,8 @@ import javax.annotation.Nonnull;
 
 /**
  * Builder for Application Commands.
+ *
+ * @see Commands
  */
 public interface CommandData extends SerializableData
 {
