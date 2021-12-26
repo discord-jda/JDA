@@ -122,6 +122,7 @@ public interface Guild extends ISnowflake
     /**
      * Creates or updates a command.
      * <br>If a command with the same name exists, it will be replaced.
+     * This operation is <b>not</b> idempotent.
      *
      * <p>To specify a complete list of all commands you can use {@link #updateCommands()} instead.
      *
@@ -147,6 +148,7 @@ public interface Guild extends ISnowflake
     /**
      * Creates or updates a slash command.
      * <br>If a command with the same name exists, it will be replaced.
+     * This operation is <b>not</b> idempotent.
      *
      * <p>To specify a complete list of all commands you can use {@link #updateCommands()} instead.
      *
@@ -172,6 +174,7 @@ public interface Guild extends ISnowflake
     /**
      * Configures the complete list of guild commands.
      * <br>This will replace the existing command list for this guild. You should only use this once on startup!
+     * This operation is idempotent.
      *
      * <p>You need the OAuth2 scope {@code "applications.commands"} in order to add commands to a guild.
      *
