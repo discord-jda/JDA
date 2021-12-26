@@ -34,7 +34,7 @@ import java.util.Collection;
 /**
  * A {@link InteractionCallbackAction} which can be used to edit the message for an interaction.
  */
-public interface UpdateInteractionAction extends InteractionCallbackAction<InteractionHook>
+public interface MessageEditCallbackAction extends InteractionCallbackAction<InteractionHook>
 {
     /**
      * Set the new content for this message.
@@ -48,7 +48,7 @@ public interface UpdateInteractionAction extends InteractionCallbackAction<Inter
      * @return The same update action, for chaining convenience
      */
     @Nonnull
-    UpdateInteractionAction setContent(@Nullable final String content);
+    MessageEditCallbackAction setContent(@Nullable final String content);
 
     /**
      * Set the {@link MessageEmbed MessageEmbeds} for the message
@@ -63,7 +63,7 @@ public interface UpdateInteractionAction extends InteractionCallbackAction<Inter
      */
     @Nonnull
     @CheckReturnValue
-    default UpdateInteractionAction setEmbeds(@Nonnull MessageEmbed... embeds)
+    default MessageEditCallbackAction setEmbeds(@Nonnull MessageEmbed... embeds)
     {
         Checks.noneNull(embeds, "MessageEmbed");
         return setEmbeds(Arrays.asList(embeds));
@@ -82,7 +82,7 @@ public interface UpdateInteractionAction extends InteractionCallbackAction<Inter
      */
     @Nonnull
     @CheckReturnValue
-    UpdateInteractionAction setEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds);
+    MessageEditCallbackAction setEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds);
 
     /**
      * Set the action rows for the message.
@@ -97,7 +97,7 @@ public interface UpdateInteractionAction extends InteractionCallbackAction<Inter
      */
     @Nonnull
     @CheckReturnValue
-    default UpdateInteractionAction setActionRows(@Nonnull Collection<? extends ActionRow> rows)
+    default MessageEditCallbackAction setActionRows(@Nonnull Collection<? extends ActionRow> rows)
     {
         Checks.noneNull(rows, "ActionRows");
         return setActionRows(rows.toArray(new ActionRow[0]));
@@ -116,7 +116,7 @@ public interface UpdateInteractionAction extends InteractionCallbackAction<Inter
      */
     @Nonnull
     @CheckReturnValue
-    UpdateInteractionAction setActionRows(@Nonnull ActionRow... rows);
+    MessageEditCallbackAction setActionRows(@Nonnull ActionRow... rows);
 
     /**
      * Set only one action row for convenience.
@@ -133,7 +133,7 @@ public interface UpdateInteractionAction extends InteractionCallbackAction<Inter
      */
     @Nonnull
     @CheckReturnValue
-    default UpdateInteractionAction setActionRow(@Nonnull Component... components)
+    default MessageEditCallbackAction setActionRow(@Nonnull Component... components)
     {
         return setActionRows(ActionRow.of(components));
     }
@@ -153,7 +153,7 @@ public interface UpdateInteractionAction extends InteractionCallbackAction<Inter
      */
     @Nonnull
     @CheckReturnValue
-    default UpdateInteractionAction setActionRow(@Nonnull Collection<? extends Component> components)
+    default MessageEditCallbackAction setActionRow(@Nonnull Collection<? extends Component> components)
     {
         return setActionRows(ActionRow.of(components));
     }
@@ -175,7 +175,7 @@ public interface UpdateInteractionAction extends InteractionCallbackAction<Inter
      */
     @Nonnull
     @CheckReturnValue
-    default UpdateInteractionAction addFile(@Nonnull File file, @Nonnull AttachmentOption... options)
+    default MessageEditCallbackAction addFile(@Nonnull File file, @Nonnull AttachmentOption... options)
     {
         Checks.notNull(file, "File");
         return addFile(file, file.getName(), options);
@@ -212,7 +212,7 @@ public interface UpdateInteractionAction extends InteractionCallbackAction<Inter
      */
     @Nonnull
     @CheckReturnValue
-    default UpdateInteractionAction addFile(@Nonnull File file, @Nonnull String name, @Nonnull AttachmentOption... options)
+    default MessageEditCallbackAction addFile(@Nonnull File file, @Nonnull String name, @Nonnull AttachmentOption... options)
     {
         try
         {
@@ -246,7 +246,7 @@ public interface UpdateInteractionAction extends InteractionCallbackAction<Inter
      */
     @Nonnull
     @CheckReturnValue
-    default UpdateInteractionAction addFile(@Nonnull byte[] data, @Nonnull String name, @Nonnull AttachmentOption... options)
+    default MessageEditCallbackAction addFile(@Nonnull byte[] data, @Nonnull String name, @Nonnull AttachmentOption... options)
     {
         Checks.notNull(data, "Data");
         return addFile(new ByteArrayInputStream(data), name, options);
@@ -272,7 +272,7 @@ public interface UpdateInteractionAction extends InteractionCallbackAction<Inter
      */
     @Nonnull
     @CheckReturnValue
-    UpdateInteractionAction addFile(@Nonnull InputStream data, @Nonnull String name, @Nonnull AttachmentOption... options);
+    MessageEditCallbackAction addFile(@Nonnull InputStream data, @Nonnull String name, @Nonnull AttachmentOption... options);
 
 /////// This is waiting for https://github.com/discord/discord-api-docs/issues/3048
 //

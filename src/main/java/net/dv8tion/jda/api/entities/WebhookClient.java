@@ -16,7 +16,7 @@
 
 package net.dv8tion.jda.api.entities;
 
-import net.dv8tion.jda.api.interactions.Interaction;
+import net.dv8tion.jda.api.interactions.callbacks.IDeferrableCallback;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.ComponentLayout;
 import net.dv8tion.jda.api.requests.RestAction;
@@ -32,7 +32,7 @@ import java.util.*;
 
 /**
  * Interface which allows sending messages through the webhooks API.
- * <br>Interactions can use these through {@link Interaction#getHook()}.
+ * <br>Interactions can use these through {@link IDeferrableCallback#getHook()}.
  *
  * @see Webhook
  * @see net.dv8tion.jda.api.interactions.InteractionHook

@@ -20,7 +20,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.commands.context.MessageContextInteraction;
-import net.dv8tion.jda.api.requests.restaction.interactions.ReplyAction;
+import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction;
 
 import javax.annotation.Nonnull;
 
@@ -43,7 +43,7 @@ public class MessageContextEvent extends GenericCommandEvent implements MessageC
 
     @Nonnull
     @Override
-    public ReplyAction deferReply()
+    public ReplyCallbackAction deferReply()
     {
         return interaction.deferReply();
     }

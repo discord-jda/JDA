@@ -142,6 +142,8 @@ public class OptionData implements SerializableData
      *         The option description, up to {@value #MAX_DESCRIPTION_LENGTH} characters, as defined by {@link #MAX_DESCRIPTION_LENGTH}
      * @param  isRequired
      *         {@code True}, if this option is required
+     * @param  isAutoComplete
+     *         True, if auto-complete should be supported (requires {@link OptionType#canSupportChoices()})
      *
      * @throws IllegalArgumentException
      *         If any of the following checks fail
@@ -149,6 +151,7 @@ public class OptionData implements SerializableData
      *             <li>{@code type} is not null</li>
      *             <li>{@code name} is alphanumeric (with dash), lowercase and between 1 and {@value #MAX_NAME_LENGTH} characters long</li>
      *             <li>{@code description} is between 1 and {@value #MAX_DESCRIPTION_LENGTH} characters long</li>
+     *             <li>{@link OptionType#canSupportChoices()} is false then {@code isAutoComplete} is also false</li>
      *         </ul>
      */
     public OptionData(@Nonnull OptionType type, @Nonnull String name, @Nonnull String description, boolean isRequired, boolean isAutoComplete)
@@ -866,6 +869,7 @@ public class OptionData implements SerializableData
     @Nonnull
     public static OptionData fromOption(@Nonnull Command.Option option)
     {
+        Checks.notNull(option, "Option");
         OptionData data = new OptionData(option.getType(), option.getName(), option.getDescription());
         data.setRequired(option.isRequired());
         data.setAutoComplete(option.isAutoComplete());

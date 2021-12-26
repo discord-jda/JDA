@@ -18,21 +18,35 @@ package net.dv8tion.jda.api.interactions;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
-import net.dv8tion.jda.api.interactions.components.ComponentInteraction;
+import net.dv8tion.jda.api.interactions.callbacks.IAutoCompleteCallback;
+import net.dv8tion.jda.api.interactions.callbacks.IDeferrableCallback;
+import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback;
+import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback;
+import net.dv8tion.jda.api.interactions.commands.Command;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
  * Abstract representation for any kind of Discord interaction.
- * <br>This includes things such as {@link net.dv8tion.jda.api.interactions.commands.CommandInteraction Slash-Commands} or {@link ComponentInteraction Buttons}.
+ * <br>This includes things such as {@link net.dv8tion.jda.api.interactions.commands.SlashCommandInteraction Slash-Commands}
+ * or {@link net.dv8tion.jda.api.interactions.components.buttons.ButtonInteraction Buttons}.
  *
  * <p>To properly handle an interaction you must acknowledge it.
- * This means you need to use either {@link #reply(String)}, {@link #deferReply()}, or another similar method for other interactions.
+ * Each interaction has different callbacks which acknowledge the interaction. These are added by the individual {@code I...Callback} interfaces:
+ * <ul>
+ *     <li>{@link IReplyCallback}
+ *     <br>Which supports direct message replies and deferred message replies via {@link IReplyCallback#reply(String)} and {@link IReplyCallback#deferReply()}</li>
+ *     <li>{@link IMessageEditCallback}
+ *     <br>Which supports direct message edits and deferred message edits (or no-operation) via {@link IMessageEditCallback#editMessage(String)} and {@link IMessageEditCallback#deferEdit()}</li>
+ *     <li>{@link IAutoCompleteCallback}
+ *     <br>Which supports choice suggestions for auto-complete interactions via {@link IAutoCompleteCallback#replyChoices(Command.Choice...)}</li>
+ * </ul>
  *
- * <p>Once the interaction is acknowledged, you can use {@link #getHook()} to send additional messages or update the original reply.
- * When using {@link #deferReply()} the first message sent to the {@link InteractionHook} will be identical to using {@link InteractionHook#editOriginal(String)}.
- * You must decide whether your reply will be ephemeral or not before calling {@link #deferReply()}. So design your code flow with that in mind!
+ * <p>Once the interaction is acknowledged, you can not reply with these methods again. If the interaction is a {@link IDeferrableCallback deferrable},
+ * you can use {@link IDeferrableCallback#getHook()} to send additional messages or update the original reply.
+ * When using {@link IReplyCallback#deferReply()} the first message sent to the {@link InteractionHook} will be identical to using {@link InteractionHook#editOriginal(String)}.
+ * You must decide whether your reply will be ephemeral or not before calling {@link IReplyCallback#deferReply()}. So design your code flow with that in mind!
  *
  * <p><b>You can only acknowledge an interaction once!</b> Any additional calls to reply/deferReply will result in exceptions.
  * You can use {@link #isAcknowledged()} to check whether the interaction has been acknowledged already.
@@ -127,8 +141,7 @@ public interface Interaction extends ISnowflake
 
     /**
      * Whether this interaction has already been acknowledged.
-     * <br>Both {@link #deferReply()} and {@link #reply(String)} acknowledge an interaction.
-     * Each interaction can only be acknowledged once.
+     * <br><b>Each interaction can only be acknowledged once.</b>
      *
      * @return True, if this interaction has already been acknowledged
      */

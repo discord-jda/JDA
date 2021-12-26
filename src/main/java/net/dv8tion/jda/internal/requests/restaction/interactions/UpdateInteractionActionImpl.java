@@ -19,7 +19,7 @@ package net.dv8tion.jda.internal.requests.restaction.interactions;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
-import net.dv8tion.jda.api.requests.restaction.interactions.UpdateInteractionAction;
+import net.dv8tion.jda.api.requests.restaction.interactions.MessageEditCallbackAction;
 import net.dv8tion.jda.api.utils.AttachmentOption;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
@@ -35,7 +35,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class UpdateInteractionActionImpl extends DeferrableCallbackActionImpl implements UpdateInteractionAction
+public class UpdateInteractionActionImpl extends DeferrableCallbackActionImpl implements MessageEditCallbackAction
 {
     private List<String> retainedFiles = null;
     private List<MessageEmbed> embeds = null;
@@ -78,7 +78,7 @@ public class UpdateInteractionActionImpl extends DeferrableCallbackActionImpl im
         return json;
     }
 
-    public UpdateInteractionAction applyMessage(Message message)
+    public MessageEditCallbackAction applyMessage(Message message)
     {
         this.content = message.getContentRaw();
         this.embeds = new ArrayList<>(message.getEmbeds());
@@ -88,7 +88,7 @@ public class UpdateInteractionActionImpl extends DeferrableCallbackActionImpl im
 
     @Nonnull
     @Override
-    public UpdateInteractionAction setEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
+    public MessageEditCallbackAction setEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
     {
         Checks.noneNull(embeds, "MessageEmbed");
         Checks.check(embeds.size() <= 10, "Cannot have more than 10 embeds per message!");
@@ -107,7 +107,7 @@ public class UpdateInteractionActionImpl extends DeferrableCallbackActionImpl im
 
     @Nonnull
     @Override
-    public UpdateInteractionAction setActionRows(@Nonnull ActionRow... rows)
+    public MessageEditCallbackAction setActionRows(@Nonnull ActionRow... rows)
     {
         Checks.noneNull(rows, "ActionRows");
         Checks.check(rows.length <= 5, "Can only have 5 action rows per message!");
@@ -118,7 +118,7 @@ public class UpdateInteractionActionImpl extends DeferrableCallbackActionImpl im
 
     @Nonnull
     @Override
-    public UpdateInteractionAction addFile(@Nonnull InputStream data, @Nonnull String name, @Nonnull AttachmentOption... options)
+    public MessageEditCallbackAction addFile(@Nonnull InputStream data, @Nonnull String name, @Nonnull AttachmentOption... options)
     {
         Checks.notNull(data, "Data");
         Checks.notEmpty(name, "Name");
@@ -143,7 +143,7 @@ public class UpdateInteractionActionImpl extends DeferrableCallbackActionImpl im
 
     @Nonnull
     @Override
-    public UpdateInteractionAction setContent(@Nullable String content)
+    public MessageEditCallbackAction setContent(@Nullable String content)
     {
         if (content != null)
             Checks.notLonger(content, Message.MAX_CONTENT_LENGTH, "Content");

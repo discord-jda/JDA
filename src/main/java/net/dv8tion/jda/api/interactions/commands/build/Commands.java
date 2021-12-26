@@ -65,6 +65,8 @@ public class Commands
      *             <li>The name must be lowercase alphanumeric (with dash), 1-32 characters long</li>
      *             <li>The description must be 1-100 characters long</li>
      *         </ul>
+     *
+     * @return {@link SlashCommandData} builder for slash commands
      */
     @Nonnull
     public static SlashCommandData slash(@Nonnull String name, @Nonnull String description)

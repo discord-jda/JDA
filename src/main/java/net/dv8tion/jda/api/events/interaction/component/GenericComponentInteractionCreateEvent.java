@@ -23,8 +23,8 @@ import net.dv8tion.jda.api.events.interaction.GenericInteractionCreateEvent;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.components.Component;
 import net.dv8tion.jda.api.interactions.components.ComponentInteraction;
-import net.dv8tion.jda.api.requests.restaction.interactions.ReplyAction;
-import net.dv8tion.jda.api.requests.restaction.interactions.UpdateInteractionAction;
+import net.dv8tion.jda.api.requests.restaction.interactions.MessageEditCallbackAction;
+import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -97,7 +97,7 @@ public class GenericComponentInteractionCreateEvent extends GenericInteractionCr
 
     @Nonnull
     @Override
-    public UpdateInteractionAction deferEdit()
+    public MessageEditCallbackAction deferEdit()
     {
         return interaction.deferEdit();
     }
@@ -111,7 +111,7 @@ public class GenericComponentInteractionCreateEvent extends GenericInteractionCr
 
     @Nonnull
     @Override
-    public ReplyAction deferReply()
+    public ReplyCallbackAction deferReply()
     {
         return interaction.deferReply();
     }

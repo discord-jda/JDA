@@ -20,7 +20,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.commands.SlashCommandInteraction;
-import net.dv8tion.jda.api.requests.restaction.interactions.ReplyAction;
+import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction;
 
 import javax.annotation.Nonnull;
 
@@ -57,7 +57,7 @@ public class SlashCommandEvent extends GenericCommandEvent implements SlashComma
 
     @Nonnull
     @Override
-    public ReplyAction deferReply()
+    public ReplyCallbackAction deferReply()
     {
         return interaction.deferReply();
     }

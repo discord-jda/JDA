@@ -19,7 +19,7 @@ package net.dv8tion.jda.api.interactions.callbacks;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.interactions.InteractionHook;
-import net.dv8tion.jda.api.requests.restaction.interactions.ReplyAction;
+import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction;
 import net.dv8tion.jda.internal.requests.restaction.interactions.ReplyActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
@@ -27,6 +27,22 @@ import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import java.util.Collection;
 
+/**
+ * Interactions which allow message replies in the channel they were used in.
+ *
+ * <p>These replies automatically acknowledge the interaction and support deferring.
+ *
+ * <h2>Deferred Replies</h2>
+ *
+ * If an interaction reply is deferred using {@link #deferReply()} or {@link #deferReply(boolean)},
+ * the {@link #getHook() interaction hook} can be used to send a delayed/deferred reply with {@link InteractionHook#sendMessage(String)}.
+ * When using {@link #deferReply()} the first message sent to the {@link InteractionHook} will be identical to using {@link InteractionHook#editOriginal(String)}.
+ * You must decide whether your reply will be ephemeral or not before calling {@link #deferReply()}. So design your code flow with that in mind!
+ *
+ * <p>If a reply is {@link #deferReply() deferred}, it becomes the <b>original</b> message of the interaction hook.
+ * This means all the methods with {@code original} in the name, such as {@link InteractionHook#editOriginal(String)},
+ * will affect that original reply.
+ */
 public interface IReplyCallback extends IDeferrableCallback
 {
     /**
@@ -40,11 +56,11 @@ public interface IReplyCallback extends IDeferrableCallback
      * <br>When the acknowledgement is sent after the interaction expired, you will receive {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_INTERACTION ErrorResponse.UNKNOWN_INTERACTION}.
      * <p>Use {@link #reply(String)} to reply directly.
      *
-     * @return {@link ReplyAction}
+     * @return {@link ReplyCallbackAction}
      */
     @Nonnull
     @CheckReturnValue
-    ReplyAction deferReply();
+    ReplyCallbackAction deferReply();
 
     /**
      * Acknowledge this interaction and defer the reply to a later time.
@@ -70,11 +86,11 @@ public interface IReplyCallback extends IDeferrableCallback
      * @param  ephemeral
      *         True, if this message should only be visible to the interaction user
      *
-     * @return {@link ReplyAction}
+     * @return {@link ReplyCallbackAction}
      */
     @Nonnull
     @CheckReturnValue
-    default ReplyAction deferReply(boolean ephemeral)
+    default ReplyCallbackAction deferReply(boolean ephemeral)
     {
         return deferReply().setEphemeral(ephemeral);
     }
@@ -82,7 +98,7 @@ public interface IReplyCallback extends IDeferrableCallback
     /**
      * Reply to this interaction and acknowledge it.
      * <br>This will send a reply message for this interaction.
-     * You can use {@link ReplyAction#setEphemeral(boolean) setEphemeral(true)} to only let the target user see the message.
+     * You can use {@link ReplyCallbackAction#setEphemeral(boolean) setEphemeral(true)} to only let the target user see the message.
      * Replies are non-ephemeral by default.
      *
      * <p><b>You only have 3 seconds to acknowledge an interaction!</b>
@@ -95,11 +111,11 @@ public interface IReplyCallback extends IDeferrableCallback
      * @throws IllegalArgumentException
      *         If null is provided
      *
-     * @return {@link ReplyAction}
+     * @return {@link ReplyCallbackAction}
      */
     @Nonnull
     @CheckReturnValue
-    default ReplyAction reply(@Nonnull Message message)
+    default ReplyCallbackAction reply(@Nonnull Message message)
     {
         Checks.notNull(message, "Message");
         ReplyActionImpl action = (ReplyActionImpl) deferReply();
@@ -109,7 +125,7 @@ public interface IReplyCallback extends IDeferrableCallback
     /**
      * Reply to this interaction and acknowledge it.
      * <br>This will send a reply message for this interaction.
-     * You can use {@link ReplyAction#setEphemeral(boolean) setEphemeral(true)} to only let the target user see the message.
+     * You can use {@link ReplyCallbackAction#setEphemeral(boolean) setEphemeral(true)} to only let the target user see the message.
      * Replies are non-ephemeral by default.
      *
      * <p><b>You only have 3 seconds to acknowledge an interaction!</b>
@@ -122,11 +138,11 @@ public interface IReplyCallback extends IDeferrableCallback
      * @throws IllegalArgumentException
      *         If null is provided or the content is empty or longer than {@link Message#MAX_CONTENT_LENGTH}
      *
-     * @return {@link ReplyAction}
+     * @return {@link ReplyCallbackAction}
      */
     @Nonnull
     @CheckReturnValue
-    default ReplyAction reply(@Nonnull String content)
+    default ReplyCallbackAction reply(@Nonnull String content)
     {
         Checks.notNull(content, "Content");
         return deferReply().setContent(content);
@@ -135,7 +151,7 @@ public interface IReplyCallback extends IDeferrableCallback
     /**
      * Reply to this interaction and acknowledge it.
      * <br>This will send a reply message for this interaction.
-     * You can use {@link ReplyAction#setEphemeral(boolean) setEphemeral(true)} to only let the target user see the message.
+     * You can use {@link ReplyCallbackAction#setEphemeral(boolean) setEphemeral(true)} to only let the target user see the message.
      * Replies are non-ephemeral by default.
      *
      * <p><b>You only have 3 seconds to acknowledge an interaction!</b>
@@ -148,11 +164,11 @@ public interface IReplyCallback extends IDeferrableCallback
      * @throws IllegalArgumentException
      *         If null is provided
      *
-     * @return {@link ReplyAction}
+     * @return {@link ReplyCallbackAction}
      */
     @Nonnull
     @CheckReturnValue
-    default ReplyAction replyEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
+    default ReplyCallbackAction replyEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
     {
         return deferReply().addEmbeds(embeds);
     }
@@ -160,7 +176,7 @@ public interface IReplyCallback extends IDeferrableCallback
     /**
      * Reply to this interaction and acknowledge it.
      * <br>This will send a reply message for this interaction.
-     * You can use {@link ReplyAction#setEphemeral(boolean) setEphemeral(true)} to only let the target user see the message.
+     * You can use {@link ReplyCallbackAction#setEphemeral(boolean) setEphemeral(true)} to only let the target user see the message.
      * Replies are non-ephemeral by default.
      *
      * <p><b>You only have 3 seconds to acknowledge an interaction!</b>
@@ -175,11 +191,11 @@ public interface IReplyCallback extends IDeferrableCallback
      * @throws IllegalArgumentException
      *         If null is provided
      *
-     * @return {@link ReplyAction}
+     * @return {@link ReplyCallbackAction}
      */
     @Nonnull
     @CheckReturnValue
-    default ReplyAction replyEmbeds(@Nonnull MessageEmbed embed, @Nonnull MessageEmbed... embeds)
+    default ReplyCallbackAction replyEmbeds(@Nonnull MessageEmbed embed, @Nonnull MessageEmbed... embeds)
     {
         Checks.notNull(embed, "MessageEmbed");
         Checks.noneNull(embeds, "MessageEmbed");
@@ -249,7 +265,7 @@ public interface IReplyCallback extends IDeferrableCallback
     /**
      * Reply to this interaction and acknowledge it.
      * <br>This will send a reply message for this interaction.
-     * You can use {@link ReplyAction#setEphemeral(boolean) setEphemeral(true)} to only let the target user see the message.
+     * You can use {@link ReplyCallbackAction#setEphemeral(boolean) setEphemeral(true)} to only let the target user see the message.
      * Replies are non-ephemeral by default.
      *
      * <p><b>You only have 3 seconds to acknowledge an interaction!</b>
@@ -264,11 +280,11 @@ public interface IReplyCallback extends IDeferrableCallback
      * @throws IllegalArgumentException
      *         If the format string is null or the resulting content is longer than {@link Message#MAX_CONTENT_LENGTH}
      *
-     * @return {@link ReplyAction}
+     * @return {@link ReplyCallbackAction}
      */
     @Nonnull
     @CheckReturnValue
-    default ReplyAction replyFormat(@Nonnull String format, @Nonnull Object... args)
+    default ReplyCallbackAction replyFormat(@Nonnull String format, @Nonnull Object... args)
     {
         Checks.notNull(format, "Format String");
         return reply(String.format(format, args));

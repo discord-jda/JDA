@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.entities.Emoji;
 import net.dv8tion.jda.api.events.interaction.component.ButtonClickEvent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.Component;
+import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction;
 import net.dv8tion.jda.internal.interactions.component.ButtonImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
@@ -66,8 +67,8 @@ import javax.annotation.Nullable;
  * <br>
  * <img alt="ButtonExample" src="https://raw.githubusercontent.com/DV8FromTheWorld/JDA/52377f69d1f3bfba909c51a449ac6b258f606956/assets/wiki/interactions/ButtonExamples.png">
  *
- * @see net.dv8tion.jda.api.requests.restaction.interactions.ReplyAction#addActionRow(Component...) ReplyAction.addActionRow(Component...)
- * @see net.dv8tion.jda.api.requests.restaction.interactions.ReplyAction#addActionRows(ActionRow...) ReplyAction.addActionRows(ActionRow...)
+ * @see ReplyCallbackAction#addActionRow(Component...) ReplyAction.addActionRow(Component...)
+ * @see ReplyCallbackAction#addActionRows(ActionRow...) ReplyAction.addActionRows(ActionRow...)
  */
 public interface Button extends Component
 {
