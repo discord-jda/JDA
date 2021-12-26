@@ -65,13 +65,15 @@ public class Command implements ISnowflake
     private final List<Subcommand> subcommands;
     private final long id, guildId, applicationId, version;
     private final boolean defaultEnabled;
+    private final Command.Type type;
 
     public Command(JDAImpl api, Guild guild, DataObject json)
     {
         this.api = api;
         this.guild = guild;
         this.name = json.getString("name");
-        this.description = json.getString("description");
+        this.description = json.getString("description", "");
+        this.type = Type.fromId(json.getInt("type", 1));
         this.id = json.getUnsignedLong("id");
         this.defaultEnabled = json.getBoolean("default_permission");
         this.guildId = guild != null ? guild.getIdLong() : 0L;
@@ -231,6 +233,17 @@ public class Command implements ISnowflake
     }
 
     /**
+     * The {@link Type} of command
+     *
+     * @return The command type
+     */
+    @Nonnull
+    public Type getType()
+    {
+        return type;
+    }
+
+    /**
      * The name of this command.
      *
      * @return The name
@@ -244,7 +257,7 @@ public class Command implements ISnowflake
     /**
      * The description of this command.
      *
-     * @return The description
+     * @return The description, empty for context menu commands
      */
     @Nonnull
     public String getDescription()

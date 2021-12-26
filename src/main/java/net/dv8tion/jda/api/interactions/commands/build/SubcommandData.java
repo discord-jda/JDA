@@ -17,6 +17,7 @@
 package net.dv8tion.jda.api.interactions.commands.build;
 
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteEvent;
+import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
@@ -253,5 +254,17 @@ public class SubcommandData extends BaseCommand<CommandDataImpl> implements Seri
                         .forEach(sub::addOptions)
         );
         return sub;
+    }
+
+    @Nonnull
+    public static SubcommandData fromSubcommand(@Nonnull Command.Subcommand subcommand)
+    {
+        Checks.notNull(subcommand, "Subcommand");
+        SubcommandData data = new SubcommandData(subcommand.getName(), subcommand.getDescription());
+        subcommand.getOptions()
+                .stream()
+                .map(OptionData::fromOption)
+                .forEach(data::addOptions);
+        return data;
     }
 }
