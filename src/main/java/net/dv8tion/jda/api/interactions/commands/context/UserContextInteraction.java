@@ -22,6 +22,9 @@ import net.dv8tion.jda.api.entities.User;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+/**
+ * Interaction with a user context menu command
+ */
 public interface UserContextInteraction extends ContextInteraction<User>
 {
     @Nonnull
@@ -31,6 +34,12 @@ public interface UserContextInteraction extends ContextInteraction<User>
         return ContextTarget.USER;
     }
 
+    /**
+     * If this context menu command was used in a {@link net.dv8tion.jda.api.entities.Guild Guild},
+     * this returns the member instance for the target user.
+     *
+     * @return The target member instance, or null if this was not in a guild.
+     */
     @Nullable
     Member getTargetMember();
 }

@@ -16,14 +16,17 @@
 
 package net.dv8tion.jda.api.interactions.commands;
 
-import net.dv8tion.jda.api.events.interaction.command.SlashCommandEvent;
 import net.dv8tion.jda.api.interactions.Interaction;
 import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback;
+import net.dv8tion.jda.api.interactions.commands.context.ContextInteraction;
 
 /**
- * Interaction of a Slash-Command.
+ * Interaction of any Application Command.
  *
- * @see SlashCommandEvent
+ * <p>This includes all context menu commands and slash commands.
+ *
+ * @see ContextInteraction
+ * @see SlashCommandInteraction
  */
 public interface CommandInteraction extends Interaction, IReplyCallback, CommandPayload
 {

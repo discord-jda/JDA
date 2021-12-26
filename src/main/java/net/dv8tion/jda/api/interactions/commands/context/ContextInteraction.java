@@ -20,15 +20,37 @@ import net.dv8tion.jda.api.interactions.commands.CommandInteraction;
 
 import javax.annotation.Nonnull;
 
+/**
+ * Represents application comments which are invoked as context menu items in the client UI.
+ *
+ * @param <T>
+ *        The target type of this context interaction
+ *
+ * @see   #getTarget()
+ */
 public interface ContextInteraction<T> extends CommandInteraction
 {
+    /**
+     * The target type of this context interaction
+     *
+     * @return The context target type
+     */
     @Nonnull
     ContextTarget getTargetType();
 
+    /**
+     * The target entity of this context interaction
+     *
+     * @return The target entity
+     */
     @Nonnull
     T getTarget();
 
-    enum ContextTarget {
+    /**
+     * The target type, of a context interaction.
+     */
+    enum ContextTarget
+    {
         USER, MESSAGE
     }
 }

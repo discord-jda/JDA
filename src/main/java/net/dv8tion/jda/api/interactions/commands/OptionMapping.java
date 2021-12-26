@@ -302,7 +302,7 @@ public class OptionMapping
     private Channel getAsChannel()
     {
         if (type != OptionType.CHANNEL)
-            throw new IllegalStateException("Cannot resolve AbstractChannel for option " + getName() + " of type " + type);
+            throw new IllegalStateException("Cannot resolve Channel for option " + getName() + " of type " + type);
         return (Channel) resolved.get(getAsLong());
     }
 }

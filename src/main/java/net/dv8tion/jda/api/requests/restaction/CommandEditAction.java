@@ -18,11 +18,8 @@ package net.dv8tion.jda.api.requests.restaction;
 
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.interactions.commands.build.OptionData;
-import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
-import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
+import net.dv8tion.jda.api.interactions.commands.build.*;
 import net.dv8tion.jda.api.requests.RestAction;
-import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.CheckReturnValue;
@@ -58,7 +55,7 @@ public interface CommandEditAction extends RestAction<Command>
     CommandEditAction deadline(long timestamp);
 
     /**
-     * Replace the command with the provided {@link CommandDataImpl}.
+     * Replace the command with the provided {@link CommandData}.
      *
      * @param  commandData
      *         The data for the command
@@ -67,10 +64,12 @@ public interface CommandEditAction extends RestAction<Command>
      *         If null is provided
      *
      * @return The CommandEditAction instance, for chaining
+     *
+     * @see    Commands
      */
     @Nonnull
     @CheckReturnValue
-    CommandEditAction apply(@Nonnull CommandDataImpl commandData);
+    CommandEditAction apply(@Nonnull CommandData commandData);
 
     /**
      * Whether this command is available to everyone by default.
