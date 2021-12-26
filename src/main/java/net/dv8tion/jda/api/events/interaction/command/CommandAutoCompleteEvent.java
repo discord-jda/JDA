@@ -17,7 +17,9 @@
 package net.dv8tion.jda.api.events.interaction.command;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.events.interaction.GenericAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.GenericInteractionCreateEvent;
+import net.dv8tion.jda.api.interactions.callbacks.IAutoCompleteCallback;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.CommandAutoCompleteInteraction;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
@@ -28,7 +30,18 @@ import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.List;
 
-public class CommandAutoCompleteEvent extends GenericInteractionCreateEvent implements CommandAutoCompleteInteraction
+/**
+ * Indicates that a user is typing in a {@link net.dv8tion.jda.api.interactions.commands.build.OptionData option} which
+ * supports {@link net.dv8tion.jda.api.interactions.commands.build.OptionData#setAutoComplete(boolean) auto-complete}.
+ *
+ * <h2>Requirements</h2>
+ * To receive these events, you must unset the <b>Interactions Endpoint URL</b> in your application dashboard.
+ * You can simply remove the URL for this endpoint in your settings at the <a href="https://discord.com/developers/applications" target="_blank">Discord Developers Portal</a>.
+ *
+ * @see CommandAutoCompleteInteraction
+ * @see IAutoCompleteCallback
+ */
+public class CommandAutoCompleteEvent extends GenericInteractionCreateEvent implements CommandAutoCompleteInteraction, GenericAutoCompleteInteractionEvent
 {
     private final CommandAutoCompleteInteraction interaction;
 
