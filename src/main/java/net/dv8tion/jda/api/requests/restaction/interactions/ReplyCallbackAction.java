@@ -37,19 +37,19 @@ import java.util.function.BooleanSupplier;
  * A {@link InteractionCallbackAction} which can be used to send a message reply for an interaction.
  * <br>You can use {@link #setEphemeral(boolean)} to hide this message from other users.
  */
-public interface ReplyAction extends InteractionCallbackAction<InteractionHook>, AllowedMentions<ReplyAction>
+public interface ReplyCallbackAction extends InteractionCallbackAction<InteractionHook>, AllowedMentions<ReplyCallbackAction>
 {
     @Nonnull
     @Override
-    ReplyAction setCheck(@Nullable BooleanSupplier checks);
+    ReplyCallbackAction setCheck(@Nullable BooleanSupplier checks);
 
     @Nonnull
     @Override
-    ReplyAction timeout(long timeout, @Nonnull TimeUnit unit);
+    ReplyCallbackAction timeout(long timeout, @Nonnull TimeUnit unit);
 
     @Nonnull
     @Override
-    ReplyAction deadline(long timestamp);
+    ReplyCallbackAction deadline(long timestamp);
 
     /**
      * Add {@link MessageEmbed MessageEmbeds} for the message
@@ -64,7 +64,7 @@ public interface ReplyAction extends InteractionCallbackAction<InteractionHook>,
      */
     @Nonnull
     @CheckReturnValue
-    default ReplyAction addEmbeds(@Nonnull MessageEmbed... embeds)
+    default ReplyCallbackAction addEmbeds(@Nonnull MessageEmbed... embeds)
     {
         Checks.noneNull(embeds, "MessageEmbed");
         return addEmbeds(Arrays.asList(embeds));
@@ -83,7 +83,7 @@ public interface ReplyAction extends InteractionCallbackAction<InteractionHook>,
      */
     @Nonnull
     @CheckReturnValue
-    ReplyAction addEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds);
+    ReplyCallbackAction addEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds);
 
     /**
      * Add a single {@link ActionRow} to the message.
@@ -100,7 +100,7 @@ public interface ReplyAction extends InteractionCallbackAction<InteractionHook>,
      */
     @Nonnull
     @CheckReturnValue
-    default ReplyAction addActionRow(@Nonnull Component... components)
+    default ReplyCallbackAction addActionRow(@Nonnull Component... components)
     {
         return addActionRows(ActionRow.of(components));
     }
@@ -120,7 +120,7 @@ public interface ReplyAction extends InteractionCallbackAction<InteractionHook>,
      */
     @Nonnull
     @CheckReturnValue
-    default ReplyAction addActionRow(@Nonnull Collection<? extends Component> components)
+    default ReplyCallbackAction addActionRow(@Nonnull Collection<? extends Component> components)
     {
         return addActionRows(ActionRow.of(components));
     }
@@ -138,7 +138,7 @@ public interface ReplyAction extends InteractionCallbackAction<InteractionHook>,
      */
     @Nonnull
     @CheckReturnValue
-    default ReplyAction addActionRows(@Nonnull Collection<? extends ActionRow> rows)
+    default ReplyCallbackAction addActionRows(@Nonnull Collection<? extends ActionRow> rows)
     {
         Checks.noneNull(rows, "ActionRows");
         return addActionRows(rows.toArray(new ActionRow[0]));
@@ -157,7 +157,7 @@ public interface ReplyAction extends InteractionCallbackAction<InteractionHook>,
      */
     @Nonnull
     @CheckReturnValue
-    ReplyAction addActionRows(@Nonnull ActionRow... rows);
+    ReplyCallbackAction addActionRows(@Nonnull ActionRow... rows);
 
     /**
      * Set the content for this message.
@@ -171,7 +171,7 @@ public interface ReplyAction extends InteractionCallbackAction<InteractionHook>,
      * @return The same reply action, for chaining convenience
      */
     @Nonnull
-    ReplyAction setContent(@Nullable final String content);
+    ReplyCallbackAction setContent(@Nullable final String content);
 
     /**
      * Enable/Disable Text-To-Speech for the resulting message.
@@ -182,7 +182,7 @@ public interface ReplyAction extends InteractionCallbackAction<InteractionHook>,
      * @return The same reply action, for chaining convenience
      */
     @Nonnull
-    ReplyAction setTTS(final boolean isTTS);
+    ReplyCallbackAction setTTS(final boolean isTTS);
 
     /**
      * Set whether this message should be visible to other users.
@@ -204,7 +204,7 @@ public interface ReplyAction extends InteractionCallbackAction<InteractionHook>,
      */
     @Nonnull
     @CheckReturnValue
-    ReplyAction setEphemeral(boolean ephemeral);
+    ReplyCallbackAction setEphemeral(boolean ephemeral);
 
 
     /**
@@ -224,7 +224,7 @@ public interface ReplyAction extends InteractionCallbackAction<InteractionHook>,
      */
     @Nonnull
     @CheckReturnValue
-    default ReplyAction addFile(@Nonnull File file, @Nonnull AttachmentOption... options)
+    default ReplyCallbackAction addFile(@Nonnull File file, @Nonnull AttachmentOption... options)
     {
         Checks.notNull(file, "File");
         return addFile(file, file.getName(), options);
@@ -261,7 +261,7 @@ public interface ReplyAction extends InteractionCallbackAction<InteractionHook>,
      */
     @Nonnull
     @CheckReturnValue
-    default ReplyAction addFile(@Nonnull File file, @Nonnull String name, @Nonnull AttachmentOption... options)
+    default ReplyCallbackAction addFile(@Nonnull File file, @Nonnull String name, @Nonnull AttachmentOption... options)
     {
         try
         {
@@ -295,7 +295,7 @@ public interface ReplyAction extends InteractionCallbackAction<InteractionHook>,
      */
     @Nonnull
     @CheckReturnValue
-    default ReplyAction addFile(@Nonnull byte[] data, @Nonnull String name, @Nonnull AttachmentOption... options)
+    default ReplyCallbackAction addFile(@Nonnull byte[] data, @Nonnull String name, @Nonnull AttachmentOption... options)
     {
         Checks.notNull(data, "Data");
         return addFile(new ByteArrayInputStream(data), name, options);
@@ -321,5 +321,5 @@ public interface ReplyAction extends InteractionCallbackAction<InteractionHook>,
      */
     @Nonnull
     @CheckReturnValue
-    ReplyAction addFile(@Nonnull InputStream data, @Nonnull String name, @Nonnull AttachmentOption... options);
+    ReplyCallbackAction addFile(@Nonnull InputStream data, @Nonnull String name, @Nonnull AttachmentOption... options);
 }

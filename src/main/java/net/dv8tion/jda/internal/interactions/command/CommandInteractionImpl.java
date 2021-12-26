@@ -18,7 +18,7 @@ package net.dv8tion.jda.internal.interactions.command;
 
 import net.dv8tion.jda.api.interactions.commands.CommandInteraction;
 import net.dv8tion.jda.api.interactions.commands.CommandPayload;
-import net.dv8tion.jda.api.requests.restaction.interactions.ReplyAction;
+import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.interactions.DeferrableInteractionImpl;
@@ -44,7 +44,7 @@ public class CommandInteractionImpl extends DeferrableInteractionImpl implements
 
     @Nonnull
     @Override
-    public ReplyAction deferReply()
+    public ReplyCallbackAction deferReply()
     {
         return new ReplyActionImpl(hook);
     }

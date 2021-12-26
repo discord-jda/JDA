@@ -19,7 +19,7 @@ package net.dv8tion.jda.internal.interactions.component;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.interactions.components.ComponentInteraction;
-import net.dv8tion.jda.api.requests.restaction.interactions.ReplyAction;
+import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.interactions.DeferrableInteractionImpl;
@@ -82,7 +82,7 @@ public abstract class ComponentInteractionImpl extends DeferrableInteractionImpl
 
     @Nonnull
     @Override
-    public ReplyAction deferReply()
+    public ReplyCallbackAction deferReply()
     {
         return new ReplyActionImpl(this.hook);
     }

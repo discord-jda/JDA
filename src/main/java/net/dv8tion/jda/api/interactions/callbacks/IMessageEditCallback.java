@@ -18,9 +18,10 @@ package net.dv8tion.jda.api.interactions.callbacks;
 
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.ComponentLayout;
-import net.dv8tion.jda.api.requests.restaction.interactions.UpdateInteractionAction;
+import net.dv8tion.jda.api.requests.restaction.interactions.MessageEditCallbackAction;
 import net.dv8tion.jda.internal.requests.restaction.interactions.UpdateInteractionActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
@@ -31,6 +32,21 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Interactions which allow a target message to be edited on use.
+ *
+ * <p>Editing a message using these methods will automatically acknowledge the interaction.
+ *
+ * <h2>Deferred Edits</h2>
+ *
+ * Similar to {@link IReplyCallback}, message edits can be deferred and performed later with {@link #deferEdit()}.
+ * A deferred edit tells Discord, that you intend to edit the message this interaction was performed on, but will do so later.
+ * However, you can defer the edit and never do it, which is effectively a no-operation acknowledgement of the interaction.
+ *
+ * <p>If an edit is {@link #deferEdit() deferred}, it becomes the <b>original</b> message of the interaction hook.
+ * This means all the methods with {@code original} in the name, such as {@link InteractionHook#editOriginal(String)},
+ * will affect that original message you edited.
+ */
 public interface IMessageEditCallback extends IDeferrableCallback
 {
     /**
@@ -42,13 +58,13 @@ public interface IMessageEditCallback extends IDeferrableCallback
      * <br>When the acknowledgement is sent after the interaction expired, you will receive {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_INTERACTION ErrorResponse.UNKNOWN_INTERACTION}.
      * <p>Use {@link #editMessage(String)} to edit it directly.
      *
-     * @return {@link UpdateInteractionAction} that can be used to update the message
+     * @return {@link MessageEditCallbackAction} that can be used to update the message
      *
      * @see    #editMessage(String)
      */
     @Nonnull
     @CheckReturnValue
-    UpdateInteractionAction deferEdit();
+    MessageEditCallbackAction deferEdit();
 
     /**
      * Acknowledgement of this interaction with a message update.
@@ -65,11 +81,11 @@ public interface IMessageEditCallback extends IDeferrableCallback
      * @throws IllegalArgumentException
      *         If the provided message is null
      *
-     * @return {@link UpdateInteractionAction} that can be used to further update the message
+     * @return {@link MessageEditCallbackAction} that can be used to further update the message
      */
     @Nonnull
     @CheckReturnValue
-    default UpdateInteractionAction editMessage(@Nonnull Message message)
+    default MessageEditCallbackAction editMessage(@Nonnull Message message)
     {
         Checks.notNull(message, "Message");
         UpdateInteractionActionImpl action = (UpdateInteractionActionImpl) deferEdit();
@@ -91,11 +107,11 @@ public interface IMessageEditCallback extends IDeferrableCallback
      * @throws IllegalArgumentException
      *         If the provided content is null
      *
-     * @return {@link UpdateInteractionAction} that can be used to further update the message
+     * @return {@link MessageEditCallbackAction} that can be used to further update the message
      */
     @Nonnull
     @CheckReturnValue
-    default UpdateInteractionAction editMessage(@Nonnull String content)
+    default MessageEditCallbackAction editMessage(@Nonnull String content)
     {
         Checks.notNull(content, "Content");
         return deferEdit().setContent(content);
@@ -116,11 +132,11 @@ public interface IMessageEditCallback extends IDeferrableCallback
      * @throws IllegalArgumentException
      *         If the provided components are null
      *
-     * @return {@link UpdateInteractionAction} that can be used to further update the message
+     * @return {@link MessageEditCallbackAction} that can be used to further update the message
      */
     @Nonnull
     @CheckReturnValue
-    default UpdateInteractionAction editComponents(@Nonnull Collection<? extends ComponentLayout> components)
+    default MessageEditCallbackAction editComponents(@Nonnull Collection<? extends ComponentLayout> components)
     {
         Checks.noneNull(components, "Components");
         if (components.stream().anyMatch(it -> !(it instanceof ActionRow)))
@@ -144,11 +160,11 @@ public interface IMessageEditCallback extends IDeferrableCallback
      * @throws IllegalArgumentException
      *         If the provided components are null
      *
-     * @return {@link UpdateInteractionAction} that can be used to further update the message
+     * @return {@link MessageEditCallbackAction} that can be used to further update the message
      */
     @Nonnull
     @CheckReturnValue
-    default UpdateInteractionAction editComponents(@Nonnull ComponentLayout... components)
+    default MessageEditCallbackAction editComponents(@Nonnull ComponentLayout... components)
     {
         Checks.noneNull(components, "ComponentLayouts");
         return editComponents(Arrays.asList(components));
@@ -169,11 +185,11 @@ public interface IMessageEditCallback extends IDeferrableCallback
      * @throws IllegalArgumentException
      *         If any of the provided embeds is null
      *
-     * @return {@link UpdateInteractionAction} that can be used to further update the message
+     * @return {@link MessageEditCallbackAction} that can be used to further update the message
      */
     @Nonnull
     @CheckReturnValue
-    default UpdateInteractionAction editMessageEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
+    default MessageEditCallbackAction editMessageEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
     {
         Checks.noneNull(embeds, "MessageEmbed");
         return deferEdit().setEmbeds(embeds);
@@ -194,11 +210,11 @@ public interface IMessageEditCallback extends IDeferrableCallback
      * @throws IllegalArgumentException
      *         If any of the provided embeds is null
      *
-     * @return {@link UpdateInteractionAction} that can be used to further update the message
+     * @return {@link MessageEditCallbackAction} that can be used to further update the message
      */
     @Nonnull
     @CheckReturnValue
-    default UpdateInteractionAction editMessageEmbeds(@Nonnull MessageEmbed... embeds)
+    default MessageEditCallbackAction editMessageEmbeds(@Nonnull MessageEmbed... embeds)
     {
         Checks.noneNull(embeds, "MessageEmbed");
         return deferEdit().setEmbeds(embeds);
@@ -221,11 +237,11 @@ public interface IMessageEditCallback extends IDeferrableCallback
      * @throws IllegalArgumentException
      *         If the provided format is null
      *
-     * @return {@link UpdateInteractionAction} that can be used to further update the message
+     * @return {@link MessageEditCallbackAction} that can be used to further update the message
      */
     @Nonnull
     @CheckReturnValue
-    default UpdateInteractionAction editMessageFormat(@Nonnull String format, @Nonnull Object... args)
+    default MessageEditCallbackAction editMessageFormat(@Nonnull String format, @Nonnull Object... args)
     {
         Checks.notNull(format, "Format String");
         return editMessage(String.format(format, args));

@@ -19,7 +19,7 @@ package net.dv8tion.jda.internal.requests.restaction.interactions;
 import net.dv8tion.jda.api.interactions.callbacks.IAutoCompleteCallback;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.requests.restaction.interactions.ChoiceAction;
+import net.dv8tion.jda.api.requests.restaction.interactions.AutoCompleteCallbackAction;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -29,7 +29,7 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class ChoiceActionImpl extends InteractionCallbackImpl<Void> implements ChoiceAction
+public class ChoiceActionImpl extends InteractionCallbackImpl<Void> implements AutoCompleteCallbackAction
 {
     private final OptionType type;
     private final Map<String, Command.Choice> choices = new LinkedHashMap<>();
@@ -49,7 +49,7 @@ public class ChoiceActionImpl extends InteractionCallbackImpl<Void> implements C
 
     @NotNull
     @Override
-    public ChoiceAction addChoices(@NotNull Collection<Command.Choice> choices)
+    public AutoCompleteCallbackAction addChoices(@NotNull Collection<Command.Choice> choices)
     {
         Checks.noneNull(choices, "Choices");
         for (Command.Choice choice : choices)

@@ -20,6 +20,11 @@ import net.dv8tion.jda.api.interactions.InteractionHook;
 
 import javax.annotation.Nonnull;
 
+/**
+ * Interactions which can be deferred.
+ *
+ * <p>This is implemented by {@link IReplyCallback} and {@link IMessageEditCallback}.
+ */
 public interface IDeferrableCallback
 {
     /**

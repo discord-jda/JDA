@@ -17,7 +17,7 @@
 package net.dv8tion.jda.internal.interactions.command;
 
 import net.dv8tion.jda.api.interactions.commands.*;
-import net.dv8tion.jda.api.requests.restaction.interactions.ChoiceAction;
+import net.dv8tion.jda.api.requests.restaction.interactions.AutoCompleteCallbackAction;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
@@ -81,7 +81,7 @@ public class AutoCompleteCommandInteractionImpl extends InteractionImpl implemen
 
     @Nonnull
     @Override
-    public ChoiceAction replyChoices(@Nonnull Collection<Command.Choice> choices)
+    public AutoCompleteCallbackAction replyChoices(@Nonnull Collection<Command.Choice> choices)
     {
         return new ChoiceActionImpl(this, focused.getType()).addChoices(choices);
     }
