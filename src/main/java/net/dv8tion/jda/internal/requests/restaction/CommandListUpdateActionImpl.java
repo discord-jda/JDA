@@ -25,6 +25,7 @@ import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.internal.entities.GuildImpl;
+import net.dv8tion.jda.internal.interactions.command.CommandImpl;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -126,7 +127,7 @@ public class CommandListUpdateActionImpl extends RestActionImpl<List<Command>> i
     protected void handleSuccess(Response response, Request<List<Command>> request)
     {
         List<Command> commands = response.getArray().stream(DataArray::getObject)
-                .map(obj -> new Command(api, guild, obj))
+                .map(obj -> new CommandImpl(api, guild, obj))
                 .collect(Collectors.toList());
         request.onSuccess(commands);
     }

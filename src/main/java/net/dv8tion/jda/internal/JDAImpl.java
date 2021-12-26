@@ -57,6 +57,7 @@ import net.dv8tion.jda.internal.entities.UserImpl;
 import net.dv8tion.jda.internal.handle.EventCache;
 import net.dv8tion.jda.internal.handle.GuildSetupController;
 import net.dv8tion.jda.internal.hooks.EventManagerProxy;
+import net.dv8tion.jda.internal.interactions.command.CommandImpl;
 import net.dv8tion.jda.internal.managers.AudioManagerImpl;
 import net.dv8tion.jda.internal.managers.DirectAudioControllerImpl;
 import net.dv8tion.jda.internal.managers.PresenceImpl;
@@ -875,7 +876,7 @@ public class JDAImpl implements JDA
             (response, request) ->
                 response.getArray()
                         .stream(DataArray::getObject)
-                        .map(json -> new Command(this, null, json))
+                        .map(json -> new CommandImpl(this, null, json))
                         .collect(Collectors.toList()));
     }
 
@@ -885,7 +886,7 @@ public class JDAImpl implements JDA
     {
         Checks.isSnowflake(id);
         Route.CompiledRoute route = Route.Interactions.GET_COMMAND.compile(getSelfUser().getApplicationId(), id);
-        return new RestActionImpl<>(this, route, (response, request) -> new Command(this, null, response.getObject()));
+        return new RestActionImpl<>(this, route, (response, request) -> new CommandImpl(this, null, response.getObject()));
     }
 
     @Nonnull

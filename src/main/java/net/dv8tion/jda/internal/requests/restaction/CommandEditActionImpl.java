@@ -28,6 +28,7 @@ import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.restaction.CommandEditAction;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
+import net.dv8tion.jda.internal.interactions.command.CommandImpl;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -194,6 +195,6 @@ public class CommandEditActionImpl extends RestActionImpl<Command> implements Co
     protected void handleSuccess(Response response, Request<Command> request)
     {
         DataObject json = response.getObject();
-        request.onSuccess(new Command(api, guild, json));
+        request.onSuccess(new CommandImpl(api, guild, json));
     }
 }

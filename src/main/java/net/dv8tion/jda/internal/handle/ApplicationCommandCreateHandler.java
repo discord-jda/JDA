@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.events.application.ApplicationCommandCreateEvent;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
+import net.dv8tion.jda.internal.interactions.command.CommandImpl;
 
 public class ApplicationCommandCreateHandler extends SocketHandler
 {
@@ -44,7 +45,7 @@ public class ApplicationCommandCreateHandler extends SocketHandler
             return null;
         }
 
-        Command command = new Command(api, guild, content);
+        Command command = new CommandImpl(api, guild, content);
         api.handleEvent(
             new ApplicationCommandCreateEvent(api, responseNumber,
                 command, guild));
