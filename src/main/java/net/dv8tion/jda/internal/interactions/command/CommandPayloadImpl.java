@@ -20,6 +20,7 @@ import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import net.dv8tion.jda.api.entities.ISnowflake;
 import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.CommandPayload;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
@@ -45,6 +46,7 @@ public class CommandPayloadImpl extends InteractionImpl implements CommandPayloa
     private final String name;
     private String subcommand;
     private String group;
+    private final Command.Type type;
 
     public CommandPayloadImpl(JDAImpl jda, DataObject data)
     {
@@ -52,6 +54,7 @@ public class CommandPayloadImpl extends InteractionImpl implements CommandPayloa
         DataObject commandData = data.getObject("data");
         this.commandId = commandData.getUnsignedLong("id");
         this.name = commandData.getString("name");
+        this.type = Command.Type.fromId(commandData.getInt("type", 1));
 
         DataArray options = commandData.optArray("options").orElseGet(DataArray::empty);
         DataObject resolveJson = commandData.optObject("resolved").orElseGet(DataObject::empty);
@@ -130,6 +133,13 @@ public class CommandPayloadImpl extends InteractionImpl implements CommandPayloa
     public MessageChannel getChannel()
     {
         return (MessageChannel) super.getChannel();
+    }
+
+    @Nonnull
+    @Override
+    public Command.Type getCommandType()
+    {
+        return type;
     }
 
     @Nonnull

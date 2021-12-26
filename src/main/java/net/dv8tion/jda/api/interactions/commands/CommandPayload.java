@@ -34,6 +34,14 @@ import java.util.stream.Collectors;
 public interface CommandPayload extends Interaction // TODO: Consider naming
 {
     /**
+     * The {@link Command.Type Type} of command this interaction is for.
+     *
+     * @return The command type
+     */
+    @Nonnull
+    Command.Type getCommandType();
+
+    /**
      * The command name.
      * <br>This can be useful for abstractions.
      *
@@ -108,6 +116,59 @@ public interface CommandPayload extends Interaction // TODO: Consider naming
             builder.append('/').append(getSubcommandGroup());
         if (getSubcommandName() != null)
             builder.append('/').append(getSubcommandName());
+        return builder.toString();
+    }
+
+    /**
+     * Gets the display string for this command.
+     * <br>This is similar to the string you see when clicking the interaction name in the client.
+     *
+     * <p>Example return for an echo command: {@code /say echo phrase: Say this}
+     *
+     * @return The display string for this command
+     */
+    @Nonnull
+    default String getCommandString()
+    {
+        //Get text like the text that appears when you hover over the interaction in discord
+        if (getCommandType() != Command.Type.SLASH)
+            return getName();
+
+        StringBuilder builder = new StringBuilder();
+        builder.append("/").append(getName());
+        if (getSubcommandGroup() != null)
+            builder.append(" ").append(getSubcommandGroup());
+        if (getSubcommandName() != null)
+            builder.append(" ").append(getSubcommandName());
+        for (OptionMapping o : getOptions())
+        {
+            builder.append(" ").append(o.getName()).append(": ");
+            switch (o.getType())
+            {
+            case CHANNEL:
+                builder.append("#").append(o.getAsGuildChannel().getName());
+                break;
+            case USER:
+                builder.append("@").append(o.getAsUser().getName());
+                break;
+            case ROLE:
+                builder.append("@").append(o.getAsRole().getName());
+                break;
+            case MENTIONABLE: //client only allows user or role mentionable as of Aug 4, 2021
+                if (o.getAsMentionable() instanceof Role)
+                    builder.append("@").append(o.getAsRole().getName());
+                else if (o.getAsMentionable() instanceof Member)
+                    builder.append("@").append(o.getAsUser().getName());
+                else if (o.getAsMentionable() instanceof User)
+                    builder.append("@").append(o.getAsUser().getName());
+                else
+                    builder.append("@").append(o.getAsMentionable().getIdLong());
+                break;
+            default:
+                builder.append(o.getAsString());
+                break;
+            }
+        }
         return builder.toString();
     }
 
@@ -196,55 +257,5 @@ public interface CommandPayload extends Interaction // TODO: Consider naming
     {
         List<OptionMapping> options = getOptionsByName(name);
         return options.isEmpty() ? null : options.get(0);
-    }
-
-    /**
-     * Gets the slash command String for this slash command.
-     * <br>This is similar to the String you see when clicking the interaction name in the client.
-     *
-     * <p>Example return for an echo command: {@code /say echo phrase: Say this}
-     *
-     * @return The command String for this slash command
-     */
-    @Nonnull
-    default String getCommandString()
-    {
-        //Get text like the text that appears when you hover over the interaction in discord
-        StringBuilder builder = new StringBuilder();
-        builder.append("/").append(getName());
-        if (getSubcommandGroup() != null)
-            builder.append(" ").append(getSubcommandGroup());
-        if (getSubcommandName() != null)
-            builder.append(" ").append(getSubcommandName());
-        for (OptionMapping o : getOptions())
-        {
-            builder.append(" ").append(o.getName()).append(": ");
-            switch (o.getType())
-            {
-            case CHANNEL:
-                builder.append("#").append(o.getAsGuildChannel().getName());
-                break;
-            case USER:
-                builder.append("@").append(o.getAsUser().getName());
-                break;
-            case ROLE:
-                builder.append("@").append(o.getAsRole().getName());
-                break;
-            case MENTIONABLE: //client only allows user or role mentionable as of Aug 4, 2021
-                if (o.getAsMentionable() instanceof Role)
-                    builder.append("@").append(o.getAsRole().getName());
-                else if (o.getAsMentionable() instanceof Member)
-                    builder.append("@").append(o.getAsUser().getName());
-                else if (o.getAsMentionable() instanceof User)
-                    builder.append("@").append(o.getAsUser().getName());
-                else
-                    builder.append("@").append(o.getAsMentionable().getIdLong());
-                break;
-            default:
-                builder.append(o.getAsString());
-                break;
-            }
-        }
-        return builder.toString();
     }
 }
