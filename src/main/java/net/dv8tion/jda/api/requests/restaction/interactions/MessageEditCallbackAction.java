@@ -274,7 +274,7 @@ public interface MessageEditCallbackAction extends InteractionCallbackAction<Int
     @CheckReturnValue
     MessageEditCallbackAction addFile(@Nonnull InputStream data, @Nonnull String name, @Nonnull AttachmentOption... options);
 
-/////// This is waiting for https://github.com/discord/discord-api-docs/issues/3048
+///// TODO: This is waiting for https://github.com/discord/discord-api-docs/discussions/3335
 //
 //    /**
 //     * Removes all attachments that are currently attached to the existing message except for the ones provided.
@@ -292,7 +292,7 @@ public interface MessageEditCallbackAction extends InteractionCallbackAction<Int
 //     */
 //    @Nonnull
 //    @CheckReturnValue
-//    UpdateInteractionAction retainFilesById(@Nonnull Collection<String> ids);
+//    MessageEditCallbackAction retainFilesById(@Nonnull Collection<String> ids);
 //
 //    /**
 //     * Removes all attachments that are currently attached to the existing message except for the ones provided.
@@ -310,7 +310,7 @@ public interface MessageEditCallbackAction extends InteractionCallbackAction<Int
 //     */
 //    @Nonnull
 //    @CheckReturnValue
-//    default UpdateInteractionAction retainFilesById(@Nonnull String... ids)
+//    default MessageEditCallbackAction retainFilesById(@Nonnull String... ids)
 //    {
 //        Checks.notNull(ids, "IDs");
 //        return retainFilesById(Arrays.asList(ids));
@@ -332,7 +332,7 @@ public interface MessageEditCallbackAction extends InteractionCallbackAction<Int
 //     */
 //    @Nonnull
 //    @CheckReturnValue
-//    default UpdateInteractionAction retainFilesById(long... ids)
+//    default MessageEditCallbackAction retainFilesById(long... ids)
 //    {
 //        Checks.notNull(ids, "IDs");
 //        return retainFilesById(Arrays
@@ -358,7 +358,7 @@ public interface MessageEditCallbackAction extends InteractionCallbackAction<Int
 //     */
 //    @Nonnull
 //    @CheckReturnValue
-//    default UpdateInteractionAction retainFiles(@Nonnull Collection<? extends Message.Attachment> attachments)
+//    default MessageEditCallbackAction retainFiles(@Nonnull Collection<? extends Message.Attachment> attachments)
 //    {
 //        Checks.noneNull(attachments, "Attachments");
 //        return retainFilesById(attachments
