@@ -19,6 +19,7 @@ package net.dv8tion.jda.api.events.interaction.command;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.events.interaction.GenericInteractionCreateEvent;
 import net.dv8tion.jda.api.interactions.InteractionHook;
+import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.CommandInteraction;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction;
@@ -43,6 +44,13 @@ public class GenericCommandEvent extends GenericInteractionCreateEvent implement
     public CommandInteraction getInteraction()
     {
         return (CommandInteraction) super.getInteraction();
+    }
+
+    @Nonnull
+    @Override
+    public Command.Type getCommandType()
+    {
+        return getInteraction().getCommandType();
     }
 
     @NotNull

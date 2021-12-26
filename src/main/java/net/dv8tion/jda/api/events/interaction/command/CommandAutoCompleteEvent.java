@@ -60,6 +60,13 @@ public class CommandAutoCompleteEvent extends GenericInteractionCreateEvent impl
 
     @Nonnull
     @Override
+    public Command.Type getCommandType()
+    {
+        return interaction.getCommandType();
+    }
+
+    @Nonnull
+    @Override
     public String getName()
     {
         return interaction.getName();
