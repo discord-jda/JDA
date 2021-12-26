@@ -17,7 +17,11 @@
 package net.dv8tion.jda.api.interactions.commands.build;
 
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteEvent;
+import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.utils.data.DataArray;
+import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
@@ -257,5 +261,84 @@ public interface SlashCommandData extends CommandData
     {
         Checks.noneNull(groups, "SubcommandGroups");
         return addSubcommandGroups(groups.toArray(new SubcommandGroupData[0]));
+    }
+
+    /**
+     * Converts the provided {@link Command} into a SlashCommandData instance.
+     *
+     * @param  command
+     *         The command to convert
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided or the command has illegal configuration
+     *
+     * @return An instance of SlashCommandData
+     */
+    @Nonnull
+    static SlashCommandData fromCommand(@Nonnull Command command)
+    {
+        Checks.notNull(command, "Command");
+        if (command.getType() != Command.Type.SLASH)
+            throw new IllegalArgumentException("Cannot convert command of type " + command.getType() + " to SlashCommandData!");
+
+        CommandDataImpl data = new CommandDataImpl(command.getName(), command.getDescription());
+        data.setDefaultEnabled(command.isDefaultEnabled());
+        command.getOptions()
+                .stream()
+                .map(OptionData::fromOption)
+                .forEach(data::addOptions);
+        command.getSubcommands()
+                .stream()
+                .map(SubcommandData::fromSubcommand)
+                .forEach(data::addSubcommands);
+        command.getSubcommandGroups()
+                .stream()
+                .map(SubcommandGroupData::fromGroup)
+                .forEach(data::addSubcommandGroups);
+        return data;
+    }
+
+    /**
+     * Parses the provided serialization back into a SlashCommandData instance.
+     * <br>This is the reverse function for {@link SlashCommandData#toData()}.
+     *
+     * @param  object
+     *         The serialized {@link DataObject} representing the command
+     *
+     * @throws net.dv8tion.jda.api.exceptions.ParsingException
+     *         If the serialized object is missing required fields
+     * @throws IllegalArgumentException
+     *         If any of the values are failing the respective checks such as length
+     *
+     * @return The parsed SlashCommandData instance, which can be further configured through setters
+     */
+    @Nonnull
+    static SlashCommandData fromData(@Nonnull DataObject object)
+    {
+        Checks.notNull(object, "DataObject");
+        String name = object.getString("name");
+        Command.Type commandType = Command.Type.fromId(object.getInt("type", 1));
+        if (commandType != Command.Type.SLASH)
+            throw new IllegalArgumentException("Cannot convert command of type " + commandType + " to SlashCommandData!");
+
+        String description = object.getString("description");
+        DataArray options = object.optArray("options").orElseGet(DataArray::empty);
+        CommandDataImpl command = new CommandDataImpl(name, description);
+        options.stream(DataArray::getObject).forEach(opt ->
+        {
+            OptionType type = OptionType.fromKey(opt.getInt("type"));
+            switch (type)
+            {
+            case SUB_COMMAND:
+                command.addSubcommands(SubcommandData.fromData(opt));
+                break;
+            case SUB_COMMAND_GROUP:
+                command.addSubcommandGroups(SubcommandGroupData.fromData(opt));
+                break;
+            default:
+                command.addOptions(OptionData.fromData(opt));
+            }
+        });
+        return command;
     }
 }

@@ -249,6 +249,9 @@ public interface Command extends ISnowflake
         return TimeUtil.getTimeCreated(getVersion());
     }
 
+    /**
+     * Possible command types
+     */
     enum Type
     {
         UNKNOWN(-1),
@@ -263,6 +266,14 @@ public interface Command extends ISnowflake
             this.id = id;
         }
 
+        /**
+         * Resolves the provided command type id to the enum constant
+         *
+         * @param  id
+         *         The command type id
+         *
+         * @return The type or {@link #UNKNOWN}
+         */
         @Nonnull
         public static Type fromId(int id)
         {
@@ -274,6 +285,11 @@ public interface Command extends ISnowflake
             return UNKNOWN;
         }
 
+        /**
+         * The raw command type id used in the API
+         *
+         * @return The command type id
+         */
         public int getId()
         {
             return id;
@@ -408,6 +424,11 @@ public interface Command extends ISnowflake
             return stringValue;
         }
 
+        /**
+         * The {@link OptionType} this choice is for
+         *
+         * @return The option type of this choice
+         */
         @Nonnull
         public OptionType getType()
         {

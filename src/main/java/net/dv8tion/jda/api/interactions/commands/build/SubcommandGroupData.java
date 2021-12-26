@@ -218,6 +218,17 @@ public class SubcommandGroupData implements SerializableData
         return group;
     }
 
+    /**
+     * Converts the provided {@link Command.SubcommandGroup} into a SubcommandGroupData instance.
+     *
+     * @param  group
+     *         The subcommand group to convert
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided or the subcommand group has illegal configuration
+     *
+     * @return An instance of SubcommandGroupData
+     */
     @Nonnull
     public static SubcommandGroupData fromGroup(@Nonnull Command.SubcommandGroup group)
     {
