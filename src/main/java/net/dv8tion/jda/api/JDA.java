@@ -610,8 +610,8 @@ public interface JDA
      * <pre>{@code
      * // Set list to 2 commands
      * jda.updateCommands()
-     *   .addCommands(new CommandData("ping", "Gives the current ping"))
-     *   .addCommands(new CommandData("ban", "Ban the target user")
+     *   .addCommands(Commands.slash("ping", "Gives the current ping"))
+     *   .addCommands(Commands.slash("ban", "Ban the target user")
      *     .addOption(OptionType.USER, "user", "The user to ban", true))
      *   .queue();
      * // Delete all commands
