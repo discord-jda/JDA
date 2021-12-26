@@ -723,10 +723,12 @@ public class OptionData implements SerializableData
     @Nonnull
     public OptionData addChoices(@Nonnull Command.Choice... choices)
     {
+        if (choices.length == 0)
+            return this;
         if (this.choices == null)
             throw new IllegalStateException("Cannot add choices for an option of type " + type);
         Checks.noneNull(choices, "Choices");
-        if (isAutoComplete && choices.length > 0)
+        if (isAutoComplete)
             throw new IllegalStateException("Cannot add choices to auto-complete options");
         Checks.check(choices.length + this.choices.size() <= MAX_CHOICES, "Cannot have more than 25 choices for one option!");
         for (Command.Choice choice : choices)
@@ -869,21 +871,23 @@ public class OptionData implements SerializableData
         data.setAutoComplete(option.isAutoComplete());
         data.addChoices(option.getChoices());
         Number min = option.getMinValue(), max = option.getMaxValue();
-        if (option.getType() == OptionType.CHANNEL)
-            data.setChannelTypes(option.getChannelTypes());
-        if (option.getType() == OptionType.NUMBER)
+        switch (option.getType())
         {
+        case CHANNEL:
+            data.setChannelTypes(option.getChannelTypes());
+            break;
+        case NUMBER:
             if (min != null)
                 data.setMinValue(min.doubleValue());
             if (max != null)
                 data.setMaxValue(max.doubleValue());
-        }
-        if (option.getType() == OptionType.INTEGER)
-        {
+            break;
+        case INTEGER:
             if (min != null)
                 data.setMinValue(min.longValue());
             if (max != null)
                 data.setMaxValue(max.longValue());
+            break;
         }
         return data;
     }
