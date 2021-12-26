@@ -204,4 +204,10 @@ public class PrivateChannelImpl extends AbstractChannelImpl<PrivateChannelImpl> 
         if (getUser() != null && getUser().isBot())
             throw new UnsupportedOperationException("Cannot send a private message between bots.");
     }
+
+    @Override
+    public String toString()
+    {
+        return "PrivateChannel:" + getName() + '(' + getId() + ')';
+    }
 }

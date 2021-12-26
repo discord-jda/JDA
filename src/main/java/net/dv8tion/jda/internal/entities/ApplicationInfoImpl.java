@@ -242,7 +242,7 @@ public class ApplicationInfoImpl implements ApplicationInfo
     @Override
     public String toString()
     {
-        return "ApplicationInfo(" + this.id + ")";
+        return "ApplicationInfo(" + this.id + ')';
     }
 
 }

@@ -110,4 +110,10 @@ public class TextChannelImpl extends AbstractStandardGuildMessageChannelImpl<Tex
     {
         getGuild().getTextChannelsView().clearCachedLists();
     }
+
+    @Override
+    public String toString()
+    {
+        return "TextChannel:" + getName() + '(' + getId() + ')';
+    }
 }

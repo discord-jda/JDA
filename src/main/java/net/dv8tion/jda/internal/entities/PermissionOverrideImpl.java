@@ -202,7 +202,7 @@ public class PermissionOverrideImpl implements PermissionOverride
     @Override
     public String toString()
     {
-        return "PermOver:(" + (isMemberOverride() ? "M" : "R") + ")(" + channel.getId() + " | " + getId() + ")";
+        return "PermissionOverride:" + (isMemberOverride() ? "MEMBER" : "ROLE") + ':' + channel.getId() + '(' + getId() + ')';
     }
 
     private void checkPermissions()

@@ -67,7 +67,7 @@ public class VoiceChannelImpl extends AbstractStandardGuildChannelImpl<VoiceChan
     {
         return ChannelType.VOICE;
     }
-    
+
     @Override
     public int getBitrate()
     {
@@ -203,6 +203,6 @@ public class VoiceChannelImpl extends AbstractStandardGuildChannelImpl<VoiceChan
     @Override
     public String toString()
     {
-        return "VC:" + getName() + '(' + getId() + ')';
+        return "VoiceChannel:" + getName() + '(' + getId() + ')';
     }
 }

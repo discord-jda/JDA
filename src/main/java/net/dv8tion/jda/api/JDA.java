@@ -190,7 +190,7 @@ public interface JDA extends IGuildChannelContainer
         @Override
         public String toString()
         {
-            return "Shard " + getShardString();
+            return "ShardInfo" + getShardString();
         }
 
         @Override
