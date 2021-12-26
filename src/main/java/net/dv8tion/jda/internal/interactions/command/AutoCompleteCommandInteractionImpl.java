@@ -22,7 +22,7 @@ import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.interactions.InteractionImpl;
-import net.dv8tion.jda.internal.requests.restaction.interactions.ChoiceActionImpl;
+import net.dv8tion.jda.internal.requests.restaction.interactions.AutoCompleteCallbackActionImpl;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
@@ -83,6 +83,6 @@ public class AutoCompleteCommandInteractionImpl extends InteractionImpl implemen
     @Override
     public AutoCompleteCallbackAction replyChoices(@Nonnull Collection<Command.Choice> choices)
     {
-        return new ChoiceActionImpl(this, focused.getType()).addChoices(choices);
+        return new AutoCompleteCallbackActionImpl(this, focused.getType()).addChoices(choices);
     }
 }

@@ -22,7 +22,7 @@ import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.ComponentLayout;
 import net.dv8tion.jda.api.requests.restaction.interactions.MessageEditCallbackAction;
-import net.dv8tion.jda.internal.requests.restaction.interactions.UpdateInteractionActionImpl;
+import net.dv8tion.jda.internal.requests.restaction.interactions.MessageEditCallbackActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.CheckReturnValue;
@@ -88,7 +88,7 @@ public interface IMessageEditCallback extends IDeferrableCallback
     default MessageEditCallbackAction editMessage(@Nonnull Message message)
     {
         Checks.notNull(message, "Message");
-        UpdateInteractionActionImpl action = (UpdateInteractionActionImpl) deferEdit();
+        MessageEditCallbackActionImpl action = (MessageEditCallbackActionImpl) deferEdit();
         return action.applyMessage(message);
     }
 

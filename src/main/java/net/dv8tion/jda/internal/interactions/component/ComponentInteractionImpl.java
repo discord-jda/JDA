@@ -23,8 +23,8 @@ import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.interactions.DeferrableInteractionImpl;
+import net.dv8tion.jda.internal.requests.restaction.interactions.MessageEditCallbackActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.interactions.ReplyActionImpl;
-import net.dv8tion.jda.internal.requests.restaction.interactions.UpdateInteractionActionImpl;
 
 import javax.annotation.Nonnull;
 
@@ -75,9 +75,9 @@ public abstract class ComponentInteractionImpl extends DeferrableInteractionImpl
 
     @Nonnull
     @Override
-    public UpdateInteractionActionImpl deferEdit()
+    public MessageEditCallbackActionImpl deferEdit()
     {
-        return new UpdateInteractionActionImpl(this.hook);
+        return new MessageEditCallbackActionImpl(this.hook);
     }
 
     @Nonnull
