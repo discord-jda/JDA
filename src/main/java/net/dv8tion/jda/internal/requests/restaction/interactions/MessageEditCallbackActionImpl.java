@@ -35,14 +35,14 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class UpdateInteractionActionImpl extends DeferrableCallbackActionImpl implements MessageEditCallbackAction
+public class MessageEditCallbackActionImpl extends DeferrableCallbackActionImpl implements MessageEditCallbackAction
 {
     private List<String> retainedFiles = null;
     private List<MessageEmbed> embeds = null;
     private List<ActionRow> components = null;
     private String content = null;
 
-    public UpdateInteractionActionImpl(InteractionHookImpl hook)
+    public MessageEditCallbackActionImpl(InteractionHookImpl hook)
     {
         super(hook);
     }
