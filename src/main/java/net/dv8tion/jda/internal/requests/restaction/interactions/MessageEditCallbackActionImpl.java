@@ -68,7 +68,7 @@ public class MessageEditCallbackActionImpl extends DeferrableCallbackActionImpl 
             data.put("components", DataArray.fromCollection(components));
         if (retainedFiles != null)
         {
-            json.put("attachments", DataArray.fromCollection(
+            data.put("attachments", DataArray.fromCollection(
                 retainedFiles.stream()
                     .map(id -> DataObject.empty().put("id", id))
                     .collect(Collectors.toList()))
@@ -132,7 +132,7 @@ public class MessageEditCallbackActionImpl extends DeferrableCallbackActionImpl 
 
 //    @Nonnull
 //    @Override
-//    public UpdateInteractionAction retainFilesById(@Nonnull Collection<String> ids)
+//    public MessageEditCallbackAction retainFilesById(@Nonnull Collection<String> ids)
 //    {
 //        Checks.noneNull(ids, "IDs");
 //        ids.forEach(Checks::isSnowflake);

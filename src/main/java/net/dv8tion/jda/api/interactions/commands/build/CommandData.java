@@ -28,6 +28,7 @@ import javax.annotation.Nonnull;
 
 /**
  * Builder for Application Commands.
+ * <br>Use the factory methods provided by {@link Commands} to create instances of this interface.
  *
  * @see Commands
  */
