@@ -17,6 +17,7 @@
 package net.dv8tion.jda.internal.interactions.command;
 
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.interactions.commands.context.MessageContextInteraction;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
@@ -33,5 +34,11 @@ public class MessageContextInteractionImpl extends ContextInteractionImpl<Messag
         DataObject messages = resolved.getObject("messages");
         DataObject message = messages.getObject(messages.keys().iterator().next());
         return api.getEntityBuilder().createMessage(message);
+    }
+
+    @Override
+    public MessageChannel getChannel()
+    {
+        return (MessageChannel) super.getChannel();
     }
 }

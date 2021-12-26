@@ -18,12 +18,25 @@ package net.dv8tion.jda.api.events.interaction.command;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.interactions.InteractionHook;
+import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback;
 import net.dv8tion.jda.api.interactions.commands.context.MessageContextInteraction;
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction;
+import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;
 
+/**
+ * Indicates that a message context command was used.
+ *
+ * <h2>Requirements</h2>
+ * To receive these events, you must unset the <b>Interactions Endpoint URL</b> in your application dashboard.
+ * You can simply remove the URL for this endpoint in your settings at the <a href="https://discord.com/developers/applications" target="_blank">Discord Developers Portal</a>.
+ *
+ * @see MessageContextInteraction
+ * @see IReplyCallback
+ */
 public class MessageContextEvent extends GenericCommandEvent implements MessageContextInteraction
 {
     private final MessageContextInteraction interaction;
@@ -32,6 +45,13 @@ public class MessageContextEvent extends GenericCommandEvent implements MessageC
     {
         super(api, responseNumber, interaction);
         this.interaction = interaction;
+    }
+
+    @Nullable
+    @Override
+    public MessageChannel getChannel()
+    {
+        return interaction.getChannel();
     }
 
     @Nonnull

@@ -27,6 +27,9 @@ import org.jetbrains.annotations.Nullable;
 import javax.annotation.Nonnull;
 import java.util.List;
 
+/**
+ * Indicates that a {@link CommandInteraction} was used.
+ */
 public class GenericCommandEvent extends GenericInteractionCreateEvent implements CommandPayload
 {
     public GenericCommandEvent(@Nonnull JDA api, long responseNumber, @Nonnull CommandInteraction interaction)
