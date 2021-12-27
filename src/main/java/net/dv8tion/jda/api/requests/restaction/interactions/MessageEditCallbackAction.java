@@ -18,8 +18,8 @@ package net.dv8tion.jda.api.requests.restaction.interactions;
 
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.interactions.InteractionHook;
+import net.dv8tion.jda.api.interactions.components.ActionComponent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
-import net.dv8tion.jda.api.interactions.components.Component;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.utils.AttachmentOption;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -129,11 +129,11 @@ public interface MessageEditCallbackAction extends InteractionCallbackAction<Int
      *
      * @return The same update action, for chaining convenience
      *
-     * @see    ActionRow#of(Component...)
+     * @see    ActionRow#of(ActionComponent...)
      */
     @Nonnull
     @CheckReturnValue
-    default MessageEditCallbackAction setActionRow(@Nonnull Component... components)
+    default MessageEditCallbackAction setActionRow(@Nonnull ActionComponent... components)
     {
         return setActionRows(ActionRow.of(components));
     }
@@ -153,7 +153,7 @@ public interface MessageEditCallbackAction extends InteractionCallbackAction<Int
      */
     @Nonnull
     @CheckReturnValue
-    default MessageEditCallbackAction setActionRow(@Nonnull Collection<? extends Component> components)
+    default MessageEditCallbackAction setActionRow(@Nonnull Collection<? extends ActionComponent> components)
     {
         return setActionRows(ActionRow.of(components));
     }

@@ -21,7 +21,6 @@ import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonInteraction;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 /**
  * Indicates that a custom {@link Button} on one of the bots messages was clicked by a user.
@@ -49,14 +48,14 @@ public class ButtonClickEvent extends GenericComponentInteractionCreateEvent imp
         return interaction;
     }
 
-    @Nullable
+    @Nonnull
     @Override
     public Button getComponent()
     {
         return interaction.getComponent();
     }
 
-    @Nullable
+    @Nonnull
     @Override
     public Button getButton()
     {

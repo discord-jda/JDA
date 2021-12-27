@@ -18,8 +18,8 @@ package net.dv8tion.jda.api.requests.restaction.interactions;
 
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.interactions.InteractionHook;
+import net.dv8tion.jda.api.interactions.components.ActionComponent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
-import net.dv8tion.jda.api.interactions.components.Component;
 import net.dv8tion.jda.api.utils.AllowedMentions;
 import net.dv8tion.jda.api.utils.AttachmentOption;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -96,11 +96,11 @@ public interface ReplyCallbackAction extends InteractionCallbackAction<Interacti
      *
      * @return The same reply action, for chaining convenience
      *
-     * @see    ActionRow#of(Component...)
+     * @see    ActionRow#of(ActionComponent...)
      */
     @Nonnull
     @CheckReturnValue
-    default ReplyCallbackAction addActionRow(@Nonnull Component... components)
+    default ReplyCallbackAction addActionRow(@Nonnull ActionComponent... components)
     {
         return addActionRows(ActionRow.of(components));
     }
@@ -120,7 +120,7 @@ public interface ReplyCallbackAction extends InteractionCallbackAction<Interacti
      */
     @Nonnull
     @CheckReturnValue
-    default ReplyCallbackAction addActionRow(@Nonnull Collection<? extends Component> components)
+    default ReplyCallbackAction addActionRow(@Nonnull Collection<? extends ActionComponent> components)
     {
         return addActionRows(ActionRow.of(components));
     }

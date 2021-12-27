@@ -27,13 +27,13 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * Represents a top-level layout used for {@link Component Components} such as {@link Button Buttons}.
+ * Represents a top-level layout used for {@link ActionComponent ActionComponents} such as {@link Button Buttons}.
  *
  * <p>Components must always be contained within such a layout.
  *
  * @see ActionRow
  */
-public interface ComponentLayout extends SerializableData, Iterable<Component>
+public interface LayoutComponent extends SerializableData, Iterable<ActionComponent>, Component
 {
     /**
      * List representation of this component layout.
@@ -42,7 +42,7 @@ public interface ComponentLayout extends SerializableData, Iterable<Component>
      * @return {@link List} of components in this action row
      */
     @Nonnull
-    List<Component> getComponents();
+    List<ActionComponent> getComponents();
 
     /**
      * List of buttons in this component layout.
@@ -51,14 +51,6 @@ public interface ComponentLayout extends SerializableData, Iterable<Component>
      */
     @Nonnull
     List<Button> getButtons();
-
-    /**
-     * The {@link Type} of layout
-     *
-     * @return The layout {@link Type} or {@link Type#UNKNOWN}
-     */
-    @Nonnull
-    Type getType();
 
     /**
      * Check whether this layout is empty.
@@ -73,7 +65,7 @@ public interface ComponentLayout extends SerializableData, Iterable<Component>
 
     /**
      * Check whether this is a valid layout configuration.
-     * <br>This checks that there is at least one component in this layout and it does not violate {@link Component#getMaxPerRow()}.
+     * <br>This checks that there is at least one component in this layout and it does not violate {@link ActionComponent#getMaxPerRow()}.
      *
      * @return True, if this layout is valid
      */
@@ -81,15 +73,15 @@ public interface ComponentLayout extends SerializableData, Iterable<Component>
     {
         if (isEmpty())
             return false;
-        List<Component> components = getComponents();
-        Map<Component.Type, List<Component>> groups = components.stream().collect(Collectors.groupingBy(Component::getType));
+        List<ActionComponent> components = getComponents();
+        Map<Component.Type, List<ActionComponent>> groups = components.stream().collect(Collectors.groupingBy(Component::getType));
         if (groups.size() > 1) // TODO: You can't mix components right now but maybe in the future, we need to check back on this when that happens
             return false;
 
-        for (Map.Entry<Component.Type, List<Component>> entry : groups.entrySet())
+        for (Map.Entry<Component.Type, List<ActionComponent>> entry : groups.entrySet())
         {
             Component.Type type = entry.getKey();
-            List<Component> list = entry.getValue();
+            List<ActionComponent> list = entry.getValue();
             if (list.size() > type.getMaxPerRow())
                 return false;
         }
@@ -109,16 +101,16 @@ public interface ComponentLayout extends SerializableData, Iterable<Component>
      * @throws IllegalArgumentException
      *         If the provided id is null
      *
-     * @return The old {@link Component} that was replaced or removed
+     * @return The old {@link ActionComponent} that was replaced or removed
      */
     @Nullable
-    default Component updateComponent(@Nonnull String id, @Nullable Component newComponent)
+    default ActionComponent updateComponent(@Nonnull String id, @Nullable ActionComponent newComponent)
     {
         Checks.notNull(id, "ID");
-        List<Component> list = getComponents();
-        for (ListIterator<Component> it = list.listIterator(); it.hasNext();)
+        List<ActionComponent> list = getComponents();
+        for (ListIterator<ActionComponent> it = list.listIterator(); it.hasNext();)
         {
-            Component component = it.next();
+            ActionComponent component = it.next();
             if (id.equals(component.getId()) || (component instanceof Button && id.equals(((Button) component).getUrl())))
             {
                 if (newComponent == null)
@@ -152,14 +144,14 @@ public interface ComponentLayout extends SerializableData, Iterable<Component>
      *
      * @return True, if any of the layouts was modified
      */
-    static boolean updateComponent(@Nonnull List<? extends ComponentLayout> layouts, @Nonnull String id, @Nullable Component newComponent)
+    static boolean updateComponent(@Nonnull List<? extends LayoutComponent> layouts, @Nonnull String id, @Nullable ActionComponent newComponent)
     {
         Checks.notNull(layouts, "ComponentLayout");
         Checks.notEmpty(id, "ID or URL");
-        for (Iterator<? extends ComponentLayout> it = layouts.iterator(); it.hasNext();)
+        for (Iterator<? extends LayoutComponent> it = layouts.iterator(); it.hasNext();)
         {
-            ComponentLayout components = it.next();
-            Component oldComponent = components.updateComponent(id, newComponent);
+            LayoutComponent components = it.next();
+            ActionComponent oldComponent = components.updateComponent(id, newComponent);
             if (oldComponent != null)
             {
                 if (components.getComponents().isEmpty())
@@ -170,31 +162,5 @@ public interface ComponentLayout extends SerializableData, Iterable<Component>
             }
         }
         return false;
-    }
-
-    /**
-     * The layout types
-     */
-    enum Type
-    {
-        UNKNOWN(-1),
-        ACTION_ROW(1)
-        ;
-        private final int key;
-
-        Type(int key)
-        {
-            this.key = key;
-        }
-
-        /**
-         * The raw type value
-         *
-         * @return The raw type value
-         */
-        public int getKey()
-        {
-            return key;
-        }
     }
 }

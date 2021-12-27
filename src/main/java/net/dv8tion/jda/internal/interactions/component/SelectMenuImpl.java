@@ -16,8 +16,8 @@
 
 package net.dv8tion.jda.internal.interactions.component;
 
+import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
-import net.dv8tion.jda.api.interactions.components.selections.SelectionMenu;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 
@@ -27,14 +27,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class SelectionMenuImpl implements SelectionMenu
+public class SelectMenuImpl implements SelectMenu
 {
     private final String id, placeholder;
     private final int minValues, maxValues;
     private final boolean disabled;
     private final List<SelectOption> options;
 
-    public SelectionMenuImpl(DataObject data)
+    public SelectMenuImpl(DataObject data)
     {
         this(
             data.getString("custom_id"),
@@ -46,7 +46,7 @@ public class SelectionMenuImpl implements SelectionMenu
         );
     }
 
-    public SelectionMenuImpl(String id, String placeholder, int minValues, int maxValues, boolean disabled, List<SelectOption> options)
+    public SelectMenuImpl(String id, String placeholder, int minValues, int maxValues, boolean disabled, List<SelectOption> options)
     {
         this.id = id;
         this.placeholder = placeholder;
@@ -69,7 +69,7 @@ public class SelectionMenuImpl implements SelectionMenu
     @Override
     public Type getType()
     {
-        return Type.SELECTION_MENU;
+        return Type.SELECT_MENU;
     }
 
     @Nullable

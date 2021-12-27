@@ -23,7 +23,7 @@ import net.dv8tion.jda.api.entities.WebhookClient;
 import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback;
 import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
-import net.dv8tion.jda.api.interactions.components.ComponentLayout;
+import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.WebhookMessageUpdateAction;
 import net.dv8tion.jda.api.utils.AttachmentOption;
@@ -191,7 +191,7 @@ public interface InteractionHook extends WebhookClient<Message>
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageUpdateAction<Message> editOriginalComponents(@Nonnull Collection<? extends ComponentLayout> components)
+    default WebhookMessageUpdateAction<Message> editOriginalComponents(@Nonnull Collection<? extends LayoutComponent> components)
     {
         return editMessageComponentsById("@original", components);
     }
@@ -221,7 +221,7 @@ public interface InteractionHook extends WebhookClient<Message>
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageUpdateAction<Message> editOriginalComponents(@Nonnull ComponentLayout... components)
+    default WebhookMessageUpdateAction<Message> editOriginalComponents(@Nonnull LayoutComponent... components)
     {
         return editMessageComponentsById("@original", components);
     }

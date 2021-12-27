@@ -18,8 +18,8 @@ package net.dv8tion.jda.api.requests.restaction;
 
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.interactions.components.ActionComponent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
-import net.dv8tion.jda.api.interactions.components.Component;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.AllowedMentions;
@@ -316,7 +316,7 @@ public interface WebhookMessageAction<T> extends RestAction<T>, AllowedMentions<
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageAction<T> addActionRow(@Nonnull Component... components)
+    default WebhookMessageAction<T> addActionRow(@Nonnull ActionComponent... components)
     {
         return addActionRows(ActionRow.of(components));
     }
@@ -334,7 +334,7 @@ public interface WebhookMessageAction<T> extends RestAction<T>, AllowedMentions<
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageAction<T> addActionRow(@Nonnull Collection<? extends Component> components)
+    default WebhookMessageAction<T> addActionRow(@Nonnull Collection<? extends ActionComponent> components)
     {
         return addActionRows(ActionRow.of(components));
     }

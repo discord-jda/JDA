@@ -17,27 +17,26 @@
 package net.dv8tion.jda.api.events.interaction.component;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.interactions.components.selections.SelectionMenu;
-import net.dv8tion.jda.api.interactions.components.selections.SelectionMenuInteraction;
+import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;
+import net.dv8tion.jda.api.interactions.components.selections.SelectMenuInteraction;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.List;
 
 /**
- * Indicates that a custom {@link SelectionMenu} on one of the bots messages was used by a user.
+ * Indicates that a custom {@link SelectMenu} on one of the bots messages was used by a user.
  *
- * <p>This fires when a user selects the options on one of the custom selection menus attached to a bot or webhook message.
+ * <p>This fires when a user selects the options on one of the custom select menus attached to a bot or webhook message.
  *
  * <h2>Requirements</h2>
  * To receive these events, you must unset the <b>Interactions Endpoint URL</b> in your application dashboard.
  * You can simply remove the URL for this endpoint in your settings at the <a href="https://discord.com/developers/applications" target="_blank">Discord Developers Portal</a>.
  */
-public class SelectionMenuEvent extends GenericComponentInteractionCreateEvent implements SelectionMenuInteraction
+public class SelectMenuEvent extends GenericComponentInteractionCreateEvent implements SelectMenuInteraction
 {
-    private final SelectionMenuInteraction menuInteraction;
+    private final SelectMenuInteraction menuInteraction;
 
-    public SelectionMenuEvent(@Nonnull JDA api, long responseNumber, @Nonnull SelectionMenuInteraction interaction)
+    public SelectMenuEvent(@Nonnull JDA api, long responseNumber, @Nonnull SelectMenuInteraction interaction)
     {
         super(api, responseNumber, interaction);
         this.menuInteraction = interaction;
@@ -45,14 +44,14 @@ public class SelectionMenuEvent extends GenericComponentInteractionCreateEvent i
 
     @Nonnull
     @Override
-    public SelectionMenuInteraction getInteraction()
+    public SelectMenuInteraction getInteraction()
     {
         return menuInteraction;
     }
 
-    @Nullable
+    @Nonnull
     @Override
-    public SelectionMenu getComponent()
+    public SelectMenu getComponent()
     {
         return menuInteraction.getComponent();
     }
