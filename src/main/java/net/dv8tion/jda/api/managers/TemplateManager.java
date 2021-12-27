@@ -41,9 +41,9 @@ import javax.annotation.Nullable;
 public interface TemplateManager extends Manager<TemplateManager>
 {
     /** Used to reset the name field */
-    long NAME = 0x1;
+    long NAME        = 1;
     /** Used to reset the description field */
-    long DESCRIPTION = 0x2;
+    long DESCRIPTION = 1 << 1;
 
     /**
      * Resets the fields specified by the provided bit-flag pattern.

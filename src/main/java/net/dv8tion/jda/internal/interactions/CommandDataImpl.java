@@ -146,8 +146,10 @@ public class CommandDataImpl extends BaseCommand<CommandDataImpl> implements Sla
     @Override
     public CommandDataImpl addOptions(@Nonnull OptionData... options)
     {
-        checkType(Command.Type.SLASH, "add options");
         Checks.noneNull(options, "Option");
+        if (options.length == 0)
+            return this;
+        checkType(Command.Type.SLASH, "add options");
         Checks.check(options.length + this.options.length() <= 25, "Cannot have more than 25 options for a command!");
         Checks.check(allowOption, "You cannot mix options with subcommands/groups.");
         allowSubcommands = allowGroups = false;
@@ -166,8 +168,10 @@ public class CommandDataImpl extends BaseCommand<CommandDataImpl> implements Sla
     @Override
     public CommandDataImpl addSubcommands(@Nonnull SubcommandData... subcommands)
     {
-        checkType(Command.Type.SLASH, "add subcommands");
         Checks.noneNull(subcommands, "Subcommands");
+        if (subcommands.length == 0)
+            return this;
+        checkType(Command.Type.SLASH, "add subcommands");
         if (!allowSubcommands)
             throw new IllegalArgumentException("You cannot mix options with subcommands/groups.");
         allowOption = false;
@@ -181,8 +185,10 @@ public class CommandDataImpl extends BaseCommand<CommandDataImpl> implements Sla
     @Override
     public CommandDataImpl addSubcommandGroups(@Nonnull SubcommandGroupData... groups)
     {
-        checkType(Command.Type.SLASH, "add subcommand groups");
         Checks.noneNull(groups, "SubcommandGroups");
+        if (groups.length == 0)
+            return this;
+        checkType(Command.Type.SLASH, "add subcommand groups");
         if (!allowGroups)
             throw new IllegalArgumentException("You cannot mix options with subcommands/groups.");
         allowOption = false;

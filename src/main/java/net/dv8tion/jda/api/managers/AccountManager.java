@@ -43,9 +43,9 @@ import javax.annotation.Nullable;
 public interface AccountManager extends Manager<AccountManager>
 {
     /** Used to reset the name field */
-    long NAME = 0x1;
+    long NAME   = 1;
     /** Used to reset the avatar field */
-    long AVATAR = 0x2;
+    long AVATAR = 1 << 1;
 
     /**
      * The {@link net.dv8tion.jda.api.entities.SelfUser SelfUser} that will be
