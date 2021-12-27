@@ -17,7 +17,6 @@
 package net.dv8tion.jda.api;
 
 import net.dv8tion.jda.api.entities.*;
-import net.dv8tion.jda.api.events.ShutdownEvent;
 import net.dv8tion.jda.api.hooks.IEventManager;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
@@ -2384,7 +2383,7 @@ public interface JDA
      * @throws InterruptedException
      *          if the current thread is interrupted while waiting
      * 
-     * @see ShutdownEvent
+     * @see {@link net.dv8tion.jda.api.events.ShutdownEvent ShutdownEvent}
      */
     void awaitShutdown() throws InterruptedException;
 
