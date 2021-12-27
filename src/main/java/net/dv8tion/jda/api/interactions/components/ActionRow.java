@@ -20,7 +20,7 @@ import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.interactions.component.ButtonImpl;
-import net.dv8tion.jda.internal.interactions.component.SelectionMenuImpl;
+import net.dv8tion.jda.internal.interactions.component.SelectMenuImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
@@ -32,9 +32,9 @@ import java.util.stream.Collectors;
  *
  * @see Component
  */
-public class ActionRow implements ComponentLayout, Iterable<Component>
+public class ActionRow implements LayoutComponent, Iterable<ActionComponent>
 {
-    private final List<Component> components = new ArrayList<>();
+    private final List<ActionComponent> components = new ArrayList<>();
 
     private ActionRow() {}
 
@@ -66,8 +66,8 @@ public class ActionRow implements ComponentLayout, Iterable<Component>
                 {
                 case BUTTON:
                     return new ButtonImpl(obj);
-                case SELECTION_MENU:
-                    return new SelectionMenuImpl(obj);
+                case SELECT_MENU:
+                    return new SelectMenuImpl(obj);
                 default:
                     return null;
                 }
@@ -78,7 +78,7 @@ public class ActionRow implements ComponentLayout, Iterable<Component>
     }
 
     /**
-     * Create one row of interactive message {@link Component components}.
+     * Create one row of interactive message {@link ActionComponent action components}.
      * <br>You cannot currently mix different types of components and each type has its own maximum defined by {@link Component.Type#getMaxPerRow()}.
      *
      * @param  components
@@ -90,14 +90,14 @@ public class ActionRow implements ComponentLayout, Iterable<Component>
      * @return The action row
      */
     @Nonnull
-    public static ActionRow of(@Nonnull Collection<? extends Component> components)
+    public static ActionRow of(@Nonnull Collection<? extends ActionComponent> components)
     {
         Checks.noneNull(components, "Components");
-        return of(components.toArray(new Component[0]));
+        return of(components.toArray(new ActionComponent[0]));
     }
 
     /**
-     * Create one row of interactive message {@link Component components}.
+     * Create one row of interactive message {@link ActionComponent action components}.
      * <br>You cannot currently mix different types of components and each type has its own maximum defined by {@link Component.Type#getMaxPerRow()}.
      *
      * @param  components
@@ -109,7 +109,7 @@ public class ActionRow implements ComponentLayout, Iterable<Component>
      * @return The action row
      */
     @Nonnull
-    public static ActionRow of(@Nonnull Component... components)
+    public static ActionRow of(@Nonnull ActionComponent... components)
     {
         Checks.noneNull(components, "Components");
         Checks.check(components.length > 0, "Cannot have empty row!");
@@ -117,7 +117,7 @@ public class ActionRow implements ComponentLayout, Iterable<Component>
         Collections.addAll(row.components, components);
         if (!row.isValid())
         {
-            Map<Component.Type, List<Component>> grouped = Arrays.stream(components).collect(Collectors.groupingBy(Component::getType));
+            Map<Component.Type, List<ActionComponent>> grouped = Arrays.stream(components).collect(Collectors.groupingBy(Component::getType));
             String provided = grouped.entrySet()
                 .stream()
                 .map(entry -> entry.getValue().size() + "/" + entry.getKey().getMaxPerRow() + " of " + entry.getKey())
@@ -135,7 +135,7 @@ public class ActionRow implements ComponentLayout, Iterable<Component>
      */
     @Nonnull
     @Override
-    public List<Component> getComponents()
+    public List<ActionComponent> getComponents()
     {
         return components;
     }
@@ -158,9 +158,9 @@ public class ActionRow implements ComponentLayout, Iterable<Component>
 
     @Nonnull
     @Override
-    public Type getType()
+    public Component.Type getType()
     {
-        return Type.ACTION_ROW;
+        return Component.Type.ACTION_ROW;
     }
 
     @Nonnull
@@ -174,7 +174,7 @@ public class ActionRow implements ComponentLayout, Iterable<Component>
 
     @Nonnull
     @Override
-    public Iterator<Component> iterator()
+    public Iterator<ActionComponent> iterator()
     {
         return components.iterator();
     }

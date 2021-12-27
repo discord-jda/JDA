@@ -18,7 +18,7 @@ package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.interactions.callbacks.IDeferrableCallback;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
-import net.dv8tion.jda.api.interactions.components.ComponentLayout;
+import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.WebhookMessageAction;
 import net.dv8tion.jda.api.requests.restaction.WebhookMessageUpdateAction;
@@ -699,7 +699,7 @@ public interface WebhookClient<T>
      */
     @Nonnull
     @CheckReturnValue
-    WebhookMessageUpdateAction<T> editMessageComponentsById(@Nonnull String messageId, @Nonnull Collection<? extends ComponentLayout> components); // We use ComponentLayout for forward compatibility here
+    WebhookMessageUpdateAction<T> editMessageComponentsById(@Nonnull String messageId, @Nonnull Collection<? extends LayoutComponent> components); // We use ComponentLayout for forward compatibility here
 
     /**
      * Edit an existing message sent by this webhook.
@@ -726,7 +726,7 @@ public interface WebhookClient<T>
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageUpdateAction<T> editMessageComponentsById(long messageId, @Nonnull Collection<? extends ComponentLayout> components)
+    default WebhookMessageUpdateAction<T> editMessageComponentsById(long messageId, @Nonnull Collection<? extends LayoutComponent> components)
     {
         return editMessageComponentsById(Long.toUnsignedString(messageId), components);
     }
@@ -756,7 +756,7 @@ public interface WebhookClient<T>
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageUpdateAction<T> editMessageComponentsById(@Nonnull String messageId, @Nonnull ComponentLayout... components)
+    default WebhookMessageUpdateAction<T> editMessageComponentsById(@Nonnull String messageId, @Nonnull LayoutComponent... components)
     {
         Checks.noneNull(components, "ComponentLayouts");
         return editMessageComponentsById(messageId, Arrays.asList(components));
@@ -787,7 +787,7 @@ public interface WebhookClient<T>
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageUpdateAction<T> editMessageComponentsById(long messageId, @Nonnull ComponentLayout... components)
+    default WebhookMessageUpdateAction<T> editMessageComponentsById(long messageId, @Nonnull LayoutComponent... components)
     {
         return editMessageComponentsById(Long.toUnsignedString(messageId), components);
     }

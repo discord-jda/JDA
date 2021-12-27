@@ -17,24 +17,23 @@
 package net.dv8tion.jda.internal.interactions.component;
 
 import net.dv8tion.jda.api.interactions.components.Component;
-import net.dv8tion.jda.api.interactions.components.selections.SelectionMenu;
-import net.dv8tion.jda.api.interactions.components.selections.SelectionMenuInteraction;
+import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;
+import net.dv8tion.jda.api.interactions.components.selections.SelectMenuInteraction;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class SelectionMenuInteractionImpl extends ComponentInteractionImpl implements SelectionMenuInteraction
+public class SelectMenuInteractionImpl extends ComponentInteractionImpl implements SelectMenuInteraction
 {
     private final List<String> values;
-    private final SelectionMenu menu;
+    private final SelectMenu menu;
 
-    public SelectionMenuInteractionImpl(JDAImpl jda, DataObject data)
+    public SelectMenuInteractionImpl(JDAImpl jda, DataObject data)
     {
         super(jda, data);
         values = Collections.unmodifiableList(data.getObject("data").getArray("values")
@@ -42,10 +41,10 @@ public class SelectionMenuInteractionImpl extends ComponentInteractionImpl imple
             .collect(Collectors.toList()));
         if (message != null)
         {
-            menu = (SelectionMenu) message.getActionRows()
+            menu = (SelectMenu) message.getActionRows()
                     .stream()
                     .flatMap(row -> row.getComponents().stream())
-                    .filter(c -> c.getType() == Component.Type.SELECTION_MENU && customId.equals(c.getId()))
+                    .filter(c -> c.getType() == Component.Type.SELECT_MENU && customId.equals(c.getId()))
                     .findFirst()
                     .orElse(null);
         }
@@ -55,9 +54,9 @@ public class SelectionMenuInteractionImpl extends ComponentInteractionImpl imple
         }
     }
 
-    @Nullable
+    @Nonnull
     @Override
-    public SelectionMenu getComponent()
+    public SelectMenu getComponent()
     {
         return menu;
     }
@@ -66,7 +65,7 @@ public class SelectionMenuInteractionImpl extends ComponentInteractionImpl imple
     @Override
     public Component.Type getComponentType()
     {
-        return Component.Type.SELECTION_MENU;
+        return Component.Type.SELECT_MENU;
     }
 
     @Nonnull

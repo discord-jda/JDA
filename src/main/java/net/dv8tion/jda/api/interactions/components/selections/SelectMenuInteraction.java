@@ -17,10 +17,10 @@
 package net.dv8tion.jda.api.interactions.components.selections;
 
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.events.interaction.component.SelectionMenuEvent;
+import net.dv8tion.jda.api.events.interaction.component.SelectMenuEvent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.ComponentInteraction;
-import net.dv8tion.jda.api.interactions.components.ComponentLayout;
+import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.requests.RestAction;
 
 import javax.annotation.CheckReturnValue;
@@ -32,26 +32,25 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Component Interaction for a {@link SelectionMenu}.
+ * Component Interaction for a {@link SelectMenu}.
  *
- * @see SelectionMenuEvent
+ * @see SelectMenuEvent
  */
-public interface SelectionMenuInteraction extends ComponentInteraction
+public interface SelectMenuInteraction extends ComponentInteraction
 {
-    @Nullable
+    @Nonnull
     @Override
-    SelectionMenu getComponent();
+    SelectMenu getComponent();
 
     /**
-     * The {@link SelectionMenu} this interaction belongs to.
-     * <br>This is null for ephemeral messages!
+     * The {@link SelectMenu} this interaction belongs to.
      *
-     * @return The {@link SelectionMenu}
+     * @return The {@link SelectMenu}
      *
      * @see    #getComponentId()
      */
-    @Nullable
-    default SelectionMenu getSelectionMenu()
+    @Nonnull
+    default SelectMenu getSelectMenu()
     {
         return getComponent();
     }
@@ -62,13 +61,10 @@ public interface SelectionMenuInteraction extends ComponentInteraction
      *
      * @return {@link List} of the selected options or null if this message is ephemeral
      */
-    @Nullable
+    @Nonnull
     default List<SelectOption> getSelectedOptions()
     {
-        SelectionMenu menu = getComponent();
-        if (menu == null)
-            return null;
-
+        SelectMenu menu = getComponent();
         List<String> values = getValues();
         return menu.getOptions()
                 .stream()
@@ -85,29 +81,26 @@ public interface SelectionMenuInteraction extends ComponentInteraction
     List<String> getValues();
 
     /**
-     * Update the selection menu with a new selection menu instance.
+     * Update the select menu with a new select menu instance.
      *
      * <p>If this interaction is already acknowledged this will use {@link #getHook()}
      * and otherwise {@link #editComponents(Collection)} directly to acknowledge the interaction.
      *
      * @param  newMenu
-     *         The new selection menu to use, or null to remove this menu from the message entirely
-     *
-     * @throws IllegalStateException
-     *         If this interaction was triggered by a selection menu on an ephemeral message.
+     *         The new select menu to use, or null to remove this menu from the message entirely
      *
      * @return {@link RestAction}
      *
-     * @see    SelectionMenu#createCopy()
-     * @see    SelectionMenu#create(String)
+     * @see    SelectMenu#createCopy()
+     * @see    SelectMenu#create(String)
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<Void> editSelectionMenu(@Nullable SelectionMenu newMenu)
+    default RestAction<Void> editSelectMenu(@Nullable SelectMenu newMenu)
     {
         Message message = getMessage();
         List<ActionRow> components = new ArrayList<>(message.getActionRows());
-        ComponentLayout.updateComponent(components, getComponentId(), newMenu);
+        LayoutComponent.updateComponent(components, getComponentId(), newMenu);
 
         if (isAcknowledged())
             return getHook().editMessageComponentsById(message.getId(), components).map(it -> null);

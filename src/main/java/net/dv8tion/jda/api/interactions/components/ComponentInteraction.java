@@ -23,10 +23,9 @@ import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback;
 import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 /**
- * Interaction on a message {@link Component}.
+ * Interaction on a message {@link ActionComponent}.
  *
  * <p>Instead of {@link #deferReply()} and {@link #reply(String)} you can use {@link #deferEdit()} and {@link #editMessage(String)} with these interactions!
  * <b>You can only acknowledge an interaction once!</b>
@@ -34,8 +33,8 @@ import javax.annotation.Nullable;
 public interface ComponentInteraction extends Interaction, IReplyCallback, IMessageEditCallback
 {
     /**
-     * The custom component Id provided to the component when it was originally created.
-     * <br>This value should be used to determine what action to take in regards to this interaction.
+     * The custom component ID provided to the component when it was originally created.
+     * <br>This value should be used to determine what action to take in regard to this interaction.
      *
      * <br>This id does not have to be numerical.
      *
@@ -45,13 +44,12 @@ public interface ComponentInteraction extends Interaction, IReplyCallback, IMess
     String getComponentId();
 
     /**
-     * The {@link Component} instance.
-     * <br>This is null on interactions for ephemeral messages.
+     * The {@link ActionComponent} instance.
      *
-     * @return The {@link Component}, or null if this message is ephemeral
+     * @return The {@link ActionComponent}
      */
-    @Nullable
-    Component getComponent();
+    @Nonnull
+    ActionComponent getComponent();
 
     /**
      * The {@link Message} instance.

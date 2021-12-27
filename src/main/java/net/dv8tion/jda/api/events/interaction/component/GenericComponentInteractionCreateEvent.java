@@ -21,13 +21,13 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.events.interaction.GenericInteractionCreateEvent;
 import net.dv8tion.jda.api.interactions.InteractionHook;
+import net.dv8tion.jda.api.interactions.components.ActionComponent;
 import net.dv8tion.jda.api.interactions.components.Component;
 import net.dv8tion.jda.api.interactions.components.ComponentInteraction;
 import net.dv8tion.jda.api.requests.restaction.interactions.MessageEditCallbackAction;
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 /**
  * Indicates that a {@link ComponentInteraction} was created in a channel.
@@ -68,9 +68,9 @@ public class GenericComponentInteractionCreateEvent extends GenericInteractionCr
         return interaction.getComponentId();
     }
 
-    @Nullable
+    @Nonnull
     @Override
-    public Component getComponent()
+    public ActionComponent getComponent()
     {
         return interaction.getComponent();
     }

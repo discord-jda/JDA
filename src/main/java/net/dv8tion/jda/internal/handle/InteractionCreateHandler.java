@@ -22,7 +22,7 @@ import net.dv8tion.jda.api.events.interaction.command.MessageContextEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandEvent;
 import net.dv8tion.jda.api.events.interaction.command.UserContextEvent;
 import net.dv8tion.jda.api.events.interaction.component.ButtonClickEvent;
-import net.dv8tion.jda.api.events.interaction.component.SelectionMenuEvent;
+import net.dv8tion.jda.api.events.interaction.component.SelectMenuEvent;
 import net.dv8tion.jda.api.interactions.InteractionType;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.components.Component;
@@ -34,7 +34,7 @@ import net.dv8tion.jda.internal.interactions.command.MessageContextInteractionIm
 import net.dv8tion.jda.internal.interactions.command.SlashCommandInteractionImpl;
 import net.dv8tion.jda.internal.interactions.command.UserContextInteractionImpl;
 import net.dv8tion.jda.internal.interactions.component.ButtonInteractionImpl;
-import net.dv8tion.jda.internal.interactions.component.SelectionMenuInteractionImpl;
+import net.dv8tion.jda.internal.interactions.component.SelectMenuInteractionImpl;
 import net.dv8tion.jda.internal.requests.WebSocketClient;
 
 public class InteractionCreateHandler extends SocketHandler
@@ -113,10 +113,10 @@ public class InteractionCreateHandler extends SocketHandler
                 new ButtonClickEvent(api, responseNumber,
                     new ButtonInteractionImpl(api, content)));
             break;
-        case SELECTION_MENU:
+        case SELECT_MENU:
             api.handleEvent(
-                new SelectionMenuEvent(api, responseNumber,
-                    new SelectionMenuInteractionImpl(api, content)));
+                new SelectMenuEvent(api, responseNumber,
+                    new SelectMenuInteractionImpl(api, content)));
             break;
         }
     }

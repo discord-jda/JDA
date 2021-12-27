@@ -20,7 +20,7 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
-import net.dv8tion.jda.api.interactions.components.ComponentLayout;
+import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.requests.restaction.interactions.MessageEditCallbackAction;
 import net.dv8tion.jda.internal.requests.restaction.interactions.MessageEditCallbackActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -136,7 +136,7 @@ public interface IMessageEditCallback extends IDeferrableCallback
      */
     @Nonnull
     @CheckReturnValue
-    default MessageEditCallbackAction editComponents(@Nonnull Collection<? extends ComponentLayout> components)
+    default MessageEditCallbackAction editComponents(@Nonnull Collection<? extends LayoutComponent> components)
     {
         Checks.noneNull(components, "Components");
         if (components.stream().anyMatch(it -> !(it instanceof ActionRow)))
@@ -164,7 +164,7 @@ public interface IMessageEditCallback extends IDeferrableCallback
      */
     @Nonnull
     @CheckReturnValue
-    default MessageEditCallbackAction editComponents(@Nonnull ComponentLayout... components)
+    default MessageEditCallbackAction editComponents(@Nonnull LayoutComponent... components)
     {
         Checks.noneNull(components, "ComponentLayouts");
         return editComponents(Arrays.asList(components));

@@ -44,7 +44,7 @@ import net.dv8tion.jda.api.events.interaction.GenericInteractionCreateEvent;
 import net.dv8tion.jda.api.events.interaction.command.*;
 import net.dv8tion.jda.api.events.interaction.component.ButtonClickEvent;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
-import net.dv8tion.jda.api.events.interaction.component.SelectionMenuEvent;
+import net.dv8tion.jda.api.events.interaction.component.SelectMenuEvent;
 import net.dv8tion.jda.api.events.message.*;
 import net.dv8tion.jda.api.events.message.react.*;
 import net.dv8tion.jda.api.events.role.GenericRoleEvent;
@@ -126,7 +126,7 @@ public abstract class ListenerAdapter implements EventListener
     public void onUserContext(@Nonnull UserContextEvent event) {}
     public void onMessageContext(@Nonnull MessageContextEvent event) {}
     public void onButtonClick(@Nonnull ButtonClickEvent event) {}
-    public void onSelectionMenu(@Nonnull SelectionMenuEvent event) {}
+    public void onSelectMenu(@Nonnull SelectMenuEvent event) {}
     public void onCommandAutoComplete(@Nonnull CommandAutoCompleteEvent event) {}
 
     //User Events

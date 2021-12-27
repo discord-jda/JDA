@@ -20,7 +20,7 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.interaction.component.ButtonClickEvent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.ComponentInteraction;
-import net.dv8tion.jda.api.interactions.components.ComponentLayout;
+import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.requests.RestAction;
 
 import javax.annotation.CheckReturnValue;
@@ -37,7 +37,7 @@ import java.util.List;
  */
 public interface ButtonInteraction extends ComponentInteraction
 {
-    @Nullable
+    @Nonnull
     @Override
     default Button getComponent()
     {
@@ -46,13 +46,12 @@ public interface ButtonInteraction extends ComponentInteraction
 
     /**
      * The {@link Button} this interaction belongs to.
-     * <br>This is null for ephemeral messages!
      *
      * @return The {@link Button}
      *
      * @see    #getComponentId()
      */
-    @Nullable
+    @Nonnull
     Button getButton();
 
     /**
@@ -64,9 +63,6 @@ public interface ButtonInteraction extends ComponentInteraction
      * @param  newButton
      *         The new button to use, or null to remove this button from the message entirely
      *
-     * @throws IllegalStateException
-     *         If this interaction was triggered by a button on an ephemeral message.
-     *
      * @return {@link RestAction}
      */
     @Nonnull
@@ -75,7 +71,7 @@ public interface ButtonInteraction extends ComponentInteraction
     {
         Message message = getMessage();
         List<ActionRow> components = new ArrayList<>(message.getActionRows());
-        ComponentLayout.updateComponent(components, getComponentId(), newButton);
+        LayoutComponent.updateComponent(components, getComponentId(), newButton);
 
         if (isAcknowledged())
             return getHook().editMessageComponentsById(message.getId(), components).map(it -> null);

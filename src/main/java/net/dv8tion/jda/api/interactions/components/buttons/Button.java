@@ -18,8 +18,8 @@ package net.dv8tion.jda.api.interactions.components.buttons;
 
 import net.dv8tion.jda.api.entities.Emoji;
 import net.dv8tion.jda.api.events.interaction.component.ButtonClickEvent;
+import net.dv8tion.jda.api.interactions.components.ActionComponent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
-import net.dv8tion.jda.api.interactions.components.Component;
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction;
 import net.dv8tion.jda.internal.interactions.component.ButtonImpl;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -67,10 +67,10 @@ import javax.annotation.Nullable;
  * <br>
  * <img alt="ButtonExample" src="https://raw.githubusercontent.com/DV8FromTheWorld/JDA/52377f69d1f3bfba909c51a449ac6b258f606956/assets/wiki/interactions/ButtonExamples.png">
  *
- * @see ReplyCallbackAction#addActionRow(Component...) ReplyAction.addActionRow(Component...)
+ * @see ReplyCallbackAction#addActionRow(ActionComponent...) ReplyAction.addActionRow(ActionComponent...)
  * @see ReplyCallbackAction#addActionRows(ActionRow...) ReplyAction.addActionRows(ActionRow...)
  */
-public interface Button extends Component
+public interface Button extends ActionComponent
 {
     /**
      * The maximum length a button label can have
@@ -122,47 +122,20 @@ public interface Button extends Component
     @Nullable
     Emoji getEmoji();
 
-    /**
-     * Whether this button is disabled.
-     *
-     * <p>You can use {@link #asDisabled()} or {@link #asEnabled()} to create enabled/disabled instances.
-     *
-     * @return True, if this button is disabled
-     */
-    boolean isDisabled();
-
-    /**
-     * Returns a copy of this button with {@link #isDisabled()} set to true.
-     *
-     * @return New disabled button instance
-     */
     @Nonnull
     @CheckReturnValue
     default Button asDisabled()
     {
-        return new ButtonImpl(getId(), getLabel(), getStyle(), getUrl(), true, getEmoji());
+        return withDisabled(true);
     }
 
-    /**
-     * Returns a copy of this button with {@link #isDisabled()} set to false.
-     *
-     * @return New enabled button instance
-     */
     @Nonnull
     @CheckReturnValue
     default Button asEnabled()
     {
-        return new ButtonImpl(getId(), getLabel(), getStyle(), getUrl(), false, getEmoji());
+        return withDisabled(false);
     }
 
-    /**
-     * Returns a copy of this button with {@link #isDisabled()} set to the provided value.
-     *
-     * @param  disabled
-     *         True, if this button should be disabled
-     *
-     * @return New enabled/disabled button instance
-     */
     @Nonnull
     @CheckReturnValue
     default Button withDisabled(boolean disabled)
