@@ -371,6 +371,13 @@ public enum AuditLogKey
      */
     MEMBER_ROLES_REMOVE("$remove"),
 
+    /**
+     * Change of the {@link net.dv8tion.jda.api.entities.Member#getTimeOutEnd() Time out} of a Member.
+     * <br>Indicating that the {@link net.dv8tion.jda.api.entities.Member#getTimeOutEnd() Member.getTimeOutEnd()} value updated.
+     *
+     * <p>Expected type: <b>OffsetDateTime</b>
+     */
+    MEMBER_TIME_OUT("communication_disabled_until"),
 
     // PERMISSION OVERRIDE
     /**
