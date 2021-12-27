@@ -17,7 +17,7 @@
 package net.dv8tion.jda.api.interactions.components.buttons;
 
 import net.dv8tion.jda.api.entities.Emoji;
-import net.dv8tion.jda.api.events.interaction.component.ButtonClickEvent;
+import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.interactions.components.ActionComponent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction;
@@ -33,12 +33,12 @@ import javax.annotation.Nullable;
  * <br>These buttons are located below the message in {@link ActionRow ActionRows}.
  *
  * <p>Each button has either a {@code custom_id} or URL attached.
- * The id has to be provided by the user and can be used to identify the button in the {@link ButtonClickEvent ButtonClickEvent}.
+ * The id has to be provided by the user and can be used to identify the button in the {@link ButtonInteractionEvent ButtonInteractionEvent}.
  *
  * <h2>Example Usage</h2>
  * <pre>{@code
  * public class HelloBot extends ListenerAdapter {
- *   public void onSlashCommand(SlashCommandEvent event) {
+ *   public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {
  *       if (event.getName().equals("hello")) {
  *           event.reply("Click the button to say hello")
  *               .addActionRow(
@@ -55,7 +55,7 @@ import javax.annotation.Nullable;
  *       }
  *   }
  *
- *   public void onButtonClick(ButtonClickEvent event) {
+ *   public void onButtonInteraction(ButtonInteractionEvent event) {
  *       if (event.getComponentId().equals("hello")) {
  *           event.reply("Hello :)").queue();
  *       }
@@ -508,7 +508,7 @@ public interface Button extends ActionComponent
      * <br>The button is enabled and has no emoji attached by default.
      * You can use {@link #asDisabled()} and {@link #withEmoji(Emoji)} to further configure it.
      *
-     * <p>Note that link buttons never send a {@link ButtonClickEvent ButtonClickEvent}.
+     * <p>Note that link buttons never send a {@link ButtonInteractionEvent ButtonInteractionEvent}.
      * These buttons only open a link for the user.
      *
      * @param  url
@@ -544,7 +544,7 @@ public interface Button extends ActionComponent
      *
      * <p>To disable the button you can use {@link #asDisabled()}.
      *
-     * <p>Note that link buttons never send a {@link ButtonClickEvent ButtonClickEvent}.
+     * <p>Note that link buttons never send a {@link ButtonInteractionEvent ButtonInteractionEvent}.
      * These buttons only open a link for the user.
      *
      * @param  url

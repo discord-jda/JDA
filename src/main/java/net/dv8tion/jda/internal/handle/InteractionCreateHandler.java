@@ -17,12 +17,12 @@
 package net.dv8tion.jda.internal.handle;
 
 import net.dv8tion.jda.api.events.interaction.GenericInteractionCreateEvent;
-import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteEvent;
-import net.dv8tion.jda.api.events.interaction.command.MessageContextEvent;
-import net.dv8tion.jda.api.events.interaction.command.SlashCommandEvent;
-import net.dv8tion.jda.api.events.interaction.command.UserContextEvent;
-import net.dv8tion.jda.api.events.interaction.component.ButtonClickEvent;
-import net.dv8tion.jda.api.events.interaction.component.SelectMenuEvent;
+import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.component.SelectMenuInteractionEvent;
 import net.dv8tion.jda.api.interactions.InteractionType;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.components.Component;
@@ -70,7 +70,7 @@ public class InteractionCreateHandler extends SocketHandler
                 break;
             case COMMAND_AUTOCOMPLETE:
                 api.handleEvent(
-                    new CommandAutoCompleteEvent(api, responseNumber,
+                    new CommandAutoCompleteInteractionEvent(api, responseNumber,
                         new AutoCompleteCommandInteractionImpl(api, content)));
                 break;
             default:
@@ -88,17 +88,17 @@ public class InteractionCreateHandler extends SocketHandler
         {
         case SLASH:
             api.handleEvent(
-                new SlashCommandEvent(api, responseNumber,
+                new SlashCommandInteractionEvent(api, responseNumber,
                     new SlashCommandInteractionImpl(api, content)));
             break;
         case MESSAGE:
             api.handleEvent(
-                new MessageContextEvent(api, responseNumber,
+                new MessageContextInteractionEvent(api, responseNumber,
                     new MessageContextInteractionImpl(api, content)));
             break;
         case USER:
             api.handleEvent(
-                new UserContextEvent(api, responseNumber,
+                new UserContextInteractionEvent(api, responseNumber,
                     new UserContextInteractionImpl(api, content)));
             break;
         }
@@ -110,12 +110,12 @@ public class InteractionCreateHandler extends SocketHandler
         {
         case BUTTON:
             api.handleEvent(
-                new ButtonClickEvent(api, responseNumber,
+                new ButtonInteractionEvent(api, responseNumber,
                     new ButtonInteractionImpl(api, content)));
             break;
         case SELECT_MENU:
             api.handleEvent(
-                new SelectMenuEvent(api, responseNumber,
+                new SelectMenuInteractionEvent(api, responseNumber,
                     new SelectMenuInteractionImpl(api, content)));
             break;
         }

@@ -42,9 +42,9 @@ import net.dv8tion.jda.api.events.http.HttpRequestEvent;
 import net.dv8tion.jda.api.events.interaction.GenericAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.GenericInteractionCreateEvent;
 import net.dv8tion.jda.api.events.interaction.command.*;
-import net.dv8tion.jda.api.events.interaction.component.ButtonClickEvent;
+import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
-import net.dv8tion.jda.api.events.interaction.component.SelectMenuEvent;
+import net.dv8tion.jda.api.events.interaction.component.SelectMenuInteractionEvent;
 import net.dv8tion.jda.api.events.message.*;
 import net.dv8tion.jda.api.events.message.react.*;
 import net.dv8tion.jda.api.events.role.GenericRoleEvent;
@@ -122,12 +122,12 @@ public abstract class ListenerAdapter implements EventListener
     public void onException(@Nonnull ExceptionEvent event) {}
 
     //Interaction Events
-    public void onSlashCommand(@Nonnull SlashCommandEvent event) {}
-    public void onUserContext(@Nonnull UserContextEvent event) {}
-    public void onMessageContext(@Nonnull MessageContextEvent event) {}
-    public void onButtonClick(@Nonnull ButtonClickEvent event) {}
-    public void onSelectMenu(@Nonnull SelectMenuEvent event) {}
-    public void onCommandAutoComplete(@Nonnull CommandAutoCompleteEvent event) {}
+    public void onSlashCommandInteraction(@Nonnull SlashCommandInteractionEvent event) {}
+    public void onUserContextInteraction(@Nonnull UserContextInteractionEvent event) {}
+    public void onMessageContextInteraction(@Nonnull MessageContextInteractionEvent event) {}
+    public void onButtonInteraction(@Nonnull ButtonInteractionEvent event) {}
+    public void onSelectMenuInteraction(@Nonnull SelectMenuInteractionEvent event) {}
+    public void onCommandAutoCompleteInteraction(@Nonnull CommandAutoCompleteInteractionEvent event) {}
 
     //User Events
     public void onUserUpdateName(@Nonnull UserUpdateNameEvent event) {}
@@ -296,7 +296,7 @@ public abstract class ListenerAdapter implements EventListener
     public void onGenericInteractionCreate(@Nonnull GenericInteractionCreateEvent event) {}
     public void onGenericAutoCompleteInteraction(@Nonnull GenericAutoCompleteInteractionEvent event) {}
     public void onGenericComponentInteractionCreate(@Nonnull GenericComponentInteractionCreateEvent event) {}
-    public void onGenericCommand(@Nonnull GenericCommandEvent event) {}
+    public void onGenericCommandInteraction(@Nonnull GenericCommandInteractionEvent event) {}
     public void onGenericMessage(@Nonnull GenericMessageEvent event) {}
     public void onGenericMessageReaction(@Nonnull GenericMessageReactionEvent event) {}
     public void onGenericUser(@Nonnull GenericUserEvent event) {}

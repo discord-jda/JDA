@@ -41,11 +41,11 @@ import java.util.List;
  * @see CommandAutoCompleteInteraction
  * @see IAutoCompleteCallback
  */
-public class CommandAutoCompleteEvent extends GenericInteractionCreateEvent implements CommandAutoCompleteInteraction, GenericAutoCompleteInteractionEvent
+public class CommandAutoCompleteInteractionEvent extends GenericInteractionCreateEvent implements CommandAutoCompleteInteraction, GenericAutoCompleteInteractionEvent
 {
     private final CommandAutoCompleteInteraction interaction;
 
-    public CommandAutoCompleteEvent(@Nonnull JDA api, long responseNumber, @Nonnull CommandAutoCompleteInteraction interaction)
+    public CommandAutoCompleteInteractionEvent(@Nonnull JDA api, long responseNumber, @Nonnull CommandAutoCompleteInteraction interaction)
     {
         super(api, responseNumber, interaction);
         this.interaction = interaction;

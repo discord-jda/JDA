@@ -32,9 +32,9 @@ import java.util.List;
 /**
  * Indicates that a {@link CommandInteraction} was used.
  */
-public class GenericCommandEvent extends GenericInteractionCreateEvent implements CommandInteraction
+public class GenericCommandInteractionEvent extends GenericInteractionCreateEvent implements CommandInteraction
 {
-    public GenericCommandEvent(@Nonnull JDA api, long responseNumber, @Nonnull CommandInteraction interaction)
+    public GenericCommandInteractionEvent(@Nonnull JDA api, long responseNumber, @Nonnull CommandInteraction interaction)
     {
         super(api, responseNumber, interaction);
     }

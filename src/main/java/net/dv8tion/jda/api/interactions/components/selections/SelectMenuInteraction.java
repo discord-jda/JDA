@@ -17,7 +17,7 @@
 package net.dv8tion.jda.api.interactions.components.selections;
 
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.events.interaction.component.SelectMenuEvent;
+import net.dv8tion.jda.api.events.interaction.component.SelectMenuInteractionEvent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.ComponentInteraction;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
 /**
  * Component Interaction for a {@link SelectMenu}.
  *
- * @see SelectMenuEvent
+ * @see SelectMenuInteractionEvent
  */
 public interface SelectMenuInteraction extends ComponentInteraction
 {

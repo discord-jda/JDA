@@ -20,8 +20,8 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.events.interaction.command.SlashCommandEvent;
-import net.dv8tion.jda.api.events.interaction.component.ButtonClickEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
@@ -77,7 +77,7 @@ public class SlashBotExample extends ListenerAdapter
 
 
     @Override
-    public void onSlashCommand(SlashCommandEvent event)
+    public void onSlashCommandInteraction(SlashCommandInteractionEvent event)
     {
         // Only accept commands from guilds
         if (event.getGuild() == null)
@@ -104,7 +104,7 @@ public class SlashBotExample extends ListenerAdapter
     }
 
     @Override
-    public void onButtonClick(ButtonClickEvent event)
+    public void onButtonInteraction(ButtonInteractionEvent event)
     {
         String[] id = event.getComponentId().split(":"); // this is the custom id we specified in our button
         String authorId = id[0];
@@ -129,7 +129,7 @@ public class SlashBotExample extends ListenerAdapter
         }
     }
 
-    public void ban(SlashCommandEvent event, User user, Member member)
+    public void ban(SlashCommandInteractionEvent event, User user, Member member)
     {
         event.deferReply(true).queue(); // Let the user know we received the command before doing anything else
         InteractionHook hook = event.getHook(); // This is a special webhook that allows you to send messages without having permissions in the channel and also allows ephemeral messages
@@ -163,12 +163,12 @@ public class SlashBotExample extends ListenerAdapter
             .queue();
     }
 
-    public void say(SlashCommandEvent event, String content)
+    public void say(SlashCommandInteractionEvent event, String content)
     {
         event.reply(content).queue(); // This requires no permissions!
     }
 
-    public void leave(SlashCommandEvent event)
+    public void leave(SlashCommandInteractionEvent event)
     {
         if (!event.getMember().hasPermission(Permission.KICK_MEMBERS))
             event.reply("You do not have permissions to kick me.").setEphemeral(true).queue();
@@ -178,7 +178,7 @@ public class SlashBotExample extends ListenerAdapter
                  .queue();
     }
 
-    public void prune(SlashCommandEvent event)
+    public void prune(SlashCommandInteractionEvent event)
     {
         OptionMapping amountOption = event.getOption("amount"); // This is configured to be optional so check for null
         int amount = amountOption == null
@@ -188,7 +188,7 @@ public class SlashBotExample extends ListenerAdapter
         event.reply("This will delete " + amount + " messages.\nAre you sure?") // prompt the user with a button menu
             .addActionRow(// this means "<style>(<id>, <label>)", you can encode anything you want in the id (up to 100 characters)
                 Button.secondary(userId + ":delete", "Nevermind!"),
-                Button.danger(userId + ":prune:" + amount, "Yes!")) // the first parameter is the component id we use in onButtonClick above
+                Button.danger(userId + ":prune:" + amount, "Yes!")) // the first parameter is the component id we use in onButtonInteraction above
             .queue();
     }
 }
