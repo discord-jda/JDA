@@ -16,10 +16,6 @@
 package net.dv8tion.jda.api.hooks;
 
 import net.dv8tion.jda.api.events.*;
-import net.dv8tion.jda.api.events.application.ApplicationCommandCreateEvent;
-import net.dv8tion.jda.api.events.application.ApplicationCommandDeleteEvent;
-import net.dv8tion.jda.api.events.application.ApplicationCommandUpdateEvent;
-import net.dv8tion.jda.api.events.application.GenericApplicationCommandEvent;
 import net.dv8tion.jda.api.events.channel.ChannelCreateEvent;
 import net.dv8tion.jda.api.events.channel.ChannelDeleteEvent;
 import net.dv8tion.jda.api.events.channel.GenericChannelEvent;
@@ -132,11 +128,6 @@ public abstract class ListenerAdapter implements EventListener
     public void onButtonClick(@Nonnull ButtonClickEvent event) {}
     public void onSelectionMenu(@Nonnull SelectionMenuEvent event) {}
     public void onCommandAutoComplete(@Nonnull CommandAutoCompleteEvent event) {}
-
-    //Application Events
-    public void onApplicationCommandUpdate(@Nonnull ApplicationCommandUpdateEvent event) {}
-    public void onApplicationCommandDelete(@Nonnull ApplicationCommandDeleteEvent event) {}
-    public void onApplicationCommandCreate(@Nonnull ApplicationCommandCreateEvent event) {}
 
     //User Events
     public void onUserUpdateName(@Nonnull UserUpdateNameEvent event) {}
@@ -302,7 +293,6 @@ public abstract class ListenerAdapter implements EventListener
     public void onHttpRequest(@Nonnull HttpRequestEvent event) {}
 
     //Generic Events
-    public void onGenericApplicationCommand(@Nonnull GenericApplicationCommandEvent event) {}
     public void onGenericInteractionCreate(@Nonnull GenericInteractionCreateEvent event) {}
     public void onGenericAutoCompleteInteraction(@Nonnull GenericAutoCompleteInteractionEvent event) {}
     public void onGenericComponentInteractionCreate(@Nonnull GenericComponentInteractionCreateEvent event) {}
