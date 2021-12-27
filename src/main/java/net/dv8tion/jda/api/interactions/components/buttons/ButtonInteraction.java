@@ -17,7 +17,7 @@
 package net.dv8tion.jda.api.interactions.components.buttons;
 
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.events.interaction.component.ButtonClickEvent;
+import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.ComponentInteraction;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
@@ -33,7 +33,7 @@ import java.util.List;
 /**
  * Interaction on a {@link Button} component.
  *
- * @see ButtonClickEvent
+ * @see ButtonInteractionEvent
  */
 public interface ButtonInteraction extends ComponentInteraction
 {

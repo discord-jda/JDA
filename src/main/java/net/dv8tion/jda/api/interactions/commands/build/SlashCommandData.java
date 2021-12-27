@@ -16,7 +16,7 @@
 
 package net.dv8tion.jda.api.interactions.commands.build;
 
-import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteEvent;
+import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.utils.data.DataArray;
@@ -111,7 +111,7 @@ public interface SlashCommandData extends CommandData
      * @param  required
      *         Whether this option is required (See {@link OptionData#setRequired(boolean)})
      * @param  autoComplete
-     *         Whether this option supports auto-complete via {@link CommandAutoCompleteEvent},
+     *         Whether this option supports auto-complete via {@link CommandAutoCompleteInteractionEvent},
      *         only supported for option types which {@link OptionType#canSupportChoices() support choices}
      *
      * @throws IllegalArgumentException

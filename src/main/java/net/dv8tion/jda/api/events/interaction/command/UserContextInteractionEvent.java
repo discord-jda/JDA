@@ -17,25 +17,29 @@
 package net.dv8tion.jda.api.events.interaction.command;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.MessageChannel;
-import net.dv8tion.jda.api.interactions.commands.SlashCommandInteraction;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback;
+import net.dv8tion.jda.api.interactions.commands.context.UserContextInteraction;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
- * Indicates that a slash command was used in a {@link MessageChannel}.
+ * Indicates that a user context command was used.
  *
  * <h2>Requirements</h2>
  * To receive these events, you must unset the <b>Interactions Endpoint URL</b> in your application dashboard.
  * You can simply remove the URL for this endpoint in your settings at the <a href="https://discord.com/developers/applications" target="_blank">Discord Developers Portal</a>.
  *
- * @see SlashCommandInteraction
+ * @see UserContextInteraction
+ * @see IReplyCallback
  */
-public class SlashCommandEvent extends GenericCommandEvent implements SlashCommandInteraction
+public class UserContextInteractionEvent extends GenericCommandInteractionEvent implements UserContextInteraction
 {
-    private final SlashCommandInteraction interaction;
+    private final UserContextInteraction interaction;
 
-    public SlashCommandEvent(@Nonnull JDA api, long responseNumber, @Nonnull SlashCommandInteraction interaction)
+    public UserContextInteractionEvent(@Nonnull JDA api, long responseNumber, @Nonnull UserContextInteraction interaction)
     {
         super(api, responseNumber, interaction);
         this.interaction = interaction;
@@ -43,8 +47,15 @@ public class SlashCommandEvent extends GenericCommandEvent implements SlashComma
 
     @Nonnull
     @Override
-    public MessageChannel getChannel()
+    public User getTarget()
     {
-        return interaction.getChannel();
+        return interaction.getTarget();
+    }
+
+    @Nullable
+    @Override
+    public Member getTargetMember()
+    {
+        return interaction.getTargetMember();
     }
 }

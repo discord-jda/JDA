@@ -34,11 +34,11 @@ import java.util.stream.Collectors;
  * One select menu fills up an entire action row by itself. You cannot have an action row with other components if a select menu is present in the same row.
  *
  * <p>The selections a user makes are only visible within their current client session.
- * Other users cannot see the choices selected and they will disappear when the client restarts or the message is reloaded.
+ * Other users cannot see the choices selected, and they will disappear when the client restarts or the message is reloaded.
  *
  * <h2>Examples</h2>
  * <pre>{@code
- * public void onSlashCommand(SlashCommandEvent event) {
+ * public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {
  *   if (!event.getName().equals("class")) return;
  *
  *   SelectMenu menu = SelectMenu.create("menu:class")

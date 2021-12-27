@@ -17,7 +17,7 @@
 package net.dv8tion.jda.api.interactions.commands.build;
 
 import net.dv8tion.jda.api.entities.ChannelType;
-import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteEvent;
+import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.utils.data.DataArray;
@@ -215,7 +215,7 @@ public class OptionData implements SerializableData
 
     /**
      * Whether this option supports auto-complete interactions
-     * via {@link CommandAutoCompleteEvent}.
+     * via {@link CommandAutoCompleteInteractionEvent}.
      *
      * @return True, if this option supports auto-complete
      */
@@ -349,7 +349,7 @@ public class OptionData implements SerializableData
 
     /**
      * Configure whether this option should support auto-complete interactions
-     * via {@link CommandAutoCompleteEvent}.
+     * via {@link CommandAutoCompleteInteractionEvent}.
      *
      * <p>This is only supported for options which support choices. See {@link OptionType#canSupportChoices()}.
      *

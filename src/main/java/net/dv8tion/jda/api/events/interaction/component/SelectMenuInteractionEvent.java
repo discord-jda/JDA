@@ -14,48 +14,52 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.events.interaction.command;
+package net.dv8tion.jda.api.events.interaction.component;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback;
-import net.dv8tion.jda.api.interactions.commands.context.UserContextInteraction;
+import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;
+import net.dv8tion.jda.api.interactions.components.selections.SelectMenuInteraction;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import java.util.List;
 
 /**
- * Indicates that a user context command was used.
+ * Indicates that a custom {@link SelectMenu} on one of the bots messages was used by a user.
+ *
+ * <p>This fires when a user selects the options on one of the custom select menus attached to a bot or webhook message.
  *
  * <h2>Requirements</h2>
  * To receive these events, you must unset the <b>Interactions Endpoint URL</b> in your application dashboard.
  * You can simply remove the URL for this endpoint in your settings at the <a href="https://discord.com/developers/applications" target="_blank">Discord Developers Portal</a>.
- *
- * @see UserContextInteraction
- * @see IReplyCallback
  */
-public class UserContextEvent extends GenericCommandEvent implements UserContextInteraction
+public class SelectMenuInteractionEvent extends GenericComponentInteractionCreateEvent implements SelectMenuInteraction
 {
-    private final UserContextInteraction interaction;
+    private final SelectMenuInteraction menuInteraction;
 
-    public UserContextEvent(@Nonnull JDA api, long responseNumber, @Nonnull UserContextInteraction interaction)
+    public SelectMenuInteractionEvent(@Nonnull JDA api, long responseNumber, @Nonnull SelectMenuInteraction interaction)
     {
         super(api, responseNumber, interaction);
-        this.interaction = interaction;
+        this.menuInteraction = interaction;
     }
 
     @Nonnull
     @Override
-    public User getTarget()
+    public SelectMenuInteraction getInteraction()
     {
-        return interaction.getTarget();
+        return menuInteraction;
     }
 
-    @Nullable
+    @Nonnull
     @Override
-    public Member getTargetMember()
+    public SelectMenu getComponent()
     {
-        return interaction.getTargetMember();
+        return menuInteraction.getComponent();
+    }
+
+    @Nonnull
+    @Override
+    public List<String> getValues()
+    {
+        return menuInteraction.getValues();
     }
 }
