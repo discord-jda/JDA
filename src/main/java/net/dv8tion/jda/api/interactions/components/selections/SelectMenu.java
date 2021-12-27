@@ -180,7 +180,7 @@ public interface SelectMenu extends ActionComponent
      * @throws IllegalArgumentException
      *         If some part of the data has an invalid length or null is provided
      *
-     * @return The parsed SelectionMenu Builder instance
+     * @return The parsed SelectMenu Builder instance
      */
     @Nonnull
     @CheckReturnValue
