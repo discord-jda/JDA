@@ -374,8 +374,9 @@ public enum AuditLogKey
     /**
      * Change of the {@link net.dv8tion.jda.api.entities.Member#getTimeOutEnd() Time out} of a Member.
      * <br>Indicating that the {@link net.dv8tion.jda.api.entities.Member#getTimeOutEnd() Member.getTimeOutEnd()} value updated.
+     * <br>This is provided as an ISO8601 Date-Time string.
      *
-     * <p>Expected type: <b>OffsetDateTime</b>
+     * <p>Expected type: <b>String</b>
      */
     MEMBER_TIME_OUT("communication_disabled_until"),
 
