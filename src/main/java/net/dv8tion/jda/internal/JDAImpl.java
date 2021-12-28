@@ -125,7 +125,7 @@ public class JDAImpl implements JDA
     protected WebSocketClient client;
     protected Requester requester;
     protected IAudioSendFactory audioSendFactory = new DefaultSendFactory();
-    protected Status status = Status.INITIALIZING;
+    protected volatile Status status = Status.INITIALIZING;
     protected SelfUser selfUser;
     protected ShardInfo shardInfo;
     protected long responseTotal;
