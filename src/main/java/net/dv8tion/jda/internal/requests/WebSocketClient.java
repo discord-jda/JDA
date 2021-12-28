@@ -146,6 +146,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             this.api.setStatus(JDA.Status.SHUTDOWN);
             this.api.handleEvent(
                 new ShutdownEvent(api, OffsetDateTime.now(), 1006));
+            shutdownFinished = true;
             if (e instanceof RuntimeException)
                 throw (RuntimeException) e;
             else
@@ -581,6 +582,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             LOG.error("Reconnect queue rejected session. Shutting down...");
             this.api.setStatus(JDA.Status.SHUTDOWN);
             this.api.handleEvent(new ShutdownEvent(api, OffsetDateTime.now(), 1006));
+            shutdownFinished = true;
         }
     }
 
@@ -614,6 +616,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         {
             api.setStatus(JDA.Status.SHUTDOWN);
             api.handleEvent(new ShutdownEvent(api, OffsetDateTime.now(), 1000));
+            shutdownFinished = true;
             return;
         }
         String message = "";
@@ -642,6 +645,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 // JDA has already been shutdown so we can stop here
                 api.setStatus(JDA.Status.SHUTDOWN);
                 api.handleEvent(new ShutdownEvent(api, OffsetDateTime.now(), 1000));
+                shutdownFinished = true;
                 return;
             }
             catch (RuntimeException ex)
