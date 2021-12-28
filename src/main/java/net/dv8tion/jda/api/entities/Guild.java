@@ -4961,6 +4961,7 @@ public interface Guild extends ISnowflake
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      */
     @Nonnull
+    @CheckReturnValue
     AuditableRestAction<Void> removeTimeoutById(@Nonnull String userId);
 
     /**
