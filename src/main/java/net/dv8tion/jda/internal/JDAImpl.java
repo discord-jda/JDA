@@ -760,7 +760,7 @@ public class JDAImpl implements JDA
         WebSocketClient client = getClient();
         if (client != null)
         {
-            while (!client.isShutdownFinished())
+            while (!client.isShutdownEventFired())
             {
                 Thread.sleep(50);
             }
