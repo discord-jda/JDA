@@ -4510,7 +4510,7 @@ public interface Guild extends ISnowflake
 
     /**
      * Puts the specified Member in time out in this {@link net.dv8tion.jda.api.entities.Guild Guild} for a specific amount of time.
-     * <br>While a Member is in time out, they cannot reply, send messages, react and speak in voice channels.
+     * <br>While a Member is in time out, they cannot send messages, reply, react, or speak in voice channels.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
      * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
@@ -4924,7 +4924,7 @@ public interface Guild extends ISnowflake
         Checks.notNull(member, "Member");
         if (!getSelfMember().canInteract(member))
             throw new HierarchyException("Can't modify a member with higher or equal highest role than yourself!");
-        return removeTimeoutById(member.getUser().getId());
+        return removeTimeoutById(member.getId());
     }
 
     /**
