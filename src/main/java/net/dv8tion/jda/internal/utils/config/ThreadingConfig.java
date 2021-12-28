@@ -131,6 +131,31 @@ public class ThreadingConfig
         if (shutdownAudioPool && audioPool != null)
             audioPool.shutdownNow();
     }
+    
+    public void awaitTermination() throws InterruptedException
+    {
+        // wait "forever"
+        // common pool needs special handling, this is not foolproof but best we can do
+        if (callbackPool == ForkJoinPool.commonPool())
+        {
+            ForkJoinPool forkJoinPool = (ForkJoinPool) callbackPool;
+            forkJoinPool.awaitQuiescence(Long.MAX_VALUE, TimeUnit.MILLISECONDS);
+        }
+        else
+        {
+            callbackPool.awaitTermination(Long.MAX_VALUE, TimeUnit.MILLISECONDS);
+        }
+        gatewayPool.awaitTermination(Long.MAX_VALUE, TimeUnit.MILLISECONDS);
+        rateLimitPool.awaitTermination(Long.MAX_VALUE, TimeUnit.MILLISECONDS);
+        if (eventPool != null)
+        {
+            eventPool.awaitTermination(Long.MAX_VALUE, TimeUnit.MILLISECONDS);
+        }
+        if (audioPool != null)
+        {
+            audioPool.awaitTermination(Long.MAX_VALUE, TimeUnit.MILLISECONDS);
+        }
+    }
 
     @Nonnull
     public ScheduledExecutorService getRateLimitPool()

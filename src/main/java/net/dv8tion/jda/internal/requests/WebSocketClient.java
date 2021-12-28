@@ -112,6 +112,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     protected final AtomicInteger messagesSent = new AtomicInteger(0);
 
     protected volatile boolean shutdown = false;
+    protected volatile boolean shutdownFinished = false;
     protected boolean shouldReconnect;
     protected boolean handleIdentifyRateLimit = false;
     protected boolean connected = false;
@@ -333,6 +334,11 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             api.getSessionController().removeSession(connectNode);
         close(1000, "Shutting down");
     }
+    
+    public boolean isShutdownFinished()
+    {
+        return shutdownFinished;
+    }
 
     /*
         ### Start Internal methods ###
@@ -499,6 +505,9 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 decompressor.shutdown();
             api.shutdownInternals();
             api.handleEvent(new ShutdownEvent(api, OffsetDateTime.now(), rawCloseCode));
+            // assuming the event has fired by this point or is now out of our hands
+            // set flag indicating websocket has died
+            shutdownFinished = true;
         }
         else
         {

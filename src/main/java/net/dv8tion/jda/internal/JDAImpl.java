@@ -119,8 +119,6 @@ public class JDAImpl implements JDA
     protected final ThreadingConfig threadConfig;
     protected final SessionConfig sessionConfig;
     protected final MetaConfig metaConfig;
-    
-    protected final Object statusLock = new Object();
 
     protected WebSocketClient client;
     protected Requester requester;
@@ -348,13 +346,11 @@ public class JDAImpl implements JDA
 
     public void setStatus(Status status)
     {
-        synchronized (statusLock)
+        synchronized (Status.class) // only for use as a mutex, status is volatile and no counterpart is needed
         {
             Status oldStatus = this.status;
             this.status = status;
-
             handleEvent(new StatusChangeEvent(this, status, oldStatus));
-            statusLock.notifyAll(); // notify threads awaiting status change for shutdown
         }
     }
 
@@ -430,9 +426,7 @@ public class JDAImpl implements JDA
     @Override
     public Status getStatus()
     {
-        synchronized (statusLock) {
-            return status;
-        }
+        return status;
     }
 
     @Nonnull
@@ -760,13 +754,15 @@ public class JDAImpl implements JDA
     }
     
     @Override
-    public synchronized void awaitShutdown() throws InterruptedException
+    public void awaitShutdown() throws InterruptedException
     {
-        synchronized (statusLock)
+        threadConfig.awaitTermination();
+        WebSocketClient client = getClient();
+        if (client != null)
         {
-            while (status != Status.SHUTDOWN)
+            while (!client.isShutdownFinished())
             {
-                statusLock.wait();
+                Thread.sleep(50);
             }
         }
     }
