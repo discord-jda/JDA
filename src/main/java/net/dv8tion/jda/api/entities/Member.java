@@ -584,9 +584,6 @@ public interface Member extends IMentionable, IPermissionHolder
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MODERATE_MEMBERS} permission.
-     * @throws net.dv8tion.jda.api.exceptions.HierarchyException
-     *         If the logged in account cannot put a timeout on the other Member due to permission hierarchy position.
-     *         <br>See {@link Member#canInteract(Member)}
      * @throws IllegalArgumentException
      *         If any of the following checks are true
      *         <ul>
@@ -623,9 +620,6 @@ public interface Member extends IMentionable, IPermissionHolder
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MODERATE_MEMBERS} permission.
-     * @throws net.dv8tion.jda.api.exceptions.HierarchyException
-     *         If the logged in account cannot put a timeout on the other Member due to permission hierarchy position.
-     *         <br>See {@link Member#canInteract(Member)}
      * @throws IllegalArgumentException
      *         If any of the following checks are true
      *         <ul>
@@ -662,9 +656,6 @@ public interface Member extends IMentionable, IPermissionHolder
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MODERATE_MEMBERS} permission.
-     * @throws net.dv8tion.jda.api.exceptions.HierarchyException
-     *         If the logged in account cannot put a timeout on the other Member due to permission hierarchy position.
-     *         <br>See {@link Member#canInteract(Member)}
      * @throws IllegalArgumentException
      *         If any of the following checks are true
      *         <ul>
@@ -696,9 +687,6 @@ public interface Member extends IMentionable, IPermissionHolder
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MODERATE_MEMBERS} permission.
-     * @throws net.dv8tion.jda.api.exceptions.HierarchyException
-     *         If the logged in account cannot remove the timeout from the other Member due to permission hierarchy position.
-     *         <br>See {@link Member#canInteract(Member)}
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      */
