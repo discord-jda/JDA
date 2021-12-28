@@ -4800,7 +4800,7 @@ public interface Guild extends ISnowflake
     default AuditableRestAction<Void> timeoutForById(@Nonnull String userId, @Nonnull Duration duration)
     {
         Checks.notNull(duration, "Duration");
-        Checks.check(!(duration.isNegative() && duration.isZero()), "Duration may not be negative or zero");
+        Checks.check(!(duration.isNegative() || duration.isZero()), "Duration may not be negative or zero");
         return timeoutUntilById(userId, Helpers.toOffset(System.currentTimeMillis() + duration.toMillis()));
     }
 
