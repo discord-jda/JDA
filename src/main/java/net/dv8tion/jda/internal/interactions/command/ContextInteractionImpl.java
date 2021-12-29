@@ -16,7 +16,7 @@
 
 package net.dv8tion.jda.internal.interactions.command;
 
-import net.dv8tion.jda.api.interactions.commands.CommandPayload;
+import net.dv8tion.jda.api.interactions.commands.CommandInteractionPayload;
 import net.dv8tion.jda.api.interactions.commands.context.ContextInteraction;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
@@ -24,20 +24,20 @@ import net.dv8tion.jda.internal.JDAImpl;
 import javax.annotation.Nonnull;
 import java.util.function.Function;
 
-public abstract class ContextInteractionImpl<T> extends CommandInteractionImpl implements ContextInteraction<T>, CommandPayloadMixin
+public abstract class ContextInteractionImpl<T> extends CommandInteractionImpl implements ContextInteraction<T>, CommandInteractionPayloadMixin
 {
     private final T target;
-    private final CommandPayloadImpl payload;
+    private final CommandInteractionPayloadImpl payload;
 
     public ContextInteractionImpl(JDAImpl jda, DataObject data, Function<DataObject, T> entityParser)
     {
         super(jda, data);
-        this.payload = new CommandPayloadImpl(jda, data);
+        this.payload = new CommandInteractionPayloadImpl(jda, data);
         this.target = entityParser.apply(data.getObject("data").getObject("resolved"));
     }
 
     @Override
-    public CommandPayload getCommandPayload()
+    public CommandInteractionPayload getCommandPayload()
     {
         return payload;
     }

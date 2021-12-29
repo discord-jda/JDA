@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
  * Interactions which provide command data.
  * <br>This is an abstraction for {@link CommandAutoCompleteInteraction} and {@link CommandInteraction}.
  */
-public interface CommandPayload extends Interaction // TODO: Consider naming
+public interface CommandInteractionPayload extends Interaction
 {
     /**
      * The {@link Command.Type Type} of command this interaction is for.
@@ -194,6 +194,9 @@ public interface CommandPayload extends Interaction // TODO: Consider naming
      * The options provided by the user when this command was executed.
      * <br>Each option has a name and value.
      *
+     * <p>For {@link CommandAutoCompleteInteraction}, this might be incomplete and unvalidated.
+     * Auto-complete interactions happen on incomplete command inputs and are not validated.
+     *
      * @return The options passed for this command
      */
     @Nonnull
@@ -201,6 +204,9 @@ public interface CommandPayload extends Interaction // TODO: Consider naming
 
     /**
      * Gets all options for the specified name.
+     *
+     * <p>For {@link CommandAutoCompleteInteraction}, this might be incomplete and unvalidated.
+     * Auto-complete interactions happen on incomplete command inputs and are not validated.
      *
      * @param  name
      *         The option name
@@ -224,6 +230,9 @@ public interface CommandPayload extends Interaction // TODO: Consider naming
     /**
      * Gets all options for the specified type.
      *
+     * <p>For {@link CommandAutoCompleteInteraction}, this might be incomplete and unvalidated.
+     * Auto-complete interactions happen on incomplete command inputs and are not validated.
+     *
      * @param  type
      *         The option type
      *
@@ -243,6 +252,9 @@ public interface CommandPayload extends Interaction // TODO: Consider naming
 
     /**
      * Finds the first option with the specified name.
+     *
+     * <p>For {@link CommandAutoCompleteInteraction}, this might be incomplete and unvalidated.
+     * Auto-complete interactions happen on incomplete command inputs and are not validated.
      *
      * @param  name
      *         The option name

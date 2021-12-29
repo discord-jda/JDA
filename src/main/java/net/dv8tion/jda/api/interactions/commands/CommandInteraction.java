@@ -28,6 +28,6 @@ import net.dv8tion.jda.api.interactions.commands.context.ContextInteraction;
  * @see ContextInteraction
  * @see SlashCommandInteraction
  */
-public interface CommandInteraction extends Interaction, IReplyCallback, CommandPayload
+public interface CommandInteraction extends Interaction, IReplyCallback, CommandInteractionPayload
 {
 }

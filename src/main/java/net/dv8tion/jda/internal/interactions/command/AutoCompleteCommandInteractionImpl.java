@@ -27,15 +27,15 @@ import net.dv8tion.jda.internal.requests.restaction.interactions.AutoCompleteCal
 import javax.annotation.Nonnull;
 import java.util.Collection;
 
-public class AutoCompleteCommandInteractionImpl extends InteractionImpl implements CommandPayloadMixin, CommandAutoCompleteInteraction
+public class AutoCompleteCommandInteractionImpl extends InteractionImpl implements CommandInteractionPayloadMixin, CommandAutoCompleteInteraction
 {
-    private final CommandPayload payload;
+    private final CommandInteractionPayload payload;
     private OptionMapping focused;
 
     public AutoCompleteCommandInteractionImpl(JDAImpl jda, DataObject data)
     {
         super(jda, data);
-        this.payload = new CommandPayloadImpl(jda, data);
+        this.payload = new CommandInteractionPayloadImpl(jda, data);
 
         DataArray options = data.getObject("data").getArray("options");
         findFocused(options);
@@ -73,7 +73,7 @@ public class AutoCompleteCommandInteractionImpl extends InteractionImpl implemen
     }
 
     @Override
-    public CommandPayload getCommandPayload()
+    public CommandInteractionPayload getCommandPayload()
     {
         return payload;
     }

@@ -33,7 +33,7 @@ import javax.annotation.Nonnull;
  * @see #getFocusedOption()
  * @see OptionData#setAutoComplete(boolean)
  */
-public interface CommandAutoCompleteInteraction extends Interaction, IAutoCompleteCallback, CommandPayload
+public interface CommandAutoCompleteInteraction extends Interaction, IAutoCompleteCallback, CommandInteractionPayload
 {
     /**
      * The focused option which the user is typing.
