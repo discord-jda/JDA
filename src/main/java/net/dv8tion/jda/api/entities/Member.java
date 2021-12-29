@@ -55,6 +55,8 @@ public interface Member extends IMentionable, IPermissionHolder
 {
     /** Template for {@link #getAvatarUrl()}. */
     String AVATAR_URL = "https://cdn.discordapp.com/guilds/%s/users/%s/avatars/%s.%s";
+    /** Maximum time out length a Member can be put into in days. */
+    int MAX_TIME_OUT_LENGTH = 28;
 
     /**
      * The user wrapped by this Entity.
@@ -589,7 +591,7 @@ public interface Member extends IMentionable, IPermissionHolder
      *         <ul>
      *             <li>The provided {@code amount} is lower than or equal to {@code 0}</li>
      *             <li>The provided {@code unit} is null</li>
-     *             <li>The provided {@code amount} with the {@code unit} results in a date that is more than 28 days in the future</li>
+     *             <li>The provided {@code amount} with the {@code unit} results in a date that is more than {@value MAX_TIME_OUT_LENGTH} days in the future</li>
      *         </ul>
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
@@ -625,7 +627,7 @@ public interface Member extends IMentionable, IPermissionHolder
      *         <ul>
      *             <li>The provided {@code duration} is null</li>
      *             <li>The provided {@code duration} is not positive</li>
-     *             <li>The provided {@code duration} results in a date that is more than 28 days in the future</li>
+     *             <li>The provided {@code duration} results in a date that is more than {@value MAX_TIME_OUT_LENGTH} days in the future</li>
      *         </ul>
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
@@ -660,7 +662,7 @@ public interface Member extends IMentionable, IPermissionHolder
      *         If any of the following checks are true
      *         <ul>
      *             <li>The provided {@code temporal} is in the past</li>
-     *             <li>The provided {@code temporal} is more than 28 days in the future</li>
+     *             <li>The provided {@code temporal} is more than {@value MAX_TIME_OUT_LENGTH} days in the future</li>
      *         </ul>
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}

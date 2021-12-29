@@ -4540,7 +4540,7 @@ public interface Guild extends ISnowflake
      *             <li>The provided {@code member} is null</li>
      *             <li>The provided {@code amount} is lower than or equal to {@code 0}</li>
      *             <li>The provided {@code unit} is null</li>
-     *             <li>The provided {@code amount} with the {@code unit} results in a date that is more than 28 days in the future</li>
+     *             <li>The provided {@code amount} with the {@code unit} results in a date that is more than {@value MAX_TIME_OUT_LENGTH} days in the future</li>
      *         </ul>
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
@@ -4583,7 +4583,7 @@ public interface Guild extends ISnowflake
      *         <ul>
      *             <li>The provided {@code member} is null</li>
      *             <li>The provided {@code duration} is null</li>
-     *             <li>The provided {@code duration} results in a date that is more than 28 days in the future</li>
+     *             <li>The provided {@code duration} results in a date that is more than {@value MAX_TIME_OUT_LENGTH} days in the future</li>
      *         </ul>
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
@@ -4625,7 +4625,7 @@ public interface Guild extends ISnowflake
      *         <ul>
      *             <li>The provided {@code member} is null</li>
      *             <li>The provided {@code temporal} is in the past</li>
-     *             <li>The provided {@code temporal} is more than 28 days in the future</li>
+     *             <li>The provided {@code temporal} is more than {@value MAX_TIME_OUT_LENGTH} days in the future</li>
      *         </ul>
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
@@ -4669,7 +4669,7 @@ public interface Guild extends ISnowflake
      *             <li>The provided {@code userId} is not a valid snowflake</li>
      *             <li>The provided {@code amount} is lower than or equal to {@code 0}</li>
      *             <li>The provided {@code unit} is null</li>
-     *             <li>The provided {@code amount} with the {@code unit} results in a date that is more than 28 days in the future</li>
+     *             <li>The provided {@code amount} with the {@code unit} results in a date that is more than {@value MAX_TIME_OUT_LENGTH} days in the future</li>
      *         </ul>
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
@@ -4710,7 +4710,7 @@ public interface Guild extends ISnowflake
      *             <li>The provided {@code userId} is not a valid snowflake</li>
      *             <li>The provided {@code amount} is lower than or equal to {@code 0}</li>
      *             <li>The provided {@code unit} is null</li>
-     *             <li>The provided {@code amount} with the {@code unit} results in a date that is more than 28 days in the future</li>
+     *             <li>The provided {@code amount} with the {@code unit} results in a date that is more than {@value MAX_TIME_OUT_LENGTH} days in the future</li>
      *         </ul>
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
@@ -4751,7 +4751,7 @@ public interface Guild extends ISnowflake
      *             <li>The provided {@code userId} is not a valid snowflake</li>
      *             <li>The provided {@code duration} is null</li>
      *             <li>The provided {@code duration} is not positive</li>
-     *             <li>The provided {@code duration} results in a date that is more than 28 days in the future</li>
+     *             <li>The provided {@code duration} results in a date that is more than {@value MAX_TIME_OUT_LENGTH} days in the future</li>
      *         </ul>
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
@@ -4790,7 +4790,7 @@ public interface Guild extends ISnowflake
      *             <li>The provided {@code userId} is not a valid snowflake</li>
      *             <li>The provided {@code duration} is null</li>
      *             <li>The provided {@code duration} is not positive</li>
-     *             <li>The provided {@code duration} results in a date that is more than 28 days in the future</li>
+     *             <li>The provided {@code duration} results in a date that is more than {@value MAX_TIME_OUT_LENGTH} days in the future</li>
      *         </ul>
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
@@ -4830,7 +4830,7 @@ public interface Guild extends ISnowflake
      *         <ul>
      *             <li>The provided {@code userId} is not a valid snowflake</li>
      *             <li>The provided {@code temporal} is in the past</li>
-     *             <li>The provided {@code temporal} is more than 28 days in the future</li>
+     *             <li>The provided {@code temporal} is more than {@value MAX_TIME_OUT_LENGTH} days in the future</li>
      *         </ul>
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
@@ -4869,7 +4869,7 @@ public interface Guild extends ISnowflake
      *             <li>The provided {@code userId} is not a valid snowflake</li>
      *             <li>The provided {@code temporal} is null</li>
      *             <li>The provided {@code temporal} is in the past</li>
-     *             <li>The provided {@code temporal} is more than 28 days in the future</li>
+     *             <li>The provided {@code temporal} is more than {@value MAX_TIME_OUT_LENGTH} days in the future</li>
      *         </ul>
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
