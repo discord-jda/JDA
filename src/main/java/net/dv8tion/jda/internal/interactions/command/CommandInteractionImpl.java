@@ -17,7 +17,7 @@
 package net.dv8tion.jda.internal.interactions.command;
 
 import net.dv8tion.jda.api.interactions.commands.CommandInteraction;
-import net.dv8tion.jda.api.interactions.commands.CommandPayload;
+import net.dv8tion.jda.api.interactions.commands.CommandInteractionPayload;
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
@@ -26,18 +26,18 @@ import net.dv8tion.jda.internal.requests.restaction.interactions.ReplyActionImpl
 
 import javax.annotation.Nonnull;
 
-public class CommandInteractionImpl extends DeferrableInteractionImpl implements CommandInteraction, CommandPayloadMixin
+public class CommandInteractionImpl extends DeferrableInteractionImpl implements CommandInteraction, CommandInteractionPayloadMixin
 {
-    private final CommandPayloadImpl payload;
+    private final CommandInteractionPayloadImpl payload;
 
     public CommandInteractionImpl(JDAImpl jda, DataObject data)
     {
         super(jda, data);
-        this.payload = new CommandPayloadImpl(jda, data);
+        this.payload = new CommandInteractionPayloadImpl(jda, data);
     }
 
     @Override
-    public CommandPayload getCommandPayload()
+    public CommandInteractionPayload getCommandPayload()
     {
         return payload;
     }

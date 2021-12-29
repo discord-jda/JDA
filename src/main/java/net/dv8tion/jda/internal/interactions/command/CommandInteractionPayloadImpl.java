@@ -21,7 +21,7 @@ import gnu.trove.map.hash.TLongObjectHashMap;
 import net.dv8tion.jda.api.entities.ISnowflake;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.interactions.commands.Command;
-import net.dv8tion.jda.api.interactions.commands.CommandPayload;
+import net.dv8tion.jda.api.interactions.commands.CommandInteractionPayload;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.utils.data.DataArray;
@@ -38,7 +38,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class CommandPayloadImpl extends InteractionImpl implements CommandPayload
+public class CommandInteractionPayloadImpl extends InteractionImpl implements CommandInteractionPayload
 {
     private final long commandId;
     private final List<OptionMapping> options = new ArrayList<>();
@@ -48,7 +48,7 @@ public class CommandPayloadImpl extends InteractionImpl implements CommandPayloa
     private String group;
     private final Command.Type type;
 
-    public CommandPayloadImpl(JDAImpl jda, DataObject data)
+    public CommandInteractionPayloadImpl(JDAImpl jda, DataObject data)
     {
         super(jda, data);
         DataObject commandData = data.getObject("data");

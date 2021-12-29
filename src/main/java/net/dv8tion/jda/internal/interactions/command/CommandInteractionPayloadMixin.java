@@ -17,16 +17,16 @@
 package net.dv8tion.jda.internal.interactions.command;
 
 import net.dv8tion.jda.api.interactions.commands.Command;
-import net.dv8tion.jda.api.interactions.commands.CommandPayload;
+import net.dv8tion.jda.api.interactions.commands.CommandInteractionPayload;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 
-public interface CommandPayloadMixin extends CommandPayload
+public interface CommandInteractionPayloadMixin extends CommandInteractionPayload
 {
-    CommandPayload getCommandPayload();
+    CommandInteractionPayload getCommandPayload();
 
     @Nonnull
     @Override
