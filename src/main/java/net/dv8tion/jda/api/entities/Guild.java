@@ -4540,7 +4540,7 @@ public interface Guild extends ISnowflake
      *             <li>The provided {@code member} is null</li>
      *             <li>The provided {@code amount} is lower than or equal to {@code 0}</li>
      *             <li>The provided {@code unit} is null</li>
-     *             <li>The provided {@code amount} with the {@code unit} results in a date that is more than {@value MAX_TIME_OUT_LENGTH} days in the future</li>
+     *             <li>The provided {@code amount} with the {@code unit} results in a date that is more than {@value Member#MAX_TIME_OUT_LENGTH} days in the future</li>
      *         </ul>
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
@@ -4556,7 +4556,8 @@ public interface Guild extends ISnowflake
 
     /**
      * Puts the specified Member in time out in this {@link net.dv8tion.jda.api.entities.Guild Guild} for a specific amount of time.
-     * <br>While a Member is in time out, they cannot reply, send messages, react and speak in voice channels.
+     * <br>While a Member is in time out, all permissions except {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL VIEW_CHANNEL} and
+     * {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY MESSAGE_HISTORY} are removed from them.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
      * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
@@ -4583,7 +4584,7 @@ public interface Guild extends ISnowflake
      *         <ul>
      *             <li>The provided {@code member} is null</li>
      *             <li>The provided {@code duration} is null</li>
-     *             <li>The provided {@code duration} results in a date that is more than {@value MAX_TIME_OUT_LENGTH} days in the future</li>
+     *             <li>The provided {@code duration} results in a date that is more than {@value Member#MAX_TIME_OUT_LENGTH} days in the future</li>
      *         </ul>
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
@@ -4598,7 +4599,8 @@ public interface Guild extends ISnowflake
 
     /**
      * Puts the specified Member in time out in this {@link net.dv8tion.jda.api.entities.Guild Guild} until the specified date.
-     * <br>While a Member is in time out, they cannot reply, send messages, react and speak in voice channels.
+     * <br>While a Member is in time out, all permissions except {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL VIEW_CHANNEL} and
+     * {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY MESSAGE_HISTORY} are removed from them.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
      * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
@@ -4625,7 +4627,7 @@ public interface Guild extends ISnowflake
      *         <ul>
      *             <li>The provided {@code member} is null</li>
      *             <li>The provided {@code temporal} is in the past</li>
-     *             <li>The provided {@code temporal} is more than {@value MAX_TIME_OUT_LENGTH} days in the future</li>
+     *             <li>The provided {@code temporal} is more than {@value Member#MAX_TIME_OUT_LENGTH} days in the future</li>
      *         </ul>
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
@@ -4642,7 +4644,8 @@ public interface Guild extends ISnowflake
 
     /**
      * Puts a Member specified by the id in time out in this {@link net.dv8tion.jda.api.entities.Guild Guild} for a specific amount of time.
-     * <br>While a Member is in time out, they cannot reply, send messages, react and speak in voice channels.
+     * <br>While a Member is in time out, all permissions except {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL VIEW_CHANNEL} and
+     * {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY MESSAGE_HISTORY} are removed from them.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
      * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
@@ -4669,7 +4672,7 @@ public interface Guild extends ISnowflake
      *             <li>The provided {@code userId} is not a valid snowflake</li>
      *             <li>The provided {@code amount} is lower than or equal to {@code 0}</li>
      *             <li>The provided {@code unit} is null</li>
-     *             <li>The provided {@code amount} with the {@code unit} results in a date that is more than {@value MAX_TIME_OUT_LENGTH} days in the future</li>
+     *             <li>The provided {@code amount} with the {@code unit} results in a date that is more than {@value Member#MAX_TIME_OUT_LENGTH} days in the future</li>
      *         </ul>
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
@@ -4683,7 +4686,8 @@ public interface Guild extends ISnowflake
 
     /**
      * Puts a Member specified by the id in time out in this {@link net.dv8tion.jda.api.entities.Guild Guild} for a specific amount of time.
-     * <br>While a Member is in time out, they cannot reply, send messages, react and speak in voice channels.
+     * <br>While a Member is in time out, all permissions except {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL VIEW_CHANNEL} and
+     * {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY MESSAGE_HISTORY} are removed from them.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
      * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
@@ -4710,7 +4714,7 @@ public interface Guild extends ISnowflake
      *             <li>The provided {@code userId} is not a valid snowflake</li>
      *             <li>The provided {@code amount} is lower than or equal to {@code 0}</li>
      *             <li>The provided {@code unit} is null</li>
-     *             <li>The provided {@code amount} with the {@code unit} results in a date that is more than {@value MAX_TIME_OUT_LENGTH} days in the future</li>
+     *             <li>The provided {@code amount} with the {@code unit} results in a date that is more than {@value Member#MAX_TIME_OUT_LENGTH} days in the future</li>
      *         </ul>
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
@@ -4726,7 +4730,8 @@ public interface Guild extends ISnowflake
 
     /**
      * Puts the specified Member in time out in this {@link net.dv8tion.jda.api.entities.Guild Guild} for a specific amount of time.
-     * <br>While a Member is in time out, they cannot reply, send messages, react and speak in voice channels.
+     * <br>While a Member is in time out, all permissions except {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL VIEW_CHANNEL} and
+     * {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY MESSAGE_HISTORY} are removed from them.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
      * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
@@ -4751,7 +4756,7 @@ public interface Guild extends ISnowflake
      *             <li>The provided {@code userId} is not a valid snowflake</li>
      *             <li>The provided {@code duration} is null</li>
      *             <li>The provided {@code duration} is not positive</li>
-     *             <li>The provided {@code duration} results in a date that is more than {@value MAX_TIME_OUT_LENGTH} days in the future</li>
+     *             <li>The provided {@code duration} results in a date that is more than {@value Member#MAX_TIME_OUT_LENGTH} days in the future</li>
      *         </ul>
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
@@ -4765,7 +4770,8 @@ public interface Guild extends ISnowflake
 
     /**
      * Puts the specified Member in time out in this {@link net.dv8tion.jda.api.entities.Guild Guild} for a specific amount of time.
-     * <br>While a Member is in time out, they cannot reply, send messages, react and speak in voice channels.
+     * <br>While a Member is in time out, all permissions except {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL VIEW_CHANNEL} and
+     * {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY MESSAGE_HISTORY} are removed from them.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
      * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
@@ -4790,7 +4796,7 @@ public interface Guild extends ISnowflake
      *             <li>The provided {@code userId} is not a valid snowflake</li>
      *             <li>The provided {@code duration} is null</li>
      *             <li>The provided {@code duration} is not positive</li>
-     *             <li>The provided {@code duration} results in a date that is more than {@value MAX_TIME_OUT_LENGTH} days in the future</li>
+     *             <li>The provided {@code duration} results in a date that is more than {@value Member#MAX_TIME_OUT_LENGTH} days in the future</li>
      *         </ul>
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
@@ -4806,7 +4812,8 @@ public interface Guild extends ISnowflake
 
     /**
      * Puts a Member specified by the id in time out in this {@link net.dv8tion.jda.api.entities.Guild Guild} until the specified date.
-     * <br>While a Member is in time out, they cannot reply, send messages, react and speak in voice channels.
+     * <br>While a Member is in time out, all permissions except {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL VIEW_CHANNEL} and
+     * {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY MESSAGE_HISTORY} are removed from them.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
      * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
@@ -4830,7 +4837,7 @@ public interface Guild extends ISnowflake
      *         <ul>
      *             <li>The provided {@code userId} is not a valid snowflake</li>
      *             <li>The provided {@code temporal} is in the past</li>
-     *             <li>The provided {@code temporal} is more than {@value MAX_TIME_OUT_LENGTH} days in the future</li>
+     *             <li>The provided {@code temporal} is more than {@value Member#MAX_TIME_OUT_LENGTH} days in the future</li>
      *         </ul>
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
@@ -4844,7 +4851,8 @@ public interface Guild extends ISnowflake
 
     /**
      * Puts a Member specified by the id in time out in this {@link net.dv8tion.jda.api.entities.Guild Guild} until the specified date.
-     * <br>While a Member is in time out, they cannot reply, send messages, react and speak in voice channels.
+     * <br>While a Member is in time out, all permissions except {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL VIEW_CHANNEL} and
+     * {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY MESSAGE_HISTORY} are removed from them.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
      * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
@@ -4869,7 +4877,7 @@ public interface Guild extends ISnowflake
      *             <li>The provided {@code userId} is not a valid snowflake</li>
      *             <li>The provided {@code temporal} is null</li>
      *             <li>The provided {@code temporal} is in the past</li>
-     *             <li>The provided {@code temporal} is more than {@value MAX_TIME_OUT_LENGTH} days in the future</li>
+     *             <li>The provided {@code temporal} is more than {@value Member#MAX_TIME_OUT_LENGTH} days in the future</li>
      *         </ul>
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
