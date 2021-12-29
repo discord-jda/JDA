@@ -19,7 +19,6 @@ package net.dv8tion.jda.internal.interactions.command;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.CommandPayload;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
-import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -29,7 +28,7 @@ public interface CommandPayloadMixin extends CommandPayload
 {
     CommandPayload getCommandPayload();
 
-    @NotNull
+    @Nonnull
     @Override
     default Command.Type getCommandType()
     {
