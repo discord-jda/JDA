@@ -20,10 +20,8 @@ import net.dv8tion.jda.api.entities.ISnowflake;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.time.*;
+import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.TemporalAccessor;
 import java.util.Calendar;
 import java.util.TimeZone;
 
@@ -96,57 +94,5 @@ public class TimeUtil
     public static String getDateTimeString(@Nonnull OffsetDateTime time)
     {
         return time.format(dtFormatter);
-    }
-
-    /**
-     * Converts the provided {@link TemporalAccessor} to {@link OffsetDateTime}.
-     *
-     * @param  temporal
-     *         the temporal accessor of the timestamp
-     * @throws DateTimeException
-     *         If it's impossible to obtain {@link OffsetDateTime} from the provided {@link TemporalAccessor}
-     * @return The {@link OffsetDateTime} representing the {@link TemporalAccessor}
-     */
-    @Nullable
-    public static OffsetDateTime toOffsetDateTime(@Nullable TemporalAccessor temporal)
-    {
-        if (temporal == null)
-        {
-            return null;
-        }
-        else if (temporal instanceof OffsetDateTime)
-        {
-            return (OffsetDateTime) temporal;
-        }
-        else
-        {
-            ZoneOffset offset;
-            try
-            {
-                offset = ZoneOffset.from(temporal);
-            }
-            catch (DateTimeException ignore)
-            {
-                offset = ZoneOffset.UTC;
-            }
-            try
-            {
-                LocalDateTime ldt = LocalDateTime.from(temporal);
-                return OffsetDateTime.of(ldt, offset);
-            }
-            catch (DateTimeException ignore)
-            {
-                try
-                {
-                    Instant instant = Instant.from(temporal);
-                    return OffsetDateTime.ofInstant(instant, offset);
-                }
-                catch (DateTimeException ex)
-                {
-                    throw new DateTimeException("Unable to obtain OffsetDateTime from TemporalAccessor: " +
-                            temporal + " of type " + temporal.getClass().getName(), ex);
-                }
-            }
-        }
     }
 }

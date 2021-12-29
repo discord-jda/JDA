@@ -18,7 +18,6 @@ package net.dv8tion.jda.api;
 import net.dv8tion.jda.api.entities.EmbedType;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.Role;
-import net.dv8tion.jda.api.utils.TimeUtil;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
@@ -26,7 +25,7 @@ import net.dv8tion.jda.internal.utils.Helpers;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.awt.*;
-import java.time.*;
+import java.time.OffsetDateTime;
 import java.time.temporal.TemporalAccessor;
 import java.util.LinkedList;
 import java.util.List;
@@ -383,7 +382,7 @@ public class EmbedBuilder
     @Nonnull
     public EmbedBuilder setTimestamp(@Nullable TemporalAccessor temporal)
     {
-        this.timestamp = TimeUtil.toOffsetDateTime(temporal);
+        this.timestamp = Helpers.toOffsetDateTime(temporal);
         return this;
     }
 

@@ -16,9 +16,8 @@
 
 package net.dv8tion.jda.internal.utils;
 
-import java.time.Instant;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
+import javax.annotation.Nullable;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAccessor;
 import java.util.*;
@@ -50,6 +49,48 @@ public final class Helpers
     {
         TemporalAccessor joinedAt = DateTimeFormatter.ISO_OFFSET_DATE_TIME.parse(iso8601String);
         return Instant.from(joinedAt).toEpochMilli();
+    }
+
+    public static OffsetDateTime toOffsetDateTime(@Nullable TemporalAccessor temporal)
+    {
+        if (temporal == null)
+        {
+            return null;
+        }
+        else if (temporal instanceof OffsetDateTime)
+        {
+            return (OffsetDateTime) temporal;
+        }
+        else
+        {
+            ZoneOffset offset;
+            try
+            {
+                offset = ZoneOffset.from(temporal);
+            }
+            catch (DateTimeException ignore)
+            {
+                offset = ZoneOffset.UTC;
+            }
+            try
+            {
+                LocalDateTime ldt = LocalDateTime.from(temporal);
+                return OffsetDateTime.of(ldt, offset);
+            }
+            catch (DateTimeException ignore)
+            {
+                try
+                {
+                    Instant instant = Instant.from(temporal);
+                    return OffsetDateTime.ofInstant(instant, offset);
+                }
+                catch (DateTimeException ex)
+                {
+                    throw new DateTimeException("Unable to obtain OffsetDateTime from TemporalAccessor: " +
+                            temporal + " of type " + temporal.getClass().getName(), ex);
+                }
+            }
+        }
     }
 
     // locale-safe String#format

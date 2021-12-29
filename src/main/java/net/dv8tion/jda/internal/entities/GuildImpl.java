@@ -1404,7 +1404,7 @@ public class GuildImpl implements Guild
     {
         Checks.isSnowflake(userId, "User ID");
         Checks.notNull(temporal, "Temporal");
-        OffsetDateTime date = TimeUtil.toOffsetDateTime(temporal);
+        OffsetDateTime date = Helpers.toOffsetDateTime(temporal);
         Checks.check(date.isAfter(OffsetDateTime.now()), "Cannot put a member in time out with date in the past. Provided: %s", date);
         Checks.check(date.isBefore(OffsetDateTime.now().plusDays(28)), "Cannot put a member in time out for more than 28 days. Provided: %s", date);
         checkPermission(Permission.MODERATE_MEMBERS);
@@ -1416,6 +1416,7 @@ public class GuildImpl implements Guild
     @Override
     public AuditableRestAction<Void> removeTimeoutById(@Nonnull String userId)
     {
+        Checks.isSnowflake(userId, "User ID");
         return timeoutUntilById0(userId, null);
     }
 
