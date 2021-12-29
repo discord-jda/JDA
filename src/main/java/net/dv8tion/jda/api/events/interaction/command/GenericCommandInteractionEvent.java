@@ -23,10 +23,9 @@ import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.CommandInteraction;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.List;
 
 /**
@@ -53,7 +52,7 @@ public class GenericCommandInteractionEvent extends GenericInteractionCreateEven
         return getInteraction().getCommandType();
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public String getName()
     {
@@ -80,7 +79,7 @@ public class GenericCommandInteractionEvent extends GenericInteractionCreateEven
         return getInteraction().getCommandIdLong();
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public List<OptionMapping> getOptions()
     {

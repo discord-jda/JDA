@@ -19,10 +19,9 @@ package net.dv8tion.jda.api.interactions.commands.context;
 import net.dv8tion.jda.api.entities.GuildMessageChannel;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Interaction with a message context menu command
@@ -40,7 +39,7 @@ public interface MessageContextInteraction extends ContextInteraction<Message>
     @Override
     MessageChannel getChannel();
 
-    @NotNull
+    @Nonnull
     @Override
     default GuildMessageChannel getGuildChannel()
     {
