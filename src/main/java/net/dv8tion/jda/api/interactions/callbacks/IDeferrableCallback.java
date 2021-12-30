@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.interactions.callbacks;
 
+import net.dv8tion.jda.api.interactions.Interaction;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 
 import javax.annotation.Nonnull;
@@ -25,7 +26,7 @@ import javax.annotation.Nonnull;
  *
  * <p>This is implemented by {@link IReplyCallback} and {@link IMessageEditCallback}.
  */
-public interface IDeferrableCallback
+public interface IDeferrableCallback extends Interaction
 {
     /**
      * The {@link InteractionHook} which can be used to send deferred replies or followup messages.
