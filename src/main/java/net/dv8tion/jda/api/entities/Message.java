@@ -76,7 +76,7 @@ import java.util.stream.Collectors;
  * as per interface specifications.
  * <br>Specific operations may have specified information available in the {@code throws} javadoc.
  *
- * <h1>Formattable</h1>
+ * <h2>Formattable</h2>
  * This interface extends {@link java.util.Formattable Formattable} and can be used with a {@link java.util.Formatter Formatter}
  * such as used by {@link String#format(String, Object...) String.format(String, Object...)}
  * or {@link java.io.PrintStream#printf(String, Object...) PrintStream.printf(String, Object...)}.
@@ -171,7 +171,7 @@ public interface Message extends ISnowflake, Formattable
     /**
      * Pattern used to find {@link #getJumpUrl() Jump URLs} in strings.
      *
-     * <h2>Groups</h2>
+     * <h4>Groups</h4>
      * <table>
      *   <caption style="display: none">Javadoc is stupid, this is not a required tag</caption>
      *   <tr>
@@ -263,7 +263,7 @@ public interface Message extends ISnowflake, Formattable
      * <br>This can be used to retrieve the amount of times a user was mentioned in this message. This only
      * counts direct mentions of the user and not mentions through roles or the everyone tag.
      *
-     * <h2>Example</h2>
+     * <h4>Example</h4>
      * <pre>{@code
      * public void sendCount(Message msg)
      * {
@@ -309,7 +309,7 @@ public interface Message extends ISnowflake, Formattable
      * A {@link org.apache.commons.collections4.Bag Bag} of mentioned channels.
      * <br>This can be used to retrieve the amount of times a channel was mentioned in this message.
      *
-     * <h2>Example</h2>
+     * <h4>Example</h4>
      * <pre>{@code
      * public void sendCount(Message msg)
      * {
@@ -359,7 +359,7 @@ public interface Message extends ISnowflake, Formattable
      * counts direct mentions of the role and not mentions through the everyone tag.
      * If a role is not {@link net.dv8tion.jda.api.entities.Role#isMentionable() mentionable} it will not be included.
      *
-     * <h2>Example</h2>
+     * <h4>Example</h4>
      * <pre>{@code
      * public void sendCount(Message msg)
      * {
@@ -927,7 +927,7 @@ public interface Message extends ISnowflake, Formattable
      * A {@link org.apache.commons.collections4.Bag Bag} of emotes used in this message.
      * <br>This can be used to retrieve the amount of times an emote was used in this message.
      *
-     * <h2>Example</h2>
+     * <h4>Example</h4>
      * <pre>{@code
      * public void sendCount(Message msg)
      * {
@@ -1134,7 +1134,7 @@ public interface Message extends ISnowflake, Formattable
      *     <br>The request was attempted after the channel was deleted.</li>
      * </ul>
      *
-     * <h2>Example</h2>
+     * <h4>Example</h4>
      * <pre>{@code
      * List<ActionRow> rows = Arrays.asList(
      *   ActionRow.of(Button.success("prompt:accept", "Accept"), Button.danger("prompt:reject", "Reject")), // 1st row below message
@@ -1188,7 +1188,7 @@ public interface Message extends ISnowflake, Formattable
      *     <br>The request was attempted after the channel was deleted.</li>
      * </ul>
      *
-     * <h2>Example</h2>
+     * <h4>Example</h4>
      * <pre>{@code
      * message.editMessageComponents(
      *   ActionRow.of(Button.success("prompt:accept", "Accept"), Button.danger("prompt:reject", "Reject")), // 1st row below message
@@ -1768,7 +1768,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * <p><b>Neither success nor failure of this request will affect this Message's {@link #getReactions()} return as Message is immutable.</b>
      *
-     * <h2>Examples</h2>
+     * <h4>Examples</h4>
      * <code>
      * // custom<br>
      * message.addReaction("minn:245267426227388416").queue();<br>
@@ -1875,7 +1875,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * <p>Please note that you <b>can't</b> clear reactions if this message was sent in a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}!
      *
-     * <h2>Example</h2>
+     * <h4>Example</h4>
      * <pre><code>
      * // custom
      * message.clearReactions("minn:245267426227388416").queue();
@@ -2094,7 +2094,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * <p><b>Neither success nor failure of this request will affect this Message's {@link #getReactions()} return as Message is immutable.</b>
      *
-     * <h2>Examples</h2>
+     * <h4>Examples</h4>
      * <code>
      * // custom<br>
      * message.removeReaction("minn:245267426227388416").queue();<br>
@@ -2812,7 +2812,7 @@ public interface Message extends ISnowflake, Formattable
          * Enqueues a request to retrieve the contents of this Attachment.
          * <br><b>The receiver is expected to close the retrieved {@link java.io.InputStream}.</b>
          *
-         * <h2>Example</h2>
+         * <h4>Example</h4>
          * <pre>{@code
          * public void printContents(Message.Attachment attachment)
          * {
@@ -2864,7 +2864,7 @@ public interface Message extends ISnowflake, Formattable
          * <br>This will download the file using the {@link net.dv8tion.jda.api.JDA#getCallbackPool() callback pool}.
          * Alternatively you can use {@link #retrieveInputStream()} and use a continuation with a different executor.
          *
-         * <h2>Example</h2>
+         * <h4>Example</h4>
          * <pre>{@code
          * public void saveLocally(Message.Attachment attachment)
          * {
@@ -2891,7 +2891,7 @@ public interface Message extends ISnowflake, Formattable
          * <br>This will download the file using the {@link net.dv8tion.jda.api.JDA#getCallbackPool() callback pool}.
          * Alternatively you can use {@link #retrieveInputStream()} and use a continuation with a different executor.
          *
-         * <h2>Example</h2>
+         * <h4>Example</h4>
          * <pre>{@code
          * public void saveLocally(Message.Attachment attachment)
          * {
@@ -2925,7 +2925,7 @@ public interface Message extends ISnowflake, Formattable
          * <br>This will download the file using the {@link net.dv8tion.jda.api.JDA#getCallbackPool() callback pool}.
          * Alternatively you can use {@link #retrieveInputStream()} and use a continuation with a different executor.
          *
-         * <h2>Example</h2>
+         * <h4>Example</h4>
          * <pre>{@code
          * public void saveLocally(Message.Attachment attachment)
          * {
@@ -2992,7 +2992,7 @@ public interface Message extends ISnowflake, Formattable
          * <br>This will download the file using the {@link net.dv8tion.jda.api.JDA#getCallbackPool() callback pool}.
          * Alternatively you can use {@link #retrieveInputStream()} and use a continuation with a different executor.
          *
-         * <h2>Example</h2>
+         * <h4>Example</h4>
          * <pre>{@code
          * public void changeAvatar(Message.Attachment attachment)
          * {

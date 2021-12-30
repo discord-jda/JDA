@@ -42,7 +42,7 @@ public interface Webhook extends ISnowflake
     /**
      * Pattern for a Webhook URL.
      *
-     * <h2>Groups</h2>
+     * <h4>Groups</h4>
      * <table>
      *   <caption style="display: none">Javadoc is stupid, this is not a required tag</caption>
      *   <tr>
@@ -176,7 +176,7 @@ public interface Webhook extends ISnowflake
      * The execute token for this Webhook.
      * <br>This can be used to modify/delete/execute
      * this Webhook.
-     * 
+     *
      * <p><b>Note: Some Webhooks, such as those retrieved from Audit Logs, do not contain a token</b>
      *
      * @return The execute token for this Webhook
@@ -239,7 +239,7 @@ public interface Webhook extends ISnowflake
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the Webhook does not have a token, such as the Webhooks retrieved from Audit Logs and the currently
      *         logged in account does not have {@link net.dv8tion.jda.api.Permission#MANAGE_WEBHOOKS} in this channel.
-     * 
+     *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      *         <br>The rest action to delete this Webhook.
      */

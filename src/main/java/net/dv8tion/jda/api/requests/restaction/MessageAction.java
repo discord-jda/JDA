@@ -60,7 +60,7 @@ import java.util.stream.Collectors;
  * If you decide not to execute this action, you should call {@link #clearFiles()} to free resources.</u>
  * <br>Note that the garbage collector also frees opened file streams when it finalizes the stream object.
  *
- * <h1>Example</h1>
+ * <h2>Example</h2>
  * <pre><code>
  * {@literal @Override}
  *  public void onMessageReceived(MessageReceivedEvent event)
@@ -101,7 +101,7 @@ public interface MessageAction extends RestAction<Message>, Appendable, AllowedM
      * <p>If {@code null} is provided to this method, then all Types will be pingable
      * (unless whitelisting via one of the {@code mention*} methods is used).
      *
-     * <h2>Example</h2>
+     * <h4>Example</h4>
      * <pre>{@code
      * // Disable EVERYONE and HERE mentions by default (to avoid mass ping)
      * EnumSet<Message.MentionType> deny = EnumSet.of(Message.MentionType.EVERYONE, Message.MentionType.HERE);
