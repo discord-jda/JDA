@@ -30,7 +30,7 @@ import java.util.List;
  * which are fired by Discord whenever something interesting happens
  * (ie., a {@link net.dv8tion.jda.api.events.message.MessageDeleteEvent MessageDeleteEvent} gets fired whenever a message gets deleted).
  */
-public interface GuildScheduledEvent extends ISnowflake
+public interface GuildScheduledEvent extends ISnowflake, Comparable<GuildScheduledEvent>
 {
     /**
      * The maximum allowed length for an event's name.
@@ -90,7 +90,7 @@ public interface GuildScheduledEvent extends ISnowflake
      *
      * @return The time the event is set to start at
      *
-     * @see #getEndTime()
+     * @see    #getEndTime()
      */
     @Nonnull
     OffsetDateTime getStartTime();
@@ -103,8 +103,8 @@ public interface GuildScheduledEvent extends ISnowflake
      * @return The time that the event is set to end at. This will never be {@code null} for events of
      *         {@link Type#EXTERNAL Type.EXTERNAL}, but can be null for other types.
      *
-     * @see #getType()
-     * @see #getStartTime()
+     * @see    #getType()
+     * @see    #getStartTime()
      */
     @Nullable
     OffsetDateTime getEndTime();
@@ -116,9 +116,9 @@ public interface GuildScheduledEvent extends ISnowflake
      * @return The stage channel, or {@code null} if the stage channel was deleted
      *         or if the event is not of {@link Type#STAGE_INSTANCE Type.STAGE_INSTANCE}
      *
-     * @see #getType()
-     * @see #getVoiceChannel()
-     * @see #getExternalLocation()
+     * @see    #getType()
+     * @see    #getVoiceChannel()
+     * @see    #getExternalLocation()
      */
     @Nullable
     StageChannel getStageChannel();
@@ -130,9 +130,9 @@ public interface GuildScheduledEvent extends ISnowflake
      * @return The voice channel, or {@code null} if the voice channel was deleted
      *         or if the event is not of {@link Type#STAGE_INSTANCE Type.VOICE}
      *
-     * @see #getType()
-     * @see #getStageChannel()
-     * @see #getExternalLocation()
+     * @see    #getType()
+     * @see    #getStageChannel()
+     * @see    #getExternalLocation()
      */
     @Nullable
     VoiceChannel getVoiceChannel();
@@ -143,9 +143,9 @@ public interface GuildScheduledEvent extends ISnowflake
      *
      * @return The location, or {@code null} if the event is not of {@link Type#EXTERNAL Type.EXTERNAL}
      *
-     * @see #getType()
-     * @see #getStageChannel()
-     * @see #getVoiceChannel()
+     * @see    #getType()
+     * @see    #getStageChannel()
+     * @see    #getVoiceChannel()
      */
     @Nullable
     String getExternalLocation();
@@ -154,7 +154,7 @@ public interface GuildScheduledEvent extends ISnowflake
      * The amount of users who are interested in attending the event.
      * <br>This method only returns the cached count, and may not be consistent with the live count.
      *
-     * @return  The amount of users who are interested in attending the event
+     * @return The amount of users who are interested in attending the event
      */
     int getInterestedUserCount();
 
@@ -204,7 +204,32 @@ public interface GuildScheduledEvent extends ISnowflake
     JDA getJDA();
 
     /**
+     * Compares two {@link GuildScheduledEvent} objects based on their scheduled start times.
+     * <br>If two events are set to start at the same time, the comparison will be made based on their snowflake ID.
+     *
+     * @param  guildScheduledEvent
+     *         The provided scheduled event
+     *
+     * @throws IllegalArgumentException
+     *         If the provided scheduled event is {@code null}, from a different {@link Guild}, or is not a valid
+     *         scheduled event provided by JDA.
+     *
+     * @return A negative number if the original event (which is the event that the {@link #compareTo(GuildScheduledEvent) compareTo}
+     *         method is called upon) starts sooner than the provided event, or positive if it will start later than
+     *         the provided event. If both events are set to start at the same time, then the result will be negative if the original
+     *         event's snowflake ID is less than the provided event's ID, positive if it is greater than, or 0 if they
+     *         are the same.
+     *
+     * @see Comparable#compareTo(Object)
+     * @see #getStartTime()
+     * @see #getIdLong()
+     */
+    @Override
+    int compareTo(@Nonnull GuildScheduledEvent guildScheduledEvent);
+
+    /**
      * Represents the status of a scheduled guild event.
+     *
      * @see GuildScheduledEvent#getStatus
      */
     enum Status

@@ -57,6 +57,7 @@ import net.dv8tion.jda.internal.utils.cache.SnowflakeCacheViewImpl;
 import net.dv8tion.jda.internal.utils.cache.SortedSnowflakeCacheViewImpl;
 import net.dv8tion.jda.internal.utils.concurrent.task.GatewayTask;
 import okhttp3.RequestBody;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -452,49 +453,6 @@ public class GuildImpl implements Guild
         });
     }
 
-    @Nullable
-    @Override
-    @CheckReturnValue
-    public RestAction<GuildScheduledEvent> retrieveScheduledEventById(long id)
-    {
-        // TODO: Implement
-        return null;
-    }
-
-    @Nullable
-    @Override
-    public GuildScheduledEvent getScheduledEventById(long id)
-    {
-        // TODO: Implement
-        return null;
-    }
-
-    @Override
-    @Nonnull
-    public List<GuildScheduledEvent> getScheduledEvents()
-    {
-        // TODO: Implement
-        return null;
-    }
-
-    @Override
-    @Nonnull
-    @CheckReturnValue
-    public RestAction<List<GuildScheduledEvent>> retrieveScheduledEvents()
-    {
-        // TODO: Implement
-        return null;
-    }
-
-    @Override
-    @Nonnull
-    @CheckReturnValue
-    public GuildScheduledEventAction createScheduledEvent()
-    {
-        // TODO: Implement
-        return null;
-    }
-
     @Override
     public VoiceChannel getAfkChannel()
     {
@@ -639,6 +597,14 @@ public class GuildImpl implements Guild
     public SortedSnowflakeCacheView<StageChannel> getStageChannelCache()
     {
         return stageChannelCache;
+    }
+
+    @Nonnull
+    @Override
+    public SortedSnowflakeCacheView<GuildScheduledEvent> getScheduledEventCache()
+    {
+        // Todo: Implement
+        return null;
     }
 
     @Nonnull
@@ -1185,6 +1151,15 @@ public class GuildImpl implements Guild
         });
     }
 
+    @Nonnull
+    @Override
+    @CheckReturnValue
+    public RestAction<GuildScheduledEvent> retrieveScheduledEventById(long id)
+    {
+        // TODO: Implement
+        return null;
+    }
+
     @Override
     public long getIdLong()
     {
@@ -1699,6 +1674,15 @@ public class GuildImpl implements Guild
             DataObject obj = response.getObject();
             return jda.getEntityBuilder().createEmote(this, obj);
         });
+    }
+
+    @Nonnull
+    @Override
+    @CheckReturnValue
+    public GuildScheduledEventAction createScheduledEvent()
+    {
+        // TODO: Implement, possibly split into separate methods for each event type
+        return null;
     }
 
     @Nonnull

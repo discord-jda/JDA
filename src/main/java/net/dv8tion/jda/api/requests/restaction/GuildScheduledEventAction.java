@@ -34,46 +34,47 @@ import java.util.function.BooleanSupplier;
  * This extension allows setting properties such as the name or description of an event before it is
  * created.
  *
- * <p><b>Requirements</b></p>
+ * <h2>Requirements</h2>
  * Events that are created are required to have a name, a location, and a start time. Depending on the
  * type of location provided, an event will be of one of three different {@link GuildScheduledEvent.Type Types}:
  * <ol>
  *     <li>
- *         <p><b>{@link GuildScheduledEvent.Type#STAGE_INSTANCE Type.STAGE_INSTANCE}</b></p>
- *         <p>These events are set to take place inside of a {@link net.dv8tion.jda.api.entities.StageChannel StageChannel}. The
+ *         {@link GuildScheduledEvent.Type#STAGE_INSTANCE Type.STAGE_INSTANCE}
+ *         <br>These events are set to take place inside of a {@link net.dv8tion.jda.api.entities.StageChannel StageChannel}. The
  *         following permissions are required in the specified stage channel in order to create an event there:
  *          <ul>
  *              <li>{@link net.dv8tion.jda.api.Permission#MANAGE_EVENTS Permission.MANAGE_EVENTS}</li>
  *              <li>{@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL Permission.MANAGE_CHANNEL}</li>
  *              <li>{@link net.dv8tion.jda.api.Permission#VOICE_MUTE_OTHERS Permission.VOICE_MUTE_OTHERS}</li>
  *              <li>{@link net.dv8tion.jda.api.Permission#VOICE_MOVE_OTHERS Permission.VOICE_MOVE_OTHERS}}</li>
- *         </ul></p>
+ *         </ul>
  *     </li>
  *     <li>
- *         <p><b>{@link GuildScheduledEvent.Type#VOICE Type.VOICE}</b></p>
- *         <p>These events are set to take place inside of a {@link net.dv8tion.jda.api.entities.VoiceChannel}. The
+ *         {@link GuildScheduledEvent.Type#VOICE Type.VOICE}
+ *         <br>These events are set to take place inside of a {@link net.dv8tion.jda.api.entities.VoiceChannel}. The
  *         following permissions are required in the specified voice channel in order to create an event there:
  *         <ul>
  *             <li>{@link net.dv8tion.jda.api.Permission#MANAGE_EVENTS Permission.MANAGE_EVENTS}</li>
  *             <li>{@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}</li>
  *             <li>{@link net.dv8tion.jda.api.Permission#VOICE_CONNECT Permission.VOICE_CONNECT}</li>
- *         </ul></p>
+ *         </ul>
  *     </li>
  *     <li>
- *         <p><b>{@link GuildScheduledEvent.Type#EXTERNAL Type.EXTERNAL}</b></p>
- *         <p>These events are set to take place at a custom location. {@link net.dv8tion.jda.api.Permission#MANAGE_EVENTS Permission.MANAGE_EVENTS}
+ *         {@link GuildScheduledEvent.Type#EXTERNAL Type.EXTERNAL}
+ *         <br>These events are set to take place at a custom location. {@link net.dv8tion.jda.api.Permission#MANAGE_EVENTS Permission.MANAGE_EVENTS}
  *         is required on the guild level in order to create this type of event. Additionally, an end time <i>must</i>
  *         also be specified.
  *     </li>
  * </ol>
- * <p><b>Example</b></p>
+ *
+ * <h2>Example</h2>
  * <pre>{@code
- *     guildScheduledEventAction.setName("Cactus Beauty Contest")
- *          .setDescription("Come and have your cacti judged! _Must be spikey to enter_")
- *          .setStartTime(OffsetDateTime.parse("2023-11-15T03:00:00+01:00"))
- *          .setEndTime(OffsetDateTime.parse("2023-11-15T05:45:00+01:00"))
- *          .setLocation("Mike's Backyard")
- *          .queue();
+ * guildScheduledEventAction.setName("Cactus Beauty Contest")
+ *    .setDescription("Come and have your cacti judged! _Must be spikey to enter_")
+ *    .setStartTime(OffsetDateTime.of(LocalDate.of(2022, 12, 31), LocalTime.of(11, 30), ZoneOffset.ofHours(7)))
+ *    .setEndTime(OffsetDateTime.of(LocalDate.of(2025, 12, 31), LocalTime.of(15, 30), ZoneOffset.ofHours(7)))
+ *    .setLocation("Mike's Backyard")
+ *    .queue();
  * }</pre>
  *
  * @see    net.dv8tion.jda.api.entities.Guild
@@ -146,8 +147,6 @@ public interface GuildScheduledEventAction extends AuditableRestAction<GuildSche
      * @param  stageChannel
      *         The Stage Channel that the new {@link GuildScheduledEvent} is set to take place in.
      *
-     * @return The current GuildScheduledEventAction, for chaining convenience
-     *
      * @throws java.lang.IllegalArgumentException
      *         If the provided Stage Channel is {@code null}, or is not from the same guild
      *         that the event is being created in.
@@ -159,7 +158,11 @@ public interface GuildScheduledEventAction extends AuditableRestAction<GuildSche
      *         {@link net.dv8tion.jda.api.Permission#VOICE_MUTE_OTHERS Permission.VOICE_MUTE_OTHERS},
      *         or {@link net.dv8tion.jda.api.Permission#VOICE_MOVE_OTHERS Permission.VOICE_MOVE_OTHERS}, in the provided
      *         stage channel.
+     *
+     * @return The current GuildScheduledEventAction, for chaining convenience
      */
+    @Nonnull
+    @CheckReturnValue
     GuildScheduledEventManager setLocation(@Nonnull StageChannel stageChannel);
 
     /**
@@ -172,8 +175,6 @@ public interface GuildScheduledEventAction extends AuditableRestAction<GuildSche
      * @param  voiceChannel
      *         The Voice Channel that the selected {@link GuildScheduledEvent} is set to take place at.
      *
-     * @return The current GuildScheduledEventAction, for chaining convenience
-     *
      * @throws java.lang.IllegalArgumentException
      *         If the provided Voice Channel is {@code null}, or is not from the same guild
      *         that the event is being created in.
@@ -184,7 +185,11 @@ public interface GuildScheduledEventAction extends AuditableRestAction<GuildSche
      *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}, or
      *         {@link net.dv8tion.jda.api.Permission#VOICE_CONNECT Permission.VOICE_CONNECT} in the provided
      *         Voice Channel.
+     *
+     * @return The current GuildScheduledEventAction, for chaining convenience
      */
+    @Nonnull
+    @CheckReturnValue
     GuildScheduledEventManager setLocation(@Nonnull VoiceChannel voiceChannel);
 
     /**
@@ -199,8 +204,6 @@ public interface GuildScheduledEventAction extends AuditableRestAction<GuildSche
      * @param  externalLocation
      *         The location that the new {@link GuildScheduledEvent} is set to take place at.
      *
-     * @return The current GuildScheduledEventAction, for chaining convenience
-     *
      * @throws java.lang.IllegalArgumentException
      *         If the provided location is {@code null}
      *
@@ -211,10 +214,14 @@ public interface GuildScheduledEventAction extends AuditableRestAction<GuildSche
      *         If the currently logged in account does not have
      *         {@link net.dv8tion.jda.api.Permission#MANAGE_EVENTS Permission.MANAGE_EVENTS}
      *
-     * @see #setEndTime(OffsetDateTime)
-     * @see #setLocation(StageChannel)
-     * @see #setLocation(VoiceChannel)
+     * @return The current GuildScheduledEventAction, for chaining convenience
+     *
+     * @see    #setEndTime(OffsetDateTime)
+     * @see    #setLocation(StageChannel)
+     * @see    #setLocation(VoiceChannel)
      */
+    @Nonnull
+    @CheckReturnValue
     GuildScheduledEventManager setLocation(@Nonnull String externalLocation);
 
     /**
@@ -228,13 +235,15 @@ public interface GuildScheduledEventAction extends AuditableRestAction<GuildSche
      * @param  startTime
      *         The time that the new {@link GuildScheduledEvent} should start at
      *
-     * @return The current GuildScheduledEventAction, for chaining convenience
-     *
      * @throws java.lang.IllegalArgumentException If the provided start time is {@code null}, or takes place after the
      * end time.
      *
-     * @see #setEndTime(OffsetDateTime)
+     * @return The current GuildScheduledEventAction, for chaining convenience
+     *
+     * @see    #setEndTime(OffsetDateTime)
      */
+    @Nonnull
+    @CheckReturnValue
     GuildScheduledEventManager setStartTime(@Nonnull OffsetDateTime startTime);
 
     /**
@@ -251,16 +260,17 @@ public interface GuildScheduledEventAction extends AuditableRestAction<GuildSche
      *         The time that the new {@link GuildScheduledEvent} is set to end at,
      *         or {@code null} for no end time to be set.
      *
-     * @return The current GuildScheduledEventAction, for chaining convenience
-     *
      * @throws java.lang.IllegalArgumentException
      *         If the provided end time is before the start time
      *
      * @throws java.lang.IllegalStateException
      *         If the provided end time is {@code null} when the event is set to take place at an external location
      *
+     * @return The current GuildScheduledEventAction, for chaining convenience
      *
-     * @see #setStartTime(OffsetDateTime)
+     * @see    #setStartTime(OffsetDateTime)
      */
+    @Nonnull
+    @CheckReturnValue
     GuildScheduledEventManager setEndTime(@Nullable OffsetDateTime endTime);
 }

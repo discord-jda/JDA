@@ -33,13 +33,13 @@ import java.time.OffsetDateTime;
  * <p><b>Example</b>
  * <pre>{@code
  * manager.setName("Pizza Party!")
- *        .setDescription("Come and eat some pizza and watch a movie in vc! _Make sure to bring popcorn_")
- *        .setVoiceChannel(voiceChannel);
- *        .queue();
+ *     .setDescription("Come and eat some pizza and watch a movie in vc! _Make sure to bring popcorn_")
+ *     .setVoiceChannel(voiceChannel);
+ *     .queue();
  * manager.reset(GuildScheduledEventManager.NAME | GuildScheduledEventManager.DESCRIPTION)
- *        .setStartTime(OffsetDateTime.parse("2021-12-14T10:14:00+01:00"))
- *        .setName("Discussing Turtle Shells")
- *        .queue();
+ *     .setStartTime(OffsetDateTime.of(LocalDate.of(2025, 12, 31), LocalTime.of(15, 45), ZoneOffset.ofHours(7)))
+ *     .setName("Discussing Turtle Shells")
+ *     .queue();
  * }</pre>
  *
  * @see GuildScheduledEvent#getManager()
@@ -163,8 +163,6 @@ public interface GuildScheduledEventManager extends Manager<GuildScheduledEventM
      * @param  stageChannel
      *         The Stage Channel that the selected {@link GuildScheduledEvent} is set to take place in.
      *
-     * @return GuildScheduledEventManager for chaining convenience
-     *
      * @throws java.lang.IllegalArgumentException
      *         If the provided Stage Channel is {@code null}, or is not from the same guild
      *         that the selected {@link GuildScheduledEvent} takes place in.
@@ -176,7 +174,11 @@ public interface GuildScheduledEventManager extends Manager<GuildScheduledEventM
      *         {@link net.dv8tion.jda.api.Permission#VOICE_MUTE_OTHERS Permission.VOICE_MUTE_OTHERS},
      *         or {@link net.dv8tion.jda.api.Permission#VOICE_MOVE_OTHERS Permission.VOICE_MOVE_OTHERS}, in the provided
      *         stage channel.
+     *
+     * @return GuildScheduledEventManager for chaining convenience
      */
+    @Nonnull
+    @CheckReturnValue
     GuildScheduledEventManager setLocation(@Nonnull StageChannel stageChannel);
 
     /**
@@ -186,8 +188,6 @@ public interface GuildScheduledEventManager extends Manager<GuildScheduledEventM
      *
      * @param  voiceChannel
      *         The Voice Channel that the selected {@link GuildScheduledEvent} is set to take place at.
-     *
-     * @return GuildScheduledEventManager for chaining convenience
      *
      * @throws java.lang.IllegalArgumentException
      *         If the provided Voice Channel is {@code null}, or is not from the same guild
@@ -199,7 +199,11 @@ public interface GuildScheduledEventManager extends Manager<GuildScheduledEventM
      *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}, or
      *         {@link net.dv8tion.jda.api.Permission#VOICE_CONNECT Permission.VOICE_CONNECT} in the provided
      *         Voice Channel.
+     *
+     * @return GuildScheduledEventManager for chaining convenience
      */
+    @Nonnull
+    @CheckReturnValue
     GuildScheduledEventManager setLocation(@Nonnull VoiceChannel voiceChannel);
 
     /**
@@ -212,8 +216,6 @@ public interface GuildScheduledEventManager extends Manager<GuildScheduledEventM
      * @param  externalLocation
      *         The location that the selected {@link GuildScheduledEvent} is set to take place at.
      *
-     * @return GuildScheduledEventManager for chaining convenience
-     *
      * @throws java.lang.IllegalArgumentException
      *         If the provided location is {@code null}
      *
@@ -224,10 +226,14 @@ public interface GuildScheduledEventManager extends Manager<GuildScheduledEventM
      *         If the currently logged in account does not have
      *         {@link net.dv8tion.jda.api.Permission#MANAGE_EVENTS Permission.MANAGE_EVENTS}
      *
-     * @see #setEndTime(OffsetDateTime)
-     * @see #setLocation(StageChannel)
-     * @see #setLocation(VoiceChannel)
+     * @return GuildScheduledEventManager for chaining convenience
+     *
+     * @see    #setEndTime(OffsetDateTime)
+     * @see    #setLocation(StageChannel)
+     * @see    #setLocation(VoiceChannel)
      */
+    @Nonnull
+    @CheckReturnValue
     GuildScheduledEventManager setLocation(@Nonnull String externalLocation);
 
     /**
@@ -240,13 +246,15 @@ public interface GuildScheduledEventManager extends Manager<GuildScheduledEventM
      * @param  startTime
      *         The time that the selected {@link GuildScheduledEvent} is set to start at.
      *
-     * @return GuildScheduledEventManager for chaining convenience
-     *
      * @throws java.lang.IllegalArgumentException
      *         If the provided start time is {@code null}, or takes place after the end time.
      *
-     * @see #setEndTime(OffsetDateTime)
+     * @return GuildScheduledEventManager for chaining convenience
+     *
+     * @see    #setEndTime(OffsetDateTime)
      */
+    @Nonnull
+    @CheckReturnValue
     GuildScheduledEventManager setStartTime(@Nonnull OffsetDateTime startTime);
 
     /**
@@ -260,17 +268,18 @@ public interface GuildScheduledEventManager extends Manager<GuildScheduledEventM
      *         The time that the selected {@link GuildScheduledEvent} is set to end at,
      *         or {@code null} for no end time to be set.
      *
-     * @return GuildScheduledEventManager for chaining convenience
-     *
      * @throws java.lang.IllegalArgumentException
      *         If the provided end time is before the start time
      *
      * @throws java.lang.IllegalStateException
      *         If the provided end time is {@code null} when the event is set to take place at an external location
      *
+     * @return GuildScheduledEventManager for chaining convenience
      *
-     * @see #setStartTime(OffsetDateTime)
+     * @see    #setStartTime(OffsetDateTime)
      */
+    @Nonnull
+    @CheckReturnValue
     GuildScheduledEventManager setEndTime(@Nullable OffsetDateTime endTime);
 
     /**
@@ -285,15 +294,17 @@ public interface GuildScheduledEventManager extends Manager<GuildScheduledEventM
      * @param  status
      *         The new status
      *
-     * @return GuildScheduledEventManager for chaining convenience
-     *
      * @throws java.lang.IllegalStateException
      *         If the transition between statuses does not follow one of the three documented above.
      * @throws IllegalArgumentException
      *         If the provided status is {@code null}
      *
-     * @see #getGuildScheduledEvent()
-     * @see GuildScheduledEvent#getStatus()
+     * @return GuildScheduledEventManager for chaining convenience
+     *
+     * @see    #getGuildScheduledEvent()
+     * @see    GuildScheduledEvent#getStatus()
      */
+    @Nonnull
+    @CheckReturnValue
     GuildScheduledEventManager setStatus(@Nonnull GuildScheduledEvent.Status status);
 }

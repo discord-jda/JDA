@@ -1289,6 +1289,84 @@ public interface JDA
     }
 
     /**
+     * {@link net.dv8tion.jda.api.utils.cache.SnowflakeCacheView SnowflakeCacheView} of
+     * all cached {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvents} visible to this JDA session.
+     *
+     * @return {@link net.dv8tion.jda.api.utils.cache.SnowflakeCacheView SnowflakeCacheView}
+     */
+    @Nonnull
+    SnowflakeCacheView<GuildScheduledEvent> getGuildScheduledEventCache();
+
+    /**
+     * An unmodifiable list of all {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvents} of all connected
+     * {@link net.dv8tion.jda.api.entities.Guild Guilds}.
+     *
+     * <p>This copies the backing store into a list. This means every call
+     * creates a new list with O(n) complexity. It is recommended to store this into
+     * a local variable or use {@link #getGuildScheduledEventCache()} and use its more efficient
+     * versions of handling these values.
+     *
+     * @return Possible-empty list of all known {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvents}.
+     */
+    @Nonnull
+    default List<GuildScheduledEvent> getGuildScheduledEvents()
+    {
+        return getGuildScheduledEventCache().asList();
+    }
+
+    /**
+     * This returns the {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvent} which has the same id as the one provided.
+     * <br>If there is no known {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvent} with an id that matches the provided
+     * one, then this returns {@code null}.
+     *
+     * @param  id
+     *         The id of the {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvent}.
+     * @throws java.lang.NumberFormatException
+     *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
+     *
+     * @return Possibly-null {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvent} with a matching id.
+     */
+    @Nullable
+    default GuildScheduledEvent getGuildScheduledEventById(@Nonnull String id)
+    {
+        return getGuildScheduledEventCache().getElementById(id);
+    }
+
+    /**
+     * This returns the {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvent} which has the same id as the one provided.
+     * <br>If there is no known {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvent} with an id that matches the provided
+     * one, then this returns {@code null}.
+     *
+     * @param  id
+     *         The id of the {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvent}.
+     *
+     * @return Possibly-null {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvent} with a matching id.
+     */
+    @Nullable
+    default GuildScheduledEvent getGuildScheduledEventById(long id)
+    {
+        return getGuildScheduledEventCache().getElementById(id);
+    }
+
+    /**
+     * An unmodifiable list of all {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvents} that have the same name as the one provided.
+     * <br>If there are no {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvents} with the provided name, then this returns an empty list.
+     *
+     * @param  name
+     *         The name of the requested {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvent}.
+     * @param  ignoreCase
+     *         Whether to ignore case or not when comparing the provided name to each {@link net.dv8tion.jda.api.entities.GuildScheduledEvent#getName()}.
+     *
+     * @return Possibly-empty list of all the {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvents} that all have the
+     *         same name as the provided name.
+     */
+    @Nonnull
+    default List<GuildScheduledEvent> getGuildScheduledEventsByName(@Nonnull String name, boolean ignoreCase)
+    {
+        return getGuildScheduledEventCache().getElementsByName(name, ignoreCase);
+    }
+
+    /**
      * Get {@link GuildChannel GuildChannel} for the provided ID.
      * <br>This checks if any of the channel types in this guild have the provided ID and returns the first match.
      *

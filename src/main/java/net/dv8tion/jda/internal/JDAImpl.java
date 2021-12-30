@@ -621,6 +621,14 @@ public class JDAImpl implements JDA
 
     @Nonnull
     @Override
+    public SnowflakeCacheView<GuildScheduledEvent> getGuildScheduledEventCache()
+    {
+        // TODO: Implement
+        return null;
+    }
+
+    @Nonnull
+    @Override
     public SnowflakeCacheView<Category> getCategoryCache()
     {
         return categories;
