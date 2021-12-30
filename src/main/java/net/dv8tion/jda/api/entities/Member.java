@@ -55,7 +55,7 @@ public interface Member extends IMentionable, IPermissionHolder
 {
     /** Template for {@link #getAvatarUrl()}. */
     String AVATAR_URL = "https://cdn.discordapp.com/guilds/%s/users/%s/avatars/%s.%s";
-    /** Maximum time out length a Member can be put into in days. */
+    /** Maximum number of days a Member can be timed out for */
     int MAX_TIME_OUT_LENGTH = 28;
 
     /**
