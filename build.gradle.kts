@@ -270,6 +270,9 @@ javadoc.apply {
         if (javaVersion in JavaVersion.VERSION_11..JavaVersion.VERSION_12) {
             opt.addBooleanOption("-no-module-directories", true)
         }
+        if (JavaVersion.current().isJava8Compatible) {
+            opt.addBooleanOption("Xdoclint:all,-missing", true)
+        }
     }
 
     dependsOn(sourcesJar)
