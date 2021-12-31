@@ -270,8 +270,8 @@ javadoc.apply {
         if (javaVersion in JavaVersion.VERSION_11..JavaVersion.VERSION_12) {
             opt.addBooleanOption("-no-module-directories", true)
         }
-        if (JavaVersion.current().isJava8Compatible) {
-            opt.addBooleanOption("Xdoclint:all,-missing", true)
+        if (JavaVersion.VERSION_11 < javaVersion) {
+            opt.addBooleanOption("Xdoclint:all,-missing", true) // Removes "no comment" warnings
         }
     }
 
