@@ -64,6 +64,7 @@ import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -82,6 +83,7 @@ public class GuildImpl implements Guild
     private final SnowflakeCacheViewImpl<Emote> emoteCache = new SnowflakeCacheViewImpl<>(Emote.class, Emote::getName);
     private final MemberCacheViewImpl memberCache = new MemberCacheViewImpl();
     private final CacheView.SimpleCacheView<MemberPresenceImpl> memberPresences;
+    private final AtomicInteger memberCount = new AtomicInteger();
 
     private GuildManager manager;
     private CompletableFuture<Void> pendingRequestToSpeak;
@@ -111,7 +113,6 @@ public class GuildImpl implements Guild
     private Locale preferredLocale = Locale.ENGLISH;
     private boolean available;
     private boolean canSendVerification = false;
-    private int memberCount;
 
     public GuildImpl(JDAImpl api, long id)
     {
@@ -330,7 +331,7 @@ public class GuildImpl implements Guild
     @Override
     public int getMemberCount()
     {
-        return memberCount;
+        return memberCount.get();
     }
 
     @Nonnull
@@ -462,7 +463,7 @@ public class GuildImpl implements Guild
             int presenceLimit = json.getInt("max_presences", 5000);
             this.maxMembers = memberLimit;
             this.maxPresences = presenceLimit;
-            int approxMembers = json.getInt("approximate_member_count", this.memberCount);
+            int approxMembers = json.getInt("approximate_member_count", this.memberCount.get());
             int approxPresence = json.getInt("approximate_presence_count", 0);
             return new MetaData(memberLimit, presenceLimit, approxPresence, approxMembers);
         });
@@ -1941,7 +1942,7 @@ public class GuildImpl implements Guild
 
     public GuildImpl setMemberCount(int count)
     {
-        this.memberCount = count;
+        this.memberCount.set(count);
         return this;
     }
 
@@ -2005,12 +2006,12 @@ public class GuildImpl implements Guild
 
     public void onMemberAdd()
     {
-        memberCount++;
+        memberCount.incrementAndGet();
     }
 
     public void onMemberRemove()
     {
-        memberCount--;
+        memberCount.decrementAndGet();
     }
 
     // -- Object overrides --
