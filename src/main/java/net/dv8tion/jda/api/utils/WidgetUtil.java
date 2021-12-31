@@ -533,7 +533,7 @@ public class WidgetUtil
         @Override
         public String toString()
         {
-            return "Widget[" + (isAvailable() ? getName() : "") + "](" + id + ')';
+            return "Widget:" + (isAvailable() ? getName() : "") + '(' + id + ')';
         }
 
         private void checkAvailable()
@@ -812,7 +812,7 @@ public class WidgetUtil
             @Override
             public String toString()
             {
-                return "WidgetMember:" + getName() + '(' + id + ')';
+                return "Widget.Member:" + getName() + '(' + id + ')';
             }
         }
 
@@ -903,7 +903,7 @@ public class WidgetUtil
             @Override
             public String toString()
             {
-                return "WidgetVoiceChannel:" + getName() + '(' + id + ')';
+                return "Widget.VoiceChannel:" + getName() + '(' + id + ')';
             }
         }
         
@@ -1054,7 +1054,7 @@ public class WidgetUtil
             
             @Override
             public String toString() {
-                return "WidgetVoiceState:" + widget.getName() + '(' + member.getEffectiveName() + ')';
+                return "Widget.VoiceState:" + widget.getName() + '(' + member.getEffectiveName() + ')';
             }
         }
     }
