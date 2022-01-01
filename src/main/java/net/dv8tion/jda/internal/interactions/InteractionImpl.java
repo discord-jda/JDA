@@ -37,7 +37,10 @@ public class InteractionImpl implements Interaction
     protected final User user;
     protected final Channel channel;
     protected final JDAImpl api;
-    protected boolean isAck;
+
+    //This is used to give a proper error when an interaction is ack'd twice
+    // By default, discord only responds with "unknown interaction" which is horrible UX so we add a check manually here
+    private boolean isAck;
 
     public InteractionImpl(JDAImpl jda, DataObject data)
     {
@@ -71,9 +74,17 @@ public class InteractionImpl implements Interaction
         }
     }
 
-    public void ack()
+    public synchronized boolean ack()
     {
+        boolean wasAck = isAck;
         this.isAck = true;
+        return wasAck;
+    }
+
+    @Override
+    public synchronized boolean isAcknowledged()
+    {
+        return isAck;
     }
 
     @Override
@@ -121,12 +132,6 @@ public class InteractionImpl implements Interaction
     public Member getMember()
     {
         return member;
-    }
-
-    @Override
-    public boolean isAcknowledged()
-    {
-        return isAck;
     }
 
     @Nonnull

@@ -20,12 +20,7 @@ import net.dv8tion.jda.api.exceptions.InteractionFailureException;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
-import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.internal.interactions.InteractionHookImpl;
-
-import javax.annotation.Nonnull;
-import java.util.concurrent.CompletableFuture;
-import java.util.function.Consumer;
 
 public abstract class DeferrableCallbackActionImpl extends InteractionCallbackImpl<InteractionHook>
 {
@@ -36,6 +31,9 @@ public abstract class DeferrableCallbackActionImpl extends InteractionCallbackIm
         super(hook.getInteraction());
         this.hook = hook;
     }
+
+    //Here we intercept the responses and forward this information to our followup hook
+    // Using this, we can make nice cascading exceptions which fail all followup messages simultaneously.
 
     @Override
     protected void handleSuccess(Response response, Request<InteractionHook> request)
@@ -50,48 +48,5 @@ public abstract class DeferrableCallbackActionImpl extends InteractionCallbackIm
         if (!response.isOk())
             hook.fail(new InteractionFailureException());
         super.handleResponse(response, request);
-    }
-
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // Here we intercept calls to queue/submit/complete to prevent double ack/reply scenarios with a better error message than discord provides //
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // This is an exception factory method that only returns an exception if we would have to throw it or fail in another way.
-    private IllegalStateException tryAck() // note that hook.ack() is already synchronized so this is actually thread-safe!
-    {
-        // true => we already called this before => this will never succeed!
-        return hook.ack() ? new IllegalStateException("This interaction has already been acknowledged or replied to. You can only reply or acknowledge an interaction (or slash command) once!")
-                : null; // null indicates we were successful, no exception means we can't fail :)
-    }
-
-    @Override
-    public void queue(Consumer<? super InteractionHook> success, Consumer<? super Throwable> failure)
-    {
-        IllegalStateException exception = tryAck();
-        if (exception != null)
-        {
-            if (failure != null)
-                failure.accept(exception); // if the failure callback throws that will just bubble up, which is acceptable
-            else
-                RestAction.getDefaultFailure().accept(exception);
-            return;
-        }
-
-        super.queue(success, failure);
-    }
-
-    @Nonnull
-    @Override
-    public CompletableFuture<InteractionHook> submit(boolean shouldQueue)
-    {
-        IllegalStateException exception = tryAck();
-        if (exception != null)
-        {
-            CompletableFuture<InteractionHook> future = new CompletableFuture<>();
-            future.completeExceptionally(exception);
-            return future;
-        }
-
-        return super.submit(shouldQueue);
     }
 }

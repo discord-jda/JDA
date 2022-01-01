@@ -33,13 +33,6 @@ public class DeferrableInteractionImpl extends InteractionImpl implements IDefer
         this.hook = new InteractionHookImpl(this, jda);
     }
 
-    @Override
-    public void ack()
-    {
-        hook.ack();
-        super.ack();
-    }
-
     @Nonnull
     @Override
     public InteractionHook getHook()
