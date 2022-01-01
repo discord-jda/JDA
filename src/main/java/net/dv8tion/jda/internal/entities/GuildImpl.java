@@ -37,6 +37,7 @@ import net.dv8tion.jda.api.requests.restaction.order.CategoryOrderAction;
 import net.dv8tion.jda.api.requests.restaction.order.ChannelOrderAction;
 import net.dv8tion.jda.api.requests.restaction.order.RoleOrderAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.AuditLogPaginationAction;
+import net.dv8tion.jda.api.utils.TimeUtil;
 import net.dv8tion.jda.api.utils.cache.*;
 import net.dv8tion.jda.api.utils.concurrent.Task;
 import net.dv8tion.jda.api.utils.data.DataArray;
@@ -62,6 +63,8 @@ import okhttp3.RequestBody;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.time.OffsetDateTime;
+import java.time.temporal.TemporalAccessor;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
@@ -1401,6 +1404,36 @@ public class GuildImpl implements Guild
 
         Route.CompiledRoute route = Route.Guilds.UNBAN.compile(getId(), userId);
         return new AuditableRestActionImpl<>(getJDA(), route);
+    }
+
+    @Nonnull
+    @Override
+    public AuditableRestAction<Void> timeoutUntilById(@Nonnull String userId, @Nonnull TemporalAccessor temporal)
+    {
+        Checks.isSnowflake(userId, "User ID");
+        Checks.notNull(temporal, "Temporal");
+        OffsetDateTime date = Helpers.toOffsetDateTime(temporal);
+        Checks.check(date.isAfter(OffsetDateTime.now()), "Cannot put a member in time out with date in the past. Provided: %s", date);
+        Checks.check(date.isBefore(OffsetDateTime.now().plusDays(Member.MAX_TIME_OUT_LENGTH)), "Cannot put a member in time out for more than 28 days. Provided: %s", date);
+        checkPermission(Permission.MODERATE_MEMBERS);
+
+        return timeoutUntilById0(userId, date);
+    }
+
+    @Nonnull
+    @Override
+    public AuditableRestAction<Void> removeTimeoutById(@Nonnull String userId)
+    {
+        Checks.isSnowflake(userId, "User ID");
+        return timeoutUntilById0(userId, null);
+    }
+
+    @Nonnull
+    private AuditableRestAction<Void> timeoutUntilById0(@Nonnull String userId, @Nullable OffsetDateTime date)
+    {
+        DataObject body = DataObject.empty().put("communication_disabled_until", date == null ? null : date.toString());
+        Route.CompiledRoute route = Route.Guilds.MODIFY_MEMBER.compile(getId(), userId);
+        return new AuditableRestActionImpl<>(getJDA(), route, body);
     }
 
     @Nonnull
