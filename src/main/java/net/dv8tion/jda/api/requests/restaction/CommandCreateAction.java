@@ -16,11 +16,13 @@
 
 package net.dv8tion.jda.api.requests.restaction;
 
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
+import net.dv8tion.jda.api.interactions.commands.privileges.CommandPrivilege;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.internal.utils.Checks;
 
@@ -28,12 +30,16 @@ import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Collection;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 
 /**
  * Specialized {@link RestAction} used to create or update commands.
  * <br>If a command with the specified name already exists, it will be replaced!
+ *
+ * <p>This operation is <b>not</b> idempotent!
+ * Commands will persist between restarts of your bot, you only have to create a command once.
  */
 public interface CommandCreateAction extends RestAction<Command>
 {
@@ -56,6 +62,9 @@ public interface CommandCreateAction extends RestAction<Command>
     /**
      * Whether this command is available to everyone by default.
      * <br>If this is disabled, you need to explicitly whitelist users and roles per guild.
+     *
+     * <p>You can use {@link CommandPrivilege} to enable or disable this command per guild for roles and members of the guild.
+     * See {@link Command#updatePrivileges(Guild, CommandPrivilege...)} and {@link Guild#updateCommandPrivileges(Map)}.
      *
      * @param  enabled
      *         True, if this command is enabled by default for everyone. (Default: true)
