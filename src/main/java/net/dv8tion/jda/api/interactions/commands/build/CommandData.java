@@ -44,7 +44,7 @@ public interface CommandData extends SerializableData
      * @throws IllegalArgumentException
      *         If the name is not between 1-32 characters long, or not lowercase and alphanumeric for slash commands
      *
-     * @return The CommandData instance, for chaining
+     * @return The builder instance, for chaining
      */
     @Nonnull
     CommandData setName(@Nonnull String name);
@@ -59,7 +59,7 @@ public interface CommandData extends SerializableData
      * @param  enabled
      *         True, if this command is enabled by default for everyone. (Default: true)
      *
-     * @return The CommandData instance, for chaining
+     * @return The builder instance, for chaining
      */
     @Nonnull
     SlashCommandData setDefaultEnabled(boolean enabled);

@@ -33,6 +33,28 @@ import java.util.List;
  */
 public interface SlashCommandData extends CommandData
 {
+    @Nonnull
+    @Override
+    SlashCommandData setName(@Nonnull String name);
+
+    @Nonnull
+    @Override
+    SlashCommandData setDefaultEnabled(boolean enabled);
+
+    /**
+     * Configure the description
+     *
+     * @param  description
+     *         The description, 1-100 characters
+     *
+     * @throws IllegalArgumentException
+     *         If the name is null or not between 1-100 characters
+     *
+     * @return The builder, for chaining
+     */
+    @Nonnull
+    SlashCommandData setDescription(@Nonnull String description);
+
     /**
      * The {@link SubcommandData Subcommands} in this command.
      *
@@ -66,7 +88,7 @@ public interface SlashCommandData extends CommandData
      *             <li>If null is provided</li>
      *         </ul>
      *
-     * @return The CommandData instance, for chaining
+     * @return The builder instance, for chaining
      */
     @Nonnull
     SlashCommandData addOptions(@Nonnull OptionData... options);
@@ -88,7 +110,7 @@ public interface SlashCommandData extends CommandData
      *             <li>If null is provided</li>
      *         </ul>
      *
-     * @return The CommandData instance, for chaining
+     * @return The builder instance, for chaining
      */
     @Nonnull
     default SlashCommandData addOptions(@Nonnull Collection<? extends OptionData> options)
@@ -124,7 +146,7 @@ public interface SlashCommandData extends CommandData
      *             <li>If null is provided</li>
      *         </ul>
      *
-     * @return The CommandData instance, for chaining
+     * @return The builder instance, for chaining
      */
     @Nonnull
     default SlashCommandData addOption(@Nonnull OptionType type, @Nonnull String name, @Nonnull String description, boolean required, boolean autoComplete)
@@ -157,7 +179,7 @@ public interface SlashCommandData extends CommandData
      *             <li>If null is provided</li>
      *         </ul>
      *
-     * @return The CommandData instance, for chaining
+     * @return The builder instance, for chaining
      */
     @Nonnull
     default SlashCommandData addOption(@Nonnull OptionType type, @Nonnull String name, @Nonnull String description, boolean required)
@@ -187,7 +209,7 @@ public interface SlashCommandData extends CommandData
      *             <li>If null is provided</li>
      *         </ul>
      *
-     * @return The CommandData instance, for chaining
+     * @return The builder instance, for chaining
      */
     @Nonnull
     default SlashCommandData addOption(@Nonnull OptionType type, @Nonnull String name, @Nonnull String description)
@@ -205,7 +227,7 @@ public interface SlashCommandData extends CommandData
      *         If null is provided, or more than 25 subcommands are provided.
      *         Also throws if you try to mix subcommands/options/groups in one command.
      *
-     * @return The CommandData instance, for chaining
+     * @return The builder instance, for chaining
      */
     @Nonnull
     SlashCommandData addSubcommands(@Nonnull SubcommandData... subcommands);
@@ -220,7 +242,7 @@ public interface SlashCommandData extends CommandData
      *         If null is provided, or more than 25 subcommands are provided.
      *         Also throws if you try to mix subcommands/options/groups in one command.
      *
-     * @return The CommandData instance, for chaining
+     * @return The builder instance, for chaining
      */
     @Nonnull
     default SlashCommandData addSubcommands(@Nonnull Collection<? extends SubcommandData> subcommands)
@@ -239,7 +261,7 @@ public interface SlashCommandData extends CommandData
      *         If null is provided, or more than 25 subcommand groups are provided.
      *         Also throws if you try to mix subcommands/options/groups in one command.
      *
-     * @return The CommandData instance, for chaining
+     * @return The builder instance, for chaining
      */
     @Nonnull
     SlashCommandData addSubcommandGroups(@Nonnull SubcommandGroupData... groups);
@@ -254,7 +276,7 @@ public interface SlashCommandData extends CommandData
      *         If null is provided, or more than 25 subcommand groups are provided.
      *         Also throws if you try to mix subcommands/options/groups in one command.
      *
-     * @return The CommandData instance, for chaining
+     * @return The builder instance, for chaining
      */
     @Nonnull
     default SlashCommandData addSubcommandGroups(@Nonnull Collection<? extends SubcommandGroupData> groups)
