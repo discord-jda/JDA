@@ -96,6 +96,8 @@ public interface Command extends ISnowflake
 
     /**
      * Updates the list of {@link CommandPrivilege CommandPrivileges} for this command.
+     * <br>Note that commands are enabled by default for all members of a guild, which means you can only <em>blacklist</em> roles and members using this method.
+     * To change this behavior, use {@link CommandData#setDefaultEnabled(boolean)} on your command.
      *
      * <p>These privileges are used to restrict who can use commands through Role/User whitelists/blacklists.
      *
@@ -121,6 +123,8 @@ public interface Command extends ISnowflake
 
     /**
      * Updates the list of {@link CommandPrivilege CommandPrivileges} for this command.
+     * <br>Note that commands are enabled by default for all members of a guild, which means you can only <em>blacklist</em> roles and members using this method.
+     * To change this behavior, use {@link CommandData#setDefaultEnabled(boolean)} on your command.
      *
      * <p>These privileges are used to restrict who can use commands through Role/User whitelists/blacklists.
      *

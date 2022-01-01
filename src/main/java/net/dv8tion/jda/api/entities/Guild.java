@@ -23,6 +23,7 @@ import net.dv8tion.jda.api.exceptions.HierarchyException;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.privileges.CommandPrivilege;
 import net.dv8tion.jda.api.managers.AudioManager;
 import net.dv8tion.jda.api.managers.GuildManager;
@@ -123,6 +124,7 @@ public interface Guild extends ISnowflake
      * Creates or updates a command.
      * <br>If a command with the same name exists, it will be replaced.
      * This operation is <b>not</b> idempotent.
+     * Commands will persist between restarts of your bot, you only have to create a command once.
      *
      * <p>To specify a complete list of all commands you can use {@link #updateCommands()} instead.
      *
@@ -137,9 +139,9 @@ public interface Guild extends ISnowflake
      * @return {@link RestAction} - Type: {@link Command}
      *         <br>The RestAction used to create or update the command
      *
-     * @see    net.dv8tion.jda.api.interactions.commands.build.Commands#slash(String, String) Commands.slash(...)
-     * @see    net.dv8tion.jda.api.interactions.commands.build.Commands#message(String) Commands.message(...)
-     * @see    net.dv8tion.jda.api.interactions.commands.build.Commands#user(String) Commands.user(...)
+     * @see    Commands#slash(String, String) Commands.slash(...)
+     * @see    Commands#message(String) Commands.message(...)
+     * @see    Commands#user(String) Commands.user(...)
      */
     @Nonnull
     @CheckReturnValue
@@ -149,6 +151,7 @@ public interface Guild extends ISnowflake
      * Creates or updates a slash command.
      * <br>If a command with the same name exists, it will be replaced.
      * This operation is <b>not</b> idempotent.
+     * Commands will persist between restarts of your bot, you only have to create a command once.
      *
      * <p>To specify a complete list of all commands you can use {@link #updateCommands()} instead.
      *
@@ -173,8 +176,10 @@ public interface Guild extends ISnowflake
 
     /**
      * Configures the complete list of guild commands.
-     * <br>This will replace the existing command list for this guild. You should only use this once on startup!
-     * This operation is idempotent.
+     * <br>This will replace the existing command list for this guild. You should only use this at most once on startup!
+     *
+     * <p>This operation is idempotent.
+     * Commands will persist between restarts of your bot, you only have to create a command once.
      *
      * <p>You need the OAuth2 scope {@code "applications.commands"} in order to add commands to a guild.
      *
@@ -191,6 +196,8 @@ public interface Guild extends ISnowflake
      * }</pre>
      *
      * @return {@link CommandListUpdateAction}
+     *
+     * @see    JDA#updateCommands()
      */
     @Nonnull
     @CheckReturnValue
@@ -325,6 +332,8 @@ public interface Guild extends ISnowflake
 
     /**
      * Updates the list of {@link CommandPrivilege CommandPrivileges} for the specified command.
+     * <br>Note that commands are enabled by default for all members of a guild, which means you can only <em>blacklist</em> roles and members using this method.
+     * To change this behavior, use {@link CommandData#setDefaultEnabled(boolean)} on your command.
      *
      * <p>These privileges are used to restrict who can use commands through Role/User whitelists/blacklists.
      *
@@ -348,6 +357,8 @@ public interface Guild extends ISnowflake
 
     /**
      * Updates the list of {@link CommandPrivilege CommandPrivileges} for the specified command.
+     * <br>Note that commands are enabled by default for all members of a guild, which means you can only <em>blacklist</em> roles and members using this method.
+     * To change this behavior, use {@link CommandData#setDefaultEnabled(boolean)} on your command.
      *
      * <p>These privileges are used to restrict who can use commands through Role/User whitelists/blacklists.
      *
@@ -375,6 +386,8 @@ public interface Guild extends ISnowflake
 
     /**
      * Updates the list of {@link CommandPrivilege CommandPrivileges} for the specified command.
+     * <br>Note that commands are enabled by default for all members of a guild, which means you can only <em>blacklist</em> roles and members using this method.
+     * To change this behavior, use {@link CommandData#setDefaultEnabled(boolean)} on your command.
      *
      * <p>These privileges are used to restrict who can use commands through Role/User whitelists/blacklists.
      *
@@ -401,6 +414,8 @@ public interface Guild extends ISnowflake
 
     /**
      * Updates the list of {@link CommandPrivilege CommandPrivileges} for the specified command.
+     * <br>Note that commands are enabled by default for all members of a guild, which means you can only <em>blacklist</em> roles and members using this method.
+     * To change this behavior, use {@link CommandData#setDefaultEnabled(boolean)} on your command.
      *
      * <p>These privileges are used to restrict who can use commands through Role/User whitelists/blacklists.
      *
@@ -429,6 +444,8 @@ public interface Guild extends ISnowflake
     /**
      * Updates the list of {@link CommandPrivilege CommandPrivileges} for the specified commands.
      * <br>The argument for this function is a {@link Map} similar to the one returned by {@link #retrieveCommandPrivileges()}.
+     * <br>Note that commands are enabled by default for all members of a guild, which means you can only <em>blacklist</em> roles and members using this method.
+     * To change this behavior, use {@link CommandData#setDefaultEnabled(boolean)} on your command.
      *
      * <p>These privileges are used to restrict who can use commands through Role/User whitelists/blacklists.
      *

@@ -34,6 +34,8 @@ import java.util.function.BooleanSupplier;
 /**
  * Specialized {@link RestAction} used to replace existing commands of a guild or globally.
  * <br>Any commands that currently exist and are not listed through {@link #addCommands(CommandData...)} will be <b>DELETED</b>!
+ *
+ * <p>This operation is idempotent. Commands will persist between restarts of your bot, you only have to create a command once.
  */
 public interface CommandListUpdateAction extends RestAction<List<Command>>
 {

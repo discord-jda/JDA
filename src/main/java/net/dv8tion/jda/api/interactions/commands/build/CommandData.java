@@ -16,13 +16,16 @@
 
 package net.dv8tion.jda.api.interactions.commands.build;
 
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.commands.privileges.CommandPrivilege;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
+import java.util.Map;
 
 /**
  * Builder for Application Commands.
@@ -49,6 +52,9 @@ public interface CommandData extends SerializableData
     /**
      * Whether this command is available to everyone by default.
      * <br>If this is disabled, you need to explicitly whitelist users and roles per guild.
+     *
+     * <p>You can use {@link CommandPrivilege} to enable or disable this command per guild for roles and members of the guild.
+     * See {@link Command#updatePrivileges(Guild, CommandPrivilege...)} and {@link Guild#updateCommandPrivileges(Map)}.
      *
      * @param  enabled
      *         True, if this command is enabled by default for everyone. (Default: true)
