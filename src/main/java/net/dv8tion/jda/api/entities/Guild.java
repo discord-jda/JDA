@@ -2841,7 +2841,7 @@ public interface Guild extends ISnowflake
     AudioManager getAudioManager();
 
     /**
-     * Once the currently logged in account is connected to a {@link StageChannel} with an active {@link StageInstance},
+     * Once the currently logged in account is connected to a {@link StageChannel},
      * this will trigger a {@link GuildVoiceState#getRequestToSpeakTimestamp() Request-to-Speak} (aka raise your hand).
      *
      * <p>This will set an internal flag to automatically request to speak once the bot joins a stage channel.
@@ -2868,7 +2868,7 @@ public interface Guild extends ISnowflake
      * Cancels the {@link #requestToSpeak() Request-to-Speak}.
      * <br>This can also be used to move back to the audience if you are currently a speaker.
      *
-     * <p>If there is no request to speak or the member is not currently connected to an active {@link StageInstance}, this does nothing.
+     * <p>If there is no request to speak or the member is not currently connected to a {@link StageChannel}, this does nothing.
      *
      * @return {@link Task} representing the request to speak cancellation.
      *         Calling {@link Task#get()} can result in deadlocks and should be avoided at all times.

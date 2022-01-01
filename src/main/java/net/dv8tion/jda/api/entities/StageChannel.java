@@ -130,7 +130,7 @@ public interface StageChannel extends GuildChannel, AudioChannel, ICategorizable
      * <p>If the self member has {@link Permission#VOICE_MUTE_OTHERS} this will immediately promote them to speaker.
      *
      * @throws IllegalStateException
-     *         If the self member is not currently connected to the channel of this stage instance
+     *         If the self member is not currently connected to the channel
      *
      * @return {@link RestAction}
      *
@@ -147,7 +147,7 @@ public interface StageChannel extends GuildChannel, AudioChannel, ICategorizable
      * <p>If there is no request to speak or the member is not currently connected to an active {@link StageInstance}, this does nothing.
      *
      * @throws IllegalStateException
-     *         If the self member is not currently connected to the channel of this stage instance
+     *         If the self member is not currently connected to the channel
      *
      * @return {@link RestAction}
      *
