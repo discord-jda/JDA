@@ -37,7 +37,6 @@ import net.dv8tion.jda.api.requests.restaction.order.CategoryOrderAction;
 import net.dv8tion.jda.api.requests.restaction.order.ChannelOrderAction;
 import net.dv8tion.jda.api.requests.restaction.order.RoleOrderAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.AuditLogPaginationAction;
-import net.dv8tion.jda.api.utils.TimeUtil;
 import net.dv8tion.jda.api.utils.cache.*;
 import net.dv8tion.jda.api.utils.concurrent.Task;
 import net.dv8tion.jda.api.utils.data.DataArray;
@@ -936,11 +935,13 @@ public class GuildImpl implements Guild
         }
 
         AudioChannel channel = getSelfMember().getVoiceState().getChannel();
-        StageInstance instance = channel instanceof StageChannel ? ((StageChannel) channel).getStageInstance() : null;
-        if (instance == null)
-            return new GatewayTask<>(CompletableFuture.completedFuture(null), () -> {});
-        CompletableFuture<Void> future = instance.cancelRequestToSpeak().submit();
-        return new GatewayTask<>(future, () -> future.cancel(false));
+        if (channel instanceof StageChannel)
+        {
+            CompletableFuture<Void> future = ((StageChannel) channel).cancelRequestToSpeak().submit();
+            return new GatewayTask<>(future, () -> future.cancel(false));
+        }
+
+        return new GatewayTask<>(CompletableFuture.completedFuture(null), () -> {});
     }
 
     @Nonnull
@@ -1785,14 +1786,19 @@ public class GuildImpl implements Guild
         if (!(connectedChannel instanceof StageChannel))
             return;
         StageChannel stage = (StageChannel) connectedChannel;
-        StageInstance instance = stage.getStageInstance();
-        if (instance == null)
-            return;
-
         CompletableFuture<Void> future = pendingRequestToSpeak;
         pendingRequestToSpeak = null;
 
-        instance.requestToSpeak().queue((v) -> future.complete(null), future::completeExceptionally);
+        try
+        {
+            stage.requestToSpeak().queue((v) -> future.complete(null), future::completeExceptionally);
+        }
+        catch (Throwable ex)
+        {
+            future.completeExceptionally(ex);
+            if (ex instanceof Error)
+                throw ex;
+        }
     }
 
     // ---- Setters -----
