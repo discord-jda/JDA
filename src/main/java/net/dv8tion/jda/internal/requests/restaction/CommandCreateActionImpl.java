@@ -34,6 +34,7 @@ import net.dv8tion.jda.internal.utils.Checks;
 import okhttp3.RequestBody;
 
 import javax.annotation.Nonnull;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 
@@ -87,6 +88,20 @@ public class CommandCreateActionImpl extends RestActionImpl<Command> implements 
 
     @Nonnull
     @Override
+    public String getName()
+    {
+        return data.getName();
+    }
+
+    @Nonnull
+    @Override
+    public Command.Type getType()
+    {
+        return data.getType();
+    }
+
+    @Nonnull
+    @Override
     public CommandCreateAction timeout(long timeout, @Nonnull TimeUnit unit)
     {
         return (CommandCreateAction) super.timeout(timeout, unit);
@@ -111,6 +126,20 @@ public class CommandCreateActionImpl extends RestActionImpl<Command> implements 
         Checks.notLonger(description, 100, "Description");
         data.setDescription(description);
         return this;
+    }
+
+    @Nonnull
+    @Override
+    public List<SubcommandData> getSubcommands()
+    {
+        return data.getSubcommands();
+    }
+
+    @Nonnull
+    @Override
+    public List<SubcommandGroupData> getSubcommandGroups()
+    {
+        return data.getSubcommandGroups();
     }
 
     @Nonnull
@@ -148,5 +177,12 @@ public class CommandCreateActionImpl extends RestActionImpl<Command> implements 
     {
         DataObject json = response.getObject();
         request.onSuccess(new CommandImpl(api, guild, json));
+    }
+
+    @Nonnull
+    @Override
+    public DataObject toData()
+    {
+        return data.toData();
     }
 }
