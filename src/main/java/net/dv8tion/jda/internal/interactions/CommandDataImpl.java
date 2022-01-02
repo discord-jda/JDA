@@ -142,6 +142,12 @@ public class CommandDataImpl extends BaseCommand<CommandDataImpl> implements Sla
         return this;
     }
 
+    @Override
+    public boolean isDefaultEnabled()
+    {
+        return defaultPermissions;
+    }
+
     @Nonnull
     @Override
     public CommandDataImpl addOptions(@Nonnull OptionData... options)

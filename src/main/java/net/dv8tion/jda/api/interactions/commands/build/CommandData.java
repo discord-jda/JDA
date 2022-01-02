@@ -73,6 +73,16 @@ public interface CommandData extends SerializableData
     String getName();
 
     /**
+     * Whether this command is available to everyone by default.
+     *
+     * @return True, if this command is enabled to everyone by default
+     *
+     * @see    #setDefaultEnabled(boolean)
+     * @see    CommandPrivilege
+     */
+    boolean isDefaultEnabled();
+
+    /**
      * The {@link Command.Type}
      *
      * @return The {@link Command.Type}

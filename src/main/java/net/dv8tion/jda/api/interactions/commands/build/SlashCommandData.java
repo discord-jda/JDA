@@ -56,6 +56,14 @@ public interface SlashCommandData extends CommandData
     SlashCommandData setDescription(@Nonnull String description);
 
     /**
+     * The configured description
+     *
+     * @return The description
+     */
+    @Nonnull
+    String getDescription();
+
+    /**
      * The {@link SubcommandData Subcommands} in this command.
      *
      * @return Immutable list of {@link SubcommandData}

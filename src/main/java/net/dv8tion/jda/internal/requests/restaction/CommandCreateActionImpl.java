@@ -93,6 +93,12 @@ public class CommandCreateActionImpl extends RestActionImpl<Command> implements 
         return data.getName();
     }
 
+    @Override
+    public boolean isDefaultEnabled()
+    {
+        return data.isDefaultEnabled();
+    }
+
     @Nonnull
     @Override
     public Command.Type getType()
@@ -126,6 +132,13 @@ public class CommandCreateActionImpl extends RestActionImpl<Command> implements 
         Checks.notLonger(description, 100, "Description");
         data.setDescription(description);
         return this;
+    }
+
+    @Nonnull
+    @Override
+    public String getDescription()
+    {
+        return data.getDescription();
     }
 
     @Nonnull
