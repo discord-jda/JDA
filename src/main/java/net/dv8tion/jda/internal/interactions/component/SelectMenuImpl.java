@@ -26,6 +26,7 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 public class SelectMenuImpl implements SelectMenu
 {
@@ -125,5 +126,33 @@ public class SelectMenuImpl implements SelectMenu
         if (placeholder != null)
             data.put("placeholder", placeholder);
         return data;
+    }
+
+    @Override
+    public String toString()
+    {
+        return "SelectMenu:" + id + "(" + placeholder + ")";
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return Objects.hash(id, placeholder, minValues, maxValues, disabled, options);
+    }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (obj == this)
+            return true;
+        if (!(obj instanceof SelectMenu))
+            return false;
+        SelectMenu other = (SelectMenu) obj;
+        return Objects.equals(id, other.getId())
+                && Objects.equals(placeholder, other.getPlaceholder())
+                && minValues == other.getMinValues()
+                && maxValues == other.getMaxValues()
+                && disabled == other.isDisabled()
+                && Objects.equals(options, other.getOptions());
     }
 }

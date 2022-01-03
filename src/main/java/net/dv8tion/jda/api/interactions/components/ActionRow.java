@@ -178,4 +178,26 @@ public class ActionRow implements LayoutComponent, Iterable<ActionComponent>
     {
         return components.iterator();
     }
+
+    @Override
+    public String toString()
+    {
+        return "ActionRow(" + components + ")";
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return components.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (obj == this)
+            return true;
+        if (!(obj instanceof ActionRow))
+            return false;
+        return components.equals(((ActionRow) obj).components);
+    }
 }
