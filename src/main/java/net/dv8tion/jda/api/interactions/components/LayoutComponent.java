@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
 import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.internal.utils.Checks;
 
+import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
@@ -86,6 +87,7 @@ public interface LayoutComponent extends SerializableData, Iterable<ActionCompon
      * @see    ActionComponent#withDisabled(boolean)
      */
     @Nonnull
+    @CheckReturnValue
     LayoutComponent withDisabled(boolean disabled);
 
     /**
@@ -97,6 +99,7 @@ public interface LayoutComponent extends SerializableData, Iterable<ActionCompon
      * @see    ActionComponent#asDisabled()
      */
     @Nonnull
+    @CheckReturnValue
     LayoutComponent asDisabled();
 
     /**
@@ -108,6 +111,7 @@ public interface LayoutComponent extends SerializableData, Iterable<ActionCompon
      * @see    ActionComponent#asEnabled()
      */
     @Nonnull
+    @CheckReturnValue
     LayoutComponent asEnabled();
 
     /**
