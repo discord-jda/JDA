@@ -246,6 +246,29 @@ public class ActionRow implements LayoutComponent, Iterable<ActionComponent>
 
     @Nonnull
     @Override
+    public ActionRow withDisabled(boolean disabled)
+    {
+        return ActionRow.of(components.stream()
+                .map(c -> c.withDisabled(disabled))
+                .collect(Collectors.toList()));
+    }
+
+    @Nonnull
+    @Override
+    public ActionRow asDisabled()
+    {
+        return withDisabled(true);
+    }
+
+    @Nonnull
+    @Override
+    public ActionRow asEnabled()
+    {
+        return withDisabled(false);
+    }
+
+    @Nonnull
+    @Override
     public Component.Type getType()
     {
         return Component.Type.ACTION_ROW;
