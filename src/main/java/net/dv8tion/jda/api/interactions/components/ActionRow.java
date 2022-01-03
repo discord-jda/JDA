@@ -128,6 +128,94 @@ public class ActionRow implements LayoutComponent, Iterable<ActionComponent>
     }
 
     /**
+     * Partitions the provided {@link ActionComponent components} into a list of ActionRow instances.
+     * <br>This will split the provided components by {@link Type#getMaxPerRow()} and create homogeneously typed rows,
+     * meaning they will not have mixed component types.
+     *
+     * <h4>Example</h4>
+     * <pre>{@code
+     * List<ActionComponent> components = Arrays.asList(
+     *   Button.primary("id1", "Hello"),
+     *   Button.secondary("id2", "World"),
+     *   SelectMenu.create("menu:id").build()
+     * );
+     *
+     * List<ActionRow> partitioned = ActionRow.partition(components);
+     * // partitioned[0] = ActionRow(button, button)
+     * // partitioned[1] = ActionRow(selectMenu)
+     * }</pre>
+     *
+     * @param  components
+     *         The components to partition
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided
+     *
+     * @return {@link List} of {@link ActionRow}
+     */
+    @Nonnull
+    public static List<ActionRow> partitionOf(@Nonnull Collection<? extends ActionComponent> components)
+    {
+        Checks.noneNull(components, "Components");
+
+        List<ActionRow> rows = new ArrayList<>();
+        // The current action row we are building
+        List<ActionComponent> currentRow = null;
+        // The component types contained in that row (for now it can't have mixed types)
+        Component.Type type = null;
+
+        for (ActionComponent current : components)
+        {
+            if (type != current.getType() || currentRow.size() == type.getMaxPerRow())
+            {
+                type = current.getType();
+                ActionRow row = ActionRow.of(current);
+                currentRow = row.components;
+                rows.add(row);
+            }
+            else
+            {
+                currentRow.add(current);
+            }
+        }
+
+        return rows;
+    }
+
+    /**
+     * Partitions the provided {@link ActionComponent components} into a list of ActionRow instances.
+     * <br>This will split the provided components by {@link Type#getMaxPerRow()} and create homogeneously typed rows,
+     * meaning they will not have mixed component types.
+     *
+     * <h4>Example</h4>
+     * <pre>{@code
+     * List<ActionComponent> components = Arrays.asList(
+     *   Button.primary("id1", "Hello"),
+     *   Button.secondary("id2", "World"),
+     *   SelectMenu.create("menu:id").build()
+     * );
+     *
+     * List<ActionRow> partitioned = ActionRow.partition(components);
+     * // partitioned[0] = ActionRow(button, button)
+     * // partitioned[1] = ActionRow(selectMenu)
+     * }</pre>
+     *
+     * @param  components
+     *         The components to partition
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided
+     *
+     * @return {@link List} of {@link ActionRow}
+     */
+    @Nonnull
+    public static List<ActionRow> partitionOf(@Nonnull ActionComponent... components)
+    {
+        Checks.notNull(components, "Components");
+        return partitionOf(Arrays.asList(components));
+    }
+
+    /**
      * Mutable list of components in this ActionRow.
      * <br>ActionRows should not be empty and are limited to 5 buttons.
      *
