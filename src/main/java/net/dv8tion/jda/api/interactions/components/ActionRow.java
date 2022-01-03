@@ -23,6 +23,7 @@ import net.dv8tion.jda.internal.interactions.component.ButtonImpl;
 import net.dv8tion.jda.internal.interactions.component.SelectMenuImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
+import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -246,6 +247,7 @@ public class ActionRow implements LayoutComponent, Iterable<ActionComponent>
 
     @Nonnull
     @Override
+    @CheckReturnValue
     public ActionRow withDisabled(boolean disabled)
     {
         return ActionRow.of(components.stream()
@@ -255,6 +257,7 @@ public class ActionRow implements LayoutComponent, Iterable<ActionComponent>
 
     @Nonnull
     @Override
+    @CheckReturnValue
     public ActionRow asDisabled()
     {
         return withDisabled(true);
@@ -262,6 +265,7 @@ public class ActionRow implements LayoutComponent, Iterable<ActionComponent>
 
     @Nonnull
     @Override
+    @CheckReturnValue
     public ActionRow asEnabled()
     {
         return withDisabled(false);
