@@ -53,6 +53,64 @@ public interface LayoutComponent extends SerializableData, Iterable<ActionCompon
     List<Button> getButtons();
 
     /**
+     * Whether all components in this layout are {@link ActionComponent#isDisabled() disabled}.
+     * <br>Note that this is a universal quantifier, which means false <b>does not</b> imply {@link #isEnabled()}!
+     *
+     * @return True, if all components are disabled
+     */
+    default boolean isDisabled()
+    {
+        return getComponents().stream().allMatch(ActionComponent::isDisabled);
+    }
+
+    /**
+     * Whether all components in this layout are {@link ActionComponent#isDisabled() enabled}.
+     * <br>Note that this is a universal quantifier, which means false <b>does not</b> imply {@link #isDisabled()}!
+     *
+     * @return True, if all components are enabled
+     */
+    default boolean isEnabled()
+    {
+        return getComponents().stream().noneMatch(ActionComponent::isDisabled);
+    }
+
+    /**
+     * Returns a new instance of this LayoutComponent with all components set to disabled/enabled.
+     * <br>This does not modify the layout this was called on. To do this in-place, you can use {@link #getComponents()}.
+     *
+     * @param  disabled
+     *         True if the components should be set to disabled, false if they should be enabled
+     *
+     * @return The new layout component with all components updated
+     *
+     * @see    ActionComponent#withDisabled(boolean)
+     */
+    @Nonnull
+    LayoutComponent withDisabled(boolean disabled);
+
+    /**
+     * Returns a new instance of this LayoutComponent with all components set to disabled.
+     * <br>This does not modify the layout this was called on. To do this in-place, you can use {@link #getComponents()}.
+     *
+     * @return The new layout component with all components updated
+     *
+     * @see    ActionComponent#asDisabled()
+     */
+    @Nonnull
+    LayoutComponent asDisabled();
+
+    /**
+     * Returns a new instance of this LayoutComponent with all components set to enabled.
+     * <br>This does not modify the layout this was called on. To do this in-place, you can use {@link #getComponents()}.
+     *
+     * @return The new layout component with all components updated
+     *
+     * @see    ActionComponent#asEnabled()
+     */
+    @Nonnull
+    LayoutComponent asEnabled();
+
+    /**
      * Check whether this layout is empty.
      * <br>Identical to {@code getComponents().isEmpty()}
      *
