@@ -16,8 +16,6 @@
 
 package net.dv8tion.jda.internal.utils;
 
-import net.dv8tion.jda.api.utils.TimeUtil;
-
 import javax.annotation.Nullable;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
@@ -45,11 +43,6 @@ public final class Helpers
     public static OffsetDateTime toOffset(long instant)
     {
         return OffsetDateTime.ofInstant(Instant.ofEpochMilli(instant), OFFSET);
-    }
-    
-    public static String toISO8601(long id)
-    {
-        return DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(TimeUtil.getTimeCreated(id));
     }
 
     public static long toTimestamp(String iso8601String)
