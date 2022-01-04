@@ -44,6 +44,11 @@ public final class Helpers
     {
         return OffsetDateTime.ofInstant(Instant.ofEpochMilli(instant), OFFSET);
     }
+    
+    public static String toISO8601(long timestamp)
+    {
+        return DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(Instant.ofEpochMilli(timestamp));
+    }
 
     public static long toTimestamp(String iso8601String)
     {
