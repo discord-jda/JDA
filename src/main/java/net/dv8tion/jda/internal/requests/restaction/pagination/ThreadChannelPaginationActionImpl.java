@@ -13,6 +13,7 @@ import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.requests.Route;
+import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -46,7 +47,7 @@ public class ThreadChannelPaginationActionImpl extends PaginationActionImpl<Thre
         route = route.withQueryParams("limit", limit);
 
         if (last != 0)
-            route = route.withQueryParams("before", Long.toUnsignedString(last));
+            route = route.withQueryParams("before", Helpers.toISO8601(last));
 
         return route;
     }
