@@ -71,9 +71,12 @@ public class OptionMapping
     /**
      * Resolved {@link Member} mentions for a {@link OptionType#STRING STRING} option.
      * <br>If this option is not of type {@link OptionType#STRING STRING}, this always returns an empty list.
+     * Mentions are sorted by occurrence.
      *
      * <p>This only contains members of the guild.
      * If the user mentions users from other guilds, they will only be provided by {@link #getMentionedUsers()}.
+     *
+     * <p>This is not supported for {@link CommandAutoCompleteInteraction}.
      *
      * @return {@link List} of {@link Member} the resolved guild user mentions in a string option
      */
@@ -93,8 +96,11 @@ public class OptionMapping
     /**
      * Resolved {@link User} mentions for a {@link OptionType#STRING STRING} option.
      * <br>If this option is not of type {@link OptionType#STRING STRING}, this always returns an empty list.
+     * Mentions are sorted by occurrence.
      *
      * <p>This may also contain users which are not members in the guild!
+     *
+     * <p>This is not supported for {@link CommandAutoCompleteInteraction}.
      *
      * @return {@link List} of {@link User} the resolved guild user mentions in a string option
      */
@@ -118,6 +124,9 @@ public class OptionMapping
     /**
      * Resolved {@link Role} mentions for a {@link OptionType#STRING STRING} option.
      * <br>If this option is not of type {@link OptionType#STRING STRING}, this always returns an empty list.
+     * Mentions are sorted by occurrence.
+     *
+     * <p>This is not supported for {@link CommandAutoCompleteInteraction}.
      *
      * @return {@link List} of {@link Role} the resolved guild role mentions in a string option
      */
@@ -137,6 +146,9 @@ public class OptionMapping
     /**
      * Resolved {@link GuildChannel} mentions for a {@link OptionType#STRING STRING} option.
      * <br>If this option is not of type {@link OptionType#STRING STRING}, this always returns an empty list.
+     * Mentions are sorted by occurrence.
+     *
+     * <p>This is not supported for {@link CommandAutoCompleteInteraction}.
      *
      * @return {@link List} of {@link GuildChannel} the resolved guild channel mentions in a string option
      */
@@ -151,6 +163,39 @@ public class OptionMapping
             Object obj = resolved.get(id);
             return obj instanceof GuildChannel ? (GuildChannel) obj : null;
         });
+    }
+
+    /**
+     * All resolved {@link IMentionable mentions} for a {@link OptionType#STRING STRING} option.
+     * <br>If this option is not of type {@link OptionType#STRING STRING}, this always returns an empty list.
+     * Mentions are sorted by occurrence.
+     *
+     * <p>This is not supported for {@link CommandAutoCompleteInteraction}.
+     *
+     * This merges {@link #getMentionedUsers()}, {@link #getMentionedMembers()}, {@link #getMentionedRoles()}, and {@link #getMentionedChannels()}.
+     *
+     * @return {@link List} of {@link IMentionable} the resolved mentions in a string option
+     */
+    @Nonnull
+    public List<IMentionable> getMentions()
+    {
+        if (type != OptionType.STRING)
+            return Collections.emptyList();
+
+        List<User> users = getMentionedUsers();
+        List<Member> members = getMentionedMembers();
+        List<Role> roles = getMentionedRoles();
+        List<GuildChannel> channels = getMentionedChannels();
+        users.removeIf(user -> members.stream().anyMatch(m -> m.getIdLong() == user.getIdLong()));
+
+        List<IMentionable> mentions = new ArrayList<>(users.size() + members.size() + roles.size() + channels.size());
+        mentions.addAll(users);
+        mentions.addAll(members);
+        mentions.addAll(roles);
+        mentions.addAll(channels);
+        mentions.sort(Comparator.comparingInt(mention -> getAsString().indexOf(mention.getId())));
+
+        return mentions;
     }
 
     /**
