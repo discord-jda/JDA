@@ -51,7 +51,7 @@ public class OptionMapping
         this.resolved = resolved;
     }
 
-    private <T, C extends Collection<T>> C parseMentions(C coll, Pattern pattern, Function<Matcher, T> resolver)
+    private <T, C extends Collection<T>> C parseMentions(C coll, Pattern pattern, boolean duplicates, Function<Matcher, T> resolver)
     {
         Matcher matcher = pattern.matcher(getAsString());
         while (matcher.find())
@@ -59,7 +59,7 @@ public class OptionMapping
             try
             {
                 T obj = resolver.apply(matcher);
-                if (obj != null)
+                if (obj != null && (duplicates || !coll.contains(obj)))
                     coll.add(obj);
             }
             catch (NumberFormatException ignored) {}
@@ -86,7 +86,7 @@ public class OptionMapping
         if (type != OptionType.STRING)
             return Collections.emptyList();
 
-        return parseMentions(new ArrayList<>(), Message.MentionType.USER.getPattern(), (matcher) -> {
+        return parseMentions(new ArrayList<>(), Message.MentionType.USER.getPattern(), false, (matcher) -> {
             long id = Long.parseUnsignedLong(matcher.group(1));
             Object obj = resolved.get(id);
             return obj instanceof Member ? (Member) obj : null;
@@ -110,7 +110,7 @@ public class OptionMapping
         if (type != OptionType.STRING)
             return Collections.emptyList();
 
-        return parseMentions(new ArrayList<>(), Message.MentionType.USER.getPattern(), (matcher) -> {
+        return parseMentions(new ArrayList<>(), Message.MentionType.USER.getPattern(), false, (matcher) -> {
             long id = Long.parseUnsignedLong(matcher.group(1));
             Object obj = resolved.get(id);
             if (obj instanceof User)
@@ -136,7 +136,7 @@ public class OptionMapping
         if (type != OptionType.STRING)
             return Collections.emptyList();
 
-        return parseMentions(new ArrayList<>(), Message.MentionType.ROLE.getPattern(), (matcher) -> {
+        return parseMentions(new ArrayList<>(), Message.MentionType.ROLE.getPattern(), false, (matcher) -> {
             long id = Long.parseUnsignedLong(matcher.group(1));
             Object obj = resolved.get(id);
             return obj instanceof Role ? (Role) obj : null;
@@ -158,7 +158,7 @@ public class OptionMapping
         if (type != OptionType.STRING)
             return Collections.emptyList();
 
-        return parseMentions(new ArrayList<>(), Message.MentionType.CHANNEL.getPattern(), (matcher) -> {
+        return parseMentions(new ArrayList<>(), Message.MentionType.CHANNEL.getPattern(), false, (matcher) -> {
             long id = Long.parseUnsignedLong(matcher.group(1));
             Object obj = resolved.get(id);
             return obj instanceof GuildChannel ? (GuildChannel) obj : null;
