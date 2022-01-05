@@ -22,7 +22,10 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Objects;
+import java.util.*;
+import java.util.function.Function;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Name/Value pair for a {@link CommandInteraction} option.
@@ -46,6 +49,108 @@ public class OptionMapping
         this.type = OptionType.fromKey(data.getInt("type", -1));
         this.name = data.getString("name");
         this.resolved = resolved;
+    }
+
+    private <T, C extends Collection<T>> C parseMentions(C coll, Pattern pattern, Function<Matcher, T> resolver)
+    {
+        Matcher matcher = pattern.matcher(getAsString());
+        while (matcher.find())
+        {
+            try
+            {
+                T obj = resolver.apply(matcher);
+                if (obj != null)
+                    coll.add(obj);
+            }
+            catch (NumberFormatException ignored) {}
+        }
+
+        return coll;
+    }
+
+    /**
+     * Resolved {@link Member} mentions for a {@link OptionType#STRING STRING} option.
+     * <br>If this option is not of type {@link OptionType#STRING STRING}, this always returns an empty list.
+     *
+     * <p>This only contains members of the guild.
+     * If the user mentions users from other guilds, they will only be provided by {@link #getMentionedUsers()}.
+     *
+     * @return {@link List} of {@link Member} the resolved guild user mentions in a string option
+     */
+    @Nonnull
+    public List<Member> getMentionedMembers()
+    {
+        if (type != OptionType.STRING)
+            return Collections.emptyList();
+
+        return parseMentions(new ArrayList<>(), Message.MentionType.USER.getPattern(), (matcher) -> {
+            long id = Long.parseUnsignedLong(matcher.group(1));
+            Object obj = resolved.get(id);
+            return obj instanceof Member ? (Member) obj : null;
+        });
+    }
+
+    /**
+     * Resolved {@link User} mentions for a {@link OptionType#STRING STRING} option.
+     * <br>If this option is not of type {@link OptionType#STRING STRING}, this always returns an empty list.
+     *
+     * <p>This may also contain users which are not members in the guild!
+     *
+     * @return {@link List} of {@link User} the resolved guild user mentions in a string option
+     */
+    @Nonnull
+    public List<User> getMentionedUsers()
+    {
+        if (type != OptionType.STRING)
+            return Collections.emptyList();
+
+        return parseMentions(new ArrayList<>(), Message.MentionType.USER.getPattern(), (matcher) -> {
+            long id = Long.parseUnsignedLong(matcher.group(1));
+            Object obj = resolved.get(id);
+            if (obj instanceof User)
+                return (User) obj;
+            if (obj instanceof Member)
+                return ((Member) obj).getUser();
+            return null;
+        });
+    }
+
+    /**
+     * Resolved {@link Role} mentions for a {@link OptionType#STRING STRING} option.
+     * <br>If this option is not of type {@link OptionType#STRING STRING}, this always returns an empty list.
+     *
+     * @return {@link List} of {@link Role} the resolved guild role mentions in a string option
+     */
+    @Nonnull
+    public List<Role> getMentionedRoles()
+    {
+        if (type != OptionType.STRING)
+            return Collections.emptyList();
+
+        return parseMentions(new ArrayList<>(), Message.MentionType.ROLE.getPattern(), (matcher) -> {
+            long id = Long.parseUnsignedLong(matcher.group(1));
+            Object obj = resolved.get(id);
+            return obj instanceof Role ? (Role) obj : null;
+        });
+    }
+
+    /**
+     * Resolved {@link GuildChannel} mentions for a {@link OptionType#STRING STRING} option.
+     * <br>If this option is not of type {@link OptionType#STRING STRING}, this always returns an empty list.
+     *
+     * @return {@link List} of {@link GuildChannel} the resolved guild channel mentions in a string option
+     */
+    @Nonnull
+    public List<GuildChannel> getMentionedChannels()
+    {
+        if (type != OptionType.STRING)
+            return Collections.emptyList();
+
+        return parseMentions(new ArrayList<>(), Message.MentionType.CHANNEL.getPattern(), (matcher) -> {
+            long id = Long.parseUnsignedLong(matcher.group(1));
+            Object obj = resolved.get(id);
+            return obj instanceof GuildChannel ? (GuildChannel) obj : null;
+        });
     }
 
     /**
