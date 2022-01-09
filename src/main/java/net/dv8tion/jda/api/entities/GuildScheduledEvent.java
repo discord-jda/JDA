@@ -15,14 +15,15 @@
  */
 package net.dv8tion.jda.api.entities;
 
+import net.dv8tion.jda.annotations.Incubating;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.managers.GuildScheduledEventManager;
 import net.dv8tion.jda.api.requests.RestAction;
 
+import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.time.OffsetDateTime;
-import java.util.List;
 
 /**
  * A class representing a guild scheduled event (the ones that show up under the events tab in the Official Discord Client).
@@ -60,12 +61,77 @@ public interface GuildScheduledEvent extends ISnowflake, Comparable<GuildSchedul
 
     /**
      * The user who originally created the event.
+     * <p> A {@code null} may be returned if user has deleted their account, the {@link User} object has not yet been cached
+     * (lazy-loading) or if the event was created before Discord started keeping track of event creators on October 21st, 2021. {@link #hasCreator()} may be used to check if the
+     * event has a creator associated with it.
+     * <p> The creator may additionally be retrieved using {@link #retrieveCreator()} if the event {@link #hasCreator() has a creator}
+     * but a {@code null} value is returned due to the {@link User} not being cached.
      *
-     * @return The user, or {@code null} if the event was created before Discord started keeping track of event
-     *         creators on October 21st, 2021.
+     * @return Possiblly-null {@link User} object representing the event's creator.
+     *
+     * @see    #hasCreator()
+     * @see    #getCreatorId()
+     * @see    #getCreatorIdLong()
+     * @see    #retrieveCreator()
      */
     @Nullable
     User getCreator();
+
+    // Todo: Document
+    @Nonnull
+    @CheckReturnValue
+    RestAction<User> retrieveCreator();
+
+    /**
+     * The ID of the user who originally created this event.
+     * <p> This method may return -1 if the event was created before Discord started keeping track of event creators on
+     * October 21st, 2021.
+     *
+     * @return The ID of the user who created this event, or -1 if no user is associated with creating this event.
+     *
+     * @see    #getCreatorIdLong()
+     * @see    #getCreator()
+     * @see    #hasCreator()
+     * @see    #retrieveCreator()
+     */
+    long getCreatorIdLong();
+
+    /**
+     * The ID of the user who originally created this event.
+     * <br> This method may return {@code null} if the event was created before Discord started keeping track of event
+     * creators on October 21st, 2021.
+     *
+     * @return The Id of the user who created this event, or {@code null} if no user is associated with creating this event.
+     *
+     * @see    #getCreatorIdLong()
+     * @see    #getCreator()
+     * @see    #hasCreator()
+     * @see    #retrieveCreator()
+     */
+    @Nullable
+    default String getCreatorId()
+    {
+        return getCreatorIdLong() == -1 ? null : String.valueOf(getCreatorIdLong());
+    }
+
+    // TODO: Decide if this should actually be included as it may imply #getCreator() won't be null
+    /**
+     * Determines if this event has a creator associated with it.
+     * <br> This will return {@code false} for events created prior to October 21st, 2021
+     * when Discord first started keep track of who created an event.
+     *
+     * @return {@code true} if this event has a creator associated with it, {@code false} if not
+     *
+     * @see    #getCreatorIdLong()
+     * @see    #getCreatorId()
+     * @see    #getCreator()
+     * @see    #retrieveCreator()
+     */
+    @Incubating
+    default boolean hasCreator()
+    {
+        return getCreatorIdLong() != -1;
+    }
 
     /**
      * The status of the event (ie., if the event has ended or has not yet started).
@@ -150,26 +216,41 @@ public interface GuildScheduledEvent extends ISnowflake, Comparable<GuildSchedul
     @Nullable
     String getExternalLocation();
 
+    // TODO: Add a PagintationAction to retrieve users currently interested in the scheduled event
     /**
      * The amount of users who are interested in attending the event.
-     * <br>This method only returns the cached count, and may not be consistent with the live count.
+     * <p>This method only returns the cached count, and may not be consistent with the live count. Discord may additionally not
+     * provide an interested user count for some {@link GuildScheduledEvent} objects returned from the Guild's or JDA's
+     * cache, and this method may return -1 as a result. However, event's retrieved using {@link Guild#retrieveScheduledEventById(long)}
+     * will always contain an interested user count.
      *
      * @return The amount of users who are interested in attending the event
+     *
+     * @see Guild#retrieveScheduledEventById(long)
+     * @see Guild#retrieveScheduledEventById(String)
      */
     int getInterestedUserCount();
 
     /**
-     * Retrieves a list of users who are interested in attending the event.
+     * The guild that this event was created in
      *
-     * @param  max
-     *         The maximum amount of users to retrieve
-     *
-     * @throws java.lang.IllegalArgumentException
-     *         If the provided maximum amount of users to retrieve is not positive
-     *
-     * @return {@link RestAction} - Type: {@link List} or {@link User}
+     * @return The guild
      */
-    RestAction<List<User>> retrieveInterestedUsers(int max);
+    @Nonnull
+    Guild getGuild();
+
+    /**
+     * The JDA instance associated with this event object
+     *
+     * @return The JDA instance
+     */
+    @Nonnull
+    default JDA getJDA()
+    {
+        return getGuild().getJDA();
+    }
+
+    // TODO: Add a method to delete the scheduled event
 
     /**
      * The {@link GuildScheduledEventManager} for this event.
@@ -186,22 +267,6 @@ public interface GuildScheduledEvent extends ISnowflake, Comparable<GuildSchedul
      */
     @Nonnull
     GuildScheduledEventManager getManager();
-
-    /**
-     * The guild that this event was created in
-     *
-     * @return The guild
-     */
-    @Nonnull
-    Guild getGuild();
-
-    /**
-     * The JDA instance associated with this event object
-     *
-     * @return The JDA instance
-     */
-    @Nonnull
-    JDA getJDA();
 
     /**
      * Compares two {@link GuildScheduledEvent} objects based on their scheduled start times.
