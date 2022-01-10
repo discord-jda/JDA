@@ -467,7 +467,7 @@ public interface Guild extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    RestAction<Map<String, List<CommandPrivilege>>> updateCommandPrivileges(@Nonnull Map<String, Collection<? extends CommandPrivilege>> privileges);
+    RestAction<Map<String, List<CommandPrivilege>>> updateCommandPrivileges(@Nonnull Map<String, ? extends Collection<CommandPrivilege>> privileges);
 
     /**
      * Retrieves the available regions for this Guild
