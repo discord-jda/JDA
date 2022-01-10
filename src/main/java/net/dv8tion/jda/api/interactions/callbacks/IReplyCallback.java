@@ -21,7 +21,7 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction;
 import net.dv8tion.jda.api.utils.AttachmentOption;
-import net.dv8tion.jda.internal.requests.restaction.interactions.ReplyActionImpl;
+import net.dv8tion.jda.internal.requests.restaction.interactions.ReplyCallbackActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.CheckReturnValue;
@@ -121,7 +121,7 @@ public interface IReplyCallback extends IDeferrableCallback
     default ReplyCallbackAction reply(@Nonnull Message message)
     {
         Checks.notNull(message, "Message");
-        ReplyActionImpl action = (ReplyActionImpl) deferReply();
+        ReplyCallbackActionImpl action = (ReplyCallbackActionImpl) deferReply();
         return action.applyMessage(message);
     }
 

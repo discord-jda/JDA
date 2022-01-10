@@ -29,10 +29,7 @@ import net.dv8tion.jda.internal.utils.Checks;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class MessageEditCallbackActionImpl extends DeferrableCallbackActionImpl implements MessageEditCallbackAction
@@ -111,6 +108,7 @@ public class MessageEditCallbackActionImpl extends DeferrableCallbackActionImpl 
     {
         Checks.noneNull(rows, "ActionRows");
         Checks.check(rows.length <= 5, "Can only have 5 action rows per message!");
+        Checks.checkDuplicateIds(Arrays.stream(rows));
         this.components = new ArrayList<>();
         Collections.addAll(components, rows);
         return this;

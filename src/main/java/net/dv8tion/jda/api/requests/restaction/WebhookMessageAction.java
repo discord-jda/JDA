@@ -310,7 +310,8 @@ public interface WebhookMessageAction<T> extends RestAction<T>, AllowedMentions<
      *         The components for the action row, such as {@link Button Button}
      *
      * @throws IllegalArgumentException
-     *         If null is provided or more than 5 actions rows are provided
+     *         If null is provided, an invalid number of components is provided,
+     *         or any custom {@link ActionComponent#getId() id} is duplicated
      *
      * @return The same message action, for chaining convenience
      */
@@ -328,7 +329,8 @@ public interface WebhookMessageAction<T> extends RestAction<T>, AllowedMentions<
      *         The components for the action row, such as {@link Button Button}
      *
      * @throws IllegalArgumentException
-     *         If null is provided or more than 5 actions rows are provided
+     *         If null is provided, an invalid number of components is provided,
+     *         or any custom {@link ActionComponent#getId() id} is duplicated
      *
      * @return The same message action, for chaining convenience
      */
@@ -346,7 +348,8 @@ public interface WebhookMessageAction<T> extends RestAction<T>, AllowedMentions<
      *         The action rows to add
      *
      * @throws IllegalArgumentException
-     *         If null is provided or more than 5 actions rows are provided
+     *         If null is provided, more than 5 action rows are provided,
+     *         or any custom {@link ActionComponent#getId() id} is duplicated
      *
      * @return The same message action, for chaining convenience
      */
@@ -365,7 +368,8 @@ public interface WebhookMessageAction<T> extends RestAction<T>, AllowedMentions<
      *         The action rows to add
      *
      * @throws IllegalArgumentException
-     *         If null is provided or more than 5 actions rows are provided
+     *         If null is provided, more than 5 action rows are provided,
+     *         or any custom {@link ActionComponent#getId() id} is duplicated
      *
      * @return The same message action, for chaining convenience
      */

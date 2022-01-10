@@ -376,6 +376,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
         if (components == null)
             components = new ArrayList<>();
         Checks.check(rows.length <= 5, "Can only have 5 action rows per message!");
+        Checks.checkDuplicateIds(Arrays.stream(rows));
         this.components.clear();
         Collections.addAll(this.components, rows);
         return this;

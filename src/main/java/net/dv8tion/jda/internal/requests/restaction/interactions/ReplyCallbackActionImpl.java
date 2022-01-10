@@ -32,14 +32,12 @@ import net.dv8tion.jda.internal.utils.Helpers;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
+import java.util.stream.Stream;
 
-public class ReplyActionImpl extends DeferrableCallbackActionImpl implements ReplyCallbackAction
+public class ReplyCallbackActionImpl extends DeferrableCallbackActionImpl implements ReplyCallbackAction
 {
     private final List<MessageEmbed> embeds = new ArrayList<>();
     private final AllowedMentionsImpl allowedMentions = new AllowedMentionsImpl();
@@ -49,12 +47,12 @@ public class ReplyActionImpl extends DeferrableCallbackActionImpl implements Rep
     private int flags;
     private boolean tts;
 
-    public ReplyActionImpl(InteractionHookImpl hook)
+    public ReplyCallbackActionImpl(InteractionHookImpl hook)
     {
         super(hook);
     }
 
-    public ReplyActionImpl applyMessage(Message message)
+    public ReplyCallbackActionImpl applyMessage(Message message)
     {
         this.content = message.getContentRaw();
         this.tts = message.isTTS();
@@ -98,7 +96,7 @@ public class ReplyActionImpl extends DeferrableCallbackActionImpl implements Rep
 
     @Nonnull
     @Override
-    public ReplyActionImpl setEphemeral(boolean ephemeral)
+    public ReplyCallbackActionImpl setEphemeral(boolean ephemeral)
     {
         if (ephemeral)
             this.flags |= 64;
@@ -145,6 +143,8 @@ public class ReplyActionImpl extends DeferrableCallbackActionImpl implements Rep
     {
         Checks.noneNull(rows, "ActionRows");
         Checks.check(components.size() + rows.length <= 5, "Can only have 5 action rows per message!");
+        Checks.checkDuplicateIds(Stream.concat(this.components.stream(), Arrays.stream(rows)));
+
         Collections.addAll(components, rows);
         return this;
     }
@@ -172,7 +172,7 @@ public class ReplyActionImpl extends DeferrableCallbackActionImpl implements Rep
 
     @Nonnull
     @Override
-    public ReplyActionImpl setTTS(boolean isTTS)
+    public ReplyCallbackActionImpl setTTS(boolean isTTS)
     {
         this.tts = isTTS;
         return this;
@@ -180,7 +180,7 @@ public class ReplyActionImpl extends DeferrableCallbackActionImpl implements Rep
 
     @Nonnull
     @Override
-    public ReplyActionImpl setContent(String content)
+    public ReplyCallbackActionImpl setContent(String content)
     {
         if (content != null)
             Checks.notLonger(content, Message.MAX_CONTENT_LENGTH, "Content");
