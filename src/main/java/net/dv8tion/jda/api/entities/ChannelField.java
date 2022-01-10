@@ -148,6 +148,7 @@ public enum ChannelField
      * Limited to {@link ThreadChannel Thread Channels}.
      *
      * @see ThreadChannel#getAutoArchiveDuration()
+     * @see net.dv8tion.jda.api.entities.ThreadChannel.AutoArchiveDuration
      */
     AUTO_ARCHIVE_DURATION("autoArchiveDuration", AuditLogKey.THREAD_AUTO_ARCHIVE_DURATION),
 
