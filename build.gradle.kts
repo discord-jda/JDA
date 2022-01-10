@@ -36,7 +36,7 @@ plugins {
 
     id("io.codearte.nexus-staging") version "0.30.0"
     id("de.marcphilipp.nexus-publish") version "0.4.0"
-    id("com.github.johnrengelman.shadow") version "7.1.0"
+    id("com.github.johnrengelman.shadow") version "7.1.2"
 }
 
 val versionObj = Version(major = "5", minor = "0", revision = "0", classifier = "alpha.4")
@@ -95,14 +95,14 @@ dependencies {
 
     //Code safety
     api("com.google.code.findbugs:jsr305:3.0.2")
-    api("org.jetbrains:annotations:16.0.1")
+    api("org.jetbrains:annotations:23.0.0")
 
     //Logger
     api("org.slf4j:slf4j-api:1.7.32")
 
     //Web Connection Support
     api("com.neovisionaries:nv-websocket-client:2.14")
-    api("com.squareup.okhttp3:okhttp:4.9.1")
+    api("com.squareup.okhttp3:okhttp:4.9.3")
 
     //Opus library support
     api("club.minnced:opus-java:1.1.1")
@@ -128,7 +128,7 @@ dependencies {
         addAll(configurations["implementation"].allDependencies)
     }
 
-    testImplementation("org.junit.jupiter:junit-jupiter:5.8.0")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.8.2")
 }
 
 val compileJava: JavaCompile by tasks
