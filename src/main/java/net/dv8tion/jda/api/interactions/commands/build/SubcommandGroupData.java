@@ -129,6 +129,8 @@ public class SubcommandGroupData implements SerializableData
 
     /**
      * The {@link SubcommandData Subcommands} in this group.
+     * <br>These subcommand instances are <b>reconstructed</b>,
+     * which means that any modifications will not be reflected in the backing state.
      *
      * @return Immutable list of {@link SubcommandData}
      */
