@@ -23,7 +23,7 @@ import org.jetbrains.annotations.Contract;
 import java.util.Collection;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Objects;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -204,24 +204,27 @@ public class Checks
             throw new IllegalArgumentException(name + " may not be negative");
     }
 
-    // Components
+    // Unique streams checks
 
-    public static void checkDuplicateIds(Stream<? extends LayoutComponent> layouts)
+    public static <T> void checkUnique(Stream<T> stream, String format, BiFunction<Long, T, Object[]> getArgs)
     {
-        Map<String, Long> counts = layouts
-                .flatMap(row -> row.getComponents().stream())
-                .map(ActionComponent::getId)
-                .filter(Objects::nonNull)
-                .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
-
-        for (Map.Entry<String, Long> entry : counts.entrySet())
+        Map<T, Long> counts = stream.collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
+        for (Map.Entry<T, Long> entry : counts.entrySet())
         {
             if (entry.getValue() > 1)
             {
-                throw new IllegalArgumentException(
-                        "Cannot have components with duplicate custom IDs." +
-                        " Id: \"" + entry.getKey() + "\" appeared " + entry.getValue() + " times!");
+                Object[] args = getArgs.apply(entry.getValue(), entry.getKey());
+                throw new IllegalArgumentException(Helpers.format(format, args));
             }
         }
+    }
+
+    public static void checkDuplicateIds(Stream<? extends LayoutComponent> layouts)
+    {
+        Stream<String> stream = layouts.flatMap(row -> row.getComponents().stream()).map(ActionComponent::getId);
+        checkUnique(stream,
+                "Cannot have components with duplicate custom IDs. Id: \"%s\" appeared %d times!",
+                (count, value) -> new Object[]{ value, count }
+        );
     }
 }

@@ -35,10 +35,8 @@ import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -111,20 +109,16 @@ public class CommandListUpdateActionImpl extends RestActionImpl<List<Command>> i
         Checks.check(message + newMessage <= Commands.MAX_MESSAGE_COMMANDS,
                 "Cannot have more than %d message context commands!", Commands.MAX_MESSAGE_COMMANDS);
 
-        Map<String, Long> counts = Stream.concat(commands.stream(), this.commands.stream())
-                .map(c -> c.getType() + " " + c.getName())
-                .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
-        for (Map.Entry<String, Long> entry : counts.entrySet())
-        {
-            if (entry.getValue() > 1)
-            {
-                String[] tuple = entry.getKey().split(" ", 2);
-                throw new IllegalArgumentException(
-                        "Cannot have multiple commands of the same type with identical names. "
-                       +"Name: \"" + tuple[1] + "\" with type " + tuple[0] + " appeared " + entry.getValue() + " times!"
-                );
+        Checks.checkUnique(
+            Stream.concat(commands.stream(), this.commands.stream()).map(c -> c.getType() + " " + c.getName()),
+            "Cannot have multiple commands of the same type with identical names. " +
+            "Name: \"%s\" with type %s appeared %d times!",
+            (count, value) -> {
+                String[] tuple = value.split(" ", 2);
+                return new Object[] { tuple[1], tuple[0], count };
             }
-        }
+        );
+
         slash += newSlash;
         user += newUser;
         message += newMessage;
