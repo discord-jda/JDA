@@ -25,7 +25,7 @@ import javax.annotation.Nonnull;
 /**
  * Indicates that a {@link Member Member} has agreed to Membership Screening requirements.
  *
- * <p>Can be used to retrieve members who have agreed to Membership Screening requirements.
+ * <p>Can be used to retrieve members who have agreed to Membership Screening requirements and the triggering guild.
  *
  * <p>Identifier: {@code pending}
  *
