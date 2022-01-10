@@ -37,6 +37,7 @@ import net.dv8tion.jda.api.requests.restaction.order.CategoryOrderAction;
 import net.dv8tion.jda.api.requests.restaction.order.ChannelOrderAction;
 import net.dv8tion.jda.api.requests.restaction.order.RoleOrderAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.AuditLogPaginationAction;
+import net.dv8tion.jda.api.utils.TimeUtil;
 import net.dv8tion.jda.api.utils.cache.*;
 import net.dv8tion.jda.api.utils.concurrent.Task;
 import net.dv8tion.jda.api.utils.data.DataArray;
@@ -61,6 +62,8 @@ import okhttp3.RequestBody;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.time.OffsetDateTime;
+import java.time.temporal.TemporalAccessor;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
@@ -111,6 +114,7 @@ public class GuildImpl implements Guild
     private BoostTier boostTier = BoostTier.NONE;
     private Locale preferredLocale = Locale.ENGLISH;
     private int memberCount;
+    private boolean boostProgressBarEnabled;
 
     public GuildImpl(JDAImpl api, long id)
     {
@@ -830,6 +834,12 @@ public class GuildImpl implements Guild
         return manager;
     }
 
+    @Override
+    public boolean isBoostProgressBarEnabled()
+    {
+        return boostProgressBarEnabled;
+    }
+
     @Nonnull
     @Override
     public AuditLogPaginationAction retrieveAuditLogs()
@@ -1215,31 +1225,31 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public RestAction<Void> moveVoiceMember(@Nonnull Member member, @Nullable VoiceChannel voiceChannel)
+    public RestAction<Void> moveVoiceMember(@Nonnull Member member, @Nullable AudioChannel audioChannel)
     {
         Checks.notNull(member, "Member");
         checkGuild(member.getGuild(), "Member");
-        if (voiceChannel != null)
-            checkGuild(voiceChannel.getGuild(), "VoiceChannel");
+        if (audioChannel != null)
+            checkGuild(audioChannel.getGuild(), "AudioChannel");
 
         GuildVoiceState vState = member.getVoiceState();
         if (vState == null)
             throw new IllegalStateException("Cannot move a Member with disabled CacheFlag.VOICE_STATE");
         AudioChannel channel = vState.getChannel();
         if (channel == null)
-            throw new IllegalStateException("You cannot move a Member who isn't in a VoiceChannel!");
+            throw new IllegalStateException("You cannot move a Member who isn't in an AudioChannel!");
 
         if (!PermissionUtil.checkPermission((IPermissionContainer) channel, getSelfMember(), Permission.VOICE_MOVE_OTHERS))
             throw new InsufficientPermissionException(channel, Permission.VOICE_MOVE_OTHERS, "This account does not have Permission to MOVE_OTHERS out of the channel that the Member is currently in.");
 
-        if (voiceChannel != null
-            && !PermissionUtil.checkPermission(voiceChannel, getSelfMember(), Permission.VOICE_CONNECT)
-            && !PermissionUtil.checkPermission(voiceChannel, member, Permission.VOICE_CONNECT))
-            throw new InsufficientPermissionException(voiceChannel, Permission.VOICE_CONNECT,
+        if (audioChannel != null
+            && !getSelfMember().hasPermission(audioChannel, Permission.VOICE_CONNECT)
+            && !member.hasPermission(audioChannel, Permission.VOICE_CONNECT))
+            throw new InsufficientPermissionException(audioChannel, Permission.VOICE_CONNECT,
                                                       "Neither this account nor the Member that is attempting to be moved have the VOICE_CONNECT permission " +
-                                                      "for the destination VoiceChannel, so the move cannot be done.");
+                                                      "for the destination AudioChannel, so the move cannot be done.");
 
-        DataObject body = DataObject.empty().put("channel_id", voiceChannel == null ? null : voiceChannel.getId());
+        DataObject body = DataObject.empty().put("channel_id", audioChannel == null ? null : audioChannel.getId());
         Route.CompiledRoute route = Route.Guilds.MODIFY_MEMBER.compile(getId(), member.getUser().getId());
         return new RestActionImpl<>(getJDA(), route, body);
     }
@@ -1393,6 +1403,36 @@ public class GuildImpl implements Guild
 
         Route.CompiledRoute route = Route.Guilds.UNBAN.compile(getId(), userId);
         return new AuditableRestActionImpl<>(getJDA(), route);
+    }
+
+    @Nonnull
+    @Override
+    public AuditableRestAction<Void> timeoutUntilById(@Nonnull String userId, @Nonnull TemporalAccessor temporal)
+    {
+        Checks.isSnowflake(userId, "User ID");
+        Checks.notNull(temporal, "Temporal");
+        OffsetDateTime date = Helpers.toOffsetDateTime(temporal);
+        Checks.check(date.isAfter(OffsetDateTime.now()), "Cannot put a member in time out with date in the past. Provided: %s", date);
+        Checks.check(date.isBefore(OffsetDateTime.now().plusDays(Member.MAX_TIME_OUT_LENGTH)), "Cannot put a member in time out for more than 28 days. Provided: %s", date);
+        checkPermission(Permission.MODERATE_MEMBERS);
+
+        return timeoutUntilById0(userId, date);
+    }
+
+    @Nonnull
+    @Override
+    public AuditableRestAction<Void> removeTimeoutById(@Nonnull String userId)
+    {
+        Checks.isSnowflake(userId, "User ID");
+        return timeoutUntilById0(userId, null);
+    }
+
+    @Nonnull
+    private AuditableRestAction<Void> timeoutUntilById0(@Nonnull String userId, @Nullable OffsetDateTime date)
+    {
+        DataObject body = DataObject.empty().put("communication_disabled_until", date == null ? null : date.toString());
+        Route.CompiledRoute route = Route.Guilds.MODIFY_MEMBER.compile(getId(), userId);
+        return new AuditableRestActionImpl<>(getJDA(), route, body);
     }
 
     @Nonnull
@@ -1912,6 +1952,12 @@ public class GuildImpl implements Guild
     public GuildImpl setNSFWLevel(NSFWLevel nsfwLevel)
     {
         this.nsfwLevel = nsfwLevel;
+        return this;
+    }
+
+    public GuildImpl setBoostProgressBarEnabled(boolean enabled)
+    {
+        this.boostProgressBarEnabled = enabled;
         return this;
     }
 

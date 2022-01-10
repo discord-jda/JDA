@@ -17,8 +17,7 @@
 package net.dv8tion.jda.api.events.channel;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.Channel;
-import net.dv8tion.jda.api.entities.ChannelType;
+import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.Event;
 
 import javax.annotation.Nonnull;
@@ -33,6 +32,17 @@ public class GenericChannelEvent extends Event
         super(api, responseNumber);
 
         this.channel = channel;
+    }
+
+    /**
+     * Whether this channel event happened in a {@link net.dv8tion.jda.api.entities.Guild Guild}.
+     * <br>If this is {@code false} then {@link #getGuild()} will throw an {@link java.lang.IllegalStateException}.
+     *
+     * @return True, if {@link #getChannelType()}.{@link ChannelType#isGuild() isGuild()} is true.
+     */
+    public boolean isFromGuild()
+    {
+        return getChannelType().isGuild();
     }
 
     @Nonnull
@@ -50,6 +60,27 @@ public class GenericChannelEvent extends Event
     public Channel getChannel()
     {
         return this.channel;
+    }
+
+    /**
+     * The {@link net.dv8tion.jda.api.entities.Guild Guild} in which this channel event happened.
+     * <br>If this channel event was not received in a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel},
+     * this will throw an {@link java.lang.IllegalStateException}.
+     *
+     * @throws java.lang.IllegalStateException
+     *         If this channel event did not happen in a {@link net.dv8tion.jda.api.entities.GuildChannel}.
+     *
+     * @return The Guild in which this channel event happened
+     *
+     * @see    #isFromType(ChannelType)
+     * @see    #getChannelType()
+     */
+    @Nonnull
+    public Guild getGuild()
+    {
+        if (!isFromGuild())
+            throw new IllegalStateException("This channel event did not happen in a guild");
+        return ((GuildChannel) channel).getGuild();
     }
 
     //TODO-v5: Add getters for all channel types

@@ -25,7 +25,7 @@ import javax.annotation.Nullable;
 /**
  * Indicates that a {@link net.dv8tion.jda.api.entities.Member Member} updated their {@link net.dv8tion.jda.api.entities.Guild Guild} avatar.
  *
- * <p>Can be used to retrieve members who change their per guild avatar, triggering guild, the old avatar id and the new avatar id.
+ * <p>Can be used to retrieve members who change their per guild avatar, the triggering guild, the old avatar id and the new avatar id.
  *
  * <p>Identifier: {@code avatar}
  *

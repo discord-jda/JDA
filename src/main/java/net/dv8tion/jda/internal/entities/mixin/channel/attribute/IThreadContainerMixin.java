@@ -19,11 +19,11 @@ package net.dv8tion.jda.internal.entities.mixin.channel.attribute;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.IThreadContainer;
-import net.dv8tion.jda.api.requests.restaction.ThreadAction;
+import net.dv8tion.jda.api.requests.restaction.ThreadChannelAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.ThreadChannelPaginationAction;
 import net.dv8tion.jda.internal.entities.mixin.channel.middleman.GuildChannelMixin;
 import net.dv8tion.jda.internal.requests.Route;
-import net.dv8tion.jda.internal.requests.restaction.ThreadActionImpl;
+import net.dv8tion.jda.internal.requests.restaction.ThreadChannelActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.pagination.ThreadChannelPaginationActionImpl;
 
 import javax.annotation.CheckReturnValue;
@@ -35,7 +35,7 @@ public interface IThreadContainerMixin<T extends IThreadContainerMixin<T>> exten
     @Nonnull
     @CheckReturnValue
     @Override
-    default ThreadAction createThreadChannel(String name, boolean isPrivate)
+    default ThreadChannelAction createThreadChannel(String name, boolean isPrivate)
     {
         checkPermission(Permission.VIEW_CHANNEL);
         if (isPrivate)
@@ -55,18 +55,18 @@ public interface IThreadContainerMixin<T extends IThreadContainerMixin<T>> exten
                 ? ChannelType.GUILD_PUBLIC_THREAD
                 : ChannelType.GUILD_NEWS_THREAD;
 
-        return new ThreadActionImpl(this, name, threadType);
+        return new ThreadChannelActionImpl(this, name, threadType);
     }
 
     @Nonnull
     @CheckReturnValue
     @Override
-    default ThreadAction createThreadChannel(String name, long messageId)
+    default ThreadChannelAction createThreadChannel(String name, long messageId)
     {
         checkPermission(Permission.VIEW_CHANNEL);
         checkPermission(Permission.CREATE_PUBLIC_THREADS);
 
-        return new ThreadActionImpl(this, name, Long.toUnsignedString(messageId));
+        return new ThreadChannelActionImpl(this, name, Long.toUnsignedString(messageId));
     }
 
     @Nonnull
@@ -77,7 +77,7 @@ public interface IThreadContainerMixin<T extends IThreadContainerMixin<T>> exten
         checkPermission(Permission.MESSAGE_HISTORY);
 
         Route.CompiledRoute route = Route.Channels.LIST_PUBLIC_ARCHIVED_THREADS.compile(getId());
-        return new ThreadChannelPaginationActionImpl(getJDA(), route, this);
+        return new ThreadChannelPaginationActionImpl(getJDA(), route, this, false);
     }
 
     @Nonnull
@@ -89,7 +89,7 @@ public interface IThreadContainerMixin<T extends IThreadContainerMixin<T>> exten
         checkPermission(Permission.MANAGE_THREADS);
 
         Route.CompiledRoute route = Route.Channels.LIST_PRIVATE_ARCHIVED_THREADS.compile(getId());
-        return new ThreadChannelPaginationActionImpl(getJDA(), route, this);
+        return new ThreadChannelPaginationActionImpl(getJDA(), route, this, false);
     }
 
     @Nonnull
@@ -100,6 +100,6 @@ public interface IThreadContainerMixin<T extends IThreadContainerMixin<T>> exten
         checkPermission(Permission.MESSAGE_HISTORY);
 
         Route.CompiledRoute route = Route.Channels.LIST_JOINED_PRIVATE_ARCHIVED_THREADS.compile(getId());
-        return new ThreadChannelPaginationActionImpl(getJDA(), route, this);
+        return new ThreadChannelPaginationActionImpl(getJDA(), route, this, true);
     }
 }

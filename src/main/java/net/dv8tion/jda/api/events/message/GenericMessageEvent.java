@@ -24,7 +24,7 @@ import javax.annotation.Nonnull;
 /**
  * Indicates that a {@link net.dv8tion.jda.api.entities.Message Message} was created/deleted/changed.
  * <br>Every MessageEvent is an instance of this event and can be casted.
- * 
+ *
  * <p>Can be used to detect any MessageEvent.
  *
  * <h2>Requirements</h2>
@@ -72,7 +72,7 @@ public abstract class GenericMessageEvent extends Event
     @Nonnull
     public GuildMessageChannel getGuildChannel()
     {
-        if (isFromGuild())
+        if (!isFromGuild())
             throw new IllegalStateException("This message event did not happen in a guild");
         return (GuildMessageChannel) channel;
     }
@@ -220,5 +220,40 @@ public abstract class GenericMessageEvent extends Event
         if (!isFromType(ChannelType.PRIVATE))
             throw new IllegalStateException("This message event did not happen in a private channel");
         return (PrivateChannel) channel;
+    }
+
+    /**
+     * The {@link net.dv8tion.jda.api.entities.ThreadChannel ThreadChannel} the Message was received in.
+     * <br>If this Message was not received in a {@link net.dv8tion.jda.api.entities.ThreadChannel ThreadChannel},
+     * this will throw an {@link java.lang.IllegalStateException}.
+     *
+     * @throws java.lang.IllegalStateException
+     *         If this was not sent in a {@link net.dv8tion.jda.api.entities.ThreadChannel}.
+     *
+     * @return The ThreadChannel the Message was received in
+     *
+     * @see    #isFromGuild()
+     * @see    #isFromType(ChannelType)
+     * @see    #getChannelType()
+     * @see    #isFromThread()
+     */
+    @Nonnull
+    public ThreadChannel getThreadChannel()
+    {
+        if (!isFromThread())
+            throw new IllegalStateException("This message event did not happen in a thread channel");
+        return (ThreadChannel) channel;
+    }
+
+    /**
+     * If the message event was from a {@link net.dv8tion.jda.api.entities.ThreadChannel ThreadChannel}
+     *
+     * @return If the message event was from a ThreadChannel
+     *
+     * @see ChannelType#isThread()
+     */
+    public boolean isFromThread()
+    {
+        return getChannelType().isThread();
     }
 }

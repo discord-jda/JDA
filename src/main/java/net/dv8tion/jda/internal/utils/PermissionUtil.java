@@ -314,7 +314,9 @@ public class PermissionUtil
             if (isApplied(permission, Permission.ADMINISTRATOR.getRawValue()))
                 return Permission.ALL_PERMISSIONS;
         }
-
+        // See https://discord.com/developers/docs/topics/permissions#permissions-for-timed-out-members
+        if (member.isTimedOut())
+            permission &= Permission.VIEW_CHANNEL.getRawValue() | Permission.MESSAGE_HISTORY.getRawValue();
         return permission;
     }
 
@@ -354,7 +356,7 @@ public class PermissionUtil
         final long admin = Permission.ADMINISTRATOR.getRawValue();
         if (isApplied(permission, admin))
             return Permission.ALL_PERMISSIONS;
-        
+
         // MANAGE_CHANNEL allows to delete channels within a category (this is undocumented behavior)
         if (channel instanceof ICategorizableChannel) {
             ICategorizableChannel categorizableChannel = (ICategorizableChannel) channel;
@@ -371,8 +373,12 @@ public class PermissionUtil
 
         //When the permission to view the channel or to connect to the channel is not applied it is not granted
         // This means that we have no access to this channel at all
-        final boolean hasConnect = (channel.getType() != ChannelType.VOICE && channel.getType() != ChannelType.STAGE) || isApplied(permission, connectChannel);
+        // See https://github.com/discord/discord-api-docs/issues/1522
+        final boolean hasConnect = !channel.getType().isAudio() || isApplied(permission, connectChannel);
         final boolean hasView = isApplied(permission, viewChannel);
+        // See https://discord.com/developers/docs/topics/permissions#permissions-for-timed-out-members
+        if (member.isTimedOut())
+            permission &= viewChannel | Permission.MESSAGE_HISTORY.getRawValue();
         return hasView && hasConnect ? permission : 0;
     }
 

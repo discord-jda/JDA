@@ -39,7 +39,7 @@ plugins {
     id("com.github.johnrengelman.shadow") version "7.1.0"
 }
 
-val versionObj = Version(major = "4", minor = "4", revision = "0")
+val versionObj = Version(major = "5", minor = "0", revision = "0", classifier = "alpha.4")
 val isCI = System.getProperty("BUILD_NUMBER") != null // jenkins
         || System.getenv("BUILD_NUMBER") != null
         || System.getProperty("GIT_COMMIT") != null // jitpack
@@ -47,10 +47,10 @@ val isCI = System.getProperty("BUILD_NUMBER") != null // jenkins
 
 // Check the commit hash and version information
 val commitHash: String by lazy {
-    val file = File(".git/refs/heads/master")
+    val commit = System.getenv("GIT_COMMIT") ?: System.getProperty("GIT_COMMIT")
     // We only set the commit hash on CI builds since we don't want dirty local repos to set a wrong commit
-    if (isCI && file.canRead())
-        file.readText().substring(0, 7)
+    if (isCI && commit != null)
+        commit.substring(0, 7)
     else
         "DEV"
 }
@@ -452,6 +452,7 @@ tasks.getByName("getStagingProfile").enabled = ossrhConfigured
 
 tasks.create("release") {
     val closeAndReleaseRepository: Task by tasks
+    closeAndReleaseRepository.mustRunAfter(tasks.withType<PublishToMavenRepository>())
     dependsOn(tasks.withType<PublishToMavenRepository>()) // uploads artifacts to sonatype
     dependsOn(closeAndReleaseRepository) // does the maven central sync
     dependsOn(build) // builds all jars for jenkins

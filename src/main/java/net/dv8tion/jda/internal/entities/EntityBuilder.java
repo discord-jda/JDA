@@ -37,10 +37,7 @@ import net.dv8tion.jda.api.entities.templates.TemplateGuild;
 import net.dv8tion.jda.api.entities.templates.TemplateRole;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleAddEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleRemoveEvent;
-import net.dv8tion.jda.api.events.guild.member.update.GuildMemberUpdateAvatarEvent;
-import net.dv8tion.jda.api.events.guild.member.update.GuildMemberUpdateBoostTimeEvent;
-import net.dv8tion.jda.api.events.guild.member.update.GuildMemberUpdateNicknameEvent;
-import net.dv8tion.jda.api.events.guild.member.update.GuildMemberUpdatePendingEvent;
+import net.dv8tion.jda.api.events.guild.member.update.*;
 import net.dv8tion.jda.api.events.user.update.UserUpdateAvatarEvent;
 import net.dv8tion.jda.api.events.user.update.UserUpdateDiscriminatorEvent;
 import net.dv8tion.jda.api.events.user.update.UserUpdateFlagsEvent;
@@ -209,6 +206,7 @@ public class EntityBuilder
         final int notificationLevel = guildJson.getInt("default_message_notifications", 0);
         final int explicitContentLevel = guildJson.getInt("explicit_content_filter", 0);
         final int nsfwLevel = guildJson.getInt("nsfw_level", -1);
+        final boolean boostProgressBarEnabled = guildJson.getBoolean("premium_progress_bar_enabled");
 
         guildObj.setName(name)
                 .setIconId(iconId)
@@ -228,7 +226,8 @@ public class EntityBuilder
                 .setBoostCount(boostCount)
                 .setBoostTier(boostTier)
                 .setMemberCount(memberCount)
-                .setNSFWLevel(Guild.NSFWLevel.fromKey(nsfwLevel));
+                .setNSFWLevel(Guild.NSFWLevel.fromKey(nsfwLevel))
+                .setBoostProgressBarEnabled(boostProgressBarEnabled);
 
         SnowflakeCacheViewImpl<Guild> guildView = getJDA().getGuildsView();
         try (UnlockHook hook = guildView.writeLock())
@@ -517,6 +516,11 @@ public class EntityBuilder
                 : Helpers.toTimestamp(memberJson.getString("premium_since"));
             member.setBoostDate(boostTimestamp);
 
+            long timeOutTimestamp = memberJson.isNull("communication_disabled_until")
+                ? 0
+                : Helpers.toTimestamp(memberJson.getString("communication_disabled_until"));
+            member.setTimeOutEnd(timeOutTimestamp);
+
             if (!memberJson.isNull("pending"))
                 member.setPending(memberJson.getBoolean("pending"));
             Set<Role> roles = member.getRoleSet();
@@ -624,10 +628,7 @@ public class EntityBuilder
         {
             long epoch = 0;
             if (!content.isNull("premium_since"))
-            {
-                TemporalAccessor date = DateTimeFormatter.ISO_OFFSET_DATE_TIME.parse(content.getString("premium_since"));
-                epoch = Instant.from(date).toEpochMilli();
-            }
+                epoch = Helpers.toTimestamp(content.getString("premium_since"));
             if (epoch != member.getBoostDateRaw())
             {
                 OffsetDateTime oldTime = member.getTimeBoosted();
@@ -636,6 +637,22 @@ public class EntityBuilder
                     new GuildMemberUpdateBoostTimeEvent(
                         getJDA(), responseNumber,
                         member, oldTime));
+            }
+        }
+
+        if (content.hasKey("communication_disabled_until"))
+        {
+            long epoch = 0;
+            if (!content.isNull("communication_disabled_until"))
+                epoch = Helpers.toTimestamp(content.getString("communication_disabled_until"));
+            if (epoch != member.getTimeOutEndRaw())
+            {
+                OffsetDateTime oldTime = member.getTimeOutEnd();
+                member.setTimeOutEnd(epoch);
+                getJDA().handleEvent(
+                        new GuildMemberUpdateTimeOutEvent(
+                                getJDA(), responseNumber,
+                                member, oldTime));
             }
         }
 
@@ -1191,7 +1208,7 @@ public class EntityBuilder
     public ThreadMember createThreadMember(GuildImpl guild, ThreadChannelImpl threadChannel, DataObject json)
     {
         DataObject memberJson = json.getObject("member");
-        DataObject presenceJson = json.getObject("presence");
+        DataObject presenceJson = json.isNull("presence") ? null : json.getObject("presence");
 
         Member member = createMember(guild, memberJson, null, presenceJson);
         return createThreadMember(threadChannel, member, json);
@@ -1623,8 +1640,9 @@ public class EntityBuilder
         final String proxyUrl = jsonObject.getString("proxy_url");
         final String filename = jsonObject.getString("filename");
         final String contentType = jsonObject.getString("content_type", null);
+        final String description = jsonObject.getString("description", null);
         final long id = jsonObject.getLong("id");
-        return new Message.Attachment(id, url, proxyUrl, filename, contentType, size, height, width, ephemeral, getJDA());
+        return new Message.Attachment(id, url, proxyUrl, filename, contentType, description, size, height, width, ephemeral, getJDA());
     }
 
     public MessageEmbed createMessageEmbed(DataObject content)

@@ -9,6 +9,7 @@ import net.dv8tion.jda.api.exceptions.ParsingException;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.restaction.pagination.ThreadChannelPaginationAction;
+import net.dv8tion.jda.api.utils.TimeUtil;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
@@ -21,11 +22,13 @@ import java.util.List;
 public class ThreadChannelPaginationActionImpl extends PaginationActionImpl<ThreadChannel, ThreadChannelPaginationAction> implements ThreadChannelPaginationAction
 {
     protected final IThreadContainer channel;
+    protected final boolean useID;
 
-    public ThreadChannelPaginationActionImpl(JDA api, Route.CompiledRoute route, IThreadContainer channel)
+    public ThreadChannelPaginationActionImpl(JDA api, Route.CompiledRoute route, IThreadContainer channel, boolean useID)
     {
-        super(api, route, 1, 100, 100);
+        super(api, route, 2, 100, 100);
         this.channel = channel;
+        this.useID = useID;
     }
 
     @Nonnull
@@ -45,10 +48,13 @@ public class ThreadChannelPaginationActionImpl extends PaginationActionImpl<Thre
 
         route = route.withQueryParams("limit", limit);
 
-        if (last != 0)
-            route = route.withQueryParams("before", Long.toUnsignedString(last));
+        if (last == 0)
+            return route;
 
-        return route;
+        if (useID)
+            return route.withQueryParams("before", Long.toUnsignedString(last));
+        // OffsetDateTime#toString() is defined to be ISO8601, needs no helper method.
+        return route.withQueryParams("before", TimeUtil.getTimeCreated(last).toString());
     }
 
     @Override

@@ -24,6 +24,7 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class SelectionMenuImpl implements SelectionMenu
@@ -52,7 +53,7 @@ public class SelectionMenuImpl implements SelectionMenu
         this.minValues = minValues;
         this.maxValues = maxValues;
         this.disabled = disabled;
-        this.options = options;
+        this.options = Collections.unmodifiableList(options);
     }
 
     private static List<SelectOption> parseOptions(DataArray array)

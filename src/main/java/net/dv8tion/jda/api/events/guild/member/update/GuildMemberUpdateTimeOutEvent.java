@@ -24,12 +24,12 @@ import javax.annotation.Nullable;
 import java.time.OffsetDateTime;
 
 /**
- * Indicates that a {@link net.dv8tion.jda.api.entities.Member Member} updated their {@link net.dv8tion.jda.api.entities.Guild Guild} boost time.
- * <br>This happens when a member started or stopped boosting a guild.
+ * Indicates that a {@link net.dv8tion.jda.api.entities.Member Member} had their time out changed.
+ * <br><b>This event does not fire for automatic time out expiration.</b>
  *
- * <p>Can be used to retrieve members who boosted and the triggering guild.
+ * <p>Can be used to retrieve members who had their time out changed and the triggering guild.
  *
- * <p>Identifier: {@code boost_time}
+ * <p>Identifier: {@code timeout_time}
  *
  * <h2>Requirements</h2>
  *
@@ -42,33 +42,33 @@ import java.time.OffsetDateTime;
  * member was updated and gives us the updated member object. In order to fire a specific event like this we
  * need to have the old member cached to compare against.
  */
-public class GuildMemberUpdateBoostTimeEvent extends GenericGuildMemberUpdateEvent<OffsetDateTime>
+public class GuildMemberUpdateTimeOutEvent extends GenericGuildMemberUpdateEvent<OffsetDateTime>
 {
-    public static final String IDENTIFIER = "boost_time";
+    public static final String IDENTIFIER = "timeout_time";
 
-    public GuildMemberUpdateBoostTimeEvent(@Nonnull JDA api, long responseNumber, @Nonnull Member member, @Nullable OffsetDateTime previous)
+    public GuildMemberUpdateTimeOutEvent(@Nonnull JDA api, long responseNumber, @Nonnull Member member, @Nullable OffsetDateTime previous)
     {
-        super(api, responseNumber, member, previous, member.getTimeBoosted(), IDENTIFIER);
+        super(api, responseNumber, member, previous, member.getTimeOutEnd(), IDENTIFIER);
     }
 
     /**
-     * The old boost time
+     * The old end of the time out
      *
-     * @return The old boost time
+     * @return The old end of the time out
      */
     @Nullable
-    public OffsetDateTime getOldTimeBoosted()
+    public OffsetDateTime getOldTimeOutEnd()
     {
         return getOldValue();
     }
 
     /**
-     * The new boost time
+     * The new end of the time out
      *
-     * @return The new boost time
+     * @return The new end of the time out
      */
     @Nullable
-    public OffsetDateTime getNewTimeBoosted()
+    public OffsetDateTime getNewTimeOutEnd()
     {
         return getNewValue();
     }
