@@ -16,11 +16,18 @@
 
 package net.dv8tion.jda.internal.utils;
 
+import net.dv8tion.jda.api.interactions.components.ActionComponent;
+import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import org.jetbrains.annotations.Contract;
 
 import java.util.Collection;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
+import java.util.function.Function;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Checks
 {
@@ -197,4 +204,24 @@ public class Checks
             throw new IllegalArgumentException(name + " may not be negative");
     }
 
+    // Components
+
+    public static void checkDuplicateIds(Stream<? extends LayoutComponent> layouts)
+    {
+        Map<String, Long> counts = layouts
+                .flatMap(row -> row.getComponents().stream())
+                .map(ActionComponent::getId)
+                .filter(Objects::nonNull)
+                .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
+
+        for (Map.Entry<String, Long> entry : counts.entrySet())
+        {
+            if (entry.getValue() > 1)
+            {
+                throw new IllegalArgumentException(
+                        "Cannot have components with duplicate custom IDs." +
+                        " Id: \"" + entry.getKey() + "\" appeared " + entry.getValue() + " times!");
+            }
+        }
+    }
 }

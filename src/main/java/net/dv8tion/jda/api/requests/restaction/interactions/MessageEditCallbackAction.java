@@ -91,7 +91,8 @@ public interface MessageEditCallbackAction extends InteractionCallbackAction<Int
      *         The new action rows
      *
      * @throws IllegalArgumentException
-     *         If null is provided or more than 5 actions rows are provided
+     *         If null is provided, more than 5 action rows are provided,
+     *         or any custom {@link ActionComponent#getId() id} is duplicated
      *
      * @return The same update action, for chaining convenience
      */
@@ -110,7 +111,8 @@ public interface MessageEditCallbackAction extends InteractionCallbackAction<Int
      *         The new action rows
      *
      * @throws IllegalArgumentException
-     *         If null is provided or more than 5 actions rows are provided
+     *         If null is provided, more than 5 action rows are provided,
+     *         or any custom {@link ActionComponent#getId() id} is duplicated
      *
      * @return The same update action, for chaining convenience
      */
@@ -125,7 +127,8 @@ public interface MessageEditCallbackAction extends InteractionCallbackAction<Int
      *         The action row components, such as {@link Button Buttons}
      *
      * @throws IllegalArgumentException
-     *         If null or an invalid number of components are provided
+     *         If null is provided, an invalid number of components is provided,
+     *         or any custom {@link ActionComponent#getId() id} is duplicated
      *
      * @return The same update action, for chaining convenience
      *
@@ -145,7 +148,8 @@ public interface MessageEditCallbackAction extends InteractionCallbackAction<Int
      *         The action row components, such as {@link Button Buttons}
      *
      * @throws IllegalArgumentException
-     *         If null or an invalid number of components are provided
+     *         If null is provided, an invalid number of components is provided,
+     *         or any custom {@link ActionComponent#getId() id} is duplicated
      *
      * @return The same update action, for chaining convenience
      *

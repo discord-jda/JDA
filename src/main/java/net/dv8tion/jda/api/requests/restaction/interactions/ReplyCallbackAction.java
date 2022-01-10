@@ -92,7 +92,8 @@ public interface ReplyCallbackAction extends InteractionCallbackAction<Interacti
      *         The components for this action row
      *
      * @throws IllegalArgumentException
-     *         If null is provided or an invalid number of components are provided
+     *         If null is provided, an invalid number of components is provided,
+     *         or any custom {@link ActionComponent#getId() id} is duplicated
      *
      * @return The same reply action, for chaining convenience
      *
@@ -112,7 +113,8 @@ public interface ReplyCallbackAction extends InteractionCallbackAction<Interacti
      *         The components for this action row
      *
      * @throws IllegalArgumentException
-     *         If null is provided or an invalid number of components are provided
+     *         If null is provided, an invalid number of components is provided,
+     *         or any custom {@link ActionComponent#getId() id} is duplicated
      *
      * @return The same reply action, for chaining convenience
      *
@@ -132,7 +134,8 @@ public interface ReplyCallbackAction extends InteractionCallbackAction<Interacti
      *         The action rows to add
      *
      * @throws IllegalArgumentException
-     *         If null is provided or more than 5 action rows are provided
+     *         If null is provided, more than 5 action rows are provided,
+     *         or any custom {@link ActionComponent#getId() id} is duplicated
      *
      * @return The same reply action, for chaining convenience
      */
@@ -151,7 +154,8 @@ public interface ReplyCallbackAction extends InteractionCallbackAction<Interacti
      *         The action rows to add
      *
      * @throws IllegalArgumentException
-     *         If null is provided or more than 5 action rows are provided
+     *         If null is provided, more than 5 action rows are provided,
+     *         or any custom {@link ActionComponent#getId() id} is duplicated
      *
      * @return The same reply action, for chaining convenience
      */

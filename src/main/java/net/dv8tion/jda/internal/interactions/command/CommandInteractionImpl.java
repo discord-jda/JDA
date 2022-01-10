@@ -22,7 +22,7 @@ import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.interactions.DeferrableInteractionImpl;
-import net.dv8tion.jda.internal.requests.restaction.interactions.ReplyActionImpl;
+import net.dv8tion.jda.internal.requests.restaction.interactions.ReplyCallbackActionImpl;
 
 import javax.annotation.Nonnull;
 
@@ -46,6 +46,6 @@ public class CommandInteractionImpl extends DeferrableInteractionImpl implements
     @Override
     public ReplyCallbackAction deferReply()
     {
-        return new ReplyActionImpl(hook);
+        return new ReplyCallbackActionImpl(hook);
     }
 }

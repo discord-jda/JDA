@@ -162,6 +162,7 @@ public class WebhookMessageActionImpl<T>
     {
         Checks.noneNull(rows, "ActionRows");
         Checks.check(rows.length + components.size() <= 5, "Can only have 5 action rows per message!");
+        Checks.checkDuplicateIds(Stream.concat(components.stream(), Arrays.stream(rows)));
         Collections.addAll(components, rows);
         return this;
     }

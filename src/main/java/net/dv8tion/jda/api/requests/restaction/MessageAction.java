@@ -809,7 +809,8 @@ public interface MessageAction extends RestAction<Message>, Appendable, AllowedM
      *         The new action rows
      *
      * @throws IllegalArgumentException
-     *         If null is provided or more than 5 actions rows are provided
+     *         If null is provided, more than 5 action rows are provided,
+     *         or any custom {@link ActionComponent#getId() id} is duplicated
      *
      * @return Updated MessageAction for chaining convenience
      */
@@ -828,7 +829,8 @@ public interface MessageAction extends RestAction<Message>, Appendable, AllowedM
      *         The new action rows
      *
      * @throws IllegalArgumentException
-     *         If null is provided or more than 5 actions rows are provided
+     *         If null is provided, more than 5 action rows are provided,
+     *         or any custom {@link ActionComponent#getId() id} is duplicated
      *
      * @return Updated MessageAction for chaining convenience
      */
@@ -844,7 +846,8 @@ public interface MessageAction extends RestAction<Message>, Appendable, AllowedM
      *         The components for this action row
      *
      * @throws IllegalArgumentException
-     *         If anything is null, empty, or an invalid number of components are provided
+     *         If null is provided, an invalid number of components is provided,
+     *         or any custom {@link ActionComponent#getId() id} is duplicated
      *
      * @return Updated MessageAction for chaining convenience
      *
@@ -865,7 +868,8 @@ public interface MessageAction extends RestAction<Message>, Appendable, AllowedM
      *         The components for this action row
      *
      * @throws IllegalArgumentException
-     *         If anything is null, empty, or an invalid number of components are provided
+     *         If null is provided, an invalid number of components is provided,
+     *         or any custom {@link ActionComponent#getId() id} is duplicated
      *
      * @return Updated MessageAction for chaining convenience
      *
