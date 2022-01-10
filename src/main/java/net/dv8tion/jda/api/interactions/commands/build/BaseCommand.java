@@ -125,8 +125,6 @@ public abstract class BaseCommand<T extends BaseCommand<T>> implements Serializa
         DataObject json = DataObject.empty().put("name", this.name);
         if (description != null)
             json.put("description", description);
-        if (!options.isEmpty())
-            json.put("options", options);
-        return json;
+        return json.put("options", options);
     }
 }

@@ -65,6 +65,8 @@ public interface SlashCommandData extends CommandData
 
     /**
      * The {@link SubcommandData Subcommands} in this command.
+     * <br>These subcommand instances are <b>reconstructed</b>,
+     * which means that any modifications will not be reflected in the backing state.
      *
      * @return Immutable list of {@link SubcommandData}
      */
@@ -73,6 +75,8 @@ public interface SlashCommandData extends CommandData
 
     /**
      * The {@link SubcommandGroupData Subcommand Groups} in this command.
+     * <br>These subcommand group instances are <b>reconstructed</b>,
+     * which means that any modifications will not be reflected in the backing state.
      *
      * @return Immutable list of {@link SubcommandGroupData}
      */
