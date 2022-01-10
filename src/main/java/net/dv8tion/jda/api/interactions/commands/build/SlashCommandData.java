@@ -97,6 +97,7 @@ public interface SlashCommandData extends CommandData
      *             <li>If the option type is {@link OptionType#SUB_COMMAND} or {@link OptionType#SUB_COMMAND_GROUP}.</li>
      *             <li>If this option is required and you already added a non-required option.</li>
      *             <li>If more than 25 options are provided.</li>
+     *             <li>If the option name is not unique</li>
      *             <li>If null is provided</li>
      *         </ul>
      *
@@ -119,6 +120,7 @@ public interface SlashCommandData extends CommandData
      *             <li>If the option type is {@link OptionType#SUB_COMMAND} or {@link OptionType#SUB_COMMAND_GROUP}.</li>
      *             <li>If this option is required and you already added a non-required option.</li>
      *             <li>If more than 25 options are provided.</li>
+     *             <li>If the option name is not unique</li>
      *             <li>If null is provided</li>
      *         </ul>
      *
@@ -155,6 +157,7 @@ public interface SlashCommandData extends CommandData
      *             <li>If the provided option type does not support auto-complete</li>
      *             <li>If this option is required and you already added a non-required option.</li>
      *             <li>If more than 25 options are provided.</li>
+     *             <li>If the option name is not unique</li>
      *             <li>If null is provided</li>
      *         </ul>
      *
@@ -188,6 +191,7 @@ public interface SlashCommandData extends CommandData
      *             <li>If the option type is {@link OptionType#SUB_COMMAND} or {@link OptionType#SUB_COMMAND_GROUP}.</li>
      *             <li>If this option is required and you already added a non-required option.</li>
      *             <li>If more than 25 options are provided.</li>
+     *             <li>If the option name is not unique</li>
      *             <li>If null is provided</li>
      *         </ul>
      *
@@ -218,6 +222,7 @@ public interface SlashCommandData extends CommandData
      *             <li>If the option type is {@link OptionType#SUB_COMMAND} or {@link OptionType#SUB_COMMAND_GROUP}.</li>
      *             <li>If this option is required and you already added a non-required option.</li>
      *             <li>If more than 25 options are provided.</li>
+     *             <li>If the option name is not unique</li>
      *             <li>If null is provided</li>
      *         </ul>
      *
@@ -236,7 +241,7 @@ public interface SlashCommandData extends CommandData
      *         The subcommands to add
      *
      * @throws IllegalArgumentException
-     *         If null is provided, or more than 25 subcommands are provided.
+     *         If null, more than 25 subcommands, or duplicate subcommand names are provided.
      *         Also throws if you try to mix subcommands/options/groups in one command.
      *
      * @return The builder instance, for chaining
@@ -251,7 +256,7 @@ public interface SlashCommandData extends CommandData
      *         The subcommands to add
      *
      * @throws IllegalArgumentException
-     *         If null is provided, or more than 25 subcommands are provided.
+     *         If null, more than 25 subcommands, or duplicate subcommand names are provided.
      *         Also throws if you try to mix subcommands/options/groups in one command.
      *
      * @return The builder instance, for chaining
@@ -270,7 +275,7 @@ public interface SlashCommandData extends CommandData
      *         The subcommand groups to add
      *
      * @throws IllegalArgumentException
-     *         If null is provided, or more than 25 subcommand groups are provided.
+     *         If null, more than 25 subcommand groups, or duplicate group names are provided.
      *         Also throws if you try to mix subcommands/options/groups in one command.
      *
      * @return The builder instance, for chaining
@@ -285,7 +290,7 @@ public interface SlashCommandData extends CommandData
      *         The subcommand groups to add
      *
      * @throws IllegalArgumentException
-     *         If null is provided, or more than 25 subcommand groups are provided.
+     *         If null, more than 25 subcommand groups, or duplicate group names are provided.
      *         Also throws if you try to mix subcommands/options/groups in one command.
      *
      * @return The builder instance, for chaining
