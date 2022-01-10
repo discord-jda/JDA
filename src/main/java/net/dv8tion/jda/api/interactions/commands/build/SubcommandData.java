@@ -26,7 +26,9 @@ import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.stream.Stream;
 
 /**
  * Builder for a Slash-Command subcommand.
@@ -84,6 +86,7 @@ public class SubcommandData extends BaseCommand<CommandDataImpl> implements Seri
      *         <ul>
      *             <li>If this option is required and you already added a non-required option.</li>
      *             <li>If more than 25 options are provided.</li>
+     *             <li>If the option name is not unique</li>
      *             <li>If null is provided</li>
      *         </ul>
      *
@@ -94,14 +97,23 @@ public class SubcommandData extends BaseCommand<CommandDataImpl> implements Seri
     {
         Checks.noneNull(options, "Option");
         Checks.check(options.length + this.options.length() <= 25, "Cannot have more than 25 options for a subcommand!");
+        boolean allowRequired = this.allowRequired;
         for (OptionData option : options)
         {
             Checks.check(option.getType() != OptionType.SUB_COMMAND, "Cannot add a subcommand to a subcommand!");
             Checks.check(option.getType() != OptionType.SUB_COMMAND_GROUP, "Cannot add a subcommand group to a subcommand!");
             Checks.check(allowRequired || !option.isRequired(), "Cannot add required options after non-required options!");
             allowRequired = option.isRequired(); // prevent adding required options after non-required options
-            this.options.add(option);
         }
+
+        Checks.checkUnique(Stream.concat(getOptions().stream(), Arrays.stream(options)).map(OptionData::getName),
+            "Cannot have multiple options with the same name. Name: \"%s\" appeared %d times!",
+            (count, value) -> new Object[]{ value, count });
+
+        this.allowRequired = allowRequired;
+        for (OptionData option : options)
+            this.options.add(option);
+
         return this;
     }
 
@@ -117,6 +129,7 @@ public class SubcommandData extends BaseCommand<CommandDataImpl> implements Seri
      *         <ul>
      *             <li>If this option is required and you already added a non-required option.</li>
      *             <li>If more than 25 options are provided.</li>
+     *             <li>If the option name is not unique</li>
      *             <li>If null is provided</li>
      *         </ul>
      *
@@ -151,6 +164,7 @@ public class SubcommandData extends BaseCommand<CommandDataImpl> implements Seri
      *             <li>If this option is required and you already added a non-required option.</li>
      *             <li>If the provided option type does not support auto-complete</li>
      *             <li>If more than 25 options are provided.</li>
+     *             <li>If the option name is not unique</li>
      *             <li>If null is provided</li>
      *         </ul>
      *
@@ -182,6 +196,7 @@ public class SubcommandData extends BaseCommand<CommandDataImpl> implements Seri
      *         <ul>
      *             <li>If this option is required and you already added a non-required option.</li>
      *             <li>If more than 25 options are provided.</li>
+     *             <li>If the option name is not unique</li>
      *             <li>If null is provided</li>
      *         </ul>
      *
@@ -210,6 +225,7 @@ public class SubcommandData extends BaseCommand<CommandDataImpl> implements Seri
      *         <ul>
      *             <li>If this option is required and you already added a non-required option.</li>
      *             <li>If more than 25 options are provided.</li>
+     *             <li>If the option name is not unique</li>
      *             <li>If null is provided</li>
      *         </ul>
      *

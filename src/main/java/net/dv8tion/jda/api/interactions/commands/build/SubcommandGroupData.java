@@ -24,9 +24,11 @@ import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Builder for a Slash-Command group.
@@ -149,7 +151,7 @@ public class SubcommandGroupData implements SerializableData
      *         The subcommands to add
      *
      * @throws IllegalArgumentException
-     *         If null is provided, or more than 25 subcommands are provided
+     *         If null, more than 25 subcommands, or duplicate subcommand names are provided.
      *
      * @return The SubcommandGroupData instance, for chaining
      */
@@ -158,6 +160,11 @@ public class SubcommandGroupData implements SerializableData
     {
         Checks.noneNull(subcommands, "Subcommand");
         Checks.check(subcommands.length + options.length() <= 25, "Cannot have more than 25 subcommands in one group!");
+        Checks.checkUnique(
+            Stream.concat(getSubcommands().stream(), Arrays.stream(subcommands)).map(SubcommandData::getName),
+            "Cannot have multiple subcommands with the same name. Name: \"%s\" appeared %d times!",
+            (count, value) -> new Object[]{ value, count }
+        );
         for (SubcommandData subcommand : subcommands)
             options.add(subcommand);
         return this;
@@ -170,7 +177,7 @@ public class SubcommandGroupData implements SerializableData
      *         The subcommands to add
      *
      * @throws IllegalArgumentException
-     *         If null is provided, or more than 25 subcommands are provided
+     *         If null, more than 25 subcommands, or duplicate subcommand names are provided.
      *
      * @return The SubcommandGroupData instance, for chaining
      */

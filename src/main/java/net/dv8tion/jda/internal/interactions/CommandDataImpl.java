@@ -24,8 +24,10 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class CommandDataImpl extends BaseCommand<CommandDataImpl> implements SlashCommandData
 {
@@ -158,15 +160,25 @@ public class CommandDataImpl extends BaseCommand<CommandDataImpl> implements Sla
         checkType(Command.Type.SLASH, "add options");
         Checks.check(options.length + this.options.length() <= 25, "Cannot have more than 25 options for a command!");
         Checks.check(allowOption, "You cannot mix options with subcommands/groups.");
-        allowSubcommands = allowGroups = false;
+        boolean allowRequired = this.allowRequired;
         for (OptionData option : options)
         {
             Checks.check(option.getType() != OptionType.SUB_COMMAND, "Cannot add a subcommand with addOptions(...). Use addSubcommands(...) instead!");
             Checks.check(option.getType() != OptionType.SUB_COMMAND_GROUP, "Cannot add a subcommand group with addOptions(...). Use addSubcommandGroups(...) instead!");
             Checks.check(allowRequired || !option.isRequired(), "Cannot add required options after non-required options!");
             allowRequired = option.isRequired(); // prevent adding required options after non-required options
-            this.options.add(option);
         }
+
+        Checks.checkUnique(
+            Stream.concat(getOptions().stream(), Arrays.stream(options)).map(OptionData::getName),
+            "Cannot have multiple options with the same name. Name: \"%s\" appeared %d times!",
+            (count, value) -> new Object[]{ value, count }
+        );
+
+        allowSubcommands = allowGroups = false;
+        this.allowRequired = allowRequired;
+        for (OptionData option : options)
+            this.options.add(option);
         return this;
     }
 
@@ -180,8 +192,14 @@ public class CommandDataImpl extends BaseCommand<CommandDataImpl> implements Sla
         checkType(Command.Type.SLASH, "add subcommands");
         if (!allowSubcommands)
             throw new IllegalArgumentException("You cannot mix options with subcommands/groups.");
-        allowOption = false;
         Checks.check(subcommands.length + options.length() <= 25, "Cannot have more than 25 subcommands for a command!");
+        Checks.checkUnique(
+            Stream.concat(getSubcommands().stream(), Arrays.stream(subcommands)).map(SubcommandData::getName),
+            "Cannot have multiple subcommands with the same name. Name: \"%s\" appeared %d times!",
+            (count, value) -> new Object[]{ value, count }
+        );
+
+        allowOption = false;
         for (SubcommandData data : subcommands)
             options.add(data);
         return this;
@@ -197,8 +215,14 @@ public class CommandDataImpl extends BaseCommand<CommandDataImpl> implements Sla
         checkType(Command.Type.SLASH, "add subcommand groups");
         if (!allowGroups)
             throw new IllegalArgumentException("You cannot mix options with subcommands/groups.");
-        allowOption = false;
         Checks.check(groups.length + options.length() <= 25, "Cannot have more than 25 subcommand groups for a command!");
+        Checks.checkUnique(
+            Stream.concat(getSubcommandGroups().stream(), Arrays.stream(groups)).map(SubcommandGroupData::getName),
+            "Cannot have multiple subcommand groups with the same name. Name: \"%s\" appeared %d times!",
+            (count, value) -> new Object[]{ value, count }
+        );
+
+        allowOption = false;
         for (SubcommandGroupData data : groups)
             options.add(data);
         return this;
