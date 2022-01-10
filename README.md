@@ -649,7 +649,7 @@ All dependencies are managed automatically by Gradle.
    * Version: **2.14**
    * [Github](https://github.com/TakahikoKawasaki/nv-websocket-client)
  * OkHttp
-   * Version: **4.9.1**
+   * Version: **4.9.3**
    * [Github](https://github.com/square/okhttp)
  * Apache Commons Collections4
    * Version: **4.4**
