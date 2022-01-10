@@ -35,8 +35,7 @@ public class MessageListenerExample extends ListenerAdapter
      */
     public static void main(String[] args)
     {
-        //We construct a builder for a BOT account. If we wanted to use a CLIENT account
-        // we would use AccountType.CLIENT
+        //We construct a builder for our bot.
         try
         {
             JDA jda = JDABuilder.createDefault("Your-Token-Goes-Here") // The token of the account that is logging in.
