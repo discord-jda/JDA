@@ -24,7 +24,7 @@ import javax.annotation.Nonnull;
 /**
  * Indicates that a {@link net.dv8tion.jda.api.entities.User User} was banned from a {@link net.dv8tion.jda.api.entities.Guild Guild}.
  *
- * <p>Can be used to retrieve the user who was banned (if available) and triggering guild.
+ * <p>Can be used to retrieve the user who was banned (if available) and the triggering guild.
  * <br><b>Note</b>: This does not directly indicate that a Member is removed from the Guild!
  *
  * @see net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent GuildMemberRemoveEvent
