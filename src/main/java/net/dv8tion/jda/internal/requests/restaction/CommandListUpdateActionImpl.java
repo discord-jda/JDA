@@ -35,9 +35,12 @@ import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
+import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class CommandListUpdateActionImpl extends RestActionImpl<List<Command>> implements CommandListUpdateAction
 {
@@ -107,6 +110,21 @@ public class CommandListUpdateActionImpl extends RestActionImpl<List<Command>> i
                 "Cannot have more than %d user context commands!", Commands.MAX_USER_COMMANDS);
         Checks.check(message + newMessage <= Commands.MAX_MESSAGE_COMMANDS,
                 "Cannot have more than %d message context commands!", Commands.MAX_MESSAGE_COMMANDS);
+
+        Map<String, Long> counts = Stream.concat(commands.stream(), this.commands.stream())
+                .map(c -> c.getType() + " " + c.getName())
+                .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
+        for (Map.Entry<String, Long> entry : counts.entrySet())
+        {
+            if (entry.getValue() > 1)
+            {
+                String[] tuple = entry.getKey().split(" ", 2);
+                throw new IllegalArgumentException(
+                        "Cannot have multiple commands of the same type with identical names. "
+                       +"Name: \"" + tuple[1] + "\" with type " + tuple[0] + " appeared " + entry.getValue() + " times!"
+                );
+            }
+        }
         slash += newSlash;
         user += newUser;
         message += newMessage;
