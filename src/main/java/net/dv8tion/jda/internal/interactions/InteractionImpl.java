@@ -41,7 +41,6 @@ public class InteractionImpl implements Interaction
     protected final User user;
     protected final Channel channel;
     protected final Locale userLocale;
-    protected final Locale guildLocale;
     protected final JDAImpl api;
 
     public InteractionImpl(JDAImpl jda, DataObject data)
@@ -52,7 +51,6 @@ public class InteractionImpl implements Interaction
         this.type = data.getInt("type");
         this.guild = jda.getGuildById(data.getUnsignedLong("guild_id", 0L));
         this.userLocale = data.isNull("locale") ? null : Locale.forLanguageTag(data.getString("locale"));
-        this.guildLocale = guild == null ? null : guild.getLocale();
         this.hook = new InteractionHookImpl(this, jda);
         if (guild != null)
         {
@@ -79,7 +77,7 @@ public class InteractionImpl implements Interaction
         }
     }
 
-    public InteractionImpl(long id, int type, String token, Guild guild, Member member, User user, Channel channel, Locale userLocale, Locale guildLocale)
+    public InteractionImpl(long id, int type, String token, Guild guild, Member member, User user, Channel channel, Locale userLocale)
     {
         this.id = id;
         this.type = type;
@@ -89,7 +87,6 @@ public class InteractionImpl implements Interaction
         this.user = user;
         this.channel = channel;
         this.userLocale = userLocale;
-        this.guildLocale = guildLocale;
         this.api = (JDAImpl) user.getJDA();
         this.hook = new InteractionHookImpl(this, api);
     }
@@ -132,13 +129,6 @@ public class InteractionImpl implements Interaction
     public Locale getUserLocale()
     {
         return userLocale;
-    }
-
-    @Nonnull
-    @Override
-    public Locale getGuildLocale()
-    {
-        return guildLocale;
     }
 
     @Nonnull
