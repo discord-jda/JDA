@@ -87,7 +87,7 @@ public class GenericInteractionCreateEvent extends Event implements Interaction
         return interaction.getChannel();
     }
 
-    @Nullable
+    @Nonnull
     @Override
     public Locale getUserLocale()
     {

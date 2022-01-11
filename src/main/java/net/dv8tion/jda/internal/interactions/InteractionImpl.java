@@ -123,7 +123,7 @@ public class InteractionImpl implements Interaction
         return channel;
     }
 
-    @Nullable
+    @Nonnull
     @Override
     public Locale getUserLocale()
     {
