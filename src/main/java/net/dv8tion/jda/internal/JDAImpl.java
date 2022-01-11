@@ -318,7 +318,7 @@ public class JDAImpl implements JDA
 
     public String getGateway()
     {
-        return getSessionController().getGateway(this);
+        return getSessionController().getGateway();
     }
 
 

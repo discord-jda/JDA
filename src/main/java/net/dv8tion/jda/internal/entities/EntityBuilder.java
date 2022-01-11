@@ -37,10 +37,7 @@ import net.dv8tion.jda.api.entities.templates.TemplateGuild;
 import net.dv8tion.jda.api.entities.templates.TemplateRole;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleAddEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleRemoveEvent;
-import net.dv8tion.jda.api.events.guild.member.update.GuildMemberUpdateAvatarEvent;
-import net.dv8tion.jda.api.events.guild.member.update.GuildMemberUpdateBoostTimeEvent;
-import net.dv8tion.jda.api.events.guild.member.update.GuildMemberUpdateNicknameEvent;
-import net.dv8tion.jda.api.events.guild.member.update.GuildMemberUpdatePendingEvent;
+import net.dv8tion.jda.api.events.guild.member.update.*;
 import net.dv8tion.jda.api.events.user.update.UserUpdateAvatarEvent;
 import net.dv8tion.jda.api.events.user.update.UserUpdateDiscriminatorEvent;
 import net.dv8tion.jda.api.events.user.update.UserUpdateFlagsEvent;
@@ -519,6 +516,11 @@ public class EntityBuilder
                 : Helpers.toTimestamp(memberJson.getString("premium_since"));
             member.setBoostDate(boostTimestamp);
 
+            long timeOutTimestamp = memberJson.isNull("communication_disabled_until")
+                ? 0
+                : Helpers.toTimestamp(memberJson.getString("communication_disabled_until"));
+            member.setTimeOutEnd(timeOutTimestamp);
+
             if (!memberJson.isNull("pending"))
                 member.setPending(memberJson.getBoolean("pending"));
             Set<Role> roles = member.getRoleSet();
@@ -626,10 +628,7 @@ public class EntityBuilder
         {
             long epoch = 0;
             if (!content.isNull("premium_since"))
-            {
-                TemporalAccessor date = DateTimeFormatter.ISO_OFFSET_DATE_TIME.parse(content.getString("premium_since"));
-                epoch = Instant.from(date).toEpochMilli();
-            }
+                epoch = Helpers.toTimestamp(content.getString("premium_since"));
             if (epoch != member.getBoostDateRaw())
             {
                 OffsetDateTime oldTime = member.getTimeBoosted();
@@ -638,6 +637,22 @@ public class EntityBuilder
                     new GuildMemberUpdateBoostTimeEvent(
                         getJDA(), responseNumber,
                         member, oldTime));
+            }
+        }
+
+        if (content.hasKey("communication_disabled_until"))
+        {
+            long epoch = 0;
+            if (!content.isNull("communication_disabled_until"))
+                epoch = Helpers.toTimestamp(content.getString("communication_disabled_until"));
+            if (epoch != member.getTimeOutEndRaw())
+            {
+                OffsetDateTime oldTime = member.getTimeOutEnd();
+                member.setTimeOutEnd(epoch);
+                getJDA().handleEvent(
+                        new GuildMemberUpdateTimeOutEvent(
+                                getJDA(), responseNumber,
+                                member, oldTime));
             }
         }
 

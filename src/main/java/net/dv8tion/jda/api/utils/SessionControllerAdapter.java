@@ -78,15 +78,6 @@ public class SessionControllerAdapter implements SessionController
 
     @Nonnull
     @Override
-    public String getGateway(@Nonnull JDA api)
-    {
-        Route.CompiledRoute route = Route.Misc.GATEWAY.compile();
-        return new RestActionImpl<String>(api, route,
-                (response, request) -> response.getObject().getString("url")).priority().complete();
-    }
-
-    @Nonnull
-    @Override
     public ShardedGateway getShardedGateway(@Nonnull JDA api)
     {
         AccountTypeException.check(api.getAccountType(), AccountType.BOT);

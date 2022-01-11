@@ -170,14 +170,14 @@ public class OptionMapping
      * <br>Note that {@link OptionType#USER OptionType.USER} can also accept users that are not members of a guild, in which case this will be null!
      *
      * @throws IllegalStateException
-     *         If this option is not of type {@link OptionType#USER USER}
+     *         If this option is not of type {@link OptionType#USER USER} or {@link OptionType#MENTIONABLE MENTIONABLE}
      *
      * @return The resolved {@link Member}, or null
      */
     @Nullable
     public Member getAsMember()
     {
-        if (type != OptionType.USER)
+        if (type != OptionType.USER && type != OptionType.MENTIONABLE)
             throw new IllegalStateException("Cannot resolve Member for option " + getName() + " of type " + type);
         Object object = resolved.get(getAsLong());
         if (object instanceof Member)
@@ -189,40 +189,42 @@ public class OptionMapping
      * The resolved {@link User} for this option value.
      *
      * @throws IllegalStateException
-     *         If this option is not of type {@link OptionType#USER USER}
+     *         If this option is not of type {@link OptionType#USER USER} or
+     *         {@link OptionType#MENTIONABLE MENTIONABLE} without a resolved user
      *
      * @return The resolved {@link User}
      */
     @Nonnull
     public User getAsUser()
     {
-        if (type != OptionType.USER)
+        if (type != OptionType.USER && type != OptionType.MENTIONABLE)
             throw new IllegalStateException("Cannot resolve User for option " + getName() + " of type " + type);
         Object object = resolved.get(getAsLong());
         if (object instanceof Member)
             return ((Member) object).getUser();
         if (object instanceof User)
             return (User) object;
-        throw new IllegalStateException("Could not resolve user!");
+        throw new IllegalStateException("Could not resolve User from option type " + type);
     }
 
     /**
      * The resolved {@link Role} for this option value.
      *
      * @throws IllegalStateException
-     *         If this option is not of type {@link OptionType#ROLE ROLE}
+     *         If this option is not of type {@link OptionType#ROLE ROLE} or
+     *         {@link OptionType#MENTIONABLE MENTIONABLE} without a resolved role
      *
      * @return The resolved {@link Role}
      */
     @Nonnull
     public Role getAsRole()
     {
-        if (type != OptionType.ROLE)
+        if (type != OptionType.ROLE && type != OptionType.MENTIONABLE)
             throw new IllegalStateException("Cannot resolve Role for option " + getName() + " of type " + type);
         Object role = resolved.get(getAsLong());
         if (role instanceof Role)
             return (Role) role;
-        throw new IllegalStateException("Could not resolve role!");
+        throw new IllegalStateException("Could not resolve Role from option type " + type);
     }
 
     /**

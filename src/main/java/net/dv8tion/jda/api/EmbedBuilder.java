@@ -25,7 +25,7 @@ import net.dv8tion.jda.internal.utils.Helpers;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.awt.*;
-import java.time.*;
+import java.time.OffsetDateTime;
 import java.time.temporal.TemporalAccessor;
 import java.util.LinkedList;
 import java.util.List;
@@ -72,7 +72,7 @@ public class EmbedBuilder
     {
         copyFrom(builder);
     }
-    
+
     /**
      * Creates an EmbedBuilder using fields in an existing embed.
      *
@@ -257,7 +257,7 @@ public class EmbedBuilder
     {
         return setTitle(title, null);
     }
-    
+
     /**
      * Sets the Title of the embed.
      * <br>You can provide {@code null} as url if no url should be used.
@@ -382,47 +382,10 @@ public class EmbedBuilder
     @Nonnull
     public EmbedBuilder setTimestamp(@Nullable TemporalAccessor temporal)
     {
-        if (temporal == null)
-        {
-            this.timestamp = null;
-        }
-        else if (temporal instanceof OffsetDateTime)
-        {
-            this.timestamp = (OffsetDateTime) temporal;
-        }
-        else
-        {
-            ZoneOffset offset;
-            try
-            {
-                offset = ZoneOffset.from(temporal);
-            }
-            catch (DateTimeException ignore)
-            {
-                offset = ZoneOffset.UTC;
-            }
-            try
-            {
-                LocalDateTime ldt = LocalDateTime.from(temporal);
-                this.timestamp = OffsetDateTime.of(ldt, offset);
-            }
-            catch (DateTimeException ignore)
-            {
-                try
-                {
-                    Instant instant = Instant.from(temporal);
-                    this.timestamp = OffsetDateTime.ofInstant(instant, offset);
-                }
-                catch (DateTimeException ex)
-                {
-                    throw new DateTimeException("Unable to obtain OffsetDateTime from TemporalAccessor: " +
-                            temporal + " of type " + temporal.getClass().getName(), ex);
-                }
-            }
-        }
-        return this; 
+        this.timestamp = Helpers.toOffsetDateTime(temporal);
+        return this;
     }
-    
+
     /**
      * Sets the Color of the embed.
      *
@@ -461,7 +424,7 @@ public class EmbedBuilder
         this.color = color;
         return this;
     }
-    
+
     /**
      * Sets the Thumbnail of the embed.
      *
@@ -557,7 +520,7 @@ public class EmbedBuilder
         }
         return this;
     }
-    
+
     /**
      * Sets the Author of the embed. The author appears in the top left of the embed and can have a small
      * image beside it along with the author's name being made clickable by way of providing a url.
@@ -747,7 +710,7 @@ public class EmbedBuilder
     /**
      * Copies the provided Field into a new Field for this builder.
      * <br>For additional documentation, see {@link #addField(String, String, boolean)}
-     * 
+     *
      * @param  field
      *         the field object to add
      *
@@ -758,7 +721,7 @@ public class EmbedBuilder
     {
         return field == null ? this : addField(field.getName(), field.getValue(), field.isInline());
     }
-    
+
     /**
      * Adds a Field to the embed.
      *
@@ -794,7 +757,7 @@ public class EmbedBuilder
         this.fields.add(new MessageEmbed.Field(name, value, inline));
         return this;
     }
-    
+
     /**
      * Adds a blank (empty) Field to the embed.
      *
@@ -827,7 +790,7 @@ public class EmbedBuilder
         this.fields.clear();
         return this;
     }
-    
+
     /**
      * <b>Modifiable</b> list of {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbed} Fields that the builder will
      * use for {@link #build()}.

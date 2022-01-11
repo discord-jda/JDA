@@ -29,7 +29,6 @@ import java.util.FormattableFlags;
 import java.util.Formatter;
 import java.util.List;
 
-//TODO-v5: document all
 public interface ThreadChannel extends GuildMessageChannel, IMemberContainer
 {
     //TODO fields that need to be researched:
@@ -214,6 +213,88 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer
     //TODO-v5: docs - update the docs once retrieveThreadMember is added
     @Nullable
     ThreadMember getThreadMemberById(long id);
+
+    /**
+     * Load the thread-member for the specified user.
+     * <br>If the thread-member is already loaded it, will be retrieved from {@link #getThreadMemberById(long)}
+     * and immediately provided if the thread-member information is consistent. If the bot hasn't joined the thread,
+     * {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MEMBERS GatewayIntent.GUILD_MEMBERS} is required to keep the cache updated.
+     *
+     * @param  member
+     *         The member to load the thread-member from
+     *
+     * @throws IllegalArgumentException
+     *         If provided with null
+     *
+     * @return {@link RestAction} - Type: {@link ThreadMember}
+     */
+    @Nonnull
+    @CheckReturnValue
+    default RestAction<ThreadMember> retrieveThreadMember(@Nonnull Member member)
+    {
+        Checks.notNull(member, "Member");
+        return retrieveThreadMemberById(member.getIdLong());
+    }
+
+    /**
+     * Load the thread-member for the specified user.
+     * <br>If the thread-member is already loaded, it will be retrieved from {@link #getThreadMemberById(long)}
+     * and immediately provided if the thread-member information is consistent. If the bot hasn't joined the thread,
+     * {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MEMBERS GatewayIntent.GUILD_MEMBERS} is required to keep the cache updated.
+     *
+     * @param  user
+     *         The user to load the thread-member from
+     *
+     * @throws IllegalArgumentException
+     *         If provided with null
+     *
+     * @return {@link RestAction} - Type: {@link ThreadMember}
+     */
+    @Nonnull
+    @CheckReturnValue
+    default RestAction<ThreadMember> retrieveThreadMember(@Nonnull User user)
+    {
+        Checks.notNull(user, "User");
+        return retrieveThreadMemberById(user.getIdLong());
+    }
+
+    /**
+     * Load the thread-member for the user with the specified id.
+     * <br>If the thread-member is already loaded, it will be retrieved from {@link #getThreadMemberById(long)}
+     * and immediately provided if the thread-member information is consistent. If the bot hasn't joined the thread,
+     * {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MEMBERS GatewayIntent.GUILD_MEMBERS} is required to keep the cache updated.
+     *
+     * @param  id
+     *         The user id to load the thread-member from
+     *
+     * @throws IllegalArgumentException
+     *         If the provided id is empty or null
+     * @throws NumberFormatException
+     *         If the provided id is not a snowflake
+     *
+     * @return {@link RestAction} - Type: {@link ThreadMember}
+     */
+    @Nonnull
+    @CheckReturnValue
+    default RestAction<ThreadMember> retrieveThreadMemberById(@Nonnull String id)
+    {
+        return retrieveThreadMemberById(MiscUtil.parseSnowflake(id));
+    }
+
+    /**
+     * Load the thread-member for the user with the specified id.
+     * <br>If the thread-member is already loaded, it will be retrieved from {@link #getThreadMemberById(long)}
+     * and immediately provided if the thread-member information is consistent. If the bot hasn't joined the thread,
+     * {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MEMBERS GatewayIntent.GUILD_MEMBERS} is required to keep the cache updated.
+     *
+     * @param  id
+     *         The user id to load the thread-member from
+     *
+     * @return {@link RestAction} - Type: {@link ThreadMember}
+     */
+    @Nonnull
+    @CheckReturnValue
+    RestAction<ThreadMember> retrieveThreadMemberById(long id);
 
     /**
      * Retrieves the {@link ThreadMember ThreadMembers} of this thread.

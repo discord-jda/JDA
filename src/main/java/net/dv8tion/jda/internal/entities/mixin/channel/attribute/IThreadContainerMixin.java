@@ -78,7 +78,7 @@ public interface IThreadContainerMixin<T extends IThreadContainerMixin<T>> exten
         checkPermission(Permission.MESSAGE_HISTORY);
 
         Route.CompiledRoute route = Route.Channels.LIST_PUBLIC_ARCHIVED_THREADS.compile(getId());
-        return new ThreadChannelPaginationActionImpl(getJDA(), route, this);
+        return new ThreadChannelPaginationActionImpl(getJDA(), route, this, false);
     }
 
     @Nonnull
@@ -90,7 +90,7 @@ public interface IThreadContainerMixin<T extends IThreadContainerMixin<T>> exten
         checkPermission(Permission.MANAGE_THREADS);
 
         Route.CompiledRoute route = Route.Channels.LIST_PRIVATE_ARCHIVED_THREADS.compile(getId());
-        return new ThreadChannelPaginationActionImpl(getJDA(), route, this);
+        return new ThreadChannelPaginationActionImpl(getJDA(), route, this, false);
     }
 
     @Nonnull
@@ -101,6 +101,6 @@ public interface IThreadContainerMixin<T extends IThreadContainerMixin<T>> exten
         checkPermission(Permission.MESSAGE_HISTORY);
 
         Route.CompiledRoute route = Route.Channels.LIST_JOINED_PRIVATE_ARCHIVED_THREADS.compile(getId());
-        return new ThreadChannelPaginationActionImpl(getJDA(), route, this);
+        return new ThreadChannelPaginationActionImpl(getJDA(), route, this, true);
     }
 }
