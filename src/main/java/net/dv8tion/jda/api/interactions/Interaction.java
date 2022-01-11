@@ -506,11 +506,10 @@ public interface Interaction extends ISnowflake
 
     /**
      * Returns the selected language of the invoking user.
-     * This is null if the {@link InteractionType type} of this interaction is {@link InteractionType#PING PING}.
      *
-     * @return The language of the invoking user or null if the type is {@link InteractionType#PING PING}
+     * @return The language of the invoking user
      */
-    @Nullable
+    @Nonnull
     Locale getUserLocale();
 
     /**

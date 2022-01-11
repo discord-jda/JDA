@@ -50,7 +50,7 @@ public class InteractionImpl implements Interaction
         this.token = data.getString("token");
         this.type = data.getInt("type");
         this.guild = jda.getGuildById(data.getUnsignedLong("guild_id", 0L));
-        this.userLocale = data.isNull("locale") ? null : Locale.forLanguageTag(data.getString("locale"));
+        this.userLocale = Locale.forLanguageTag(data.getString("locale"));
         this.hook = new InteractionHookImpl(this, jda);
         if (guild != null)
         {
@@ -124,7 +124,7 @@ public class InteractionImpl implements Interaction
         return channel;
     }
 
-    @Nullable
+    @Nonnull
     @Override
     public Locale getUserLocale()
     {
