@@ -38,7 +38,6 @@ public class InteractionImpl implements Interaction
     protected final User user;
     protected final Channel channel;
     protected final Locale userLocale;
-    protected final Locale guildLocale;
     protected final JDAImpl api;
 
     //This is used to give a proper error when an interaction is ack'd twice
@@ -52,8 +51,7 @@ public class InteractionImpl implements Interaction
         this.token = data.getString("token");
         this.type = data.getInt("type");
         this.guild = jda.getGuildById(data.getUnsignedLong("guild_id", 0L));
-        this.userLocale = data.isNull("locale") ? null : Locale.forLanguageTag(data.getString("locale"));
-        this.guildLocale = guild == null ? null : guild.getLocale();
+        this.userLocale = Locale.forLanguageTag(data.getString("locale"));
         if (guild != null)
         {
             member = jda.getEntityBuilder().createMember((GuildImpl) guild, data.getObject("member"));
@@ -79,7 +77,7 @@ public class InteractionImpl implements Interaction
         }
     }
 
-    public synchronized boolean ack()
+    public InteractionImpl(long id, int type, String token, Guild guild, Member member, User user, Channel channel, Locale userLocale, Locale guildLocale)
     {
         boolean wasAck = isAck;
         this.isAck = true;
@@ -130,13 +128,6 @@ public class InteractionImpl implements Interaction
     public Locale getUserLocale()
     {
         return userLocale;
-    }
-
-    @Nonnull
-    @Override
-    public Locale getGuildLocale()
-    {
-        return guildLocale;
     }
 
     @Nonnull
