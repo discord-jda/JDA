@@ -45,7 +45,13 @@ public interface IThreadContainer extends GuildChannel, IPermissionContainer
 
     /**
      * Creates a new, public {@link ThreadChannel} with the parent channel being this {@link IThreadContainer}.
-     * This requires the bot to have {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL} and {@link net.dv8tion.jda.api.Permission#CREATE_PUBLIC_THREADS} permissions.
+     * This requires the bot to have the {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL} and {@link net.dv8tion.jda.api.Permission#CREATE_PUBLIC_THREADS} permissions.
+     *
+     * The resulting {@link net.dv8tion.jda.api.entities.ThreadChannel ThreadChannel} may be either one of:
+     * <ul>
+     *     <li>{@link ChannelType#GUILD_PUBLIC_THREAD}</li>
+     *     <li>{@link ChannelType#GUILD_NEWS_THREAD}</li>
+     * </ul>
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
      * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
@@ -56,20 +62,13 @@ public interface IThreadContainer extends GuildChannel, IPermissionContainer
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MAX_CHANNELS MAX_CHANNELS}
      *     <br>The maximum number of channels were exceeded</li>
      *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#THREAD_WITH_THIS_MESSAGE_ALREADY_EXISTS}
-     *     <br>This message has already been used to create a thread</li>
-     *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MAX_ACTIVE_THREADS}
      *     <br>The maximum number of active threads has been reached, and no more may be created.</li>
      *
      * </ul>
      *
-     * The resulting {@link net.dv8tion.jda.api.entities.ThreadChannel ThreadChannel} may be one either one of:
-     * <ul>
-     *     <li>{@link ChannelType#GUILD_PUBLIC_THREAD}</li>
-     *     <li>{@link ChannelType#GUILD_NEWS_THREAD}</li>
-     *
-     * @param name The name of the new ThreadChannel
+     * @param name
+     *        The name of the new ThreadChannel
      *
      * @return A specific {@link ThreadChannelAction} that may be used to configure the new ThreadChannel before its creation.
      */
@@ -82,7 +81,14 @@ public interface IThreadContainer extends GuildChannel, IPermissionContainer
 
     /**
      * Creates a new {@link ThreadChannel} with the parent channel being this {@link IThreadContainer}.
-     * This requires the bot to have {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL} and {@link net.dv8tion.jda.api.Permission#CREATE_PUBLIC_THREADS} permissions.
+     * This requires the bot to have the {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL} and {@link net.dv8tion.jda.api.Permission#CREATE_PUBLIC_THREADS} permissions.
+     *
+     * The resulting {@link net.dv8tion.jda.api.entities.ThreadChannel ThreadChannel} may be one of:
+     * <ul>
+     *     <li>{@link ChannelType#GUILD_PUBLIC_THREAD}</li>
+     *     <li>{@link ChannelType#GUILD_NEWS_THREAD}</li>
+     *     <li>{@link ChannelType#GUILD_PRIVATE_THREAD}</li>
+     * </ul>
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
      * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
@@ -93,9 +99,6 @@ public interface IThreadContainer extends GuildChannel, IPermissionContainer
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MAX_CHANNELS MAX_CHANNELS}
      *     <br>The maximum number of channels were exceeded</li>
      *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#THREAD_WITH_THIS_MESSAGE_ALREADY_EXISTS}
-     *     <br>This message has already been used to create a thread</li>
-     *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MAX_ACTIVE_THREADS}
      *     <br>The maximum number of active threads has been reached, and no more may be created.</li>
      *
@@ -104,15 +107,13 @@ public interface IThreadContainer extends GuildChannel, IPermissionContainer
      *
      * </ul>
      *
-     * The resulting {@link net.dv8tion.jda.api.entities.ThreadChannel ThreadChannel} may be one of:
-     * <ul>
-     *     <li>{@link ChannelType#GUILD_PUBLIC_THREAD}</li>
-     *     <li>{@link ChannelType#GUILD_NEWS_THREAD}</li>
-     *     <li>{@link ChannelType#GUILD_PRIVATE_THREAD}</li>
+     * @param  name
+     *         The name of the new ThreadChannel
+     * @param  isPrivate
+     *         The public/private status of the new ThreadChannel. If true, the new ThreadChannel will be private.
      *
-     * @param name The name of the new ThreadChannel
-     * @param isPrivate The public/private status of the new ThreadChannel. If true, the new ThreadChannel will be private.
-     * @throws InsufficientPermissionException if the ThreadChannel is set to private, and the logged in account does not have {@link net.dv8tion.jda.api.Permission#CREATE_PRIVATE_THREADS}.
+     * @throws InsufficientPermissionException
+     *         if the ThreadChannel is set to private, and the logged in account does not have {@link net.dv8tion.jda.api.Permission#CREATE_PRIVATE_THREADS}.
      *
      * @return A specific {@link ThreadChannelAction} that may be used to configure the new ThreadChannel before its creation.
      */
@@ -126,6 +127,12 @@ public interface IThreadContainer extends GuildChannel, IPermissionContainer
      * This ThreadChannel will be spawned from the given messageID, and will consequently share its ID with the message.
      * This requires the bot to have {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL} and {@link net.dv8tion.jda.api.Permission#CREATE_PUBLIC_THREADS} permissions.
      *
+     * The resulting {@link net.dv8tion.jda.api.entities.ThreadChannel ThreadChannel} may be one of:
+     * <ul>
+     *     <li>{@link ChannelType#GUILD_PUBLIC_THREAD}</li>
+     *     <li>{@link ChannelType#GUILD_NEWS_THREAD}</li>
+     * </ul>
+     *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
      * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
      * <ul>
@@ -143,13 +150,10 @@ public interface IThreadContainer extends GuildChannel, IPermissionContainer
      *
      * </ul>
      *
-     * The resulting {@link net.dv8tion.jda.api.entities.ThreadChannel ThreadChannel} may be one of:
-     * <ul>
-     *     <li>{@link ChannelType#GUILD_PUBLIC_THREAD}</li>
-     *     <li>{@link ChannelType#GUILD_NEWS_THREAD}</li>
-     *
-     * @param name The name of the new ThreadChannel
-     * @param messageId The ID of the message from which this ThreadChannel will be spawned.
+     * @param name
+     *        The name of the new ThreadChannel
+     * @param messageId
+     *        The ID of the message from which this ThreadChannel will be spawned.
      *
      * @return A specific {@link ThreadChannelAction} that may be used to configure the new ThreadChannel before its creation.
      */
@@ -163,6 +167,12 @@ public interface IThreadContainer extends GuildChannel, IPermissionContainer
      * This ThreadChannel will be spawned from the given messageID, and will consequently share its ID with the message.
      * This requires the bot to have {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL} and {@link net.dv8tion.jda.api.Permission#CREATE_PUBLIC_THREADS} permissions.
      *
+     * The resulting {@link net.dv8tion.jda.api.entities.ThreadChannel ThreadChannel} may be one of:
+     * <ul>
+     *     <li>{@link ChannelType#GUILD_PUBLIC_THREAD}</li>
+     *     <li>{@link ChannelType#GUILD_NEWS_THREAD}</li>
+     * </ul>
+     *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
      * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
      * <ul>
@@ -180,13 +190,10 @@ public interface IThreadContainer extends GuildChannel, IPermissionContainer
      *
      * </ul>
      *
-     * The resulting {@link net.dv8tion.jda.api.entities.ThreadChannel ThreadChannel} may be one of:
-     * <ul>
-     *     <li>{@link ChannelType#GUILD_PUBLIC_THREAD}</li>
-     *     <li>{@link ChannelType#GUILD_NEWS_THREAD}</li>
-     *
-     * @param name The name of the new ThreadChannel
-     * @param messageId The ID of the message from which this ThreadChannel will be spawned.
+     * @param name
+     *        The name of the new ThreadChannel
+     * @param messageId
+     *        The ID of the message from which this ThreadChannel will be spawned.
      *
      * @return A specific {@link ThreadChannelAction} that may be used to configure the new ThreadChannel before its creation.
      */
@@ -197,21 +204,7 @@ public interface IThreadContainer extends GuildChannel, IPermissionContainer
         return createThreadChannel(name, MiscUtil.parseSnowflake(messageId));
     }
 
-
-    //TODO-hex: document possible error responses
-    /**
-     * Obtains the <i>archived</i>, <i>public</i> {@link ThreadChannel ThreadChannels} that are children of this {@link IThreadContainer}.
-     * ThreadChannels that are still active will not be included here.
-     *
-     *
-     *
-     * @throws InsufficientPermissionException
-     *         If the current account does not have the {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY} permission.
-     *
-     * @return
-     *
-     * @see ThreadChannelPaginationAction
-     */
+    //TODO-v5: Docs
     @Nonnull
     @CheckReturnValue
     ThreadChannelPaginationAction retrieveArchivedPublicThreadChannels();

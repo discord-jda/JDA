@@ -76,7 +76,7 @@ public enum ChannelField
     /**
      * The topic of the channel.
      *
-     * Limited to {@link BaseGuildMessageChannel Base Guild Channels} (and implementations).
+     * Limited to {@link NewsChannel NewsChannels} and {@link TextChannel TextChannels}.
      *
      * @see BaseGuildMessageChannel#getTopic()
      */

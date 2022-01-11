@@ -36,7 +36,7 @@ import javax.annotation.Nonnull;
  *        .queue();
  * }</pre>
  *
- * @see BaseGuildMessageChannel#getManager()
+ * @see TextChannel#getManager()
  */
 public interface TextChannelManager extends BaseGuildMessageChannelManager<TextChannel, TextChannelManager>
 {
