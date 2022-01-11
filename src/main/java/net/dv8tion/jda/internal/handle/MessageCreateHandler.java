@@ -99,7 +99,7 @@ public class MessageCreateHandler extends SocketHandler
 
                 //Discord will only ever allow this property to show up to 50,
                 // so we don't want to update it to be over 50 because we don't want users to use it incorrectly.
-                int newMessageCount = Math.max(gThread.getMessageCount() + 1, 50);
+                int newMessageCount = Math.min(gThread.getMessageCount() + 1, 50);
                 gThread.setMessageCount(newMessageCount);
             }
         }
