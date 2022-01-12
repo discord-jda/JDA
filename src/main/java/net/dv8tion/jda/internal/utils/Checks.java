@@ -23,6 +23,7 @@ import org.jetbrains.annotations.Contract;
 import java.util.Collection;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.regex.Pattern;
@@ -221,7 +222,10 @@ public class Checks
 
     public static void checkDuplicateIds(Stream<? extends LayoutComponent> layouts)
     {
-        Stream<String> stream = layouts.flatMap(row -> row.getComponents().stream()).map(ActionComponent::getId);
+        Stream<String> stream = layouts.flatMap(row -> row.getComponents().stream())
+                .map(ActionComponent::getId)
+                .filter(Objects::nonNull);
+
         checkUnique(stream,
                 "Cannot have components with duplicate custom IDs. Id: \"%s\" appeared %d times!",
                 (count, value) -> new Object[]{ value, count }
