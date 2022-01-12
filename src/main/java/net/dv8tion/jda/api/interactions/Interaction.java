@@ -26,6 +26,7 @@ import net.dv8tion.jda.api.interactions.commands.Command;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Locale;
 
 /**
  * Abstract representation for any kind of Discord interaction.
@@ -254,6 +255,29 @@ public interface Interaction extends ISnowflake
         if (channel instanceof PrivateChannel)
             return (PrivateChannel) channel;
         throw new IllegalStateException("Cannot convert channel of type " + getChannelType() + " to PrivateChannel");
+    }
+
+    /**
+     * Returns the selected language of the invoking user.
+     *
+     * @return The language of the invoking user
+     */
+    @Nonnull
+    Locale getUserLocale();
+
+    /**
+     * Returns the preferred language of the Guild.
+     * <br>If {@link #isFromGuild()} returns {@code false}, this throws {@link IllegalStateException}!
+     * <br>This is identical to {@code getGuild().getLocale()}.
+     *
+     * @return The preferred language of the Guild
+     */
+    @Nonnull
+    default Locale getGuildLocale()
+    {
+        if (!isFromGuild())
+            throw new IllegalStateException("This interaction did not happen in a guild");
+        return getGuild().getLocale();
     }
 
     /**
