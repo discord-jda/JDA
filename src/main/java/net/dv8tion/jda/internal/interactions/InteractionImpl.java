@@ -77,7 +77,7 @@ public class InteractionImpl implements Interaction
         }
     }
 
-    public InteractionImpl(long id, int type, String token, Guild guild, Member member, User user, Channel channel, Locale userLocale, Locale guildLocale)
+    public synchronized boolean ack()
     {
         boolean wasAck = isAck;
         this.isAck = true;
