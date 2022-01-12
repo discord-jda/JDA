@@ -267,8 +267,10 @@ public interface Interaction extends ISnowflake
 
     /**
      * Returns the preferred language of the Guild.
-     * <br>If {@link #isFromGuild()} returns {@code false}, this throws {@link IllegalStateException}!
      * <br>This is identical to {@code getGuild().getLocale()}.
+     *
+     * @throws IllegalStateException
+     *         If this interaction is not from a guild. (See {@link #isFromGuild()})
      *
      * @return The preferred language of the Guild
      */
