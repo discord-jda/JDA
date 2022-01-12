@@ -112,7 +112,7 @@ public class GuildImpl implements Guild
     private NSFWLevel nsfwLevel = NSFWLevel.UNKNOWN;
     private Timeout afkTimeout;
     private BoostTier boostTier = BoostTier.NONE;
-    private Locale preferredLocale = Locale.ENGLISH;
+    private Locale preferredLocale = Locale.US;
     private int memberCount;
     private boolean boostProgressBarEnabled;
 
