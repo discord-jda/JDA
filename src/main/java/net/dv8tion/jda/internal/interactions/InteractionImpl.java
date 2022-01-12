@@ -51,7 +51,7 @@ public class InteractionImpl implements Interaction
         this.token = data.getString("token");
         this.type = data.getInt("type");
         this.guild = jda.getGuildById(data.getUnsignedLong("guild_id", 0L));
-        this.userLocale = Locale.forLanguageTag(data.getString("locale"));
+        this.userLocale = Locale.forLanguageTag(data.getString("locale", "en-US"));
         if (guild != null)
         {
             member = jda.getEntityBuilder().createMember((GuildImpl) guild, data.getObject("member"));
