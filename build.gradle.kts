@@ -119,8 +119,9 @@ dependencies {
 
     //General Utility
     implementation("net.sf.trove4j:trove4j:3.0.3")
-    // Match the dependency version of lavaplayer
-    implementation("com.fasterxml.jackson.core:jackson-databind:2.10.1")
+    // Match the minor version of lavaplayers jackson dependency
+    implementation("com.fasterxml.jackson.core:jackson-core:2.10.5")
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.10.5.1")
 
     //Sets the dependencies for the examples
     configurations["examplesImplementation"].withDependencies {

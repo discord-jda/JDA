@@ -655,7 +655,7 @@ All dependencies are managed automatically by Gradle.
    * Version: **4.4**
    * [Website](https://commons.apache.org/proper/commons-collections)
  * jackson
-   * Version: **2.10.1**
+   * Version: **2.10.5.1**
    * [Github](https://github.com/FasterXML/jackson)
  * Trove4j
    * Version: **3.0.3**
