@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.interactions.commands;
 
+import net.dv8tion.jda.api.interactions.AutoCompleteQuery;
 import net.dv8tion.jda.api.interactions.Interaction;
 import net.dv8tion.jda.api.interactions.callbacks.IAutoCompleteCallback;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
@@ -40,8 +41,8 @@ public interface CommandAutoCompleteInteraction extends Interaction, IAutoComple
      *
      * <p>This is not validated by the Discord API and may contain invalid/incomplete inputs.
      *
-     * @return The focused {@link OptionMapping}
+     * @return The focused {@link AutoCompleteQuery}
      */
     @Nonnull
-    OptionMapping getFocusedOption();
+    AutoCompleteQuery getFocusedOption();
 }

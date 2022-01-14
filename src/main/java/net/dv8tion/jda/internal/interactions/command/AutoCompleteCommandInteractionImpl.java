@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.internal.interactions.command;
 
+import net.dv8tion.jda.api.interactions.AutoCompleteQuery;
 import net.dv8tion.jda.api.interactions.commands.*;
 import net.dv8tion.jda.api.requests.restaction.interactions.AutoCompleteCallbackAction;
 import net.dv8tion.jda.api.utils.data.DataArray;
@@ -30,7 +31,7 @@ import java.util.Collection;
 public class AutoCompleteCommandInteractionImpl extends InteractionImpl implements CommandInteractionPayloadMixin, CommandAutoCompleteInteraction
 {
     private final CommandInteractionPayload payload;
-    private OptionMapping focused;
+    private AutoCompleteQuery focused;
 
     public AutoCompleteCommandInteractionImpl(JDAImpl jda, DataObject data)
     {
@@ -58,7 +59,8 @@ public class AutoCompleteCommandInteractionImpl extends InteractionImpl implemen
             default:
                 if (option.getBoolean("focused"))
                 {
-                    focused = getOption(option.getString("name"));
+                    OptionMapping opt = getOption(option.getString("name"));
+                    focused = new AutoCompleteQuery(opt);
                     break;
                 }
             }
@@ -67,7 +69,7 @@ public class AutoCompleteCommandInteractionImpl extends InteractionImpl implemen
 
     @Nonnull
     @Override
-    public OptionMapping getFocusedOption()
+    public AutoCompleteQuery getFocusedOption()
     {
         return focused;
     }

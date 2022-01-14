@@ -19,6 +19,7 @@ package net.dv8tion.jda.api.events.interaction.command;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.events.interaction.GenericAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.GenericInteractionCreateEvent;
+import net.dv8tion.jda.api.interactions.AutoCompleteQuery;
 import net.dv8tion.jda.api.interactions.callbacks.IAutoCompleteCallback;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.CommandAutoCompleteInteraction;
@@ -53,7 +54,7 @@ public class CommandAutoCompleteInteractionEvent extends GenericInteractionCreat
 
     @Nonnull
     @Override
-    public OptionMapping getFocusedOption()
+    public AutoCompleteQuery getFocusedOption()
     {
         return interaction.getFocusedOption();
     }
