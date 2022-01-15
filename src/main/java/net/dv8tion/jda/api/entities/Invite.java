@@ -451,7 +451,7 @@ public interface Invite
          * The welcome screen of the {@link net.dv8tion.jda.api.entities.Invite.Guild Guild}.
          * <br>This will be {@code null} if the Guild has no welcome screen.
          *
-         * @return The welcome screen of this Guild
+         * @return The welcome screen of this Guild or {@code null}
          */
         @Nullable
         GuildWelcomeScreen getWelcomeScreen();
