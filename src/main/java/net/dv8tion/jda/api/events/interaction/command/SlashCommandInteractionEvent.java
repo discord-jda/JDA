@@ -43,6 +43,13 @@ public class SlashCommandInteractionEvent extends GenericCommandInteractionEvent
 
     @Nonnull
     @Override
+    public SlashCommandInteraction getInteraction()
+    {
+        return interaction;
+    }
+
+    @Nonnull
+    @Override
     public MessageChannel getChannel()
     {
         return interaction.getChannel();

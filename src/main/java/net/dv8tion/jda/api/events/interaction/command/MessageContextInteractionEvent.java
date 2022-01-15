@@ -45,6 +45,13 @@ public class MessageContextInteractionEvent extends GenericCommandInteractionEve
         this.interaction = interaction;
     }
 
+    @Nonnull
+    @Override
+    public MessageContextInteraction getInteraction()
+    {
+        return interaction;
+    }
+
     @Nullable
     @Override
     public MessageChannel getChannel()

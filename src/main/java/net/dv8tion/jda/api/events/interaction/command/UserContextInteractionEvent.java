@@ -47,6 +47,13 @@ public class UserContextInteractionEvent extends GenericCommandInteractionEvent 
 
     @Nonnull
     @Override
+    public UserContextInteraction getInteraction()
+    {
+        return interaction;
+    }
+
+    @Nonnull
+    @Override
     public User getTarget()
     {
         return interaction.getTarget();

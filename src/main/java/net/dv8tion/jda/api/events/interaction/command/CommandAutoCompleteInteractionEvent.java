@@ -54,6 +54,13 @@ public class CommandAutoCompleteInteractionEvent extends GenericInteractionCreat
 
     @Nonnull
     @Override
+    public CommandAutoCompleteInteraction getInteraction()
+    {
+        return interaction;
+    }
+
+    @Nonnull
+    @Override
     public AutoCompleteQuery getFocusedOption()
     {
         return interaction.getFocusedOption();
