@@ -1226,7 +1226,6 @@ public class GuildImpl implements Guild
     @Override
     public RestAction<GuildWelcomeScreen> retrieveWelcomeScreen()
     {
-        checkPermission(Permission.MANAGE_SERVER);
         final Route.CompiledRoute route = Route.Guilds.GET_WELCOME_SCREEN.compile(getId());
         return new RestActionImpl<>(getJDA(), route, (response, request) ->
         {
