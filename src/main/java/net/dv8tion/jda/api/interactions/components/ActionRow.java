@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
  *
  * @see Component
  */
-public class ActionRow implements LayoutComponent, Iterable<ActionComponent>
+public class ActionRow implements LayoutComponent
 {
     private final List<ActionComponent> components = new ArrayList<>();
 

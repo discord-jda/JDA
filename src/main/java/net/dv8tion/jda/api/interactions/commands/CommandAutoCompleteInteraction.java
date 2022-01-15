@@ -17,7 +17,6 @@
 package net.dv8tion.jda.api.interactions.commands;
 
 import net.dv8tion.jda.api.interactions.AutoCompleteQuery;
-import net.dv8tion.jda.api.interactions.Interaction;
 import net.dv8tion.jda.api.interactions.callbacks.IAutoCompleteCallback;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 
@@ -34,7 +33,7 @@ import javax.annotation.Nonnull;
  * @see #getFocusedOption()
  * @see OptionData#setAutoComplete(boolean)
  */
-public interface CommandAutoCompleteInteraction extends Interaction, IAutoCompleteCallback, CommandInteractionPayload
+public interface CommandAutoCompleteInteraction extends IAutoCompleteCallback, CommandInteractionPayload
 {
     /**
      * The focused option which the user is typing.
