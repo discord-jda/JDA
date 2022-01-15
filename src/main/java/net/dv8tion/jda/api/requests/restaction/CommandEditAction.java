@@ -66,6 +66,7 @@ public interface CommandEditAction extends RestAction<Command>
      * @return The CommandEditAction instance, for chaining
      *
      * @see    Commands
+     * @see    CommandCreateAction
      */
     @Nonnull
     @CheckReturnValue

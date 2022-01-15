@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.interactions.commands;
 
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.User;
@@ -173,7 +174,10 @@ public interface CommandInteractionPayload extends Interaction
     }
 
     /**
-     * The command id
+     * The command id.
+     * <br>This is the id generated when a command is created via {@link Guild#updateCommands()} or similar.
+     *
+     * <p>It is usually preferred to discriminate commands by the {@link #getName() command names} instead.
      *
      * @return The command id
      */
@@ -181,6 +185,9 @@ public interface CommandInteractionPayload extends Interaction
 
     /**
      * The command id
+     * <br>This is the id generated when a command is created via {@link Guild#updateCommands()} or similar.
+     *
+     * <p>It is usually preferred to discriminate commands by the {@link #getName() command names} instead.
      *
      * @return The command id
      */

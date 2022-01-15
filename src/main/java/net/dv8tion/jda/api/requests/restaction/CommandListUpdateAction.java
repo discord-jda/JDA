@@ -69,7 +69,7 @@ public interface CommandListUpdateAction extends RestAction<List<Command>>
      * @throws IllegalArgumentException
      *         If null or more than
      *         {@value Commands#MAX_SLASH_COMMANDS} slash commands,
-     *         {@value Commands#MAX_USER_COMMANDS} user context commands, and
+     *         {@value Commands#MAX_USER_COMMANDS} user context commands, or
      *         {@value Commands#MAX_MESSAGE_COMMANDS} message context commands, are provided
      *
      * @return The CommandUpdateAction instance, for chaining
@@ -96,7 +96,7 @@ public interface CommandListUpdateAction extends RestAction<List<Command>>
      * @throws IllegalArgumentException
      *         If null or more than
      *         {@value Commands#MAX_SLASH_COMMANDS} slash commands,
-     *         {@value Commands#MAX_USER_COMMANDS} user context commands, and
+     *         {@value Commands#MAX_USER_COMMANDS} user context commands, or
      *         {@value Commands#MAX_MESSAGE_COMMANDS} message context commands, are provided
      *
      * @return The CommandUpdateAction instance, for chaining

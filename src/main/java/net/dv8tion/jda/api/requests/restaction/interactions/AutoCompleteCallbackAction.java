@@ -16,7 +16,9 @@
 
 package net.dv8tion.jda.api.requests.restaction.interactions;
 
+import net.dv8tion.jda.api.interactions.callbacks.IAutoCompleteCallback;
 import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.commands.CommandAutoCompleteInteraction;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -29,6 +31,10 @@ import java.util.stream.Collectors;
 
 /**
  * An {@link InteractionCallbackAction} that can be used to suggest auto-complete choices.
+ *
+ * @see OptionData#setAutoComplete
+ * @see IAutoCompleteCallback
+ * @see CommandAutoCompleteInteraction
  */
 public interface AutoCompleteCallbackAction extends InteractionCallbackAction<Void>
 {
@@ -108,7 +114,7 @@ public interface AutoCompleteCallbackAction extends InteractionCallbackAction<Vo
      *             <li>More than {@value OptionData#MAX_CHOICES} are added</li>
      *             <li>The choice name is empty or longer than {@value OptionData#MAX_CHOICE_NAME_LENGTH}</li>
      *             <li>The option type is not {@link OptionType#STRING}</li>
-     *             <li>The string value of any of the choices is empty or longer than {@value OptionData#MAX_CHOICE_VALUE_LENGTH}</li>
+     *             <li>The value is empty or longer than {@value OptionData#MAX_CHOICE_VALUE_LENGTH}</li>
      *         </ul>
      *
      * @return The same callback action, for chaining convenience
@@ -136,7 +142,7 @@ public interface AutoCompleteCallbackAction extends InteractionCallbackAction<Vo
      *             <li>More than {@value OptionData#MAX_CHOICES} are added</li>
      *             <li>The choice name is empty or longer than {@value OptionData#MAX_CHOICE_NAME_LENGTH}</li>
      *             <li>The option type is incompatible with the choice type</li>
-     *             <li>The value of is not between {@value  OptionData#MIN_NEGATIVE_NUMBER} and {@value OptionData#MAX_POSITIVE_NUMBER}</li>
+     *             <li>The value is not between {@value  OptionData#MIN_NEGATIVE_NUMBER} and {@value OptionData#MAX_POSITIVE_NUMBER}</li>
      *         </ul>
      *
      * @return The same callback action, for chaining convenience
@@ -164,7 +170,7 @@ public interface AutoCompleteCallbackAction extends InteractionCallbackAction<Vo
      *             <li>More than {@value OptionData#MAX_CHOICES} are added</li>
      *             <li>The choice name is empty or longer than {@value OptionData#MAX_CHOICE_NAME_LENGTH}</li>
      *             <li>The option type is incompatible with the choice type</li>
-     *             <li>The value of is not between {@value  OptionData#MIN_NEGATIVE_NUMBER} and {@value OptionData#MAX_POSITIVE_NUMBER}</li>
+     *             <li>The value is not between {@value  OptionData#MIN_NEGATIVE_NUMBER} and {@value OptionData#MAX_POSITIVE_NUMBER}</li>
      *         </ul>
      *
      * @return The same callback action, for chaining convenience

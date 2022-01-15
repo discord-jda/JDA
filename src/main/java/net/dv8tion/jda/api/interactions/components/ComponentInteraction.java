@@ -38,6 +38,8 @@ public interface ComponentInteraction extends IReplyCallback, IMessageEditCallba
      * <br>This id does not have to be numerical.
      *
      * @return The component ID
+     *
+     * @see    ActionComponent#getId()
      */
     @Nonnull
     String getComponentId();
