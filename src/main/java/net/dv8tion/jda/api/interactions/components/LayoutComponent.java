@@ -208,7 +208,7 @@ public interface LayoutComponent extends SerializableData, Iterable<ActionCompon
      */
     static boolean updateComponent(@Nonnull List<? extends LayoutComponent> layouts, @Nonnull String id, @Nullable ActionComponent newComponent)
     {
-        Checks.notNull(layouts, "ComponentLayout");
+        Checks.notNull(layouts, "LayoutComponent");
         Checks.notEmpty(id, "ID or URL");
         for (Iterator<? extends LayoutComponent> it = layouts.iterator(); it.hasNext();)
         {
@@ -219,7 +219,7 @@ public interface LayoutComponent extends SerializableData, Iterable<ActionCompon
                 if (components.getComponents().isEmpty())
                     it.remove();
                 else if (!components.isValid() && newComponent != null)
-                    throw new IllegalArgumentException("Cannot replace " + oldComponent.getType() + " with " + newComponent.getType() + " due to a violation of the layout maximum. The resulting ComponentLayout is invalid!");
+                    throw new IllegalArgumentException("Cannot replace " + oldComponent.getType() + " with " + newComponent.getType() + " due to a violation of the layout maximum. The resulting LayoutComponent is invalid!");
                 return !Objects.equals(oldComponent, newComponent);
             }
         }

@@ -216,7 +216,7 @@ public interface IReplyCallback extends IDeferrableCallback
 //     * <p>If your handling can take longer than 3 seconds, due to various rate limits or other conditions, you should use {@link #deferReply()} instead.
 //     *
 //     * @param  components
-//     *         The {@link ComponentLayout ComponentLayouts} to send, such as {@link ActionRow}
+//     *         The {@link LayoutComponent LayoutComponents} to send, such as {@link ActionRow}
 //     *
 //     * @throws IllegalArgumentException
 //     *         If null is provided
@@ -225,7 +225,7 @@ public interface IReplyCallback extends IDeferrableCallback
 //     */
 //    @Nonnull
 //    @CheckReturnValue
-//    default ReplyAction replyComponents(@Nonnull Collection<? extends ComponentLayout> components)
+//    default ReplyAction replyComponents(@Nonnull Collection<? extends LayoutComponent> components)
 //    {
 //        if (components.stream().anyMatch(it -> !(it instanceof ActionRow)))
 //            throw new UnsupportedOperationException("Only ActionRow layouts are currently supported.");
@@ -246,7 +246,7 @@ public interface IReplyCallback extends IDeferrableCallback
 //     * <p>If your handling can take longer than 3 seconds, due to various rate limits or other conditions, you should use {@link #deferReply()} instead.
 //     *
 //     * @param  components
-//     *         The {@link ComponentLayout ComponentLayouts} to send, such as {@link ActionRow}
+//     *         The {@link LayoutComponent LayoutComponents} to send, such as {@link ActionRow}
 //     *
 //     * @throws IllegalArgumentException
 //     *         If null is provided
@@ -255,11 +255,11 @@ public interface IReplyCallback extends IDeferrableCallback
 //     */
 //    @Nonnull
 //    @CheckReturnValue
-//    default ReplyAction replyComponents(@Nonnull ComponentLayout component, @Nonnull ComponentLayout... components)
+//    default ReplyAction replyComponents(@Nonnull LayoutComponent component, @Nonnull LayoutComponent... components)
 //    {
-//        Checks.notNull(component, "ComponentLayouts");
-//        Checks.noneNull(components, "ComponentLayouts");
-//        List<ComponentLayout> layouts = new ArrayList<>();
+//        Checks.notNull(component, "LayoutComponents");
+//        Checks.noneNull(components, "LayoutComponents");
+//        List<LayoutComponent> layouts = new ArrayList<>();
 //        layouts.add(component);
 //        Collections.addAll(layouts, components);
 //        return replyComponents(layouts);

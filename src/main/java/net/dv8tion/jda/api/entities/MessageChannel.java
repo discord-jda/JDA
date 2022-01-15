@@ -3167,7 +3167,7 @@ public interface MessageChannel extends Channel, Formattable
      * Attempts to edit a message by its id in this MessageChannel.
      * <br>This will replace all the current {@link net.dv8tion.jda.api.interactions.components.Component Components},
      * such as {@link Button Buttons} or {@link SelectMenu SelectMenus} on this message.
-     * The provided parameters are {@link LayoutComponent ComponentLayout} such as {@link ActionRow} which contain a list of components to arrange in the respective layout.
+     * The provided parameters are {@link LayoutComponent LayoutComponent} such as {@link ActionRow} which contain a list of components to arrange in the respective layout.
      *
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
@@ -3200,14 +3200,14 @@ public interface MessageChannel extends Channel, Formattable
      * @param  messageId
      *         The id referencing the Message that should be edited
      * @param  components
-     *         Up to 5 new {@link LayoutComponent ComponentLayouts} for the edited message, such as {@link ActionRow}
+     *         Up to 5 new {@link LayoutComponent LayoutComponents} for the edited message, such as {@link ActionRow}
      *
      * @throws UnsupportedOperationException
      *         If the component layout is a custom implementation that is not supported by this interface
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If provided {@code messageId} is {@code null} or empty.</li>
-     *             <li>If any of the provided {@link LayoutComponent ComponentLayouts} is null</li>
+     *             <li>If any of the provided {@link LayoutComponent LayoutComponents} is null</li>
      *         </ul>
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If this is a TextChannel and this account does not have
@@ -3233,7 +3233,7 @@ public interface MessageChannel extends Channel, Formattable
      * Attempts to edit a message by its id in this MessageChannel.
      * <br>This will replace all the current {@link net.dv8tion.jda.api.interactions.components.Component Components},
      * such as {@link Button Buttons} or {@link SelectMenu SelectMenus} on this message.
-     * The provided parameters are {@link LayoutComponent ComponentLayout} such as {@link ActionRow} which contain a list of components to arrange in the respective layout.
+     * The provided parameters are {@link LayoutComponent LayoutComponent} such as {@link ActionRow} which contain a list of components to arrange in the respective layout.
      *
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
@@ -3266,12 +3266,12 @@ public interface MessageChannel extends Channel, Formattable
      * @param  messageId
      *         The id referencing the Message that should be edited
      * @param  components
-     *         Up to 5 new {@link LayoutComponent ComponentLayouts} for the edited message, such as {@link ActionRow}
+     *         Up to 5 new {@link LayoutComponent LayoutComponents} for the edited message, such as {@link ActionRow}
      *
      * @throws UnsupportedOperationException
      *         If the component layout is a custom implementation that is not supported by this interface
      * @throws IllegalArgumentException
-     *         If any of the provided {@link LayoutComponent ComponentLayouts} is null
+     *         If any of the provided {@link LayoutComponent LayoutComponents} is null
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If this is a TextChannel and this account does not have
      *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
@@ -3291,7 +3291,7 @@ public interface MessageChannel extends Channel, Formattable
      * Attempts to edit a message by its id in this MessageChannel.
      * <br>This will replace all the current {@link net.dv8tion.jda.api.interactions.components.Component Components},
      * such as {@link Button Buttons} or {@link SelectMenu SelectMenus} on this message.
-     * The provided parameters are {@link LayoutComponent ComponentLayout} such as {@link ActionRow} which contain a list of components to arrange in the respective layout.
+     * The provided parameters are {@link LayoutComponent LayoutComponent} such as {@link ActionRow} which contain a list of components to arrange in the respective layout.
      *
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
@@ -3323,14 +3323,14 @@ public interface MessageChannel extends Channel, Formattable
      * @param  messageId
      *         The id referencing the Message that should be edited
      * @param  components
-     *         Up to 5 new {@link LayoutComponent ComponentLayouts} for the edited message, such as {@link ActionRow}
+     *         Up to 5 new {@link LayoutComponent LayoutComponents} for the edited message, such as {@link ActionRow}
      *
      * @throws UnsupportedOperationException
      *         If the component layout is a custom implementation that is not supported by this interface
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If provided {@code messageId} is {@code null} or empty.</li>
-     *             <li>If any of the provided {@link LayoutComponent ComponentLayouts} is null</li>
+     *             <li>If any of the provided {@link LayoutComponent LayoutComponents} is null</li>
      *         </ul>
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If this is a TextChannel and this account does not have
@@ -3352,7 +3352,7 @@ public interface MessageChannel extends Channel, Formattable
      * Attempts to edit a message by its id in this MessageChannel.
      * <br>This will replace all the current {@link net.dv8tion.jda.api.interactions.components.Component Components},
      * such as {@link Button Buttons} or {@link SelectMenu SelectMenus} on this message.
-     * The provided parameters are {@link LayoutComponent ComponentLayout} such as {@link ActionRow} which contain a list of components to arrange in the respective layout.
+     * The provided parameters are {@link LayoutComponent LayoutComponent} such as {@link ActionRow} which contain a list of components to arrange in the respective layout.
      *
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
@@ -3384,12 +3384,12 @@ public interface MessageChannel extends Channel, Formattable
      * @param  messageId
      *         The id referencing the Message that should be edited
      * @param  components
-     *         Up to 5 new {@link LayoutComponent ComponentLayouts} for the edited message, such as {@link ActionRow}
+     *         Up to 5 new {@link LayoutComponent LayoutComponents} for the edited message, such as {@link ActionRow}
      *
      * @throws UnsupportedOperationException
      *         If the component layout is a custom implementation that is not supported by this interface
      * @throws IllegalArgumentException
-     *         If any of the provided {@link LayoutComponent ComponentLayouts} is null
+     *         If any of the provided {@link LayoutComponent LayoutComponents} is null
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If this is a TextChannel and this account does not have
      *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}

@@ -1109,11 +1109,11 @@ public interface Message extends ISnowflake, Formattable
     }
 
     /**
-     * Edits this Message's content to the provided {@link LayoutComponent ComponentLayouts}.
+     * Edits this Message's content to the provided {@link LayoutComponent LayoutComponents}.
      * <br><b>Messages can only be edited by the account that sent them!</b>.
      * <br>This will replace all the current {@link net.dv8tion.jda.api.interactions.components.Component Components},
      * such as {@link Button Buttons} or {@link SelectMenu SelectMenus} on this message.
-     * The provided parameters are {@link LayoutComponent ComponentLayout} such as {@link ActionRow} which contain a list of components to arrange in the respective layout.
+     * The provided parameters are {@link LayoutComponent LayoutComponent} such as {@link ActionRow} which contain a list of components to arrange in the respective layout.
      *
      * <p>This message instance will not be updated by this operation, please use the response message instead.
      *
@@ -1145,7 +1145,7 @@ public interface Message extends ISnowflake, Formattable
      * }</pre>
      *
      * @param  components
-     *         Up to 5 new {@link LayoutComponent ComponentLayouts} for the edited message, such as {@link ActionRow}
+     *         Up to 5 new {@link LayoutComponent LayoutComponents} for the edited message, such as {@link ActionRow}
      *
      * @throws java.lang.UnsupportedOperationException
      *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
@@ -1163,11 +1163,11 @@ public interface Message extends ISnowflake, Formattable
     MessageAction editMessageComponents(@Nonnull Collection<? extends LayoutComponent> components);
 
     /**
-     * Edits this Message's content to the provided {@link LayoutComponent ComponentLayouts}.
+     * Edits this Message's content to the provided {@link LayoutComponent LayoutComponents}.
      * <br><b>Messages can only be edited by the account that sent them!</b>.
      * <br>This will replace all the current {@link net.dv8tion.jda.api.interactions.components.Component Components},
      * such as {@link Button Buttons} or {@link SelectMenu SelectMenus} on this message.
-     * The provided parameters are {@link LayoutComponent ComponentLayout} such as {@link ActionRow} which contain a list of components to arrange in the respective layout.
+     * The provided parameters are {@link LayoutComponent LayoutComponent} such as {@link ActionRow} which contain a list of components to arrange in the respective layout.
      *
      * <p>This message instance will not be updated by this operation, please use the response message instead.
      *
@@ -1198,7 +1198,7 @@ public interface Message extends ISnowflake, Formattable
      * }</pre>
      *
      * @param  components
-     *         Up to 5 new {@link LayoutComponent ComponentLayouts} for the edited message, such as {@link ActionRow}
+     *         Up to 5 new {@link LayoutComponent LayoutComponents} for the edited message, such as {@link ActionRow}
      *
      * @throws java.lang.UnsupportedOperationException
      *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}

@@ -166,7 +166,7 @@ public interface IMessageEditCallback extends IDeferrableCallback
     @CheckReturnValue
     default MessageEditCallbackAction editComponents(@Nonnull LayoutComponent... components)
     {
-        Checks.noneNull(components, "ComponentLayouts");
+        Checks.noneNull(components, "LayoutComponents");
         return editComponents(Arrays.asList(components));
     }
 

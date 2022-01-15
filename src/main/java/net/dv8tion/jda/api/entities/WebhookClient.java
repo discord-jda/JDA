@@ -699,7 +699,7 @@ public interface WebhookClient<T>
      */
     @Nonnull
     @CheckReturnValue
-    WebhookMessageUpdateAction<T> editMessageComponentsById(@Nonnull String messageId, @Nonnull Collection<? extends LayoutComponent> components); // We use ComponentLayout for forward compatibility here
+    WebhookMessageUpdateAction<T> editMessageComponentsById(@Nonnull String messageId, @Nonnull Collection<? extends LayoutComponent> components); // We use LayoutComponent for forward compatibility here
 
     /**
      * Edit an existing message sent by this webhook.
@@ -758,7 +758,7 @@ public interface WebhookClient<T>
     @CheckReturnValue
     default WebhookMessageUpdateAction<T> editMessageComponentsById(@Nonnull String messageId, @Nonnull LayoutComponent... components)
     {
-        Checks.noneNull(components, "ComponentLayouts");
+        Checks.noneNull(components, "LayoutComponents");
         return editMessageComponentsById(messageId, Arrays.asList(components));
     }
 
