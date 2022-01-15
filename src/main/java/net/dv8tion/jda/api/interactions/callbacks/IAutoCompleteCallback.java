@@ -34,6 +34,7 @@ import java.util.stream.Collectors;
  *
  * <p>Auto-complete must be enabled on {@link OptionData options} via {@link OptionData#setAutoComplete(boolean)}.
  * When a user inputs auto-complete options, you will receive these interactions and can provide up to {@value OptionData#MAX_CHOICES} suggestions for the user to pick from.
+ * You can also use {@link #replyChoices(Command.Choice...)} without parameters to acknowledge the interaction with 0 choices.
  */
 public interface IAutoCompleteCallback extends Interaction
 {
@@ -42,7 +43,7 @@ public interface IAutoCompleteCallback extends Interaction
      * <br>The user may continue writing inputs instead of using one of your choices.
      *
      * @param  choices
-     *         The choice suggestions to present to the user
+     *         The choice suggestions to present to the user, 0-{@link OptionData#MAX_CHOICES} choices
      *
      * @throws IllegalArgumentException
      *         If any of the following is true:
@@ -66,7 +67,7 @@ public interface IAutoCompleteCallback extends Interaction
      * <br>The user may continue writing inputs instead of using one of your choices.
      *
      * @param  choices
-     *         The choice suggestions to present to the user
+     *         The choice suggestions to present to the user, 0-{@link OptionData#MAX_CHOICES} choices
      *
      * @throws IllegalArgumentException
      *         If any of the following is true:

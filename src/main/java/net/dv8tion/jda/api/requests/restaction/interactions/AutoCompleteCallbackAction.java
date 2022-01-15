@@ -45,7 +45,7 @@ public interface AutoCompleteCallbackAction extends InteractionCallbackAction<Vo
      * <br>The user may continue writing inputs instead of using one of your choices.
      *
      * @param  choices
-     *         The choice suggestions to present to the user
+     *         The choice suggestions to present to the user, 0-{@link OptionData#MAX_CHOICES} choices
      *
      * @throws IllegalArgumentException
      *         If any of the following is true:
@@ -69,7 +69,7 @@ public interface AutoCompleteCallbackAction extends InteractionCallbackAction<Vo
      * <br>The user may continue writing inputs instead of using one of your choices.
      *
      * @param  choices
-     *         The choice suggestions to present to the user
+     *         The choice suggestions to present to the user, 0-{@link OptionData#MAX_CHOICES} choices
      *
      * @throws IllegalArgumentException
      *         If any of the following is true:
