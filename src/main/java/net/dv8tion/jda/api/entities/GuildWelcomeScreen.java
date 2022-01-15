@@ -42,8 +42,9 @@ public class GuildWelcomeScreen
 
     /**
      * The server description that is shown in the Welcome screen.
+     * <br>This will be {@code null} if the welcome screen has no description.
      *
-     * @return The server description that is shown in the Welcome screen
+     * @return The server description that is shown in the Welcome screen or {@code null}
      */
     @Nullable
     public String getDescription()
