@@ -1902,7 +1902,7 @@ public class EntityBuilder
         for (int i = 0; i < welcomeChannelsArray.length(); i++)
         {
             final DataObject welcomeChannelObj = welcomeChannelsArray.getObject(i);
-            welcomeChannels.add(new GuildWelcomeScreen.Channel(welcomeChannelObj.getLong("channel_id"), welcomeChannelObj.getString("description"),
+            welcomeChannels.add(new GuildWelcomeScreen.Channel(api, welcomeChannelObj.getLong("channel_id"), welcomeChannelObj.getString("description"),
                     welcomeChannelObj.getString("emoji_id", null), welcomeChannelObj.getString("emoji_name", null)));
         }
         return new GuildWelcomeScreen(object.getString("description", null), Collections.unmodifiableList(welcomeChannels));
