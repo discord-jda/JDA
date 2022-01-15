@@ -122,9 +122,11 @@ public abstract class BaseCommand<T extends BaseCommand<T>> implements Serializa
     @Override
     public DataObject toData()
     {
-        DataObject json = DataObject.empty().put("name", this.name);
+        DataObject json = DataObject.empty()
+                .put("name", this.name)
+                .put("options", options);
         if (description != null)
             json.put("description", description);
-        return json.put("options", options);
+        return json;
     }
 }

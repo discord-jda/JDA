@@ -62,7 +62,7 @@ public interface CommandData extends SerializableData
      * @return The builder instance, for chaining
      */
     @Nonnull
-    SlashCommandData setDefaultEnabled(boolean enabled);
+    CommandData setDefaultEnabled(boolean enabled);
 
     /**
      * The current command name

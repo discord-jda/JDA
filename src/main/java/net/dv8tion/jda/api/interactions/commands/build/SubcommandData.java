@@ -22,7 +22,6 @@ import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.SerializableData;
-import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
@@ -33,7 +32,7 @@ import java.util.stream.Stream;
 /**
  * Builder for a Slash-Command subcommand.
  */
-public class SubcommandData extends BaseCommand<CommandDataImpl> implements SerializableData
+public class SubcommandData extends BaseCommand<SubcommandData> implements SerializableData
 {
     private boolean allowRequired = true;
 
