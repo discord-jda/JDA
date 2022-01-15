@@ -20,6 +20,13 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 
+/**
+ * The welcome screen of a {@link net.dv8tion.jda.api.entities.Guild}.
+ * This welcome screen will be shown to all members after joining the Guild.
+ *
+ * @see Guild#retrieveWelcomeScreen()
+ * @see Invite.Guild#getWelcomeScreen()
+ */
 public class GuildWelcomeScreen
 {
     private final String description;
