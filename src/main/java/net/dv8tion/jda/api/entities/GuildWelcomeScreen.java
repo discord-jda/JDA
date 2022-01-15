@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.api.entities;
 
+import net.dv8tion.jda.api.JDA;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
@@ -67,13 +69,15 @@ public class GuildWelcomeScreen
      * @see GuildWelcomeScreen#getChannels()
      */
     public static class Channel implements ISnowflake {
+        private final JDA api;
         private final long id;
         private final String description;
         private final String emoteId;
         private final String emojiName;
 
-        public Channel(long id, String description, String emoteId, String emojiName)
+        public Channel(JDA api, long id, String description, String emoteId, String emojiName)
         {
+            this.api = api;
             this.id = id;
             this.description = description;
             this.emoteId = emoteId;
@@ -89,6 +93,18 @@ public class GuildWelcomeScreen
         public long getIdLong()
         {
             return id;
+        }
+
+        /**
+         * Returns the {@link net.dv8tion.jda.api.entities.BaseGuildMessageChannel} that is linked to this recommended channel.
+         * <br>This will be {@code null} if the linked channel was deleted.
+         *
+         * @return The {@link net.dv8tion.jda.api.entities.BaseGuildMessageChannel} that is linked to this recommended channel or {@code null}
+         */
+        @Nullable
+        public BaseGuildMessageChannel getChannel()
+        {
+            return (BaseGuildMessageChannel) api.getGuildChannelById(id);
         }
 
         /**
