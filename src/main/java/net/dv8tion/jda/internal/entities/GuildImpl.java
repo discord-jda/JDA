@@ -37,7 +37,6 @@ import net.dv8tion.jda.api.requests.restaction.order.CategoryOrderAction;
 import net.dv8tion.jda.api.requests.restaction.order.ChannelOrderAction;
 import net.dv8tion.jda.api.requests.restaction.order.RoleOrderAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.AuditLogPaginationAction;
-import net.dv8tion.jda.api.utils.TimeUtil;
 import net.dv8tion.jda.api.utils.cache.*;
 import net.dv8tion.jda.api.utils.concurrent.Task;
 import net.dv8tion.jda.api.utils.data.DataArray;
@@ -1220,6 +1219,18 @@ public class GuildImpl implements Guild
         {
             EntityBuilder entityBuilder = api.getEntityBuilder();
             return entityBuilder.createTemplate(response.getObject());
+        });
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<GuildWelcomeScreen> retrieveWelcomeScreen()
+    {
+        final Route.CompiledRoute route = Route.Guilds.GET_WELCOME_SCREEN.compile(getId());
+        return new RestActionImpl<>(getJDA(), route, (response, request) ->
+        {
+            EntityBuilder entityBuilder = api.getEntityBuilder();
+            return entityBuilder.createWelcomeScreen(response.getObject());
         });
     }
 

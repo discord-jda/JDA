@@ -67,7 +67,7 @@ public interface Invite
     {
         return resolve(api, code, false);
     }
-    
+
     /**
      * Retrieves a new {@link net.dv8tion.jda.api.entities.Invite Invite} instance for the given invite code.
      * <br><b>You cannot resolve invites if you were banned from the origin Guild!</b>
@@ -155,7 +155,7 @@ public interface Invite
      * containing information about this invite's origin channel.
      *
      * @return Information about this invite's origin channel or null in case of a group invite
-     * 
+     *
      * @see    net.dv8tion.jda.api.entities.Invite.Channel
      */
     @Nullable
@@ -209,7 +209,7 @@ public interface Invite
      * containing information about this invite's origin guild.
      *
      * @return Information about this invite's origin guild or null in case of a group invite
-     * 
+     *
      * @see    net.dv8tion.jda.api.entities.Invite.Guild
      */
     @Nullable
@@ -324,7 +324,7 @@ public interface Invite
 
     /**
      * POJO for the channel information provided by an invite.
-     * 
+     *
      * @see #getChannel()
      */
     interface Channel extends ISnowflake
@@ -349,7 +349,7 @@ public interface Invite
 
     /**
      * POJO for the guild information provided by an invite.
-     * 
+     *
      * @see #getGuild()
      */
     interface Guild extends ISnowflake
@@ -401,31 +401,31 @@ public interface Invite
          */
         @Nullable
         String getSplashUrl();
-        
+
         /**
          * Returns the {@link net.dv8tion.jda.api.entities.Guild.VerificationLevel VerificationLevel} of this guild.
-         * 
+         *
          * @return the verification level of the guild
          */
         @Nonnull
         VerificationLevel getVerificationLevel();
-        
+
         /**
          * Returns the approximate count of online members in the guild. If the online member count was not included in the
-         * invite, this will return -1. Counts will usually only be returned when resolving the invite via the 
+         * invite, this will return -1. Counts will usually only be returned when resolving the invite via the
          * {@link #resolve(net.dv8tion.jda.api.JDA, java.lang.String, boolean) Invite.resolve()} method with the
          * withCounts boolean set to {@code true}
-         * 
+         *
          * @return the approximate count of online members in the guild, or -1 if not present in the invite
          */
         int getOnlineCount();
-        
+
         /**
          * Returns the approximate count of total members in the guild. If the total member count was not included in the
-         * invite, this will return -1. Counts will usually only be returned when resolving the invite via the 
+         * invite, this will return -1. Counts will usually only be returned when resolving the invite via the
          * {@link #resolve(net.dv8tion.jda.api.JDA, java.lang.String, boolean) Invite.resolve()} method with the
          * withCounts boolean set to {@code true}
-         * 
+         *
          * @return the approximate count of total members in the guild, or -1 if not present in the invite
          */
         int getMemberCount();
@@ -446,6 +446,15 @@ public interface Invite
          */
         @Nonnull
         Set<String> getFeatures();
+
+        /**
+         * The welcome screen of the {@link net.dv8tion.jda.api.entities.Invite.Guild Guild}.
+         * <br>This will be {@code null} if the Guild has no welcome screen.
+         *
+         * @return The welcome screen of this Guild
+         */
+        @Nullable
+        GuildWelcomeScreen getWelcomeScreen();
     }
 
     /**

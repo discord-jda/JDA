@@ -1895,6 +1895,19 @@ public class EntityBuilder
         return webhook;
     }
 
+    public GuildWelcomeScreen createWelcomeScreen(DataObject object)
+    {
+        final DataArray welcomeChannelsArray = object.getArray("welcome_channels");
+        final List<GuildWelcomeScreen.Channel> welcomeChannels = new ArrayList<>(welcomeChannelsArray.length());
+        for (int i = 0; i < welcomeChannelsArray.length(); i++)
+        {
+            final DataObject welcomeChannelObj = welcomeChannelsArray.getObject(i);
+            welcomeChannels.add(new GuildWelcomeScreen.Channel(welcomeChannelObj.getLong("channel_id"), welcomeChannelObj.getString("description"),
+                    welcomeChannelObj.getString("emoji_id", null), welcomeChannelObj.getString("emoji_name", null)));
+        }
+        return new GuildWelcomeScreen(object.getString("description", null), Collections.unmodifiableList(welcomeChannels));
+    }
+
     public Invite createInvite(DataObject object)
     {
         final String code = object.getString("code");
@@ -1948,7 +1961,9 @@ public class EntityBuilder
             else
                 guildFeatures = Collections.unmodifiableSet(StreamSupport.stream(guildObject.getArray("features").spliterator(), false).map(String::valueOf).collect(Collectors.toSet()));
 
-            guild = new InviteImpl.GuildImpl(guildId, guildIconId, guildName, guildSplashId, guildVerificationLevel, presenceCount, memberCount, guildFeatures);
+            final GuildWelcomeScreen welcomeScreen = guildObject.hasKey("welcome_screen") ? createWelcomeScreen(guildObject.getObject("welcome_screen")) : null;
+
+            guild = new InviteImpl.GuildImpl(guildId, guildIconId, guildName, guildSplashId, guildVerificationLevel, presenceCount, memberCount, guildFeatures, welcomeScreen);
 
             final String channelName = channelObject.getString("name");
             final long channelId = channelObject.getLong("id");
