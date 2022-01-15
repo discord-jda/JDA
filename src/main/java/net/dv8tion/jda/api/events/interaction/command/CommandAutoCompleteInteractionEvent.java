@@ -18,7 +18,6 @@ package net.dv8tion.jda.api.events.interaction.command;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.events.interaction.GenericAutoCompleteInteractionEvent;
-import net.dv8tion.jda.api.events.interaction.GenericInteractionCreateEvent;
 import net.dv8tion.jda.api.interactions.AutoCompleteQuery;
 import net.dv8tion.jda.api.interactions.callbacks.IAutoCompleteCallback;
 import net.dv8tion.jda.api.interactions.commands.Command;
@@ -42,7 +41,7 @@ import java.util.List;
  * @see CommandAutoCompleteInteraction
  * @see IAutoCompleteCallback
  */
-public class CommandAutoCompleteInteractionEvent extends GenericInteractionCreateEvent implements CommandAutoCompleteInteraction, GenericAutoCompleteInteractionEvent
+public class CommandAutoCompleteInteractionEvent extends GenericAutoCompleteInteractionEvent implements CommandAutoCompleteInteraction
 {
     private final CommandAutoCompleteInteraction interaction;
 
