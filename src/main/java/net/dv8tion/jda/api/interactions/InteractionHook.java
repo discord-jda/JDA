@@ -46,7 +46,7 @@ import java.util.Collection;
  *     <li>{@link IReplyCallback#deferReply() deferReply(...)}</li>
  *     <li>{@link IReplyCallback#reply(String) reply(...)}</li>
  *     <li>{@link IMessageEditCallback#deferEdit() deferEdit()}</li>
- *     <li> {@link IMessageEditCallback#editMessage(String) editMessage(...)}</li>
+ *     <li>{@link IMessageEditCallback#editMessage(String) editMessage(...)}</li>
  * </ul>
  *
  * <p>When {@link IReplyCallback#deferReply()} is used, the first message will act identically to {@link #editOriginal(String) editOriginal(...)}.
