@@ -471,7 +471,6 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer
     @CheckReturnValue
     RestAction<Void> leave();
 
-    //TODO-hex: do the permission requirements differ for private threads?
     //TODO-v5: re-document this method as permission checks are included in the impl.
     //this is probably also affected by private threads that are not invitable
     /**
@@ -482,9 +481,14 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>The request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
-     *         typically due to being kicked or removed.
-     *         <br>This can also be caused if the user supplied is not a member of this ThreadChannel's {@link net.dv8tion.jda.api.entities.Guild Guild}</li>
+     *     <br>This can be caused by any of the following:
+     *     <ul>
+     *         <li>The request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild},
+     *             typically due to being kicked or removed.</li>
+     *         <li>The user supplied is not a member of this ThreadChannel's {@link net.dv8tion.jda.api.entities.Guild Guild}</li>
+     *         <li>The thread is not {@link #isInvitable() invitable}, and the current account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_THREADS MANAGE_THREADS} permission.</li>
+     *     </ul>
+     *     <br>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
      *     <br>The request was attempted after the channel was deleted.</li>
@@ -508,7 +512,6 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer
     @CheckReturnValue
     RestAction<Void> addThreadMemberById(long id);
 
-    //TODO-hex: see above
     /**
      * Adds a member to this thread.
      *
@@ -517,9 +520,14 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>The request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
-     *         typically due to being kicked or removed.
-     *         <br>This can also be caused if the user supplied is not a member of this ThreadChannel's {@link net.dv8tion.jda.api.entities.Guild Guild}</li>
+     *     <br>This can be caused by any of the following:
+     *     <ul>
+     *         <li>The request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild},
+     *             typically due to being kicked or removed.</li>
+     *         <li>The user supplied is not a member of this ThreadChannel's {@link net.dv8tion.jda.api.entities.Guild Guild}</li>
+     *         <li>The thread is not {@link #isInvitable() invitable}, and the current account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_THREADS MANAGE_THREADS} permission.</li>
+     *     </ul>
+     *     <br>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
      *     <br>The request was attempted after the channel was deleted.</li>
@@ -549,7 +557,6 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer
         return addThreadMemberById(MiscUtil.parseSnowflake(id));
     }
 
-    //TODO-hex: see above
     /**
      * Adds a member to this thread.
      *
@@ -558,9 +565,14 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>The request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
-     *         typically due to being kicked or removed.
-     *         <br>This can also be caused if the user supplied is not a member of this ThreadChannel's {@link net.dv8tion.jda.api.entities.Guild Guild}</li>
+     *     <br>This can be caused by any of the following:
+     *     <ul>
+     *         <li>The request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild},
+     *             typically due to being kicked or removed.</li>
+     *         <li>The user supplied is not a member of this ThreadChannel's {@link net.dv8tion.jda.api.entities.Guild Guild}</li>
+     *         <li>The thread is not {@link #isInvitable() invitable}, and the current account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_THREADS MANAGE_THREADS} permission.</li>
+     *     </ul>
+     *     <br>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
      *     <br>The request was attempted after the channel was deleted.</li>
@@ -585,7 +597,6 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer
         return addThreadMemberById(user.getIdLong());
     }
 
-    //TODO-hex: see above
     /**
      * Adds a member to this thread.
      *
@@ -594,9 +605,14 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>The request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
-     *         typically due to being kicked or removed.
-     *         <br>This can also be caused if the member supplied is not a member of this ThreadChannel's {@link net.dv8tion.jda.api.entities.Guild Guild}</li>
+     *     <br>This can be caused by any of the following:
+     *     <ul>
+     *         <li>The request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild},
+     *             typically due to being kicked or removed.</li>
+     *         <li>The user supplied is not a member of this ThreadChannel's {@link net.dv8tion.jda.api.entities.Guild Guild}</li>
+     *         <li>The thread is not {@link #isInvitable() invitable}, and the current account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_THREADS MANAGE_THREADS} permission.</li>
+     *     </ul>
+     *     <br>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
      *     <br>The request was attempted after the channel was deleted.</li>
