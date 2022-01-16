@@ -28,12 +28,12 @@ import net.dv8tion.jda.internal.requests.restaction.interactions.AutoCompleteCal
 import javax.annotation.Nonnull;
 import java.util.Collection;
 
-public class AutoCompleteCommandInteractionImpl extends InteractionImpl implements CommandInteractionPayloadMixin, CommandAutoCompleteInteraction
+public class CommandAutoCompleteInteractionImpl extends InteractionImpl implements CommandInteractionPayloadMixin, CommandAutoCompleteInteraction
 {
     private final CommandInteractionPayload payload;
     private AutoCompleteQuery focused;
 
-    public AutoCompleteCommandInteractionImpl(JDAImpl jda, DataObject data)
+    public CommandAutoCompleteInteractionImpl(JDAImpl jda, DataObject data)
     {
         super(jda, data);
         this.payload = new CommandInteractionPayloadImpl(jda, data);

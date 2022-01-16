@@ -29,7 +29,7 @@ import net.dv8tion.jda.api.interactions.components.Component;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.interactions.InteractionImpl;
-import net.dv8tion.jda.internal.interactions.command.AutoCompleteCommandInteractionImpl;
+import net.dv8tion.jda.internal.interactions.command.CommandAutoCompleteInteractionImpl;
 import net.dv8tion.jda.internal.interactions.command.MessageContextInteractionImpl;
 import net.dv8tion.jda.internal.interactions.command.SlashCommandInteractionImpl;
 import net.dv8tion.jda.internal.interactions.command.UserContextInteractionImpl;
@@ -71,7 +71,7 @@ public class InteractionCreateHandler extends SocketHandler
             case COMMAND_AUTOCOMPLETE:
                 api.handleEvent(
                     new CommandAutoCompleteInteractionEvent(api, responseNumber,
-                        new AutoCompleteCommandInteractionImpl(api, content)));
+                        new CommandAutoCompleteInteractionImpl(api, content)));
                 break;
             default:
                 api.handleEvent(
