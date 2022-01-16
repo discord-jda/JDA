@@ -3167,7 +3167,7 @@ public interface MessageChannel extends Channel, Formattable
      * Attempts to edit a message by its id in this MessageChannel.
      * <br>This will replace all the current {@link net.dv8tion.jda.api.interactions.components.Component Components},
      * such as {@link Button Buttons} or {@link SelectMenu SelectMenus} on this message.
-     * The provided parameters are {@link LayoutComponent LayoutComponent} such as {@link ActionRow} which contain a list of components to arrange in the respective layout.
+     * The provided parameters are {@link LayoutComponent LayoutComponents} such as {@link ActionRow} which contain a list of components to arrange in the respective layout.
      *
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
@@ -3233,7 +3233,7 @@ public interface MessageChannel extends Channel, Formattable
      * Attempts to edit a message by its id in this MessageChannel.
      * <br>This will replace all the current {@link net.dv8tion.jda.api.interactions.components.Component Components},
      * such as {@link Button Buttons} or {@link SelectMenu SelectMenus} on this message.
-     * The provided parameters are {@link LayoutComponent LayoutComponent} such as {@link ActionRow} which contain a list of components to arrange in the respective layout.
+     * The provided parameters are {@link LayoutComponent LayoutComponents} such as {@link ActionRow} which contain a list of components to arrange in the respective layout.
      *
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
@@ -3291,7 +3291,7 @@ public interface MessageChannel extends Channel, Formattable
      * Attempts to edit a message by its id in this MessageChannel.
      * <br>This will replace all the current {@link net.dv8tion.jda.api.interactions.components.Component Components},
      * such as {@link Button Buttons} or {@link SelectMenu SelectMenus} on this message.
-     * The provided parameters are {@link LayoutComponent LayoutComponent} such as {@link ActionRow} which contain a list of components to arrange in the respective layout.
+     * The provided parameters are {@link LayoutComponent LayoutComponents} such as {@link ActionRow} which contain a list of components to arrange in the respective layout.
      *
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
@@ -3352,7 +3352,7 @@ public interface MessageChannel extends Channel, Formattable
      * Attempts to edit a message by its id in this MessageChannel.
      * <br>This will replace all the current {@link net.dv8tion.jda.api.interactions.components.Component Components},
      * such as {@link Button Buttons} or {@link SelectMenu SelectMenus} on this message.
-     * The provided parameters are {@link LayoutComponent LayoutComponent} such as {@link ActionRow} which contain a list of components to arrange in the respective layout.
+     * The provided parameters are {@link LayoutComponent LayoutComponents} such as {@link ActionRow} which contain a list of components to arrange in the respective layout.
      *
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
