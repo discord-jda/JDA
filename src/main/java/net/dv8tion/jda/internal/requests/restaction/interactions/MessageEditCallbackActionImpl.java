@@ -63,6 +63,7 @@ public class MessageEditCallbackActionImpl extends DeferrableCallbackActionImpl 
             data.put("embeds", DataArray.fromCollection(embeds));
         if (components != null)
             data.put("components", DataArray.fromCollection(components));
+        // TODO: This is currently unsupported and cannot run because of the missing retainFiles methods
         if (retainedFiles != null)
         {
             data.put("attachments", DataArray.fromCollection(
@@ -128,6 +129,7 @@ public class MessageEditCallbackActionImpl extends DeferrableCallbackActionImpl 
         return this;
     }
 
+////  TODO: This is waiting for https://github.com/discord/discord-api-docs/discussions/3335
 //    @Nonnull
 //    @Override
 //    public MessageEditCallbackAction retainFilesById(@Nonnull Collection<String> ids)

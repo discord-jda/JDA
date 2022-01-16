@@ -117,6 +117,8 @@ public class AutoCompleteCallbackActionImpl extends InteractionCallbackImpl<Void
             array.add(json);
         });
         data.put("choices", array);
-        return DataObject.empty().put("type", 8).put("data", data);
+        return DataObject.empty()
+                .put("type", ResponseType.COMMAND_AUTOCOMPLETE_CHOICES.getRaw())
+                .put("data", data);
     }
 }

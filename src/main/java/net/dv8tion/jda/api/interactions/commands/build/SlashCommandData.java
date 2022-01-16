@@ -350,6 +350,9 @@ public interface SlashCommandData extends CommandData
      *         If any of the values are failing the respective checks such as length
      *
      * @return The parsed SlashCommandData instance, which can be further configured through setters
+     *
+     * @see    CommandData#fromData(DataObject)
+     * @see    Commands#fromList(Collection)
      */
     @Nonnull
     static SlashCommandData fromData(@Nonnull DataObject object)

@@ -37,6 +37,8 @@ public interface InteractionCallbackAction<T> extends RestAction<T>
         DEFERRED_MESSAGE_UPDATE(6),
         /** Update the message for a component interaction */
         MESSAGE_UPDATE(7),
+        /** Provide auto-complete choices for a command */
+        COMMAND_AUTOCOMPLETE_CHOICES(8),
         ;
         private final int raw;
 

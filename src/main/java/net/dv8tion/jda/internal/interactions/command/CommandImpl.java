@@ -207,7 +207,7 @@ public class CommandImpl implements Command
     @Override
     public String toString()
     {
-        return "C:" + getName() + "(" + getId() + ")";
+        return "Command[" + getType() + "](" + getId() + ":" + getName() + ")";
     }
 
     @Override

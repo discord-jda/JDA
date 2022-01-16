@@ -143,6 +143,9 @@ public class Commands
      *         If any of the values are failing the respective checks such as length
      *
      * @return The parsed CommandData instances, which can be further configured through setters
+     *
+     * @see    CommandData#fromData(DataObject)
+     * @see    SlashCommandData#fromData(DataObject)
      */
     @Nonnull
     public static List<CommandData> fromList(@Nonnull DataArray array)
@@ -166,6 +169,9 @@ public class Commands
      *         If any of the values are failing the respective checks such as length
      *
      * @return The parsed CommandData instances, which can be further configured through setters
+     *
+     * @see    CommandData#fromData(DataObject)
+     * @see    SlashCommandData#fromData(DataObject)
      */
     @Nonnull
     public static List<CommandData> fromList(@Nonnull Collection<? extends DataObject> collection)

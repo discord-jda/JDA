@@ -25,6 +25,7 @@ import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
+import java.util.Collection;
 import java.util.Map;
 
 /**
@@ -129,6 +130,7 @@ public interface CommandData extends SerializableData
      * @return The parsed CommandData instance, which can be further configured through setters
      *
      * @see    SlashCommandData#fromData(DataObject)
+     * @see    Commands#fromList(Collection)
      */
     @Nonnull
     static CommandData fromData(@Nonnull DataObject object)

@@ -17,7 +17,6 @@ package net.dv8tion.jda.internal.requests.restaction;
 
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.commands.Command;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
@@ -43,14 +42,14 @@ public class CommandCreateActionImpl extends RestActionImpl<Command> implements 
     private final Guild guild;
     private CommandDataImpl data;
 
-    public CommandCreateActionImpl(JDAImpl api, CommandData command)
+    public CommandCreateActionImpl(JDAImpl api, CommandDataImpl command)
     {
         super(api, Route.Interactions.CREATE_COMMAND.compile(api.getSelfUser().getApplicationId()));
         this.guild = null;
-        this.data = (CommandDataImpl) command;
+        this.data = command;
     }
 
-    public CommandCreateActionImpl(Guild guild, CommandData command)
+    public CommandCreateActionImpl(Guild guild, CommandDataImpl command)
     {
         super(guild.getJDA(), Route.Interactions.CREATE_GUILD_COMMAND.compile(guild.getJDA().getSelfUser().getApplicationId(), guild.getId()));
         this.guild = guild;

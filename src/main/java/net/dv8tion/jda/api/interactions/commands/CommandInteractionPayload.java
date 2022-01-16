@@ -123,6 +123,7 @@ public interface CommandInteractionPayload extends Interaction
     /**
      * Gets the display string for this command.
      * <br>This is similar to the string you see when clicking the interaction name in the client.
+     * For non-slash command types, this simply returns {@link #getName()} instead.
      *
      * <p>Example return for an echo command: {@code /say echo phrase: Say this}
      *
