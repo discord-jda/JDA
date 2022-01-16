@@ -18,7 +18,10 @@ package net.dv8tion.jda.internal.interactions;
 
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.interactions.commands.build.*;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
+import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
+import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
+import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -29,8 +32,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class CommandDataImpl extends BaseCommand<CommandDataImpl> implements SlashCommandData
+public class CommandDataImpl implements SlashCommandData
 {
+    protected final DataArray options = DataArray.empty();
+    protected String name, description = "";
+
     private boolean allowSubcommands = true;
     private boolean allowGroups = true;
     private boolean allowOption = true;
@@ -41,43 +47,17 @@ public class CommandDataImpl extends BaseCommand<CommandDataImpl> implements Sla
 
     public CommandDataImpl(@Nonnull String name, @Nonnull String description)
     {
-        super(name, description);
         this.type = Command.Type.SLASH;
-        checkName(name);
-        checkDescription(description);
+        setName(name);
+        setDescription(description);
     }
 
     public CommandDataImpl(@Nonnull Command.Type type, @Nonnull String name)
     {
-        super(name, null);
         this.type = type;
         Checks.notNull(type, "Command Type");
-        Checks.check(type != Command.Type.SLASH, "Cannot create slash command without description. Use `new CommandData(name, description)` instead.");
-        checkName(name);
-    }
-
-    @Override
-    protected void checkName(String name)
-    {
-        Checks.inRange(name, 1, 32, "Name");
-        if (type == Command.Type.SLASH)
-        {
-            Checks.matches(name, Checks.ALPHANUMERIC_WITH_DASH, "Name");
-            Checks.isLowercase(name, "Name");
-        }
-    }
-
-    @Override
-    protected void checkDescription(String description)
-    {
-        if (type != Command.Type.SLASH)
-        {
-            if (description == null)
-                return;
-            throw new IllegalArgumentException("Cannot set descriptions for commands of type " + type);
-        }
-        Checks.notEmpty(description, "Description");
-        Checks.notLonger(description, 100, "Description");
+        Checks.check(type != Command.Type.SLASH, "Cannot create slash command without description. Use `new CommandDataImpl(name, description)` instead.");
+        setName(name);
     }
 
     protected void checkType(Command.Type required, String action)
@@ -90,9 +70,14 @@ public class CommandDataImpl extends BaseCommand<CommandDataImpl> implements Sla
     @Override
     public DataObject toData()
     {
-        return super.toData()
+        DataObject json = DataObject.empty()
                 .put("default_permission", defaultPermissions)
-                .put("type", type.getId());
+                .put("type", type.getId())
+                .put("name", name)
+                .put("options", options);
+        if (type == Command.Type.SLASH)
+            json.put("description", description);
+        return json;
     }
 
     @Nonnull
@@ -100,14 +85,6 @@ public class CommandDataImpl extends BaseCommand<CommandDataImpl> implements Sla
     public Command.Type getType()
     {
         return type;
-    }
-
-    @Nonnull
-    public CommandDataImpl setName(@Nonnull String name)
-    {
-        checkName(name);
-        this.name = name;
-        return this;
     }
 
     @Nonnull
@@ -228,5 +205,54 @@ public class CommandDataImpl extends BaseCommand<CommandDataImpl> implements Sla
         for (SubcommandGroupData data : groups)
             options.add(data);
         return this;
+    }
+
+    @Nonnull
+    @Override
+    public CommandDataImpl setName(@Nonnull String name)
+    {
+        Checks.inRange(name, 1, 32, "Name");
+        if (type == Command.Type.SLASH)
+        {
+            Checks.matches(name, Checks.ALPHANUMERIC_WITH_DASH, "Name");
+            Checks.isLowercase(name, "Name");
+        }
+        this.name = name;
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    public CommandDataImpl setDescription(@Nonnull String description)
+    {
+        checkType(Command.Type.SLASH, "set description");
+        Checks.notEmpty(description, "Description");
+        Checks.notLonger(description, 100, "Description");
+        this.description = description;
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    public String getName()
+    {
+        return name;
+    }
+
+    @Nonnull
+    @Override
+    public String getDescription()
+    {
+        return description;
+    }
+
+    @Nonnull
+    @Override
+    public List<OptionData> getOptions()
+    {
+        return options.stream(DataArray::getObject)
+                .map(OptionData::fromData)
+                .filter(it -> it.getType().getKey() > OptionType.SUB_COMMAND_GROUP.getKey())
+                .collect(Collectors.toList());
     }
 }

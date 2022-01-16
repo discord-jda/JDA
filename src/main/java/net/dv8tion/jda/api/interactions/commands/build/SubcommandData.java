@@ -27,13 +27,17 @@ import net.dv8tion.jda.internal.utils.Checks;
 import javax.annotation.Nonnull;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
  * Builder for a Slash-Command subcommand.
  */
-public class SubcommandData extends BaseCommand<SubcommandData> implements SerializableData
+public class SubcommandData implements SerializableData
 {
+    protected final DataArray options = DataArray.empty();
+    protected String name, description;
     private boolean allowRequired = true;
 
     /**
@@ -53,24 +57,49 @@ public class SubcommandData extends BaseCommand<SubcommandData> implements Seria
      */
     public SubcommandData(@Nonnull String name, @Nonnull String description)
     {
-        super(name, description);
-        checkName(name);
-        checkDescription(description);
+        setName(name);
+        setDescription(description);
     }
 
-    @Override
-    protected void checkName(String name)
+    /**
+     * Configure the name
+     *
+     * @param  name
+     *         The lowercase alphanumeric (with dash) name, 1-32 characters
+     *
+     * @throws IllegalArgumentException
+     *         If the name is null, not alphanumeric, or not between 1-32 characters
+     *
+     * @return The SubcommandData instance, for chaining
+     */
+    @Nonnull
+    public SubcommandData setName(@Nonnull String name)
     {
         Checks.inRange(name, 1, 32, "Name");
         Checks.matches(name, Checks.ALPHANUMERIC_WITH_DASH, "Name");
         Checks.isLowercase(name, "Name");
+        this.name = name;
+        return this;
     }
 
-    @Override
-    protected void checkDescription(String description)
+    /**
+     * Configure the description
+     *
+     * @param  description
+     *         The description, 1-100 characters
+     *
+     * @throws IllegalArgumentException
+     *         If the name is null or not between 1-100 characters
+     *
+     * @return The SubcommandData instance, for chaining
+     */
+    @Nonnull
+    public SubcommandData setDescription(@Nonnull String description)
     {
         Checks.notEmpty(description, "Description");
         Checks.notLonger(description, 100, "Description");
+        this.description = description;
+        return this;
     }
 
     /**
@@ -236,11 +265,51 @@ public class SubcommandData extends BaseCommand<SubcommandData> implements Seria
         return addOption(type, name, description, false);
     }
 
+    /**
+     * The options for this command.
+     *
+     * @return Immutable list of {@link OptionData}
+     */
+    @Nonnull
+    public List<OptionData> getOptions()
+    {
+        return options.stream(DataArray::getObject)
+                .map(OptionData::fromData)
+                .filter(it -> it.getType().getKey() > OptionType.SUB_COMMAND_GROUP.getKey())
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * The configured name
+     *
+     * @return The name
+     */
+    @Nonnull
+    public String getName()
+    {
+        return name;
+    }
+
+    /**
+     * The configured description
+     *
+     * @return The description
+     */
+    @Nonnull
+    public String getDescription()
+    {
+        return description;
+    }
+
     @Nonnull
     @Override
     public DataObject toData()
     {
-        return super.toData().put("type", OptionType.SUB_COMMAND.getKey());
+        return DataObject.empty()
+                .put("type", OptionType.SUB_COMMAND.getKey())
+                .put("name", name)
+                .put("description", description)
+                .put("options", options);
     }
 
     /**

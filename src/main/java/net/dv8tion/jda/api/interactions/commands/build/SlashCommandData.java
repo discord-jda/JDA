@@ -84,6 +84,14 @@ public interface SlashCommandData extends CommandData
     List<SubcommandGroupData> getSubcommandGroups();
 
     /**
+     * The options for this command.
+     *
+     * @return Immutable list of {@link OptionData}
+     */
+    @Nonnull
+    List<OptionData> getOptions();
+
+    /**
      * Adds up to 25 options to this command.
      *
      * <p>Required options must be added before non-required options!

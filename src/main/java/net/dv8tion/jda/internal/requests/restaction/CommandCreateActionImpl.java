@@ -53,7 +53,7 @@ public class CommandCreateActionImpl extends RestActionImpl<Command> implements 
     {
         super(guild.getJDA(), Route.Interactions.CREATE_GUILD_COMMAND.compile(guild.getJDA().getSelfUser().getApplicationId(), guild.getId()));
         this.guild = guild;
-        this.data = (CommandDataImpl) command;
+        this.data = command;
     }
 
     @Nonnull
@@ -152,6 +152,13 @@ public class CommandCreateActionImpl extends RestActionImpl<Command> implements 
     public List<SubcommandGroupData> getSubcommandGroups()
     {
         return data.getSubcommandGroups();
+    }
+
+    @Nonnull
+    @Override
+    public List<OptionData> getOptions()
+    {
+        return data.getOptions();
     }
 
     @Nonnull
