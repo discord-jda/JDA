@@ -85,8 +85,7 @@ public class CommandImpl implements Command
     @Override
     public RestAction<Void> delete()
     {
-        if (applicationId != api.getSelfUser().getApplicationIdLong())
-            throw new IllegalStateException("Cannot delete a command from another bot!");
+        checkSelfUser("Cannot delete a command from another bot!");
         Route.CompiledRoute route;
         String appId = getJDA().getSelfUser().getApplicationId();
         if (guildId != 0L)
@@ -100,8 +99,7 @@ public class CommandImpl implements Command
     @Override
     public CommandEditAction editCommand()
     {
-        if (applicationId != api.getSelfUser().getApplicationIdLong())
-            throw new IllegalStateException("Cannot edit a command from another bot!");
+        checkSelfUser("Cannot edit a command from another bot!");
         return guild == null ? new CommandEditActionImpl(api, getId()) : new CommandEditActionImpl(guild, getId());
     }
 
@@ -109,6 +107,7 @@ public class CommandImpl implements Command
     @Override
     public RestAction<List<CommandPrivilege>> retrievePrivileges(@Nonnull Guild guild)
     {
+        checkSelfUser("Cannot retrieve privileges for a command from another bot!");
         Checks.notNull(guild, "Guild");
         return guild.retrieveCommandPrivilegesById(id);
     }
@@ -117,8 +116,7 @@ public class CommandImpl implements Command
     @Override
     public RestAction<List<CommandPrivilege>> updatePrivileges(@Nonnull Guild guild, @Nonnull Collection<? extends CommandPrivilege> privileges)
     {
-        if (applicationId != api.getSelfUser().getApplicationIdLong())
-            throw new IllegalStateException("Cannot update privileges for a command from another bot!");
+        checkSelfUser("Cannot update privileges for a command from another bot!");
         Checks.notNull(guild, "Guild");
         return guild.updateCommandPrivilegesById(id, privileges);
     }
@@ -224,5 +222,11 @@ public class CommandImpl implements Command
     public int hashCode()
     {
         return Long.hashCode(id);
+    }
+
+    private void checkSelfUser(String s)
+    {
+        if (applicationId != api.getSelfUser().getApplicationIdLong())
+            throw new IllegalStateException(s);
     }
 }
