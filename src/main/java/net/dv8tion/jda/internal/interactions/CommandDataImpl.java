@@ -90,7 +90,9 @@ public class CommandDataImpl extends BaseCommand<CommandDataImpl> implements Sla
     @Override
     public DataObject toData()
     {
-        return super.toData().put("default_permission", defaultPermissions).put("type", type.getId());
+        return super.toData()
+            .put("default_permission", defaultPermissions)
+            .put("type", type.getId());
     }
 
     @Nonnull
