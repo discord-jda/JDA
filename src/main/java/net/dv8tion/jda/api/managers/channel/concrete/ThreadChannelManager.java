@@ -28,7 +28,7 @@ import net.dv8tion.jda.api.managers.channel.ChannelManager;
  *        .setArchived(false)
  *        .queue();
  * manager.reset(ChannelManager.SLOWMODE | ChannelManager.NAME)
- *        .setName("Javascript is to Java as car is to carpet")
+ *        .setName("Java is to Javascript as car is to carpet")
  *        .setLocked(false)
  *        .setSlowmode(120)
  *        .queue();

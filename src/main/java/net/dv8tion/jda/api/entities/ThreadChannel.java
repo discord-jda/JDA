@@ -87,6 +87,8 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer
      * Threads can only be locked and unlocked by moderators.
      *
      * @return true if this thread is locked, false otherwise.
+     *
+     * @see ChannelField#LOCKED
      */
     boolean isLocked();
 
@@ -102,6 +104,8 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer
      *         If this thread is not a private thread.
      *
      * @return true if this thread is invitable, false otherwise.
+     *
+     * @see ChannelField#INVITABLE
      */
     boolean isInvitable();
 
@@ -155,11 +159,12 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer
     /**
      * Gets a List of all cached {@link ThreadMember members} of this thread.
      * <br>
-     * <br>The thread owner is not included in this list.
+     * <br>The thread owner is not included in this list, unless the current account is the owner.
      * Any updates to this cache are lost when JDA is shutdown, and this list is not sent to JDA on startup.
      * For this reason, {@link #retrieveThreadMembers()} should be used instead in most cases.
      *
-     * <p>In order for the cache to be updated, the following requirements must be met:
+     * <p>The cache this method relies on is empty until JDA sees a member join via a {@link net.dv8tion.jda.api.events.thread.member.ThreadMemberJoinEvent}.
+     * In order for this cache to be updated, the following requirements must be met:
      * <ul>
      *     <li>the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MEMBERS} intent must be enabled.</li>
      *     <li>the bot must be able to join the thread (either via the {@link net.dv8tion.jda.api.Permission#MANAGE_THREADS MANAGE_THREADS} permission, or a public thread)</li>
@@ -176,41 +181,90 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer
     /**
      * Gets a {@link ThreadMember} of this thread by their {@link Member}.
      *
-     * Note that this operation relies on the ThreadMember cache for this ThreadChannel, and so is likely to return null.
+     * Note that this operation relies on the {@link #getThreadMembers() ThreadMember cache} for this ThreadChannel.
+     * As the cache is likely to be unpopulated, this method is likely to return null.
      *
-     * Use of retrieveThreadMember(Member) is preferred instead, once it is released.
+     * Use of {@link #retrieveThreadMember(Member)} is preferred instead, once it is released.
      *
      * @param member
      *        The member to get the {@link ThreadMember} for.
      *
      * @return The {@link ThreadMember} of this thread for the given member.
+     *
+     * @throws NullPointerException
+     *         If the given member is null.
+     *
+     * @see #retrieveThreadMember(Member)
      */
-    //TODO-v5: docs - update the docs once retrieveThreadMember is added
-    //TODO-v5: docs - how much of this relies on the GUILD_MEMBERS intent. Current impl is unfinished and so cannot document.
     @Nullable
     default ThreadMember getThreadMember(Member member)
     {
         return getThreadMemberById(member.getId());
     }
 
-    //TODO-v5: docs - how much of this relies on the GUILD_MEMBERS intent. Current impl is unfinished and so cannot document.
-    //TODO-v5: docs - update the docs once retrieveThreadMember is added
+    /**
+     * Gets a {@link ThreadMember} of this thread by their {@link Member}.
+     *
+     * Note that this operation relies on the {@link #getThreadMembers() ThreadMember cache} for this ThreadChannel.
+     * As the cache is likely to be unpopulated, this method is likely to return null.
+     *
+     * Use of {@link #retrieveThreadMember(Member)} is preferred instead, once it is released.
+     *
+     * @param user
+     *        The user to get the {@link ThreadMember} for.
+     *
+     * @return The {@link ThreadMember} of this thread for the given member.
+     *
+     * @throws NullPointerException
+     *         If the given user is null.
+     *
+     * @see #retrieveThreadMember(Member)
+     */
     @Nullable
     default ThreadMember getThreadMember(User user)
     {
         return getThreadMemberById(user.getId());
     }
 
-    //TODO-v5: docs - how much of this relies on the GUILD_MEMBERS intent. Current impl is unfinished and so cannot document.
-    //TODO-v5: docs - update the docs once retrieveThreadMember is added
+    /**
+     * Gets a {@link ThreadMember} of this thread by their {@link Member}.
+     *
+     * Note that this operation relies on the {@link #getThreadMembers() ThreadMember cache} for this ThreadChannel.
+     * As the cache is likely to be unpopulated, this method is likely to return null.
+     *
+     * Use of {@link #retrieveThreadMember(Member)} is preferred instead, once it is released.
+     *
+     * @param id
+     *        The ID of the member to get the {@link ThreadMember} for.
+     *
+     * @return The {@link ThreadMember} of this thread for the given member.
+     *
+     * @throws IllegalArgumentException
+     *         If the given id is null or empty.
+     *
+     * @see #retrieveThreadMember(Member)
+     */
     @Nullable
     default ThreadMember getThreadMemberById(String id)
     {
         return getThreadMemberById(MiscUtil.parseSnowflake(id));
     }
 
-    //TODO-v5: docs - how much of this relies on the GUILD_MEMBERS intent. Current impl is unfinished and so cannot document.
-    //TODO-v5: docs - update the docs once retrieveThreadMember is added
+    /**
+     * Gets a {@link ThreadMember} of this thread by their {@link Member}.
+     *
+     * Note that this operation relies on the {@link #getThreadMembers() ThreadMember cache} for this ThreadChannel.
+     * As the cache is likely to be unpopulated, this method is likely to return null.
+     *
+     * Use of {@link #retrieveThreadMember(Member)} is preferred instead, once it is released.
+     *
+     * @param id
+     *        The member to get the {@link ThreadMember} for.
+     *
+     * @return The {@link ThreadMember} of this thread for the given member.
+     *
+     * @see #retrieveThreadMember(Member)
+     */
     @Nullable
     ThreadMember getThreadMemberById(long id);
 
@@ -329,18 +383,17 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer
      *
      * @return The {@link User} of the member who created this thread as a String.
      */
-    @Nullable
     default String getOwnerId()
     {
         return Long.toUnsignedString(getOwnerIdLong());
     }
 
     /**
-     * Gets the {@link User} of the owner of this thread.
+     * Gets the {@link Member} that created and owns this thread.
      * <br>
-     * This will be null if the member is not cached, and so it is recommended to retrieve this member from the guild.
+     * This will be null if the member is not cached, and so it is recommended to {@link Guild#retrieveMemberById(long) retrieve this member from the guild} using {@link #getOwnerIdLong() the owner'd ID}.
      *
-     * @return The {@link User} of the member who created this thread.
+     * @return The {@link Member} of the member who created this thread.
      *
      * @see #getThreadMemberById(long)
      * @see Guild#retrieveMemberById(long)
@@ -356,11 +409,12 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer
      * <br>
      * This will be null if the member is not cached, and so it is recommended to retrieve the owner instead.
      *
+     * <br>This method relies on the {@link #getThreadMembers()} cache, and so it is recommended to {@link #retrieveThreadMemberById(long) retrieve the ThreadMember} by {@link #getOwnerIdLong() their ID} instead.
+     *
      * @return The owner of this thread as a {@link ThreadMember}.
      *
      * @see #getThreadMemberById(long)
      */
-    //TODO-v5: docs - update the docs once retrieveThreadMember is added
     @Nullable
     default ThreadMember getOwnerThreadMember()
     {
@@ -381,6 +435,7 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer
      * @see #isLocked()
      * @see ThreadChannelManager#setArchived(boolean)
      * @see #getAutoArchiveDuration()
+     * @see ChannelField#ARCHIVED
      */
     boolean isArchived();
 
@@ -408,6 +463,8 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer
      * A thread archived this way can be unarchived by any member.
      *
      * @return the time before which a thread will automatically be archived.
+     *
+     * @see ChannelField#AUTO_ARCHIVE_DURATION
      */
     @Nonnull
     AutoArchiveDuration getAutoArchiveDuration();
@@ -416,7 +473,7 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer
     /**
      * The slowmode time of this thread. This determines the time each non-moderator must wait before sending another message.
      *
-     * @return The time between a member sending two messages, in seconds.
+     * @return The amount of time in seconds a ThreadMember must wait between sending messages.
      *
      * @see net.dv8tion.jda.api.managers.channel.concrete.ThreadChannelManager#setSlowmode(int)
      */
@@ -640,8 +697,7 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer
     /**
      * Removes a member from this thread.
      *
-     * <p>Removing members from public threads or private threads this account does not own <b>requires the {@link net.dv8tion.jda.api.Permission#MANAGE_THREADS} permission</b>.
-     * <br>This permission is not needed to remove members from private threads this account owns.
+     * <p>Removing members from threads <b>requires the {@link net.dv8tion.jda.api.Permission#MANAGE_THREADS} permission</b> <i>unless</i> the thread is private <b>and</b> owned by the current account.
      *
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
@@ -675,8 +731,7 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer
     /**
      * Removes a member from this thread.
      *
-     * <p>Removing members from public threads or private threads this account does not own <b>requires the {@link net.dv8tion.jda.api.Permission#MANAGE_THREADS} permission</b>.
-     * <br>This permission is not needed to remove members from private threads this account owns.
+     * <p>Removing members from threads <b>requires the {@link net.dv8tion.jda.api.Permission#MANAGE_THREADS} permission</b> <i>unless</i> the thread is private <b>and</b> owned by the current account.
      *
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
@@ -716,8 +771,7 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer
     /**
      * Removes a member from this thread.
      *
-     * <p>Removing members from public threads or private threads this account does not own <b>requires the {@link net.dv8tion.jda.api.Permission#MANAGE_THREADS} permission</b>.
-     * <br>This permission is not needed to remove members from private threads this account owns.
+     * <p>Removing members from threads <b>requires the {@link net.dv8tion.jda.api.Permission#MANAGE_THREADS} permission</b> <i>unless</i> the thread is private <b>and</b> owned by the current account.
      *
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
@@ -751,7 +805,7 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer
 
     /**
      * Removes a member from this thread.
-     * <br>This permission is not needed to remove members from private threads this account owns.
+     * <p>Removing members from threads <b>requires the {@link net.dv8tion.jda.api.Permission#MANAGE_THREADS} permission</b> <i>unless</i> the thread is private <b>and</b> owned by the current account.
      *
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>

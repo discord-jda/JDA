@@ -23,6 +23,7 @@ import net.dv8tion.jda.api.utils.MiscUtil;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -33,13 +34,14 @@ public interface IThreadContainer extends GuildChannel, IPermissionContainer
      *
      * @return a list of all ThreadChannel children.
      */
-    //todo-v5: Should this Collection be guaranteed to be unmodifiable?
     default List<ThreadChannel> getThreadChannels()
     {
-        return getGuild().getThreadChannels()
-                .stream()
-                .filter(thread -> thread.getParentChannel() == this)
-                .collect(Collectors.toList());
+        return Collections.unmodifiableList(
+                getGuild().getThreadChannels()
+                    .stream()
+                    .filter(thread -> thread.getParentChannel() == this)
+                    .collect(Collectors.toList())
+                );
     }
 
 

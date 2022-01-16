@@ -61,13 +61,13 @@ public enum ChannelField
      */
     PARENT("parent", AuditLogKey.CHANNEL_PARENT),
 
+    //TODO-v5 if the calculation of IPositionableChannel#getPosition() changes, this may need modification too.
     /**
      * The position of this channel relative to other channels in the guild.
      *
      * @see IPositionableChannel#getPosition()
      *
      */
-    //TODO-v5 if the calculation of IPositionableChannel#getPosition() changes, this may need modification too.
     POSITION("position", null), //Discord doesn't track Channel position changes in AuditLog.
 
 
@@ -178,7 +178,6 @@ public enum ChannelField
      *
      * @see ThreadChannel#getTimeArchiveInfoLastModified()
      */
-    //todo-v5: Docs - check if this is actually correct
     ARCHIVED_TIMESTAMP("archiveTimestamp", null),
 
     /**
@@ -188,7 +187,7 @@ public enum ChannelField
      *
      * Limited to {@link ThreadChannel Thread Channels}.
      *
-     * @see ThreadChannel#isLocked() ()
+     * @see ThreadChannel#isLocked()
      */
     LOCKED("locked", AuditLogKey.THREAD_LOCKED),
 
