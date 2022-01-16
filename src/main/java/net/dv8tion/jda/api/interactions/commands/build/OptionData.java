@@ -366,7 +366,7 @@ public class OptionData implements SerializableData
     {
         if (isAutoComplete)
         {
-            if (choices == null)
+            if (choices == null || !type.canSupportChoices())
                 throw new IllegalStateException("Cannot enable auto-complete for options of type " + type);
             if (!choices.isEmpty())
                 throw new IllegalStateException("Cannot enable auto-complete for options with choices");
@@ -728,7 +728,7 @@ public class OptionData implements SerializableData
     {
         if (choices.length == 0)
             return this;
-        if (this.choices == null)
+        if (this.choices == null || !type.canSupportChoices())
             throw new IllegalStateException("Cannot add choices for an option of type " + type);
         Checks.noneNull(choices, "Choices");
         if (isAutoComplete)
