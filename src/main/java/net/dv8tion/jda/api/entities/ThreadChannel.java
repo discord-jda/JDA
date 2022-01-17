@@ -164,7 +164,9 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer
      * For this reason, {@link #retrieveThreadMembers()} should be used instead in most cases.
      *
      * <p>The cache this method relies on is empty until JDA sees a member join via a {@link net.dv8tion.jda.api.events.thread.member.ThreadMemberJoinEvent}.
-     * In order for this cache to be updated, the following requirements must be met:
+     * <br>If this thread is spawned from a message sent <i>by this account</i>, then this account will be added to the cache.
+     * Threads created from other members' messages do not share this behavior.
+     * <br>In order for this cache to be updated, the following requirements must be met:
      * <ul>
      *     <li>the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MEMBERS} intent must be enabled.</li>
      *     <li>the bot must be able to join the thread (either via the {@link net.dv8tion.jda.api.Permission#MANAGE_THREADS MANAGE_THREADS} permission, or a public thread)</li>
