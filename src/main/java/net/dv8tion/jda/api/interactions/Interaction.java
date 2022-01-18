@@ -258,6 +258,24 @@ public interface Interaction extends ISnowflake
     }
 
     /**
+     * The {@link ThreadChannel} this interaction happened in.
+     * <br>If {@link #getChannelType()} is not {@link ChannelType#isThread()}, this throws {@link IllegalStateException}!
+     *
+     * @throws IllegalStateException
+     *         If {@link #getChannel()} is not a thread channel
+     *
+     * @return The {@link ThreadChannel}
+     */
+    @Nonnull
+    default ThreadChannel getThreadChannel()
+    {
+        Channel channel = getChannel();
+        if (channel instanceof ThreadChannel)
+            return (ThreadChannel) channel;
+        throw new IllegalStateException("Cannot convert channel of type " + getChannelType() + " to ThreadChannel");
+    }
+
+    /**
      * Returns the selected language of the invoking user.
      *
      * @return The language of the invoking user

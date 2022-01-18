@@ -378,6 +378,21 @@ public class OptionMapping
     }
 
     /**
+     * The {@link ChannelType} for the resolved channel.
+     *
+     * @throws IllegalStateException
+     *         If this option is not of type {@link OptionType#CHANNEL CHANNEL}
+     *
+     * @return The {@link ChannelType}
+     */
+    @Nonnull
+    public ChannelType getChannelType()
+    {
+        Channel channel = getAsChannel();
+        return channel == null ? ChannelType.UNKNOWN : channel.getType();
+    }
+
+    /**
      * The resolved {@link GuildChannel} for this option value.
      * <br>Note that {@link OptionType#CHANNEL OptionType.CHANNEL} can accept channels of any type!
      *
@@ -396,36 +411,120 @@ public class OptionMapping
         throw new IllegalStateException("Could not resolve GuildChannel!");
     }
 
+
     /**
-     * The resolved {@link MessageChannel} for this option value.
+     * The resolved {@link GuildMessageChannel} for this option value.
      * <br>Note that {@link OptionType#CHANNEL OptionType.CHANNEL} can accept channels of any type!
      *
      * @throws IllegalStateException
      *         If this option is not of type {@link OptionType#CHANNEL CHANNEL}
      *
-     * @return The resolved {@link MessageChannel}, or null if this was not a message channel
+     * @return The resolved {@link GuildMessageChannel}, or null if this was not a message channel
      */
     @Nullable
-    public MessageChannel getAsMessageChannel()
+    public GuildMessageChannel getAsMessageChannel()
     {
         Channel value = getAsChannel();
-        return value instanceof MessageChannel ? (MessageChannel) value : null;
+        return value instanceof GuildMessageChannel ? (GuildMessageChannel) value : null;
     }
 
     /**
-     * The {@link ChannelType} for the resolved channel.
+     * The resolved {@link TextChannel} for this option value.
+     * <br>Note that {@link OptionType#CHANNEL OptionType.CHANNEL} can accept channels of any type!
      *
      * @throws IllegalStateException
      *         If this option is not of type {@link OptionType#CHANNEL CHANNEL}
      *
-     * @return The {@link ChannelType}
+     * @return The resolved {@link TextChannel}, or null if this was not a text channel
      */
-    @Nonnull
-    public ChannelType getChannelType()
+    @Nullable
+    public TextChannel getAsTextChannel()
     {
         Channel channel = getAsChannel();
-        return channel == null ? ChannelType.UNKNOWN : channel.getType();
+        return channel instanceof TextChannel ? (TextChannel) channel : null;
     }
+
+    /**
+     * The resolved {@link NewsChannel} for this option value.
+     * <br>Note that {@link OptionType#CHANNEL OptionType.CHANNEL} can accept channels of any type!
+     *
+     * @throws IllegalStateException
+     *         If this option is not of type {@link OptionType#CHANNEL CHANNEL}
+     *
+     * @return The resolved {@link NewsChannel}, or null if this was not a news channel
+     */
+    @Nullable
+    public NewsChannel getAsNewsChannel()
+    {
+        Channel channel = getAsChannel();
+        return channel instanceof NewsChannel ? (NewsChannel) channel : null;
+    }
+
+    /**
+     * The resolved {@link ThreadChannel} for this option value.
+     * <br>Note that {@link OptionType#CHANNEL OptionType.CHANNEL} can accept channels of any type!
+     *
+     * @throws IllegalStateException
+     *         If this option is not of type {@link OptionType#CHANNEL CHANNEL}
+     *
+     * @return The resolved {@link ThreadChannel}, or null if this was not a thread channel
+     */
+    @Nullable
+    public ThreadChannel getAsThreadChannel()
+    {
+        Channel channel = getAsChannel();
+        return channel instanceof ThreadChannel ? (ThreadChannel) channel : null;
+    }
+
+
+    /**
+     * The resolved {@link AudioChannel} for this option value.
+     * <br>Note that {@link OptionType#CHANNEL OptionType.CHANNEL} can accept channels of any type!
+     *
+     * @throws IllegalStateException
+     *         If this option is not of type {@link OptionType#CHANNEL CHANNEL}
+     *
+     * @return The resolved {@link AudioChannel}, or null if this was not an audio channel
+     */
+    @Nullable
+    public AudioChannel getAsAudioChannel()
+    {
+        Channel channel = getAsChannel();
+        return channel instanceof AudioChannel ? (AudioChannel) channel : null;
+    }
+
+    /**
+     * The resolved {@link VoiceChannel} for this option value.
+     * <br>Note that {@link OptionType#CHANNEL OptionType.CHANNEL} can accept channels of any type!
+     *
+     * @throws IllegalStateException
+     *         If this option is not of type {@link OptionType#CHANNEL CHANNEL}
+     *
+     * @return The resolved {@link VoiceChannel}, or null if this was not a voice channel
+     */
+    @Nullable
+    public VoiceChannel getAsVoiceChannel()
+    {
+        Channel channel = getAsChannel();
+        return channel instanceof VoiceChannel ? (VoiceChannel) channel : null;
+    }
+
+    /**
+     * The resolved {@link StageChannel} for this option value.
+     * <br>Note that {@link OptionType#CHANNEL OptionType.CHANNEL} can accept channels of any type!
+     *
+     * @throws IllegalStateException
+     *         If this option is not of type {@link OptionType#CHANNEL CHANNEL}
+     *
+     * @return The resolved {@link StageChannel}, or null if this was not a stage channel
+     */
+    @Nullable
+    public StageChannel getAsStageChannel()
+    {
+        Channel channel = getAsChannel();
+        return channel instanceof StageChannel ? (StageChannel) channel : null;
+    }
+
 
     @Override
     public String toString()
