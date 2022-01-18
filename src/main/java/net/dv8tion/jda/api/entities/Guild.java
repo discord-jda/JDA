@@ -127,7 +127,7 @@ public interface Guild extends ISnowflake
     /**
      * Creates or updates a command.
      * <br>If a command with the same name exists, it will be replaced.
-     * This operation is <b>not</b> idempotent.
+     * This operation is idempotent.
      * Commands will persist between restarts of your bot, you only have to create a command once.
      *
      * <p>To specify a complete list of all commands you can use {@link #updateCommands()} instead.
@@ -154,7 +154,7 @@ public interface Guild extends ISnowflake
     /**
      * Creates or updates a slash command.
      * <br>If a command with the same name exists, it will be replaced.
-     * This operation is <b>not</b> idempotent.
+     * This operation is idempotent.
      * Commands will persist between restarts of your bot, you only have to create a command once.
      *
      * <p>To specify a complete list of all commands you can use {@link #updateCommands()} instead.
