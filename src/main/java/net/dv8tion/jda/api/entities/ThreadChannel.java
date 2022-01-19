@@ -164,8 +164,7 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer
      * For this reason, {@link #retrieveThreadMembers()} should be used instead in most cases.
      *
      * <p>The cache this method relies on is empty until JDA sees a member join via a {@link net.dv8tion.jda.api.events.thread.member.ThreadMemberJoinEvent}.
-     * <br>If this thread is spawned from a message sent <i>by this account</i>, then this account will be added to the cache.
-     * Threads created from other members' messages do not share this behavior.
+     * <br>If the current account is a member of this ThreadChannel, this cache will contain the current account, even after a restart.
      * <br>In order for this cache to be updated, the following requirements must be met:
      * <ul>
      *     <li>the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MEMBERS} intent must be enabled.</li>
@@ -193,7 +192,7 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer
      *
      * @return The {@link ThreadMember} of this thread for the given member.
      *
-     * @throws NullPointerException
+     * @throws IllegalArgumentException
      *         If the given member is null.
      *
      * @see #retrieveThreadMember(Member)
@@ -201,6 +200,7 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer
     @Nullable
     default ThreadMember getThreadMember(Member member)
     {
+        Checks.notNull(member, "Member");
         return getThreadMemberById(member.getId());
     }
 
@@ -217,7 +217,7 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer
      *
      * @return The {@link ThreadMember} of this thread for the given member.
      *
-     * @throws NullPointerException
+     * @throws IllegalArgumentException
      *         If the given user is null.
      *
      * @see #retrieveThreadMember(Member)
@@ -225,6 +225,7 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer
     @Nullable
     default ThreadMember getThreadMember(User user)
     {
+        Checks.notNull(user, "User");
         return getThreadMemberById(user.getId());
     }
 
@@ -385,6 +386,7 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer
      *
      * @return The {@link User} of the member who created this thread as a String.
      */
+    @Nonnull
     default String getOwnerId()
     {
         return Long.toUnsignedString(getOwnerIdLong());
