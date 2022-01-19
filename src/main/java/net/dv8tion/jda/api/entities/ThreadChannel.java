@@ -475,11 +475,10 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer
 
     /**
      * The timestamp when this thread was created.
-     * <br><b>This will be {@code null} for threads created before 2022-01-10.</b>
      *
-     * @return The timestamp when this thread was created or {@code null}
+     * @return The timestamp when this thread was created
      */
-    @Nullable
+    @Nonnull
     OffsetDateTime getTimeCreated();
 
     /**

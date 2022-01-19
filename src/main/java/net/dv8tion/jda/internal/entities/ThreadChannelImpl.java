@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.managers.channel.concrete.ThreadChannelManager;
 import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.api.utils.TimeUtil;
 import net.dv8tion.jda.api.utils.cache.CacheView;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
@@ -210,11 +211,11 @@ public class ThreadChannelImpl extends AbstractGuildChannelImpl<ThreadChannelImp
         return autoArchiveDuration;
     }
 
-    @Nullable
+    @Nonnull
     @Override
     public OffsetDateTime getTimeCreated()
     {
-        return creationTimestamp == 0 ? null : Helpers.toOffset(creationTimestamp);
+        return creationTimestamp == 0 ? TimeUtil.getTimeCreated(getIdLong()) : Helpers.toOffset(creationTimestamp);
     }
 
     @Override
