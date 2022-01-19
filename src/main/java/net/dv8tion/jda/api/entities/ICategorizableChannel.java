@@ -46,15 +46,19 @@ public interface ICategorizableChannel extends GuildChannel, IPermissionContaine
     long getParentCategoryIdLong();
 
     /**
-     * Get the snowflake of the {@link Category} that contains this channel.
+     * Get the snowflake of the {@link net.dv8tion.jda.api.entities.Category Category} that contains this channel.
      *
-     * This will return {@code 0} if this channel doesn't have a parent category.
+     * This will return {@code null} if this channel doesn't have a parent category.
      *
-     * @return The Discord ID snowflake of the parent channel as a String.
+     * @return Possibly-null String representation of the Discord ID snowflake of the parent channel.
      */
+    @Nullable
     default String getParentCategoryId()
     {
-        return Long.toUnsignedString(getParentCategoryIdLong());
+        long parentID = getParentCategoryIdLong();
+        if (parentID == 0L)
+            return null;
+        return Long.toUnsignedString(parentID);
     }
 
     /**
