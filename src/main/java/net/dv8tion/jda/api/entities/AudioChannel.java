@@ -22,7 +22,26 @@ import net.dv8tion.jda.api.managers.channel.middleman.AudioChannelManager;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-//TODO-v5: Docs
+/**
+ * Represents a Guild Channel that is capable of handling audio.
+ * <br>This is a {@link GuildChannel GuildChannel} that contains additional methods present for audio channels
+ *
+ * @see VoiceChannel
+ * @see StageChannel
+ *
+ * @see   Guild#getVoiceChannelCache()
+ * @see   Guild#getVoiceChannels()
+ * @see   Guild#getVoiceChannelsByName(String, boolean)
+ * @see   Guild#getVoiceChannelById(long)
+ *
+ * @see   Guild#getStageChannelCache()
+ * @see   Guild#getStageChannels()
+ * @see   Guild#getStageChannelsByName(String, boolean)
+ * @see   Guild#getStageChannelById(long)
+ *
+ * @see net.dv8tion.jda.api.JDA#getVoiceChannelById(long)
+ * @see net.dv8tion.jda.api.JDA#getStageChannelById(long)
+ */
 public interface AudioChannel extends GuildChannel, IMemberContainer
 {
     //TODO-v5: Docs
