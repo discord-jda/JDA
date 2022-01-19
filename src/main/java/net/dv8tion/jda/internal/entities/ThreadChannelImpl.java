@@ -52,6 +52,7 @@ public class ThreadChannelImpl extends AbstractGuildChannelImpl<ThreadChannelImp
     private boolean invitable;
     private long parentChannelId;
     private long archiveTimestamp;
+    private long creationTimestamp;
     private long ownerId;
     private long latestMessageId;
     private int messageCount;
@@ -209,6 +210,13 @@ public class ThreadChannelImpl extends AbstractGuildChannelImpl<ThreadChannelImp
         return autoArchiveDuration;
     }
 
+    @Nullable
+    @Override
+    public OffsetDateTime getTimeCreated()
+    {
+        return creationTimestamp == 0 ? null : Helpers.toOffset(creationTimestamp);
+    }
+
     @Override
     public int getSlowmode()
     {
@@ -308,6 +316,12 @@ public class ThreadChannelImpl extends AbstractGuildChannelImpl<ThreadChannelImp
     public ThreadChannelImpl setArchiveTimestamp(long archiveTimestamp)
     {
         this.archiveTimestamp = archiveTimestamp;
+        return this;
+    }
+
+    public ThreadChannelImpl setCreationTimestamp(long creationTimestamp)
+    {
+        this.creationTimestamp = creationTimestamp;
         return this;
     }
 
