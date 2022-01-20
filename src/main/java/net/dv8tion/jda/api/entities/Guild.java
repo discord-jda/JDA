@@ -2977,6 +2977,9 @@ public interface Guild extends ISnowflake
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_GUILD_WELCOME_SCREEN Unknown Guild Welcome Screen}
      *     <br>The guild has no welcome screen</li>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS Missing Permissions}
+     *     <br>The guild's welcome screen is disabled
+     *     and the currently logged in account doesn't have the {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} permission</li>
      * </ul>
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.api.entities.GuildWelcomeScreen GuildWelcomeScreen}
