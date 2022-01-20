@@ -475,6 +475,8 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer
 
     /**
      * The timestamp when this thread was created.
+     * <br><b>This will only be valid for threads created after 2022-01-09.
+     * Otherwise, this will return the timestamp of creation based on the {@link #getIdLong() thread's id.}</b>
      *
      * @return The timestamp when this thread was created
      */
