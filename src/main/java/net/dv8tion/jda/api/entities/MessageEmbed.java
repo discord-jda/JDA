@@ -151,7 +151,7 @@ public class MessageEmbed implements SerializableData
     }
 
     /**
-     * The that was originally placed into chat that spawned this embed.
+     * The url that was originally placed into chat that spawned this embed.
      * <br><b>This will return the {@link #getTitle() title url} if the {@link #getType() type} of this embed is {@link EmbedType#RICH RICH}.</b>
      *
      * @return Possibly-null String containing the link that spawned this embed or the title url
