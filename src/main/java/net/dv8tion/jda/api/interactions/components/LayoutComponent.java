@@ -28,22 +28,36 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * Represents a top-level layout used for {@link ActionComponent ActionComponents} such as {@link Button Buttons}.
+ * Represents a top-level layout used for {@link ItemComponent ItemComponents} such as {@link Button Buttons}.
  *
  * <p>Components must always be contained within such a layout.
  *
  * @see ActionRow
  */
-public interface LayoutComponent extends SerializableData, Iterable<ActionComponent>, Component
+public interface LayoutComponent extends SerializableData, Iterable<ItemComponent>, Component
 {
     /**
      * List representation of this component layout.
-     * <br>This list is modifiable. Note that empty action rows are not supported.
+     * <br>This list is modifiable. Note that empty layouts are not supported.
      *
-     * @return {@link List} of components in this action row
+     * @return {@link List} of components in this layout
      */
     @Nonnull
-    List<ActionComponent> getComponents();
+    List<ItemComponent> getComponents();
+
+    /**
+     * Immutable filtered copy of {@link #getComponents()} elements which are {@link ActionComponent ActionComponents}.
+     *
+     * @return Immutable {@link List} copy of {@link ActionComponent ActionComponents} in this layout
+     */
+    @Nonnull
+    default List<ActionComponent> getActionComponents()
+    {
+        return getComponents().stream()
+                .filter(ActionComponent.class::isInstance)
+                .map(ActionComponent.class::cast)
+                .collect(Collectors.toList());
+    }
 
     /**
      * List of buttons in this component layout.
@@ -51,7 +65,14 @@ public interface LayoutComponent extends SerializableData, Iterable<ActionCompon
      * @return Immutable {@link List} of {@link Button Buttons}
      */
     @Nonnull
-    List<Button> getButtons();
+    default List<Button> getButtons()
+    {
+        return Collections.unmodifiableList(
+            getComponents().stream()
+                .filter(Button.class::isInstance)
+                .map(Button.class::cast)
+                    .collect(Collectors.toList()));
+    }
 
     /**
      * Whether all components in this layout are {@link ActionComponent#isDisabled() disabled}.
@@ -61,7 +82,7 @@ public interface LayoutComponent extends SerializableData, Iterable<ActionCompon
      */
     default boolean isDisabled()
     {
-        return getComponents().stream().allMatch(ActionComponent::isDisabled);
+        return getActionComponents().stream().allMatch(ActionComponent::isDisabled);
     }
 
     /**
@@ -72,7 +93,7 @@ public interface LayoutComponent extends SerializableData, Iterable<ActionCompon
      */
     default boolean isEnabled()
     {
-        return getComponents().stream().noneMatch(ActionComponent::isDisabled);
+        return getActionComponents().stream().noneMatch(ActionComponent::isDisabled);
     }
 
     /**
@@ -127,7 +148,7 @@ public interface LayoutComponent extends SerializableData, Iterable<ActionCompon
 
     /**
      * Check whether this is a valid layout configuration.
-     * <br>This checks that there is at least one component in this layout and it does not violate {@link ActionComponent#getMaxPerRow()}.
+     * <br>This checks that there is at least one component in this layout and it does not violate {@link ItemComponent#getMaxPerRow()}.
      *
      * @return True, if this layout is valid
      */
@@ -135,15 +156,15 @@ public interface LayoutComponent extends SerializableData, Iterable<ActionCompon
     {
         if (isEmpty())
             return false;
-        List<ActionComponent> components = getComponents();
-        Map<Component.Type, List<ActionComponent>> groups = components.stream().collect(Collectors.groupingBy(Component::getType));
+        List<ItemComponent> components = getComponents();
+        Map<Component.Type, List<ItemComponent>> groups = components.stream().collect(Collectors.groupingBy(Component::getType));
         if (groups.size() > 1) // TODO: You can't mix components right now but maybe in the future, we need to check back on this when that happens
             return false;
 
-        for (Map.Entry<Component.Type, List<ActionComponent>> entry : groups.entrySet())
+        for (Map.Entry<Component.Type, List<ItemComponent>> entry : groups.entrySet())
         {
             Component.Type type = entry.getKey();
-            List<ActionComponent> list = entry.getValue();
+            List<ItemComponent> list = entry.getValue();
             if (list.size() > type.getMaxPerRow())
                 return false;
         }
@@ -163,17 +184,20 @@ public interface LayoutComponent extends SerializableData, Iterable<ActionCompon
      * @throws IllegalArgumentException
      *         If the provided id is null
      *
-     * @return The old {@link ActionComponent} that was replaced or removed
+     * @return The old {@link ItemComponent} that was replaced or removed
      */
     @Nullable
-    default ActionComponent updateComponent(@Nonnull String id, @Nullable ActionComponent newComponent)
+    default ItemComponent updateComponent(@Nonnull String id, @Nullable ItemComponent newComponent)
     {
         Checks.notNull(id, "ID");
-        List<ActionComponent> list = getComponents();
-        for (ListIterator<ActionComponent> it = list.listIterator(); it.hasNext();)
+        List<ItemComponent> list = getComponents();
+        for (ListIterator<ItemComponent> it = list.listIterator(); it.hasNext();)
         {
-            ActionComponent component = it.next();
-            if (id.equals(component.getId()) || (component instanceof Button && id.equals(((Button) component).getUrl())))
+            ItemComponent component = it.next();
+            if (!(component instanceof ActionComponent))
+                continue;
+            ActionComponent action = (ActionComponent) component;
+            if (id.equals(action.getId()) || (action instanceof Button && id.equals(((Button) action).getUrl())))
             {
                 if (newComponent == null)
                     it.remove();
@@ -206,14 +230,96 @@ public interface LayoutComponent extends SerializableData, Iterable<ActionCompon
      *
      * @return True, if any of the layouts was modified
      */
-    static boolean updateComponent(@Nonnull List<? extends LayoutComponent> layouts, @Nonnull String id, @Nullable ActionComponent newComponent)
+    static boolean updateComponent(@Nonnull List<? extends LayoutComponent> layouts, @Nonnull String id, @Nullable ItemComponent newComponent)
     {
         Checks.notNull(layouts, "LayoutComponent");
         Checks.notEmpty(id, "ID or URL");
         for (Iterator<? extends LayoutComponent> it = layouts.iterator(); it.hasNext();)
         {
             LayoutComponent components = it.next();
-            ActionComponent oldComponent = components.updateComponent(id, newComponent);
+            ItemComponent oldComponent = components.updateComponent(id, newComponent);
+            if (oldComponent != null)
+            {
+                if (components.getComponents().isEmpty())
+                    it.remove();
+                else if (!components.isValid() && newComponent != null)
+                    throw new IllegalArgumentException("Cannot replace " + oldComponent.getType() + " with " + newComponent.getType() + " due to a violation of the layout maximum. The resulting LayoutComponent is invalid!");
+                return !Objects.equals(oldComponent, newComponent);
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Find and replace a component in this layout.
+     * <br>This will locate and replace the existing component by checking for {@link ItemComponent#equals(Object) equality}. If you provide null it will be removed instead.
+     *
+     * <p><b>Example</b>
+     * <pre>{@code
+     * public void disableButton(ActionRow row, Button button) {
+     *     row.updateComponent(button, button.asDisabled());
+     * }
+     * }</pre>
+     *
+     * @param  component
+     *         The component that should be replaced
+     * @param  newComponent
+     *         The new component or null to remove it
+     *
+     * @throws IllegalArgumentException
+     *         If the provided component is null
+     *
+     * @return The old {@link ItemComponent} that was replaced or removed
+     */
+    @Nullable
+    default ItemComponent updateComponent(@Nonnull ItemComponent component, @Nullable ItemComponent newComponent)
+    {
+        Checks.notNull(component, "Component to replace");
+        List<ItemComponent> list = getComponents();
+        for (ListIterator<ItemComponent> it = list.listIterator(); it.hasNext();)
+        {
+            ItemComponent item = it.next();
+            if (component.equals(item))
+            {
+                if (newComponent == null)
+                    it.remove();
+                else
+                    it.set(newComponent);
+                return component;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Find and replace a component in this list of layouts.
+     * <br>This will locate and replace the existing component by checking for {@link ItemComponent#equals(Object) equality}. If you provide null it will be removed instead.
+     *
+     * <p>If one of the layouts is empty after removing the component, it will be removed from the list.
+     * This is an inplace operation and modifies the provided list directly.
+     *
+     * @param  layouts
+     *         The layouts to modify
+     * @param  component
+     *         The component that should be replaced
+     * @param  newComponent
+     *         The new component or null to remove it
+     *
+     * @throws UnsupportedOperationException
+     *         If the list cannot be modified
+     * @throws IllegalArgumentException
+     *         If the provided component or list is null or the replace operation results in an {@link #isValid() invalid} layout
+     *
+     * @return True, if any of the layouts was modified
+     */
+    static boolean updateComponent(@Nonnull List<? extends LayoutComponent> layouts, @Nonnull ItemComponent component, @Nullable ItemComponent newComponent)
+    {
+        Checks.notNull(layouts, "LayoutComponent");
+        Checks.notNull(component, "Component to replace");
+        for (Iterator<? extends LayoutComponent> it = layouts.iterator(); it.hasNext();)
+        {
+            LayoutComponent components = it.next();
+            ItemComponent oldComponent = components.updateComponent(component, newComponent);
             if (oldComponent != null)
             {
                 if (components.getComponents().isEmpty())

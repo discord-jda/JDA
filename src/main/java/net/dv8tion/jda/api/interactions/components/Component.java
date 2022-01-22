@@ -47,7 +47,7 @@ public interface Component extends SerializableData
     enum Type
     {
         UNKNOWN(-1, 0),
-        /** A row of interactive components on a message */
+        /** A row of components */
         ACTION_ROW(1, 0),
         /** A button */
         BUTTON(2, 5),

@@ -223,6 +223,8 @@ public class Checks
     public static void checkDuplicateIds(Stream<? extends LayoutComponent> layouts)
     {
         Stream<String> stream = layouts.flatMap(row -> row.getComponents().stream())
+                .filter(ActionComponent.class::isInstance)
+                .map(ActionComponent.class::cast)
                 .map(ActionComponent::getId)
                 .filter(Objects::nonNull);
 

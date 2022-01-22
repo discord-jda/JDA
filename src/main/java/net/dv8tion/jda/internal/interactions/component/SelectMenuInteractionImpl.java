@@ -41,10 +41,12 @@ public class SelectMenuInteractionImpl extends ComponentInteractionImpl implemen
             .collect(Collectors.toList()));
         if (message != null)
         {
-            menu = (SelectMenu) message.getActionRows()
+            menu = message.getActionRows()
                     .stream()
                     .flatMap(row -> row.getComponents().stream())
-                    .filter(c -> c.getType() == Component.Type.SELECT_MENU && customId.equals(c.getId()))
+                    .filter(SelectMenu.class::isInstance)
+                    .map(SelectMenu.class::cast)
+                    .filter(c -> customId.equals(c.getId()))
                     .findFirst()
                     .orElse(null);
         }

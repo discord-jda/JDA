@@ -23,7 +23,7 @@ import javax.annotation.Nullable;
 /**
  * Component which supports interactions via {@link ComponentInteraction}.
  */
-public interface ActionComponent extends Component
+public interface ActionComponent extends ItemComponent
 {
     /**
      * The component ID or null.
@@ -87,14 +87,4 @@ public interface ActionComponent extends Component
     @Nonnull
     @CheckReturnValue
     ActionComponent withDisabled(boolean disabled);
-
-    /**
-     * How many of these components can be added to one {@link ActionRow}.
-     *
-     * @return The maximum amount an action row can contain
-     */
-    default int getMaxPerRow()
-    {
-        return getType().getMaxPerRow();
-    }
 }

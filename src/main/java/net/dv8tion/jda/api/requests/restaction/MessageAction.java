@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.interactions.components.ActionComponent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
+import net.dv8tion.jda.api.interactions.components.ItemComponent;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.AllowedMentions;
 import net.dv8tion.jda.api.utils.AttachmentOption;
@@ -839,7 +840,7 @@ public interface MessageAction extends RestAction<Message>, Appendable, AllowedM
     MessageAction setActionRows(@Nonnull ActionRow... rows);
 
     /**
-     * Create one row of up to 5 interactive message {@link ActionComponent action components}.
+     * Create one row of up to 5 message {@link ItemComponent components}.
      * <br>This is identical to {@code setActionRows(ActionRow.of(components))}
      *
      * @param  components
@@ -855,13 +856,13 @@ public interface MessageAction extends RestAction<Message>, Appendable, AllowedM
      */
     @Nonnull
     @CheckReturnValue
-    default MessageAction setActionRow(@Nonnull Collection<? extends ActionComponent> components)
+    default MessageAction setActionRow(@Nonnull Collection<? extends ItemComponent> components)
     {
         return setActionRows(ActionRow.of(components));
     }
 
     /**
-     * Create one row of up to 5 interactive message {@link ActionComponent action components}.
+     * Create one row of up to 5 message {@link ItemComponent components}.
      * <br>This is identical to {@code setActionRows(ActionRow.of(components))}
      *
      * @param  components
@@ -873,11 +874,11 @@ public interface MessageAction extends RestAction<Message>, Appendable, AllowedM
      *
      * @return Updated MessageAction for chaining convenience
      *
-     * @see    ActionRow#of(ActionComponent...)
+     * @see    ActionRow#of(ItemComponent...)
      */
     @Nonnull
     @CheckReturnValue
-    default MessageAction setActionRow(@Nonnull ActionComponent... components)
+    default MessageAction setActionRow(@Nonnull ItemComponent... components)
     {
         return setActionRows(ActionRow.of(components));
     }
