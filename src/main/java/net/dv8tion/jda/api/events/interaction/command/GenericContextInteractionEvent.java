@@ -17,42 +17,43 @@
 package net.dv8tion.jda.api.events.interaction.command;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback;
-import net.dv8tion.jda.api.interactions.commands.context.UserContextInteraction;
+import net.dv8tion.jda.api.interactions.commands.context.ContextInteraction;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 /**
- * Indicates that a user context command was used.
+ * Indicates that a {@link ContextInteraction} was used.
  *
  * <h2>Requirements</h2>
  * To receive these events, you must unset the <b>Interactions Endpoint URL</b> in your application dashboard.
  * You can simply remove the URL for this endpoint in your settings at the <a href="https://discord.com/developers/applications" target="_blank">Discord Developers Portal</a>.
- *
- * @see UserContextInteraction
- * @see IReplyCallback
  */
-public class UserContextInteractionEvent extends GenericContextInteractionEvent<User> implements UserContextInteraction
+public class GenericContextInteractionEvent<T> extends GenericCommandInteractionEvent implements ContextInteraction<T>
 {
-    public UserContextInteractionEvent(@Nonnull JDA api, long responseNumber, @Nonnull UserContextInteraction interaction)
+    public GenericContextInteractionEvent(@Nonnull JDA api, long responseNumber, @Nonnull ContextInteraction<T> interaction)
     {
         super(api, responseNumber, interaction);
     }
 
     @Nonnull
     @Override
-    public UserContextInteraction getInteraction()
+    @SuppressWarnings("unchecked")
+    public ContextInteraction<T> getInteraction()
     {
-        return (UserContextInteraction) super.getInteraction();
+        return (ContextInteraction<T>) super.getInteraction();
     }
 
-    @Nullable
+    @Nonnull
     @Override
-    public Member getTargetMember()
+    public ContextTarget getTargetType()
     {
-        return getInteraction().getTargetMember();
+        return getInteraction().getTargetType();
+    }
+
+    @Nonnull
+    @Override
+    public T getTarget()
+    {
+        return getInteraction().getTarget();
     }
 }

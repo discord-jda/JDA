@@ -298,6 +298,7 @@ public abstract class ListenerAdapter implements EventListener
     public void onGenericAutoCompleteInteraction(@Nonnull GenericAutoCompleteInteractionEvent event) {}
     public void onGenericComponentInteractionCreate(@Nonnull GenericComponentInteractionCreateEvent event) {}
     public void onGenericCommandInteraction(@Nonnull GenericCommandInteractionEvent event) {}
+    public void onGenericContextInteraction(@Nonnull GenericContextInteractionEvent<?> event) {}
     public void onGenericMessage(@Nonnull GenericMessageEvent event) {}
     public void onGenericMessageReaction(@Nonnull GenericMessageReactionEvent event) {}
     public void onGenericUser(@Nonnull GenericUserEvent event) {}
