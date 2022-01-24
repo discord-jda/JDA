@@ -4,12 +4,12 @@ about: Request a new feature
 ---
 
 <!--
-  For questions join the official JDA discord server: https://discord.gg/0hMr4ce0tIl3SLv5
+  For questions, join the official JDA discord server: https://discord.gg/0hMr4ce0tIl3SLv5
 -->
 
 
 
-[download]: https://bintray.com/dv8fromtheworld/maven/JDA/_latestVersion
+[download]: https://jitpack.io/#DV8FromtheWorld/JDA/
 [guild]: https://discord.gg/0hMr4ce0tIk3pSjp
 [stack overflow]: https://stackoverflow.com/questions/tagged/java
 
