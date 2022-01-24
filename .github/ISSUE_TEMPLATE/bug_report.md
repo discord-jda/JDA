@@ -4,12 +4,12 @@ about: Found bug that needs to be fixed?
 ---
 
 <!--
-  For questions join the official JDA discord server: https://discord.gg/0hMr4ce0tIl3SLv5
+  For questions, join the official JDA discord server: https://discord.gg/0hMr4ce0tIl3SLv5
 -->
 
 
 
-[download]: https://bintray.com/dv8fromtheworld/maven/JDA/_latestVersion
+[download]: https://jitpack.io/#DV8FromtheWorld/JDA/
 [guild]: https://discord.gg/0hMr4ce0tIk3pSjp
 [stack overflow]: https://stackoverflow.com/questions/tagged/java
 
@@ -46,7 +46,7 @@ Tell us what you expect to happen instead.
 <!--
 If you have a reproducible behavior, please provide some details for us.
 
-Otherwise just put N/A
+Otherwise, just put N/A
 -->
 
 ### Code for JDABuilder or DefaultShardManagerBuilder Used
@@ -55,7 +55,7 @@ Otherwise just put N/A
 Please provide the code you used to start your bot.
 This greatly impacts behavior due to the way cache and events are configured.
 
-Otherwise just put N/A
+Otherwise, just put N/A
 -->
 
 ### Exception or Error
@@ -63,5 +63,5 @@ Otherwise just put N/A
 <!--
 If applicable, add an exception with the stacktrace.
 
-Otherwise just put N/A
+Otherwise, just put N/A
 -->
