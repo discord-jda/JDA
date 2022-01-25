@@ -41,7 +41,7 @@ import javax.annotation.Nullable;
 public interface StageInstanceManager extends Manager<StageInstanceManager>
 {
     /** Used to reset the topic field */
-    long TOPIC = 1 << 0;
+    long TOPIC         = 1;
     /** Used to reset the privacy level field */
     long PRIVACY_LEVEL = 1 << 1;
 

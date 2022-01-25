@@ -32,10 +32,10 @@ import javax.annotation.Nonnull;
  *        .setTopic("logs for github commits")
  *        .setNSFW(false)
  *        .queue();
- * manager.reset(ChannelManager.TOPIC | ChannelManager.NAME)
+ * manager.reset(ChannelManager.PARENT | ChannelManager.NAME)
  *        .setName("nsfw-commits")
- *        .setTopic(null)
- *        .setNSFW(true)
+ *        .queue();
+ * manager.setTopic("Java is to Javascript as wall is to wallet")
  *        .queue();
  * }</pre>
  *
