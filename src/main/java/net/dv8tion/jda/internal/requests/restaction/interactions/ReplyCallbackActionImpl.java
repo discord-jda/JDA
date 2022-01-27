@@ -91,7 +91,9 @@ public class ReplyCallbackActionImpl extends DeferrableCallbackActionImpl implem
 
     private boolean isEmpty()
     {
-        return Helpers.isEmpty(content) && embeds.isEmpty() && files.isEmpty() && components.isEmpty();
+        //Intentionally does not check components.isEmpty() here
+        // You cannot send a message with only components at this time.
+        return Helpers.isEmpty(content) && embeds.isEmpty() && files.isEmpty();
     }
 
     @Nonnull
