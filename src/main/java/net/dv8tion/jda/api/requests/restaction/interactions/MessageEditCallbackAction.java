@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.requests.restaction.interactions;
 
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.components.ActionComponent;
@@ -31,6 +32,7 @@ import javax.annotation.Nullable;
 import java.io.*;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 /**
  * A {@link InteractionCallbackAction} which can be used to edit the message for an interaction.
@@ -279,97 +281,117 @@ public interface MessageEditCallbackAction extends InteractionCallbackAction<Int
     @CheckReturnValue
     MessageEditCallbackAction addFile(@Nonnull InputStream data, @Nonnull String name, @Nonnull AttachmentOption... options);
 
-///// TODO: This is waiting for https://github.com/discord/discord-api-docs/discussions/3335
-//
-//    /**
-//     * Removes all attachments that are currently attached to the existing message except for the ones provided.
-//     * <br>For example {@code retainFilesById(Arrays.asList("123"))} would remove all attachments except for the one with the id 123.
-//     *
-//     * <p>To remove all attachments from the message you can pass an empty list.
-//     *
-//     * @param  ids
-//     *         The ids for the attachments which should be retained on the message
-//     *
-//     * @throws IllegalArgumentException
-//     *         If any of the ids is null or not a valid snowflake
-//     *
-//     * @return The same update action, for chaining convenience
-//     */
-//    @Nonnull
-//    @CheckReturnValue
-//    MessageEditCallbackAction retainFilesById(@Nonnull Collection<String> ids);
-//
-//    /**
-//     * Removes all attachments that are currently attached to the existing message except for the ones provided.
-//     * <br>For example {@code retainFilesById(Arrays.asList("123"))} would remove all attachments except for the one with the id 123.
-//     *
-//     * <p>To remove all attachments from the message you can pass an empty list.
-//     *
-//     * @param  ids
-//     *         The ids for the attachments which should be retained on the message
-//     *
-//     * @throws IllegalArgumentException
-//     *         If any of the ids is null or not a valid snowflake
-//     *
-//     * @return The same update action, for chaining convenience
-//     */
-//    @Nonnull
-//    @CheckReturnValue
-//    default MessageEditCallbackAction retainFilesById(@Nonnull String... ids)
-//    {
-//        Checks.notNull(ids, "IDs");
-//        return retainFilesById(Arrays.asList(ids));
-//    }
-//
-//    /**
-//     * Removes all attachments that are currently attached to the existing message except for the ones provided.
-//     * <br>For example {@code retainFilesById(Arrays.asList("123"))} would remove all attachments except for the one with the id 123.
-//     *
-//     * <p>To remove all attachments from the message you can pass an empty list.
-//     *
-//     * @param  ids
-//     *         The ids for the attachments which should be retained on the message
-//     *
-//     * @throws IllegalArgumentException
-//     *         If any of the ids is null or not a valid snowflake
-//     *
-//     * @return The same update action, for chaining convenience
-//     */
-//    @Nonnull
-//    @CheckReturnValue
-//    default MessageEditCallbackAction retainFilesById(long... ids)
-//    {
-//        Checks.notNull(ids, "IDs");
-//        return retainFilesById(Arrays
-//                .stream(ids)
-//                .mapToObj(Long::toUnsignedString)
-//                .collect(Collectors.toList())
-//        );
-//    }
-//
-//    /**
-//     * Removes all attachments that are currently attached to the existing message except for the ones provided.
-//     * <br>For example {@code retainFiles(message.getAttachments().subList(1, message.getAttachments().size()))} would only remove the first attachment from the message.
-//     *
-//     * <p>To remove all attachments from the message you can pass an empty list.
-//     *
-//     * @param  attachments
-//     *         The attachments which should be retained on the message
-//     *
-//     * @throws IllegalArgumentException
-//     *         If any of the ids is null or not a valid snowflake
-//     *
-//     * @return The same update action, for chaining convenience
-//     */
-//    @Nonnull
-//    @CheckReturnValue
-//    default MessageEditCallbackAction retainFiles(@Nonnull Collection<? extends Message.Attachment> attachments)
-//    {
-//        Checks.noneNull(attachments, "Attachments");
-//        return retainFilesById(attachments
-//                .stream()
-//                .map(Message.Attachment::getId)
-//                .collect(Collectors.toList())
-//        );
-//    }
+    /**
+     * Removes all attachments that are currently attached to the existing message except for the ones provided.
+     * <br>For example {@code retainFilesById(Arrays.asList("123"))} would remove all attachments except for the one with the id 123.
+     *
+     * <p>To remove all attachments from the message you can pass an empty list.
+     *
+     * @param  ids
+     *         The ids for the attachments which should be retained on the message
+     *
+     * @throws IllegalArgumentException
+     *         If any of the ids is null or not a valid snowflake
+     *
+     * @return The same update action, for chaining convenience
+     */
+    @Nonnull
+    @CheckReturnValue
+    MessageEditCallbackAction retainFilesById(@Nonnull Collection<String> ids);
+
+    /**
+     * Removes all attachments that are currently attached to the existing message except for the ones provided.
+     * <br>For example {@code retainFilesById(Arrays.asList("123"))} would remove all attachments except for the one with the id 123.
+     *
+     * <p>To remove all attachments from the message you can pass an empty list.
+     *
+     * @param  ids
+     *         The ids for the attachments which should be retained on the message
+     *
+     * @throws IllegalArgumentException
+     *         If any of the ids is null or not a valid snowflake
+     *
+     * @return The same update action, for chaining convenience
+     */
+    @Nonnull
+    @CheckReturnValue
+    default MessageEditCallbackAction retainFilesById(@Nonnull String... ids)
+    {
+        Checks.notNull(ids, "IDs");
+        return retainFilesById(Arrays.asList(ids));
+    }
+
+    /**
+     * Removes all attachments that are currently attached to the existing message except for the ones provided.
+     * <br>For example {@code retainFilesById(Arrays.asList("123"))} would remove all attachments except for the one with the id 123.
+     *
+     * <p>To remove all attachments from the message you can pass an empty list.
+     *
+     * @param  ids
+     *         The ids for the attachments which should be retained on the message
+     *
+     * @throws IllegalArgumentException
+     *         If any of the ids is null or not a valid snowflake
+     *
+     * @return The same update action, for chaining convenience
+     */
+    @Nonnull
+    @CheckReturnValue
+    default MessageEditCallbackAction retainFilesById(long... ids)
+    {
+        Checks.notNull(ids, "IDs");
+        return retainFilesById(Arrays
+                .stream(ids)
+                .mapToObj(Long::toUnsignedString)
+                .collect(Collectors.toList())
+        );
+    }
+
+    /**
+     * Removes all attachments that are currently attached to the existing message except for the ones provided.
+     * <br>For example {@code retainFiles(message.getAttachments().subList(1, message.getAttachments().size()))} would only remove the first attachment from the message.
+     *
+     * <p>To remove all attachments from the message you can pass an empty list.
+     *
+     * @param  attachments
+     *         The attachments which should be retained on the message
+     *
+     * @throws IllegalArgumentException
+     *         If any of the ids is null or not a valid snowflake
+     *
+     * @return The same update action, for chaining convenience
+     */
+    @Nonnull
+    @CheckReturnValue
+    default MessageEditCallbackAction retainFiles(@Nonnull Collection<? extends Message.Attachment> attachments)
+    {
+        Checks.noneNull(attachments, "Attachments");
+        return retainFilesById(attachments
+                .stream()
+                .map(Message.Attachment::getId)
+                .collect(Collectors.toList())
+        );
+    }
+
+    /**
+     * Removes all attachments that are currently attached to the existing message except for the ones provided.
+     * <br>For example {@code retainFiles(message.getAttachments().subList(1, message.getAttachments().size()))} would only remove the first attachment from the message.
+     *
+     * <p>To remove all attachments from the message you can pass an empty list.
+     *
+     * @param  attachments
+     *         The attachments which should be retained on the message
+     *
+     * @throws IllegalArgumentException
+     *         If any of the ids is null or not a valid snowflake
+     *
+     * @return The same update action, for chaining convenience
+     */
+    @Nonnull
+    @CheckReturnValue
+    default MessageEditCallbackAction retainFiles(@Nonnull Message.Attachment... attachments)
+    {
+        Checks.noneNull(attachments, "Attachments");
+        return retainFiles(Arrays.asList(attachments));
+    }
 }
