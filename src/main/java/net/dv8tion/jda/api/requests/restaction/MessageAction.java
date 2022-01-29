@@ -20,8 +20,9 @@ import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.interactions.components.ActionComponent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
-import net.dv8tion.jda.api.interactions.components.Component;
+import net.dv8tion.jda.api.interactions.components.ItemComponent;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.AllowedMentions;
 import net.dv8tion.jda.api.utils.AttachmentOption;
@@ -809,7 +810,8 @@ public interface MessageAction extends RestAction<Message>, Appendable, AllowedM
      *         The new action rows
      *
      * @throws IllegalArgumentException
-     *         If null is provided or more than 5 actions rows are provided
+     *         If null is provided, more than 5 action rows are provided,
+     *         or any custom {@link ActionComponent#getId() id} is duplicated
      *
      * @return Updated MessageAction for chaining convenience
      */
@@ -828,7 +830,8 @@ public interface MessageAction extends RestAction<Message>, Appendable, AllowedM
      *         The new action rows
      *
      * @throws IllegalArgumentException
-     *         If null is provided or more than 5 actions rows are provided
+     *         If null is provided, more than 5 action rows are provided,
+     *         or any custom {@link ActionComponent#getId() id} is duplicated
      *
      * @return Updated MessageAction for chaining convenience
      */
@@ -837,14 +840,15 @@ public interface MessageAction extends RestAction<Message>, Appendable, AllowedM
     MessageAction setActionRows(@Nonnull ActionRow... rows);
 
     /**
-     * Create one row of up to 5 interactive message {@link Component components}.
+     * Create one row of up to 5 message {@link ItemComponent components}.
      * <br>This is identical to {@code setActionRows(ActionRow.of(components))}
      *
      * @param  components
      *         The components for this action row
      *
      * @throws IllegalArgumentException
-     *         If anything is null, empty, or an invalid number of components are provided
+     *         If null is provided, an invalid number of components is provided,
+     *         or any custom {@link ActionComponent#getId() id} is duplicated
      *
      * @return Updated MessageAction for chaining convenience
      *
@@ -852,28 +856,29 @@ public interface MessageAction extends RestAction<Message>, Appendable, AllowedM
      */
     @Nonnull
     @CheckReturnValue
-    default MessageAction setActionRow(@Nonnull Collection<? extends Component> components)
+    default MessageAction setActionRow(@Nonnull Collection<? extends ItemComponent> components)
     {
         return setActionRows(ActionRow.of(components));
     }
 
     /**
-     * Create one row of up to 5 interactive message {@link Component components}.
+     * Create one row of up to 5 message {@link ItemComponent components}.
      * <br>This is identical to {@code setActionRows(ActionRow.of(components))}
      *
      * @param  components
      *         The components for this action row
      *
      * @throws IllegalArgumentException
-     *         If anything is null, empty, or an invalid number of components are provided
+     *         If null is provided, an invalid number of components is provided,
+     *         or any custom {@link ActionComponent#getId() id} is duplicated
      *
      * @return Updated MessageAction for chaining convenience
      *
-     * @see    ActionRow#of(Component...)
+     * @see    ActionRow#of(ItemComponent...)
      */
     @Nonnull
     @CheckReturnValue
-    default MessageAction setActionRow(@Nonnull Component... components)
+    default MessageAction setActionRow(@Nonnull ItemComponent... components)
     {
         return setActionRows(ActionRow.of(components));
     }

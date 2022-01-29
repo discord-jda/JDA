@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -33,7 +34,7 @@ public class CommandDataTest
     @Test
     public void testNormal()
     {
-        CommandData command = new CommandData("ban", "Ban a user from this server")
+        CommandData command = new CommandDataImpl("ban", "Ban a user from this server")
                 .setDefaultEnabled(false)
                 .addOption(OptionType.USER, "user", "The user to ban", true) // required before non-required
                 .addOption(OptionType.STRING, "reason", "The ban reason") // test that default is false
@@ -65,7 +66,7 @@ public class CommandDataTest
     @Test
     public void testSubcommand()
     {
-        CommandData command = new CommandData("mod", "Moderation commands")
+        CommandDataImpl command = new CommandDataImpl("mod", "Moderation commands")
                 .setDefaultEnabled(true)
                 .addSubcommands(new SubcommandData("ban", "Ban a user from this server")
                     .addOption(OptionType.USER, "user", "The user to ban", true) // required before non-required
@@ -102,7 +103,7 @@ public class CommandDataTest
     @Test
     public void testSubcommandGroup()
     {
-        CommandData command = new CommandData("mod", "Moderation commands")
+        CommandDataImpl command = new CommandDataImpl("mod", "Moderation commands")
                 .addSubcommandGroups(new SubcommandGroupData("ban", "Ban or unban a user from this server")
                     .addSubcommands(new SubcommandData("add", "Ban a user from this server")
                         .addOption(OptionType.USER, "user", "The user to ban", true) // required before non-required
@@ -142,7 +143,7 @@ public class CommandDataTest
     @Test
     public void testRequiredThrows()
     {
-        CommandData command = new CommandData("ban", "Simple ban command");
+        CommandDataImpl command = new CommandDataImpl("ban", "Simple ban command");
         command.addOption(OptionType.STRING, "opt", "desc");
 
         Assertions.assertThrows(IllegalArgumentException.class, () -> command.addOption(OptionType.STRING, "other", "desc", true));
@@ -155,9 +156,9 @@ public class CommandDataTest
     @Test
     public void testNameChecks()
     {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> new CommandData("invalid name", "Valid description"));
-        Assertions.assertThrows(IllegalArgumentException.class, () -> new CommandData("invalidName", "Valid description"));
-        Assertions.assertThrows(IllegalArgumentException.class, () -> new CommandData("valid_name", ""));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> new CommandDataImpl("invalid name", "Valid description"));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> new CommandDataImpl("invalidName", "Valid description"));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> new CommandDataImpl("valid_name", ""));
 
         Assertions.assertThrows(IllegalArgumentException.class, () -> new SubcommandData("invalid name", "Valid description"));
         Assertions.assertThrows(IllegalArgumentException.class, () -> new SubcommandData("invalidName", "Valid description"));

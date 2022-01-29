@@ -21,8 +21,9 @@ import net.dv8tion.jda.api.exceptions.HttpException;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.interactions.InteractionType;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
-import net.dv8tion.jda.api.interactions.components.Button;
-import net.dv8tion.jda.api.interactions.components.ComponentLayout;
+import net.dv8tion.jda.api.interactions.components.LayoutComponent;
+import net.dv8tion.jda.api.interactions.components.buttons.Button;
+import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
@@ -1108,11 +1109,11 @@ public interface Message extends ISnowflake, Formattable
     }
 
     /**
-     * Edits this Message's content to the provided {@link net.dv8tion.jda.api.interactions.components.ComponentLayout ComponentLayouts}.
+     * Edits this Message's content to the provided {@link LayoutComponent LayoutComponents}.
      * <br><b>Messages can only be edited by the account that sent them!</b>.
      * <br>This will replace all the current {@link net.dv8tion.jda.api.interactions.components.Component Components},
-     * such as {@link net.dv8tion.jda.api.interactions.components.Button Buttons} or {@link net.dv8tion.jda.api.interactions.components.selections.SelectionMenu SelectionMenus} on this message.
-     * The provided parameters are {@link ComponentLayout ComponentLayout} such as {@link ActionRow} which contain a list of components to arrange in the respective layout.
+     * such as {@link Button Buttons} or {@link SelectMenu SelectMenus} on this message.
+     * The provided parameters are {@link LayoutComponent LayoutComponent} such as {@link ActionRow} which contain a list of components to arrange in the respective layout.
      *
      * <p>This message instance will not be updated by this operation, please use the response message instead.
      *
@@ -1144,7 +1145,7 @@ public interface Message extends ISnowflake, Formattable
      * }</pre>
      *
      * @param  components
-     *         Up to 5 new {@link net.dv8tion.jda.api.interactions.components.ComponentLayout ComponentLayouts} for the edited message, such as {@link ActionRow}
+     *         Up to 5 new {@link LayoutComponent LayoutComponents} for the edited message, such as {@link ActionRow}
      *
      * @throws java.lang.UnsupportedOperationException
      *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
@@ -1159,14 +1160,14 @@ public interface Message extends ISnowflake, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    MessageAction editMessageComponents(@Nonnull Collection<? extends ComponentLayout> components);
+    MessageAction editMessageComponents(@Nonnull Collection<? extends LayoutComponent> components);
 
     /**
-     * Edits this Message's content to the provided {@link net.dv8tion.jda.api.interactions.components.ComponentLayout ComponentLayouts}.
+     * Edits this Message's content to the provided {@link LayoutComponent LayoutComponents}.
      * <br><b>Messages can only be edited by the account that sent them!</b>.
      * <br>This will replace all the current {@link net.dv8tion.jda.api.interactions.components.Component Components},
-     * such as {@link net.dv8tion.jda.api.interactions.components.Button Buttons} or {@link net.dv8tion.jda.api.interactions.components.selections.SelectionMenu SelectionMenus} on this message.
-     * The provided parameters are {@link ComponentLayout ComponentLayout} such as {@link ActionRow} which contain a list of components to arrange in the respective layout.
+     * such as {@link Button Buttons} or {@link SelectMenu SelectMenus} on this message.
+     * The provided parameters are {@link LayoutComponent LayoutComponent} such as {@link ActionRow} which contain a list of components to arrange in the respective layout.
      *
      * <p>This message instance will not be updated by this operation, please use the response message instead.
      *
@@ -1197,7 +1198,7 @@ public interface Message extends ISnowflake, Formattable
      * }</pre>
      *
      * @param  components
-     *         Up to 5 new {@link net.dv8tion.jda.api.interactions.components.ComponentLayout ComponentLayouts} for the edited message, such as {@link ActionRow}
+     *         Up to 5 new {@link LayoutComponent LayoutComponents} for the edited message, such as {@link ActionRow}
      *
      * @throws java.lang.UnsupportedOperationException
      *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
@@ -1212,7 +1213,7 @@ public interface Message extends ISnowflake, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default MessageAction editMessageComponents(@Nonnull ComponentLayout... components)
+    default MessageAction editMessageComponents(@Nonnull LayoutComponent... components)
     {
         Checks.noneNull(components, "Components");
         return editMessageComponents(Arrays.asList(components));

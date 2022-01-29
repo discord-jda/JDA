@@ -1319,9 +1319,6 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     protected void setupHandlers()
     {
         final SocketHandler.NOPHandler nopHandler =   new SocketHandler.NOPHandler(api);
-        handlers.put("APPLICATION_COMMAND_UPDATE",    new ApplicationCommandUpdateHandler(api));
-        handlers.put("APPLICATION_COMMAND_DELETE",    new ApplicationCommandDeleteHandler(api));
-        handlers.put("APPLICATION_COMMAND_CREATE",    new ApplicationCommandCreateHandler(api));
         handlers.put("CHANNEL_CREATE",                new ChannelCreateHandler(api));
         handlers.put("CHANNEL_DELETE",                new ChannelDeleteHandler(api));
         handlers.put("CHANNEL_UPDATE",                new ChannelUpdateHandler(api));

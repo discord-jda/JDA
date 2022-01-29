@@ -64,10 +64,12 @@ public class StageInstanceManagerImpl extends ManagerBase<StageInstanceManager> 
 
     @Nonnull
     @Override
+    @SuppressWarnings("deprecation")
     public StageInstanceManager setPrivacyLevel(@Nonnull StageInstance.PrivacyLevel level)
     {
         Checks.notNull(level, "PrivacyLevel");
         Checks.check(level != StageInstance.PrivacyLevel.UNKNOWN, "PrivacyLevel must not be UNKNOWN!");
+        Checks.check(level != StageInstance.PrivacyLevel.PUBLIC, "Cannot create PUBLIC stage instances anymore.");
         this.privacyLevel = level;
         set |= PRIVACY_LEVEL;
         return this;

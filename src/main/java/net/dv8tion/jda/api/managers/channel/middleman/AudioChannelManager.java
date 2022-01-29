@@ -23,6 +23,7 @@ import net.dv8tion.jda.api.managers.channel.ChannelManager;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 
+//todo-v5: Docs
 public interface AudioChannelManager<T extends AudioChannel, M extends AudioChannelManager<T, M>> extends ChannelManager<T, M>
 {
     /**

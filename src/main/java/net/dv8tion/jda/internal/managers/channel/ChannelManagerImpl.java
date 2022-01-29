@@ -531,7 +531,7 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
         }
 
         this.invitable = invitable;
-        set |= LOCKED;
+        set |= INVITEABLE;
         return (M) this;
     }
 
