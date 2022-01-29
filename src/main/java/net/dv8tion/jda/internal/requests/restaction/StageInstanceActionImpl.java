@@ -77,10 +77,12 @@ public class StageInstanceActionImpl extends RestActionImpl<StageInstance> imple
 
     @Nonnull
     @Override
+    @SuppressWarnings("deprecation")
     public StageInstanceAction setPrivacyLevel(@Nonnull StageInstance.PrivacyLevel level)
     {
         Checks.notNull(level, "PrivacyLevel");
         Checks.check(level != StageInstance.PrivacyLevel.UNKNOWN, "The PrivacyLevel must not be UNKNOWN!");
+        Checks.check(level != StageInstance.PrivacyLevel.PUBLIC, "Cannot create PUBLIC stage instances anymore.");
         this.level = level;
         return this;
     }
