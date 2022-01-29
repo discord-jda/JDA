@@ -1187,6 +1187,7 @@ public class EntityBuilder
                 .setArchived(threadMetadata.getBoolean("archived"))
                 .setInvitable(threadMetadata.getBoolean("invitable"))
                 .setArchiveTimestamp(Helpers.toTimestamp(threadMetadata.getString("archive_timestamp")))
+                .setCreationTimestamp(threadMetadata.isNull("create_timestamp") ? 0 : Helpers.toTimestamp(threadMetadata.getString("create_timestamp")))
                 .setAutoArchiveDuration(ThreadChannel.AutoArchiveDuration.fromKey(threadMetadata.getInt("auto_archive_duration")));
 
         //If the bot in the thread already, then create a thread member for the bot.

@@ -473,6 +473,15 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer
     @Nonnull
     AutoArchiveDuration getAutoArchiveDuration();
 
+    /**
+     * The timestamp when this thread was created.
+     * <br><b>This will only be valid for threads created after 2022-01-09.
+     * Otherwise, this will return the timestamp of creation based on the {@link #getIdLong() thread's id.}</b>
+     *
+     * @return The timestamp when this thread was created
+     */
+    @Nonnull
+    OffsetDateTime getTimeCreated();
 
     /**
      * The slowmode time of this thread. This determines the time each non-moderator must wait before sending another message.
