@@ -1961,7 +1961,7 @@ public class EntityBuilder
             else
                 guildFeatures = Collections.unmodifiableSet(StreamSupport.stream(guildObject.getArray("features").spliterator(), false).map(String::valueOf).collect(Collectors.toSet()));
 
-            final GuildWelcomeScreen welcomeScreen = guildObject.hasKey("welcome_screen") ? createWelcomeScreen(guildObject.getObject("welcome_screen")) : null;
+            final GuildWelcomeScreen welcomeScreen = guildObject.isNull("welcome_screen") ? null : createWelcomeScreen(guildObject.getObject("welcome_screen"));
 
             guild = new InviteImpl.GuildImpl(guildId, guildIconId, guildName, guildSplashId, guildVerificationLevel, presenceCount, memberCount, guildFeatures, welcomeScreen);
 
