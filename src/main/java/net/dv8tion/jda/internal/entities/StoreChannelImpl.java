@@ -102,6 +102,6 @@ public class StoreChannelImpl extends AbstractGuildChannelImpl<StoreChannelImpl>
     @Override
     public String toString()
     {
-        return "SC:" + getName() + '(' + getId() + ')';
+        return "StoreChannel:" + getName() + '(' + getId() + ')';
     }
 }

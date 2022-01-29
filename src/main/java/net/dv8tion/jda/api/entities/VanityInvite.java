@@ -88,6 +88,6 @@ public class VanityInvite
     @Override
     public String toString()
     {
-        return "VanityInvite(" + code + ")";
+        return "VanityInvite(" + code + ')';
     }
 }

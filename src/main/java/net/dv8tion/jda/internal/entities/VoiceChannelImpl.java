@@ -61,7 +61,7 @@ public class VoiceChannelImpl extends AbstractGuildChannelImpl<VoiceChannelImpl>
     {
         return ChannelType.VOICE;
     }
-    
+
     @Override
     public int getBitrate()
     {
@@ -175,5 +175,11 @@ public class VoiceChannelImpl extends AbstractGuildChannelImpl<VoiceChannelImpl>
     {
         this.userLimit = userLimit;
         return this;
+    }
+
+    @Override
+    public String toString()
+    {
+        return "VoiceChannel:" + getName() + '(' + getId() + ')';
     }
 }

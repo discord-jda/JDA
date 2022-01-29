@@ -2066,7 +2066,7 @@ public class GuildImpl implements Guild
     @Override
     public String toString()
     {
-        return "G:" + getName() + '(' + id + ')';
+        return "Guild:" + getName() + '(' + id + ')';
     }
 
     private void checkCanCreateChannel(Category parent)

@@ -237,7 +237,7 @@ public class GuildVoiceStateImpl implements GuildVoiceState
     @Override
     public String toString()
     {
-        return "VS:" + getGuild().getName() + '(' + getId() + ')';
+        return "VoiceState:" + getGuild().getName() + '(' + getId() + ')';
     }
 
     // -- Setters --

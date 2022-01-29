@@ -371,7 +371,7 @@ public class RoleImpl implements Role
     @Override
     public String toString()
     {
-        return "R:" + getName() + '(' + id + ')';
+        return "Role:" + getName() + '(' + id + ')';
     }
 
     @Override
@@ -531,7 +531,7 @@ public class RoleImpl implements Role
         @Override
         public String toString()
         {
-            return "RoleTags(bot=" + getBotId() + ",integration=" + getIntegrationId() + ",boost=" + isBoost() + ")";
+            return "RoleTags(bot=" + getBotId() + ",integration=" + getIntegrationId() + ",boost=" + isBoost() + ')';
         }
     }
 }

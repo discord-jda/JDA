@@ -254,6 +254,6 @@ public class Emoji implements SerializableData, IMentionable
     @Override
     public String toString()
     {
-        return "E:" + name + "(" + id + ")";
+        return "Emoji:" + name + '(' + id + ')';
     }
 }

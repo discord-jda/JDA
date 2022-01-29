@@ -146,12 +146,6 @@ public class PrivateChannelImpl extends AbstractChannelImpl<PrivateChannelImpl> 
         return impl.id == this.id;
     }
 
-    @Override
-    public String toString()
-    {
-        return "PC:" + getUser().getName() + '(' + getId() + ')';
-    }
-
     private void updateUser()
     {
         // Load user from cache if one exists, otherwise we might have an outdated user instance
@@ -164,5 +158,11 @@ public class PrivateChannelImpl extends AbstractChannelImpl<PrivateChannelImpl> 
     {
         if (getUser().isBot() && getJDA().getAccountType() == AccountType.BOT)
             throw new UnsupportedOperationException("Cannot send a private message between bots.");
+    }
+
+    @Override
+    public String toString()
+    {
+        return "PrivateChannel:" + getName() + '(' + getId() + ')';
     }
 }

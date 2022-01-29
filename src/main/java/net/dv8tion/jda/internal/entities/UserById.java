@@ -69,7 +69,7 @@ public class UserById implements User
     @Override
     public String toString()
     {
-        return "U:(" + getId() + ')';
+        return "User(" + getId() + ')';
     }
 
     @Contract("->fail")

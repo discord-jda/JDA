@@ -124,7 +124,7 @@ public class ActivityImpl implements Activity
     public String toString()
     {
         if (url != null)
-            return String.format("Activity(%s | %s)", name, url);
+            return String.format("Activity[%s](%s)", name, url);
         else
             return String.format("Activity(%s)", name);
     }

@@ -181,7 +181,7 @@ public interface JDA
         @Override
         public String toString()
         {
-            return "Shard " + getShardString();
+            return "ShardInfo " + getShardString();
         }
 
         @Override
