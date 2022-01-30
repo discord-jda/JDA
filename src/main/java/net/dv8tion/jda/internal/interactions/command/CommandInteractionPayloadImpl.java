@@ -19,6 +19,7 @@ package net.dv8tion.jda.internal.interactions.command;
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import net.dv8tion.jda.api.entities.ISnowflake;
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.CommandInteractionPayload;
@@ -91,31 +92,39 @@ public class CommandInteractionPayloadImpl extends InteractionImpl implements Co
         EntityBuilder entityBuilder = jda.getEntityBuilder();
 
         resolveJson.optObject("users").ifPresent(users ->
-                users.keys().forEach(userId -> {
-                    DataObject userJson = users.getObject(userId);
-                    UserImpl userArg = entityBuilder.createUser(userJson);
-                    resolved.put(userArg.getIdLong(), userArg);
-                })
+            users.keys().forEach(userId -> {
+                DataObject userJson = users.getObject(userId);
+                UserImpl userArg = entityBuilder.createUser(userJson);
+                resolved.put(userArg.getIdLong(), userArg);
+            })
+        );
+
+        resolveJson.optObject("attachments").ifPresent(attachments ->
+            attachments.keys().forEach(id -> {
+                DataObject json = attachments.getObject(id);
+                Message.Attachment file = entityBuilder.createMessageAttachment(json);
+                resolveJson.put(id, file);
+            })
         );
 
         if (guild != null) // Technically these can function in DMs too ...
         {
             resolveJson.optObject("members").ifPresent(members ->
-                    members.keys().forEach(memberId -> {
-                        DataObject userJson = resolveJson.getObject("users").getObject(memberId);
-                        DataObject memberJson = members.getObject(memberId);
-                        memberJson.put("user", userJson);
-                        MemberImpl optionMember = entityBuilder.createMember((GuildImpl) guild, memberJson);
-                        entityBuilder.updateMemberCache(optionMember);
-                        resolved.put(optionMember.getIdLong(), optionMember); // This basically upgrades user to member
-                    })
+                members.keys().forEach(memberId -> {
+                    DataObject userJson = resolveJson.getObject("users").getObject(memberId);
+                    DataObject memberJson = members.getObject(memberId);
+                    memberJson.put("user", userJson);
+                    MemberImpl optionMember = entityBuilder.createMember((GuildImpl) guild, memberJson);
+                    entityBuilder.updateMemberCache(optionMember);
+                    resolved.put(optionMember.getIdLong(), optionMember); // This basically upgrades user to member
+                })
             );
             resolveJson.optObject("roles").ifPresent(roles ->
-                    roles.keys()
-                            .stream()
-                            .map(guild::getRoleById)
-                            .filter(Objects::nonNull)
-                            .forEach(role -> resolved.put(role.getIdLong(), role))
+                roles.keys()
+                    .stream()
+                    .map(guild::getRoleById)
+                    .filter(Objects::nonNull)
+                    .forEach(role -> resolved.put(role.getIdLong(), role))
             );
             resolveJson.optObject("channels").ifPresent(channels -> {
                 channels.keys().forEach(id -> {
