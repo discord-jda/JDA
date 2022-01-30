@@ -18,22 +18,24 @@ package net.dv8tion.jda.api.interactions.components;
 
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
-import net.dv8tion.jda.internal.interactions.ButtonImpl;
-import net.dv8tion.jda.internal.interactions.SelectionMenuImpl;
+import net.dv8tion.jda.internal.interactions.component.ButtonImpl;
+import net.dv8tion.jda.internal.interactions.component.SelectMenuImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
+import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * One row of interactive message components.
+ * One row of components.
  *
- * @see Component
+ * @see ItemComponent
+ * @see LayoutComponent
  */
-public class ActionRow implements ComponentLayout, Iterable<Component>
+public class ActionRow implements LayoutComponent
 {
-    private final List<Component> components = new ArrayList<>();
+    private final List<ItemComponent> components = new ArrayList<>();
 
     private ActionRow() {}
 
@@ -65,8 +67,8 @@ public class ActionRow implements ComponentLayout, Iterable<Component>
                 {
                 case BUTTON:
                     return new ButtonImpl(obj);
-                case SELECTION_MENU:
-                    return new SelectionMenuImpl(obj);
+                case SELECT_MENU:
+                    return new SelectMenuImpl(obj);
                 default:
                     return null;
                 }
@@ -77,7 +79,7 @@ public class ActionRow implements ComponentLayout, Iterable<Component>
     }
 
     /**
-     * Create one row of interactive message {@link Component components}.
+     * Create one row of {@link ItemComponent components}.
      * <br>You cannot currently mix different types of components and each type has its own maximum defined by {@link Component.Type#getMaxPerRow()}.
      *
      * @param  components
@@ -89,14 +91,14 @@ public class ActionRow implements ComponentLayout, Iterable<Component>
      * @return The action row
      */
     @Nonnull
-    public static ActionRow of(@Nonnull Collection<? extends Component> components)
+    public static ActionRow of(@Nonnull Collection<? extends ItemComponent> components)
     {
         Checks.noneNull(components, "Components");
-        return of(components.toArray(new Component[0]));
+        return of(components.toArray(new ItemComponent[0]));
     }
 
     /**
-     * Create one row of interactive message {@link Component components}.
+     * Create one row of {@link ItemComponent components}.
      * <br>You cannot currently mix different types of components and each type has its own maximum defined by {@link Component.Type#getMaxPerRow()}.
      *
      * @param  components
@@ -108,7 +110,7 @@ public class ActionRow implements ComponentLayout, Iterable<Component>
      * @return The action row
      */
     @Nonnull
-    public static ActionRow of(@Nonnull Component... components)
+    public static ActionRow of(@Nonnull ItemComponent... components)
     {
         Checks.noneNull(components, "Components");
         Checks.check(components.length > 0, "Cannot have empty row!");
@@ -116,7 +118,7 @@ public class ActionRow implements ComponentLayout, Iterable<Component>
         Collections.addAll(row.components, components);
         if (!row.isValid())
         {
-            Map<Component.Type, List<Component>> grouped = Arrays.stream(components).collect(Collectors.groupingBy(Component::getType));
+            Map<Component.Type, List<ItemComponent>> grouped = Arrays.stream(components).collect(Collectors.groupingBy(Component::getType));
             String provided = grouped.entrySet()
                 .stream()
                 .map(entry -> entry.getValue().size() + "/" + entry.getKey().getMaxPerRow() + " of " + entry.getKey())
@@ -127,6 +129,94 @@ public class ActionRow implements ComponentLayout, Iterable<Component>
     }
 
     /**
+     * Partitions the provided {@link ItemComponent components} into a list of ActionRow instances.
+     * <br>This will split the provided components by {@link Type#getMaxPerRow()} and create homogeneously typed rows,
+     * meaning they will not have mixed component types.
+     *
+     * <p><b>Example</b>
+     * <pre>{@code
+     * List<ItemComponent> components = Arrays.asList(
+     *   Button.primary("id1", "Hello"),
+     *   Button.secondary("id2", "World"),
+     *   SelectMenu.create("menu:id").build()
+     * );
+     *
+     * List<ActionRow> partitioned = ActionRow.partition(components);
+     * // partitioned[0] = ActionRow(button, button)
+     * // partitioned[1] = ActionRow(selectMenu)
+     * }</pre>
+     *
+     * @param  components
+     *         The components to partition
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided
+     *
+     * @return {@link List} of {@link ActionRow}
+     */
+    @Nonnull
+    public static List<ActionRow> partitionOf(@Nonnull Collection<? extends ItemComponent> components)
+    {
+        Checks.noneNull(components, "Components");
+
+        List<ActionRow> rows = new ArrayList<>();
+        // The current action row we are building
+        List<ItemComponent> currentRow = null;
+        // The component types contained in that row (for now it can't have mixed types)
+        Component.Type type = null;
+
+        for (ItemComponent current : components)
+        {
+            if (type != current.getType() || currentRow.size() == type.getMaxPerRow())
+            {
+                type = current.getType();
+                ActionRow row = ActionRow.of(current);
+                currentRow = row.components;
+                rows.add(row);
+            }
+            else
+            {
+                currentRow.add(current);
+            }
+        }
+
+        return rows;
+    }
+
+    /**
+     * Partitions the provided {@link ItemComponent components} into a list of ActionRow instances.
+     * <br>This will split the provided components by {@link Type#getMaxPerRow()} and create homogeneously typed rows,
+     * meaning they will not have mixed component types.
+     *
+     * <p><b>Example</b>
+     * <pre>{@code
+     * List<ItemComponent> components = Arrays.asList(
+     *   Button.primary("id1", "Hello"),
+     *   Button.secondary("id2", "World"),
+     *   SelectMenu.create("menu:id").build()
+     * );
+     *
+     * List<ActionRow> partitioned = ActionRow.partition(components);
+     * // partitioned[0] = ActionRow(button, button)
+     * // partitioned[1] = ActionRow(selectMenu)
+     * }</pre>
+     *
+     * @param  components
+     *         The components to partition
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided
+     *
+     * @return {@link List} of {@link ActionRow}
+     */
+    @Nonnull
+    public static List<ActionRow> partitionOf(@Nonnull ItemComponent... components)
+    {
+        Checks.notNull(components, "Components");
+        return partitionOf(Arrays.asList(components));
+    }
+
+    /**
      * Mutable list of components in this ActionRow.
      * <br>ActionRows should not be empty and are limited to 5 buttons.
      *
@@ -134,32 +224,46 @@ public class ActionRow implements ComponentLayout, Iterable<Component>
      */
     @Nonnull
     @Override
-    public List<Component> getComponents()
+    public List<ItemComponent> getComponents()
     {
         return components;
     }
 
-    /**
-     * Immutable list of buttons in this ActionRow.
-     *
-     * @return Immutable list of buttons
-     */
     @Nonnull
     @Override
-    public List<Button> getButtons()
+    @CheckReturnValue
+    public ActionRow withDisabled(boolean disabled)
     {
-        return Collections.unmodifiableList(
-            getComponents().stream()
-                .filter(Button.class::isInstance)
-                .map(Button.class::cast)
+        return ActionRow.of(components.stream()
+                .map(c -> {
+                    if (c instanceof ActionComponent)
+                        return ((ActionComponent) c).withDisabled(disabled);
+                    return c;
+                })
                 .collect(Collectors.toList()));
     }
 
     @Nonnull
     @Override
-    public Type getType()
+    @CheckReturnValue
+    public ActionRow asDisabled()
     {
-        return Type.ACTION_ROW;
+        return withDisabled(true);
+    }
+
+    @Nonnull
+    @Override
+    @CheckReturnValue
+    public ActionRow asEnabled()
+    {
+        return withDisabled(false);
+    }
+
+    @Nonnull
+    @Override
+    public Component.Type getType()
+    {
+        return Component.Type.ACTION_ROW;
     }
 
     @Nonnull
@@ -173,8 +277,30 @@ public class ActionRow implements ComponentLayout, Iterable<Component>
 
     @Nonnull
     @Override
-    public Iterator<Component> iterator()
+    public Iterator<ItemComponent> iterator()
     {
         return components.iterator();
+    }
+
+    @Override
+    public String toString()
+    {
+        return "ActionRow(" + components + ")";
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return components.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (obj == this)
+            return true;
+        if (!(obj instanceof ActionRow))
+            return false;
+        return components.equals(((ActionRow) obj).components);
     }
 }

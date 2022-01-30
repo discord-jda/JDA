@@ -72,7 +72,7 @@ public interface ICategorizableChannel extends GuildChannel, IPermissionContaine
     @Nullable
     default Category getParentCategory()
     {
-        return getGuild().getCategoryById(getParentCategoryId());
+        return getGuild().getCategoryById(getParentCategoryIdLong());
     }
 
     /**

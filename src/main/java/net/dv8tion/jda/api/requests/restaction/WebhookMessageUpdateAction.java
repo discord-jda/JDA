@@ -18,8 +18,10 @@ package net.dv8tion.jda.api.requests.restaction;
 
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.interactions.components.ActionComponent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
-import net.dv8tion.jda.api.interactions.components.Component;
+import net.dv8tion.jda.api.interactions.components.ItemComponent;
+import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.AttachmentOption;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -97,16 +99,17 @@ public interface WebhookMessageUpdateAction<T> extends RestAction<T>
      * Set only one action row for convenience.
      *
      * @param  components
-     *         The action row components, such as {@link net.dv8tion.jda.api.interactions.components.Button Buttons}
+     *         The action row components, such as {@link Button Buttons}
      *
      * @throws IllegalArgumentException
-     *         If null or more than 5 components are provided
+     *         If null is provided, an invalid number of components is provided,
+     *         or any custom {@link ActionComponent#getId() id} is duplicated
      *
      * @return The same update action, for chaining convenience
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageUpdateAction<T> setActionRow(@Nonnull Component... components)
+    default WebhookMessageUpdateAction<T> setActionRow(@Nonnull ItemComponent... components)
     {
         return setActionRows(ActionRow.of(components));
     }
@@ -115,16 +118,17 @@ public interface WebhookMessageUpdateAction<T> extends RestAction<T>
      * Set only one action row for convenience.
      *
      * @param  components
-     *         The action row components, such as {@link net.dv8tion.jda.api.interactions.components.Button Buttons}
+     *         The action row components, such as {@link Button Buttons}
      *
      * @throws IllegalArgumentException
-     *         If null or more than 5 components are provided
+     *         If null is provided, an invalid number of components is provided,
+     *         or any custom {@link ActionComponent#getId() id} is duplicated
      *
      * @return The same update action, for chaining convenience
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageUpdateAction<T> setActionRow(@Nonnull Collection<? extends Component> components)
+    default WebhookMessageUpdateAction<T> setActionRow(@Nonnull Collection<? extends ItemComponent> components)
     {
         return setActionRows(ActionRow.of(components));
     }
@@ -136,7 +140,8 @@ public interface WebhookMessageUpdateAction<T> extends RestAction<T>
      *         The new action rows
      *
      * @throws IllegalArgumentException
-     *         If null is provided or more than 5 actions rows are provided
+     *         If null is provided, more than 5 action rows are provided,
+     *         or any custom {@link ActionComponent#getId() id} is duplicated
      *
      * @return The same update action, for chaining convenience
      */
@@ -155,7 +160,8 @@ public interface WebhookMessageUpdateAction<T> extends RestAction<T>
      *         The new action rows
      *
      * @throws IllegalArgumentException
-     *         If null is provided or more than 5 actions rows are provided
+     *         If null is provided, more than 5 action rows are provided,
+     *         or any custom {@link ActionComponent#getId() id} is duplicated
      *
      * @return The same update action, for chaining convenience
      */
