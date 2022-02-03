@@ -729,21 +729,21 @@ public class OptionData implements SerializableData
      * @see ChoiceNameTransformer
      */
     @Nonnull
-    public OptionData addChoices(@Nonnull Class<?> enumClass)
+    public OptionData addChoices(@Nonnull Class<? extends Enum<?>> enumClass)
     {
         Checks.check(enumClass.isEnum(), "enumClass has to be an enum!");
         Checks.check(type == OptionType.STRING, "Cannot add enum choice for OptionType." + type);
         Object[] enumConstants = enumClass.getEnumConstants();
         Checks.check(enumConstants.length + this.choices.size() <= MAX_CHOICES, "Cannot have more than 25 choices for one option!");
-        for (Object enumConstant : enumClass.getEnumConstants())
+        for (Enum<?> enumConstant : enumClass.getEnumConstants())
         {
             if (enumConstant instanceof ChoiceNameTransformer)
             {
-                addChoice(((ChoiceNameTransformer) enumConstant).getDisplayName(), enumConstant.toString());
+                addChoice(((ChoiceNameTransformer) enumConstant).getDisplayName(), enumConstant.name());
             }
             else
             {
-                addChoice(enumConstant.toString(), enumConstant.toString());
+                addChoice(enumConstant.name(), enumConstant.name());
             }
         }
         return this;
