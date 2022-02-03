@@ -71,6 +71,15 @@ public class SlashBotExample extends ListenerAdapter
                 .addOption(INTEGER, "amount", "How many messages to prune (Default 100)") // simple optional argument
         );
 
+        // Commands with predefined choices for an option determined by an enum
+        commands.addCommands(
+                Commands.slash("hello", "Say hello to the world")
+                        .addOptions(
+                                new OptionData(STRING, "worldPart", "The part of the world you want to greet")
+                                        .addChoices(MyEnum.class)
+                        )
+        );
+
         // Send the new set of commands to discord, this will override any existing global commands with the new set provided here
         commands.queue();
     }
@@ -98,6 +107,8 @@ public class SlashBotExample extends ListenerAdapter
         case "prune": // 2 stage command with a button prompt
             prune(event);
             break;
+        case "hello":
+            MyEnum myEnum = event.getOption("worldPart").getAsEnum(MyEnum.class);
         default:
             event.reply("I can't handle that command right now :(").setEphemeral(true).queue();
         }
@@ -168,6 +179,24 @@ public class SlashBotExample extends ListenerAdapter
         event.reply(content).queue(); // This requires no permissions!
     }
 
+    public void sayHello(SlashCommandInteractionEvent event, MyEnum myEnum)
+    {
+        switch (myEnum){
+        case ASIA:
+            event.reply("Hello Asia!").queue();
+            break;
+        case AMERICA:
+            event.reply("Hello America!").queue();
+            break;
+        case EUROPE:
+            event.reply("Hello Europe!").queue();
+            break;
+        case WORLD:
+            event.reply("Hello World!").queue();
+            break;
+        }
+    }
+
     public void leave(SlashCommandInteractionEvent event)
     {
         if (!event.getMember().hasPermission(Permission.KICK_MEMBERS))
@@ -191,4 +220,16 @@ public class SlashBotExample extends ListenerAdapter
                 Button.danger(userId + ":prune:" + amount, "Yes!")) // the first parameter is the component id we use in onButtonInteraction above
             .queue();
     }
+
+    public enum MyEnum{
+        @OptionData.OptionChoice(name = "Asia")
+        ASIA,
+        @OptionData.OptionChoice(name = "Europe")
+        EUROPE,
+        @OptionData.OptionChoice(name = "America")
+        AMERICA,
+        @OptionData.OptionChoice(name = "World")
+        WORLD
+    }
+
 }
