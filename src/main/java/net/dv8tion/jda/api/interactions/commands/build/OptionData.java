@@ -28,11 +28,6 @@ import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-import java.lang.reflect.Field;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -713,7 +708,8 @@ public class OptionData implements SerializableData
      * Add predefined Choices by Enum-Constants for this OptionData
      * <br> The user can only provide one of the choices, provided by the enum
      *
-     * <p> An Enum-Constant can be annotated by {@link OptionChoice} to determine the displayname in the Discord client
+     * <p> The Enum can implement {@link ChoiceNameTransformer}. This allows to change the name that
+     * will be displays in the Discord client
      *
      * @param enumClass
      *        The class type of which the Choices shall be added
@@ -730,44 +726,39 @@ public class OptionData implements SerializableData
      * @return The OptionData instance, for chaining
      *
      * @see net.dv8tion.jda.api.interactions.commands.OptionMapping#getAsEnum(Class)
-     * @see OptionChoice
+     * @see ChoiceNameTransformer
      */
     @Nonnull
     public OptionData addChoices(@Nonnull Class<?> enumClass)
     {
-        if (this.choices == null)
-            throw new IllegalStateException("Cannot add choices for an option of type " + type);
         Checks.check(enumClass.isEnum(), "enumClass has to be an enum!");
         Checks.check(type == OptionType.STRING, "Cannot add enum choice for OptionType." + type);
         Object[] enumConstants = enumClass.getEnumConstants();
         Checks.check(enumConstants.length + this.choices.size() <= MAX_CHOICES, "Cannot have more than 25 choices for one option!");
-        for (Field field : enumClass.getFields())
+        for (Object enumConstant : enumClass.getEnumConstants())
         {
-            if (!field.isEnumConstant()) continue;
-            if (field.isAnnotationPresent(OptionChoice.class))
+            if (enumConstant instanceof ChoiceNameTransformer)
             {
-                OptionChoice choice = field.getAnnotation(OptionChoice.class);
-                addChoice(choice.name(), field.getName());
+                addChoice(((ChoiceNameTransformer) enumConstant).getDisplayName(), enumConstant.toString());
             }
             else
             {
-                addChoice(field.getName(), field.getName());
+                addChoice(enumConstant.toString(), enumConstant.toString());
             }
         }
         return this;
     }
 
     /**
-     * Used to specify the name of the Choices when using {@link OptionData#addChoices(Class)}
+     * This interface is used to set the name of choices given by Enums which will be displayed in the discord client
      */
-    @Retention(RetentionPolicy.RUNTIME)
-    @Target(ElementType.FIELD)
-    public @interface OptionChoice
+    public interface ChoiceNameTransformer
     {
         /**
-         * @return The name of the choice in the discord client
+         * @return The name of the Choice that will be displayed the in Discord client
          */
-        String name();
+        @Nonnull
+        String getDisplayName();
     }
 
     /**

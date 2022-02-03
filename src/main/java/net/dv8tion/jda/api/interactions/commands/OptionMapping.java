@@ -248,10 +248,10 @@ public class OptionMapping
      * @return The enum-constant corresponding with this option value
      */
     @Nonnull
-    public <T> T getAsEnum(Class<T> enumClass)
+    public <T extends Enum<T>> T getAsEnum(Class<T> enumClass)
     {
         Checks.check(enumClass.isEnum(), "enumClass");
-        T t = Enum.valueOf(enumClass, getAsString())
+        T t = Enum.valueOf(enumClass, getAsString());
         Checks.notNull(t, String.format("Enum constant for %s not found", getAsString()));
         return t;
     }

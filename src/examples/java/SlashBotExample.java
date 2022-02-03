@@ -30,6 +30,7 @@ import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
+import org.jetbrains.annotations.NotNull;
 
 import javax.security.auth.login.LoginException;
 import java.util.EnumSet;
@@ -221,15 +222,19 @@ public class SlashBotExample extends ListenerAdapter
             .queue();
     }
 
-    public enum MyEnum{
-        @OptionData.OptionChoice(name = "Asia")
+    public enum MyEnum implements OptionData.ChoiceNameTransformer
+    {
         ASIA,
-        @OptionData.OptionChoice(name = "Europe")
         EUROPE,
-        @OptionData.OptionChoice(name = "America")
         AMERICA,
-        @OptionData.OptionChoice(name = "World")
-        WORLD
+        WORLD;
+
+        @NotNull
+        @Override
+        public String getDisplayName()
+        {
+            return this.name().toLowerCase();
+        }
     }
 
 }
