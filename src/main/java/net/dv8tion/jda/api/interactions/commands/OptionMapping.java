@@ -251,11 +251,8 @@ public class OptionMapping
     public <T> T getAsEnum(Class<T> enumClass)
     {
         Checks.check(enumClass.isEnum(), "enumClass");
-        T t = Arrays.stream(enumClass.getEnumConstants())
-                .filter(t1 -> t1.toString().equals(getAsString()))
-                .findAny()
-                .orElse(null);
-        Checks.notNull(t, String.format("Enum konstant for %s not found", getAsString()));
+        T t = Enum.valueOf(enumClass, getAsString())
+        Checks.notNull(t, String.format("Enum constant for %s not found", getAsString()));
         return t;
     }
 
