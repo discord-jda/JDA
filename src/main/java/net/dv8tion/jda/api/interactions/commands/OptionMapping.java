@@ -19,6 +19,7 @@ package net.dv8tion.jda.api.interactions.commands;
 import gnu.trove.map.TLongObjectMap;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -231,6 +232,31 @@ public class OptionMapping
     public String getAsString()
     {
         return data.getString("value");
+    }
+
+    /**
+     * The enum-constant representation of this option value
+     * @param enumClass The enum from that the enum-constant shall be returned
+     *
+     * @throws IllegalArgumentException
+     *         If any of the following checks fail
+     *         <ul>
+     *             <li>{@code enumClass} is an enum </li>
+     *             <li>{@code} contains a constant corresponding with this option value</li>
+     *         </ul>
+     *
+     * @return The enum-constant corresponding with this option value
+     */
+    @Nonnull
+    public <T> T getAsEnum(Class<T> enumClass)
+    {
+        Checks.check(enumClass.isEnum(), "enumClass");
+        T t = Arrays.stream(enumClass.getEnumConstants())
+                .filter(t1 -> t1.toString().equals(getAsString()))
+                .findAny()
+                .orElse(null);
+        Checks.notNull(t, String.format("Enum konstant for %s not found", getAsString()));
+        return t;
     }
 
     /**
