@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.sharding.ShardManager;
 import net.dv8tion.jda.api.utils.MiscUtil;
+import net.dv8tion.jda.api.utils.cache.CacheView;
 import net.dv8tion.jda.api.utils.cache.SnowflakeCacheView;
 import net.dv8tion.jda.internal.utils.Checks;
 
@@ -27,6 +28,19 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 
+/**
+ * Provides various channel cache getters.
+ *
+ * <p>This getter exists on any instance of {@link IGuildChannelContainer} and only checks the caches with the relevant scoping.
+ * For {@link Guild}, {@link JDA}, or {@link ShardManager},
+ * this returns the relevant channel with respect to the cache within each of those objects.
+ * For a guild, this would mean it only returns channels within the same guild.
+ * <br>If this is called on {@link JDA} or {@link ShardManager}, this may return null immediately after building, because the cache isn't initialized yet.
+ * To make sure the cache is initialized after building your {@link JDA} instance, you can use {@link JDA#awaitReady()}.
+ *
+ * <p>For the most efficient usage, it is recommended to use {@link CacheView} getters such as {@link #getTextChannelCache()}.
+ * List getters usually require making a snapshot copy of the underlying cache view, which may introduce an undesirable performance hit.
+ */
 public interface IGuildChannelContainer
 {
     /**
