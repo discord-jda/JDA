@@ -579,6 +579,56 @@ public class JDAImpl implements JDA
 
     @Nonnull
     @Override
+    public RestAction<Channel> retrieveChannelById(long channelId)
+    {
+        Channel channel = getChannelById(channelId);
+
+        //if the channel is null, then we need to make a request
+        if (channel == null)
+        {
+            Route.CompiledRoute route = Route.Channels.GET_CHANNEL.compile(Long.toUnsignedString(channelId));
+            return new RestActionImpl<>(this, route, (response, request) -> getEntityBuilder().createChannel(response.getObject()));
+        }
+
+        //guild channels are always fully populated when cached
+        if (channel.getType() != ChannelType.PRIVATE)
+        {
+            return new CompletedRestAction<>(this, channel);
+        }
+
+        //if the channel is not null, and is a private channel, then
+        //we need special handling, as they may have incomplete information
+        PrivateChannel privateChannel = (PrivateChannel) channel;
+        if (privateChannel.getUser() == null){
+            //we don't have enough information, so we need to make a request
+            Route.CompiledRoute route = Route.Channels.GET_CHANNEL.compile(Long.toUnsignedString(channelId));
+            return new RestActionImpl<>(this, route, (response, request) -> getEntityBuilder().createPrivateChannel(response.getObject()));
+        }
+        else
+        {
+            //we have enough information, so we can just return the channel
+            return new CompletedRestAction<>(this, privateChannel);
+        }
+
+    }
+
+    public Channel getChannelById(long channelId){
+        Channel channel = getTextChannelById(channelId);
+        if (channel == null)
+            channel = getNewsChannelById(channelId);
+        if (channel == null)
+            channel = getThreadChannelById(channelId);
+        if (channel == null)
+            channel = getPrivateChannelById(channelId);
+        if (channel == null)
+            channel = getStageChannelById(channelId);
+        if (channel == null)
+            channel = getVoiceChannelById(channelId);
+        return channel;
+    }
+
+    @Nonnull
+    @Override
     public CacheView<AudioManager> getAudioManagerCache()
     {
         return audioManagers;

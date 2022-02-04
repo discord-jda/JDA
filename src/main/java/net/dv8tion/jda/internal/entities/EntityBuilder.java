@@ -311,6 +311,33 @@ public class EntityBuilder
         return guildObj;
     }
 
+    public Channel createChannel(DataObject dataObject){
+        final long guildId = dataObject.getLong("guild_id", 0L);
+        final GuildImpl guildObj = (GuildImpl) getJDA().getGuildById(guildId);
+        final ChannelType channelType = ChannelType.fromId(dataObject.getInt("type"));
+
+        switch (channelType)
+        {
+        case TEXT:
+            return createTextChannel(guildObj, dataObject, guildId);
+        case PRIVATE:
+            return createPrivateChannel(dataObject);
+        case NEWS:
+            return createNewsChannel(guildObj, dataObject, guildId);
+        case STAGE:
+            return createStageChannel(guildObj, dataObject, guildId);
+        case VOICE:
+            return createVoiceChannel(guildObj, dataObject, guildId);
+        case CATEGORY:
+            return createCategory(guildObj, dataObject, guildId);
+        case STORE:
+            return createStoreChannel(guildObj, dataObject, guildId);
+        default:
+            LOG.debug("Cannot create channel for type " + dataObject.getInt("type"));
+            throw new IllegalArgumentException("Cannot create channel for type " + dataObject.getInt("type"));
+        }
+    }
+
     private void createGuildChannel(GuildImpl guildObj, DataObject channelData)
     {
         final ChannelType channelType = ChannelType.fromId(channelData.getInt("type"));
@@ -1233,6 +1260,14 @@ public class EntityBuilder
         if (channel != null)
             return channel;
 
+        //if we don't have enough information to construct the channel properly, the rest of the properties can be null
+        if (!json.hasKey("recipients") && !json.hasKey("recipient"))
+        {
+            PrivateChannelImpl priv = new PrivateChannelImpl(channelId, getJDA());
+            cachePrivateChannel(priv);
+            return priv;
+        }
+
         DataObject recipient = json.hasKey("recipients") ?
             json.getArray("recipients").getObject(0) :
             json.getObject("recipient");
@@ -1255,14 +1290,19 @@ public class EntityBuilder
         user.setPrivateChannel(priv);
 
         // only add channels to cache when they come from an event, otherwise we would never remove the channel
+        cachePrivateChannel(priv);
+
+        getJDA().getEventCache().playbackCache(EventCache.Type.CHANNEL, channelId);
+        return priv;
+    }
+
+    private void cachePrivateChannel(PrivateChannelImpl priv){
         SnowflakeCacheViewImpl<PrivateChannel> privateView = getJDA().getPrivateChannelsView();
         try (UnlockHook hook = privateView.writeLock())
         {
-            privateView.getMap().put(channelId, priv);
+            privateView.getMap().put(priv.getIdLong(), priv);
         }
-        api.usedPrivateChannel(channelId);
-        getJDA().getEventCache().playbackCache(EventCache.Type.CHANNEL, channelId);
-        return priv;
+        api.usedPrivateChannel(priv.getIdLong());
     }
 
     @Nullable
@@ -1387,11 +1427,13 @@ public class EntityBuilder
         final long authorId = author.getLong("id");
         MemberImpl member = null;
 
-        if (channel == null && jsonObject.isNull("guild_id") && authorId != getJDA().getSelfUser().getIdLong())
+        if (channel == null && jsonObject.isNull("guild_id"))
         {
             DataObject channelData = DataObject.empty()
-                    .put("id", channelId)
-                    .put("recipient", author);
+                    .put("id", channelId);
+            if (authorId != getJDA().getSelfUser().getIdLong())
+                    channelData.put("recipient", author);
+            //this will construct a minimal private channel if we are the author
             channel = createPrivateChannel(channelData);
         }
         else if (channel == null)

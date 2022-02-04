@@ -16,27 +16,39 @@
 
 package net.dv8tion.jda.internal.entities;
 
-import net.dv8tion.jda.api.AccountType;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.PrivateChannel;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.internal.entities.mixin.channel.middleman.MessageChannelMixin;
+import net.dv8tion.jda.internal.requests.CompletedRestAction;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public class PrivateChannelImpl extends AbstractChannelImpl<PrivateChannelImpl> implements PrivateChannel, MessageChannelMixin<PrivateChannelImpl>
 {
     private User user;
     private long latestMessageId;
 
+    private PrivateChannelImpl(JDA api, long id, User user)
+    {
+        super(id, api);
+        this.user = user;
+    }
+
+    public PrivateChannelImpl(long id, JDA jda)
+    {
+        this(jda, id, null);
+    }
+
     public PrivateChannelImpl(long id, User user)
     {
-        super(id, user.getJDA());
-        this.user = user;
+        this(user.getJDA(), id, user);
     }
 
     @Nonnull
@@ -46,7 +58,7 @@ public class PrivateChannelImpl extends AbstractChannelImpl<PrivateChannelImpl> 
         return ChannelType.PRIVATE;
     }
 
-    @Nonnull
+    @Nullable
     @Override
     public User getUser()
     {
@@ -54,18 +66,26 @@ public class PrivateChannelImpl extends AbstractChannelImpl<PrivateChannelImpl> 
         return user;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public String getName()
+    public RestAction<User> retrieveUser()
     {
-        return getUser().getName();
+        if (user != null){
+            return new CompletedRestAction<>(getJDA(), user);
+        }
+        //even if the user blocks the bot, this does not fail.
+        return getJDA().retrieveChannelById(id)
+                .map(channel -> ((PrivateChannel) channel).getUser());
     }
 
     @Nonnull
     @Override
-    public JDA getJDA()
+    public String getName()
     {
-        return user.getJDA();
+        if (getUser() == null)
+            //don't break or override the contract of @NotNull
+            return "";
+        return getUser().getName();
     }
 
     @Nonnull
@@ -85,7 +105,7 @@ public class PrivateChannelImpl extends AbstractChannelImpl<PrivateChannelImpl> 
     @Override
     public boolean canTalk()
     {
-        return !user.isBot();
+        return user == null || !user.isBot();
     }
 
     @Override
@@ -149,7 +169,7 @@ public class PrivateChannelImpl extends AbstractChannelImpl<PrivateChannelImpl> 
     @Override
     public String toString()
     {
-        return "PC:" + getUser().getName() + '(' + getId() + ')';
+        return "PC:" + getName() + '(' + getId() + ')';
     }
 
     private void updateUser()
@@ -162,7 +182,7 @@ public class PrivateChannelImpl extends AbstractChannelImpl<PrivateChannelImpl> 
 
     private void checkBot()
     {
-        if (getUser().isBot() && getJDA().getAccountType() == AccountType.BOT)
+        if (getUser() != null && getUser().isBot())
             throw new UnsupportedOperationException("Cannot send a private message between bots.");
     }
 }

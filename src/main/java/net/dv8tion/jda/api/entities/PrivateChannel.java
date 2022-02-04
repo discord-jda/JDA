@@ -15,7 +15,11 @@
  */
 package net.dv8tion.jda.api.entities;
 
+import net.dv8tion.jda.api.requests.RestAction;
+
+import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Represents the connection used for direct messaging.
@@ -27,8 +31,29 @@ public interface PrivateChannel extends MessageChannel
     /**
      * The {@link net.dv8tion.jda.api.entities.User User} that this {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel} communicates with.
      *
-     * @return A non-null {@link net.dv8tion.jda.api.entities.User User}.
+     * <p>This user is only null if this channel is currently uncached, and one the following occur:
+     * <ul>
+     *     <li>A reaction is removed</li>
+     *     <li>A reaction is added</li>
+     *     <li>A message is deleted</li>
+     *     <li>This account sends a message to a user from another shard (not shard 0)</li>
+     * </ul>
+     * The consequence of this is that for any message this bot receives from a guild or from other users will not be null.
+     *
+     *
+     * @return A potentially null {@link net.dv8tion.jda.api.entities.User User}.
+     */
+    @Nullable
+    User getUser();
+
+    /**
+     * Retrieves the {@link User User} that this {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel} communicates with.
+     *
+     * <br>This method fetches the channel from the API and retrieves the User from that.
+     *
+     * @return A {@link RestAction RestAction} to retrieve the {@link User User} that this {@link PrivateChannel PrivateChannel} communicates with.
      */
     @Nonnull
-    User getUser();
+    @CheckReturnValue
+    RestAction<User> retrieveUser();
 }
