@@ -64,16 +64,10 @@ public class GuildDeleteHandler extends SocketHandler
         //Remove everything from global cache
         // this prevents some race-conditions for getting audio managers from guilds
         SnowflakeCacheViewImpl<Guild> guildView = getJDA().getGuildsView();
-        SnowflakeCacheViewImpl<StoreChannel> storeView = getJDA().getStoreChannelsView();
         SnowflakeCacheViewImpl<TextChannel> textView = getJDA().getTextChannelsView();
         SnowflakeCacheViewImpl<VoiceChannel> voiceView = getJDA().getVoiceChannelsView();
         SnowflakeCacheViewImpl<Category> categoryView = getJDA().getCategoriesView();
         guildView.remove(id);
-        try (UnlockHook hook = storeView.writeLock())
-        {
-            guild.getStoreChannelCache()
-                 .forEachUnordered(chan -> storeView.getMap().remove(chan.getIdLong()));
-        }
         try (UnlockHook hook = textView.writeLock())
         {
             guild.getTextChannelCache()

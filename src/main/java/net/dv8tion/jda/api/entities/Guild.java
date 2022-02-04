@@ -1422,8 +1422,6 @@ public interface Guild extends ISnowflake
         if (channel == null)
             channel = getStageChannelById(id);
         if (channel == null)
-            channel = getStoreChannelById(id);
-        if (channel == null)
             channel = getCategoryById(id);
         if (channel == null)
             channel = getThreadChannelById(id);
@@ -1494,8 +1492,6 @@ public interface Guild extends ISnowflake
                 return getVoiceChannelById(id);
             case STAGE:
                 return getStageChannelById(id);
-            case STORE:
-                return getStoreChannelById(id);
             case CATEGORY:
                 return getCategoryById(id);
         }
@@ -1756,100 +1752,6 @@ public interface Guild extends ISnowflake
      */
     @Nonnull
     SortedSnowflakeCacheView<Category> getCategoryCache();
-
-    /**
-     * Gets a {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannel} from this guild that has the same id as the
-     * one provided. This method is similar to {@link net.dv8tion.jda.api.JDA#getStoreChannelById(String)}, but it only
-     * checks this specific Guild for a StoreChannel.
-     * <br>If there is no {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannel} with an id that matches the provided
-     * one, then this returns {@code null}.
-     *
-     * @param  id
-     *         The id of the {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannel}.
-     *
-     * @throws java.lang.NumberFormatException
-     *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
-     *
-     * @return Possibly-null {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannel} with matching id.
-     *
-     * @since  4.0.0
-     */
-    @Nullable
-    default StoreChannel getStoreChannelById(@Nonnull String id)
-    {
-        return getStoreChannelCache().getElementById(id);
-    }
-
-    /**
-     * Gets a {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannel} from this guild that has the same id as the
-     * one provided. This method is similar to {@link net.dv8tion.jda.api.JDA#getStoreChannelById(long)}, but it only
-     * checks this specific Guild for a StoreChannel.
-     * <br>If there is no {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannel} with an id that matches the provided
-     * one, then this returns {@code null}.
-     *
-     * @param  id
-     *         The id of the {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannel}.
-     *
-     * @return Possibly-null {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannel} with matching id.
-     *
-     * @since  4.0.0
-     */
-    @Nullable
-    default StoreChannel getStoreChannelById(long id)
-    {
-        return getStoreChannelCache().getElementById(id);
-    }
-
-    /**
-     * Gets all {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannels} in this {@link net.dv8tion.jda.api.entities.Guild Guild}.
-     * <br>The channels returned will be sorted according to their position.
-     *
-     * <p>This copies the backing store into a list. This means every call
-     * creates a new list with O(n) complexity. It is recommended to store this into
-     * a local variable or use {@link #getStoreChannelCache()} and use its more efficient
-     * versions of handling these values.
-     *
-     * @return An immutable List of all {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannel} in this Guild.
-     *
-     * @since  4.0.0
-     */
-    @Nonnull
-    default List<StoreChannel> getStoreChannels()
-    {
-        return getStoreChannelCache().asList();
-    }
-
-    /**
-     * Gets a list of all {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannels} in this Guild that have the same
-     * name as the one provided.
-     * <br>If there are no {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannels} with the provided name, then this returns an empty list.
-     *
-     * @param  name
-     *         The name used to filter the returned {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannels}.
-     * @param  ignoreCase
-     *         Determines if the comparison ignores case when comparing. True - case insensitive.
-     *
-     * @return Possibly-empty immutable list of all StoreChannels with names that match the provided name.
-     *
-     * @since  4.0.0
-     */
-    @Nonnull
-    default List<StoreChannel> getStoreChannelsByName(@Nonnull String name, boolean ignoreCase)
-    {
-        return getStoreChannelCache().getElementsByName(name, ignoreCase);
-    }
-
-    /**
-     * Sorted {@link net.dv8tion.jda.api.utils.cache.SnowflakeCacheView SnowflakeCacheView} of
-     * all cached {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannels} of this Guild.
-     * <br>TextChannels are sorted according to their position.
-     *
-     * @return {@link net.dv8tion.jda.api.utils.cache.SortedSnowflakeCacheView SortedSnowflakeCacheView}
-     *
-     * @since  4.0.0
-     */
-    @Nonnull
-    SortedSnowflakeCacheView<StoreChannel> getStoreChannelCache();
 
     /**
      * Gets a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} from this guild that has the same id as the

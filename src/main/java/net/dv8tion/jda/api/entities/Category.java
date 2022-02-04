@@ -52,7 +52,6 @@ public interface Category extends GuildChannel, ICopyableChannel, IPositionableC
      * All {@link GuildChannel Channels} listed
      * for this Category
      * <br>This may contain {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels},
-     * {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannels},
      * and {@link net.dv8tion.jda.api.entities.TextChannel TextChannels}!
      *
      * @return Immutable list of all child channels
@@ -61,29 +60,12 @@ public interface Category extends GuildChannel, ICopyableChannel, IPositionableC
     default List<GuildChannel> getChannels()
     {
         List<GuildChannel> channels = new ArrayList<>();
-        channels.addAll(getStoreChannels());
         channels.addAll(getTextChannels());
         channels.addAll(getVoiceChannels());
         channels.addAll(getStageChannels());
         Collections.sort(channels);
 
         return Collections.unmodifiableList(channels);
-    }
-
-    /**
-     * All {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannels}
-     * listed for this Category
-     *
-     * @return Immutable list of all child StoreChannels
-     *
-     * @since  4.0.0
-     */
-    @Nonnull
-    default List<StoreChannel> getStoreChannels()
-    {
-        return Collections.unmodifiableList(getGuild().getStoreChannelCache().stream()
-            .filter(channel -> equals(channel.getParentCategory()))
-            .sorted().collect(Collectors.toList()));
     }
 
     /**
@@ -253,6 +235,8 @@ public interface Category extends GuildChannel, ICopyableChannel, IPositionableC
     @CheckReturnValue
     ChannelAction<StageChannel> createStageChannel(@Nonnull String name);
 
+    // TODO: not sure what to do with the docs here
+    // I think Store Channel should be replaced with News Channel, leaving it as it is for now
     /**
      * Modifies the positional order of this Category's nested {@link #getTextChannels() TextChannels} and {@link #getStoreChannels() StoreChannels}.
      * <br>This uses an extension of {@link ChannelOrderAction ChannelOrderAction}
