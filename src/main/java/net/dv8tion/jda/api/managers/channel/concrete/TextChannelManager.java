@@ -23,6 +23,21 @@ import net.dv8tion.jda.api.managers.channel.middleman.BaseGuildMessageChannelMan
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 
+/**
+ * Manager providing functionality common for all {@link TextChannel TextChannels}.
+ *
+ * <p><b>Example</b>
+ * <pre>{@code
+ * manager.setSlowmode(10)
+ *        .queue();
+ * manager.reset(ChannelManager.PARENT | ChannelManager.NAME)
+ *        .setTopic("nsfw-commits")
+ *        .setNSFW(true)
+ *        .queue();
+ * }</pre>
+ *
+ * @see TextChannel#getManager()
+ */
 public interface TextChannelManager extends BaseGuildMessageChannelManager<TextChannel, TextChannelManager>
 {
     /**
@@ -30,18 +45,17 @@ public interface TextChannelManager extends BaseGuildMessageChannelManager<TextC
      * <br>Provide {@code 0} to reset the slowmode of the {@link TextChannel TextChannel}
      *
      * <p>A channel slowmode <b>must not</b> be negative nor greater than {@link TextChannel#MAX_SLOWMODE TextChannel.MAX_SLOWMODE}!
-     * <br><b>This is only available to {@link TextChannel TextChannels}</b>
      *
      * <p>Note: Bots are unaffected by this.
      * <br>Having {@link Permission#MESSAGE_MANAGE MESSAGE_MANAGE} or
      * {@link Permission#MANAGE_CHANNEL MANAGE_CHANNEL} permission also
      * grants immunity to slowmode.
      *
+     * @see ThreadChannel#getSlowmode()
+     *
      * @param  slowmode
      *         The new slowmode for the selected {@link TextChannel TextChannel}
      *
-     * @throws IllegalStateException
-     *         If the selected {@link GuildChannel GuildChannel}'s type is not {@link ChannelType#TEXT TEXT}
      * @throws IllegalArgumentException
      *         If the provided slowmode is negative or greater than {@link TextChannel#MAX_SLOWMODE TextChannel.MAX_SLOWMODE}
      *

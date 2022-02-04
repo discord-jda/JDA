@@ -27,7 +27,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-//TODO-v5: Need Docs
+/**
+ * Represents a {@link GuildChannel} that uses {@link PermissionOverride Permission Overrides}.
+ *
+ * Channels that implement this interface can override permissions for specific users or roles.
+ *
+ * @see PermissionOverride
+ */
 public interface IPermissionContainer extends GuildChannel
 {
     //TODO-v5: Docs

@@ -21,7 +21,12 @@ import net.dv8tion.jda.api.requests.restaction.ChannelAction;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 
-//TODO-v5: Need Docs
+
+/**
+ * Represents a GuildChannel that is capable of being copied.
+ *
+ * Please see {@link ICopyableChannel#createCopy()} for information on what is copied.
+ */
 public interface ICopyableChannel extends GuildChannel
 {
     /**

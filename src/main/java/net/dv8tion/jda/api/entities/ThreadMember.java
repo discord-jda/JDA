@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.JDA;
 import javax.annotation.Nonnull;
 import java.time.OffsetDateTime;
 
+//TODO-v5: docs
 public interface ThreadMember extends IMentionable
 {
     @Nonnull

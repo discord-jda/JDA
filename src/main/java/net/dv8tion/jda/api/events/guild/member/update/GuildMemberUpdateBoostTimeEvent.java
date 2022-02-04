@@ -27,7 +27,7 @@ import java.time.OffsetDateTime;
  * Indicates that a {@link net.dv8tion.jda.api.entities.Member Member} updated their {@link net.dv8tion.jda.api.entities.Guild Guild} boost time.
  * <br>This happens when a member started or stopped boosting a guild.
  *
- * <p>Can be used to retrieve members who boosted, triggering guild.
+ * <p>Can be used to retrieve members who boosted and the triggering guild.
  *
  * <p>Identifier: {@code boost_time}
  *

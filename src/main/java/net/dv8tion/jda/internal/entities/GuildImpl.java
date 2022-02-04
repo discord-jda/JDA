@@ -42,6 +42,8 @@ import net.dv8tion.jda.api.utils.concurrent.Task;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
+import net.dv8tion.jda.internal.interactions.CommandDataImpl;
+import net.dv8tion.jda.internal.interactions.command.CommandImpl;
 import net.dv8tion.jda.internal.managers.AudioManagerImpl;
 import net.dv8tion.jda.internal.managers.GuildManagerImpl;
 import net.dv8tion.jda.internal.requests.*;
@@ -61,6 +63,8 @@ import okhttp3.RequestBody;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.time.OffsetDateTime;
+import java.time.temporal.TemporalAccessor;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
@@ -109,7 +113,7 @@ public class GuildImpl implements Guild
     private NSFWLevel nsfwLevel = NSFWLevel.UNKNOWN;
     private Timeout afkTimeout;
     private BoostTier boostTier = BoostTier.NONE;
-    private Locale preferredLocale = Locale.ENGLISH;
+    private Locale preferredLocale = Locale.US;
     private int memberCount;
     private boolean boostProgressBarEnabled;
 
@@ -132,7 +136,7 @@ public class GuildImpl implements Guild
                 (response, request) ->
                         response.getArray()
                                 .stream(DataArray::getObject)
-                                .map(json -> new Command(getJDA(), this, json))
+                                .map(json -> new CommandImpl(getJDA(), this, json))
                                 .collect(Collectors.toList()));
     }
 
@@ -142,7 +146,7 @@ public class GuildImpl implements Guild
     {
         Checks.isSnowflake(id);
         Route.CompiledRoute route = Route.Interactions.GET_GUILD_COMMAND.compile(getJDA().getSelfUser().getApplicationId(), getId(), id);
-        return new RestActionImpl<>(getJDA(), route, (response, request) -> new Command(getJDA(), this, response.getObject()));
+        return new RestActionImpl<>(getJDA(), route, (response, request) -> new CommandImpl(getJDA(), this, response.getObject()));
     }
 
     @Nonnull
@@ -150,7 +154,7 @@ public class GuildImpl implements Guild
     public CommandCreateAction upsertCommand(@Nonnull CommandData command)
     {
         Checks.notNull(command, "CommandData");
-        return new CommandCreateActionImpl(this, command);
+        return new CommandCreateActionImpl(this, (CommandDataImpl) command);
     }
 
     @Nonnull
@@ -218,7 +222,7 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public RestAction<Map<String, List<CommandPrivilege>>> updateCommandPrivileges(@Nonnull Map<String, Collection<? extends CommandPrivilege>> privileges)
+    public RestAction<Map<String, List<CommandPrivilege>>> updateCommandPrivileges(@Nonnull Map<String, ? extends Collection<CommandPrivilege>> privileges)
     {
         Checks.notNull(privileges, "Privileges");
         privileges.forEach((key, value) -> {
@@ -933,11 +937,13 @@ public class GuildImpl implements Guild
         }
 
         AudioChannel channel = getSelfMember().getVoiceState().getChannel();
-        StageInstance instance = channel instanceof StageChannel ? ((StageChannel) channel).getStageInstance() : null;
-        if (instance == null)
-            return new GatewayTask<>(CompletableFuture.completedFuture(null), () -> {});
-        CompletableFuture<Void> future = instance.cancelRequestToSpeak().submit();
-        return new GatewayTask<>(future, () -> future.cancel(false));
+        if (channel instanceof StageChannel)
+        {
+            CompletableFuture<Void> future = ((StageChannel) channel).cancelRequestToSpeak().submit();
+            return new GatewayTask<>(future, () -> future.cancel(false));
+        }
+
+        return new GatewayTask<>(CompletableFuture.completedFuture(null), () -> {});
     }
 
     @Nonnull
@@ -1404,6 +1410,36 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
+    public AuditableRestAction<Void> timeoutUntilById(@Nonnull String userId, @Nonnull TemporalAccessor temporal)
+    {
+        Checks.isSnowflake(userId, "User ID");
+        Checks.notNull(temporal, "Temporal");
+        OffsetDateTime date = Helpers.toOffsetDateTime(temporal);
+        Checks.check(date.isAfter(OffsetDateTime.now()), "Cannot put a member in time out with date in the past. Provided: %s", date);
+        Checks.check(date.isBefore(OffsetDateTime.now().plusDays(Member.MAX_TIME_OUT_LENGTH)), "Cannot put a member in time out for more than 28 days. Provided: %s", date);
+        checkPermission(Permission.MODERATE_MEMBERS);
+
+        return timeoutUntilById0(userId, date);
+    }
+
+    @Nonnull
+    @Override
+    public AuditableRestAction<Void> removeTimeoutById(@Nonnull String userId)
+    {
+        Checks.isSnowflake(userId, "User ID");
+        return timeoutUntilById0(userId, null);
+    }
+
+    @Nonnull
+    private AuditableRestAction<Void> timeoutUntilById0(@Nonnull String userId, @Nullable OffsetDateTime date)
+    {
+        DataObject body = DataObject.empty().put("communication_disabled_until", date == null ? null : date.toString());
+        Route.CompiledRoute route = Route.Guilds.MODIFY_MEMBER.compile(getId(), userId);
+        return new AuditableRestActionImpl<>(getJDA(), route, body);
+    }
+
+    @Nonnull
+    @Override
     public AuditableRestAction<Void> deafen(@Nonnull Member member, boolean deafen)
     {
         Checks.notNull(member, "Member");
@@ -1752,14 +1788,19 @@ public class GuildImpl implements Guild
         if (!(connectedChannel instanceof StageChannel))
             return;
         StageChannel stage = (StageChannel) connectedChannel;
-        StageInstance instance = stage.getStageInstance();
-        if (instance == null)
-            return;
-
         CompletableFuture<Void> future = pendingRequestToSpeak;
         pendingRequestToSpeak = null;
 
-        instance.requestToSpeak().queue((v) -> future.complete(null), future::completeExceptionally);
+        try
+        {
+            stage.requestToSpeak().queue((v) -> future.complete(null), future::completeExceptionally);
+        }
+        catch (Throwable ex)
+        {
+            future.completeExceptionally(ex);
+            if (ex instanceof Error)
+                throw ex;
+        }
     }
 
     // ---- Setters -----

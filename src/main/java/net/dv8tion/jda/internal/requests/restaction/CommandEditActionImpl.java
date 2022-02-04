@@ -27,6 +27,8 @@ import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.restaction.CommandEditAction;
 import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.internal.interactions.CommandDataImpl;
+import net.dv8tion.jda.internal.interactions.command.CommandImpl;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -45,7 +47,7 @@ public class CommandEditActionImpl extends RestActionImpl<Command> implements Co
     private static final int OPTIONS_SET     = 1 << 2;
     private final Guild guild;
     private int mask = 0;
-    private CommandData data = new CommandData(UNDEFINED, UNDEFINED);
+    private CommandDataImpl data = new CommandDataImpl(UNDEFINED, UNDEFINED);
 
     public CommandEditActionImpl(JDA api, String id)
     {
@@ -79,7 +81,7 @@ public class CommandEditActionImpl extends RestActionImpl<Command> implements Co
     {
         Checks.notNull(commandData, "Command Data");
         this.mask = NAME_SET | DESCRIPTION_SET | OPTIONS_SET;
-        this.data = commandData;
+        this.data = (CommandDataImpl) commandData;
         return this;
     }
 
@@ -137,7 +139,7 @@ public class CommandEditActionImpl extends RestActionImpl<Command> implements Co
     @Override
     public CommandEditAction clearOptions()
     {
-        data = new CommandData(data.getName(), data.getDescription());
+        data = new CommandDataImpl(data.getName(), data.getDescription());
         mask &= ~OPTIONS_SET;
         return this;
     }
@@ -185,7 +187,7 @@ public class CommandEditActionImpl extends RestActionImpl<Command> implements Co
         if (isUnchanged(OPTIONS_SET))
             json.remove("options");
         mask = 0;
-        data = new CommandData(UNDEFINED, UNDEFINED);
+        data = new CommandDataImpl(UNDEFINED, UNDEFINED);
         return getRequestBody(json);
     }
 
@@ -193,6 +195,6 @@ public class CommandEditActionImpl extends RestActionImpl<Command> implements Co
     protected void handleSuccess(Response response, Request<Command> request)
     {
         DataObject json = response.getObject();
-        request.onSuccess(new Command(api, guild, json));
+        request.onSuccess(new CommandImpl(api, guild, json));
     }
 }

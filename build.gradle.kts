@@ -39,7 +39,8 @@ plugins {
     id("com.github.johnrengelman.shadow") version "7.1.0"
 }
 
-val versionObj = Version(major = "5", minor = "0", revision = "0", classifier = "alpha.2")
+val javaVersion = JavaVersion.current()
+val versionObj = Version(major = "5", minor = "0", revision = "0", classifier = "alpha.5")
 val isCI = System.getProperty("BUILD_NUMBER") != null // jenkins
         || System.getenv("BUILD_NUMBER") != null
         || System.getProperty("GIT_COMMIT") != null // jitpack
@@ -228,7 +229,7 @@ tasks.withType<JavaCompile> {
     val arguments = mutableListOf("-Xlint:deprecation", "-Xlint:unchecked")
     options.encoding = "UTF-8"
     options.isIncremental = true
-    if (JavaVersion.current().isJava9Compatible) doFirst {
+    if (javaVersion.isJava9Compatible) doFirst {
         arguments += "--release"
         arguments += "8"
     }
@@ -254,19 +255,19 @@ javadoc.apply {
     options.memberLevel = JavadocMemberLevel.PUBLIC
     options.encoding = "UTF-8"
 
-    if (options is StandardJavadocDocletOptions) {
-        val opt = options as StandardJavadocDocletOptions
+    (options as? StandardJavadocDocletOptions)?.let { opt ->
         opt.author()
         opt.tags("incubating:a:Incubating:")
         opt.links(
                 "https://docs.oracle.com/javase/8/docs/api/",
                 "https://takahikokawasaki.github.io/nv-websocket-client/",
                 "https://square.github.io/okhttp/3.x/okhttp/")
-        if (JavaVersion.current().isJava9Compatible) {
-            opt.addBooleanOption("html5", true)
+        if (JavaVersion.VERSION_1_8 < javaVersion) {
+            opt.addBooleanOption("html5", true) // Adds search bar
             opt.addStringOption("-release", "8")
         }
-        if (JavaVersion.current().isJava11Compatible) {
+        // Fix for https://stackoverflow.com/questions/52326318/maven-javadoc-search-redirects-to-undefined-url
+        if (javaVersion in JavaVersion.VERSION_11..JavaVersion.VERSION_12) {
             opt.addBooleanOption("-no-module-directories", true)
         }
     }

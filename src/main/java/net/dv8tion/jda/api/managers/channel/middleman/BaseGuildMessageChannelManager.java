@@ -25,6 +25,22 @@ import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+/**
+ * Manager providing functionality common for all {@link BaseGuildMessageChannel BaseGuildMessageChannels}.
+ *
+ * <p><b>Example</b>
+ * <pre>{@code
+ * manager.setName("help")
+          .setTopic("Java is to Javascript as ham is to hamster")
+ *        .queue();
+ * manager.reset(ChannelManager.PARENT | ChannelManager.NAME)
+ *        .setTopic("nsfw-commits")
+ *        .setNSFW(true)
+ *        .queue();
+ * }</pre>
+ *
+ * @see BaseGuildMessageChannel#getManager()
+ */
 public interface BaseGuildMessageChannelManager<T extends BaseGuildMessageChannel, M extends BaseGuildMessageChannelManager<T, M>>
         extends IPermissionContainerManager<T, M>,
         IPositionableChannelManager<T, M>,

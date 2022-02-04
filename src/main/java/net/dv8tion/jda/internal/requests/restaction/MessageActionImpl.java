@@ -376,6 +376,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
         if (components == null)
             components = new ArrayList<>();
         Checks.check(rows.length <= 5, "Can only have 5 action rows per message!");
+        Checks.checkDuplicateIds(Arrays.stream(rows));
         this.components.clear();
         Collections.addAll(this.components, rows);
         return this;
@@ -479,7 +480,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
         for (Map.Entry<String, InputStream> entry : files.entrySet())
         {
             final RequestBody body = IOUtil.createRequestBody(Requester.MEDIA_TYPE_OCTET, entry.getValue());
-            builder.addFormDataPart("file" + index++, entry.getKey(), body);
+            builder.addFormDataPart("files[" + (index++) + "]", entry.getKey(), body);
         }
         if (messageReference != 0L || components != null || retainedAttachments != null || !isEmpty())
             builder.addFormDataPart("payload_json", getJSON().toString());

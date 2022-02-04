@@ -16,13 +16,12 @@
 
 package net.dv8tion.jda.api.requests.restaction.interactions;
 
-import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.requests.RestAction;
 
 /**
  * A callback action is used to <b>acknowledge</b> an {@link net.dv8tion.jda.api.interactions.Interaction Interaction}.
  */
-public interface InteractionCallbackAction extends RestAction<InteractionHook>
+public interface InteractionCallbackAction<T> extends RestAction<T>
 {
     /**
      * The possible types of interaction responses.
@@ -38,6 +37,8 @@ public interface InteractionCallbackAction extends RestAction<InteractionHook>
         DEFERRED_MESSAGE_UPDATE(6),
         /** Update the message for a component interaction */
         MESSAGE_UPDATE(7),
+        /** Provide auto-complete choices for a command */
+        COMMAND_AUTOCOMPLETE_CHOICES(8),
         ;
         private final int raw;
 

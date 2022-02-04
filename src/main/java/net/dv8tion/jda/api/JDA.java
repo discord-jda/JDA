@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.entities.channel.IGuildChannelContainer;
 import net.dv8tion.jda.api.hooks.IEventManager;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.managers.AudioManager;
 import net.dv8tion.jda.api.managers.DirectAudioController;
 import net.dv8tion.jda.api.managers.Presence;
@@ -32,6 +33,7 @@ import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.api.utils.cache.CacheView;
 import net.dv8tion.jda.api.utils.cache.SnowflakeCacheView;
+import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 import net.dv8tion.jda.internal.requests.CompletedRestAction;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
@@ -538,6 +540,8 @@ public interface JDA extends IGuildChannelContainer
     /**
      * Creates or updates a global command.
      * <br>If a command with the same name exists, it will be replaced.
+     * This operation is idempotent.
+     * Commands will persist between restarts of your bot, you only have to create a command once.
      *
      * <p>To specify a complete list of all commands you can use {@link #updateCommands()} instead.
      *
@@ -552,17 +556,23 @@ public interface JDA extends IGuildChannelContainer
      * @throws IllegalArgumentException
      *         If null is provided
      *
-     * @return {@link CommandCreateAction}
+     * @return {@link RestAction} - Type: {@link Command}
+     *         <br>The RestAction used to create or update the command
      *
-     * @see net.dv8tion.jda.api.entities.Guild#upsertCommand(CommandData)
+     * @see    Commands#slash(String, String) Commands.slash(...)
+     * @see    Commands#message(String) Commands.message(...)
+     * @see    Commands#user(String) Commands.user(...)
+     * @see    Guild#upsertCommand(CommandData) Guild.upsertCommand(...)
      */
     @Nonnull
     @CheckReturnValue
-    CommandCreateAction upsertCommand(@Nonnull CommandData command);
+    RestAction<Command> upsertCommand(@Nonnull CommandData command);
 
     /**
-     * Creates or updates a global command.
+     * Creates or updates a global slash command.
      * <br>If a command with the same name exists, it will be replaced.
+     * This operation is idempotent.
+     * Commands will persist between restarts of your bot, you only have to create a command once.
      *
      * <p>To specify a complete list of all commands you can use {@link #updateCommands()} instead.
      *
@@ -581,18 +591,21 @@ public interface JDA extends IGuildChannelContainer
      *
      * @return {@link CommandCreateAction}
      *
-     * @see net.dv8tion.jda.api.entities.Guild#upsertCommand(String, String)  
+     * @see Guild#upsertCommand(String, String)
      */
     @Nonnull
     @CheckReturnValue
     default CommandCreateAction upsertCommand(@Nonnull String name, @Nonnull String description)
     {
-        return upsertCommand(new CommandData(name, description));
+        return (CommandCreateAction) upsertCommand(new CommandDataImpl(name, description));
     }
 
     /**
      * Configures the complete list of global commands.
      * <br>This will replace the existing command list for this bot. You should only use this once on startup!
+     *
+     * <p>This operation is idempotent.
+     * Commands will persist between restarts of your bot, you only have to create a command once.
      *
      * <p>You need the OAuth2 scope {@code "applications.commands"} in order to add commands to a guild.
      *
@@ -603,8 +616,8 @@ public interface JDA extends IGuildChannelContainer
      * <pre>{@code
      * // Set list to 2 commands
      * jda.updateCommands()
-     *   .addCommands(new CommandData("ping", "Gives the current ping"))
-     *   .addCommands(new CommandData("ban", "Ban the target user")
+     *   .addCommands(Commands.slash("ping", "Gives the current ping"))
+     *   .addCommands(Commands.slash("ban", "Ban the target user")
      *     .addOption(OptionType.USER, "user", "The user to ban", true))
      *   .queue();
      * // Delete all commands
@@ -612,6 +625,8 @@ public interface JDA extends IGuildChannelContainer
      * }</pre>
      *
      * @return {@link CommandListUpdateAction}
+     *
+     * @see    Guild#updateCommands()
      */
     @Nonnull
     @CheckReturnValue
@@ -702,7 +717,7 @@ public interface JDA extends IGuildChannelContainer
     }
 
     /**
-     * Constructs a new {@link net.dv8tion.jda.api.entities.Guild Guild} with the specified name
+     * Constructs a new {@link Guild Guild} with the specified name
      * <br>Use the returned {@link GuildAction GuildAction} to provide
      * further details and settings for the resulting Guild!
      *
@@ -725,7 +740,7 @@ public interface JDA extends IGuildChannelContainer
     GuildAction createGuild(@Nonnull String name);
 
     /**
-     * Constructs a new {@link net.dv8tion.jda.api.entities.Guild Guild} from the specified template code.
+     * Constructs a new {@link Guild Guild} from the specified template code.
      *
      * <p>This RestAction does not provide the resulting Guild!
      * It will be in a following {@link net.dv8tion.jda.api.events.guild.GuildJoinEvent GuildJoinEvent}.
@@ -757,7 +772,7 @@ public interface JDA extends IGuildChannelContainer
     /**
      * {@link net.dv8tion.jda.api.utils.cache.CacheView CacheView} of
      * all cached {@link net.dv8tion.jda.api.managers.AudioManager AudioManagers} created for this JDA instance.
-     * <br>AudioManagers are created when first retrieved via {@link net.dv8tion.jda.api.entities.Guild#getAudioManager() Guild.getAudioManager()}.
+     * <br>AudioManagers are created when first retrieved via {@link Guild#getAudioManager() Guild.getAudioManager()}.
      * <u>Using this will perform better than calling {@code Guild.getAudioManager()} iteratively as that would cause many useless audio managers to be created!</u>
      *
      * <p>AudioManagers are cross-session persistent!
@@ -789,7 +804,7 @@ public interface JDA extends IGuildChannelContainer
 
     /**
      * An immutable list of all {@link net.dv8tion.jda.api.entities.User Users} that share a
-     * {@link net.dv8tion.jda.api.entities.Guild Guild} with the currently logged in account.
+     * {@link Guild Guild} with the currently logged in account.
      * <br>This list will never contain duplicates and represents all
      * {@link net.dv8tion.jda.api.entities.User Users} that JDA can currently see.
      *
@@ -943,12 +958,12 @@ public interface JDA extends IGuildChannelContainer
     }
 
     /**
-     * Gets all {@link net.dv8tion.jda.api.entities.Guild Guilds} that contain all given users as their members.
+     * Gets all {@link Guild Guilds} that contain all given users as their members.
      *
      * @param  users
-     *         The users which all the returned {@link net.dv8tion.jda.api.entities.Guild Guilds} must contain.
+     *         The users which all the returned {@link Guild Guilds} must contain.
      *
-     * @return Immutable list of all {@link net.dv8tion.jda.api.entities.Guild Guild} instances which have all {@link net.dv8tion.jda.api.entities.User Users} in them.
+     * @return Immutable list of all {@link Guild Guild} instances which have all {@link net.dv8tion.jda.api.entities.User Users} in them.
      *
      * @see    Guild#isMember(net.dv8tion.jda.api.entities.User)
      */
@@ -956,12 +971,12 @@ public interface JDA extends IGuildChannelContainer
     List<Guild> getMutualGuilds(@Nonnull User... users);
 
     /**
-     * Gets all {@link net.dv8tion.jda.api.entities.Guild Guilds} that contain all given users as their members.
+     * Gets all {@link Guild Guilds} that contain all given users as their members.
      *
      * @param users
-     *        The users which all the returned {@link net.dv8tion.jda.api.entities.Guild Guilds} must contain.
+     *        The users which all the returned {@link Guild Guilds} must contain.
      *
-     * @return Immutable list of all {@link net.dv8tion.jda.api.entities.Guild Guild} instances which have all {@link net.dv8tion.jda.api.entities.User Users} in them.
+     * @return Immutable list of all {@link Guild Guild} instances which have all {@link net.dv8tion.jda.api.entities.User Users} in them.
      */
     @Nonnull
     List<Guild> getMutualGuilds(@Nonnull Collection<User> users);
@@ -1105,7 +1120,7 @@ public interface JDA extends IGuildChannelContainer
 
     /**
      * {@link net.dv8tion.jda.api.utils.cache.SnowflakeCacheView SnowflakeCacheView} of
-     * all cached {@link net.dv8tion.jda.api.entities.Guild Guilds} visible to this JDA session.
+     * all cached {@link Guild Guilds} visible to this JDA session.
      *
      * @return {@link net.dv8tion.jda.api.utils.cache.SnowflakeCacheView SnowflakeCacheView}
      */
@@ -1113,11 +1128,11 @@ public interface JDA extends IGuildChannelContainer
     SnowflakeCacheView<Guild> getGuildCache();
 
     /**
-     * An immutable List of all {@link net.dv8tion.jda.api.entities.Guild Guilds} that the logged account is connected to.
-     * <br>If this account is not connected to any {@link net.dv8tion.jda.api.entities.Guild Guilds}, this will return an empty list.
+     * An immutable List of all {@link Guild Guilds} that the logged account is connected to.
+     * <br>If this account is not connected to any {@link Guild Guilds}, this will return an empty list.
      *
      * <p>If the developer is sharding ({@link net.dv8tion.jda.api.JDABuilder#useSharding(int, int)}, then this list
-     * will only contain the {@link net.dv8tion.jda.api.entities.Guild Guilds} that the shard is actually connected to.
+     * will only contain the {@link Guild Guilds} that the shard is actually connected to.
      * Discord determines which guilds a shard is connect to using the following format:
      * <br>Guild connected if shardId == (guildId {@literal >>} 22) % totalShards;
      * <br>Source for formula: <a href="https://discord.com/developers/docs/topics/gateway#sharding">Discord Documentation</a>
@@ -1127,7 +1142,7 @@ public interface JDA extends IGuildChannelContainer
      * a local variable or use {@link #getGuildCache()} and use its more efficient
      * versions of handling these values.
      *
-     * @return Possibly-empty immutable list of all the {@link net.dv8tion.jda.api.entities.Guild Guilds} that this account is connected to.
+     * @return Possibly-empty immutable list of all the {@link Guild Guilds} that this account is connected to.
      */
     @Nonnull
     default List<Guild> getGuilds()
@@ -1136,16 +1151,16 @@ public interface JDA extends IGuildChannelContainer
     }
 
     /**
-     * This returns the {@link net.dv8tion.jda.api.entities.Guild Guild} which has the same id as the one provided.
+     * This returns the {@link Guild Guild} which has the same id as the one provided.
      * <br>If there is no connected guild with an id that matches the provided one, then this returns {@code null}.
      *
      * @param  id
-     *         The id of the {@link net.dv8tion.jda.api.entities.Guild Guild}.
+     *         The id of the {@link Guild Guild}.
      *
      * @throws java.lang.NumberFormatException
      *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
      *
-     * @return Possibly-null {@link net.dv8tion.jda.api.entities.Guild Guild} with matching id.
+     * @return Possibly-null {@link Guild Guild} with matching id.
      */
     @Nullable
     default Guild getGuildById(@Nonnull String id)
@@ -1154,13 +1169,13 @@ public interface JDA extends IGuildChannelContainer
     }
 
     /**
-     * This returns the {@link net.dv8tion.jda.api.entities.Guild Guild} which has the same id as the one provided.
+     * This returns the {@link Guild Guild} which has the same id as the one provided.
      * <br>If there is no connected guild with an id that matches the provided one, then this returns {@code null}.
      *
      * @param  id
-     *         The id of the {@link net.dv8tion.jda.api.entities.Guild Guild}.
+     *         The id of the {@link Guild Guild}.
      *
-     * @return Possibly-null {@link net.dv8tion.jda.api.entities.Guild Guild} with matching id.
+     * @return Possibly-null {@link Guild Guild} with matching id.
      */
     @Nullable
     default Guild getGuildById(long id)
@@ -1169,15 +1184,15 @@ public interface JDA extends IGuildChannelContainer
     }
 
     /**
-     * An immutable list of all {@link net.dv8tion.jda.api.entities.Guild Guilds} that have the same name as the one provided.
-     * <br>If there are no {@link net.dv8tion.jda.api.entities.Guild Guilds} with the provided name, then this returns an empty list.
+     * An immutable list of all {@link Guild Guilds} that have the same name as the one provided.
+     * <br>If there are no {@link Guild Guilds} with the provided name, then this returns an empty list.
      *
      * @param  name
-     *         The name of the requested {@link net.dv8tion.jda.api.entities.Guild Guilds}.
+     *         The name of the requested {@link Guild Guilds}.
      * @param  ignoreCase
-     *         Whether to ignore case or not when comparing the provided name to each {@link net.dv8tion.jda.api.entities.Guild#getName()}.
+     *         Whether to ignore case or not when comparing the provided name to each {@link Guild#getName()}.
      *
-     * @return Possibly-empty immutable list of all the {@link net.dv8tion.jda.api.entities.Guild Guilds} that all have the same name as the provided name.
+     * @return Possibly-empty immutable list of all the {@link Guild Guilds} that all have the same name as the provided name.
      */
     @Nonnull
     default List<Guild> getGuildsByName(@Nonnull String name, boolean ignoreCase)
@@ -1220,8 +1235,8 @@ public interface JDA extends IGuildChannelContainer
 
     /**
      * All {@link net.dv8tion.jda.api.entities.Role Roles} this JDA instance can see. <br>This will iterate over each
-     * {@link net.dv8tion.jda.api.entities.Guild Guild} retrieved from {@link #getGuilds()} and collect its {@link
-     * net.dv8tion.jda.api.entities.Guild#getRoles() Guild.getRoles()}.
+     * {@link Guild Guild} retrieved from {@link #getGuilds()} and collect its {@link
+     * Guild#getRoles() Guild.getRoles()}.
      *
      * <p>This copies the backing store into a list. This means every call
      * creates a new list with O(n) complexity. It is recommended to store this into
@@ -1238,7 +1253,7 @@ public interface JDA extends IGuildChannelContainer
 
     /**
      * Retrieves the {@link net.dv8tion.jda.api.entities.Role Role} associated to the provided id. <br>This iterates
-     * over all {@link net.dv8tion.jda.api.entities.Guild Guilds} and check whether a Role from that Guild is assigned
+     * over all {@link Guild Guilds} and check whether a Role from that Guild is assigned
      * to the specified ID and will return the first that can be found.
      *
      * @param  id
@@ -1257,7 +1272,7 @@ public interface JDA extends IGuildChannelContainer
 
     /**
      * Retrieves the {@link net.dv8tion.jda.api.entities.Role Role} associated to the provided id. <br>This iterates
-     * over all {@link net.dv8tion.jda.api.entities.Guild Guilds} and check whether a Role from that Guild is assigned
+     * over all {@link Guild Guilds} and check whether a Role from that Guild is assigned
      * to the specified ID and will return the first that can be found.
      *
      * @param  id

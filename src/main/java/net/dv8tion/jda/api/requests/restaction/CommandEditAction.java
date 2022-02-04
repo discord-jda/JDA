@@ -18,10 +18,7 @@ package net.dv8tion.jda.api.requests.restaction;
 
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
-import net.dv8tion.jda.api.interactions.commands.build.OptionData;
-import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
-import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
+import net.dv8tion.jda.api.interactions.commands.build.*;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.internal.utils.Checks;
 
@@ -67,6 +64,9 @@ public interface CommandEditAction extends RestAction<Command>
      *         If null is provided
      *
      * @return The CommandEditAction instance, for chaining
+     *
+     * @see    Commands
+     * @see    CommandCreateAction
      */
     @Nonnull
     @CheckReturnValue

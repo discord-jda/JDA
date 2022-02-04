@@ -20,9 +20,10 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.WebhookClient;
+import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback;
+import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
-import net.dv8tion.jda.api.interactions.components.ComponentInteraction;
-import net.dv8tion.jda.api.interactions.components.ComponentLayout;
+import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.WebhookMessageUpdateAction;
 import net.dv8tion.jda.api.utils.AttachmentOption;
@@ -42,15 +43,18 @@ import java.util.Collection;
  * <p>The interaction has to be acknowledged before any of these actions can be performed.
  * First, you need to call one of:
  * <ul>
- *     <li>{@link Interaction#deferReply() Interaction.deferReply(...)}</li>
- *     <li>{@link Interaction#reply(String) Interaction.reply(...)}</li>
- *     <li>{@link ComponentInteraction#deferEdit() ComponentInteraction.deferEdit()}</li>
- *     <li> {@link ComponentInteraction#editMessage(String) ComponentInteraction.editMessage(...)}</li>
+ *     <li>{@link IReplyCallback#deferReply() deferReply(...)}</li>
+ *     <li>{@link IReplyCallback#reply(String) reply(...)}</li>
+ *     <li>{@link IMessageEditCallback#deferEdit() deferEdit()}</li>
+ *     <li>{@link IMessageEditCallback#editMessage(String) editMessage(...)}</li>
  * </ul>
  *
- * <p>When {@link Interaction#deferReply()} is used, the first message will act identically to {@link #editOriginal(String) editOriginal(...)}.
- * This means that you cannot make your deferred reply ephemeral through this interaction hook. You need to specify whether your reply is ephemeral or not directly in {@link Interaction#deferReply(boolean) deferReply(boolean)}.
+ * <p>When {@link IReplyCallback#deferReply()} is used, the first message will act identically to {@link #editOriginal(String) editOriginal(...)}.
+ * This means that you cannot make your deferred reply ephemeral through this interaction hook.
+ * You need to specify whether your reply is ephemeral or not directly in {@link IReplyCallback#deferReply(boolean) deferReply(boolean)}.
  *
+ * @see IReplyCallback
+ * @see IMessageEditCallback
  * @see #editOriginal(String)
  * @see #deleteOriginal()
  * @see #sendMessage(String)
@@ -134,8 +138,8 @@ public interface InteractionHook extends WebhookClient<Message>
 
     /**
      * Edit the source message sent by this interaction.
-     * <br>For {@link ComponentInteraction#editComponents(Collection)} and {@link ComponentInteraction#deferEdit()} this will be the message the components are attached to.
-     * For {@link Interaction#deferReply()} and {@link Interaction#reply(String)} this will be the reply message instead.
+     * <br>For {@link IMessageEditCallback#editComponents(Collection)} and {@link IMessageEditCallback#deferEdit()} this will be the message the components are attached to.
+     * For {@link IReplyCallback#deferReply()} and {@link IReplyCallback#reply(String)} this will be the reply message instead.
      *
      * <p>This method will be delayed until the interaction is acknowledged.
      *
@@ -164,8 +168,8 @@ public interface InteractionHook extends WebhookClient<Message>
 
     /**
      * Edit the source message sent by this interaction.
-     * <br>For {@link ComponentInteraction#editComponents(Collection)} and {@link ComponentInteraction#deferEdit()} this will be the message the components are attached to.
-     * For {@link Interaction#deferReply()} and {@link Interaction#reply(String)} this will be the reply message instead.
+     * <br>For {@link IMessageEditCallback#editComponents(Collection)} and {@link IMessageEditCallback#deferEdit()} this will be the message the components are attached to.
+     * For {@link IReplyCallback#deferReply()} and {@link IReplyCallback#reply(String)} this will be the reply message instead.
      *
      * <p>This method will be delayed until the interaction is acknowledged.
      *
@@ -187,15 +191,15 @@ public interface InteractionHook extends WebhookClient<Message>
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageUpdateAction<Message> editOriginalComponents(@Nonnull Collection<? extends ComponentLayout> components)
+    default WebhookMessageUpdateAction<Message> editOriginalComponents(@Nonnull Collection<? extends LayoutComponent> components)
     {
         return editMessageComponentsById("@original", components);
     }
 
     /**
      * Edit the source message sent by this interaction.
-     * <br>For {@link ComponentInteraction#editComponents(Collection)} and {@link ComponentInteraction#deferEdit()} this will be the message the components are attached to.
-     * For {@link Interaction#deferReply()} and {@link Interaction#reply(String)} this will be the reply message instead.
+     * <br>For {@link IMessageEditCallback#editComponents(Collection)} and {@link IMessageEditCallback#deferEdit()} this will be the message the components are attached to.
+     * For {@link IReplyCallback#deferReply()} and {@link IReplyCallback#reply(String)} this will be the reply message instead.
      *
      * <p>This method will be delayed until the interaction is acknowledged.
      *
@@ -217,15 +221,15 @@ public interface InteractionHook extends WebhookClient<Message>
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageUpdateAction<Message> editOriginalComponents(@Nonnull ComponentLayout... components)
+    default WebhookMessageUpdateAction<Message> editOriginalComponents(@Nonnull LayoutComponent... components)
     {
         return editMessageComponentsById("@original", components);
     }
 
     /**
      * Edit the source message sent by this interaction.
-     * <br>For {@link ComponentInteraction#editComponents(Collection)} and {@link ComponentInteraction#deferEdit()} this will be the message the components are attached to.
-     * For {@link Interaction#deferReply()} and {@link Interaction#reply(String)} this will be the reply message instead.
+     * <br>For {@link IMessageEditCallback#editComponents(Collection)} and {@link IMessageEditCallback#deferEdit()} this will be the message the components are attached to.
+     * For {@link IReplyCallback#deferReply()} and {@link IReplyCallback#reply(String)} this will be the reply message instead.
      *
      * <p>This method will be delayed until the interaction is acknowledged.
      *
@@ -254,8 +258,8 @@ public interface InteractionHook extends WebhookClient<Message>
 
     /**
      * Edit the source message sent by this interaction.
-     * <br>For {@link ComponentInteraction#editComponents(Collection)} and {@link ComponentInteraction#deferEdit()} this will be the message the components are attached to.
-     * For {@link Interaction#deferReply()} and {@link Interaction#reply(String)} this will be the reply message instead.
+     * <br>For {@link IMessageEditCallback#editComponents(Collection)} and {@link IMessageEditCallback#deferEdit()} this will be the message the components are attached to.
+     * For {@link IReplyCallback#deferReply()} and {@link IReplyCallback#reply(String)} this will be the reply message instead.
      *
      * <p>This method will be delayed until the interaction is acknowledged.
      *
@@ -284,8 +288,8 @@ public interface InteractionHook extends WebhookClient<Message>
 
     /**
      * Edit the source message sent by this interaction.
-     * <br>For {@link ComponentInteraction#editComponents(Collection)} and {@link ComponentInteraction#deferEdit()} this will be the message the components are attached to.
-     * For {@link Interaction#deferReply()} and {@link Interaction#reply(String)} this will be the reply message instead.
+     * <br>For {@link IMessageEditCallback#editComponents(Collection)} and {@link IMessageEditCallback#deferEdit()} this will be the message the components are attached to.
+     * For {@link IReplyCallback#deferReply()} and {@link IReplyCallback#reply(String)} this will be the reply message instead.
      *
      * <p>This method will be delayed until the interaction is acknowledged.
      *
@@ -314,8 +318,8 @@ public interface InteractionHook extends WebhookClient<Message>
 
     /**
      * Edit the source message sent by this interaction.
-     * <br>For {@link ComponentInteraction#editComponents(Collection)} and {@link ComponentInteraction#deferEdit()} this will be the message the components are attached to.
-     * For {@link Interaction#deferReply()} and {@link Interaction#reply(String)} this will be the reply message instead.
+     * <br>For {@link IMessageEditCallback#editComponents(Collection)} and {@link IMessageEditCallback#deferEdit()} this will be the message the components are attached to.
+     * For {@link IReplyCallback#deferReply()} and {@link IReplyCallback#reply(String)} this will be the reply message instead.
      *
      * <p>This method will be delayed until the interaction is acknowledged.
      *
@@ -348,8 +352,8 @@ public interface InteractionHook extends WebhookClient<Message>
 
     /**
      * Edit the source message sent by this interaction.
-     * <br>For {@link ComponentInteraction#editComponents(Collection)} and {@link ComponentInteraction#deferEdit()} this will be the message the components are attached to.
-     * For {@link Interaction#deferReply()} and {@link Interaction#reply(String)} this will be the reply message instead.
+     * <br>For {@link IMessageEditCallback#editComponents(Collection)} and {@link IMessageEditCallback#deferEdit()} this will be the message the components are attached to.
+     * For {@link IReplyCallback#deferReply()} and {@link IReplyCallback#reply(String)} this will be the reply message instead.
      * <br>The provided file will be appended to the message. You cannot delete or edit existing files on a message.
      *
      * <p>This method will be delayed until the interaction is acknowledged.
@@ -397,8 +401,8 @@ public interface InteractionHook extends WebhookClient<Message>
 
     /**
      * Edit the source message sent by this interaction.
-     * <br>For {@link ComponentInteraction#editComponents(Collection)} and {@link ComponentInteraction#deferEdit()} this will be the message the components are attached to.
-     * For {@link Interaction#deferReply()} and {@link Interaction#reply(String)} this will be the reply message instead.
+     * <br>For {@link IMessageEditCallback#editComponents(Collection)} and {@link IMessageEditCallback#deferEdit()} this will be the message the components are attached to.
+     * For {@link IReplyCallback#deferReply()} and {@link IReplyCallback#reply(String)} this will be the reply message instead.
      * <br>The provided file will be appended to the message. You cannot delete or edit existing files on a message.
      *
      * <p>This method will be delayed until the interaction is acknowledged.
@@ -446,8 +450,8 @@ public interface InteractionHook extends WebhookClient<Message>
 
     /**
      * Edit the source message sent by this interaction.
-     * <br>For {@link ComponentInteraction#editComponents(Collection)} and {@link ComponentInteraction#deferEdit()} this will be the message the components are attached to.
-     * For {@link Interaction#deferReply()} and {@link Interaction#reply(String)} this will be the reply message instead.
+     * <br>For {@link IMessageEditCallback#editComponents(Collection)} and {@link IMessageEditCallback#deferEdit()} this will be the message the components are attached to.
+     * For {@link IReplyCallback#deferReply()} and {@link IReplyCallback#reply(String)} this will be the reply message instead.
      * <br>The provided file will be appended to the message. You cannot delete or edit existing files on a message.
      *
      * <p>This method will be delayed until the interaction is acknowledged.
@@ -495,8 +499,8 @@ public interface InteractionHook extends WebhookClient<Message>
 
     /**
      * Edit the source message sent by this interaction.
-     * <br>For {@link ComponentInteraction#editComponents(Collection)} and {@link ComponentInteraction#deferEdit()} this will be the message the components are attached to.
-     * For {@link Interaction#deferReply()} and {@link Interaction#reply(String)} this will be the reply message instead.
+     * <br>For {@link IMessageEditCallback#editComponents(Collection)} and {@link IMessageEditCallback#deferEdit()} this will be the message the components are attached to.
+     * For {@link IReplyCallback#deferReply()} and {@link IReplyCallback#reply(String)} this will be the reply message instead.
      * <br>The provided file will be appended to the message. You cannot delete or edit existing files on a message.
      *
      * <p>This method will be delayed until the interaction is acknowledged.
