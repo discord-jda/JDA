@@ -29,12 +29,12 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 /**
- * Provides various channel cache getters.
+ * Provides various channel cache getters for Guild channels.
  *
- * <p>This getter exists on any instance of {@link IGuildChannelContainer} and only checks the caches with the relevant scoping.
- * For {@link Guild}, {@link JDA}, or {@link ShardManager},
- * this returns the relevant channel with respect to the cache within each of those objects.
- * For a guild, this would mean it only returns channels within the same guild.
+ * <p>These getters only check the caches with the relevant scoping of the implementing type.
+ * For example, {@link Guild} returns channels that exist within the guild,
+ * whereas {@link JDA} or {@link ShardManager} returns any channels that exist within the shard.
+ *
  * <br>If this is called on {@link JDA} or {@link ShardManager}, this may return null immediately after building, because the cache isn't initialized yet.
  * To make sure the cache is initialized after building your {@link JDA} instance, you can use {@link JDA#awaitReady()}.
  *
