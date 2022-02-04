@@ -1311,7 +1311,7 @@ public interface JDA
      * <ul>
      *     <li>{@link #getTextChannelById(String)}</li>
      *     <li>{@link #getVoiceChannelById(String)}</li>
-     *     <li>{@link #getStoreChannelById(String)}</li>
+     *     <li>{@link #getNewsChannelById(String)}</li>
      *     <li>{@link #getCategoryById(String)}</li>
      * </ul>
      *
@@ -1339,7 +1339,7 @@ public interface JDA
      * <ul>
      *     <li>{@link #getTextChannelById(long)}</li>
      *     <li>{@link #getVoiceChannelById(long)}</li>
-     *     <li>{@link #getStoreChannelById(long)}</li>
+     *     <li>{@link #getNewsChannelById(long)}</li>
      *     <li>{@link #getCategoryById(long)}</li>
      * </ul>
      *
@@ -1376,7 +1376,7 @@ public interface JDA
      * <ul>
      *     <li>{@link #getTextChannelById(String)}</li>
      *     <li>{@link #getVoiceChannelById(String)}</li>
-     *     <li>{@link #getStoreChannelById(String)}</li>
+     *     <li>{@link #getNewsChannelById(String)}</li>
      *     <li>{@link #getCategoryById(String)}</li>
      * </ul>
      *
@@ -1409,7 +1409,7 @@ public interface JDA
      * <ul>
      *     <li>{@link #getTextChannelById(long)}</li>
      *     <li>{@link #getVoiceChannelById(long)}</li>
-     *     <li>{@link #getStoreChannelById(long)}</li>
+     *     <li>{@link #getNewsChannelById(long)}</li>
      *     <li>{@link #getCategoryById(long)}</li>
      * </ul>
      *

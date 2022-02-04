@@ -235,15 +235,13 @@ public interface Category extends GuildChannel, ICopyableChannel, IPositionableC
     @CheckReturnValue
     ChannelAction<StageChannel> createStageChannel(@Nonnull String name);
 
-    // TODO: not sure what to do with the docs here
-    // I think Store Channel should be replaced with News Channel, leaving it as it is for now
     /**
-     * Modifies the positional order of this Category's nested {@link #getTextChannels() TextChannels} and {@link #getStoreChannels() StoreChannels}.
+     * Modifies the positional order of this Category's nested {@link #getTextChannels() TextChannels} and {@link #getNewsChannels() NewsChannels}.
      * <br>This uses an extension of {@link ChannelOrderAction ChannelOrderAction}
      * specialized for ordering the nested {@link net.dv8tion.jda.api.entities.TextChannel TextChannels}
-     * and {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannels} of this {@link net.dv8tion.jda.api.entities.Category Category}.
+     * and {@link net.dv8tion.jda.api.entities.NewsChannel NewsChannels} of this {@link net.dv8tion.jda.api.entities.Category Category}.
      * <br>Like {@link ChannelOrderAction}, the returned {@link CategoryOrderAction CategoryOrderAction}
-     * can be used to move TextChannels/StoreChannels {@link OrderAction#moveUp(int) up},
+     * can be used to move TextChannels/NewsChannels {@link OrderAction#moveUp(int) up},
      * {@link OrderAction#moveDown(int) down}, or
      * {@link OrderAction#moveTo(int) to} a specific position.
      * <br>This uses <b>ascending</b> order with a 0 based index.
@@ -259,19 +257,19 @@ public interface Category extends GuildChannel, ICopyableChannel, IPositionableC
      *
      * @return A {@link CategoryOrderAction CategoryOrderAction} for
      *         ordering the Category's {@link net.dv8tion.jda.api.entities.TextChannel TextChannels}
-     *         and {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannels}.
+     *         and {@link net.dv8tion.jda.api.entities.NewsChannel NewsChannels}.
      */
     @Nonnull
     @CheckReturnValue
     CategoryOrderAction modifyTextChannelPositions();
 
     /**
-     * Modifies the positional order of this Category's nested {@link #getVoiceChannels() VoiceChannels}.
+     * Modifies the positional order of this Category's nested {@link #getVoiceChannels() VoiceChannels} and {@link #getStageChannels() StageChannels}.
      * <br>This uses an extension of {@link ChannelOrderAction ChannelOrderAction}
-     * specialized for ordering the nested {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels} of this
-     * {@link net.dv8tion.jda.api.entities.Category Category}.
-     * <br>Like {@code ChannelOrderAction}, the returned {@link CategoryOrderAction CategoryOrderAction}
-     * can be used to move VoiceChannels {@link OrderAction#moveUp(int) up},
+     * specialized for ordering the nested {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels}
+     * and {@link net.dv8tion.jda.api.entities.StageChannel StageChannels} of this {@link net.dv8tion.jda.api.entities.Category Category}.
+     * <br>Like {@link ChannelOrderAction}, the returned {@link CategoryOrderAction CategoryOrderAction}
+     * can be used to move VoiceChannels/StageChannels {@link OrderAction#moveUp(int) up},
      * {@link OrderAction#moveDown(int) down}, or
      * {@link OrderAction#moveTo(int) to} a specific position.
      * <br>This uses <b>ascending</b> order with a 0 based index.
@@ -286,7 +284,8 @@ public interface Category extends GuildChannel, ICopyableChannel, IPositionableC
      * </ul>
      *
      * @return A {@link CategoryOrderAction CategoryOrderAction} for
-     *         ordering the Category's {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels}.
+     *         ordering the Category's {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels}
+     *         and {@link net.dv8tion.jda.api.entities.StageChannel StageChannels}.
      */
     @Nonnull
     @CheckReturnValue
