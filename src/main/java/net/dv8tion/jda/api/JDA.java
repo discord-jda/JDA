@@ -1166,7 +1166,8 @@ public interface JDA
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<Channel> retrieveChannelById(String id){
+    default RestAction<Channel> retrieveChannelById(String id)
+    {
         return retrieveChannelById(MiscUtil.parseSnowflake(id));
     }
 

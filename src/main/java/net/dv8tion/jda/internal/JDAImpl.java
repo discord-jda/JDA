@@ -599,7 +599,8 @@ public class JDAImpl implements JDA
         //if the channel is not null, and is a private channel, then
         //we need special handling, as they may have incomplete information
         PrivateChannel privateChannel = (PrivateChannel) channel;
-        if (privateChannel.getUser() == null){
+        if (privateChannel.getUser() == null)
+        {
             //we don't have enough information, so we need to make a request
             Route.CompiledRoute route = Route.Channels.GET_CHANNEL.compile(Long.toUnsignedString(channelId));
             return new RestActionImpl<>(this, route, (response, request) -> getEntityBuilder().createPrivateChannel(response.getObject()));
@@ -612,7 +613,8 @@ public class JDAImpl implements JDA
 
     }
 
-    public Channel getChannelById(long channelId){
+    public Channel getChannelById(long channelId)
+    {
         Channel channel = getTextChannelById(channelId);
         if (channel == null)
             channel = getNewsChannelById(channelId);
