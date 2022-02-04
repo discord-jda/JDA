@@ -521,6 +521,23 @@ public class JDABuilder
     }
 
     /**
+     * Whether JDA should store the raw {@link net.dv8tion.jda.api.utils.data.DataObject} for every discord event.
+     * <br>Default: {@code false}
+     *
+     * @param  enable
+     *         True, if JDA should add the raw {@link net.dv8tion.jda.api.utils.data.DataObject} to every discord events.
+     *
+     * @return The JDABuilder instance. Useful for chaining.
+     *
+     * @since  5.0.0
+     */
+    @Nonnull
+    public JDABuilder setEventPassthrough(boolean enable)
+    {
+        return setFlag(ConfigFlag.EVENT_PASSTHROUGH, enable);
+    }
+
+    /**
      * Whether the rate-limit should be relative to the current time plus latency.
      * <br>By default we use the {@code X-RateLimit-Reset-After} header to determine when
      * a rate-limit is no longer imminent. This has the disadvantage that it might wait longer than needed due
