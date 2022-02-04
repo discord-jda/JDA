@@ -526,7 +526,7 @@ public class JDABuilder
      * <br>Default: {@code false}
      *
      * @param  enable
-     *         True, if JDA should add the raw {@link net.dv8tion.jda.api.utils.data.DataObject} to every discord events.
+     *         True, if JDA should add the raw {@link net.dv8tion.jda.api.utils.data.DataObject} to every discord event.
      *
      * @return The JDABuilder instance. Useful for chaining.
      *
