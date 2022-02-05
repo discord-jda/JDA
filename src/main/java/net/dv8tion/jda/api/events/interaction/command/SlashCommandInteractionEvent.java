@@ -19,6 +19,7 @@ package net.dv8tion.jda.api.events.interaction.command;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.interactions.commands.SlashCommandInteraction;
+import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
 
@@ -35,9 +36,9 @@ public class SlashCommandInteractionEvent extends GenericCommandInteractionEvent
 {
     private final SlashCommandInteraction interaction;
 
-    public SlashCommandInteractionEvent(@Nonnull JDA api, long responseNumber, @Nonnull SlashCommandInteraction interaction)
+    public SlashCommandInteractionEvent(@Nonnull JDA api, long responseNumber, DataObject rawData, @Nonnull SlashCommandInteraction interaction)
     {
-        super(api, responseNumber, interaction);
+        super(api, responseNumber, rawData, interaction);
         this.interaction = interaction;
     }
 

@@ -44,9 +44,9 @@ public class RawGatewayEvent extends Event
 {
     private final DataObject data;
 
-    public RawGatewayEvent(@Nonnull JDA api, long responseNumber, @Nonnull DataObject data)
+    public RawGatewayEvent(@Nonnull JDA api, long responseNumber, DataObject rawData, @Nonnull DataObject data)
     {
-        super(api, responseNumber);
+        super(api, responseNumber, rawData);
         this.data = data;
     }
 

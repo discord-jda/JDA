@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.Event;
+import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
 
@@ -33,9 +34,9 @@ public abstract class GenericRoleEvent extends Event
 {
     protected final Role role;
 
-    public GenericRoleEvent(@Nonnull JDA api, long responseNumber, @Nonnull Role role)
+    public GenericRoleEvent(@Nonnull JDA api, long responseNumber, DataObject rawData, @Nonnull Role role)
     {
-        super(api, responseNumber);
+        super(api, responseNumber, rawData);
         this.role = role;
     }
 

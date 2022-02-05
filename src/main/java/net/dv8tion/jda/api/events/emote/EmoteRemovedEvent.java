@@ -18,6 +18,7 @@ package net.dv8tion.jda.api.events.emote;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Emote;
+import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
 
@@ -33,8 +34,8 @@ import javax.annotation.Nonnull;
  */
 public class EmoteRemovedEvent extends GenericEmoteEvent
 {
-    public EmoteRemovedEvent(@Nonnull JDA api, long responseNumber, @Nonnull Emote emote)
+    public EmoteRemovedEvent(@Nonnull JDA api, long responseNumber, DataObject rawData, @Nonnull Emote emote)
     {
-        super(api, responseNumber, emote);
+        super(api, responseNumber, rawData, emote);
     }
 }

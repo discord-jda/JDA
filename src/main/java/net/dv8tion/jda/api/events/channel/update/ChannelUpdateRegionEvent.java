@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Region;
 import net.dv8tion.jda.api.entities.Channel;
 import net.dv8tion.jda.api.entities.ChannelField;
+import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
 
@@ -28,8 +29,8 @@ public class ChannelUpdateRegionEvent extends GenericChannelUpdateEvent<Region>
 {
     public static final ChannelField FIELD = ChannelField.REGION;
 
-    public ChannelUpdateRegionEvent(@Nonnull JDA api, long responseNumber, Channel channel, Region oldValue, Region newValue)
+    public ChannelUpdateRegionEvent(@Nonnull JDA api, long responseNumber, DataObject rawData, Channel channel, Region oldValue, Region newValue)
     {
-        super(api, responseNumber, channel, FIELD, oldValue, newValue);
+        super(api, responseNumber, rawData, channel, FIELD, oldValue, newValue);
     }
 }

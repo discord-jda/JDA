@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.requests.CompletedRestAction;
 
 import javax.annotation.CheckReturnValue;
@@ -47,10 +48,10 @@ public class GenericMessageReactionEvent extends GenericMessageEvent
     protected Member member;
     protected MessageReaction reaction;
 
-    public GenericMessageReactionEvent(@Nonnull JDA api, long responseNumber, @Nullable User user,
+    public GenericMessageReactionEvent(@Nonnull JDA api, long responseNumber, DataObject rawData, @Nullable User user,
                                        @Nullable Member member, @Nonnull MessageReaction reaction, long userId)
     {
-        super(api, responseNumber, reaction.getMessageIdLong(), reaction.getChannel());
+        super(api, responseNumber, rawData, reaction.getMessageIdLong(), reaction.getChannel());
         this.userId = userId;
         this.issuer = user;
         this.member = member;

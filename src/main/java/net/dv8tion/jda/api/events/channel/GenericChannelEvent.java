@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.events.Event;
+import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
 
@@ -30,9 +31,9 @@ public class GenericChannelEvent extends Event
 {
     protected final Channel channel;
 
-    public GenericChannelEvent(@Nonnull JDA api, long responseNumber, Channel channel)
+    public GenericChannelEvent(@Nonnull JDA api, long responseNumber, DataObject rawData, Channel channel)
     {
-        super(api, responseNumber);
+        super(api, responseNumber, rawData);
 
         this.channel = channel;
     }

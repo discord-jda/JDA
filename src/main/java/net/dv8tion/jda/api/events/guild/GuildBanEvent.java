@@ -18,6 +18,7 @@ package net.dv8tion.jda.api.events.guild;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
 
@@ -37,9 +38,9 @@ public class GuildBanEvent extends GenericGuildEvent
 {
     private final User user;
 
-    public GuildBanEvent(@Nonnull JDA api, long responseNumber, @Nonnull Guild guild, @Nonnull User user)
+    public GuildBanEvent(@Nonnull JDA api, long responseNumber, DataObject rawData, @Nonnull Guild guild, @Nonnull User user)
     {
-        super(api, responseNumber, guild);
+        super(api, responseNumber, rawData, guild);
         this.user = user;
     }
 

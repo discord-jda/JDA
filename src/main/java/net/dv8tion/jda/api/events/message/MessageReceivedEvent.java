@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.Webhook;
+import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -44,9 +45,9 @@ public class MessageReceivedEvent extends GenericMessageEvent
 {
     private final Message message;
 
-    public MessageReceivedEvent(@Nonnull JDA api, long responseNumber, @Nonnull Message message)
+    public MessageReceivedEvent(@Nonnull JDA api, long responseNumber, DataObject rawData, @Nonnull Message message)
     {
-        super(api, responseNumber, message.getIdLong(), message.getChannel());
+        super(api, responseNumber, rawData, message.getIdLong(), message.getChannel());
         this.message = message;
     }
 

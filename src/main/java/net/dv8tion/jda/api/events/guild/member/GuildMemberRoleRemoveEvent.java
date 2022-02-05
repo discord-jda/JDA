@@ -18,6 +18,7 @@ package net.dv8tion.jda.api.events.guild.member;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
 import java.util.Collections;
@@ -43,9 +44,9 @@ public class GuildMemberRoleRemoveEvent extends GenericGuildMemberEvent
 {
     private final List<Role> removedRoles;
 
-    public GuildMemberRoleRemoveEvent(@Nonnull JDA api, long responseNumber, @Nonnull Member member, @Nonnull List<Role> removedRoles)
+    public GuildMemberRoleRemoveEvent(@Nonnull JDA api, long responseNumber, DataObject rawData, @Nonnull Member member, @Nonnull List<Role> removedRoles)
     {
-        super(api, responseNumber, member);
+        super(api, responseNumber, rawData, member);
         this.removedRoles = Collections.unmodifiableList(removedRoles);
     }
 

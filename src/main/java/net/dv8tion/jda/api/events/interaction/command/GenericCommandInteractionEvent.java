@@ -23,6 +23,7 @@ import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.CommandInteraction;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction;
+import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -37,9 +38,9 @@ import java.util.List;
  */
 public class GenericCommandInteractionEvent extends GenericInteractionCreateEvent implements CommandInteraction
 {
-    public GenericCommandInteractionEvent(@Nonnull JDA api, long responseNumber, @Nonnull CommandInteraction interaction)
+    public GenericCommandInteractionEvent(@Nonnull JDA api, long responseNumber, DataObject rawData, @Nonnull CommandInteraction interaction)
     {
-        super(api, responseNumber, interaction);
+        super(api, responseNumber, rawData, interaction);
     }
 
     @Nonnull

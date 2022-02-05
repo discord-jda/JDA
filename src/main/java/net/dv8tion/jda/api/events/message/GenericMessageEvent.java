@@ -18,6 +18,7 @@ package net.dv8tion.jda.api.events.message;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.Event;
+import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
 
@@ -40,9 +41,9 @@ public abstract class GenericMessageEvent extends Event
     protected final long messageId;
     protected final MessageChannel channel;
 
-    public GenericMessageEvent(@Nonnull JDA api, long responseNumber, long messageId, @Nonnull MessageChannel channel)
+    public GenericMessageEvent(@Nonnull JDA api, long responseNumber, DataObject rawData, long messageId, @Nonnull MessageChannel channel)
     {
-        super(api, responseNumber);
+        super(api, responseNumber, rawData);
         this.messageId = messageId;
         this.channel = channel;
     }

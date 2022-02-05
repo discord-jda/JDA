@@ -19,6 +19,7 @@ package net.dv8tion.jda.api.events.guild.override;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.PermissionOverride;
+import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
 
@@ -29,8 +30,8 @@ import javax.annotation.Nonnull;
  */
 public class PermissionOverrideDeleteEvent extends GenericPermissionOverrideEvent
 {
-    public PermissionOverrideDeleteEvent(@Nonnull JDA api, long responseNumber, @Nonnull GuildChannel channel, @Nonnull PermissionOverride override)
+    public PermissionOverrideDeleteEvent(@Nonnull JDA api, long responseNumber, DataObject rawData, @Nonnull GuildChannel channel, @Nonnull PermissionOverride override)
     {
-        super(api, responseNumber, channel, override);
+        super(api, responseNumber, rawData, channel, override);
     }
 }

@@ -19,6 +19,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.guild.GenericGuildEvent;
+import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
 
@@ -36,9 +37,9 @@ public abstract class GenericGuildMemberEvent extends GenericGuildEvent
 {
     private final Member member;
 
-    public GenericGuildMemberEvent(@Nonnull JDA api, long responseNumber, @Nonnull Member member)
+    public GenericGuildMemberEvent(@Nonnull JDA api, long responseNumber, DataObject rawData, @Nonnull Member member)
     {
-        super(api, responseNumber, member.getGuild());
+        super(api, responseNumber, rawData, member.getGuild());
         this.member = member;
     }
 

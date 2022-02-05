@@ -18,6 +18,7 @@ package net.dv8tion.jda.api.events.guild.update;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
 
@@ -32,9 +33,9 @@ public class GuildUpdateNameEvent extends GenericGuildUpdateEvent<String>
 {
     public static final String IDENTIFIER = "name";
 
-    public GuildUpdateNameEvent(@Nonnull JDA api, long responseNumber, @Nonnull Guild guild, @Nonnull String oldName)
+    public GuildUpdateNameEvent(@Nonnull JDA api, long responseNumber, DataObject rawData, @Nonnull Guild guild, @Nonnull String oldName)
     {
-        super(api, responseNumber, guild, oldName, guild.getName(), IDENTIFIER);
+        super(api, responseNumber, rawData, guild, oldName, guild.getName(), IDENTIFIER);
     }
 
     /**

@@ -17,6 +17,7 @@
 package net.dv8tion.jda.api.events.self;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
 
@@ -31,9 +32,9 @@ public class SelfUpdateDiscriminatorEvent extends GenericSelfUpdateEvent<String>
 {
     public static final String IDENTIFIER = "discriminator";
 
-    public SelfUpdateDiscriminatorEvent(@Nonnull JDA api, long responseNumber, @Nonnull String oldDiscriminator)
+    public SelfUpdateDiscriminatorEvent(@Nonnull JDA api, long responseNumber, DataObject rawData, @Nonnull String oldDiscriminator)
     {
-        super(api, responseNumber, oldDiscriminator, api.getSelfUser().getDiscriminator(), IDENTIFIER);
+        super(api, responseNumber, rawData, oldDiscriminator, api.getSelfUser().getDiscriminator(), IDENTIFIER);
     }
 
     /**

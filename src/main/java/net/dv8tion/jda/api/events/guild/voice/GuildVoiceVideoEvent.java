@@ -18,6 +18,7 @@ package net.dv8tion.jda.api.events.guild.voice;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
 
@@ -43,9 +44,9 @@ public class GuildVoiceVideoEvent extends GenericGuildVoiceEvent
 {
     private final boolean video;
 
-    public GuildVoiceVideoEvent(@Nonnull JDA api, long responseNumber, @Nonnull Member member, boolean video)
+    public GuildVoiceVideoEvent(@Nonnull JDA api, long responseNumber, DataObject rawData, @Nonnull Member member, boolean video)
     {
-        super(api, responseNumber, member);
+        super(api, responseNumber, rawData, member);
         this.video = video;
     }
 

@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.StageChannel;
 import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -49,10 +50,10 @@ public class GuildVoiceRequestToSpeakEvent extends GenericGuildVoiceEvent
 {
     private final OffsetDateTime oldTime, newTime;
 
-    public GuildVoiceRequestToSpeakEvent(@Nonnull JDA api, long responseNumber, @Nonnull Member member,
+    public GuildVoiceRequestToSpeakEvent(@Nonnull JDA api, long responseNumber, DataObject rawData, @Nonnull Member member,
                                          @Nullable OffsetDateTime oldTime, @Nullable OffsetDateTime newTime)
     {
-        super(api, responseNumber, member);
+        super(api, responseNumber, rawData, member);
         this.oldTime = oldTime;
         this.newTime = newTime;
     }

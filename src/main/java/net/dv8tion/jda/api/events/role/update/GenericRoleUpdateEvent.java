@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.UpdateEvent;
 import net.dv8tion.jda.api.events.role.GenericRoleEvent;
+import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -37,10 +38,10 @@ public abstract class GenericRoleUpdateEvent<T> extends GenericRoleEvent impleme
     protected final String identifier;
 
     public GenericRoleUpdateEvent(
-        @Nonnull JDA api, long responseNumber, @Nonnull Role role,
+        @Nonnull JDA api, long responseNumber, DataObject rawData, @Nonnull Role role,
         @Nullable T previous, @Nullable T next, @Nonnull String identifier)
     {
-        super(api, responseNumber, role);
+        super(api, responseNumber, rawData, role);
         this.previous = previous;
         this.next = next;
         this.identifier = identifier;

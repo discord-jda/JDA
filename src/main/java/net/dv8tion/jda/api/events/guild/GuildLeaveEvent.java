@@ -17,6 +17,7 @@ package net.dv8tion.jda.api.events.guild;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
 
@@ -30,8 +31,8 @@ import javax.annotation.Nonnull;
  */
 public class GuildLeaveEvent extends GenericGuildEvent
 {
-    public GuildLeaveEvent(@Nonnull JDA api, long responseNumber, @Nonnull Guild guild)
+    public GuildLeaveEvent(@Nonnull JDA api, long responseNumber, DataObject rawData, @Nonnull Guild guild)
     {
-        super(api, responseNumber, guild);
+        super(api, responseNumber, rawData, guild);
     }
 }

@@ -18,6 +18,7 @@ package net.dv8tion.jda.api.events.thread;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.ThreadChannel;
+import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
 
@@ -30,8 +31,8 @@ import javax.annotation.Nonnull;
  */
 public class ThreadRevealedEvent extends GenericThreadEvent
 {
-    public ThreadRevealedEvent(@Nonnull JDA api, long responseNumber, ThreadChannel thread)
+    public ThreadRevealedEvent(@Nonnull JDA api, long responseNumber, DataObject rawData, ThreadChannel thread)
     {
-        super(api, responseNumber, thread);
+        super(api, responseNumber, rawData, thread);
     }
 }

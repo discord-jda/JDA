@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.Invite;
+import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
 
@@ -35,8 +36,8 @@ import javax.annotation.Nonnull;
  */
 public class GuildInviteDeleteEvent extends GenericGuildInviteEvent
 {
-    public GuildInviteDeleteEvent(@Nonnull JDA api, long responseNumber, @Nonnull String code, @Nonnull GuildChannel channel)
+    public GuildInviteDeleteEvent(@Nonnull JDA api, long responseNumber, DataObject rawData, @Nonnull String code, @Nonnull GuildChannel channel)
     {
-        super(api, responseNumber, code, channel);
+        super(api, responseNumber, rawData, code, channel);
     }
 }

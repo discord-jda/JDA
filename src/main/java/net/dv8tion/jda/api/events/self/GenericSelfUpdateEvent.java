@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.SelfUser;
 import net.dv8tion.jda.api.events.Event;
 import net.dv8tion.jda.api.events.UpdateEvent;
+import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -37,10 +38,10 @@ public abstract class GenericSelfUpdateEvent<T> extends Event implements UpdateE
     protected final String identifier;
 
     public GenericSelfUpdateEvent(
-            @Nonnull JDA api, long responseNumber,
+            @Nonnull JDA api, long responseNumber, DataObject rawData,
             @Nullable T previous, @Nullable T next, @Nonnull String identifier)
     {
-        super(api, responseNumber);
+        super(api, responseNumber, rawData);
         this.previous = previous;
         this.next = next;
         this.identifier = identifier;

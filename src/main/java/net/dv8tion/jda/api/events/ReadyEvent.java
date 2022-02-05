@@ -16,6 +16,7 @@
 package net.dv8tion.jda.api.events;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.handle.GuildSetupController;
 
@@ -33,9 +34,9 @@ public class ReadyEvent extends Event
     private final int availableGuilds;
     private final int unavailableGuilds;
 
-    public ReadyEvent(@Nonnull JDA api, long responseNumber)
+    public ReadyEvent(@Nonnull JDA api, long responseNumber, DataObject rawData)
     {
-        super(api, responseNumber);
+        super(api, responseNumber, rawData);
         this.availableGuilds = (int) getJDA().getGuildCache().size();
         GuildSetupController setupController = ((JDAImpl) getJDA()).getGuildSetupController();
         this.unavailableGuilds = setupController.getSetupNodes(GuildSetupController.Status.UNAVAILABLE).size() + setupController.getUnavailableGuilds().size();

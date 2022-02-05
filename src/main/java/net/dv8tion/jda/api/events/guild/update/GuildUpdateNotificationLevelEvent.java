@@ -18,6 +18,7 @@ package net.dv8tion.jda.api.events.guild.update;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
 
@@ -32,9 +33,9 @@ public class GuildUpdateNotificationLevelEvent extends GenericGuildUpdateEvent<G
 {
     public static final String IDENTIFIER = "notification_level";
 
-    public GuildUpdateNotificationLevelEvent(@Nonnull JDA api, long responseNumber, @Nonnull Guild guild, @Nonnull Guild.NotificationLevel oldNotificationLevel)
+    public GuildUpdateNotificationLevelEvent(@Nonnull JDA api, long responseNumber, DataObject rawData, @Nonnull Guild guild, @Nonnull Guild.NotificationLevel oldNotificationLevel)
     {
-        super(api, responseNumber, guild, oldNotificationLevel, guild.getDefaultNotificationLevel(), IDENTIFIER);
+        super(api, responseNumber, rawData, guild, oldNotificationLevel, guild.getDefaultNotificationLevel(), IDENTIFIER);
     }
 
     /**

@@ -18,6 +18,7 @@ package net.dv8tion.jda.api.events.guild.update;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -33,9 +34,9 @@ public class GuildUpdateVanityCodeEvent extends GenericGuildUpdateEvent<String>
 {
     public static final String IDENTIFIER = "vanity_code";
 
-    public GuildUpdateVanityCodeEvent(@Nonnull JDA api, long responseNumber, @Nonnull Guild guild, @Nullable String previous)
+    public GuildUpdateVanityCodeEvent(@Nonnull JDA api, long responseNumber, DataObject rawData, @Nonnull Guild guild, @Nullable String previous)
     {
-        super(api, responseNumber, guild, previous, guild.getVanityCode(), IDENTIFIER);
+        super(api, responseNumber, rawData, guild, previous, guild.getVanityCode(), IDENTIFIER);
     }
 
     /**

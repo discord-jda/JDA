@@ -23,6 +23,7 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.Event;
 import net.dv8tion.jda.api.interactions.Interaction;
+import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -42,9 +43,9 @@ public class GenericInteractionCreateEvent extends Event implements Interaction
 {
     private final Interaction interaction;
 
-    public GenericInteractionCreateEvent(@Nonnull JDA api, long responseNumber, @Nonnull Interaction interaction)
+    public GenericInteractionCreateEvent(@Nonnull JDA api, long responseNumber, DataObject rawData, @Nonnull Interaction interaction)
     {
-        super(api, responseNumber);
+        super(api, responseNumber, rawData);
         this.interaction = interaction;
     }
 

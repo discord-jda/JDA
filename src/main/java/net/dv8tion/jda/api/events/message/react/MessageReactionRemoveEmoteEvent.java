@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.MessageReaction;
 import net.dv8tion.jda.api.events.message.GenericMessageEvent;
+import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
 
@@ -43,9 +44,9 @@ public class MessageReactionRemoveEmoteEvent extends GenericMessageEvent
 {
     private final MessageReaction reaction;
 
-    public MessageReactionRemoveEmoteEvent(@Nonnull JDA api, long responseNumber, long messageId, @Nonnull MessageChannel channel, @Nonnull MessageReaction reaction)
+    public MessageReactionRemoveEmoteEvent(@Nonnull JDA api, long responseNumber, DataObject rawData, long messageId, @Nonnull MessageChannel channel, @Nonnull MessageReaction reaction)
     {
-        super(api, responseNumber, messageId, channel);
+        super(api, responseNumber, rawData, messageId, channel);
         this.reaction = reaction;
     }
 

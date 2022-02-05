@@ -17,6 +17,7 @@
 package net.dv8tion.jda.api.events.self;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
 
@@ -31,9 +32,9 @@ public class SelfUpdateNameEvent extends GenericSelfUpdateEvent<String>
 {
     public static final String IDENTIFIER = "name";
 
-    public SelfUpdateNameEvent(@Nonnull JDA api, long responseNumber, @Nonnull String oldName)
+    public SelfUpdateNameEvent(@Nonnull JDA api, long responseNumber, DataObject rawData, @Nonnull String oldName)
     {
-        super(api, responseNumber, oldName, api.getSelfUser().getName(), IDENTIFIER);
+        super(api, responseNumber, rawData, oldName, api.getSelfUser().getName(), IDENTIFIER);
     }
 
     /**

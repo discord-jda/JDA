@@ -18,6 +18,7 @@ package net.dv8tion.jda.api.events.guild.update;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
 
@@ -32,9 +33,9 @@ public class GuildUpdateMaxMembersEvent extends GenericGuildUpdateEvent<Integer>
 {
     public static final String IDENTIFIER = "max_members";
 
-    public GuildUpdateMaxMembersEvent(@Nonnull JDA api, long responseNumber, @Nonnull Guild guild, int previous)
+    public GuildUpdateMaxMembersEvent(@Nonnull JDA api, long responseNumber, DataObject rawData, @Nonnull Guild guild, int previous)
     {
-        super(api, responseNumber, guild, previous, guild.getMaxMembers(), IDENTIFIER);
+        super(api, responseNumber, rawData, guild, previous, guild.getMaxMembers(), IDENTIFIER);
     }
 
     /**

@@ -18,6 +18,7 @@ package net.dv8tion.jda.api.events.guild.update;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
 
@@ -32,9 +33,9 @@ public class GuildUpdateMFALevelEvent extends GenericGuildUpdateEvent<Guild.MFAL
 {
     public static final String IDENTIFIER = "mfa_level";
 
-    public GuildUpdateMFALevelEvent(@Nonnull JDA api, long responseNumber, @Nonnull Guild guild, @Nonnull Guild.MFALevel oldMFALevel)
+    public GuildUpdateMFALevelEvent(@Nonnull JDA api, long responseNumber, DataObject rawData, @Nonnull Guild guild, @Nonnull Guild.MFALevel oldMFALevel)
     {
-        super(api, responseNumber, guild, oldMFALevel, guild.getRequiredMFALevel(), IDENTIFIER);
+        super(api, responseNumber, rawData, guild, oldMFALevel, guild.getRequiredMFALevel(), IDENTIFIER);
     }
 
     /**

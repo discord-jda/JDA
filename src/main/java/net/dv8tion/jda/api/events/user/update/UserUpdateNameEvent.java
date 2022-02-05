@@ -18,6 +18,7 @@ package net.dv8tion.jda.api.events.user.update;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
 
@@ -43,9 +44,9 @@ public class UserUpdateNameEvent extends GenericUserUpdateEvent<String>
 {
     public static final String IDENTIFIER = "name";
 
-    public UserUpdateNameEvent(@Nonnull JDA api, long responseNumber, @Nonnull User user, @Nonnull String oldName)
+    public UserUpdateNameEvent(@Nonnull JDA api, long responseNumber, DataObject rawData, @Nonnull User user, @Nonnull String oldName)
     {
-        super(api, responseNumber, user, oldName, user.getName(), IDENTIFIER);
+        super(api, responseNumber, rawData, user, oldName, user.getName(), IDENTIFIER);
     }
 
     /**

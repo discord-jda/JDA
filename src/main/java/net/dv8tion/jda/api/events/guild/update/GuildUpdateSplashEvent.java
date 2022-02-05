@@ -18,6 +18,7 @@ package net.dv8tion.jda.api.events.guild.update;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -33,9 +34,9 @@ public class GuildUpdateSplashEvent extends GenericGuildUpdateEvent<String>
 {
     public static final String IDENTIFIER = "splash";
 
-    public GuildUpdateSplashEvent(@Nonnull JDA api, long responseNumber, @Nonnull Guild guild, @Nullable String oldSplashId)
+    public GuildUpdateSplashEvent(@Nonnull JDA api, long responseNumber, DataObject rawData, @Nonnull Guild guild, @Nullable String oldSplashId)
     {
-        super(api, responseNumber, guild, oldSplashId, guild.getSplashId(), IDENTIFIER);
+        super(api, responseNumber, rawData, guild, oldSplashId, guild.getSplashId(), IDENTIFIER);
     }
 
     /**

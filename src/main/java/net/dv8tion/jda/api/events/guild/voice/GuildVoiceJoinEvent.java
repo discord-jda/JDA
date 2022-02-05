@@ -19,6 +19,7 @@ package net.dv8tion.jda.api.events.guild.voice;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.AudioChannel;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
 
@@ -43,9 +44,9 @@ import javax.annotation.Nonnull;
  */
 public class GuildVoiceJoinEvent extends GenericGuildVoiceUpdateEvent
 {
-    public GuildVoiceJoinEvent(@Nonnull JDA api, long responseNumber, @Nonnull Member member)
+    public GuildVoiceJoinEvent(@Nonnull JDA api, long responseNumber, DataObject rawData, @Nonnull Member member)
     {
-        super(api, responseNumber, member, null, member.getVoiceState().getChannel());
+        super(api, responseNumber, rawData, member, null, member.getVoiceState().getChannel());
     }
 
     @Nonnull

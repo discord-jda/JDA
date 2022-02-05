@@ -19,6 +19,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.GuildMessageChannel;
 import net.dv8tion.jda.api.events.Event;
+import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
 import java.util.Collections;
@@ -43,9 +44,9 @@ public class MessageBulkDeleteEvent extends Event
     protected final GuildMessageChannel channel;
     protected final List<String> messageIds;
 
-    public MessageBulkDeleteEvent(@Nonnull JDA api, long responseNumber, @Nonnull GuildMessageChannel channel, @Nonnull List<String> messageIds)
+    public MessageBulkDeleteEvent(@Nonnull JDA api, long responseNumber, DataObject rawData, @Nonnull GuildMessageChannel channel, @Nonnull List<String> messageIds)
     {
-        super(api, responseNumber);
+        super(api, responseNumber, rawData);
         this.channel = channel;
         this.messageIds = Collections.unmodifiableList(messageIds);
     }

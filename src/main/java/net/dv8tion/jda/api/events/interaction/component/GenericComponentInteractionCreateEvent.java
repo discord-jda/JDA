@@ -26,6 +26,7 @@ import net.dv8tion.jda.api.interactions.components.Component;
 import net.dv8tion.jda.api.interactions.components.ComponentInteraction;
 import net.dv8tion.jda.api.requests.restaction.interactions.MessageEditCallbackAction;
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction;
+import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
 
@@ -41,9 +42,9 @@ public class GenericComponentInteractionCreateEvent extends GenericInteractionCr
 {
     private final ComponentInteraction interaction;
 
-    public GenericComponentInteractionCreateEvent(@Nonnull JDA api, long responseNumber, @Nonnull ComponentInteraction interaction)
+    public GenericComponentInteractionCreateEvent(@Nonnull JDA api, long responseNumber, DataObject rawData, @Nonnull ComponentInteraction interaction)
     {
-        super(api, responseNumber, interaction);
+        super(api, responseNumber, rawData, interaction);
         this.interaction = interaction;
     }
 

@@ -18,6 +18,7 @@ package net.dv8tion.jda.api.events.guild.update;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
 
@@ -32,9 +33,9 @@ public class GuildUpdateExplicitContentLevelEvent extends GenericGuildUpdateEven
 {
     public static final String IDENTIFIER = "explicit_content_filter";
 
-    public GuildUpdateExplicitContentLevelEvent(@Nonnull JDA api, long responseNumber, @Nonnull Guild guild, @Nonnull Guild.ExplicitContentLevel oldLevel)
+    public GuildUpdateExplicitContentLevelEvent(@Nonnull JDA api, long responseNumber, DataObject rawData, @Nonnull Guild guild, @Nonnull Guild.ExplicitContentLevel oldLevel)
     {
-        super(api, responseNumber, guild, oldLevel, guild.getExplicitContentLevel(), IDENTIFIER);
+        super(api, responseNumber, rawData, guild, oldLevel, guild.getExplicitContentLevel(), IDENTIFIER);
     }
 
     /**

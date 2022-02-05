@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.StageChannel;
 import net.dv8tion.jda.api.entities.StageInstance;
 import net.dv8tion.jda.api.events.guild.GenericGuildEvent;
+import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
 
@@ -33,9 +34,9 @@ public abstract class GenericStageInstanceEvent extends GenericGuildEvent
 {
     protected final StageInstance instance;
 
-    public GenericStageInstanceEvent(@Nonnull JDA api, long responseNumber, @Nonnull StageInstance stageInstance)
+    public GenericStageInstanceEvent(@Nonnull JDA api, long responseNumber, DataObject rawData, @Nonnull StageInstance stageInstance)
     {
-        super(api, responseNumber, stageInstance.getGuild());
+        super(api, responseNumber, rawData, stageInstance.getGuild());
         this.instance = stageInstance;
     }
 

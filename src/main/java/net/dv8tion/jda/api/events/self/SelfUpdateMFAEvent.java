@@ -17,6 +17,7 @@
 package net.dv8tion.jda.api.events.self;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
 
@@ -32,9 +33,9 @@ public class SelfUpdateMFAEvent extends GenericSelfUpdateEvent<Boolean>
 {
     public static final String IDENTIFIER = "mfa_enabled";
 
-    public SelfUpdateMFAEvent(@Nonnull JDA api, long responseNumber, boolean wasMfaEnabled)
+    public SelfUpdateMFAEvent(@Nonnull JDA api, long responseNumber, DataObject rawData, boolean wasMfaEnabled)
     {
-        super(api, responseNumber, wasMfaEnabled, !wasMfaEnabled, IDENTIFIER);
+        super(api, responseNumber, rawData, wasMfaEnabled, !wasMfaEnabled, IDENTIFIER);
     }
 
     /**

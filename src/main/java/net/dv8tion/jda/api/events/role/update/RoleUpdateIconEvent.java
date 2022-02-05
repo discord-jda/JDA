@@ -19,6 +19,7 @@ package net.dv8tion.jda.api.events.role.update;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.RoleIcon;
+import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -34,9 +35,9 @@ public class RoleUpdateIconEvent extends GenericRoleUpdateEvent<RoleIcon>
 {
     public static final String IDENTIFIER = "icon";
 
-    public RoleUpdateIconEvent(@Nonnull JDA api, long responseNumber, @Nonnull Role role, @Nullable RoleIcon oldIcon)
+    public RoleUpdateIconEvent(@Nonnull JDA api, long responseNumber, DataObject rawData, @Nonnull Role role, @Nullable RoleIcon oldIcon)
     {
-        super(api, responseNumber, role, oldIcon, role.getIcon(), IDENTIFIER);
+        super(api, responseNumber, rawData, role, oldIcon, role.getIcon(), IDENTIFIER);
     }
 
     /**

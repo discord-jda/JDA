@@ -19,6 +19,7 @@ package net.dv8tion.jda.api.events.channel.update;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Channel;
 import net.dv8tion.jda.api.entities.ChannelField;
+import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
 
@@ -27,8 +28,8 @@ public class ChannelUpdateArchivedEvent extends GenericChannelUpdateEvent<Boolea
 {
     public static final ChannelField FIELD = ChannelField.ARCHIVED;
 
-    public ChannelUpdateArchivedEvent(@Nonnull JDA api, long responseNumber, Channel channel, Boolean oldValue, Boolean newValue)
+    public ChannelUpdateArchivedEvent(@Nonnull JDA api, long responseNumber, DataObject rawData, Channel channel, Boolean oldValue, Boolean newValue)
     {
-        super(api, responseNumber, channel, FIELD, oldValue, newValue);
+        super(api, responseNumber, rawData, channel, FIELD, oldValue, newValue);
     }
 }

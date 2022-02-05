@@ -19,6 +19,7 @@ package net.dv8tion.jda.api.events.emote.update;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Emote;
 import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -41,9 +42,9 @@ public class EmoteUpdateRolesEvent extends GenericEmoteUpdateEvent<List<Role>>
 {
     public static final String IDENTIFIER = "roles";
 
-    public EmoteUpdateRolesEvent(@Nonnull JDA api, long responseNumber, @Nonnull Emote emote, @Nonnull List<Role> oldRoles)
+    public EmoteUpdateRolesEvent(@Nonnull JDA api, long responseNumber, DataObject rawData, @Nonnull Emote emote, @Nonnull List<Role> oldRoles)
     {
-        super(api, responseNumber, emote, oldRoles, emote.getRoles(), IDENTIFIER);
+        super(api, responseNumber, rawData, emote, oldRoles, emote.getRoles(), IDENTIFIER);
     }
 
     /**
