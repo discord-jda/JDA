@@ -38,6 +38,7 @@ import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.IOUtil;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -314,6 +315,16 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
         {
             throw new IllegalArgumentException(e);
         }
+    }
+
+    @NotNull
+    @Override
+    public MessageAction addFile(@Nonnull byte[] data, @Nonnull String name, @Nonnull AttachmentOption... options)
+    {
+        Checks.notNull(data, "Data");
+        final long maxSize = getMaxFileSize();
+        Checks.check(data.length <= maxSize, "File may not exceed the maximum file length of %d bytes!", maxSize);
+        return addFile(new ByteArrayInputStream(data), name, options);
     }
 
     @Nonnull
