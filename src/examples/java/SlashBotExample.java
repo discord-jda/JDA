@@ -52,7 +52,9 @@ public class SlashBotExample extends ListenerAdapter
             Commands.slash("ban", "Ban a user from this server. Requires permission to ban users.")
                 .addOptions(new OptionData(USER, "user", "The user to ban") // USER type allows to include members of the server or other users by id
                     .setRequired(true)) // This command requires a parameter
-                .addOptions(new OptionData(INTEGER, "del_days", "Delete messages from the past days.")) // This is optional
+                .addOptions(new OptionData(INTEGER, "del_days", "Delete messages from the past days.") // This is optional
+                        .setRequiredRange(0, 7)) // Only allow values between 0 and 7 (inclusive)
+                .addOptions(new OptionData(STRING, "reason", "The ban reason to use (default: Banned by <user>)")) // optional reason
         );
 
         // Simple reply commands
@@ -153,12 +155,17 @@ public class SlashBotExample extends ListenerAdapter
             return;
         }
 
-        int delDays = 0;
-        OptionMapping option = event.getOption("del_days");
-        if (option != null) // null = not provided
-            delDays = (int) Math.max(0, Math.min(7, option.getAsLong()));
+        // optional command argument, fall back to 0 if not provided
+        long delDays = event.getOption("del_days", 0L, OptionMapping::getAsLong); // this last part is a method reference used to "resolve" the option value
+
+        // optional ban reason with a lazy evaluated fallback (supplier)
+        String reason = event.getOption("reason",
+                () -> "Banned by " + event.getUser().getAsTag(), // used if getOption("reason") is null (not provided)
+                OptionMapping::getAsString); // used if getOption("reason") is not null (provided)
+
         // Ban the user and send a success response
-        event.getGuild().ban(user, delDays)
+        event.getGuild().ban(user, (int) delDays, reason)
+            .reason(reason) // audit-log reason
             .flatMap(v -> hook.sendMessage("Banned user " + user.getAsTag()))
             .queue();
     }
