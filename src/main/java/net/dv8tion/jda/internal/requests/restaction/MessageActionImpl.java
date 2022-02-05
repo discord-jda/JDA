@@ -38,7 +38,6 @@ import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.IOUtil;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
-import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -317,7 +316,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
         }
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public MessageAction addFile(@Nonnull byte[] data, @Nonnull String name, @Nonnull AttachmentOption... options)
     {
