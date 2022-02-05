@@ -281,12 +281,82 @@ public interface CommandInteractionPayload extends Interaction
         return options.isEmpty() ? null : options.get(0);
     }
 
+    /**
+     * Finds the first option with the specified name.
+     * <br>A resolver is used to get the value if the option is provided.
+     * If no option is provided for the given name, this will simply return null instead.
+     * You can use {@link #getOption(String, Object, Function)} to provide a fallback for missing options.
+     *
+     * <p>For {@link CommandAutoCompleteInteraction}, this might be incomplete and unvalidated.
+     * Auto-complete interactions happen on incomplete command inputs and are not validated.
+     *
+     * <p><b>Example</b>
+     * <br>You can understand this as a shortcut for these lines of code:
+     * <pre>{@code
+     * OptionMapping opt = event.getOption("reason");
+     * String reason = opt == null ? null : opt.getAsString();
+     * }</pre>
+     * Which can be written with this resolver as:
+     * <pre>{@code
+     * String reason = event.getOption("reason", OptionMapping::getAsString);
+     * }</pre>
+     *
+     * @param  name
+     *         The option name
+     * @param  resolver
+     *         The mapping resolver function to use if there is a mapping available,
+     *         the provided mapping will never be null!
+     *
+     * @throws IllegalArgumentException
+     *         If the name or resolver is null
+     *
+     * @return The resolved option with the provided name, or null if that option is not provided
+     *
+     * @see    #getOption(String, Object, Function)
+     * @see    #getOption(String, Supplier, Function)
+     */
     @Nullable
     default <T> T getOption(@Nonnull String name, @Nonnull Function<? super OptionMapping, ? extends T> resolver)
     {
         return getOption(name, null, resolver);
     }
 
+    /**
+     * Finds the first option with the specified name.
+     * <br>A resolver is used to get the value if the option is provided.
+     * If no option is provided for the given name, this will simply return your provided fallback instead.
+     * You can use {@link #getOption(String, Function)} to fall back to {@code null}.
+     *
+     * <p>For {@link CommandAutoCompleteInteraction}, this might be incomplete and unvalidated.
+     * Auto-complete interactions happen on incomplete command inputs and are not validated.
+     *
+     * <p><b>Example</b>
+     * <br>You can understand this as a shortcut for these lines of code:
+     * <pre>{@code
+     * OptionMapping opt = event.getOption("reason");
+     * String reason = opt == null ? "ban by mod" : opt.getAsString();
+     * }</pre>
+     * Which can be written with this resolver as:
+     * <pre>{@code
+     * String reason = event.getOption("reason", "ban by mod", OptionMapping::getAsString);
+     * }</pre>
+     *
+     * @param  name
+     *         The option name
+     * @param  fallback
+     *         The fallback to use if the option is not provided, meaning {@link #getOption(String)} returns null
+     * @param  resolver
+     *         The mapping resolver function to use if there is a mapping available,
+     *         the provided mapping will never be null!
+     *
+     * @throws IllegalArgumentException
+     *         If the name or resolver is null
+     *
+     * @return The resolved option with the provided name, or {@code fallback} if that option is not provided
+     *
+     * @see    #getOption(String, Function)
+     * @see    #getOption(String, Supplier, Function)
+     */
     default <T> T getOption(@Nonnull String name,
                             @Nullable T fallback,
                             @Nonnull Function<? super OptionMapping, ? extends T> resolver)
@@ -298,6 +368,42 @@ public interface CommandInteractionPayload extends Interaction
         return fallback;
     }
 
+    /**
+     * Finds the first option with the specified name.
+     * <br>A resolver is used to get the value if the option is provided.
+     * If no option is provided for the given name, this will simply return your provided fallback instead.
+     * You can use {@link #getOption(String, Function)} to fall back to {@code null}.
+     *
+     * <p>For {@link CommandAutoCompleteInteraction}, this might be incomplete and unvalidated.
+     * Auto-complete interactions happen on incomplete command inputs and are not validated.
+     *
+     * <p><b>Example</b>
+     * <br>You can understand this as a shortcut for these lines of code:
+     * <pre>{@code
+     * OptionMapping opt = event.getOption("reason");
+     * String reason = opt == null ? context.getFallbackReason() : opt.getAsString();
+     * }</pre>
+     * Which can be written with this resolver as:
+     * <pre>{@code
+     * String reason = event.getOption("reason", context::getFallbackReason , OptionMapping::getAsString);
+     * }</pre>
+     *
+     * @param  name
+     *         The option name
+     * @param  fallback
+     *         The fallback supplier to use if the option is not provided, meaning {@link #getOption(String)} returns null
+     * @param  resolver
+     *         The mapping resolver function to use if there is a mapping available,
+     *         the provided mapping will never be null!
+     *
+     * @throws IllegalArgumentException
+     *         If the name or resolver is null
+     *
+     * @return The resolved option with the provided name, or {@code fallback} if that option is not provided
+     *
+     * @see    #getOption(String, Function)
+     * @see    #getOption(String, Object, Function)
+     */
     default <T> T getOption(@Nonnull String name,
                             @Nullable Supplier<? extends T> fallback,
                             @Nonnull Function<? super OptionMapping, ? extends T> resolver)
