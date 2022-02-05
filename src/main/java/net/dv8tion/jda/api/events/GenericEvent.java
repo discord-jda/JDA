@@ -17,6 +17,7 @@
 package net.dv8tion.jda.api.events;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
 
@@ -37,4 +38,8 @@ public interface GenericEvent
      * @return The current sequence number for this event
      */
     long getResponseNumber();
+
+    //TODO docs
+    @Nonnull
+    DataObject getRawData();
 }

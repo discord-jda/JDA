@@ -16,6 +16,7 @@
 package net.dv8tion.jda.api.events;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
 
@@ -30,6 +31,7 @@ public abstract class Event implements GenericEvent
 {
     protected final JDA api;
     protected final long responseNumber;
+    protected final DataObject rawData;
 
     /**
      * Creates a new Event from the given JDA instance
@@ -38,13 +40,16 @@ public abstract class Event implements GenericEvent
      *        Current JDA instance
      * @param responseNumber
      *        The sequence number for this event
+     * @param rawData
+     *        The raw data of this event
      *
      * @see   #Event(net.dv8tion.jda.api.JDA)
      */
-    public Event(@Nonnull JDA api, long responseNumber)
+    public Event(@Nonnull JDA api, long responseNumber, DataObject rawData)
     {
         this.api = api;
         this.responseNumber = responseNumber;
+        this.rawData = rawData;
     }
 
     /**
@@ -56,7 +61,7 @@ public abstract class Event implements GenericEvent
      */
     public Event(@Nonnull JDA api)
     {
-        this(api, api.getResponseTotal());
+        this(api, api.getResponseTotal(), null);
     }
 
     @Nonnull
@@ -70,5 +75,15 @@ public abstract class Event implements GenericEvent
     public long getResponseNumber()
     {
         return responseNumber;
+    }
+
+    @Nonnull
+    @Override
+    public DataObject getRawData()
+    {
+        if (rawData == null)
+            throw new IllegalStateException("This event does not contain any raw data, or event passthrough is not enabled, see JDABuilder#setEventPassthrough(boolean)");
+
+        return rawData;
     }
 }
