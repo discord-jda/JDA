@@ -26,6 +26,8 @@ import net.dv8tion.jda.internal.utils.Checks;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
@@ -277,5 +279,33 @@ public interface CommandInteractionPayload extends Interaction
     {
         List<OptionMapping> options = getOptionsByName(name);
         return options.isEmpty() ? null : options.get(0);
+    }
+
+    @Nullable
+    default <T> T getOption(@Nonnull String name, @Nonnull Function<? super OptionMapping, ? extends T> resolver)
+    {
+        return getOption(name, null, resolver);
+    }
+
+    default <T> T getOption(@Nonnull String name,
+                            @Nullable T fallback,
+                            @Nonnull Function<? super OptionMapping, ? extends T> resolver)
+    {
+        Checks.notNull(resolver, "Resolver");
+        OptionMapping mapping = getOption(name);
+        if (mapping != null)
+            return resolver.apply(mapping);
+        return fallback;
+    }
+
+    default <T> T getOption(@Nonnull String name,
+                            @Nullable Supplier<? extends T> fallback,
+                            @Nonnull Function<? super OptionMapping, ? extends T> resolver)
+    {
+        Checks.notNull(resolver, "Resolver");
+        OptionMapping mapping = getOption(name);
+        if (mapping != null)
+            return resolver.apply(mapping);
+        return fallback == null ? null : fallback.get();
     }
 }
