@@ -398,7 +398,7 @@ public class EntityBuilder
             userObj.setName(newName);
             jda.handleEvent(
                 new UserUpdateNameEvent(
-                    jda, responseNumber,
+                    jda, responseNumber, getJDA().isEventPassthrough() ? user : null,
                     userObj, oldName));
         }
 
@@ -407,7 +407,7 @@ public class EntityBuilder
             userObj.setDiscriminator(newDiscriminator);
             jda.handleEvent(
                 new UserUpdateDiscriminatorEvent(
-                    jda, responseNumber,
+                    jda, responseNumber, getJDA().isEventPassthrough() ? user : null,
                     userObj, oldDiscriminator));
         }
 
@@ -416,7 +416,7 @@ public class EntityBuilder
             userObj.setAvatarId(newAvatar);
             jda.handleEvent(
                 new UserUpdateAvatarEvent(
-                    jda, responseNumber,
+                    jda, responseNumber, getJDA().isEventPassthrough() ? user : null,
                     userObj, oldAvatar));
         }
 
@@ -425,7 +425,7 @@ public class EntityBuilder
             userObj.setFlags(newFlags);
             jda.handleEvent(
                     new UserUpdateFlagsEvent(
-                        jda, responseNumber,
+                        jda, responseNumber, getJDA().isEventPassthrough() ? user : null,
                         userObj, User.UserFlag.getFlags(oldFlags)));
         }
     }
@@ -607,7 +607,7 @@ public class EntityBuilder
                 member.setNickname(newNick);
                 getJDA().handleEvent(
                     new GuildMemberUpdateNicknameEvent(
-                        getJDA(), responseNumber,
+                        getJDA(), responseNumber, getJDA().isEventPassthrough() ? content : null,
                         member, oldNick));
             }
         }
@@ -620,7 +620,7 @@ public class EntityBuilder
                 member.setAvatarId(newAvatarId);
                 getJDA().handleEvent(
                         new GuildMemberUpdateAvatarEvent(
-                                getJDA(), responseNumber,
+                                getJDA(), responseNumber, getJDA().isEventPassthrough() ? content : null,
                                 member, oldAvatarId));
             }
         }
@@ -635,7 +635,7 @@ public class EntityBuilder
                 member.setBoostDate(epoch);
                 getJDA().handleEvent(
                     new GuildMemberUpdateBoostTimeEvent(
-                        getJDA(), responseNumber,
+                        getJDA(), responseNumber, getJDA().isEventPassthrough() ? content : null,
                         member, oldTime));
             }
         }
@@ -651,7 +651,7 @@ public class EntityBuilder
                 member.setTimeOutEnd(epoch);
                 getJDA().handleEvent(
                         new GuildMemberUpdateTimeOutEvent(
-                                getJDA(), responseNumber,
+                                getJDA(), responseNumber, getJDA().isEventPassthrough() ? content : null,
                                 member, oldTime));
             }
         }
@@ -673,7 +673,7 @@ public class EntityBuilder
                 member.setPending(pending);
                 getJDA().handleEvent(
                     new GuildMemberUpdatePendingEvent(
-                        getJDA(), responseNumber,
+                        getJDA(), responseNumber, getJDA().isEventPassthrough() ? content : null,
                         member, oldPending));
             }
         }
@@ -710,14 +710,14 @@ public class EntityBuilder
         {
             getJDA().handleEvent(
                 new GuildMemberRoleRemoveEvent(
-                    getJDA(), responseNumber,
+                    getJDA(), responseNumber, null,
                     member, removedRoles));
         }
         if (newRoles.size() > 0)
         {
             getJDA().handleEvent(
                 new GuildMemberRoleAddEvent(
-                    getJDA(), responseNumber,
+                    getJDA(), responseNumber, null,
                     member, newRoles));
         }
     }

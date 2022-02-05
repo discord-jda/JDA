@@ -77,7 +77,7 @@ public class MessageDeleteHandler extends SocketHandler
             }
         }
 
-        getJDA().handleEvent(new MessageDeleteEvent(getJDA(), responseNumber, messageId, channel));
+        getJDA().handleEvent(new MessageDeleteEvent(getJDA(), responseNumber, getJDA().isEventPassthrough() ? content : null, messageId, channel));
         return null;
     }
 }

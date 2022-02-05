@@ -44,7 +44,7 @@ public class ThreadListSyncHandler extends SocketHandler
             DataObject threadJson = threadsArrayJson.getObject(i);
             ThreadChannel thread = entityBuilder.createThreadChannel(threadJson, guildId);
 
-            api.handleEvent(new ThreadRevealedEvent(api, responseNumber, thread));
+            api.handleEvent(new ThreadRevealedEvent(api, responseNumber, getJDA().isEventPassthrough() ? content : null, thread));
         }
 
         return null;

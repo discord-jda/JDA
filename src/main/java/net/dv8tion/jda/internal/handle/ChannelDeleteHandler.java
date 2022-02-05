@@ -62,7 +62,7 @@ public class ChannelDeleteHandler extends SocketHandler
                 guild.getStoreChannelView().remove(channelId);
                 getJDA().handleEvent(
                     new ChannelDeleteEvent(
-                        getJDA(), responseNumber,
+                        getJDA(), responseNumber, getJDA().isEventPassthrough() ? content : null,
                         channel));
                 break;
             }
@@ -78,7 +78,7 @@ public class ChannelDeleteHandler extends SocketHandler
                 guild.getTextChannelsView().remove(channel.getIdLong());
                 getJDA().handleEvent(
                     new ChannelDeleteEvent(
-                        getJDA(), responseNumber,
+                        getJDA(), responseNumber, getJDA().isEventPassthrough() ? content : null,
                         channel));
                 break;
             }
@@ -94,7 +94,7 @@ public class ChannelDeleteHandler extends SocketHandler
                 guild.getNewsChannelView().remove(channel.getIdLong());
                 getJDA().handleEvent(
                         new ChannelDeleteEvent(
-                                getJDA(), responseNumber,
+                                getJDA(), responseNumber, getJDA().isEventPassthrough() ? content : null,
                                 channel));
                 break;
             }
@@ -118,7 +118,7 @@ public class ChannelDeleteHandler extends SocketHandler
                 guild.getVoiceChannelsView().remove(channel.getIdLong());
                 getJDA().handleEvent(
                     new ChannelDeleteEvent(
-                        getJDA(), responseNumber,
+                        getJDA(), responseNumber, getJDA().isEventPassthrough() ? content : null,
                         channel));
                 break;
             }
@@ -134,7 +134,7 @@ public class ChannelDeleteHandler extends SocketHandler
                 guild.getStageChannelsView().remove(channel.getIdLong());
                 getJDA().handleEvent(
                     new ChannelDeleteEvent(
-                        getJDA(), responseNumber,
+                        getJDA(), responseNumber, getJDA().isEventPassthrough() ? content : null,
                         channel));
             }
 
@@ -150,7 +150,7 @@ public class ChannelDeleteHandler extends SocketHandler
                 guild.getCategoriesView().remove(channelId);
                 getJDA().handleEvent(
                     new ChannelDeleteEvent(
-                        getJDA(), responseNumber,
+                        getJDA(), responseNumber, getJDA().isEventPassthrough() ? content : null,
                         category));
                 break;
             }

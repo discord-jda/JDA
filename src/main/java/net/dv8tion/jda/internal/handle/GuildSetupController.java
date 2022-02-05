@@ -177,7 +177,7 @@ public class GuildSetupController
         {
             log.debug("Leaving unavailable guild with id {}", id);
             remove(id);
-            api.getEventManager().handle(new UnavailableGuildLeaveEvent(api, api.getResponseTotal(), id));
+            api.getEventManager().handle(new UnavailableGuildLeaveEvent(api, api.getResponseTotal(), obj, id));
             return true;
         }
 
@@ -208,7 +208,7 @@ public class GuildSetupController
                 remove(id);
             else
                 ready(id);
-            api.getEventManager().handle(new UnavailableGuildLeaveEvent(api, api.getResponseTotal(), id));
+            api.getEventManager().handle(new UnavailableGuildLeaveEvent(api, api.getResponseTotal(), getJDA().isEventPassthrough() ? obj : null, id));
         }
         log.debug("Updated incompleteCount to {}", incompleteCount);
         checkReady();

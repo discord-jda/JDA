@@ -74,7 +74,7 @@ public class GuildRoleUpdateHandler extends SocketHandler
             role.setName(name);
             getJDA().handleEvent(
                     new RoleUpdateNameEvent(
-                            getJDA(), responseNumber,
+                            getJDA(), responseNumber, getJDA().isEventPassthrough() ? content : null,
                             role, oldName));
         }
         if (color != role.getColorRaw())
@@ -83,7 +83,7 @@ public class GuildRoleUpdateHandler extends SocketHandler
             role.setColor(color);
             getJDA().handleEvent(
                     new RoleUpdateColorEvent(
-                            getJDA(), responseNumber,
+                            getJDA(), responseNumber, getJDA().isEventPassthrough() ? content : null,
                             role, oldColor));
         }
         if (!Objects.equals(position, role.getPositionRaw()))
@@ -93,7 +93,7 @@ public class GuildRoleUpdateHandler extends SocketHandler
             role.setRawPosition(position);
             getJDA().handleEvent(
                     new RoleUpdatePositionEvent(
-                            getJDA(), responseNumber,
+                            getJDA(), responseNumber, getJDA().isEventPassthrough() ? content : null,
                             role, oldPosition, oldPositionRaw));
         }
         if (!Objects.equals(permissions, role.getPermissionsRaw()))
@@ -102,7 +102,7 @@ public class GuildRoleUpdateHandler extends SocketHandler
             role.setRawPermissions(permissions);
             getJDA().handleEvent(
                     new RoleUpdatePermissionsEvent(
-                            getJDA(), responseNumber,
+                            getJDA(), responseNumber, getJDA().isEventPassthrough() ? content : null,
                             role, oldPermissionsRaw));
         }
 
@@ -112,7 +112,7 @@ public class GuildRoleUpdateHandler extends SocketHandler
             role.setHoisted(hoisted);
             getJDA().handleEvent(
                     new RoleUpdateHoistedEvent(
-                            getJDA(), responseNumber,
+                            getJDA(), responseNumber, getJDA().isEventPassthrough() ? content : null,
                             role, wasHoisted));
         }
         if (mentionable != role.isMentionable())
@@ -121,7 +121,7 @@ public class GuildRoleUpdateHandler extends SocketHandler
             role.setMentionable(mentionable);
             getJDA().handleEvent(
                     new RoleUpdateMentionableEvent(
-                            getJDA(), responseNumber,
+                            getJDA(), responseNumber, getJDA().isEventPassthrough() ? content : null,
                             role, wasMentionable));
         }
 
@@ -134,7 +134,7 @@ public class GuildRoleUpdateHandler extends SocketHandler
             role.setIcon(newIcon);
             getJDA().handleEvent(
                     new RoleUpdateIconEvent(
-                            getJDA(), responseNumber,
+                            getJDA(), responseNumber, getJDA().isEventPassthrough() ? content : null,
                             role, oldIcon));
         }
         return null;

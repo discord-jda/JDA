@@ -52,7 +52,7 @@ public class StageInstanceDeleteHandler extends SocketHandler
         StageInstance instance = channel.getStageInstance();
         channel.setStageInstance(null);
         if (instance != null)
-            getJDA().handleEvent(new StageInstanceDeleteEvent(getJDA(), responseNumber, instance));
+            getJDA().handleEvent(new StageInstanceDeleteEvent(getJDA(), responseNumber, getJDA().isEventPassthrough() ? content : null, instance));
         return null;
     }
 }

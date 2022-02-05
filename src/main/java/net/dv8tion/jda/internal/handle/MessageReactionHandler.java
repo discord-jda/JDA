@@ -163,14 +163,14 @@ public class MessageReactionHandler extends SocketHandler
         {
             api.handleEvent(
                 new MessageReactionAddEvent(
-                    api, responseNumber,
+                    api, responseNumber, getJDA().isEventPassthrough() ? content : null,
                     user, member, reaction, userId));
         }
         else
         {
             api.handleEvent(
                 new MessageReactionRemoveEvent(
-                    api, responseNumber,
+                    api, responseNumber, getJDA().isEventPassthrough() ? content : null,
                     user, member, reaction, userId));
         }
         return null;

@@ -78,7 +78,7 @@ public class MessageBulkDeleteHandler extends SocketHandler
             List<String> messages = array.stream(DataArray::getString).collect(Collectors.toList());
             getJDA().handleEvent(
                 new MessageBulkDeleteEvent(
-                    getJDA(), responseNumber,
+                    getJDA(), responseNumber, getJDA().isEventPassthrough() ? content : null,
                     channel, messages));
         }
         return null;

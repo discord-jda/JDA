@@ -54,7 +54,7 @@ public class InviteDeleteHandler extends SocketHandler
         String code = content.getString("code");
         getJDA().handleEvent(
             new GuildInviteDeleteEvent(
-                getJDA(), responseNumber,
+                getJDA(), responseNumber, getJDA().isEventPassthrough() ? content : null,
                 code, channel));
         return null;
     }

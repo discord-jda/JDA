@@ -210,7 +210,7 @@ public class GuildSetupNode
             {
                 firedUnavailableJoin = true;
                 JDAImpl api = getController().getJDA();
-                api.handleEvent(new UnavailableGuildJoinedEvent(api, api.getResponseTotal(), id));
+                api.handleEvent(new UnavailableGuildJoinedEvent(api, api.getResponseTotal(), api.isEventPassthrough() ? obj : null, id));
             }
             return;
         }
@@ -360,18 +360,18 @@ public class GuildSetupNode
         switch (type)
         {
         case AVAILABLE:
-            api.handleEvent(new GuildAvailableEvent(api, api.getResponseTotal(), guild));
+            api.handleEvent(new GuildAvailableEvent(api, api.getResponseTotal(), null, guild));
             getController().remove(id);
             break;
         case JOIN:
-            api.handleEvent(new GuildJoinEvent(api, api.getResponseTotal(), guild));
+            api.handleEvent(new GuildJoinEvent(api, api.getResponseTotal(), null, guild));
             if (requestedChunk)
                 getController().ready(id);
             else
                 getController().remove(id);
             break;
         default:
-            api.handleEvent(new GuildReadyEvent(api, api.getResponseTotal(), guild));
+            api.handleEvent(new GuildReadyEvent(api, api.getResponseTotal(), null, guild));
             getController().ready(id);
             break;
         }

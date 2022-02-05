@@ -51,7 +51,7 @@ public class ChannelCreateHandler extends SocketHandler
             return null;
         }
 
-        jda.handleEvent(new ChannelCreateEvent(jda, responseNumber, channel));
+        jda.handleEvent(new ChannelCreateEvent(jda, responseNumber, getJDA().isEventPassthrough() ? content : null, channel));
 
         return null;
     }
