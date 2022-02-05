@@ -39,7 +39,23 @@ public interface GenericEvent
      */
     long getResponseNumber();
 
-    //TODO docs
+    /**
+     * The raw {@link DataObject} which this Event corresponds to
+     *
+     * @return The corresponding {@link DataObject}
+     *
+     * @throws IllegalStateException If the event has no raw data
+     *
+     * @see #hasRawData()
+     */
     @Nonnull
     DataObject getRawData();
+
+    /**
+     * Whether this event contains its raw event data
+     *
+     * @return <code>True</code> if the event has raw data, <code>false</code> if not
+     * @see #getRawData()
+     */
+    boolean hasRawData();
 }

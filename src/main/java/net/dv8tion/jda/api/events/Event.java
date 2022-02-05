@@ -86,4 +86,10 @@ public abstract class Event implements GenericEvent
 
         return rawData;
     }
+
+    @Override
+    public boolean hasRawData()
+    {
+        return rawData != null;
+    }
 }
