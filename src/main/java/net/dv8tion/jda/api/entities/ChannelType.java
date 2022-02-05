@@ -140,7 +140,7 @@ public enum ChannelType
             case GROUP:
                 return true;
             default:
-                return false;
+                return isThread();
         }
     }
 
@@ -150,7 +150,8 @@ public enum ChannelType
      *
      * @return True, if channels of this type are {@link ThreadChannel ThreadChannel}
      */
-    public boolean isThread() {
+    public boolean isThread()
+    {
         switch (this)
         {
             case GUILD_NEWS_THREAD:
