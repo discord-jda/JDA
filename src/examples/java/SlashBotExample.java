@@ -156,7 +156,7 @@ public class SlashBotExample extends ListenerAdapter
         }
 
         // optional command argument, fall back to 0 if not provided
-        long delDays = event.getOption("del_days", 0L, OptionMapping::getAsLong); // this last part is a method reference used to "resolve" the option value
+        int delDays = event.getOption("del_days", 0, OptionMapping::getAsInt); // this last part is a method reference used to "resolve" the option value
 
         // optional ban reason with a lazy evaluated fallback (supplier)
         String reason = event.getOption("reason",
@@ -164,7 +164,7 @@ public class SlashBotExample extends ListenerAdapter
                 OptionMapping::getAsString); // used if getOption("reason") is not null (provided)
 
         // Ban the user and send a success response
-        event.getGuild().ban(user, (int) delDays, reason)
+        event.getGuild().ban(user, delDays, reason)
             .reason(reason) // audit-log reason
             .flatMap(v -> hook.sendMessage("Banned user " + user.getAsTag()))
             .queue();
