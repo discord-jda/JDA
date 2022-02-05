@@ -1380,10 +1380,6 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
 
     @Nonnull
     @Override
-    SortedSnowflakeCacheView<StoreChannel> getStoreChannelCache();
-
-    @Nonnull
-    @Override
     SortedSnowflakeCacheView<TextChannel> getTextChannelCache();
 
     @Nonnull
