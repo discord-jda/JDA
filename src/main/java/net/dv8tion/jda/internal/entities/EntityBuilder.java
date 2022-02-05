@@ -1449,6 +1449,8 @@ public class EntityBuilder
                 mentionedRoles.add(arr.getLong(i));
         });
 
+        MessageMentions mentions = new MessageMentionsImpl(mentionsEveryone, mentionedUsers, mentionedRoles);
+
         MessageType type = MessageType.fromId(jsonObject.getInt("type"));
         ReceivedMessage message;
         Message referencedMessage = null;
@@ -1513,15 +1515,14 @@ public class EntityBuilder
             throw new IllegalArgumentException(UNKNOWN_MESSAGE_TYPE);
         if (!type.isSystem())
         {
-            message = new ReceivedMessage(id, channel, type, messageReference, fromWebhook,
-                    mentionsEveryone, mentionedUsers, mentionedRoles, tts, pinned,
-                    content, nonce, user, member, activity, editTime, reactions, attachments, embeds, stickers, components, flags, messageInteraction);
+            message = new ReceivedMessage(id, channel, type, messageReference, fromWebhook, tts, pinned,
+                    content, nonce, user, member, activity, editTime, mentions, reactions, attachments, embeds, stickers, components, flags, messageInteraction);
         }
         else
         {
-            message = new SystemMessage(id, channel, type, messageReference, fromWebhook,
-                    mentionsEveryone, mentionedUsers, mentionedRoles, tts, pinned,
-                    content, nonce, user, member, activity, editTime, reactions, attachments, embeds, stickers, flags);
+            message = new SystemMessage(id, channel, type, messageReference, fromWebhook, tts, pinned,
+                    content, nonce, user, member, activity, editTime, mentions, reactions, attachments, embeds, stickers, flags);
+
             return message; // We don't need to parse mentions for system messages, they are always empty anyway
         }
 
@@ -1558,7 +1559,7 @@ public class EntityBuilder
             mentionedUsersList.add(mentionedMember.getUser());
         }
 
-        message.setMentions(mentionedUsersList, mentionedMembersList);
+        ((MessageMentionsImpl) message.getMentions()).setUserMemberMentions(mentionedUsersList, mentionedMembersList);
         return message;
     }
 
