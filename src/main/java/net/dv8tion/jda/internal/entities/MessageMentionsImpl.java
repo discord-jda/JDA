@@ -32,7 +32,6 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 
-//TODO-v5 | Docs
 public class MessageMentionsImpl implements MessageMentions
 {
     private Message message;
@@ -54,13 +53,11 @@ public class MessageMentionsImpl implements MessageMentions
         this.mentionedRoles = mentionedRoles;
     }
 
-    //TODO-v5 | Docs
     public JDA getJDA()
     {
         return message.getJDA();
     }
 
-    //TODO-v5 | Docs
     public Message getMessage()
     {
         return message;
