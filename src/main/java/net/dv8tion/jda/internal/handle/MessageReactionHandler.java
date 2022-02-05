@@ -70,8 +70,8 @@ public class MessageReactionHandler extends SocketHandler
                 JDALogger.getLazyString(() -> add ? "add" : "remove"), content);
             return null;
         }
-
-        Guild guild = api.getGuildById(content.getUnsignedLong("guild_id", 0));
+        final long guildId = content.getUnsignedLong("guild_id", 0);
+        Guild guild = api.getGuildById(guildId);
         MemberImpl member = null;
         if (guild != null)
         {
@@ -106,6 +106,17 @@ public class MessageReactionHandler extends SocketHandler
         if (user == null && member != null)
             user = member.getUser(); // this happens when we have guild subscriptions disabled
 
+        if (user == null)
+        {
+            if (add && guild != null)
+            {
+                api.getEventCache().cache(EventCache.Type.USER, userId, responseNumber, allContent, this::handle);
+                EventCache.LOG.debug("Received a reaction for a user that JDA does not currently have cached. " +
+                        "UserID: {} ChannelId: {} MessageId: {}", userId, channelId, messageId);
+                return null;
+            }
+        }
+
         //TODO-v5-unified-channel-cache
         MessageChannel channel = api.getTextChannelById(channelId);
         if (channel == null)
@@ -116,6 +127,12 @@ public class MessageReactionHandler extends SocketHandler
             channel = api.getPrivateChannelById(channelId);
         if (channel == null)
         {
+            if (guildId != 0)
+            {
+                api.getEventCache().cache(EventCache.Type.CHANNEL, channelId, responseNumber, allContent, this::handle);
+                EventCache.LOG.debug("Received a reaction for a channel that JDA does not currently have cached");
+                return null;
+            }
             //create a new private channel with minimal information for this event
             channel = getJDA().getEntityBuilder().createPrivateChannel(
                     DataObject.empty()

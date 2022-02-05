@@ -60,22 +60,16 @@ public class GenericMessageReactionEvent extends GenericMessageEvent
     /**
      * The id for the user who owns the reaction.
      *
-     * This is null if the user was not cached.
-     *
      * @return The user id
      */
     @Nullable
     public String getUserId()
     {
-        if (userId == 0)
-            return null;
         return Long.toUnsignedString(userId);
     }
 
     /**
      * The id for the user who owns reaction.
-     *
-     * This is {@code 0} if the user was not cached.
      *
      * @return The user id
      */
@@ -157,11 +151,6 @@ public class GenericMessageReactionEvent extends GenericMessageEvent
         User user = getUser();
         if (user != null)
             return new CompletedRestAction<>(getJDA(), user);
-        if (userId == 0)
-        {
-            return getJDA().retrieveChannelById(getChannel().getIdLong())
-                    .map(channel -> ((PrivateChannel) channel).getUser());
-        }
         return getJDA().retrieveUserById(getUserIdLong());
     }
 
@@ -186,7 +175,7 @@ public class GenericMessageReactionEvent extends GenericMessageEvent
     {
         if (member != null)
             return new CompletedRestAction<>(getJDA(), member);
-        if (userId == 0 || !getChannel().getType().isGuild())
+        if (!getChannel().getType().isGuild())
             throw new IllegalStateException("Cannot retrieve member for a private reaction not from a guild");
         return getGuild().retrieveMemberById(getUserIdLong());
     }

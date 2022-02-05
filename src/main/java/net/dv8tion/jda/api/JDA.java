@@ -1118,60 +1118,6 @@ public interface JDA
     RestAction<User> retrieveUserById(long id, boolean update);
 
     /**
-     * Retrieves a {@link Channel} object based on the provided id.
-     *
-     * <p>The returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} can encounter the following Discord errors:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL ErrorResponse.UNKNOWN_CHANNEL}
-     *     <br>Occurs when the provided id does not refer to a {@link Channel Channel} known by Discord.
-     *     known by Discord. Typically occurs when developers provide an incomplete id (cut short).</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>Occurs when the provided id does refers to a {@link Channel Channel} that this account does not have access to.
-     *     </li>
-     * </ul>
-     *
-     * @param  id
-     *         The id of the requested {@link Channel Channel}.
-     *
-     * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.api.entities.Channel Channel}
-     *         <br>On request, gets the User with id matching provided id from Discord.
-     */
-    @Nonnull
-    @CheckReturnValue
-    RestAction<Channel> retrieveChannelById(long id);
-
-    /**
-     * Retrieves a {@link Channel} object based on the provided id.
-     *
-     * <p>The returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} can encounter the following Discord errors:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL ErrorResponse.UNKNOWN_CHANNEL}
-     *     <br>Occurs when the provided id does not refer to a {@link Channel Channel} known by Discord.
-     *     known by Discord. Typically occurs when developers provide an incomplete id (cut short).</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>Occurs when the provided id does refers to a {@link Channel Channel} that this account does not have access to.
-     *     </li>
-     * </ul>
-     *
-     * @param  id
-     *         The id of the requested {@link Channel Channel}.
-     *
-     * @throws IllegalArgumentException
-     *         If the provided id is null or is not a valid Snowflake.
-     *
-     * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.api.entities.Channel Channel}
-     *         <br>On request, gets the User with id matching provided id from Discord.
-     */
-    @Nonnull
-    @CheckReturnValue
-    default RestAction<Channel> retrieveChannelById(String id)
-    {
-        return retrieveChannelById(MiscUtil.parseSnowflake(id));
-    }
-
-    /**
      * {@link net.dv8tion.jda.api.utils.cache.SnowflakeCacheView SnowflakeCacheView} of
      * all cached {@link Guild Guilds} visible to this JDA session.
      *
