@@ -289,7 +289,7 @@ public class OptionMapping
      * @throws ArithmeticException
      *         If the provided integer value cannot fit into a 32bit signed int
      *
-     * @return The long value
+     * @return The int value
      */
     public int getAsInt()
     {
