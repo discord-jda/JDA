@@ -306,6 +306,8 @@ public interface CommandInteractionPayload extends Interaction
      * @param  resolver
      *         The mapping resolver function to use if there is a mapping available,
      *         the provided mapping will never be null!
+     * @param  <T>
+     *         The type of the resolved option value
      *
      * @throws IllegalArgumentException
      *         If the name or resolver is null
@@ -348,6 +350,8 @@ public interface CommandInteractionPayload extends Interaction
      * @param  resolver
      *         The mapping resolver function to use if there is a mapping available,
      *         the provided mapping will never be null!
+     * @param  <T>
+     *         The type of the resolved option value
      *
      * @throws IllegalArgumentException
      *         If the name or resolver is null
@@ -395,6 +399,8 @@ public interface CommandInteractionPayload extends Interaction
      * @param  resolver
      *         The mapping resolver function to use if there is a mapping available,
      *         the provided mapping will never be null!
+     * @param  <T>
+     *         The type of the resolved option value
      *
      * @throws IllegalArgumentException
      *         If the name or resolver is null
