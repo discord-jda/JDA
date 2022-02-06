@@ -62,7 +62,7 @@ public class GenericMessageReactionEvent extends GenericMessageEvent
      *
      * @return The user id
      */
-    @Nullable
+    @Nonnull
     public String getUserId()
     {
         return Long.toUnsignedString(userId);

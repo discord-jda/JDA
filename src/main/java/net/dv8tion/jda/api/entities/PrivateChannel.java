@@ -38,10 +38,13 @@ public interface PrivateChannel extends MessageChannel
      *     <li>A message is deleted</li>
      *     <li>This account sends a message to a user from another shard (not shard 0)</li>
      * </ul>
-     * The consequence of this is that for any message this bot receives from a guild or from other users will not be null.
+     * The consequence of this is that for any message this bot receives from a guild or from other users, the user will not be null.
      *
+     * <br>In order to retrieve a user that is null, use {@link #retrieveUser()}
      *
      * @return Possibly-null {@link net.dv8tion.jda.api.entities.User User}.
+     *
+     * @see #retrieveUser()
      */
     @Nullable
     User getUser();
