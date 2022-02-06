@@ -1267,7 +1267,8 @@ public class EntityBuilder
         return priv;
     }
 
-    private void cachePrivateChannel(PrivateChannelImpl priv){
+    private void cachePrivateChannel(PrivateChannelImpl priv)
+    {
         SnowflakeCacheViewImpl<PrivateChannel> privateView = getJDA().getPrivateChannelsView();
         try (UnlockHook hook = privateView.writeLock())
         {

@@ -41,7 +41,7 @@ public interface PrivateChannel extends MessageChannel
      * The consequence of this is that for any message this bot receives from a guild or from other users will not be null.
      *
      *
-     * @return A potentially null {@link net.dv8tion.jda.api.entities.User User}.
+     * @return Possibly-null {@link net.dv8tion.jda.api.entities.User User}.
      */
     @Nullable
     User getUser();

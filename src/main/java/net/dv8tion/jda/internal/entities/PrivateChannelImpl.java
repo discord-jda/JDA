@@ -60,9 +60,8 @@ public class PrivateChannelImpl extends AbstractChannelImpl<PrivateChannelImpl> 
     @Override
     public RestAction<User> retrieveUser()
     {
-        if (user != null){
+        if (user != null)
             return new CompletedRestAction<>(getJDA(), user);
-        }
         //even if the user blocks the bot, this does not fail.
         return retrievePrivateChannel()
                 .map(PrivateChannel::getUser);
@@ -83,7 +82,7 @@ public class PrivateChannelImpl extends AbstractChannelImpl<PrivateChannelImpl> 
     @Nonnull
     private RestAction<PrivateChannel> retrievePrivateChannel()
     {
-        Route.CompiledRoute route = Route.Channels.GET_CHANNEL.compile(Long.toUnsignedString(id));
+        Route.CompiledRoute route = Route.Channels.GET_CHANNEL.compile(getId());
         return new RestActionImpl<>(getJDA(), route, (response, request) -> ((JDAImpl) getJDA()).getEntityBuilder().createPrivateChannel(response.getObject()));
     }
 
