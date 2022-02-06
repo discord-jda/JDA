@@ -61,7 +61,7 @@ public class PrivateChannelImpl extends AbstractChannelImpl<PrivateChannelImpl> 
     public RestAction<User> retrieveUser()
     {
         if (user != null)
-            return new CompletedRestAction<>(getJDA(), user);
+            return new CompletedRestAction<>(getJDA(), getUser());
         //even if the user blocks the bot, this does not fail.
         return retrievePrivateChannel()
                 .map(PrivateChannel::getUser);
