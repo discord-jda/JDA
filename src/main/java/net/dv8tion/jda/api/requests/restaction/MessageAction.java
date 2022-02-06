@@ -17,7 +17,6 @@
 package net.dv8tion.jda.api.requests.restaction;
 
 import net.dv8tion.jda.api.MessageBuilder;
-import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.MessageEmbed;
