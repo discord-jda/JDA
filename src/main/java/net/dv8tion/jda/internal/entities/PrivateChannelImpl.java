@@ -71,12 +71,13 @@ public class PrivateChannelImpl extends AbstractChannelImpl<PrivateChannelImpl> 
     @Override
     public String getName()
     {
+        User user = getUser();
         if (user == null)
         {
             //don't break or override the contract of @NotNull
             return "";
         }
-        return getUser().getName();
+        return user.getName();
     }
 
     @Nonnull
