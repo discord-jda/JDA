@@ -40,13 +40,16 @@ public interface GenericEvent
     long getResponseNumber();
 
     /**
-     * The raw {@link DataObject} which this Event corresponds to
+     * The passthrough data that this event was serialized from.
+     * <br>This provides the full gateway message payload, including sequence and dispatch type.
+     * For details, read the official <a href="https://discord.dev/topics/gateway" target="_blank">Discord Documentation</a>.
+     *
+     * @throws IllegalStateException 
+     *         If the event has no raw data, see {@link #hasRawData()}
      *
      * @return The corresponding {@link DataObject}
      *
-     * @throws IllegalStateException If the event has no raw data
-     *
-     * @see #hasRawData()
+     * @see    #hasRawData()
      */
     @Nonnull
     DataObject getRawData();
