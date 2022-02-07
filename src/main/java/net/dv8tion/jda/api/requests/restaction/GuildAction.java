@@ -198,14 +198,13 @@ public interface GuildAction extends RestAction<Void>
      *         The {@link net.dv8tion.jda.api.entities.ChannelType ChannelType} of the resulting GuildChannel
      *         <br>This may be of type {@link net.dv8tion.jda.api.entities.ChannelType#TEXT TEXT} or {@link net.dv8tion.jda.api.entities.ChannelType#VOICE VOICE}!
      * @param  name
-     *         The name of the channel. This must be alphanumeric with underscores for type TEXT
+     *         The name of the channel.
      *
      * @throws java.lang.IllegalArgumentException
      *         <ul>
      *             <li>If provided with an invalid ChannelType</li>
      *             <li>If the provided name is {@code null} or blank</li>
      *             <li>If the provided name is not between 2-100 characters long</li>
-     *             <li>If the type is TEXT and the provided name is not alphanumeric with underscores</li>
      *         </ul>
      *
      * @return The new ChannelData instance
