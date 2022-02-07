@@ -510,7 +510,7 @@ public interface GuildAction extends RestAction<Void>
          *         The {@link net.dv8tion.jda.api.entities.ChannelType ChannelType} of the resulting GuildChannel
          *         <br>This may be of type {@link net.dv8tion.jda.api.entities.ChannelType#TEXT TEXT} or {@link net.dv8tion.jda.api.entities.ChannelType#VOICE VOICE}!
          * @param  name
-         *         The name of the channel
+         *         The name of the channel.
          *
          * @throws java.lang.IllegalArgumentException
          *         <ul>
