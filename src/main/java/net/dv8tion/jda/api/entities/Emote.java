@@ -177,7 +177,6 @@ public interface Emote extends IMentionable
     @Nonnull
     EmoteManager getManager();
 
-    //TODO remove
     /**
      * Whether or not this Emote is animated.
      *
