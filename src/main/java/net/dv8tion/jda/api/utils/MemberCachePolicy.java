@@ -90,7 +90,7 @@ public interface MemberCachePolicy
         return voiceState != null && voiceState.getChannel() != null;
     };
     /**
-     * Cache members who are boosting the guild. This checks {@link Member#getTimeBoosted()}
+     * Cache members who are boosting the guild. This checks {@link Member#isBoosting()}
      * <br>Requires {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MEMBERS GUILD_MEMBERS} to be enabled.
      * */
     MemberCachePolicy BOOSTER = Member::isBoosting;
