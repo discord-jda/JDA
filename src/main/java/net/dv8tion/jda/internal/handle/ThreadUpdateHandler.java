@@ -54,7 +54,7 @@ public class ThreadUpdateHandler extends SocketHandler
             thread = (ThreadChannelImpl) api.getEntityBuilder().createThreadChannel(content, guildId);
             api.handleEvent(
                 new ChannelUpdateArchivedEvent(
-                    api, responseNumber, getJDA().isEventPassthrough() ? allContent : null,
+                    api, responseNumber, getPassthrough(),
                     thread, true, false));
 
             return null;
@@ -83,7 +83,7 @@ public class ThreadUpdateHandler extends SocketHandler
             thread.setName(name);
             api.handleEvent(
                 new ChannelUpdateNameEvent(
-                    getJDA(), responseNumber, getJDA().isEventPassthrough() ? allContent : null,
+                    getJDA(), responseNumber, getPassthrough(),
                     thread, oldName, name));
         }
         if (oldSlowmode != slowmode)
@@ -91,7 +91,7 @@ public class ThreadUpdateHandler extends SocketHandler
             thread.setSlowmode(slowmode);
             api.handleEvent(
                 new ChannelUpdateSlowmodeEvent(
-                    api, responseNumber, getJDA().isEventPassthrough() ? allContent : null,
+                    api, responseNumber, getPassthrough(),
                     thread, oldSlowmode, slowmode));
         }
         if (oldAutoArchiveDuration != autoArchiveDuration)
@@ -99,7 +99,7 @@ public class ThreadUpdateHandler extends SocketHandler
             thread.setAutoArchiveDuration(autoArchiveDuration);
             api.handleEvent(
                 new ChannelUpdateAutoArchiveDurationEvent(
-                    api, responseNumber, getJDA().isEventPassthrough() ? allContent : null,
+                    api, responseNumber, getPassthrough(),
                     thread, oldAutoArchiveDuration, autoArchiveDuration));
         }
         if (oldLocked != locked)
@@ -107,7 +107,7 @@ public class ThreadUpdateHandler extends SocketHandler
             thread.setLocked(locked);
             api.handleEvent(
                 new ChannelUpdateLockedEvent(
-                    api, responseNumber, getJDA().isEventPassthrough() ? allContent : null,
+                    api, responseNumber, getPassthrough(),
                     thread, oldLocked, locked));
         }
         if (oldArchived != archived)
@@ -115,7 +115,7 @@ public class ThreadUpdateHandler extends SocketHandler
             thread.setArchived(archived);
             api.handleEvent(
                 new ChannelUpdateArchivedEvent(
-                    api, responseNumber, getJDA().isEventPassthrough() ? allContent : null,
+                    api, responseNumber, getPassthrough(),
                     thread, oldArchived, archived));
         }
         if (oldArchiveTimestamp != archiveTimestamp)
@@ -123,7 +123,7 @@ public class ThreadUpdateHandler extends SocketHandler
             thread.setArchiveTimestamp(archiveTimestamp);
             api.handleEvent(
                 new ChannelUpdateArchiveTimestampEvent(
-                    api, responseNumber, getJDA().isEventPassthrough() ? allContent : null,
+                    api, responseNumber, getPassthrough(),
                     thread, oldArchiveTimestamp, archiveTimestamp));
         }
         if (oldInvitable != invitable)
@@ -131,7 +131,7 @@ public class ThreadUpdateHandler extends SocketHandler
             thread.setInvitable(invitable);
             api.handleEvent(
                 new ChannelUpdateInvitableEvent(
-                    api, responseNumber, getJDA().isEventPassthrough() ? allContent : null,
+                    api, responseNumber, getPassthrough(),
                     thread, oldInvitable, invitable));
         }
 

@@ -39,6 +39,10 @@ public abstract class SocketHandler
         this.allContent = null;
     }
 
+    protected DataObject getPassthrough() {
+        return api.isEventPassthrough() ? allContent : null;
+    }
+
     protected JDAImpl getJDA()
     {
         return api;

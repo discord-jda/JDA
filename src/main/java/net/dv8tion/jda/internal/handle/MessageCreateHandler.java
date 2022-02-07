@@ -108,7 +108,7 @@ public class MessageCreateHandler extends SocketHandler
             api.usedPrivateChannel(channel.getIdLong());
         }
 
-        jda.handleEvent(new MessageReceivedEvent( jda, responseNumber, getJDA().isEventPassthrough() ? allContent : null, message));
+        jda.handleEvent(new MessageReceivedEvent( jda, responseNumber, getPassthrough(), message));
         return null;
     }
 }

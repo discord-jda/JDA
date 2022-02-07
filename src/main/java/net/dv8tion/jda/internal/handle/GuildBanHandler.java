@@ -55,14 +55,14 @@ public class GuildBanHandler extends SocketHandler
         {
             getJDA().handleEvent(
                     new GuildBanEvent(
-                            getJDA(), responseNumber, getJDA().isEventPassthrough() ? allContent : null,
+                            getJDA(), responseNumber, getPassthrough(),
                             guild, user));
         }
         else
         {
             getJDA().handleEvent(
                     new GuildUnbanEvent(
-                            getJDA(), responseNumber, getJDA().isEventPassthrough() ? allContent : null,
+                            getJDA(), responseNumber, getPassthrough(),
                             guild, user));
         }
         return null;

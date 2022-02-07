@@ -62,9 +62,9 @@ public class StageInstanceUpdateHandler extends SocketHandler
             return null;
 
         if (!Objects.equals(oldTopic, newInstance.getTopic()))
-            getJDA().handleEvent(new StageInstanceUpdateTopicEvent(getJDA(), responseNumber, getJDA().isEventPassthrough() ? allContent : null, newInstance, oldTopic));
+            getJDA().handleEvent(new StageInstanceUpdateTopicEvent(getJDA(), responseNumber, getPassthrough(), newInstance, oldTopic));
         if (oldLevel != newInstance.getPrivacyLevel())
-            getJDA().handleEvent(new StageInstanceUpdatePrivacyLevelEvent(getJDA(), responseNumber, getJDA().isEventPassthrough() ? allContent : null, newInstance, oldLevel));
+            getJDA().handleEvent(new StageInstanceUpdatePrivacyLevelEvent(getJDA(), responseNumber, getPassthrough(), newInstance, oldLevel));
         return null;
     }
 }

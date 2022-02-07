@@ -70,12 +70,12 @@ public class InteractionCreateHandler extends SocketHandler
                 break;
             case COMMAND_AUTOCOMPLETE:
                 api.handleEvent(
-                    new CommandAutoCompleteInteractionEvent(api, responseNumber, getJDA().isEventPassthrough() ? allContent : null,
+                    new CommandAutoCompleteInteractionEvent(api, responseNumber, getPassthrough(),
                         new CommandAutoCompleteInteractionImpl(api, content)));
                 break;
             default:
                 api.handleEvent(
-                    new GenericInteractionCreateEvent(api, responseNumber, getJDA().isEventPassthrough() ? allContent : null,
+                    new GenericInteractionCreateEvent(api, responseNumber, getPassthrough(),
                         new InteractionImpl(api, content)));
         }
 
@@ -88,17 +88,17 @@ public class InteractionCreateHandler extends SocketHandler
         {
         case SLASH:
             api.handleEvent(
-                new SlashCommandInteractionEvent(api, responseNumber, getJDA().isEventPassthrough() ? allContent : null,
+                new SlashCommandInteractionEvent(api, responseNumber, getPassthrough(),
                     new SlashCommandInteractionImpl(api, content)));
             break;
         case MESSAGE:
             api.handleEvent(
-                new MessageContextInteractionEvent(api, responseNumber, getJDA().isEventPassthrough() ? allContent : null,
+                new MessageContextInteractionEvent(api, responseNumber, getPassthrough(),
                     new MessageContextInteractionImpl(api, content)));
             break;
         case USER:
             api.handleEvent(
-                new UserContextInteractionEvent(api, responseNumber, getJDA().isEventPassthrough() ? allContent : null,
+                new UserContextInteractionEvent(api, responseNumber, getPassthrough(),
                     new UserContextInteractionImpl(api, content)));
             break;
         }
@@ -110,12 +110,12 @@ public class InteractionCreateHandler extends SocketHandler
         {
         case BUTTON:
             api.handleEvent(
-                new ButtonInteractionEvent(api, responseNumber, getJDA().isEventPassthrough() ? allContent : null,
+                new ButtonInteractionEvent(api, responseNumber, getPassthrough(),
                     new ButtonInteractionImpl(api, content)));
             break;
         case SELECT_MENU:
             api.handleEvent(
-                new SelectMenuInteractionEvent(api, responseNumber, getJDA().isEventPassthrough() ? allContent : null,
+                new SelectMenuInteractionEvent(api, responseNumber, getPassthrough(),
                     new SelectMenuInteractionImpl(api, content)));
             break;
         }

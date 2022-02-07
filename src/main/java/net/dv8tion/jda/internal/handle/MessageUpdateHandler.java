@@ -102,7 +102,7 @@ public class MessageUpdateHandler extends SocketHandler
 
         getJDA().handleEvent(
                 new MessageUpdateEvent(
-                        getJDA(), responseNumber, getJDA().isEventPassthrough() ? allContent : null,
+                        getJDA(), responseNumber, getPassthrough(),
                         message));
         return null;
     }
@@ -133,7 +133,7 @@ public class MessageUpdateHandler extends SocketHandler
 
         getJDA().handleEvent(
                 new MessageEmbedEvent(
-                        getJDA(), responseNumber, getJDA().isEventPassthrough() ? allContent : null,
+                        getJDA(), responseNumber, getPassthrough(),
                         messageId, channel, embeds));
         return null;
     }

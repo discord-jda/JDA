@@ -123,7 +123,7 @@ public class PresenceUpdateHandler extends SocketHandler
                 getJDA().getEntityBuilder().updateMemberCache(member);
                 getJDA().handleEvent(
                     new UserUpdateOnlineStatusEvent(
-                        getJDA(), responseNumber, getJDA().isEventPassthrough() ? allContent : null,
+                        getJDA(), responseNumber, getPassthrough(),
                         member, oldStatus));
             }
         }

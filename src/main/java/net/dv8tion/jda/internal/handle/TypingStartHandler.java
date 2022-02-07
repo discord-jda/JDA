@@ -87,7 +87,7 @@ public class TypingStartHandler extends SocketHandler
         OffsetDateTime timestamp = Instant.ofEpochSecond(content.getInt("timestamp")).atOffset(ZoneOffset.UTC);
         getJDA().handleEvent(
             new UserTypingEvent(
-                getJDA(), responseNumber, getJDA().isEventPassthrough() ? allContent : null,
+                getJDA(), responseNumber, getPassthrough(),
                 user, channel, timestamp, member));
         return null;
     }

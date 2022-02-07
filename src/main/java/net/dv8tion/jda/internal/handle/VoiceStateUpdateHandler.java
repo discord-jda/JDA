@@ -120,53 +120,53 @@ public class VoiceStateUpdateHandler extends SocketHandler
         {
             vState.setSelfMuted(selfMuted);
             getJDA().getEntityBuilder().updateMemberCache(member);
-            getJDA().handleEvent(new GuildVoiceSelfMuteEvent(getJDA(), responseNumber, getJDA().isEventPassthrough() ? allContent : null, member));
+            getJDA().handleEvent(new GuildVoiceSelfMuteEvent(getJDA(), responseNumber, getPassthrough(), member));
         }
         if (selfDeafened != vState.isSelfDeafened())
         {
             vState.setSelfDeafened(selfDeafened);
             getJDA().getEntityBuilder().updateMemberCache(member);
-            getJDA().handleEvent(new GuildVoiceSelfDeafenEvent(getJDA(), responseNumber, getJDA().isEventPassthrough() ? allContent : null, member));
+            getJDA().handleEvent(new GuildVoiceSelfDeafenEvent(getJDA(), responseNumber, getPassthrough(), member));
         }
         if (guildMuted != vState.isGuildMuted())
         {
             vState.setGuildMuted(guildMuted);
             getJDA().getEntityBuilder().updateMemberCache(member);
-            getJDA().handleEvent(new GuildVoiceGuildMuteEvent(getJDA(), responseNumber, getJDA().isEventPassthrough() ? allContent : null, member));
+            getJDA().handleEvent(new GuildVoiceGuildMuteEvent(getJDA(), responseNumber, getPassthrough(), member));
         }
         if (guildDeafened != vState.isGuildDeafened())
         {
             vState.setGuildDeafened(guildDeafened);
             getJDA().getEntityBuilder().updateMemberCache(member);
-            getJDA().handleEvent(new GuildVoiceGuildDeafenEvent(getJDA(), responseNumber, getJDA().isEventPassthrough() ? allContent : null, member));
+            getJDA().handleEvent(new GuildVoiceGuildDeafenEvent(getJDA(), responseNumber, getPassthrough(), member));
         }
         if (suppressed != vState.isSuppressed())
         {
             vState.setSuppressed(suppressed);
             getJDA().getEntityBuilder().updateMemberCache(member);
-            getJDA().handleEvent(new GuildVoiceSuppressEvent(getJDA(), responseNumber, getJDA().isEventPassthrough() ? allContent : null, member));
+            getJDA().handleEvent(new GuildVoiceSuppressEvent(getJDA(), responseNumber, getPassthrough(), member));
         }
         if (stream != vState.isStream())
         {
             vState.setStream(stream);
             getJDA().getEntityBuilder().updateMemberCache(member);
-            getJDA().handleEvent(new GuildVoiceStreamEvent(getJDA(), responseNumber, getJDA().isEventPassthrough() ? allContent : null, member, stream));
+            getJDA().handleEvent(new GuildVoiceStreamEvent(getJDA(), responseNumber, getPassthrough(), member, stream));
         }
         if (video != vState.isSendingVideo())
         {
             vState.setVideo(video);
             getJDA().getEntityBuilder().updateMemberCache(member);
-            getJDA().handleEvent(new GuildVoiceVideoEvent(getJDA(), responseNumber, getJDA().isEventPassthrough() ? allContent : null, member, video));
+            getJDA().handleEvent(new GuildVoiceVideoEvent(getJDA(), responseNumber, getPassthrough(), member, video));
         }
         if (wasMute != vState.isMuted())
-            getJDA().handleEvent(new GuildVoiceMuteEvent(getJDA(), responseNumber, getJDA().isEventPassthrough() ? allContent : null, member));
+            getJDA().handleEvent(new GuildVoiceMuteEvent(getJDA(), responseNumber, getPassthrough(), member));
         if (wasDeaf != vState.isDeafened())
-            getJDA().handleEvent(new GuildVoiceDeafenEvent(getJDA(), responseNumber, getJDA().isEventPassthrough() ? allContent : null, member));
+            getJDA().handleEvent(new GuildVoiceDeafenEvent(getJDA(), responseNumber, getPassthrough(), member));
         if (requestToSpeakTimestamp != vState.getRequestToSpeak())
         {
             OffsetDateTime oldRequestToSpeak = vState.getRequestToSpeakTimestamp();
             vState.setRequestToSpeak(requestToSpeakTime);
-            getJDA().handleEvent(new GuildVoiceRequestToSpeakEvent(getJDA(), responseNumber, getJDA().isEventPassthrough() ? allContent : null, member, oldRequestToSpeak, requestToSpeakTime));
+            getJDA().handleEvent(new GuildVoiceRequestToSpeakEvent(getJDA(), responseNumber, getPassthrough(), member, oldRequestToSpeak, requestToSpeakTime));
         }
 
         if (!Objects.equals(channel, vState.getChannel()))
@@ -181,7 +181,7 @@ public class VoiceStateUpdateHandler extends SocketHandler
 
                 getJDA().handleEvent(
                     new GuildVoiceJoinEvent(
-                        getJDA(), responseNumber, getJDA().isEventPassthrough() ? allContent : null,
+                        getJDA(), responseNumber, getPassthrough(),
                         member));
             }
             else if (channel == null)
@@ -193,7 +193,7 @@ public class VoiceStateUpdateHandler extends SocketHandler
 
                 getJDA().handleEvent(
                     new GuildVoiceLeaveEvent(
-                        getJDA(), responseNumber, getJDA().isEventPassthrough() ? allContent : null,
+                        getJDA(), responseNumber, getPassthrough(),
                         member, oldChannel));
             }
             else
@@ -222,7 +222,7 @@ public class VoiceStateUpdateHandler extends SocketHandler
 
                 getJDA().handleEvent(
                     new GuildVoiceMoveEvent(
-                        getJDA(), responseNumber, getJDA().isEventPassthrough() ? allContent : null,
+                        getJDA(), responseNumber, getPassthrough(),
                         member, oldChannel));
             }
         }

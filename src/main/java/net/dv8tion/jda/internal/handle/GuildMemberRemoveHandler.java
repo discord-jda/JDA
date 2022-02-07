@@ -78,7 +78,7 @@ public class GuildMemberRemoveHandler extends SocketHandler
                 {
                     getJDA().handleEvent(
                         new GuildVoiceLeaveEvent(
-                            getJDA(), responseNumber, getJDA().isEventPassthrough() ? allContent : null,
+                            getJDA(), responseNumber, getPassthrough(),
                             connected, channel));
                 }
             });
@@ -86,7 +86,7 @@ public class GuildMemberRemoveHandler extends SocketHandler
             // Fire cache independent event, we can still inform the library user about the member removal
             getJDA().handleEvent(
                 new GuildMemberRemoveEvent(
-                    getJDA(), responseNumber, getJDA().isEventPassthrough() ? allContent : null,
+                    getJDA(), responseNumber, getPassthrough(),
                     guild, user, null));
             return null;
         }
@@ -100,7 +100,7 @@ public class GuildMemberRemoveHandler extends SocketHandler
 
             getJDA().handleEvent(
                 new GuildVoiceLeaveEvent(
-                    getJDA(), responseNumber, getJDA().isEventPassthrough() ? allContent : null,
+                    getJDA(), responseNumber, getPassthrough(),
                     member, channel));
         }
 
@@ -119,7 +119,7 @@ public class GuildMemberRemoveHandler extends SocketHandler
         // Cache independent event
         getJDA().handleEvent(
             new GuildMemberRemoveEvent(
-                getJDA(), responseNumber, getJDA().isEventPassthrough() ? allContent : null,
+                getJDA(), responseNumber, getPassthrough(),
                 guild, user, member));
         return null;
     }
