@@ -116,6 +116,11 @@ public class MemberImpl implements Member
         return boostDate != 0 ? Helpers.toOffset(boostDate) : null;
     }
 
+    @Override
+    public boolean isBoosting(){
+        return boostDate != 0;
+    }
+
     @Nullable
     @Override
     public OffsetDateTime getTimeOutEnd()
