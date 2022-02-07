@@ -124,14 +124,14 @@ public class GuildDeleteHandler extends SocketHandler
             setupController.onUnavailable(id);
             getJDA().handleEvent(
                 new GuildUnavailableEvent(
-                    getJDA(), responseNumber, getJDA().isEventPassthrough() ? content : null,
+                    getJDA(), responseNumber, getJDA().isEventPassthrough() ? allContent : null,
                     guild));
         }
         else
         {
             getJDA().handleEvent(
                 new GuildLeaveEvent(
-                    getJDA(), responseNumber, getJDA().isEventPassthrough() ? content : null,
+                    getJDA(), responseNumber, getJDA().isEventPassthrough() ? allContent : null,
                     guild));
         }
         getJDA().getEventCache().clear(EventCache.Type.GUILD, id);

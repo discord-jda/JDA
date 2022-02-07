@@ -47,7 +47,7 @@ public class GuildRoleCreateHandler extends SocketHandler
         Role newRole = getJDA().getEntityBuilder().createRole(guild, content.getObject("role"), guild.getIdLong());
         getJDA().handleEvent(
             new RoleCreateEvent(
-                getJDA(), responseNumber, getJDA().isEventPassthrough() ? content : null,
+                getJDA(), responseNumber, getJDA().isEventPassthrough() ? allContent : null,
                 newRole));
         return null;
     }

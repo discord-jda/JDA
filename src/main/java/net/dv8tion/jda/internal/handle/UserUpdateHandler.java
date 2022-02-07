@@ -56,7 +56,7 @@ public class UserUpdateHandler extends SocketHandler
             self.setName(name);
             getJDA().handleEvent(
                 new SelfUpdateNameEvent(
-                    getJDA(), responseNumber, getJDA().isEventPassthrough() ? content : null,
+                    getJDA(), responseNumber, getJDA().isEventPassthrough() ? allContent : null,
                     oldName));
         }
 
@@ -66,7 +66,7 @@ public class UserUpdateHandler extends SocketHandler
             self.setAvatarId(avatarId);
             getJDA().handleEvent(
                 new SelfUpdateAvatarEvent(
-                    getJDA(), responseNumber, getJDA().isEventPassthrough() ? content : null,
+                    getJDA(), responseNumber, getJDA().isEventPassthrough() ? allContent : null,
                     oldAvatarId));
         }
 
@@ -76,7 +76,7 @@ public class UserUpdateHandler extends SocketHandler
             self.setVerified(verified);
             getJDA().handleEvent(
                 new SelfUpdateVerifiedEvent(
-                    getJDA(), responseNumber, getJDA().isEventPassthrough() ? content : null,
+                    getJDA(), responseNumber, getJDA().isEventPassthrough() ? allContent : null,
                     wasVerified));
         }
 
@@ -86,7 +86,7 @@ public class UserUpdateHandler extends SocketHandler
             self.setMfaEnabled(mfaEnabled);
             getJDA().handleEvent(
                 new SelfUpdateMFAEvent(
-                    getJDA(), responseNumber, getJDA().isEventPassthrough() ? content : null,
+                    getJDA(), responseNumber, getJDA().isEventPassthrough() ? allContent : null,
                     wasMfaEnabled));
         }
         return null;

@@ -50,7 +50,7 @@ public class MessageReactionBulkRemoveHandler extends SocketHandler
 
         jda.handleEvent(
             new MessageReactionRemoveAllEvent(
-                jda, responseNumber, getJDA().isEventPassthrough() ? content : null,
+                jda, responseNumber, getJDA().isEventPassthrough() ? allContent : null,
                 messageId, channel));
         return null;
     }

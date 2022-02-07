@@ -51,7 +51,7 @@ public class GuildMemberAddHandler extends SocketHandler
         getJDA().getEntityBuilder().updateMemberCache(member);
         getJDA().handleEvent(
             new GuildMemberJoinEvent(
-                getJDA(), responseNumber, getJDA().isEventPassthrough() ? content : null,
+                getJDA(), responseNumber, getJDA().isEventPassthrough() ? allContent : null,
                 member));
         return null;
     }

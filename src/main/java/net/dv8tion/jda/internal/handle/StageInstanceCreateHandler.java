@@ -47,7 +47,7 @@ public class StageInstanceCreateHandler extends SocketHandler
         StageInstance instance = getJDA().getEntityBuilder().createStageInstance(guild, content);
         if (instance != null)
         {
-            getJDA().handleEvent(new StageInstanceCreateEvent(getJDA(), responseNumber, getJDA().isEventPassthrough() ? content : null, instance));
+            getJDA().handleEvent(new StageInstanceCreateEvent(getJDA(), responseNumber, getJDA().isEventPassthrough() ? allContent : null, instance));
             guild.updateRequestToSpeak();
         }
         return null;

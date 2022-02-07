@@ -72,7 +72,7 @@ public class GuildRoleDeleteHandler extends SocketHandler
 
         getJDA().handleEvent(
             new RoleDeleteEvent(
-                getJDA(), responseNumber, getJDA().isEventPassthrough() ? content : null,
+                getJDA(), responseNumber, getJDA().isEventPassthrough() ? allContent : null,
                 removedRole));
         getJDA().getEventCache().clear(EventCache.Type.ROLE, roleId);
         return null;
