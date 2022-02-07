@@ -166,8 +166,8 @@ public class PresenceUpdateHandler extends SocketHandler
             {
                 getJDA().handleEvent(
                     new UserUpdateActivityOrderEvent(
-                        getJDA(), responseNumber, null,
-                        oldActivities, member));
+                        getJDA(), responseNumber,
+                            oldActivities, member));
             }
         }
         else
@@ -185,22 +185,22 @@ public class PresenceUpdateHandler extends SocketHandler
             {
                 getJDA().handleEvent(
                     new UserActivityStartEvent(
-                        getJDA(), responseNumber, null,
-                        member, activity));
+                        getJDA(), responseNumber,
+                            member, activity));
             }
 
             for (Activity activity : stoppedActivities)
             {
                 getJDA().handleEvent(
                     new UserActivityEndEvent(
-                        getJDA(), responseNumber, null,
-                        member, activity));
+                        getJDA(), responseNumber,
+                            member, activity));
             }
 
             getJDA().handleEvent(
                 new UserUpdateActivitiesEvent(
-                    getJDA(), responseNumber, null,
-                    member, oldActivities));
+                    getJDA(), responseNumber,
+                        member, oldActivities));
         }
     }
 

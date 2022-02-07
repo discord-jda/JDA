@@ -16,10 +16,8 @@
 package net.dv8tion.jda.api.events;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 /**
  * Indicates that JDA successfully resumed its connection to the gateway.
@@ -29,8 +27,8 @@ import javax.annotation.Nullable;
  */
 public class ResumedEvent extends Event
 {
-    public ResumedEvent(@Nonnull JDA api, long responseNumber, @Nullable DataObject rawData)
+    public ResumedEvent(@Nonnull JDA api, long responseNumber)
     {
-        super(api, responseNumber, rawData);
+        super(api, responseNumber, null);
     }
 }

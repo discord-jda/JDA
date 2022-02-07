@@ -199,19 +199,19 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                     JDAImpl.LOG.warn("For more info see https://git.io/vrFWP");
                 }
                 JDAImpl.LOG.info("Finished Loading!");
-                api.handleEvent(new ReadyEvent(api, api.getResponseTotal(), null));
+                api.handleEvent(new ReadyEvent(api, api.getResponseTotal()));
             }
             else
             {
                 updateAudioManagerReferences();
                 JDAImpl.LOG.info("Finished (Re)Loading!");
-                api.handleEvent(new ReconnectedEvent(api, api.getResponseTotal(), null));
+                api.handleEvent(new ReconnectedEvent(api, api.getResponseTotal()));
             }
         }
         else
         {
             JDAImpl.LOG.debug("Successfully resumed Session!");
-            api.handleEvent(new ResumedEvent(api, api.getResponseTotal(), null));
+            api.handleEvent(new ResumedEvent(api, api.getResponseTotal()));
         }
         api.setStatus(JDA.Status.CONNECTED);
     }

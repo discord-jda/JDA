@@ -710,15 +710,15 @@ public class EntityBuilder
         {
             getJDA().handleEvent(
                 new GuildMemberRoleRemoveEvent(
-                    getJDA(), responseNumber, null,
-                    member, removedRoles));
+                    getJDA(), responseNumber,
+                        member, removedRoles));
         }
         if (newRoles.size() > 0)
         {
             getJDA().handleEvent(
                 new GuildMemberRoleAddEvent(
-                    getJDA(), responseNumber, null,
-                    member, newRoles));
+                    getJDA(), responseNumber,
+                        member, newRoles));
         }
     }
 

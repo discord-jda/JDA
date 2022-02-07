@@ -360,18 +360,18 @@ public class GuildSetupNode
         switch (type)
         {
         case AVAILABLE:
-            api.handleEvent(new GuildAvailableEvent(api, api.getResponseTotal(), null, guild));
+            api.handleEvent(new GuildAvailableEvent(api, api.getResponseTotal(), guild));
             getController().remove(id);
             break;
         case JOIN:
-            api.handleEvent(new GuildJoinEvent(api, api.getResponseTotal(), null, guild));
+            api.handleEvent(new GuildJoinEvent(api, api.getResponseTotal(), guild));
             if (requestedChunk)
                 getController().ready(id);
             else
                 getController().remove(id);
             break;
         default:
-            api.handleEvent(new GuildReadyEvent(api, api.getResponseTotal(), null, guild));
+            api.handleEvent(new GuildReadyEvent(api, api.getResponseTotal(), guild));
             getController().ready(id);
             break;
         }

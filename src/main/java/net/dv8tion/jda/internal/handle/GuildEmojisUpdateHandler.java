@@ -122,16 +122,16 @@ public class GuildEmojisUpdateHandler extends SocketHandler
         {
             getJDA().handleEvent(
                 new EmoteRemovedEvent(
-                    getJDA(), responseNumber, null,
-                    e));
+                    getJDA(), responseNumber,
+                        e));
         }
 
         for (Emote e : newEmotes)
         {
             getJDA().handleEvent(
                 new EmoteAddedEvent(
-                    getJDA(), responseNumber, null,
-                    e));
+                    getJDA(), responseNumber,
+                        e));
         }
 
         return null;
@@ -145,16 +145,16 @@ public class GuildEmojisUpdateHandler extends SocketHandler
         {
             getJDA().handleEvent(
                 new EmoteUpdateNameEvent(
-                    getJDA(), responseNumber, null,
-                    newEmote, oldEmote.getName()));
+                    getJDA(), responseNumber,
+                        newEmote, oldEmote.getName()));
         }
 
         if (!CollectionUtils.isEqualCollection(oldEmote.getRoles(), newEmote.getRoles()))
         {
             getJDA().handleEvent(
                 new EmoteUpdateRolesEvent(
-                    getJDA(), responseNumber, null,
-                    newEmote, oldEmote.getRoles()));
+                    getJDA(), responseNumber,
+                        newEmote, oldEmote.getRoles()));
         }
 
     }
