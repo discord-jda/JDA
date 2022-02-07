@@ -35,7 +35,7 @@ public class GuildUpdateCommunityUpdatesChannelEvent extends GenericGuildUpdateE
 {
     public static final String IDENTIFIER = "community_updates_channel";
 
-    public GuildUpdateCommunityUpdatesChannelEvent(@Nonnull JDA api, long responseNumber, DataObject rawData, @Nonnull Guild guild, @Nullable TextChannel oldCommunityUpdatesChannel)
+    public GuildUpdateCommunityUpdatesChannelEvent(@Nonnull JDA api, long responseNumber, @Nullable DataObject rawData, @Nonnull Guild guild, @Nullable TextChannel oldCommunityUpdatesChannel)
     {
         super(api, responseNumber, rawData, guild, oldCommunityUpdatesChannel, guild.getCommunityUpdatesChannel(), IDENTIFIER);
     }

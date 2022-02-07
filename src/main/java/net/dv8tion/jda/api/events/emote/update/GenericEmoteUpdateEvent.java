@@ -42,7 +42,7 @@ public abstract class GenericEmoteUpdateEvent<T> extends GenericEmoteEvent imple
     protected final String identifier;
 
     public GenericEmoteUpdateEvent(
-            @Nonnull JDA api, long responseNumber, DataObject rawData, @Nonnull Emote emote,
+            @Nonnull JDA api, long responseNumber, @Nullable DataObject rawData, @Nonnull Emote emote,
             @Nullable T previous, @Nullable T next, @Nonnull String identifier)
     {
         super(api, responseNumber, rawData, emote);

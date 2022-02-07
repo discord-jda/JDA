@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Indicates that the discriminator of a {@link net.dv8tion.jda.api.entities.User User} changed.
@@ -44,7 +45,7 @@ public class UserUpdateDiscriminatorEvent extends GenericUserUpdateEvent<String>
 {
     public static final String IDENTIFIER = "discriminator";
 
-    public UserUpdateDiscriminatorEvent(@Nonnull JDA api, long responseNumber, DataObject rawData, @Nonnull User user, @Nonnull String oldDiscriminator)
+    public UserUpdateDiscriminatorEvent(@Nonnull JDA api, long responseNumber, @Nullable DataObject rawData, @Nonnull User user, @Nonnull String oldDiscriminator)
     {
         super(api, responseNumber, rawData, user, oldDiscriminator, user.getDiscriminator(), IDENTIFIER);
     }

@@ -35,7 +35,7 @@ public class RoleUpdateColorEvent extends GenericRoleUpdateEvent<Integer>
 {
     public static final String IDENTIFIER = "color";
 
-    public RoleUpdateColorEvent(@Nonnull JDA api, long responseNumber, DataObject rawData, @Nonnull Role role, int oldColor)
+    public RoleUpdateColorEvent(@Nonnull JDA api, long responseNumber, @Nullable DataObject rawData, @Nonnull Role role, int oldColor)
     {
         super(api, responseNumber, rawData, role, oldColor, role.getColorRaw(), IDENTIFIER);
     }

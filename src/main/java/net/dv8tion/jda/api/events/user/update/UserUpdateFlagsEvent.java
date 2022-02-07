@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.EnumSet;
 
 /**
@@ -44,7 +45,7 @@ public class UserUpdateFlagsEvent extends GenericUserUpdateEvent<EnumSet<User.Us
 {
     public static final String IDENTIFIER = "public_flags";
     
-    public UserUpdateFlagsEvent(@Nonnull JDA api, long responseNumber, DataObject rawData, @Nonnull User user, @Nonnull EnumSet<User.UserFlag> oldFlags)
+    public UserUpdateFlagsEvent(@Nonnull JDA api, long responseNumber, @Nullable DataObject rawData, @Nonnull User user, @Nonnull EnumSet<User.UserFlag> oldFlags)
     {
         super(api, responseNumber, rawData, user, oldFlags, user.getFlags(), IDENTIFIER);
     }

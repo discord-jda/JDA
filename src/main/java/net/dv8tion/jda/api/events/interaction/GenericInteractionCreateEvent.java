@@ -43,7 +43,7 @@ public class GenericInteractionCreateEvent extends Event implements Interaction
 {
     private final Interaction interaction;
 
-    public GenericInteractionCreateEvent(@Nonnull JDA api, long responseNumber, DataObject rawData, @Nonnull Interaction interaction)
+    public GenericInteractionCreateEvent(@Nonnull JDA api, long responseNumber, @Nullable DataObject rawData, @Nonnull Interaction interaction)
     {
         super(api, responseNumber, rawData);
         this.interaction = interaction;

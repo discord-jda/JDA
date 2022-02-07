@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Indicates that the {@link net.dv8tion.jda.api.entities.Guild.VerificationLevel VerificationLevel} of a {@link net.dv8tion.jda.api.entities.Guild Guild} changed.
@@ -33,7 +34,7 @@ public class GuildUpdateVerificationLevelEvent extends GenericGuildUpdateEvent<G
 {
     public static final String IDENTIFIER = "verification_level";
 
-    public GuildUpdateVerificationLevelEvent(@Nonnull JDA api, long responseNumber, DataObject rawData, @Nonnull Guild guild, @Nonnull Guild.VerificationLevel oldVerificationLevel)
+    public GuildUpdateVerificationLevelEvent(@Nonnull JDA api, long responseNumber, @Nullable DataObject rawData, @Nonnull Guild guild, @Nonnull Guild.VerificationLevel oldVerificationLevel)
     {
         super(api, responseNumber, rawData, guild, oldVerificationLevel, guild.getVerificationLevel(), IDENTIFIER);
     }

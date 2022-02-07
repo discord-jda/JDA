@@ -36,7 +36,7 @@ public class GuildUpdateOwnerEvent extends GenericGuildUpdateEvent<Member>
     public static final String IDENTIFIER = "owner";
     private final long prevId, nextId;
 
-    public GuildUpdateOwnerEvent(@Nonnull JDA api, long responseNumber, DataObject rawData, @Nonnull Guild guild, @Nullable Member oldOwner,
+    public GuildUpdateOwnerEvent(@Nonnull JDA api, long responseNumber, @Nullable DataObject rawData, @Nonnull Guild guild, @Nullable Member oldOwner,
                                  long prevId, long nextId)
     {
         super(api, responseNumber, rawData, guild, oldOwner, guild.getOwner(), IDENTIFIER);

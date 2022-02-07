@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.entities.Emote;
 import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Indicates that an {@link net.dv8tion.jda.api.entities.Emote Emote} was removed from a Guild.
@@ -34,7 +35,7 @@ import javax.annotation.Nonnull;
  */
 public class EmoteRemovedEvent extends GenericEmoteEvent
 {
-    public EmoteRemovedEvent(@Nonnull JDA api, long responseNumber, DataObject rawData, @Nonnull Emote emote)
+    public EmoteRemovedEvent(@Nonnull JDA api, long responseNumber, @Nullable DataObject rawData, @Nonnull Emote emote)
     {
         super(api, responseNumber, rawData, emote);
     }

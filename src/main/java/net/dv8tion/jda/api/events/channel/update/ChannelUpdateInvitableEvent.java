@@ -22,13 +22,14 @@ import net.dv8tion.jda.api.entities.ChannelField;
 import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 //TODO-v5: Docs
 public class ChannelUpdateInvitableEvent extends GenericChannelUpdateEvent<Boolean>
 {
     public static final ChannelField FIELD = ChannelField.INVITABLE;
 
-    public ChannelUpdateInvitableEvent(@Nonnull JDA api, long responseNumber, DataObject rawData, Channel channel, boolean oldValue, boolean newValue)
+    public ChannelUpdateInvitableEvent(@Nonnull JDA api, long responseNumber, @Nullable DataObject rawData, Channel channel, boolean oldValue, boolean newValue)
     {
         super(api, responseNumber, rawData, channel, FIELD, oldValue, newValue);
     }

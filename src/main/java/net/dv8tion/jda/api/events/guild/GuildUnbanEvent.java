@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Indicates that a {@link net.dv8tion.jda.api.entities.User User} was unbanned from a {@link net.dv8tion.jda.api.entities.Guild Guild}.
@@ -35,7 +36,7 @@ public class GuildUnbanEvent extends GenericGuildEvent
 {
     private final User user;
 
-    public GuildUnbanEvent(@Nonnull JDA api, long responseNumber, DataObject rawData, @Nonnull Guild guild, @Nonnull User user)
+    public GuildUnbanEvent(@Nonnull JDA api, long responseNumber, @Nullable DataObject rawData, @Nonnull Guild guild, @Nonnull User user)
     {
         super(api, responseNumber, rawData, guild);
         this.user = user;

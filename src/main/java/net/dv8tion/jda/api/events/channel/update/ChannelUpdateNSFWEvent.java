@@ -22,13 +22,14 @@ import net.dv8tion.jda.api.entities.ChannelField;
 import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 //TODO-v5: Docs
 public class ChannelUpdateNSFWEvent extends GenericChannelUpdateEvent<Boolean>
 {
     public static ChannelField FIELD = ChannelField.NSFW;
 
-    public ChannelUpdateNSFWEvent(@Nonnull JDA api, long responseNumber, DataObject rawData, Channel channel, Boolean oldValue, Boolean newValue)
+    public ChannelUpdateNSFWEvent(@Nonnull JDA api, long responseNumber, @Nullable DataObject rawData, Channel channel, Boolean oldValue, Boolean newValue)
     {
         super(api, responseNumber, rawData, channel, FIELD, oldValue, newValue);
     }

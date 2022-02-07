@@ -34,7 +34,7 @@ public class SelfUpdateAvatarEvent extends GenericSelfUpdateEvent<String>
     public static final String IDENTIFIER = "avatar";
     private static final String AVATAR_URL = "https://cdn.discordapp.com/avatars/%s/%s%s";
 
-    public SelfUpdateAvatarEvent(@Nonnull JDA api, long responseNumber, DataObject rawData, @Nullable String oldAvatarId)
+    public SelfUpdateAvatarEvent(@Nonnull JDA api, long responseNumber, @Nullable DataObject rawData, @Nullable String oldAvatarId)
     {
         super(api, responseNumber, rawData, oldAvatarId, api.getSelfUser().getAvatarId(), IDENTIFIER);
     }

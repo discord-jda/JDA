@@ -23,11 +23,12 @@ import net.dv8tion.jda.api.entities.ThreadMember;
 import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 //TODO-v5: Docs
 public class ThreadMemberJoinEvent extends GenericThreadMemberEvent
 {
-    public ThreadMemberJoinEvent(@Nonnull JDA api, long responseNumber, DataObject rawData, ThreadChannel thread, ThreadMember threadMember)
+    public ThreadMemberJoinEvent(@Nonnull JDA api, long responseNumber, @Nullable DataObject rawData, ThreadChannel thread, ThreadMember threadMember)
     {
         super(api, responseNumber, rawData, thread, threadMember.getIdLong(), threadMember);
     }

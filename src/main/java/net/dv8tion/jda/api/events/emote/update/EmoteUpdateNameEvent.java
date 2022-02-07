@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.entities.Emote;
 import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Indicates that the name of an {@link net.dv8tion.jda.api.entities.Emote Emote} changed.
@@ -40,7 +41,7 @@ public class EmoteUpdateNameEvent extends GenericEmoteUpdateEvent<String>
 {
     public static final String IDENTIFIER = "name";
 
-    public EmoteUpdateNameEvent(@Nonnull JDA api, long responseNumber, DataObject rawData, @Nonnull Emote emote, @Nonnull String oldName)
+    public EmoteUpdateNameEvent(@Nonnull JDA api, long responseNumber, @Nullable DataObject rawData, @Nonnull Emote emote, @Nonnull String oldName)
     {
         super(api, responseNumber, rawData, emote, oldName, emote.getName(), IDENTIFIER);
     }

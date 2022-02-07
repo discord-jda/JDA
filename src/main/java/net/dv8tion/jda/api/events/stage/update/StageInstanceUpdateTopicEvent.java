@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.entities.StageInstance;
 import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Indicates that a {@link net.dv8tion.jda.api.entities.StageInstance StageInstance} updated its {@code topic}.
@@ -34,7 +35,7 @@ public class StageInstanceUpdateTopicEvent extends GenericStageInstanceUpdateEve
 {
     public static final String IDENTIFIER = "topic";
 
-    public StageInstanceUpdateTopicEvent(@Nonnull JDA api, long responseNumber, DataObject rawData, @Nonnull StageInstance stageInstance, String previous)
+    public StageInstanceUpdateTopicEvent(@Nonnull JDA api, long responseNumber, @Nullable DataObject rawData, @Nonnull StageInstance stageInstance, String previous)
     {
         super(api, responseNumber, rawData, stageInstance, previous, stageInstance.getTopic(), IDENTIFIER);
     }

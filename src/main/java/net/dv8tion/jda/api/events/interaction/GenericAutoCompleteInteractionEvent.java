@@ -25,6 +25,7 @@ import net.dv8tion.jda.api.requests.restaction.interactions.AutoCompleteCallback
 import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Collection;
 
 /**
@@ -39,7 +40,7 @@ import java.util.Collection;
  */
 public class GenericAutoCompleteInteractionEvent extends GenericInteractionCreateEvent implements IAutoCompleteCallback
 {
-    public GenericAutoCompleteInteractionEvent(@Nonnull JDA api, long responseNumber, DataObject rawData, @Nonnull Interaction interaction)
+    public GenericAutoCompleteInteractionEvent(@Nonnull JDA api, long responseNumber, @Nullable DataObject rawData, @Nonnull Interaction interaction)
     {
         super(api, responseNumber, rawData, interaction);
     }

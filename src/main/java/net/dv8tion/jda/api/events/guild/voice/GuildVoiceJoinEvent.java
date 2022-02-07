@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Indicates that a {@link net.dv8tion.jda.api.entities.Member Member} connected to a {@link net.dv8tion.jda.api.entities.AudioChannel AudioChannel}.
@@ -44,7 +45,7 @@ import javax.annotation.Nonnull;
  */
 public class GuildVoiceJoinEvent extends GenericGuildVoiceUpdateEvent
 {
-    public GuildVoiceJoinEvent(@Nonnull JDA api, long responseNumber, DataObject rawData, @Nonnull Member member)
+    public GuildVoiceJoinEvent(@Nonnull JDA api, long responseNumber, @Nullable DataObject rawData, @Nonnull Member member)
     {
         super(api, responseNumber, rawData, member, null, member.getVoiceState().getChannel());
     }

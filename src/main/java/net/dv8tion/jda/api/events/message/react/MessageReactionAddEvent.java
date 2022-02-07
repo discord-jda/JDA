@@ -41,7 +41,7 @@ import javax.annotation.Nullable;
  */
 public class MessageReactionAddEvent extends GenericMessageReactionEvent
 {
-    public MessageReactionAddEvent(@Nonnull JDA api, long responseNumber, DataObject rawData, @Nonnull User user,
+    public MessageReactionAddEvent(@Nonnull JDA api, long responseNumber, @Nullable DataObject rawData, @Nonnull User user,
                                    @Nullable Member member, @Nonnull MessageReaction reaction, long userId)
     {
         super(api, responseNumber, rawData, user, member, reaction, userId);

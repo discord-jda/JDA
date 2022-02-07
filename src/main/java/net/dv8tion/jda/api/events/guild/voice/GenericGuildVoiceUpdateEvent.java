@@ -42,7 +42,7 @@ public class GenericGuildVoiceUpdateEvent extends GenericGuildVoiceEvent impleme
     protected final AudioChannel joined, left;
 
     public GenericGuildVoiceUpdateEvent(
-            @Nonnull JDA api, long responseNumber, DataObject rawData, @Nonnull Member member, @Nullable AudioChannel left, @Nullable AudioChannel joined)
+            @Nonnull JDA api, long responseNumber, @Nullable DataObject rawData, @Nonnull Member member, @Nullable AudioChannel left, @Nullable AudioChannel joined)
     {
         super(api, responseNumber, rawData, member);
         this.left = left;

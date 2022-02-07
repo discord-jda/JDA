@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Indicates that the mfa level of the current user changed.
@@ -33,7 +34,7 @@ public class SelfUpdateMFAEvent extends GenericSelfUpdateEvent<Boolean>
 {
     public static final String IDENTIFIER = "mfa_enabled";
 
-    public SelfUpdateMFAEvent(@Nonnull JDA api, long responseNumber, DataObject rawData, boolean wasMfaEnabled)
+    public SelfUpdateMFAEvent(@Nonnull JDA api, long responseNumber, @Nullable DataObject rawData, boolean wasMfaEnabled)
     {
         super(api, responseNumber, rawData, wasMfaEnabled, !wasMfaEnabled, IDENTIFIER);
     }

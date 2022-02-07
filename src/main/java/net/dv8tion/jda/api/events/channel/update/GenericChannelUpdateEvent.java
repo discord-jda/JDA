@@ -33,7 +33,7 @@ public class GenericChannelUpdateEvent<T> extends GenericChannelEvent implements
     protected final T oldValue;
     protected final T newValue;
 
-    public GenericChannelUpdateEvent(@Nonnull JDA api, long responseNumber, DataObject rawData, Channel channel, ChannelField channelField, T oldValue, T newValue)
+    public GenericChannelUpdateEvent(@Nonnull JDA api, long responseNumber, @Nullable DataObject rawData, Channel channel, ChannelField channelField, T oldValue, T newValue)
     {
         super(api, responseNumber, rawData, channel);
 

@@ -45,7 +45,7 @@ public class GuildMemberUpdateNicknameEvent extends GenericGuildMemberUpdateEven
 {
     public static final String IDENTIFIER = "nick";
 
-    public GuildMemberUpdateNicknameEvent(@Nonnull JDA api, long responseNumber, DataObject rawData, @Nonnull Member member, @Nullable String oldNick)
+    public GuildMemberUpdateNicknameEvent(@Nonnull JDA api, long responseNumber, @Nullable DataObject rawData, @Nonnull Member member, @Nullable String oldNick)
     {
         super(api, responseNumber, rawData, member, oldNick, member.getNickname(), IDENTIFIER);
     }

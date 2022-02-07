@@ -40,7 +40,7 @@ import javax.annotation.Nullable;
  */
 public class MessageReactionRemoveEvent extends GenericMessageReactionEvent
 {
-    public MessageReactionRemoveEvent(@Nonnull JDA api, long responseNumber, DataObject rawData, @Nullable User user,
+    public MessageReactionRemoveEvent(@Nonnull JDA api, long responseNumber, @Nullable DataObject rawData, @Nullable User user,
                                       @Nullable Member member, @Nonnull MessageReaction reaction, long userId)
     {
         super(api, responseNumber, rawData, user, member, reaction, userId);

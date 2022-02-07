@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.events.Event;
 import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Indicates that a {@link net.dv8tion.jda.api.entities.Message Message} was created/deleted/changed.
@@ -41,7 +42,7 @@ public abstract class GenericMessageEvent extends Event
     protected final long messageId;
     protected final MessageChannel channel;
 
-    public GenericMessageEvent(@Nonnull JDA api, long responseNumber, DataObject rawData, long messageId, @Nonnull MessageChannel channel)
+    public GenericMessageEvent(@Nonnull JDA api, long responseNumber, @Nullable DataObject rawData, long messageId, @Nonnull MessageChannel channel)
     {
         super(api, responseNumber, rawData);
         this.messageId = messageId;

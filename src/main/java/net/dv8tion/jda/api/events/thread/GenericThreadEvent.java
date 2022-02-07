@@ -23,13 +23,14 @@ import net.dv8tion.jda.api.events.Event;
 import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 //TODO-v5: Docs
 public class GenericThreadEvent extends Event
 {
     protected final ThreadChannel thread;
 
-    public GenericThreadEvent(@Nonnull JDA api, long responseNumber, DataObject rawData, ThreadChannel thread)
+    public GenericThreadEvent(@Nonnull JDA api, long responseNumber, @Nullable DataObject rawData, ThreadChannel thread)
     {
         super(api, responseNumber, rawData);
 

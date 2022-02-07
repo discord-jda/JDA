@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Indicates that a {@link Member Member} has agreed to Membership Screening requirements.
@@ -50,7 +51,7 @@ public class GuildMemberUpdatePendingEvent extends GenericGuildMemberUpdateEvent
 {
     public static final String IDENTIFIER = "pending";
 
-    public GuildMemberUpdatePendingEvent(@Nonnull JDA api, long responseNumber, DataObject rawData, @Nonnull Member member, boolean previous)
+    public GuildMemberUpdatePendingEvent(@Nonnull JDA api, long responseNumber, @Nullable DataObject rawData, @Nonnull Member member, boolean previous)
     {
         super(api, responseNumber, rawData, member, previous, member.isPending(), IDENTIFIER);
     }

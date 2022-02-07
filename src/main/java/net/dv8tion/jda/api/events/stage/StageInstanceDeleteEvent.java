@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.entities.StageInstance;
 import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Indicates that a {@link net.dv8tion.jda.api.entities.StageInstance StageInstance} was deleted.
@@ -29,7 +30,7 @@ import javax.annotation.Nonnull;
  */
 public class StageInstanceDeleteEvent extends GenericStageInstanceEvent
 {
-    public StageInstanceDeleteEvent(@Nonnull JDA api, long responseNumber, DataObject rawData, @Nonnull StageInstance stageInstance)
+    public StageInstanceDeleteEvent(@Nonnull JDA api, long responseNumber, @Nullable DataObject rawData, @Nonnull StageInstance stageInstance)
     {
         super(api, responseNumber, rawData, stageInstance);
     }

@@ -35,7 +35,7 @@ public class GenericPermissionOverrideEvent extends GenericGuildEvent
     protected final GuildChannel channel;
     protected final PermissionOverride override;
 
-    public GenericPermissionOverrideEvent(@Nonnull JDA api, long responseNumber, DataObject rawData, @Nonnull GuildChannel channel, @Nonnull PermissionOverride override)
+    public GenericPermissionOverrideEvent(@Nonnull JDA api, long responseNumber, @Nullable DataObject rawData, @Nonnull GuildChannel channel, @Nonnull PermissionOverride override)
     {
         super(api, responseNumber, rawData, channel.getGuild());
         this.channel = channel;

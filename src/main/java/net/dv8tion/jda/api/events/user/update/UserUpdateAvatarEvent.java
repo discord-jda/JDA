@@ -45,7 +45,7 @@ public class UserUpdateAvatarEvent extends GenericUserUpdateEvent<String>
 {
     public static final String IDENTIFIER = "avatar";
 
-    public UserUpdateAvatarEvent(@Nonnull JDA api, long responseNumber, DataObject rawData, @Nonnull User user, @Nullable String oldAvatar)
+    public UserUpdateAvatarEvent(@Nonnull JDA api, long responseNumber, @Nullable DataObject rawData, @Nonnull User user, @Nullable String oldAvatar)
     {
         super(api, responseNumber, rawData, user, oldAvatar, user.getAvatarId(), IDENTIFIER);
     }

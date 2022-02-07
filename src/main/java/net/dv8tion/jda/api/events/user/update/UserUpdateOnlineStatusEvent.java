@@ -23,6 +23,7 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Indicates that the {@link OnlineStatus OnlineStatus} of a {@link net.dv8tion.jda.api.entities.User User} changed.
@@ -49,7 +50,7 @@ public class UserUpdateOnlineStatusEvent extends GenericUserUpdateEvent<OnlineSt
     private final Guild guild;
     private final Member member;
 
-    public UserUpdateOnlineStatusEvent(@Nonnull JDA api, long responseNumber, DataObject rawData, @Nonnull Member member, @Nonnull OnlineStatus oldOnlineStatus)
+    public UserUpdateOnlineStatusEvent(@Nonnull JDA api, long responseNumber, @Nullable DataObject rawData, @Nonnull Member member, @Nonnull OnlineStatus oldOnlineStatus)
     {
         super(api, responseNumber, rawData, member.getUser(), oldOnlineStatus, member.getOnlineStatus(), IDENTIFIER);
         this.guild = member.getGuild();

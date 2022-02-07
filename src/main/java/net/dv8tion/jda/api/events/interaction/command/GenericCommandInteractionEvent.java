@@ -38,7 +38,7 @@ import java.util.List;
  */
 public class GenericCommandInteractionEvent extends GenericInteractionCreateEvent implements CommandInteraction
 {
-    public GenericCommandInteractionEvent(@Nonnull JDA api, long responseNumber, DataObject rawData, @Nonnull CommandInteraction interaction)
+    public GenericCommandInteractionEvent(@Nonnull JDA api, long responseNumber, @Nullable DataObject rawData, @Nonnull CommandInteraction interaction)
     {
         super(api, responseNumber, rawData, interaction);
     }

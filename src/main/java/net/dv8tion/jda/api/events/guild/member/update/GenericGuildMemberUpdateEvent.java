@@ -48,7 +48,7 @@ public abstract class GenericGuildMemberUpdateEvent<T> extends GenericGuildMembe
     protected final String identifier;
 
     public GenericGuildMemberUpdateEvent(
-        @Nonnull JDA api, long responseNumber, DataObject rawData, @Nonnull Member member,
+        @Nonnull JDA api, long responseNumber, @Nullable DataObject rawData, @Nonnull Member member,
         @Nullable T previous, @Nullable T next, @Nonnull String identifier)
     {
         super(api, responseNumber, rawData, member);

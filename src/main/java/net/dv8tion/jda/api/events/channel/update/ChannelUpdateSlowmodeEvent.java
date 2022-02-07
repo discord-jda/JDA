@@ -22,13 +22,14 @@ import net.dv8tion.jda.api.entities.ChannelField;
 import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 //TODO-v5: Docs
 public class ChannelUpdateSlowmodeEvent extends GenericChannelUpdateEvent<Integer>
 {
     public static final ChannelField FIELD = ChannelField.SLOWMODE;
 
-    public ChannelUpdateSlowmodeEvent(@Nonnull JDA api, long responseNumber, DataObject rawData, Channel channel, Integer oldValue, Integer newValue)
+    public ChannelUpdateSlowmodeEvent(@Nonnull JDA api, long responseNumber, @Nullable DataObject rawData, Channel channel, Integer oldValue, Integer newValue)
     {
         super(api, responseNumber, rawData, channel, FIELD, oldValue, newValue);
     }

@@ -35,7 +35,7 @@ public class GuildUpdateAfkChannelEvent extends GenericGuildUpdateEvent<VoiceCha
 {
     public static final String IDENTIFIER = "afk_channel";
 
-    public GuildUpdateAfkChannelEvent(@Nonnull JDA api, long responseNumber, DataObject rawData, @Nonnull Guild guild, @Nullable VoiceChannel oldAfkChannel)
+    public GuildUpdateAfkChannelEvent(@Nonnull JDA api, long responseNumber, @Nullable DataObject rawData, @Nonnull Guild guild, @Nullable VoiceChannel oldAfkChannel)
     {
         super(api, responseNumber, rawData, guild, oldAfkChannel, guild.getAfkChannel(), IDENTIFIER);
     }

@@ -50,7 +50,7 @@ public class GuildVoiceRequestToSpeakEvent extends GenericGuildVoiceEvent
 {
     private final OffsetDateTime oldTime, newTime;
 
-    public GuildVoiceRequestToSpeakEvent(@Nonnull JDA api, long responseNumber, DataObject rawData, @Nonnull Member member,
+    public GuildVoiceRequestToSpeakEvent(@Nonnull JDA api, long responseNumber, @Nullable DataObject rawData, @Nonnull Member member,
                                          @Nullable OffsetDateTime oldTime, @Nullable OffsetDateTime newTime)
     {
         super(api, responseNumber, rawData, member);

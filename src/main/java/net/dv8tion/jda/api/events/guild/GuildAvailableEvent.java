@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Indicates that a {@link net.dv8tion.jda.api.entities.Guild Guild} became available.
@@ -30,7 +31,7 @@ import javax.annotation.Nonnull;
  */
 public class GuildAvailableEvent extends GenericGuildEvent
 {
-    public GuildAvailableEvent(@Nonnull JDA api, long responseNumber, DataObject rawData, @Nonnull Guild guild)
+    public GuildAvailableEvent(@Nonnull JDA api, long responseNumber, @Nullable DataObject rawData, @Nonnull Guild guild)
     {
         super(api, responseNumber, rawData, guild);
     }

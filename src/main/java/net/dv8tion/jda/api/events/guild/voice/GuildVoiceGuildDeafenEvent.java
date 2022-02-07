@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Indicates that a {@link net.dv8tion.jda.api.entities.Member Member} was (un-)deafened by a moderator.
@@ -43,7 +44,7 @@ public class GuildVoiceGuildDeafenEvent extends GenericGuildVoiceEvent
 {
     protected final boolean guildDeafened;
 
-    public GuildVoiceGuildDeafenEvent(@Nonnull JDA api, long responseNumber, DataObject rawData, @Nonnull Member member)
+    public GuildVoiceGuildDeafenEvent(@Nonnull JDA api, long responseNumber, @Nullable DataObject rawData, @Nonnull Member member)
     {
         super(api, responseNumber, rawData, member);
         this.guildDeafened = member.getVoiceState().isGuildDeafened();

@@ -56,7 +56,7 @@ public class UserUpdateActivitiesEvent extends GenericUserUpdateEvent<List<Activ
     public static final String IDENTIFIER = "activities";
     private final Member member;
 
-    public UserUpdateActivitiesEvent(@Nonnull JDA api, long responseNumber, DataObject rawData, @Nonnull Member member, @Nullable List<Activity> previous)
+    public UserUpdateActivitiesEvent(@Nonnull JDA api, long responseNumber, @Nullable DataObject rawData, @Nonnull Member member, @Nullable List<Activity> previous)
     {
         super(api, responseNumber, rawData, member.getUser(), previous, member.getActivities(), IDENTIFIER);
         this.member = member;

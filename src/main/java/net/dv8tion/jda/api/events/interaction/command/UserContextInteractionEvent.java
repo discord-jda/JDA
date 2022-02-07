@@ -38,7 +38,7 @@ import javax.annotation.Nullable;
  */
 public class UserContextInteractionEvent extends GenericContextInteractionEvent<User> implements UserContextInteraction
 {
-    public UserContextInteractionEvent(@Nonnull JDA api, long responseNumber, DataObject rawData, @Nonnull UserContextInteraction interaction)
+    public UserContextInteractionEvent(@Nonnull JDA api, long responseNumber, @Nullable DataObject rawData, @Nonnull UserContextInteraction interaction)
     {
         super(api, responseNumber, rawData, interaction);
     }

@@ -34,7 +34,7 @@ public class GuildUpdateBannerEvent extends GenericGuildUpdateEvent<String>
 {
     public static final String IDENTIFIER = "banner";
 
-    public GuildUpdateBannerEvent(@Nonnull JDA api, long responseNumber, DataObject rawData, @Nonnull Guild guild, @Nullable String previous)
+    public GuildUpdateBannerEvent(@Nonnull JDA api, long responseNumber, @Nullable DataObject rawData, @Nonnull Guild guild, @Nullable String previous)
     {
         super(api, responseNumber, rawData, guild, previous, guild.getBannerId(), IDENTIFIER);
     }

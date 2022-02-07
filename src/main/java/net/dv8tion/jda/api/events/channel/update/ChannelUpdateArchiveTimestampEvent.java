@@ -23,6 +23,7 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.time.OffsetDateTime;
 
 //TODO-v5: Docs
@@ -33,7 +34,7 @@ public class ChannelUpdateArchiveTimestampEvent extends GenericChannelUpdateEven
     private final long oldTimestamp;
     private final long newTimestamp;
 
-    public ChannelUpdateArchiveTimestampEvent(@Nonnull JDA api, long responseNumber, DataObject rawData, Channel channel, long oldValue, long newValue)
+    public ChannelUpdateArchiveTimestampEvent(@Nonnull JDA api, long responseNumber, @Nullable DataObject rawData, Channel channel, long oldValue, long newValue)
     {
         //Explicitly providing null for new and old value here as we will override the methods providing them.
         //We are doing this so that we only construct the OffsetDateTime objects if they are specifically requested

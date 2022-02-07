@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Indicates that a {@link net.dv8tion.jda.api.entities.Role Role} was created.
@@ -29,7 +30,7 @@ import javax.annotation.Nonnull;
  */
 public class RoleCreateEvent extends GenericRoleEvent
 {
-    public RoleCreateEvent(@Nonnull JDA api, long responseNumber, DataObject rawData, @Nonnull Role createdRole)
+    public RoleCreateEvent(@Nonnull JDA api, long responseNumber, @Nullable DataObject rawData, @Nonnull Role createdRole)
     {
         super(api, responseNumber, rawData, createdRole);
     }

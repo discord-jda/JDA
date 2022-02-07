@@ -50,7 +50,7 @@ public abstract class GenericUserUpdateEvent<T> extends GenericUserEvent impleme
     protected final String identifier;
 
     public GenericUserUpdateEvent(
-        @Nonnull JDA api, long responseNumber, DataObject rawData, @Nonnull User user,
+        @Nonnull JDA api, long responseNumber, @Nullable DataObject rawData, @Nonnull User user,
         @Nullable T previous, @Nullable T next, @Nonnull String identifier)
     {
         super(api, responseNumber, rawData, user);

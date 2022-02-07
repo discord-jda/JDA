@@ -23,6 +23,7 @@ import net.dv8tion.jda.api.entities.PermissionOverride;
 import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.EnumSet;
 
 /**
@@ -35,7 +36,7 @@ public class PermissionOverrideUpdateEvent extends GenericPermissionOverrideEven
 {
     private final long oldAllow, oldDeny;
 
-    public PermissionOverrideUpdateEvent(@Nonnull JDA api, long responseNumber, DataObject rawData, @Nonnull GuildChannel channel, @Nonnull PermissionOverride override, long oldAllow, long oldDeny)
+    public PermissionOverrideUpdateEvent(@Nonnull JDA api, long responseNumber, @Nullable DataObject rawData, @Nonnull GuildChannel channel, @Nonnull PermissionOverride override, long oldAllow, long oldDeny)
     {
         super(api, responseNumber, rawData, channel, override);
         this.oldAllow = oldAllow;

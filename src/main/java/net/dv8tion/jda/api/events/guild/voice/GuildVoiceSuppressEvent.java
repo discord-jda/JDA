@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Indicates that a {@link net.dv8tion.jda.api.entities.Member Member} was (un-)suppressed.
@@ -45,7 +46,7 @@ public class GuildVoiceSuppressEvent extends GenericGuildVoiceEvent
 {
     protected final boolean suppressed;
 
-    public GuildVoiceSuppressEvent(@Nonnull JDA api, long responseNumber, DataObject rawData, @Nonnull Member member)
+    public GuildVoiceSuppressEvent(@Nonnull JDA api, long responseNumber, @Nullable DataObject rawData, @Nonnull Member member)
     {
         super(api, responseNumber, rawData, member);
         this.suppressed = member.getVoiceState().isSuppressed();

@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Locale;
 
 /**
@@ -37,7 +38,7 @@ public class GuildUpdateLocaleEvent extends GenericGuildUpdateEvent<Locale>
 {
     public static final String IDENTIFIER = "locale";
 
-    public GuildUpdateLocaleEvent(@Nonnull JDA api, long responseNumber, DataObject rawData, @Nonnull Guild guild, @Nonnull Locale previous)
+    public GuildUpdateLocaleEvent(@Nonnull JDA api, long responseNumber, @Nullable DataObject rawData, @Nonnull Guild guild, @Nonnull Locale previous)
     {
         super(api, responseNumber, rawData, guild, previous, guild.getLocale(), IDENTIFIER);
     }

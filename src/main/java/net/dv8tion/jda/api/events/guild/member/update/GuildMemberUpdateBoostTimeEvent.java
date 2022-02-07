@@ -47,7 +47,7 @@ public class GuildMemberUpdateBoostTimeEvent extends GenericGuildMemberUpdateEve
 {
     public static final String IDENTIFIER = "boost_time";
 
-    public GuildMemberUpdateBoostTimeEvent(@Nonnull JDA api, long responseNumber, DataObject rawData, @Nonnull Member member, @Nullable OffsetDateTime previous)
+    public GuildMemberUpdateBoostTimeEvent(@Nonnull JDA api, long responseNumber, @Nullable DataObject rawData, @Nonnull Member member, @Nullable OffsetDateTime previous)
     {
         super(api, responseNumber, rawData, member, previous, member.getTimeBoosted(), IDENTIFIER);
     }

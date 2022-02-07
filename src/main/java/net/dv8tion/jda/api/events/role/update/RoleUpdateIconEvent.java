@@ -35,7 +35,7 @@ public class RoleUpdateIconEvent extends GenericRoleUpdateEvent<RoleIcon>
 {
     public static final String IDENTIFIER = "icon";
 
-    public RoleUpdateIconEvent(@Nonnull JDA api, long responseNumber, DataObject rawData, @Nonnull Role role, @Nullable RoleIcon oldIcon)
+    public RoleUpdateIconEvent(@Nonnull JDA api, long responseNumber, @Nullable DataObject rawData, @Nonnull Role role, @Nullable RoleIcon oldIcon)
     {
         super(api, responseNumber, rawData, role, oldIcon, role.getIcon(), IDENTIFIER);
     }

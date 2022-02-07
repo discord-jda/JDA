@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.events.Event;
 import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Indicates that a {@link net.dv8tion.jda.api.entities.User User} changed or started an activity.
@@ -32,7 +33,7 @@ public abstract class GenericUserEvent extends Event
 {
     private final User user;
 
-    public GenericUserEvent(@Nonnull JDA api, long responseNumber, DataObject rawData, @Nonnull User user)
+    public GenericUserEvent(@Nonnull JDA api, long responseNumber, @Nullable DataObject rawData, @Nonnull User user)
     {
         super(api, responseNumber, rawData);
         this.user = user;

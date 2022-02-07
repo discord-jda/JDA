@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.interactions.commands.context.ContextInteraction;
 import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Indicates that a {@link ContextInteraction} was used.
@@ -31,7 +32,7 @@ import javax.annotation.Nonnull;
  */
 public class GenericContextInteractionEvent<T> extends GenericCommandInteractionEvent implements ContextInteraction<T>
 {
-    public GenericContextInteractionEvent(@Nonnull JDA api, long responseNumber, DataObject rawData, @Nonnull ContextInteraction<T> interaction)
+    public GenericContextInteractionEvent(@Nonnull JDA api, long responseNumber, @Nullable DataObject rawData, @Nonnull ContextInteraction<T> interaction)
     {
         super(api, responseNumber, rawData, interaction);
     }

@@ -38,7 +38,7 @@ import javax.annotation.Nullable;
  */
 public class MessageContextInteractionEvent extends GenericContextInteractionEvent<Message> implements MessageContextInteraction
 {
-    public MessageContextInteractionEvent(@Nonnull JDA api, long responseNumber, DataObject rawData, @Nonnull MessageContextInteraction interaction)
+    public MessageContextInteractionEvent(@Nonnull JDA api, long responseNumber, @Nullable DataObject rawData, @Nonnull MessageContextInteraction interaction)
     {
         super(api, responseNumber, rawData, interaction);
     }

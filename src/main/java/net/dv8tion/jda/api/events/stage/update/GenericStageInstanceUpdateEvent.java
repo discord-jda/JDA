@@ -37,7 +37,7 @@ public abstract class GenericStageInstanceUpdateEvent<T> extends GenericStageIns
     protected final T next;
     protected final String identifier;
 
-    public GenericStageInstanceUpdateEvent(@Nonnull JDA api, long responseNumber, DataObject rawData, @Nonnull StageInstance stageInstance, T previous, T next, String identifier)
+    public GenericStageInstanceUpdateEvent(@Nonnull JDA api, long responseNumber, @Nullable DataObject rawData, @Nonnull StageInstance stageInstance, T previous, T next, String identifier)
     {
         super(api, responseNumber, rawData, stageInstance);
         this.previous = previous;

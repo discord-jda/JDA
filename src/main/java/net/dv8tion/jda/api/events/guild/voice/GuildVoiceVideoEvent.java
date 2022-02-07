@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Indicates that a {@link net.dv8tion.jda.api.entities.Member Member} turned on their camera.
@@ -44,7 +45,7 @@ public class GuildVoiceVideoEvent extends GenericGuildVoiceEvent
 {
     private final boolean video;
 
-    public GuildVoiceVideoEvent(@Nonnull JDA api, long responseNumber, DataObject rawData, @Nonnull Member member, boolean video)
+    public GuildVoiceVideoEvent(@Nonnull JDA api, long responseNumber, @Nullable DataObject rawData, @Nonnull Member member, boolean video)
     {
         super(api, responseNumber, rawData, member);
         this.video = video;

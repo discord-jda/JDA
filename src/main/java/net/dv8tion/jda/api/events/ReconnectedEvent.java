@@ -19,6 +19,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Indicates if JDA successfully re-established its connection to the gateway.
@@ -29,7 +30,7 @@ import javax.annotation.Nonnull;
  */
 public class ReconnectedEvent extends Event
 {
-    public ReconnectedEvent(@Nonnull JDA api, long responseNumber, DataObject rawData)
+    public ReconnectedEvent(@Nonnull JDA api, long responseNumber, @Nullable DataObject rawData)
     {
         super(api, responseNumber, rawData);
     }

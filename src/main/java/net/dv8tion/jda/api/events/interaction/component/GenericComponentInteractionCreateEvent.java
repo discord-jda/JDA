@@ -29,6 +29,7 @@ import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction;
 import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Indicates that a {@link ComponentInteraction} was created in a channel.
@@ -42,7 +43,7 @@ public class GenericComponentInteractionCreateEvent extends GenericInteractionCr
 {
     private final ComponentInteraction interaction;
 
-    public GenericComponentInteractionCreateEvent(@Nonnull JDA api, long responseNumber, DataObject rawData, @Nonnull ComponentInteraction interaction)
+    public GenericComponentInteractionCreateEvent(@Nonnull JDA api, long responseNumber, @Nullable DataObject rawData, @Nonnull ComponentInteraction interaction)
     {
         super(api, responseNumber, rawData, interaction);
         this.interaction = interaction;

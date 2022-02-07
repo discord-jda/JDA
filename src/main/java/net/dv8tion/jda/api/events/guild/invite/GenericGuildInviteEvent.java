@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.events.guild.GenericGuildEvent;
 import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Indicates that an {@link Invite} was created or deleted in a {@link Guild}.
@@ -39,7 +40,7 @@ public class GenericGuildInviteEvent extends GenericGuildEvent
     private final String code;
     private final GuildChannel channel;
 
-    public GenericGuildInviteEvent(@Nonnull JDA api, long responseNumber, DataObject rawData, @Nonnull String code, @Nonnull GuildChannel channel)
+    public GenericGuildInviteEvent(@Nonnull JDA api, long responseNumber, @Nullable DataObject rawData, @Nonnull String code, @Nonnull GuildChannel channel)
     {
         super(api, responseNumber, rawData, channel.getGuild());
         this.code = code;

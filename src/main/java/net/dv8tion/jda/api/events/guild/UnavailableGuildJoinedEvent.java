@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.events.Event;
 import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Indicates that you joined a {@link net.dv8tion.jda.api.entities.Guild Guild} that is not yet available.
@@ -33,7 +34,7 @@ public class UnavailableGuildJoinedEvent extends Event
 {
     private final long guildId;
 
-    public UnavailableGuildJoinedEvent(@Nonnull JDA api, long responseNumber, DataObject rawData, long guildId)
+    public UnavailableGuildJoinedEvent(@Nonnull JDA api, long responseNumber, @Nullable DataObject rawData, long guildId)
     {
         super(api, responseNumber, rawData);
         this.guildId = guildId;

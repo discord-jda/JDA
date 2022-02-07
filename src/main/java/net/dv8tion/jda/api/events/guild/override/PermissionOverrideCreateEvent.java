@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.entities.PermissionOverride;
 import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Indicates that a {@link PermissionOverride} of a {@link GuildChannel} has been created.
@@ -30,7 +31,7 @@ import javax.annotation.Nonnull;
  */
 public class PermissionOverrideCreateEvent extends GenericPermissionOverrideEvent
 {
-    public PermissionOverrideCreateEvent(@Nonnull JDA api, long responseNumber, DataObject rawData, @Nonnull GuildChannel channel, @Nonnull PermissionOverride override)
+    public PermissionOverrideCreateEvent(@Nonnull JDA api, long responseNumber, @Nullable DataObject rawData, @Nonnull GuildChannel channel, @Nonnull PermissionOverride override)
     {
         super(api, responseNumber, rawData, channel, override);
     }

@@ -34,7 +34,7 @@ public class GuildUpdateIconEvent extends GenericGuildUpdateEvent<String>
 {
     public static final String IDENTIFIER = "icon";
 
-    public GuildUpdateIconEvent(@Nonnull JDA api, long responseNumber, DataObject rawData, @Nonnull Guild guild, @Nullable String oldIconId)
+    public GuildUpdateIconEvent(@Nonnull JDA api, long responseNumber, @Nullable DataObject rawData, @Nonnull Guild guild, @Nullable String oldIconId)
     {
         super(api, responseNumber, rawData, guild, oldIconId, guild.getIconId(), IDENTIFIER);
     }

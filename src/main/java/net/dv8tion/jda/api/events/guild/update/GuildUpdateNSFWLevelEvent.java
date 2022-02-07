@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Indicates that the {@link net.dv8tion.jda.api.entities.Guild.NSFWLevel NSFWLevel} of a {@link net.dv8tion.jda.api.entities.Guild Guild} changed.
@@ -33,7 +34,7 @@ public class GuildUpdateNSFWLevelEvent extends GenericGuildUpdateEvent<Guild.NSF
 {
     public static final String IDENTIFIER = "nsfw_level";
 
-    public GuildUpdateNSFWLevelEvent(@Nonnull JDA api, long responseNumber, DataObject rawData, @Nonnull Guild guild, @Nonnull Guild.NSFWLevel oldNSFWLevel)
+    public GuildUpdateNSFWLevelEvent(@Nonnull JDA api, long responseNumber, @Nullable DataObject rawData, @Nonnull Guild guild, @Nonnull Guild.NSFWLevel oldNSFWLevel)
     {
         super(api, responseNumber, rawData, guild, oldNSFWLevel, guild.getNSFWLevel(), IDENTIFIER);
     }

@@ -45,7 +45,7 @@ public class MessageReceivedEvent extends GenericMessageEvent
 {
     private final Message message;
 
-    public MessageReceivedEvent(@Nonnull JDA api, long responseNumber, DataObject rawData, @Nonnull Message message)
+    public MessageReceivedEvent(@Nonnull JDA api, long responseNumber, @Nullable DataObject rawData, @Nonnull Message message)
     {
         super(api, responseNumber, rawData, message.getIdLong(), message.getChannel());
         this.message = message;

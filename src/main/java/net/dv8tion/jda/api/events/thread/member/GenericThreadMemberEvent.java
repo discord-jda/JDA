@@ -32,7 +32,7 @@ public class GenericThreadMemberEvent extends GenericThreadEvent
     protected final long threadMemberId;
     protected final ThreadMember threadMember;
 
-    public GenericThreadMemberEvent(@Nonnull JDA api, long responseNumber, DataObject rawData, ThreadChannel thread, long threadMemberId, ThreadMember threadMember)
+    public GenericThreadMemberEvent(@Nonnull JDA api, long responseNumber, @Nullable DataObject rawData, ThreadChannel thread, long threadMemberId, ThreadMember threadMember)
     {
         super(api, responseNumber, rawData, thread);
 

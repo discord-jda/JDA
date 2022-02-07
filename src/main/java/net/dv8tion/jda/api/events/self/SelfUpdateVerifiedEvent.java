@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Indicates that the verification state of the current user changed. (client-only)
@@ -32,7 +33,7 @@ public class SelfUpdateVerifiedEvent extends GenericSelfUpdateEvent<Boolean>
 {
     public static final String IDENTIFIER = "verified";
 
-    public SelfUpdateVerifiedEvent(@Nonnull JDA api, long responseNumber, DataObject rawData, boolean wasVerified)
+    public SelfUpdateVerifiedEvent(@Nonnull JDA api, long responseNumber, @Nullable DataObject rawData, boolean wasVerified)
     {
         super(api, responseNumber, rawData, wasVerified, !wasVerified, IDENTIFIER);
     }

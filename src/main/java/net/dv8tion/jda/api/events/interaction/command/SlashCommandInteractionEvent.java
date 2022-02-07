@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.interactions.commands.SlashCommandInteraction;
 import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Indicates that a slash command was used in a {@link MessageChannel}.
@@ -36,7 +37,7 @@ public class SlashCommandInteractionEvent extends GenericCommandInteractionEvent
 {
     private final SlashCommandInteraction interaction;
 
-    public SlashCommandInteractionEvent(@Nonnull JDA api, long responseNumber, DataObject rawData, @Nonnull SlashCommandInteraction interaction)
+    public SlashCommandInteractionEvent(@Nonnull JDA api, long responseNumber, @Nullable DataObject rawData, @Nonnull SlashCommandInteraction interaction)
     {
         super(api, responseNumber, rawData, interaction);
         this.interaction = interaction;

@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
 
@@ -44,7 +45,7 @@ public class GuildMemberRoleAddEvent extends GenericGuildMemberEvent
 {
     private final List<Role> addedRoles;
 
-    public GuildMemberRoleAddEvent(@Nonnull JDA api, long responseNumber, DataObject rawData, @Nonnull Member member, @Nonnull List<Role> addedRoles)
+    public GuildMemberRoleAddEvent(@Nonnull JDA api, long responseNumber, @Nullable DataObject rawData, @Nonnull Member member, @Nonnull List<Role> addedRoles)
     {
         super(api, responseNumber, rawData, member);
         this.addedRoles = Collections.unmodifiableList(addedRoles);

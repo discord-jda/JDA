@@ -19,6 +19,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Top-level event type
@@ -45,7 +46,7 @@ public abstract class Event implements GenericEvent
      *
      * @see   #Event(net.dv8tion.jda.api.JDA)
      */
-    public Event(@Nonnull JDA api, long responseNumber, DataObject rawData)
+    public Event(@Nonnull JDA api, long responseNumber, @Nullable DataObject rawData)
     {
         this.api = api;
         this.responseNumber = responseNumber;
