@@ -74,7 +74,7 @@ public class PrivateChannelImpl extends AbstractChannelImpl<PrivateChannelImpl> 
         User user = getUser();
         if (user == null)
         {
-            //don't break or override the contract of @NotNull
+            //don't break or override the contract of @NonNull
             return "";
         }
         return user.getName();
