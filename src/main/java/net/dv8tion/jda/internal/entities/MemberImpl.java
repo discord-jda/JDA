@@ -117,7 +117,8 @@ public class MemberImpl implements Member
     }
 
     @Override
-    public boolean isBoosting(){
+    public boolean isBoosting()
+    {
         return boostDate != 0;
     }
 
