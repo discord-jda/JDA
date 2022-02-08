@@ -208,6 +208,8 @@ public interface CommandInteractionPayload extends Interaction
      * Auto-complete interactions happen on incomplete command inputs and are not validated.
      *
      * @return The options passed for this command
+     *
+     * @see    #getOption(String)
      */
     @Nonnull
     List<OptionMapping> getOptions();
@@ -227,6 +229,7 @@ public interface CommandInteractionPayload extends Interaction
      * @return The list of options
      *
      * @see   #getOption(String)
+     * @see   #getOptions()
      */
     @Nonnull
     default List<OptionMapping> getOptionsByName(@Nonnull String name)
@@ -250,6 +253,8 @@ public interface CommandInteractionPayload extends Interaction
      *         If the provided type is null
      *
      * @return The list of options
+     *
+     * @see    #getOptions()
      */
     @Nonnull
     default List<OptionMapping> getOptionsByType(@Nonnull OptionType type)
@@ -266,6 +271,9 @@ public interface CommandInteractionPayload extends Interaction
      * <p>For {@link CommandAutoCompleteInteraction}, this might be incomplete and unvalidated.
      * Auto-complete interactions happen on incomplete command inputs and are not validated.
      *
+     * <p>You can use the second and third parameter overloads to handle optional arguments gracefully.
+     * See {@link #getOption(String, Function)} and {@link #getOption(String, Object, Function)}.
+     *
      * @param  name
      *         The option name
      *
@@ -273,6 +281,10 @@ public interface CommandInteractionPayload extends Interaction
      *         If the name is null
      *
      * @return The option with the provided name, or null if that option is not provided
+     *
+     * @see    #getOption(String, Function)
+     * @see    #getOption(String, Object, Function)
+     * @see    #getOption(String, Supplier, Function)
      */
     @Nullable
     default OptionMapping getOption(@Nonnull String name)
