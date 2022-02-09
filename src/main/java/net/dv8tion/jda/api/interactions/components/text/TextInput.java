@@ -30,6 +30,21 @@ import org.jetbrains.annotations.Nullable;
 public interface TextInput extends ActionComponent
 {
     /**
+     * The maximum amount of characters a TextInput's minimum length can have
+     */
+    int TEXT_INPUT_MIN_LENGTH_MAXIMUM = 4000;
+
+    /**
+     * The minimum amount of characters a TextInput's maximum length can have
+     */
+    int TEXT_INPUT_MAX_LENGTH_MINIMUM = 1;
+
+    /**
+     * The maximum amount of characters a TextInput's maximum length can have
+     */
+    int TEXT_INPUT_MAX_LENGTH_MAXIMUM = 4000;
+
+    /**
      * The {@link TextInputStyle TextInputStyle} of this TextInput component.
      *
      * <b>This is null if the TextInput was received from a {@link net.dv8tion.jda.api.events.interaction.ModalSubmitInteractionEvent ModalSubmitInteractionEvent}!</b>
@@ -187,7 +202,7 @@ public interface TextInput extends ActionComponent
         public Builder setMinLength(int minLength)
         {
             Checks.notNegative(minLength, "Minimum length");
-            Checks.check(minLength <= 4000, "Minimum length cannot be longer than 4000 characters!");
+            Checks.check(minLength <= TEXT_INPUT_MIN_LENGTH_MAXIMUM, "Minimum length cannot be longer than 4000 characters!");
             this.minLength = minLength;
             return this;
         }
@@ -206,8 +221,8 @@ public interface TextInput extends ActionComponent
          */
         public Builder setMaxLength(int maxLength)
         {
-            Checks.check(maxLength >= 1, "Maximum length cannot be smaller than 1");
-            Checks.check(maxLength <= 4000, "Maximum length cannot be longer than 4000 characters!");
+            Checks.check(maxLength >= TEXT_INPUT_MAX_LENGTH_MINIMUM, "Maximum length cannot be smaller than 1");
+            Checks.check(maxLength <= TEXT_INPUT_MAX_LENGTH_MAXIMUM, "Maximum length cannot be longer than 4000 characters!");
             this.maxLength = maxLength;
             return this;
         }
