@@ -18,7 +18,6 @@ package net.dv8tion.jda.api.interactions;
 
 import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
-import net.dv8tion.jda.api.interactions.components.ItemComponent;
 import net.dv8tion.jda.api.interactions.components.text.TextInput;
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction;
 import org.jetbrains.annotations.NotNull;
@@ -56,7 +55,7 @@ public interface ModalInteraction extends IReplyCallback
      * @return TextInput with this id, or null
      */
     @Nullable
-    default TextInput getInputField(String id)
+    default TextInput getTextInputField(String id)
     {
         return getComponents().stream()
                 .map(ActionRow::getComponents)
