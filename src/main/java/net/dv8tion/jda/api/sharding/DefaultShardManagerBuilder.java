@@ -2153,7 +2153,7 @@ public class  DefaultShardManagerBuilder
      *         to whether or not loading has finished when this returns.
      */
     @Nonnull
-    public ShardManager build() , IllegalArgumentException
+    public ShardManager build() throws IllegalArgumentException
     {
         return build(true);
     }
@@ -2181,7 +2181,7 @@ public class  DefaultShardManagerBuilder
      * finished when this returns.
      */
     @Nonnull
-    public ShardManager build(boolean login) , IllegalArgumentException
+    public ShardManager build(boolean login) throws IllegalArgumentException
     {
         checkIntents();
         boolean useShutdownNow = shardingFlags.contains(ShardingConfigFlag.SHUTDOWN_NOW);
