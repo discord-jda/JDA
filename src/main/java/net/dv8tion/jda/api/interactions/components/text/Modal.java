@@ -28,14 +28,38 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Represents a Discord Modal
+ *
+ * Replying to an interaction with a modal will cause a form window to pop up on the User's client.
+ *
+ * <b>Only a maximum of 5 components can be included in a Modal, and only {@link net.dv8tion.jda.api.interactions.components.text.TextInput TextInputs} are allowed.</b>
+ *
+ * @see net.dv8tion.jda.api.events.interaction.ModalSubmitInteractionEvent
+ */
 public interface Modal extends ActionComponent
 {
+    /**
+     * The custom id of this modal
+     *
+     * @return The custom id of this modal
+     */
     @NotNull
     String getId();
 
+    /**
+     * The title of this modal
+     *
+     * @return The title of this modal
+     */
     @NotNull
     String getTitle();
 
+    /**
+     * A List of {@link net.dv8tion.jda.api.interactions.components.ActionRow ActionRows} that this modal contains.
+     *
+     * @return List of ActionRows
+     */
     @NotNull
     List<ActionRow> getComponents();
 
@@ -46,12 +70,23 @@ public interface Modal extends ActionComponent
         throw new UnsupportedOperationException("Modals cannot be disabled!");
     }
 
+    /**
+     * Creates a new Modal.
+     *
+     * @param customId The custom id for this modal
+     *
+     * @throws IllegalArgumentException
+     *         If the provided customId or title are null
+     *
+     * @return {@link Builder Builder} instance to customize this modal further
+     */
     @NotNull
     @CheckReturnValue
-    static Modal.Builder create(@NotNull String customId)
+    static Modal.Builder create(@NotNull String customId, @NotNull String title)
     {
         Checks.notNull(customId, "Custom ID");
-        return new Modal.Builder(customId);
+        Checks.notNull(title, "Title");
+        return new Modal.Builder(customId).setTitle(title);
     }
 
     class Builder
@@ -65,18 +100,42 @@ public interface Modal extends ActionComponent
             setId(customId);
         }
 
+        /**
+         * Sets the custom id for this modal.
+         *
+         * @param customId Custom id
+         *
+         * @return Builder for chaining convenience
+         */
         public Builder setId(@NotNull String customId)
         {
             this.id = customId;
             return this;
         }
 
+        /**
+         * Sets the title for this modal.
+         *
+         * @param title The title
+         *
+         * @return Builder for chaining convenience
+         */
         public Builder setTitle(String title)
         {
             this.title = title;
             return this;
         }
 
+        /**
+         * Adds components to this modal
+         *
+         * @param components Vararg of ActionRows
+         *
+         * @throws IllegalArgumentException
+         *         If any of the provided ActionRows are null
+         *
+         * @return Builder for chaining convenience
+         */
         public Builder addComponents(ActionRow... components)
         {
             Checks.noneNull(components, "Components");
@@ -84,6 +143,16 @@ public interface Modal extends ActionComponent
             return this;
         }
 
+        /**
+         * Adds components to this modal
+         *
+         * @param components Collection of ActionRows
+         *
+         * @throws IllegalArgumentException
+         *         If any of the provided ActionRows are null
+         *
+         * @return Builder for chaining convenience
+         */
         public Builder addComponents(Collection<? extends ActionRow> components)
         {
             Checks.noneNull(components, "Components");
@@ -91,21 +160,47 @@ public interface Modal extends ActionComponent
             return this;
         }
 
+        /**
+         * Returns a list of all components
+         *
+         * @return A list of components
+         */
         public List<ActionRow> getComponents()
         {
             return Collections.unmodifiableList(components);
         }
 
+        /**
+         * Returns the title
+         *
+         * @return the title
+         */
         public String getTitle()
         {
             return title;
         }
 
+        /**
+         * Returns the custom id
+         *
+         * @return the id
+         */
         public String getId()
         {
             return id;
         }
 
+        /**
+         * Builds and returns the {@link Modal}
+         *
+         * @throws IllegalArgumentException
+         *         If the id is null
+         *         If the title is null
+         *         If the components are empty
+         *         If there are more than 5 components
+         *
+         * @return A Modal
+         */
         public Modal build()
         {
             Checks.check(id != null, "Custom ID cannot be null!");
