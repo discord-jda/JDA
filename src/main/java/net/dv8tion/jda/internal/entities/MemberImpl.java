@@ -113,7 +113,7 @@ public class MemberImpl implements Member
     @Override
     public OffsetDateTime getTimeBoosted()
     {
-        return boostDate != 0 ? Helpers.toOffset(boostDate) : null;
+        return isBoosting() ? Helpers.toOffset(boostDate) : null;
     }
 
     @Override
