@@ -20,14 +20,11 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.ModalInteraction;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
-import net.dv8tion.jda.api.interactions.components.ItemComponent;
-import net.dv8tion.jda.api.interactions.components.text.TextInput;
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction;
 import net.dv8tion.jda.internal.interactions.ModalInteractionImpl;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
 import java.util.List;
 
 /**
@@ -43,27 +40,27 @@ public class ModalSubmitInteractionEvent extends GenericInteractionCreateEvent i
 {
     private final ModalInteractionImpl interaction;
 
-    public ModalSubmitInteractionEvent(@NotNull JDA api, long responseNumber, @NotNull ModalInteractionImpl interaction)
+    public ModalSubmitInteractionEvent(@Nonnull JDA api, long responseNumber, @Nonnull ModalInteractionImpl interaction)
     {
         super(api, responseNumber, interaction);
         this.interaction = interaction;
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public ModalInteractionImpl getInteraction()
     {
         return interaction;
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public InteractionHook getHook()
     {
         return interaction.getHook();
     }
 
-    @NotNull
+    @Nonnull
     @CheckReturnValue
     @Override
     public ReplyCallbackAction deferReply(boolean ephemeral)
@@ -71,7 +68,7 @@ public class ModalSubmitInteractionEvent extends GenericInteractionCreateEvent i
         return interaction.deferReply(ephemeral);
     }
 
-    @NotNull
+    @Nonnull
     @CheckReturnValue
     @Override
     public ReplyCallbackAction reply(String content)
@@ -79,14 +76,14 @@ public class ModalSubmitInteractionEvent extends GenericInteractionCreateEvent i
         return interaction.reply(content);
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public String getModalId()
     {
         return interaction.getModalId();
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public List<ActionRow> getComponents()
     {

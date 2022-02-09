@@ -24,9 +24,9 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
-import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
 
 public interface IModalCallback extends IDeferrableCallback
 {
@@ -38,7 +38,7 @@ public interface IModalCallback extends IDeferrableCallback
      * @param modal The Modal to send
      * @return RestAction
      */
-    @NotNull
+    @Nonnull
     @CheckReturnValue
     default RestAction<InteractionHook> replyModal(Modal modal)
     {

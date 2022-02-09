@@ -20,8 +20,8 @@ import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.text.Modal;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
-import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nonnull;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -57,35 +57,35 @@ public class ModalImpl implements Modal
         return false;
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public Type getType()
     {
         return Type.ACTION_ROW;
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public String getId()
     {
         return id;
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public String getTitle()
     {
         return title;
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public List<ActionRow> getActionRows()
     {
         return Collections.unmodifiableList(components);
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public DataObject toData()
     {

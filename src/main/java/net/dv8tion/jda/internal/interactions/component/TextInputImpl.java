@@ -19,8 +19,9 @@ package net.dv8tion.jda.internal.interactions.component;
 import net.dv8tion.jda.api.interactions.components.text.TextInput;
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle;
 import net.dv8tion.jda.api.utils.data.DataObject;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public class TextInputImpl implements TextInput
 {
@@ -85,7 +86,7 @@ public class TextInputImpl implements TextInput
         this.placeholder = placeholder;
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public Type getType()
     {
@@ -99,7 +100,7 @@ public class TextInputImpl implements TextInput
         return style;
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public String getId()
     {
@@ -145,7 +146,7 @@ public class TextInputImpl implements TextInput
         return placeholder;
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public DataObject toData()
     {

@@ -23,8 +23,8 @@ import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.requests.restaction.interactions.ReplyCallbackActionImpl;
-import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nonnull;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -48,14 +48,14 @@ public class ModalInteractionImpl extends DeferrableInteractionImpl implements M
                 .collect(Collectors.toList());
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public String getModalId()
     {
         return modalId;
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public List<ActionRow> getComponents()
     {
@@ -63,14 +63,14 @@ public class ModalInteractionImpl extends DeferrableInteractionImpl implements M
     }
 
     @Override
-    @NotNull
+    @Nonnull
     public ReplyCallbackAction deferReply(boolean ephemeral)
     {
         return new ReplyCallbackActionImpl(hook).setEphemeral(ephemeral);
     }
 
     @Override
-    @NotNull
+    @Nonnull
     public ReplyCallbackAction reply(String content)
     {
         return new ReplyCallbackActionImpl(hook).setContent(content);

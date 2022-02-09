@@ -19,8 +19,9 @@ package net.dv8tion.jda.api.interactions.components.text;
 import net.dv8tion.jda.api.interactions.components.ActionComponent;
 import net.dv8tion.jda.internal.interactions.component.TextInputImpl;
 import net.dv8tion.jda.internal.utils.Checks;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Represents a Discord Text input component
@@ -61,7 +62,7 @@ public interface TextInput extends ActionComponent
      *
      * @return The custom id of this component.
      */
-    @NotNull
+    @Nonnull
     String getId();
 
     /**
@@ -128,7 +129,7 @@ public interface TextInput extends ActionComponent
         return false;
     }
 
-    @NotNull
+    @Nonnull
     @Override
     default ActionComponent withDisabled(boolean disabled)
     {
@@ -144,7 +145,7 @@ public interface TextInput extends ActionComponent
      *
      * @return a new TextInput Builder.
      */
-    static TextInput.Builder create(@NotNull String id, @NotNull String label, @NotNull TextInputStyle style)
+    static TextInput.Builder create(@Nonnull String id, @Nonnull String label, @Nonnull TextInputStyle style)
     {
         Checks.notNull(id, "Custom ID");
         Checks.notNull(label, "Label");
@@ -228,13 +229,17 @@ public interface TextInput extends ActionComponent
         }
 
         /**
-         * Sets the required range of characters on this TextInput component
+         * Sets the minimum and maximum required length on this TextInput component
          *
-         * @param min minimum
-         * @param max maximum
+         * @param min Minimum length of the text input
+         * @param max Maximum length of the text input
+
          * @throws IllegalArgumentException
-         *         If min is negative or greater than {@link #TEXT_INPUT_MIN_LENGTH_MAXIMUM}
-         *         If max is smaller than 1 or greater than {@link #TEXT_INPUT_MAX_LENGTH_MAXIMUM}
+         * <ul>
+         *  <li>If min is negative or greater than {@link #TEXT_INPUT_MIN_LENGTH_MAXIMUM}</li>
+         *  <li>If max is smaller than 1, smaller than min or greater than {@link #TEXT_INPUT_MAX_LENGTH_MAXIMUM}</li>
+         * </ul>
+         *
          * @return Builder for chaining convenience
          */
         public Builder setRequiredRange(int min, int max)
@@ -251,7 +256,7 @@ public interface TextInput extends ActionComponent
          *
          * @return Builder for chaining convenience
          */
-        public Builder setValue(String value)
+        public Builder setValue(@Nullable String value)
         {
             this.value = value;
             return this;
@@ -264,7 +269,7 @@ public interface TextInput extends ActionComponent
          *
          * @return Builder for chaining convenience
          */
-        public Builder setPlaceholder(String placeholder)
+        public Builder setPlaceholder(@Nullable String placeholder)
         {
             this.placeholder = placeholder;
             return this;

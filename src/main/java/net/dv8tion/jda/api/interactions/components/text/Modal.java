@@ -20,9 +20,9 @@ import net.dv8tion.jda.api.interactions.components.ActionComponent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.internal.interactions.component.ModalImpl;
 import net.dv8tion.jda.internal.utils.Checks;
-import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -44,7 +44,7 @@ public interface Modal extends ActionComponent
      *
      * @return The custom id of this modal
      */
-    @NotNull
+    @Nonnull
     String getId();
 
     /**
@@ -52,7 +52,7 @@ public interface Modal extends ActionComponent
      *
      * @return The title of this modal
      */
-    @NotNull
+    @Nonnull
     String getTitle();
 
     /**
@@ -60,10 +60,10 @@ public interface Modal extends ActionComponent
      *
      * @return List of ActionRows
      */
-    @NotNull
+    @Nonnull
     List<ActionRow> getActionRows();
 
-    @NotNull
+    @Nonnull
     @Override
     default ActionComponent withDisabled(boolean disabled)
     {
@@ -80,9 +80,9 @@ public interface Modal extends ActionComponent
      *
      * @return {@link Builder Builder} instance to customize this modal further
      */
-    @NotNull
+    @Nonnull
     @CheckReturnValue
-    static Modal.Builder create(@NotNull String customId, @NotNull String title)
+    static Modal.Builder create(@Nonnull String customId, @Nonnull String title)
     {
         Checks.notNull(customId, "Custom ID");
         Checks.notNull(title, "Title");
@@ -95,7 +95,7 @@ public interface Modal extends ActionComponent
         private String title;
         private final List<ActionRow> components = new ArrayList<>();
 
-        protected Builder(@NotNull String customId)
+        protected Builder(@Nonnull String customId)
         {
             setId(customId);
         }
@@ -107,7 +107,7 @@ public interface Modal extends ActionComponent
          *
          * @return Builder for chaining convenience
          */
-        public Builder setId(@NotNull String customId)
+        public Builder setId(@Nonnull String customId)
         {
             this.id = customId;
             return this;

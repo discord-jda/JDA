@@ -20,10 +20,10 @@ import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.text.TextInput;
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.List;
 
 public interface ModalInteraction extends IReplyCallback
@@ -32,7 +32,7 @@ public interface ModalInteraction extends IReplyCallback
      * Returns the custom id of the Modal in question
      * @return Custom id
      */
-    @NotNull
+    @Nonnull
     String getModalId();
 
     /**
@@ -42,7 +42,7 @@ public interface ModalInteraction extends IReplyCallback
      *
      * @return List of {@link ActionRow ActionRows}
      */
-    @NotNull
+    @Nonnull
     List<ActionRow> getComponents();
 
     /**
@@ -65,21 +65,21 @@ public interface ModalInteraction extends IReplyCallback
                 .findFirst().orElse(null);
     }
 
-    @NotNull
+    @Nonnull
     InteractionHook getHook();
 
-    @NotNull
+    @Nonnull
     @CheckReturnValue
     default ReplyCallbackAction deferReply()
     {
         return deferReply(false);
     }
 
-    @NotNull
+    @Nonnull
     @CheckReturnValue
     ReplyCallbackAction deferReply(boolean ephemeral);
 
-    @NotNull
+    @Nonnull
     @CheckReturnValue
     ReplyCallbackAction reply(String content);
 }
