@@ -129,34 +129,34 @@ public interface Modal extends ActionComponent
         /**
          * Adds components to this modal
          *
-         * @param components Vararg of ActionRows
+         * @param actionRows Vararg of ActionRows
          *
          * @throws IllegalArgumentException
          *         If any of the provided ActionRows are null
          *
          * @return Builder for chaining convenience
          */
-        public Builder addComponents(ActionRow... components)
+        public Builder addComponents(ActionRow... actionRows)
         {
-            Checks.noneNull(components, "Components");
-            Collections.addAll(this.components, components);
+            Checks.noneNull(actionRows, "Action Rows");
+            Collections.addAll(this.components, actionRows);
             return this;
         }
 
         /**
          * Adds components to this modal
          *
-         * @param components Collection of ActionRows
+         * @param actionRows Collection of ActionRows
          *
          * @throws IllegalArgumentException
          *         If any of the provided ActionRows are null
          *
          * @return Builder for chaining convenience
          */
-        public Builder addComponents(Collection<? extends ActionRow> components)
+        public Builder addComponents(Collection<? extends ActionRow> actionRows)
         {
-            Checks.noneNull(components, "Components");
-            this.components.addAll(components);
+            Checks.noneNull(actionRows, "Components");
+            this.components.addAll(actionRows);
             return this;
         }
 
