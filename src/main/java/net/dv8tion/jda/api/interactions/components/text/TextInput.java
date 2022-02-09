@@ -8,6 +8,9 @@ import javax.annotation.Nullable;
 public interface TextInput extends ItemComponent
 {
     @Nonnull
+    TextInputStyle getStyle();
+
+    @Nonnull
     String getId();
 
     @Nonnull

@@ -1,6 +1,7 @@
 package net.dv8tion.jda.internal.interactions.component;
 
 import net.dv8tion.jda.api.interactions.components.text.TextInput;
+import net.dv8tion.jda.api.interactions.components.text.TextInputStyle;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -9,24 +10,48 @@ public class TextInputImpl implements TextInput
 {
 
     private final String id;
-    private final int style;
+    private final TextInputStyle style;
     private final String label;
-    private final int minLength;
-    private final int maxLength;
-    private final boolean required;
-    private final String value;
-    private final String placeholder;
+
+    private int minLength;
+    private int maxLength;
+    private boolean required;
+    private String value;
+    private String placeholder;
 
     public TextInputImpl(DataObject object)
     {
-        id = object.getString("custom_id");
-        style = object.getInt("style");
-        label = object.getString("label");
-        minLength = object.getInt("min_Length", -1);
-        maxLength = object.getInt("max_length", -1);
-        required = object.getBoolean("required", false);
-        value = object.getString("value", null);
-        placeholder = object.getString("placeholder", null);
+        this(
+            object.getString("custom_id"),
+            TextInputStyle.fromKey(object.getInt("style")),
+            object.getString("label"),
+            object.getInt("min_Length", -1),
+            object.getInt("max_length", -1),
+            object.getBoolean("required", false),
+            object.getString("value", null),
+            object.getString("placeholder", null)
+        );
+    }
+
+    public TextInputImpl(
+            String id, TextInputStyle style, String label, int minLength, int maxLength, boolean required,
+            String value, String placeholder)
+    {
+        this.id = id;
+        this.style = style;
+        this.label = label;
+        this.minLength = minLength;
+        this.maxLength = maxLength;
+        this.required = required;
+        this.value = value;
+        this.placeholder = placeholder;
+    }
+
+    public TextInputImpl(String id, TextInputStyle style, String label)
+    {
+        this.id = id;
+        this.style = style;
+        this.label = label;
     }
 
     @NotNull
@@ -34,6 +59,13 @@ public class TextInputImpl implements TextInput
     public Type getType()
     {
         return Type.TEXT_INPUT;
+    }
+
+    @NotNull
+    @Override
+    public TextInputStyle getStyle()
+    {
+        return style;
     }
 
     @NotNull
