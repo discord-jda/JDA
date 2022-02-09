@@ -228,6 +228,23 @@ public interface TextInput extends ActionComponent
         }
 
         /**
+         * Sets the required range of characters on this TextInput component
+         *
+         * @param min minimum
+         * @param max maximum
+         * @throws IllegalArgumentException
+         *         If min is negative or greater than {@link #TEXT_INPUT_MIN_LENGTH_MAXIMUM}
+         *         If max is smaller than 1 or greater than {@link #TEXT_INPUT_MAX_LENGTH_MAXIMUM}
+         * @return Builder for chaining convenience
+         */
+        public Builder setRequiredRange(int min, int max)
+        {
+            setMinLength(min);
+            setMaxLength(max);
+            return this;
+        }
+
+        /**
          * Sets a pre-populated text for this TextInput field.
          *
          * @param value Pre-Populated text
