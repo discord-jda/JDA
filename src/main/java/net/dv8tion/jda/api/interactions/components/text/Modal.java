@@ -61,7 +61,7 @@ public interface Modal extends ActionComponent
      * @return List of ActionRows
      */
     @NotNull
-    List<ActionRow> getComponents();
+    List<ActionRow> getActionRows();
 
     @NotNull
     @Override
@@ -127,7 +127,7 @@ public interface Modal extends ActionComponent
         }
 
         /**
-         * Adds components to this modal
+         * Adds ActionRows to this modal
          *
          * @param actionRows Vararg of ActionRows
          *
@@ -136,7 +136,7 @@ public interface Modal extends ActionComponent
          *
          * @return Builder for chaining convenience
          */
-        public Builder addComponents(ActionRow... actionRows)
+        public Builder addActionRows(ActionRow... actionRows)
         {
             Checks.noneNull(actionRows, "Action Rows");
             Collections.addAll(this.components, actionRows);
@@ -153,7 +153,7 @@ public interface Modal extends ActionComponent
          *
          * @return Builder for chaining convenience
          */
-        public Builder addComponents(Collection<? extends ActionRow> actionRows)
+        public Builder addActionRows(Collection<? extends ActionRow> actionRows)
         {
             Checks.noneNull(actionRows, "Components");
             this.components.addAll(actionRows);

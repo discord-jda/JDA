@@ -80,7 +80,7 @@ public class ModalImpl implements Modal
 
     @NotNull
     @Override
-    public List<ActionRow> getComponents()
+    public List<ActionRow> getActionRows()
     {
         return Collections.unmodifiableList(components);
     }
