@@ -62,10 +62,17 @@ public class ModalInteractionImpl extends DeferrableInteractionImpl implements M
         return Collections.unmodifiableList(components);
     }
 
-    @NotNull
     @Override
-    public ReplyCallbackAction deferReply()
+    @NotNull
+    public ReplyCallbackAction deferReply(boolean ephemeral)
     {
-        return new ReplyCallbackActionImpl(hook);
+        return new ReplyCallbackActionImpl(hook).setEphemeral(ephemeral);
+    }
+
+    @Override
+    @NotNull
+    public ReplyCallbackAction reply(String content)
+    {
+        return new ReplyCallbackActionImpl(hook).setContent(content);
     }
 }
