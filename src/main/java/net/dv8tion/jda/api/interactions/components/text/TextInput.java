@@ -1,11 +1,12 @@
 package net.dv8tion.jda.api.interactions.components.text;
 
-import net.dv8tion.jda.api.interactions.components.ItemComponent;
+import net.dv8tion.jda.api.interactions.components.ActionComponent;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public interface TextInput extends ItemComponent
+public interface TextInput extends ActionComponent
 {
     @Nonnull
     TextInputStyle getStyle();
@@ -27,4 +28,17 @@ public interface TextInput extends ItemComponent
 
     @Nullable
     String getPlaceHolder();
+
+    @Override
+    default boolean isDisabled()
+    {
+        return false;
+    }
+
+    @NotNull
+    @Override
+    default ActionComponent withDisabled(boolean disabled)
+    {
+        throw new UnsupportedOperationException("Text Inputs cannot be disabled!");
+    }
 }
