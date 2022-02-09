@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.interactions.component.ButtonImpl;
 import net.dv8tion.jda.internal.interactions.component.SelectMenuImpl;
+import net.dv8tion.jda.internal.interactions.component.TextInputImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.CheckReturnValue;
@@ -69,6 +70,8 @@ public class ActionRow implements LayoutComponent
                     return new ButtonImpl(obj);
                 case SELECT_MENU:
                     return new SelectMenuImpl(obj);
+                case TEXT_INPUT:
+                    return new TextInputImpl(obj);
                 default:
                     return null;
                 }
