@@ -203,7 +203,7 @@ public interface TextInput extends ActionComponent
         public Builder setMinLength(int minLength)
         {
             Checks.notNegative(minLength, "Minimum length");
-            Checks.check(minLength <= TEXT_INPUT_MIN_LENGTH_MAXIMUM, "Minimum length cannot be longer than 4000 characters!");
+            Checks.check(minLength <= TEXT_INPUT_MIN_LENGTH_MAXIMUM, "Minimum length cannot be longer than " + TEXT_INPUT_MIN_LENGTH_MAXIMUM);
             this.minLength = minLength;
             return this;
         }
@@ -222,8 +222,8 @@ public interface TextInput extends ActionComponent
          */
         public Builder setMaxLength(int maxLength)
         {
-            Checks.check(maxLength >= TEXT_INPUT_MAX_LENGTH_MINIMUM, "Maximum length cannot be smaller than 1");
-            Checks.check(maxLength <= TEXT_INPUT_MAX_LENGTH_MAXIMUM, "Maximum length cannot be longer than 4000 characters!");
+            Checks.check(maxLength >= TEXT_INPUT_MAX_LENGTH_MINIMUM, "Maximum length cannot be smaller than " + TEXT_INPUT_MAX_LENGTH_MINIMUM);
+            Checks.check(maxLength <= TEXT_INPUT_MAX_LENGTH_MAXIMUM, "Maximum length cannot be longer than " + TEXT_INPUT_MAX_LENGTH_MAXIMUM);
 
             this.maxLength = maxLength;
 
