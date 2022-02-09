@@ -17,6 +17,7 @@
 package net.dv8tion.jda.internal.handle;
 
 import net.dv8tion.jda.api.events.interaction.GenericInteractionCreateEvent;
+import net.dv8tion.jda.api.events.interaction.ModalSubmitInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
@@ -29,6 +30,7 @@ import net.dv8tion.jda.api.interactions.components.Component;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.interactions.InteractionImpl;
+import net.dv8tion.jda.internal.interactions.ModalInteractionImpl;
 import net.dv8tion.jda.internal.interactions.command.CommandAutoCompleteInteractionImpl;
 import net.dv8tion.jda.internal.interactions.command.MessageContextInteractionImpl;
 import net.dv8tion.jda.internal.interactions.command.SlashCommandInteractionImpl;
@@ -73,6 +75,9 @@ public class InteractionCreateHandler extends SocketHandler
                     new CommandAutoCompleteInteractionEvent(api, responseNumber,
                         new CommandAutoCompleteInteractionImpl(api, content)));
                 break;
+        case MODAL_SUBMIT:
+                api.handleEvent(new ModalSubmitInteractionEvent(api, responseNumber,
+                        new ModalInteractionImpl(api, content)));
             default:
                 api.handleEvent(
                     new GenericInteractionCreateEvent(api, responseNumber,

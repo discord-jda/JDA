@@ -1,7 +1,7 @@
 package net.dv8tion.jda.api.interactions;
 
 import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback;
-import net.dv8tion.jda.api.interactions.components.text.TextInput;
+import net.dv8tion.jda.api.interactions.components.ActionRow;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -9,11 +9,8 @@ import java.util.List;
 public interface ModalInteraction extends IReplyCallback
 {
     @Nonnull
-    String getFormId();
+    String getModalId();
 
     @Nonnull
-    String getTitle();
-
-    @Nonnull
-    List<TextInput> getComponents();
+    List<ActionRow> getComponents();
 }

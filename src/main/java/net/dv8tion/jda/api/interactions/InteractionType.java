@@ -60,6 +60,8 @@ public enum InteractionType
             return COMPONENT;
         case 4:
             return COMMAND_AUTOCOMPLETE;
+        case 5:
+            return MODAL_SUBMIT;
         default:
             return UNKNOWN;
         }

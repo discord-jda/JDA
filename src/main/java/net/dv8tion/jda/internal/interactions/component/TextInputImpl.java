@@ -24,8 +24,8 @@ public class TextInputImpl implements TextInput
     {
         this(
             object.getString("custom_id"),
-            TextInputStyle.fromKey(object.getInt("style")),
-            object.getString("label"),
+            TextInputStyle.fromKey(object.getInt("style", -1)),
+            object.getString("label", null),
             object.getInt("min_Length", -1),
             object.getInt("max_length", -1),
             object.getBoolean("required", false),
@@ -91,7 +91,7 @@ public class TextInputImpl implements TextInput
         return id;
     }
 
-    @NotNull
+    @Nullable
     @Override
     public String getLabel()
     {

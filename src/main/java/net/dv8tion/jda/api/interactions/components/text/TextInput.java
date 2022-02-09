@@ -15,7 +15,7 @@ public interface TextInput extends ActionComponent
     @Nonnull
     String getId();
 
-    @Nonnull
+    @Nullable
     String getLabel();
 
     int getMinLength();
