@@ -78,6 +78,7 @@ public class InteractionCreateHandler extends SocketHandler
             case MODAL_SUBMIT:
                 api.handleEvent(new ModalSubmitInteractionEvent(api, responseNumber,
                         new ModalInteractionImpl(api, content)));
+                break;
             default:
                 api.handleEvent(
                     new GenericInteractionCreateEvent(api, responseNumber,
