@@ -9,6 +9,7 @@ import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.requests.restaction.interactions.ReplyCallbackActionImpl;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -19,9 +20,12 @@ public class ModalInteractionImpl extends DeferrableInteractionImpl implements M
 
     public ModalInteractionImpl(JDAImpl api, DataObject object)
     {
-        super(api, object);;
+        super(api, object);
+
         DataObject data = object.getObject("data");
+
         this.modalId = data.getString("custom_id");
+
         this.components = data.getArray("components")
                 .stream(DataArray::getObject)
                 .map(ActionRow::fromData)
@@ -39,7 +43,7 @@ public class ModalInteractionImpl extends DeferrableInteractionImpl implements M
     @Override
     public List<ActionRow> getComponents()
     {
-        return components;
+        return Collections.unmodifiableList(components);
     }
 
     @NotNull

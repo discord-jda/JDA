@@ -1,6 +1,6 @@
 package net.dv8tion.jda.api.interactions.components.text;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 public enum TextInputStyle
 {
@@ -28,7 +28,7 @@ public enum TextInputStyle
      *
      * @return The text input style or {@link #UNKNOWN}
      */
-    @Nonnull
+    @NotNull
     public static TextInputStyle fromKey(int key)
     {
         for (TextInputStyle style : values())

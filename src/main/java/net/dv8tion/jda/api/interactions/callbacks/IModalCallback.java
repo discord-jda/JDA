@@ -1,6 +1,5 @@
 package net.dv8tion.jda.api.interactions.callbacks;
 
-import net.dv8tion.jda.api.interactions.Interaction;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.components.text.Modal;
 import net.dv8tion.jda.api.requests.RestAction;
@@ -8,13 +7,13 @@ import net.dv8tion.jda.api.requests.restaction.interactions.InteractionCallbackA
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
 
 public interface IModalCallback extends IDeferrableCallback
 {
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     default RestAction<InteractionHook> replyModal(Modal modal)
     {

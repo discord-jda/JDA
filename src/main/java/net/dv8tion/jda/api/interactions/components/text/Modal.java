@@ -6,7 +6,6 @@ import net.dv8tion.jda.internal.interactions.component.ModalImpl;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -14,13 +13,13 @@ import java.util.List;
 
 public interface Modal extends ActionComponent
 {
-    @Nonnull
+    @NotNull
     String getId();
 
-    @Nonnull
+    @NotNull
     String getTitle();
 
-    @Nonnull
+    @NotNull
     List<ActionRow> getComponents();
 
     @NotNull
@@ -30,9 +29,9 @@ public interface Modal extends ActionComponent
         throw new UnsupportedOperationException("Modals cannot be disabled!");
     }
 
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    static Modal.Builder create(@Nonnull String customId)
+    static Modal.Builder create(@NotNull String customId)
     {
         return new Modal.Builder(customId);
     }
@@ -43,7 +42,7 @@ public interface Modal extends ActionComponent
         private String title;
         private final List<ActionRow> components = new ArrayList<>();
 
-        protected Builder(@Nonnull String id)
+        protected Builder(@NotNull String id)
         {
             setId(id);
         }

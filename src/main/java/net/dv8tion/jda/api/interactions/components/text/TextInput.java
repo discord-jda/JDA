@@ -3,16 +3,14 @@ package net.dv8tion.jda.api.interactions.components.text;
 import net.dv8tion.jda.api.interactions.components.ActionComponent;
 import net.dv8tion.jda.internal.interactions.component.TextInputImpl;
 import org.jetbrains.annotations.NotNull;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 public interface TextInput extends ActionComponent
 {
-    @Nonnull
+    @Nullable
     TextInputStyle getStyle();
 
-    @Nonnull
+    @NotNull
     String getId();
 
     @Nullable
@@ -43,7 +41,7 @@ public interface TextInput extends ActionComponent
         throw new UnsupportedOperationException("Text Inputs cannot be disabled!");
     }
 
-    static TextInput.Builder create(String id, String label, TextInputStyle style)
+    static TextInput.Builder create(@NotNull String id, @NotNull String label, @NotNull TextInputStyle style)
     {
         return new Builder(id, label, style);
     }

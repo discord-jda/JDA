@@ -19,7 +19,9 @@ public class ModalImpl implements Modal
     public ModalImpl(DataObject object)
     {
         this.id = object.getString("id");
+
         this.title = object.getString("title");
+
         this.components = object.getArray("components")
                         .stream(DataArray::getObject)
                         .map(ActionRow::fromData)
@@ -64,7 +66,7 @@ public class ModalImpl implements Modal
     @Override
     public List<ActionRow> getComponents()
     {
-        return components;
+        return Collections.unmodifiableList(components);
     }
 
     @NotNull

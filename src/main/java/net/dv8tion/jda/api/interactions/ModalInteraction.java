@@ -2,15 +2,15 @@ package net.dv8tion.jda.api.interactions;
 
 import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.util.List;
 
 public interface ModalInteraction extends IReplyCallback
 {
-    @Nonnull
+    @NotNull
     String getModalId();
 
-    @Nonnull
+    @NotNull
     List<ActionRow> getComponents();
 }

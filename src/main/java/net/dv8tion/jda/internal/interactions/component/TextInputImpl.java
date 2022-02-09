@@ -8,7 +8,6 @@ import org.jetbrains.annotations.Nullable;
 
 public class TextInputImpl implements TextInput
 {
-
     private final String id;
     private final TextInputStyle style;
     private final String label;
@@ -77,7 +76,7 @@ public class TextInputImpl implements TextInput
         return Type.TEXT_INPUT;
     }
 
-    @NotNull
+    @Nullable
     @Override
     public TextInputStyle getStyle()
     {
