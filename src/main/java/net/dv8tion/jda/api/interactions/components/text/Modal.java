@@ -3,6 +3,7 @@ package net.dv8tion.jda.api.interactions.components.text;
 import net.dv8tion.jda.api.interactions.components.ActionComponent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.internal.interactions.component.ModalImpl;
+import net.dv8tion.jda.internal.utils.Checks;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.CheckReturnValue;
@@ -33,6 +34,7 @@ public interface Modal extends ActionComponent
     @CheckReturnValue
     static Modal.Builder create(@NotNull String customId)
     {
+        Checks.notNull(customId, "Custom ID");
         return new Modal.Builder(customId);
     }
 
@@ -42,14 +44,14 @@ public interface Modal extends ActionComponent
         private String title;
         private final List<ActionRow> components = new ArrayList<>();
 
-        protected Builder(@NotNull String id)
+        protected Builder(@NotNull String customId)
         {
-            setId(id);
+            setId(customId);
         }
 
-        public Builder setId(String id)
+        public Builder setId(@NotNull String customId)
         {
-            this.id = id;
+            this.id = customId;
             return this;
         }
 
@@ -61,19 +63,21 @@ public interface Modal extends ActionComponent
 
         public Builder addComponents(ActionRow... components)
         {
+            Checks.noneNull(components, "Components");
             Collections.addAll(this.components, components);
             return this;
         }
 
-        public Builder addComponents(Collection<? extends ActionRow> inputs)
+        public Builder addComponents(Collection<? extends ActionRow> components)
         {
-            this.components.addAll(inputs);
+            Checks.noneNull(components, "Components");
+            this.components.addAll(components);
             return this;
         }
 
         public List<ActionRow> getComponents()
         {
-            return components;
+            return Collections.unmodifiableList(components);
         }
 
         public String getTitle()
@@ -88,6 +92,11 @@ public interface Modal extends ActionComponent
 
         public Modal build()
         {
+            Checks.check(id != null, "Custom ID cannot be null!");
+            Checks.check(title != null, "Title cannot be null!");
+            Checks.check(!components.isEmpty(), "Cannot make a modal with no components!");
+            Checks.check(components.size() <= 5, "Cannot make a modal with more than 5 components!");
+
             return new ModalImpl(id, title, components);
         }
     }

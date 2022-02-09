@@ -2,6 +2,7 @@ package net.dv8tion.jda.api.interactions.components.text;
 
 import net.dv8tion.jda.api.interactions.components.ActionComponent;
 import net.dv8tion.jda.internal.interactions.component.TextInputImpl;
+import net.dv8tion.jda.internal.utils.Checks;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -43,6 +44,9 @@ public interface TextInput extends ActionComponent
 
     static TextInput.Builder create(@NotNull String id, @NotNull String label, @NotNull TextInputStyle style)
     {
+        Checks.notNull(id, "Custom ID");
+        Checks.notNull(label, "Label");
+        Checks.notNull(style, "Style");
         return new Builder(id, label, style);
     }
 
@@ -73,12 +77,16 @@ public interface TextInput extends ActionComponent
 
         public Builder setMinLength(int minLength)
         {
+            Checks.notNegative(minLength, "Minimum length");
+            Checks.check(minLength <= 4000, "Minimum length cannot be longer than 4000 characters!");
             this.minLength = minLength;
             return this;
         }
 
         public Builder setMaxLength(int maxLength)
         {
+            Checks.check(maxLength >= 1, "Maximum length cannot be smaller than 1");
+            Checks.check(maxLength <= 4000, "Maximum length cannot be longer than 4000 characters!");
             this.maxLength = maxLength;
             return this;
         }
