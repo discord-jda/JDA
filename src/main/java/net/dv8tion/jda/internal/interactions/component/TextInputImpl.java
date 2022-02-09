@@ -13,8 +13,9 @@ public class TextInputImpl implements TextInput
     private final TextInputStyle style;
     private final String label;
 
-    private int minLength;
-    private int maxLength;
+    private int minLength = -1;
+    private int maxLength = -1;
+
     private boolean required;
     private String value;
     private String placeholder;
@@ -52,6 +53,21 @@ public class TextInputImpl implements TextInput
         this.id = id;
         this.style = style;
         this.label = label;
+    }
+
+    public void setRequired(boolean required)
+    {
+        this.required = required;
+    }
+
+    public void setValue(String value)
+    {
+        this.value = value;
+    }
+
+    public void setPlaceholder(String placeholder)
+    {
+        this.placeholder = placeholder;
     }
 
     @NotNull
@@ -121,8 +137,9 @@ public class TextInputImpl implements TextInput
         DataObject obj = DataObject.empty()
                     .put("type", 4)
                     .put("custom_id", id)
-                    .put("style", style)
-                    .put("label", label);
+                    .put("style", style.getKey())
+                    .put("label", label)
+                    .put("required", required);
         if (minLength != -1)
             obj.put("min_length", minLength);
         if (maxLength != -1)
