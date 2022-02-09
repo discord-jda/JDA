@@ -191,12 +191,12 @@ public interface TextInput extends ActionComponent
         /**
          * Sets the minimum length of this input field.
          *
-         * <b>This has to be between 0 and 4000</b>
+         * <b>This has to be between 0 and {@value #TEXT_INPUT_MIN_LENGTH_MAXIMUM}</b>
          *
          * @param minLength The minimum amount of characters that need to be written
          *
          * @throws IllegalArgumentException
-         *         If minLength is negative or greater than 4000
+         *         If minLength is negative or greater than {@value #TEXT_INPUT_MIN_LENGTH_MAXIMUM}
          *
          * @return Builder for chaining convenience
          */
@@ -211,12 +211,12 @@ public interface TextInput extends ActionComponent
         /**
          * Sets the maximum length of this input field.
          *
-         * <b>This has to be between 1 and 4000</b>
+         * <b>This has to be between {@value #TEXT_INPUT_MAX_LENGTH_MINIMUM} and {@value #TEXT_INPUT_MAX_LENGTH_MAXIMUM}</b>
          *
          * @param maxLength The maximum amount of characters that need to be written
          *
          * @throws IllegalArgumentException
-         *         If maxLength is smaller than 1 or greater than 4000
+         *         If maxLength is smaller than {@value #TEXT_INPUT_MAX_LENGTH_MINIMUM} or greater than {@value #TEXT_INPUT_MAX_LENGTH_MAXIMUM}
          *
          * @return Builder for chaining convenience
          */
@@ -224,7 +224,9 @@ public interface TextInput extends ActionComponent
         {
             Checks.check(maxLength >= TEXT_INPUT_MAX_LENGTH_MINIMUM, "Maximum length cannot be smaller than 1");
             Checks.check(maxLength <= TEXT_INPUT_MAX_LENGTH_MAXIMUM, "Maximum length cannot be longer than 4000 characters!");
+
             this.maxLength = maxLength;
+
             return this;
         }
 
@@ -325,7 +327,8 @@ public interface TextInput extends ActionComponent
         }
 
         /**
-         * The placeholder
+         * The placeholder of this Modal
+         *
          * @return Placeholder
          */
         public String getPlaceholder()
@@ -334,7 +337,8 @@ public interface TextInput extends ActionComponent
         }
 
         /**
-         * The value
+         * The String value of this Modal
+         *
          * @return Value
          */
         public String getValue()
