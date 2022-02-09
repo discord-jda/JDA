@@ -53,6 +53,8 @@ public interface Component extends SerializableData
         BUTTON(2, 5),
         /** A select menu */
         SELECT_MENU(3, 1),
+        /** A text input field */
+        TEXT_INPUT(4, 1)
         ;
 
         private final int key;
