@@ -31,19 +31,14 @@ import javax.annotation.Nullable;
 public interface TextInput extends ActionComponent
 {
     /**
-     * The maximum amount of characters a TextInput's minimum length can have
+     * The minimum amount of characters a TextInput's value can have
      */
-    int TEXT_INPUT_MIN_LENGTH_MAXIMUM = 4000;
+    int TEXT_INPUT_MIN_LENGTH = 1;
 
     /**
-     * The minimum amount of characters a TextInput's maximum length can have
+     * The maximum amount of characters a TextInput's value can have
      */
-    int TEXT_INPUT_MAX_LENGTH_MINIMUM = 1;
-
-    /**
-     * The maximum amount of characters a TextInput's maximum length can have
-     */
-    int TEXT_INPUT_MAX_LENGTH_MAXIMUM = 4000;
+    int TEXT_INPUT_MAX_LENGTH = 4000;
 
     /**
      * The {@link TextInputStyle TextInputStyle} of this TextInput component.
@@ -203,7 +198,7 @@ public interface TextInput extends ActionComponent
         public Builder setMinLength(int minLength)
         {
             Checks.notNegative(minLength, "Minimum length");
-            Checks.check(minLength <= TEXT_INPUT_MIN_LENGTH_MAXIMUM, "Minimum length cannot be longer than " + TEXT_INPUT_MIN_LENGTH_MAXIMUM);
+            Checks.check(minLength <= TEXT_INPUT_MAX_LENGTH, "Minimum length cannot be longer than " + TEXT_INPUT_MAX_LENGTH + " characters!");
             this.minLength = minLength;
             return this;
         }
@@ -211,19 +206,19 @@ public interface TextInput extends ActionComponent
         /**
          * Sets the maximum length of this input field.
          *
-         * <b>This has to be between {@value #TEXT_INPUT_MAX_LENGTH_MINIMUM} and {@value #TEXT_INPUT_MAX_LENGTH_MAXIMUM}</b>
+         * <b>This has to be between {@value #TEXT_INPUT_MIN_LENGTH} and {@value #TEXT_INPUT_MAX_LENGTH}</b>
          *
          * @param maxLength The maximum amount of characters that need to be written
          *
          * @throws IllegalArgumentException
-         *         If maxLength is smaller than {@value #TEXT_INPUT_MAX_LENGTH_MINIMUM} or greater than {@value #TEXT_INPUT_MAX_LENGTH_MAXIMUM}
+         *         If maxLength is smaller than {@value #TEXT_INPUT_MIN_LENGTH} or greater than {@value #TEXT_INPUT_MAX_LENGTH}
          *
          * @return Builder for chaining convenience
          */
         public Builder setMaxLength(int maxLength)
         {
-            Checks.check(maxLength >= TEXT_INPUT_MAX_LENGTH_MINIMUM, "Maximum length cannot be smaller than " + TEXT_INPUT_MAX_LENGTH_MINIMUM);
-            Checks.check(maxLength <= TEXT_INPUT_MAX_LENGTH_MAXIMUM, "Maximum length cannot be longer than " + TEXT_INPUT_MAX_LENGTH_MAXIMUM);
+            Checks.check(maxLength >= TEXT_INPUT_MIN_LENGTH, "Maximum length cannot be smaller than " + TEXT_INPUT_MIN_LENGTH + " characters!");
+            Checks.check(maxLength <= TEXT_INPUT_MAX_LENGTH, "Maximum length cannot be longer than " + TEXT_INPUT_MAX_LENGTH + " characters!");
 
             this.maxLength = maxLength;
 
@@ -239,7 +234,7 @@ public interface TextInput extends ActionComponent
          * @throws IllegalArgumentException
          * <ul>
          *  <li>If min is negative or greater than {@link #TEXT_INPUT_MIN_LENGTH_MAXIMUM}</li>
-         *  <li>If max is smaller than 1, smaller than min or greater than {@link #TEXT_INPUT_MAX_LENGTH_MAXIMUM}</li>
+         *  <li>If max is smaller than 1, smaller than min or greater than {@link #TEXT_INPUT_MAX_LENGTH}</li>
          * </ul>
          *
          * @return Builder for chaining convenience
@@ -365,6 +360,9 @@ public interface TextInput extends ActionComponent
          */
         public TextInput build()
         {
+            if (maxLength < minLength)
+                throw new IllegalArgumentException("maxLength cannot be smaller than minLength!");
+
             return new TextInputImpl(id, style, label, minLength, maxLength, required, value, placeholder);
         }
     }
