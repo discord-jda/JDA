@@ -18,6 +18,7 @@ package net.dv8tion.jda.api.events.interaction;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.interactions.InteractionHook;
+import net.dv8tion.jda.api.interactions.ModalInteraction;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.ItemComponent;
 import net.dv8tion.jda.api.interactions.components.text.TextInput;
@@ -38,7 +39,7 @@ import java.util.List;
  *
  * @see net.dv8tion.jda.api.interactions.ModalInteraction
  */
-public class ModalSubmitInteractionEvent extends GenericInteractionCreateEvent
+public class ModalSubmitInteractionEvent extends GenericInteractionCreateEvent implements ModalInteraction
 {
     private final ModalInteractionImpl interaction;
 
@@ -53,56 +54,6 @@ public class ModalSubmitInteractionEvent extends GenericInteractionCreateEvent
     public ModalInteractionImpl getInteraction()
     {
         return interaction;
-    }
-
-    /**
-     * Returns the custom id of the Modal in question
-     * @return Custom id
-     */
-    @NotNull
-    public String getModalId()
-    {
-        return interaction.getModalId();
-    }
-
-    /**
-     * Returns a List of {@link ActionRow ActionRows} the modal in question contains
-     *
-     * Contains information like the text the user entered on {@link TextInput TextInputs}
-     *
-     * @return List of {@link ActionRow ActionRows}
-     */
-    @NotNull
-    public List<ActionRow> getComponents()
-    {
-        return interaction.getComponents();
-    }
-
-    /**
-     * Convenience method to get a {@link TextInput TextInput} by its id from the List of components.
-     *
-     * Returns null if no TextInput with that id has been found
-     *
-     * @param id The custom id
-     *
-     * @return TextInput with this id, or null
-     */
-    @Nullable
-    public TextInput getInputField(String id)
-    {
-        for (ActionRow row : getComponents())
-        {
-            for (ItemComponent component : row)
-            {
-                if (component instanceof TextInput)
-                {
-                    TextInput textInput = (TextInput) component;
-                    if (textInput.getId().equals(id))
-                        return textInput;
-                }
-            }
-        }
-        return null;
     }
 
     @NotNull
@@ -130,5 +81,19 @@ public class ModalSubmitInteractionEvent extends GenericInteractionCreateEvent
     public ReplyCallbackAction reply(String content)
     {
         return interaction.reply(content);
+    }
+
+    @NotNull
+    @Override
+    public String getModalId()
+    {
+        return interaction.getModalId();
+    }
+
+    @NotNull
+    @Override
+    public List<ActionRow> getComponents()
+    {
+        return interaction.getComponents();
     }
 }

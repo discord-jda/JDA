@@ -18,15 +18,56 @@ package net.dv8tion.jda.api.interactions;
 
 import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
+import net.dv8tion.jda.api.interactions.components.ItemComponent;
+import net.dv8tion.jda.api.interactions.components.text.TextInput;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
 public interface ModalInteraction extends IReplyCallback
 {
+    /**
+     * Returns the custom id of the Modal in question
+     * @return Custom id
+     */
     @NotNull
     String getModalId();
 
+    /**
+     * Returns a List of {@link ActionRow ActionRows} the modal in question contains
+     *
+     * Contains information like the text the user entered on {@link TextInput TextInputs}
+     *
+     * @return List of {@link ActionRow ActionRows}
+     */
     @NotNull
     List<ActionRow> getComponents();
+
+    /**
+     * Convenience method to get a {@link TextInput TextInput} by its id from the List of components.
+     *
+     * Returns null if no TextInput with that id has been found
+     *
+     * @param id The custom id
+     *
+     * @return TextInput with this id, or null
+     */
+    @Nullable
+    default TextInput getInputField(String id)
+    {
+        for (ActionRow row : getComponents())
+        {
+            for (ItemComponent component : row)
+            {
+                if (component instanceof TextInput)
+                {
+                    TextInput textInput = (TextInput) component;
+                    if (textInput.getId().equals(id))
+                        return textInput;
+                }
+            }
+        }
+        return null;
+    }
 }
