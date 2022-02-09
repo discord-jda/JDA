@@ -152,7 +152,7 @@ public class TextInputImpl implements TextInput
         DataObject obj = DataObject.empty()
                     .put("type", 4)
                     .put("custom_id", id)
-                    .put("style", style.getKey())
+                    .put("style", style.getRaw())
                     .put("label", label)
                     .put("required", required);
         if (minLength != -1)

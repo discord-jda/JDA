@@ -31,7 +31,14 @@ public enum TextInputStyle
         this.key = type;
     }
 
-    public int getKey()
+    /**
+     * Returns the raw integer for this TextInputStyle
+     *
+     * This returns -1 if it's of type {@link #UNKNOWN}.
+     *
+     * @return raw int for this TextInputStyle
+     */
+    public int getRaw()
     {
         return key;
     }

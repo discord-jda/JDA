@@ -57,6 +57,7 @@ public class ModalSubmitInteractionEvent extends GenericInteractionCreateEvent i
     }
 
     @NotNull
+    @Override
     public InteractionHook getHook()
     {
         return interaction.getHook();
@@ -64,13 +65,7 @@ public class ModalSubmitInteractionEvent extends GenericInteractionCreateEvent i
 
     @NotNull
     @CheckReturnValue
-    public ReplyCallbackAction deferReply()
-    {
-        return interaction.deferReply();
-    }
-
-    @NotNull
-    @CheckReturnValue
+    @Override
     public ReplyCallbackAction deferReply(boolean ephemeral)
     {
         return interaction.deferReply(ephemeral);
@@ -78,6 +73,7 @@ public class ModalSubmitInteractionEvent extends GenericInteractionCreateEvent i
 
     @NotNull
     @CheckReturnValue
+    @Override
     public ReplyCallbackAction reply(String content)
     {
         return interaction.reply(content);

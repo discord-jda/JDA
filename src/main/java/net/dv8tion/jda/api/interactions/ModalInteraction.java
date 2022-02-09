@@ -20,9 +20,11 @@ import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.ItemComponent;
 import net.dv8tion.jda.api.interactions.components.text.TextInput;
+import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import javax.annotation.CheckReturnValue;
 import java.util.List;
 
 public interface ModalInteraction extends IReplyCallback
@@ -56,18 +58,29 @@ public interface ModalInteraction extends IReplyCallback
     @Nullable
     default TextInput getInputField(String id)
     {
-        for (ActionRow row : getComponents())
-        {
-            for (ItemComponent component : row)
-            {
-                if (component instanceof TextInput)
-                {
-                    TextInput textInput = (TextInput) component;
-                    if (textInput.getId().equals(id))
-                        return textInput;
-                }
-            }
-        }
-        return null;
+        return getComponents().stream()
+                .map(ActionRow::getComponents)
+                .filter(TextInput.class::isInstance)
+                .map(TextInput.class::cast)
+                .filter(textInput -> textInput.getId().equals(id))
+                .findFirst().orElse(null);
     }
+
+    @NotNull
+    InteractionHook getHook();
+
+    @NotNull
+    @CheckReturnValue
+    default ReplyCallbackAction deferReply()
+    {
+        return deferReply(false);
+    }
+
+    @NotNull
+    @CheckReturnValue
+    ReplyCallbackAction deferReply(boolean ephemeral);
+
+    @NotNull
+    @CheckReturnValue
+    ReplyCallbackAction reply(String content);
 }
