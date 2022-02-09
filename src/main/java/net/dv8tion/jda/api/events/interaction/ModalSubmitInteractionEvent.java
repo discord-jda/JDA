@@ -29,6 +29,15 @@ import org.jetbrains.annotations.Nullable;
 import javax.annotation.CheckReturnValue;
 import java.util.List;
 
+/**
+ * Indicates that a {@link net.dv8tion.jda.api.interactions.components.text.Modal Modal} was submitted.
+ *
+ * <h2>Requirements</h2>
+ * To receive these events, you must unset the <b>Interactions Endpoint URL</b> in your application dashboard.
+ * You can simply remove the URL for this endpoint in your settings at the <a href="https://discord.com/developers/applications" target="_blank">Discord Developers Portal</a>.
+ *
+ * @see net.dv8tion.jda.api.interactions.ModalInteraction
+ */
 public class ModalSubmitInteractionEvent extends GenericInteractionCreateEvent
 {
     private final ModalInteractionImpl interaction;
@@ -46,18 +55,38 @@ public class ModalSubmitInteractionEvent extends GenericInteractionCreateEvent
         return interaction;
     }
 
+    /**
+     * Returns the custom id of the Modal in question
+     * @return Custom id
+     */
     @NotNull
     public String getModalId()
     {
         return interaction.getModalId();
     }
 
+    /**
+     * Returns a List of {@link ActionRow ActionRows} the modal in question contains
+     *
+     * Contains information like the text the user entered on {@link TextInput TextInputs}
+     *
+     * @return List of {@link ActionRow ActionRows}
+     */
     @NotNull
     public List<ActionRow> getComponents()
     {
         return interaction.getComponents();
     }
 
+    /**
+     * Convenience method to get a {@link TextInput TextInput} by its id from the List of components.
+     *
+     * Returns null if no TextInput with that id has been found
+     *
+     * @param id The custom id
+     *
+     * @return TextInput with this id, or null
+     */
     @Nullable
     public TextInput getInputField(String id)
     {
