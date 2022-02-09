@@ -230,7 +230,7 @@ public enum ErrorResponse
         Checks.noneNull(responses, "ErrorResponse");
         EnumSet<ErrorResponse> set = EnumSet.noneOf(ErrorResponse.class);
         Collections.addAll(set, responses);
-        return test(set);
+        return error -> error instanceof ErrorResponseException && set.contains(((ErrorResponseException) error).getErrorResponse());
     }
 
     /**
