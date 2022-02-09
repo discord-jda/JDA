@@ -122,7 +122,7 @@ public interface Member extends IMentionable, IPermissionHolder
     /**
      * Returns whether a member is boosting the guild or not.
      *
-     * @return true if it is boosting, false otherwise.
+     * @return True, if it is boosting
      */
     boolean isBoosting();
 
