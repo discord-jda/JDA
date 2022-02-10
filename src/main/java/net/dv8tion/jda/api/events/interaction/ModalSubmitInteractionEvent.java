@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.ModalInteraction;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
+import net.dv8tion.jda.api.interactions.modals.TextInputMapping;
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction;
 import net.dv8tion.jda.internal.interactions.ModalInteractionImpl;
 
@@ -85,8 +86,8 @@ public class ModalSubmitInteractionEvent extends GenericInteractionCreateEvent i
 
     @Nonnull
     @Override
-    public List<ActionRow> getComponents()
+    public List<TextInputMapping> getTextInputs()
     {
-        return interaction.getComponents();
+        return interaction.getTextInputs();
     }
 }

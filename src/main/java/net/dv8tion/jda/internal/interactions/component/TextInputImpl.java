@@ -28,27 +28,11 @@ public class TextInputImpl implements TextInput
     private final String id;
     private final TextInputStyle style;
     private final String label;
-
-    private int minLength = -1;
-    private int maxLength = -1;
-
-    private boolean required;
-    private String value;
-    private String placeholder;
-
-    public TextInputImpl(DataObject object)
-    {
-        this(
-            object.getString("custom_id"),
-            TextInputStyle.fromKey(object.getInt("style", -1)),
-            object.getString("label", null),
-            object.getInt("min_Length", -1),
-            object.getInt("max_length", -1),
-            object.getBoolean("required", false),
-            object.getString("value", null),
-            object.getString("placeholder", null)
-        );
-    }
+    private final int minLength;
+    private final int maxLength;
+    private final boolean required;
+    private final String value;
+    private final String placeholder;
 
     public TextInputImpl(
             String id, TextInputStyle style, String label, int minLength, int maxLength, boolean required,
@@ -64,28 +48,6 @@ public class TextInputImpl implements TextInput
         this.placeholder = placeholder;
     }
 
-    public TextInputImpl(String id, TextInputStyle style, String label)
-    {
-        this.id = id;
-        this.style = style;
-        this.label = label;
-    }
-
-    public void setRequired(boolean required)
-    {
-        this.required = required;
-    }
-
-    public void setValue(String value)
-    {
-        this.value = value;
-    }
-
-    public void setPlaceholder(String placeholder)
-    {
-        this.placeholder = placeholder;
-    }
-
     @Nonnull
     @Override
     public Type getType()
@@ -93,7 +55,7 @@ public class TextInputImpl implements TextInput
         return Type.TEXT_INPUT;
     }
 
-    @Nullable
+    @Nonnull
     @Override
     public TextInputStyle getStyle()
     {
@@ -107,7 +69,7 @@ public class TextInputImpl implements TextInput
         return id;
     }
 
-    @Nullable
+    @Nonnull
     @Override
     public String getLabel()
     {

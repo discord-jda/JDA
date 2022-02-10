@@ -43,11 +43,9 @@ public interface TextInput extends ActionComponent
     /**
      * The {@link TextInputStyle TextInputStyle} of this TextInput component.
      *
-     * <b>This is null if the TextInput was received from a {@link net.dv8tion.jda.api.events.interaction.ModalSubmitInteractionEvent ModalSubmitInteractionEvent}!</b>
-     *
-     * @return The style of this TextInput component or null.
+     * @return The style of this TextInput component.
      */
-    @Nullable
+    @Nonnull
     TextInputStyle getStyle();
 
     /**
@@ -63,17 +61,15 @@ public interface TextInput extends ActionComponent
     /**
      * The label of this TextInput component.
      *
-     * <b>This is null if the TextInput was received from a {@link net.dv8tion.jda.api.events.interaction.ModalSubmitInteractionEvent ModalSubmitInteractionEvent}!</b>
-     *
-     * @return The label of this TextInput component or null.
+     * @return The label of this TextInput component.
      */
-    @Nullable
+    @Nonnull
     String getLabel();
 
     /**
      * The minimum amount of characters that must be written to submit the Modal.
      *
-     * <b>This is -1 if no length has been set or this TextInput was received from a {@link net.dv8tion.jda.api.events.interaction.ModalSubmitInteractionEvent ModalSubmitInteractionEvent}</b>
+     * <b>This is -1 if no length has been set!</b>
      *
      * @return The minimum length of this TextInput component or -1
      */
@@ -82,7 +78,7 @@ public interface TextInput extends ActionComponent
     /**
      * The maximum amount of characters that can be written to submit the Modal.
      *
-     * <b>This is -1 if no length has been set or this TextInput was received from a {@link net.dv8tion.jda.api.events.interaction.ModalSubmitInteractionEvent ModalSubmitInteractionEvent}</b>
+     * <b>This is -1 if no length has been set!</b>
      *
      * @return The maximum length of this TextInput component or -1
      */
@@ -91,17 +87,14 @@ public interface TextInput extends ActionComponent
     /**
      * Whether this TextInput is required to be written to submit the Modal.
      *
-     * <b>This returns false if this TextInput was received from a {@link net.dv8tion.jda.api.events.interaction.ModalSubmitInteractionEvent ModalSubmitInteractionEvent}</b>
-     *
      * @return True if this TextInput is required to be used.
      */
     boolean isRequired();
 
     /**
-     * The value of this TextInput component.
-     * This contains the content of this input field when you received it from a {@link net.dv8tion.jda.api.events.interaction.ModalSubmitInteractionEvent ModalSubmitInteractionEvent}
+     * The pre-defined value of this TextInput component.
      *
-     * <b>This is null if no pre-defined value has been set</b>
+     * <b>This is null if no pre-defined value has been set!</b>
      *
      * @return The value of this TextInput component or null.
      */
@@ -111,7 +104,7 @@ public interface TextInput extends ActionComponent
     /**
      * The placeholder of this TextInput component.
      *
-     * <b>This is null if the TextInput was received from a {@link net.dv8tion.jda.api.events.interaction.ModalSubmitInteractionEvent ModalSubmitInteractionEvent}!</b>
+     * <b>This is null if no placeholder has been set!</b>
      *
      * @return The placeholder of this TextInput component or null.
      */
@@ -188,12 +181,12 @@ public interface TextInput extends ActionComponent
         /**
          * Sets the minimum length of this input field.
          *
-         * <b>This has to be between 0 and {@value #TEXT_INPUT_MIN_LENGTH_MAXIMUM}</b>
+         * <b>This has to be between 0 and {@value #TEXT_INPUT_MAX_LENGTH}</b>
          *
          * @param minLength The minimum amount of characters that need to be written
          *
          * @throws IllegalArgumentException
-         *         If minLength is negative or greater than {@value #TEXT_INPUT_MIN_LENGTH_MAXIMUM}
+         *         If minLength is negative or greater than {@value #TEXT_INPUT_MAX_LENGTH}
          *
          * @return The same builder instance for chaining
          */

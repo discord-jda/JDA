@@ -17,7 +17,7 @@
 package net.dv8tion.jda.internal.interactions;
 
 import net.dv8tion.jda.api.interactions.ModalInteraction;
-import net.dv8tion.jda.api.interactions.components.ActionRow;
+import net.dv8tion.jda.api.interactions.modals.TextInputMapping;
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 public class ModalInteractionImpl extends DeferrableInteractionImpl implements ModalInteraction
 {
     private final String modalId;
-    private final List<ActionRow> components;
+    private final List<TextInputMapping> mappings;
 
     public ModalInteractionImpl(JDAImpl api, DataObject object)
     {
@@ -42,9 +42,11 @@ public class ModalInteractionImpl extends DeferrableInteractionImpl implements M
 
         this.modalId = data.getString("custom_id");
 
-        this.components = data.getArray("components")
+        this.mappings = data.getArray("components")
                 .stream(DataArray::getObject)
-                .map(ActionRow::fromData)
+                .map(dataObject -> dataObject.getArray("components"))
+                .flatMap(dataArray -> dataArray.stream(DataArray::getObject))
+                .map(TextInputMapping::new)
                 .collect(Collectors.toList());
     }
 
@@ -57,9 +59,9 @@ public class ModalInteractionImpl extends DeferrableInteractionImpl implements M
 
     @Nonnull
     @Override
-    public List<ActionRow> getComponents()
+    public List<TextInputMapping> getTextInputs()
     {
-        return Collections.unmodifiableList(components);
+        return Collections.unmodifiableList(mappings);
     }
 
     @Override

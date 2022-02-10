@@ -17,8 +17,8 @@
 package net.dv8tion.jda.api.interactions;
 
 import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback;
-import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.text.TextInput;
+import net.dv8tion.jda.api.interactions.modals.TextInputMapping;
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction;
 
 import javax.annotation.CheckReturnValue;
@@ -36,17 +36,17 @@ public interface ModalInteraction extends IReplyCallback
     String getModalId();
 
     /**
-     * Returns a List of {@link ActionRow ActionRows} the modal in question contains
+     * Returns a List of {@link TextInputMapping TextInputMappings} the modal in question contains
      *
      * Contains information like the text the user entered on {@link TextInput TextInputs}
      *
-     * @return List of {@link ActionRow ActionRows}
+     * @return List of {@link TextInputMapping TextInputMappings}
      */
     @Nonnull
-    List<ActionRow> getComponents();
+    List<TextInputMapping> getTextInputs();
 
     /**
-     * Convenience method to get a {@link TextInput TextInput} by its id from the List of components.
+     * Convenience method to get a {@link TextInput TextInput} by its id from the List of {@link TextInputMapping TextInputMappings}
      *
      * Returns null if no TextInput with that id has been found
      *
@@ -55,14 +55,10 @@ public interface ModalInteraction extends IReplyCallback
      * @return TextInput with this id, or null
      */
     @Nullable
-    default TextInput getTextInputField(String id)
+    default TextInputMapping getTextInputField(String id)
     {
-        return getComponents().stream()
-                .map(ActionRow::getComponents)
-                .flatMap(List::stream)
-                .filter(TextInput.class::isInstance)
-                .map(TextInput.class::cast)
-                .filter(textInput -> textInput.getId().equals(id))
+        return getTextInputs().stream()
+                .filter(mapping -> mapping.getId().equals(id))
                 .findFirst().orElse(null);
     }
 
