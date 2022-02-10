@@ -32,9 +32,9 @@ import java.util.List;
 /**
  * Represents a Discord Modal
  *
- * Replying to an interaction with a modal will cause a form window to pop up on the User's client.
+ * <p>Replying to an interaction with a modal will cause a form window to pop up on the User's client.
  *
- * <b>Only a maximum of 5 components can be included in a Modal, and only {@link net.dv8tion.jda.api.interactions.components.text.TextInput TextInputs} are allowed.</b>
+ * <p><b>Only a maximum of 5 components can be included in a Modal, and only {@link net.dv8tion.jda.api.interactions.components.text.TextInput TextInputs} are allowed.</b>
  *
  * @see net.dv8tion.jda.api.events.interaction.ModalSubmitInteractionEvent
  */
@@ -74,7 +74,8 @@ public interface Modal extends ActionComponent
     /**
      * Creates a new Modal.
      *
-     * @param customId The custom id for this modal
+     * @param  customId 
+     *         The custom id for this modal
      *
      * @throws IllegalArgumentException
      *         If the provided customId or title are null
@@ -104,7 +105,8 @@ public interface Modal extends ActionComponent
         /**
          * Sets the custom id for this modal.
          *
-         * @param customId Custom id
+         * @param  customId
+         *         Custom id
          *
          * @return The same builder instance for chaining
          */
@@ -118,7 +120,8 @@ public interface Modal extends ActionComponent
         /**
          * Sets the title for this modal.
          *
-         * @param title The title
+         * @param  title 
+         *         The title
          *
          * @return The same builder instance for chaining
          */
@@ -132,7 +135,8 @@ public interface Modal extends ActionComponent
         /**
          * Adds ActionRows to this modal
          *
-         * @param actionRows Vararg of ActionRows
+         * @param  actionRows 
+         *         Vararg of ActionRows
          *
          * @throws IllegalArgumentException
          *         If any of the provided ActionRows are null
@@ -150,7 +154,8 @@ public interface Modal extends ActionComponent
         /**
          * Adds components to this modal
          *
-         * @param actionRows Collection of ActionRows
+         * @param  actionRows 
+         *         Collection of ActionRows
          *
          * @throws IllegalArgumentException
          *         If any of the provided ActionRows are null

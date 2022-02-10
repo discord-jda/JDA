@@ -26,7 +26,7 @@ import javax.annotation.Nullable;
 /**
  * Represents a Discord Text input component
  *
- * Must be used in {@link Modal Modals}!
+ * <p>Must be used in {@link Modal Modals}!
  */
 public interface TextInput extends ActionComponent
 {
@@ -43,7 +43,7 @@ public interface TextInput extends ActionComponent
     /**
      * The {@link TextInputStyle TextInputStyle} of this TextInput component.
      *
-     * <b>This is null if the TextInput was received from a {@link net.dv8tion.jda.api.events.interaction.ModalSubmitInteractionEvent ModalSubmitInteractionEvent}!</b>
+     * <p><b>This is null if the TextInput was received from a {@link net.dv8tion.jda.api.events.interaction.ModalSubmitInteractionEvent ModalSubmitInteractionEvent}!</b>
      *
      * @return The style of this TextInput component or null.
      */
@@ -53,7 +53,7 @@ public interface TextInput extends ActionComponent
     /**
      * The custom id of this TextInput component.
      *
-     * This is used to uniquely identify the modal. Similar to {@link net.dv8tion.jda.api.interactions.components.buttons.Button Buttons}.
+     * <p>This is used to uniquely identify the modal. Similar to {@link net.dv8tion.jda.api.interactions.components.buttons.Button Buttons}.
      *
      * @return The custom id of this component.
      */
@@ -63,7 +63,7 @@ public interface TextInput extends ActionComponent
     /**
      * The label of this TextInput component.
      *
-     * <b>This is null if the TextInput was received from a {@link net.dv8tion.jda.api.events.interaction.ModalSubmitInteractionEvent ModalSubmitInteractionEvent}!</b>
+     * <p><b>This is null if the TextInput was received from a {@link net.dv8tion.jda.api.events.interaction.ModalSubmitInteractionEvent ModalSubmitInteractionEvent}!</b>
      *
      * @return The label of this TextInput component or null.
      */
@@ -73,7 +73,7 @@ public interface TextInput extends ActionComponent
     /**
      * The minimum amount of characters that must be written to submit the Modal.
      *
-     * <b>This is -1 if no length has been set or this TextInput was received from a {@link net.dv8tion.jda.api.events.interaction.ModalSubmitInteractionEvent ModalSubmitInteractionEvent}</b>
+     * <p><b>This is -1 if no length has been set or this TextInput was received from a {@link net.dv8tion.jda.api.events.interaction.ModalSubmitInteractionEvent ModalSubmitInteractionEvent}</b>
      *
      * @return The minimum length of this TextInput component or -1
      */
@@ -82,7 +82,7 @@ public interface TextInput extends ActionComponent
     /**
      * The maximum amount of characters that can be written to submit the Modal.
      *
-     * <b>This is -1 if no length has been set or this TextInput was received from a {@link net.dv8tion.jda.api.events.interaction.ModalSubmitInteractionEvent ModalSubmitInteractionEvent}</b>
+     * <p><b>This is -1 if no length has been set or this TextInput was received from a {@link net.dv8tion.jda.api.events.interaction.ModalSubmitInteractionEvent ModalSubmitInteractionEvent}</b>
      *
      * @return The maximum length of this TextInput component or -1
      */
@@ -91,7 +91,7 @@ public interface TextInput extends ActionComponent
     /**
      * Whether this TextInput is required to be written to submit the Modal.
      *
-     * <b>This returns false if this TextInput was received from a {@link net.dv8tion.jda.api.events.interaction.ModalSubmitInteractionEvent ModalSubmitInteractionEvent}</b>
+     * <p><b>This returns false if this TextInput was received from a {@link net.dv8tion.jda.api.events.interaction.ModalSubmitInteractionEvent ModalSubmitInteractionEvent}</b>
      *
      * @return True if this TextInput is required to be used.
      */
@@ -101,7 +101,7 @@ public interface TextInput extends ActionComponent
      * The value of this TextInput component.
      * This contains the content of this input field when you received it from a {@link net.dv8tion.jda.api.events.interaction.ModalSubmitInteractionEvent ModalSubmitInteractionEvent}
      *
-     * <b>This is null if no pre-defined value has been set</b>
+     * <p><b>This is null if no pre-defined value has been set</b>
      *
      * @return The value of this TextInput component or null.
      */
@@ -111,7 +111,7 @@ public interface TextInput extends ActionComponent
     /**
      * The placeholder of this TextInput component.
      *
-     * <b>This is null if the TextInput was received from a {@link net.dv8tion.jda.api.events.interaction.ModalSubmitInteractionEvent ModalSubmitInteractionEvent}!</b>
+     * <p><b>This is null if the TextInput was received from a {@link net.dv8tion.jda.api.events.interaction.ModalSubmitInteractionEvent ModalSubmitInteractionEvent}!</b>
      *
      * @return The placeholder of this TextInput component or null.
      */
@@ -134,9 +134,12 @@ public interface TextInput extends ActionComponent
     /**
      * Creates a new TextInput Builder.
      *
-     * @param id The custom id
-     * @param label The label
-     * @param style The {@link TextInputStyle TextInputStyle}
+     * @param  id 
+     *         The custom id
+     * @param  label 
+     *         The label
+     * @param  style 
+     *         The {@link TextInputStyle TextInputStyle}
      *
      * @return a new TextInput Builder.
      */
@@ -174,7 +177,8 @@ public interface TextInput extends ActionComponent
         /**
          * Sets whether the user is required to write in this TextInput.
          *
-         * @param required If this TextInput should be required
+         * @param  required 
+         *         If this TextInput should be required
          *
          * @return The same builder instance for chaining
          */
@@ -188,9 +192,10 @@ public interface TextInput extends ActionComponent
         /**
          * Sets the minimum length of this input field.
          *
-         * <b>This has to be between 0 and {@value #TEXT_INPUT_MIN_LENGTH_MAXIMUM}</b>
+         * <p><b>This has to be between 0 and {@value #TEXT_INPUT_MIN_LENGTH_MAXIMUM}</b>
          *
-         * @param minLength The minimum amount of characters that need to be written
+         * @param  minLength 
+         *         The minimum amount of characters that need to be written
          *
          * @throws IllegalArgumentException
          *         If minLength is negative or greater than {@value #TEXT_INPUT_MIN_LENGTH_MAXIMUM}
@@ -209,9 +214,10 @@ public interface TextInput extends ActionComponent
         /**
          * Sets the maximum length of this input field.
          *
-         * <b>This has to be between {@value #TEXT_INPUT_MIN_LENGTH} and {@value #TEXT_INPUT_MAX_LENGTH}</b>
+         * <p><b>This has to be between {@value #TEXT_INPUT_MIN_LENGTH} and {@value #TEXT_INPUT_MAX_LENGTH}</b>
          *
-         * @param maxLength The maximum amount of characters that need to be written
+         * @param  maxLength 
+         *         The maximum amount of characters that need to be written
          *
          * @throws IllegalArgumentException
          *         If maxLength is smaller than {@value #TEXT_INPUT_MIN_LENGTH} or greater than {@value #TEXT_INPUT_MAX_LENGTH}
@@ -232,8 +238,10 @@ public interface TextInput extends ActionComponent
         /**
          * Sets the minimum and maximum required length on this TextInput component
          *
-         * @param min Minimum length of the text input
-         * @param max Maximum length of the text input
+         * @param  min 
+         *         Minimum length of the text input
+         * @param  max 
+         *         Maximum length of the text input
 
          * @throws IllegalArgumentException
          * <ul>
@@ -254,7 +262,8 @@ public interface TextInput extends ActionComponent
         /**
          * Sets a pre-populated text for this TextInput field.
          *
-         * @param value Pre-Populated text
+         * @param  value 
+         *         Pre-Populated text
          *
          * @return The same builder instance for chaining
          */
@@ -268,7 +277,8 @@ public interface TextInput extends ActionComponent
         /**
          * Sets a placeholder for this TextInput field.
          *
-         * @param placeholder The placeholder
+         * @param  placeholder 
+         *         The placeholder
          *
          * @return The same builder instance for chaining
          */
@@ -312,6 +322,7 @@ public interface TextInput extends ActionComponent
 
         /**
          * The label
+         *
          * @return Label
          */
         @Nonnull
@@ -356,9 +367,9 @@ public interface TextInput extends ActionComponent
         /**
          * Whether this TextInput is required
          *
-         * @see TextInput#isRequired()
-         *
          * @return True if this TextInput is required
+         * 
+         * @see TextInput#isRequired()
          */
         public boolean isRequired()
         {

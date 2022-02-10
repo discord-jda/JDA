@@ -34,7 +34,7 @@ public enum TextInputStyle
     /**
      * Returns the raw integer key for this TextInputStyle
      *
-     * This returns -1 if it's of type {@link #UNKNOWN}.
+     * <p>This returns -1 if it's of type {@link #UNKNOWN}.
      *
      * @return The raw int key
      */
