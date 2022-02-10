@@ -34,6 +34,20 @@ public class TextInputImpl implements TextInput
     private final String value;
     private final String placeholder;
 
+    public TextInputImpl(DataObject object)
+    {
+        this(
+                object.getString("custom_id"),
+                TextInputStyle.fromKey(object.getInt("style", -1)),
+                object.getString("label", null),
+                object.getInt("min_Length", -1),
+                object.getInt("max_length", -1),
+                object.getBoolean("required", false),
+                object.getString("value", null),
+                object.getString("placeholder", null)
+        );
+    }
+
     public TextInputImpl(
             String id, TextInputStyle style, String label, int minLength, int maxLength, boolean required,
             String value, String placeholder)
