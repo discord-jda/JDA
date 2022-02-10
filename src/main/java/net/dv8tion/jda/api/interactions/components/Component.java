@@ -77,6 +77,16 @@ public interface Component extends SerializableData
         }
 
         /**
+         * Raw int representing this ComponentType
+         *
+         * @return Raw int representing this ComponentType
+         */
+        public int getKey()
+        {
+            return key;
+        }
+
+        /**
          * Maps the provided type id to the respective enum instance.
          *
          * @param  type

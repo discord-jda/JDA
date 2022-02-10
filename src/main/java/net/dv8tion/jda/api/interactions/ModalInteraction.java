@@ -17,8 +17,7 @@
 package net.dv8tion.jda.api.interactions;
 
 import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback;
-import net.dv8tion.jda.api.interactions.components.text.TextInput;
-import net.dv8tion.jda.api.interactions.modals.TextInputMapping;
+import net.dv8tion.jda.api.interactions.modals.ModalMapping;
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction;
 
 import javax.annotation.CheckReturnValue;
@@ -37,29 +36,27 @@ public interface ModalInteraction extends IReplyCallback
     String getModalId();
 
     /**
-     * Returns a List of {@link TextInputMapping TextInputMappings} the modal in question contains
+     * Returns a List of {@link ModalMapping ModalMappings} the modal in question contains
      *
-     * <p>Contains information like the text the user entered on {@link TextInput TextInputs}
-     *
-     * @return List of {@link TextInputMapping TextInputMappings}
+     * @return List of {@link ModalMapping TextInputMappings}
      */
     @Nonnull
-    List<TextInputMapping> getTextInputs();
+    List<ModalMapping> getValues();
 
     /**
-     * Convenience method to get a {@link TextInput TextInput} by its id from the List of {@link TextInputMapping TextInputMappings}
+     * Convenience method to get a {@link ModalMapping ModalMapping} by its id from the List of {@link ModalMapping ModalMappings}
      *
-     * <p>Returns null if no TextInput with that id has been found
+     * <p>Returns null if no component with that id has been found
      *
      * @param  id
      *         The custom id
      *
-     * @return TextInput with this id, or null if not found
+     * @return ModalMapping with this id, or null if not found
      */
     @Nullable
-    default TextInputMapping getTextInputField(String id)
+    default ModalMapping getValue(String id)
     {
-        return getTextInputs().stream()
+        return getValues().stream()
                 .filter(mapping -> mapping.getId().equals(id))
                 .findFirst().orElse(null);
     }
