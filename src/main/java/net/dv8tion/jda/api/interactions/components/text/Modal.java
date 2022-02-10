@@ -23,6 +23,7 @@ import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -107,6 +108,7 @@ public interface Modal extends ActionComponent
          *
          * @return The same builder instance for chaining
          */
+        @Nonnull
         public Builder setId(@Nonnull String customId)
         {
             this.id = customId;
@@ -120,6 +122,7 @@ public interface Modal extends ActionComponent
          *
          * @return The same builder instance for chaining
          */
+        @Nonnull
         public Builder setTitle(String title)
         {
             this.title = title;
@@ -136,7 +139,8 @@ public interface Modal extends ActionComponent
          *
          * @return The same builder instance for chaining
          */
-        public Builder addActionRows(@NonNull ActionRow... actionRows)
+        @Nonnull
+        public Builder addActionRows(@Nonnull ActionRow... actionRows)
         {
             Checks.noneNull(actionRows, "Action Rows");
             Collections.addAll(this.components, actionRows);
@@ -153,7 +157,8 @@ public interface Modal extends ActionComponent
          *
          * @return The same builder instance for chaining
          */
-        public Builder addActionRows(@NonNull Collection<? extends ActionRow> actionRows)
+        @Nonnull
+        public Builder addActionRows(@Nonnull Collection<? extends ActionRow> actionRows)
         {
             Checks.noneNull(actionRows, "Components");
             this.components.addAll(actionRows);
@@ -165,6 +170,7 @@ public interface Modal extends ActionComponent
          *
          * @return A list of components
          */
+        @Nonnull
         public List<ActionRow> getComponents()
         {
             return Collections.unmodifiableList(components);
@@ -175,6 +181,7 @@ public interface Modal extends ActionComponent
          *
          * @return the title
          */
+        @Nullable
         public String getTitle()
         {
             return title;
@@ -185,6 +192,7 @@ public interface Modal extends ActionComponent
          *
          * @return the id
          */
+        @Nullable
         public String getId()
         {
             return id;
@@ -201,6 +209,7 @@ public interface Modal extends ActionComponent
          *
          * @return A Modal
          */
+        @Nonnull
         public Modal build()
         {
             Checks.check(id != null, "Custom ID cannot be null!");

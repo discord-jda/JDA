@@ -140,6 +140,7 @@ public interface TextInput extends ActionComponent
      *
      * @return a new TextInput Builder.
      */
+    @Nonnull
     static TextInput.Builder create(@Nonnull String id, @Nonnull String label, @Nonnull TextInputStyle style)
     {
         Checks.notNull(id, "Custom ID");
@@ -177,6 +178,7 @@ public interface TextInput extends ActionComponent
          *
          * @return The same builder instance for chaining
          */
+        @Nonnull
         public Builder setRequired(boolean required)
         {
             this.required = required;
@@ -195,6 +197,7 @@ public interface TextInput extends ActionComponent
          *
          * @return The same builder instance for chaining
          */
+        @Nonnull
         public Builder setMinLength(int minLength)
         {
             Checks.notNegative(minLength, "Minimum length");
@@ -215,6 +218,7 @@ public interface TextInput extends ActionComponent
          *
          * @return The same builder instance for chaining
          */
+        @Nonnull
         public Builder setMaxLength(int maxLength)
         {
             Checks.check(maxLength >= TEXT_INPUT_MIN_LENGTH, "Maximum length cannot be smaller than " + TEXT_INPUT_MIN_LENGTH + " characters!");
@@ -239,6 +243,7 @@ public interface TextInput extends ActionComponent
          *
          * @return The same builder instance for chaining
          */
+        @Nonnull
         public Builder setRequiredRange(int min, int max)
         {
             setMinLength(min);
@@ -253,6 +258,7 @@ public interface TextInput extends ActionComponent
          *
          * @return The same builder instance for chaining
          */
+        @Nonnull
         public Builder setValue(@Nullable String value)
         {
             this.value = value;
@@ -266,6 +272,7 @@ public interface TextInput extends ActionComponent
          *
          * @return The same builder instance for chaining
          */
+        @Nonnull
         public Builder setPlaceholder(@Nullable String placeholder)
         {
             this.placeholder = placeholder;
@@ -297,6 +304,7 @@ public interface TextInput extends ActionComponent
          *
          * @return Custom id
          */
+        @Nonnull
         public String getId()
         {
             return id;
@@ -306,6 +314,7 @@ public interface TextInput extends ActionComponent
          * The label
          * @return Label
          */
+        @Nonnull
         public String getLabel()
         {
             return label;
@@ -323,10 +332,11 @@ public interface TextInput extends ActionComponent
         }
 
         /**
-         * The placeholder of this Modal
+         * The placeholder of this TextInput
          *
          * @return Placeholder
          */
+        @Nullable
         public String getPlaceholder()
         {
             return placeholder;
@@ -337,6 +347,7 @@ public interface TextInput extends ActionComponent
          *
          * @return Value
          */
+        @Nullable
         public String getValue()
         {
             return value;
@@ -359,6 +370,7 @@ public interface TextInput extends ActionComponent
          *
          * @return the TextInput instance
          */
+        @Nonnull
         public TextInput build()
         {
             if (maxLength < minLength)
