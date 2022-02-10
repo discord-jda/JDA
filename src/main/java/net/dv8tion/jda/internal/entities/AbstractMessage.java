@@ -562,21 +562,21 @@ public abstract class AbstractMessage implements Message
     }
 
     @Override
-    public MessageReaction.ReactionEmote getReactionByUnicode(@Nonnull String unicode)
+    public MessageReaction getReactionByUnicode(@Nonnull String unicode)
     {
         unsupported();
         return null;
     }
 
     @Override
-    public MessageReaction.ReactionEmote getReactionById(@Nonnull String id)
+    public MessageReaction getReactionById(@Nonnull String id)
     {
         unsupported();
         return null;
     }
 
     @Override
-    public MessageReaction.ReactionEmote getReactionById(long id)
+    public MessageReaction getReactionById(long id)
     {
         unsupported();
         return null;

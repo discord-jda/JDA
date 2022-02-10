@@ -2297,11 +2297,11 @@ public interface Message extends ISnowflake, Formattable
     ReactionPaginationAction retrieveReactionUsers(@Nonnull String unicode);
 
     /**
-     * This obtains the {@link net.dv8tion.jda.api.entities.MessageReaction.ReactionEmote ReactionEmote} for the given unicode reaction on this message.
+     * This obtains the {@link net.dv8tion.jda.api.entities.MessageReaction MessageReaction} for the given unicode reaction on this message.
      *
      * <p>Messages also store reactions using unicode values.
      *
-     * <p>An instance of the related {@link net.dv8tion.jda.api.entities.MessageReaction.ReactionEmote ReactionEmote} can be
+     * <p>An instance of the related {@link net.dv8tion.jda.api.entities.MessageReaction MessageReaction} can be
      * obtained through this method by using the emoji's unicode value.
      *
      * @param  unicode
@@ -2312,20 +2312,20 @@ public interface Message extends ISnowflake, Formattable
      * @throws java.lang.IllegalArgumentException
      *         If the provided unicode value is null or empty.
      *
-     * @return The {@link net.dv8tion.jda.api.entities.MessageReaction.ReactionEmote ReactionEmote} of this message or null if not present.
+     * @return The {@link net.dv8tion.jda.api.entities.MessageReaction MessageReaction} of this message or null if not present.
      *
      * @since  4.1.0
      */
     @Nullable
     @CheckReturnValue
-    MessageReaction.ReactionEmote getReactionByUnicode(@Nonnull String unicode);
+    MessageReaction getReactionByUnicode(@Nonnull String unicode);
 
     /**
-     * This obtains the {@link net.dv8tion.jda.api.entities.MessageReaction.ReactionEmote ReactionEmote} for the given reaction id on this message.
+     * This obtains the {@link net.dv8tion.jda.api.entities.MessageReaction MessageReaction} for the given reaction id on this message.
      *
      * <p>Messages store reactions by keeping a list of reaction names.
      *
-     * <p>An instance of the related {@link net.dv8tion.jda.api.entities.MessageReaction.ReactionEmote ReactionEmote} can be
+     * <p>An instance of the related {@link net.dv8tion.jda.api.entities.MessageReaction MessageReaction} can be
      * obtained through this method by using the emote's id.
      *
      * @param  id
@@ -2336,20 +2336,20 @@ public interface Message extends ISnowflake, Formattable
      * @throws java.lang.IllegalArgumentException
      *         If the provided id is not a valid snowflake.
      *
-     * @return The {@link net.dv8tion.jda.api.entities.MessageReaction.ReactionEmote ReactionEmote} of this message or null if not present.
+     * @return The {@link net.dv8tion.jda.api.entities.MessageReaction MessageReaction} of this message or null if not present.
      *
      * @since  4.1.0
      */
     @Nullable
     @CheckReturnValue
-    MessageReaction.ReactionEmote getReactionById(@Nonnull String id);
+    MessageReaction getReactionById(@Nonnull String id);
 
     /**
-     * This obtains the {@link net.dv8tion.jda.api.entities.MessageReaction.ReactionEmote ReactionEmote} for the given reaction id on this message.
+     * This obtains the {@link net.dv8tion.jda.api.entities.MessageReaction MessageReaction} for the given reaction id on this message.
      *
      * <p>Messages store reactions by keeping a list of reaction names.
      *
-     * <p>An instance of the related {@link net.dv8tion.jda.api.entities.MessageReaction.ReactionEmote ReactionEmote} can be
+     * <p>An instance of the related {@link net.dv8tion.jda.api.entities.MessageReaction MessageReaction} can be
      * obtained through this method by using the emote's id.
      *
      * @param  id
@@ -2358,13 +2358,13 @@ public interface Message extends ISnowflake, Formattable
      * @throws java.lang.UnsupportedOperationException
      *         If this is a system message
      *
-     * @return The {@link net.dv8tion.jda.api.entities.MessageReaction.ReactionEmote ReactionEmote} of this message or null if not present.
+     * @return The {@link net.dv8tion.jda.api.entities.MessageReaction MessageReaction} of this message or null if not present.
      *
      * @since  4.1.0
      */
     @Nullable
     @CheckReturnValue
-    MessageReaction.ReactionEmote getReactionById(long id);
+    MessageReaction getReactionById(long id);
 
     /**
      * Enables/Disables suppression of Embeds on this Message.
