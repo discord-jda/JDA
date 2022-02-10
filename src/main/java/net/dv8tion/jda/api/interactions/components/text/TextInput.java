@@ -230,7 +230,7 @@ public interface TextInput extends ActionComponent
 
          * @throws IllegalArgumentException
          * <ul>
-         *  <li>If min is negative or greater than {@link #TEXT_INPUT_MIN_LENGTH_MAXIMUM}</li>
+         *  <li>If min is negative or greater than {@link #TEXT_INPUT_MAX_LENGTH}</li>
          *  <li>If max is smaller than 1, smaller than min or greater than {@link #TEXT_INPUT_MAX_LENGTH}</li>
          * </ul>
          *

@@ -207,10 +207,12 @@ public interface Modal extends ActionComponent
          * Builds and returns the {@link Modal}
          *
          * @throws IllegalArgumentException
-         *         If the id is null
-         *         If the title is null
-         *         If the components are empty
-         *         If there are more than 5 components
+         * <ul>
+         *     <li>If the id is null</li>
+         *     <li>If the title is null</li>
+         *     <li>If the components are empty</li>
+         *     <li>If there are more than 5 components</li>
+         * </ul>
          *
          * @return A Modal
          */

@@ -38,7 +38,7 @@ public interface ModalInteraction extends IReplyCallback
     /**
      * Returns a List of {@link ModalMapping ModalMappings} the modal in question contains
      *
-     * @return List of {@link ModalMapping TextInputMappings}
+     * @return List of {@link ModalMapping ModalMappings}
      */
     @Nonnull
     List<ModalMapping> getValues();

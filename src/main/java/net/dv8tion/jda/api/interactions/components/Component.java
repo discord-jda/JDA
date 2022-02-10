@@ -18,18 +18,20 @@ package net.dv8tion.jda.api.interactions.components;
 
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;
+import net.dv8tion.jda.api.interactions.components.text.TextInput;
 import net.dv8tion.jda.api.utils.data.SerializableData;
 
 import javax.annotation.Nonnull;
 
 /**
- * Component of a Message.
- * <br>These are used to extend messages with interactive elements such as buttons or select menus.
+ * Component of a Message or Modal.
+ * <br>These are used to extend messages or modals with interactive elements such as buttons or select menus.
  *
  * @see ActionRow
  *
  * @see Button
  * @see SelectMenu
+ * @see TextInput
  */
 public interface Component extends SerializableData
 {
@@ -78,6 +80,8 @@ public interface Component extends SerializableData
 
         /**
          * Raw int representing this ComponentType
+         *
+         * <p>This returns -1 if it's of type {@link #UNKNOWN}.
          *
          * @return Raw int representing this ComponentType
          */
