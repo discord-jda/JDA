@@ -36,7 +36,7 @@ public interface IModalCallback extends IDeferrableCallback
      * This will open a popup on the target user's Discord client.
      *
      * @param modal The Modal to send
-     * @return RestAction
+     * @return RestAction - Type: {@link InteractionHook} 
      */
     @Nonnull
     @CheckReturnValue

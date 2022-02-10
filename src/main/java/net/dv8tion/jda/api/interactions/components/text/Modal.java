@@ -105,7 +105,7 @@ public interface Modal extends ActionComponent
          *
          * @param customId Custom id
          *
-         * @return Builder for chaining convenience
+         * @return The same builder instance for chaining
          */
         public Builder setId(@Nonnull String customId)
         {
@@ -118,7 +118,7 @@ public interface Modal extends ActionComponent
          *
          * @param title The title
          *
-         * @return Builder for chaining convenience
+         * @return The same builder instance for chaining
          */
         public Builder setTitle(String title)
         {
@@ -134,9 +134,9 @@ public interface Modal extends ActionComponent
          * @throws IllegalArgumentException
          *         If any of the provided ActionRows are null
          *
-         * @return Builder for chaining convenience
+         * @return The same builder instance for chaining
          */
-        public Builder addActionRows(ActionRow... actionRows)
+        public Builder addActionRows(@NonNull ActionRow... actionRows)
         {
             Checks.noneNull(actionRows, "Action Rows");
             Collections.addAll(this.components, actionRows);
@@ -151,9 +151,9 @@ public interface Modal extends ActionComponent
          * @throws IllegalArgumentException
          *         If any of the provided ActionRows are null
          *
-         * @return Builder for chaining convenience
+         * @return The same builder instance for chaining
          */
-        public Builder addActionRows(Collection<? extends ActionRow> actionRows)
+        public Builder addActionRows(@NonNull Collection<? extends ActionRow> actionRows)
         {
             Checks.noneNull(actionRows, "Components");
             this.components.addAll(actionRows);

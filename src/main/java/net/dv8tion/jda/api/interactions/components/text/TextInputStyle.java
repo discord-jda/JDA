@@ -32,11 +32,11 @@ public enum TextInputStyle
     }
 
     /**
-     * Returns the raw integer for this TextInputStyle
+     * Returns the raw integer key for this TextInputStyle
      *
      * This returns -1 if it's of type {@link #UNKNOWN}.
      *
-     * @return raw int for this TextInputStyle
+     * @return The raw int key
      */
     public int getRaw()
     {
@@ -44,7 +44,8 @@ public enum TextInputStyle
     }
 
     /**
-     * Returns the style associated with the provided key
+     * Returns the TextInputStyle associated with the provided key.
+     * <br>If an unknown key is provided, this returns {@link #UNKNOWN}.
      *
      * @param  key
      *         The key to convert

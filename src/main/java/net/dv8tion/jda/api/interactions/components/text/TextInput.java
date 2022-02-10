@@ -175,7 +175,7 @@ public interface TextInput extends ActionComponent
          *
          * @param required If this TextInput should be required
          *
-         * @return Builder for chaining convenience
+         * @return The same builder instance for chaining
          */
         public Builder setRequired(boolean required)
         {
@@ -193,7 +193,7 @@ public interface TextInput extends ActionComponent
          * @throws IllegalArgumentException
          *         If minLength is negative or greater than {@value #TEXT_INPUT_MIN_LENGTH_MAXIMUM}
          *
-         * @return Builder for chaining convenience
+         * @return The same builder instance for chaining
          */
         public Builder setMinLength(int minLength)
         {
@@ -213,7 +213,7 @@ public interface TextInput extends ActionComponent
          * @throws IllegalArgumentException
          *         If maxLength is smaller than {@value #TEXT_INPUT_MIN_LENGTH} or greater than {@value #TEXT_INPUT_MAX_LENGTH}
          *
-         * @return Builder for chaining convenience
+         * @return The same builder instance for chaining
          */
         public Builder setMaxLength(int maxLength)
         {
@@ -237,7 +237,7 @@ public interface TextInput extends ActionComponent
          *  <li>If max is smaller than 1, smaller than min or greater than {@link #TEXT_INPUT_MAX_LENGTH}</li>
          * </ul>
          *
-         * @return Builder for chaining convenience
+         * @return The same builder instance for chaining
          */
         public Builder setRequiredRange(int min, int max)
         {
@@ -251,7 +251,7 @@ public interface TextInput extends ActionComponent
          *
          * @param value Pre-Populated text
          *
-         * @return Builder for chaining convenience
+         * @return The same builder instance for chaining
          */
         public Builder setValue(@Nullable String value)
         {
@@ -264,7 +264,7 @@ public interface TextInput extends ActionComponent
          *
          * @param placeholder The placeholder
          *
-         * @return Builder for chaining convenience
+         * @return The same builder instance for chaining
          */
         public Builder setPlaceholder(@Nullable String placeholder)
         {
@@ -316,6 +316,7 @@ public interface TextInput extends ActionComponent
          *
          * @return The TextInputStyle
          */
+        @Nonnull
         public TextInputStyle getStyle()
         {
             return style;

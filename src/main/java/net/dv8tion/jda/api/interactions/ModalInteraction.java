@@ -58,7 +58,8 @@ public interface ModalInteraction extends IReplyCallback
     default TextInput getTextInputField(String id)
     {
         return getComponents().stream()
-                .flatMap(row -> row.getComponents().stream())
+                .map(ActionRow::getComponents)
+                .flatMap(List::stream)
                 .filter(TextInput.class::isInstance)
                 .map(TextInput.class::cast)
                 .filter(textInput -> textInput.getId().equals(id))
