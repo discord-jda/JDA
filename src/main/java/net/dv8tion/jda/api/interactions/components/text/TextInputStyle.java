@@ -16,8 +16,19 @@
 
 package net.dv8tion.jda.api.interactions.components.text;
 
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 
+/**
+ * The different styles a {@link TextInput TextInput} field can have.
+ * <br>The different styles are:
+ * <ul>
+ *     <li>SHORT - Single line input</li>
+ *     <li>PARAGRAPH - Multiline input</li>
+ * </ul>
+ *
+ * @see TextInput
+ * @see Modal
+ */
 public enum TextInputStyle
 {
     UNKNOWN(-1),
@@ -52,7 +63,7 @@ public enum TextInputStyle
      *
      * @return The text input style or {@link #UNKNOWN}
      */
-    @NotNull
+    @Nonnull
     public static TextInputStyle fromKey(int key)
     {
         for (TextInputStyle style : values())

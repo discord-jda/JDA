@@ -31,7 +31,7 @@ public enum InteractionType
     COMMAND(2),
     COMPONENT(3),
     COMMAND_AUTOCOMPLETE(4),
-    MODAL_SUBMIT(5)
+    MODAL_SUBMIT(5),
     ;
 
     private final int key;

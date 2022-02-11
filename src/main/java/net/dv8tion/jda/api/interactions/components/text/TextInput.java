@@ -127,9 +127,15 @@ public interface TextInput extends ActionComponent
     /**
      * Creates a new TextInput Builder.
      *
-     * @param id The custom id
-     * @param label The label
-     * @param style The {@link TextInputStyle TextInputStyle}
+     * @param  id
+     *         The custom id
+     * @param  label
+     *         The label
+     * @param  style
+     *         The {@link TextInputStyle TextInputStyle}
+     *
+     * @throws IllegalArgumentException
+     *         If either id, label or style is null.
      *
      * @return a new TextInput Builder.
      */
@@ -195,7 +201,7 @@ public interface TextInput extends ActionComponent
         public Builder setMinLength(int minLength)
         {
             Checks.notNegative(minLength, "Minimum length");
-            Checks.check(minLength <= TEXT_INPUT_MAX_LENGTH, "Minimum length cannot be longer than " + TEXT_INPUT_MAX_LENGTH + " characters!");
+            Checks.check(minLength <= TEXT_INPUT_MAX_LENGTH, "Minimum length cannot be longer than %d characters!", TEXT_INPUT_MAX_LENGTH);
             this.minLength = minLength;
             return this;
         }
@@ -261,6 +267,7 @@ public interface TextInput extends ActionComponent
 
         /**
          * Sets a placeholder for this TextInput field.
+         * <br>This is a short hint that describes the expected value of the input field.
          *
          * @param placeholder The placeholder
          *

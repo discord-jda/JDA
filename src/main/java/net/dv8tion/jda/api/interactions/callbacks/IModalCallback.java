@@ -16,7 +16,6 @@
 
 package net.dv8tion.jda.api.interactions.callbacks;
 
-import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.components.text.Modal;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.interactions.InteractionCallbackAction;
@@ -28,6 +27,9 @@ import net.dv8tion.jda.internal.utils.Checks;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 
+/**
+ * Interactions which allow sending modals.
+ */
 public interface IModalCallback extends IDeferrableCallback
 {
     /**
@@ -37,18 +39,22 @@ public interface IModalCallback extends IDeferrableCallback
      *
      * @param  modal 
      *         The Modal to send
+     *
+     * @throws IllegalArgumentException
+     *         If modal is null
      *        
-     * @return RestAction - Type: {@link InteractionHook} 
+     * @return RestAction - Type: {@link Void}
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<InteractionHook> replyModal(Modal modal)
+    default RestAction<Void> replyModal(Modal modal)
     {
         Checks.notNull(modal, "Modal");
         Route.CompiledRoute route = Route.Interactions.CALLBACK.compile(getId(), getToken());
         DataObject object = DataObject.empty()
                 .put("type", InteractionCallbackAction.ResponseType.MODAL.getRaw())
                 .put("data", modal.toData());
-        return new RestActionImpl<>(getJDA(), route, object, ((response, voidRequest) -> getHook()));
+
+        return new RestActionImpl<>(getJDA(), route, object, ((response, voidRequest) -> null));
     }
 }

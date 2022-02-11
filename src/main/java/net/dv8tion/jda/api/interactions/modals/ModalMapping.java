@@ -1,28 +1,29 @@
 package net.dv8tion.jda.api.interactions.modals;
 
-import net.dv8tion.jda.api.events.interaction.ModalSubmitInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.interactions.components.Component;
 import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
+import java.util.Objects;
 
 /**
- * ID/Component pair for a {@link net.dv8tion.jda.api.events.interaction.ModalSubmitInteractionEvent ModalSubmitInteractionEvent}.
+ * ID/Component pair for a {@link ModalInteractionEvent ModalSubmitInteractionEvent}.
  *
- * @see ModalSubmitInteractionEvent#getValue(String)
- * @see ModalSubmitInteractionEvent#getValues()
+ * @see ModalInteractionEvent#getValue(String)
+ * @see ModalInteractionEvent#getValues()
  */
 public class ModalMapping
 {
     private final String id;
     private final String value;
-    private final Component.Type componentType;
+    private final Component.Type type;
 
     public ModalMapping(DataObject object)
     {
         this.id = object.getString("custom_id");
         this.value = object.getString("value");
-        this.componentType = Component.Type.fromKey(object.getInt("type"));
+        this.type = Component.Type.fromKey(object.getInt("type"));
     }
 
     /**
@@ -36,16 +37,21 @@ public class ModalMapping
         return id;
     }
 
+    /**
+     * The {@link Component.Type Type} of this component
+     *
+     * @return Type of this component
+     */
     @Nonnull
     public Component.Type getType()
     {
-        return componentType;
+        return type;
     }
 
     /**
      * The String representation of this component.
      *
-     * For TextInputs, this returns what the User typed in it.
+     * <p>For TextInputs, this returns what the User typed in it.
      *
      * @return The String representation of this component.
      */
@@ -53,5 +59,30 @@ public class ModalMapping
     public String getAsString()
     {
         return value;
+    }
+
+    @Override
+    public String toString()
+    {
+        return "ModalMapping{" +
+                "id='" + id + '\'' +
+                ", value='" + value + '\'' +
+                ", componentType=" + type +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ModalMapping that = (ModalMapping) o;
+        return Objects.equals(id, that.id) && Objects.equals(value, that.value) && type == that.type;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return Objects.hash(id, value, type);
     }
 }

@@ -21,9 +21,10 @@ import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.ModalInteraction;
 import net.dv8tion.jda.api.interactions.modals.ModalMapping;
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction;
-import net.dv8tion.jda.internal.interactions.ModalInteractionImpl;
+import net.dv8tion.jda.internal.interactions.InteractionHookImpl;
+import net.dv8tion.jda.internal.requests.restaction.interactions.ReplyCallbackActionImpl;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import java.util.List;
 
@@ -36,11 +37,11 @@ import java.util.List;
  *
  * @see net.dv8tion.jda.api.interactions.ModalInteraction
  */
-public class ModalSubmitInteractionEvent extends GenericInteractionCreateEvent implements ModalInteraction
+public class ModalInteractionEvent extends GenericInteractionCreateEvent implements ModalInteraction
 {
-    private final ModalInteractionImpl interaction;
+    private final ModalInteraction interaction;
 
-    public ModalSubmitInteractionEvent(@Nonnull JDA api, long responseNumber, @Nonnull ModalInteractionImpl interaction)
+    public ModalInteractionEvent(@Nonnull JDA api, long responseNumber, @Nonnull ModalInteraction interaction)
     {
         super(api, responseNumber, interaction);
         this.interaction = interaction;
@@ -48,32 +49,9 @@ public class ModalSubmitInteractionEvent extends GenericInteractionCreateEvent i
 
     @Nonnull
     @Override
-    public ModalInteractionImpl getInteraction()
+    public ModalInteraction getInteraction()
     {
         return interaction;
-    }
-
-    @Nonnull
-    @Override
-    public InteractionHook getHook()
-    {
-        return interaction.getHook();
-    }
-
-    @Nonnull
-    @CheckReturnValue
-    @Override
-    public ReplyCallbackAction deferReply(boolean ephemeral)
-    {
-        return interaction.deferReply(ephemeral);
-    }
-
-    @Nonnull
-    @CheckReturnValue
-    @Override
-    public ReplyCallbackAction reply(String content)
-    {
-        return interaction.reply(content);
     }
 
     @Nonnull
@@ -88,5 +66,19 @@ public class ModalSubmitInteractionEvent extends GenericInteractionCreateEvent i
     public List<ModalMapping> getValues()
     {
         return interaction.getValues();
+    }
+
+    @NotNull
+    @Override
+    public ReplyCallbackAction deferReply()
+    {
+        return new ReplyCallbackActionImpl((InteractionHookImpl) getHook());
+    }
+
+    @NotNull
+    @Override
+    public InteractionHook getHook()
+    {
+        return interaction.getHook();
     }
 }

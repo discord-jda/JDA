@@ -18,13 +18,17 @@ package net.dv8tion.jda.api.interactions;
 
 import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback;
 import net.dv8tion.jda.api.interactions.modals.ModalMapping;
-import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction;
+import net.dv8tion.jda.internal.utils.Checks;
 
-import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 
+/**
+ * Interaction on a {@link net.dv8tion.jda.api.interactions.components.text.Modal Modal}
+ *
+ * @see net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
+ */
 public interface ModalInteraction extends IReplyCallback
 {
     /**
@@ -51,31 +55,17 @@ public interface ModalInteraction extends IReplyCallback
      * @param  id
      *         The custom id
      *
+     * @throws IllegalArgumentException
+     *         If the provided id is null
+     *
      * @return ModalMapping with this id, or null if not found
      */
     @Nullable
-    default ModalMapping getValue(String id)
+    default ModalMapping getValue(@Nonnull String id)
     {
+        Checks.notNull(id, "ID");
         return getValues().stream()
                 .filter(mapping -> mapping.getId().equals(id))
                 .findFirst().orElse(null);
     }
-
-    @Nonnull
-    InteractionHook getHook();
-
-    @Nonnull
-    @CheckReturnValue
-    default ReplyCallbackAction deferReply()
-    {
-        return deferReply(false);
-    }
-
-    @Nonnull
-    @CheckReturnValue
-    ReplyCallbackAction deferReply(boolean ephemeral);
-
-    @Nonnull
-    @CheckReturnValue
-    ReplyCallbackAction reply(String content);
 }

@@ -22,7 +22,7 @@ import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
-import net.dv8tion.jda.internal.requests.restaction.interactions.ReplyCallbackActionImpl;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import java.util.Collections;
@@ -39,10 +39,8 @@ public class ModalInteractionImpl extends DeferrableInteractionImpl implements M
         super(api, object);
 
         DataObject data = object.getObject("data");
-
         this.modalId = data.getString("custom_id");
-
-        this.mappings = data.getArray("components")
+        this.mappings = data.optArray("components").orElseGet(DataArray::empty)
                 .stream(DataArray::getObject)
                 .map(dataObject -> dataObject.getArray("components"))
                 .flatMap(dataArray -> dataArray.stream(DataArray::getObject))
@@ -64,17 +62,10 @@ public class ModalInteractionImpl extends DeferrableInteractionImpl implements M
         return Collections.unmodifiableList(mappings);
     }
 
+    @NotNull
     @Override
-    @Nonnull
-    public ReplyCallbackAction deferReply(boolean ephemeral)
+    public ReplyCallbackAction deferReply()
     {
-        return new ReplyCallbackActionImpl(hook).setEphemeral(ephemeral);
-    }
-
-    @Override
-    @Nonnull
-    public ReplyCallbackAction reply(String content)
-    {
-        return new ReplyCallbackActionImpl(hook).setContent(content);
+        return deferReply(false);
     }
 }

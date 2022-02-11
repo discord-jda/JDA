@@ -35,10 +35,8 @@ public class ModalImpl implements Modal
     public ModalImpl(DataObject object)
     {
         this.id = object.getString("id");
-
         this.title = object.getString("title");
-
-        this.components = object.getArray("components")
+        this.components = object.optArray("components").orElseGet(DataArray::empty)
                         .stream(DataArray::getObject)
                         .map(ActionRow::fromData)
                         .collect(Collectors.toList());
@@ -49,19 +47,6 @@ public class ModalImpl implements Modal
         this.id = id;
         this.title = title;
         this.components = Collections.unmodifiableList(components);
-    }
-
-    @Override
-    public boolean isDisabled()
-    {
-        return false;
-    }
-
-    @Nonnull
-    @Override
-    public Type getType()
-    {
-        return Type.ACTION_ROW;
     }
 
     @Nonnull
@@ -93,14 +78,9 @@ public class ModalImpl implements Modal
                 .put("custom_id", id)
                 .put("title", title);
 
-        DataArray componentsArray = DataArray.empty();
-
-        components.stream()
+        object.put("components", DataArray.fromCollection(components.stream()
                 .map(ActionRow::toData)
-                .forEach(componentsArray::add);
-
-        object.put("components", componentsArray);
-
+                .collect(Collectors.toList())));
         return object;
     }
 }

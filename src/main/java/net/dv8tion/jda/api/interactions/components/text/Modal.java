@@ -16,29 +16,54 @@
 
 package net.dv8tion.jda.api.interactions.components.text;
 
-import net.dv8tion.jda.api.interactions.components.ActionComponent;
+import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
+import net.dv8tion.jda.api.interactions.components.ItemComponent;
+import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.internal.interactions.component.ModalImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
  * Represents a Discord Modal
  *
  * <p>Replying to an interaction with a modal will cause a form window to pop up on the User's client.
+ * <h2>Example</h2>
+ * <pre>{@code
+ *     public void onSlashCommandInteraction(@NonNull SlashCommandInteractionEvent event)
+ *     {
+ *         if (event.getName().equals("support"))
+ *         {
+ *             TextInput email = TextInput.create("email", "Email", TextInputStyle.SHORT)
+ *                     .setPlaceholder("Enter your E-mail")
+ *                     .setRequired(true)
+ *                     .setMinLength(10)
+ *                     .setMaxLength(100)
+ *                     .build();
+ *
+ *             TextInput body = TextInput.create("body", "Body", TextInputStyle.PARAGRAPH)
+ *                     .setPlaceholder("Your concerns go here")
+ *                     .setRequired(true)
+ *                     .setMinLength(30)
+ *                     .setMaxLength(1000)
+ *                     .build();
+ *             Modal modal = Modal.create("support", "Support")
+ *                     .addActionRows(ActionRow.of(email), ActionRow.of(body))
+ *                     .build();
+ *
+ *             event.replyModal(modal).queue();
+ *         }
+ *     }
+ * }</pre>
  *
  * <p><b>Only a maximum of 5 components can be included in a Modal, and only {@link net.dv8tion.jda.api.interactions.components.text.TextInput TextInputs} are allowed.</b>
  *
- * @see net.dv8tion.jda.api.events.interaction.ModalSubmitInteractionEvent
+ * @see ModalInteractionEvent
  */
-public interface Modal extends ActionComponent
+public interface Modal extends SerializableData
 {
     /**
      * The custom id of this modal
@@ -64,11 +89,18 @@ public interface Modal extends ActionComponent
     @Nonnull
     List<ActionRow> getActionRows();
 
+    /**
+     * Creates a new preconfigured {@link Modal.Builder} with the same settings used for this modal.
+     * <br>This can be useful to create an updated version of this modal without needing to rebuild it from scratch.
+     *
+     * @return The {@link Modal.Builder} used to create the modal
+     */
     @Nonnull
-    @Override
-    default ActionComponent withDisabled(boolean disabled)
+    default Modal.Builder createCopy()
     {
-        throw new UnsupportedOperationException("Modals cannot be disabled!");
+        return new Builder(getId())
+                .setTitle(getTitle())
+                .addActionRows(getActionRows());
     }
 
     /**
@@ -77,8 +109,11 @@ public interface Modal extends ActionComponent
      * @param  customId 
      *         The custom id for this modal
      *
+     * @param title
+     *        The title for this modal
+     *
      * @throws IllegalArgumentException
-     *         If the provided customId or title are null
+     *         If the provided customId or title are null, empty or blank.
      *
      * @return {@link Builder Builder} instance to customize this modal further
      */
@@ -108,11 +143,15 @@ public interface Modal extends ActionComponent
          * @param  customId
          *         Custom id
          *
+         * @throws IllegalArgumentException
+         *         If the provided id is null or blank
+         *
          * @return The same builder instance for chaining
          */
         @Nonnull
         public Builder setId(@Nonnull String customId)
         {
+            Checks.notBlank(customId, "ID");
             this.id = customId;
             return this;
         }
@@ -123,11 +162,15 @@ public interface Modal extends ActionComponent
          * @param  title 
          *         The title
          *
+         * @throws IllegalArgumentException
+         *         If the provided title is null or blank
+         *
          * @return The same builder instance for chaining
          */
         @Nonnull
         public Builder setTitle(String title)
         {
+            Checks.notBlank(title, "Title");
             this.title = title;
             return this;
         }
@@ -136,7 +179,7 @@ public interface Modal extends ActionComponent
          * Adds ActionRows to this modal
          *
          * @param  actionRows 
-         *         Vararg of ActionRows
+         *         ActionRows to add to the modal, up to 5
          *
          * @throws IllegalArgumentException
          *         If any of the provided ActionRows are null
@@ -155,7 +198,7 @@ public interface Modal extends ActionComponent
          * Adds components to this modal
          *
          * @param  actionRows 
-         *         Collection of ActionRows
+         *         ActionRows to add to the modal, up to 5
          *
          * @throws IllegalArgumentException
          *         If any of the provided ActionRows are null
@@ -171,14 +214,40 @@ public interface Modal extends ActionComponent
         }
 
         /**
+         * Adds an ActionRow to this modal
+         *
+         * @param components The components to add
+         *
+         * @return Same builder for chaining convenience
+         */
+        @Nonnull
+        public Builder addActionRow(Collection<? extends ItemComponent> components)
+        {
+            return addActionRows(ActionRow.of(components));
+        }
+
+        /**
+         * Adds an ActionRow to this modal
+         *
+         * @param components The components to add
+         *
+         * @return Same builder for chaining convenience
+         */
+        @Nonnull
+        public Builder addActionRow(ItemComponent... components)
+        {
+            return addActionRows(ActionRow.of(components));
+        }
+
+        /**
          * Returns a list of all components
          *
          * @return A list of components
          */
         @Nonnull
-        public List<ActionRow> getComponents()
+        public List<ActionRow> getActionRows()
         {
-            return Collections.unmodifiableList(components);
+            return components;
         }
 
         /**
@@ -186,7 +255,7 @@ public interface Modal extends ActionComponent
          *
          * @return the title
          */
-        @Nullable
+        @Nonnull
         public String getTitle()
         {
             return title;
@@ -197,7 +266,7 @@ public interface Modal extends ActionComponent
          *
          * @return the id
          */
-        @Nullable
+        @Nonnull
         public String getId()
         {
             return id;
@@ -219,8 +288,6 @@ public interface Modal extends ActionComponent
         @Nonnull
         public Modal build()
         {
-            Checks.check(id != null, "Custom ID cannot be null!");
-            Checks.check(title != null, "Title cannot be null!");
             Checks.check(!components.isEmpty(), "Cannot make a modal with no components!");
             Checks.check(components.size() <= 5, "Cannot make a modal with more than 5 components!");
 
