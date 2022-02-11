@@ -50,6 +50,7 @@ public interface TextInput extends ActionComponent
 
     /**
      * The custom id of this TextInput component.
+     *
      * <p>This is used to uniquely identify the modal. Similar to {@link net.dv8tion.jda.api.interactions.components.buttons.Button Buttons}.
      *
      * @return The custom id of this component.
