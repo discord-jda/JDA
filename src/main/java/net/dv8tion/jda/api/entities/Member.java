@@ -120,6 +120,13 @@ public interface Member extends IMentionable, IPermissionHolder
     OffsetDateTime getTimeBoosted();
 
     /**
+     * Returns whether a member is boosting the guild or not.
+     *
+     * @return True, if it is boosting
+     */
+    boolean isBoosting();
+
+    /**
      * The time this Member will be released from time out.
      * <br>If this Member is not in time out, this returns {@code null}.
      * This may also return dates in the past, in which case the time out has expired.
