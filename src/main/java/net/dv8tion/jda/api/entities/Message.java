@@ -29,6 +29,7 @@ import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationAction;
 import net.dv8tion.jda.api.utils.AttachmentOption;
+import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.requests.FunctionalCallback;
 import net.dv8tion.jda.internal.requests.Requester;
@@ -963,6 +964,8 @@ public interface Message extends ISnowflake, Formattable
      *         If this is a system message
      *
      * @return Immutable list of all MessageReactions on this message.
+     *
+     * @see net.dv8tion.jda.api.entities.MessageReaction
      */
     @Nonnull
     List<MessageReaction> getReactions();
@@ -2314,6 +2317,9 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return The {@link net.dv8tion.jda.api.entities.MessageReaction MessageReaction} of this message or null if not present.
      *
+     * @see #getReactionById(long)
+     * @see net.dv8tion.jda.api.entities.MessageReaction
+     *
      * @since  4.1.0
      */
     @Nullable
@@ -2338,11 +2344,18 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return The {@link net.dv8tion.jda.api.entities.MessageReaction MessageReaction} of this message or null if not present.
      *
+     * @see #getReactionById(long)
+     * @see #getReactionByUnicode(String)
+     * @see net.dv8tion.jda.api.entities.MessageReaction
+     *
      * @since  4.1.0
      */
     @Nullable
     @CheckReturnValue
-    MessageReaction getReactionById(@Nonnull String id);
+    default MessageReaction getReactionById(@Nonnull String id)
+    {
+        return getReactionById(MiscUtil.parseSnowflake(id));
+    }
 
     /**
      * This obtains the {@link net.dv8tion.jda.api.entities.MessageReaction MessageReaction} for the given reaction id on this message.
@@ -2359,6 +2372,10 @@ public interface Message extends ISnowflake, Formattable
      *         If this is a system message
      *
      * @return The {@link net.dv8tion.jda.api.entities.MessageReaction MessageReaction} of this message or null if not present.
+     *
+     * @see #getReactionById(String)
+     * @see #getReactionByUnicode(String)
+     * @see net.dv8tion.jda.api.entities.MessageReaction
      *
      * @since  4.1.0
      */

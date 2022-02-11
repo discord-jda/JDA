@@ -569,13 +569,6 @@ public abstract class AbstractMessage implements Message
     }
 
     @Override
-    public MessageReaction getReactionById(@Nonnull String id)
-    {
-        unsupported();
-        return null;
-    }
-
-    @Override
     public MessageReaction getReactionById(long id)
     {
         unsupported();

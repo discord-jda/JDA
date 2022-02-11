@@ -315,12 +315,6 @@ public class ReceivedMessage extends AbstractMessage
     }
 
     @Override
-    public MessageReaction getReactionById(@Nonnull String id)
-    {
-        return getReactionById(MiscUtil.parseSnowflake(id));
-    }
-
-    @Override
     public MessageReaction getReactionById(long id)
     {
         return this.reactions.stream()
