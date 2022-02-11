@@ -18,6 +18,7 @@ package net.dv8tion.jda.api.interactions.commands;
 
 import gnu.trove.map.TLongObjectMap;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
@@ -293,6 +294,26 @@ public class OptionMapping
             case ATTACHMENT:
                 return data.getLong("value");
         }
+    }
+
+    /**
+     * The int value for this option.
+     * <br>This will be the ID of any resolved entity such as {@link Role} or {@link Member}.
+     *
+     * <p><b>It is highly recommended to assert int values by using {@link OptionData#setRequiredRange(long, long)}</b>
+     *
+     * @throws IllegalStateException
+     *         If this option {@link #getType() type} cannot be converted to a long
+     * @throws NumberFormatException
+     *         If this option is of type {@link OptionType#STRING STRING} and could not be parsed to a valid long value
+     * @throws ArithmeticException
+     *         If the provided integer value cannot fit into a 32bit signed int
+     *
+     * @return The int value
+     */
+    public int getAsInt()
+    {
+        return Math.toIntExact(getAsLong());
     }
 
     /**
