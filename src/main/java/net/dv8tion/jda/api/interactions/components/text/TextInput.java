@@ -50,8 +50,7 @@ public interface TextInput extends ActionComponent
 
     /**
      * The custom id of this TextInput component.
-     *
-     * This is used to uniquely identify the modal. Similar to {@link net.dv8tion.jda.api.interactions.components.buttons.Button Buttons}.
+     * <p>This is used to uniquely identify the modal. Similar to {@link net.dv8tion.jda.api.interactions.components.buttons.Button Buttons}.
      *
      * @return The custom id of this component.
      */
@@ -183,7 +182,8 @@ public interface TextInput extends ActionComponent
          *
          * <b>This has to be between 0 and {@value #TEXT_INPUT_MAX_LENGTH}</b>
          *
-         * @param minLength The minimum amount of characters that need to be written
+         * @param  minLength
+         *         The minimum amount of characters that need to be written
          *
          * @throws IllegalArgumentException
          *         If minLength is negative or greater than {@value #TEXT_INPUT_MAX_LENGTH}
