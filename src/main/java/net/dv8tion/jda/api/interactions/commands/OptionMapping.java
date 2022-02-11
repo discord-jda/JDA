@@ -221,6 +221,25 @@ public class OptionMapping
     }
 
     /**
+     * The file uploaded for this option.
+     * <br>This is represented as an {@link Message.Attachment#isEphemeral() ephemeral} attachment which will only be hosted for up to 2 weeks.
+     * If you want a permanent reference, you must download it.
+     *
+     * @throws IllegalStateException
+     *         If this option {@link #getType() type} is not {@link OptionType#ATTACHMENT}
+     *
+     * @return {@link net.dv8tion.jda.api.entities.Message.Attachment Attachment}
+     */
+    @Nonnull
+    public Message.Attachment getAsAttachment()
+    {
+        Object obj = resolved.get(getAsLong());
+        if (obj instanceof Message.Attachment)
+            return (Message.Attachment) obj;
+        throw new IllegalStateException("Cannot resolve option of type " + type + " to Attachment!");
+    }
+
+    /**
      * The String representation of this option value.
      * <br>This will automatically convert the value to a string if the type is not {@link OptionType#STRING OptionType.STRING}.
      * <br>This will be the ID of any resolved entity such as {@link Role} or {@link Member}.
@@ -271,6 +290,7 @@ public class OptionMapping
             case ROLE:
             case USER:
             case INTEGER:
+            case ATTACHMENT:
                 return data.getLong("value");
         }
     }
