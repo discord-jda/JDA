@@ -103,7 +103,7 @@ public class CommandInteractionPayloadImpl extends InteractionImpl implements Co
             attachments.keys().forEach(id -> {
                 DataObject json = attachments.getObject(id);
                 Message.Attachment file = entityBuilder.createMessageAttachment(json);
-                resolveJson.put(id, file);
+                resolved.put(file.getIdLong(), file);
             })
         );
 
