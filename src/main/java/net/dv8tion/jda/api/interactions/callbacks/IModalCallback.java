@@ -53,7 +53,7 @@ public interface IModalCallback extends IDeferrableCallback
         Route.CompiledRoute route = Route.Interactions.CALLBACK.compile(getId(), getToken());
         DataObject object = DataObject.empty()
                 .put("type", InteractionCallbackAction.ResponseType.MODAL.getRaw())
-                .put("data", modal.toData());
+                .put("data", modal);
 
         return new RestActionImpl<>(getJDA(), route, object, ((response, voidRequest) -> null));
     }
