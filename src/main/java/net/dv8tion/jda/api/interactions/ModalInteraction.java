@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.interactions;
 
+import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback;
 import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback;
 import net.dv8tion.jda.api.interactions.modals.ModalMapping;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -29,7 +30,7 @@ import java.util.List;
  *
  * @see net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
  */
-public interface ModalInteraction extends IReplyCallback
+public interface ModalInteraction extends IReplyCallback, IMessageEditCallback
 {
     /**
      * Returns the custom id of the Modal in question

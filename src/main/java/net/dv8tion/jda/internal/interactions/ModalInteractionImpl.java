@@ -18,10 +18,12 @@ package net.dv8tion.jda.internal.interactions;
 
 import net.dv8tion.jda.api.interactions.ModalInteraction;
 import net.dv8tion.jda.api.interactions.modals.ModalMapping;
+import net.dv8tion.jda.api.requests.restaction.interactions.MessageEditCallbackAction;
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
+import net.dv8tion.jda.internal.requests.restaction.interactions.MessageEditCallbackActionImpl;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
@@ -67,5 +69,12 @@ public class ModalInteractionImpl extends DeferrableInteractionImpl implements M
     public ReplyCallbackAction deferReply()
     {
         return deferReply(false);
+    }
+
+    @NotNull
+    @Override
+    public MessageEditCallbackAction deferEdit()
+    {
+        return new MessageEditCallbackActionImpl(hook);
     }
 }

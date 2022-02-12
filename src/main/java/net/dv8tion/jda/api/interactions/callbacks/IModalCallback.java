@@ -17,11 +17,8 @@
 package net.dv8tion.jda.api.interactions.callbacks;
 
 import net.dv8tion.jda.api.interactions.components.text.Modal;
-import net.dv8tion.jda.api.requests.RestAction;
-import net.dv8tion.jda.api.requests.restaction.interactions.InteractionCallbackAction;
-import net.dv8tion.jda.api.utils.data.DataObject;
-import net.dv8tion.jda.internal.requests.RestActionImpl;
-import net.dv8tion.jda.internal.requests.Route;
+import net.dv8tion.jda.api.requests.restaction.interactions.ModalCallbackAction;
+import net.dv8tion.jda.internal.requests.restaction.interactions.ModalCallbackActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.CheckReturnValue;
@@ -29,32 +26,34 @@ import javax.annotation.Nonnull;
 
 /**
  * Interactions which allow sending modals.
+ *
+ * <p>Sending a modal using {@link #replyModal(Modal)} will automatically acknowledge this interaction.
  */
 public interface IModalCallback extends IDeferrableCallback
 {
     /**
-     * Replies to this interaction with a {@link Modal Modal}.
+     * Acknowledgement of this interaction with a {@link Modal Modal}.
      *
      * <p>This will open a popup on the target user's Discord client.
+     *
+     * <p><b>You can only use this once per interaction!</b>
+     *
+     * <br>When the acknowledgement is sent after the interaction expired, you will receive {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_INTERACTION ErrorResponse.UNKNOWN_INTERACTION}.
      *
      * @param  modal 
      *         The Modal to send
      *
      * @throws IllegalArgumentException
-     *         If modal is null
+     *         If the provided modal is null
      *        
-     * @return RestAction - Type: {@link Void}
+     * @return ModalCallbackAction
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<Void> replyModal(Modal modal)
+    default ModalCallbackAction replyModal(@Nonnull Modal modal)
     {
         Checks.notNull(modal, "Modal");
-        Route.CompiledRoute route = Route.Interactions.CALLBACK.compile(getId(), getToken());
-        DataObject object = DataObject.empty()
-                .put("type", InteractionCallbackAction.ResponseType.MODAL.getRaw())
-                .put("data", modal);
 
-        return new RestActionImpl<>(getJDA(), route, object, ((response, voidRequest) -> null));
+        return new ModalCallbackActionImpl(getHook(), modal);
     }
 }

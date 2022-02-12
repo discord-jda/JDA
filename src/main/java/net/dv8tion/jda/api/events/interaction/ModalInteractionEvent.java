@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.ModalInteraction;
 import net.dv8tion.jda.api.interactions.modals.ModalMapping;
+import net.dv8tion.jda.api.requests.restaction.interactions.MessageEditCallbackAction;
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction;
 import net.dv8tion.jda.internal.interactions.InteractionHookImpl;
 import net.dv8tion.jda.internal.requests.restaction.interactions.ReplyCallbackActionImpl;
@@ -80,5 +81,12 @@ public class ModalInteractionEvent extends GenericInteractionCreateEvent impleme
     public InteractionHook getHook()
     {
         return interaction.getHook();
+    }
+
+    @NotNull
+    @Override
+    public MessageEditCallbackAction deferEdit()
+    {
+        return interaction.deferEdit();
     }
 }

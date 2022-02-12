@@ -168,7 +168,7 @@ public interface Modal extends SerializableData
          * @return The same builder instance for chaining
          */
         @Nonnull
-        public Builder setTitle(String title)
+        public Builder setTitle(@Nonnull String title)
         {
             Checks.notBlank(title, "Title");
             this.title = title;
@@ -221,7 +221,7 @@ public interface Modal extends SerializableData
          * @return Same builder for chaining convenience
          */
         @Nonnull
-        public Builder addActionRow(Collection<? extends ItemComponent> components)
+        public Builder addActionRow(@Nonnull Collection<? extends ItemComponent> components)
         {
             return addActionRows(ActionRow.of(components));
         }
@@ -234,7 +234,7 @@ public interface Modal extends SerializableData
          * @return Same builder for chaining convenience
          */
         @Nonnull
-        public Builder addActionRow(ItemComponent... components)
+        public Builder addActionRow(@Nonnull ItemComponent... components)
         {
             return addActionRows(ActionRow.of(components));
         }
