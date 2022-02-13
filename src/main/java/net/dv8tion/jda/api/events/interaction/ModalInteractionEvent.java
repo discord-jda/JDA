@@ -24,7 +24,6 @@ import net.dv8tion.jda.api.requests.restaction.interactions.MessageEditCallbackA
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction;
 import net.dv8tion.jda.internal.interactions.InteractionHookImpl;
 import net.dv8tion.jda.internal.requests.restaction.interactions.ReplyCallbackActionImpl;
-import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -69,21 +68,21 @@ public class ModalInteractionEvent extends GenericInteractionCreateEvent impleme
         return interaction.getValues();
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public ReplyCallbackAction deferReply()
     {
         return new ReplyCallbackActionImpl((InteractionHookImpl) getHook());
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public InteractionHook getHook()
     {
         return interaction.getHook();
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public MessageEditCallbackAction deferEdit()
     {
