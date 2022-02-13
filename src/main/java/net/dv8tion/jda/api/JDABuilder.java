@@ -29,6 +29,7 @@ import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.managers.PresenceImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.IOUtil;
+import net.dv8tion.jda.internal.utils.InvalidTokenException;
 import net.dv8tion.jda.internal.utils.config.AuthorizationConfig;
 import net.dv8tion.jda.internal.utils.config.MetaConfig;
 import net.dv8tion.jda.internal.utils.config.SessionConfig;
@@ -1739,7 +1740,7 @@ public class JDABuilder
      * {@link net.dv8tion.jda.api.hooks.EventListener EventListener} to listen for the
      * {@link net.dv8tion.jda.api.events.ReadyEvent ReadyEvent}.
      *
-     * @
+     * @throws InvalidTokenException
      *         If the provided token is invalid.
      * @throws IllegalArgumentException
      *         If the provided token is empty or null. Or the provided intents/cache configuration is not possible.

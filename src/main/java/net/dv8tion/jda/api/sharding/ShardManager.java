@@ -23,7 +23,6 @@ import net.dv8tion.jda.api.entities.channel.IGuildChannelContainer;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.requests.RestAction;
-import net.dv8tion.jda.internal.utils.InvalidTokenException;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.cache.CacheView;
 import net.dv8tion.jda.api.utils.cache.ShardCacheView;
@@ -33,6 +32,7 @@ import net.dv8tion.jda.internal.requests.CompletedRestAction;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.InvalidTokenException;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -1156,7 +1156,7 @@ public interface ShardManager extends IGuildChannelContainer
     /**
      * Initializes and starts all shards. This should only be called once.
      *
-     * @
+     * @throws InvalidTokenException
      *         If the provided token is invalid.
      */
     void login() ;
