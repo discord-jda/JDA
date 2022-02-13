@@ -15,7 +15,6 @@
  */
 package net.dv8tion.jda.api.utils;
 
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
@@ -30,9 +29,9 @@ public class ImageProxy extends FileProxy
     private final String id;
     private final String extension;
 
-    public ImageProxy(JDA jda, String url, String id, String extension)
+    public ImageProxy(String url, String id, String extension)
     {
-        super(jda, url);
+        super(url);
 
         Checks.notNull(id, "ID");
         Checks.notNull(extension, "Extension");

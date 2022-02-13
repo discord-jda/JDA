@@ -15,7 +15,6 @@
  */
 package net.dv8tion.jda.api.utils;
 
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.exceptions.HttpException;
 import net.dv8tion.jda.internal.requests.FunctionalCallback;
 import net.dv8tion.jda.internal.requests.Requester;
@@ -42,16 +41,13 @@ public class FileProxy
 {
     private static volatile OkHttpClient defaultHttpClient;
 
-    private final JDA jda;
     private final String url;
     private OkHttpClient customHttpClient;
 
-    public FileProxy(@Nonnull JDA jda, @Nonnull String url)
+    public FileProxy(@Nonnull String url)
     {
-        Checks.notNull(jda, "JDA");
         Checks.notNull(url, "URL");
 
-        this.jda = jda;
         this.url = url;
     }
 
@@ -66,13 +62,6 @@ public class FileProxy
         Checks.notNull(httpClient, "Default OkHttpClient");
 
         FileProxy.defaultHttpClient = httpClient;
-    }
-
-    //TODO docs
-    @Nonnull
-    public JDA getJDA()
-    {
-        return jda;
     }
 
     //TODO docs

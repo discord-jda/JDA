@@ -343,7 +343,7 @@ public interface User extends IMentionable
             final String bannerUrl = String.format(BANNER_URL, Long.toUnsignedString(userId), bannerId, extension);
             if (bannerUrl == null) return null;
 
-            return new ImageProxy(getJDA(), bannerUrl, bannerId, extension);
+            return new ImageProxy(bannerUrl, bannerId, extension);
         }
 
         /**

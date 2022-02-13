@@ -69,7 +69,7 @@ public class GuildUpdateBannerEvent extends GenericGuildUpdateEvent<String>
 
         final String newBannerUrl = String.format(Guild.BANNER_URL, guild.getId(), next);
 
-        return new ImageProxy(getJDA(), newBannerUrl, next, "png");
+        return new ImageProxy(newBannerUrl, next, "png");
     }
 
     /**
@@ -102,6 +102,6 @@ public class GuildUpdateBannerEvent extends GenericGuildUpdateEvent<String>
 
         final String oldBannerUrl = String.format(Guild.BANNER_URL, guild.getId(), previous);
 
-        return new ImageProxy(getJDA(), oldBannerUrl, previous, "png");
+        return new ImageProxy(oldBannerUrl, previous, "png");
     }
 }

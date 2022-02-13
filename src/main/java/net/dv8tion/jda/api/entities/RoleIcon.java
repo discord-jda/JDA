@@ -86,7 +86,7 @@ public class RoleIcon
 
         final String iconUrl = String.format(ICON_URL, roleId, iconId);
 
-        return new ImageProxy(getJDA(), iconUrl, iconId, "png");
+        return new ImageProxy(iconUrl, iconId, "png");
     }
 
     /**

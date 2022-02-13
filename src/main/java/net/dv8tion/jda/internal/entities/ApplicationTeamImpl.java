@@ -62,7 +62,7 @@ public class ApplicationTeamImpl implements ApplicationTeam
 
         final String iconUrl = String.format(ICON_URL, getId(), iconId);
 
-        return new ImageProxy(getJDA(), iconUrl, iconId, "png");
+        return new ImageProxy(iconUrl, iconId, "png");
     }
 
 	@Nonnull

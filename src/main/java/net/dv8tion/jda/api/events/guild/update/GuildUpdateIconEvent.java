@@ -70,7 +70,7 @@ public class GuildUpdateIconEvent extends GenericGuildUpdateEvent<String>
         final String extension = previous.startsWith("a_") ? "gif" : "png";
         final String oldIconUrl = String.format(Guild.ICON_URL, guild.getId(), previous, extension);
 
-        return new ImageProxy(getJDA(), oldIconUrl, previous, extension);
+        return new ImageProxy(oldIconUrl, previous, extension);
     }
 
     /**
@@ -104,6 +104,6 @@ public class GuildUpdateIconEvent extends GenericGuildUpdateEvent<String>
         final String extension = next.startsWith("a_") ? "gif" : "png";
         final String newIconUrl = String.format(Guild.ICON_URL, guild.getId(), next, extension);
 
-        return new ImageProxy(getJDA(), newIconUrl, next, extension);
+        return new ImageProxy(newIconUrl, next, extension);
     }
 }

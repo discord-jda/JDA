@@ -188,7 +188,7 @@ public class MemberImpl implements Member
         final String avatarUrl = String.format(AVATAR_URL, getGuild().getId(), getId(), avatarId, extension);
         if (avatarUrl == null) return null;
 
-        return new ImageProxy(getJDA(), avatarUrl, avatarId, extension);
+        return new ImageProxy(avatarUrl, avatarId, extension);
     }
 
     @Nonnull

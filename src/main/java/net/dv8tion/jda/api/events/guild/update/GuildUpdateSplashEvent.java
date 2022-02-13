@@ -69,7 +69,7 @@ public class GuildUpdateSplashEvent extends GenericGuildUpdateEvent<String>
 
         final String oldSplashUrl = String.format(Guild.SPLASH_URL, guild.getId(), previous);
 
-        return new ImageProxy(getJDA(), oldSplashUrl, previous, "png");
+        return new ImageProxy(oldSplashUrl, previous, "png");
     }
 
     /**
@@ -102,6 +102,6 @@ public class GuildUpdateSplashEvent extends GenericGuildUpdateEvent<String>
 
         final String newSplashUrl = String.format(Guild.SPLASH_URL, guild.getId(), next);
 
-        return new ImageProxy(getJDA(), newSplashUrl, next, "png");
+        return new ImageProxy(newSplashUrl, next, "png");
     }
 }

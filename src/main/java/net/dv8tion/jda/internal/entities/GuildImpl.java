@@ -38,7 +38,6 @@ import net.dv8tion.jda.api.requests.restaction.order.ChannelOrderAction;
 import net.dv8tion.jda.api.requests.restaction.order.RoleOrderAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.AuditLogPaginationAction;
 import net.dv8tion.jda.api.utils.ImageProxy;
-import net.dv8tion.jda.api.utils.TimeUtil;
 import net.dv8tion.jda.api.utils.cache.*;
 import net.dv8tion.jda.api.utils.concurrent.Task;
 import net.dv8tion.jda.api.utils.data.DataArray;
@@ -361,7 +360,7 @@ public class GuildImpl implements Guild
         final String extension = iconId.startsWith("a_") ? "gif" : "png";
         final String iconUrl = String.format(ICON_URL, getId(), iconId, extension);
 
-        return new ImageProxy(getJDA(), iconUrl, iconId, extension);
+        return new ImageProxy(iconUrl, iconId, extension);
     }
 
     @Nonnull
@@ -385,7 +384,7 @@ public class GuildImpl implements Guild
 
         final String splashUrl = String.format(SPLASH_URL, getId(), splashId);
 
-        return new ImageProxy(getJDA(), splashUrl, splashUrl, splashId);
+        return new ImageProxy(splashUrl, splashUrl, splashId);
     }
 
     @Nullable
@@ -434,7 +433,7 @@ public class GuildImpl implements Guild
         final String bannerUrl = String.format(BANNER_URL, getId(), banner);
         if (bannerUrl == null) return null;
 
-        return new ImageProxy(getJDA(), bannerUrl, banner, "png");
+        return new ImageProxy(bannerUrl, banner, "png");
     }
 
     @Nonnull
