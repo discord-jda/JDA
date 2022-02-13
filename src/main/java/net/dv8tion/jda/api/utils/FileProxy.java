@@ -40,8 +40,11 @@ import java.util.concurrent.CompletableFuture;
 //TODO docs
 public class FileProxy
 {
+    private static volatile OkHttpClient defaultHttpClient;
+
     private final JDA jda;
     private final String url;
+    private OkHttpClient customHttpClient;
 
     public FileProxy(@Nonnull JDA jda, @Nonnull String url)
     {
@@ -50,6 +53,19 @@ public class FileProxy
 
         this.jda = jda;
         this.url = url;
+    }
+
+    /**
+     * Sets the default OkHttpClient used by {@link FileProxy} and {@link ImageProxy}
+     * <br>This can still be overridden on a per-instance basis with {@link #withClient(OkHttpClient)}
+     *
+     * @param httpClient The default {@link OkHttpClient} to use while making HTTP requests
+     */
+    public static void setHttpClient(@Nonnull OkHttpClient httpClient)
+    {
+        Checks.notNull(httpClient, "Default OkHttpClient");
+
+        FileProxy.defaultHttpClient = httpClient;
     }
 
     //TODO docs
@@ -66,8 +82,47 @@ public class FileProxy
         return url;
     }
 
+    /**
+     * Sets the custom OkHttpClient used by this instance, regardless of if {@link #setHttpClient(OkHttpClient)} has been used or not
+     *
+     * @param customHttpClient The custom {@link OkHttpClient} to use while making HTTP requests
+     *
+     * @return This proxy for chaining convenience
+     */
+    @Nonnull
+    public FileProxy withClient(@Nonnull OkHttpClient customHttpClient)
+    {
+        Checks.notNull(customHttpClient, "Custom HTTP client");
+
+        this.customHttpClient = customHttpClient;
+
+        return this;
+    }
+
 
     // INTERNAL DOWNLOAD METHODS
+
+    protected OkHttpClient getHttpClient() {
+        // Return custom HTTP client if set
+        if (customHttpClient != null)
+        {
+            return customHttpClient;
+        }
+
+        // Otherwise, see if a default one has been assigned
+        //  If there is no client then create a default one
+        if (defaultHttpClient == null)
+        {
+            synchronized (this) {
+                if (defaultHttpClient == null)
+                {
+                    defaultHttpClient = new OkHttpClient();
+                }
+            }
+        }
+
+        return defaultHttpClient;
+    }
 
     protected Request getRequest(String url)
     {
@@ -82,7 +137,7 @@ public class FileProxy
     {
         CompletableFuture<InputStream> future = new CompletableFuture<>();
         Request req = getRequest(url);
-        OkHttpClient httpClient = getJDA().getHttpClient();
+        OkHttpClient httpClient = getHttpClient();
         httpClient.newCall(req).enqueue(FunctionalCallback
                 .onFailure((call, e) -> future.completeExceptionally(new UncheckedIOException(e)))
                 .onSuccess((call, response) ->
