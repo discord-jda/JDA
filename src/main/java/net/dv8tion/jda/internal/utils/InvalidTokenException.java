@@ -44,12 +44,4 @@ public class InvalidTokenException extends RuntimeException
         super(message);
     }
 
-    
-
-    public InvalidTokenException(String message, Throwable rootCause)
-    {
-        super(message, rootCause);
-    }
-
-
 }
