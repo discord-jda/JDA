@@ -16,6 +16,7 @@
 package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.utils.AttachmentProxy;
 import net.dv8tion.jda.api.utils.ImageProxy;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
@@ -527,7 +528,15 @@ public class MessageEmbed implements SerializableData
             return url;
         }
 
-        //TODO AttachmentProxy
+        //TODO docs
+        @Nullable
+        public AttachmentProxy get()
+        {
+            final String url = getUrl();
+            if (url == null) return null;
+
+            return new AttachmentProxy(url);
+        }
 
         /**
          * The Discord proxied url of the thumbnail image.
@@ -539,6 +548,16 @@ public class MessageEmbed implements SerializableData
         public String getProxyUrl()
         {
             return proxyUrl;
+        }
+
+        //TODO docs
+        @Nullable
+        public AttachmentProxy getProxy()
+        {
+            final String proxyUrl = getProxyUrl();
+            if (proxyUrl == null) return null;
+
+            return new AttachmentProxy(proxyUrl);
         }
 
         /**
@@ -653,8 +672,6 @@ public class MessageEmbed implements SerializableData
             return url;
         }
 
-        //TODO AttachmentProxy - Not sure if the URL is actually a downloadable video
-
         /**
          * The width of the video.
          * <br>This usually isn't the actual video width, but instead the starting embed window size.
@@ -723,7 +740,15 @@ public class MessageEmbed implements SerializableData
             return url;
         }
 
-        //TODO AttachmentProxy
+        //TODO docs
+        @Nullable
+        public AttachmentProxy get()
+        {
+            final String url = getUrl();
+            if (url == null) return null;
+
+            return new AttachmentProxy(url);
+        }
 
         /**
          * The url of the image, proxied by Discord
@@ -735,6 +760,16 @@ public class MessageEmbed implements SerializableData
         public String getProxyUrl()
         {
             return proxyUrl;
+        }
+
+        //TODO docs
+        @Nullable
+        public AttachmentProxy getProxy()
+        {
+            final String proxyUrl = getProxyUrl();
+            if (proxyUrl == null) return null;
+
+            return new AttachmentProxy(proxyUrl);
         }
 
         /**

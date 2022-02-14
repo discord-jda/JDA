@@ -29,6 +29,7 @@ import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationAction;
 import net.dv8tion.jda.api.utils.AttachmentOption;
+import net.dv8tion.jda.api.utils.AttachmentProxy;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.requests.FunctionalCallback;
 import net.dv8tion.jda.internal.requests.Requester;
@@ -2749,7 +2750,12 @@ public interface Message extends ISnowflake, Formattable
             return url;
         }
 
-        //TODO AttachmentProxy
+        //TODO docs
+        @Nonnull
+        public AttachmentProxy get()
+        {
+            return new AttachmentProxy(getUrl());
+        }
 
         /**
          * Url to the resource proxied by the Discord CDN.
@@ -2760,6 +2766,13 @@ public interface Message extends ISnowflake, Formattable
         public String getProxyUrl()
         {
             return proxyUrl;
+        }
+
+        //TODO docs
+        @Nonnull
+        public AttachmentProxy getProxy()
+        {
+            return new AttachmentProxy(getProxyUrl());
         }
 
         /**
