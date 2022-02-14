@@ -653,7 +653,6 @@ public interface Guild extends ISnowflake
     @Nonnull
     String getName();
 
-    
     /**
      * The Discord hash-id of the {@link net.dv8tion.jda.api.entities.Guild Guild} icon image.
      * If no icon has been set, this returns {@code null}.
@@ -664,7 +663,6 @@ public interface Guild extends ISnowflake
      */
     @Nullable
     String getIconId();
-
     
     /**
      * The URL of the {@link net.dv8tion.jda.api.entities.Guild Guild} icon image.
@@ -700,7 +698,6 @@ public interface Guild extends ISnowflake
     @Nonnull
     Set<String> getFeatures();
 
-    
     /**
      * The Discord hash-id of the splash image for this Guild. A Splash image is an image displayed when viewing a
      * Discord Guild Invite on the web or in client just before accepting or declining the invite.
@@ -714,7 +711,6 @@ public interface Guild extends ISnowflake
     @Nullable
     String getSplashId();
 
-    
     /**
      * The URL of the splash image for this Guild. A Splash image is an image displayed when viewing a
      * Discord Guild Invite on the web or in client just before accepting or declining the invite.
@@ -834,7 +830,7 @@ public interface Guild extends ISnowflake
      *
      * @see    #getBannerUrl()
      */
-    @Nullable 
+    @Nullable
     String getBannerId();
 
     /**
@@ -847,7 +843,7 @@ public interface Guild extends ISnowflake
      *
      * @since  4.0.0
      */
-    @Nullable 
+    @Nullable
     default String getBannerUrl()
     {
         String bannerId = getBannerId();

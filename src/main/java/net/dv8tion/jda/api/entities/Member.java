@@ -244,7 +244,7 @@ public interface Member extends IMentionable, IPermissionHolder
      *
      * @return Possibly-null String containing the {@link net.dv8tion.jda.api.entities.Member} per guild avatar id.
      */
-    @Nullable 
+    @Nullable
     String getAvatarId();
 
     /**
@@ -253,7 +253,7 @@ public interface Member extends IMentionable, IPermissionHolder
      *
      * @return Possibly-null String containing the {@link net.dv8tion.jda.api.entities.Member} per guild avatar url.
      */
-    @Nullable 
+    @Nullable
     default String getAvatarUrl()
     {
         String avatarId = getAvatarId();

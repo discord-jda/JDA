@@ -362,7 +362,7 @@ public interface Invite
          *
          * @see    #getIconUrl()
          */
-        @Nullable 
+        @Nullable
         String getIconId();
 
         /**
@@ -372,7 +372,7 @@ public interface Invite
          *
          * @see    #getIconId()
          */
-        @Nullable 
+        @Nullable
         String getIconUrl();
 
         /**
@@ -390,7 +390,7 @@ public interface Invite
          *
          * @see    #getSplashUrl()
          */
-        @Nullable 
+        @Nullable
         String getSplashId();
 
         /**
@@ -400,7 +400,7 @@ public interface Invite
          *
          * @see    #getSplashId()
          */
-        @Nullable 
+        @Nullable
         String getSplashUrl();
 
         //TODO docs
@@ -457,10 +457,6 @@ public interface Invite
          */
         @Nonnull
         Set<String> getFeatures();
-
-        //TODO docs
-        @Nonnull
-        JDA getJDA();
     }
 
     /**
@@ -477,7 +473,7 @@ public interface Invite
          *
          * @see    #getIconUrl()
          */
-        @Nullable 
+        @Nullable
         String getIconId();
 
         /**
@@ -487,7 +483,7 @@ public interface Invite
          *
          * @see    #getIconId()
          */
-        @Nullable 
+        @Nullable
         String getIconUrl();
 
         @Nullable
@@ -517,10 +513,6 @@ public interface Invite
          */
         @Nullable
         List<String> getUsers();
-
-        //TODO docs
-        @Nonnull
-        JDA getJDA();
     }
 
     /**
@@ -619,7 +611,7 @@ public interface Invite
          *
          * @see    #getIconUrl()
          */
-        @Nullable 
+        @Nullable
         String getIconId();
 
         /**
@@ -629,7 +621,7 @@ public interface Invite
          *
          * @see    #getIconId()
          */
-        @Nullable 
+        @Nullable
         String getIconUrl();
 
         //TODO docs
@@ -648,10 +640,6 @@ public interface Invite
          * @return {@code -1} if this application does not have a max participant count
          */
         int getMaxParticipants();
-
-        //TODO docs
-        @Nonnull
-        JDA getJDA();
     }
 
     /**

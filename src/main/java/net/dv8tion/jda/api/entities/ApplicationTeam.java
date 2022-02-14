@@ -16,7 +16,6 @@
 
 package net.dv8tion.jda.api.entities;
 
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.utils.ImageProxy;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -73,7 +72,7 @@ public interface ApplicationTeam extends ISnowflake
      *
      * @see    #getIconUrl()
      */
-    @Nullable 
+    @Nullable
     String getIconId();
 
     /**
@@ -81,7 +80,7 @@ public interface ApplicationTeam extends ISnowflake
      *
      * @return The icon url, or null if no icon is applied
      */
-    @Nullable 
+    @Nullable
     default String getIconUrl()
     {
         String iconId = getIconId();
@@ -176,8 +175,4 @@ public interface ApplicationTeam extends ISnowflake
         }
         return null;
     }
-
-    //TODO docs
-    @Nonnull
-    JDA getJDA();
 }
