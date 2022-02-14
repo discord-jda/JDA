@@ -20,6 +20,7 @@ import net.dv8tion.jda.internal.requests.FunctionalCallback;
 import net.dv8tion.jda.internal.requests.Requester;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.IOUtil;
+import okhttp3.Call;
 import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -124,10 +125,45 @@ public class FileProxy
 
     protected CompletableFuture<InputStream> download(String url)
     {
-        CompletableFuture<InputStream> future = new CompletableFuture<>();
-        Request req = getRequest(url);
-        OkHttpClient httpClient = getHttpClient();
-        httpClient.newCall(req).enqueue(FunctionalCallback
+        final CompletableFuture<InputStream> downloadFuture = new CompletableFuture<>();
+
+        // We need to apply a pattern of CompletableFuture as shown here https://discord.com/channels/125227483518861312/942488867167146005/942492134446088203
+        // This CompletableFuture is going to be passed to the user / other proxy methods and must not be overridden with other "completion stages" (see CF#exceptionally return type)
+        // This is done in order to make cancelling these downloads actually cancel all the tasks that depends on the previous ones.
+        //    If we did not do this, CF#cancel would have only cancelled the *last* CompletableFuture, so the download would still have occurred for example
+        // So since we return a completely different future, we need to use #complete / #completeExceptionally manually,
+        //     i.e. When the underlying CompletableFuture (the actual download task) has completed in any state
+        final DownloadTask downloadTask = downloadInternal(url);
+
+        downloadTask.getFuture()
+                .thenAccept(downloadFuture::complete) //Pass data directly, no processing is required
+                .exceptionally(throwable ->
+                {
+                    downloadFuture.completeExceptionally(throwable);
+
+                    return null;
+                });
+
+        downloadFuture.whenComplete((p, throwable) ->
+        {
+            if (downloadFuture.isCancelled())
+            {
+                downloadTask.cancelCall();
+            }
+        });
+
+        return downloadFuture;
+    }
+
+    private DownloadTask downloadInternal(String url)
+    {
+        final CompletableFuture<InputStream> future = new CompletableFuture<>();
+
+        final Request req = getRequest(url);
+        final OkHttpClient httpClient = getHttpClient();
+        final Call newCall = httpClient.newCall(req);
+
+        newCall.enqueue(FunctionalCallback
                 .onFailure((call, e) -> future.completeExceptionally(new UncheckedIOException(e)))
                 .onSuccess((call, response) ->
                 {
@@ -143,12 +179,13 @@ public class FileProxy
                         IOUtil.silentClose(response);
                     }
                 }).build());
-        return future;
+
+        return new DownloadTask(newCall, future);
     }
 
     protected CompletableFuture<Path> downloadToPath(String url)
     {
-        final HttpUrl parsedUrl = HttpUrl.parse(url);
+        final HttpUrl parsedUrl = HttpUrl.parse(url); //TODO should we allow other schemes than http and https ?
         if (parsedUrl == null)
         {
             final CompletableFuture<Path> future = new CompletableFuture<>();
@@ -165,14 +202,17 @@ public class FileProxy
     }
 
     protected CompletableFuture<Path> downloadToPath(String url, Path path) {
+        final CompletableFuture<Path> downloadToPathFuture = new CompletableFuture<>();
+
         //Check if the parent path, the folder, exists
         if (Files.notExists(path.getParent()))
         {
             throw new IllegalArgumentException("Parent folder of the file '" + path.toAbsolutePath() + "' does not exist.");
         }
 
+        final DownloadTask downloadTask = downloadInternal(url);
 
-        return download(url).thenApply(stream ->
+        downloadTask.getFuture().thenAccept(stream ->
         {
             try
             {
@@ -182,7 +222,7 @@ public class FileProxy
 
                 Files.move(tmpPath, path, StandardCopyOption.REPLACE_EXISTING);
 
-                return path;
+                downloadToPathFuture.complete(tmpPath);
             }
             catch (IOException e)
             {
@@ -192,7 +232,20 @@ public class FileProxy
             {
                 IOUtil.silentClose(stream);
             }
+        }).exceptionally(throwable -> {
+            downloadToPathFuture.completeExceptionally(throwable);
+
+            return null;
         });
+
+        downloadToPathFuture.whenComplete((p, throwable) -> {
+            if (downloadToPathFuture.isCancelled())
+            {
+                downloadTask.cancelCall();
+            }
+        });
+
+        return downloadToPathFuture;
     }
 
 
@@ -228,5 +281,26 @@ public class FileProxy
         Checks.notNull(path, "Path");
 
         return downloadToPath(url, path);
+    }
+
+    protected static class DownloadTask {
+        private final Call call;
+        private final CompletableFuture<InputStream> future;
+
+        public DownloadTask(Call call, CompletableFuture<InputStream> future)
+        {
+            this.call = call;
+            this.future = future;
+        }
+
+        protected void cancelCall()
+        {
+            call.cancel();
+        }
+
+        protected CompletableFuture<InputStream> getFuture()
+        {
+            return future;
+        }
     }
 }
