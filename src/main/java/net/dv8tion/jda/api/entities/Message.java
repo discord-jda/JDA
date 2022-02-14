@@ -2750,13 +2750,6 @@ public interface Message extends ISnowflake, Formattable
             return url;
         }
 
-        //TODO docs
-        @Nonnull
-        public AttachmentProxy get()
-        {
-            return new AttachmentProxy(getUrl());
-        }
-
         /**
          * Url to the resource proxied by the Discord CDN.
          *

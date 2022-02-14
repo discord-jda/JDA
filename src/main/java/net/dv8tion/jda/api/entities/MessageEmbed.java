@@ -528,16 +528,6 @@ public class MessageEmbed implements SerializableData
             return url;
         }
 
-        //TODO docs
-        @Nullable
-        public AttachmentProxy get()
-        {
-            final String url = getUrl();
-            if (url == null) return null;
-
-            return new AttachmentProxy(url);
-        }
-
         /**
          * The Discord proxied url of the thumbnail image.
          * <br>This url is used to access the image through Discord instead of directly to prevent ip scraping.
@@ -738,16 +728,6 @@ public class MessageEmbed implements SerializableData
         public String getUrl()
         {
             return url;
-        }
-
-        //TODO docs
-        @Nullable
-        public AttachmentProxy get()
-        {
-            final String url = getUrl();
-            if (url == null) return null;
-
-            return new AttachmentProxy(url);
         }
 
         /**
