@@ -37,7 +37,6 @@ import net.dv8tion.jda.api.requests.restaction.order.CategoryOrderAction;
 import net.dv8tion.jda.api.requests.restaction.order.ChannelOrderAction;
 import net.dv8tion.jda.api.requests.restaction.order.RoleOrderAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.AuditLogPaginationAction;
-import net.dv8tion.jda.api.utils.ImageProxy;
 import net.dv8tion.jda.api.utils.cache.*;
 import net.dv8tion.jda.api.utils.concurrent.Task;
 import net.dv8tion.jda.api.utils.data.DataArray;
@@ -352,15 +351,6 @@ public class GuildImpl implements Guild
         return iconId;
     }
 
-    @Override
-    public ImageProxy getIcon()
-    {
-        final String iconUrl = getIconUrl();
-        if (iconUrl == null) return null;
-
-        return new ImageProxy(iconUrl);
-    }
-
     @Nonnull
     @Override
     public Set<String> getFeatures()
@@ -372,16 +362,6 @@ public class GuildImpl implements Guild
     public String getSplashId()
     {
         return splashId;
-    }
-
-    @Override
-    @Nullable
-    public ImageProxy getSplash()
-    {
-        final String splashUrl = getSplashUrl();
-        if (splashUrl == null) return null;
-
-        return new ImageProxy(splashUrl);
     }
 
     @Nullable
@@ -421,16 +401,6 @@ public class GuildImpl implements Guild
     public String getBannerId()
     {
         return banner;
-    }
-
-    @Nullable
-    @Override
-    public ImageProxy getBanner()
-    {
-        final String bannerUrl = getBannerUrl();
-        if (bannerUrl == null) return null;
-
-        return new ImageProxy(bannerUrl);
     }
 
     @Nonnull

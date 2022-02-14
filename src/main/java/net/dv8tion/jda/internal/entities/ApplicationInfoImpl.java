@@ -21,9 +21,7 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.ApplicationInfo;
 import net.dv8tion.jda.api.entities.ApplicationTeam;
 import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.utils.ImageProxy;
 import net.dv8tion.jda.internal.utils.Checks;
-import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;
 import java.util.Collection;
@@ -104,16 +102,7 @@ public class ApplicationInfoImpl implements ApplicationInfo
                 : "https://cdn.discordapp.com/app-icons/" + this.id + '/' + this.iconId + ".png";
     }
 
-	@Nullable
-	@Override
-	public ImageProxy getIcon() {
-        final String iconUrl = getIconUrl();
-        if (iconUrl == null) return null;
-
-        return new ImageProxy(iconUrl);
-    }
-
-	@Nonnull
+    @Nonnull
     @Override
     public ApplicationTeam getTeam()
     {

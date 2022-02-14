@@ -21,7 +21,6 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.PrivateChannel;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.requests.RestAction;
-import net.dv8tion.jda.api.utils.ImageProxy;
 import org.jetbrains.annotations.Contract;
 
 import javax.annotation.Nonnull;
@@ -98,13 +97,6 @@ public class UserById implements User
     @Nullable
     @Override
     public String getAvatarId()
-    {
-        unsupported();
-        return null;
-    }
-
-    @Nonnull
-    public ImageProxy getDefaultAvatar()
     {
         unsupported();
         return null;

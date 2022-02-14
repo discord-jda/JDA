@@ -21,7 +21,6 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
-import net.dv8tion.jda.api.utils.ImageProxy;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.api.utils.cache.CacheView;
 import net.dv8tion.jda.internal.JDAImpl;
@@ -176,16 +175,6 @@ public class MemberImpl implements Member
     public String getAvatarId()
     {
         return avatarId;
-    }
-
-    @Nullable
-    @Override
-    public ImageProxy getAvatar()
-    {
-        final String avatarUrl = getAvatarUrl();
-        if (avatarUrl == null) return null;
-
-        return new ImageProxy(avatarUrl);
     }
 
     @Nonnull

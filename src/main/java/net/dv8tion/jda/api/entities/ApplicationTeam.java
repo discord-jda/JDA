@@ -73,7 +73,7 @@ public interface ApplicationTeam extends ISnowflake
      *
      * @see    #getIconUrl()
      */
-    @Nullable //TODO remove
+    @Nullable 
     String getIconId();
 
     /**
@@ -81,16 +81,20 @@ public interface ApplicationTeam extends ISnowflake
      *
      * @return The icon url, or null if no icon is applied
      */
-    @Nullable //TODO remove
+    @Nullable 
     default String getIconUrl()
     {
         String iconId = getIconId();
         return iconId == null ? null : String.format(ICON_URL, getId(), iconId);
     }
 
-    //TODO docs
     @Nullable
-    ImageProxy getIcon();
+    default ImageProxy getIcon() {
+        final String iconUrl = getIconUrl();
+        if (iconUrl == null) return null;
+
+        return new ImageProxy(iconUrl);
+    }
 
     /**
      * The {@link net.dv8tion.jda.api.entities.TeamMember Team Members}.
