@@ -77,18 +77,6 @@ public class UserImpl extends UserById implements User
         return avatarId;
     }
 
-    @Nullable
-    @Override
-    public ImageProxy getAvatar()
-    {
-        if (avatarId == null) return null;
-
-        final String avatarExtension = avatarId.startsWith("a_") ? "gif" : "png";
-        final String avatarUrl = String.format(AVATAR_URL, getId(), avatarId, avatarExtension);
-
-        return new ImageProxy(avatarUrl);
-    }
-
     @Nonnull
     @Override
     public RestAction<Profile> retrieveProfile()
@@ -101,7 +89,7 @@ public class UserImpl extends UserById implements User
                 String bannerId = json.getString("banner", null);
                 int accentColor = json.getInt("accent_color", User.DEFAULT_ACCENT_COLOR_RAW);
 
-                return new Profile(getJDA(), getIdLong(), bannerId, accentColor);
+                return new Profile(getIdLong(), bannerId, accentColor);
             });
         });
     }

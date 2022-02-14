@@ -79,11 +79,11 @@ public interface User extends IMentionable
      */
     Pattern USER_TAG = Pattern.compile("(.{2,32})#(\\d{4})");
 
-    /** Template for {@link #getAvatar()}. */
+    /** Template for {@link #getAvatarUrl()}. */
     String AVATAR_URL = "https://cdn.discordapp.com/avatars/%s/%s.%s";
-    /** Template for {@link #getDefaultAvatar()} */
+    /** Template for {@link #getDefaultAvatarUrl()} */
     String DEFAULT_AVATAR_URL = "https://cdn.discordapp.com/embed/avatars/%s.png";
-    /** Template for {@link Profile#getBanner()} */
+    /** Template for {@link Profile#getBannerUrl()} */
     String BANNER_URL = "https://cdn.discordapp.com/banners/%s/%s.%s";
 
     /** Used to keep consistency between color values used in the API */
@@ -154,16 +154,91 @@ public interface User extends IMentionable
     @Nonnull
     String getDiscriminator();
 
-    @Nullable //TODO remove
-	String getAvatarId();
-
-	//TODO docs
+    /**
+     * The Discord ID for this user's avatar image.
+     * If the user has not set an image, this will return null.
+     *
+     * @throws UnsupportedOperationException
+     *         If this User was created with {@link #fromId(long)}
+     *
+     * @return Possibly-null String containing the {@link net.dv8tion.jda.api.entities.User User} avatar id.
+     */
     @Nullable
-    ImageProxy getAvatar();
+    String getAvatarId();
+
+    /**
+     * The URL for the user's avatar image.
+     * If the user has not set an image, this will return null.
+     *
+     * @throws UnsupportedOperationException
+     *         If this User was created with {@link #fromId(long)}
+     *
+     * @return Possibly-null String containing the {@link net.dv8tion.jda.api.entities.User User} avatar url.
+     */
+    @Nullable
+    default String getAvatarUrl()
+    {
+        String avatarId = getAvatarId();
+        return avatarId == null ? null : String.format(AVATAR_URL, getId(), avatarId, avatarId.startsWith("a_") ? "gif" : "png");
+    }
+
+    //TODO docs
+    @Nullable
+    default ImageProxy getAvatar()
+    {
+        final String avatarUrl = getAvatarUrl();
+
+        return avatarUrl == null ? null : new ImageProxy(avatarUrl);
+    }
+
+    /**
+     * The Discord ID for this user's default avatar image.
+     *
+     * @throws UnsupportedOperationException
+     *         If this User was created with {@link #fromId(long)}
+     *
+     * @return Never-null String containing the {@link net.dv8tion.jda.api.entities.User User} default avatar id.
+     */
+    @Nonnull
+    String getDefaultAvatarId();
+
+    /**
+     * The URL for the user's default avatar image.
+     *
+     * @throws UnsupportedOperationException
+     *         If this User was created with {@link #fromId(long)}
+     *
+     * @return Never-null String containing the {@link net.dv8tion.jda.api.entities.User User} default avatar url.
+     */
+    @Nonnull
+    default String getDefaultAvatarUrl()
+    {
+        return String.format(DEFAULT_AVATAR_URL, getDefaultAvatarId());
+    }
 
     //TODO docs
     @Nonnull
-    ImageProxy getDefaultAvatar();
+    default ImageProxy getDefaultAvatar()
+    {
+        return new ImageProxy(getDefaultAvatarUrl());
+    }
+
+    /**
+     * The URL for the user's avatar image.
+     * If they do not have an avatar set, this will return the URL of their
+     * default avatar
+     *
+     * @throws UnsupportedOperationException
+     *         If this User was created with {@link #fromId(long)}
+     *
+     * @return  Never-null String containing the {@link net.dv8tion.jda.api.entities.User User} effective avatar url.
+     */
+    @Nonnull
+    default String getEffectiveAvatarUrl()
+    {
+        String avatarUrl = getAvatarUrl();
+        return avatarUrl == null ? getDefaultAvatarUrl() : avatarUrl;
+    }
 
     //TODO docs
     @Nonnull
@@ -320,27 +395,48 @@ public interface User extends IMentionable
      */
     class Profile
     {
-        private final JDA jda;
         private final long userId;
         private final String bannerId;
         private final int accentColor;
 
-        public Profile(JDA jda, long userId, String bannerId, int accentColor)
+        public Profile(long userId, String bannerId, int accentColor)
         {
-            this.jda = jda;
             this.userId = userId;
             this.bannerId = bannerId;
             this.accentColor = accentColor;
+        }
+
+        /**
+         * The Discord Id for this user's banner image.
+         * If the user has not set a banner, this will return null.
+         *
+         * @return Possibly-null String containing the {@link User User} banner id.
+         */
+        @Nullable
+        public String getBannerId()
+        {
+            return bannerId;
+        }
+
+        /**
+         * The URL for the user's banner image.
+         * If the user has not set a banner, this will return null.
+         *
+         * @return Possibly-null String containing the {@link User User} banner url.
+         *
+         * @see User#BANNER_URL
+         */
+        @Nullable
+        public String getBannerUrl()
+        {
+            return bannerId == null ? null : String.format(BANNER_URL, Long.toUnsignedString(userId), bannerId, bannerId.startsWith("a_") ? "gif" : "png");
         }
 
         //TODO docs
         @Nullable
         public ImageProxy getBanner()
         {
-            if (bannerId == null) return null;
-
-            final String extension = bannerId.startsWith("a_") ? "gif" : "png";
-            final String bannerUrl = String.format(BANNER_URL, Long.toUnsignedString(userId), bannerId, extension);
+            final String bannerUrl = getBannerUrl();
             if (bannerUrl == null) return null;
 
             return new ImageProxy(bannerUrl);
@@ -379,13 +475,6 @@ public interface User extends IMentionable
                     ", bannerId='" + bannerId + "'" +
                     ", accentColor=" + accentColor +
                     ')';
-        }
-
-        //TODO docs
-        @Nonnull
-        public JDA getJDA()
-        {
-            return jda;
         }
     }
 

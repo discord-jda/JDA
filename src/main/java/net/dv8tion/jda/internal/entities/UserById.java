@@ -103,14 +103,6 @@ public class UserById implements User
         return null;
     }
 
-    @Nullable
-    @Override
-    public ImageProxy getAvatar()
-    {
-        unsupported();
-        return null;
-    }
-
     @Nonnull
     public ImageProxy getDefaultAvatar()
     {
@@ -128,7 +120,7 @@ public class UserById implements User
 
     @Nonnull
     @Override
-    public ImageProxy getEffectiveAvatar()
+    public String getDefaultAvatarId()
     {
         unsupported();
         return null;
