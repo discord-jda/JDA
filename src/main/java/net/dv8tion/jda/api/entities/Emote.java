@@ -205,7 +205,7 @@ public interface Emote extends IMentionable
         final String extension = isAnimated() ? "gif" : "png";
         final String imageUrl = String.format(ICON_URL, getId(), extension);
 
-        return new ImageProxy(imageUrl, getId(), extension);
+        return new ImageProxy(imageUrl);
     }
 
     /**

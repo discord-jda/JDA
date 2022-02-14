@@ -135,7 +135,7 @@ public class TemplateGuild implements ISnowflake
         final String extension = iconId.startsWith("a_") ? "gif" : "png";
         final String iconUrl = String.format(Guild.ICON_URL, this.id, this.iconId, extension);
 
-        return new ImageProxy(iconUrl, iconId, extension);
+        return new ImageProxy(iconUrl);
     }
 
     /**

@@ -70,7 +70,7 @@ public class SelfUpdateAvatarEvent extends GenericSelfUpdateEvent<String>
         final String extension = previous.startsWith("a_") ? ".gif" : ".png";
         final String oldAvatarUrl = String.format(AVATAR_URL, getSelfUser().getId(), previous, extension);
 
-        return new ImageProxy(oldAvatarUrl, previous, extension);
+        return new ImageProxy(oldAvatarUrl);
     }
 
     /**
@@ -104,6 +104,6 @@ public class SelfUpdateAvatarEvent extends GenericSelfUpdateEvent<String>
         final String extension = next.startsWith("a_") ? ".gif" : ".png";
         final String newAvatarUrl = String.format(AVATAR_URL, getSelfUser().getId(), next, extension);
 
-        return new ImageProxy(newAvatarUrl, next, extension);
+        return new ImageProxy(newAvatarUrl);
     }
 }

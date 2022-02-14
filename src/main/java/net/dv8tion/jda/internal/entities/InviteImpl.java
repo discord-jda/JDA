@@ -371,7 +371,7 @@ public class InviteImpl implements Invite
 
             final String iconUrl = "https://cdn.discordapp.com/icons/" + this.id + "/" + this.iconId + ".png";
 
-            return new ImageProxy(iconUrl, iconId, "png");
+            return new ImageProxy(iconUrl);
         }
 
 	    @Override
@@ -408,7 +408,7 @@ public class InviteImpl implements Invite
 
             final String splashUrl = "https://cdn.discordapp.com/splashes/" + this.id + "/" + this.splashId + ".png";
 
-            return new ImageProxy(splashUrl, splashId, "png");
+            return new ImageProxy(splashUrl);
         }
 
         @Nonnull
@@ -482,7 +482,7 @@ public class InviteImpl implements Invite
 
             final String iconUrl = "https://cdn.discordapp.com/channel-icons/" + this.id + "/" + this.iconId + ".png";
 
-            return new ImageProxy(iconUrl, iconId, "png");
+            return new ImageProxy(iconUrl);
         }
 
         @Override
@@ -636,7 +636,7 @@ public class InviteImpl implements Invite
 
             final String iconUrl = "https://cdn.discordapp.com/app-icons/" + this.id + '/' + this.iconId + ".png";
 
-            return new ImageProxy(iconUrl, iconId, "png");
+            return new ImageProxy(iconUrl);
         }
 
         @Override

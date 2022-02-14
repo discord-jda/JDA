@@ -111,7 +111,7 @@ public class ApplicationInfoImpl implements ApplicationInfo
 
         final String iconUrl = "https://cdn.discordapp.com/app-icons/" + this.id + '/' + this.iconId + ".png";
 
-        return new ImageProxy(iconUrl, iconId, "png");
+        return new ImageProxy(iconUrl);
     }
 
 	@Nonnull

@@ -360,7 +360,7 @@ public class GuildImpl implements Guild
         final String extension = iconId.startsWith("a_") ? "gif" : "png";
         final String iconUrl = String.format(ICON_URL, getId(), iconId, extension);
 
-        return new ImageProxy(iconUrl, iconId, extension);
+        return new ImageProxy(iconUrl);
     }
 
     @Nonnull
@@ -384,7 +384,7 @@ public class GuildImpl implements Guild
 
         final String splashUrl = String.format(SPLASH_URL, getId(), splashId);
 
-        return new ImageProxy(splashUrl, splashUrl, splashId);
+        return new ImageProxy(splashUrl);
     }
 
     @Nullable
@@ -433,7 +433,7 @@ public class GuildImpl implements Guild
         final String bannerUrl = String.format(BANNER_URL, getId(), banner);
         if (bannerUrl == null) return null;
 
-        return new ImageProxy(bannerUrl, banner, "png");
+        return new ImageProxy(bannerUrl);
     }
 
     @Nonnull

@@ -82,7 +82,7 @@ public class UserUpdateAvatarEvent extends GenericUserUpdateEvent<String>
         final String oldAvatarUrl = String.format(User.AVATAR_URL, getUser().getId(), previous, extension);
         if (oldAvatarUrl == null) return null;
 
-        return new ImageProxy(oldAvatarUrl, previous, extension);
+        return new ImageProxy(oldAvatarUrl);
     }
 
     /**
@@ -116,6 +116,6 @@ public class UserUpdateAvatarEvent extends GenericUserUpdateEvent<String>
         final String extension = next.startsWith("a_") ? "gif" : "png";
         final String newAvatarUrl = String.format(User.AVATAR_URL, getUser().getId(), next, extension);
 
-        return new ImageProxy(newAvatarUrl, next, extension);
+        return new ImageProxy(newAvatarUrl);
     }
 }

@@ -26,32 +26,9 @@ import java.util.concurrent.CompletableFuture;
 //TODO docs
 public class ImageProxy extends FileProxy
 {
-    private final String id;
-    private final String extension;
-
-    public ImageProxy(String url, String id, String extension)
+    public ImageProxy(String url)
     {
         super(url);
-
-        Checks.notNull(id, "ID");
-        Checks.notNull(extension, "Extension");
-
-        this.id = id;
-        this.extension = extension;
-    }
-
-    //TODO docs
-    @Nonnull
-    public String getExtension()
-    {
-        return extension;
-    }
-
-    //TODO docs
-    @Nonnull
-    public String getId()
-    {
-        return id;
     }
 
     @Nonnull

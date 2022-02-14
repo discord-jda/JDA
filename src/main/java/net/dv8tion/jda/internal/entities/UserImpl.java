@@ -86,7 +86,7 @@ public class UserImpl extends UserById implements User
         final String avatarExtension = avatarId.startsWith("a_") ? "gif" : "png";
         final String avatarUrl = String.format(AVATAR_URL, getId(), avatarId, avatarExtension);
 
-        return new ImageProxy(avatarUrl, avatarId, avatarExtension);
+        return new ImageProxy(avatarUrl);
     }
 
     @Nonnull
@@ -118,7 +118,7 @@ public class UserImpl extends UserById implements User
         final String defaultAvatarId = String.valueOf(discriminator % 5);
         final String defaultAvatarUrl = String.format(DEFAULT_AVATAR_URL, defaultAvatarId);
 
-        return new ImageProxy(defaultAvatarUrl, defaultAvatarId, "png");
+        return new ImageProxy(defaultAvatarUrl);
     }
 
     @Nonnull
