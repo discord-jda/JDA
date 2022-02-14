@@ -345,7 +345,7 @@ public class GuildImpl implements Guild
         return name;
     }
 
-    //TODO remove
+   
     @Override
     public String getIconId()
     {
@@ -355,10 +355,8 @@ public class GuildImpl implements Guild
     @Override
     public ImageProxy getIcon()
     {
-        if (iconId == null) return null;
-
-        final String extension = iconId.startsWith("a_") ? "gif" : "png";
-        final String iconUrl = String.format(ICON_URL, getId(), iconId, extension);
+        final String iconUrl = getIconUrl();
+        if (iconUrl == null) return null;
 
         return new ImageProxy(iconUrl);
     }
@@ -380,9 +378,8 @@ public class GuildImpl implements Guild
     @Nullable
     public ImageProxy getSplash()
     {
-        if (splashId == null) return null;
-
-        final String splashUrl = String.format(SPLASH_URL, getId(), splashId);
+        final String splashUrl = getSplashUrl();
+        if (splashUrl == null) return null;
 
         return new ImageProxy(splashUrl);
     }
@@ -430,7 +427,7 @@ public class GuildImpl implements Guild
     @Override
     public ImageProxy getBanner()
     {
-        final String bannerUrl = String.format(BANNER_URL, getId(), banner);
+        final String bannerUrl = getBannerUrl();
         if (bannerUrl == null) return null;
 
         return new ImageProxy(bannerUrl);

@@ -187,8 +187,9 @@ public interface User extends IMentionable
     default ImageProxy getAvatar()
     {
         final String avatarUrl = getAvatarUrl();
+        if (avatarUrl == null) return null;
 
-        return avatarUrl == null ? null : new ImageProxy(avatarUrl);
+        return new ImageProxy(avatarUrl);
     }
 
     /**

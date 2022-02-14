@@ -357,7 +357,7 @@ public class EntityBuilder
         }
 
         User.Profile profile = user.hasKey("banner")
-            ? new User.Profile(getJDA(), id, user.getString("banner", null), user.getInt("accent_color", User.DEFAULT_ACCENT_COLOR_RAW))
+            ? new User.Profile(id, user.getString("banner", null), user.getInt("accent_color", User.DEFAULT_ACCENT_COLOR_RAW))
             : null;
 
         if (newUser)

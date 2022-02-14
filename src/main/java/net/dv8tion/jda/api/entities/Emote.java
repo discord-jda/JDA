@@ -202,10 +202,7 @@ public interface Emote extends IMentionable
     @Nonnull
     default ImageProxy getImage()
     {
-        final String extension = isAnimated() ? "gif" : "png";
-        final String imageUrl = String.format(ICON_URL, getId(), extension);
-
-        return new ImageProxy(imageUrl);
+        return new ImageProxy(getImageUrl());
     }
 
     /**

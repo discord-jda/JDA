@@ -58,9 +58,8 @@ public class ApplicationTeamImpl implements ApplicationTeam
 	@Nullable
 	@Override
 	public ImageProxy getIcon() {
-        if (iconId == null) return null;
-
-        final String iconUrl = String.format(ICON_URL, getId(), iconId);
+        final String iconUrl = getIconUrl();
+        if (iconUrl == null) return null;
 
         return new ImageProxy(iconUrl);
     }

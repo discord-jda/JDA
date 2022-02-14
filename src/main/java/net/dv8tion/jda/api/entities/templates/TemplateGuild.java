@@ -107,7 +107,7 @@ public class TemplateGuild implements ISnowflake
      *
      * @see    #getIconUrl()
      */
-    @Nullable //TODO remove
+    @Nullable
     public String getIconId()
     {
         return this.iconId;
@@ -120,7 +120,7 @@ public class TemplateGuild implements ISnowflake
      *
      * @see    #getIconId()
      */
-    @Nullable //TODO remove
+    @Nullable
     public String getIconUrl()
     {
         return this.iconId == null ? null
@@ -130,10 +130,8 @@ public class TemplateGuild implements ISnowflake
     //TODO docs
     @Nullable
     public ImageProxy getIcon() {
-        if (iconId == null) return null;
-
-        final String extension = iconId.startsWith("a_") ? "gif" : "png";
-        final String iconUrl = String.format(Guild.ICON_URL, this.id, this.iconId, extension);
+        final String iconUrl = getIconUrl();
+        if (iconUrl == null) return null;
 
         return new ImageProxy(iconUrl);
     }

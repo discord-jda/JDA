@@ -44,7 +44,7 @@ public class GuildUpdateSplashEvent extends GenericGuildUpdateEvent<String>
      *
      * @return The old splash id, or null
      */
-    @Nullable //TODO remove
+    @Nullable
     public String getOldSplashId()
     {
         return getOldValue();
@@ -55,7 +55,7 @@ public class GuildUpdateSplashEvent extends GenericGuildUpdateEvent<String>
      *
      * @return The url of the old splash, or null
      */
-    @Nullable //TODO remove
+    @Nullable
     public String getOldSplashUrl()
     {
         return previous == null ? null : String.format(Guild.SPLASH_URL, guild.getId(), previous);
@@ -65,9 +65,8 @@ public class GuildUpdateSplashEvent extends GenericGuildUpdateEvent<String>
     @Nullable
     public ImageProxy getOldSplash()
     {
-        if (previous == null) return null;
-
-        final String oldSplashUrl = String.format(Guild.SPLASH_URL, guild.getId(), previous);
+        final String oldSplashUrl = getOldSplashUrl();
+        if (oldSplashUrl == null) return null;
 
         return new ImageProxy(oldSplashUrl);
     }
@@ -77,7 +76,7 @@ public class GuildUpdateSplashEvent extends GenericGuildUpdateEvent<String>
      *
      * @return The new splash id, or null
      */
-    @Nullable //TODO remove
+    @Nullable
     public String getNewSplashId()
     {
         return getNewValue();
@@ -88,7 +87,7 @@ public class GuildUpdateSplashEvent extends GenericGuildUpdateEvent<String>
      *
      * @return The url of the new splash, or null
      */
-    @Nullable //TODO remove
+    @Nullable
     public String getNewSplashUrl()
     {
         return next == null ? null : String.format(Guild.SPLASH_URL, guild.getId(), next);
@@ -98,9 +97,8 @@ public class GuildUpdateSplashEvent extends GenericGuildUpdateEvent<String>
     @Nullable
     public ImageProxy getNewSplash()
     {
-        if (next == null) return null;
-
-        final String newSplashUrl = String.format(Guild.SPLASH_URL, guild.getId(), next);
+        final String newSplashUrl = getNewSplashUrl();
+        if (newSplashUrl == null) return null;
 
         return new ImageProxy(newSplashUrl);
     }

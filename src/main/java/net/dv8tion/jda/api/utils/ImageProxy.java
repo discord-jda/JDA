@@ -26,7 +26,7 @@ import java.util.concurrent.CompletableFuture;
 //TODO docs
 public class ImageProxy extends FileProxy
 {
-    public ImageProxy(String url)
+    public ImageProxy(@Nonnull String url)
     {
         super(url);
     }

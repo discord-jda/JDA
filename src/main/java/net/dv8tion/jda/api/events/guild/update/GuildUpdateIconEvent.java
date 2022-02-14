@@ -44,7 +44,7 @@ public class GuildUpdateIconEvent extends GenericGuildUpdateEvent<String>
      *
      * @return The old icon id, or null
      */
-    @Nullable //TODO remove
+    @Nullable
     public String getOldIconId()
     {
         return getOldValue();
@@ -55,7 +55,7 @@ public class GuildUpdateIconEvent extends GenericGuildUpdateEvent<String>
      *
      * @return The url of the old icon, or null
      */
-    @Nullable //TODO remove
+    @Nullable
     public String getOldIconUrl()
     {
         return previous == null ? null : String.format(Guild.ICON_URL, guild.getId(), previous, previous.startsWith("a_") ? "gif" : "png");
@@ -65,10 +65,8 @@ public class GuildUpdateIconEvent extends GenericGuildUpdateEvent<String>
     @Nullable
     public ImageProxy getOldIcon()
     {
-        if (previous == null) return null;
-
-        final String extension = previous.startsWith("a_") ? "gif" : "png";
-        final String oldIconUrl = String.format(Guild.ICON_URL, guild.getId(), previous, extension);
+        final String oldIconUrl = getOldIconUrl();
+        if (oldIconUrl == null) return null;
 
         return new ImageProxy(oldIconUrl);
     }
@@ -78,7 +76,7 @@ public class GuildUpdateIconEvent extends GenericGuildUpdateEvent<String>
      *
      * @return The old icon id, or null
      */
-    @Nullable //TODO remove
+    @Nullable
     public String getNewIconId()
     {
         return getNewValue();
@@ -89,7 +87,7 @@ public class GuildUpdateIconEvent extends GenericGuildUpdateEvent<String>
      *
      * @return The url of the new icon, or null
      */
-    @Nullable //TODO remove
+    @Nullable
     public String getNewIconUrl()
     {
         return next == null ? null : String.format(Guild.ICON_URL, guild.getId(), next, next.startsWith("a_") ? "gif" : "png");
@@ -99,10 +97,8 @@ public class GuildUpdateIconEvent extends GenericGuildUpdateEvent<String>
     @Nullable
     public ImageProxy getNewIcon()
     {
-        if (next == null) return null;
-
-        final String extension = next.startsWith("a_") ? "gif" : "png";
-        final String newIconUrl = String.format(Guild.ICON_URL, guild.getId(), next, extension);
+        final String newIconUrl = getNewIconUrl();
+        if (newIconUrl == null) return null;
 
         return new ImageProxy(newIconUrl);
     }

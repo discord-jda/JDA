@@ -367,9 +367,8 @@ public class InviteImpl implements Invite
 	    @Nullable
 	    @Override
 	    public ImageProxy getIcon() {
-            if (iconId == null) return null;
-
-            final String iconUrl = "https://cdn.discordapp.com/icons/" + this.id + "/" + this.iconId + ".png";
+            final String iconUrl = getIconUrl();
+            if (iconUrl == null) return null;
 
             return new ImageProxy(iconUrl);
         }
@@ -404,9 +403,8 @@ public class InviteImpl implements Invite
         @Override
         public ImageProxy getSplash()
         {
-            if (splashId == null) return null;
-
-            final String splashUrl = "https://cdn.discordapp.com/splashes/" + this.id + "/" + this.splashId + ".png";
+            final String splashUrl = getSplashUrl();
+            if (splashUrl == null) return null;
 
             return new ImageProxy(splashUrl);
         }
@@ -478,9 +476,8 @@ public class InviteImpl implements Invite
         @Override
         public ImageProxy getIcon()
         {
-            if (iconId == null) return null;
-
-            final String iconUrl = "https://cdn.discordapp.com/channel-icons/" + this.id + "/" + this.iconId + ".png";
+            final String iconUrl = getIconUrl();
+            if (iconUrl == null) return null;
 
             return new ImageProxy(iconUrl);
         }
@@ -632,9 +629,8 @@ public class InviteImpl implements Invite
         @Override
         public ImageProxy getIcon()
         {
-            if (iconId == null) return null;
-
-            final String iconUrl = "https://cdn.discordapp.com/app-icons/" + this.id + '/' + this.iconId + ".png";
+            final String iconUrl = getIconUrl();
+            if (iconUrl == null) return null;
 
             return new ImageProxy(iconUrl);
         }

@@ -182,10 +182,7 @@ public class MemberImpl implements Member
     @Override
     public ImageProxy getAvatar()
     {
-        if (avatarId == null) return null;
-
-        final String extension = avatarId.startsWith("a_") ? "gif" : "png";
-        final String avatarUrl = String.format(AVATAR_URL, getGuild().getId(), getId(), avatarId, extension);
+        final String avatarUrl = getAvatarUrl();
         if (avatarUrl == null) return null;
 
         return new ImageProxy(avatarUrl);

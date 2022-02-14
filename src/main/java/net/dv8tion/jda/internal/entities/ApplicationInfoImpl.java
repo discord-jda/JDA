@@ -107,9 +107,8 @@ public class ApplicationInfoImpl implements ApplicationInfo
 	@Nullable
 	@Override
 	public ImageProxy getIcon() {
-        if (iconId == null) return null;
-
-        final String iconUrl = "https://cdn.discordapp.com/app-icons/" + this.id + '/' + this.iconId + ".png";
+        final String iconUrl = getIconUrl();
+        if (iconUrl == null) return null;
 
         return new ImageProxy(iconUrl);
     }

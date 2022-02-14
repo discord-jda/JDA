@@ -71,7 +71,7 @@ public class UserImpl extends UserById implements User
     }
 
     @Nullable
-    @Override //TODO remove
+    @Override
     public String getAvatarId()
     {
         return avatarId;
@@ -103,10 +103,7 @@ public class UserImpl extends UserById implements User
     @Nonnull
     public ImageProxy getDefaultAvatar()
     {
-        final String defaultAvatarId = String.valueOf(discriminator % 5);
-        final String defaultAvatarUrl = String.format(DEFAULT_AVATAR_URL, defaultAvatarId);
-
-        return new ImageProxy(defaultAvatarUrl);
+        return new ImageProxy(getDefaultAvatarUrl());
     }
 
     @Nonnull
