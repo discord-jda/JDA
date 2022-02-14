@@ -15,6 +15,7 @@
  */
 package net.dv8tion.jda.api.entities;
 
+import net.dv8tion.jda.api.utils.ImageProxy;
 import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.Nonnull;
@@ -112,6 +113,13 @@ public class MessageSticker implements ISnowflake
     public String getIconUrl()
     {
         return Helpers.format(ICON_URL, getId(), formatType.getExtension());
+    }
+
+    //TODO docs
+    @Nonnull
+    public ImageProxy getIcon()
+    {
+        return new ImageProxy(getIconUrl());
     }
 
     /**

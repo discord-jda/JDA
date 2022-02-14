@@ -645,6 +645,16 @@ public class WidgetUtil
                 return avatarId == null ? null : String.format(User.AVATAR_URL, getId(), avatarId, avatarId.startsWith("a_") ? ".gif" : ".png");
             }
 
+            //TODO docs
+            @Nullable
+            public ImageProxy getAvatar()
+            {
+                final String avatarUrl = getAvatarUrl();
+                if (avatarUrl == null) return null;
+
+                return new ImageProxy(avatarUrl);
+            }
+
             /**
              * Gets the asset id of the member's default avatar
              * 
@@ -669,6 +679,13 @@ public class WidgetUtil
                 return String.format(User.DEFAULT_AVATAR_URL, getDefaultAvatarId());
             }
 
+            //TODO docs
+            @Nonnull
+            public ImageProxy getDefaultAvatar()
+            {
+                return new ImageProxy(getDefaultAvatarUrl());
+            }
+
             /**
             * The URL for the user's avatar image
             * <br>If they do not have an avatar set, this will return the URL of their
@@ -681,6 +698,13 @@ public class WidgetUtil
             {
                 String avatarUrl = getAvatarUrl();
                 return avatarUrl == null ? getDefaultAvatarUrl() : avatarUrl;
+            }
+
+            //TODO docs
+            @Nonnull
+            public ImageProxy getNewSplash()
+            {
+                return new ImageProxy(getEffectiveAvatarUrl());
             }
             
             /**

@@ -15,6 +15,8 @@
  */
 package net.dv8tion.jda.api.entities;
 
+import net.dv8tion.jda.api.utils.ImageProxy;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -133,6 +135,16 @@ public class MessageActivity
             return iconId == null ? null : "https://cdn.discordapp.com/application/" + getId() + "/" + iconId + ".png";
         }
 
+        //TODO docs
+        @Nullable
+        public ImageProxy getIcon()
+        {
+            final String iconUrl = getIconUrl();
+            if (iconUrl == null) return null;
+
+            return new ImageProxy(iconUrl);
+        }
+
         /**
          * The cover aka splash id of this Application.
          *
@@ -153,6 +165,16 @@ public class MessageActivity
         public String getCoverUrl()
         {
             return coverId == null ? null : "https://cdn.discordapp.com/application/" + getId() + "/" + coverId + ".png";
+        }
+
+        //TODO docs
+        @Nullable
+        public ImageProxy getCover()
+        {
+            final String coverUrl = getCoverUrl();
+            if (coverUrl == null) return null;
+
+            return new ImageProxy(coverUrl);
         }
 
         @Override

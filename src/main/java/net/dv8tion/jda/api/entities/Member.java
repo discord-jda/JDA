@@ -279,9 +279,8 @@ public interface Member extends IMentionable, IPermissionHolder
     @Nonnull 
     default String getEffectiveAvatarUrl()
     {
-//        String avatarUrl = getAvatarUrl();
-//        return avatarUrl == null ? getUser().getEffectiveAvatarUrl() : avatarUrl;
-        return null;
+        String avatarUrl = getAvatarUrl();
+        return avatarUrl == null ? getUser().getEffectiveAvatarUrl() : avatarUrl;
     }
 
     //TODO docs

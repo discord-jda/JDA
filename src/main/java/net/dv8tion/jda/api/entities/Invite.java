@@ -375,14 +375,6 @@ public interface Invite
         @Nullable 
         String getIconUrl();
 
-        @Nullable
-        default ImageProxy getIcon() {
-final String iconUrl = getIconUrl();
-if (iconUrl == null) return null;
-
-return new ImageProxy(iconUrl);
-}
-
         /**
          * The name of this guild.
          *
@@ -411,6 +403,7 @@ return new ImageProxy(iconUrl);
         @Nullable 
         String getSplashUrl();
 
+        //TODO docs
         @Nullable
         default ImageProxy getSplash()
         {
@@ -639,6 +632,7 @@ return new ImageProxy(iconUrl);
         @Nullable 
         String getIconUrl();
 
+        //TODO docs
 	    @Nullable
 	    default ImageProxy getIcon()
 	    {

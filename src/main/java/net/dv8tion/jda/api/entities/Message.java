@@ -2749,6 +2749,8 @@ public interface Message extends ISnowflake, Formattable
             return url;
         }
 
+        //TODO AttachmentProxy
+
         /**
          * Url to the resource proxied by the Discord CDN.
          *

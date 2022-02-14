@@ -16,6 +16,7 @@
 package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.utils.ImageProxy;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.SerializableData;
@@ -526,6 +527,8 @@ public class MessageEmbed implements SerializableData
             return url;
         }
 
+        //TODO AttachmentProxy
+
         /**
          * The Discord proxied url of the thumbnail image.
          * <br>This url is used to access the image through Discord instead of directly to prevent ip scraping.
@@ -650,6 +653,8 @@ public class MessageEmbed implements SerializableData
             return url;
         }
 
+        //TODO AttachmentProxy - Not sure if the URL is actually a downloadable video
+
         /**
          * The width of the video.
          * <br>This usually isn't the actual video width, but instead the starting embed window size.
@@ -717,6 +722,8 @@ public class MessageEmbed implements SerializableData
         {
             return url;
         }
+
+        //TODO AttachmentProxy
 
         /**
          * The url of the image, proxied by Discord
@@ -816,6 +823,15 @@ public class MessageEmbed implements SerializableData
             return iconUrl;
         }
 
+        //TODO docs
+        @Nullable
+        public ImageProxy getIcon()
+        {
+            if (iconUrl == null) return null;
+
+            return new ImageProxy(iconUrl);
+        }
+
         /**
          * The url of the author's icon, proxied by Discord
          * <br>This url is used to access the image through Discord instead of directly to prevent ip scraping.
@@ -826,6 +842,15 @@ public class MessageEmbed implements SerializableData
         public String getProxyIconUrl()
         {
             return proxyIconUrl;
+        }
+
+        //TODO docs
+        @Nullable
+        public ImageProxy getProxyIcon()
+        {
+            if (proxyIconUrl == null) return null;
+
+            return new ImageProxy(proxyIconUrl);
         }
 
         @Override
@@ -879,6 +904,15 @@ public class MessageEmbed implements SerializableData
             return iconUrl;
         }
 
+        //TODO docs
+        @Nullable
+        public ImageProxy getIcon()
+        {
+            if (iconUrl == null) return null;
+
+            return new ImageProxy(iconUrl);
+        }
+
         /**
          * The url of the footer's icon, proxied by Discord
          * <br>This url is used to access the image through Discord instead of directly to prevent ip scraping.
@@ -889,6 +923,15 @@ public class MessageEmbed implements SerializableData
         public String getProxyIconUrl()
         {
             return proxyIconUrl;
+        }
+
+        //TODO docs
+        @Nullable
+        public ImageProxy getProxyIcon()
+        {
+            if (proxyIconUrl == null) return null;
+
+            return new ImageProxy(proxyIconUrl);
         }
 
         @Override
