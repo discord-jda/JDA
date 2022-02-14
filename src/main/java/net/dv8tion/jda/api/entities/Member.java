@@ -260,6 +260,7 @@ public interface Member extends IMentionable, IPermissionHolder
         return avatarId == null ? null : String.format(AVATAR_URL, getGuild().getId(), getId(), avatarId, avatarId.startsWith("a_") ? "gif" : "png");
     }
 
+    //TODO docs
 	@Nullable
 	default ImageProxy getAvatar()
 	{
@@ -276,7 +277,7 @@ public interface Member extends IMentionable, IPermissionHolder
      *
      * @return Never-null String containing the {@link net.dv8tion.jda.api.entities.Member} avatar url.
      */
-    @Nonnull 
+    @Nonnull
     default String getEffectiveAvatarUrl()
     {
         String avatarUrl = getAvatarUrl();

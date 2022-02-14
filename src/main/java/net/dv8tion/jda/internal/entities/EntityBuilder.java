@@ -1344,7 +1344,7 @@ public class EntityBuilder
         if (iconId == null && emoji == null)
             role.setIcon(null);
         else
-            role.setIcon(new RoleIcon(getJDA(), iconId, emoji, id));
+            role.setIcon(new RoleIcon(iconId, emoji, id));
 
         if (playbackCache)
             getJDA().getEventCache().playbackCache(EventCache.Type.ROLE, id);
@@ -2095,7 +2095,7 @@ public class EntityBuilder
         TemplateChannel systemChannel = channels.stream().filter(templateChannel -> templateChannel.getIdLong() == systemChannelId)
                 .findFirst().orElse(null);
 
-        final TemplateGuild guild = new TemplateGuild(getJDA(), guildId, guildName, guildDescription, guildIconId, guildVerificationLevel, notificationLevel, explicitContentLevel, locale,
+        final TemplateGuild guild = new TemplateGuild(guildId, guildName, guildDescription, guildIconId, guildVerificationLevel, notificationLevel, explicitContentLevel, locale,
                 afkTimeout, afkChannel, systemChannel, roles, channels);
 
         final boolean synced = !object.getBoolean("is_dirty", false);

@@ -663,7 +663,7 @@ public interface Guild extends ISnowflake
      */
     @Nullable
     String getIconId();
-    
+
     /**
      * The URL of the {@link net.dv8tion.jda.api.entities.Guild Guild} icon image.
      * If no icon has been set, this returns {@code null}.
@@ -679,6 +679,7 @@ public interface Guild extends ISnowflake
         return iconId == null ? null : String.format(ICON_URL, getId(), iconId, iconId.startsWith("a_") ? "gif" : "png");
     }
 
+    //TODO docs
     default ImageProxy getIcon()
     {
         final String iconUrl = getIconUrl();
@@ -728,6 +729,7 @@ public interface Guild extends ISnowflake
         return splashId == null ? null : String.format(SPLASH_URL, getId(), splashId);
     }
 
+    //TODO docs
     @Nullable
     default ImageProxy getSplash()
     {
@@ -850,6 +852,7 @@ public interface Guild extends ISnowflake
         return bannerId == null ? null : String.format(BANNER_URL, getId(), bannerId, bannerId.startsWith("a_") ? "gif" : "png");
     }
 
+    //TODO docs
     @Nullable
     default ImageProxy getBanner()
     {

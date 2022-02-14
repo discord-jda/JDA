@@ -486,6 +486,7 @@ public interface Invite
         @Nullable
         String getIconUrl();
 
+        //TODO docs
         @Nullable
         default ImageProxy getIcon()
         {

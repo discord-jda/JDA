@@ -100,6 +100,13 @@ public class UserImpl extends UserById implements User
 
     @Nonnull
     @Override
+    public String getDefaultAvatarId()
+    {
+        return String.valueOf(discriminator % 5);
+    }
+
+    @Nonnull
+    @Override
     public String getAsTag()
     {
         return getName() + '#' + getDiscriminator();

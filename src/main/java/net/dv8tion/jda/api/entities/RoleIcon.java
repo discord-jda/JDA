@@ -16,11 +16,9 @@
 
 package net.dv8tion.jda.api.entities;
 
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.managers.RoleManager;
 import net.dv8tion.jda.api.utils.ImageProxy;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Objects;
 
@@ -34,14 +32,12 @@ public class RoleIcon
     /** Template for {@link #getIconUrl()}. */
     public static final String ICON_URL = "https://cdn.discordapp.com/role-icons/%s/%s.png";
 
-    private final JDA jda;
     private final String iconId;
     private final String emoji;
     private final long roleId;
 
-    public RoleIcon(JDA jda, String iconId, String emoji, long roleId)
+    public RoleIcon(String iconId, String emoji, long roleId)
     {
-        this.jda = jda;
         this.iconId = iconId;
         this.emoji = emoji;
         this.roleId = roleId;
@@ -129,12 +125,5 @@ public class RoleIcon
     public int hashCode()
     {
         return Objects.hash(iconId, emoji);
-    }
-
-    //TODO docs
-    @Nonnull
-    public JDA getJDA()
-    {
-        return jda;
     }
 }

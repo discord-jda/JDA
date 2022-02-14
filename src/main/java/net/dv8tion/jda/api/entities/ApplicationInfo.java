@@ -89,6 +89,7 @@ public interface ApplicationInfo extends ISnowflake
     @Nullable
     String getIconUrl();
 
+    //TODO docs
 	@Nullable
 	default ImageProxy getIcon() {
         final String iconUrl = getIconUrl();
