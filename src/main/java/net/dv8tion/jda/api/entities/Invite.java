@@ -626,14 +626,14 @@ public interface Invite
         String getIconUrl();
 
         //TODO docs
-	    @Nullable
-	    default ImageProxy getIcon()
-	    {
-	        final String iconUrl = getIconUrl();
-	        if (iconUrl == null) return null;
+        @Nullable
+        default ImageProxy getIcon()
+        {
+            final String iconUrl = getIconUrl();
+            if (iconUrl == null) return null;
 
-	        return new ImageProxy(iconUrl);
-	    }
+            return new ImageProxy(iconUrl);
+        }
 
         /**
          * The max participant count of this application or {@code -1} if no max participant count is set

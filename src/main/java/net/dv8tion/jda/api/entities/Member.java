@@ -261,14 +261,14 @@ public interface Member extends IMentionable, IPermissionHolder
     }
 
     //TODO docs
-	@Nullable
-	default ImageProxy getAvatar()
-	{
-	    final String avatarUrl = getAvatarUrl();
-	    if (avatarUrl == null) return null;
+    @Nullable
+    default ImageProxy getAvatar()
+    {
+        final String avatarUrl = getAvatarUrl();
+        if (avatarUrl == null) return null;
 
-	    return new ImageProxy(avatarUrl);
-	}
+        return new ImageProxy(avatarUrl);
+    }
 
     /**
      * The URL for the member's effective avatar image.
