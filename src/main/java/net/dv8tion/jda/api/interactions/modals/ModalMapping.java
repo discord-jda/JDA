@@ -80,11 +80,7 @@ public class ModalMapping
     @Override
     public String toString()
     {
-        return "ModalMapping{" +
-                "id='" + id + '\'' +
-                ", value='" + value + '\'' +
-                ", componentType=" + type +
-                '}';
+        return "ModalMapping[" + getType() + "](" + getId() + "=" + getAsString() + ")";
     }
 
     @Override
