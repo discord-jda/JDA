@@ -17,6 +17,7 @@
 package net.dv8tion.jda.api.interactions.components.text;
 
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
+import net.dv8tion.jda.api.interactions.ModalInteraction;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.ItemComponent;
 import net.dv8tion.jda.api.utils.data.SerializableData;
@@ -71,6 +72,8 @@ public interface Modal extends SerializableData
      * The custom id of this modal
      *
      * @return The custom id of this modal
+     *
+     * @see ModalInteraction#getModalId()
      */
     @Nonnull
     String getId();
@@ -122,8 +125,6 @@ public interface Modal extends SerializableData
     @CheckReturnValue
     static Modal.Builder create(@Nonnull String customId, @Nonnull String title)
     {
-        Checks.notNull(customId, "Custom ID");
-        Checks.notNull(title, "Title");
         return new Modal.Builder(customId).setTitle(title);
     }
 
@@ -243,9 +244,9 @@ public interface Modal extends SerializableData
         }
 
         /**
-         * Returns a list of all components
+         * Returns a modifiable list of all components
          *
-         * @return A list of components
+         * @return A modifiable list of components
          */
         @Nonnull
         public List<ActionRow> getActionRows()
