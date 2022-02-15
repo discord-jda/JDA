@@ -267,7 +267,7 @@ public class FileProxy
     }
 
     /**
-     * Retrieves the data of this attachment, at the specified width and height, and stores it in a file with the same name as the queried file name (this would be the last segment of the URL)
+     * Downloads the data of this file, and stores it in a file with the same name as the queried file name (this would be the last segment of the URL)
      *
      * @return a {@link CompletableFuture} which holds a {@link Path} which corresponds to the location the file has been downloaded
      *

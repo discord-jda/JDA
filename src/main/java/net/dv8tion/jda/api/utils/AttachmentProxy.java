@@ -69,7 +69,7 @@ public class AttachmentProxy extends FileProxy
     }
 
     /**
-     * Retrieves the data of this attachment, at the specified width and height, and stores it in a file with the same name as the queried file name (this would be the last segment of the URL)
+     * Downloads the data of this attachment, at the specified width and height, and stores it in a file with the same name as the queried file name (this would be the last segment of the URL)
      * <br>The attachment, if an image, may be resized at any size, however if the size does not fit the ratio of the image, then it will be cropped as to fit the target size
      * <br>If the attachment is not an image then the size parameters are ignored and the file is downloaded
      *
@@ -101,7 +101,7 @@ public class AttachmentProxy extends FileProxy
     }
 
     /**
-     * Retrieves the data of this attachment, at the specified width and height, and stores it in the specified file
+     * Downloads the data of this attachment, at the specified width and height, and stores it in the specified file
      * <br>The attachment, if an image, may be resized at any size, however if the size does not fit the ratio of the image, then it will be cropped as to fit the target size
      * <br>If the attachment is not an image then the size parameters are ignored and the file is downloaded
      *
@@ -137,7 +137,7 @@ public class AttachmentProxy extends FileProxy
     }
 
     /**
-     * Retrieves the data of this attachment, at the specified size, and stores it in the specified file
+     * Downloads the data of this attachment, at the specified size, and stores it in the specified file
      * <br>The attachment, if an image, may be resized at any size, however if the size does not fit the ratio of the image, then it will be cropped as to fit the target size
      * <br>If the attachment is not an image then the size parameters are ignored and the file is downloaded
      *
