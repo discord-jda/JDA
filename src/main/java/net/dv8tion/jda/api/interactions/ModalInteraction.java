@@ -28,6 +28,8 @@ import java.util.List;
 /**
  * Interaction on a {@link net.dv8tion.jda.api.interactions.components.text.Modal Modal}
  *
+ * If the modal of this interaction was a reply to a {@link net.dv8tion.jda.api.interactions.components.ComponentInteraction ComponentInteraction}, you can also use {@link #deferEdit()} to edit the message instead of replying.
+ *
  * @see net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
  */
 public interface ModalInteraction extends IReplyCallback, IMessageEditCallback
@@ -36,6 +38,8 @@ public interface ModalInteraction extends IReplyCallback, IMessageEditCallback
      * Returns the custom id of the Modal in question
      *
      * @return Custom id
+     * 
+     * @see net.dv8tion.jda.api.interactions.components.text.Modal.Builder#setId(String) 
      */
     @Nonnull
     String getModalId();
