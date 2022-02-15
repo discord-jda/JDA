@@ -19,7 +19,6 @@ package net.dv8tion.jda.internal.utils;
 /**
  * Indicates that an invalid token was given when trying to login the Discord API
  *
- * @author java-coding-prodigy
  * @since 5.0.0
  * */
 public class InvalidTokenException extends RuntimeException
