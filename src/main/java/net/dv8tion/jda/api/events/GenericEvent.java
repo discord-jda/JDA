@@ -59,7 +59,7 @@ public interface GenericEvent
      *
      * @return True if the event has raw data
      *
-     * @see #getRawData()
+     * @see    #getRawData()
      */
     boolean hasRawData();
 }
