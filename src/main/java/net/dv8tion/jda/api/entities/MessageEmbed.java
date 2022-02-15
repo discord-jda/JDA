@@ -540,7 +540,13 @@ public class MessageEmbed implements SerializableData
             return proxyUrl;
         }
 
-        //TODO docs
+        /**
+         * Returns an {@link AttachmentProxy} for this embed thumbnail
+         *
+         * @return The {@link AttachmentProxy} of this embed thumbnail
+         *
+         * @see #getProxyUrl()
+         */
         @Nullable
         public AttachmentProxy getProxy()
         {
@@ -742,7 +748,13 @@ public class MessageEmbed implements SerializableData
             return proxyUrl;
         }
 
-        //TODO docs
+        /**
+         * Returns an {@link AttachmentProxy} for this embed image
+         *
+         * @return The {@link AttachmentProxy} of this embed image
+         *
+         * @see #getProxyUrl()
+         */
         @Nullable
         public AttachmentProxy getProxy()
         {

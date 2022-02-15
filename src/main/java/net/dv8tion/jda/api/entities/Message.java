@@ -2761,7 +2761,13 @@ public interface Message extends ISnowflake, Formattable
             return proxyUrl;
         }
 
-        //TODO docs
+        /**
+         * Returns an {@link AttachmentProxy} for this attachment
+         *
+         * @return The {@link AttachmentProxy} of this attachment
+         *
+         * @see #getProxyUrl()
+         */
         @Nonnull
         public AttachmentProxy getProxy()
         {
