@@ -216,7 +216,7 @@ public class FileProxy
         {
             try
             {
-                final Path tmpPath = Files.createTempFile("image", null);
+                final Path tmpPath = Files.createTempFile("file", null);
 
                 Files.copy(stream, tmpPath, StandardCopyOption.REPLACE_EXISTING);
 
