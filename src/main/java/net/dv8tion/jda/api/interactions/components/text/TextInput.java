@@ -173,7 +173,8 @@ public interface TextInput extends ActionComponent
         /**
          * Sets whether the user is required to write in this TextInput.
          *
-         * @param required If this TextInput should be required
+         * @param  required 
+         *         If this TextInput should be required
          *
          * @return The same builder instance for chaining
          */
@@ -225,15 +226,16 @@ public interface TextInput extends ActionComponent
             Checks.check(maxLength <= TEXT_INPUT_MAX_LENGTH, "Maximum length cannot be longer than " + TEXT_INPUT_MAX_LENGTH + " characters!");
 
             this.maxLength = maxLength;
-
             return this;
         }
 
         /**
          * Sets the minimum and maximum required length on this TextInput component
          *
-         * @param min Minimum length of the text input
-         * @param max Maximum length of the text input
+         * @param  min 
+         *         Minimum length of the text input
+         * @param  max 
+         *         Maximum length of the text input
 
          * @throws IllegalArgumentException
          * <ul>
@@ -254,7 +256,8 @@ public interface TextInput extends ActionComponent
         /**
          * Sets a pre-populated text for this TextInput field.
          *
-         * @param value Pre-Populated text
+         * @param  value 
+         *         Pre-Populated text
          *
          * @return The same builder instance for chaining
          */
@@ -269,7 +272,8 @@ public interface TextInput extends ActionComponent
          * Sets a placeholder for this TextInput field.
          * <br>This is a short hint that describes the expected value of the input field.
          *
-         * @param placeholder The placeholder
+         * @param  placeholder 
+         *         The placeholder
          *
          * @return The same builder instance for chaining
          */
@@ -312,8 +316,9 @@ public interface TextInput extends ActionComponent
         }
 
         /**
-         * The label
-         * @return Label
+         * The label shown above this text input box
+         *
+         * @return Label for the input
          */
         @Nonnull
         public String getLabel()
@@ -357,9 +362,9 @@ public interface TextInput extends ActionComponent
         /**
          * Whether this TextInput is required
          *
-         * @see TextInput#isRequired()
-         *
          * @return True if this TextInput is required
+         * 
+         * @see TextInput#isRequired()
          */
         public boolean isRequired()
         {

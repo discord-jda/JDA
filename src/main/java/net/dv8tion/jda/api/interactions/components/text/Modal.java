@@ -31,7 +31,8 @@ import java.util.*;
  * Represents a Discord Modal
  *
  * <p>Replying to an interaction with a modal will cause a form window to pop up on the User's client.
- * <h2>Example</h2>
+  *
+  * <h2>Example</h2>
  * <pre>{@code
  *     public void onSlashCommandInteraction(@NonNull SlashCommandInteractionEvent event)
  *     {
@@ -59,7 +60,8 @@ import java.util.*;
  *     }
  * }</pre>
  *
- * <p><b>Only a maximum of 5 components can be included in a Modal, and only {@link net.dv8tion.jda.api.interactions.components.text.TextInput TextInputs} are allowed.</b>
+ * <p><b>Only a maximum of 5 component layouts can be included in a Modal, and only {@link net.dv8tion.jda.api.interactions.components.text.TextInput TextInputs} are allowed at this time.</b>
+ * You can check whether a component is supported via {@link ComponentType#isModalCompatible}
  *
  * @see ModalInteractionEvent
  */
@@ -108,12 +110,11 @@ public interface Modal extends SerializableData
      *
      * @param  customId 
      *         The custom id for this modal
-     *
-     * @param title
-     *        The title for this modal
+     * @param  title
+     *         The title for this modal
      *
      * @throws IllegalArgumentException
-     *         If the provided customId or title are null, empty or blank.
+     *         If the provided customId or title are null, empty, or blank.
      *
      * @return {@link Builder Builder} instance to customize this modal further
      */
@@ -128,9 +129,9 @@ public interface Modal extends SerializableData
 
     class Builder
     {
+        private final List<ActionRow> components = new ArrayList<>(5);
         private String id;
         private String title;
-        private final List<ActionRow> components = new ArrayList<>();
 
         protected Builder(@Nonnull String customId)
         {
@@ -195,7 +196,7 @@ public interface Modal extends SerializableData
         }
 
         /**
-         * Adds components to this modal
+         * Adds ActionRows to this modal
          *
          * @param  actionRows 
          *         ActionRows to add to the modal, up to 5
@@ -216,7 +217,8 @@ public interface Modal extends SerializableData
         /**
          * Adds an ActionRow to this modal
          *
-         * @param components The components to add
+         * @param  components
+         *         The components to add
          *
          * @return Same builder for chaining convenience
          */
@@ -229,7 +231,8 @@ public interface Modal extends SerializableData
         /**
          * Adds an ActionRow to this modal
          *
-         * @param components The components to add
+         * @param  components
+         *         The components to add
          *
          * @return Same builder for chaining convenience
          */
@@ -277,8 +280,6 @@ public interface Modal extends SerializableData
          *
          * @throws IllegalArgumentException
          * <ul>
-         *     <li>If the id is null</li>
-         *     <li>If the title is null</li>
          *     <li>If the components are empty</li>
          *     <li>If there are more than 5 components</li>
          * </ul>

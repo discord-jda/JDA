@@ -72,7 +72,7 @@ public class ModalInteractionEvent extends GenericInteractionCreateEvent impleme
     @Override
     public ReplyCallbackAction deferReply()
     {
-        return new ReplyCallbackActionImpl((InteractionHookImpl) getHook());
+        return interaction.deferReply();
     }
 
     @Nonnull

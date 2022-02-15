@@ -91,9 +91,9 @@ public class ModalMapping
     public boolean equals(Object o)
     {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (!(o instanceof ModalMapping)) return false;
         ModalMapping that = (ModalMapping) o;
-        return Objects.equals(id, that.id) && Objects.equals(value, that.value) && type == that.type;
+        return type == that.type && Objects.equals(id, that.id) && Objects.equals(value, that.value);
     }
 
     @Override
