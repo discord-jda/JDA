@@ -73,21 +73,22 @@ public class AttachmentProxy extends FileProxy
      * <br>The attachment, if an image, may be resized at any size, however if the size does not fit the ratio of the image, then it will be cropped as to fit the target size
      * <br>If the attachment is not an image then the size parameters are ignored and the file is downloaded
      *
-     * @param    width
-     *           The width of this image, must be positive
-     * @param    height
-     *           The height of this image, must be positive
+     * @param   width
+     *          The width of this image, must be positive
+     * @param   height
+     *          The height of this image, must be positive
      *
-     * @throws   IllegalArgumentException
-     *           If any of the follow checks are true
-     *           <ul>
-     *               <li>The requested width is negative or 0</li>
-     *               <li>The requested height is negative or 0</li>
-     *           </ul>
+     * @throws  IllegalArgumentException
+     *          If any of the follow checks are true
+     *          <ul>
+     *              <li>The requested width is negative or 0</li>
+     *              <li>The requested height is negative or 0</li>
+     *          </ul>
      *
-     * @return   a {@link CompletableFuture} which would return a {@link Path} which corresponds to the location the file has been downloaded
+     * @return a {@link CompletableFuture} which would return a {@link Path} which corresponds to the location the file has been downloaded
      *
-     * @implNote The file is first downloaded into a temporary file, the file is then moved to its real destination when the download is complete
+     * @implNote
+     *         The file is first downloaded into a temporary file, the file is then moved to its real destination when the download is complete
      */
     @Nonnull
     public CompletableFuture<Path> downloadToPath(int width, int height)
@@ -103,23 +104,24 @@ public class AttachmentProxy extends FileProxy
      * <br>The attachment, if an image, may be resized at any size, however if the size does not fit the ratio of the image, then it will be cropped as to fit the target size
      * <br>If the attachment is not an image then the size parameters are ignored and the file is downloaded
      *
-     * @param    file
-     *           The file in which to download the image
-     * @param    width
-     *           The width of this image, must be positive
-     * @param    height
-     *           The height of this image, must be positive
+     * @param  file
+     *         The file in which to download the image
+     * @param  width
+     *         The width of this image, must be positive
+     * @param  height
+     *         The height of this image, must be positive
      *
-     * @throws   IllegalArgumentException
-     *           If any of the follow checks are true
-     *           <ul>
-     *               <li>The requested width is negative or 0</li>
-     *               <li>The requested height is negative or 0</li>
-     *           </ul>
+     * @throws IllegalArgumentException
+     *         If any of the follow checks are true
+     *         <ul>
+     *             <li>The requested width is negative or 0</li>
+     *             <li>The requested height is negative or 0</li>
+     *         </ul>
      *
-     * @return   a {@link CompletableFuture} which would return a {@link File}, it is the same as the file passed in the parameters
+     * @return a {@link CompletableFuture} which would return a {@link File}, it is the same as the file passed in the parameters
      *
-     * @implNote The file is first downloaded into a temporary file, the file is then moved to its real destination when the download is complete
+     * @implNote
+     *         The file is first downloaded into a temporary file, the file is then moved to its real destination when the download is complete
      */
     @Nonnull
     public CompletableFuture<File> downloadToFile(@Nonnull File file, int width, int height)
@@ -136,24 +138,25 @@ public class AttachmentProxy extends FileProxy
      * <br>The attachment, if an image, may be resized at any size, however if the size does not fit the ratio of the image, then it will be cropped as to fit the target size
      * <br>If the attachment is not an image then the size parameters are ignored and the file is downloaded
      *
-     * @param    path
-     *           The file in which to download the image
-     * @param    width
-     *           The width of this image, must be positive
-     * @param    height
-     *           The height of this image, must be positive
+     * @param  path
+     *         The file in which to download the image
+     * @param  width
+     *         The width of this image, must be positive
+     * @param  height
+     *         The height of this image, must be positive
      *
-     * @return   a {@link CompletableFuture} which would return a {@link Path}, it is the same as the file passed in the parameters
+     * @return a {@link CompletableFuture} which would return a {@link Path}, it is the same as the file passed in the parameters
      *
-     * @throws   IllegalArgumentException
-     *           If any of the follow checks are true
-     *           <ul>
-     *               <li>The requested width is negative or 0</li>
-     *               <li>The requested height is negative or 0</li>
-     *           </ul>
+     * @throws IllegalArgumentException
+     *         If any of the follow checks are true
+     *         <ul>
+     *             <li>The requested width is negative or 0</li>
+     *             <li>The requested height is negative or 0</li>
+     *         </ul>
      *
-     * @implNote The file is first downloaded into a temporary file, the file is then moved to its real destination when the download is complete.
-     *           <br>The given path can also target filesystems such as a ZIP filesystem
+     * @implNote
+     *         The file is first downloaded into a temporary file, the file is then moved to its real destination when the download is complete.
+     *         <br>The given path can also target filesystems such as a ZIP filesystem
      */
     @Nonnull
     public CompletableFuture<Path> downloadToPath(@Nonnull Path path, int width, int height)

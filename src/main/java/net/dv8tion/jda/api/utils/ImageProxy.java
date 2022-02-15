@@ -40,8 +40,7 @@ public class ImageProxy extends FileProxy
     /**
      * Retrieves the {@link InputStream} of this image at the specified size
      * <br><b>The image may not be resized at any size, usually Discord only allows for a few powers of 2</b>, so numbers like 128, 256, 512..., 100 might also be a valid size
-     * <br><br>
-     * If the image is not of a valid size, the CompletableFuture will hold an exception since the HTTP request would have returned a 404
+     * <p>If the image is not of a valid size, the CompletableFuture will hold an exception since the HTTP request would have returned a 404
      *
      * @param size The size of this image
      *
