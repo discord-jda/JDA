@@ -48,24 +48,28 @@ public interface Component extends SerializableData
      */
     enum Type
     {
-        UNKNOWN(-1, 0),
+        UNKNOWN(-1, 0, false, false),
         /** A row of components */
-        ACTION_ROW(1, 0),
+        ACTION_ROW(1, 0, true, true),
         /** A button */
-        BUTTON(2, 5),
+        BUTTON(2, 5, true, false),
         /** A select menu */
-        SELECT_MENU(3, 1),
+        SELECT_MENU(3, 1, true, false),
         /** A text input field */
-        TEXT_INPUT(4, 1)
+        TEXT_INPUT(4, 1, false, true)
         ;
 
         private final int key;
         private final int maxPerRow;
+        private final boolean messageCompatible;
+        private final boolean modalCompatible;
 
-        Type(int key, int maxPerRow)
+        Type(int key, int maxPerRow, boolean messageCompatible, boolean modalCompatible)
         {
             this.key = key;
             this.maxPerRow = maxPerRow;
+            this.messageCompatible = messageCompatible;
+            this.modalCompatible = modalCompatible;
         }
 
         /**
@@ -88,6 +92,26 @@ public interface Component extends SerializableData
         public int getKey()
         {
             return key;
+        }
+
+        /**
+         * Whether this component can be used in {@link net.dv8tion.jda.api.entities.Message Messages}.
+         *
+         * @return Whether this component can be used in Messages.
+         */
+        public boolean isMessageCompatible()
+        {
+            return messageCompatible;
+        }
+
+        /**
+         * Whether this component can be used in {@link net.dv8tion.jda.api.interactions.components.text.Modal Modals}.
+         *
+         * @return Whether this component can be used in Modals.
+         */
+        public boolean isModalCompatible()
+        {
+            return modalCompatible;
         }
 
         /**
