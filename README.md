@@ -170,7 +170,6 @@ public class ReadyListener implements EventListener
 public class MessageListener extends ListenerAdapter
 {
     public static void main(String[] args)
-            
     {
         JDA jda = JDABuilder.createDefault("token")
                 .enableIntents(GatewayIntent.MESSAGE_CONTENT) // enables explicit access to message.getContentDisplay()
