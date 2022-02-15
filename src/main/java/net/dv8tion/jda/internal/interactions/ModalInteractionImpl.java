@@ -24,6 +24,7 @@ import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.requests.restaction.interactions.MessageEditCallbackActionImpl;
+import net.dv8tion.jda.internal.requests.restaction.interactions.ReplyCallbackActionImpl;
 
 import javax.annotation.Nonnull;
 import java.util.Collections;
@@ -67,7 +68,7 @@ public class ModalInteractionImpl extends DeferrableInteractionImpl implements M
     @Override
     public ReplyCallbackAction deferReply()
     {
-        return deferReply(false);
+        return new ReplyCallbackActionImpl(hook);
     }
 
     @Nonnull
