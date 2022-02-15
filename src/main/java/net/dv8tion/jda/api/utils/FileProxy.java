@@ -37,7 +37,9 @@ import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-//TODO docs
+/**
+ * A utility class to download files from Discord
+ */
 public class FileProxy
 {
     private static volatile OkHttpClient defaultHttpClient;
@@ -65,7 +67,12 @@ public class FileProxy
         FileProxy.defaultHttpClient = httpClient;
     }
 
-    //TODO docs
+    /**
+     * Returns the URL that has been passed to this proxy
+     * <br>This URL is always from Discord
+     *
+     * @return The URL of the file
+     */
     @Nonnull
     public String getUrl()
     {
@@ -185,13 +192,10 @@ public class FileProxy
 
     protected CompletableFuture<Path> downloadToPath(String url)
     {
-        final HttpUrl parsedUrl = HttpUrl.parse(url); //TODO should we allow other schemes than http and https ?
+        final HttpUrl parsedUrl = HttpUrl.parse(url);
         if (parsedUrl == null)
         {
-            final CompletableFuture<Path> future = new CompletableFuture<>();
-            future.completeExceptionally(new IllegalArgumentException("URL '" + url + "' is not valid"));
-
-            return future;
+            throw new IllegalArgumentException("URL '" + url + "' is not valid");
         }
 
         final List<String> segments = parsedUrl.pathSegments();
@@ -251,14 +255,49 @@ public class FileProxy
 
     //API DOWNLOAD METHOD
 
-    //TODO docs
+    /**
+     * Retrieves the {@link InputStream} of this file
+     *
+     * @return a {@link CompletableFuture} which holds an {@link InputStream}
+     */
     @Nonnull
     public CompletableFuture<InputStream> download()
     {
         return download(url);
     }
 
-    //TODO docs
+    /**
+     * Retrieves the data of this attachment, at the specified width and height, and stores it in a file with the same name as the queried file name (this would be the last segment of the URL)
+     *
+     * @return a {@link CompletableFuture} which holds a {@link Path} which corresponds to the location the file has been downloaded
+     *
+     * @implNote
+     *         The file is first downloaded into a temporary file, the file is then moved to its real destination when the download is complete
+     */
+    @Nonnull
+    public CompletableFuture<Path> downloadToPath()
+    {
+        return downloadToPath(url);
+    }
+
+    /**
+     * Downloads the data of this file into the specified file
+     *
+     * @param  file
+     *         The file in which to download the data
+     *
+     * @throws IllegalArgumentException
+     *         If any of the follow checks are true
+     *         <ul>
+     *             <li>The target file is null</li>
+     *             <li>The parent folder of the target file does not exist</li>
+     *         </ul>
+     *
+     * @return a {@link CompletableFuture} which holds a {@link File}, it is the same as the file passed in the parameters
+     *
+     * @implNote
+     *         The file is first downloaded into a temporary file, the file is then moved to its real destination when the download is complete
+     */
     @Nonnull
     public CompletableFuture<File> downloadToFile(@Nonnull File file)
     {
@@ -267,14 +306,25 @@ public class FileProxy
         return downloadToPath(url, file.toPath()).thenApply(Path::toFile);
     }
 
-    //TODO docs
-    @Nonnull
-    public CompletableFuture<Path> downloadToPath()
-    {
-        return downloadToPath(url);
-    }
-
-    //TODO docs
+    /**
+     * Downloads the data of this file into the specified file
+     *
+     * @param  path
+     *         The file in which to download the image
+     *
+     * @return a {@link CompletableFuture} which holds a {@link Path}, it is the same as the path passed in the parameters
+     *
+     * @throws IllegalArgumentException
+     *         If any of the follow checks are true
+     *         <ul>
+     *             <li>The target path is null</li>
+     *             <li>The parent folder of the target path does not exist</li>
+     *         </ul>
+     *
+     * @implNote
+     *         The file is first downloaded into a temporary file, the file is then moved to its real destination when the download is complete.
+     *         <br>The given path can also target filesystems such as a ZIP filesystem
+     */
     @Nonnull
     public CompletableFuture<Path> downloadToPath(@Nonnull Path path)
     {
