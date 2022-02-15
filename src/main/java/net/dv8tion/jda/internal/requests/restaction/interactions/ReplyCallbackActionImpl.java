@@ -144,6 +144,10 @@ public class ReplyCallbackActionImpl extends DeferrableCallbackActionImpl implem
     public ReplyCallbackAction addActionRows(@Nonnull ActionRow... rows)
     {
         Checks.noneNull(rows, "ActionRows");
+
+        if (Arrays.stream(rows).anyMatch(row -> !row.isMessageCompatible()))
+            throw new IllegalArgumentException("Provided ActionRow is not compatible with Messages!");
+
         Checks.check(components.size() + rows.length <= 5, "Can only have 5 action rows per message!");
         Checks.checkDuplicateIds(Stream.concat(this.components.stream(), Arrays.stream(rows)));
 

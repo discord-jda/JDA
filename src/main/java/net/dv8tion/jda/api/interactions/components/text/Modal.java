@@ -184,16 +184,20 @@ public interface Modal extends SerializableData
          *         ActionRows to add to the modal, up to 5
          *
          * @throws IllegalArgumentException
-         *         If any of the provided ActionRows are null
+         *         <ul>
+         *             <li>If any of the provided ActionRows are null</li>
+         *             <li>If any of the provided ActionRows' components are not compatible with Modals</li>
+         *         </ul>
          *
          * @return The same builder instance for chaining
+         *
+         * @see    ActionRow#isModalCompatible()
          */
         @Nonnull
         public Builder addActionRows(@Nonnull ActionRow... actionRows)
         {
             Checks.noneNull(actionRows, "Action Rows");
-            Collections.addAll(this.components, actionRows);
-            return this;
+            return addActionRows(Arrays.asList(actionRows));
         }
 
         /**
@@ -203,14 +207,23 @@ public interface Modal extends SerializableData
          *         ActionRows to add to the modal, up to 5
          *
          * @throws IllegalArgumentException
-         *         If any of the provided ActionRows are null
+         *         <ul>
+         *             <li>If any of the provided ActionRows are null</li>
+         *             <li>If any of the provided ActionRows' components are not compatible with Modals</li>
+         *         </ul>
          *
          * @return The same builder instance for chaining
+         *
+         * @see    ActionRow#isModalCompatible()
          */
         @Nonnull
         public Builder addActionRows(@Nonnull Collection<? extends ActionRow> actionRows)
         {
             Checks.noneNull(actionRows, "Components");
+
+            if (actionRows.stream().anyMatch(actionRow -> !actionRow.isModalCompatible()))
+                throw new IllegalArgumentException("ActionRow contains components that are not compatible with Modals!");
+
             this.components.addAll(actionRows);
             return this;
         }
@@ -221,7 +234,15 @@ public interface Modal extends SerializableData
          * @param  components
          *         The components to add
          *
+         * @throws IllegalArgumentException
+         *         <ul>
+         *             <li>If any of the provided ItemComponents are null, or an invalid number of components are provided.</li>
+         *             <li>If any of the provided ItemComponents are not compatible with Modals</li>
+         *         </ul>
+         *
          * @return Same builder for chaining convenience
+         *
+         * @see    ItemComponent#isModalCompatible()
          */
         @Nonnull
         public Builder addActionRow(@Nonnull Collection<? extends ItemComponent> components)
@@ -235,7 +256,15 @@ public interface Modal extends SerializableData
          * @param  components
          *         The components to add
          *
+         * @throws IllegalArgumentException
+         *         <ul>
+         *             <li>If any of the provided ItemComponents are null, or an invalid number of components are provided.</li>
+         *             <li>If any of the provided ItemComponents are not compatible with Modals</li>
+         *         </ul>
+         *
          * @return Same builder for chaining convenience
+         *
+         * @see    ItemComponent#isModalCompatible()
          */
         @Nonnull
         public Builder addActionRow(@Nonnull ItemComponent... components)

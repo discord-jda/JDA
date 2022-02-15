@@ -107,6 +107,10 @@ public class MessageEditCallbackActionImpl extends DeferrableCallbackActionImpl 
     public MessageEditCallbackAction setActionRows(@Nonnull ActionRow... rows)
     {
         Checks.noneNull(rows, "ActionRows");
+
+        if (Arrays.stream(rows).anyMatch(row -> !row.isMessageCompatible()))
+            throw new IllegalArgumentException("Provided ActionRow is not compatible with Messages!");
+
         Checks.check(rows.length <= 5, "Can only have 5 action rows per message!");
         Checks.checkDuplicateIds(Arrays.stream(rows));
         this.components = new ArrayList<>();

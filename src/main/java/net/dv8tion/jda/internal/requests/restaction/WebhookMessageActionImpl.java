@@ -161,6 +161,10 @@ public class WebhookMessageActionImpl<T>
     public WebhookMessageActionImpl<T> addActionRows(@Nonnull ActionRow... rows)
     {
         Checks.noneNull(rows, "ActionRows");
+
+        if (Arrays.stream(rows).anyMatch(row -> !row.isMessageCompatible()))
+            throw new IllegalArgumentException("Provided ActionRow is not compatible with Messages!");
+
         Checks.check(rows.length + components.size() <= 5, "Can only have 5 action rows per message!");
         Checks.checkDuplicateIds(Stream.concat(components.stream(), Arrays.stream(rows)));
         Collections.addAll(components, rows);
