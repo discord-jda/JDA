@@ -22,8 +22,6 @@ import net.dv8tion.jda.api.interactions.ModalInteraction;
 import net.dv8tion.jda.api.interactions.modals.ModalMapping;
 import net.dv8tion.jda.api.requests.restaction.interactions.MessageEditCallbackAction;
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction;
-import net.dv8tion.jda.internal.interactions.InteractionHookImpl;
-import net.dv8tion.jda.internal.requests.restaction.interactions.ReplyCallbackActionImpl;
 
 import javax.annotation.Nonnull;
 import java.util.List;
