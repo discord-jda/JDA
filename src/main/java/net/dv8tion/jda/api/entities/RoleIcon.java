@@ -74,7 +74,13 @@ public class RoleIcon
         return iconId == null ? null : String.format(ICON_URL, roleId, iconId);
     }
 
-    //TODO docs
+    /**
+     * Returns an {@link ImageProxy} for this role's icon
+     *
+     * @return Possibly-null {@link ImageProxy} of this role's icon
+     *
+     * @see #getIconUrl()
+     */
     @Nullable
     public ImageProxy getIcon()
     {

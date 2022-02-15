@@ -24,7 +24,7 @@ import java.nio.file.Path;
 import java.util.concurrent.CompletableFuture;
 
 /**
- * A utility class to retrieve attachments coming from Discord
+ * A utility class to retrieve attachments
  * <br>This supports downloading the images from the normal URL, as well as downloading the image with a specific width and height
  */
 public class AttachmentProxy extends FileProxy

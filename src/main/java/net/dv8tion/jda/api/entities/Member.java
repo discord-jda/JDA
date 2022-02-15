@@ -260,7 +260,13 @@ public interface Member extends IMentionable, IPermissionHolder
         return avatarId == null ? null : String.format(AVATAR_URL, getGuild().getId(), getId(), avatarId, avatarId.startsWith("a_") ? "gif" : "png");
     }
 
-    //TODO docs
+    /**
+     * Returns an {@link ImageProxy} for this member's avatar
+     *
+     * @return Possibly-null {@link ImageProxy} of this member's avatar
+     *
+     * @see #getAvatarUrl()
+     */
     @Nullable
     default ImageProxy getAvatar()
     {
@@ -284,7 +290,13 @@ public interface Member extends IMentionable, IPermissionHolder
         return avatarUrl == null ? getUser().getEffectiveAvatarUrl() : avatarUrl;
     }
 
-    //TODO docs
+    /**
+     * Returns an {@link ImageProxy} for this member's effective avatar image
+     *
+     * @return Never-null {@link ImageProxy} of this member's effective avatar image
+     *
+     * @see #getEffectiveAvatarUrl()
+     */
     @Nonnull
     default ImageProxy getEffectiveAvatar()
     {

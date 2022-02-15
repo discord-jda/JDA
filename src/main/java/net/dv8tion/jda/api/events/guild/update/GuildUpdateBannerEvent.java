@@ -61,7 +61,13 @@ public class GuildUpdateBannerEvent extends GenericGuildUpdateEvent<String>
         return next == null ? null : String.format(Guild.BANNER_URL, guild.getId(), next, next.startsWith("a_") ? "gif" : "png");
     }
 
-    //TODO docs
+    /**
+     * Returns an {@link ImageProxy} for this guild's new banner
+     *
+     * @return Possibly-null {@link ImageProxy} of this guild's new banner
+     *
+     * @see #getNewBannerUrl()
+     */
     @Nullable
     public ImageProxy getNewBanner()
     {
@@ -93,7 +99,13 @@ public class GuildUpdateBannerEvent extends GenericGuildUpdateEvent<String>
         return previous == null ? null : String.format(Guild.BANNER_URL, guild.getId(), previous, previous.startsWith("a_") ? "gif" : "png");
     }
 
-    //TODO docs
+    /**
+     * Returns an {@link ImageProxy} for this guild's old banner
+     *
+     * @return Possibly-null {@link ImageProxy} of this guild's old banner
+     *
+     * @see #getOldBannerUrl()
+     */
     @Nullable
     public ImageProxy getOldBanner()
     {

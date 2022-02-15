@@ -72,7 +72,13 @@ public class UserUpdateAvatarEvent extends GenericUserUpdateEvent<String>
         return previous == null ? null : String.format(User.AVATAR_URL, getUser().getId(), previous, previous.startsWith("a_") ? "gif" : "png");
     }
 
-    //TODO docs
+    /**
+     * Returns an {@link ImageProxy} for this user's old avatar image
+     *
+     * @return Possibly-null {@link ImageProxy} of this user's old avatar image
+     *
+     * @see #getOldAvatarUrl()
+     */
     @Nullable
     public ImageProxy getOldAvatar()
     {
@@ -104,7 +110,13 @@ public class UserUpdateAvatarEvent extends GenericUserUpdateEvent<String>
         return next == null ? null : String.format(User.AVATAR_URL, getUser().getId(), next, next.startsWith("a_") ? "gif" : "png");
     }
 
-    //TODO docs
+    /**
+     * Returns an {@link ImageProxy} for this user's new avatar image
+     *
+     * @return Possibly-null {@link ImageProxy} of this user's new avatar image
+     *
+     * @see #getNewAvatarUrl()
+     */
     @Nullable
     public ImageProxy getNewAvatar()
     {

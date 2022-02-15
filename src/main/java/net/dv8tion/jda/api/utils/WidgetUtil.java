@@ -645,7 +645,13 @@ public class WidgetUtil
                 return avatarId == null ? null : String.format(User.AVATAR_URL, getId(), avatarId, avatarId.startsWith("a_") ? ".gif" : ".png");
             }
 
-            //TODO docs
+            /**
+             * Returns an {@link ImageProxy} for this user's avatar image
+             *
+             * @return Possibly-null {@link ImageProxy} of this user's avatar image
+             *
+             * @see #getAvatarUrl()
+             */
             @Nullable
             public ImageProxy getAvatar()
             {
@@ -679,7 +685,13 @@ public class WidgetUtil
                 return String.format(User.DEFAULT_AVATAR_URL, getDefaultAvatarId());
             }
 
-            //TODO docs
+            /**
+             * Returns an {@link ImageProxy} for this user's default avatar image
+             *
+             * @return Never-null {@link ImageProxy} of this user's default avatar image
+             *
+             * @see #getDefaultAvatarUrl()
+             */
             @Nonnull
             public ImageProxy getDefaultAvatar()
             {
@@ -700,9 +712,15 @@ public class WidgetUtil
                 return avatarUrl == null ? getDefaultAvatarUrl() : avatarUrl;
             }
 
-            //TODO docs
+            /**
+             * Returns an {@link ImageProxy} for this user's effective avatar image
+             *
+             * @return Never-null {@link ImageProxy} of this user's effective avatar image
+             *
+             * @see #getEffectiveAvatarUrl()
+             */
             @Nonnull
-            public ImageProxy getNewSplash()
+            public ImageProxy getEffectiveAvatar()
             {
                 return new ImageProxy(getEffectiveAvatarUrl());
             }

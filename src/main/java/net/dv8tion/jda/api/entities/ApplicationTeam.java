@@ -87,7 +87,13 @@ public interface ApplicationTeam extends ISnowflake
         return iconId == null ? null : String.format(ICON_URL, getId(), iconId);
     }
 
-    //TODO docs
+    /**
+     * Returns an {@link ImageProxy} for this application team's icon
+     *
+     * @return The {@link ImageProxy} of this application team's icon, or null if no icon is applied
+     *
+     * @see #getIconUrl()
+     */
     @Nullable
     default ImageProxy getIcon() {
         final String iconUrl = getIconUrl();

@@ -61,7 +61,13 @@ public class SelfUpdateAvatarEvent extends GenericSelfUpdateEvent<String>
         return previous == null ? null : String.format(AVATAR_URL, getSelfUser().getId(), previous, previous.startsWith("a_") ? ".gif" : ".png");
     }
 
-    //TODO docs
+    /**
+     * Returns an {@link ImageProxy} for this bot's new avatar image
+     *
+     * @return Possibly-null {@link ImageProxy} of this bot's new avatar image
+     *
+     * @see #getOldAvatarUrl()
+     */
     @Nullable
     public ImageProxy getOldAvatar()
     {
@@ -93,7 +99,13 @@ public class SelfUpdateAvatarEvent extends GenericSelfUpdateEvent<String>
         return next == null ? null : String.format(AVATAR_URL, getSelfUser().getId(), next, next.startsWith("a_") ? ".gif" : ".png");
     }
 
-    //TODO docs
+    /**
+     * Returns an {@link ImageProxy} for this bot's new avatar image
+     *
+     * @return Possibly-null {@link ImageProxy} of this bot's new avatar image
+     *
+     * @see #getNewAvatarUrl()
+     */
     @Nullable
     public ImageProxy getNewAvatar()
     {

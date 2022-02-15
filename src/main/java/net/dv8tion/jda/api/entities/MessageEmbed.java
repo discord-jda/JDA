@@ -850,7 +850,13 @@ public class MessageEmbed implements SerializableData
             return iconUrl;
         }
 
-        //TODO docs
+        /**
+         * Returns an {@link ImageProxy} for this author's icon
+         *
+         * @return Possibly-null {@link ImageProxy} of this author's icon
+         *
+         * @see #getIconUrl()
+         */
         @Nullable
         public ImageProxy getIcon()
         {
@@ -871,7 +877,13 @@ public class MessageEmbed implements SerializableData
             return proxyIconUrl;
         }
 
-        //TODO docs
+        /**
+         * Returns an {@link ImageProxy} for this proxied author's icon
+         *
+         * @return Possibly-null {@link ImageProxy} of this proxied author's icon
+         *
+         * @see #getProxyIconUrl()
+         */
         @Nullable
         public ImageProxy getProxyIcon()
         {
@@ -931,7 +943,13 @@ public class MessageEmbed implements SerializableData
             return iconUrl;
         }
 
-        //TODO docs
+        /**
+         * Returns an {@link ImageProxy} for this footer's icon
+         *
+         * @return Possibly-null {@link ImageProxy} of this footer's icon
+         *
+         * @see #getIconUrl()
+         */
         @Nullable
         public ImageProxy getIcon()
         {
@@ -952,7 +970,13 @@ public class MessageEmbed implements SerializableData
             return proxyIconUrl;
         }
 
-        //TODO docs
+        /**
+         * Returns an {@link ImageProxy} for this proxied footer's icon
+         *
+         * @return Possibly-null {@link ImageProxy} of this proxied footer's icon
+         *
+         * @see #getProxyIconUrl()
+         */
         @Nullable
         public ImageProxy getProxyIcon()
         {

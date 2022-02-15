@@ -71,7 +71,13 @@ public class GuildMemberUpdateAvatarEvent extends GenericGuildMemberUpdateEvent<
         return previous == null ? null : String.format(Member.AVATAR_URL, getMember().getGuild().getId(), getMember().getId(), previous, previous.startsWith("a_") ? "gif" : "png");
     }
 
-    //TODO docs
+    /**
+     * Returns an {@link ImageProxy} for this member's old avatar
+     *
+     * @return Possibly-null {@link ImageProxy} of this member's old avatar
+     *
+     * @see #getOldAvatarUrl()
+     */
     @Nullable
     public ImageProxy getOldAvatar()
     {
@@ -103,7 +109,13 @@ public class GuildMemberUpdateAvatarEvent extends GenericGuildMemberUpdateEvent<
         return next == null ? null : String.format(Member.AVATAR_URL, getMember().getGuild().getId(), getMember().getId(), next, next.startsWith("a_") ? "gif" : "png");
     }
 
-    //TODO docs
+    /**
+     * Returns an {@link ImageProxy} for this member's new avatar
+     *
+     * @return Possibly-null {@link ImageProxy} of this member's new avatar
+     *
+     * @see #getNewAvatarUrl()
+     */
     @Nullable
     public ImageProxy getNewAvatar()
     {

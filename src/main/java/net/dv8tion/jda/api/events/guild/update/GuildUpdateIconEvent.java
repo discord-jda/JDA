@@ -61,7 +61,13 @@ public class GuildUpdateIconEvent extends GenericGuildUpdateEvent<String>
         return previous == null ? null : String.format(Guild.ICON_URL, guild.getId(), previous, previous.startsWith("a_") ? "gif" : "png");
     }
 
-    //TODO docs
+    /**
+     * Returns an {@link ImageProxy} for this guild's old icon
+     *
+     * @return Possibly-null {@link ImageProxy} of this guild's old icon
+     *
+     * @see #getOldIconUrl()
+     */
     @Nullable
     public ImageProxy getOldIcon()
     {
@@ -93,7 +99,13 @@ public class GuildUpdateIconEvent extends GenericGuildUpdateEvent<String>
         return next == null ? null : String.format(Guild.ICON_URL, guild.getId(), next, next.startsWith("a_") ? "gif" : "png");
     }
 
-    //TODO docs
+    /**
+     * Returns an {@link ImageProxy} for this guild's new icon
+     *
+     * @return Possibly-null {@link ImageProxy} of this guild's new icon
+     *
+     * @see #getNewIconUrl()
+     */
     @Nullable
     public ImageProxy getNewIcon()
     {

@@ -38,7 +38,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 /**
- * A utility class to download files from Discord
+ * A utility class to download files
  */
 public class FileProxy
 {

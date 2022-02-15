@@ -115,7 +115,13 @@ public class MessageSticker implements ISnowflake
         return Helpers.format(ICON_URL, getId(), formatType.getExtension());
     }
 
-    //TODO docs
+    /**
+     * Returns an {@link ImageProxy} for this sticker's image
+     *
+     * @return Never-null {@link ImageProxy} of this sticker's image
+     *
+     * @see #getIconUrl()
+     */
     @Nonnull
     public ImageProxy getIcon()
     {

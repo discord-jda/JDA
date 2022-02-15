@@ -403,7 +403,13 @@ public interface Invite
         @Nullable
         String getSplashUrl();
 
-        //TODO docs
+        /**
+         * Returns an {@link ImageProxy} for this invite guild's icon
+         *
+         * @return Possibly-null {@link ImageProxy} of this invite guild's icon
+         *
+         * @see #getIconUrl()
+         */
         @Nullable
         default ImageProxy getSplash()
         {
@@ -486,7 +492,13 @@ public interface Invite
         @Nullable
         String getIconUrl();
 
-        //TODO docs
+        /**
+         * Returns an {@link ImageProxy} for this group invite's icon
+         *
+         * @return Possibly-null {@link ImageProxy} of this group invite's icon
+         *
+         * @see #getIconUrl()
+         */
         @Nullable
         default ImageProxy getIcon()
         {
@@ -625,7 +637,13 @@ public interface Invite
         @Nullable
         String getIconUrl();
 
-        //TODO docs
+        /**
+         * Returns an {@link ImageProxy} for this application invite's icon
+         *
+         * @return Possibly-null {@link ImageProxy} of this application invite's icon
+         *
+         * @see #getIconUrl()
+         */
         @Nullable
         default ImageProxy getIcon()
         {

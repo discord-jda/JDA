@@ -124,7 +124,13 @@ public class TemplateGuild implements ISnowflake
                 : String.format(Guild.ICON_URL, this.id, this.iconId, iconId.startsWith("a_") ? "gif" : "png");
     }
 
-    //TODO docs
+    /**
+     * Returns an {@link ImageProxy} for this template guild's icon
+     *
+     * @return Possibly-null {@link ImageProxy} of this template guild's icon
+     *
+     * @see #getIconUrl()
+     */
     @Nullable
     public ImageProxy getIcon() {
         final String iconUrl = getIconUrl();

@@ -679,7 +679,13 @@ public interface Guild extends ISnowflake
         return iconId == null ? null : String.format(ICON_URL, getId(), iconId, iconId.startsWith("a_") ? "gif" : "png");
     }
 
-    //TODO docs
+    /**
+     * Returns an {@link ImageProxy} for this guild's icon
+     *
+     * @return The {@link ImageProxy} of this guild's icon
+     *
+     * @see #getIconUrl()
+     */
     default ImageProxy getIcon()
     {
         final String iconUrl = getIconUrl();
@@ -729,7 +735,13 @@ public interface Guild extends ISnowflake
         return splashId == null ? null : String.format(SPLASH_URL, getId(), splashId);
     }
 
-    //TODO docs
+    /**
+     * Returns an {@link ImageProxy} for this guild's splash icon
+     *
+     * @return Possibly-null {@link ImageProxy} of this guild's splash icon
+     *
+     * @see #getSplashUrl()
+     */
     @Nullable
     default ImageProxy getSplash()
     {
@@ -852,7 +864,13 @@ public interface Guild extends ISnowflake
         return bannerId == null ? null : String.format(BANNER_URL, getId(), bannerId, bannerId.startsWith("a_") ? "gif" : "png");
     }
 
-    //TODO docs
+    /**
+     * Returns an {@link ImageProxy} for this guild's banner icon
+     *
+     * @return Possibly-null {@link ImageProxy} of this guild's banner icon
+     *
+     * @see #getBannerUrl()
+     */
     @Nullable
     default ImageProxy getBanner()
     {

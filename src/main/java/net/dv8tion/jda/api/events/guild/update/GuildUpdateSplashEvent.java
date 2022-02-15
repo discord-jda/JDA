@@ -61,7 +61,13 @@ public class GuildUpdateSplashEvent extends GenericGuildUpdateEvent<String>
         return previous == null ? null : String.format(Guild.SPLASH_URL, guild.getId(), previous);
     }
 
-    //TODO docs
+    /**
+     * Returns an {@link ImageProxy} for this guild's old splash image
+     *
+     * @return Possibly-null {@link ImageProxy} of this guild's old splash image
+     *
+     * @see #getOldSplashUrl() ()
+     */
     @Nullable
     public ImageProxy getOldSplash()
     {
@@ -93,7 +99,13 @@ public class GuildUpdateSplashEvent extends GenericGuildUpdateEvent<String>
         return next == null ? null : String.format(Guild.SPLASH_URL, guild.getId(), next);
     }
 
-    //TODO docs
+    /**
+     * Returns an {@link ImageProxy} for this guild's new splash image
+     *
+     * @return Possibly-null {@link ImageProxy} of this guild's new splash image
+     *
+     * @see #getNewSplashUrl()
+     */
     @Nullable
     public ImageProxy getNewSplash()
     {

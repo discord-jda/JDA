@@ -182,7 +182,13 @@ public interface User extends IMentionable
         return avatarId == null ? null : String.format(AVATAR_URL, getId(), avatarId, avatarId.startsWith("a_") ? "gif" : "png");
     }
 
-    //TODO docs
+    /**
+     * Returns an {@link ImageProxy} for this user's avatar
+     *
+     * @return Possibly-null {@link ImageProxy} of this user's avatar
+     *
+     * @see #getAvatarUrl()
+     */
     @Nullable
     default ImageProxy getAvatar()
     {
@@ -217,7 +223,13 @@ public interface User extends IMentionable
         return String.format(DEFAULT_AVATAR_URL, getDefaultAvatarId());
     }
 
-    //TODO docs
+    /**
+     * Returns an {@link ImageProxy} for this user's default avatar
+     *
+     * @return Never-null {@link ImageProxy} of this user's default avatar
+     *
+     * @see #getDefaultAvatarUrl()
+     */
     @Nonnull
     default ImageProxy getDefaultAvatar()
     {
@@ -241,7 +253,13 @@ public interface User extends IMentionable
         return avatarUrl == null ? getDefaultAvatarUrl() : avatarUrl;
     }
 
-    //TODO docs
+    /**
+     * Returns an {@link ImageProxy} for this user's effective avatar image
+     *
+     * @return Never-null {@link ImageProxy} of this user's effective avatar image
+     *
+     * @see #getEffectiveAvatarUrl()
+     */
     @Nonnull
     default ImageProxy getEffectiveAvatar()
     {
@@ -433,7 +451,13 @@ public interface User extends IMentionable
             return bannerId == null ? null : String.format(BANNER_URL, Long.toUnsignedString(userId), bannerId, bannerId.startsWith("a_") ? "gif" : "png");
         }
 
-        //TODO docs
+        /**
+         * Returns an {@link ImageProxy} for this user's banner
+         *
+         * @return Possibly-null {@link ImageProxy} of this user's banner
+         *
+         * @see #getBannerUrl()
+         */
         @Nullable
         public ImageProxy getBanner()
         {

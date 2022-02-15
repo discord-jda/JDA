@@ -361,7 +361,13 @@ public class InviteImpl implements Invite
                     : "https://cdn.discordapp.com/icons/" + this.id + "/" + this.iconId + ".png";
         }
 
-        //TODO docs
+        /**
+         * Returns an {@link ImageProxy} for this guild's icon
+         *
+         * @return Possibly-null {@link ImageProxy} of this guild's icon
+         *
+         * @see #getIconUrl()
+         */
         @Nullable
         public ImageProxy getIcon()
         {

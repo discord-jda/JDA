@@ -135,7 +135,13 @@ public class MessageActivity
             return iconId == null ? null : "https://cdn.discordapp.com/application/" + getId() + "/" + iconId + ".png";
         }
 
-        //TODO docs
+        /**
+         * Returns an {@link ImageProxy} for this application's icon
+         *
+         * @return Possibly-null {@link ImageProxy} of this application's icon
+         *
+         * @see #getIconUrl()
+         */
         @Nullable
         public ImageProxy getIcon()
         {
@@ -167,7 +173,13 @@ public class MessageActivity
             return coverId == null ? null : "https://cdn.discordapp.com/application/" + getId() + "/" + coverId + ".png";
         }
 
-        //TODO docs
+        /**
+         * Returns an {@link ImageProxy} for this cover's icon
+         *
+         * @return Possibly-null {@link ImageProxy} of this cover's icon
+         *
+         * @see #getCoverUrl()
+         */
         @Nullable
         public ImageProxy getCover()
         {

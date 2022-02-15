@@ -198,7 +198,13 @@ public interface Emote extends IMentionable
         return String.format(ICON_URL, getId(), isAnimated() ? "gif" : "png");
     }
 
-    //TODO docs
+    /**
+     * Returns an {@link ImageProxy} for this emote's image
+     *
+     * @return Never-null {@link ImageProxy} of this emote's image
+     *
+     * @see #getImageUrl()
+     */
     @Nonnull
     default ImageProxy getImage()
     {
