@@ -135,16 +135,16 @@ public interface TextInput extends ActionComponent
      *         The {@link TextInputStyle TextInputStyle}
      *
      * @throws IllegalArgumentException
-     *         If either id, label or style is null.
+     *         <ul>
+     *             <li>If either id or label are null or blank</li>
+     *             <li>If style is null or UNKNOWN</li>
+     *         </ul>
      *
      * @return a new TextInput Builder.
      */
     @Nonnull
     static TextInput.Builder create(@Nonnull String id, @Nonnull String label, @Nonnull TextInputStyle style)
     {
-        Checks.notNull(id, "Custom ID");
-        Checks.notNull(label, "Label");
-        Checks.notNull(style, "Style");
         return new Builder(id, label, style);
     }
 
@@ -153,21 +153,87 @@ public interface TextInput extends ActionComponent
      */
     class Builder
     {
-        private final String id;
-        private final TextInputStyle style;
-        private final String label;
-
-        private int minLength = -1;
-        private int maxLength = -1;
+        private String id;
+        private String label;
         private String value;
         private String placeholder;
+        private int minLength = -1;
+        private int maxLength = -1;
+        private TextInputStyle style;
         private boolean required;
 
         protected Builder(String id, String label, TextInputStyle style)
         {
+            Checks.notBlank(id, "ID");
+            Checks.notBlank(label, "Label");
+            Checks.notNull(style, "Style");
+
+            Checks.check(style != TextInputStyle.UNKNOWN, "TextInputStyle cannot be UNKNOWN!");
+
             this.id = id;
             this.label = label;
             this.style = style;
+        }
+
+        /**
+         * Sets the id for this TextInput
+         * <br>This is used to uniquely identify it.
+         *
+         * @param  id
+         *         The id to set
+         *
+         * @throws IllegalArgumentException
+         *         If id is null or blank
+         *
+         * @return The same Builder for chaining convenience.
+         */
+        public Builder setId(@Nonnull String id)
+        {
+            Checks.notBlank(id, "ID");
+            this.id = id;
+            return this;
+        }
+
+        /**
+         * Sets the label for this TextInput
+         *
+         * @param  label
+         *         The label to set
+         *
+         * @throws IllegalArgumentException
+         *         If label is null or blank
+         *
+         * @return The same Builder for chaining convenience.
+         */
+        public Builder setLabel(@Nonnull String label)
+        {
+            Checks.notBlank(label, "Label");
+            this.label = label;
+            return this;
+        }
+
+        /**
+         * Sets the style for this TextInput
+         * <br>Possible values are:
+         * <br><ul>
+         *     <li>{@link TextInputStyle#SHORT}</li>
+         *     <li>{@link TextInputStyle#PARAGRAPH}</li>
+         * </ul>
+         *
+         * @param  style
+         *         The style to set
+         *
+         * @throws IllegalArgumentException
+         *         If style is null or UNKNOWN
+         *
+         * @return The same Builder for chaining convenience.
+         */
+        public Builder setStyle(TextInputStyle style)
+        {
+            Checks.notNull(style, "Style");
+            Checks.check(style != TextInputStyle.UNKNOWN, "TextInputStyle cannot be UNKNOWN!");
+            this.style = style;
+            return this;
         }
 
         /**
