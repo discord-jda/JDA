@@ -151,7 +151,7 @@ public interface ReplyCallbackAction extends InteractionCallbackAction<Interacti
      *
      * @return The same reply action, for chaining convenience
      *
-     * @see ActionRow#isMessageCompatible()
+     * @see    ActionRow#isMessageCompatible()
      */
     @Nonnull
     @CheckReturnValue
@@ -176,7 +176,7 @@ public interface ReplyCallbackAction extends InteractionCallbackAction<Interacti
      *
      * @return The same reply action, for chaining convenience
      *
-     * @see ActionRow#isMessageCompatible()
+     * @see    ActionRow#isMessageCompatible()
      */
     @Nonnull
     @CheckReturnValue

@@ -26,8 +26,8 @@ import javax.annotation.Nonnull;
  *     <li>PARAGRAPH - Multiline input</li>
  * </ul>
  *
- * @see TextInput
- * @see Modal
+ * @see    TextInput
+ * @see    Modal
  */
 public enum TextInputStyle
 {

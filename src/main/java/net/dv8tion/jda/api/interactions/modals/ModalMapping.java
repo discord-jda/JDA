@@ -26,8 +26,8 @@ import java.util.Objects;
 /**
  * ID/Component pair for a {@link ModalInteractionEvent ModalSubmitInteractionEvent}.
  *
- * @see ModalInteractionEvent#getValue(String)
- * @see ModalInteractionEvent#getValues()
+ * @see    ModalInteractionEvent#getValue(String)
+ * @see    ModalInteractionEvent#getValues()
  */
 public class ModalMapping
 {
