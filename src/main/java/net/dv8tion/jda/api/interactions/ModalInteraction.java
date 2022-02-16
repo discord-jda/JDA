@@ -41,7 +41,7 @@ public interface ModalInteraction extends IReplyCallback, IMessageEditCallback
      *
      * @return Custom id
      * 
-     * @see net.dv8tion.jda.api.interactions.components.text.Modal.Builder#setId(String) 
+     * @see    net.dv8tion.jda.api.interactions.components.text.Modal.Builder#setId(String) 
      */
     @Nonnull
     String getModalId();
@@ -51,7 +51,7 @@ public interface ModalInteraction extends IReplyCallback, IMessageEditCallback
      *
      * @return List of {@link ModalMapping ModalMappings}
      *
-     * @see #getValue(String)
+     * @see    #getValue(String)
      */
     @Nonnull
     List<ModalMapping> getValues();
