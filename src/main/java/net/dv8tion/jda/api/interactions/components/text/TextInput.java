@@ -364,7 +364,7 @@ public interface TextInput extends ActionComponent
          *
          * @return True if this TextInput is required
          * 
-         * @see TextInput#isRequired()
+         * @see    TextInput#isRequired()
          */
         public boolean isRequired()
         {

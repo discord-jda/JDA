@@ -39,7 +39,7 @@ public interface ItemComponent extends Component
      *
      * @return Whether this component can be used in Modals.
      *
-     * @see Type#isModalCompatible()
+     * @see    Type#isModalCompatible()
      */
     default boolean isModalCompatible()
     {

@@ -64,7 +64,7 @@ import java.util.*;
  * <p><b>Only a maximum of 5 component layouts can be included in a Modal, and only {@link net.dv8tion.jda.api.interactions.components.text.TextInput TextInputs} are allowed at this time.</b>
  * You can check whether a component is supported via {@link ComponentType#isModalCompatible}
  *
- * @see ModalInteractionEvent
+ * @see    ModalInteractionEvent
  */
 public interface Modal extends SerializableData
 {
@@ -73,7 +73,7 @@ public interface Modal extends SerializableData
      *
      * @return The custom id of this modal
      *
-     * @see ModalInteraction#getModalId()
+     * @see    ModalInteraction#getModalId()
      */
     @Nonnull
     String getId();

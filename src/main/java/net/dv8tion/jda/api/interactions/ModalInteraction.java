@@ -32,7 +32,7 @@ import java.util.function.Supplier;
  *
  * If the modal of this interaction was a reply to a {@link net.dv8tion.jda.api.interactions.components.ComponentInteraction ComponentInteraction}, you can also use {@link #deferEdit()} to edit the message instead of replying.
  *
- * @see net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
+ * @see    net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
  */
 public interface ModalInteraction extends IReplyCallback, IMessageEditCallback
 {
