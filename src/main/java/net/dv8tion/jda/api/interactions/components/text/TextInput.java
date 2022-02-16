@@ -164,15 +164,9 @@ public interface TextInput extends ActionComponent
 
         protected Builder(String id, String label, TextInputStyle style)
         {
-            Checks.notBlank(id, "ID");
-            Checks.notBlank(label, "Label");
-            Checks.notNull(style, "Style");
-
-            Checks.check(style != TextInputStyle.UNKNOWN, "TextInputStyle cannot be UNKNOWN!");
-
-            this.id = id;
-            this.label = label;
-            this.style = style;
+            setId(id);
+            setLabel(label);
+            setStyle(style);
         }
 
         /**
