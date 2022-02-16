@@ -58,7 +58,8 @@ public class FileProxy
      * Sets the default OkHttpClient used by {@link FileProxy} and {@link ImageProxy}
      * <br>This can still be overridden on a per-instance basis with {@link #withClient(OkHttpClient)}
      *
-     * @param httpClient The default {@link OkHttpClient} to use while making HTTP requests
+     * @param  httpClient
+     *         The default {@link OkHttpClient} to use while making HTTP requests
      */
     public static void setHttpClient(@Nonnull OkHttpClient httpClient)
     {
@@ -82,7 +83,8 @@ public class FileProxy
     /**
      * Sets the custom OkHttpClient used by this instance, regardless of if {@link #setHttpClient(OkHttpClient)} has been used or not
      *
-     * @param customHttpClient The custom {@link OkHttpClient} to use while making HTTP requests
+     * @param  customHttpClient
+     *         The custom {@link OkHttpClient} to use while making HTTP requests
      *
      * @return This proxy for chaining convenience
      */

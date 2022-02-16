@@ -43,6 +43,7 @@ public class ImageProxy extends FileProxy
     /**
      * Retrieves the {@link InputStream} of this image at the specified size
      * <br><b>The image may not be resized at any size, usually Discord only allows for a few powers of 2</b>, so numbers like 128, 256, 512..., 100 might also be a valid size
+     *
      * <p>If the image is not of a valid size, the CompletableFuture will hold an exception since the HTTP request would have returned a 404
      *
      * @param  size
@@ -61,6 +62,7 @@ public class ImageProxy extends FileProxy
     /**
      * Downloads the data of this image, at the specified size, and stores it in a file with the same name as the queried file name (this would be the last segment of the URL)
      * <br><b>The image may not be resized at any size, usually Discord only allows for a few powers of 2</b>, so numbers like 128, 256, 512..., 100 might also be a valid size
+     *
      * <p>If the image is not of a valid size, the CompletableFuture will hold an exception since the HTTP request would have returned a 404
      *
      * @param  size
@@ -89,6 +91,7 @@ public class ImageProxy extends FileProxy
     /**
      * Downloads the data of this image, at the specified size, and stores it in the specified file
      * <br><b>The image may not be resized at any size, usually Discord only allows for a few powers of 2</b>, so numbers like 128, 256, 512..., 100 might also be a valid size
+     *
      * <p>If the image is not of a valid size, the CompletableFuture will hold an exception since the HTTP request would have returned a 404
      *
      * @param  file
@@ -119,6 +122,7 @@ public class ImageProxy extends FileProxy
     /**
      * Downloads the data of this image, at the specified size, and stores it in the specified file
      * <br><b>The image may not be resized at any size, usually Discord only allows for a few powers of 2</b>, so numbers like 128, 256, 512..., 100 might also be a valid size
+     *
      * <p>If the image is not of a valid size, the CompletableFuture will hold an exception since the HTTP request would have returned a 404
      *
      * @param  path
