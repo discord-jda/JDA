@@ -408,7 +408,7 @@ public interface Invite
          *
          * @return Possibly-null {@link ImageProxy} of this invite guild's icon
          *
-         * @see #getIconUrl()
+         * @see    #getIconUrl()
          */
         @Nullable
         default ImageProxy getSplash()
@@ -497,7 +497,7 @@ public interface Invite
          *
          * @return Possibly-null {@link ImageProxy} of this group invite's icon
          *
-         * @see #getIconUrl()
+         * @see    #getIconUrl()
          */
         @Nullable
         default ImageProxy getIcon()
@@ -642,7 +642,7 @@ public interface Invite
          *
          * @return Possibly-null {@link ImageProxy} of this application invite's icon
          *
-         * @see #getIconUrl()
+         * @see    #getIconUrl()
          */
         @Nullable
         default ImageProxy getIcon()

@@ -94,7 +94,7 @@ public interface ApplicationInfo extends ISnowflake
      *
      * @return The {@link ImageProxy} of this application info's icon or null if no icon is defined
      *
-     * @see #getIconUrl()
+     * @see    #getIconUrl()
      */
     @Nullable
     default ImageProxy getIcon()

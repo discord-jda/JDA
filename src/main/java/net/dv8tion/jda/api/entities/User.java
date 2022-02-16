@@ -187,7 +187,7 @@ public interface User extends IMentionable
      *
      * @return Possibly-null {@link ImageProxy} of this user's avatar
      *
-     * @see #getAvatarUrl()
+     * @see    #getAvatarUrl()
      */
     @Nullable
     default ImageProxy getAvatar()
@@ -228,7 +228,7 @@ public interface User extends IMentionable
      *
      * @return Never-null {@link ImageProxy} of this user's default avatar
      *
-     * @see #getDefaultAvatarUrl()
+     * @see    #getDefaultAvatarUrl()
      */
     @Nonnull
     default ImageProxy getDefaultAvatar()
@@ -258,7 +258,7 @@ public interface User extends IMentionable
      *
      * @return Never-null {@link ImageProxy} of this user's effective avatar image
      *
-     * @see #getEffectiveAvatarUrl()
+     * @see    #getEffectiveAvatarUrl()
      */
     @Nonnull
     default ImageProxy getEffectiveAvatar()
@@ -456,7 +456,7 @@ public interface User extends IMentionable
          *
          * @return Possibly-null {@link ImageProxy} of this user's banner
          *
-         * @see #getBannerUrl()
+         * @see    #getBannerUrl()
          */
         @Nullable
         public ImageProxy getBanner()

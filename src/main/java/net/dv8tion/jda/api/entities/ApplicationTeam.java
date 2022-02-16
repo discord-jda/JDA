@@ -92,7 +92,7 @@ public interface ApplicationTeam extends ISnowflake
      *
      * @return The {@link ImageProxy} of this application team's icon, or null if no icon is applied
      *
-     * @see #getIconUrl()
+     * @see    #getIconUrl()
      */
     @Nullable
     default ImageProxy getIcon() {

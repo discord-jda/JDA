@@ -2766,7 +2766,7 @@ public interface Message extends ISnowflake, Formattable
          *
          * @return The {@link AttachmentProxy} of this attachment
          *
-         * @see #getProxyUrl()
+         * @see    #getProxyUrl()
          */
         @Nonnull
         public AttachmentProxy getProxy()

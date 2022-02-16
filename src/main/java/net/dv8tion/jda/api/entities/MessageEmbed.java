@@ -545,7 +545,7 @@ public class MessageEmbed implements SerializableData
          *
          * @return The {@link AttachmentProxy} of this embed thumbnail
          *
-         * @see #getProxyUrl()
+         * @see    #getProxyUrl()
          */
         @Nullable
         public AttachmentProxy getProxy()
@@ -753,7 +753,7 @@ public class MessageEmbed implements SerializableData
          *
          * @return The {@link AttachmentProxy} of this embed image
          *
-         * @see #getProxyUrl()
+         * @see    #getProxyUrl()
          */
         @Nullable
         public AttachmentProxy getProxy()
@@ -855,7 +855,7 @@ public class MessageEmbed implements SerializableData
          *
          * @return Possibly-null {@link ImageProxy} of this author's icon
          *
-         * @see #getIconUrl()
+         * @see    #getIconUrl()
          */
         @Nullable
         public ImageProxy getIcon()
@@ -882,7 +882,7 @@ public class MessageEmbed implements SerializableData
          *
          * @return Possibly-null {@link ImageProxy} of this proxied author's icon
          *
-         * @see #getProxyIconUrl()
+         * @see    #getProxyIconUrl()
          */
         @Nullable
         public ImageProxy getProxyIcon()
@@ -948,7 +948,7 @@ public class MessageEmbed implements SerializableData
          *
          * @return Possibly-null {@link ImageProxy} of this footer's icon
          *
-         * @see #getIconUrl()
+         * @see    #getIconUrl()
          */
         @Nullable
         public ImageProxy getIcon()
@@ -975,7 +975,7 @@ public class MessageEmbed implements SerializableData
          *
          * @return Possibly-null {@link ImageProxy} of this proxied footer's icon
          *
-         * @see #getProxyIconUrl()
+         * @see    #getProxyIconUrl()
          */
         @Nullable
         public ImageProxy getProxyIcon()

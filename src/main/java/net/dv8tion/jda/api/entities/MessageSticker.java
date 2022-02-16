@@ -120,7 +120,7 @@ public class MessageSticker implements ISnowflake
      *
      * @return Never-null {@link ImageProxy} of this sticker's image
      *
-     * @see #getIconUrl()
+     * @see    #getIconUrl()
      */
     @Nonnull
     public ImageProxy getIcon()

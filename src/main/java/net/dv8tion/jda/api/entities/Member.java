@@ -265,7 +265,7 @@ public interface Member extends IMentionable, IPermissionHolder
      *
      * @return Possibly-null {@link ImageProxy} of this member's avatar
      *
-     * @see #getAvatarUrl()
+     * @see    #getAvatarUrl()
      */
     @Nullable
     default ImageProxy getAvatar()
@@ -295,7 +295,7 @@ public interface Member extends IMentionable, IPermissionHolder
      *
      * @return Never-null {@link ImageProxy} of this member's effective avatar image
      *
-     * @see #getEffectiveAvatarUrl()
+     * @see    #getEffectiveAvatarUrl()
      */
     @Nonnull
     default ImageProxy getEffectiveAvatar()

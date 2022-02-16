@@ -129,7 +129,7 @@ public class TemplateGuild implements ISnowflake
      *
      * @return Possibly-null {@link ImageProxy} of this template guild's icon
      *
-     * @see #getIconUrl()
+     * @see    #getIconUrl()
      */
     @Nullable
     public ImageProxy getIcon() {

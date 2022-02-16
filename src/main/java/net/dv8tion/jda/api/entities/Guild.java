@@ -684,7 +684,7 @@ public interface Guild extends ISnowflake
      *
      * @return The {@link ImageProxy} of this guild's icon
      *
-     * @see #getIconUrl()
+     * @see    #getIconUrl()
      */
     default ImageProxy getIcon()
     {
@@ -740,7 +740,7 @@ public interface Guild extends ISnowflake
      *
      * @return Possibly-null {@link ImageProxy} of this guild's splash icon
      *
-     * @see #getSplashUrl()
+     * @see    #getSplashUrl()
      */
     @Nullable
     default ImageProxy getSplash()
@@ -869,7 +869,7 @@ public interface Guild extends ISnowflake
      *
      * @return Possibly-null {@link ImageProxy} of this guild's banner icon
      *
-     * @see #getBannerUrl()
+     * @see    #getBannerUrl()
      */
     @Nullable
     default ImageProxy getBanner()

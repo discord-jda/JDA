@@ -203,7 +203,7 @@ public interface Emote extends IMentionable
      *
      * @return Never-null {@link ImageProxy} of this emote's image
      *
-     * @see #getImageUrl()
+     * @see    #getImageUrl()
      */
     @Nonnull
     default ImageProxy getImage()

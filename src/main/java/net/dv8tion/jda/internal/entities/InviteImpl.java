@@ -366,7 +366,7 @@ public class InviteImpl implements Invite
          *
          * @return Possibly-null {@link ImageProxy} of this guild's icon
          *
-         * @see #getIconUrl()
+         * @see    #getIconUrl()
          */
         @Nullable
         public ImageProxy getIcon()

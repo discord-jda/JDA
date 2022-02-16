@@ -650,7 +650,7 @@ public class WidgetUtil
              *
              * @return Possibly-null {@link ImageProxy} of this user's avatar image
              *
-             * @see #getAvatarUrl()
+             * @see    #getAvatarUrl()
              */
             @Nullable
             public ImageProxy getAvatar()
@@ -690,7 +690,7 @@ public class WidgetUtil
              *
              * @return Never-null {@link ImageProxy} of this user's default avatar image
              *
-             * @see #getDefaultAvatarUrl()
+             * @see    #getDefaultAvatarUrl()
              */
             @Nonnull
             public ImageProxy getDefaultAvatar()
@@ -717,7 +717,7 @@ public class WidgetUtil
              *
              * @return Never-null {@link ImageProxy} of this user's effective avatar image
              *
-             * @see #getEffectiveAvatarUrl()
+             * @see    #getEffectiveAvatarUrl()
              */
             @Nonnull
             public ImageProxy getEffectiveAvatar()

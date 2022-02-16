@@ -140,7 +140,7 @@ public class MessageActivity
          *
          * @return Possibly-null {@link ImageProxy} of this application's icon
          *
-         * @see #getIconUrl()
+         * @see    #getIconUrl()
          */
         @Nullable
         public ImageProxy getIcon()
@@ -178,7 +178,7 @@ public class MessageActivity
          *
          * @return Possibly-null {@link ImageProxy} of this cover's icon
          *
-         * @see #getCoverUrl()
+         * @see    #getCoverUrl()
          */
         @Nullable
         public ImageProxy getCover()
