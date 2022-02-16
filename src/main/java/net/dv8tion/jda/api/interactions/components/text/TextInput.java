@@ -209,7 +209,7 @@ public interface TextInput extends ActionComponent
         /**
          * Sets the style for this TextInput
          * <br>Possible values are:
-         * <br><ul>
+         * <ul>
          *     <li>{@link TextInputStyle#SHORT}</li>
          *     <li>{@link TextInputStyle#PARAGRAPH}</li>
          * </ul>
