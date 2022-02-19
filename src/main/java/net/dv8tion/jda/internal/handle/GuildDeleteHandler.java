@@ -66,6 +66,7 @@ public class GuildDeleteHandler extends SocketHandler
         SnowflakeCacheViewImpl<Guild> guildView = getJDA().getGuildsView();
         SnowflakeCacheViewImpl<StoreChannel> storeView = getJDA().getStoreChannelsView();
         SnowflakeCacheViewImpl<TextChannel> textView = getJDA().getTextChannelsView();
+        SnowflakeCacheViewImpl<NewsChannel> newsView = getJDA().getNewsChannelView();
         SnowflakeCacheViewImpl<VoiceChannel> voiceView = getJDA().getVoiceChannelsView();
         SnowflakeCacheViewImpl<Category> categoryView = getJDA().getCategoriesView();
         guildView.remove(id);
@@ -78,6 +79,11 @@ public class GuildDeleteHandler extends SocketHandler
         {
             guild.getTextChannelCache()
                  .forEachUnordered(chan -> textView.getMap().remove(chan.getIdLong()));
+        }
+        try (UnlockHook hook = newsView.writeLock())
+        {
+            guild.getNewsChannelCache()
+                    .forEachUnordered(chan -> newsView.getMap().remove(chan.getIdLong()));
         }
         try (UnlockHook hook = voiceView.writeLock())
         {
