@@ -141,6 +141,11 @@ public class PrivateChannelImpl extends AbstractChannelImpl<PrivateChannelImpl> 
         return false;
     }
 
+    public void setUser(User user)
+    {
+        this.user = user;
+    }
+
     @Override
     public PrivateChannelImpl setLatestMessageIdLong(long latestMessageId)
     {

@@ -1228,17 +1228,20 @@ public class EntityBuilder
     public PrivateChannel createPrivateChannel(DataObject json)
     {
         final long channelId = json.getUnsignedLong("id");
-        PrivateChannel channel = api.getPrivateChannelById(channelId);
+        PrivateChannelImpl channel = (PrivateChannelImpl) api.getPrivateChannelById(channelId);
         api.usedPrivateChannel(channelId);
-        if (channel != null)
-            return channel;
+        //since we provide and cache incomplete channels, it isn't enough to check if the channel exists and return it
+        //this channel may have been cached in an incomplete state
 
-        //if we don't have enough information to construct the channel properly, the rest of the properties can be null
+        //we have no extra information in this event, so we find the channel or make one
         if (!json.hasKey("recipients") && !json.hasKey("recipient"))
         {
-            PrivateChannelImpl priv = new PrivateChannelImpl(getJDA(), channelId, null);
-            cachePrivateChannel(priv);
-            return priv;
+            if (channel == null)
+            {
+                channel = new PrivateChannelImpl(getJDA(), channelId, null);
+                cachePrivateChannel(channel);
+            }
+            return channel;
         }
 
         DataObject recipient = json.hasKey("recipients") ?
@@ -1251,7 +1254,16 @@ public class EntityBuilder
             // As such, make a fake user and fake private channel.
             user = createUser(recipient);
         }
-
+        if (channel != null)
+        {
+            //we already have the channel so don't need to make a new one,
+            //but we may need the user that was in the message
+            if (channel.getUser() == null)
+            {
+                channel.setUser(user);
+            }
+            return channel;
+        }
         return createPrivateChannel(json, user);
     }
 
