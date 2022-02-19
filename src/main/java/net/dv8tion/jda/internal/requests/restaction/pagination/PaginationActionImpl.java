@@ -129,7 +129,7 @@ public abstract class PaginationActionImpl<T, M extends PaginationAction<T, M>>
             if (!isEmpty())
                 throw new IllegalStateException("Cannot change pagination order after retrieving.");
             if (!getSupportedOrders().contains(order))
-                throw new IllegalStateException("Cannot use PaginationOrder." + order + " for this pagination endpoint.");
+                throw new IllegalArgumentException("Cannot use PaginationOrder." + order + " for this pagination endpoint.");
         }
         this.order = order;
         return (M) this;
