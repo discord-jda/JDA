@@ -89,7 +89,7 @@ public interface MessageChannel extends Channel, Formattable
      *
      * <p>This value is updated on each {@link net.dv8tion.jda.api.events.message.MessageReceivedEvent MessageReceivedEvent}
      * and <u><b>the value might point to an already deleted message since the ID is not cleared when the message is deleted,
-     * so calling {@link #retrieveMessageById(long)} with this id can throw {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}</b></u>
+     * so calling {@link #retrieveMessageById(long)} with this id can result in an {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE} error</b></u>
      *
      * @return The most recent message's id
      */
@@ -105,7 +105,7 @@ public interface MessageChannel extends Channel, Formattable
      *
      * <p>This value is updated on each {@link net.dv8tion.jda.api.events.message.MessageReceivedEvent MessageReceivedEvent}
      * and <u><b>the value might point to an already deleted message since the value is not cleared when the message is deleted,
-     * so calling {@link #retrieveMessageById(long)} with this id can throw {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}</b></u>
+     * so calling {@link #retrieveMessageById(long)} with this id can result in an {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE} error</b></u>
      *
      * @return The most recent message's id
      */
