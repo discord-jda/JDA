@@ -11,19 +11,18 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-//TODO-v5: Docs
+
+/**
+ * Represents all message channels present in guilds.
+ *
+ * This includes channels that are not included in {@link BaseGuildMessageChannel BaseGuildMessageChannel}, such as {@link ThreadChannel}.
+ *
+ * @see BaseGuildMessageChannel
+ *
+ */
 public interface GuildMessageChannel extends GuildChannel, MessageChannel
 {
-    /**
-     * Whether we can send messages in this channel.
-     * <br>This is an overload of {@link #canTalk(Member)} with the SelfMember.
-     * <br>Checks for both {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} and
-     * {@link net.dv8tion.jda.api.Permission#MESSAGE_SEND Permission.MESSAGE_SEND}.
-     *
-     * For {@link ThreadChannel} this method checks for {@link Permission#MESSAGE_SEND_IN_THREADS} instead of {@link Permission#MESSAGE_SEND}.
-     *
-     * @return True, if we are able to read and send messages in this channel
-     */
+    @Override
     default boolean canTalk()
     {
         return canTalk(getGuild().getSelfMember());

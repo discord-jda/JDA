@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.interactions.commands.build;
 
+import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
@@ -23,9 +24,11 @@ import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Builder for a Slash-Command group.
@@ -128,6 +131,8 @@ public class SubcommandGroupData implements SerializableData
 
     /**
      * The {@link SubcommandData Subcommands} in this group.
+     * <br>These subcommand instances are <b>reconstructed</b>,
+     * which means that any modifications will not be reflected in the backing state.
      *
      * @return Immutable list of {@link SubcommandData}
      */
@@ -146,7 +151,7 @@ public class SubcommandGroupData implements SerializableData
      *         The subcommands to add
      *
      * @throws IllegalArgumentException
-     *         If null is provided, or more than 25 subcommands are provided
+     *         If null, more than 25 subcommands, or duplicate subcommand names are provided.
      *
      * @return The SubcommandGroupData instance, for chaining
      */
@@ -155,6 +160,11 @@ public class SubcommandGroupData implements SerializableData
     {
         Checks.noneNull(subcommands, "Subcommand");
         Checks.check(subcommands.length + options.length() <= 25, "Cannot have more than 25 subcommands in one group!");
+        Checks.checkUnique(
+            Stream.concat(getSubcommands().stream(), Arrays.stream(subcommands)).map(SubcommandData::getName),
+            "Cannot have multiple subcommands with the same name. Name: \"%s\" appeared %d times!",
+            (count, value) -> new Object[]{ value, count }
+        );
         for (SubcommandData subcommand : subcommands)
             options.add(subcommand);
         return this;
@@ -167,7 +177,7 @@ public class SubcommandGroupData implements SerializableData
      *         The subcommands to add
      *
      * @throws IllegalArgumentException
-     *         If null is provided, or more than 25 subcommands are provided
+     *         If null, more than 25 subcommands, or duplicate subcommand names are provided.
      *
      * @return The SubcommandGroupData instance, for chaining
      */
@@ -215,5 +225,28 @@ public class SubcommandGroupData implements SerializableData
                         .forEach(group::addSubcommands)
         );
         return group;
+    }
+
+    /**
+     * Converts the provided {@link Command.SubcommandGroup} into a SubcommandGroupData instance.
+     *
+     * @param  group
+     *         The subcommand group to convert
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided or the subcommand group has illegal configuration
+     *
+     * @return An instance of SubcommandGroupData
+     */
+    @Nonnull
+    public static SubcommandGroupData fromGroup(@Nonnull Command.SubcommandGroup group)
+    {
+        Checks.notNull(group, "Subcommand Group");
+        SubcommandGroupData data = new SubcommandGroupData(group.getName(), group.getDescription());
+        group.getSubcommands()
+                .stream()
+                .map(SubcommandData::fromSubcommand)
+                .forEach(data::addSubcommands);
+        return data;
     }
 }

@@ -25,10 +25,13 @@ import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.awt.*;
+import java.time.Duration;
 import java.time.OffsetDateTime;
+import java.time.temporal.TemporalAccessor;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Represents a Guild-specific User.
@@ -52,6 +55,8 @@ public interface Member extends IMentionable, IPermissionHolder
 {
     /** Template for {@link #getAvatarUrl()}. */
     String AVATAR_URL = "https://cdn.discordapp.com/guilds/%s/users/%s/avatars/%s.%s";
+    /** Maximum number of days a Member can be timed out for */
+    int MAX_TIME_OUT_LENGTH = 28;
 
     /**
      * The user wrapped by this Entity.
@@ -113,6 +118,35 @@ public interface Member extends IMentionable, IPermissionHolder
      */
     @Nullable
     OffsetDateTime getTimeBoosted();
+
+    /**
+     * Returns whether a member is boosting the guild or not.
+     *
+     * @return True, if it is boosting
+     */
+    boolean isBoosting();
+
+    /**
+     * The time this Member will be released from time out.
+     * <br>If this Member is not in time out, this returns {@code null}.
+     * This may also return dates in the past, in which case the time out has expired.
+     *
+     * @return The time this Member will be released from time out or {@code null} if not in time out
+     */
+    @Nullable
+    OffsetDateTime getTimeOutEnd();
+
+    /**
+     * Whether this Member is in time out.
+     * <br>While a Member is in time out, all permissions except {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL VIEW_CHANNEL} and
+     * {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY MESSAGE_HISTORY} are removed from them.
+     *
+     * @return True, if this Member is in time out
+     */
+    default boolean isTimedOut()
+    {
+        return getTimeOutEnd() != null && getTimeOutEnd().isAfter(OffsetDateTime.now());
+    }
 
     /**
      * The {@link net.dv8tion.jda.api.entities.GuildVoiceState VoiceState} of this Member.
@@ -537,6 +571,143 @@ public interface Member extends IMentionable, IPermissionHolder
     default AuditableRestAction<Void> kick(@Nullable String reason)
     {
         return getGuild().kick(this, reason);
+    }
+
+    /**
+     * Puts this Member in time out in this {@link net.dv8tion.jda.api.entities.Guild Guild} for a specific amount of time.
+     * <br>While a Member is in time out, all permissions except {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL VIEW_CHANNEL} and
+     * {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY MESSAGE_HISTORY} are removed from them.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
+     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The target Member cannot be put into time out due to a permission discrepancy</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MEMBER UNKNOWN_MEMBER}
+     *     <br>The specified Member was removed from the Guild before finishing the task</li>
+     * </ul>
+     *
+     * @param  amount
+     *         The amount of the provided {@link TimeUnit unit} to put this Member in time out for
+     * @param  unit
+     *         The {@link TimeUnit Unit} type of {@code amount}
+     *
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MODERATE_MEMBERS} permission.
+     * @throws IllegalArgumentException
+     *         If any of the following checks are true
+     *         <ul>
+     *             <li>The provided {@code amount} is lower than or equal to {@code 0}</li>
+     *             <li>The provided {@code unit} is null</li>
+     *             <li>The provided {@code amount} with the {@code unit} results in a date that is more than {@value MAX_TIME_OUT_LENGTH} days in the future</li>
+     *         </ul>
+     *
+     * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
+     */
+    @Nonnull
+    @CheckReturnValue
+    default AuditableRestAction<Void> timeoutFor(long amount, @Nonnull TimeUnit unit)
+    {
+        return getGuild().timeoutFor(this, amount, unit);
+    }
+
+    /**
+     * Puts this Member in time out in this {@link net.dv8tion.jda.api.entities.Guild Guild} for a specific amount of time.
+     * <br>While a Member is in time out, all permissions except {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL VIEW_CHANNEL} and
+     * {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY MESSAGE_HISTORY} are removed from them.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
+     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The target Member cannot be put into time out due to a permission discrepancy</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MEMBER UNKNOWN_MEMBER}
+     *     <br>The specified Member was removed from the Guild before finishing the task</li>
+     * </ul>
+     *
+     * @param  duration
+     *         The duration to put this Member in time out for
+     *
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MODERATE_MEMBERS} permission.
+     * @throws IllegalArgumentException
+     *         If any of the following checks are true
+     *         <ul>
+     *             <li>The provided {@code duration} is null</li>
+     *             <li>The provided {@code duration} is not positive</li>
+     *             <li>The provided {@code duration} results in a date that is more than {@value MAX_TIME_OUT_LENGTH} days in the future</li>
+     *         </ul>
+     *
+     * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
+     */
+    @Nonnull
+    @CheckReturnValue
+    default AuditableRestAction<Void> timeoutFor(@Nonnull Duration duration)
+    {
+        return getGuild().timeoutFor(this, duration);
+    }
+
+    /**
+     * Puts this Member in time out in this {@link net.dv8tion.jda.api.entities.Guild Guild} until the specified date.
+     * <br>While a Member is in time out, all permissions except {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL VIEW_CHANNEL} and
+     * {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY MESSAGE_HISTORY} are removed from them.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
+     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The target Member cannot be put into time out due to a permission discrepancy</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MEMBER UNKNOWN_MEMBER}
+     *     <br>The specified Member was removed from the Guild before finishing the task</li>
+     * </ul>
+     *
+     * @param  temporal
+     *         The time this Member will be released from time out, or null to remove the time out
+     *
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MODERATE_MEMBERS} permission.
+     * @throws IllegalArgumentException
+     *         If any of the following checks are true
+     *         <ul>
+     *             <li>The provided {@code temporal} is in the past</li>
+     *             <li>The provided {@code temporal} is more than {@value MAX_TIME_OUT_LENGTH} days in the future</li>
+     *         </ul>
+     *
+     * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
+     */
+    @Nonnull
+    @CheckReturnValue
+    default AuditableRestAction<Void> timeoutUntil(@Nullable TemporalAccessor temporal)
+    {
+        return getGuild().timeoutUntil(this, temporal);
+    }
+
+    /**
+     * Removes a time out from this Member in this {@link net.dv8tion.jda.api.entities.Guild Guild}.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
+     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The time out cannot be removed due to a permission discrepancy</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MEMBER UNKNOWN_MEMBER}
+     *     <br>The specified Member was removed from the Guild before finishing the task</li>
+     * </ul>
+     *
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MODERATE_MEMBERS} permission.
+     *
+     * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
+     */
+    @Nonnull
+    @CheckReturnValue
+    default AuditableRestAction<Void> removeTimeout()
+    {
+        return getGuild().removeTimeout(this);
     }
 
     /**

@@ -45,6 +45,7 @@ public enum Permission
     BAN_MEMBERS(          2, true, false, "Ban Members"),
     NICKNAME_CHANGE(     26, true, false, "Change Nickname"),
     NICKNAME_MANAGE(     27, true, false, "Manage Nicknames"),
+    MODERATE_MEMBERS(    40, true, false, "Timeout Members"),
 
     // Text Permissions
     MESSAGE_ADD_REACTION(     6, true, true, "Add Reactions"),

@@ -26,7 +26,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
- * One of the possible options provided in a {@link SelectionMenu}.
+ * One of the possible options provided in a {@link SelectMenu}.
  */
 public class SelectOption implements SerializableData
 {
@@ -56,7 +56,7 @@ public class SelectOption implements SerializableData
      * @param  label
      *         The label for the option, up to {@value #LABEL_MAX_LENGTH} characters, as defined by {@link #LABEL_MAX_LENGTH}
      * @param  value
-     *         The value for the option used to indicate which option was selected with {@link SelectionMenuInteraction#getValues()},
+     *         The value for the option used to indicate which option was selected with {@link SelectMenuInteraction#getValues()},
      *         up to {@value #VALUE_MAX_LENGTH} characters, as defined by {@link #VALUE_MAX_LENGTH}
      *
      * @throws IllegalArgumentException
@@ -73,7 +73,7 @@ public class SelectOption implements SerializableData
      * @param  label
      *         The label for the option, up to {@value #LABEL_MAX_LENGTH} characters, as defined by {@link #LABEL_MAX_LENGTH}
      * @param  value
-     *         The value for the option used to indicate which option was selected with {@link SelectionMenuInteraction#getValues()},
+     *         The value for the option used to indicate which option was selected with {@link SelectMenuInteraction#getValues()},
      *         up to {@value #VALUE_MAX_LENGTH} characters, as defined by {@link #VALUE_MAX_LENGTH}
      * @param  description
      *         The description explaining the meaning of this option in more detail, up to {@value #DESCRIPTION_MAX_LENGTH} characters, as defined by {@link #DESCRIPTION_MAX_LENGTH}
@@ -107,7 +107,7 @@ public class SelectOption implements SerializableData
      * @param  label
      *         The label for the option, up to {@value #LABEL_MAX_LENGTH} characters, as defined by {@link #LABEL_MAX_LENGTH}
      * @param  value
-     *         The value for the option used to indicate which option was selected with {@link SelectionMenuInteraction#getValues()},
+     *         The value for the option used to indicate which option was selected with {@link SelectMenuInteraction#getValues()},
      *         up to {@value #VALUE_MAX_LENGTH} characters, as defined by {@link #VALUE_MAX_LENGTH}
      *
      * @throws IllegalArgumentException
@@ -144,7 +144,7 @@ public class SelectOption implements SerializableData
      * Returns a copy of this select option with the changed value.
      *
      * @param  value
-     *         The value for the option used to indicate which option was selected with {@link SelectionMenuInteraction#getValues()},
+     *         The value for the option used to indicate which option was selected with {@link SelectMenuInteraction#getValues()},
      *         up to {@value #VALUE_MAX_LENGTH} characters, as defined by {@link #VALUE_MAX_LENGTH}
      *
      * @throws IllegalArgumentException
@@ -223,7 +223,7 @@ public class SelectOption implements SerializableData
     }
 
     /**
-     * The current option value which is used to identify the selected options in {@link SelectionMenuInteraction#getValues()}.
+     * The current option value which is used to identify the selected options in {@link SelectMenuInteraction#getValues()}.
      *
      * @return The option value
      */
@@ -255,7 +255,7 @@ public class SelectOption implements SerializableData
     }
 
     /**
-     * The emoji attached to this option which is shown next to the option in the selection menu
+     * The emoji attached to this option which is shown next to the option in the select menu
      *
      * @return The attached emoji
      */

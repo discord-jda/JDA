@@ -18,26 +18,36 @@ package net.dv8tion.jda.api.interactions;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
-import net.dv8tion.jda.api.interactions.components.ComponentInteraction;
-import net.dv8tion.jda.api.requests.restaction.interactions.ReplyAction;
-import net.dv8tion.jda.internal.requests.restaction.interactions.ReplyActionImpl;
-import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.api.interactions.callbacks.IAutoCompleteCallback;
+import net.dv8tion.jda.api.interactions.callbacks.IDeferrableCallback;
+import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback;
+import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback;
+import net.dv8tion.jda.api.interactions.commands.Command;
 
-import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Collection;
+import java.util.Locale;
 
 /**
  * Abstract representation for any kind of Discord interaction.
- * <br>This includes things such as {@link net.dv8tion.jda.api.interactions.commands.CommandInteraction Slash-Commands} or {@link ComponentInteraction Buttons}.
+ * <br>This includes things such as {@link net.dv8tion.jda.api.interactions.commands.SlashCommandInteraction Slash-Commands}
+ * or {@link net.dv8tion.jda.api.interactions.components.buttons.ButtonInteraction Buttons}.
  *
  * <p>To properly handle an interaction you must acknowledge it.
- * This means you need to use either {@link #reply(String)}, {@link #deferReply()}, or another similar method for other interactions.
+ * Each interaction has different callbacks which acknowledge the interaction. These are added by the individual {@code I...Callback} interfaces:
+ * <ul>
+ *     <li>{@link IReplyCallback}
+ *     <br>Which supports direct message replies and deferred message replies via {@link IReplyCallback#reply(String)} and {@link IReplyCallback#deferReply()}</li>
+ *     <li>{@link IMessageEditCallback}
+ *     <br>Which supports direct message edits and deferred message edits (or no-operation) via {@link IMessageEditCallback#editMessage(String)} and {@link IMessageEditCallback#deferEdit()}</li>
+ *     <li>{@link IAutoCompleteCallback}
+ *     <br>Which supports choice suggestions for auto-complete interactions via {@link IAutoCompleteCallback#replyChoices(Command.Choice...)}</li>
+ * </ul>
  *
- * <p>Once the interaction is acknowledged, you can use {@link #getHook()} to send additional messages or update the original reply.
- * When using {@link #deferReply()} the first message sent to the {@link InteractionHook} will be identical to using {@link InteractionHook#editOriginal(String)}.
- * You must decide whether your reply will be ephemeral or not before calling {@link #deferReply()}. So design your code flow with that in mind!
+ * <p>Once the interaction is acknowledged, you can not reply with these methods again. If the interaction is a {@link IDeferrableCallback deferrable},
+ * you can use {@link IDeferrableCallback#getHook()} to send additional messages or update the original reply.
+ * When using {@link IReplyCallback#deferReply()} the first message sent to the {@link InteractionHook} will be identical to using {@link InteractionHook#editOriginal(String)}.
+ * You must decide whether your reply will be ephemeral or not before calling {@link IReplyCallback#deferReply()}. So design your code flow with that in mind!
  *
  * <p><b>You can only acknowledge an interaction once!</b> Any additional calls to reply/deferReply will result in exceptions.
  * You can use {@link #isAcknowledged()} to check whether the interaction has been acknowledged already.
@@ -131,269 +141,13 @@ public interface Interaction extends ISnowflake
     Channel getChannel();
 
     /**
-     * The {@link InteractionHook} which can be used to send deferred replies or followup messages.
-     *
-     * @throws UnsupportedOperationException
-     *         If this interaction does not support deferred replies and followup messages
-     *
-     * @return The interaction hook
-     */
-    @Nonnull
-    InteractionHook getHook();
-
-    /**
      * Whether this interaction has already been acknowledged.
-     * <br>Both {@link #deferReply()} and {@link #reply(String)} acknowledge an interaction.
-     * Each interaction can only be acknowledged once.
+     * <br><b>Each interaction can only be acknowledged once.</b>
      *
      * @return True, if this interaction has already been acknowledged
      */
     boolean isAcknowledged();
 
-    /**
-     * Acknowledge this interaction and defer the reply to a later time.
-     * <br>This will send a {@code <Bot> is thinking...} message in chat that will be updated later through either {@link InteractionHook#editOriginal(String)} or {@link InteractionHook#sendMessage(String)}.
-     *
-     * <p>You can use {@link #deferReply(boolean) deferReply(true)} to send a deferred ephemeral reply. If your initial deferred message is not ephemeral it cannot be made ephemeral later.
-     * Your first message to the {@link InteractionHook} will inherit whether the message is ephemeral or not from this deferred reply.
-     *
-     * <p><b>You only have 3 seconds to acknowledge an interaction!</b>
-     * <br>When the acknowledgement is sent after the interaction expired, you will receive {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_INTERACTION ErrorResponse.UNKNOWN_INTERACTION}.
-     * <p>Use {@link #reply(String)} to reply directly.
-     *
-     * @return {@link ReplyAction}
-     */
-    @Nonnull
-    @CheckReturnValue
-    ReplyAction deferReply();
-
-    /**
-     * Acknowledge this interaction and defer the reply to a later time.
-     * <br>This will send a {@code <Bot> is thinking...} message in chat that will be updated later through either {@link InteractionHook#editOriginal(String)} or {@link InteractionHook#sendMessage(String)}.
-     *
-     * <p>You can use {@code deferReply()} or {@code deferReply(false)} to send a non-ephemeral deferred reply. If your initial deferred message is ephemeral it cannot be made non-ephemeral later.
-     * Your first message to the {@link InteractionHook} will inherit whether the message is ephemeral or not from this deferred reply.
-     *
-     * <p><b>You only have 3 seconds to acknowledge an interaction!</b>
-     * <br>When the acknowledgement is sent after the interaction expired, you will receive {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_INTERACTION ErrorResponse.UNKNOWN_INTERACTION}.
-     * <p>Use {@link #reply(String)} to reply directly.
-     *
-     * <p>Ephemeral messages have some limitations and will be removed once the user restarts their client.
-     * <br>When a message is ephemeral, it will only be visible to the user that used the interaction.
-     * <br>Limitations:
-     * <ul>
-     *     <li>Cannot be deleted by the bot</li>
-     *     <li>Cannot contain any files/attachments</li>
-     *     <li>Cannot be reacted to</li>
-     *     <li>Cannot be retrieved</li>
-     * </ul>
-     *
-     * @param  ephemeral
-     *         True, if this message should only be visible to the interaction user
-     *
-     * @return {@link ReplyAction}
-     */
-    @Nonnull
-    @CheckReturnValue
-    default ReplyAction deferReply(boolean ephemeral)
-    {
-        return deferReply().setEphemeral(ephemeral);
-    }
-
-    /**
-     * Reply to this interaction and acknowledge it.
-     * <br>This will send a reply message for this interaction.
-     * You can use {@link ReplyAction#setEphemeral(boolean) setEphemeral(true)} to only let the target user see the message.
-     * Replies are non-ephemeral by default.
-     *
-     * <p><b>You only have 3 seconds to acknowledge an interaction!</b>
-     * <br>When the acknowledgement is sent after the interaction expired, you will receive {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_INTERACTION ErrorResponse.UNKNOWN_INTERACTION}.
-     * <p>If your handling can take longer than 3 seconds, due to various rate limits or other conditions, you should use {@link #deferReply()} instead.
-     *
-     * @param  message
-     *         The message to send
-     *
-     * @throws IllegalArgumentException
-     *         If null is provided
-     *
-     * @return {@link ReplyAction}
-     */
-    @Nonnull
-    @CheckReturnValue
-    default ReplyAction reply(@Nonnull Message message)
-    {
-        Checks.notNull(message, "Message");
-        ReplyActionImpl action = (ReplyActionImpl) deferReply();
-        return action.applyMessage(message);
-    }
-
-    /**
-     * Reply to this interaction and acknowledge it.
-     * <br>This will send a reply message for this interaction.
-     * You can use {@link ReplyAction#setEphemeral(boolean) setEphemeral(true)} to only let the target user see the message.
-     * Replies are non-ephemeral by default.
-     *
-     * <p><b>You only have 3 seconds to acknowledge an interaction!</b>
-     * <br>When the acknowledgement is sent after the interaction expired, you will receive {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_INTERACTION ErrorResponse.UNKNOWN_INTERACTION}.
-     * <p>If your handling can take longer than 3 seconds, due to various rate limits or other conditions, you should use {@link #deferReply()} instead.
-     *
-     * @param  content
-     *         The message content to send
-     *
-     * @throws IllegalArgumentException
-     *         If null is provided or the content is empty or longer than {@link Message#MAX_CONTENT_LENGTH}
-     *
-     * @return {@link ReplyAction}
-     */
-    @Nonnull
-    @CheckReturnValue
-    default ReplyAction reply(@Nonnull String content)
-    {
-        Checks.notNull(content, "Content");
-        return deferReply().setContent(content);
-    }
-
-    /**
-     * Reply to this interaction and acknowledge it.
-     * <br>This will send a reply message for this interaction.
-     * You can use {@link ReplyAction#setEphemeral(boolean) setEphemeral(true)} to only let the target user see the message.
-     * Replies are non-ephemeral by default.
-     *
-     * <p><b>You only have 3 seconds to acknowledge an interaction!</b>
-     * <br>When the acknowledgement is sent after the interaction expired, you will receive {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_INTERACTION ErrorResponse.UNKNOWN_INTERACTION}.
-     * <p>If your handling can take longer than 3 seconds, due to various rate limits or other conditions, you should use {@link #deferReply()} instead.
-     *
-     * @param  embeds
-     *         The {@link MessageEmbed MessageEmbeds} to send
-     *
-     * @throws IllegalArgumentException
-     *         If null is provided
-     *
-     * @return {@link ReplyAction}
-     */
-    @Nonnull
-    @CheckReturnValue
-    default ReplyAction replyEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
-    {
-        return deferReply().addEmbeds(embeds);
-    }
-
-    /**
-     * Reply to this interaction and acknowledge it.
-     * <br>This will send a reply message for this interaction.
-     * You can use {@link ReplyAction#setEphemeral(boolean) setEphemeral(true)} to only let the target user see the message.
-     * Replies are non-ephemeral by default.
-     *
-     * <p><b>You only have 3 seconds to acknowledge an interaction!</b>
-     * <br>When the acknowledgement is sent after the interaction expired, you will receive {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_INTERACTION ErrorResponse.UNKNOWN_INTERACTION}.
-     * <p>If your handling can take longer than 3 seconds, due to various rate limits or other conditions, you should use {@link #deferReply()} instead.
-     *
-     * @param  embed
-     *         The message embed to send
-     * @param  embeds
-     *         Any additional embeds to send
-     *
-     * @throws IllegalArgumentException
-     *         If null is provided
-     *
-     * @return {@link ReplyAction}
-     */
-    @Nonnull
-    @CheckReturnValue
-    default ReplyAction replyEmbeds(@Nonnull MessageEmbed embed, @Nonnull MessageEmbed... embeds)
-    {
-        Checks.notNull(embed, "MessageEmbed");
-        Checks.noneNull(embeds, "MessageEmbed");
-        return deferReply().addEmbeds(embed).addEmbeds(embeds);
-    }
-
-//    /**
-//     * Reply to this interaction and acknowledge it.
-//     * <br>This will send a reply message for this interaction.
-//     * You can use {@link ReplyAction#setEphemeral(boolean) setEphemeral(true)} to only let the target user see the message.
-//     * Replies are non-ephemeral by default.
-//     *
-//     * <p><b>You only have 3 seconds to acknowledge an interaction!</b>
-//     * <br>When the acknowledgement is sent after the interaction expired, you will receive {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_INTERACTION ErrorResponse.UNKNOWN_INTERACTION}.
-//     * <p>If your handling can take longer than 3 seconds, due to various rate limits or other conditions, you should use {@link #deferReply()} instead.
-//     *
-//     * @param  components
-//     *         The {@link ComponentLayout ComponentLayouts} to send, such as {@link ActionRow}
-//     *
-//     * @throws IllegalArgumentException
-//     *         If null is provided
-//     *
-//     * @return {@link ReplyAction}
-//     */
-//    @Nonnull
-//    @CheckReturnValue
-//    default ReplyAction replyComponents(@Nonnull Collection<? extends ComponentLayout> components)
-//    {
-//        if (components.stream().anyMatch(it -> !(it instanceof ActionRow)))
-//            throw new UnsupportedOperationException("Only ActionRow layouts are currently supported.");
-//        List<ActionRow> rows = components.stream()
-//                .map(ActionRow.class::cast)
-//                .collect(Collectors.toList());
-//        return deferReply().addActionRows(rows);
-//    }
-//
-//    /**
-//     * Reply to this interaction and acknowledge it.
-//     * <br>This will send a reply message for this interaction.
-//     * You can use {@link ReplyAction#setEphemeral(boolean) setEphemeral(true)} to only let the target user see the message.
-//     * Replies are non-ephemeral by default.
-//     *
-//     * <p><b>You only have 3 seconds to acknowledge an interaction!</b>
-//     * <br>When the acknowledgement is sent after the interaction expired, you will receive {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_INTERACTION ErrorResponse.UNKNOWN_INTERACTION}.
-//     * <p>If your handling can take longer than 3 seconds, due to various rate limits or other conditions, you should use {@link #deferReply()} instead.
-//     *
-//     * @param  components
-//     *         The {@link ComponentLayout ComponentLayouts} to send, such as {@link ActionRow}
-//     *
-//     * @throws IllegalArgumentException
-//     *         If null is provided
-//     *
-//     * @return {@link ReplyAction}
-//     */
-//    @Nonnull
-//    @CheckReturnValue
-//    default ReplyAction replyComponents(@Nonnull ComponentLayout component, @Nonnull ComponentLayout... components)
-//    {
-//        Checks.notNull(component, "ComponentLayouts");
-//        Checks.noneNull(components, "ComponentLayouts");
-//        List<ComponentLayout> layouts = new ArrayList<>();
-//        layouts.add(component);
-//        Collections.addAll(layouts, components);
-//        return replyComponents(layouts);
-//    }
-
-    /**
-     * Reply to this interaction and acknowledge it.
-     * <br>This will send a reply message for this interaction.
-     * You can use {@link ReplyAction#setEphemeral(boolean) setEphemeral(true)} to only let the target user see the message.
-     * Replies are non-ephemeral by default.
-     *
-     * <p><b>You only have 3 seconds to acknowledge an interaction!</b>
-     * <br>When the acknowledgement is sent after the interaction expired, you will receive {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_INTERACTION ErrorResponse.UNKNOWN_INTERACTION}.
-     * <p>If your handling can take longer than 3 seconds, due to various rate limits or other conditions, you should use {@link #deferReply()} instead.
-     *
-     * @param  format
-     *         Format string for the message content
-     * @param  args
-     *         Format arguments for the content
-     *
-     * @throws IllegalArgumentException
-     *         If the format string is null or the resulting content is longer than {@link Message#MAX_CONTENT_LENGTH}
-     *
-     * @return {@link ReplyAction}
-     */
-    @Nonnull
-    @CheckReturnValue
-    default ReplyAction replyFormat(@Nonnull String format, @Nonnull Object... args)
-    {
-        Checks.notNull(format, "Format String");
-        return reply(String.format(format, args));
-    }
 
     /**
      * The {@link GuildChannel} this interaction happened in.
@@ -501,6 +255,49 @@ public interface Interaction extends ISnowflake
         if (channel instanceof PrivateChannel)
             return (PrivateChannel) channel;
         throw new IllegalStateException("Cannot convert channel of type " + getChannelType() + " to PrivateChannel");
+    }
+
+    /**
+     * The {@link ThreadChannel} this interaction happened in.
+     * <br>If {@link #getChannelType()} is not {@link ChannelType#isThread()}, this throws {@link IllegalStateException}!
+     *
+     * @throws IllegalStateException
+     *         If {@link #getChannel()} is not a thread channel
+     *
+     * @return The {@link ThreadChannel}
+     */
+    @Nonnull
+    default ThreadChannel getThreadChannel()
+    {
+        Channel channel = getChannel();
+        if (channel instanceof ThreadChannel)
+            return (ThreadChannel) channel;
+        throw new IllegalStateException("Cannot convert channel of type " + getChannelType() + " to ThreadChannel");
+    }
+
+    /**
+     * Returns the selected language of the invoking user.
+     *
+     * @return The language of the invoking user
+     */
+    @Nonnull
+    Locale getUserLocale();
+
+    /**
+     * Returns the preferred language of the Guild.
+     * <br>This is identical to {@code getGuild().getLocale()}.
+     *
+     * @throws IllegalStateException
+     *         If this interaction is not from a guild. (See {@link #isFromGuild()})
+     *
+     * @return The preferred language of the Guild
+     */
+    @Nonnull
+    default Locale getGuildLocale()
+    {
+        if (!isFromGuild())
+            throw new IllegalStateException("This interaction did not happen in a guild");
+        return getGuild().getLocale();
     }
 
     /**

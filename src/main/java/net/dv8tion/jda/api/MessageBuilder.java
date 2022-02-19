@@ -17,7 +17,7 @@ package net.dv8tion.jda.api;
 
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
-import net.dv8tion.jda.api.interactions.components.ComponentLayout;
+import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import net.dv8tion.jda.internal.entities.DataMessage;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -42,7 +42,7 @@ public class MessageBuilder implements Appendable
     protected final StringBuilder builder = new StringBuilder();
 
     protected final List<MessageEmbed> embeds = new ArrayList<>();
-    protected final List<ComponentLayout> components = new ArrayList<>();
+    protected final List<LayoutComponent> components = new ArrayList<>();
     protected boolean isTTS = false;
     protected String nonce;
     protected EnumSet<Message.MentionType> allowedMentions = null;
@@ -1023,7 +1023,7 @@ public class MessageBuilder implements Appendable
 
         String[] ids = new String[0];
         return new DataMessage(isTTS, message, nonce, embeds,
-                allowedMentions, mentionedUsers.toArray(ids), mentionedRoles.toArray(ids), components.toArray(new ComponentLayout[0]));
+                allowedMentions, mentionedUsers.toArray(ids), mentionedRoles.toArray(ids), components.toArray(new LayoutComponent[0]));
     }
 
     /**
@@ -1091,7 +1091,7 @@ public class MessageBuilder implements Appendable
     {
         String[] ids = new String[0];
         return new DataMessage(isTTS, builder.substring(beginIndex, endIndex), null, null,
-                allowedMentions, mentionedUsers.toArray(ids), mentionedRoles.toArray(ids), components.toArray(new ComponentLayout[0]));
+                allowedMentions, mentionedUsers.toArray(ids), mentionedRoles.toArray(ids), components.toArray(new LayoutComponent[0]));
     }
 
     private String[] toStringArray(long[] users)

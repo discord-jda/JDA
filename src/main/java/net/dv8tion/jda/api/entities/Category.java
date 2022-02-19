@@ -65,6 +65,7 @@ public interface Category extends GuildChannel, ICopyableChannel, IPositionableC
         channels.addAll(getTextChannels());
         channels.addAll(getVoiceChannels());
         channels.addAll(getStageChannels());
+        channels.addAll(getNewsChannels());
         Collections.sort(channels);
 
         return Collections.unmodifiableList(channels);
