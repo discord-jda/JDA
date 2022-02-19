@@ -64,12 +64,20 @@ public class GuildDeleteHandler extends SocketHandler
         //Remove everything from global cache
         // this prevents some race-conditions for getting audio managers from guilds
         SnowflakeCacheViewImpl<Guild> guildView = getJDA().getGuildsView();
+        SnowflakeCacheViewImpl<StageChannel> stageView = getJDA().getStageChannelView();
         SnowflakeCacheViewImpl<StoreChannel> storeView = getJDA().getStoreChannelsView();
         SnowflakeCacheViewImpl<TextChannel> textView = getJDA().getTextChannelsView();
+        SnowflakeCacheViewImpl<ThreadChannel> threadView = getJDA().getThreadChannelsView();
         SnowflakeCacheViewImpl<NewsChannel> newsView = getJDA().getNewsChannelView();
         SnowflakeCacheViewImpl<VoiceChannel> voiceView = getJDA().getVoiceChannelsView();
         SnowflakeCacheViewImpl<Category> categoryView = getJDA().getCategoriesView();
+
         guildView.remove(id);
+        try (UnlockHook hook = stageView.writeLock())
+        {
+            guild.getStageChannelCache()
+                    .forEachUnordered(chan -> stageView.getMap().remove(chan.getIdLong()));
+        }
         try (UnlockHook hook = storeView.writeLock())
         {
             guild.getStoreChannelCache()
@@ -79,6 +87,11 @@ public class GuildDeleteHandler extends SocketHandler
         {
             guild.getTextChannelCache()
                  .forEachUnordered(chan -> textView.getMap().remove(chan.getIdLong()));
+        }
+        try (UnlockHook hook = threadView.writeLock())
+        {
+            guild.getThreadChannelsView()
+                    .forEachUnordered(chan -> threadView.getMap().remove(chan.getIdLong()));
         }
         try (UnlockHook hook = newsView.writeLock())
         {
