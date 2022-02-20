@@ -1227,56 +1227,48 @@ public class EntityBuilder
 
     public PrivateChannel createPrivateChannel(DataObject json)
     {
-        final long channelId = json.getUnsignedLong("id");
-        PrivateChannelImpl channel = (PrivateChannelImpl) api.getPrivateChannelById(channelId);
-        api.usedPrivateChannel(channelId);
-        //since we provide and cache incomplete channels, it isn't enough to check if the channel exists and return it
-        //this channel may have been cached in an incomplete state
-
-        //we have no extra information in this event, so we find the channel or make one
-        if (!json.hasKey("recipients") && !json.hasKey("recipient"))
-        {
-            if (channel == null)
-            {
-                channel = new PrivateChannelImpl(getJDA(), channelId, null);
-                cachePrivateChannel(channel);
-            }
-            return channel;
-        }
-
-        DataObject recipient = json.hasKey("recipients") ?
-            json.getArray("recipients").getObject(0) :
-            json.getObject("recipient");
-        final long userId = recipient.getLong("id");
-        UserImpl user = (UserImpl) getJDA().getUserById(userId);
-        if (user == null)
-        {   //The getJDA() can give us private channels connected to Users that we can no longer communicate with.
-            // As such, make a fake user and fake private channel.
-            user = createUser(recipient);
-        }
-        if (channel != null)
-        {
-            //we already have the channel so don't need to make a new one,
-            //but we may need the user that was in the message
-            if (channel.getUser() == null)
-            {
-                channel.setUser(user);
-            }
-            return channel;
-        }
-        return createPrivateChannel(json, user);
+        return createPrivateChannel(json, null);
     }
 
     public PrivateChannel createPrivateChannel(DataObject json, UserImpl user)
     {
-        final long channelId = json.getLong("id");
-        PrivateChannelImpl priv = new PrivateChannelImpl(getJDA(), channelId, user)
-                .setLatestMessageIdLong(json.getLong("last_message_id", 0));
-        user.setPrivateChannel(priv);
-
+        final long channelId = json.getUnsignedLong("id");
+        PrivateChannelImpl channel = (PrivateChannelImpl) api.getPrivateChannelById(channelId);
+        if (channel == null)
+        {
+            channel = new PrivateChannelImpl(getJDA(), channelId, user)
+                    .setLatestMessageIdLong(json.getLong("last_message_id", 0));
+        }
+        UserImpl recipient = user;
+        if (channel.getUser() == null)
+        {
+            if (recipient == null && (json.hasKey("recipients") || json.hasKey("recipient")))
+            {
+                //if we don't know the recipient, and we have information on them, we can use that
+                DataObject recipientJson = json.hasKey("recipients") ?
+                        json.getArray("recipients").getObject(0) :
+                        json.getObject("recipient");
+                final long userId = recipientJson.getUnsignedLong("id");
+                recipient = (UserImpl) getJDA().getUserById(userId);
+                if (recipient == null)
+                {
+                    recipient = createUser(recipientJson);
+                }
+            }
+            if (recipient != null)
+            {
+                //update the channel if we have found the user
+                channel.setUser(user);
+            }
+        }
+        if (recipient != null)
+        {
+            recipient.setPrivateChannel(channel);
+        }
         // only add channels to the cache when they come from an event, otherwise we would never remove the channel
-        cachePrivateChannel(priv);
-        return priv;
+        cachePrivateChannel(channel);
+        api.usedPrivateChannel(channelId);
+        return channel;
     }
 
     private void cachePrivateChannel(PrivateChannelImpl priv)
