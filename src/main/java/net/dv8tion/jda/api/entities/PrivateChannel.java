@@ -16,6 +16,7 @@
 package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.requests.RestAction;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -59,4 +60,16 @@ public interface PrivateChannel extends MessageChannel
     @Nonnull
     @CheckReturnValue
     RestAction<User> retrieveUser();
+
+    /**
+     * The human-readable name of this channel.
+     *
+     * If getUser returns null, this method will return the empty String.
+     * This happens when JDA does not have enough information to populate the channel name
+     *
+     * @return The name of this channel
+     */
+    @NotNull
+    @Override
+    String getName();
 }

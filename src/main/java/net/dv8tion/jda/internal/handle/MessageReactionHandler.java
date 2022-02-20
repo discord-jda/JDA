@@ -108,6 +108,9 @@ public class MessageReactionHandler extends SocketHandler
 
         if (user == null)
         {
+            // We expect there to be a user object already cached when we are in a guild and adding a new reaction as the user should be a member cached in the guild.
+            // The event in the context of a guild will also provide a member object, if the required intents are present.
+            // The only time we can receive a reaction add but not have the user cached would be if we receive the event in an uncached or partially built PrivateChannel.
             if (add && guild != null)
             {
                 api.getEventCache().cache(EventCache.Type.USER, userId, responseNumber, allContent, this::handle);
