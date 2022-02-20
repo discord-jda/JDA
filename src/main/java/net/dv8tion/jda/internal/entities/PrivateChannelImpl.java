@@ -35,7 +35,7 @@ public class PrivateChannelImpl extends AbstractChannelImpl<PrivateChannelImpl> 
     private User user;
     private long latestMessageId;
 
-    public PrivateChannelImpl(JDA api, long id, User user)
+    public PrivateChannelImpl(JDA api, long id, @Nullable User user)
     {
         super(id, api);
         this.user = user;
@@ -105,8 +105,11 @@ public class PrivateChannelImpl extends AbstractChannelImpl<PrivateChannelImpl> 
     @Override
     public boolean canTalk()
     {
-        //the only way user is null, is when an event is dispatched that doesn't give us enough information
-        //since events will only happen in this channel if it is between the bot and the user, a null user is a valid channel state
+        //The only way user is null is when an event is dispatched that doesn't give us enough information to build the recipient user,
+        // which only happens if this bot sends a message (or otherwise triggers an event) from a shard other than shard 0.
+        // The event will be received on shard 0 and not have enough information to build the recipient user.
+        //As such, since events will only happen in this channel if it is between the bot and the user, a null user is a valid channel state. 
+        // Events cannot happen between a bot and another bot, so the user would never be null in that case.
         return user == null || !user.isBot();
     }
 
@@ -189,8 +192,11 @@ public class PrivateChannelImpl extends AbstractChannelImpl<PrivateChannelImpl> 
 
     private void checkBot()
     {
-        //the only way user is null, is when an event is dispatched that doesn't give us enough information
-        //since events will only happen in this channel if it is between the bot and the user, a null user is a valid channel state
+        //The only way user is null is when an event is dispatched that doesn't give us enough information to build the recipient user,
+        // which only happens if this bot sends a message (or otherwise triggers an event) from a shard other than shard 0.
+        // The event will be received on shard 0 and not have enough information to build the recipient user.
+        //As such, since events will only happen in this channel if it is between the bot and the user, a null user is a valid channel state. 
+        // Events cannot happen between a bot and another bot, so the user would never be null in that case.
         if (getUser() != null && getUser().isBot())
             throw new UnsupportedOperationException("Cannot send a private message between bots.");
     }
