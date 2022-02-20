@@ -112,7 +112,6 @@ public interface IGuildChannelContainer
      *     <li>{@link #getNewsChannelById(String)}</li>
      *     <li>{@link #getStageChannelById(String)}</li>
      *     <li>{@link #getVoiceChannelById(String)}</li>
-     *     <li>{@link #getStoreChannelById(String)}</li>
      *     <li>{@link #getCategoryById(String)}</li>
      * </ul>
      *
@@ -149,7 +148,6 @@ public interface IGuildChannelContainer
      *     <li>{@link #getNewsChannelById(long)}</li>
      *     <li>{@link #getStageChannelById(long)}</li>
      *     <li>{@link #getVoiceChannelById(long)}</li>
-     *     <li>{@link #getStoreChannelById(long)}</li>
      *     <li>{@link #getCategoryById(long)}</li>
      * </ul>
      *
@@ -197,7 +195,6 @@ public interface IGuildChannelContainer
      *     <li>{@link #getNewsChannelById(String)}</li>
      *     <li>{@link #getStageChannelById(String)}</li>
      *     <li>{@link #getVoiceChannelById(String)}</li>
-     *     <li>{@link #getStoreChannelById(String)}</li>
      *     <li>{@link #getCategoryById(String)}</li>
      * </ul>
      *
@@ -239,7 +236,6 @@ public interface IGuildChannelContainer
      *     <li>{@link #getNewsChannelById(long)}</li>
      *     <li>{@link #getStageChannelById(long)}</li>
      *     <li>{@link #getVoiceChannelById(long)}</li>
-     *     <li>{@link #getStoreChannelById(long)}</li>
      *     <li>{@link #getCategoryById(long)}</li>
      * </ul>
      *
