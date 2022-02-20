@@ -364,7 +364,7 @@ public class OptionData implements SerializableData
     @Nonnull
     public OptionData setAutoComplete(boolean autoComplete)
     {
-        if (isAutoComplete)
+        if (autoComplete)
         {
             if (choices == null || !type.canSupportChoices())
                 throw new IllegalStateException("Cannot enable auto-complete for options of type " + type);

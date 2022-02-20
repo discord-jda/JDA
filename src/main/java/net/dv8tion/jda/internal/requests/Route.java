@@ -207,6 +207,7 @@ public class Route
     {
         public static final Route DELETE_CHANNEL =       new Route(DELETE, "channels/{channel_id}");
         public static final Route MODIFY_CHANNEL =       new Route(PATCH,  "channels/{channel_id}");
+        public static final Route GET_CHANNEL =          new Route(GET,    "channels/{channel_id}");
         public static final Route GET_WEBHOOKS =         new Route(GET,    "channels/{channel_id}/webhooks");
         public static final Route CREATE_WEBHOOK =       new Route(POST,   "channels/{channel_id}/webhooks");
         public static final Route CREATE_PERM_OVERRIDE = new Route(PUT,    "channels/{channel_id}/permissions/{permoverride_id}");

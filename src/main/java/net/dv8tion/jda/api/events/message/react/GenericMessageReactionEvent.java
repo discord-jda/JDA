@@ -175,6 +175,8 @@ public class GenericMessageReactionEvent extends GenericMessageEvent
     {
         if (member != null)
             return new CompletedRestAction<>(getJDA(), member);
+        if (!getChannel().getType().isGuild())
+            throw new IllegalStateException("Cannot retrieve member for a private reaction not from a guild");
         return getGuild().retrieveMemberById(getUserIdLong());
     }
 
