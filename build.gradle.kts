@@ -261,7 +261,7 @@ javadoc.apply {
         opt.links(
                 "https://docs.oracle.com/javase/8/docs/api/",
                 "https://takahikokawasaki.github.io/nv-websocket-client/",
-                "https://square.github.io/okhttp/3.x/okhttp/")
+                "https://javadoc.io/doc/com.squareup.okhttp3/okhttp/3.13.0/")
         if (JavaVersion.VERSION_1_8 < javaVersion) {
             opt.addBooleanOption("html5", true) // Adds search bar
             opt.addStringOption("-release", "8")
