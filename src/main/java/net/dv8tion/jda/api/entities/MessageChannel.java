@@ -52,7 +52,7 @@ import java.util.stream.Collectors;
 /**
  * Represents a Discord channel that can have {@link net.dv8tion.jda.api.entities.Message Messages} and files sent to it.
  *
- * <h1>Formattable</h1>
+ * <h2>Formattable</h2>
  * This interface extends {@link java.util.Formattable Formattable} and can be used with a {@link java.util.Formatter Formatter}
  * such as used by {@link String#format(String, Object...) String.format(String, Object...)}
  * or {@link java.io.PrintStream#printf(String, Object...) PrintStream.printf(String, Object...)}.
@@ -1003,7 +1003,7 @@ public interface MessageChannel extends Channel, Formattable
      * <p><b><u>It is recommended not to use this in an enhanced for-loop without end conditions as it might cause memory
      * overflows in channels with a long message history.</u></b>
      *
-     * <h1>Examples</h1>
+     * <h4>Examples</h4>
      * <pre>{@code
      * public CompletableFuture<List<Message>> getMessagesByUser(MessageChannel channel, User user) {
      *     return channel.getIterableHistory()
@@ -1579,7 +1579,7 @@ public interface MessageChannel extends Channel, Formattable
      * Retrieves messages from the beginning of this {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel}.
      * The {@code limit} determines the amount of messages being retrieved.
      *
-     * <h2>Example</h2>
+     * <h4>Example</h4>
      * <pre><code>
      * public void resendFirstMessage(MessageChannel channel)
      * {
@@ -1687,7 +1687,7 @@ public interface MessageChannel extends Channel, Formattable
      * <p>This method encodes the provided unicode for you.
      * <b>Do not encode the emoji before providing the unicode.</b>
      *
-     * <h2>Examples</h2>
+     * <h4>Examples</h4>
      * <code>
      * // custom<br>
      * channel.addReactionById(messageId, "minn:245267426227388416").queue();<br>
@@ -1772,7 +1772,7 @@ public interface MessageChannel extends Channel, Formattable
      * <p>This method encodes the provided unicode for you.
      * <b>Do not encode the emoji before providing the unicode.</b>
      *
-     * <h2>Examples</h2>
+     * <h4>Examples</h4>
      * <code>
      * // custom<br>
      * channel.addReactionById(messageId, "minn:245267426227388416").queue();<br>
@@ -3163,7 +3163,7 @@ public interface MessageChannel extends Channel, Formattable
      *     <br>The request was attempted after the channel was deleted.</li>
      * </ul>
      *
-     * <h2>Example</h2>
+     * <h4>Example</h4>
      * <pre>{@code
      * List<ActionRow> rows = Arrays.asList(
      *   ActionRow.of(Button.success("prompt:accept", "Accept"), Button.danger("prompt:reject", "Reject")), // 1st row below message
@@ -3229,7 +3229,7 @@ public interface MessageChannel extends Channel, Formattable
      *     <br>The request was attempted after the channel was deleted.</li>
      * </ul>
      *
-     * <h2>Example</h2>
+     * <h4>Example</h4>
      * <pre>{@code
      * List<ActionRow> rows = Arrays.asList(
      *   ActionRow.of(Button.success("prompt:accept", "Accept"), Button.danger("prompt:reject", "Reject")), // 1st row below message
@@ -3287,7 +3287,7 @@ public interface MessageChannel extends Channel, Formattable
      *     <br>The request was attempted after the channel was deleted.</li>
      * </ul>
      *
-     * <h2>Example</h2>
+     * <h4>Example</h4>
      * <pre>{@code
      * channel.editMessageComponentsById(messageId,
      *   ActionRow.of(Button.success("prompt:accept", "Accept"), Button.danger("prompt:reject", "Reject")), // 1st row below message
@@ -3348,7 +3348,7 @@ public interface MessageChannel extends Channel, Formattable
      *     <br>The request was attempted after the channel was deleted.</li>
      * </ul>
      *
-     * <h2>Example</h2>
+     * <h4>Example</h4>
      * <pre>{@code
      * channel.editMessageComponentsById(messageId,
      *   ActionRow.of(Button.success("prompt:accept", "Accept"), Button.danger("prompt:reject", "Reject")), // 1st row below message
