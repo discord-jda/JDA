@@ -86,18 +86,14 @@ public interface MessageChannel extends Channel, Formattable
     /**
      * The id for the most recent message sent
      * in this current MessageChannel.
-     * <br>This should only be used if {@link #hasLatestMessage()} returns {@code true}!
      *
      * <p>This value is updated on each {@link net.dv8tion.jda.api.events.message.MessageReceivedEvent MessageReceivedEvent}
-     * and <u><b>will be reset to {@code null} if the message associated with this ID gets deleted</b></u>
-     *
-     * @throws java.lang.IllegalStateException
-     *         If no message id is available
+     * and <u><b>the value might point to an already deleted message since the ID is not cleared when the message is deleted,
+     * so calling {@link #retrieveMessageById(long)} with this id can result in an {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE} error</b></u>
      *
      * @return The most recent message's id
      */
     @Nonnull
-    //TODO-v5: Revisit this. Surely this should be Nullable instead of throw an exception...
     default String getLatestMessageId()
     {
         return Long.toUnsignedString(getLatestMessageIdLong());
@@ -106,35 +102,14 @@ public interface MessageChannel extends Channel, Formattable
     /**
      * The id for the most recent message sent
      * in this current MessageChannel.
-     * <br>This should only be used if {@link #hasLatestMessage()} returns {@code true}!
      *
      * <p>This value is updated on each {@link net.dv8tion.jda.api.events.message.MessageReceivedEvent MessageReceivedEvent}
-     * and <u><b>will be reset to {@code null} if the message associated with this ID gets deleted</b></u>
-     *
-     * @throws java.lang.IllegalStateException
-     *         If no message id is available
+     * and <u><b>the value might point to an already deleted message since the value is not cleared when the message is deleted,
+     * so calling {@link #retrieveMessageById(long)} with this id can result in an {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE} error</b></u>
      *
      * @return The most recent message's id
      */
     long getLatestMessageIdLong();
-
-    /**
-     * Whether this MessageChannel contains a tracked most recent
-     * message or not.
-     *
-     * <p>This does not directly mean that {@link #getHistory()} will be unable to retrieve past messages,
-     * it merely means that the latest message is untracked by our internal cache meaning that
-     * if this returns {@code false} the {@link #getLatestMessageId()}
-     * method will throw an {@link java.util.NoSuchElementException NoSuchElementException}
-     *
-     * @return True, if a latest message id is available for retrieval by {@link #getLatestMessageId()}
-     *
-     * @see    #getLatestMessageId()
-     */
-    default boolean hasLatestMessage()
-    {
-        return getLatestMessageIdLong() != 0;
-    }
 
     /**
      * Whether the currently logged in user can send messages in this channel or not.
