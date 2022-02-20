@@ -79,32 +79,6 @@ public class ChannelUpdateHandler extends SocketHandler
 
         switch (type)
         {
-            case STORE:
-            {
-                StoreChannelImpl storeChannel = (StoreChannelImpl) channel;
-
-                final String oldName = storeChannel.getName();
-                final int oldPosition = storeChannel.getPositionRaw();
-
-                if (!Objects.equals(oldName, name))
-                {
-                    storeChannel.setName(name);
-                    getJDA().handleEvent(
-                        new ChannelUpdateNameEvent(
-                            getJDA(), responseNumber,
-                            storeChannel, oldName, name
-                        ));
-                }
-                if (!Objects.equals(oldPosition, position))
-                {
-                    storeChannel.setPosition(position);
-                    getJDA().handleEvent(
-                        new ChannelUpdatePositionEvent(
-                            getJDA(), responseNumber,
-                            storeChannel, oldPosition, position));
-                }
-                break;
-            }
             case TEXT:
             {
                 final String topic = content.getString("topic", null);

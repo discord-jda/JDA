@@ -112,7 +112,6 @@ public interface IGuildChannelContainer
      *     <li>{@link #getNewsChannelById(String)}</li>
      *     <li>{@link #getStageChannelById(String)}</li>
      *     <li>{@link #getVoiceChannelById(String)}</li>
-     *     <li>{@link #getStoreChannelById(String)}</li>
      *     <li>{@link #getCategoryById(String)}</li>
      * </ul>
      *
@@ -149,7 +148,6 @@ public interface IGuildChannelContainer
      *     <li>{@link #getNewsChannelById(long)}</li>
      *     <li>{@link #getStageChannelById(long)}</li>
      *     <li>{@link #getVoiceChannelById(long)}</li>
-     *     <li>{@link #getStoreChannelById(long)}</li>
      *     <li>{@link #getCategoryById(long)}</li>
      * </ul>
      *
@@ -169,8 +167,6 @@ public interface IGuildChannelContainer
             channel = getVoiceChannelById(id);
         if (channel == null)
             channel = getStageChannelById(id);
-        if (channel == null)
-            channel = getStoreChannelById(id);
         if (channel == null)
             channel = getCategoryById(id);
         if (channel == null)
@@ -199,7 +195,6 @@ public interface IGuildChannelContainer
      *     <li>{@link #getNewsChannelById(String)}</li>
      *     <li>{@link #getStageChannelById(String)}</li>
      *     <li>{@link #getVoiceChannelById(String)}</li>
-     *     <li>{@link #getStoreChannelById(String)}</li>
      *     <li>{@link #getCategoryById(String)}</li>
      * </ul>
      *
@@ -241,7 +236,6 @@ public interface IGuildChannelContainer
      *     <li>{@link #getNewsChannelById(long)}</li>
      *     <li>{@link #getStageChannelById(long)}</li>
      *     <li>{@link #getVoiceChannelById(long)}</li>
-     *     <li>{@link #getStoreChannelById(long)}</li>
      *     <li>{@link #getCategoryById(long)}</li>
      * </ul>
      *
@@ -266,8 +260,6 @@ public interface IGuildChannelContainer
             return getVoiceChannelById(id);
         case STAGE:
             return getStageChannelById(id);
-        case STORE:
-            return getStoreChannelById(id);
         case CATEGORY:
             return getCategoryById(id);
         }
@@ -625,132 +617,6 @@ public interface IGuildChannelContainer
     default List<Category> getCategories()
     {
         return getCategoryCache().asList();
-    }
-
-
-    // StoreChannels
-
-
-    /**
-     * Sorted {@link net.dv8tion.jda.api.utils.cache.SnowflakeCacheView SnowflakeCacheView} of {@link StoreChannel}.
-     * <br>In {@link Guild} cache, channels are sorted according to their position and id.
-     *
-     * <p>This getter exists on any instance of {@link IGuildChannelContainer} and only checks the caches with the relevant scoping.
-     * For {@link Guild}, {@link JDA}, or {@link ShardManager},
-     * this returns the relevant channel with respect to the cache within each of those objects.
-     * For a guild, this would mean it only returns channels within the same guild.
-     * <br>If this is called on {@link JDA} or {@link ShardManager}, this may return null immediately after building, because the cache isn't initialized yet.
-     * To make sure the cache is initialized after building your {@link JDA} instance, you can use {@link JDA#awaitReady()}.
-     *
-     * @return {@link net.dv8tion.jda.api.utils.cache.SortedSnowflakeCacheView SortedSnowflakeCacheView}
-     *
-     * @since  4.0.0
-     */
-    @Nonnull
-    SnowflakeCacheView<StoreChannel> getStoreChannelCache();
-
-    /**
-     * Gets a list of all {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannels}
-     * in this Guild that have the same name as the one provided.
-     * <br>If there are no channels with the provided name, then this returns an empty list.
-     *
-     * <p>This getter exists on any instance of {@link IGuildChannelContainer} and only checks the caches with the relevant scoping.
-     * For {@link Guild}, {@link JDA}, or {@link ShardManager},
-     * this returns the relevant channel with respect to the cache within each of those objects.
-     * For a guild, this would mean it only returns channels within the same guild.
-     * <br>If this is called on {@link JDA} or {@link ShardManager}, this may return null immediately after building, because the cache isn't initialized yet.
-     * To make sure the cache is initialized after building your {@link JDA} instance, you can use {@link JDA#awaitReady()}.
-     *
-     * @param  name
-     *         The name used to filter the returned {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannels}.
-     * @param  ignoreCase
-     *         Determines if the comparison ignores case when comparing. True - case insensitive.
-     *
-     * @return Possibly-empty immutable list of all StoreChannels with names that match the provided name.
-     *
-     * @since  4.0.0
-     */
-    @Nonnull
-    default List<StoreChannel> getStoreChannelsByName(@Nonnull String name, boolean ignoreCase)
-    {
-        return getStoreChannelCache().getElementsByName(name, ignoreCase);
-    }
-
-    /**
-     * Gets a {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannel} that has the same id as the one provided.
-     * <br>If there is no channel with an id that matches the provided one, then this returns {@code null}.
-     *
-     * <p>This getter exists on any instance of {@link IGuildChannelContainer} and only checks the caches with the relevant scoping.
-     * For {@link Guild}, {@link JDA}, or {@link ShardManager},
-     * this returns the relevant channel with respect to the cache within each of those objects.
-     * For a guild, this would mean it only returns channels within the same guild.
-     * <br>If this is called on {@link JDA} or {@link ShardManager}, this may return null immediately after building, because the cache isn't initialized yet.
-     * To make sure the cache is initialized after building your {@link JDA} instance, you can use {@link JDA#awaitReady()}.
-     *
-     * @param  id
-     *         The id of the {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannel}.
-     *
-     * @throws java.lang.NumberFormatException
-     *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
-     *
-     * @return Possibly-null {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannel} with matching id.
-     *
-     * @since  4.0.0
-     */
-    @Nullable
-    default StoreChannel getStoreChannelById(@Nonnull String id)
-    {
-        return getStoreChannelCache().getElementById(id);
-    }
-
-    /**
-     * Gets a {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannel} that has the same id as the one provided.
-     * <br>If there is no channel with an id that matches the provided one, then this returns {@code null}.
-     *
-     * <p>This getter exists on any instance of {@link IGuildChannelContainer} and only checks the caches with the relevant scoping.
-     * For {@link Guild}, {@link JDA}, or {@link ShardManager},
-     * this returns the relevant channel with respect to the cache within each of those objects.
-     * For a guild, this would mean it only returns channels within the same guild.
-     * <br>If this is called on {@link JDA} or {@link ShardManager}, this may return null immediately after building, because the cache isn't initialized yet.
-     * To make sure the cache is initialized after building your {@link JDA} instance, you can use {@link JDA#awaitReady()}.
-     *
-     * @param  id
-     *         The id of the {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannel}.
-     *
-     * @return Possibly-null {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannel} with matching id.
-     *
-     * @since  4.0.0
-     */
-    @Nullable
-    default StoreChannel getStoreChannelById(long id)
-    {
-        return getStoreChannelCache().getElementById(id);
-    }
-
-    /**
-     * Gets all {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannel} in the cache.
-     * <br>In {@link Guild} cache, channels are sorted according to their position and id.
-     *
-     * <p>This copies the backing store into a list. This means every call
-     * creates a new list with O(n) complexity. It is recommended to store this into
-     * a local variable or use {@link #getStoreChannelCache()} and use its more efficient
-     * versions of handling these values.
-     *
-     * <p>This getter exists on any instance of {@link IGuildChannelContainer} and only checks the caches with the relevant scoping.
-     * For {@link Guild}, {@link JDA}, or {@link ShardManager},
-     * this returns the relevant channel with respect to the cache within each of those objects.
-     * For a guild, this would mean it only returns channels within the same guild.
-     * <br>If this is called on {@link JDA} or {@link ShardManager}, this may return null immediately after building, because the cache isn't initialized yet.
-     * To make sure the cache is initialized after building your {@link JDA} instance, you can use {@link JDA#awaitReady()}.
-     *
-     * @return An immutable List of all {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannel} in this Guild.
-     *
-     * @since  4.0.0
-     */
-    @Nonnull
-    default List<StoreChannel> getStoreChannels()
-    {
-        return getStoreChannelCache().asList();
     }
 
 

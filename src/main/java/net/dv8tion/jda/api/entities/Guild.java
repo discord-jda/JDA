@@ -1380,10 +1380,6 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
 
     @Nonnull
     @Override
-    SortedSnowflakeCacheView<StoreChannel> getStoreChannelCache();
-
-    @Nonnull
-    @Override
     SortedSnowflakeCacheView<TextChannel> getTextChannelCache();
 
     @Nonnull
@@ -1401,12 +1397,12 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      *
      * <p>The returned list is ordered in the same fashion as it would be by the official discord client.
      * <ol>
-     *     <li>TextChannel and StoreChannel without parent</li>
+     *     <li>TextChannel and NewsChannel without parent</li>
      *     <li>VoiceChannel without parent</li>
      *     <li>StageChannel without parent</li>
      *     <li>Categories
      *         <ol>
-     *             <li>TextChannel and StoreChannel with category as parent</li>
+     *             <li>TextChannel and NewsChannel with category as parent</li>
      *             <li>VoiceChannel with category as parent</li>
      *             <li>StageChannel with category as parent</li>
      *         </ol>
@@ -1429,12 +1425,12 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      *
      * <p>The returned list is ordered in the same fashion as it would be by the official discord client.
      * <ol>
-     *     <li>TextChannel and StoreChannel without parent</li>
+     *     <li>TextChannel and NewsChannel without parent</li>
      *     <li>VoiceChannel without parent</li>
      *     <li>StageChannel without parent</li>
      *     <li>Categories
      *         <ol>
-     *             <li>TextChannel and StoreChannel with category as parent</li>
+     *             <li>TextChannel and NewsChannel with category as parent</li>
      *             <li>VoiceChannel with category as parent</li>
      *             <li>StageChannel with category as parent</li>
      *         </ol>
