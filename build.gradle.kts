@@ -251,7 +251,7 @@ jar.apply {
 }
 
 javadoc.apply {
-    isFailOnError = false
+    isFailOnError = true
     options.memberLevel = JavadocMemberLevel.PUBLIC
     options.encoding = "UTF-8"
 
