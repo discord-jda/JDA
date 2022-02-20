@@ -24,7 +24,7 @@ import javax.annotation.Nonnull;
 import java.util.Objects;
 
 /**
- * ID/Component pair for a {@link ModalInteractionEvent ModalSubmitInteractionEvent}.
+ * ID/Component pair for a {@link net.dv8tion.jda.api.events.interaction.ModalInteractionEvent ModalInteractionEvent}.
  *
  * @see    ModalInteractionEvent#getValue(String)
  * @see    ModalInteractionEvent#getValues()

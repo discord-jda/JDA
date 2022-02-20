@@ -32,7 +32,7 @@ import javax.annotation.Nonnull;
 public interface IModalCallback extends IDeferrableCallback
 {
     /**
-     * Acknowledgement of this interaction with a {@link Modal Modal}.
+     * Acknowledgement of this interaction with a {@link net.dv8tion.jda.api.interactions.components.text.Modal Modal}.
      *
      * <p>This will open a popup on the target user's Discord client.
      *

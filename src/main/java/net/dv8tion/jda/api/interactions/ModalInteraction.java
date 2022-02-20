@@ -45,9 +45,9 @@ public interface ModalInteraction extends IReplyCallback, IMessageEditCallback
     String getModalId();
 
     /**
-     * Returns a List of {@link ModalMapping ModalMappings} the modal in question contains
+     * Returns a List of {@link net.dv8tion.jda.api.interactions.modals.ModalMapping ModalMappings} the modal in question contains
      *
-     * @return List of {@link ModalMapping ModalMappings}
+     * @return List of {@link net.dv8tion.jda.api.interactions.modals.ModalMapping ModalMappings}
      *
      * @see    #getValue(String)
      */
@@ -55,7 +55,7 @@ public interface ModalInteraction extends IReplyCallback, IMessageEditCallback
     List<ModalMapping> getValues();
 
     /**
-     * Convenience method to get a {@link ModalMapping ModalMapping} by its id from the List of {@link ModalMapping ModalMappings}
+     * Convenience method to get a {@link net.dv8tion.jda.api.interactions.modals.ModalMapping ModalMapping} by its id from the List of {@link net.dv8tion.jda.api.interactions.modals.ModalMapping ModalMappings}
      *
      * <p>Returns null if no component with that id has been found
      *

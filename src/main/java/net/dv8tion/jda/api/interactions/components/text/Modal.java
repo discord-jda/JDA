@@ -31,7 +31,7 @@ import java.util.*;
 /**
  * Represents a Discord Modal
  *
- * <p>Replying to an interaction with a modal will cause a form window to pop up on the User's client.
+ * <p>Replying to an interaction with a modal will cause a form window to pop up on the User's Discord client.
   *
   * <h2>Example</h2>
  * <pre>{@code
@@ -275,7 +275,7 @@ public interface Modal extends SerializableData
         /**
          * Returns a modifiable list of all components
          *
-         * @return A modifiable list of components
+         * @return A modifiable list of all components
          */
         @Nonnull
         public List<ActionRow> getActionRows()

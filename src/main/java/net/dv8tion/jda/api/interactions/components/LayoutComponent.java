@@ -47,7 +47,7 @@ public interface LayoutComponent extends SerializableData, Iterable<ItemComponen
 
     /**
      * Whether this LayoutComponent is compatible with {@link net.dv8tion.jda.api.entities.Message Messages}.
-     * <br>This returns false if this LayoutComponent contains components that are not compatible with Messages.
+     * <br>This will return false if this LayoutComponent contains components that are incompatible with Messages.
      *
      * @return True, if all components of this LayoutComponent are compatible with messages.
      */
@@ -58,7 +58,7 @@ public interface LayoutComponent extends SerializableData, Iterable<ItemComponen
 
     /**
      * Whether this LayoutComponent is compatible with {@link net.dv8tion.jda.api.interactions.components.text.Modal Modals}.
-     * <br>This returns false if this LayoutComponent contains components that are not compatible with Modals.
+     * <br>This will return false if this LayoutComponent contains components that are incompatible with Modals.
      *
      * @return True, if all components of this LayoutComponent are compatible with modals.
      */
