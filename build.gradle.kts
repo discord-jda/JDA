@@ -99,7 +99,7 @@ dependencies {
     api("org.jetbrains:annotations:23.0.0")
 
     //Logger
-    api("org.slf4j:slf4j-api:1.7.32")
+    api("org.slf4j:slf4j-api:1.7.36")
 
     //Web Connection Support
     api("com.neovisionaries:nv-websocket-client:2.14")

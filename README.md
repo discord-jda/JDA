@@ -657,7 +657,7 @@ All dependencies are managed automatically by Gradle.
    * Version: **3.0.3**
    * [BitBucket](https://bitbucket.org/trove4j/trove)
  * slf4j-api
-   * Version: **1.7.32**
+   * Version: **1.7.36**
    * [Website](https://www.slf4j.org/)
  * opus-java (optional)
    * Version: **1.1.1**
