@@ -19,7 +19,7 @@ package net.dv8tion.jda.internal.entities;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
-import net.dv8tion.jda.api.interactions.components.ComponentLayout;
+import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
@@ -412,7 +412,7 @@ public abstract class AbstractMessage implements Message
 
     @Nonnull
     @Override
-    public MessageAction editMessageComponents(@Nonnull Collection<? extends ComponentLayout> components)
+    public MessageAction editMessageComponents(@Nonnull Collection<? extends LayoutComponent> components)
     {
         unsupported();
         return null;

@@ -34,7 +34,7 @@ import javax.annotation.Nonnull;
  * Minimum - 1
  * <br>Maximum - 100
  *
- * <h1>Example</h1>
+ * <h2>Example</h2>
  * <pre>{@code
  * // Clean up all private threads older than 2 weeks
  * public static void cleanupPrivateThreads(TextChannel channel) {

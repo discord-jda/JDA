@@ -124,6 +124,7 @@ public class WebhookMessageUpdateActionImpl<T>
     public WebhookMessageUpdateAction<T> setActionRows(@Nonnull ActionRow... rows)
     {
         Checks.noneNull(rows, "ActionRows");
+        Checks.checkDuplicateIds(Arrays.stream(rows));
         this.components.clear();
         Collections.addAll(this.components, rows);
         set |= COMPONENTS;

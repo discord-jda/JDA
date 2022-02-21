@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.managers.channel.attribute.ICategorizableChannelManag
 import net.dv8tion.jda.api.managers.channel.attribute.IPositionableChannelManager;
 import net.dv8tion.jda.api.managers.channel.middleman.AudioChannelManager;
 
+//TODO-v5: Docs
 public interface StageChannelManager extends
         AudioChannelManager<StageChannel, StageChannelManager>,
         ICategorizableChannelManager<StageChannel, StageChannelManager>,

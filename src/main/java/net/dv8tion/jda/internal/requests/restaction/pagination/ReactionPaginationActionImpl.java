@@ -30,6 +30,7 @@ import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.EncodingUtil;
 
 import javax.annotation.Nonnull;
+import java.util.EnumSet;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -48,18 +49,21 @@ public class ReactionPaginationActionImpl
     public ReactionPaginationActionImpl(MessageReaction reaction)
     {
         super(reaction.getJDA(), Route.Messages.GET_REACTION_USERS.compile(reaction.getChannel().getId(), reaction.getMessageId(), getCode(reaction)), 1, 100, 100);
+        super.order(PaginationOrder.FORWARD);
         this.reaction = reaction;
     }
 
     public ReactionPaginationActionImpl(Message message, String code)
     {
         super(message.getJDA(), Route.Messages.GET_REACTION_USERS.compile(message.getChannel().getId(), message.getId(), code), 1, 100, 100);
+        super.order(PaginationOrder.FORWARD);
         this.reaction = null;
     }
 
     public ReactionPaginationActionImpl(MessageChannel channel, String messageId, String code)
     {
         super(channel.getJDA(), Route.Messages.GET_REACTION_USERS.compile(channel.getId(), messageId, code), 1, 100, 100);
+        super.order(PaginationOrder.FORWARD);
         this.reaction = null;
     }
 
@@ -81,23 +85,11 @@ public class ReactionPaginationActionImpl
         return reaction;
     }
 
+    @Nonnull
     @Override
-    protected Route.CompiledRoute finalizeRoute()
+    public EnumSet<PaginationOrder> getSupportedOrders()
     {
-        Route.CompiledRoute route = super.finalizeRoute();
-
-        String after = null;
-        String limit = String.valueOf(getLimit());
-        long last = this.lastKey;
-        if (last != 0)
-            after = Long.toUnsignedString(last);
-
-        route = route.withQueryParams("limit", limit);
-
-        if (after != null)
-            route = route.withQueryParams("after", after);
-
-        return route;
+        return EnumSet.of(PaginationOrder.FORWARD);
     }
 
     @Override

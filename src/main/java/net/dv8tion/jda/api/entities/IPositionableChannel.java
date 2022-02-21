@@ -22,7 +22,13 @@ import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.stream.Collectors;
 
-//TODO-v5: Need Docs
+/**
+ * Represents a {@link GuildChannel GuildChannel} that has a position.
+ *
+ * These channels can be re-ordered using a position value.
+ *
+ * In the case of identical position values, the natural order of the channel snowflakes is used.
+ */
 public interface IPositionableChannel extends GuildChannel
 {
     //TODO-v5: Docs

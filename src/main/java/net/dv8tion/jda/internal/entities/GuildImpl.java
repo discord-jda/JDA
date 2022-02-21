@@ -37,12 +37,13 @@ import net.dv8tion.jda.api.requests.restaction.order.CategoryOrderAction;
 import net.dv8tion.jda.api.requests.restaction.order.ChannelOrderAction;
 import net.dv8tion.jda.api.requests.restaction.order.RoleOrderAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.AuditLogPaginationAction;
-import net.dv8tion.jda.api.utils.TimeUtil;
 import net.dv8tion.jda.api.utils.cache.*;
 import net.dv8tion.jda.api.utils.concurrent.Task;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
+import net.dv8tion.jda.internal.interactions.CommandDataImpl;
+import net.dv8tion.jda.internal.interactions.command.CommandImpl;
 import net.dv8tion.jda.internal.managers.AudioManagerImpl;
 import net.dv8tion.jda.internal.managers.GuildManagerImpl;
 import net.dv8tion.jda.internal.requests.*;
@@ -78,7 +79,6 @@ public class GuildImpl implements Guild
 
     private final SortedSnowflakeCacheViewImpl<Category> categoryCache = new SortedSnowflakeCacheViewImpl<>(Category.class, Channel::getName, Comparator.naturalOrder());
     private final SortedSnowflakeCacheViewImpl<VoiceChannel> voiceChannelCache = new SortedSnowflakeCacheViewImpl<>(VoiceChannel.class, Channel::getName, Comparator.naturalOrder());
-    private final SortedSnowflakeCacheViewImpl<StoreChannel> storeChannelCache = new SortedSnowflakeCacheViewImpl<>(StoreChannel.class, Channel::getName, Comparator.naturalOrder());
     private final SortedSnowflakeCacheViewImpl<TextChannel> textChannelCache = new SortedSnowflakeCacheViewImpl<>(TextChannel.class, Channel::getName, Comparator.naturalOrder());
     private final SortedSnowflakeCacheViewImpl<NewsChannel> newsChannelCache = new SortedSnowflakeCacheViewImpl<>(NewsChannel.class, Channel::getName, Comparator.naturalOrder());
     private final SortedSnowflakeCacheViewImpl<StageChannel> stageChannelCache = new SortedSnowflakeCacheViewImpl<>(StageChannel.class, Channel::getName, Comparator.naturalOrder());
@@ -112,7 +112,7 @@ public class GuildImpl implements Guild
     private NSFWLevel nsfwLevel = NSFWLevel.UNKNOWN;
     private Timeout afkTimeout;
     private BoostTier boostTier = BoostTier.NONE;
-    private Locale preferredLocale = Locale.ENGLISH;
+    private Locale preferredLocale = Locale.US;
     private int memberCount;
     private boolean boostProgressBarEnabled;
 
@@ -135,7 +135,7 @@ public class GuildImpl implements Guild
                 (response, request) ->
                         response.getArray()
                                 .stream(DataArray::getObject)
-                                .map(json -> new Command(getJDA(), this, json))
+                                .map(json -> new CommandImpl(getJDA(), this, json))
                                 .collect(Collectors.toList()));
     }
 
@@ -145,7 +145,7 @@ public class GuildImpl implements Guild
     {
         Checks.isSnowflake(id);
         Route.CompiledRoute route = Route.Interactions.GET_GUILD_COMMAND.compile(getJDA().getSelfUser().getApplicationId(), getId(), id);
-        return new RestActionImpl<>(getJDA(), route, (response, request) -> new Command(getJDA(), this, response.getObject()));
+        return new RestActionImpl<>(getJDA(), route, (response, request) -> new CommandImpl(getJDA(), this, response.getObject()));
     }
 
     @Nonnull
@@ -153,7 +153,7 @@ public class GuildImpl implements Guild
     public CommandCreateAction upsertCommand(@Nonnull CommandData command)
     {
         Checks.notNull(command, "CommandData");
-        return new CommandCreateActionImpl(this, command);
+        return new CommandCreateActionImpl(this, (CommandDataImpl) command);
     }
 
     @Nonnull
@@ -221,7 +221,7 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public RestAction<Map<String, List<CommandPrivilege>>> updateCommandPrivileges(@Nonnull Map<String, Collection<? extends CommandPrivilege>> privileges)
+    public RestAction<Map<String, List<CommandPrivilege>>> updateCommandPrivileges(@Nonnull Map<String, ? extends Collection<CommandPrivilege>> privileges)
     {
         Checks.notNull(privileges, "Privileges");
         privileges.forEach((key, value) -> {
@@ -568,13 +568,6 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public SortedSnowflakeCacheView<StoreChannel> getStoreChannelCache()
-    {
-        return storeChannelCache;
-    }
-
-    @Nonnull
-    @Override
     public SortedSnowflakeCacheView<TextChannel> getTextChannelCache()
     {
         return textChannelCache;
@@ -641,10 +634,8 @@ public class GuildImpl implements Guild
         SnowflakeCacheViewImpl<StageChannel> stageView = getStageChannelsView();
         SnowflakeCacheViewImpl<TextChannel> textView = getTextChannelsView();
         SnowflakeCacheViewImpl<NewsChannel> newsView = getNewsChannelView();
-        SnowflakeCacheViewImpl<StoreChannel> storeView = getStoreChannelView();
         List<TextChannel> textChannels;
         List<NewsChannel> newsChannels;
-        List<StoreChannel> storeChannels;
         List<VoiceChannel> voiceChannels;
         List<StageChannel> stageChannels;
         List<Category> categories;
@@ -652,12 +643,10 @@ public class GuildImpl implements Guild
              UnlockHook voiceHook = voiceView.readLock();
              UnlockHook textHook = textView.readLock();
              UnlockHook newsHook = newsView.readLock();
-             UnlockHook storeHook = storeView.readLock();
              UnlockHook stageHook = stageView.readLock())
         {
             if (includeHidden)
             {
-                storeChannels = storeView.asList();
                 textChannels = textView.asList();
                 newsChannels = newsView.asList();
                 voiceChannels = voiceView.asList();
@@ -665,17 +654,15 @@ public class GuildImpl implements Guild
             }
             else
             {
-                storeChannels = storeView.stream().filter(filterHidden).collect(Collectors.toList());
                 textChannels = textView.stream().filter(filterHidden).collect(Collectors.toList());
                 newsChannels = newsView.stream().filter(filterHidden).collect(Collectors.toList());
                 voiceChannels = voiceView.stream().filter(filterHidden).collect(Collectors.toList());
                 stageChannels = stageView.stream().filter(filterHidden).collect(Collectors.toList());
             }
             categories = categoryView.asList(); // we filter categories out when they are empty (no visible channels inside)
-            channels = new ArrayList<>((int) categoryView.size() + voiceChannels.size() + textChannels.size() + newsChannels.size() + storeChannels.size() + stageChannels.size());
+            channels = new ArrayList<>((int) categoryView.size() + voiceChannels.size() + textChannels.size() + newsChannels.size() + stageChannels.size());
         }
 
-        storeChannels.stream().filter(it -> it.getParentCategory() == null).forEach(channels::add);
         textChannels.stream().filter(it -> it.getParentCategory() == null).forEach(channels::add);
         newsChannels.stream().filter(it -> it.getParentCategory() == null).forEach(channels::add);
         voiceChannels.stream().filter(it -> it.getParentCategory() == null).forEach(channels::add);
@@ -817,12 +804,13 @@ public class GuildImpl implements Guild
 
     @Nullable
     @Override
-    public TextChannel getDefaultChannel()
+    public BaseGuildMessageChannel getDefaultChannel()
     {
         final Role role = getPublicRole();
-        return getTextChannelsView().stream()
-                                    .filter(c -> role.hasPermission(c, Permission.VIEW_CHANNEL))
-                                    .min(Comparator.naturalOrder()).orElse(null);
+        return Stream.concat(getTextChannelCache().stream(), getNewsChannelCache().stream())
+                .filter(c -> role.hasPermission(c, Permission.VIEW_CHANNEL))
+                .min(Comparator.naturalOrder())
+                .orElse(null);
     }
 
     @Nonnull
@@ -936,11 +924,13 @@ public class GuildImpl implements Guild
         }
 
         AudioChannel channel = getSelfMember().getVoiceState().getChannel();
-        StageInstance instance = channel instanceof StageChannel ? ((StageChannel) channel).getStageInstance() : null;
-        if (instance == null)
-            return new GatewayTask<>(CompletableFuture.completedFuture(null), () -> {});
-        CompletableFuture<Void> future = instance.cancelRequestToSpeak().submit();
-        return new GatewayTask<>(future, () -> future.cancel(false));
+        if (channel instanceof StageChannel)
+        {
+            CompletableFuture<Void> future = ((StageChannel) channel).cancelRequestToSpeak().submit();
+            return new GatewayTask<>(future, () -> future.cancel(false));
+        }
+
+        return new GatewayTask<>(CompletableFuture.completedFuture(null), () -> {});
     }
 
     @Nonnull
@@ -1785,14 +1775,19 @@ public class GuildImpl implements Guild
         if (!(connectedChannel instanceof StageChannel))
             return;
         StageChannel stage = (StageChannel) connectedChannel;
-        StageInstance instance = stage.getStageInstance();
-        if (instance == null)
-            return;
-
         CompletableFuture<Void> future = pendingRequestToSpeak;
         pendingRequestToSpeak = null;
 
-        instance.requestToSpeak().queue((v) -> future.complete(null), future::completeExceptionally);
+        try
+        {
+            stage.requestToSpeak().queue((v) -> future.complete(null), future::completeExceptionally);
+        }
+        catch (Throwable ex)
+        {
+            future.completeExceptionally(ex);
+            if (ex instanceof Error)
+                throw ex;
+        }
     }
 
     // ---- Setters -----
@@ -1966,11 +1961,6 @@ public class GuildImpl implements Guild
     public SortedSnowflakeCacheViewImpl<Category> getCategoriesView()
     {
         return categoryCache;
-    }
-
-    public SortedSnowflakeCacheViewImpl<StoreChannel> getStoreChannelView()
-    {
-        return storeChannelCache;
     }
 
     public SortedSnowflakeCacheViewImpl<TextChannel> getTextChannelsView()

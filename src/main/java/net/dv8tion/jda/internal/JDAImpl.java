@@ -57,6 +57,8 @@ import net.dv8tion.jda.internal.entities.UserImpl;
 import net.dv8tion.jda.internal.handle.EventCache;
 import net.dv8tion.jda.internal.handle.GuildSetupController;
 import net.dv8tion.jda.internal.hooks.EventManagerProxy;
+import net.dv8tion.jda.internal.interactions.CommandDataImpl;
+import net.dv8tion.jda.internal.interactions.command.CommandImpl;
 import net.dv8tion.jda.internal.managers.AudioManagerImpl;
 import net.dv8tion.jda.internal.managers.DirectAudioControllerImpl;
 import net.dv8tion.jda.internal.managers.PresenceImpl;
@@ -95,7 +97,6 @@ public class JDAImpl implements JDA
     protected final SnowflakeCacheViewImpl<User> userCache = new SnowflakeCacheViewImpl<>(User.class, User::getName);
     protected final SnowflakeCacheViewImpl<Guild> guildCache = new SnowflakeCacheViewImpl<>(Guild.class, Guild::getName);
     protected final SnowflakeCacheViewImpl<Category> categories = new SnowflakeCacheViewImpl<>(Category.class, Channel::getName);
-    protected final SnowflakeCacheViewImpl<StoreChannel> storeChannelCache = new SnowflakeCacheViewImpl<>(StoreChannel.class, Channel::getName);
     protected final SnowflakeCacheViewImpl<TextChannel> textChannelCache = new SnowflakeCacheViewImpl<>(TextChannel.class, Channel::getName);
     protected final SnowflakeCacheViewImpl<NewsChannel> newsChannelCache = new SnowflakeCacheViewImpl<>(NewsChannel.class, Channel::getName);
     protected final SnowflakeCacheViewImpl<VoiceChannel> voiceChannelCache = new SnowflakeCacheViewImpl<>(VoiceChannel.class, Channel::getName);
@@ -628,13 +629,6 @@ public class JDAImpl implements JDA
 
     @Nonnull
     @Override
-    public SnowflakeCacheView<StoreChannel> getStoreChannelCache()
-    {
-        return storeChannelCache;
-    }
-
-    @Nonnull
-    @Override
     public SnowflakeCacheView<TextChannel> getTextChannelCache()
     {
         return textChannelCache;
@@ -875,7 +869,7 @@ public class JDAImpl implements JDA
             (response, request) ->
                 response.getArray()
                         .stream(DataArray::getObject)
-                        .map(json -> new Command(this, null, json))
+                        .map(json -> new CommandImpl(this, null, json))
                         .collect(Collectors.toList()));
     }
 
@@ -885,7 +879,7 @@ public class JDAImpl implements JDA
     {
         Checks.isSnowflake(id);
         Route.CompiledRoute route = Route.Interactions.GET_COMMAND.compile(getSelfUser().getApplicationId(), id);
-        return new RestActionImpl<>(this, route, (response, request) -> new Command(this, null, response.getObject()));
+        return new RestActionImpl<>(this, route, (response, request) -> new CommandImpl(this, null, response.getObject()));
     }
 
     @Nonnull
@@ -893,7 +887,7 @@ public class JDAImpl implements JDA
     public CommandCreateAction upsertCommand(@Nonnull CommandData command)
     {
         Checks.notNull(command, "CommandData");
-        return new CommandCreateActionImpl(this, command);
+        return new CommandCreateActionImpl(this, (CommandDataImpl) command);
     }
 
     @Nonnull
@@ -1095,11 +1089,6 @@ public class JDAImpl implements JDA
     public SnowflakeCacheViewImpl<Category> getCategoriesView()
     {
         return categories;
-    }
-
-    public SnowflakeCacheViewImpl<StoreChannel> getStoreChannelsView()
-    {
-        return storeChannelCache;
     }
 
     public SnowflakeCacheViewImpl<TextChannel> getTextChannelsView()

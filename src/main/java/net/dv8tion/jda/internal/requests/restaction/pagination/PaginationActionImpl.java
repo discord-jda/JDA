@@ -42,6 +42,8 @@ public abstract class PaginationActionImpl<T, M extends PaginationAction<T, M>>
     protected final int minLimit;
     protected final AtomicInteger limit;
 
+    protected PaginationOrder order = PaginationOrder.BACKWARD;
+
     protected volatile long iteratorIndex = 0;
     protected volatile long lastKey = 0;
     protected volatile T last = null;
@@ -107,6 +109,30 @@ public abstract class PaginationActionImpl<T, M extends PaginationAction<T, M>>
     public long getLastKey()
     {
         return lastKey;
+    }
+
+    @Nonnull
+    @Override
+    public PaginationOrder getOrder()
+    {
+        return order;
+    }
+
+    @Nonnull
+    @Override
+    @SuppressWarnings("unchecked")
+    public M order(@Nonnull PaginationAction.PaginationOrder order)
+    {
+        Checks.notNull(order, "PaginationOrder");
+        if (order != this.order)
+        {
+            if (!isEmpty())
+                throw new IllegalStateException("Cannot change pagination order after retrieving.");
+            if (!getSupportedOrders().contains(order))
+                throw new IllegalArgumentException("Cannot use PaginationOrder." + order + " for this pagination endpoint.");
+        }
+        this.order = order;
+        return (M) this;
     }
 
     @Nonnull
@@ -319,6 +345,24 @@ public abstract class PaginationActionImpl<T, M extends PaginationAction<T, M>>
                 }
             }
         }
+    }
+
+    @Override
+    protected Route.CompiledRoute finalizeRoute()
+    {
+        Route.CompiledRoute route = super.finalizeRoute();
+
+        final String limit = String.valueOf(this.getLimit());
+        final long last = this.lastKey;
+
+        route = route.withQueryParams("limit", limit);
+
+        if (last != 0)
+            route = route.withQueryParams(order.getKey(), Long.toUnsignedString(last));
+        else if (order == PaginationOrder.FORWARD)
+            route = route.withQueryParams("after", "0");
+
+        return route;
     }
 
     protected List<T> getRemainingCache()

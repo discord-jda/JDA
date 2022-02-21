@@ -17,6 +17,7 @@ import net.dv8tion.jda.internal.requests.Route;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 
 public class ThreadChannelPaginationActionImpl extends PaginationActionImpl<ThreadChannel, ThreadChannelPaginationAction> implements ThreadChannelPaginationAction
@@ -36,6 +37,13 @@ public class ThreadChannelPaginationActionImpl extends PaginationActionImpl<Thre
     public IThreadContainer getChannel()
     {
         return channel;
+    }
+
+    @Nonnull
+    @Override
+    public EnumSet<PaginationOrder> getSupportedOrders()
+    {
+        return EnumSet.of(PaginationOrder.BACKWARD);
     }
 
     @Override
