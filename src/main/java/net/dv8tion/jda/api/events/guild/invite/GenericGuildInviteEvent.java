@@ -168,25 +168,6 @@ public class GenericGuildInviteEvent extends GenericGuildEvent
     }
 
     /**
-     * The {@link StoreChannel} this invite points to.
-     *
-     * @throws IllegalStateException
-     *         If this did not happen in a channel of type {@link ChannelType#STORE ChannelType.STORE}
-     *
-     * @return {@link StoreChannel}
-     *
-     * @see    #getChannel()
-     * @see    #getChannelType()
-     */
-    @Nonnull
-    public StoreChannel getStoreChannel()
-    {
-        if (getChannelType() != ChannelType.STORE)
-            throw new IllegalStateException("The channel is not of type STORE");
-        return (StoreChannel) getChannel();
-    }
-
-    /**
      * The {@link Category} this invite points to.
      *
      * @throws IllegalStateException

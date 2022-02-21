@@ -82,11 +82,11 @@ public enum OptionType
      * @see OptionMapping#getAsLong()
      */
     NUMBER(10, true),
-//    /**
-//     * Options which accept a file attachment
-//     * @see OptionMapping#getAsAttachment()
-//     */
-//    ATTACHMENT(11),
+    /**
+     * Options which accept a file attachment
+     * @see OptionMapping#getAsAttachment()
+     */
+    ATTACHMENT(11),
     ;
 
     private final int raw;

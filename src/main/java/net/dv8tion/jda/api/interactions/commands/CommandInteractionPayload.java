@@ -26,6 +26,8 @@ import net.dv8tion.jda.internal.utils.Checks;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
@@ -206,6 +208,8 @@ public interface CommandInteractionPayload extends Interaction
      * Auto-complete interactions happen on incomplete command inputs and are not validated.
      *
      * @return The options passed for this command
+     *
+     * @see    #getOption(String)
      */
     @Nonnull
     List<OptionMapping> getOptions();
@@ -225,6 +229,7 @@ public interface CommandInteractionPayload extends Interaction
      * @return The list of options
      *
      * @see   #getOption(String)
+     * @see   #getOptions()
      */
     @Nonnull
     default List<OptionMapping> getOptionsByName(@Nonnull String name)
@@ -248,6 +253,8 @@ public interface CommandInteractionPayload extends Interaction
      *         If the provided type is null
      *
      * @return The list of options
+     *
+     * @see    #getOptions()
      */
     @Nonnull
     default List<OptionMapping> getOptionsByType(@Nonnull OptionType type)
@@ -264,6 +271,9 @@ public interface CommandInteractionPayload extends Interaction
      * <p>For {@link CommandAutoCompleteInteraction}, this might be incomplete and unvalidated.
      * Auto-complete interactions happen on incomplete command inputs and are not validated.
      *
+     * <p>You can use the second and third parameter overloads to handle optional arguments gracefully.
+     * See {@link #getOption(String, Function)} and {@link #getOption(String, Object, Function)}.
+     *
      * @param  name
      *         The option name
      *
@@ -271,11 +281,155 @@ public interface CommandInteractionPayload extends Interaction
      *         If the name is null
      *
      * @return The option with the provided name, or null if that option is not provided
+     *
+     * @see    #getOption(String, Function)
+     * @see    #getOption(String, Object, Function)
+     * @see    #getOption(String, Supplier, Function)
      */
     @Nullable
     default OptionMapping getOption(@Nonnull String name)
     {
         List<OptionMapping> options = getOptionsByName(name);
         return options.isEmpty() ? null : options.get(0);
+    }
+
+    /**
+     * Finds the first option with the specified name.
+     * <br>A resolver is used to get the value if the option is provided.
+     * If no option is provided for the given name, this will simply return null instead.
+     * You can use {@link #getOption(String, Object, Function)} to provide a fallback for missing options.
+     *
+     * <p>For {@link CommandAutoCompleteInteraction}, this might be incomplete and unvalidated.
+     * Auto-complete interactions happen on incomplete command inputs and are not validated.
+     *
+     * <p><b>Example</b>
+     * <br>You can understand this as a shortcut for these lines of code:
+     * <pre>{@code
+     * OptionMapping opt = event.getOption("reason");
+     * String reason = opt == null ? null : opt.getAsString();
+     * }</pre>
+     * Which can be written with this resolver as:
+     * <pre>{@code
+     * String reason = event.getOption("reason", OptionMapping::getAsString);
+     * }</pre>
+     *
+     * @param  name
+     *         The option name
+     * @param  resolver
+     *         The mapping resolver function to use if there is a mapping available,
+     *         the provided mapping will never be null!
+     * @param  <T>
+     *         The type of the resolved option value
+     *
+     * @throws IllegalArgumentException
+     *         If the name or resolver is null
+     *
+     * @return The resolved option with the provided name, or null if that option is not provided
+     *
+     * @see    #getOption(String, Object, Function)
+     * @see    #getOption(String, Supplier, Function)
+     */
+    @Nullable
+    default <T> T getOption(@Nonnull String name, @Nonnull Function<? super OptionMapping, ? extends T> resolver)
+    {
+        return getOption(name, null, resolver);
+    }
+
+    /**
+     * Finds the first option with the specified name.
+     * <br>A resolver is used to get the value if the option is provided.
+     * If no option is provided for the given name, this will simply return your provided fallback instead.
+     * You can use {@link #getOption(String, Function)} to fall back to {@code null}.
+     *
+     * <p>For {@link CommandAutoCompleteInteraction}, this might be incomplete and unvalidated.
+     * Auto-complete interactions happen on incomplete command inputs and are not validated.
+     *
+     * <p><b>Example</b>
+     * <br>You can understand this as a shortcut for these lines of code:
+     * <pre>{@code
+     * OptionMapping opt = event.getOption("reason");
+     * String reason = opt == null ? "ban by mod" : opt.getAsString();
+     * }</pre>
+     * Which can be written with this resolver as:
+     * <pre>{@code
+     * String reason = event.getOption("reason", "ban by mod", OptionMapping::getAsString);
+     * }</pre>
+     *
+     * @param  name
+     *         The option name
+     * @param  fallback
+     *         The fallback to use if the option is not provided, meaning {@link #getOption(String)} returns null
+     * @param  resolver
+     *         The mapping resolver function to use if there is a mapping available,
+     *         the provided mapping will never be null!
+     * @param  <T>
+     *         The type of the resolved option value
+     *
+     * @throws IllegalArgumentException
+     *         If the name or resolver is null
+     *
+     * @return The resolved option with the provided name, or {@code fallback} if that option is not provided
+     *
+     * @see    #getOption(String, Function)
+     * @see    #getOption(String, Supplier, Function)
+     */
+    default <T> T getOption(@Nonnull String name,
+                            @Nullable T fallback,
+                            @Nonnull Function<? super OptionMapping, ? extends T> resolver)
+    {
+        Checks.notNull(resolver, "Resolver");
+        OptionMapping mapping = getOption(name);
+        if (mapping != null)
+            return resolver.apply(mapping);
+        return fallback;
+    }
+
+    /**
+     * Finds the first option with the specified name.
+     * <br>A resolver is used to get the value if the option is provided.
+     * If no option is provided for the given name, this will simply return your provided fallback instead.
+     * You can use {@link #getOption(String, Function)} to fall back to {@code null}.
+     *
+     * <p>For {@link CommandAutoCompleteInteraction}, this might be incomplete and unvalidated.
+     * Auto-complete interactions happen on incomplete command inputs and are not validated.
+     *
+     * <p><b>Example</b>
+     * <br>You can understand this as a shortcut for these lines of code:
+     * <pre>{@code
+     * OptionMapping opt = event.getOption("reason");
+     * String reason = opt == null ? context.getFallbackReason() : opt.getAsString();
+     * }</pre>
+     * Which can be written with this resolver as:
+     * <pre>{@code
+     * String reason = event.getOption("reason", context::getFallbackReason , OptionMapping::getAsString);
+     * }</pre>
+     *
+     * @param  name
+     *         The option name
+     * @param  fallback
+     *         The fallback supplier to use if the option is not provided, meaning {@link #getOption(String)} returns null
+     * @param  resolver
+     *         The mapping resolver function to use if there is a mapping available,
+     *         the provided mapping will never be null!
+     * @param  <T>
+     *         The type of the resolved option value
+     *
+     * @throws IllegalArgumentException
+     *         If the name or resolver is null
+     *
+     * @return The resolved option with the provided name, or {@code fallback} if that option is not provided
+     *
+     * @see    #getOption(String, Function)
+     * @see    #getOption(String, Object, Function)
+     */
+    default <T> T getOption(@Nonnull String name,
+                            @Nullable Supplier<? extends T> fallback,
+                            @Nonnull Function<? super OptionMapping, ? extends T> resolver)
+    {
+        Checks.notNull(resolver, "Resolver");
+        OptionMapping mapping = getOption(name);
+        if (mapping != null)
+            return resolver.apply(mapping);
+        return fallback == null ? null : fallback.get();
     }
 }

@@ -318,6 +318,16 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
 
     @Nonnull
     @Override
+    public MessageAction addFile(@Nonnull byte[] data, @Nonnull String name, @Nonnull AttachmentOption... options)
+    {
+        Checks.notNull(data, "Data");
+        final long maxSize = getMaxFileSize();
+        Checks.check(data.length <= maxSize, "File may not exceed the maximum file length of %d bytes!", maxSize);
+        return addFile(new ByteArrayInputStream(data), name, options);
+    }
+
+    @Nonnull
+    @Override
     @CheckReturnValue
     public MessageActionImpl clearFiles()
     {
