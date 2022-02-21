@@ -63,7 +63,6 @@ public interface AudioChannelManager<T extends AudioChannel, M extends AudioChan
      *     <li>{@link Region#SINGAPORE}</li>
      *     <li>{@link Region#SOUTH_AFRICA}</li>
      *     <li>{@link Region#SYDNEY}</li>
-     *     <li>{@link Region#EUROPE}</li>
      *     <li>{@link Region#INDIA}</li>
      *     <li>{@link Region#SOUTH_KOREA}</li>
      *     <li>{@link Region#BRAZIL}</li>
