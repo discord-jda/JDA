@@ -45,6 +45,8 @@ val isCI = System.getProperty("BUILD_NUMBER") != null // jenkins
         || System.getenv("BUILD_NUMBER") != null
         || System.getProperty("GIT_COMMIT") != null // jitpack
         || System.getenv("GIT_COMMIT") != null
+        || System.getProperty("GITHUB_ACTIONS") != null // Github Actions
+        || System.getenv("GITHUB_ACTIONS") != null
 
 // Check the commit hash and version information
 val commitHash: String by lazy {
