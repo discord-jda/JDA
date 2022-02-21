@@ -1367,22 +1367,30 @@ public class EntityBuilder
         {
             //we know it's a private channel
             PrivateChannelImpl priv = (PrivateChannelImpl) channel;
-            //if it's not null and we have the user, then there's nothing more we can add here
-            if (priv == null || priv.getUser() == null)
+
+            boolean isAuthorSelfUser = authorId == getJDA().getSelfUser().getIdLong();
+            if (priv == null)
             {
                 DataObject channelData = DataObject.empty()
                         .put("id", channelId);
+
                 //if we see an author that isn't us, we can assume that is the other side of this private channel
                 //if the author is us, we learn no information about the user at the other end
-                if (authorId != getJDA().getSelfUser().getIdLong())
+                if (!isAuthorSelfUser)
                     channelData.put("recipient", author);
+
                 //even without knowing the user at the other end, we can still construct a minimal channel
-                //the channel is either null or without a user
-                //this call to createPrivateChannel will not create a new one if one already exists,
-                //and will update the channel with any extra information we have
                 channel = createPrivateChannel(channelData);
             }
+            else if (priv.getUser() == null && !isAuthorSelfUser)
+            {
+                //if we see an author that isn't us, we can assume that is the other side of this private channel
+                //if the author is us, we learn no information about the user at the other end
+                priv.setUser(createUser(author));
+            }
+
         }
+
         else if (channel == null)
             throw new IllegalArgumentException(MISSING_CHANNEL);
 
