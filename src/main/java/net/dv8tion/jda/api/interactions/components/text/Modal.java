@@ -62,7 +62,7 @@ import java.util.*;
  * }</pre>
  *
  * <p><b>Only a maximum of 5 component layouts can be included in a Modal, and only {@link net.dv8tion.jda.api.interactions.components.text.TextInput TextInputs} are allowed at this time.</b>
- * You can check whether a component is supported via {@link ComponentType#isModalCompatible}
+ * You can check whether a component is supported via {@link net.dv8tion.jda.api.interactions.components.Component.Type#isModalCompatible}
  *
  * @see    ModalInteractionEvent
  */
