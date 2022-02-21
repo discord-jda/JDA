@@ -965,7 +965,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return Immutable list of all MessageReactions on this message.
      *
-     * @see net.dv8tion.jda.api.entities.MessageReaction
+     * @see    net.dv8tion.jda.api.entities.MessageReaction
      */
     @Nonnull
     List<MessageReaction> getReactions();
@@ -2317,8 +2317,8 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return The {@link net.dv8tion.jda.api.entities.MessageReaction MessageReaction} of this message or null if not present.
      *
-     * @see #getReactionById(long)
-     * @see net.dv8tion.jda.api.entities.MessageReaction
+     * @see    #getReactionById(long)
+     * @see    net.dv8tion.jda.api.entities.MessageReaction
      *
      * @since  4.1.0
      */
@@ -2344,9 +2344,9 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return The {@link net.dv8tion.jda.api.entities.MessageReaction MessageReaction} of this message or null if not present.
      *
-     * @see #getReactionById(long)
-     * @see #getReactionByUnicode(String)
-     * @see net.dv8tion.jda.api.entities.MessageReaction
+     * @see    #getReactionById(long)
+     * @see    #getReactionByUnicode(String)
+     * @see    net.dv8tion.jda.api.entities.MessageReaction
      *
      * @since  4.1.0
      */
@@ -2373,9 +2373,9 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return The {@link net.dv8tion.jda.api.entities.MessageReaction MessageReaction} of this message or null if not present.
      *
-     * @see #getReactionById(String)
-     * @see #getReactionByUnicode(String)
-     * @see net.dv8tion.jda.api.entities.MessageReaction
+     * @see    #getReactionById(String)
+     * @see    #getReactionByUnicode(String)
+     * @see    net.dv8tion.jda.api.entities.MessageReaction
      *
      * @since  4.1.0
      */
