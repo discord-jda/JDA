@@ -41,6 +41,11 @@ public class MessageContextInteractionImpl extends ContextInteractionImpl<Messag
     {
         DataObject messages = resolved.getObject("messages");
         DataObject message = messages.getObject(messages.keys().iterator().next());
+        //manually include the guild id
+        if (resolved.hasKey("guild_id"))
+        {
+            message.put("guild_id", resolved.getLong("guild_id"));
+        }
         return api.getEntityBuilder().createMessage(message);
     }
 
