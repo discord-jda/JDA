@@ -119,7 +119,7 @@ public interface CacheView<T> extends Iterable<T>
      *
      * <p>The stream will be closed once this method returns and cannot be used anymore.
      *
-     * <h2>Example</h2>
+     * <h4>Example</h4>
      * <code>
      * {@literal CacheView<User>} view = jda.getUserCache();<br>
      * long shortNames = view.applyStream(stream {@literal ->} stream.filter(it {@literal ->} it.getName().length() {@literal <} 4).count());<br>
@@ -158,7 +158,7 @@ public interface CacheView<T> extends Iterable<T>
      *
      * <p>The stream will be closed once this method returns and cannot be used anymore.
      *
-     * <h2>Example</h2>
+     * <h4>Example</h4>
      * <code>
      * {@literal CacheView<TextChannel>} view = guild.getTextChannelCache();<br>
      * view.acceptStream(stream {@literal ->} stream.filter(it {@literal ->} it.isNSFW()).forEach(it {@literal ->} it.sendMessage("lewd").queue()));

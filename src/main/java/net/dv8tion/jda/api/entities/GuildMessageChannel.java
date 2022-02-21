@@ -469,7 +469,7 @@ public interface GuildMessageChannel extends GuildChannel, MessageChannel
     /**
      * Removes all reactions for the specified emoji.
      *
-     * <h2>Example</h2>
+     * <h4>Example</h4>
      * <pre><code>
      * // custom
      * channel.clearReactions(messageId, "minn:245267426227388416").queue();
@@ -551,7 +551,7 @@ public interface GuildMessageChannel extends GuildChannel, MessageChannel
     /**
      * Removes all reactions for the specified emoji.
      *
-     * <h2>Example</h2>
+     * <h4>Example</h4>
      * <pre><code>
      * // custom
      * channel.clearReactions(messageId, "minn:245267426227388416").queue();

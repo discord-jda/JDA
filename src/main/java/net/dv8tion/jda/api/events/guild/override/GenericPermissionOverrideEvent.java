@@ -122,25 +122,6 @@ public class GenericPermissionOverrideEvent extends GenericGuildEvent
     }
 
     /**
-     * The {@link StoreChannel} this override belongs to.
-     *
-     * @throws IllegalStateException
-     *         If the override does not belong to a StoreChannel
-     *
-     * @return {@link StoreChannel}
-     *
-     * @see    #getChannel()
-     * @see    #getChannelType()
-     */
-    @Nonnull
-    public StoreChannel getStoreChannel()
-    {
-        if (channel instanceof StoreChannel)
-            return (StoreChannel) channel;
-        throw new IllegalStateException("This override is for a channel of type " + getChannelType());
-    }
-
-    /**
      * The {@link Category} this override belongs to.
      * <br>Note: This is not the same as {@code getChannel().getParentCategory()}!
      *

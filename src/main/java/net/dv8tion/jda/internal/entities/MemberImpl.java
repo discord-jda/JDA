@@ -36,6 +36,7 @@ import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Stream;
 
 public class MemberImpl implements Member
 {
@@ -113,7 +114,13 @@ public class MemberImpl implements Member
     @Override
     public OffsetDateTime getTimeBoosted()
     {
-        return boostDate != 0 ? Helpers.toOffset(boostDate) : null;
+        return isBoosting() ? Helpers.toOffset(boostDate) : null;
+    }
+
+    @Override
+    public boolean isBoosting()
+    {
+        return boostDate != 0;
     }
 
     @Nullable
@@ -443,11 +450,11 @@ public class MemberImpl implements Member
 
     @Nullable
     @Override
-    public TextChannel getDefaultChannel()
+    public BaseGuildMessageChannel getDefaultChannel()
     {
-        return getGuild().getTextChannelsView().stream()
-                 .sorted(Comparator.reverseOrder())
-                 .filter(c -> hasPermission(c, Permission.VIEW_CHANNEL))
-                 .findFirst().orElse(null);
+        return Stream.concat(getGuild().getTextChannelCache().stream(), getGuild().getNewsChannelCache().stream())
+                .filter(c -> hasPermission(c, Permission.VIEW_CHANNEL))
+                .min(Comparator.naturalOrder())
+                .orElse(null);
     }
 }

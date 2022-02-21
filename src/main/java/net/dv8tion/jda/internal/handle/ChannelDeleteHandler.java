@@ -49,23 +49,6 @@ public class ChannelDeleteHandler extends SocketHandler
 
         switch (type)
         {
-            case STORE:
-            {
-                //TODO-v5-unified-channel-cache: We can put all the removals at the top once we have a unified channel cache
-                StoreChannel channel = getJDA().getStoreChannelsView().remove(channelId);
-                if (channel == null || guild == null)
-                {
-                    WebSocketClient.LOG.debug("CHANNEL_DELETE attempted to delete a store channel that is not yet cached. JSON: {}", content);
-                    return null;
-                }
-
-                guild.getStoreChannelView().remove(channelId);
-                getJDA().handleEvent(
-                    new ChannelDeleteEvent(
-                        getJDA(), responseNumber,
-                        channel));
-                break;
-            }
             case TEXT:
             {
                 TextChannel channel = getJDA().getTextChannelsView().remove(channelId);

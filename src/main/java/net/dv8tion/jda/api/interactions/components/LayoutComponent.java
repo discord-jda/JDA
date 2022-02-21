@@ -252,7 +252,7 @@ public interface LayoutComponent extends SerializableData, Iterable<ItemComponen
 
     /**
      * Find and replace a component in this layout.
-     * <br>This will locate and replace the existing component by checking for {@link ItemComponent#equals(Object) equality}. If you provide null it will be removed instead.
+     * <br>This will locate and replace the existing component by checking for {@link Object#equals(Object) equality}. If you provide null it will be removed instead.
      *
      * <p><b>Example</b>
      * <pre>{@code
@@ -293,7 +293,7 @@ public interface LayoutComponent extends SerializableData, Iterable<ItemComponen
 
     /**
      * Find and replace a component in this list of layouts.
-     * <br>This will locate and replace the existing component by checking for {@link ItemComponent#equals(Object) equality}. If you provide null it will be removed instead.
+     * <br>This will locate and replace the existing component by checking for {@link Object#equals(Object) equality}. If you provide null it will be removed instead.
      *
      * <p>If one of the layouts is empty after removing the component, it will be removed from the list.
      * This is an inplace operation and modifies the provided list directly.

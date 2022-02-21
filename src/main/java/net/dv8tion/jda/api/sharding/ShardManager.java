@@ -780,12 +780,6 @@ public interface ShardManager extends IGuildChannelContainer
     }
 
     @Nonnull
-    default SnowflakeCacheView<StoreChannel> getStoreChannelCache()
-    {
-        return CacheView.allSnowflakes(() -> this.getShardCache().stream().map(JDA::getStoreChannelCache));
-    }
-
-    @Nonnull
     @Override
     default SnowflakeCacheView<StageChannel> getStageChannelCache()
     {

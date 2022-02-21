@@ -36,7 +36,7 @@ import javax.annotation.Nullable;
  * Minimum - 1
  * <br>Maximum - 100
  *
- * <h1>Example</h1>
+ * <h2>Example</h2>
  * <pre><code>
  * public class Listener extends ListenerAdapter
  * {
@@ -75,7 +75,7 @@ public interface AuditLogPaginationAction extends PaginationAction<AuditLogEntry
      */
     @Nonnull
     Guild getGuild();
-    
+
     /**
      * Filters retrieved entities by the specified {@link net.dv8tion.jda.api.audit.ActionType ActionType}
      *
