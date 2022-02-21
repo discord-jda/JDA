@@ -1377,6 +1377,9 @@ public class EntityBuilder
                 if (authorId != getJDA().getSelfUser().getIdLong())
                     channelData.put("recipient", author);
                 //even without knowing the user at the other end, we can still construct a minimal channel
+                //the channel is either null or without a user
+                //this call to createPrivateChannel will not create a new one if one already exists,
+                //and will update the channel with any extra information we have
                 channel = createPrivateChannel(channelData);
             }
         }
