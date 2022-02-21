@@ -1363,16 +1363,22 @@ public class EntityBuilder
         final long authorId = author.getLong("id");
         MemberImpl member = null;
 
-        if (channel == null && jsonObject.isNull("guild_id"))
+        if (jsonObject.isNull("guild_id"))
         {
-            DataObject channelData = DataObject.empty()
-                    .put("id", channelId);
-            //if we see an author that isn't us, we can assume that is the other side of this private channel
-            //if the author is us, we learn no information about the user at the other end
-            if (authorId != getJDA().getSelfUser().getIdLong())
+            //we know it's a private channel
+            PrivateChannelImpl priv = (PrivateChannelImpl) channel;
+            //if it's not null and we have the user, then there's nothing more we can add here
+            if (priv == null || priv.getUser() == null)
+            {
+                DataObject channelData = DataObject.empty()
+                        .put("id", channelId);
+                //if we see an author that isn't us, we can assume that is the other side of this private channel
+                //if the author is us, we learn no information about the user at the other end
+                if (authorId != getJDA().getSelfUser().getIdLong())
                     channelData.put("recipient", author);
-            //even without knowing the user at the other end, we can still construct a minimal channel
-            channel = createPrivateChannel(channelData);
+                //even without knowing the user at the other end, we can still construct a minimal channel
+                channel = createPrivateChannel(channelData);
+            }
         }
         else if (channel == null)
             throw new IllegalArgumentException(MISSING_CHANNEL);
