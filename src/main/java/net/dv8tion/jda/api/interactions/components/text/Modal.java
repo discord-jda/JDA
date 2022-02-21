@@ -319,7 +319,7 @@ public interface Modal extends SerializableData
         @Nonnull
         public Modal build()
         {
-            Checks.check(!components.isEmpty(), "Cannot make a modal with no components!");
+            Checks.check(!components.isEmpty(), "Cannot make a modal without components!");
             Checks.check(components.size() <= 5, "Cannot make a modal with more than 5 components!");
 
             return new ModalImpl(id, title, components);

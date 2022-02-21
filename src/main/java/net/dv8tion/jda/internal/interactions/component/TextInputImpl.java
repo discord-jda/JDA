@@ -49,8 +49,8 @@ public class TextInputImpl implements TextInput
     }
 
     public TextInputImpl(
-            String id, TextInputStyle style, String label, int minLength, int maxLength, boolean required,
-            String value, String placeholder)
+            String id, TextInputStyle style, String label, int minLength,
+            int maxLength, boolean required, String value, String placeholder)
     {
         this.id = id;
         this.style = style;
