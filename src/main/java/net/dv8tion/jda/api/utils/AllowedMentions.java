@@ -44,7 +44,7 @@ public interface AllowedMentions<R>
      * <p>If {@code null} is provided to this method, then all Types will be pingable
      * (unless whitelisting via one of the {@code mention*} methods is used).
      *
-     * <h2>Example</h2>
+     * <h4>Example</h4>
      * <pre>{@code
      * // Disable EVERYONE and HERE mentions by default (to avoid mass ping)
      * EnumSet<Message.MentionType> deny = EnumSet.of(Message.MentionType.EVERYONE, Message.MentionType.HERE);

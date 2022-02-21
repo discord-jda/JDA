@@ -19,19 +19,17 @@ package net.dv8tion.jda.internal.interactions;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.interactions.Interaction;
-import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.entities.MemberImpl;
-import net.dv8tion.jda.internal.requests.restaction.interactions.ReplyActionImpl;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Locale;
 
 public class InteractionImpl implements Interaction
 {
-    protected final InteractionHookImpl hook;
     protected final long id;
     protected final int type;
     protected final String token;
@@ -39,7 +37,12 @@ public class InteractionImpl implements Interaction
     protected final Member member;
     protected final User user;
     protected final Channel channel;
+    protected final Locale userLocale;
     protected final JDAImpl api;
+
+    //This is used to give a proper error when an interaction is ack'd twice
+    // By default, discord only responds with "unknown interaction" which is horrible UX so we add a check manually here
+    private boolean isAck;
 
     public InteractionImpl(JDAImpl jda, DataObject data)
     {
@@ -48,7 +51,7 @@ public class InteractionImpl implements Interaction
         this.token = data.getString("token");
         this.type = data.getInt("type");
         this.guild = jda.getGuildById(data.getUnsignedLong("guild_id", 0L));
-        this.hook = new InteractionHookImpl(this, jda);
+        this.userLocale = Locale.forLanguageTag(data.getString("locale", "en-US"));
         if (guild != null)
         {
             member = jda.getEntityBuilder().createMember((GuildImpl) guild, data.getObject("member"));
@@ -74,17 +77,17 @@ public class InteractionImpl implements Interaction
         }
     }
 
-    public InteractionImpl(long id, int type, String token, Guild guild, Member member, User user, Channel channel)
+    public synchronized boolean ack()
     {
-        this.id = id;
-        this.type = type;
-        this.token = token;
-        this.guild = guild;
-        this.member = member;
-        this.user = user;
-        this.channel = channel;
-        this.api = (JDAImpl) user.getJDA();
-        this.hook = new InteractionHookImpl(this, api);
+        boolean wasAck = isAck;
+        this.isAck = true;
+        return wasAck;
+    }
+
+    @Override
+    public synchronized boolean isAcknowledged()
+    {
+        return isAck;
     }
 
     @Override
@@ -121,10 +124,9 @@ public class InteractionImpl implements Interaction
     }
 
     @Nonnull
-    @Override
-    public InteractionHook getHook()
+    public Locale getUserLocale()
     {
-        return hook;
+        return userLocale;
     }
 
     @Nonnull
@@ -139,19 +141,6 @@ public class InteractionImpl implements Interaction
     public Member getMember()
     {
         return member;
-    }
-
-    @Override
-    public boolean isAcknowledged()
-    {
-        return hook.isAck();
-    }
-
-    @Nonnull
-    @Override
-    public ReplyActionImpl deferReply()
-    {
-        return new ReplyActionImpl(this.hook);
     }
 
     @Nonnull

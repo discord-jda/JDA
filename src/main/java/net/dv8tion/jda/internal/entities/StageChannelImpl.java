@@ -21,19 +21,24 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.channel.concrete.StageChannelManager;
+import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.ChannelAction;
 import net.dv8tion.jda.api.requests.restaction.StageInstanceAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
+import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.entities.mixin.channel.attribute.ICategorizableChannelMixin;
 import net.dv8tion.jda.internal.entities.mixin.channel.attribute.IInviteContainerMixin;
 import net.dv8tion.jda.internal.entities.mixin.channel.attribute.IPositionableChannelMixin;
 import net.dv8tion.jda.internal.entities.mixin.channel.middleman.AudioChannelMixin;
 import net.dv8tion.jda.internal.managers.channel.concrete.StageChannelManagerImpl;
+import net.dv8tion.jda.internal.requests.RestActionImpl;
+import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.StageInstanceActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
-import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
@@ -149,6 +154,40 @@ public class StageChannelImpl extends AbstractGuildChannelImpl<StageChannelImpl>
     public StageChannelManager getManager()
     {
         return new StageChannelManagerImpl(this);
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<Void> requestToSpeak()
+    {
+        Guild guild = getGuild();
+        Route.CompiledRoute route = Route.Guilds.UPDATE_VOICE_STATE.compile(guild.getId(), "@me");
+        DataObject body = DataObject.empty().put("channel_id", getId());
+        // Stage moderators can bypass the request queue by just unsuppressing
+        if (guild.getSelfMember().hasPermission(this, Permission.VOICE_MUTE_OTHERS))
+            body.putNull("request_to_speak_timestamp").put("suppress", false);
+        else
+            body.put("request_to_speak_timestamp", OffsetDateTime.now().toString());
+
+        if (!this.equals(guild.getSelfMember().getVoiceState().getChannel()))
+            throw new IllegalStateException("Cannot request to speak without being connected to the stage channel!");
+        return new RestActionImpl<>(getJDA(), route, body);
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<Void> cancelRequestToSpeak()
+    {
+        Guild guild = getGuild();
+        Route.CompiledRoute route = Route.Guilds.UPDATE_VOICE_STATE.compile(guild.getId(), "@me");
+        DataObject body = DataObject.empty()
+                .putNull("request_to_speak_timestamp")
+                .put("suppress", true)
+                .put("channel_id", getId());
+
+        if (!this.equals(guild.getSelfMember().getVoiceState().getChannel()))
+            throw new IllegalStateException("Cannot cancel request to speak without being connected to the stage channel!");
+        return new RestActionImpl<>(getJDA(), route, body);
     }
 
     @Override

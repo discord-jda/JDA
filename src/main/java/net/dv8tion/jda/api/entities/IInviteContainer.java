@@ -23,7 +23,11 @@ import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import java.util.List;
 
-//TODO-v5: Need Docs
+/**
+ * Represents a {@link GuildChannel GuildChannel} that can be the target of a Guild's invite.
+ *
+ * Invites have to be targeted at exactly one {@link IInviteContainer}, which will open when the invite is used (unless restricted by permissions).
+ */
 public interface IInviteContainer extends GuildChannel
 {
     /**

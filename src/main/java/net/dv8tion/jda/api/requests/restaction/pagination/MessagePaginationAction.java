@@ -34,7 +34,7 @@ import javax.annotation.Nonnull;
  * Minimum - 1
  * <br>Maximum - 100
  *
- * <h1>Example</h1>
+ * <h2>Example</h2>
  * <pre><code>
  * /**
  *  * Iterates messages in an async stream and stops once the limit has been reached.

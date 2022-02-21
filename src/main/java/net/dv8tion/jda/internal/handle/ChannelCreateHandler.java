@@ -63,7 +63,6 @@ public class ChannelCreateHandler extends SocketHandler
         {
             case TEXT: return builder.createTextChannel(content, guildId);
             case NEWS: return builder.createNewsChannel(content, guildId);
-            case STORE: return builder.createStoreChannel(content, guildId);
             case VOICE: return builder.createVoiceChannel(content, guildId);
             case STAGE: return builder.createStageChannel(content, guildId);
             case CATEGORY: return builder.createCategory(content, guildId);

@@ -21,7 +21,14 @@ import net.dv8tion.jda.api.managers.channel.attribute.ICategorizableChannelManag
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-//TODO-v5: Need Docs
+
+/**
+ * Represents a channel that can be a member of a {@link Category}.
+ * Channels represented by this interface can have a parent {@link Category}.
+ *
+ * @see Category
+ * @see Guild#getCategories()
+ */
 public interface ICategorizableChannel extends GuildChannel, IPermissionContainer
 {
     //TODO-v5: Docs
@@ -29,13 +36,29 @@ public interface ICategorizableChannel extends GuildChannel, IPermissionContaine
     @Nonnull
     ICategorizableChannelManager<?, ?> getManager();
 
-    //TODO-v5: Docs
+    /**
+     * Get the snowflake of the {@link Category} that contains this channel.
+     *
+     * This will return {@code 0} if this channel doesn't have a parent category.
+     *
+     * @return The Discord ID snowflake of the parent channel as a long.
+     */
     long getParentCategoryIdLong();
 
-    //TODO-v5: Docs
+    /**
+     * Get the snowflake of the {@link net.dv8tion.jda.api.entities.Category Category} that contains this channel.
+     *
+     * This will return {@code null} if this channel doesn't have a parent category.
+     *
+     * @return Possibly-null String representation of the Discord ID snowflake of the parent channel.
+     */
+    @Nullable
     default String getParentCategoryId()
     {
-        return Long.toUnsignedString(getParentCategoryIdLong());
+        long parentID = getParentCategoryIdLong();
+        if (parentID == 0L)
+            return null;
+        return Long.toUnsignedString(parentID);
     }
 
     /**
@@ -49,7 +72,7 @@ public interface ICategorizableChannel extends GuildChannel, IPermissionContaine
     @Nullable
     default Category getParentCategory()
     {
-        return getGuild().getCategoryById(getParentCategoryId());
+        return getGuild().getCategoryById(getParentCategoryIdLong());
     }
 
     /**

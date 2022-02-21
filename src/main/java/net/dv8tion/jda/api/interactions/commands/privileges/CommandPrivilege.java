@@ -21,6 +21,8 @@ import net.dv8tion.jda.api.entities.ISnowflake;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.requests.restaction.CommandCreateAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.SerializableData;
@@ -39,6 +41,9 @@ import java.util.Map;
  * @see Guild#retrieveCommandPrivileges()
  * @see Guild#updateCommandPrivilegesById(String, Collection)
  * @see Guild#updateCommandPrivileges(Map)
+ *
+ * @see CommandData#setDefaultEnabled(boolean)
+ * @see CommandCreateAction#setDefaultEnabled(boolean)
  * @see Command#isDefaultEnabled()
  */
 public class CommandPrivilege implements ISnowflake, SerializableData

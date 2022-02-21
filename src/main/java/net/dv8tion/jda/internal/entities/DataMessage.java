@@ -20,7 +20,7 @@ import net.dv8tion.jda.api.entities.MessageActivity;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.MessageType;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
-import net.dv8tion.jda.api.interactions.components.ComponentLayout;
+import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -32,11 +32,11 @@ public class DataMessage extends AbstractMessage
     private final EnumSet<MentionType> allowedMentions;
     private final String[] mentionedRoles;
     private final String[] mentionedUsers;
-    private final ComponentLayout[] components;
+    private final LayoutComponent[] components;
     private Collection<? extends MessageEmbed> embeds;
 
     public DataMessage(boolean tts, String content, String nonce, Collection<? extends MessageEmbed> embeds,
-                       EnumSet<MentionType> allowedMentions, String[] mentionedUsers, String[] mentionedRoles, ComponentLayout[] components)
+                       EnumSet<MentionType> allowedMentions, String[] mentionedUsers, String[] mentionedRoles, LayoutComponent[] components)
     {
         super(content, nonce, tts);
         this.embeds = embeds;
@@ -48,7 +48,7 @@ public class DataMessage extends AbstractMessage
 
     public DataMessage(boolean tts, String content, String nonce, Collection<? extends MessageEmbed> embeds)
     {
-        this(tts, content, nonce, embeds, null, new String[0], new String[0], new ComponentLayout[0]);
+        this(tts, content, nonce, embeds, null, new String[0], new String[0], new LayoutComponent[0]);
     }
 
     public EnumSet<MentionType> getAllowedMentions()

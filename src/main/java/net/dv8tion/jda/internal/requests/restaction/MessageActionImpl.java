@@ -318,6 +318,16 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
 
     @Nonnull
     @Override
+    public MessageAction addFile(@Nonnull byte[] data, @Nonnull String name, @Nonnull AttachmentOption... options)
+    {
+        Checks.notNull(data, "Data");
+        final long maxSize = getMaxFileSize();
+        Checks.check(data.length <= maxSize, "File may not exceed the maximum file length of %d bytes!", maxSize);
+        return addFile(new ByteArrayInputStream(data), name, options);
+    }
+
+    @Nonnull
+    @Override
     @CheckReturnValue
     public MessageActionImpl clearFiles()
     {
@@ -376,6 +386,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
         if (components == null)
             components = new ArrayList<>();
         Checks.check(rows.length <= 5, "Can only have 5 action rows per message!");
+        Checks.checkDuplicateIds(Arrays.stream(rows));
         this.components.clear();
         Collections.addAll(this.components, rows);
         return this;
@@ -479,7 +490,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
         for (Map.Entry<String, InputStream> entry : files.entrySet())
         {
             final RequestBody body = IOUtil.createRequestBody(Requester.MEDIA_TYPE_OCTET, entry.getValue());
-            builder.addFormDataPart("file" + index++, entry.getKey(), body);
+            builder.addFormDataPart("files[" + (index++) + "]", entry.getKey(), body);
         }
         if (messageReference != 0L || components != null || retainedAttachments != null || !isEmpty())
             builder.addFormDataPart("payload_json", getJSON().toString());

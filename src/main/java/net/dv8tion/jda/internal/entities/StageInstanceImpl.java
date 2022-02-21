@@ -23,13 +23,11 @@ import net.dv8tion.jda.api.entities.StageInstance;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.StageInstanceManager;
 import net.dv8tion.jda.api.requests.RestAction;
-import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.managers.StageInstanceManagerImpl;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 
 import javax.annotation.Nonnull;
-import java.time.OffsetDateTime;
 import java.util.EnumSet;
 
 public class StageInstanceImpl implements StageInstance
@@ -98,40 +96,6 @@ public class StageInstanceImpl implements StageInstance
         checkPermissions();
         Route.CompiledRoute route = Route.StageInstances.DELETE_INSTANCE.compile(channel.getId());
         return new RestActionImpl<>(channel.getJDA(), route);
-    }
-
-    @Nonnull
-    @Override
-    public RestAction<Void> requestToSpeak()
-    {
-        Guild guild = getGuild();
-        Route.CompiledRoute route = Route.Guilds.UPDATE_VOICE_STATE.compile(guild.getId(), "@me");
-        DataObject body = DataObject.empty().put("channel_id", channel.getId());
-        // Stage moderators can bypass the request queue by just unsuppressing
-        if (guild.getSelfMember().hasPermission(getChannel(), Permission.VOICE_MUTE_OTHERS))
-            body.putNull("request_to_speak_timestamp").put("suppress", false);
-        else
-            body.put("request_to_speak_timestamp", OffsetDateTime.now().toString());
-
-        if (!channel.equals(guild.getSelfMember().getVoiceState().getChannel()))
-            throw new IllegalStateException("Cannot request to speak without being connected to the stage channel!");
-        return new RestActionImpl<>(channel.getJDA(), route, body);
-    }
-
-    @Nonnull
-    @Override
-    public RestAction<Void> cancelRequestToSpeak()
-    {
-        Guild guild = getGuild();
-        Route.CompiledRoute route = Route.Guilds.UPDATE_VOICE_STATE.compile(guild.getId(), "@me");
-        DataObject body = DataObject.empty()
-                .putNull("request_to_speak_timestamp")
-                .put("suppress", true)
-                .put("channel_id", channel.getId());
-
-        if (!channel.equals(guild.getSelfMember().getVoiceState().getChannel()))
-            throw new IllegalStateException("Cannot cancel request to speak without being connected to the stage channel!");
-        return new RestActionImpl<>(channel.getJDA(), route, body);
     }
 
     @Nonnull

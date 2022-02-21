@@ -124,9 +124,8 @@ public enum MessageType
 
     /**
      * This message was created by an interaction. Usually in combination with Slash Commands.
-     * <br>Most commonly this type will appear as a {@link Message#getReferencedMessage() referenced message}.
      */
-    APPLICATION_COMMAND(20, false),
+    SLASH_COMMAND(20, false),
 
     /**
      * A new message sent as the first message in threads that are started from an existing message in the parent channel.
@@ -138,6 +137,11 @@ public enum MessageType
      * The "Invite your friends" messages that are sent to guild owners in new servers.
      */
     GUILD_INVITE_REMINDER(22),
+
+    /**
+     * This message was created by an interaction. Usually in combination with Context Menus.
+     */
+    CONTEXT_COMMAND(23, false),
 
     /**
      * Unknown MessageType.
