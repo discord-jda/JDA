@@ -45,7 +45,8 @@ public class MessageCreateHandler extends SocketHandler
         }
 
         JDAImpl jda = getJDA();
-        if (!content.isNull("guild_id"))
+        boolean isGuild = !content.isNull("guild_id");
+        if (isGuild)
         {
             long guildId = content.getLong("guild_id");
             if (jda.getGuildSetupController().isLocked(guildId))
@@ -55,7 +56,9 @@ public class MessageCreateHandler extends SocketHandler
         Message message;
         try
         {
-            message = jda.getEntityBuilder().createMessage(content, true);
+            message = isGuild
+                ? jda.getEntityBuilder().createMessageGuildChannel(content, true)
+                : jda.getEntityBuilder().createMessagePrivateChannel(content, true);
         }
         catch (IllegalArgumentException e)
         {

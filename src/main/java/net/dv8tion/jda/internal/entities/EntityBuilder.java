@@ -60,6 +60,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.map.CaseInsensitiveMap;
 import org.slf4j.Logger;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.time.Instant;
 import java.time.OffsetDateTime;
@@ -1327,72 +1328,83 @@ public class EntityBuilder
         return role;
     }
 
-    public Message createMessage(DataObject jsonObject) { return createMessage(jsonObject, false); }
-    public Message createMessage(DataObject jsonObject, boolean modifyCache)
+    //If we aren't sure whether we have a PrivateChannel constructed yet when we want to build this method
+    public ReceivedMessage createMessagePrivateChannel(DataObject jsonObject, boolean modifyCache)
+    {
+        final long channelId = jsonObject.getLong("channel_id");
+        final DataObject author = jsonObject.getObject("author");
+        final long authorId = author.getLong("id");
+
+        PrivateChannelImpl channel = (PrivateChannelImpl) getJDA().getPrivateChannelById(channelId);
+        boolean isAuthorSelfUser = authorId == getJDA().getSelfUser().getIdLong();
+        if (channel == null)
+        {
+            DataObject channelData = DataObject.empty()
+                    .put("id", channelId);
+
+            //if we see an author that isn't us, we can assume that is the other side of this private channel
+            //if the author is us, we learn no information about the user at the other end
+            if (!isAuthorSelfUser)
+                channelData.put("recipient", author);
+
+            //even without knowing the user at the other end, we can still construct a minimal channel
+            channel = (PrivateChannelImpl) createPrivateChannel(channelData);
+        }
+
+        return createMessagePrivateChannel(jsonObject, channel, modifyCache);
+    }
+
+    //We definitely have a PrivateChannel constructed that we want to use, but make sure it has all the data
+    // it can be filled with before building the message
+    public ReceivedMessage createMessagePrivateChannel(DataObject jsonObject, @Nonnull PrivateChannel channel, boolean modifyCache)
+    {
+        final DataObject author = jsonObject.getObject("author");
+        final long authorId = author.getLong("id");
+
+        boolean isAuthorSelfUser = authorId == getJDA().getSelfUser().getIdLong();
+        if (channel.getUser() == null && !isAuthorSelfUser)
+        {
+            //if we see an author that isn't us, we can assume that is the other side of this private channel
+            //if the author is us, we learn no information about the user at the other end
+            ((PrivateChannelImpl) channel).setUser(createUser(author));
+        }
+
+        return createMessage0(jsonObject, channel, modifyCache);
+    }
+
+    //We aren't sure which guild channel to use or if it is even cached, so find it and use it to build a message or throw
+    public ReceivedMessage createMessageGuildChannel(DataObject jsonObject, boolean modifyCache)
     {
         final long channelId = jsonObject.getLong("channel_id");
 
         //TODO-v5-unified-channel-cache
-        MessageChannel chan = getJDA().getTextChannelById(channelId);
+        GuildMessageChannel chan = getJDA().getTextChannelById(channelId);
         if (chan == null)
             chan = getJDA().getNewsChannelById(channelId);
         if (chan == null)
-            chan = getJDA().getPrivateChannelById(channelId);
-        if (chan == null)
             chan = getJDA().getThreadChannelById(channelId);
-        if (chan == null && !jsonObject.isNull("guild_id"))
+        if (chan == null)
             throw new IllegalArgumentException(MISSING_CHANNEL);
 
-        return createMessage(jsonObject, chan, modifyCache);
+        return createMessage0(jsonObject, chan, modifyCache);
     }
-    public ReceivedMessage createMessage(DataObject jsonObject, @Nullable MessageChannel channel, boolean modifyCache)
-    {
-        long channelId = jsonObject.getUnsignedLong("channel_id");
-        if (channel != null && channelId != channel.getIdLong())
-        {
-            //TODO-v5-unified-channel-cache
-            channel = api.getTextChannelById(channelId);
-            if (channel == null)
-                channel = api.getNewsChannelById(channelId);
-            if (channel == null)
-                channel = api.getPrivateChannelById(channelId);
-        }
 
+    //Creation of messages _needs_ to go through either the GuildMessageChannel side or PrivateChannel to ensure that
+    // private channels get built/updated as needed and guild channels can throw MISSING_CHANNEL as needed.
+    public ReceivedMessage createMessage(DataObject jsonObject, @Nonnull MessageChannel channel, boolean modifyCache)
+    {
+        if (channel.getType().isGuild())
+            return createMessage0(jsonObject, channel, modifyCache);
+        else
+            return createMessagePrivateChannel(jsonObject, (PrivateChannel) channel, modifyCache);
+    }
+
+    private ReceivedMessage createMessage0(DataObject jsonObject, @Nonnull MessageChannel channel, boolean modifyCache)
+    {
         final long id = jsonObject.getLong("id");
         final DataObject author = jsonObject.getObject("author");
         final long authorId = author.getLong("id");
         MemberImpl member = null;
-
-        if (jsonObject.isNull("guild_id"))
-        {
-            //we know it's a private channel
-            PrivateChannelImpl priv = (PrivateChannelImpl) channel;
-
-            boolean isAuthorSelfUser = authorId == getJDA().getSelfUser().getIdLong();
-            if (priv == null)
-            {
-                DataObject channelData = DataObject.empty()
-                        .put("id", channelId);
-
-                //if we see an author that isn't us, we can assume that is the other side of this private channel
-                //if the author is us, we learn no information about the user at the other end
-                if (!isAuthorSelfUser)
-                    channelData.put("recipient", author);
-
-                //even without knowing the user at the other end, we can still construct a minimal channel
-                channel = createPrivateChannel(channelData);
-            }
-            else if (priv.getUser() == null && !isAuthorSelfUser)
-            {
-                //if we see an author that isn't us, we can assume that is the other side of this private channel
-                //if the author is us, we learn no information about the user at the other end
-                priv.setUser(createUser(author));
-            }
-
-        }
-
-        else if (channel == null)
-            throw new IllegalArgumentException(MISSING_CHANNEL);
 
         if (channel.getType().isGuild() && !jsonObject.isNull("member"))
         {
@@ -1447,6 +1459,10 @@ public class EntityBuilder
             if (authorId == getJDA().getSelfUser().getIdLong())
                 user = getJDA().getSelfUser();
             else
+                //Note, while PrivateChannel.getUser() can produce null, this invocation of it WILL NOT produce null
+                // because when the bot receives a message in a private channel that was _not authored by the bot_ then
+                // the message had to have come from the user, so that means that we had all the information to build
+                // the channel properly (or fill-in the missing user info of an existing partial channel)
                 user = ((PrivateChannel) channel).getUser();
         }
 
