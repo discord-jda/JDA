@@ -1217,7 +1217,7 @@ public class EntityBuilder
             if (recipient != null)
             {
                 //update the channel if we have found the user
-                channel.setUser(user);
+                channel.setUser(recipient);
             }
         }
         if (recipient != null)
