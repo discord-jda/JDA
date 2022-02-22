@@ -26,13 +26,26 @@ public class MessageContextInteractionImpl extends ContextInteractionImpl<Messag
 {
     public MessageContextInteractionImpl(JDAImpl jda, DataObject data)
     {
-        super(jda, data, resolved -> parse(jda, resolved));
+        super(jda, data, resolved ->
+        {
+            //temporary fix to set the guild_id for messages that do not contain it
+            if (data.hasKey("guild_id"))
+            {
+                resolved.put("guild_id", data.getLong("guild_id"));
+            }
+            return parse(jda, resolved);
+        });
     }
 
     private static Message parse(JDAImpl api, DataObject resolved)
     {
         DataObject messages = resolved.getObject("messages");
         DataObject message = messages.getObject(messages.keys().iterator().next());
+        //manually include the guild id
+        if (resolved.hasKey("guild_id"))
+        {
+            message.put("guild_id", resolved.getLong("guild_id"));
+        }
         return api.getEntityBuilder().createMessage(message);
     }
 
