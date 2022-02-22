@@ -25,6 +25,7 @@ import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.EmoteImpl;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.entities.MemberImpl;
+import net.dv8tion.jda.internal.entities.PrivateChannelImpl;
 import net.dv8tion.jda.internal.requests.WebSocketClient;
 import net.dv8tion.jda.internal.utils.JDALogger;
 
@@ -168,7 +169,15 @@ public class MessageReactionHandler extends SocketHandler
         MessageReaction reaction = new MessageReaction(channel, rEmote, messageId, userId == api.getSelfUser().getIdLong(), -1);
 
         if (channel.getType() == ChannelType.PRIVATE)
+        {
             api.usedPrivateChannel(reaction.getChannel().getIdLong());
+            PrivateChannelImpl priv = (PrivateChannelImpl) channel;
+            //try to add the user here if we need to, as we have their ID
+            if (priv.getUser() == null && user != null)
+            {
+                priv.setUser(user);
+            }
+        }
 
         if (add)
         {

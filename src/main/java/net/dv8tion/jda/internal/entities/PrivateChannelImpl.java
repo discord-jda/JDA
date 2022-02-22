@@ -184,6 +184,9 @@ public class PrivateChannelImpl extends AbstractChannelImpl<PrivateChannelImpl> 
 
     private void updateUser()
     {
+        //if the user is null then we don't even know their ID, and so we have to check that first
+        if (user == null)
+            return;
         // Load user from cache if one exists, otherwise we might have an outdated user instance
         User realUser = getJDA().getUserById(user.getIdLong());
         if (realUser != null)

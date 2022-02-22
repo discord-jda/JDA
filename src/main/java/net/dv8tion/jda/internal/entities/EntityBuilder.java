@@ -1217,7 +1217,7 @@ public class EntityBuilder
             if (recipient != null)
             {
                 //update the channel if we have found the user
-                channel.setUser(user);
+                channel.setUser(recipient);
             }
         }
         if (recipient != null)
@@ -1363,17 +1363,34 @@ public class EntityBuilder
         final long authorId = author.getLong("id");
         MemberImpl member = null;
 
-        if (channel == null && jsonObject.isNull("guild_id"))
+        if (jsonObject.isNull("guild_id"))
         {
-            DataObject channelData = DataObject.empty()
-                    .put("id", channelId);
-            //if we see an author that isn't us, we can assume that is the other side of this private channel
-            //if the author is us, we learn no information about the user at the other end
-            if (authorId != getJDA().getSelfUser().getIdLong())
+            //we know it's a private channel
+            PrivateChannelImpl priv = (PrivateChannelImpl) channel;
+
+            boolean isAuthorSelfUser = authorId == getJDA().getSelfUser().getIdLong();
+            if (priv == null)
+            {
+                DataObject channelData = DataObject.empty()
+                        .put("id", channelId);
+
+                //if we see an author that isn't us, we can assume that is the other side of this private channel
+                //if the author is us, we learn no information about the user at the other end
+                if (!isAuthorSelfUser)
                     channelData.put("recipient", author);
-            //even without knowing the user at the other end, we can still construct a minimal channel
-            channel = createPrivateChannel(channelData);
+
+                //even without knowing the user at the other end, we can still construct a minimal channel
+                channel = createPrivateChannel(channelData);
+            }
+            else if (priv.getUser() == null && !isAuthorSelfUser)
+            {
+                //if we see an author that isn't us, we can assume that is the other side of this private channel
+                //if the author is us, we learn no information about the user at the other end
+                priv.setUser(createUser(author));
+            }
+
         }
+
         else if (channel == null)
             throw new IllegalArgumentException(MISSING_CHANNEL);
 
