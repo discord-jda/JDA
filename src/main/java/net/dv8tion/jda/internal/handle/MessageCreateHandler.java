@@ -44,6 +44,10 @@ public class MessageCreateHandler extends SocketHandler
             return null;
         }
 
+        // Drop ephemeral messages since they are broken due to missing guild_id
+        if ((content.getInt("flags", 0) & 64) != 0)
+            return null;
+
         JDAImpl jda = getJDA();
         boolean isGuild = !content.isNull("guild_id");
         if (isGuild)
