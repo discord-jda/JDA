@@ -63,10 +63,9 @@ public abstract class RestActionOperator<I, O> implements RestAction<O>
                 if (success != null)
                     success.accept(result);
             }
-            catch (Exception ex)
+            catch (Throwable ex)
             {
-                if (catcher != null)
-                    catcher.accept(ex);
+                doFailure(catcher, ex);
             }
         }, catcher);
     }
