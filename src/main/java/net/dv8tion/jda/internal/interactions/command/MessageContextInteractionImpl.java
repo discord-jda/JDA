@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.internal.interactions.command;
 
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.interactions.commands.context.MessageContextInteraction;
@@ -41,8 +42,14 @@ public class MessageContextInteractionImpl extends ContextInteractionImpl<Messag
         DataObject message = messages.getObject(messages.keys().iterator().next());
 
         //Hopefully in the future we can ask 'message.hasKey("guild_id")' instead.
-        return interactionData.hasKey("guild_id")
-            ? api.getEntityBuilder().createMessageGuildChannel(message, false)
-            : api.getEntityBuilder().createMessagePrivateChannel(message, false);
+        Guild guild = null;
+        if (!interactionData.isNull("guild_id"))
+        {
+            long guildId = interactionData.getUnsignedLong("guild_id");
+            guild = api.getGuildById(guildId);
+            if (guild == null)
+                throw new IllegalStateException("Cannot find guild for resolved message object.");
+        }
+        return api.getEntityBuilder().createMessageDynamic(message, guild, false);
     }
 }

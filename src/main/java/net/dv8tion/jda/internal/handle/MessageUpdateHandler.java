@@ -37,12 +37,19 @@ public class MessageUpdateHandler extends SocketHandler
     @Override
     protected Long handleInternally(DataObject content)
     {
-        boolean isGuild = !content.isNull("guild_id");
-        if (isGuild)
+        Guild guild = null;
+        if (!content.isNull("guild_id"))
         {
             long guildId = content.getLong("guild_id");
             if (getJDA().getGuildSetupController().isLocked(guildId))
                 return guildId;
+            guild = api.getGuildById(guildId);
+            if (guild == null)
+            {
+                api.getEventCache().cache(EventCache.Type.GUILD, guildId, responseNumber, allContent, this::handle);
+                EventCache.LOG.debug("Received message for a guild that JDA does not currently have cached");
+                return null;
+            }
         }
 
         // Drop ephemeral messages since they are broken due to missing guild_id
@@ -56,7 +63,7 @@ public class MessageUpdateHandler extends SocketHandler
             {
                 MessageType type = MessageType.fromId(content.getInt("type"));
                 if (!type.isSystem())
-                    return handleMessage(content, isGuild);
+                    return handleMessage(content, guild);
                 WebSocketClient.LOG.debug("JDA received a message update for an unexpected message type. Type: {} JSON: {}", type, content);
                 return null;
             }
@@ -72,14 +79,12 @@ public class MessageUpdateHandler extends SocketHandler
         return null;
     }
 
-    private Long handleMessage(DataObject content, boolean isGuild)
+    private Long handleMessage(DataObject content, Guild guild)
     {
         Message message;
         try
         {
-            message = isGuild
-                ? getJDA().getEntityBuilder().createMessageGuildChannel(content, true)
-                : getJDA().getEntityBuilder().createMessagePrivateChannel(content, true);
+            message = getJDA().getEntityBuilder().createMessageDynamic(content, guild, true);
         }
         catch (IllegalArgumentException e)
         {

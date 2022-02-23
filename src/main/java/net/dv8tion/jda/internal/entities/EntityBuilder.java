@@ -1328,11 +1328,35 @@ public class EntityBuilder
         return role;
     }
 
-    //If we aren't sure whether we have a PrivateChannel constructed yet when we want to build this method
-    public ReceivedMessage createMessagePrivateChannel(DataObject jsonObject, boolean modifyCache)
+    public ReceivedMessage createMessage(DataObject json, @Nonnull MessageChannel channel, boolean modifyCache)
     {
-        final long channelId = jsonObject.getLong("channel_id");
-        final DataObject author = jsonObject.getObject("author");
+        // Use channel directly if message is from a known guild channel
+        if (channel instanceof GuildMessageChannel)
+            return createMessage0(json, channel, modifyCache);
+        // Try to resolve private channel recipient if needed
+        if (channel instanceof PrivateChannel)
+            return createMessageDynamic(json, null, modifyCache);
+        throw new IllegalArgumentException(MISSING_CHANNEL);
+    }
+
+    public ReceivedMessage createMessageDynamic(DataObject json, @Nullable Guild guild, boolean modifyCache)
+    {
+        //Private channels may be partial in our cache and missing recipient information
+        // we can try and derive the user from the message here
+        if (guild == null)
+            return createMessage0(json, createPrivateChannelByMessage(json), modifyCache);
+        //If we know that the message was sent in a guild, we can use the guild to resolve the channel directly
+        MessageChannel channel = guild.getChannelById(MessageChannel.class, json.getUnsignedLong("channel_id"));
+        if (channel == null)
+            throw new IllegalArgumentException(MISSING_CHANNEL);
+        return createMessage0(json, channel, modifyCache);
+    }
+
+    // This tries to build a private channel instance through an arbitrary message object
+    private PrivateChannel createPrivateChannelByMessage(DataObject message)
+    {
+        final long channelId = message.getLong("channel_id");
+        final DataObject author = message.getObject("author");
         final long authorId = author.getLong("id");
 
         PrivateChannelImpl channel = (PrivateChannelImpl) getJDA().getPrivateChannelById(channelId);
@@ -1350,48 +1374,17 @@ public class EntityBuilder
             //even without knowing the user at the other end, we can still construct a minimal channel
             channel = (PrivateChannelImpl) createPrivateChannel(channelData);
         }
-
-        return createMessagePrivateChannel(jsonObject, channel, modifyCache);
-    }
-
-    //We definitely have a PrivateChannel constructed that we want to use, but make sure it has all the data
-    // it can be filled with before building the message
-    public ReceivedMessage createMessagePrivateChannel(DataObject jsonObject, @Nonnull PrivateChannel channel, boolean modifyCache)
-    {
-        final DataObject author = jsonObject.getObject("author");
-        final long authorId = author.getLong("id");
-
-        boolean isAuthorSelfUser = authorId == getJDA().getSelfUser().getIdLong();
-        if (channel.getUser() == null && !isAuthorSelfUser)
+        else if (channel.getUser() == null && !isAuthorSelfUser)
         {
-            //if we see an author that isn't us, we can assume that is the other side of this private channel
-            //if the author is us, we learn no information about the user at the other end
-            ((PrivateChannelImpl) channel).setUser(createUser(author));
+            //In this situation, we already know the channel
+            // but the message provided us with the recipient
+            // which we can now add to the channel
+            UserImpl user = createUser(author);
+            channel.setUser(user);
+            user.setPrivateChannel(channel);
         }
 
-        return createMessage0(jsonObject, channel, modifyCache);
-    }
-
-    //We aren't sure which guild channel to use or if it is even cached, so find it and use it to build a message or throw
-    public ReceivedMessage createMessageGuildChannel(DataObject jsonObject, boolean modifyCache)
-    {
-        final long channelId = jsonObject.getLong("channel_id");
-
-        GuildMessageChannel chan = getJDA().getChannelById(GuildMessageChannel.class, channelId);
-        if (chan == null)
-            throw new IllegalArgumentException(MISSING_CHANNEL);
-
-        return createMessage0(jsonObject, chan, modifyCache);
-    }
-
-    //Creation of messages _needs_ to go through either the GuildMessageChannel side or PrivateChannel to ensure that
-    // private channels get built/updated as needed and guild channels can throw MISSING_CHANNEL as needed.
-    public ReceivedMessage createMessage(DataObject jsonObject, @Nonnull MessageChannel channel, boolean modifyCache)
-    {
-        if (channel.getType().isGuild())
-            return createMessage0(jsonObject, channel, modifyCache);
-        else
-            return createMessagePrivateChannel(jsonObject, (PrivateChannel) channel, modifyCache);
+        return channel;
     }
 
     private ReceivedMessage createMessage0(DataObject jsonObject, @Nonnull MessageChannel channel, boolean modifyCache)
@@ -1436,7 +1429,8 @@ public class EntityBuilder
             activity = createMessageActivity(jsonObject);
 
         User user;
-        if (channel.getType().isGuild()) {
+        if (channel.getType().isGuild())
+        {
             Guild guild = ((GuildChannel) channel).getGuild();
             if (member == null)
                 member = (MemberImpl) guild.getMemberById(authorId);
@@ -1449,7 +1443,8 @@ public class EntityBuilder
                     throw new IllegalArgumentException(MISSING_USER); // Specifically for MESSAGE_CREATE
             }
         }
-        else {
+        else
+        {
             //Assume private channel
             if (authorId == getJDA().getSelfUser().getIdLong())
             {
@@ -1485,7 +1480,7 @@ public class EntityBuilder
             DataObject referenceJson = jsonObject.getObject("referenced_message");
             try
             {
-                referencedMessage = createMessage(referenceJson, channel, false);
+                referencedMessage = createMessage0(referenceJson, channel, false);
             }
             catch (IllegalArgumentException ex)
             {
