@@ -45,6 +45,10 @@ public class MessageUpdateHandler extends SocketHandler
                 return guildId;
         }
 
+        // Drop ephemeral messages since they are broken due to missing guild_id
+        if ((content.getInt("flags", 0) & 64) != 0)
+            return null;
+
         //TODO: Rewrite this entire handler
         if (content.hasKey("author"))
         {
