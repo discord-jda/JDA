@@ -56,6 +56,12 @@ public class ChannelUpdateHandler extends SocketHandler
             WebSocketClient.LOG.warn("Ignoring CHANNEL_UPDATE for a group which we don't support");
             return null;
         }
+        if (!content.isNull("guild_id"))
+        {
+            long guildId = content.getUnsignedLong("guild_id");
+            if (getJDA().getGuildSetupController().isLocked(guildId))
+                return guildId;
+        }
 
         final long channelId = content.getLong("id");
         final long parentId = content.isNull("parent_id") ? 0 : content.getLong("parent_id");
