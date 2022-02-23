@@ -40,6 +40,8 @@ body:
       public void causeError() {
           throw new Exception("Error!");
       }
+  validations:
+    required: true
 - type: textarea
   attributes:
     label: "Code for JDABuilder or DefaultShardManagerBuilder used"
@@ -50,6 +52,8 @@ body:
       The provided text will be rendered as Java code, so you don't have to provide a Code block for it.
     render: java
     placeholder: 'JDA jda = JDABuilder.createDefault("token").build();'
+  validations:
+    required: true
 - type: textarea
   attributes:
     label: "Exception or Error"
