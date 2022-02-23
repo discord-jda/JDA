@@ -146,7 +146,7 @@ public class GuildImpl implements Guild
         try (UnlockHook hook = stageView.writeLock())
         {
             getStageChannelCache()
-            .forEachUnordered(chan -> stageView.getMap().remove(chan.getIdLong()));
+                .forEachUnordered(chan -> stageView.getMap().remove(chan.getIdLong()));
         }
         try (UnlockHook hook = textView.writeLock())
         {
