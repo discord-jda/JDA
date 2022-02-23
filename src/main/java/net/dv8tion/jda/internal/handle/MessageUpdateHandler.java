@@ -37,7 +37,8 @@ public class MessageUpdateHandler extends SocketHandler
     @Override
     protected Long handleInternally(DataObject content)
     {
-        if (!content.isNull("guild_id"))
+        boolean isGuild = !content.isNull("guild_id");
+        if (isGuild)
         {
             long guildId = content.getLong("guild_id");
             if (getJDA().getGuildSetupController().isLocked(guildId))
@@ -51,7 +52,7 @@ public class MessageUpdateHandler extends SocketHandler
             {
                 MessageType type = MessageType.fromId(content.getInt("type"));
                 if (!type.isSystem())
-                    return handleMessage(content);
+                    return handleMessage(content, isGuild);
                 WebSocketClient.LOG.debug("JDA received a message update for an unexpected message type. Type: {} JSON: {}", type, content);
                 return null;
             }
@@ -67,12 +68,14 @@ public class MessageUpdateHandler extends SocketHandler
         return null;
     }
 
-    private Long handleMessage(DataObject content)
+    private Long handleMessage(DataObject content, boolean isGuild)
     {
         Message message;
         try
         {
-            message = getJDA().getEntityBuilder().createMessage(content);
+            message = isGuild
+                ? getJDA().getEntityBuilder().createMessageGuildChannel(content, true)
+                : getJDA().getEntityBuilder().createMessagePrivateChannel(content, true);
         }
         catch (IllegalArgumentException e)
         {
@@ -115,6 +118,7 @@ public class MessageUpdateHandler extends SocketHandler
         LinkedList<MessageEmbed> embeds = new LinkedList<>();
 
         //TODO-v5-unified-channel-cache
+        //TODO-v5: handle for threads.
         MessageChannel channel = getJDA().getTextChannelsView().get(channelId);
         if (channel == null)
             channel = getJDA().getNewsChannelById(channelId);
