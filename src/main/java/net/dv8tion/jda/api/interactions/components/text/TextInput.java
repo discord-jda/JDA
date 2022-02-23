@@ -41,6 +41,21 @@ public interface TextInput extends ActionComponent
     int TEXT_INPUT_MAX_LENGTH = 4000;
 
     /**
+     * The maximum amount of characters the custom id of a TextInput component can have.
+     */
+    int ID_MAX_LENGTH = 100;
+
+    /**
+     * The maximum amount of characters the placeholder of a TextInput component can have.
+     */
+    int PLACEHOLDER_MAX_LENGTH = 100;
+
+    /**
+     * The maximum amount of characters the label of a TextInput component can have.
+     */
+    int LABEL_MAX_LENGTH = 45;
+
+    /**
      * The {@link TextInputStyle TextInputStyle} of this TextInput component.
      *
      * @return The style of this TextInput component.
@@ -138,6 +153,8 @@ public interface TextInput extends ActionComponent
      *         <ul>
      *             <li>If either id or label are null or blank</li>
      *             <li>If style is null or UNKNOWN</li>
+     *             <li>If id is longer than {@value #ID_MAX_LENGTH} characters</li>
+     *             <li>If label is longer than {@value #LABEL_MAX_LENGTH} characters</li>
      *         </ul>
      *
      * @return a new TextInput Builder.
@@ -177,13 +194,17 @@ public interface TextInput extends ActionComponent
          *         The id to set
          *
          * @throws IllegalArgumentException
-         *         If id is null or blank
+         *         <ul>
+         *             <li>If id is null or blank</li>
+         *             <li>If id is longer than {@value #ID_MAX_LENGTH} characters</li>
+         *         </ul>
          *
          * @return The same Builder for chaining convenience.
          */
         public Builder setId(@Nonnull String id)
         {
             Checks.notBlank(id, "ID");
+            Checks.notLonger(id, ID_MAX_LENGTH, "ID");
             this.id = id;
             return this;
         }
@@ -195,13 +216,17 @@ public interface TextInput extends ActionComponent
          *         The label to set
          *
          * @throws IllegalArgumentException
-         *         If label is null or blank
+         *         <ul>
+         *             <li>If label is null or blank</li>
+         *             <li>If label is longer than {@value #LABEL_MAX_LENGTH} characters</li>
+         *         </ul>
          *
          * @return The same Builder for chaining convenience.
          */
         public Builder setLabel(@Nonnull String label)
         {
             Checks.notBlank(label, "Label");
+            Checks.notLonger(label, LABEL_MAX_LENGTH, "Label");
             this.label = label;
             return this;
         }
@@ -335,11 +360,16 @@ public interface TextInput extends ActionComponent
          * @param  placeholder 
          *         The placeholder
          *
+         * @throws IllegalArgumentException
+         *         If the provided placeholder is not null and longer than {@link #PLACEHOLDER_MAX_LENGTH} characters
+         *
          * @return The same builder instance for chaining
          */
         @Nonnull
         public Builder setPlaceholder(@Nullable String placeholder)
         {
+            if (placeholder != null)
+                Checks.notLonger(placeholder, PLACEHOLDER_MAX_LENGTH, "Placeholder");
             this.placeholder = placeholder;
             return this;
         }
