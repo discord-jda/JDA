@@ -1377,12 +1377,7 @@ public class EntityBuilder
     {
         final long channelId = jsonObject.getLong("channel_id");
 
-        //TODO-v5-unified-channel-cache
-        GuildMessageChannel chan = getJDA().getTextChannelById(channelId);
-        if (chan == null)
-            chan = getJDA().getNewsChannelById(channelId);
-        if (chan == null)
-            chan = getJDA().getThreadChannelById(channelId);
+        GuildMessageChannel chan = getJDA().getChannelById(GuildMessageChannel.class, channelId);
         if (chan == null)
             throw new IllegalArgumentException(MISSING_CHANNEL);
 
@@ -1457,13 +1452,17 @@ public class EntityBuilder
         else {
             //Assume private channel
             if (authorId == getJDA().getSelfUser().getIdLong())
+            {
                 user = getJDA().getSelfUser();
+            }
             else
+            {
                 //Note, while PrivateChannel.getUser() can produce null, this invocation of it WILL NOT produce null
                 // because when the bot receives a message in a private channel that was _not authored by the bot_ then
                 // the message had to have come from the user, so that means that we had all the information to build
                 // the channel properly (or fill-in the missing user info of an existing partial channel)
                 user = ((PrivateChannel) channel).getUser();
+            }
         }
 
         if (modifyCache && !fromWebhook) // update the user information on message receive
