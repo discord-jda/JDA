@@ -763,6 +763,15 @@ public class ReceivedMessage extends AbstractMessage
         return (TextChannel) channel;
     }
 
+    @Nonnull
+    @Override
+    public NewsChannel getNewsChannel()
+    {
+        if (!isFromType(ChannelType.NEWS))
+            throw new IllegalStateException("This message was not sent in a news channel");
+        return (NewsChannel) channel;
+    }
+
     @Override
     public Category getCategory()
     {
