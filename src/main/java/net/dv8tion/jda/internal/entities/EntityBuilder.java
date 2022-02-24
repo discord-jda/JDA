@@ -1328,18 +1328,18 @@ public class EntityBuilder
         return role;
     }
 
-    public ReceivedMessage createMessage(DataObject json, @Nonnull MessageChannel channel, boolean modifyCache)
+    public ReceivedMessage createMessageWithChannel(DataObject json, @Nonnull MessageChannel channel, boolean modifyCache)
     {
         // Use channel directly if message is from a known guild channel
         if (channel instanceof GuildMessageChannel)
             return createMessage0(json, channel, modifyCache);
         // Try to resolve private channel recipient if needed
         if (channel instanceof PrivateChannel)
-            return createMessageDynamic(json, null, modifyCache);
+            return createMessageWithLookup(json, null, modifyCache);
         throw new IllegalArgumentException(MISSING_CHANNEL);
     }
 
-    public ReceivedMessage createMessageDynamic(DataObject json, @Nullable Guild guild, boolean modifyCache)
+    public ReceivedMessage createMessageWithLookup(DataObject json, @Nullable Guild guild, boolean modifyCache)
     {
         //Private channels may be partial in our cache and missing recipient information
         // we can try and derive the user from the message here

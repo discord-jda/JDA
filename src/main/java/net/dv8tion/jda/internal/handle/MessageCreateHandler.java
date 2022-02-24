@@ -65,7 +65,7 @@ public class MessageCreateHandler extends SocketHandler
         Message message;
         try
         {
-            message = jda.getEntityBuilder().createMessageDynamic(content, guild, true);
+            message = jda.getEntityBuilder().createMessageWithLookup(content, guild, true);
         }
         catch (IllegalArgumentException e)
         {

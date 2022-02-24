@@ -84,7 +84,7 @@ public class MessageUpdateHandler extends SocketHandler
         Message message;
         try
         {
-            message = getJDA().getEntityBuilder().createMessageDynamic(content, guild, true);
+            message = getJDA().getEntityBuilder().createMessageWithLookup(content, guild, true);
         }
         catch (IllegalArgumentException e)
         {

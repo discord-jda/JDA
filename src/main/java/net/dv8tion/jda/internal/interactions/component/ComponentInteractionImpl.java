@@ -44,7 +44,7 @@ public abstract class ComponentInteractionImpl extends DeferrableInteractionImpl
 
         message = messageJson.isNull("type")
                 ? null
-                : jda.getEntityBuilder().createMessage(messageJson, getMessageChannel(), false);
+                : jda.getEntityBuilder().createMessageWithChannel(messageJson, getMessageChannel(), false);
     }
 
     @Nonnull

@@ -50,6 +50,6 @@ public class MessageContextInteractionImpl extends ContextInteractionImpl<Messag
             if (guild == null)
                 throw new IllegalStateException("Cannot find guild for resolved message object.");
         }
-        return api.getEntityBuilder().createMessageDynamic(message, guild, false);
+        return api.getEntityBuilder().createMessageWithLookup(message, guild, false);
     }
 }
