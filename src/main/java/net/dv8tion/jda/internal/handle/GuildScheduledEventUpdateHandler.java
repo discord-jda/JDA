@@ -59,7 +59,7 @@ public class GuildScheduledEventUpdateHandler extends SocketHandler
         final OffsetDateTime endTime = content.getOffsetDateTime("scheduled_end_time", null);
         final GuildScheduledEvent.Status status = GuildScheduledEvent.Status.fromKey(content.getInt("status", -1));
         final String imageUrl = content.getString("image", null);
-        String location = content.get("channel_id").toString();
+        String location = content.getString("channel_id", null);
         GuildChannel channel = null;
         if (location == null)
             location = content.getObject("entity_metadata").getString("location");
