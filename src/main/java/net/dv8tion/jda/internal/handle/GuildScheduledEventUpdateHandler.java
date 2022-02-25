@@ -54,10 +54,11 @@ public class GuildScheduledEventUpdateHandler extends SocketHandler
             return null;
 
         final String name = content.getString("name");
-        final String description = content.getString("description");
+        final String description = content.getString("description", null);
         final OffsetDateTime startTime = content.getOffsetDateTime("scheduled_start_time");
         final OffsetDateTime endTime = content.getOffsetDateTime("scheduled_end_time", null);
-        final GuildScheduledEvent.Status status = GuildScheduledEvent.Status.fromKey(content.getInt("entity_type"));
+        final GuildScheduledEvent.Status status = GuildScheduledEvent.Status.fromKey(content.getInt("entity_type", -1));
+        final String imageUrl = content.getString("image", null);
         String location = content.get("channel_id").toString();
         GuildChannel channel = null;
         if (location == null)
@@ -114,7 +115,12 @@ public class GuildScheduledEventUpdateHandler extends SocketHandler
             event.setVoiceChannel((VoiceChannel) channel);
             getJDA().handleEvent(new GuildScheduledEventUpdateLocationEvent(getJDA(), responseNumber, event, oldLocation));
         }
-
+        if (!Objects.equals(imageUrl, event.getImageUrl()))
+        {
+            String oldImageUrl = event.getImageUrl();
+            event.setImage(imageUrl);
+            getJDA().handleEvent(new GuildScheduledEventUpdateDescriptionEvent(getJDA(), responseNumber, event, oldImageUrl));
+        }
         return null;
     }
 }
