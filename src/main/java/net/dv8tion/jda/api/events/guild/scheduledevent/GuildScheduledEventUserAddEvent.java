@@ -30,22 +30,31 @@ import javax.annotation.Nonnull;
  */
 public class GuildScheduledEventUserAddEvent extends GenericGuildScheduledEventGatewayEvent
 {
-    private final User user;
-    
-    public GuildScheduledEventUserAddEvent(@Nonnull JDA api, long responseNumber, @Nonnull GuildScheduledEvent guildScheduledEvent, @Nonnull User user)
+    private final long userId;
+
+    public GuildScheduledEventUserAddEvent(@Nonnull JDA api, long responseNumber, @Nonnull GuildScheduledEvent guildScheduledEvent, @Nonnull long userId)
     {
         super(api, responseNumber, guildScheduledEvent);
-        this.user = user;
+        this.userId = userId;
     }
 
     /**
-     * The user that indicated that they are interested in the event.
+     * The id of the user that indicated that they are interested in the event.
      *
-     * @return The user
+     * @return The long user id
      */
-    @Nonnull
-    public User getUser()
+    public long getUserIdLong()
     {
-        return user;
+        return userId;
+    }
+
+    /**
+     * The id of the user that indicated that they are interested in the event.
+     *
+     * @return The string user id
+     */
+    public String getUserId()
+    {
+        return String.valueOf(userId);
     }
 }

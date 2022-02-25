@@ -496,9 +496,19 @@ public enum ActionType
     STAGE_INSTANCE_DELETE(85, TargetType.STAGE_INSTANCE),
 
     /**
-     * A user has updated a {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvent}
+     * A user created a {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvent}
+     */
+    GUILD_SCHEDULED_EVENT_CREATE(100, TargetType.GUILD_SCHEDULED_EVENT),
+
+    /**
+     * A user updated a {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvent}
      */
     GUILD_SCHEDULED_EVENT_UPDATE(101, TargetType.GUILD_SCHEDULED_EVENT),
+
+    /**
+     * A user deleted a {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvent}
+     */
+    GUILD_SCHEDULED_EVENT_DELETE(102, TargetType.GUILD_SCHEDULED_EVENT),
 
     /**
      * A user created a {@link net.dv8tion.jda.api.entities.ThreadChannel ThreadChannel}

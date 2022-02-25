@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.entities.GuildScheduledEvent;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.guild.scheduledevent.GuildScheduledEventCreateEvent;
 import net.dv8tion.jda.api.events.guild.scheduledevent.GuildScheduledEventUserAddEvent;
+import net.dv8tion.jda.api.events.guild.scheduledevent.GuildScheduledEventUserRemoveEvent;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.GuildImpl;
@@ -46,11 +47,11 @@ public class GuildScheduledEventUserAddHandler extends SocketHandler
             return null;
         }
 
-        GuildScheduledEvent event = guild.getScheduledEventById(content.getUnsignedLong("id"));
-        User user = getJDA().getEntityBuilder().createUser(content);
+        GuildScheduledEvent event = guild.getScheduledEventById(content.getUnsignedLong("guild_scheduled_event_id"));
+        long userId = content.getUnsignedLong("user_id");
         if (event != null)
         {
-            getJDA().handleEvent(new GuildScheduledEventUserAddEvent(getJDA(), responseNumber, event, user));
+            getJDA().handleEvent(new GuildScheduledEventUserAddEvent(getJDA(), responseNumber, event, userId));
         }
         return null;
     }
