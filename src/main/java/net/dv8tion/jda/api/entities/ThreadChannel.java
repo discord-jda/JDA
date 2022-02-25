@@ -61,7 +61,7 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer
 
     /**
      * Gets the current number of members that have joined this thread.
-     * <br/>
+     * <br>
      * This is capped at 50, meaning any additional members will not affect this count.
      *
      * @return The number of members that have joined this thread, capping at 50.

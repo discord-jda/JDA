@@ -64,7 +64,7 @@ public enum TimeFormat
     /**
      * {@link Pattern} used for {@link #parse(String)}.
      *
-     * <h2>Groups</h2>
+     * <h4>Groups</h4>
      * <table>
      *   <caption style="display: none">Javadoc is stupid, this is not a required tag</caption>
      *   <tr>

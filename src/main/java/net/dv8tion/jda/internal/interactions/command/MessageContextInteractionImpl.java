@@ -26,19 +26,23 @@ public class MessageContextInteractionImpl extends ContextInteractionImpl<Messag
 {
     public MessageContextInteractionImpl(JDAImpl jda, DataObject data)
     {
-        super(jda, data, resolved -> parse(jda, resolved));
-    }
-
-    private static Message parse(JDAImpl api, DataObject resolved)
-    {
-        DataObject messages = resolved.getObject("messages");
-        DataObject message = messages.getObject(messages.keys().iterator().next());
-        return api.getEntityBuilder().createMessage(message);
+        super(jda, data, resolved -> parse(jda, data, resolved));
     }
 
     @Override
     public MessageChannel getChannel()
     {
         return (MessageChannel) super.getChannel();
+    }
+
+    private static Message parse(JDAImpl api, DataObject interactionData, DataObject resolved)
+    {
+        DataObject messages = resolved.getObject("messages");
+        DataObject message = messages.getObject(messages.keys().iterator().next());
+
+        //Hopefully in the future we can ask 'message.hasKey("guild_id")' instead.
+        return interactionData.hasKey("guild_id")
+            ? api.getEntityBuilder().createMessageGuildChannel(message, false)
+            : api.getEntityBuilder().createMessagePrivateChannel(message, false);
     }
 }
