@@ -41,5 +41,6 @@ public enum TargetType
     INTEGRATION,
     STAGE_INSTANCE,
     THREAD,
+    GUILD_SCHEDULED_EVENT,
     UNKNOWN
 }

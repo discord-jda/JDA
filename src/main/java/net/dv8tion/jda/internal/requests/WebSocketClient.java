@@ -814,6 +814,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     {
         try
         {
+            System.out.println(content);
             onEvent(content);
         }
         catch (Exception ex)
