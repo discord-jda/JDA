@@ -65,13 +65,7 @@ public class GuildUpdateHandler extends SocketHandler
             guild.setMaxPresences(maxPresences);
             guild.setMaxMembers(maxMembers);
         }
-        try
-        {
-            System.out.println("1");
-            System.out.println(content.getArray("guild_scheduled_events"));
-        } catch (Exception u) {
-            u.printStackTrace();
-        }
+
         long ownerId = content.getLong("owner_id");
         int boostCount = content.getInt("premium_subscription_count", 0);
         int boostTier = content.getInt("premium_tier", 0);

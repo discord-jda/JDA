@@ -36,6 +36,7 @@ import net.dv8tion.jda.api.events.guild.override.GenericPermissionOverrideEvent;
 import net.dv8tion.jda.api.events.guild.override.PermissionOverrideCreateEvent;
 import net.dv8tion.jda.api.events.guild.override.PermissionOverrideDeleteEvent;
 import net.dv8tion.jda.api.events.guild.override.PermissionOverrideUpdateEvent;
+import net.dv8tion.jda.api.events.guild.scheduledevent.update.*;
 import net.dv8tion.jda.api.events.guild.update.*;
 import net.dv8tion.jda.api.events.guild.voice.*;
 import net.dv8tion.jda.api.events.http.HttpRequestEvent;
@@ -236,6 +237,14 @@ public abstract class ListenerAdapter implements EventListener
     public void onGuildUpdateMaxPresences(@Nonnull GuildUpdateMaxPresencesEvent event) {}
     public void onGuildUpdateNSFWLevel(@Nonnull GuildUpdateNSFWLevelEvent event) {}
 
+    //Guild Scheduled Event Events
+    public void onGuildScheduledEventUpdateDescription(@Nonnull GuildScheduledEventUpdateDescriptionEvent event) {}
+    public void onGuildScheduledEventUpdateEndTime(@Nonnull GuildScheduledEventUpdateEndTimeEvent event) {}
+    public void onGuildScheduledEventUpdateLocation(@Nonnull GuildScheduledEventUpdateLocationEvent event) {}
+    public void onGuildScheduledEventUpdateName(@Nonnull GuildScheduledEventUpdateNameEvent event) {}
+    public void onGuildScheduledEventUpdateStartTime(@Nonnull GuildScheduledEventUpdateStartTimeEvent event) {}
+    public void onGuildScheduledEventUpdateStatus(@Nonnull GuildScheduledEventUpdateStatusEvent event) {}
+
     //Guild Invite Events
     public void onGuildInviteCreate(@Nonnull GuildInviteCreateEvent event) {}
     public void onGuildInviteDelete(@Nonnull GuildInviteDeleteEvent event) {}
@@ -321,6 +330,7 @@ public abstract class ListenerAdapter implements EventListener
     public void onGenericEmote(@Nonnull GenericEmoteEvent event) {}
     public void onGenericEmoteUpdate(@Nonnull GenericEmoteUpdateEvent event) {}
     public void onGenericPermissionOverride(@Nonnull GenericPermissionOverrideEvent event) {}
+    public void onGenericGuildScheduledEventUpdate(@Nonnull GenericGuildScheduledEventUpdateEvent event) {}
 
     private static final MethodHandles.Lookup lookup = MethodHandles.lookup();
     private static final ConcurrentMap<Class<?>, MethodHandle> methods = new ConcurrentHashMap<>();
