@@ -620,6 +620,15 @@ public class JDAImpl implements JDA
         return CacheView.allSnowflakes(() -> guildCache.stream().map(Guild::getEmoteCache));
     }
 
+
+    @Nonnull
+    @Override
+    public SnowflakeCacheView<GuildScheduledEvent> getGuildScheduledEventCache()
+    {
+        return CacheView.allSnowflakes(() -> guildCache.stream().map(Guild::getScheduledEventCache));
+    }
+
+
     @Nonnull
     @Override
     public SnowflakeCacheView<Category> getCategoryCache()

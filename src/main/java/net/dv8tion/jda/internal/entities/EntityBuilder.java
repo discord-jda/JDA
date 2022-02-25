@@ -900,6 +900,60 @@ public class EntityBuilder
                 .setAvailable(json.getBoolean("available", true));
     }
 
+
+    public GuildScheduledEvent createGuildScheduledEvent(GuildImpl guild, DataObject json, long guildId)
+    {
+        final long id = json.getLong("id");
+        if (guild == null)
+            guild = (GuildImpl) getJDA().getGuildsView().get(guildId);
+        GuildScheduledEventImpl guildScheduledEvent = (GuildScheduledEventImpl) guild.getScheduledEventsView().get(id);
+        if (guildScheduledEvent == null)
+        {
+            SnowflakeCacheViewImpl<GuildScheduledEvent> guildScheduledEventView = guild.getScheduledEventsView();
+            try (UnlockHook hook = guildScheduledEventView.writeLock())
+            {
+                guildScheduledEvent = new GuildScheduledEventImpl(id, guild);
+                guildScheduledEventView.getMap().put(id, guildScheduledEvent);
+            }
+        }
+
+        guildScheduledEvent.setName(json.getString("name"))
+                .setDescription(json.getString("description", null))
+                .setStatus(GuildScheduledEvent.Status.fromKey(json.getInt("status", -1)))
+                .setInterestedUserCount(json.getInt("user_count", -1))
+                .setStartTime(json.getOffsetDateTime("scheduled_start_time"))
+                .setEndTime(json.getOffsetDateTime("scheduled_end_time", null))
+                .setImage(json.getString("image", null));
+
+
+        final long creatorId = json.getLong("creator_id", -1);
+        guildScheduledEvent.setCreatorId(creatorId);
+        if (creatorId != -1)
+        {
+            if (json.hasKey("creator"))
+                guildScheduledEvent.setCreator(createUser(json.getObject("creator")));
+            else
+                guildScheduledEvent.setCreator(getJDA().getUserById(creatorId));
+        }
+        final GuildScheduledEvent.Type type = GuildScheduledEvent.Type.fromKey(json.getInt("entity_type"));
+        switch (type)
+        {
+        case STAGE_INSTANCE:
+            StageChannel stageChannel = guild.getStageChannelById(json.getLong("channel_id"));
+            guildScheduledEvent.setStageChannel(stageChannel);
+            break;
+        case VOICE:
+            VoiceChannel voiceChannel = guild.getVoiceChannelById(json.getLong("channel_id"));
+            guildScheduledEvent.setVoiceChannel(voiceChannel);
+            break;
+        case EXTERNAL:
+            String externalLocation = json.getObject("entity_metadata").getString("location");
+            guildScheduledEvent.setExternalLocation(externalLocation);
+        }
+        return guildScheduledEvent;
+    }
+
+
     public Category createCategory(DataObject json, long guildId)
     {
         return createCategory(null, json, guildId);
