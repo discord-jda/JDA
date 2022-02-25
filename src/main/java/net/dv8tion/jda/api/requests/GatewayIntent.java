@@ -24,6 +24,7 @@ import net.dv8tion.jda.api.events.guild.GuildUnbanEvent;
 import net.dv8tion.jda.api.events.guild.invite.GenericGuildInviteEvent;
 import net.dv8tion.jda.api.events.guild.member.GenericGuildMemberEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent;
+import net.dv8tion.jda.api.events.guild.scheduledevent.update.GenericGuildScheduledEventUpdateEvent;
 import net.dv8tion.jda.api.events.guild.voice.GenericGuildVoiceEvent;
 import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 import net.dv8tion.jda.api.events.message.MessageBulkDeleteEvent;
@@ -139,6 +140,11 @@ public enum GatewayIntent
      * Typing events in private channels.
      */
     DIRECT_MESSAGE_TYPING(14),
+
+    /**
+     * Guild Scheduled Events events.
+     */
+    GUILD_SCHEDULED_EVENTS(16),
     ;
 
     /**
@@ -353,6 +359,8 @@ public enum GatewayIntent
                 intents.add(GUILD_BANS);
             else if (GenericEmoteEvent.class.isAssignableFrom(event))
                 intents.add(GUILD_EMOJIS);
+            else if (GenericGuildScheduledEventUpdateEvent.class.isAssignableFrom(event))
+                intents.add(GUILD_SCHEDULED_EVENTS);
             else if (GenericGuildInviteEvent.class.isAssignableFrom(event))
                 intents.add(GUILD_INVITES);
             else if (GenericGuildVoiceEvent.class.isAssignableFrom(event))

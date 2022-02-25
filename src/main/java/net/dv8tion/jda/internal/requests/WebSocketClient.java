@@ -879,7 +879,6 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
     protected void onDispatch(DataObject raw)
     {
-        System.out.println(raw);
         String type = raw.getString("t");
         long responseTotal = api.getResponseTotal();
 
