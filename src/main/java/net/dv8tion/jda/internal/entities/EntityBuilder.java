@@ -189,6 +189,7 @@ public class EntityBuilder
         final DataArray channelArray = guildJson.getArray("channels");
         final DataArray threadArray = guildJson.getArray("threads");
         final DataArray emotesArray = guildJson.getArray("emojis");
+        final DataArray scheduledEventsArray = guildJson.getArray("guild_scheduled_events");
         final DataArray voiceStateArray = guildJson.getArray("voice_states");
         final Optional<DataArray> featuresArray = guildJson.optArray("features");
         final Optional<DataArray> presencesArray = guildJson.optArray("presences");
@@ -298,6 +299,13 @@ public class EntityBuilder
             DataObject threadJson = threadArray.getObject(i);
             createThreadChannel(guildObj, threadJson, guildObj.getIdLong());
         }
+
+        for (int i = 0; i < scheduledEventsArray.length(); i++)
+        {
+            DataObject scheduledEventJson = scheduledEventsArray.getObject(i);
+            createGuildScheduledEvent(guildObj, scheduledEventJson, guildObj.getIdLong());
+        }
+
 
         createGuildEmotePass(guildObj, emotesArray);
         guildJson.optArray("stage_instances")
