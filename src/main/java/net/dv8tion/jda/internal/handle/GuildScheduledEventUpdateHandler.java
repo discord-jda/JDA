@@ -36,7 +36,6 @@ public class GuildScheduledEventUpdateHandler extends SocketHandler
     @Override
     protected Long handleInternally(DataObject content)
     {
-        System.out.println("HMMMM");
         long guildId = content.getUnsignedLong("guild_id", 0L);
         if (getJDA().getGuildSetupController().isLocked(guildId))
             return guildId;
@@ -69,36 +68,42 @@ public class GuildScheduledEventUpdateHandler extends SocketHandler
 
         if (!Objects.equals(name, event.getName()))
         {
+            System.out.println("name changed");
             String oldName = event.getName();
             event.setName(name);
             getJDA().handleEvent(new GuildScheduledEventUpdateNameEvent(getJDA(), responseNumber, event, oldName));
         }
         if (!Objects.equals(description, event.getDescription()))
         {
+            System.out.println("description changed");
             String oldDescription = event.getDescription();
             event.setDescription(description);
             getJDA().handleEvent(new GuildScheduledEventUpdateDescriptionEvent(getJDA(), responseNumber, event, oldDescription));
         }
         if (!Objects.equals(startTime, event.getStartTime()))
         {
+            System.out.println("start time changed");
             OffsetDateTime oldStartTime = event.getStartTime();
             event.setStartTime(startTime);
             getJDA().handleEvent(new GuildScheduledEventUpdateStartTimeEvent(getJDA(), responseNumber, event, oldStartTime));
         }
         if (!Objects.equals(endTime, event.getEndTime()))
         {
+            System.out.println("end time changed");
             OffsetDateTime oldEndTime = event.getEndTime();
             event.setEndTime(endTime);
             getJDA().handleEvent(new GuildScheduledEventUpdateEndTimeEvent(getJDA(), responseNumber, event, oldEndTime));
         }
         if (!Objects.equals(status, event.getStatus()))
         {
+            System.out.println("status changed");
             GuildScheduledEvent.Status oldStatus = event.getStatus();
             event.setStatus(status);
             getJDA().handleEvent(new GuildScheduledEventUpdateStatusEvent(getJDA(), responseNumber, event, oldStatus));
         }
         if (channel == null && !Objects.equals(location, event.getExternalLocation()))
         {
+            System.out.println("external location changed");
             GuildScheduledEventUpdateLocationEvent.Location oldLocation = new GuildScheduledEventUpdateLocationEvent.Location(event);
             event.setStageChannel(null);
             event.setVoiceChannel(null);
@@ -107,6 +112,7 @@ public class GuildScheduledEventUpdateHandler extends SocketHandler
         }
         if (channel instanceof StageChannel && !Objects.equals(channel, event.getStageChannel()))
         {
+            System.out.println("stage channel changed");
             GuildScheduledEventUpdateLocationEvent.Location oldLocation = new GuildScheduledEventUpdateLocationEvent.Location(event);
             event.setVoiceChannel(null);
             event.setExternalLocation(null);
@@ -115,6 +121,7 @@ public class GuildScheduledEventUpdateHandler extends SocketHandler
         }
         if (channel instanceof VoiceChannel && !Objects.equals(channel, event.getVoiceChannel()))
         {
+            System.out.println("voice channel changed");
             GuildScheduledEventUpdateLocationEvent.Location oldLocation = new GuildScheduledEventUpdateLocationEvent.Location(event);
             event.setStageChannel(null);
             event.setExternalLocation(null);
@@ -123,6 +130,7 @@ public class GuildScheduledEventUpdateHandler extends SocketHandler
         }
         if (!Objects.equals(imageUrl, event.getImageUrl()))
         {
+            System.out.println("image changed");
             String oldImageUrl = event.getImageUrl();
             event.setImage(imageUrl);
             getJDA().handleEvent(new GuildScheduledEventUpdateDescriptionEvent(getJDA(), responseNumber, event, oldImageUrl));
