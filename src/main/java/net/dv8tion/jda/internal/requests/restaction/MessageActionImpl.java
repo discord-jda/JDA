@@ -613,7 +613,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
     @Override
     protected void handleSuccess(Response response, Request<Message> request)
     {
-        request.onSuccess(api.getEntityBuilder().createMessage(response.getObject(), channel, false));
+        request.onSuccess(api.getEntityBuilder().createMessageWithChannel(response.getObject(), channel, false));
     }
 
     @Override
