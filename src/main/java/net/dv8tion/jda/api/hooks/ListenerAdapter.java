@@ -36,6 +36,10 @@ import net.dv8tion.jda.api.events.guild.override.GenericPermissionOverrideEvent;
 import net.dv8tion.jda.api.events.guild.override.PermissionOverrideCreateEvent;
 import net.dv8tion.jda.api.events.guild.override.PermissionOverrideDeleteEvent;
 import net.dv8tion.jda.api.events.guild.override.PermissionOverrideUpdateEvent;
+import net.dv8tion.jda.api.events.guild.scheduledevent.GuildScheduledEventCreateEvent;
+import net.dv8tion.jda.api.events.guild.scheduledevent.GuildScheduledEventDeleteEvent;
+import net.dv8tion.jda.api.events.guild.scheduledevent.GuildScheduledEventUserAddEvent;
+import net.dv8tion.jda.api.events.guild.scheduledevent.GuildScheduledEventUserRemoveEvent;
 import net.dv8tion.jda.api.events.guild.scheduledevent.update.*;
 import net.dv8tion.jda.api.events.guild.update.*;
 import net.dv8tion.jda.api.events.guild.voice.*;
@@ -244,6 +248,11 @@ public abstract class ListenerAdapter implements EventListener
     public void onGuildScheduledEventUpdateName(@Nonnull GuildScheduledEventUpdateNameEvent event) {}
     public void onGuildScheduledEventUpdateStartTime(@Nonnull GuildScheduledEventUpdateStartTimeEvent event) {}
     public void onGuildScheduledEventUpdateStatus(@Nonnull GuildScheduledEventUpdateStatusEvent event) {}
+
+    public void onGuildScheduledEventCreate(@Nonnull GuildScheduledEventCreateEvent event) {}
+    public void onGuildScheduledEventDelete(@Nonnull GuildScheduledEventDeleteEvent event) {}
+    public void onGuildScheduledEventUserAdd(@Nonnull GuildScheduledEventUserAddEvent event) {}
+    public void onGuildScheduledEventUserRemove(@Nonnull GuildScheduledEventUserRemoveEvent event) {}
 
     //Guild Invite Events
     public void onGuildInviteCreate(@Nonnull GuildInviteCreateEvent event) {}
