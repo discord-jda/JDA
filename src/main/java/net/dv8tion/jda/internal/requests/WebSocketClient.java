@@ -814,7 +814,6 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     {
         try
         {
-            System.out.println(content);
             onEvent(content);
         }
         catch (Exception ex)
@@ -976,6 +975,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     @Override
     public void onTextMessage(WebSocket websocket, byte[] data)
     {
+        System.out.println(data);
         handleEvent(DataObject.fromJson(data));
     }
 
