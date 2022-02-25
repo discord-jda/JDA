@@ -100,18 +100,24 @@ public class GuildScheduledEventUpdateHandler extends SocketHandler
         if (channel == null && !Objects.equals(location, event.getExternalLocation()))
         {
             GuildScheduledEventUpdateLocationEvent.Location oldLocation = new GuildScheduledEventUpdateLocationEvent.Location(event);
+            event.setStageChannel(null);
+            event.setVoiceChannel(null);
             event.setExternalLocation(location);
             getJDA().handleEvent(new GuildScheduledEventUpdateLocationEvent(getJDA(), responseNumber, event, oldLocation));
         }
         if (channel instanceof StageChannel && !Objects.equals(channel, event.getStageChannel()))
         {
             GuildScheduledEventUpdateLocationEvent.Location oldLocation = new GuildScheduledEventUpdateLocationEvent.Location(event);
+            event.setVoiceChannel(null);
+            event.setExternalLocation(null);
             event.setStageChannel((StageChannel) channel);
             getJDA().handleEvent(new GuildScheduledEventUpdateLocationEvent(getJDA(), responseNumber, event, oldLocation));
         }
         if (channel instanceof VoiceChannel && !Objects.equals(channel, event.getVoiceChannel()))
         {
             GuildScheduledEventUpdateLocationEvent.Location oldLocation = new GuildScheduledEventUpdateLocationEvent.Location(event);
+            event.setStageChannel(null);
+            event.setExternalLocation(null);
             event.setVoiceChannel((VoiceChannel) channel);
             getJDA().handleEvent(new GuildScheduledEventUpdateLocationEvent(getJDA(), responseNumber, event, oldLocation));
         }
