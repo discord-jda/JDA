@@ -879,6 +879,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
     protected void onDispatch(DataObject raw)
     {
+        System.out.println(raw);
         String type = raw.getString("t");
         long responseTotal = api.getResponseTotal();
 
@@ -975,7 +976,6 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     @Override
     public void onTextMessage(WebSocket websocket, byte[] data)
     {
-        System.out.println(data);
         handleEvent(DataObject.fromJson(data));
     }
 
