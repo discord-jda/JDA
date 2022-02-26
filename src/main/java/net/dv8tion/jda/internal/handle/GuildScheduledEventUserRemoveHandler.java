@@ -48,11 +48,10 @@ public class GuildScheduledEventUserRemoveHandler extends SocketHandler
 
         GuildScheduledEvent event = guild.getScheduledEventById(content.getUnsignedLong("guild_scheduled_event_id"));
         long userId = content.getUnsignedLong("user_id");
-        if (event != null)
-        {
-            getJDA().handleEvent(new GuildScheduledEventUserRemoveEvent(getJDA(), responseNumber, event, userId));
-        }
+        if (event == null)
+            event = api.getEntityBuilder().createGuildScheduledEvent(guild, content, guildId);
 
+        getJDA().handleEvent(new GuildScheduledEventUserRemoveEvent(getJDA(), responseNumber, event, userId));
         return null;
     }
 }

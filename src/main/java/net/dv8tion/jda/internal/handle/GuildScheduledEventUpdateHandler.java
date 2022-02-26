@@ -51,7 +51,7 @@ public class GuildScheduledEventUpdateHandler extends SocketHandler
 
         GuildScheduledEventImpl event = (GuildScheduledEventImpl) guild.getScheduledEventById(content.getUnsignedLong("id"));
         if (event == null)
-            return null;
+            event = (GuildScheduledEventImpl) api.getEntityBuilder().createGuildScheduledEvent(guild, content, guildId);
 
         final String name = content.getString("name");
         final String description = content.getString("description", null);
