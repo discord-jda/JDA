@@ -52,6 +52,7 @@ public class GuildScheduledEventUserAddHandler extends SocketHandler
         if (event == null)
             event = api.getEntityBuilder().createGuildScheduledEvent(guild, content, guildId);
 
+        System.out.println(event.getName());
         getJDA().handleEvent(new GuildScheduledEventUserAddEvent(getJDA(), responseNumber, event, userId));
         return null;
     }
