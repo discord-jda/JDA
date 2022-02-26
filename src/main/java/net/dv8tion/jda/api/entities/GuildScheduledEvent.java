@@ -123,7 +123,6 @@ public interface GuildScheduledEvent extends ISnowflake, Comparable<GuildSchedul
      * @see    #getCreatorId()
      * @see    #getCreator()
      */
-
     @Nonnull
     Status getStatus();
 

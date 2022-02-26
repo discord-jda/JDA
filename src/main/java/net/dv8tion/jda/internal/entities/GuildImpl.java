@@ -475,7 +475,6 @@ public class GuildImpl implements Guild
         return rulesChannel;
     }
 
-
     @Nonnull
     @Override
     public @NotNull RestAction<GuildScheduledEvent> retrieveScheduledEventById(String id)

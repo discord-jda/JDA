@@ -1303,8 +1303,6 @@ public interface JDA extends IGuildChannelContainer
     {
         return getRoleCache().getElementsByName(name, ignoreCase);
     }
-
-
     /**
      * {@link net.dv8tion.jda.api.utils.cache.SnowflakeCacheView SnowflakeCacheView} of
      * all cached {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvents} visible to this JDA session.
@@ -1313,6 +1311,7 @@ public interface JDA extends IGuildChannelContainer
      */
     @Nonnull
     SnowflakeCacheView<GuildScheduledEvent> getGuildScheduledEventCache();
+    
     /**
      * An unmodifiable list of all {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvents} of all connected
      * {@link net.dv8tion.jda.api.entities.Guild Guilds}.
@@ -1329,6 +1328,7 @@ public interface JDA extends IGuildChannelContainer
     {
         return getGuildScheduledEventCache().asList();
     }
+    
     /**
      * This returns the {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvent} which has the same id as the one provided.
      * <br>If there is no known {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvent} with an id that matches the provided
@@ -1346,6 +1346,7 @@ public interface JDA extends IGuildChannelContainer
     {
         return getGuildScheduledEventCache().getElementById(id);
     }
+    
     /**
      * This returns the {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvent} which has the same id as the one provided.
      * <br>If there is no known {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvent} with an id that matches the provided
@@ -1361,6 +1362,7 @@ public interface JDA extends IGuildChannelContainer
     {
         return getGuildScheduledEventCache().getElementById(id);
     }
+    
     /**
      * An unmodifiable list of all {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvents} that have the same name as the one provided.
      * <br>If there are no {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvents} with the provided name, then this returns an empty list.

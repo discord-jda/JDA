@@ -306,7 +306,6 @@ public class EntityBuilder
             createGuildScheduledEvent(guildObj, scheduledEventJson, guildObj.getIdLong());
         }
 
-
         createGuildEmotePass(guildObj, emotesArray);
         guildJson.optArray("stage_instances")
                 .map(arr -> arr.stream(DataArray::getObject))
@@ -908,7 +907,6 @@ public class EntityBuilder
                 .setAvailable(json.getBoolean("available", true));
     }
 
-
     public GuildScheduledEvent createGuildScheduledEvent(GuildImpl guild, DataObject json, long guildId)
     {
         final long id = json.getLong("id");
@@ -932,7 +930,6 @@ public class EntityBuilder
                 .setStartTime(json.getOffsetDateTime("scheduled_start_time"))
                 .setEndTime(json.getOffsetDateTime("scheduled_end_time", null))
                 .setImage(json.getString("image", null));
-
 
         final long creatorId = json.getLong("creator_id", -1);
         guildScheduledEvent.setCreatorId(creatorId);

@@ -1377,7 +1377,8 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      */
     @Nonnull
     SortedSnowflakeCacheView<GuildScheduledEvent> getScheduledEventCache();
-    /**s
+    
+    /**
      * Gets a list of all {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvents} in this Guild that have the same
      * name as the one provided.
      * <br>If there are no {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvents} with the provided name,
@@ -1395,6 +1396,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     {
         return getScheduledEventCache().getElementsByName(name, ignoreCase);
     }
+    
     /**
      * Gets a {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvent} from this guild that has the same id as the
      * one provided. This method is similar to {@link net.dv8tion.jda.api.JDA#getGuildScheduledEventById(String)}, but it only
@@ -1415,6 +1417,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     {
         return getScheduledEventCache().getElementById(id);
     }
+    
     /**
      * Gets a {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvent} from this guild that has the same id as the
      * one provided. This method is similar to {@link net.dv8tion.jda.api.JDA#getGuildScheduledEventById(long)}, but it only
@@ -1433,6 +1436,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     {
         return getScheduledEventCache().getElementById(id);
     }
+    
     /**
      * Gets all {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvents} in this {@link net.dv8tion.jda.api.entities.Guild Guild}.
      * <br>The scheduled events returned will be sorted by their start times, with events starting earlier appearing first in the list. If two events are
@@ -3192,7 +3196,6 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     @CheckReturnValue
     RestAction<List<ThreadChannel>> retrieveActiveThreads();
 
-
     /**
      * Retrieves a {@link GuildScheduledEvent} by its ID.
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
@@ -3259,7 +3262,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvent}
      *
-     * @see #getScheduledEventById(long)
+     * @see    #getScheduledEventById(long)
      */
 
     /* From GuildController */
@@ -5474,7 +5477,6 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     @Nonnull
     @CheckReturnValue
     AuditableRestAction<Emote> createEmote(@Nonnull String name, @Nonnull Icon icon, @Nonnull Role... roles);
-
 
     /**
      * Creates a new {@link GuildScheduledEvent}.
