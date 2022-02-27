@@ -49,7 +49,6 @@ public class GuildScheduledEventMembersPaginationActionImpl extends PaginationAc
         return guild;
     }
 
-
     @Override
     protected void handleSuccess(Response response, Request<List<Member>> request)
     {

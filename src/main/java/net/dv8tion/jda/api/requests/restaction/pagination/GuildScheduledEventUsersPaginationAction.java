@@ -32,18 +32,13 @@ import javax.annotation.Nonnull;
  *
  * <h2>Example</h2>
  * <pre>{@code
- * // Clean up all private threads older than 2 weeks
- * public static void cleanupPrivateThreads(TextChannel channel) {
- *     // get 2-week offset
- *     long 2WeekAgoTimestamp = System.currentTimeMillis() - (14 * 24 * 60 * 60 * 1000);
+ * // Get every user interested in this event and DM them a notification
+ * public static void getInterestedUsers(GuildScheduledEvent event) {
  *     // get paginator
- *     ThreadChannelPaginationAction threads = channel.retrieveArchivedPrivateThreadChannels();
- *     // remove each thread older than 2 weeks
- *     threads.forEachAsync((thread) ->
- *         long threadArchiveTimestamp = thread.getTimeArchiveInfoLastModified().toInstant().toEpochMilli();
- *         if (threadArchiveTimestamp < 2WeeksAgoTimestamp) {
- *            thread.delete().reason("Cleaning up old private threads").queue();
- *         }
+ *     GuildScheduledEventUsersPagination users = event.retrieveGuildScheduledEventUsers();
+ *     // DM every user
+ *     users.forEachAsync((user) ->
+ *         user.openPrivateChannel().queue(privateChannel -> privateChannel.sendMessage("Event starts in 30 minutes!").queue());
  *     );
  * }
  * }</pre>
