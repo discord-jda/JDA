@@ -58,12 +58,6 @@ public class MessageDeleteHandler extends SocketHandler
             return null;
         }
 
-        // Reset the latest message id as it was deleted.
-        if (channel.hasLatestMessage() & messageId == channel.getLatestMessageIdLong())
-        {
-            ((MessageChannelMixin<?>) channel).setLatestMessageIdLong(0);
-        }
-
         if (channel.getType().isThread())
         {
             ThreadChannelImpl gThread = (ThreadChannelImpl) channel;

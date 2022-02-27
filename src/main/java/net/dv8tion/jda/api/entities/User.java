@@ -36,7 +36,7 @@ import java.util.regex.Pattern;
  * Represents a Discord User.
  * Contains all publicly available information about a specific Discord User.
  *
- * <h1>Formattable</h1>
+ * <h2>Formattable</h2>
  * This interface extends {@link java.util.Formattable Formattable} and can be used with a {@link java.util.Formatter Formatter}
  * such as used by {@link String#format(String, Object...) String.format(String, Object...)}
  * or {@link java.io.PrintStream#printf(String, Object...) PrintStream.printf(String, Object...)}.
@@ -311,7 +311,7 @@ public interface User extends IMentionable
      * <br>If a channel has already been opened with this user, it is immediately returned in the RestAction's
      * success consumer without contacting the Discord API.
      *
-     * <h2>Examples</h2>
+     * <h4>Examples</h4>
      * <pre>{@code
      * // Send message without response handling
      * public void sendMessage(User user, String content) {

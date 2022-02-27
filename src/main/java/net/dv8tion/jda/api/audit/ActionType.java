@@ -28,7 +28,7 @@ public enum ActionType
     /**
      * An Administrator updated {@link net.dv8tion.jda.api.entities.Guild Guild} information.
      *
-     * <h2>Possible Keys</h2>
+     * <h4>Possible Keys</h4>
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#GUILD_AFK_CHANNEL GUILD_AFK_CHANNEL}</li>
      *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#GUILD_AFK_TIMEOUT GUILD_AFK_TIMEOUT}</li>
@@ -51,7 +51,7 @@ public enum ActionType
     /**
      * An Administrator created a {@link GuildChannel GuildChannel}
      *
-     * <h2>Possible Keys</h2>
+     * <h4>Possible Keys</h4>
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#CHANNEL_BITRATE CHANNEL_BITRATE} (VoiceChannel only)</li>
      *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#CHANNEL_USER_LIMIT CHANNEL_USER_LIMIT} (VoiceChannel only)</li>
@@ -69,7 +69,7 @@ public enum ActionType
     /**
      * An Administrator updated {@link GuildChannel GuildChannel} information.
      *
-     * <h2>Possible Keys</h2>
+     * <h4>Possible Keys</h4>
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#CHANNEL_BITRATE CHANNEL_BITRATE} (VoiceChannel only)</li>
      *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#CHANNEL_USER_LIMIT CHANNEL_USER_LIMIT} (VoiceChannel only)</li>
@@ -85,7 +85,7 @@ public enum ActionType
     /**
      * An Administrator deleted a {@link GuildChannel GuildChannel}.
      *
-     * <h2>Possible Keys</h2>
+     * <h4>Possible Keys</h4>
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#CHANNEL_BITRATE CHANNEL_BITRATE} (VoiceChannel only)</li>
      *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#CHANNEL_USER_LIMIT CHANNEL_USER_LIMIT} (VoiceChannel only)</li>
@@ -103,7 +103,7 @@ public enum ActionType
     /**
      * An Administrator created a {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverride}.
      *
-     * <h2>Possible Keys</h2>
+     * <h4>Possible Keys</h4>
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#OVERRIDE_ALLOW OVERRIDE_ALLOW}</li>
      *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#OVERRIDE_DENY OVERRIDE_DENY}</li>
@@ -111,7 +111,7 @@ public enum ActionType
      *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#ID ID}</li>
      * </ul>
      *
-     * <h2>Possible Options</h2>
+     * <h4>Possible Options</h4>
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.audit.AuditLogOption#ROLE ROLE}</li>
      *     <li>{@link net.dv8tion.jda.api.audit.AuditLogOption#USER USER}</li>
@@ -122,7 +122,7 @@ public enum ActionType
     /**
      * An Administrator updated {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverride} information.
      *
-     * <h2>Possible Keys</h2>
+     * <h4>Possible Keys</h4>
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#OVERRIDE_ALLOW OVERRIDE_ALLOW}</li>
      *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#OVERRIDE_DENY OVERRIDE_DENY}</li>
@@ -133,7 +133,7 @@ public enum ActionType
     /**
      * An Administrator deleted a {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverride}.
      *
-     * <h2>Possible Keys</h2>
+     * <h4>Possible Keys</h4>
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#OVERRIDE_ALLOW OVERRIDE_ALLOW}</li>
      *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#OVERRIDE_DENY OVERRIDE_DENY}</li>
@@ -141,7 +141,7 @@ public enum ActionType
      *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#ID ID}</li>
      * </ul>
      *
-     * <h2>Possible Options</h2>
+     * <h4>Possible Options</h4>
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.audit.AuditLogOption#ROLE ROLE}</li>
      *     <li>{@link net.dv8tion.jda.api.audit.AuditLogOption#USER USER}</li>
@@ -158,7 +158,7 @@ public enum ActionType
     /**
      * An Administrator has pruned members for inactivity.
      *
-     * <h2>Possible Options</h2>
+     * <h4>Possible Options</h4>
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.audit.AuditLogOption#DELETE_MEMBER_DAYS DELETE_MEMBER_DAYS}</li>
      *     <li>{@link net.dv8tion.jda.api.audit.AuditLogOption#MEMBERS_REMOVED MEMBERS_REMOVED}</li>
@@ -181,7 +181,7 @@ public enum ActionType
      * A {@link net.dv8tion.jda.api.entities.Member Member} was either updated by an administrator or
      * the member updated itself.
      *
-     * <h2>Possible Keys</h2>
+     * <h4>Possible Keys</h4>
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#MEMBER_NICK MEMBER_NICK}</li>
      * </ul>
@@ -191,7 +191,7 @@ public enum ActionType
     /**
      * An Administrator updated the roles of a member.
      *
-     * <h2>Possible Keys</h2>
+     * <h4>Possible Keys</h4>
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#MEMBER_ROLES_ADD MEMBER_ROLES_ADD}</li>
      *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#MEMBER_ROLES_REMOVE MEMBER_ROLES_REMOVE}</li>
@@ -202,7 +202,7 @@ public enum ActionType
     /**
      * One or more members were moved from one voice channel to another by an Administrator
      *
-     * <h2>Possible Options</h2>
+     * <h4>Possible Options</h4>
      * <ul>
      *     <li>{@link AuditLogOption#COUNT} The amount of users moved</li>
      *     <li>{@link AuditLogOption#CHANNEL} The target channel</li>
@@ -213,7 +213,7 @@ public enum ActionType
     /**
      * One or more members were disconnected from a voice channel by an Administrator
      *
-     * <h2>Possible Options</h2>
+     * <h4>Possible Options</h4>
      * <ul>
      *     <li>{@link AuditLogOption#COUNT} The amount of users who were disconnected</li>
      * </ul>
@@ -229,7 +229,7 @@ public enum ActionType
     /**
      * An Administrator has created a {@link net.dv8tion.jda.api.entities.Role Role}.
      *
-     * <h2>Possible Keys</h2>
+     * <h4>Possible Keys</h4>
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#ROLE_COLOR ROLE_COLOR}</li>
      *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#ROLE_HOISTED ROLE_HOISTED}</li>
@@ -244,7 +244,7 @@ public enum ActionType
     /**
      * An Administrator has updated a {@link net.dv8tion.jda.api.entities.Role Role}.
      *
-     * <h2>Possible Keys</h2>
+     * <h4>Possible Keys</h4>
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#ROLE_COLOR ROLE_COLOR}</li>
      *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#ROLE_HOISTED ROLE_HOISTED}</li>
@@ -258,7 +258,7 @@ public enum ActionType
     /**
      * An Administrator has deleted a {@link net.dv8tion.jda.api.entities.Role Role}.
      *
-     * <h2>Possible Keys</h2>
+     * <h4>Possible Keys</h4>
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#ROLE_COLOR ROLE_COLOR}</li>
      *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#ROLE_HOISTED ROLE_HOISTED}</li>
@@ -274,7 +274,7 @@ public enum ActionType
     /**
      * Someone has created an {@link net.dv8tion.jda.api.entities.Invite Invite}.
      *
-     * <h2>Possible Keys</h2>
+     * <h4>Possible Keys</h4>
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#INVITE_CHANNEL INVITE_CHANNEL}</li>
      *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#INVITE_CODE INVITE_CODE}</li>
@@ -294,7 +294,7 @@ public enum ActionType
     /**
      * An Administrator has deleted an {@link net.dv8tion.jda.api.entities.Invite Invite}.
      *
-     * <h2>Possible Keys</h2>
+     * <h4>Possible Keys</h4>
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#INVITE_CHANNEL INVITE_CHANNEL}</li>
      *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#INVITE_CODE INVITE_CODE}</li>
@@ -310,7 +310,7 @@ public enum ActionType
     /**
      * An Administrator has created a {@link net.dv8tion.jda.api.entities.Webhook Webhook}.
      *
-     * <h2>Possible Keys</h2>
+     * <h4>Possible Keys</h4>
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#WEBHOOK_CHANNEL WEBHOOK_CHANNEL}</li>
      *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#WEBHOOK_ICON WEBHOOK_ICON}</li>
@@ -323,7 +323,7 @@ public enum ActionType
     /**
      * An Administrator has updated a {@link net.dv8tion.jda.api.entities.Webhook Webhook}.
      *
-     * <h2>Possible Keys</h2>
+     * <h4>Possible Keys</h4>
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#WEBHOOK_CHANNEL WEBHOOK_CHANNEL}</li>
      *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#WEBHOOK_ICON WEBHOOK_ICON}</li>
@@ -336,7 +336,7 @@ public enum ActionType
     /**
      * An Administrator has deleted a {@link net.dv8tion.jda.api.entities.Webhook Webhook}.
      *
-     * <h2>Possible Keys</h2>
+     * <h4>Possible Keys</h4>
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#WEBHOOK_CHANNEL WEBHOOK_CHANNEL}</li>
      *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#WEBHOOK_ICON WEBHOOK_ICON}</li>
@@ -350,7 +350,7 @@ public enum ActionType
     /**
      * An Administrator created an {@link net.dv8tion.jda.api.entities.Emote Emote}.
      *
-     * <h2>Possible Keys</h2>
+     * <h4>Possible Keys</h4>
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#EMOTE_NAME EMOTE_NAME}</li>
      * </ul>
@@ -360,7 +360,7 @@ public enum ActionType
     /**
      * An Administrator updated an {@link net.dv8tion.jda.api.entities.Emote Emote}.
      *
-     * <h2>Possible Keys</h2>
+     * <h4>Possible Keys</h4>
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#EMOTE_NAME EMOTE_NAME}</li>
      *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#EMOTE_ROLES_ADD EMOTE_ROLES_ADD}</li>
@@ -372,7 +372,7 @@ public enum ActionType
     /**
      * An Administrator deleted an {@link net.dv8tion.jda.api.entities.Emote Emote}.
      *
-     * <h2>Possible Keys</h2>
+     * <h4>Possible Keys</h4>
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#EMOTE_NAME EMOTE_NAME}</li>
      * </ul>
@@ -393,7 +393,7 @@ public enum ActionType
     /**
      * An Administrator has deleted one or more {@link net.dv8tion.jda.api.entities.Message Messages}.
      *
-     * <h2>Possible Options</h2>
+     * <h4>Possible Options</h4>
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.audit.AuditLogOption#COUNT COUNT}</li>
      * </ul>
@@ -403,7 +403,7 @@ public enum ActionType
     /**
      * An Administrator has performed a bulk delete of messages in a channel
      *
-     * <h2>Possible Options</h2>
+     * <h4>Possible Options</h4>
      * <ul>
      *     <li>{@link AuditLogOption#COUNT}</li>
      * </ul>
@@ -413,7 +413,7 @@ public enum ActionType
     /**
      * An Administrator has pinned a message in the channel
      *
-     * <h2>Possible Options</h2>
+     * <h4>Possible Options</h4>
      * <ul>
      *     <li>{@link AuditLogOption#CHANNEL}</li>
      *     <li>{@link AuditLogOption#MESSAGE}</li>
@@ -424,7 +424,7 @@ public enum ActionType
     /**
      * An Administrator has unpinned a message in the channel
      *
-     * <h2>Possible Options</h2>
+     * <h4>Possible Options</h4>
      * <ul>
      *     <li>{@link AuditLogOption#CHANNEL}</li>
      *     <li>{@link AuditLogOption#MESSAGE}</li>
@@ -450,12 +450,12 @@ public enum ActionType
     /**
      * A {@link net.dv8tion.jda.api.entities.StageInstance StageInstance} was started by a {@link net.dv8tion.jda.api.entities.StageChannel#isModerator(Member) Stage Moderator}.
      *
-     * <h2>Possible Options</h2>
+     * <h4>Possible Options</h4>
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.audit.AuditLogOption#CHANNEL CHANNEL}</li>
      * </ul>
      *
-     * <h2>Possible Keys</h2>
+     * <h4>Possible Keys</h4>
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#CHANNEL_TOPIC CHANNEL_TOPIC}</li>
      *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#PRIVACY_LEVEL STAGE_INSTANCE_PRIVACY_LEVEL}</li>
@@ -466,12 +466,12 @@ public enum ActionType
     /**
      * A {@link net.dv8tion.jda.api.entities.StageInstance StageInstance} was updated by a {@link net.dv8tion.jda.api.entities.StageChannel#isModerator(Member) Stage Moderator}.
      *
-     * <h2>Possible Options</h2>
+     * <h4>Possible Options</h4>
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.audit.AuditLogOption#CHANNEL CHANNEL}</li>
      * </ul>
      *
-     * <h2>Possible Keys</h2>
+     * <h4>Possible Keys</h4>
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#CHANNEL_TOPIC CHANNEL_TOPIC}</li>
      *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#PRIVACY_LEVEL STAGE_INSTANCE_PRIVACY_LEVEL}</li>
@@ -482,12 +482,12 @@ public enum ActionType
     /**
      * A {@link net.dv8tion.jda.api.entities.StageInstance StageInstance} was deleted by a {@link net.dv8tion.jda.api.entities.StageChannel#isModerator(Member) Stage Moderator}.
      *
-     * <h2>Possible Options</h2>
+     * <h4>Possible Options</h4>
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.audit.AuditLogOption#CHANNEL CHANNEL}</li>
      * </ul>
      *
-     * <h2>Possible Keys</h2>
+     * <h4>Possible Keys</h4>
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#CHANNEL_TOPIC CHANNEL_TOPIC}</li>
      *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#PRIVACY_LEVEL STAGE_INSTANCE_PRIVACY_LEVEL}</li>
@@ -498,7 +498,7 @@ public enum ActionType
     /**
      * A user created a {@link net.dv8tion.jda.api.entities.ThreadChannel ThreadChannel}
      *
-     * <h2>Possible Keys</h2>
+     * <h4>Possible Keys</h4>
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#THREAD_NAME THREAD_NAME}</li>
      *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#THREAD_SLOWMODE THREAD_SLOWMODE}</li>
@@ -514,7 +514,7 @@ public enum ActionType
     /**
      * A user updated a {@link net.dv8tion.jda.api.entities.ThreadChannel ThreadChannel}
      *
-     * <h2>Possible Keys</h2>
+     * <h4>Possible Keys</h4>
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#THREAD_NAME THREAD_NAME}</li>
      *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#THREAD_SLOWMODE THREAD_SLOWMODE}</li>

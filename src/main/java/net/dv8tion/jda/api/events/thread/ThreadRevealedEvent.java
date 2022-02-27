@@ -24,7 +24,7 @@ import javax.annotation.Nonnull;
 /**
  * This event is dispatched when a {@link ThreadChannel} that JDA didn't previously have access to (due to permissions) is now visible.
  *
- * For example, if the bot is given the {@link net.dv8tion.jda.api.Permission.ADMINISTRATOR} permission, any thread channels that the bot could not previously see would be "revealed".
+ * For example, if the bot is given the {@link net.dv8tion.jda.api.Permission#ADMINISTRATOR} permission, any thread channels that the bot could not previously see would be "revealed".
  *
  * @see ThreadHiddenEvent
  */

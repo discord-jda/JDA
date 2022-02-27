@@ -40,11 +40,13 @@ plugins {
 }
 
 val javaVersion = JavaVersion.current()
-val versionObj = Version(major = "5", minor = "0", revision = "0", classifier = "alpha.5")
+val versionObj = Version(major = "5", minor = "0", revision = "0", classifier = "alpha.9")
 val isCI = System.getProperty("BUILD_NUMBER") != null // jenkins
         || System.getenv("BUILD_NUMBER") != null
         || System.getProperty("GIT_COMMIT") != null // jitpack
         || System.getenv("GIT_COMMIT") != null
+        || System.getProperty("GITHUB_ACTIONS") != null // Github Actions
+        || System.getenv("GITHUB_ACTIONS") != null
 
 // Check the commit hash and version information
 val commitHash: String by lazy {
@@ -251,7 +253,7 @@ jar.apply {
 }
 
 javadoc.apply {
-    isFailOnError = false
+    isFailOnError = isCI
     options.memberLevel = JavadocMemberLevel.PUBLIC
     options.encoding = "UTF-8"
 
@@ -261,7 +263,7 @@ javadoc.apply {
         opt.links(
                 "https://docs.oracle.com/javase/8/docs/api/",
                 "https://takahikokawasaki.github.io/nv-websocket-client/",
-                "https://square.github.io/okhttp/3.x/okhttp/")
+                "https://javadoc.io/doc/com.squareup.okhttp3/okhttp/3.13.0/")
         if (JavaVersion.VERSION_1_8 < javaVersion) {
             opt.addBooleanOption("html5", true) // Adds search bar
             opt.addStringOption("-release", "8")
@@ -269,6 +271,14 @@ javadoc.apply {
         // Fix for https://stackoverflow.com/questions/52326318/maven-javadoc-search-redirects-to-undefined-url
         if (javaVersion in JavaVersion.VERSION_11..JavaVersion.VERSION_12) {
             opt.addBooleanOption("-no-module-directories", true)
+        }
+        // Java 13 changed accessibility rules.
+        // On versions less than Java 13, we simply ignore the errors.
+        // Both of these remove "no comment" warnings.
+        if (javaVersion >= JavaVersion.VERSION_13) {
+            opt.addBooleanOption("Xdoclint:all,-missing", true)
+        } else {
+            opt.addBooleanOption("Xdoclint:all,-missing,-accessibility", true)
         }
     }
 
