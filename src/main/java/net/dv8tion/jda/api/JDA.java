@@ -1321,7 +1321,7 @@ public interface JDA extends IGuildChannelContainer
      * a local variable or use {@link #getGuildScheduledEventCache()} and use its more efficient
      * versions of handling these values.
      *
-     * @return Possible-empty list of all known {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvents}.
+     * @return Possibly-empty list of all known {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvents}.
      */
     @Nonnull
     default List<GuildScheduledEvent> getGuildScheduledEvents()

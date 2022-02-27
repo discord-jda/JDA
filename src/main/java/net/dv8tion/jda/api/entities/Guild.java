@@ -1401,16 +1401,16 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * Gets a {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvent} from this guild that has the same id as the
      * one provided. This method is similar to {@link net.dv8tion.jda.api.JDA#getGuildScheduledEventById(String)}, but it only
      * checks this specific Guild for a scheduled event.
-     * <br>If there is no {@link net.dv8tion.jda.api.entities.StageChannel StageChannel} with an id that matches the provided
+     * <br>If there is no {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvents} with an id that matches the provided
      * one, then this returns {@code null}.
      *
      * @param  id
-     *         The id of the {@link net.dv8tion.jda.api.entities.StageChannel StageChannel}.
+     *         The id of the {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvents}.
      *
      * @throws java.lang.NumberFormatException
      *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
      *
-     * @return Possibly-null {@link net.dv8tion.jda.api.entities.StageChannel StageChannel} with matching id.
+     * @return Possibly-null {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvents} with matching id.
      */
     @Nullable
     default GuildScheduledEvent getScheduledEventById(@Nonnull String id)
@@ -3210,7 +3210,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvent}
      *
-     * @see #getScheduledEventById(long)
+     * @see    #getScheduledEventById(long)
      */
     @Nonnull
     @CheckReturnValue
@@ -3236,7 +3236,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvent}
      *
-     * @see #getScheduledEventById(long)
+     * @see    #getScheduledEventById(long)
      */
     @Nonnull
     @CheckReturnValue
