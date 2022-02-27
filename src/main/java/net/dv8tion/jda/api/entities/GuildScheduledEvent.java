@@ -255,7 +255,7 @@ public interface GuildScheduledEvent extends ISnowflake, Comparable<GuildSchedul
      */
     @Nonnull
     @CheckReturnValue
-    GuildScheduledEventUsersPaginationAction retrieveGuildScheduledEventUsers();
+    GuildScheduledEventUsersPaginationAction retrieveInterestedUsers();
 
     /**
      * A {@link PaginationAction PaginationAction} implementation
@@ -283,7 +283,7 @@ public interface GuildScheduledEvent extends ISnowflake, Comparable<GuildSchedul
      */
     @Nonnull
     @CheckReturnValue
-    GuildScheduledEventMembersPaginationAction retrieveGuildScheduledEventMembers();
+    GuildScheduledEventMembersPaginationAction retrieveInterestedMembers();
 
     /**
      * The amount of users who are interested in attending the event.

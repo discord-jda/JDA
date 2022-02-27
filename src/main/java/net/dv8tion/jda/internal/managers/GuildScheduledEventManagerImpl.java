@@ -190,23 +190,24 @@ public class GuildScheduledEventManagerImpl extends ManagerBase<GuildScheduledEv
         if (shouldUpdate(LOCATION))
         {
             Checks.check(getGuildScheduledEvent().getStatus() == GuildScheduledEvent.Status.SCHEDULED, "Cannot update location of non-scheduled event.");
-            Checks.check(this.entityType != 3 || (location != null && location.length() != 0), "Missing required parameter: Location");
-            Checks.check(this.entityType != 3 || endTime != null || getGuildScheduledEvent().getEndTime() != null, "Missing required parameter: End Time");
+            Checks.check(entityType != 3 || (location != null && location.length() != 0), "Missing required parameter: Location");
+            Checks.check(entityType != 3 || endTime != null || getGuildScheduledEvent().getEndTime() != null, "Missing required parameter: End Time");
         }
 
         if (shouldUpdate(START_TIME))
         {
+            Checks.check(startTime.isAfter(OffsetDateTime.now()), "Cannot schedule event in the past!");
             Checks.check(getGuildScheduledEvent().getStatus() == GuildScheduledEvent.Status.SCHEDULED, "Cannot update start time of non-scheduled event!");
-            Checks.check((this.endTime == null && getGuildScheduledEvent().getEndTime() == null) || (this.endTime == null ? getGuildScheduledEvent().getEndTime() : this.endTime).isAfter(startTime), "Cannot schedule event to end before starting!");
+            Checks.check((endTime == null && getGuildScheduledEvent().getEndTime() == null) || (endTime == null ? getGuildScheduledEvent().getEndTime() : endTime).isAfter(startTime), "Cannot schedule event to end before starting!");
         }
 
         if (shouldUpdate(END_TIME))
-            Checks.check((this.startTime == null ? getGuildScheduledEvent().getStartTime() : this.startTime).isBefore(endTime), "Cannot schedule event to end before starting!");
+            Checks.check((startTime == null ? getGuildScheduledEvent().getStartTime() : startTime).isBefore(endTime), "Cannot schedule event to end before starting!");
 
         if (shouldUpdate(STATUS))
         {
-            Checks.check(this.status != GuildScheduledEvent.Status.UNKNOWN, "Cannot set the event status to an unknown status!");
-            Checks.check(this.status != GuildScheduledEvent.Status.SCHEDULED && getGuildScheduledEvent().getStatus() != GuildScheduledEvent.Status.ACTIVE, "Cannot perform status update!");
+            Checks.check(status != GuildScheduledEvent.Status.UNKNOWN, "Cannot set the event status to an unknown status!");
+            Checks.check(status != GuildScheduledEvent.Status.SCHEDULED && getGuildScheduledEvent().getStatus() != GuildScheduledEvent.Status.ACTIVE, "Cannot perform status update!");
         }
     }
 }

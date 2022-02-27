@@ -195,7 +195,7 @@ public class GuildScheduledEventImpl implements GuildScheduledEvent
     @Nonnull
     @CheckReturnValue
     @Override
-    public GuildScheduledEventUsersPaginationAction retrieveGuildScheduledEventUsers()
+    public GuildScheduledEventUsersPaginationAction retrieveInterestedUsers()
     {
         return new GuildScheduledEventUsersPaginationActionImpl(this);
     }
@@ -203,7 +203,7 @@ public class GuildScheduledEventImpl implements GuildScheduledEvent
     @Nonnull
     @CheckReturnValue
     @Override
-    public GuildScheduledEventMembersPaginationAction retrieveGuildScheduledEventMembers()
+    public GuildScheduledEventMembersPaginationAction retrieveInterestedMembers()
     {
         return new GuildScheduledEventMembersPaginationActionImpl(this);
     }
