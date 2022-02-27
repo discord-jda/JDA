@@ -931,9 +931,9 @@ public class EntityBuilder
                 .setEndTime(json.getOffsetDateTime("scheduled_end_time", null))
                 .setImage(json.getString("image", null));
 
-        final long creatorId = json.getLong("creator_id", -1);
+        final long creatorId = json.getLong("creator_id", 0);
         guildScheduledEvent.setCreatorId(creatorId);
-        if (creatorId != -1)
+        if (creatorId != 0)
         {
             if (json.hasKey("creator"))
                 guildScheduledEvent.setCreator(createUser(json.getObject("creator")));

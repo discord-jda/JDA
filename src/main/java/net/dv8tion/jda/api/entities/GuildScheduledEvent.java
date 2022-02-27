@@ -89,10 +89,10 @@ public interface GuildScheduledEvent extends ISnowflake, Comparable<GuildSchedul
 
     /**
      * The ID of the user who originally created this event.
-     * <p> This method may return -1 if the event was created before Discord started keeping track of event creators on
+     * <p> This method may return 0 if the event was created before Discord started keeping track of event creators on
      * October 21st, 2021.
      *
-     * @return The ID of the user who created this event, or -1 if no user is associated with creating this event.
+     * @return The ID of the user who created this event, or 0 if no user is associated with creating this event.
      *
      * @see    #getCreatorId()
      * @see    #getCreator()
@@ -112,7 +112,7 @@ public interface GuildScheduledEvent extends ISnowflake, Comparable<GuildSchedul
     @Nullable
     default String getCreatorId()
     {
-        return getCreatorIdLong() == -1 ? null : String.valueOf(getCreatorIdLong());
+        return getCreatorIdLong() == 0 ? null : String.valueOf(getCreatorIdLong());
     }
 
     /**
