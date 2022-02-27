@@ -28,7 +28,7 @@ import net.dv8tion.jda.internal.entities.GuildImpl;
 public class GuildScheduledEventUserHandler extends SocketHandler
 {
     private final boolean add;
-    
+
     public GuildScheduledEventUserHandler(JDAImpl api, boolean add)
     {
         super(api);
