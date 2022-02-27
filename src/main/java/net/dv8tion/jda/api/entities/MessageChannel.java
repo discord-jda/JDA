@@ -836,7 +836,7 @@ public interface MessageChannel extends Channel, Formattable
         JDAImpl jda = (JDAImpl) getJDA();
         Route.CompiledRoute route = Route.Messages.GET_MESSAGE.compile(getId(), messageId);
         return new RestActionImpl<>(jda, route,
-            (response, request) -> jda.getEntityBuilder().createMessage(response.getObject(), MessageChannel.this, false));
+            (response, request) -> jda.getEntityBuilder().createMessageWithChannel(response.getObject(), MessageChannel.this, false));
     }
 
     /**
@@ -2617,7 +2617,7 @@ public interface MessageChannel extends Channel, Formattable
 
             for (int i = 0; i < pins.length(); i++)
             {
-                pinnedMessages.add(builder.createMessage(pins.getObject(i), MessageChannel.this, false));
+                pinnedMessages.add(builder.createMessageWithChannel(pins.getObject(i), MessageChannel.this, false));
             }
 
             return Collections.unmodifiableList(pinnedMessages);

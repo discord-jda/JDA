@@ -74,7 +74,7 @@ public class MessagePaginationActionImpl
         {
             try
             {
-                Message msg = builder.createMessage(array.getObject(i), channel, false);
+                Message msg = builder.createMessageWithChannel(array.getObject(i), channel, false);
                 messages.add(msg);
             }
             catch (ParsingException | NullPointerException e)

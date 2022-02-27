@@ -35,6 +35,13 @@ public class MessageReactionBulkRemoveHandler extends SocketHandler
         final long channelId = content.getLong("channel_id");
         JDAImpl jda = getJDA();
 
+        if (!content.isNull("guild_id"))
+        {
+            long guildId = content.getUnsignedLong("guild_id");
+            if (api.getGuildSetupController().isLocked(guildId))
+                return guildId;
+        }
+
         //TODO-v5-unified-channel-cache
         MessageChannel channel = jda.getTextChannelById(channelId);
         if (channel == null)
