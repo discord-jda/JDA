@@ -107,7 +107,7 @@ public interface GuildScheduledEventAction extends AuditableRestAction<GuildSche
      *         The name for the new {@link GuildScheduledEvent GuildScheduledEvent}
      *
      * @throws java.lang.IllegalArgumentException
-     *         If the new name is empty, {@code null}, or contains more than {@value GuildScheduledEvent#MAX_NAME_LENGTH}
+     *         If the new name is blank, empty, {@code null}, or contains more than {@value GuildScheduledEvent#MAX_NAME_LENGTH}
      *         characters
      *
      * @return The current GuildScheduledEventAction, for chaining convenience
