@@ -271,10 +271,10 @@ public class FileProxy
     /**
      * Downloads the data of this file, and stores it in a file with the same name as the queried file name (this would be the last segment of the URL)
      *
-     * @return a {@link CompletableFuture} which holds a {@link Path} which corresponds to the location the file has been downloaded
+     * <p><b>Implementation note:</b>
+     *       The file is first downloaded into a temporary file, the file is then moved to its real destination when the download is complete
      *
-     * @implNote
-     *         The file is first downloaded into a temporary file, the file is then moved to its real destination when the download is complete
+     * @return a {@link CompletableFuture} which holds a {@link Path} which corresponds to the location the file has been downloaded
      */
     @Nonnull
     public CompletableFuture<Path> downloadToPath()
@@ -284,6 +284,9 @@ public class FileProxy
 
     /**
      * Downloads the data of this file into the specified file
+     *
+     * <p><b>Implementation note:</b>
+     *       The file is first downloaded into a temporary file, the file is then moved to its real destination when the download is complete
      *
      * @param  file
      *         The file in which to download the data
@@ -296,9 +299,6 @@ public class FileProxy
      *         </ul>
      *
      * @return a {@link CompletableFuture} which holds a {@link File}, it is the same as the file passed in the parameters
-     *
-     * @implNote
-     *         The file is first downloaded into a temporary file, the file is then moved to its real destination when the download is complete
      */
     @Nonnull
     public CompletableFuture<File> downloadToFile(@Nonnull File file)
@@ -311,6 +311,10 @@ public class FileProxy
     /**
      * Downloads the data of this file into the specified file
      *
+     * <p><b>Implementation note:</b>
+     *       The file is first downloaded into a temporary file, the file is then moved to its real destination when the download is complete.
+     *       <br>The given path can also target filesystems such as a ZIP filesystem
+     *
      * @param  path
      *         The file in which to download the image
      *
@@ -322,10 +326,6 @@ public class FileProxy
      *             <li>The target path is null</li>
      *             <li>The parent folder of the target path does not exist</li>
      *         </ul>
-     *
-     * @implNote
-     *         The file is first downloaded into a temporary file, the file is then moved to its real destination when the download is complete.
-     *         <br>The given path can also target filesystems such as a ZIP filesystem
      */
     @Nonnull
     public CompletableFuture<Path> downloadToPath(@Nonnull Path path)

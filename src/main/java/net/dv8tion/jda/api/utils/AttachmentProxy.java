@@ -73,6 +73,9 @@ public class AttachmentProxy extends FileProxy
      * <br>The attachment, if an image, may be resized at any size, however if the size does not fit the ratio of the image, then it will be cropped as to fit the target size
      * <br>If the attachment is not an image then the size parameters are ignored and the file is downloaded
      *
+     * <p><b>Implementation note:</b>
+     *       The file is first downloaded into a temporary file, the file is then moved to its real destination when the download is complete
+     *
      * @param  width
      *         The width of this image, must be positive
      * @param  height
@@ -88,8 +91,6 @@ public class AttachmentProxy extends FileProxy
      *
      * @return a {@link CompletableFuture} which holds a {@link Path} which corresponds to the location the file has been downloaded
      *
-     * @implNote
-     *         The file is first downloaded into a temporary file, the file is then moved to its real destination when the download is complete
      */
     @Nonnull
     public CompletableFuture<Path> downloadToPath(int width, int height)
@@ -104,6 +105,9 @@ public class AttachmentProxy extends FileProxy
      * Downloads the data of this attachment, at the specified width and height, and stores it in the specified file
      * <br>The attachment, if an image, may be resized at any size, however if the size does not fit the ratio of the image, then it will be cropped as to fit the target size
      * <br>If the attachment is not an image then the size parameters are ignored and the file is downloaded
+     *
+     * <p><b>Implementation note:</b>
+     *       The file is first downloaded into a temporary file, the file is then moved to its real destination when the download is complete
      *
      * @param  file
      *         The file in which to download the image
@@ -122,9 +126,6 @@ public class AttachmentProxy extends FileProxy
      *         </ul>
      *
      * @return a {@link CompletableFuture} which holds a {@link File}, it is the same as the file passed in the parameters
-     *
-     * @implNote
-     *         The file is first downloaded into a temporary file, the file is then moved to its real destination when the download is complete
      */
     @Nonnull
     public CompletableFuture<File> downloadToFile(@Nonnull File file, int width, int height)
@@ -140,6 +141,10 @@ public class AttachmentProxy extends FileProxy
      * Downloads the data of this attachment, at the specified size, and stores it in the specified file
      * <br>The attachment, if an image, may be resized at any size, however if the size does not fit the ratio of the image, then it will be cropped as to fit the target size
      * <br>If the attachment is not an image then the size parameters are ignored and the file is downloaded
+     *
+     * <p><b>Implementation note:</b>
+     *       The file is first downloaded into a temporary file, the file is then moved to its real destination when the download is complete.
+     *       <br>The given path can also target filesystems such as a ZIP filesystem
      *
      * @param  path
      *         The file in which to download the image
@@ -158,10 +163,6 @@ public class AttachmentProxy extends FileProxy
      *             <li>The requested width is negative or 0</li>
      *             <li>The requested height is negative or 0</li>
      *         </ul>
-     *
-     * @implNote
-     *         The file is first downloaded into a temporary file, the file is then moved to its real destination when the download is complete.
-     *         <br>The given path can also target filesystems such as a ZIP filesystem
      */
     @Nonnull
     public CompletableFuture<Path> downloadToPath(@Nonnull Path path, int width, int height)

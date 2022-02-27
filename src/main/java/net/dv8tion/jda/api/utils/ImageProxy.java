@@ -65,6 +65,9 @@ public class ImageProxy extends FileProxy
      *
      * <p>If the image is not of a valid size, the CompletableFuture will hold an exception since the HTTP request would have returned a 404
      *
+     * <p><b>Implementation note:</b>
+     *       The file is first downloaded into a temporary file, the file is then moved to its real destination when the download is complete
+     *
      * @param  size
      *         The width and height of this image, must be positive
      *
@@ -76,9 +79,6 @@ public class ImageProxy extends FileProxy
      *         </ul>
      *
      * @return a {@link CompletableFuture} which holds a {@link Path} which corresponds to the location the file has been downloaded
-     *
-     * @implNote
-     *         The file is first downloaded into a temporary file, the file is then moved to its real destination when the download is complete
      */
     @Nonnull
     public CompletableFuture<Path> downloadToPath(int size)
@@ -94,6 +94,9 @@ public class ImageProxy extends FileProxy
      *
      * <p>If the image is not of a valid size, the CompletableFuture will hold an exception since the HTTP request would have returned a 404
      *
+     * <p><b>Implementation note:</b>
+     *       The file is first downloaded into a temporary file, the file is then moved to its real destination when the download is complete
+     *
      * @param  file
      *         The file in which to download the image
      *
@@ -106,9 +109,6 @@ public class ImageProxy extends FileProxy
      *         </ul>
      *
      * @return a {@link CompletableFuture} which holds a {@link File}, it is the same as the file passed in the parameters
-     *
-     * @implNote
-     *         The file is first downloaded into a temporary file, the file is then moved to its real destination when the download is complete
      */
     @Nonnull
     public CompletableFuture<File> downloadToFile(@Nonnull File file, int size)
@@ -125,6 +125,10 @@ public class ImageProxy extends FileProxy
      *
      * <p>If the image is not of a valid size, the CompletableFuture will hold an exception since the HTTP request would have returned a 404
      *
+     * <p><b>Implementation note:</b>
+     *       The file is first downloaded into a temporary file, the file is then moved to its real destination when the download is complete.
+     *       <br>The given path can also target filesystems such as a ZIP filesystem
+     *
      * @param  path
      *         The file in which to download the image
      *
@@ -137,10 +141,6 @@ public class ImageProxy extends FileProxy
      *             <li>The parent folder of the target path does not exist</li>
      *             <li>The requested size is negative or 0</li>
      *         </ul>
-     *
-     * @implNote
-     *         The file is first downloaded into a temporary file, the file is then moved to its real destination when the download is complete.
-     *         <br>The given path can also target filesystems such as a ZIP filesystem
      */
     @Nonnull
     public CompletableFuture<Path> downloadToPath(@Nonnull Path path, int size)
