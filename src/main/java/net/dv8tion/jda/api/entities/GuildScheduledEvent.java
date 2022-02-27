@@ -20,6 +20,9 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.managers.GuildScheduledEventManager;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
+import net.dv8tion.jda.api.requests.restaction.pagination.GuildScheduledEventMembersPaginationAction;
+import net.dv8tion.jda.api.requests.restaction.pagination.GuildScheduledEventUsersPaginationAction;
+import net.dv8tion.jda.api.requests.restaction.pagination.PaginationAction;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -225,6 +228,62 @@ public interface GuildScheduledEvent extends ISnowflake, Comparable<GuildSchedul
     @Nonnull
     @CheckReturnValue
     AuditableRestAction<Void> delete();
+
+    /**
+     * A {@link PaginationAction PaginationAction} implementation
+     * that allows to {@link Iterable iterate} over all {@link net.dv8tion.jda.api.entities.User Users} interested in this Event.
+     *
+     * <br>This iterates in ascending order by user id.
+     *
+     * <h4>Examples</h4>
+     * <pre>{@code
+     *     GuildScheduledEvent event = guild.getScheduledEventById(id);
+     *     ArrayList<User> users = new ArrayList<>();
+     *     event.retrieveGuildScheduledEventUsers().queue(users::addAll);
+     * }</pre>
+     *
+     * <p>Possible ErrorResponses include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_GUILD_SCHEDULED_EVENT}
+     *     <br>If the the event was already deleted.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>If we were removed from the Guild or can't view the events channel (Location)</li>
+     * </ul>
+     *
+     * @return {@link GuildScheduledEventUsersPaginationAction GuildScheduledEventUsersPaginationAction}
+     */
+    @Nonnull
+    @CheckReturnValue
+    GuildScheduledEventUsersPaginationAction retrieveGuildScheduledEventUsers();
+
+    /**
+     * A {@link PaginationAction PaginationAction} implementation
+     * that allows to {@link Iterable iterate} over all {@link net.dv8tion.jda.api.entities.Member Members} interested in this Event.
+     *
+     * <br>This iterates in ascending order by member id.
+     *
+     * <h4>Examples</h4>
+     * <pre>{@code
+     *     GuildScheduledEvent event = guild.getScheduledEventById(id);
+     *     ArrayList<Member> members = new ArrayList<>();
+     *     event.retrieveGuildScheduledEventMembers().queue(members::addAll);
+     * }</pre>
+     *
+     * <p>Possible ErrorResponses include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_GUILD_SCHEDULED_EVENT}
+     *     <br>If the the event was already deleted.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>If we were removed from the Guild or can't view the events channel (Location)</li>
+     * </ul>
+     *
+     * @return {@link GuildScheduledEventUsersPaginationAction GuildScheduledEventUsersPaginationAction}
+     */
+    @Nonnull
+    @CheckReturnValue
+    GuildScheduledEventMembersPaginationAction retrieveGuildScheduledEventMembers();
 
     /**
      * The amount of users who are interested in attending the event.

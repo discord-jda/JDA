@@ -21,11 +21,16 @@ import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.GuildScheduledEventManager;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
+import net.dv8tion.jda.api.requests.restaction.pagination.GuildScheduledEventMembersPaginationAction;
+import net.dv8tion.jda.api.requests.restaction.pagination.GuildScheduledEventUsersPaginationAction;
 import net.dv8tion.jda.internal.managers.GuildScheduledEventManagerImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
+import net.dv8tion.jda.internal.requests.restaction.pagination.GuildScheduledEventMembersPaginationActionImpl;
+import net.dv8tion.jda.internal.requests.restaction.pagination.GuildScheduledEventUsersPaginationActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
+import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.time.OffsetDateTime;
@@ -185,6 +190,22 @@ public class GuildScheduledEventImpl implements GuildScheduledEvent
 
         Route.CompiledRoute route = Route.Guilds.DELETE_SCHEDULED_EVENT.compile(guild.getId(), getId());
         return new AuditableRestActionImpl<>(getJDA(), route);
+    }
+
+    @Nonnull
+    @CheckReturnValue
+    @Override
+    public GuildScheduledEventUsersPaginationAction retrieveGuildScheduledEventUsers()
+    {
+        return new GuildScheduledEventUsersPaginationActionImpl(this);
+    }
+
+    @Nonnull
+    @CheckReturnValue
+    @Override
+    public GuildScheduledEventMembersPaginationAction retrieveGuildScheduledEventMembers()
+    {
+        return new GuildScheduledEventMembersPaginationActionImpl(this);
     }
 
     public GuildScheduledEventImpl setName(String name)
