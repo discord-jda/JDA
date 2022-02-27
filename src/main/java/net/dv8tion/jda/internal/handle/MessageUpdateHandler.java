@@ -37,12 +37,24 @@ public class MessageUpdateHandler extends SocketHandler
     @Override
     protected Long handleInternally(DataObject content)
     {
+        Guild guild = null;
         if (!content.isNull("guild_id"))
         {
             long guildId = content.getLong("guild_id");
             if (getJDA().getGuildSetupController().isLocked(guildId))
                 return guildId;
+            guild = api.getGuildById(guildId);
+            if (guild == null)
+            {
+                api.getEventCache().cache(EventCache.Type.GUILD, guildId, responseNumber, allContent, this::handle);
+                EventCache.LOG.debug("Received message for a guild that JDA does not currently have cached");
+                return null;
+            }
         }
+
+        // Drop ephemeral messages since they are broken due to missing guild_id
+        if ((content.getInt("flags", 0) & 64) != 0)
+            return null;
 
         //TODO: Rewrite this entire handler
         if (content.hasKey("author"))
@@ -51,7 +63,7 @@ public class MessageUpdateHandler extends SocketHandler
             {
                 MessageType type = MessageType.fromId(content.getInt("type"));
                 if (!type.isSystem())
-                    return handleMessage(content);
+                    return handleMessage(content, guild);
                 WebSocketClient.LOG.debug("JDA received a message update for an unexpected message type. Type: {} JSON: {}", type, content);
                 return null;
             }
@@ -67,12 +79,12 @@ public class MessageUpdateHandler extends SocketHandler
         return null;
     }
 
-    private Long handleMessage(DataObject content)
+    private Long handleMessage(DataObject content, Guild guild)
     {
         Message message;
         try
         {
-            message = getJDA().getEntityBuilder().createMessage(content);
+            message = getJDA().getEntityBuilder().createMessageWithLookup(content, guild, true);
         }
         catch (IllegalArgumentException e)
         {
@@ -115,6 +127,7 @@ public class MessageUpdateHandler extends SocketHandler
         LinkedList<MessageEmbed> embeds = new LinkedList<>();
 
         //TODO-v5-unified-channel-cache
+        //TODO-v5: handle for threads.
         MessageChannel channel = getJDA().getTextChannelsView().get(channelId);
         if (channel == null)
             channel = getJDA().getNewsChannelById(channelId);

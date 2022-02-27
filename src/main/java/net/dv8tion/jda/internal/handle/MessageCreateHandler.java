@@ -15,10 +15,7 @@
  */
 package net.dv8tion.jda.internal.handle;
 
-import net.dv8tion.jda.api.entities.ChannelType;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageChannel;
-import net.dv8tion.jda.api.entities.MessageType;
+import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
@@ -44,18 +41,31 @@ public class MessageCreateHandler extends SocketHandler
             return null;
         }
 
+        // Drop ephemeral messages since they are broken due to missing guild_id
+        if ((content.getInt("flags", 0) & 64) != 0)
+            return null;
+
         JDAImpl jda = getJDA();
+        Guild guild = null;
         if (!content.isNull("guild_id"))
         {
             long guildId = content.getLong("guild_id");
             if (jda.getGuildSetupController().isLocked(guildId))
                 return guildId;
+
+            guild = api.getGuildById(guildId);
+            if (guild == null)
+            {
+                api.getEventCache().cache(EventCache.Type.GUILD, guildId, responseNumber, allContent, this::handle);
+                EventCache.LOG.debug("Received message for a guild that JDA does not currently have cached");
+                return null;
+            }
         }
 
         Message message;
         try
         {
-            message = jda.getEntityBuilder().createMessage(content, true);
+            message = jda.getEntityBuilder().createMessageWithLookup(content, guild, true);
         }
         catch (IllegalArgumentException e)
         {
