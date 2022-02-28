@@ -81,16 +81,16 @@ public class ChannelDeleteHandler extends SocketHandler
                                 channel));
                 break;
             }
-            case VOICE:
+        case VOICE:
+        {
+            VoiceChannel channel = getJDA().getVoiceChannelsView().remove(channelId);
+            if (channel == null || guild == null)
             {
-                VoiceChannel channel = getJDA().getVoiceChannelsView().remove(channelId);
-                if (channel == null || guild == null)
-                {
-                    WebSocketClient.LOG.debug("CHANNEL_DELETE attempted to delete a voice channel that is not yet cached. JSON: {}", content);
-                    return null;
-                }
+                WebSocketClient.LOG.debug("CHANNEL_DELETE attempted to delete a voice channel that is not yet cached. JSON: {}", content);
+                return null;
+            }
 
-                // This is done in the AudioWebSocket already
+            // This is done in the AudioWebSocket already
 //                //We use this instead of getAudioManager(Guild) so we don't create a new instance. Efficiency!
 //                AudioManagerImpl manager = (AudioManagerImpl) getJDA().getAudioManagersView().get(guild.getIdLong());
 //                if (manager != null && manager.isConnected()
@@ -98,28 +98,35 @@ public class ChannelDeleteHandler extends SocketHandler
 //                {
 //                    manager.closeAudioConnection(ConnectionStatus.DISCONNECTED_CHANNEL_DELETED);
 //                }
-                guild.getVoiceChannelsView().remove(channel.getIdLong());
-                getJDA().handleEvent(
+            guild.getVoiceChannelsView().remove(channel.getIdLong());
+            getJDA().handleEvent(
                     new ChannelDeleteEvent(
-                        getJDA(), responseNumber,
-                        channel));
-                break;
-            }
-            case STAGE:
-            {
-                StageChannel channel = getJDA().getStageChannelView().remove(channelId);
-                if (channel == null || guild == null)
-                {
-                    WebSocketClient.LOG.debug("CHANNEL_DELETE attempted to delete a stage channel that is not yet cached. JSON: {}", content);
-                    return null;
-                }
+                            getJDA(), responseNumber,
+                            channel));
 
-                guild.getStageChannelsView().remove(channel.getIdLong());
-                getJDA().handleEvent(
-                    new ChannelDeleteEvent(
-                        getJDA(), responseNumber,
-                        channel));
+            // Deleting any guild scheduled events associated to the deleted channel as they are deleted when the channel gets deleted and no delete event is sent for the deletion of the guild scheduled events. So we do this to keep the cache in sync.
+            guild.getScheduledEventsView().stream().filter(guildScheduledEvent -> guildScheduledEvent.getVoiceChannel() != null && guildScheduledEvent.getVoiceChannel().getIdLong() == channelId).forEach(guildScheduledEvent -> guild.getScheduledEventsView().remove(guildScheduledEvent.getIdLong()));
+            break;
+        }
+        case STAGE:
+        {
+            StageChannel channel = getJDA().getStageChannelView().remove(channelId);
+            if (channel == null || guild == null)
+            {
+                WebSocketClient.LOG.debug("CHANNEL_DELETE attempted to delete a stage channel that is not yet cached. JSON: {}", content);
+                return null;
             }
+
+            guild.getStageChannelsView().remove(channel.getIdLong());
+            getJDA().handleEvent(
+                    new ChannelDeleteEvent(
+                            getJDA(), responseNumber,
+                            channel));
+
+            // Deleting any guild scheduled events associated to the deleted channel as they are deleted when the channel gets deleted and no delete event is sent for the deletion of the guild scheduled events. So we do this to keep the cache in sync.
+            guild.getScheduledEventsView().stream().filter(guildScheduledEvent -> guildScheduledEvent.getStageChannel() != null && guildScheduledEvent.getStageChannel().getIdLong() == channelId).forEach(guildScheduledEvent -> guild.getScheduledEventsView().remove(guildScheduledEvent.getIdLong()));
+            break;
+        }
 
             case CATEGORY:
             {
