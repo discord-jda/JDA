@@ -69,6 +69,7 @@ public interface GuildScheduledEvent extends ISnowflake, Comparable<GuildSchedul
     /**
      * The cover image url of the event.
      * <p>Links to a potentially heavily compressed image. You can append a size parameter to the URL if needed. Example: ?size=4096
+     *
      * @return The image url, or {@code null} if none is specified
      */
     @Nullable
@@ -294,8 +295,8 @@ public interface GuildScheduledEvent extends ISnowflake, Comparable<GuildSchedul
      *
      * @return The amount of users who are interested in attending the event
      *
-     * @see Guild#retrieveScheduledEventById(long)
-     * @see Guild#retrieveScheduledEventById(String)
+     * @see    Guild#retrieveScheduledEventById(long)
+     * @see    Guild#retrieveScheduledEventById(String)
      */
     int getInterestedUserCount();
 
@@ -348,9 +349,9 @@ public interface GuildScheduledEvent extends ISnowflake, Comparable<GuildSchedul
      *         event's snowflake ID is less than the provided event's ID, positive if it is greater than, or 0 if they
      *         are the same.
      *
-     * @see Comparable#compareTo(Object)
-     * @see #getStartTime()
-     * @see #getIdLong()
+     * @see    Comparable#compareTo(Object)
+     * @see    #getStartTime()
+     * @see    #getIdLong()
      */
     @Override
     int compareTo(@Nonnull GuildScheduledEvent guildScheduledEvent);
@@ -358,7 +359,7 @@ public interface GuildScheduledEvent extends ISnowflake, Comparable<GuildSchedul
     /**
      * Represents the status of a scheduled guild event.
      *
-     * @see GuildScheduledEvent#getStatus
+     * @see    GuildScheduledEvent#getStatus
      */
     enum Status
     {
