@@ -24,7 +24,7 @@ import javax.annotation.Nullable;
 /**
  * Indicates the {@link GuildScheduledEvent#getDescription() description} of a {@link GuildScheduledEvent} has changed.
  *
- * <p>Can be used to detect when the {@link GuildScheduledEvent} description has changed and retrieve the old one.
+ * <p>Can be used to detect when the {@link GuildScheduledEvent} description has changed.
  *
  * <p>Identifier: {@code guild_scheduled_event_description}
  */

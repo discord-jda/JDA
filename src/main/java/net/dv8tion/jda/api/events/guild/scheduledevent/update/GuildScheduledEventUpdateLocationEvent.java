@@ -33,7 +33,7 @@ import java.util.Objects;
  * the {@link Location GuildScheduledEventUpdateLocationEvent.Location} class to store the {@link GuildScheduledEvent.Type Type}
  * of location as well as the location itself.
  *
- * <p>Can be used to detect when the {@link GuildScheduledEvent} status has changed and retrieve the old one.
+ * <p>Can be used to detect when the {@link GuildScheduledEvent} status has changed.
  *
  * <p>Identifier: {@code guild_scheduled_event_status}
  *

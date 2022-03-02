@@ -23,7 +23,7 @@ import javax.annotation.Nonnull;
 /**
  * Indicates the {@link GuildScheduledEvent#getImageUrl() image} of a {@link GuildScheduledEvent} has changed.
  *
- * <p>Can be used to detect when the {@link GuildScheduledEvent} image had changed and retrieve the old one.
+ * <p>Can be used to detect when the {@link GuildScheduledEvent} image had changed.
  *
  * <p>Identifier: {@code guild_scheduled_event_image}
  */

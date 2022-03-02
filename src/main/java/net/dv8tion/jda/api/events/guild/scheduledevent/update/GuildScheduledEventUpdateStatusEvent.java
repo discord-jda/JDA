@@ -24,7 +24,7 @@ import javax.annotation.Nonnull;
  * Indicates the {@link GuildScheduledEvent#getStatus() status} of a {@link GuildScheduledEvent} has changed. The status
  * of a {@link GuildScheduledEvent} represents if it is currently happening, canceled, or has been completed.
  *
- * <p>Can be used to detect when the {@link GuildScheduledEvent} status has changed and retrieve the old one.
+ * <p>Can be used to detect when the {@link GuildScheduledEvent} status has changed.
  *
  * <p>Identifier: {@code guild_scheduled_event_status}
  */

@@ -25,7 +25,7 @@ import java.time.OffsetDateTime;
 /**
  * Indicates the {@link GuildScheduledEvent#getEndTime() end time} of a {@link GuildScheduledEvent} has changed.
  *
- * <p>Can be used to detect when the {@link GuildScheduledEvent} end time has changed and retrieve the old one.
+ * <p>Can be used to detect when the {@link GuildScheduledEvent} end time has changed.
  *
  * <p>Identifier: {@code guild_scheduled_event_end_time}
  */
