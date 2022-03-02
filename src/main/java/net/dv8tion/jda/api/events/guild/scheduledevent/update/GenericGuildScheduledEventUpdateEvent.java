@@ -18,8 +18,8 @@ import javax.annotation.Nullable;
  * {@link net.dv8tion.jda.api.entities.User User} or {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} objects
  * representing a <a href="https://support.discord.com/hc/en-us/articles/4409494125719-Scheduled-Events">guild's scheduled events</a>.
  *
- * @param <T>
- *        The type of the field being updated
+ * @param  <T>
+ *         The type of the field being updated
  */
 public abstract class GenericGuildScheduledEventUpdateEvent<T> extends GenericGuildScheduledEventGatewayEvent implements UpdateEvent<GuildScheduledEvent, T>
 {

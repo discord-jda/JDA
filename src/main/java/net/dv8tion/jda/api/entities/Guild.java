@@ -3230,7 +3230,6 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      *
      * @throws IllegalArgumentException
      *         If the specified ID is {@code null} or empty
-     *
      * @throws NumberFormatException
      *         If the specified ID cannot be parsed by {@link Long#parseLong(String)}
      *

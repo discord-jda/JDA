@@ -39,7 +39,7 @@ import java.time.OffsetDateTime;
  *     .queue();
  * }</pre>
  *
- * @see GuildScheduledEvent#getManager()
+ * @see    GuildScheduledEvent#getManager()
  */
 public interface GuildScheduledEventManager extends Manager<GuildScheduledEventManager>
 {
@@ -184,7 +184,6 @@ public interface GuildScheduledEventManager extends Manager<GuildScheduledEventM
      * @throws java.lang.IllegalArgumentException
      *         If the provided Stage Channel is {@code null}, or is not from the same guild
      *         that the selected {@link GuildScheduledEvent} takes place in.
-     *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have
      *         {@link net.dv8tion.jda.api.Permission#MANAGE_EVENTS Permission.ManageEvents},
@@ -210,7 +209,6 @@ public interface GuildScheduledEventManager extends Manager<GuildScheduledEventM
      * @throws java.lang.IllegalArgumentException
      *         If the provided Voice Channel is {@code null}, or is not from the same guild
      *         that the selected {@link GuildScheduledEvent} takes place in.
-     *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have
      *         {@link net.dv8tion.jda.api.Permission#MANAGE_EVENTS Permission.ManageEvents},
@@ -236,10 +234,8 @@ public interface GuildScheduledEventManager extends Manager<GuildScheduledEventM
      *
      * @throws java.lang.IllegalArgumentException
      *         If the provided location is {@code null}
-     *
      * @throws java.lang.IllegalStateException
      *         If the selected {@link GuildScheduledEvent} does not have an end time associated with it
-     *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have
      *         {@link net.dv8tion.jda.api.Permission#MANAGE_EVENTS Permission.MANAGE_EVENTS}
@@ -288,7 +284,6 @@ public interface GuildScheduledEventManager extends Manager<GuildScheduledEventM
      *
      * @throws java.lang.IllegalArgumentException
      *         If the provided end time is before the start time
-     *
      * @throws java.lang.IllegalStateException
      *         If the provided end time is {@code null} when the event is set to take place at an external location
      *

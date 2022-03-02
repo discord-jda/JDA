@@ -168,9 +168,11 @@ public class GuildScheduledEventUpdateLocationEvent extends GenericGuildSchedule
          * Constructs a new {@link Location} object from the provided
          * {@link GuildScheduledEvent}.
          *
-         * @param  guildScheduledEvent The guild scheduled event
+         * @param  guildScheduledEvent 
+         *         The guild scheduled event
          *
-         * @throws IllegalArgumentException If the provided guild scheduled event object is {@code null}
+         * @throws IllegalArgumentException 
+         *         If the provided guild scheduled event object is {@code null}
          */
         public Location(@Nonnull GuildScheduledEvent guildScheduledEvent)
         {
