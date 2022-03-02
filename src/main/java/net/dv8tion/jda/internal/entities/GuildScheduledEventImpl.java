@@ -177,7 +177,7 @@ public class GuildScheduledEventImpl implements GuildScheduledEvent
     @Override
     public GuildScheduledEventManager getManager()
     {
-        return  new GuildScheduledEventManagerImpl(this);
+        return new GuildScheduledEventManagerImpl(this);
     }
 
     @Nonnull

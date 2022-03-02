@@ -1336,6 +1336,7 @@ public interface JDA extends IGuildChannelContainer
      *
      * @param  id
      *         The id of the {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvent}.
+     *
      * @throws java.lang.NumberFormatException
      *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
      *
