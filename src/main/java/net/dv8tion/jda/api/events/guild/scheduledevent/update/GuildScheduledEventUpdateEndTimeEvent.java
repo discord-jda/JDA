@@ -35,7 +35,7 @@ public class GuildScheduledEventUpdateEndTimeEvent extends GenericGuildScheduled
 
     public GuildScheduledEventUpdateEndTimeEvent(@Nonnull JDA api, long responseNumber, @Nonnull GuildScheduledEvent guildScheduledEvent, @Nullable OffsetDateTime previous)
     {
-        super(api, responseNumber, guildScheduledEvent, previous, guildScheduledEvent.getStartTime(), IDENTIFIER);
+        super(api, responseNumber, guildScheduledEvent, previous, guildScheduledEvent.getEndTime(), IDENTIFIER);
     }
 
     /**

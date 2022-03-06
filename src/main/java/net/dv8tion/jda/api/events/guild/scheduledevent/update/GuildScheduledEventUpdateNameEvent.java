@@ -33,7 +33,7 @@ public class GuildScheduledEventUpdateNameEvent extends GenericGuildScheduledEve
 
     public GuildScheduledEventUpdateNameEvent(@Nonnull JDA api, long responseNumber, @Nonnull GuildScheduledEvent guildScheduledEvent, @Nonnull String previous)
     {
-        super(api, responseNumber, guildScheduledEvent, previous, guildScheduledEvent.getDescription(), IDENTIFIER);
+        super(api, responseNumber, guildScheduledEvent, previous, guildScheduledEvent.getName(), IDENTIFIER);
     }
 
     /**
