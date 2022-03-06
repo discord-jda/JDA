@@ -141,28 +141,9 @@ public class GuildScheduledEventUpdateLocationEvent extends GenericGuildSchedule
     public static class Location
     {
         // Only one of these will not be null at any given time. If all are null, then the event's location is unknown to JDA.
-        private String externalLocation;
-        private StageChannel stageChannel;
-        private VoiceChannel voiceChannel;
-
-        /**
-         * Constructs a new {@link Location} object from the provided object.
-         *
-         * @param object The location of the event.
-         *               <br> The object must be either an instance of {@link StageChannel},
-         *               {@link VoiceChannel}, or {@link String} in the case of an external locations. A {@code null}
-         *               object indicates that the event's location {@link GuildScheduledEvent.Type Type} is
-         *               {@link GuildScheduledEvent.Type#UNKNOWN Type#UNKNOWN}.
-         */
-        public Location(@Nullable Object object)
-        {
-            if (object instanceof String)
-                externalLocation = (String) object;
-            else if (object instanceof StageChannel)
-                stageChannel = (StageChannel) object;
-            else if (object instanceof VoiceChannel)
-                voiceChannel = (VoiceChannel) object;
-        }
+        private final String externalLocation;
+        private final StageChannel stageChannel;
+        private final VoiceChannel voiceChannel;
 
         /**
          * Constructs a new {@link Location} object from the provided
@@ -250,8 +231,6 @@ public class GuildScheduledEventUpdateLocationEvent extends GenericGuildSchedule
         {
             return externalLocation;
         }
-
-        // Object Overrides
 
         @Override
         public int hashCode()
