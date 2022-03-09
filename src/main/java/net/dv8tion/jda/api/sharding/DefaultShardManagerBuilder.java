@@ -1812,9 +1812,8 @@ public class  DefaultShardManagerBuilder
 
     /**
      * The {@link ChunkingFilter} to filter which guilds should use member chunking.
-     * <br>By default this uses {@link ChunkingFilter#ALL}.
      *
-     * <p>If a guild is configured for chunking the {@link #setMemberCachePolicy(MemberCachePolicy)} will be ignored.
+     * <p>Use {@link #setMemberCachePolicy(MemberCachePolicy)} to configure which members to keep in cache from chunking.
      *
      * @param  filter
      *         The filter to apply

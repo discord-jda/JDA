@@ -218,8 +218,7 @@ public class JDAImpl implements JDA
         try
         {
             return member.getUser().equals(getSelfUser()) // always cache self
-                    || chunkGuild(member.getGuild().getIdLong())  // always cache if chunking
-                    || memberCachePolicy.cacheMember(member); // ask policy, should we cache?
+                || memberCachePolicy.cacheMember(member); // ask policy, should we cache?
         }
         catch (Exception e)
         {
