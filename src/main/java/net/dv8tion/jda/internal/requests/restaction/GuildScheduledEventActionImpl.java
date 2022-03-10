@@ -97,9 +97,6 @@ public class GuildScheduledEventActionImpl extends AuditableRestActionImpl<Guild
     @CheckReturnValue
     public GuildScheduledEventActionImpl setDescription(@NotNull String description)
     {
-        Checks.notBlank(description, "Description");
-        description = description.trim();
-        Checks.notEmpty(description, "Description");
         Checks.notLonger(description, GuildScheduledEvent.MAX_DESCRIPTION_LENGTH, "Description");
         this.description = description;
         return this;
@@ -189,7 +186,6 @@ public class GuildScheduledEventActionImpl extends AuditableRestActionImpl<Guild
 
         if (endTime != null)
             Checks.check((endTime).isAfter(startTime), "Cannot schedule event to end before starting!");
-
     }
 
 

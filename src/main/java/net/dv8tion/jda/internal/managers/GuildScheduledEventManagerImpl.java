@@ -78,9 +78,6 @@ public class GuildScheduledEventManagerImpl extends ManagerBase<GuildScheduledEv
     @Override
     public GuildScheduledEventManager setDescription(@NotNull String description)
     {
-        Checks.notBlank(description, "Description");
-        description = description.trim();
-        Checks.notEmpty(description, "Description");
         Checks.notLonger(description, GuildScheduledEvent.MAX_DESCRIPTION_LENGTH, "Description");
         this.description = description;
         set |= DESCRIPTION;
