@@ -3439,7 +3439,10 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    AuditableRestAction<Void> kick(long userId, @Nullable String reason);
+    default AuditableRestAction<Void> kick(long userId, @Nullable String reason)
+    {
+        return kick(Long.toUnsignedString(userId), reason);
+    }
 
     /**
      * Kicks a {@link net.dv8tion.jda.api.entities.Member Member} from the {@link net.dv8tion.jda.api.entities.Guild Guild}.
@@ -3547,7 +3550,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     @CheckReturnValue
     default AuditableRestAction<Void> kick(long userId)
     {
-        return kick(userId, null);
+        return kick(Long.toUnsignedString(userId), null);
     }
 
     /**
@@ -3689,7 +3692,10 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    AuditableRestAction<Void> ban(long userId, int delDays, @Nullable String reason);
+    default AuditableRestAction<Void> ban(long userId, int delDays, @Nullable String reason)
+    {
+        return ban(Long.toUnsignedString(userId), delDays, reason);
+    }
 
     /**
      * Bans the {@link net.dv8tion.jda.api.entities.Member Member} and deletes messages sent by the user
