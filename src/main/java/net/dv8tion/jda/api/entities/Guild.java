@@ -3571,6 +3571,53 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     AuditableRestAction<Void> ban(@Nonnull String userId, int delDays, @Nullable String reason);
 
     /**
+     * Bans the user specified by the userId and deletes messages sent by the user
+     * based on the amount of delDays.
+     * <br>If you wish to ban a user without deleting any messages, provide delDays with a value of 0.
+     *
+     * <p>You can unban a user with {@link net.dv8tion.jda.api.entities.Guild#unban(User) Guild.unban(User)}.
+     *
+     * <p><b>Note:</b> {@link net.dv8tion.jda.api.entities.Guild#getMembers()} will still contain the {@link net.dv8tion.jda.api.entities.User User's}
+     * {@link net.dv8tion.jda.api.entities.Member Member} object (if the User was in the Guild)
+     * until Discord sends the {@link net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent GuildMemberRemoveEvent}.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
+     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The target Member cannot be banned due to a permission discrepancy</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_USER UNKNOWN_USER}
+     *     <br>The specified User does not exit</li>
+     * </ul>
+     *
+     * @param  userId
+     *         The id of the {@link net.dv8tion.jda.api.entities.User User} to ban.
+     * @param  delDays
+     *         The history of messages, in days, that will be deleted.
+     * @param  reason
+     *         The reason for this action or {@code null} if there is no specified reason
+     *
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#BAN_MEMBERS} permission.
+     * @throws net.dv8tion.jda.api.exceptions.HierarchyException
+     *         If the logged in account cannot ban the other user due to permission hierarchy position.
+     *         <br>See {@link Member#canInteract(Member)}
+     * @throws java.lang.IllegalArgumentException
+     *         <ul>
+     *             <li>If the provided amount of days (delDays) is less than 0.</li>
+     *             <li>If the provided amount of days (delDays) is bigger than 7.</li>
+     *             <li>If the provided reason is longer than 512 characters.</li>
+     *             <li>If the provided userId is null</li>
+     *         </ul>
+     *
+     * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
+     */
+    @Nonnull
+    @CheckReturnValue
+    AuditableRestAction<Void> ban(@Nonnull long userId, int delDays, @Nullable String reason);
+
+    /**
      * Bans the {@link net.dv8tion.jda.api.entities.Member Member} and deletes messages sent by the user
      * based on the amount of delDays.
      * <br>If you wish to ban a member without deleting any messages, provide delDays with a value of 0.
@@ -3761,6 +3808,53 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     @Nonnull
     @CheckReturnValue
     default AuditableRestAction<Void> ban(@Nonnull String userId, int delDays)
+    {
+        return ban(userId, delDays, null);
+    }
+
+    /**
+     * Bans the user specified by the userId and deletes messages sent by the user
+     * based on the amount of delDays.
+     * <br>If you wish to ban a user without deleting any messages, provide delDays with a value of 0.
+     *
+     * <p>You can unban a user with {@link net.dv8tion.jda.api.entities.Guild#unban(User) Guild.unban(User)}.
+     *
+     * <p><b>Note:</b> {@link net.dv8tion.jda.api.entities.Guild#getMembers()} will still contain the {@link net.dv8tion.jda.api.entities.User User's}
+     * {@link net.dv8tion.jda.api.entities.Member Member} object (if the User was in the Guild)
+     * until Discord sends the {@link net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent GuildMemberRemoveEvent}.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
+     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The target Member cannot be banned due to a permission discrepancy</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MEMBER UNKNOWN_MEMBER}
+     *     <br>The specified Member was removed from the Guild before finishing the task</li>
+     * </ul>
+     *
+     * @param  userId
+     *         The id of the {@link net.dv8tion.jda.api.entities.User User} to ban.
+     * @param  delDays
+     *         The history of messages, in days, that will be deleted.
+     *
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#BAN_MEMBERS} permission.
+     * @throws net.dv8tion.jda.api.exceptions.HierarchyException
+     *         If the logged in account cannot ban the other user due to permission hierarchy position.
+     *         <br>See {@link Member#canInteract(Member)}
+     * @throws java.lang.IllegalArgumentException
+     *         <ul>
+     *             <li>If the provided amount of days (delDays) is less than 0.</li>
+     *             <li>If the provided amount of days (delDays) is bigger than 7.</li>
+     *             <li>If the provided userId is {@code null}</li>
+     *         </ul>
+     *
+     * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
+     */
+    @Nonnull
+    @CheckReturnValue
+    default AuditableRestAction<Void> ban(long userId, int delDays)
     {
         return ban(userId, delDays, null);
     }
