@@ -3936,7 +3936,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     @CheckReturnValue
     default AuditableRestAction<Void> ban(long userId, int delDays)
     {
-        return ban(userId, delDays, null);
+        return ban(Long.toUnsignedString(userId), delDays, null);
     }
 
     /**
