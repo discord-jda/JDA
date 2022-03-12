@@ -3615,7 +3615,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    AuditableRestAction<Void> ban(@Nonnull long userId, int delDays, @Nullable String reason);
+    AuditableRestAction<Void> ban(long userId, int delDays, @Nullable String reason);
 
     /**
      * Bans the {@link net.dv8tion.jda.api.entities.Member Member} and deletes messages sent by the user
