@@ -1369,14 +1369,7 @@ public class GuildImpl implements Guild
     @Override
     public AuditableRestAction<Void> ban(long userId, int delDays, String reason)
     {
-        Checks.notNull(userId, "User");
-        checkPermission(Permission.BAN_MEMBERS);
-
-        User user = getJDA().getUserById(userId);
-        if (user != null) // If we have the user cached then we should use the additional information available to use during the ban process.
-            return ban(user, delDays, reason);
-
-        return ban0(String.valueOf(userId), delDays, reason);
+       return ban(Long.toUnsignedString(userId), delDays, reason);
     }
 
     @Nonnull
