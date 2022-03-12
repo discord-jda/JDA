@@ -1327,6 +1327,13 @@ public class GuildImpl implements Guild
     }
 
     @Nonnull
+    @Override
+    public AuditableRestAction<Void> kick(long userId, @Nullable String reason)
+    {
+        return kick(Long.toUnsignedString(userId), reason);
+    }
+
+    @Nonnull
     private AuditableRestAction<Void> kick0(@Nonnull String userId, @Nullable String reason)
     {
         Route.CompiledRoute route = Route.Guilds.KICK_MEMBER.compile(getId(), userId);
