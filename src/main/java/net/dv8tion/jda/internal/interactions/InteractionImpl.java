@@ -73,7 +73,13 @@ public class InteractionImpl implements Interaction
                 );
             }
             this.channel = channel;
-            user = channel.getUser();
+
+            User user = channel.getUser();
+            if (user == null)
+            {
+                user = jda.getEntityBuilder().createUser(data.getObject("user"));
+            }
+            this.user = user;
         }
     }
 
