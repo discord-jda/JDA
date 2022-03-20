@@ -415,7 +415,7 @@ public class EmbedBuilder
      * @return Color the builder has been set with.
      */
     @Nonnull
-    public java.awt.Color getColor()
+    public Color getColor()
     {
         return new Color(color);
     }
@@ -425,7 +425,6 @@ public class EmbedBuilder
      *
      * @return Raw color the builder has been set with.
      */
-    @Nonnull
     public int getColorRaw()
     {
         return color;
