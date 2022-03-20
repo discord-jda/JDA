@@ -592,7 +592,7 @@ public class EmbedBuilder
 
     /**
      * The {@link net.dv8tion.jda.api.entities.MessageEmbed.AuthorInfo AuthorInfo} used to
-     * build the footer for the embed.
+     * build the author for the embed.
      *
      * @return AuthorInfo with current author context
      */
