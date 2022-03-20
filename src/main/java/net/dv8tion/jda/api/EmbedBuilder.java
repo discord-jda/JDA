@@ -235,6 +235,18 @@ public class EmbedBuilder
     }
 
     /**
+     * The {@link String String} used to
+     * build the title for the embed.
+     *
+     * @return String with current title.
+     */
+    @Nonnull
+    public String getTitle()
+    {
+        return title;
+    }
+
+    /**
      * Sets the Title of the embed.
      * <br>Overload for {@link #setTitle(String, String)} without URL parameter.
      *
@@ -367,6 +379,17 @@ public class EmbedBuilder
     }
 
     /**
+     * The {@link java.time.OffsetDateTime Timestamp} of the embed
+     *
+     * @return Timestamp the builder has been set with.
+     */
+    @Nonnull
+    public OffsetDateTime getTimestamp()
+    {
+        return timestamp;
+    }
+
+    /**
      * Sets the Timestamp of the embed.
      *
      * <p><b><a href="https://raw.githubusercontent.com/DV8FromTheWorld/JDA/assets/assets/docs/embeds/13-setTimestamp.png">Example</a></b>
@@ -384,6 +407,17 @@ public class EmbedBuilder
     {
         this.timestamp = Helpers.toOffsetDateTime(temporal);
         return this;
+    }
+
+    /**
+     * The {@link java.awt.Color Color} of the embed
+     *
+     * @return Color the builder has been set with.
+     */
+    @Nonnull
+    public java.awt.Color getColor()
+    {
+        return new Color(color);
     }
 
     /**
@@ -423,6 +457,18 @@ public class EmbedBuilder
     {
         this.color = color;
         return this;
+    }
+
+    /**
+     * The {@link net.dv8tion.jda.api.entities.MessageEmbed.Thumbnail Thumbnail} used to
+     * build the thumbnail for the embed.
+     *
+     * @return Thumbnail with current thumbnail context.
+     */
+    @Nonnull
+    public MessageEmbed.Thumbnail getThumbnail()
+    {
+        return thumbnail; 
     }
 
     /**
@@ -473,6 +519,18 @@ public class EmbedBuilder
     }
 
     /**
+     * The {@link net.dv8tion.jda.api.entities.MessageEmbed.ImageInfo ImageInfo} used to
+     * build the image for the embed.
+     *
+     * @return ImageInfo with current image context.
+     */
+    @Nonnull
+    public MessageEmbed.ImageInfo getImage()
+    {
+        return image; 
+    }
+
+    /**
      * Sets the Image of the embed.
      *
      * <p><b><a href="https://raw.githubusercontent.com/DV8FromTheWorld/JDA/assets/assets/docs/embeds/11-setImage.png">Example</a></b>
@@ -519,6 +577,18 @@ public class EmbedBuilder
             this.image = new MessageEmbed.ImageInfo(url, null, 0, 0);
         }
         return this;
+    }
+
+    /**
+     * The {@link net.dv8tion.jda.api.entities.MessageEmbed.AuthorInfo AuthorInfo} used to
+     * build the footer for the embed.
+     *
+     * @return AuthorInfo with current author context
+     */
+    @Nonnull
+    public MessageEmbed.AuthorInfo getAuthor()
+    {
+        return author; 
     }
 
     /**
@@ -631,6 +701,18 @@ public class EmbedBuilder
             this.author = new MessageEmbed.AuthorInfo(name, url, iconUrl, null);
         }
         return this;
+    }
+
+    /**
+     * The {@link net.dv8tion.jda.api.entities.MessageEmbed.Footer Footer} used to
+     * build the footer for the embed.
+     *
+     * @return Footer with current footer context.
+     */
+    @Nonnull
+    public MessageEmbed.Footer getFooter()
+    {
+        return footer;
     }
 
     /**
