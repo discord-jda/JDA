@@ -421,6 +421,17 @@ public class EmbedBuilder
     }
 
     /**
+     * The {@link Int int} of the color as a raw integer
+     *
+     * @return Raw color the builder has been set with.
+     */
+    @Nonnull
+    public int getColorRaw()
+    {
+        return color;
+    }
+
+    /**
      * Sets the Color of the embed.
      *
      * <p><b><a href="https://raw.githubusercontent.com/DV8FromTheWorld/JDA/assets/assets/docs/embeds/02-setColor.png" target="_blank">Example</a></b>
