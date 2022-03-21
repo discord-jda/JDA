@@ -237,7 +237,7 @@ public class EmbedBuilder
     /**
      * The title that will be used for the builder, this will return null when no title was found.
      *
-     * @return String with current title.
+     * @return Nullable String containing the title.
      */
     @Nonnull
     public String getTitle()
