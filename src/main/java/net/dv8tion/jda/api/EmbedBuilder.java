@@ -424,9 +424,9 @@ public class EmbedBuilder
     }
 
     /**
-     * The {@link Int int} of the color as a raw integer
+     * The raw RGB color value for this builder, 0 when not set.
      *
-     * @return Raw color the builder has been set with.
+     * @return The raw RGB color value or 0
      */
     public int getColorRaw()
     {
