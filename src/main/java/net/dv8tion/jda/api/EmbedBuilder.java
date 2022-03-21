@@ -714,10 +714,11 @@ public class EmbedBuilder
     }
 
     /**
-     * The {@link net.dv8tion.jda.api.entities.MessageEmbed.Footer Footer} used to
-     * build the footer for the embed.
+     * The footer (bottom) of the embedded content.
+     * <br>This is typically used for timestamps or site icons.
      *
-     * @return Footer with current footer context.
+     * @return Possibly-null {@link net.dv8tion.jda.api.entities.MessageEmbed.Footer Footer}
+     *         containing the embed footer content.
      */
     @Nonnull
     public MessageEmbed.Footer getFooter()
