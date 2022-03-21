@@ -470,10 +470,11 @@ public class EmbedBuilder
     }
 
     /**
-     * The {@link net.dv8tion.jda.api.entities.MessageEmbed.Thumbnail Thumbnail} used to
-     * build the thumbnail for the embed.
+     * The information about the {@link net.dv8tion.jda.api.entities.MessageEmbed.Thumbnail Thumbnail} image to be displayed with the embed.
+     * <br>If a {@link net.dv8tion.jda.api.entities.MessageEmbed.Thumbnail Thumbnail} hasn't been set on this builder, this returns null.
      *
-     * @return Thumbnail with current thumbnail context.
+     * @return Possibly-null {@link net.dv8tion.jda.api.entities.MessageEmbed.Thumbnail Thumbnail} instance
+     *         containing general information on the displayable thumbnail.
      */
     @Nonnull
     public MessageEmbed.Thumbnail getThumbnail()
