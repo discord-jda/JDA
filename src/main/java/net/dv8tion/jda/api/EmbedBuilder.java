@@ -410,9 +410,12 @@ public class EmbedBuilder
     }
 
     /**
-     * The {@link java.awt.Color Color} of the embed
+     * The color of the stripe on the side of the embed.
+     * <br>If the color is 0, this will return null.
      *
-     * @return Color the builder has been set with.
+     * @return Nullable {@link java.awt.Color Color}
+     *
+     * @see    #getColorRaw()
      */
     @Nonnull
     public Color getColor()
