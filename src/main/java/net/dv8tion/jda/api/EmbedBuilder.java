@@ -378,9 +378,9 @@ public class EmbedBuilder
     }
 
     /**
-     * The {@link java.time.OffsetDateTime Timestamp} of the embed
+     * The Timestamp of the builder
      *
-     * @return Timestamp the builder has been set with.
+     * @return Nullable {@link java.time.OffsetDateTime OffsetDateTime} object representing the timestamp
      */
     @Nonnull
     public OffsetDateTime getTimestamp()
