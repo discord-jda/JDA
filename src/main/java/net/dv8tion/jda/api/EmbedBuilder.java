@@ -594,10 +594,11 @@ public class EmbedBuilder
     }
 
     /**
-     * The {@link net.dv8tion.jda.api.entities.MessageEmbed.AuthorInfo AuthorInfo} used to
-     * build the author for the embed.
+     * The information on the author of builder.
+     * <br>This is typically used to represent the account on the providing site.
      *
-     * @return AuthorInfo with current author context
+     * @return Possibly-null {@link net.dv8tion.jda.api.entities.MessageEmbed.AuthorInfo AuthorInfo}
+     *         containing author information.
      */
     @Nonnull
     public MessageEmbed.AuthorInfo getAuthor()
