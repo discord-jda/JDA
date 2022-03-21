@@ -529,10 +529,10 @@ public class EmbedBuilder
     }
 
     /**
-     * The {@link net.dv8tion.jda.api.entities.MessageEmbed.ImageInfo ImageInfo} used to
-     * build the image for the embed.
+     * The information about the image in builder, or null when not set
      *
-     * @return ImageInfo with current image context.
+     * @return Possibly-null {@link net.dv8tion.jda.api.entities.MessageEmbed.ImageInfo ImageInfo}
+     *         containing image information.
      */
     @Nonnull
     public MessageEmbed.ImageInfo getImage()
