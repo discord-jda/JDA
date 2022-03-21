@@ -235,8 +235,7 @@ public class EmbedBuilder
     }
 
     /**
-     * The {@link String String} used to
-     * build the title for the embed.
+     * The title that will be used for the builder, this will return null when no title was found.
      *
      * @return String with current title.
      */
