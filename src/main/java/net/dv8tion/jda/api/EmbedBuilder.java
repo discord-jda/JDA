@@ -537,7 +537,7 @@ public class EmbedBuilder
      * @return Possibly-null {@link net.dv8tion.jda.api.entities.MessageEmbed.ImageInfo ImageInfo}
      *         containing image information.
      */
-    @Nonnull
+    @Nullable
     public MessageEmbed.ImageInfo getImage()
     {
         return image; 
