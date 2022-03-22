@@ -16,19 +16,12 @@
 
 package net.dv8tion.jda.internal.entities;
 
-import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.PrivateChannel;
 import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.requests.RestAction;
-import org.jetbrains.annotations.Contract;
+import net.dv8tion.jda.api.entities.UserReference;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.EnumSet;
-import java.util.List;
 
-public class UserById implements User
+public class UserById implements UserReference
 {
     protected final long id;
 
@@ -70,119 +63,5 @@ public class UserById implements User
     public String toString()
     {
         return "U:(" + getId() + ')';
-    }
-
-    @Contract("->fail")
-    private void unsupported()
-    {
-        throw new UnsupportedOperationException("This User instance only wraps an ID. Other operations are unsupported");
-    }
-
-    @Nonnull
-    @Override
-    public String getName()
-    {
-        unsupported();
-        return null;
-    }
-
-    @Nonnull
-    @Override
-    public String getDiscriminator()
-    {
-        unsupported();
-        return null;
-    }
-
-    @Nullable
-    @Override
-    public String getAvatarId()
-    {
-        unsupported();
-        return null;
-    }
-
-    @Nonnull
-    @Override
-    public RestAction<Profile> retrieveProfile()
-    {
-        unsupported();
-        return null;
-    }
-
-    @Nonnull
-    @Override
-    public String getDefaultAvatarId()
-    {
-        unsupported();
-        return null;
-    }
-
-    @Nonnull
-    @Override
-    public String getAsTag()
-    {
-        unsupported();
-        return null;
-    }
-
-    @Override
-    public boolean hasPrivateChannel()
-    {
-        unsupported();
-        return false;
-    }
-
-    @Nonnull
-    @Override
-    public RestAction<PrivateChannel> openPrivateChannel()
-    {
-        unsupported();
-        return null;
-    }
-
-    @Nonnull
-    @Override
-    public List<Guild> getMutualGuilds()
-    {
-        unsupported();
-        return null;
-    }
-
-    @Override
-    public boolean isBot()
-    {
-        unsupported();
-        return false;
-    }
-
-    @Override
-    public boolean isSystem()
-    {
-        unsupported();
-        return false;
-    }
-
-    @Nonnull
-    @Override
-    public JDA getJDA()
-    {
-        unsupported();
-        return null;
-    }
-
-    @Nonnull
-    @Override
-    public EnumSet<UserFlag> getFlags()
-    {
-        unsupported();
-        return null;
-    }
-
-    @Override
-    public int getFlagsRaw()
-    {
-        unsupported();
-        return 0;
     }
 }

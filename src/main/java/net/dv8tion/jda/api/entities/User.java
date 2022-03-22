@@ -102,7 +102,7 @@ public interface User extends IMentionable
      * @since  4.2.1
      */
     @Nonnull
-    static User fromId(long id)
+    static UserReference fromId(long id)
     {
         return new UserById(id);
     }
@@ -124,7 +124,7 @@ public interface User extends IMentionable
      * @since  4.2.1
      */
     @Nonnull
-    static User fromId(@Nonnull String id)
+    static UserReference fromId(@Nonnull String id)
     {
         return fromId(MiscUtil.parseSnowflake(id));
     }

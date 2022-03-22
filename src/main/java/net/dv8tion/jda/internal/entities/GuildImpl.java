@@ -530,7 +530,7 @@ public class GuildImpl implements Guild
     }
 
     @Override
-    public boolean isMember(@Nonnull User user)
+    public boolean isMember(@Nonnull UserReference user)
     {
         return memberCache.get(user.getIdLong()) != null;
     }
@@ -1304,32 +1304,15 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public AuditableRestAction<Void> kick(@Nonnull Member member, String reason)
+    public AuditableRestAction<Void> kick(@Nonnull UserReference user, String reason)
     {
-        Checks.notNull(member, "member");
-        checkGuild(member.getGuild(), "member");
+        Checks.notNull(user, "User");
         checkPermission(Permission.KICK_MEMBERS);
-        checkPosition(member);
-        return kick0(member.getUser().getId(), reason);
-    }
+        Member member = resolveMember(user);
+        if (member != null) // If user is in guild. Check if we are able to ban.
+            checkPosition(member);
 
-    @Nonnull
-    @Override
-    public AuditableRestAction<Void> kick(@Nonnull String userId, @Nullable String reason)
-    {
-        Member member = getMemberById(userId);
-        if (member != null)
-            return kick(member, reason);
-        // Check permissions and whether the user is the owner, otherwise attempt a kick
-        Checks.check(!userId.equals(getOwnerId()), "Cannot kick the owner of a guild!");
-        checkPermission(Permission.KICK_MEMBERS);
-        return kick0(userId, reason);
-    }
-
-    @Nonnull
-    private AuditableRestAction<Void> kick0(@Nonnull String userId, @Nullable String reason)
-    {
-        Route.CompiledRoute route = Route.Guilds.KICK_MEMBER.compile(getId(), userId);
+        Route.CompiledRoute route = Route.Guilds.KICK_MEMBER.compile(getId(), user.getId());
         if (!Helpers.isBlank(reason))
         {
             Checks.check(reason.length() <= 512, "Reason cannot be longer than 512 characters.");
@@ -1340,44 +1323,26 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public AuditableRestAction<Void> ban(@Nonnull User user, int delDays, String reason)
+    public AuditableRestAction<Void> ban(@Nonnull UserReference user, int delDays, String reason)
     {
         Checks.notNull(user, "User");
-        checkPermission(Permission.BAN_MEMBERS);
-
-        if (isMember(user)) // If user is in guild. Check if we are able to ban.
-            checkPosition(getMember(user));
-
-        return ban0(user.getId(), delDays, reason);
-    }
-
-    @Nonnull
-    @Override
-    public AuditableRestAction<Void> ban(@Nonnull String userId, int delDays, String reason)
-    {
-        Checks.notNull(userId, "User");
-        checkPermission(Permission.BAN_MEMBERS);
-
-        User user = getJDA().getUserById(userId);
-        if (user != null) // If we have the user cached then we should use the additional information available to use during the ban process.
-            return ban(user, delDays, reason);
-
-        return ban0(userId, delDays, reason);
-    }
-
-    @Nonnull
-    private AuditableRestAction<Void> ban0(@Nonnull String userId, int delDays, String reason)
-    {
         Checks.notNegative(delDays, "Deletion Days");
         Checks.check(delDays <= 7, "Deletion Days must not be bigger than 7.");
+        checkPermission(Permission.BAN_MEMBERS);
 
-        Route.CompiledRoute route = Route.Guilds.BAN.compile(getId(), userId);
+        Member member = resolveMember(user);
+        if (member != null) // If user is in guild. Check if we are able to ban.
+            checkPosition(member);
+
+        Route.CompiledRoute route = Route.Guilds.BAN.compile(getId(), user.getId());
         DataObject params = DataObject.empty();
+
         if (!Helpers.isBlank(reason))
         {
             Checks.check(reason.length() <= 512, "Reason cannot be longer than 512 characters.");
             params.put("reason", reason);
         }
+
         if (delDays > 0)
             params.put("delete_message_days", delDays);
 
@@ -1386,35 +1351,35 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public AuditableRestAction<Void> unban(@Nonnull String userId)
+    public AuditableRestAction<Void> unban(@Nonnull UserReference user)
     {
-        Checks.isSnowflake(userId, "User ID");
+        Checks.notNull(user, "User");
         checkPermission(Permission.BAN_MEMBERS);
 
-        Route.CompiledRoute route = Route.Guilds.UNBAN.compile(getId(), userId);
+        Route.CompiledRoute route = Route.Guilds.UNBAN.compile(getId(), user.getId());
         return new AuditableRestActionImpl<>(getJDA(), route);
     }
 
     @Nonnull
     @Override
-    public AuditableRestAction<Void> timeoutUntilById(@Nonnull String userId, @Nonnull TemporalAccessor temporal)
+    public AuditableRestAction<Void> timeoutUntil(@Nonnull UserReference user, @Nonnull TemporalAccessor temporal)
     {
-        Checks.isSnowflake(userId, "User ID");
+        Checks.notNull(user, "User");
         Checks.notNull(temporal, "Temporal");
         OffsetDateTime date = Helpers.toOffsetDateTime(temporal);
         Checks.check(date.isAfter(OffsetDateTime.now()), "Cannot put a member in time out with date in the past. Provided: %s", date);
         Checks.check(date.isBefore(OffsetDateTime.now().plusDays(Member.MAX_TIME_OUT_LENGTH)), "Cannot put a member in time out for more than 28 days. Provided: %s", date);
         checkPermission(Permission.MODERATE_MEMBERS);
 
-        return timeoutUntilById0(userId, date);
+        return timeoutUntilById0(user.getId(), date);
     }
 
     @Nonnull
     @Override
-    public AuditableRestAction<Void> removeTimeoutById(@Nonnull String userId)
+    public AuditableRestAction<Void> removeTimeout(@Nonnull UserReference user)
     {
-        Checks.isSnowflake(userId, "User ID");
-        return timeoutUntilById0(userId, null);
+        Checks.notNull(user, "User");
+        return timeoutUntilById0(user.getId(), null);
     }
 
     @Nonnull
@@ -1427,75 +1392,81 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public AuditableRestAction<Void> deafen(@Nonnull Member member, boolean deafen)
+    public AuditableRestAction<Void> deafen(@Nonnull UserReference user, boolean deafen)
     {
-        Checks.notNull(member, "Member");
-        checkGuild(member.getGuild(), "Member");
+        Checks.notNull(user, "User");
         checkPermission(Permission.VOICE_DEAF_OTHERS);
 
-        GuildVoiceState voiceState = member.getVoiceState();
-        if (voiceState != null)
+        Member member = resolveMember(user);
+        if (member != null)
         {
-            if (voiceState.getChannel() == null)
-                throw new IllegalStateException("Can only deafen members who are currently in a voice channel");
-            if (voiceState.isGuildDeafened() == deafen)
-                return new CompletedRestAction<>(getJDA(), null);
+            checkGuild(member.getGuild(), "Member");
+            GuildVoiceState voiceState = member.getVoiceState();
+            if (voiceState != null)
+            {
+                if (voiceState.getChannel() == null)
+                    throw new IllegalStateException("Can only deafen members who are currently in a voice channel");
+                if (voiceState.isGuildDeafened() == deafen)
+                    return new CompletedRestAction<>(getJDA(), null);
+            }
         }
 
         DataObject body = DataObject.empty().put("deaf", deafen);
-        Route.CompiledRoute route = Route.Guilds.MODIFY_MEMBER.compile(getId(), member.getUser().getId());
+        Route.CompiledRoute route = Route.Guilds.MODIFY_MEMBER.compile(getId(), user.getId());
         return new AuditableRestActionImpl<>(getJDA(), route, body);
     }
 
     @Nonnull
     @Override
-    public AuditableRestAction<Void> mute(@Nonnull Member member, boolean mute)
+    public AuditableRestAction<Void> mute(@Nonnull UserReference user, boolean mute)
     {
-        Checks.notNull(member, "Member");
-        checkGuild(member.getGuild(), "Member");
+        Checks.notNull(user, "User");
         checkPermission(Permission.VOICE_MUTE_OTHERS);
 
-        GuildVoiceState voiceState = member.getVoiceState();
-        if (voiceState != null)
+        Member member = resolveMember(user);
+        if (member != null)
         {
-            if (voiceState.getChannel() == null)
-                throw new IllegalStateException("Can only mute members who are currently in a voice channel");
-            if (voiceState.isGuildMuted() == mute && (mute || !voiceState.isSuppressed()))
-                return new CompletedRestAction<>(getJDA(), null);
+            checkGuild(member.getGuild(), "Member");
+            GuildVoiceState voiceState = member.getVoiceState();
+            if (voiceState != null)
+            {
+                if (voiceState.getChannel() == null)
+                    throw new IllegalStateException("Can only mute members who are currently in a voice channel");
+                if (voiceState.isGuildMuted() == mute && (mute || !voiceState.isSuppressed()))
+                    return new CompletedRestAction<>(getJDA(), null);
+            }
         }
 
         DataObject body = DataObject.empty().put("mute", mute);
-        Route.CompiledRoute route = Route.Guilds.MODIFY_MEMBER.compile(getId(), member.getUser().getId());
+        Route.CompiledRoute route = Route.Guilds.MODIFY_MEMBER.compile(getId(), user.getId());
         return new AuditableRestActionImpl<>(getJDA(), route, body);
     }
 
     @Nonnull
     @Override
-    public AuditableRestAction<Void> addRoleToMember(@Nonnull Member member, @Nonnull Role role)
+    public AuditableRestAction<Void> addRoleToMember(@Nonnull UserReference user, @Nonnull Role role)
     {
-        Checks.notNull(member, "Member");
+        Checks.notNull(user, "User");
         Checks.notNull(role, "Role");
-        checkGuild(member.getGuild(), "Member");
         checkGuild(role.getGuild(), "Role");
         checkPermission(Permission.MANAGE_ROLES);
         checkPosition(role);
 
-        Route.CompiledRoute route = Route.Guilds.ADD_MEMBER_ROLE.compile(getId(), member.getUser().getId(), role.getId());
+        Route.CompiledRoute route = Route.Guilds.ADD_MEMBER_ROLE.compile(getId(), user.getId(), role.getId());
         return new AuditableRestActionImpl<>(getJDA(), route);
     }
 
     @Nonnull
     @Override
-    public AuditableRestAction<Void> removeRoleFromMember(@Nonnull Member member, @Nonnull Role role)
+    public AuditableRestAction<Void> removeRoleFromMember(@Nonnull UserReference user, @Nonnull Role role)
     {
-        Checks.notNull(member, "Member");
+        Checks.notNull(user, "User");
         Checks.notNull(role, "Role");
-        checkGuild(member.getGuild(), "Member");
         checkGuild(role.getGuild(), "Role");
         checkPermission(Permission.MANAGE_ROLES);
         checkPosition(role);
 
-        Route.CompiledRoute route = Route.Guilds.REMOVE_MEMBER_ROLE.compile(getId(), member.getUser().getId(), role.getId());
+        Route.CompiledRoute route = Route.Guilds.REMOVE_MEMBER_ROLE.compile(getId(), user.getId(), role.getId());
         return new AuditableRestActionImpl<>(getJDA(), route);
     }
 
@@ -1760,6 +1731,14 @@ public class GuildImpl implements Guild
             checkPosition(role);
             Checks.check(!role.isManaged(), "Cannot %s a managed role %s a Member. Role: %s", type, preposition, role.toString());
         });
+    }
+
+    private Member resolveMember(UserReference user)
+    {
+        Member member = getMemberById(user.getIdLong());
+        if (member == null && user instanceof Member)
+            member = (Member) user;
+        return member;
     }
 
     private synchronized boolean isRequestToSpeakPending()

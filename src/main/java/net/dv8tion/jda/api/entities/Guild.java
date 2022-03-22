@@ -20,7 +20,6 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.Region;
 import net.dv8tion.jda.api.entities.channel.IGuildChannelContainer;
 import net.dv8tion.jda.api.entities.templates.Template;
-import net.dv8tion.jda.api.exceptions.HierarchyException;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
@@ -44,8 +43,6 @@ import net.dv8tion.jda.api.utils.cache.SortedSnowflakeCacheView;
 import net.dv8tion.jda.api.utils.concurrent.Task;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 import net.dv8tion.jda.internal.requests.DeferredRestAction;
-import net.dv8tion.jda.internal.requests.Route;
-import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.concurrent.task.GatewayTask;
@@ -1053,7 +1050,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      *
      * @return True - if this user is present in this guild.
      */
-    boolean isMember(@Nonnull User user);
+    boolean isMember(@Nonnull UserReference user);
 
     /**
      * Gets the {@link net.dv8tion.jda.api.entities.Member Member} object of the currently logged in account in this guild.
@@ -1864,8 +1861,8 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
 
     /**
      * Retrieves an immutable list of the currently banned {@link net.dv8tion.jda.api.entities.User Users}.
-     * <br>If you wish to ban or unban a user, use either {@link #ban(User, int) ban(User, int)} or
-     * {@link #unban(User) unban(User)}.
+     * <br>If you wish to ban or unban a user, use either {@link #ban(UserReference, int)} or
+     * {@link #unban(UserReference)}.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
      * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
@@ -1884,41 +1881,10 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     @CheckReturnValue
     RestAction<List<Ban>> retrieveBanList();
 
-    /**
-     * Retrieves a {@link net.dv8tion.jda.api.entities.Guild.Ban Ban} of the provided ID
-     * <br>If you wish to ban or unban a user, use either {@link #ban(String, int) ban(id, int)} or
-     * {@link #unban(String) unban(id)}.
-     *
-     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
-     *     <br>The ban list cannot be fetched due to a permission discrepancy</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_BAN UNKNOWN_BAN}
-     *     <br>Either the ban was removed before finishing the task or it did not exist in the first place</li>
-     * </ul>
-     *
-     * @param  userId
-     *         the id of the banned user
-     *
-     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#BAN_MEMBERS} permission.
-     *
-     * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.api.entities.Guild.Ban Ban}
-     *         <br>An unmodifiable ban object for the user banned from this guild
-     */
-    @Nonnull
-    @CheckReturnValue
-    default RestAction<Ban> retrieveBanById(long userId)
-    {
-        return retrieveBanById(Long.toUnsignedString(userId));
-    }
 
     /**
      * Retrieves a {@link net.dv8tion.jda.api.entities.Guild.Ban Ban} of the provided ID
-     * <br>If you wish to ban or unban a user, use either {@link #ban(String, int) ban(id, int)} or
-     * {@link #unban(String) unban(id)}.
+     * <br>If you wish to ban or unban a user, use either {@link #ban(UserReference, int)} or {@link #unban(UserReference)}.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
      * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
@@ -1930,8 +1896,9 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      *     <br>Either the ban was removed before finishing the task or it did not exist in the first place</li>
      * </ul>
      *
-     * @param  userId
-     *         the id of the banned user
+     * @param  user
+     *         The {@link net.dv8tion.jda.api.entities.UserReference UserReference} for the banned user.
+     *         This can be a user instance or {@link User#fromId(long)}.
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#BAN_MEMBERS} permission.
@@ -1941,39 +1908,8 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    RestAction<Ban> retrieveBanById(@Nonnull String userId);
+    RestAction<Ban> retrieveBan(@Nonnull UserReference user);
 
-    /**
-     * Retrieves a {@link net.dv8tion.jda.api.entities.Guild.Ban Ban} of the provided {@link net.dv8tion.jda.api.entities.User User}
-     * <br>If you wish to ban or unban a user, use either {@link #ban(User, int) ban(User, int)} or
-     * {@link #unban(User) unban(User)}.
-     *
-     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
-     *     <br>The ban list cannot be fetched due to a permission discrepancy</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_BAN UNKNOWN_BAN}
-     *     <br>Either the ban was removed before finishing the task or it did not exist in the first place</li>
-     * </ul>
-     *
-     * @param  bannedUser
-     *         the banned user
-     *
-     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#BAN_MEMBERS} permission.
-     *
-     * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.api.entities.Guild.Ban Ban}
-     *         <br>An unmodifiable ban object for the user banned from this guild
-     */
-    @Nonnull
-    @CheckReturnValue
-    default RestAction<Ban> retrieveBan(@Nonnull User bannedUser)
-    {
-        Checks.notNull(bannedUser, "bannedUser");
-        return retrieveBanById(bannedUser.getId());
-    }
 
     /**
      * The method calculates the amount of Members that would be pruned if {@link #prune(int, Role...)} was executed.
@@ -3327,7 +3263,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     AuditableRestAction<Integer> prune(int days, boolean wait, @Nonnull Role... roles);
 
     /**
-     * Kicks the {@link net.dv8tion.jda.api.entities.Member Member} from the {@link net.dv8tion.jda.api.entities.Guild Guild}.
+     * Kicks the {@link net.dv8tion.jda.api.entities.UserReference UserReference} from the from the {@link net.dv8tion.jda.api.entities.Guild Guild}.
      *
      * <p><b>Note:</b> {@link net.dv8tion.jda.api.entities.Guild#getMembers()} will still contain the {@link net.dv8tion.jda.api.entities.User User}
      * until Discord sends the {@link net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent GuildMemberRemoveEvent}.
@@ -3342,48 +3278,9 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      *     <br>The specified Member was removed from the Guild before finishing the task</li>
      * </ul>
      *
-     * @param  member
-     *         The {@link net.dv8tion.jda.api.entities.Member Member} to kick
-     *         from the from the {@link net.dv8tion.jda.api.entities.Guild Guild}.
-     * @param  reason
-     *         The reason for this action or {@code null} if there is no specified reason
-     *
-     * @throws java.lang.IllegalArgumentException
-     *         If the provided member is not a Member of this Guild or is {@code null}
-     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#KICK_MEMBERS} permission.
-     * @throws net.dv8tion.jda.api.exceptions.HierarchyException
-     *         If the logged in account cannot kick the other member due to permission hierarchy position.
-     *         <br>See {@link Member#canInteract(Member)}
-     * @throws java.lang.IllegalArgumentException
-     *         If the provided reason is longer than 512 characters
-     *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
-     *         Kicks the provided Member from the current Guild
-     */
-    @Nonnull
-    @CheckReturnValue
-    AuditableRestAction<Void> kick(@Nonnull Member member, @Nullable String reason);
-
-    /**
-     * Kicks the {@link net.dv8tion.jda.api.entities.Member Member} specified by the userId from the from the {@link net.dv8tion.jda.api.entities.Guild Guild}.
-     *
-     * <p><b>Note:</b> {@link net.dv8tion.jda.api.entities.Guild#getMembers()} will still contain the {@link net.dv8tion.jda.api.entities.User User}
-     * until Discord sends the {@link net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent GuildMemberRemoveEvent}.
-     *
-     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
-     *     <br>The target Member cannot be kicked due to a permission discrepancy</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MEMBER UNKNOWN_MEMBER}
-     *     <br>The specified Member was removed from the Guild before finishing the task</li>
-     * </ul>
-     *
-     * @param  userId
-     *         The id of the {@link net.dv8tion.jda.api.entities.User User} to kick
-     *         from the from the {@link net.dv8tion.jda.api.entities.Guild Guild}.
+     * @param  user
+     *         The {@link UserReference} for the user to kick.
+     *         This can be a member or user instance or {@link User#fromId(long)}.
      * @param  reason
      *         The reason for this action or {@code null} if there is no specified reason
      *
@@ -3393,7 +3290,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      *         If the logged in account cannot kick the other member due to permission hierarchy position.
      *         <br>See {@link Member#canInteract(Member)}
      * @throws java.lang.IllegalArgumentException
-     *         If the user for the provided id cannot be kicked from this Guild or the provided {@code userId} is blank/null.
+     *         If the user cannot be kicked from this Guild or the provided {@code user} is null.
      * @throws java.lang.IllegalArgumentException
      *         If the provided reason is longer than 512 characters
      *
@@ -3401,7 +3298,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    AuditableRestAction<Void> kick(@Nonnull String userId, @Nullable String reason);
+    AuditableRestAction<Void> kick(@Nonnull UserReference user, @Nullable String reason);
 
     /**
      * Kicks a {@link net.dv8tion.jda.api.entities.Member Member} from the {@link net.dv8tion.jda.api.entities.Guild Guild}.
@@ -3419,11 +3316,12 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      *     <br>The specified Member was removed from the Guild before finishing the task</li>
      * </ul>
      *
-     * @param  member
-     *         The {@link net.dv8tion.jda.api.entities.Member Member} to kick from the from the {@link net.dv8tion.jda.api.entities.Guild Guild}.
+     * @param  user
+     *         The {@link UserReference} for the user to kick.
+     *         This can be a member or user instance or {@link User#fromId(long)}.
      *
      * @throws java.lang.IllegalArgumentException
-     *         If the provided member is not a Member of this Guild or is {@code null}
+     *         If the user cannot be kicked from this Guild or the provided {@code user} is null.
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#KICK_MEMBERS} permission.
      * @throws net.dv8tion.jda.api.exceptions.HierarchyException
@@ -3435,53 +3333,16 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    default AuditableRestAction<Void> kick(@Nonnull Member member)
+    default AuditableRestAction<Void> kick(@Nonnull UserReference user)
     {
-        return kick(member, null);
+        return kick(user, null);
     }
 
     /**
-     * Kicks the {@link net.dv8tion.jda.api.entities.Member Member} specified by the userId from the from the {@link net.dv8tion.jda.api.entities.Guild Guild}.
-     *
-     * <p><b>Note:</b> {@link net.dv8tion.jda.api.entities.Guild#getMembers()} will still contain the {@link net.dv8tion.jda.api.entities.User User}
-     * until Discord sends the {@link net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent GuildMemberRemoveEvent}.
-     *
-     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
-     *     <br>The target Member cannot be kicked due to a permission discrepancy</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MEMBER UNKNOWN_MEMBER}
-     *     <br>The specified Member was removed from the Guild before finishing the task</li>
-     * </ul>
-     *
-     * @param  userId
-     *         The id of the {@link net.dv8tion.jda.api.entities.User User} to kick from the from the {@link net.dv8tion.jda.api.entities.Guild Guild}.
-     *
-     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#KICK_MEMBERS} permission.
-     * @throws net.dv8tion.jda.api.exceptions.HierarchyException
-     *         If the logged in account cannot kick the other member due to permission hierarchy position.
-     *         <br>See {@link Member#canInteract(Member)}
-     * @throws java.lang.IllegalArgumentException
-     *         If the userId provided does not correspond to a Member in this Guild or the provided {@code userId} is blank/null.
-     *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
-     */
-    @Nonnull
-    @CheckReturnValue
-    default AuditableRestAction<Void> kick(@Nonnull String userId)
-    {
-        return kick(userId, null);
-    }
-
-    /**
-     * Bans the {@link net.dv8tion.jda.api.entities.User User} and deletes messages sent by the user
-     * based on the amount of delDays.
+     * Bans the user specified by the provided {@link UserReference} and deletes messages sent by the user based on the amount of delDays.
      * <br>If you wish to ban a user without deleting any messages, provide delDays with a value of 0.
      *
-     * <p>You can unban a user with {@link net.dv8tion.jda.api.entities.Guild#unban(User) Guild.unban(User)}.
+     * <p>You can unban a user with {@link net.dv8tion.jda.api.entities.Guild#unban(UserReference) Guild.unban(UserReference)}.
      *
      * <p><b>Note:</b> {@link net.dv8tion.jda.api.entities.Guild#getMembers()} will still contain the {@link net.dv8tion.jda.api.entities.User User's}
      * {@link net.dv8tion.jda.api.entities.Member Member} object (if the User was in the Guild)
@@ -3498,7 +3359,8 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * </ul>
      *
      * @param  user
-     *         The {@link net.dv8tion.jda.api.entities.User User} to ban.
+     *         The {@link UserReference} for the user to ban.
+     *         This can be a member or user instance or {@link User#fromId(long)}.
      * @param  delDays
      *         The history of messages, in days, that will be deleted.
      * @param  reason
@@ -3513,170 +3375,20 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      *         <ul>
      *             <li>If the provided amount of days (delDays) is less than 0.</li>
      *             <li>If the provided amount of days (delDays) is bigger than 7.</li>
-     *             <li>If the provided reason is longer than 512 characters.</li>
-     *             <li>If the provided user is null</li>
+     *             <li>If the provided user is {@code null}</li>
      *         </ul>
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      */
     @Nonnull
     @CheckReturnValue
-    AuditableRestAction<Void> ban(@Nonnull User user, int delDays, @Nullable String reason);
+    AuditableRestAction<Void> ban(@Nonnull UserReference user, int delDays, @Nullable String reason);
 
     /**
-     * Bans the user specified by the userId and deletes messages sent by the user
-     * based on the amount of delDays.
-     * <br>If you wish to ban a user without deleting any messages, provide delDays with a value of 0.
-     *
-     * <p>You can unban a user with {@link net.dv8tion.jda.api.entities.Guild#unban(User) Guild.unban(User)}.
-     *
-     * <p><b>Note:</b> {@link net.dv8tion.jda.api.entities.Guild#getMembers()} will still contain the {@link net.dv8tion.jda.api.entities.User User's}
-     * {@link net.dv8tion.jda.api.entities.Member Member} object (if the User was in the Guild)
-     * until Discord sends the {@link net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent GuildMemberRemoveEvent}.
-     *
-     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
-     *     <br>The target Member cannot be banned due to a permission discrepancy</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_USER UNKNOWN_USER}
-     *     <br>The specified User does not exit</li>
-     * </ul>
-     *
-     * @param  userId
-     *         The id of the {@link net.dv8tion.jda.api.entities.User User} to ban.
-     * @param  delDays
-     *         The history of messages, in days, that will be deleted.
-     * @param  reason
-     *         The reason for this action or {@code null} if there is no specified reason
-     *
-     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#BAN_MEMBERS} permission.
-     * @throws net.dv8tion.jda.api.exceptions.HierarchyException
-     *         If the logged in account cannot ban the other user due to permission hierarchy position.
-     *         <br>See {@link Member#canInteract(Member)}
-     * @throws java.lang.IllegalArgumentException
-     *         <ul>
-     *             <li>If the provided amount of days (delDays) is less than 0.</li>
-     *             <li>If the provided amount of days (delDays) is bigger than 7.</li>
-     *             <li>If the provided reason is longer than 512 characters.</li>
-     *             <li>If the provided userId is null</li>
-     *         </ul>
-     *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
-     */
-    @Nonnull
-    @CheckReturnValue
-    AuditableRestAction<Void> ban(@Nonnull String userId, int delDays, @Nullable String reason);
-
-    /**
-     * Bans the {@link net.dv8tion.jda.api.entities.Member Member} and deletes messages sent by the user
-     * based on the amount of delDays.
+     * Bans the {@link net.dv8tion.jda.api.entities.UserReference UserReference} and deletes messages sent by the user based on the amount of delDays.
      * <br>If you wish to ban a member without deleting any messages, provide delDays with a value of 0.
      *
-     * <p>You can unban a user with {@link net.dv8tion.jda.api.entities.Guild#unban(User) Guild.unban(User)}.
-     *
-     * <p><b>Note:</b> {@link net.dv8tion.jda.api.entities.Guild#getMembers()} will still contain the
-     * {@link net.dv8tion.jda.api.entities.Member Member} until Discord sends the
-     * {@link net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent GuildMemberRemoveEvent}.
-     *
-     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
-     *     <br>The target Member cannot be banned due to a permission discrepancy</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MEMBER UNKNOWN_MEMBER}
-     *     <br>The specified Member was removed from the Guild before finishing the task</li>
-     * </ul>
-     *
-     * @param  member
-     *         The {@link net.dv8tion.jda.api.entities.Member Member} to ban.
-     * @param  delDays
-     *         The history of messages, in days, that will be deleted.
-     * @param  reason
-     *         The reason for this action or {@code null} if there is no specified reason
-     *
-     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#BAN_MEMBERS} permission.
-     * @throws net.dv8tion.jda.api.exceptions.HierarchyException
-     *         If the logged in account cannot ban the other user due to permission hierarchy position.
-     *         <br>See {@link Member#canInteract(Member)}
-     * @throws java.lang.IllegalArgumentException
-     *         <ul>
-     *             <li>If the provided amount of days (delDays) is less than 0.</li>
-     *             <li>If the provided amount of days (delDays) is bigger than 7.</li>
-     *             <li>If the provided reason is longer than 512 characters.</li>
-     *             <li>If the provided member is {@code null}</li>
-     *         </ul>
-     *
-     *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
-     */
-    @Nonnull
-    @CheckReturnValue
-    default AuditableRestAction<Void> ban(@Nonnull Member member, int delDays, @Nullable String reason)
-    {
-        Checks.notNull(member, "Member");
-        //Don't check if the provided member is from this guild. It doesn't matter if they are or aren't.
-
-        return ban(member.getUser(), delDays, reason);
-    }
-
-    /**
-     * Bans the {@link net.dv8tion.jda.api.entities.Member Member} and deletes messages sent by the user
-     * based on the amount of delDays.
-     * <br>If you wish to ban a member without deleting any messages, provide delDays with a value of 0.
-     *
-     * <p>You can unban a user with {@link net.dv8tion.jda.api.entities.Guild#unban(User) Guild.unban(User)}.
-     *
-     * <p><b>Note:</b> {@link net.dv8tion.jda.api.entities.Guild#getMembers()} will still contain the
-     * {@link net.dv8tion.jda.api.entities.Member Member} until Discord sends the
-     * {@link net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent GuildMemberRemoveEvent}.
-     *
-     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
-     *     <br>The target Member cannot be banned due to a permission discrepancy</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MEMBER UNKNOWN_MEMBER}
-     *     <br>The specified Member was removed from the Guild before finishing the task</li>
-     * </ul>
-     *
-     * @param  member
-     *         The {@link net.dv8tion.jda.api.entities.Member Member} to ban.
-     * @param  delDays
-     *         The history of messages, in days, that will be deleted.
-     *
-     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#BAN_MEMBERS} permission.
-     * @throws net.dv8tion.jda.api.exceptions.HierarchyException
-     *         If the logged in account cannot ban the other user due to permission hierarchy position.
-     *         <br>See {@link Member#canInteract(Member)}
-     * @throws java.lang.IllegalArgumentException
-     *         <ul>
-     *             <li>If the provided amount of days (delDays) is less than 0.</li>
-     *             <li>If the provided amount of days (delDays) is bigger than 7.</li>
-     *             <li>If the provided member is {@code null}</li>
-     *         </ul>
-     *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
-     */
-    @Nonnull
-    @CheckReturnValue
-    default AuditableRestAction<Void> ban(@Nonnull Member member, int delDays)
-    {
-        return ban(member, delDays, null);
-    }
-
-    /**
-     * Bans the {@link net.dv8tion.jda.api.entities.Member Member} and deletes messages sent by the user
-     * based on the amount of delDays.
-     * <br>If you wish to ban a member without deleting any messages, provide delDays with a value of 0.
-     *
-     * <p>You can unban a user with {@link net.dv8tion.jda.api.entities.Guild#unban(User) Guild.unban(User)}.
+     * <p>You can unban a user with {@link net.dv8tion.jda.api.entities.Guild#unban(UserReference) Guild.unban(UserReference)}.
      *
      * <p><b>Note:</b> {@link net.dv8tion.jda.api.entities.Guild#getMembers()} will still contain the
      * {@link net.dv8tion.jda.api.entities.Member Member} until Discord sends the
@@ -3693,7 +3405,8 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * </ul>
      *
      * @param  user
-     *         The {@link net.dv8tion.jda.api.entities.User User} to ban.
+     *         The {@link UserReference} for the user to ban.
+     *         This can be a member or user instance or {@link User#fromId(long)}.
      * @param  delDays
      *         The history of messages, in days, that will be deleted.
      *
@@ -3713,60 +3426,13 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    default AuditableRestAction<Void> ban(@Nonnull User user, int delDays)
+    default AuditableRestAction<Void> ban(@Nonnull UserReference user, int delDays)
     {
         return ban(user, delDays, null);
     }
 
     /**
-     * Bans the user specified by the userId and deletes messages sent by the user
-     * based on the amount of delDays.
-     * <br>If you wish to ban a user without deleting any messages, provide delDays with a value of 0.
-     *
-     * <p>You can unban a user with {@link net.dv8tion.jda.api.entities.Guild#unban(User) Guild.unban(User)}.
-     *
-     * <p><b>Note:</b> {@link net.dv8tion.jda.api.entities.Guild#getMembers()} will still contain the {@link net.dv8tion.jda.api.entities.User User's}
-     * {@link net.dv8tion.jda.api.entities.Member Member} object (if the User was in the Guild)
-     * until Discord sends the {@link net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent GuildMemberRemoveEvent}.
-     *
-     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
-     *     <br>The target Member cannot be banned due to a permission discrepancy</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MEMBER UNKNOWN_MEMBER}
-     *     <br>The specified Member was removed from the Guild before finishing the task</li>
-     * </ul>
-     *
-     * @param  userId
-     *         The id of the {@link net.dv8tion.jda.api.entities.User User} to ban.
-     * @param  delDays
-     *         The history of messages, in days, that will be deleted.
-     *
-     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#BAN_MEMBERS} permission.
-     * @throws net.dv8tion.jda.api.exceptions.HierarchyException
-     *         If the logged in account cannot ban the other user due to permission hierarchy position.
-     *         <br>See {@link Member#canInteract(Member)}
-     * @throws java.lang.IllegalArgumentException
-     *         <ul>
-     *             <li>If the provided amount of days (delDays) is less than 0.</li>
-     *             <li>If the provided amount of days (delDays) is bigger than 7.</li>
-     *             <li>If the provided userId is {@code null}</li>
-     *         </ul>
-     *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
-     */
-    @Nonnull
-    @CheckReturnValue
-    default AuditableRestAction<Void> ban(@Nonnull String userId, int delDays)
-    {
-        return ban(userId, delDays, null);
-    }
-
-    /**
-     * Unbans the specified {@link net.dv8tion.jda.api.entities.User User} from this Guild.
+     * Unbans the specified {@link net.dv8tion.jda.api.entities.UserReference UserReference} from this Guild.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
      * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
@@ -3779,7 +3445,8 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * </ul>
      *
      * @param  user
-     *         The id of the {@link net.dv8tion.jda.api.entities.User User} to unban.
+     *         The {@link net.dv8tion.jda.api.entities.UserReference UserReference} to unban.
+     *         This can be a member or user instance or {@link User#fromId(long)}.
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#BAN_MEMBERS} permission.
@@ -3790,39 +3457,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    default AuditableRestAction<Void> unban(@Nonnull User user)
-    {
-        Checks.notNull(user, "User");
-
-        return unban(user.getId());
-    }
-
-    /**
-     * Unbans the a user specified by the userId from this Guild.
-     *
-     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
-     *     <br>The target Member cannot be unbanned due to a permission discrepancy</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_USER UNKNOWN_USER}
-     *     <br>The specified User does not exist</li>
-     * </ul>
-     *
-     * @param  userId
-     *         The id of the {@link net.dv8tion.jda.api.entities.User User} to unban.
-     *
-     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#BAN_MEMBERS} permission.
-     * @throws IllegalArgumentException
-     *         If the provided id is null or blank
-     *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
-     */
-    @Nonnull
-    @CheckReturnValue
-    AuditableRestAction<Void> unban(@Nonnull String userId);
+    AuditableRestAction<Void> unban(@Nonnull UserReference user);
 
     /**
      * Puts the specified Member in time out in this {@link net.dv8tion.jda.api.entities.Guild Guild} for a specific amount of time.
@@ -3838,8 +3473,9 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      *     <br>The specified Member was removed from the Guild before finishing the task</li>
      * </ul>
      *
-     * @param  member
-     *         The member to put in time out
+     * @param  user
+     *         The {@link net.dv8tion.jda.api.entities.UserReference UserReference} to timeout.
+     *         This can be a member or user instance or {@link User#fromId(long)}.
      * @param  amount
      *         The amount of the provided {@link TimeUnit unit} to put the specified Member in time out for
      * @param  unit
@@ -3863,11 +3499,11 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    default AuditableRestAction<Void> timeoutFor(@Nonnull Member member, long amount, @Nonnull TimeUnit unit)
+    default AuditableRestAction<Void> timeoutFor(@Nonnull UserReference user, long amount, @Nonnull TimeUnit unit)
     {
         Checks.check(amount >= 1, "The amount must be more than 0");
         Checks.notNull(unit, "TimeUnit");
-        return timeoutUntil(member, Helpers.toOffset(System.currentTimeMillis() + unit.toMillis(amount)));
+        return timeoutUntil(user, Helpers.toOffset(System.currentTimeMillis() + unit.toMillis(amount)));
     }
 
     /**
@@ -3885,8 +3521,9 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      *     <br>The specified Member was removed from the Guild before finishing the task</li>
      * </ul>
      *
-     * @param  member
-     *         The member to put in time out
+     * @param  user
+     *         The {@link net.dv8tion.jda.api.entities.UserReference UserReference} to timeout.
+     *         This can be a member or user instance or {@link User#fromId(long)}.
      * @param  duration
      *         The duration to put the specified Member in time out for
      *
@@ -3907,10 +3544,10 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    default AuditableRestAction<Void> timeoutFor(@Nonnull Member member, @Nonnull Duration duration)
+    default AuditableRestAction<Void> timeoutFor(@Nonnull UserReference user, @Nonnull Duration duration)
     {
         Checks.notNull(duration, "Duration");
-        return timeoutUntil(member, Helpers.toOffset(System.currentTimeMillis() + duration.toMillis()));
+        return timeoutUntil(user, Helpers.toOffset(System.currentTimeMillis() + duration.toMillis()));
     }
 
     /**
@@ -3928,8 +3565,9 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      *     <br>The specified Member was removed from the Guild before finishing the task</li>
      * </ul>
      *
-     * @param  member
-     *         The member to put in time out
+     * @param  user
+     *         The {@link net.dv8tion.jda.api.entities.UserReference UserReference} to timeout.
+     *         This can be a member or user instance or {@link User#fromId(long)}.
      * @param  temporal
      *         The time the specified Member will be released from time out or null to remove the time out
      *
@@ -3950,257 +3588,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    default AuditableRestAction<Void> timeoutUntil(@Nonnull Member member, @Nonnull TemporalAccessor temporal)
-    {
-        Checks.notNull(member, "Member");
-        if (!getSelfMember().canInteract(member))
-            throw new HierarchyException("Can't modify a member with higher or equal highest role than yourself!");
-        return timeoutUntilById(member.getId(), temporal);
-    }
-
-    /**
-     * Puts a Member specified by the id in time out in this {@link net.dv8tion.jda.api.entities.Guild Guild} for a specific amount of time.
-     * <br>While a Member is in time out, all permissions except {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL VIEW_CHANNEL} and
-     * {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY MESSAGE_HISTORY} are removed from them.
-     *
-     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
-     *     <br>The target Member cannot be put into time out due to a permission discrepancy</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MEMBER UNKNOWN_MEMBER}
-     *     <br>The specified Member was removed from the Guild before finishing the task</li>
-     * </ul>
-     *
-     * @param  userId
-     *         The user id of the Member to put in time out
-     * @param  amount
-     *         The amount of the provided {@link TimeUnit unit} to put the specified Member in time out for
-     * @param  unit
-     *         The {@link TimeUnit Unit} type of {@code amount}
-     *
-     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MODERATE_MEMBERS} permission.
-     * @throws IllegalArgumentException
-     *         If any of the following checks are true
-     *         <ul>
-     *             <li>The provided {@code userId} is not a valid snowflake</li>
-     *             <li>The provided {@code amount} is lower than or equal to {@code 0}</li>
-     *             <li>The provided {@code unit} is null</li>
-     *             <li>The provided {@code amount} with the {@code unit} results in a date that is more than {@value Member#MAX_TIME_OUT_LENGTH} days in the future</li>
-     *         </ul>
-     *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
-     */
-    @Nonnull
-    @CheckReturnValue
-    default AuditableRestAction<Void> timeoutForById(long userId, long amount, @Nonnull TimeUnit unit)
-    {
-        return timeoutForById(Long.toUnsignedString(userId), amount, unit);
-    }
-
-    /**
-     * Puts a Member specified by the id in time out in this {@link net.dv8tion.jda.api.entities.Guild Guild} for a specific amount of time.
-     * <br>While a Member is in time out, all permissions except {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL VIEW_CHANNEL} and
-     * {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY MESSAGE_HISTORY} are removed from them.
-     *
-     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
-     *     <br>The target Member cannot be put into time out due to a permission discrepancy</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MEMBER UNKNOWN_MEMBER}
-     *     <br>The specified Member was removed from the Guild before finishing the task</li>
-     * </ul>
-     *
-     * @param  userId
-     *         The user id of the Member to put in time out
-     * @param  amount
-     *         The amount of the provided {@link TimeUnit unit} to put the specified Member in time out for
-     * @param  unit
-     *         The {@link TimeUnit Unit} type of {@code amount}
-     *
-     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MODERATE_MEMBERS} permission.
-     * @throws IllegalArgumentException
-     *         If any of the following checks are true
-     *         <ul>
-     *             <li>The provided {@code userId} is not a valid snowflake</li>
-     *             <li>The provided {@code amount} is lower than or equal to {@code 0}</li>
-     *             <li>The provided {@code unit} is null</li>
-     *             <li>The provided {@code amount} with the {@code unit} results in a date that is more than {@value Member#MAX_TIME_OUT_LENGTH} days in the future</li>
-     *         </ul>
-     *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
-     */
-    @Nonnull
-    @CheckReturnValue
-    default AuditableRestAction<Void> timeoutForById(@Nonnull String userId, long amount, @Nonnull TimeUnit unit)
-    {
-        Checks.check(amount >= 1, "The amount must be more than 0");
-        Checks.notNull(unit, "TimeUnit");
-        return timeoutUntilById(userId, Helpers.toOffset(System.currentTimeMillis() + unit.toMillis(amount)));
-    }
-
-    /**
-     * Puts the specified Member in time out in this {@link net.dv8tion.jda.api.entities.Guild Guild} for a specific amount of time.
-     * <br>While a Member is in time out, all permissions except {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL VIEW_CHANNEL} and
-     * {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY MESSAGE_HISTORY} are removed from them.
-     *
-     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
-     *     <br>The target Member cannot be put into time out due to a permission discrepancy</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MEMBER UNKNOWN_MEMBER}
-     *     <br>The specified Member was removed from the Guild before finishing the task</li>
-     * </ul>
-     *
-     * @param  userId
-     *         The user id of the Member to put in time out
-     * @param  duration
-     *         The duration to put the specified Member in time out for
-     *
-     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MODERATE_MEMBERS} permission.
-     * @throws IllegalArgumentException
-     *         If any of the following checks are true
-     *         <ul>
-     *             <li>The provided {@code userId} is not a valid snowflake</li>
-     *             <li>The provided {@code duration} is null</li>
-     *             <li>The provided {@code duration} is not positive</li>
-     *             <li>The provided {@code duration} results in a date that is more than {@value Member#MAX_TIME_OUT_LENGTH} days in the future</li>
-     *         </ul>
-     *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
-     */
-    @Nonnull
-    @CheckReturnValue
-    default AuditableRestAction<Void> timeoutForById(long userId, @Nonnull Duration duration)
-    {
-        return timeoutForById(Long.toUnsignedString(userId), duration);
-    }
-
-    /**
-     * Puts the specified Member in time out in this {@link net.dv8tion.jda.api.entities.Guild Guild} for a specific amount of time.
-     * <br>While a Member is in time out, all permissions except {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL VIEW_CHANNEL} and
-     * {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY MESSAGE_HISTORY} are removed from them.
-     *
-     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
-     *     <br>The target Member cannot be put into time out due to a permission discrepancy</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MEMBER UNKNOWN_MEMBER}
-     *     <br>The specified Member was removed from the Guild before finishing the task</li>
-     * </ul>
-     *
-     * @param  userId
-     *         The user id of the Member to put in time out
-     * @param  duration
-     *         The duration to put the specified Member in time out for
-     *
-     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MODERATE_MEMBERS} permission.
-     * @throws IllegalArgumentException
-     *         If any of the following checks are true
-     *         <ul>
-     *             <li>The provided {@code userId} is not a valid snowflake</li>
-     *             <li>The provided {@code duration} is null</li>
-     *             <li>The provided {@code duration} is not positive</li>
-     *             <li>The provided {@code duration} results in a date that is more than {@value Member#MAX_TIME_OUT_LENGTH} days in the future</li>
-     *         </ul>
-     *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
-     */
-    @Nonnull
-    @CheckReturnValue
-    default AuditableRestAction<Void> timeoutForById(@Nonnull String userId, @Nonnull Duration duration)
-    {
-        Checks.notNull(duration, "Duration");
-        Checks.check(!(duration.isNegative() || duration.isZero()), "Duration may not be negative or zero");
-        return timeoutUntilById(userId, Helpers.toOffset(System.currentTimeMillis() + duration.toMillis()));
-    }
-
-    /**
-     * Puts a Member specified by the id in time out in this {@link net.dv8tion.jda.api.entities.Guild Guild} until the specified date.
-     * <br>While a Member is in time out, all permissions except {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL VIEW_CHANNEL} and
-     * {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY MESSAGE_HISTORY} are removed from them.
-     *
-     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
-     *     <br>The target Member cannot be put into time out due to a permission discrepancy</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MEMBER UNKNOWN_MEMBER}
-     *     <br>The specified Member was removed from the Guild before finishing the task</li>
-     * </ul>
-     *
-     * @param  userId
-     *         The user id of the Member to put in time out
-     * @param  temporal
-     *         The time the specified Member will be released from time out or null to remove the time out
-     *
-     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MODERATE_MEMBERS} permission.
-     * @throws IllegalArgumentException
-     *         If any of the following checks are true
-     *         <ul>
-     *             <li>The provided {@code userId} is not a valid snowflake</li>
-     *             <li>The provided {@code temporal} is in the past</li>
-     *             <li>The provided {@code temporal} is more than {@value Member#MAX_TIME_OUT_LENGTH} days in the future</li>
-     *         </ul>
-     *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
-     */
-    @Nonnull
-    @CheckReturnValue
-    default AuditableRestAction<Void> timeoutUntilById(long userId, @Nonnull TemporalAccessor temporal)
-    {
-        return timeoutUntilById(Long.toUnsignedString(userId), temporal);
-    }
-
-    /**
-     * Puts a Member specified by the id in time out in this {@link net.dv8tion.jda.api.entities.Guild Guild} until the specified date.
-     * <br>While a Member is in time out, all permissions except {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL VIEW_CHANNEL} and
-     * {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY MESSAGE_HISTORY} are removed from them.
-     *
-     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
-     *     <br>The target Member cannot be timed out due to a permission discrepancy</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MEMBER UNKNOWN_MEMBER}
-     *     <br>The specified Member was removed from the Guild before finishing the task</li>
-     * </ul>
-     *
-     * @param  userId
-     *         The user id of the Member to put in time out
-     * @param  temporal
-     *         The time the specified Member will be released from time out or null to remove the time out
-     *
-     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MODERATE_MEMBERS} permission.
-     * @throws IllegalArgumentException
-     *         If any of the following checks are true
-     *         <ul>
-     *             <li>The provided {@code userId} is not a valid snowflake</li>
-     *             <li>The provided {@code temporal} is null</li>
-     *             <li>The provided {@code temporal} is in the past</li>
-     *             <li>The provided {@code temporal} is more than {@value Member#MAX_TIME_OUT_LENGTH} days in the future</li>
-     *         </ul>
-     *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
-     */
-    @Nonnull
-    @CheckReturnValue
-    AuditableRestAction<Void> timeoutUntilById(@Nonnull String userId, @Nonnull TemporalAccessor temporal);
+    AuditableRestAction<Void> timeoutUntil(@Nonnull UserReference user, @Nonnull TemporalAccessor temporal);
 
     /**
      * Removes a time out from the specified Member in this {@link net.dv8tion.jda.api.entities.Guild Guild}.
@@ -4215,8 +3603,9 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      *     <br>The specified Member was removed from the Guild before finishing the task</li>
      * </ul>
      *
-     * @param  member
-     *         The Member to remove a time out from
+     * @param  user
+     *         The {@link net.dv8tion.jda.api.entities.UserReference UserReference} to timeout.
+     *         This can be a member or user instance or {@link User#fromId(long)}.
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MODERATE_MEMBERS} permission.
      * @throws net.dv8tion.jda.api.exceptions.HierarchyException
@@ -4226,67 +3615,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      */
     @Nonnull
-    default AuditableRestAction<Void> removeTimeout(@Nonnull Member member)
-    {
-        Checks.notNull(member, "Member");
-        if (!getSelfMember().canInteract(member))
-            throw new HierarchyException("Can't modify a member with higher or equal highest role than yourself!");
-        return removeTimeoutById(member.getId());
-    }
-
-    /**
-     * Removes a time out from a Member specified by the id in this {@link net.dv8tion.jda.api.entities.Guild Guild}.
-     *
-     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
-     *     <br>The time out cannot be removed due to a permission discrepancy</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MEMBER UNKNOWN_MEMBER}
-     *     <br>The specified Member was removed from the Guild before finishing the task</li>
-     * </ul>
-     *
-     * @param  userId
-     *         The user id of the Member to put in time out
-     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MODERATE_MEMBERS} permission.
-     * @throws IllegalArgumentException
-     *         If the specified user id is not a valid snowflake
-     *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
-     */
-    @Nonnull
-    default AuditableRestAction<Void> removeTimeoutById(long userId)
-    {
-        return removeTimeoutById(Long.toUnsignedString(userId));
-    }
-
-    /**
-     * Removes a time out from a Member specified by the id in this {@link net.dv8tion.jda.api.entities.Guild Guild}.
-     *
-     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
-     *     <br>The time out cannot be removed due to a permission discrepancy</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MEMBER UNKNOWN_MEMBER}
-     *     <br>The specified Member was removed from the Guild before finishing the task</li>
-     * </ul>
-     *
-     * @param  userId
-     *         The user id of the Member to put in time out
-     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MODERATE_MEMBERS} permission.
-     * @throws IllegalArgumentException
-     *         If the specified user id is not a valid snowflake
-     *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
-     */
-    @Nonnull
-    @CheckReturnValue
-    AuditableRestAction<Void> removeTimeoutById(@Nonnull String userId);
+    AuditableRestAction<Void> removeTimeout(@Nonnull UserReference user);
 
     /**
      * Sets the Guild Deafened state state of the {@link net.dv8tion.jda.api.entities.Member Member} based on the provided
@@ -4308,8 +3637,9 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      *     <br>The specified Member is not connected to a voice channel</li>
      * </ul>
      *
-     * @param  member
-     *         The {@link net.dv8tion.jda.api.entities.Member Member} who's {@link GuildVoiceState VoiceState} is being changed.
+     * @param  user
+     *         The {@link net.dv8tion.jda.api.entities.UserReference UserReference} who's {@link GuildVoiceState} to change.
+     *         This can be a member or user instance or {@link User#fromId(long)}.
      * @param  deafen
      *         Whether this {@link net.dv8tion.jda.api.entities.Member Member} should be deafened or undeafened.
      *
@@ -4324,7 +3654,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    AuditableRestAction<Void> deafen(@Nonnull Member member, boolean deafen);
+    AuditableRestAction<Void> deafen(@Nonnull UserReference user, boolean deafen);
 
     /**
      * Sets the Guild Muted state state of the {@link net.dv8tion.jda.api.entities.Member Member} based on the provided
@@ -4346,8 +3676,9 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      *     <br>The specified Member is not connected to a voice channel</li>
      * </ul>
      *
-     * @param  member
-     *         The {@link net.dv8tion.jda.api.entities.Member Member} who's {@link GuildVoiceState VoiceState} is being changed.
+     * @param  user
+     *         The {@link net.dv8tion.jda.api.entities.UserReference UserReference} who's {@link GuildVoiceState} to change.
+     *         This can be a member or user instance or {@link User#fromId(long)}.
      * @param  mute
      *         Whether this {@link net.dv8tion.jda.api.entities.Member Member} should be muted or unmuted.
      *
@@ -4362,7 +3693,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    AuditableRestAction<Void> mute(@Nonnull Member member, boolean mute);
+    AuditableRestAction<Void> mute(@Nonnull UserReference user, boolean mute);
 
     /**
      * Atomically assigns the provided {@link net.dv8tion.jda.api.entities.Role Role} to the specified {@link net.dv8tion.jda.api.entities.Member Member}.
@@ -4386,8 +3717,9 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      *     <br>If the specified Role does not exist</li>
      * </ul>
      *
-     * @param  member
-     *         The target member who will receive the new role
+     * @param  user
+     *         The {@link net.dv8tion.jda.api.entities.UserReference UserReference} to change roles for.
+     *         This can be a member or user instance or {@link User#fromId(long)}.
      * @param  role
      *         The role which should be assigned atomically
      *
@@ -4406,112 +3738,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    AuditableRestAction<Void> addRoleToMember(@Nonnull Member member, @Nonnull Role role);
-
-    /**
-     * Atomically assigns the provided {@link net.dv8tion.jda.api.entities.Role Role} to the specified member by their user id.
-     * <br><b>This can be used together with other role modification methods as it does not require an updated cache!</b>
-     *
-     * <p>If multiple roles should be added/removed (efficiently) in one request
-     * you may use {@link #modifyMemberRoles(Member, Collection, Collection) modifyMemberRoles(Member, Collection, Collection)} or similar methods.
-     *
-     * <p>If the specified role is already present in the member's set of roles this does nothing.
-     *
-     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
-     *     <br>The Members Roles could not be modified due to a permission discrepancy</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MEMBER UNKNOWN_MEMBER}
-     *     <br>The target Member was removed from the Guild before finishing the task</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_ROLE UNKNOWN_ROLE}
-     *     <br>If the specified Role does not exist</li>
-     * </ul>
-     *
-     * @param  userId
-     *         The id of the target member who will receive the new role
-     * @param  role
-     *         The role which should be assigned atomically
-     *
-     * @throws java.lang.IllegalArgumentException
-     *         <ul>
-     *             <li>If the specified role is not from the current Guild</li>
-     *             <li>If the role is {@code null}</li>
-     *         </ul>
-     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the currently logged in account does not have {@link net.dv8tion.jda.api.Permission#MANAGE_ROLES Permission.MANAGE_ROLES}
-     * @throws net.dv8tion.jda.api.exceptions.HierarchyException
-     *         If the provided roles are higher in the Guild's hierarchy
-     *         and thus cannot be modified by the currently logged in account
-     *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
-     */
-    @Nonnull
-    @CheckReturnValue
-    default AuditableRestAction<Void> addRoleToMember(long userId, @Nonnull Role role)
-    {
-        Checks.notNull(role, "Role");
-        Checks.check(role.getGuild().equals(this), "Role must be from the same guild! Trying to use role from %s in %s", role.getGuild().toString(), toString());
-
-        Member member = getMemberById(userId);
-        if (member != null)
-            return addRoleToMember(member, role);
-        if (!getSelfMember().hasPermission(Permission.MANAGE_ROLES))
-            throw new InsufficientPermissionException(this, Permission.MANAGE_ROLES);
-        if (!getSelfMember().canInteract(role))
-            throw new HierarchyException("Can't modify a role with higher or equal highest role than yourself! Role: " + role.toString());
-        Route.CompiledRoute route = Route.Guilds.ADD_MEMBER_ROLE.compile(getId(), Long.toUnsignedString(userId), role.getId());
-        return new AuditableRestActionImpl<>(getJDA(), route);
-    }
-
-    /**
-     * Atomically assigns the provided {@link net.dv8tion.jda.api.entities.Role Role} to the specified member by their user id.
-     * <br><b>This can be used together with other role modification methods as it does not require an updated cache!</b>
-     *
-     * <p>If multiple roles should be added/removed (efficiently) in one request
-     * you may use {@link #modifyMemberRoles(Member, Collection, Collection) modifyMemberRoles(Member, Collection, Collection)} or similar methods.
-     *
-     * <p>If the specified role is already present in the member's set of roles this does nothing.
-     *
-     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
-     *     <br>The Members Roles could not be modified due to a permission discrepancy</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MEMBER UNKNOWN_MEMBER}
-     *     <br>The target Member was removed from the Guild before finishing the task</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_ROLE UNKNOWN_ROLE}
-     *     <br>If the specified Role does not exist</li>
-     * </ul>
-     *
-     * @param  userId
-     *         The id of the target member who will receive the new role
-     * @param  role
-     *         The role which should be assigned atomically
-     *
-     * @throws java.lang.IllegalArgumentException
-     *         <ul>
-     *             <li>If the specified role is not from the current Guild</li>
-     *             <li>If the role is {@code null}</li>
-     *         </ul>
-     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the currently logged in account does not have {@link net.dv8tion.jda.api.Permission#MANAGE_ROLES Permission.MANAGE_ROLES}
-     * @throws net.dv8tion.jda.api.exceptions.HierarchyException
-     *         If the provided roles are higher in the Guild's hierarchy
-     *         and thus cannot be modified by the currently logged in account
-     *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
-     */
-    @Nonnull
-    @CheckReturnValue
-    default AuditableRestAction<Void> addRoleToMember(@Nonnull String userId, @Nonnull Role role)
-    {
-        return addRoleToMember(MiscUtil.parseSnowflake(userId), role);
-    }
+    AuditableRestAction<Void> addRoleToMember(@Nonnull UserReference user, @Nonnull Role role);
 
     /**
      * Atomically removes the provided {@link net.dv8tion.jda.api.entities.Role Role} from the specified {@link net.dv8tion.jda.api.entities.Member Member}.
@@ -4535,8 +3762,9 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      *     <br>If the specified Role does not exist</li>
      * </ul>
      *
-     * @param  member
-     *         The target member who will lose the specified role
+     * @param  user
+     *         The {@link net.dv8tion.jda.api.entities.UserReference UserReference} to change roles for.
+     *         This can be a member or user instance or {@link User#fromId(long)}.
      * @param  role
      *         The role which should be removed atomically
      *
@@ -4555,112 +3783,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    AuditableRestAction<Void> removeRoleFromMember(@Nonnull Member member, @Nonnull Role role);
-
-    /**
-     * Atomically removes the provided {@link net.dv8tion.jda.api.entities.Role Role} from the specified member by their user id.
-     * <br><b>This can be used together with other role modification methods as it does not require an updated cache!</b>
-     *
-     * <p>If multiple roles should be added/removed (efficiently) in one request
-     * you may use {@link #modifyMemberRoles(Member, Collection, Collection) modifyMemberRoles(Member, Collection, Collection)} or similar methods.
-     *
-     * <p>If the specified role is not present in the member's set of roles this does nothing.
-     *
-     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
-     *     <br>The Members Roles could not be modified due to a permission discrepancy</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MEMBER UNKNOWN_MEMBER}
-     *     <br>The target Member was removed from the Guild before finishing the task</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_ROLE UNKNOWN_ROLE}
-     *     <br>If the specified Role does not exist</li>
-     * </ul>
-     *
-     * @param  userId
-     *         The id of the target member who will lose the specified role
-     * @param  role
-     *         The role which should be removed atomically
-     *
-     * @throws java.lang.IllegalArgumentException
-     *         <ul>
-     *             <li>If the specified role is not from the current Guild</li>
-     *             <li>The role is {@code null}</li>
-     *         </ul>
-     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the currently logged in account does not have {@link net.dv8tion.jda.api.Permission#MANAGE_ROLES Permission.MANAGE_ROLES}
-     * @throws net.dv8tion.jda.api.exceptions.HierarchyException
-     *         If the provided roles are higher in the Guild's hierarchy
-     *         and thus cannot be modified by the currently logged in account
-     *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
-     */
-    @Nonnull
-    @CheckReturnValue
-    default AuditableRestAction<Void> removeRoleFromMember(long userId, @Nonnull Role role)
-    {
-        Checks.notNull(role, "Role");
-        Checks.check(role.getGuild().equals(this), "Role must be from the same guild! Trying to use role from %s in %s", role.getGuild().toString(), toString());
-
-        Member member = getMemberById(userId);
-        if (member != null)
-            return removeRoleFromMember(member, role);
-        if (!getSelfMember().hasPermission(Permission.MANAGE_ROLES))
-            throw new InsufficientPermissionException(this, Permission.MANAGE_ROLES);
-        if (!getSelfMember().canInteract(role))
-            throw new HierarchyException("Can't modify a role with higher or equal highest role than yourself! Role: " + role.toString());
-        Route.CompiledRoute route = Route.Guilds.REMOVE_MEMBER_ROLE.compile(getId(), Long.toUnsignedString(userId), role.getId());
-        return new AuditableRestActionImpl<>(getJDA(), route);
-    }
-
-    /**
-     * Atomically removes the provided {@link net.dv8tion.jda.api.entities.Role Role} from the specified member by their user id.
-     * <br><b>This can be used together with other role modification methods as it does not require an updated cache!</b>
-     *
-     * <p>If multiple roles should be added/removed (efficiently) in one request
-     * you may use {@link #modifyMemberRoles(Member, Collection, Collection) modifyMemberRoles(Member, Collection, Collection)} or similar methods.
-     *
-     * <p>If the specified role is not present in the member's set of roles this does nothing.
-     *
-     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
-     *     <br>The Members Roles could not be modified due to a permission discrepancy</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MEMBER UNKNOWN_MEMBER}
-     *     <br>The target Member was removed from the Guild before finishing the task</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_ROLE UNKNOWN_ROLE}
-     *     <br>If the specified Role does not exist</li>
-     * </ul>
-     *
-     * @param  userId
-     *         The id of the target member who will lose the specified role
-     * @param  role
-     *         The role which should be removed atomically
-     *
-     * @throws java.lang.IllegalArgumentException
-     *         <ul>
-     *             <li>If the specified role is not from the current Guild</li>
-     *             <li>The role is {@code null}</li>
-     *         </ul>
-     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the currently logged in account does not have {@link net.dv8tion.jda.api.Permission#MANAGE_ROLES Permission.MANAGE_ROLES}
-     * @throws net.dv8tion.jda.api.exceptions.HierarchyException
-     *         If the provided roles are higher in the Guild's hierarchy
-     *         and thus cannot be modified by the currently logged in account
-     *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
-     */
-    @Nonnull
-    @CheckReturnValue
-    default AuditableRestAction<Void> removeRoleFromMember(@Nonnull String userId, @Nonnull Role role)
-    {
-        return removeRoleFromMember(MiscUtil.parseSnowflake(userId), role);
-    }
+    AuditableRestAction<Void> removeRoleFromMember(@Nonnull UserReference user, @Nonnull Role role);
 
     /**
      * Modifies the {@link net.dv8tion.jda.api.entities.Role Roles} of the specified {@link net.dv8tion.jda.api.entities.Member Member}
@@ -4693,7 +3816,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * RestAction<Void> action = guild.modifyMemberRoles(member, roles);
      * }</pre>
      *
-     * <p>You can use {@link #addRoleToMember(Member, Role)} and {@link #removeRoleFromMember(Member, Role)} to make updates
+     * <p>You can use {@link #addRoleToMember(UserReference, Role)} and {@link #removeRoleFromMember(UserReference, Role)} to make updates
      * independent of the cache.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
