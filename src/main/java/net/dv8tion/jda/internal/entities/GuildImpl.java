@@ -764,21 +764,20 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public RestAction<Ban> retrieveBanById(@Nonnull String userId)
+    public RestAction<Ban> retrieveBan(@Nonnull UserReference user)
     {
         if (!getSelfMember().hasPermission(Permission.BAN_MEMBERS))
             throw new InsufficientPermissionException(this, Permission.BAN_MEMBERS);
 
-        Checks.isSnowflake(userId, "User ID");
+        Checks.notNull(user, "User");
 
-        Route.CompiledRoute route = Route.Guilds.GET_BAN.compile(getId(), userId);
+        Route.CompiledRoute route = Route.Guilds.GET_BAN.compile(getId(), user.getId());
         return new RestActionImpl<>(getJDA(), route, (response, request) ->
         {
-
             EntityBuilder builder = api.getEntityBuilder();
             DataObject bannedObj = response.getObject();
-            DataObject user = bannedObj.getObject("user");
-            return new Ban(builder.createUser(user), bannedObj.getString("reason", null));
+            DataObject userJson = bannedObj.getObject("user");
+            return new Ban(builder.createUser(userJson), bannedObj.getString("reason", null));
         });
     }
 
