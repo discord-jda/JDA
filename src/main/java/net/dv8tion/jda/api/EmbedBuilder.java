@@ -237,9 +237,9 @@ public class EmbedBuilder
     /**
      * The title that will be used for the builder, this will return null when no title was found.
      *
-     * @return Nullable String containing the title.
+     * @return Possibly-null String containing the title.
      */
-    @Nonnull
+    @Nullable
     public String getTitle()
     {
         return title;
@@ -380,9 +380,9 @@ public class EmbedBuilder
     /**
      * The Timestamp of the builder
      *
-     * @return Nullable {@link java.time.OffsetDateTime OffsetDateTime} object representing the timestamp
+     * @return Possibly-null {@link java.time.OffsetDateTime OffsetDateTime} object representing the timestamp
      */
-    @Nonnull
+    @Nullable
     public OffsetDateTime getTimestamp()
     {
         return timestamp;
@@ -412,14 +412,14 @@ public class EmbedBuilder
      * The color of the stripe on the side of the embed.
      * <br>If the color is 0, this will return null.
      *
-     * @return Nullable {@link java.awt.Color Color}
+     * @return Possibly-null {@link java.awt.Color Color}
      *
      * @see    #getColorRaw()
      */
-    @Nonnull
+    @Nullable
     public Color getColor()
     {
-        return new Color(color);
+        return color == 0 ? null : new Color(color);
     }
 
     /**
@@ -478,7 +478,7 @@ public class EmbedBuilder
      * @return Possibly-null {@link net.dv8tion.jda.api.entities.MessageEmbed.Thumbnail Thumbnail} instance
      *         containing general information on the displayable thumbnail.
      */
-    @Nonnull
+    @Nullable
     public MessageEmbed.Thumbnail getThumbnail()
     {
         return thumbnail; 
@@ -599,7 +599,7 @@ public class EmbedBuilder
      * @return Possibly-null {@link net.dv8tion.jda.api.entities.MessageEmbed.AuthorInfo AuthorInfo}
      *         containing author information.
      */
-    @Nonnull
+    @Nullable
     public MessageEmbed.AuthorInfo getAuthor()
     {
         return author; 
@@ -724,7 +724,7 @@ public class EmbedBuilder
      * @return Possibly-null {@link net.dv8tion.jda.api.entities.MessageEmbed.Footer Footer}
      *         containing the embed footer content.
      */
-    @Nonnull
+    @Nullable
     public MessageEmbed.Footer getFooter()
     {
         return footer;
