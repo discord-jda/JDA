@@ -3263,7 +3263,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     AuditableRestAction<Integer> prune(int days, boolean wait, @Nonnull Role... roles);
 
     /**
-     * Kicks the {@link net.dv8tion.jda.api.entities.UserReference UserReference} from the from the {@link net.dv8tion.jda.api.entities.Guild Guild}.
+     * Kicks the {@link net.dv8tion.jda.api.entities.UserReference UserReference} from the {@link net.dv8tion.jda.api.entities.Guild Guild}.
      *
      * <p><b>Note:</b> {@link net.dv8tion.jda.api.entities.Guild#getMembers()} will still contain the {@link net.dv8tion.jda.api.entities.User User}
      * until Discord sends the {@link net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent GuildMemberRemoveEvent}.
@@ -3375,6 +3375,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      *         <ul>
      *             <li>If the provided amount of days (delDays) is less than 0.</li>
      *             <li>If the provided amount of days (delDays) is bigger than 7.</li>
+     *             <li>If the provided reason is longer than 512 characters.</li>
      *             <li>If the provided user is {@code null}</li>
      *         </ul>
      *
@@ -3400,8 +3401,8 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The target Member cannot be banned due to a permission discrepancy</li>
      *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MEMBER UNKNOWN_MEMBER}
-     *     <br>The specified Member was removed from the Guild before finishing the task</li>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_USER UNKNOWN_USER}
+     *     <br>The specified User does not exit</li>
      * </ul>
      *
      * @param  user
@@ -3489,7 +3490,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * @throws IllegalArgumentException
      *         If any of the following checks are true
      *         <ul>
-     *             <li>The provided {@code member} is null</li>
+     *             <li>The provided {@code user} is null</li>
      *             <li>The provided {@code amount} is lower than or equal to {@code 0}</li>
      *             <li>The provided {@code unit} is null</li>
      *             <li>The provided {@code amount} with the {@code unit} results in a date that is more than {@value Member#MAX_TIME_OUT_LENGTH} days in the future</li>
@@ -3535,7 +3536,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * @throws IllegalArgumentException
      *         If any of the following checks are true
      *         <ul>
-     *             <li>The provided {@code member} is null</li>
+     *             <li>The provided {@code user} is null</li>
      *             <li>The provided {@code duration} is null</li>
      *             <li>The provided {@code duration} results in a date that is more than {@value Member#MAX_TIME_OUT_LENGTH} days in the future</li>
      *         </ul>
@@ -3579,7 +3580,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * @throws IllegalArgumentException
      *         If any of the following are true
      *         <ul>
-     *             <li>The provided {@code member} is null</li>
+     *             <li>The provided {@code user} is null</li>
      *             <li>The provided {@code temporal} is in the past</li>
      *             <li>The provided {@code temporal} is more than {@value Member#MAX_TIME_OUT_LENGTH} days in the future</li>
      *         </ul>
