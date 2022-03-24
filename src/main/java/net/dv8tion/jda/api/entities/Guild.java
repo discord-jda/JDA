@@ -499,62 +499,9 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      *
      * @param  accessToken
      *         The access token
-     * @param  userId
-     *         The user id
-     *
-     * @throws IllegalArgumentException
-     *         If the user id or access token is blank, empty, or null,
-     *         or if the provided user is already in this guild
-     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the currently logged in account does not have {@link net.dv8tion.jda.api.Permission#CREATE_INSTANT_INVITE Permission.CREATE_INSTANT_INVITE}
-     *
-     * @return {@link MemberAction MemberAction}
-     *
-     * @see    <a href="https://discord.com/developers/docs/topics/oauth2" target="_blank">Discord OAuth2 Documentation</a>
-     *
-     * @since  3.7.0
-     */
-    @Nonnull
-    @CheckReturnValue
-    MemberAction addMember(@Nonnull String accessToken, @Nonnull String userId);
-
-    /**
-     * Adds the provided user to this guild.
-     * <br>This requires an <b>OAuth2 Access Token</b> with the scope {@code guilds.join}.
-     *
-     * @param  accessToken
-     *         The access token
      * @param  user
-     *         The user
-     *
-     * @throws IllegalArgumentException
-     *         If the user or access token is blank, empty, or null,
-     *         or if the provided user is already in this guild
-     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the currently logged in account does not have {@link net.dv8tion.jda.api.Permission#CREATE_INSTANT_INVITE Permission.CREATE_INSTANT_INVITE}
-     *
-     * @return {@link MemberAction MemberAction}
-     *
-     * @see    <a href="https://discord.com/developers/docs/topics/oauth2" target="_blank">Discord OAuth2 Documentation</a>
-     *
-     * @since  3.7.0
-     */
-    @Nonnull
-    @CheckReturnValue
-    default MemberAction addMember(@Nonnull String accessToken, @Nonnull User user)
-    {
-        Checks.notNull(user, "User");
-        return addMember(accessToken, user.getId());
-    }
-
-    /**
-     * Adds the user represented by the provided id to this guild.
-     * <br>This requires an <b>OAuth2 Access Token</b> with the scope {@code guilds.join}.
-     *
-     * @param  accessToken
-     *         The access token
-     * @param  userId
-     *         The user id
+     *         The {@link UserReference} for the member to add.
+     *         This can be a member or user instance or {@link User#fromId(long)}.
      *
      * @throws IllegalArgumentException
      *         If the user id or access token is blank, empty, or null,
@@ -570,10 +517,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    default MemberAction addMember(@Nonnull String accessToken, long userId)
-    {
-        return addMember(accessToken, Long.toUnsignedString(userId));
-    }
+    MemberAction addMember(@Nonnull String accessToken, @Nonnull UserReference user);
 
     /**
      * Whether this guild has loaded members.
@@ -1054,7 +998,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
 
     /**
      * Gets the {@link net.dv8tion.jda.api.entities.Member Member} object of the currently logged in account in this guild.
-     * <br>This is basically {@link net.dv8tion.jda.api.JDA#getSelfUser()} being provided to {@link #getMember(User)}.
+     * <br>This is basically {@link net.dv8tion.jda.api.JDA#getSelfUser()} being provided to {@link #getMember(UserReference)}.
      *
      * @return The Member object of the currently logged in account.
      */
@@ -1080,22 +1024,23 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * <p>This will only check cached members!
      *
      * @param  user
-     *         The {@link net.dv8tion.jda.api.entities.User User} which to retrieve a related Member object for.
+     *         The {@link UserReference} for the member to get.
+     *         This can be a member or user instance or {@link User#fromId(long)}.
      *
      * @throws java.lang.IllegalArgumentException
      *         If the provided user is null
      *
      * @return Possibly-null {@link net.dv8tion.jda.api.entities.Member Member} for the related {@link net.dv8tion.jda.api.entities.User User}.
      *
-     * @see    #retrieveMember(User)
+     * @see    #retrieveMember(UserReference)
      */
     @Nullable
-    Member getMember(@Nonnull User user);
+    Member getMember(@Nonnull UserReference user);
 
     /**
      * Gets a {@link net.dv8tion.jda.api.entities.Member Member} object via the id of the user. The id relates to
      * {@link net.dv8tion.jda.api.entities.User#getId()}, and this method is similar to {@link JDA#getUserById(String)}
-     * <br>This is more efficient that using {@link JDA#getUserById(String)} and {@link #getMember(User)}.
+     * <br>This is more efficient that using {@link JDA#getUserById(String)} and {@link #getMember(UserReference)}.
      * <br>If no Member in this Guild has the {@code userId} provided, this returns {@code null}.
      *
      * <p>This will only check cached members!
@@ -1119,7 +1064,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     /**
      * Gets a {@link net.dv8tion.jda.api.entities.Member Member} object via the id of the user. The id relates to
      * {@link net.dv8tion.jda.api.entities.User#getIdLong()}, and this method is similar to {@link JDA#getUserById(long)}
-     * <br>This is more efficient that using {@link JDA#getUserById(long)} and {@link #getMember(User)}.
+     * <br>This is more efficient that using {@link JDA#getUserById(long)} and {@link #getMember(UserReference)}.
      * <br>If no Member in this Guild has the {@code userId} provided, this returns {@code null}.
      *
      * <p>This will only check cached members!
@@ -2448,7 +2393,8 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * </ul>
      *
      * @param  user
-     *         The user to load the member from
+     *         The {@link UserReference} for the member to retrieve.
+     *         This can be a member or user instance or {@link User#fromId(long)}.
      *
      * @throws IllegalArgumentException
      *         If provided with null
@@ -2459,7 +2405,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * @see    #unloadMember(long)
      */
     @Nonnull
-    default RestAction<Member> retrieveMember(@Nonnull User user)
+    default RestAction<Member> retrieveMember(@Nonnull UserReference user)
     {
         Checks.notNull(user, "User");
         return retrieveMemberById(user.getId());
@@ -2735,13 +2681,13 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    default Task<List<Member>> retrieveMembers(@Nonnull Collection<User> users)
+    default Task<List<Member>> retrieveMembers(@Nonnull Collection<?extends UserReference> users)
     {
         Checks.noneNull(users, "Users");
         if (users.isEmpty())
             return new GatewayTask<>(CompletableFuture.completedFuture(Collections.emptyList()), () -> {});
 
-        long[] ids = users.stream().mapToLong(User::getIdLong).toArray();
+        long[] ids = users.stream().mapToLong(UserReference::getIdLong).toArray();
         return retrieveMembersByIds(ids);
     }
 
@@ -2886,13 +2832,13 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    default Task<List<Member>> retrieveMembers(boolean includePresence, @Nonnull Collection<User> users)
+    default Task<List<Member>> retrieveMembers(boolean includePresence, @Nonnull Collection<? extends UserReference> users)
     {
         Checks.noneNull(users, "Users");
         if (users.isEmpty())
             return new GatewayTask<>(CompletableFuture.completedFuture(Collections.emptyList()), () -> {});
 
-        long[] ids = users.stream().mapToLong(User::getIdLong).toArray();
+        long[] ids = users.stream().mapToLong(UserReference::getIdLong).toArray();
         return retrieveMembersByIds(includePresence, ids);
     }
 

@@ -289,14 +289,14 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public MemberAction addMember(@Nonnull String accessToken, @Nonnull String userId)
+    public MemberAction addMember(@Nonnull String accessToken, @Nonnull UserReference user)
     {
         Checks.notBlank(accessToken, "Access-Token");
-        Checks.isSnowflake(userId, "User ID");
-        Checks.check(getMemberById(userId) == null, "User is already in this guild");
+        Checks.notNull(user, "User");
+        Checks.check(!isMember(user), "User is already in this guild");
         if (!getSelfMember().hasPermission(Permission.CREATE_INSTANT_INVITE))
             throw new InsufficientPermissionException(this, Permission.CREATE_INSTANT_INVITE);
-        return new MemberActionImpl(getJDA(), this, userId, accessToken);
+        return new MemberActionImpl(getJDA(), this, user.getId(), accessToken);
     }
 
     @Override
@@ -546,7 +546,7 @@ public class GuildImpl implements Guild
     }
 
     @Override
-    public Member getMember(@Nonnull User user)
+    public Member getMember(@Nonnull UserReference user)
     {
         Checks.notNull(user, "User");
         return getMemberById(user.getIdLong());

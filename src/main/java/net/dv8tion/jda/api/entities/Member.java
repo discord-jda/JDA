@@ -40,7 +40,7 @@ import java.util.concurrent.TimeUnit;
  *
  * @since 3.0
  *
- * @see   Guild#getMember(User)
+ * @see   Guild#getMember(UserReference)
  * @see   Guild#getMemberCache()
  * @see   Guild#getMemberById(long)
  * @see   Guild#getMemberByTag(String)
