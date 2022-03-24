@@ -31,7 +31,8 @@ import java.util.*;
 /**
  * Represents a Discord Modal
  *
- * <p>Replying to an interaction with a modal will cause a form window to pop up on the User's Discord client.
+ * <p>Replying to an interaction with a modal will open an interactive popout on the User's Discord client.
+ * This is similar to the ban modal where you can input a ban reason.
   *
   * <h2>Example</h2>
  * <pre>{@code
@@ -62,20 +63,19 @@ import java.util.*;
  * }</pre>
  *
  * <p><b>Only a maximum of 5 component layouts can be included in a Modal, and only {@link net.dv8tion.jda.api.interactions.components.text.TextInput TextInputs} are allowed at this time.</b>
- * You can check whether a component is supported via {@link net.dv8tion.jda.api.interactions.components.Component.Type#isModalCompatible}
+ * You can check whether a component is supported via {@link net.dv8tion.jda.api.interactions.components.Component.Type#isModalCompatible}.
  *
  * @see    ModalInteractionEvent
  */
 public interface Modal extends SerializableData
 {
-
     /**
-     * The maximum amount of characters the custom id of a modal can have.
+     * The maximum length a modal custom id can have
      */
     int ID_MAX_LENGTH = 100;
 
     /**
-     * The maximum amount of characters the title of a modal can have.
+     * The maximum length a modal title can have
      */
     int TITLE_MAX_LENGTH = 45;
 
@@ -120,7 +120,7 @@ public interface Modal extends SerializableData
     }
 
     /**
-     * Creates a new Modal.
+     * Creates a new Modal. You must add at least one component to a modal before building it.
      *
      * @param  customId 
      *         The custom id for this modal
@@ -143,6 +143,9 @@ public interface Modal extends SerializableData
         return new Modal.Builder(customId).setTitle(title);
     }
 
+    /**
+     * A preconfigured builder for the creation of modals.
+     */
     class Builder
     {
         private final List<ActionRow> components = new ArrayList<>(5);

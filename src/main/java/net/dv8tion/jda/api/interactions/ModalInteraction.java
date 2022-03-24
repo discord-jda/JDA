@@ -28,7 +28,8 @@ import java.util.List;
 /**
  * Interaction on a {@link net.dv8tion.jda.api.interactions.components.text.Modal Modal}
  *
- * If the modal of this interaction was a reply to a {@link net.dv8tion.jda.api.interactions.components.ComponentInteraction ComponentInteraction}, you can also use {@link #deferEdit()} to edit the message instead of replying.
+ * <p>If the modal of this interaction was a reply to a {@link net.dv8tion.jda.api.interactions.components.ComponentInteraction ComponentInteraction},
+ * you can also use {@link #deferEdit()} to edit the message instead of replying.
  *
  * @see    net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
  */
@@ -45,9 +46,9 @@ public interface ModalInteraction extends IReplyCallback, IMessageEditCallback
     String getModalId();
 
     /**
-     * Returns a List of {@link net.dv8tion.jda.api.interactions.modals.ModalMapping ModalMappings} the modal in question contains
+     * Returns a List of {@link net.dv8tion.jda.api.interactions.modals.ModalMapping ModalMappings} the modal submitted. These are the submitted values and their respective field names.
      *
-     * @return List of {@link net.dv8tion.jda.api.interactions.modals.ModalMapping ModalMappings}
+     * @return Immutable List of {@link net.dv8tion.jda.api.interactions.modals.ModalMapping ModalMappings}
      *
      * @see    #getValue(String)
      */

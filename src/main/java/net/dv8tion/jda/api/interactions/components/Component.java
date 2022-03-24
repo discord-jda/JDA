@@ -25,7 +25,8 @@ import javax.annotation.Nonnull;
 
 /**
  * Component of a Message or Modal.
- * <br>These are used to extend messages or modals with interactive elements such as buttons or select menus.
+ * <br>These are used to extend messages with interactive elements such as buttons or select menus.
+ * Components are also the primary building blocks for {@link net.dv8tion.jda.api.interactions.components.text.Modal Modals}.
  *
  * @see ActionRow
  *

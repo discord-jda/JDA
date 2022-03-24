@@ -36,8 +36,9 @@ public interface IModalCallback extends IDeferrableCallback
      *
      * <p>This will open a popup on the target user's Discord client.
      *
-     * <p><b>You can only use this once per interaction!</b>
+     * <p>Interactions can only be acknowledged once.
      *
+     * <p><b>You only have 3 seconds to acknowledge an interaction!</b>
      * <br>When the acknowledgement is sent after the interaction expired, you will receive {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_INTERACTION ErrorResponse.UNKNOWN_INTERACTION}.
      *
      * @param  modal 

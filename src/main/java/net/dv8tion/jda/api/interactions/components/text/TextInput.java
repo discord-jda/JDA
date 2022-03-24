@@ -36,22 +36,22 @@ public interface TextInput extends ActionComponent
     int TEXT_INPUT_MIN_LENGTH = 1;
 
     /**
-     * The maximum amount of characters a TextInput's value can have
+     * The maximum length a TextInput value can have
      */
     int TEXT_INPUT_MAX_LENGTH = 4000;
 
     /**
-     * The maximum amount of characters the custom id of a TextInput component can have.
+     * The maximum length a TextInput custom id can have.
      */
     int ID_MAX_LENGTH = 100;
 
     /**
-     * The maximum amount of characters the placeholder of a TextInput component can have.
+     * The maximum length a TextInput placeholder can have.
      */
     int PLACEHOLDER_MAX_LENGTH = 100;
 
     /**
-     * The maximum amount of characters the label of a TextInput component can have.
+     * The maximum length a TextInput label can have.
      */
     int LABEL_MAX_LENGTH = 45;
 
@@ -100,7 +100,7 @@ public interface TextInput extends ActionComponent
     int getMaxLength();
 
     /**
-     * Whether this TextInput is required to be written to submit the Modal.
+     * Whether this TextInput is required to be non-empty
      *
      * @return True if this TextInput is required to be used.
      */
@@ -295,9 +295,10 @@ public interface TextInput extends ActionComponent
         /**
          * Sets the maximum length of this input field.
          *
-         * <b>This has to be between {@value #TEXT_INPUT_MIN_LENGTH} and {@value #TEXT_INPUT_MAX_LENGTH}</b>
+         * <p><b>This has to be between {@value #TEXT_INPUT_MIN_LENGTH} and {@value #TEXT_INPUT_MAX_LENGTH}</b>
          *
-         * @param maxLength The maximum amount of characters that need to be written
+         * @param  maxLength 
+         *         The maximum amount of characters that need to be written
          *
          * @throws IllegalArgumentException
          *         If maxLength is smaller than {@value #TEXT_INPUT_MIN_LENGTH} or greater than {@value #TEXT_INPUT_MAX_LENGTH}
@@ -361,7 +362,7 @@ public interface TextInput extends ActionComponent
          *         The placeholder
          *
          * @throws IllegalArgumentException
-         *         If the provided placeholder is not null and longer than {@link #PLACEHOLDER_MAX_LENGTH} characters
+         *         If the provided placeholder is longer than {@link #PLACEHOLDER_MAX_LENGTH} characters
          *
          * @return The same builder instance for chaining
          */
