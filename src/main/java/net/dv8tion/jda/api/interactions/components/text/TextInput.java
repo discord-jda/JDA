@@ -26,32 +26,28 @@ import javax.annotation.Nullable;
 /**
  * Represents a Discord Text input component
  *
- * Must be used in {@link Modal Modals}!
+ * Must be used in {@link net.dv8tion.jda.api.interactions.components.Modal Modals}!
  */
 public interface TextInput extends ActionComponent
 {
-    /**
-     * The minimum amount of characters a TextInput's value can have
-     */
-    int TEXT_INPUT_MIN_LENGTH = 1;
 
     /**
-     * The maximum length a TextInput value can have
+     * The maximum length a TextInput value can have. ({@value})
      */
     int TEXT_INPUT_MAX_LENGTH = 4000;
 
     /**
-     * The maximum length a TextInput custom id can have.
+     * The maximum length a TextInput custom id can have. ({@value})
      */
     int ID_MAX_LENGTH = 100;
 
     /**
-     * The maximum length a TextInput placeholder can have.
+     * The maximum length a TextInput placeholder can have. ({@value})
      */
     int PLACEHOLDER_MAX_LENGTH = 100;
 
     /**
-     * The maximum length a TextInput label can have.
+     * The maximum length a TextInput label can have. ({@value})
      */
     int LABEL_MAX_LENGTH = 45;
 
@@ -108,6 +104,7 @@ public interface TextInput extends ActionComponent
 
     /**
      * The pre-defined value of this TextInput component.
+     * <br>If this is not null, sending a Modal with this component will pre-populate the field with this String.
      *
      * <b>This is null if no pre-defined value has been set!</b>
      *
@@ -152,7 +149,7 @@ public interface TextInput extends ActionComponent
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If either id or label are null or blank</li>
-     *             <li>If style is null or UNKNOWN</li>
+     *             <li>If style is null or {@link TextInputStyle#UNKNOWN UNKNOWN}</li>
      *             <li>If id is longer than {@value #ID_MAX_LENGTH} characters</li>
      *             <li>If label is longer than {@value #LABEL_MAX_LENGTH} characters</li>
      *         </ul>
@@ -243,7 +240,7 @@ public interface TextInput extends ActionComponent
          *         The style to set
          *
          * @throws IllegalArgumentException
-         *         If style is null or UNKNOWN
+         *         If style is null or {@link TextInputStyle#UNKNOWN UNKNOWN}
          *
          * @return The same Builder for chaining convenience.
          */
@@ -256,7 +253,7 @@ public interface TextInput extends ActionComponent
         }
 
         /**
-         * Sets whether the user is required to write in this TextInput.
+         * Sets whether the user is required to write in this TextInput. Default is false.
          *
          * @param  required 
          *         If this TextInput should be required
@@ -271,7 +268,7 @@ public interface TextInput extends ActionComponent
         }
 
         /**
-         * Sets the minimum length of this input field.
+         * Sets the minimum length of this input field. Default is -1 (No min length).
          *
          * <b>This has to be between 0 and {@value #TEXT_INPUT_MAX_LENGTH}</b>
          *
@@ -293,22 +290,22 @@ public interface TextInput extends ActionComponent
         }
 
         /**
-         * Sets the maximum length of this input field.
+         * Sets the maximum length of this input field. Default is -1 (No max length).
          *
-         * <p><b>This has to be between {@value #TEXT_INPUT_MIN_LENGTH} and {@value #TEXT_INPUT_MAX_LENGTH}</b>
+         * <p><b>This has to be between 1 and {@value #TEXT_INPUT_MAX_LENGTH}</b>
          *
          * @param  maxLength 
          *         The maximum amount of characters that need to be written
          *
          * @throws IllegalArgumentException
-         *         If maxLength is smaller than {@value #TEXT_INPUT_MIN_LENGTH} or greater than {@value #TEXT_INPUT_MAX_LENGTH}
+         *         If maxLength is smaller than 1 or greater than {@value #TEXT_INPUT_MAX_LENGTH}
          *
          * @return The same builder instance for chaining
          */
         @Nonnull
         public Builder setMaxLength(int maxLength)
         {
-            Checks.check(maxLength >= TEXT_INPUT_MIN_LENGTH, "Maximum length cannot be smaller than " + TEXT_INPUT_MIN_LENGTH + " characters!");
+            Checks.check(maxLength >= 1, "Maximum length cannot be smaller than 1 character!");
             Checks.check(maxLength <= TEXT_INPUT_MAX_LENGTH, "Maximum length cannot be longer than " + TEXT_INPUT_MAX_LENGTH + " characters!");
 
             this.maxLength = maxLength;
@@ -324,16 +321,19 @@ public interface TextInput extends ActionComponent
          *         Maximum length of the text input
 
          * @throws IllegalArgumentException
-         * <ul>
-         *  <li>If min is negative or greater than {@link #TEXT_INPUT_MAX_LENGTH}</li>
-         *  <li>If max is smaller than 1, smaller than min or greater than {@link #TEXT_INPUT_MAX_LENGTH}</li>
-         * </ul>
+         *         <ul>
+         *             <li>If min is negative or greater than {@link #TEXT_INPUT_MAX_LENGTH}</li>
+         *             <li>If max is smaller than 1, smaller than min or greater than {@link #TEXT_INPUT_MAX_LENGTH}</li>
+         *         </ul>
          *
          * @return The same builder instance for chaining
          */
         @Nonnull
         public Builder setRequiredRange(int min, int max)
         {
+            if (min > max)
+                throw new IllegalArgumentException("minimum cannot be greater than maximum!");
+
             setMinLength(min);
             setMaxLength(max);
             return this;
@@ -341,6 +341,7 @@ public interface TextInput extends ActionComponent
 
         /**
          * Sets a pre-populated text for this TextInput field.
+         * <br>If this is not null, sending a Modal with this component will pre-populate the TextInput field with the specified String.
          *
          * @param  value 
          *         Pre-Populated text
@@ -430,6 +431,7 @@ public interface TextInput extends ActionComponent
 
         /**
          * The placeholder of this TextInput
+         * <br>This is the short hint that describes the expected value of the TextInput field.
          *
          * @return Placeholder
          */
@@ -440,7 +442,7 @@ public interface TextInput extends ActionComponent
         }
 
         /**
-         * The String value of this Modal
+         * The String value of this TextInput
          *
          * @return Value
          */
@@ -451,7 +453,8 @@ public interface TextInput extends ActionComponent
         }
 
         /**
-         * Whether this TextInput is required
+         * Whether this TextInput is required.
+         * <br>If this is True, the user must populate this TextInput field before they can submit the Modal.
          *
          * @return True if this TextInput is required
          * 

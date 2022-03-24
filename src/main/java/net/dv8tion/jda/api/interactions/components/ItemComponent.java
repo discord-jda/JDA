@@ -35,7 +35,7 @@ public interface ItemComponent extends Component
     }
 
     /**
-     * Whether this component can be used in {@link net.dv8tion.jda.api.interactions.components.text.Modal Modals}.
+     * Whether this component can be used in {@link Modal Modals}.
      *
      * @return Whether this component can be used in Modals.
      *

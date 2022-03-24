@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.interactions.components.text;
+package net.dv8tion.jda.api.interactions.components;
 
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.interactions.ModalInteraction;
-import net.dv8tion.jda.api.interactions.components.ActionRow;
-import net.dv8tion.jda.api.interactions.components.ItemComponent;
 import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.internal.interactions.component.ModalImpl;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -36,31 +34,31 @@ import java.util.*;
   *
   * <h2>Example</h2>
  * <pre>{@code
- *     public void onSlashCommandInteraction(@NonNull SlashCommandInteractionEvent event)
+ * public void onSlashCommandInteraction(@Nonnull SlashCommandInteractionEvent event)
+ * {
+ *     if (event.getName().equals("modmail"))
  *     {
- *         if (event.getName().equals("support"))
- *         {
- *             TextInput email = TextInput.create("email", "Email", TextInputStyle.SHORT)
- *                     .setPlaceholder("Enter your E-mail")
- *                     .setRequired(true)
- *                     .setMinLength(10)
- *                     .setMaxLength(100)
- *                     .build();
+ *         TextInput email = TextInput.create("subject", "Subject", TextInputStyle.SHORT)
+ *                 .setPlaceholder("Subject of this ticket")
+ *                 .setRequired(true)
+ *                 .setMinLength(10)
+ *                 .setMaxLength(100) // or setRequiredRange(10, 100)
+ *                 .build();
  *
- *             TextInput body = TextInput.create("body", "Body", TextInputStyle.PARAGRAPH)
- *                     .setPlaceholder("Your concerns go here")
- *                     .setRequired(true)
- *                     .setMinLength(30)
- *                     .setMaxLength(1000)
- *                     .build();
- *             Modal modal = Modal.create("support", "Support")
- *                     .addActionRows(ActionRow.of(email), ActionRow.of(body))
- *                     .build();
+ *         TextInput body = TextInput.create("body", "Body", TextInputStyle.PARAGRAPH)
+ *                 .setPlaceholder("Your concerns go here")
+ *                 .setRequired(true)
+ *                 .setMinLength(30)
+ *                 .setMaxLength(1000)
+ *                 .build();
  *
- *             event.replyModal(modal).queue();
- *         }
+ *         Modal modal = Modal.create("modmail", "Modmail")
+ *                 .addActionRows(ActionRow.of(email), ActionRow.of(body))
+ *                 .build();
+ *
+ *         event.replyModal(modal).queue();
  *     }
- * }</pre>
+ * }}</pre>
  *
  * <p><b>Only a maximum of 5 component layouts can be included in a Modal, and only {@link net.dv8tion.jda.api.interactions.components.text.TextInput TextInputs} are allowed at this time.</b>
  * You can check whether a component is supported via {@link net.dv8tion.jda.api.interactions.components.Component.Type#isModalCompatible}.
@@ -69,13 +67,19 @@ import java.util.*;
  */
 public interface Modal extends SerializableData
 {
+
     /**
-     * The maximum length a modal custom id can have
+     * The maximum amount of components a Modal can have. ({@value})
+     */
+    int MODAL_MAX_COMPONENTS = 5;
+
+    /**
+     * The maximum length a modal custom id can have. ({@value})
      */
     int ID_MAX_LENGTH = 100;
 
     /**
-     * The maximum length a modal title can have
+     * The maximum length a modal title can have. ({@value})
      */
     int TITLE_MAX_LENGTH = 45;
 
@@ -114,8 +118,7 @@ public interface Modal extends SerializableData
     @Nonnull
     default Modal.Builder createCopy()
     {
-        return new Builder(getId())
-                .setTitle(getTitle())
+        return new Builder(getId(), getTitle())
                 .addActionRows(getActionRows());
     }
 
@@ -140,7 +143,7 @@ public interface Modal extends SerializableData
     @CheckReturnValue
     static Modal.Builder create(@Nonnull String customId, @Nonnull String title)
     {
-        return new Modal.Builder(customId).setTitle(title);
+        return new Modal.Builder(customId, title);
     }
 
     /**
@@ -152,9 +155,10 @@ public interface Modal extends SerializableData
         private String id;
         private String title;
 
-        protected Builder(@Nonnull String customId)
+        protected Builder(@Nonnull String customId, @Nonnull String title)
         {
             setId(customId);
+            setTitle(title);
         }
 
         /**
@@ -329,10 +333,10 @@ public interface Modal extends SerializableData
          * Builds and returns the {@link Modal}
          *
          * @throws IllegalArgumentException
-         * <ul>
-         *     <li>If the components are empty</li>
-         *     <li>If there are more than 5 components</li>
-         * </ul>
+         *         <ul>
+         *             <li>If the components are empty</li>
+         *             <li>If there are more than 5 components</li>
+         *         </ul>
          *
          * @return A Modal
          */
@@ -340,7 +344,7 @@ public interface Modal extends SerializableData
         public Modal build()
         {
             Checks.check(!components.isEmpty(), "Cannot make a modal without components!");
-            Checks.check(components.size() <= 5, "Cannot make a modal with more than 5 components!");
+            Checks.check(components.size() <= MODAL_MAX_COMPONENTS, "Cannot make a modal with more than 5 components!");
 
             return new ModalImpl(id, title, components);
         }

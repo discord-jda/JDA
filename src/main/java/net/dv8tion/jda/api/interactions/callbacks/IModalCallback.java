@@ -16,7 +16,7 @@
 
 package net.dv8tion.jda.api.interactions.callbacks;
 
-import net.dv8tion.jda.api.interactions.components.text.Modal;
+import net.dv8tion.jda.api.interactions.components.Modal;
 import net.dv8tion.jda.api.requests.restaction.interactions.ModalCallbackAction;
 import net.dv8tion.jda.internal.requests.restaction.interactions.ModalCallbackActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -32,7 +32,7 @@ import javax.annotation.Nonnull;
 public interface IModalCallback extends IDeferrableCallback
 {
     /**
-     * Acknowledgement of this interaction with a {@link net.dv8tion.jda.api.interactions.components.text.Modal Modal}.
+     * Acknowledgement of this interaction with a {@link net.dv8tion.jda.api.interactions.components.Modal Modal}.
      *
      * <p>This will open a popup on the target user's Discord client.
      *

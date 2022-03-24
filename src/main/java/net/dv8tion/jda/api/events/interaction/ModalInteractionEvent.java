@@ -19,6 +19,7 @@ package net.dv8tion.jda.api.events.interaction;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.ModalInteraction;
+import net.dv8tion.jda.api.interactions.components.Modal;
 import net.dv8tion.jda.api.interactions.modals.ModalMapping;
 import net.dv8tion.jda.api.requests.restaction.interactions.MessageEditCallbackAction;
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction;
@@ -27,7 +28,7 @@ import javax.annotation.Nonnull;
 import java.util.List;
 
 /**
- * Indicates that a {@link net.dv8tion.jda.api.interactions.components.text.Modal Modal} was submitted.
+ * Indicates that a {@link Modal Modal} was submitted.
  *
  * <h2>Requirements</h2>
  * To receive these events, you must unset the <b>Interactions Endpoint URL</b> in your application dashboard.

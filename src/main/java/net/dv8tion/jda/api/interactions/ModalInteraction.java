@@ -18,6 +18,7 @@ package net.dv8tion.jda.api.interactions;
 
 import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback;
 import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback;
+import net.dv8tion.jda.api.interactions.components.Modal;
 import net.dv8tion.jda.api.interactions.modals.ModalMapping;
 import net.dv8tion.jda.internal.utils.Checks;
 
@@ -26,7 +27,7 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 /**
- * Interaction on a {@link net.dv8tion.jda.api.interactions.components.text.Modal Modal}
+ * Interaction on a {@link Modal Modal}
  *
  * <p>If the modal of this interaction was a reply to a {@link net.dv8tion.jda.api.interactions.components.ComponentInteraction ComponentInteraction},
  * you can also use {@link #deferEdit()} to edit the message instead of replying.
@@ -40,7 +41,7 @@ public interface ModalInteraction extends IReplyCallback, IMessageEditCallback
      *
      * @return Custom id
      * 
-     * @see    net.dv8tion.jda.api.interactions.components.text.Modal.Builder#setId(String) 
+     * @see    Modal.Builder#setId(String)
      */
     @Nonnull
     String getModalId();
