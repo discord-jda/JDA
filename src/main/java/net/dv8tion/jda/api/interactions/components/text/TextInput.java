@@ -115,6 +115,7 @@ public interface TextInput extends ActionComponent
 
     /**
      * The placeholder of this TextInput component.
+     * <br>This is a short hint that describes the expected value of the TextInput field.
      *
      * <b>This is null if no placeholder has been set!</b>
      *
