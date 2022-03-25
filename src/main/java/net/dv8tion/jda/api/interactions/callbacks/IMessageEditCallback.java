@@ -165,7 +165,7 @@ public interface IMessageEditCallback extends IDeferrableCallback
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If any of the provided LayoutComponents is null</li>
-     *             <li>If any of the provided LayoutComponents are not compatible with messages</li>
+     *             <li>If any of the provided Components are not compatible with messages</li>
      *         </ul>
      *
      * @return {@link MessageEditCallbackAction} that can be used to further update the message

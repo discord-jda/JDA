@@ -76,7 +76,8 @@ public class InteractionCreateHandler extends SocketHandler
                         new CommandAutoCompleteInteractionImpl(api, content)));
                 break;
             case MODAL_SUBMIT:
-                api.handleEvent(new ModalInteractionEvent(api, responseNumber,
+                api.handleEvent(
+                    new ModalInteractionEvent(api, responseNumber,
                         new ModalInteractionImpl(api, content)));
                 break;
             default:

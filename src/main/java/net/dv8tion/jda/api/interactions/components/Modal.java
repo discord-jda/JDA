@@ -67,7 +67,6 @@ import java.util.*;
  */
 public interface Modal extends SerializableData
 {
-
     /**
      * The maximum amount of components a Modal can have. ({@value})
      */
