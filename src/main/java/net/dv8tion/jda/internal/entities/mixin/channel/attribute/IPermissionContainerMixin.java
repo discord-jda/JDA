@@ -53,11 +53,15 @@ public interface IPermissionContainerMixin<T extends IPermissionContainerMixin<T
 
     @Nonnull
     @Override
-    default PermissionOverrideAction putPermissionOverride(@Nonnull IPermissionHolder permissionHolder)
+    default PermissionOverrideAction upsertPermissionOverride(@Nonnull IPermissionHolder permissionHolder)
     {
         checkPermission(Permission.MANAGE_PERMISSIONS);
         Checks.notNull(permissionHolder, "PermissionHolder");
         Checks.check(permissionHolder.getGuild().equals(getGuild()), "Provided permission holder is not from the same guild as this channel!");
+
+        PermissionOverride override = getPermissionOverride(permissionHolder);
+        if (override != null)
+            return override.getManager();
         return new PermissionOverrideActionImpl(getJDA(), this, permissionHolder);
     }
 

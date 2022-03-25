@@ -38,8 +38,6 @@ import java.util.function.BooleanSupplier;
  *
  * @see    net.dv8tion.jda.api.entities.PermissionOverride#getManager()
  * @see    IPermissionContainer#upsertPermissionOverride(IPermissionHolder)
- * @see    IPermissionContainer#createPermissionOverride(IPermissionHolder)
- * @see    IPermissionContainer#putPermissionOverride(IPermissionHolder)
  */
 public interface PermissionOverrideAction extends AuditableRestAction<PermissionOverride>
 {
