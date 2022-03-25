@@ -198,6 +198,7 @@ public interface TextInput extends ActionComponent
          *
          * @return The same Builder for chaining convenience.
          */
+        @Nonnull
         public Builder setId(@Nonnull String id)
         {
             Checks.notBlank(id, "ID");
@@ -220,6 +221,7 @@ public interface TextInput extends ActionComponent
          *
          * @return The same Builder for chaining convenience.
          */
+        @Nonnull
         public Builder setLabel(@Nonnull String label)
         {
             Checks.notBlank(label, "Label");
@@ -244,6 +246,7 @@ public interface TextInput extends ActionComponent
          *
          * @return The same Builder for chaining convenience.
          */
+        @Nonnull
         public Builder setStyle(TextInputStyle style)
         {
             Checks.notNull(style, "Style");

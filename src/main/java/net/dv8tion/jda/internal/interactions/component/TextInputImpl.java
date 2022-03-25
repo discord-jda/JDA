@@ -130,8 +130,7 @@ public class TextInputImpl implements TextInput
                     .put("type", 4)
                     .put("custom_id", id)
                     .put("style", style.getRaw())
-                    .put("label", label)
-                    .put("required", required);
+                    .put("label", label);
         if (minLength != -1)
             obj.put("min_length", minLength);
         if (maxLength != -1)
