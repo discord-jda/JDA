@@ -30,7 +30,6 @@ import javax.annotation.Nullable;
  */
 public interface TextInput extends ActionComponent
 {
-
     /**
      * The maximum length a TextInput value can have. ({@value})
      */
