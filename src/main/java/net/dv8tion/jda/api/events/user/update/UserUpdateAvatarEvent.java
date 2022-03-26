@@ -74,6 +74,8 @@ public class UserUpdateAvatarEvent extends GenericUserUpdateEvent<String>
 
     /**
      * Returns an {@link ImageProxy} for this user's old avatar image
+     * <p>
+     * <b>Note:</b> the old avatar may not always be downloadable as it might have been removed from Discord
      *
      * @return Possibly-null {@link ImageProxy} of this user's old avatar image
      *

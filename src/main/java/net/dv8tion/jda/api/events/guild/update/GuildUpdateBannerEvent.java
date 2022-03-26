@@ -101,6 +101,8 @@ public class GuildUpdateBannerEvent extends GenericGuildUpdateEvent<String>
 
     /**
      * Returns an {@link ImageProxy} for this guild's old banner
+     * <p>
+     * <b>Note:</b> the old banner may not always be downloadable as it might have been removed from Discord
      *
      * @return Possibly-null {@link ImageProxy} of this guild's old banner
      *
