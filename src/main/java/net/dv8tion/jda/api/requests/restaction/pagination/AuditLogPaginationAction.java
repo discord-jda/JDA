@@ -90,7 +90,7 @@ public interface AuditLogPaginationAction extends PaginationAction<AuditLogEntry
     AuditLogPaginationAction type(@Nullable ActionType type);
 
     /**
-     * Filters retrieved entities by the specified {@link net.dv8tion.jda.api.entities.User User}.
+     * Filters retrieved entities by the specified {@link UserReference}.
      * <br>This specified the action issuer and not the target of an action. (Targets need not be users)
      *
      * @param  user

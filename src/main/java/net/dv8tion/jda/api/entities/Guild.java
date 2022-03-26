@@ -494,7 +494,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     RestAction<EnumSet<Region>> retrieveRegions(boolean includeDeprecated);
 
     /**
-     * Adds the user represented by the provided id to this guild.
+     * Adds the user to this guild as a member.
      * <br>This requires an <b>OAuth2 Access Token</b> with the scope {@code guilds.join}.
      *
      * @param  accessToken
@@ -504,8 +504,8 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      *         This can be a member or user instance or {@link User#fromId(long)}.
      *
      * @throws IllegalArgumentException
-     *         If the user id or access token is blank, empty, or null,
-     *         or if the provided user is already in this guild
+     *         If the access token is blank, empty, or null,
+     *         or if the provided user reference is null or is already in this guild
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have {@link net.dv8tion.jda.api.Permission#CREATE_INSTANT_INVITE Permission.CREATE_INSTANT_INVITE}
      *
@@ -985,14 +985,15 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     Timeout getAfkTimeout();
 
     /**
-     * Used to determine if the provided {@link net.dv8tion.jda.api.entities.User User} is a member of this Guild.
+     * Used to determine if the provided {@link UserReference UserReference} is a member of this Guild.
      *
-     * <p>This will only check cached members!
+     * <p>This will only check cached members! If the cache is not loaded (see {@link #isLoaded()}), this may return false despite the user being a member.
+     * This is false when {@link #getMember(UserReference)} returns {@code null}.
      *
      * @param  user
-     *         The user to determine whether or not they are a member of this guild.
+     *         The user to check
      *
-     * @return True - if this user is present in this guild.
+     * @return True - if this user is present and cached in this guild
      */
     boolean isMember(@Nonnull UserReference user);
 
@@ -1018,8 +1019,8 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
 
     /**
      * Gets the Guild specific {@link net.dv8tion.jda.api.entities.Member Member} object for the provided
-     * {@link net.dv8tion.jda.api.entities.User User}.
-     * <br>If the user is not in this guild, {@code null} is returned.
+     * {@link UserReference UserReference}.
+     * <br>If the user is not in this guild or currently uncached, {@code null} is returned.
      *
      * <p>This will only check cached members!
      *
@@ -1828,7 +1829,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
 
 
     /**
-     * Retrieves a {@link net.dv8tion.jda.api.entities.Guild.Ban Ban} of the provided ID
+     * Retrieves a {@link net.dv8tion.jda.api.entities.Guild.Ban Ban} of the provided {@link UserReference}.
      * <br>If you wish to ban or unban a user, use either {@link #ban(UserReference, int)} or {@link #unban(UserReference)}.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
@@ -1842,7 +1843,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * </ul>
      *
      * @param  user
-     *         The {@link net.dv8tion.jda.api.entities.UserReference UserReference} for the banned user.
+     *         The {@link UserReference UserReference} for the banned user.
      *         This can be a user instance or {@link User#fromId(long)}.
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
@@ -2373,7 +2374,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     Task<Void> loadMembers(@Nonnull Consumer<Member> callback);
 
     /**
-     * Load the member for the specified user.
+     * Load the member for the specified {@link UserReference}.
      * <br>If the member is already loaded it will be retrieved from {@link #getMemberById(long)}
      * and immediately provided if the member information is consistent. The cache consistency directly
      * relies on the enabled {@link GatewayIntent GatewayIntents} as {@link GatewayIntent#GUILD_MEMBERS GatewayIntent.GUILD_MEMBERS}
@@ -2681,7 +2682,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    default Task<List<Member>> retrieveMembers(@Nonnull Collection<?extends UserReference> users)
+    default Task<List<Member>> retrieveMembers(@Nonnull Collection<? extends UserReference> users)
     {
         Checks.noneNull(users, "Users");
         if (users.isEmpty())
@@ -3209,7 +3210,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     AuditableRestAction<Integer> prune(int days, boolean wait, @Nonnull Role... roles);
 
     /**
-     * Kicks the {@link net.dv8tion.jda.api.entities.UserReference UserReference} from the {@link net.dv8tion.jda.api.entities.Guild Guild}.
+     * Kicks the {@link UserReference} from the {@link net.dv8tion.jda.api.entities.Guild Guild}.
      *
      * <p><b>Note:</b> {@link net.dv8tion.jda.api.entities.Guild#getMembers()} will still contain the {@link net.dv8tion.jda.api.entities.User User}
      * until Discord sends the {@link net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent GuildMemberRemoveEvent}.
@@ -3233,12 +3234,12 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#KICK_MEMBERS} permission.
      * @throws net.dv8tion.jda.api.exceptions.HierarchyException
-     *         If the logged in account cannot kick the other member due to permission hierarchy position.
-     *         <br>See {@link Member#canInteract(Member)}
+     *         If the logged in account cannot kick the other member due to permission hierarchy position. (See {@link Member#canInteract(Member)})
      * @throws java.lang.IllegalArgumentException
-     *         If the user cannot be kicked from this Guild or the provided {@code user} is null.
-     * @throws java.lang.IllegalArgumentException
-     *         If the provided reason is longer than 512 characters
+     *         <ul>
+     *             <li>If the user cannot be kicked from this Guild or the provided {@code user} is null.</li>
+     *             <li>If the provided reason is longer than 512 characters</li>
+     *         </ul>
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      */
@@ -3271,8 +3272,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#KICK_MEMBERS} permission.
      * @throws net.dv8tion.jda.api.exceptions.HierarchyException
-     *         If the logged in account cannot kick the other member due to permission hierarchy position.
-     *         <br>See {@link Member#canInteract(Member)}
+     *         If the logged in account cannot kick the other member due to permission hierarchy position. (See {@link Member#canInteract(Member)})
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      *         Kicks the provided Member from the current Guild
@@ -3332,7 +3332,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     AuditableRestAction<Void> ban(@Nonnull UserReference user, int delDays, @Nullable String reason);
 
     /**
-     * Bans the {@link net.dv8tion.jda.api.entities.UserReference UserReference} and deletes messages sent by the user based on the amount of delDays.
+     * Bans the {@link UserReference} and deletes messages sent by the user based on the amount of delDays.
      * <br>If you wish to ban a member without deleting any messages, provide delDays with a value of 0.
      *
      * <p>You can unban a user with {@link net.dv8tion.jda.api.entities.Guild#unban(UserReference) Guild.unban(UserReference)}.
@@ -3379,7 +3379,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     }
 
     /**
-     * Unbans the specified {@link net.dv8tion.jda.api.entities.UserReference UserReference} from this Guild.
+     * Unbans the specified {@link UserReference UserReference} from this Guild.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
      * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
@@ -3392,7 +3392,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * </ul>
      *
      * @param  user
-     *         The {@link net.dv8tion.jda.api.entities.UserReference UserReference} to unban.
+     *         The {@link UserReference UserReference} to unban.
      *         This can be a member or user instance or {@link User#fromId(long)}.
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
@@ -3421,7 +3421,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * </ul>
      *
      * @param  user
-     *         The {@link net.dv8tion.jda.api.entities.UserReference UserReference} to timeout.
+     *         The {@link UserReference} to timeout.
      *         This can be a member or user instance or {@link User#fromId(long)}.
      * @param  amount
      *         The amount of the provided {@link TimeUnit unit} to put the specified Member in time out for
@@ -3431,8 +3431,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MODERATE_MEMBERS} permission.
      * @throws net.dv8tion.jda.api.exceptions.HierarchyException
-     *         If the logged in account cannot put a timeout on the other Member due to permission hierarchy position.
-     *         <br>See {@link Member#canInteract(Member)}
+     *         If the logged in account cannot put a timeout on the other Member due to permission hierarchy position. (See {@link Member#canInteract(Member)})
      * @throws IllegalArgumentException
      *         If any of the following checks are true
      *         <ul>
@@ -3469,7 +3468,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * </ul>
      *
      * @param  user
-     *         The {@link net.dv8tion.jda.api.entities.UserReference UserReference} to timeout.
+     *         The {@link UserReference} to timeout.
      *         This can be a member or user instance or {@link User#fromId(long)}.
      * @param  duration
      *         The duration to put the specified Member in time out for
@@ -3513,7 +3512,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * </ul>
      *
      * @param  user
-     *         The {@link net.dv8tion.jda.api.entities.UserReference UserReference} to timeout.
+     *         The {@link UserReference UserReference} to timeout.
      *         This can be a member or user instance or {@link User#fromId(long)}.
      * @param  temporal
      *         The time the specified Member will be released from time out or null to remove the time out
@@ -3521,8 +3520,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MODERATE_MEMBERS} permission.
      * @throws net.dv8tion.jda.api.exceptions.HierarchyException
-     *         If the logged in account cannot put a timeout on the other Member due to permission hierarchy position.
-     *         <br>See {@link Member#canInteract(Member)}
+     *         If the logged in account cannot put a timeout on the other Member due to permission hierarchy position. (See {@link Member#canInteract(Member)})
      * @throws IllegalArgumentException
      *         If any of the following are true
      *         <ul>
@@ -3551,13 +3549,12 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * </ul>
      *
      * @param  user
-     *         The {@link net.dv8tion.jda.api.entities.UserReference UserReference} to timeout.
+     *         The {@link UserReference} to timeout.
      *         This can be a member or user instance or {@link User#fromId(long)}.
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MODERATE_MEMBERS} permission.
      * @throws net.dv8tion.jda.api.exceptions.HierarchyException
-     *         If the logged in account cannot remove the timeout from the other Member due to permission hierarchy position.
-     *         <br>See {@link Member#canInteract(Member)}
+     *         If the logged in account cannot remove the timeout from the other Member due to permission hierarchy position. (See {@link Member#canInteract(Member)})
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      */
@@ -3565,7 +3562,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     AuditableRestAction<Void> removeTimeout(@Nonnull UserReference user);
 
     /**
-     * Sets the Guild Deafened state state of the {@link net.dv8tion.jda.api.entities.Member Member} based on the provided
+     * Sets the Guild Deafened state of the {@link net.dv8tion.jda.api.entities.Member Member} based on the provided
      * boolean.
      *
      * <p><b>Note:</b> The Member's {@link net.dv8tion.jda.api.entities.GuildVoiceState#isGuildDeafened() GuildVoiceState.isGuildDeafened()} value won't change
@@ -3585,7 +3582,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * </ul>
      *
      * @param  user
-     *         The {@link net.dv8tion.jda.api.entities.UserReference UserReference} who's {@link GuildVoiceState} to change.
+     *         The {@link UserReference} who's {@link GuildVoiceState} to change.
      *         This can be a member or user instance or {@link User#fromId(long)}.
      * @param  deafen
      *         Whether this {@link net.dv8tion.jda.api.entities.Member Member} should be deafened or undeafened.
@@ -3604,7 +3601,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     AuditableRestAction<Void> deafen(@Nonnull UserReference user, boolean deafen);
 
     /**
-     * Sets the Guild Muted state state of the {@link net.dv8tion.jda.api.entities.Member Member} based on the provided
+     * Sets the Guild Muted state of the {@link net.dv8tion.jda.api.entities.Member Member} based on the provided
      * boolean.
      *
      * <p><b>Note:</b> The Member's {@link net.dv8tion.jda.api.entities.GuildVoiceState#isGuildMuted() GuildVoiceState.isGuildMuted()} value won't change
@@ -3624,7 +3621,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * </ul>
      *
      * @param  user
-     *         The {@link net.dv8tion.jda.api.entities.UserReference UserReference} who's {@link GuildVoiceState} to change.
+     *         The {@link UserReference} who's {@link GuildVoiceState} to change.
      *         This can be a member or user instance or {@link User#fromId(long)}.
      * @param  mute
      *         Whether this {@link net.dv8tion.jda.api.entities.Member Member} should be muted or unmuted.
@@ -3665,14 +3662,14 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * </ul>
      *
      * @param  user
-     *         The {@link net.dv8tion.jda.api.entities.UserReference UserReference} to change roles for.
+     *         The {@link UserReference} to change roles for.
      *         This can be a member or user instance or {@link User#fromId(long)}.
      * @param  role
      *         The role which should be assigned atomically
      *
      * @throws java.lang.IllegalArgumentException
      *         <ul>
-     *             <li>If the specified member/role are not from the current Guild</li>
+     *             <li>If the specified member or role are not from the current Guild</li>
      *             <li>Either member or role are {@code null}</li>
      *         </ul>
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
@@ -3710,14 +3707,14 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * </ul>
      *
      * @param  user
-     *         The {@link net.dv8tion.jda.api.entities.UserReference UserReference} to change roles for.
+     *         The {@link UserReference} to change roles for.
      *         This can be a member or user instance or {@link User#fromId(long)}.
      * @param  role
      *         The role which should be removed atomically
      *
      * @throws java.lang.IllegalArgumentException
      *         <ul>
-     *             <li>If the specified member/role are not from the current Guild</li>
+     *             <li>If the specified member or role are not from the current Guild</li>
      *             <li>Either member or role are {@code null}</li>
      *         </ul>
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException

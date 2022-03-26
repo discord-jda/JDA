@@ -98,8 +98,7 @@ public interface User extends UserReference
      * @return A user instance
      *
      * @see    JDA#retrieveUserById(long)
-     *
-     * @since  4.2.1
+     * @see    UserReference#fromId(long)
      */
     @Nonnull
     static UserReference fromId(long id)
@@ -120,8 +119,7 @@ public interface User extends UserReference
      * @return A user instance
      *
      * @see    JDA#retrieveUserById(String)
-     *
-     * @since  4.2.1
+     * @see    UserReference#fromId(String)
      */
     @Nonnull
     static UserReference fromId(@Nonnull String id)

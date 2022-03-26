@@ -22,7 +22,13 @@ import net.dv8tion.jda.internal.entities.UserById;
 
 import javax.annotation.Nonnull;
 
-public interface UserReference extends IMentionable
+/**
+ * Represents an abstract user reference by only the user ID.
+ *
+ * <p>This is used for methods which only need a user ID to function, you cannot use this for getting names or similar.
+ * To get information about a user by their ID you can use {@link JDA#retrieveUserById(long)} or {@link JDA#getUserById(long)} instead.
+ */
+public interface UserReference extends IMentionable // Make this a value type whenever that's finally released!
 {
     /**
      * Creates a User instance which only wraps an ID.
@@ -34,8 +40,6 @@ public interface UserReference extends IMentionable
      * @return A user instance
      *
      * @see    JDA#retrieveUserById(long)
-     *
-     * @since  4.2.1
      */
     @Nonnull
     static UserReference fromId(long id)
@@ -56,8 +60,6 @@ public interface UserReference extends IMentionable
      * @return A user instance
      *
      * @see    JDA#retrieveUserById(String)
-     *
-     * @since  4.2.1
      */
     @Nonnull
     static UserReference fromId(@Nonnull String id)
