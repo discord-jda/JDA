@@ -118,6 +118,9 @@ public class MessageSticker implements ISnowflake
     /**
      * Returns an {@link ImageProxy} for this sticker's image
      *
+     * @throws java.lang.IllegalStateException
+     *         If the {@link StickerFormat StickerFormat} of this sticker is {@link StickerFormat#UNKNOWN UNKNOWN}
+     *
      * @return Never-null {@link ImageProxy} of this sticker's image
      *
      * @see    #getIconUrl()
