@@ -48,6 +48,11 @@ public class FileProxy
     private final String url;
     private OkHttpClient customHttpClient;
 
+    /**
+     * Constructs a new {@link FileProxy} for the provided URL
+     *
+     * @param url The URL to download from
+     */
     public FileProxy(@Nonnull String url)
     {
         Checks.notNull(url, "URL");
@@ -61,6 +66,9 @@ public class FileProxy
      *
      * @param  httpClient
      *         The default {@link OkHttpClient} to use while making HTTP requests
+     *
+     * @throws IllegalArgumentException
+     *         If the provided {@link OkHttpClient} is null
      */
     public static void setHttpClient(@Nonnull OkHttpClient httpClient)
     {
@@ -86,6 +94,9 @@ public class FileProxy
      *
      * @param  customHttpClient
      *         The custom {@link OkHttpClient} to use while making HTTP requests
+     *
+     * @throws IllegalArgumentException
+     *         If the provided {@link OkHttpClient} is null
      *
      * @return This proxy for chaining convenience
      */
@@ -177,10 +188,7 @@ public class FileProxy
     protected CompletableFuture<Path> downloadToPath(String url)
     {
         final HttpUrl parsedUrl = HttpUrl.parse(url);
-        if (parsedUrl == null)
-        {
-            throw new IllegalArgumentException("URL '" + url + "' is not valid");
-        }
+        Checks.check(parsedUrl != null, "URL '" + url + "' is not valid");
 
         final List<String> segments = parsedUrl.pathSegments();
         final String fileName = segments.get(segments.size() - 1);
@@ -191,10 +199,7 @@ public class FileProxy
 
     protected CompletableFuture<Path> downloadToPath(String url, Path path) {
         //Check if the parent path, the folder, exists
-        if (Files.notExists(path.getParent()))
-        {
-            throw new IllegalArgumentException("Parent folder of the file '" + path.toAbsolutePath() + "' does not exist.");
-        }
+        Checks.check(Files.notExists(path.getParent()), "Parent folder of the file '" + path.toAbsolutePath() + "' does not exist.");
 
         final DownloadTask downloadTask = downloadInternal(url);
 

@@ -29,6 +29,11 @@ import java.util.concurrent.CompletableFuture;
  */
 public class ImageProxy extends FileProxy
 {
+    /**
+     * Constructs a new {@link ImageProxy} for the provided URL
+     *
+     * @param url The URL to download the image from
+     */
     public ImageProxy(@Nonnull String url)
     {
         super(url);

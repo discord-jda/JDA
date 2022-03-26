@@ -29,6 +29,11 @@ import java.util.concurrent.CompletableFuture;
  */
 public class AttachmentProxy extends FileProxy
 {
+    /**
+     * Constructs a new {@link AttachmentProxy} for the provided URL
+     *
+     * @param url The URL to download the attachment from
+     */
     public AttachmentProxy(@Nonnull String url)
     {
         super(url);
@@ -37,6 +42,9 @@ public class AttachmentProxy extends FileProxy
     @Nonnull
     private String getUrl(int width, int height)
     {
+        Checks.positive(width, "Image width");
+        Checks.positive(height, "Image height");
+
         return getUrl() + "?width=" + width + "&height=" + height;
     }
 
@@ -62,9 +70,6 @@ public class AttachmentProxy extends FileProxy
     @Nonnull
     public CompletableFuture<InputStream> download(int width, int height)
     {
-        Checks.positive(width, "Image width");
-        Checks.positive(height, "Image height");
-
         return download(getUrl(width, height));
     }
 
@@ -95,9 +100,6 @@ public class AttachmentProxy extends FileProxy
     @Nonnull
     public CompletableFuture<Path> downloadToPath(int width, int height)
     {
-        Checks.positive(width, "Image width");
-        Checks.positive(height, "Image height");
-
         return downloadToPath(getUrl(width, height));
     }
 
@@ -131,8 +133,6 @@ public class AttachmentProxy extends FileProxy
     public CompletableFuture<File> downloadToFile(@Nonnull File file, int width, int height)
     {
         Checks.notNull(file, "File");
-        Checks.positive(width, "Image width");
-        Checks.positive(height, "Image height");
 
         final CompletableFuture<Path> downloadToPathFuture = downloadToPath(getUrl(width, height), file.toPath());
         return FutureUtil.thenApplyCancellable(downloadToPathFuture, Path::toFile);
@@ -169,8 +169,6 @@ public class AttachmentProxy extends FileProxy
     public CompletableFuture<Path> downloadToPath(@Nonnull Path path, int width, int height)
     {
         Checks.notNull(path, "Path");
-        Checks.positive(width, "Image width");
-        Checks.positive(height, "Image height");
 
         return downloadToPath(getUrl(width, height), path);
     }
