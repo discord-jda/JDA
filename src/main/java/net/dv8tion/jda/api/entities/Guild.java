@@ -687,6 +687,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      *
      * @see    #getIconUrl()
      */
+    @Nonnull
     default ImageProxy getIcon()
     {
         final String iconUrl = getIconUrl();
