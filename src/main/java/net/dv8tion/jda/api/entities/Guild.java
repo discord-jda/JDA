@@ -87,7 +87,13 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    RestAction<List<Command>> retrieveCommands();
+    default RestAction<List<Command>> retrieveCommands() {
+        return retrieveCommands(false);
+    }
+
+    @Nonnull
+    @CheckReturnValue
+    RestAction<List<Command>> retrieveCommands(boolean withLocalizations);
 
     /**
      * Retrieves the existing {@link Command} instance by id.

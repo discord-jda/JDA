@@ -30,6 +30,8 @@ import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.CommandEditActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;
 import java.util.*;
@@ -47,6 +49,7 @@ public class CommandImpl implements Command
     private final JDAImpl api;
     private final Guild guild;
     private final String name, description;
+    private final Map<String, String> nameLocalizations, descriptionLocalizations;
     private final List<Command.Option> options;
     private final List<Command.SubcommandGroup> groups;
     private final List<Command.Subcommand> subcommands;
@@ -69,6 +72,25 @@ public class CommandImpl implements Command
         this.groups = parseOptions(json, GROUP_TEST, Command.SubcommandGroup::new);
         this.subcommands = parseOptions(json, SUBCOMMAND_TEST, Command.Subcommand::new);
         this.version = json.getUnsignedLong("version", id);
+
+        this.nameLocalizations = parseLocalization(json, "name_localizations");
+        this.descriptionLocalizations = parseLocalization(json, "description_localizations");
+    }
+
+    @Nullable
+    public static Map<String, String> parseLocalization(@NotNull DataObject json, @NotNull String localizationProperty) {
+        return json.optObject(localizationProperty)
+                .map(dict -> {
+                    final Map<String, String> map = new HashMap<>();
+
+                    for (String key : dict.keys())
+                    {
+                        map.put(key, dict.getString(key));
+                    }
+
+                    return Collections.unmodifiableMap(map);
+                })
+                .orElse(null);
     }
 
     public static <T> List<T> parseOptions(DataObject json, Predicate<DataObject> test, Function<DataObject, T> transform)

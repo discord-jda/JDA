@@ -309,6 +309,7 @@ public interface Command extends ISnowflake
     class Choice
     {
         private final String name;
+        private Map<String, String> nameLocalizations = new HashMap<>();
         private long intValue = 0;
         private double doubleValue = Double.NaN;
         private String stringValue = null;
@@ -383,6 +384,8 @@ public interface Command extends ISnowflake
             {
                 setStringValue(json.getString("value"));
             }
+
+            this.nameLocalizations = CommandImpl.parseLocalization(json, "name_localizations");
         }
 
         /**
@@ -491,6 +494,7 @@ public interface Command extends ISnowflake
     class Option
     {
         private final String name, description;
+        private final Map<String, String> nameLocalizations, descriptionLocalizations;
         private final int type;
         private final boolean required, autoComplete;
         private final Set<ChannelType> channelTypes;
@@ -515,6 +519,9 @@ public interface Command extends ISnowflake
                 this.minValue = json.getDouble("min_value");
             if (!json.isNull("max_value"))
                 this.maxValue = json.getDouble("max_value");
+
+            this.nameLocalizations = CommandImpl.parseLocalization(json, "name_localizations");
+            this.descriptionLocalizations = CommandImpl.parseLocalization(json, "description_localizations");
         }
 
         /**
@@ -664,6 +671,7 @@ public interface Command extends ISnowflake
     class Subcommand
     {
         private final String name, description;
+        private final Map<String, String> nameLocalizations, descriptionLocalizations;
         private final List<Option> options;
 
         public Subcommand(DataObject json)
@@ -671,6 +679,9 @@ public interface Command extends ISnowflake
             this.name = json.getString("name");
             this.description = json.getString("description");
             this.options = CommandImpl.parseOptions(json, CommandImpl.OPTION_TEST, Option::new);
+
+            this.nameLocalizations = CommandImpl.parseLocalization(json, "name_localizations");
+            this.descriptionLocalizations = CommandImpl.parseLocalization(json, "description_localizations");
         }
 
         /**
@@ -736,6 +747,7 @@ public interface Command extends ISnowflake
     class SubcommandGroup
     {
         private final String name, description;
+        private final Map<String, String> nameLocalizations, descriptionLocalizations;
         private final List<Subcommand> subcommands;
 
         public SubcommandGroup(DataObject json)
@@ -743,6 +755,9 @@ public interface Command extends ISnowflake
             this.name = json.getString("name");
             this.description = json.getString("description");
             this.subcommands = CommandImpl.parseOptions(json, CommandImpl.SUBCOMMAND_TEST, Subcommand::new);
+
+            this.nameLocalizations = CommandImpl.parseLocalization(json, "name_localizations");
+            this.descriptionLocalizations = CommandImpl.parseLocalization(json, "description_localizations");
         }
 
         /**
