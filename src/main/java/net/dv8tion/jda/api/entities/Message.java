@@ -2850,7 +2850,7 @@ public interface Message extends ISnowflake, Formattable
          *
          * @return {@link java.util.concurrent.CompletableFuture} - Type: {@link java.io.InputStream}
          */
-        @Nonnull
+        @Nonnull //TODO remove
         public CompletableFuture<InputStream> retrieveInputStream() // it is expected that the response is closed by the callback!
         {
             CompletableFuture<InputStream> future = new CompletableFuture<>();
@@ -2895,7 +2895,7 @@ public interface Message extends ISnowflake, Formattable
          *
          * @return {@link java.util.concurrent.CompletableFuture} - Type: {@link java.io.File}
          */
-        @Nonnull
+        @Nonnull //TODO remove
         public CompletableFuture<File> downloadToFile() // using relative path
         {
             return downloadToFile(getFileName());
@@ -2928,7 +2928,7 @@ public interface Message extends ISnowflake, Formattable
          *
          * @return {@link java.util.concurrent.CompletableFuture} - Type: {@link java.io.File}
          */
-        @Nonnull
+        @Nonnull //TODO remove
         public CompletableFuture<File> downloadToFile(String path)
         {
             Checks.notNull(path, "Path");
@@ -2963,7 +2963,7 @@ public interface Message extends ISnowflake, Formattable
          * @return {@link java.util.concurrent.CompletableFuture} - Type: {@link java.io.File}
          */
         @SuppressWarnings("ResultOfMethodCallIgnored")
-        @Nonnull
+        @Nonnull //TODO remove
         public CompletableFuture<File> downloadToFile(File file)
         {
             Checks.notNull(file, "File");
@@ -3027,7 +3027,7 @@ public interface Message extends ISnowflake, Formattable
          *
          * @return {@link java.util.concurrent.CompletableFuture} - Type: {@link net.dv8tion.jda.api.entities.Icon}
          */
-        @Nonnull
+        @Nonnull //TODO replace in AttachmentProxy ?
         public CompletableFuture<Icon> retrieveAsIcon()
         {
             if (!isImage())
