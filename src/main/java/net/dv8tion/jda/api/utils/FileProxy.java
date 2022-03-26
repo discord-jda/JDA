@@ -222,12 +222,12 @@ public class FileProxy
         {
             try
             {
-                final Path tmpPath = Files.createTempFile("file", null);
-
+                //Temporary file follows this pattern: filename + random_number + ".part"
+                // The random number is generated until a filename becomes valid, so, the file doesn't exist in the tmp directory
+                final Path tmpPath = Files.createTempFile(path.getFileName().toString(), ".part");
                 Files.copy(stream, tmpPath, StandardCopyOption.REPLACE_EXISTING);
 
                 Files.move(tmpPath, path, StandardCopyOption.REPLACE_EXISTING);
-
                 downloadToPathFuture.complete(tmpPath);
             }
             catch (IOException e)
