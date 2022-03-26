@@ -37,6 +37,8 @@ public class ImageProxy extends FileProxy
     @Nonnull
     private String getUrl(int size)
     {
+        Checks.positive(size, "Image size");
+
         return getUrl() + "?size=" + size;
     }
 
@@ -54,8 +56,6 @@ public class ImageProxy extends FileProxy
     @Nonnull
     public CompletableFuture<InputStream> download(int size)
     {
-        Checks.positive(size, "Image size");
-
         return download(getUrl(size));
     }
 
@@ -83,8 +83,6 @@ public class ImageProxy extends FileProxy
     @Nonnull
     public CompletableFuture<Path> downloadToPath(int size)
     {
-        Checks.positive(size, "Image size");
-
         return downloadToPath(getUrl(size));
     }
 
@@ -114,7 +112,6 @@ public class ImageProxy extends FileProxy
     public CompletableFuture<File> downloadToFile(@Nonnull File file, int size)
     {
         Checks.notNull(file, "File");
-        Checks.positive(size, "Image size");
 
         final CompletableFuture<Path> downloadToPathFuture = downloadToPath(getUrl(size), file.toPath());
         return FutureUtil.thenApplyCancellable(downloadToPathFuture, Path::toFile);
@@ -147,7 +144,6 @@ public class ImageProxy extends FileProxy
     public CompletableFuture<Path> downloadToPath(@Nonnull Path path, int size)
     {
         Checks.notNull(path, "Path");
-        Checks.positive(size, "Image size");
 
         return downloadToPath(getUrl(size), path);
     }
