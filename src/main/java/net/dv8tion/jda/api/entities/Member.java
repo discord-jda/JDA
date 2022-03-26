@@ -278,9 +278,7 @@ public interface Member extends IMentionable, IPermissionHolder
     default ImageProxy getAvatar()
     {
         final String avatarUrl = getAvatarUrl();
-        if (avatarUrl == null) return null;
-
-        return new ImageProxy(avatarUrl);
+        return avatarUrl == null ? null : new ImageProxy(avatarUrl);
     }
 
     /**

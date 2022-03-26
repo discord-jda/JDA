@@ -120,8 +120,6 @@ public class GuildMemberUpdateAvatarEvent extends GenericGuildMemberUpdateEvent<
     public ImageProxy getNewAvatar()
     {
         final String newAvatarUrl = getNewAvatarUrl();
-        if (newAvatarUrl == null) return null;
-
-        return new ImageProxy(newAvatarUrl);
+        return newAvatarUrl == null ? null : new ImageProxy(newAvatarUrl);
     }
 }

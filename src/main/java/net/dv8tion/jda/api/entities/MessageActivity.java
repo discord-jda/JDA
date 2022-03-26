@@ -146,9 +146,7 @@ public class MessageActivity
         public ImageProxy getIcon()
         {
             final String iconUrl = getIconUrl();
-            if (iconUrl == null) return null;
-
-            return new ImageProxy(iconUrl);
+            return iconUrl == null ? null : new ImageProxy(iconUrl);
         }
 
         /**
@@ -184,9 +182,7 @@ public class MessageActivity
         public ImageProxy getCover()
         {
             final String coverUrl = getCoverUrl();
-            if (coverUrl == null) return null;
-
-            return new ImageProxy(coverUrl);
+            return coverUrl == null ? null : new ImageProxy(coverUrl);
         }
 
         @Override

@@ -656,9 +656,7 @@ public class WidgetUtil
             public ImageProxy getAvatar()
             {
                 final String avatarUrl = getAvatarUrl();
-                if (avatarUrl == null) return null;
-
-                return new ImageProxy(avatarUrl);
+                return avatarUrl == null ? null : new ImageProxy(avatarUrl);
             }
 
             /**

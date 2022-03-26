@@ -551,9 +551,7 @@ public class MessageEmbed implements SerializableData
         public AttachmentProxy getProxy()
         {
             final String proxyUrl = getProxyUrl();
-            if (proxyUrl == null) return null;
-
-            return new AttachmentProxy(proxyUrl);
+            return proxyUrl == null ? null : new AttachmentProxy(proxyUrl);
         }
 
         /**
@@ -759,9 +757,7 @@ public class MessageEmbed implements SerializableData
         public AttachmentProxy getProxy()
         {
             final String proxyUrl = getProxyUrl();
-            if (proxyUrl == null) return null;
-
-            return new AttachmentProxy(proxyUrl);
+            return proxyUrl == null ? null : new AttachmentProxy(proxyUrl);
         }
 
         /**
@@ -860,9 +856,7 @@ public class MessageEmbed implements SerializableData
         @Nullable
         public ImageProxy getIcon()
         {
-            if (iconUrl == null) return null;
-
-            return new ImageProxy(iconUrl);
+            return iconUrl == null ? null : new ImageProxy(iconUrl);
         }
 
         /**
@@ -887,9 +881,7 @@ public class MessageEmbed implements SerializableData
         @Nullable
         public ImageProxy getProxyIcon()
         {
-            if (proxyIconUrl == null) return null;
-
-            return new ImageProxy(proxyIconUrl);
+            return proxyIconUrl == null ? null : new ImageProxy(proxyIconUrl);
         }
 
         @Override
@@ -953,9 +945,7 @@ public class MessageEmbed implements SerializableData
         @Nullable
         public ImageProxy getIcon()
         {
-            if (iconUrl == null) return null;
-
-            return new ImageProxy(iconUrl);
+            return iconUrl == null ? null : new ImageProxy(iconUrl);
         }
 
         /**
@@ -980,9 +970,7 @@ public class MessageEmbed implements SerializableData
         @Nullable
         public ImageProxy getProxyIcon()
         {
-            if (proxyIconUrl == null) return null;
-
-            return new ImageProxy(proxyIconUrl);
+            return proxyIconUrl == null ? null : new ImageProxy(proxyIconUrl);
         }
 
         @Override

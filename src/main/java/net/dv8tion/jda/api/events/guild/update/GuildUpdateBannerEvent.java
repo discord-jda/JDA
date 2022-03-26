@@ -72,9 +72,7 @@ public class GuildUpdateBannerEvent extends GenericGuildUpdateEvent<String>
     public ImageProxy getNewBanner()
     {
         final String newBannerUrl = getNewBannerUrl();
-        if (newBannerUrl == null) return null;
-
-        return new ImageProxy(newBannerUrl);
+        return newBannerUrl == null ? null : new ImageProxy(newBannerUrl);
     }
 
     /**
@@ -112,8 +110,6 @@ public class GuildUpdateBannerEvent extends GenericGuildUpdateEvent<String>
     public ImageProxy getOldBanner()
     {
         final String oldBannerUrl = getOldBannerUrl();
-        if (oldBannerUrl == null) return null;
-
-        return new ImageProxy(oldBannerUrl);
+        return oldBannerUrl == null ? null : new ImageProxy(oldBannerUrl);
     }
 }

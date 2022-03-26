@@ -74,9 +74,7 @@ public class GuildUpdateIconEvent extends GenericGuildUpdateEvent<String>
     public ImageProxy getOldIcon()
     {
         final String oldIconUrl = getOldIconUrl();
-        if (oldIconUrl == null) return null;
-
-        return new ImageProxy(oldIconUrl);
+        return oldIconUrl == null ? null : new ImageProxy(oldIconUrl);
     }
 
     /**
@@ -112,8 +110,6 @@ public class GuildUpdateIconEvent extends GenericGuildUpdateEvent<String>
     public ImageProxy getNewIcon()
     {
         final String newIconUrl = getNewIconUrl();
-        if (newIconUrl == null) return null;
-
-        return new ImageProxy(newIconUrl);
+        return newIconUrl == null ? null : new ImageProxy(newIconUrl);
     }
 }

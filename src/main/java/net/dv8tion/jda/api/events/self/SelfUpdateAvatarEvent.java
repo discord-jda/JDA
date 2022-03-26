@@ -74,9 +74,7 @@ public class SelfUpdateAvatarEvent extends GenericSelfUpdateEvent<String>
     public ImageProxy getOldAvatar()
     {
         final String oldAvatarUrl = getOldAvatarUrl();
-        if (oldAvatarUrl == null) return null;
-
-        return new ImageProxy(oldAvatarUrl);
+        return oldAvatarUrl == null ? null : new ImageProxy(oldAvatarUrl);
     }
 
     /**
@@ -112,8 +110,6 @@ public class SelfUpdateAvatarEvent extends GenericSelfUpdateEvent<String>
     public ImageProxy getNewAvatar()
     {
         final String newAvatarUrl = getNewAvatarUrl();
-        if (newAvatarUrl == null) return null;
-
-        return new ImageProxy(newAvatarUrl);
+        return newAvatarUrl == null ? null : new ImageProxy(newAvatarUrl);
     }
 }

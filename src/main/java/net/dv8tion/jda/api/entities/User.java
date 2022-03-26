@@ -193,9 +193,7 @@ public interface User extends IMentionable
     default ImageProxy getAvatar()
     {
         final String avatarUrl = getAvatarUrl();
-        if (avatarUrl == null) return null;
-
-        return new ImageProxy(avatarUrl);
+        return avatarUrl == null ? null : new ImageProxy(avatarUrl);
     }
 
     /**
@@ -462,9 +460,7 @@ public interface User extends IMentionable
         public ImageProxy getBanner()
         {
             final String bannerUrl = getBannerUrl();
-            if (bannerUrl == null) return null;
-
-            return new ImageProxy(bannerUrl);
+            return bannerUrl == null ? null : new ImageProxy(bannerUrl);
         }
 
         /**

@@ -100,9 +100,7 @@ public interface ApplicationInfo extends ISnowflake
     default ImageProxy getIcon()
     {
         final String iconUrl = getIconUrl();
-        if (iconUrl == null) return null;
-
-        return new ImageProxy(iconUrl);
+        return iconUrl == null ? null : new ImageProxy(iconUrl);
     }
 
     /**
