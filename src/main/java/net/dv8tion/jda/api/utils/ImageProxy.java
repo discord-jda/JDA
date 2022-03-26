@@ -116,7 +116,8 @@ public class ImageProxy extends FileProxy
         Checks.notNull(file, "File");
         Checks.positive(size, "Image size");
 
-        return downloadToPath(getUrl(size), file.toPath()).thenApply(Path::toFile);
+        final CompletableFuture<Path> downloadToPathFuture = downloadToPath(getUrl(size), file.toPath());
+        return FutureUtil.thenApplyCancellable(downloadToPathFuture, Path::toFile);
     }
 
     /**

@@ -36,6 +36,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Function;
 
 /**
  * A utility class to download files
@@ -134,8 +135,6 @@ public class FileProxy
 
     protected CompletableFuture<InputStream> download(String url)
     {
-        final CompletableFuture<InputStream> downloadFuture = new CompletableFuture<>();
-
         // We need to apply a pattern of CompletableFuture as shown here https://discord.com/channels/125227483518861312/942488867167146005/942492134446088203
         // This CompletableFuture is going to be passed to the user / other proxy methods and must not be overridden with other "completion stages" (see CF#exceptionally return type)
         // This is done in order to make cancelling these downloads actually cancel all the tasks that depends on the previous ones.
@@ -144,24 +143,7 @@ public class FileProxy
         //     i.e. When the underlying CompletableFuture (the actual download task) has completed in any state
         final DownloadTask downloadTask = downloadInternal(url);
 
-        downloadTask.getFuture()
-                .thenAccept(downloadFuture::complete) //Pass data directly, no processing is required
-                .exceptionally(throwable ->
-                {
-                    downloadFuture.completeExceptionally(throwable);
-
-                    return null;
-                });
-
-        downloadFuture.whenComplete((p, throwable) ->
-        {
-            if (downloadFuture.isCancelled())
-            {
-                downloadTask.cancelCall();
-            }
-        });
-
-        return downloadFuture;
+        return FutureUtil.thenApplyCancellable(downloadTask.getFuture(), Function.identity(), downloadTask::cancelCall);
     }
 
     private DownloadTask downloadInternal(String url)
@@ -208,8 +190,6 @@ public class FileProxy
     }
 
     protected CompletableFuture<Path> downloadToPath(String url, Path path) {
-        final CompletableFuture<Path> downloadToPathFuture = new CompletableFuture<>();
-
         //Check if the parent path, the folder, exists
         if (Files.notExists(path.getParent()))
         {
@@ -218,8 +198,7 @@ public class FileProxy
 
         final DownloadTask downloadTask = downloadInternal(url);
 
-        downloadTask.getFuture().thenAccept(stream ->
-        {
+        return FutureUtil.thenApplyCancellable(downloadTask.getFuture(), stream -> {
             try
             {
                 //Temporary file follows this pattern: filename + random_number + ".part"
@@ -228,7 +207,7 @@ public class FileProxy
                 Files.copy(stream, tmpPath, StandardCopyOption.REPLACE_EXISTING);
 
                 Files.move(tmpPath, path, StandardCopyOption.REPLACE_EXISTING);
-                downloadToPathFuture.complete(tmpPath);
+                return path;
             }
             catch (IOException e)
             {
@@ -238,20 +217,7 @@ public class FileProxy
             {
                 IOUtil.silentClose(stream);
             }
-        }).exceptionally(throwable -> {
-            downloadToPathFuture.completeExceptionally(throwable);
-
-            return null;
-        });
-
-        downloadToPathFuture.whenComplete((p, throwable) -> {
-            if (downloadToPathFuture.isCancelled())
-            {
-                downloadTask.cancelCall();
-            }
-        });
-
-        return downloadToPathFuture;
+        }, downloadTask::cancelCall);
     }
 
 
@@ -305,7 +271,8 @@ public class FileProxy
     {
         Checks.notNull(file, "File");
 
-        return downloadToPath(url, file.toPath()).thenApply(Path::toFile);
+        final CompletableFuture<Path> downloadToPathFuture = downloadToPath(url, file.toPath());
+        return FutureUtil.thenApplyCancellable(downloadToPathFuture, Path::toFile);
     }
 
     /**

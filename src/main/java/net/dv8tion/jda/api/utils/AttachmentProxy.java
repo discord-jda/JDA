@@ -134,7 +134,8 @@ public class AttachmentProxy extends FileProxy
         Checks.positive(width, "Image width");
         Checks.positive(height, "Image height");
 
-        return downloadToPath(getUrl(width, height), file.toPath()).thenApply(Path::toFile);
+        final CompletableFuture<Path> downloadToPathFuture = downloadToPath(getUrl(width, height), file.toPath());
+        return FutureUtil.thenApplyCancellable(downloadToPathFuture, Path::toFile);
     }
 
     /**
