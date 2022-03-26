@@ -343,7 +343,6 @@ public class GuildImpl implements Guild
         return name;
     }
 
-   
     @Override
     public String getIconId()
     {
