@@ -176,7 +176,7 @@ public class PermOverrideManagerImpl extends ManagerBase<PermOverrideManager> im
         IPermissionContainer channel = getChannel();
         if (!selfMember.hasPermission(channel, Permission.VIEW_CHANNEL))
             throw new MissingAccessException(channel, Permission.VIEW_CHANNEL);
-        if (!selfMember.hasAccess(channel))
+        if (channel.getType().isAudio() && !selfMember.hasPermission(channel, Permission.VOICE_CONNECT))
             throw new MissingAccessException(channel, Permission.VOICE_CONNECT);
         if (!selfMember.hasPermission(channel, Permission.MANAGE_PERMISSIONS))
             throw new InsufficientPermissionException(channel, Permission.MANAGE_PERMISSIONS);

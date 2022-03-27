@@ -586,7 +586,7 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
             IPermissionContainer permChannel = (IPermissionContainer) getChannel();
             if (!selfMember.hasPermission(permChannel, Permission.VIEW_CHANNEL))
                 throw new MissingAccessException(permChannel, Permission.VIEW_CHANNEL);
-            if (!selfMember.hasAccess(permChannel))
+            if (channel.getType().isAudio() && !selfMember.hasPermission(channel, Permission.VOICE_CONNECT))
                 throw new MissingAccessException(permChannel, Permission.VOICE_CONNECT);
             if (!selfMember.hasPermission(permChannel, Permission.MANAGE_CHANNEL))
                 throw new InsufficientPermissionException(permChannel, Permission.MANAGE_CHANNEL);
