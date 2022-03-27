@@ -17,6 +17,7 @@
 package net.dv8tion.jda.internal.entities;
 
 import gnu.trove.map.TLongObjectMap;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.managers.channel.concrete.VoiceChannelManager;
 import net.dv8tion.jda.api.requests.restaction.ChannelAction;
@@ -25,6 +26,7 @@ import net.dv8tion.jda.internal.entities.mixin.channel.attribute.ICategorizableC
 import net.dv8tion.jda.internal.entities.mixin.channel.attribute.IInviteContainerMixin;
 import net.dv8tion.jda.internal.entities.mixin.channel.attribute.IPositionableChannelMixin;
 import net.dv8tion.jda.internal.entities.mixin.channel.middleman.AudioChannelMixin;
+import net.dv8tion.jda.internal.entities.mixin.channel.middleman.GuildMessageChannelMixin;
 import net.dv8tion.jda.internal.managers.channel.concrete.VoiceChannelManagerImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
@@ -37,6 +39,7 @@ import java.util.List;
 public class VoiceChannelImpl extends AbstractGuildChannelImpl<VoiceChannelImpl> implements
         VoiceChannel,
         AudioChannelMixin<VoiceChannelImpl>,
+        GuildMessageChannelMixin<VoiceChannelImpl>,
         ICategorizableChannelMixin<VoiceChannelImpl>,
         IPositionableChannelMixin<VoiceChannelImpl>,
         IInviteContainerMixin<VoiceChannelImpl>
@@ -45,6 +48,7 @@ public class VoiceChannelImpl extends AbstractGuildChannelImpl<VoiceChannelImpl>
     private final TLongObjectMap<PermissionOverride> overrides = MiscUtil.newLongMap();
 
     private String region;
+    private long latestMessageId;
     private long parentCategoryId;
     private int bitrate;
     private int position;
@@ -174,6 +178,26 @@ public class VoiceChannelImpl extends AbstractGuildChannelImpl<VoiceChannelImpl>
     public VoiceChannelImpl setUserLimit(int userLimit)
     {
         this.userLimit = userLimit;
+        return this;
+    }
+
+    @Override
+    public boolean canTalk(@Nonnull Member member)
+    {
+        Checks.notNull(member, "Member");
+        return member.hasPermission(this, Permission.MESSAGE_SEND);
+    }
+
+    @Override
+    public long getLatestMessageIdLong()
+    {
+        return latestMessageId;
+    }
+
+    @Override
+    public VoiceChannelImpl setLatestMessageIdLong(long latestMessageId)
+    {
+        this.latestMessageId = latestMessageId;
         return this;
     }
 }

@@ -119,9 +119,8 @@ public class InviteImpl implements Invite
         Route.CompiledRoute route;
 
         //TODO-v5: There are more than Text and Voice channels now. Revisit this.
-        final IPermissionContainer channel = this.channel.getType() == ChannelType.TEXT
-                ? guild.getTextChannelById(this.channel.getIdLong())
-                : guild.getVoiceChannelById(this.channel.getIdLong());
+        //TODO-v5: Null checks
+        final IPermissionContainer channel = guild.getChannelById(IPermissionContainer.class, this.channel.getIdLong());
 
         if (member.hasPermission(channel, Permission.MANAGE_CHANNEL))
         {

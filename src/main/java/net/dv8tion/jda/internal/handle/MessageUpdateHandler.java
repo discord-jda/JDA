@@ -126,13 +126,8 @@ public class MessageUpdateHandler extends SocketHandler
         final long channelId = content.getLong("channel_id");
         LinkedList<MessageEmbed> embeds = new LinkedList<>();
 
-        //TODO-v5-unified-channel-cache
         //TODO-v5: handle for threads.
-        MessageChannel channel = getJDA().getTextChannelsView().get(channelId);
-        if (channel == null)
-            channel = getJDA().getNewsChannelById(channelId);
-        if (channel == null)
-            channel = getJDA().getPrivateChannelsView().get(channelId);
+        MessageChannel channel = getJDA().getChannelById(MessageChannel.class, channelId);
         if (channel == null)
         {
             getJDA().getEventCache().cache(EventCache.Type.CHANNEL, channelId, responseNumber, allContent, this::handle);

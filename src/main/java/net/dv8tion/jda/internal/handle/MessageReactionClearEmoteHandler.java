@@ -47,14 +47,7 @@ public class MessageReactionClearEmoteHandler extends SocketHandler
         }
 
         long channelId = content.getUnsignedLong("channel_id");
-
-        //TODO-v5-unified-channel-cache
-        GuildMessageChannel channel = guild.getTextChannelById(channelId);
-        if (channel == null)
-            channel = guild.getNewsChannelById(channelId);
-        if (channel == null)
-            channel = guild.getThreadChannelById(channelId);
-
+        GuildMessageChannel channel = guild.getChannelById(GuildMessageChannel.class, channelId);
         if (channel == null)
         {
             EventCache.LOG.debug("Caching MESSAGE_REACTION_REMOVE_EMOJI event for unknown channel {}", channelId);

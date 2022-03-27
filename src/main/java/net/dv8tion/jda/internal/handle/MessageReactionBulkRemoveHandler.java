@@ -42,12 +42,7 @@ public class MessageReactionBulkRemoveHandler extends SocketHandler
                 return guildId;
         }
 
-        //TODO-v5-unified-channel-cache
-        MessageChannel channel = jda.getTextChannelById(channelId);
-        if (channel == null)
-            channel = jda.getNewsChannelById(channelId);
-        if (channel == null)
-            channel = jda.getThreadChannelById(channelId);
+        MessageChannel channel = jda.getChannelById(MessageChannel.class, channelId);
         if (channel == null)
         {
             jda.getEventCache().cache(EventCache.Type.CHANNEL, channelId, responseNumber, allContent, this::handle);

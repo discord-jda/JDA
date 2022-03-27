@@ -122,13 +122,7 @@ public class MessageReactionHandler extends SocketHandler
         }
 
         //TODO-v5-unified-channel-cache
-        MessageChannel channel = api.getTextChannelById(channelId);
-        if (channel == null)
-            channel = api.getNewsChannelById(channelId);
-        if (channel == null)
-            channel = api.getThreadChannelById(channelId);
-        if (channel == null)
-            channel = api.getPrivateChannelById(channelId);
+        MessageChannel channel = api.getChannelById(MessageChannel.class, channelId);
         if (channel == null)
         {
             if (guildId != 0)

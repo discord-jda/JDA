@@ -53,7 +53,7 @@ public class MessageReference
         if (guildId == 0L)
             this.channel = api.getPrivateChannelById(channelId);
         else
-            this.channel = (MessageChannel) api.getGuildChannelById(channelId);
+            this.channel = api.getChannelById(MessageChannel.class, channelId);
 
         this.guild = api.getGuildById(guildId); // is null if guildId = 0 anyway
 

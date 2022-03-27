@@ -57,13 +57,7 @@ public class MessageBulkDeleteHandler extends SocketHandler
         }
         else
         {
-            //TODO-v5-unified-channel-cache
-            GuildMessageChannel channel = getJDA().getTextChannelById(channelId);
-            if (channel == null)
-                channel = getJDA().getNewsChannelById(channelId);
-            if (channel == null)
-                channel = getJDA().getThreadChannelById(channelId);
-
+            GuildMessageChannel channel = getJDA().getChannelById(GuildMessageChannel.class, channelId);
             if (channel == null)
             {
                 getJDA().getEventCache().cache(EventCache.Type.CHANNEL, channelId, responseNumber, allContent, this::handle);

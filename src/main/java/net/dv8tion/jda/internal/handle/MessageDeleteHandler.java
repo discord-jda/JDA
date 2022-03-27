@@ -20,7 +20,6 @@ import net.dv8tion.jda.api.events.message.MessageDeleteEvent;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.ThreadChannelImpl;
-import net.dv8tion.jda.internal.entities.mixin.channel.middleman.MessageChannelMixin;
 
 public class MessageDeleteHandler extends SocketHandler
 {
@@ -43,14 +42,7 @@ public class MessageDeleteHandler extends SocketHandler
         final long messageId = content.getLong("id");
         final long channelId = content.getLong("channel_id");
 
-        //TODO-v5-unified-channel-cache
-        MessageChannel channel = getJDA().getTextChannelById(channelId);
-        if (channel == null)
-            channel = getJDA().getNewsChannelById(channelId);
-        if (channel == null)
-            channel = getJDA().getThreadChannelById(channelId);
-        if (channel == null)
-            channel = getJDA().getPrivateChannelById(channelId);
+        MessageChannel channel = getJDA().getChannelById(MessageChannel.class, channelId);
         if (channel == null)
         {
             getJDA().getEventCache().cache(EventCache.Type.CHANNEL, channelId, responseNumber, allContent, this::handle);
