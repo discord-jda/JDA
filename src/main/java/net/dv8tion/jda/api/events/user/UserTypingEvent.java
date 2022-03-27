@@ -119,6 +119,18 @@ public class UserTypingEvent extends GenericUserEvent
     }
 
     /**
+     * {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel} in which this users started typing,
+     * or {@code null} if this was not in a VoiceChannel.
+     *
+     * @return Possibly-null {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel}
+     */
+    @Nullable
+    public VoiceChannel getVoiceChannel()
+    {
+        return isFromType(ChannelType.VOICE) ? (VoiceChannel) channel : null;
+    }
+
+    /**
      * {@link net.dv8tion.jda.api.entities.NewsChannel NewsChannel} in which this users started typing,
      * or {@code null} if this was not in a NewsChannel.
      *

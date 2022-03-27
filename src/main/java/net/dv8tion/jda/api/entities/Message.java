@@ -757,6 +757,28 @@ public interface Message extends ISnowflake, Formattable
     TextChannel getTextChannel();
 
     /**
+     * Returns the {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel} that this message was sent in.
+     * <br><b>This is only valid if the Message was actually sent in a VoiceChannel.</b>
+     * <br>You can check the type of channel this message was sent from using {@link #isFromType(ChannelType)} or {@link #getChannelType()}.
+     *
+     * <p>Use {@link #getChannel()} for an ambiguous {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel}
+     * if you do not need functionality specific to {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel}.
+     *
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is a system message
+     * @throws java.lang.IllegalStateException
+     *         If this was not sent in a {@link net.dv8tion.jda.api.entities.VoiceChannel}.
+     *
+     * @return The VoiceChannel this message was sent in
+     *
+     * @see    #isFromGuild()
+     * @see    #isFromType(ChannelType)
+     * @see    #getChannelType()
+     */
+    @Nonnull
+    VoiceChannel getVoiceChannel();
+
+    /**
      * Returns the {@link net.dv8tion.jda.api.entities.NewsChannel NewsChannel} that this message was sent in.
      * <br><b>This is only valid if the Message was actually sent in a NewsChannel.</b>
      * <br>You can check the type of channel this message was sent from using {@link #isFromType(ChannelType)} or {@link #getChannelType()}.

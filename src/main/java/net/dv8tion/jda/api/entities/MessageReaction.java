@@ -185,6 +185,31 @@ public class MessageReaction
     }
 
     /**
+     * The {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel} this Reaction was used in
+     * or {@code null} if this is not from type {@link net.dv8tion.jda.api.entities.ChannelType#VOICE ChannelType.VOICE}!
+     *
+     * @return The {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel} or {@code null}
+     */
+    @Nullable
+    public VoiceChannel getVoiceChannel()
+    {
+        return getChannel() instanceof VoiceChannel ? (VoiceChannel) getChannel() : null;
+    }
+
+    /**
+     * The {@link net.dv8tion.jda.api.entities.NewsChannel NewsChannel} this Reaction was used in
+     * or {@code null} if this is not from type {@link net.dv8tion.jda.api.entities.ChannelType#NEWS ChannelType.NEWS}!
+     *
+     * @return The {@link net.dv8tion.jda.api.entities.NewsChannel NewsChannel} or {@code null}
+     */
+    @Nullable
+    public NewsChannel getNewsChannel()
+    {
+        return getChannel() instanceof NewsChannel ? (NewsChannel) getChannel() : null;
+    }
+
+
+    /**
      * The {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel} this Reaction was used in
      * or {@code null} if this is not from type {@link net.dv8tion.jda.api.entities.ChannelType#PRIVATE ChannelType.PRIVATE}!
      *

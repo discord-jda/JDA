@@ -179,6 +179,28 @@ public abstract class GenericMessageEvent extends Event
     }
 
     /**
+     * The {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel} the Message was received in.
+     * <br>If this Message was not received in a {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel},
+     * this will throw an {@link java.lang.IllegalStateException}.
+     *
+     * @throws java.lang.IllegalStateException
+     *         If this was not sent in a {@link net.dv8tion.jda.api.entities.VoiceChannel}.
+     *
+     * @return The VoiceChannel the Message was received in
+     *
+     * @see    #isFromGuild()
+     * @see    #isFromType(ChannelType)
+     * @see    #getChannelType()
+     */
+    @Nonnull
+    public VoiceChannel getVoiceChannel()
+    {
+        if (!isFromType(ChannelType.VOICE))
+            throw new IllegalStateException("This message event did not happen in a voice channel");
+        return (VoiceChannel) channel;
+    }
+
+    /**
      * The {@link net.dv8tion.jda.api.entities.NewsChannel NewsChannel} the Message was received in.
      * <br>If this Message was not received in a {@link net.dv8tion.jda.api.entities.NewsChannel NewsChannel},
      * this will throw an {@link java.lang.IllegalStateException}.
