@@ -317,6 +317,14 @@ public abstract class AbstractMessage implements Message
 
     @Nonnull
     @Override
+    public VoiceChannel getVoiceChannel()
+    {
+        unsupported();
+        return null;
+    }
+
+    @Nonnull
+    @Override
     public NewsChannel getNewsChannel()
     {
         unsupported();

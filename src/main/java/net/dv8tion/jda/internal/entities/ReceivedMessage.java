@@ -42,6 +42,7 @@ import net.dv8tion.jda.internal.utils.Checks;
 import org.apache.commons.collections4.Bag;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.bag.HashBag;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -761,6 +762,15 @@ public class ReceivedMessage extends AbstractMessage
         if (!isFromType(ChannelType.TEXT))
             throw new IllegalStateException("This message was not sent in a text channel");
         return (TextChannel) channel;
+    }
+
+    @NotNull
+    @Override
+    public VoiceChannel getVoiceChannel()
+    {
+        if (!isFromType(ChannelType.VOICE))
+            throw new IllegalStateException("This message was not sent in a voice channel");
+        return (VoiceChannel) channel;
     }
 
     @Nonnull
