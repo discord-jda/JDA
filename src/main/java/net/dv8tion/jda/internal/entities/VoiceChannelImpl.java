@@ -17,6 +17,7 @@
 package net.dv8tion.jda.internal.entities;
 
 import gnu.trove.map.TLongObjectMap;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.managers.channel.concrete.VoiceChannelManager;
 import net.dv8tion.jda.api.requests.restaction.ChannelAction;
@@ -25,6 +26,7 @@ import net.dv8tion.jda.internal.entities.mixin.channel.attribute.ICategorizableC
 import net.dv8tion.jda.internal.entities.mixin.channel.attribute.IInviteContainerMixin;
 import net.dv8tion.jda.internal.entities.mixin.channel.attribute.IPositionableChannelMixin;
 import net.dv8tion.jda.internal.entities.mixin.channel.middleman.AudioChannelMixin;
+import net.dv8tion.jda.internal.entities.mixin.channel.middleman.GuildMessageChannelMixin;
 import net.dv8tion.jda.internal.managers.channel.concrete.VoiceChannelManagerImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
@@ -39,13 +41,15 @@ public class VoiceChannelImpl extends AbstractGuildChannelImpl<VoiceChannelImpl>
         AudioChannelMixin<VoiceChannelImpl>,
         ICategorizableChannelMixin<VoiceChannelImpl>,
         IPositionableChannelMixin<VoiceChannelImpl>,
-        IInviteContainerMixin<VoiceChannelImpl>
+        IInviteContainerMixin<VoiceChannelImpl>,
+        GuildMessageChannelMixin<VoiceChannelImpl>
 {
     private final TLongObjectMap<Member> connectedMembers = MiscUtil.newLongMap();
     private final TLongObjectMap<PermissionOverride> overrides = MiscUtil.newLongMap();
 
     private String region;
     private long parentCategoryId;
+    private long latestMessageId;
     private int bitrate;
     private int position;
     private int userLimit;
@@ -175,5 +179,27 @@ public class VoiceChannelImpl extends AbstractGuildChannelImpl<VoiceChannelImpl>
     {
         this.userLimit = userLimit;
         return this;
+    }
+
+    @Override
+    public long getLatestMessageIdLong()
+    {
+        return latestMessageId;
+    }
+
+    @Override
+    public VoiceChannelImpl setLatestMessageIdLong(long latestMessageId)
+    {
+        this.latestMessageId = latestMessageId;
+        return this;
+    }
+
+    @Override
+    public boolean canTalk(@Nonnull Member member)
+    {
+        if (!getGuild().equals(member.getGuild()))
+            throw new IllegalArgumentException("Provided Member is not from the Guild that this VoiceChannel is part of.");
+
+        return member.hasPermission(this, Permission.VIEW_CHANNEL, Permission.MESSAGE_SEND);
     }
 }

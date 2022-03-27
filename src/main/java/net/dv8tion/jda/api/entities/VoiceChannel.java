@@ -39,7 +39,7 @@ import javax.annotation.Nonnull;
  * @see   JDA#getVoiceChannelsByName(String, boolean)
  * @see   JDA#getVoiceChannelById(long)
  */
-public interface VoiceChannel extends AudioChannel, ICategorizableChannel, ICopyableChannel, IPermissionContainer, IPositionableChannel, IInviteContainer
+public interface VoiceChannel extends AudioChannel, ICategorizableChannel, ICopyableChannel, IPermissionContainer, IPositionableChannel, IInviteContainer, GuildMessageChannel
 {
     /**
      * The maximum amount of {@link net.dv8tion.jda.api.entities.Member Members} that can be in this
