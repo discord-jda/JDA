@@ -1051,6 +1051,7 @@ public class EntityBuilder
 
         channel
             .setParentCategory(json.getLong("parent_id", 0))
+            .setLatestMessageIdLong(json.getLong("last_message_id", 0))
             .setName(json.getString("name"))
             .setPosition(json.getInt("position"))
             .setUserLimit(json.getInt("user_limit"))
