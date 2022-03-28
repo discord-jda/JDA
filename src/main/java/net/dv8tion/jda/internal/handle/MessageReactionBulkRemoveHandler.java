@@ -49,7 +49,7 @@ public class MessageReactionBulkRemoveHandler extends SocketHandler
             if (guild == null)
             {
                 jda.getEventCache().cache(EventCache.Type.GUILD, guildId, responseNumber, allContent, this::handle);
-                EventCache.LOG.debug("Got message delete for a guild that is not yet cached. GuildId: {}", guildId);
+                EventCache.LOG.debug("Got MESSAGE_REACTION_REMOVE_ALL for a guild that is not yet cached. GuildId: {}", guildId);
                 return null;
             }
         }
