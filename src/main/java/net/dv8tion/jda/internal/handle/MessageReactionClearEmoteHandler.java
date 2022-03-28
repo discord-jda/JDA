@@ -16,14 +16,12 @@
 
 package net.dv8tion.jda.internal.handle;
 
-import net.dv8tion.jda.api.entities.Emote;
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.GuildMessageChannel;
-import net.dv8tion.jda.api.entities.MessageReaction;
+import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.message.react.MessageReactionRemoveEmoteEvent;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.EmoteImpl;
+import net.dv8tion.jda.internal.requests.WebSocketClient;
 
 public class MessageReactionClearEmoteHandler extends SocketHandler
 {
@@ -50,6 +48,14 @@ public class MessageReactionClearEmoteHandler extends SocketHandler
         GuildMessageChannel channel = guild.getChannelById(GuildMessageChannel.class, channelId);
         if (channel == null)
         {
+            // If discord adds message support for unexpected types in the future, drop the event instead of caching it
+            GuildChannel actual = guild.getGuildChannelById(channelId);
+            if (actual != null)
+            {
+                WebSocketClient.LOG.debug("Dropping MESSAGE_REACTION_REMOVE_EMOJI for unexpected channel of type {}", actual.getType());
+                return null;
+            }
+
             EventCache.LOG.debug("Caching MESSAGE_REACTION_REMOVE_EMOJI event for unknown channel {}", channelId);
             getJDA().getEventCache().cache(EventCache.Type.CHANNEL, channelId, responseNumber, allContent, this::handle);
             return null;

@@ -121,16 +121,27 @@ public class MessageReactionHandler extends SocketHandler
             }
         }
 
-        //TODO-v5-unified-channel-cache
         MessageChannel channel = api.getChannelById(MessageChannel.class, channelId);
         if (channel == null)
         {
+            // If discord adds message support for unexpected types in the future, drop the event instead of caching it
+            if (guild != null)
+            {
+                GuildChannel actual = guild.getGuildChannelById(channelId);
+                if (actual != null)
+                {
+                    WebSocketClient.LOG.debug("Dropping MESSAGE_REACTION event for unexpected channel of type {}", actual.getType());
+                    return null;
+                }
+            }
+
             if (guildId != 0)
             {
                 api.getEventCache().cache(EventCache.Type.CHANNEL, channelId, responseNumber, allContent, this::handle);
                 EventCache.LOG.debug("Received a reaction for a channel that JDA does not currently have cached");
                 return null;
             }
+
             //create a new private channel with minimal information for this event
             channel = getJDA().getEntityBuilder().createPrivateChannel(
                     DataObject.empty()

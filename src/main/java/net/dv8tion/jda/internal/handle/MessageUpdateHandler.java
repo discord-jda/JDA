@@ -92,7 +92,19 @@ public class MessageUpdateHandler extends SocketHandler
             {
                 case EntityBuilder.MISSING_CHANNEL:
                 {
-                    final long channelId = content.getLong("channel_id");
+                    final long channelId = content.getUnsignedLong("channel_id");
+
+                    // If discord adds message support for unexpected types in the future, drop the event instead of caching it
+                    if (guild != null)
+                    {
+                        GuildChannel actual = guild.getGuildChannelById(channelId);
+                        if (actual != null)
+                        {
+                            WebSocketClient.LOG.debug("Dropping MESSAGE_UPDATE for unexpected channel of type {}", actual.getType());
+                            return null;
+                        }
+                    }
+
                     getJDA().getEventCache().cache(EventCache.Type.CHANNEL, channelId, responseNumber, allContent, this::handle);
                     EventCache.LOG.debug("Received a message update for a channel that JDA does not currently have cached");
                     return null;
