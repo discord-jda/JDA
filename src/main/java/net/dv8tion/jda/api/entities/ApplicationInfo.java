@@ -310,7 +310,7 @@ public interface ApplicationInfo extends ISnowflake
     /**
      * A {@link java.util.List} of scopes the default authorization URL is set up with.
      *
-     * <p>This is empty if you set a custom URL in the <a href="https://discord.com/developers/applications" target="_blank">Developer Portal</a>.
+     * <p>This List is empty if you set a custom URL in the <a href="https://discord.com/developers/applications" target="_blank">Developer Portal</a>.
      *
      * @return Immutable list of scopes the default authorization URL is set up with.
      */
