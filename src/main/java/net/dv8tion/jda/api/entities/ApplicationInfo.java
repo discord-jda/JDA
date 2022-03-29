@@ -300,7 +300,7 @@ public interface ApplicationInfo extends ISnowflake
     /**
      * The custom Authorization URL of this bot's application.
      *
-     * <p>This returns null if no custom URL is set in the <a href="https://discord.com/developers/applications" target="_blank">Developer Portal</a> or if In-app Authorization is enabled.
+     * <p>This returns {@code null} if no custom URL is set in the <a href="https://discord.com/developers/applications" target="_blank">Developer Portal</a> or if In-app Authorization is enabled.
      *
      * @return Custom Authorization URL, or null if it has not been set
      */
