@@ -27,7 +27,6 @@ public class PresenceProviderConfig
 {
     private IntFunction<? extends Activity> activityProvider;
     private IntFunction<OnlineStatus> statusProvider;
-    private IntFunction<Boolean> idleProvider;
 
     @Nullable
     public IntFunction<? extends Activity> getActivityProvider()
@@ -51,16 +50,6 @@ public class PresenceProviderConfig
         this.statusProvider = statusProvider;
     }
 
-    @Nullable
-    public IntFunction<Boolean> getIdleProvider()
-    {
-        return idleProvider;
-    }
-
-    public void setIdleProvider(@Nullable IntFunction<Boolean> idleProvider)
-    {
-        this.idleProvider = idleProvider;
-    }
 
     @Nonnull
     public static PresenceProviderConfig getDefault()

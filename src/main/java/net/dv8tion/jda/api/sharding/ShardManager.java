@@ -1012,35 +1012,6 @@ public interface ShardManager extends IGuildChannelContainer
     }
 
     /**
-     * Sets whether all instances should be marked as afk or not
-     *
-     * <p>This is relevant to client accounts to monitor
-     * whether new messages should trigger mobile push-notifications.
-     *
-     * <p>This will also change the value for shards that are created in the future.
-     *
-     * @param idle
-     *        boolean
-     */
-    default void setIdle(final boolean idle)
-    {
-        this.setIdleProvider(id -> idle);
-    }
-
-    /**
-     * Sets the provider that decides for all shards whether they should be marked as afk or not.
-     *
-     * <p>This will also change the provider for shards that are created in the future.
-     *
-     * @param idleProvider
-     *        Provider for a boolean
-     */
-    default void setIdleProvider(@Nonnull final IntFunction<Boolean> idleProvider)
-    {
-        this.getShardCache().forEach(jda -> jda.getPresence().setIdle(idleProvider.apply(jda.getShardInfo().getShardId())));
-    }
-
-    /**
      * Sets the {@link net.dv8tion.jda.api.OnlineStatus OnlineStatus} and {@link net.dv8tion.jda.api.entities.Activity Activity} for all shards.
      *
      * <p>This will also change the status for shards that are created in the future.

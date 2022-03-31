@@ -73,7 +73,6 @@ public class  DefaultShardManagerBuilder
     protected int maxBufferSize = 2048;
     protected int intents = -1;
     protected String token = null;
-    protected IntFunction<Boolean> idleProvider = null;
     protected IntFunction<OnlineStatus> statusProvider = null;
     protected IntFunction<? extends Activity> activityProvider = null;
     protected IntFunction<? extends ConcurrentMap<String, String>> contextProvider = null;
@@ -1097,43 +1096,6 @@ public class  DefaultShardManagerBuilder
     public DefaultShardManagerBuilder setActivityProvider(@Nullable final IntFunction<? extends Activity> activityProvider)
     {
         this.activityProvider = activityProvider;
-        return this;
-    }
-
-    /**
-     * Sets whether or not we should mark our sessions as afk
-     * <br>This value can be changed at any time using
-     * {@link DefaultShardManager#setIdle(boolean) DefaultShardManager#setIdleProvider(boolean)}.
-     *
-     * @param  idle
-     *         boolean value that will be provided with our IDENTIFY packages to mark our sessions as afk or not. <b>(default false)</b>
-     *
-     * @return The DefaultShardManagerBuilder instance. Useful for chaining.
-     *
-     * @see    net.dv8tion.jda.api.managers.Presence#setIdle(boolean)
-     */
-    @Nonnull
-    public DefaultShardManagerBuilder setIdle(final boolean idle)
-    {
-        return this.setIdleProvider(id -> idle);
-    }
-
-    /**
-     * Sets whether or not we should mark our sessions as afk
-     * <br>This value can be changed at any time using
-     * {@link DefaultShardManager#setIdle(boolean) DefaultShardManager#setIdleProvider(boolean)}.
-     *
-     * @param  idleProvider
-     *         boolean value that will be provided with our IDENTIFY packages to mark our sessions as afk or not. <b>(default false)</b>
-     *
-     * @return The DefaultShardManagerBuilder instance. Useful for chaining.
-     *
-     * @see    net.dv8tion.jda.api.managers.Presence#setIdle(boolean)
-     */
-    @Nonnull
-    public DefaultShardManagerBuilder setIdleProvider(@Nullable final IntFunction<Boolean> idleProvider)
-    {
-        this.idleProvider = idleProvider;
         return this;
     }
 
@@ -2172,7 +2134,6 @@ public class  DefaultShardManagerBuilder
         final PresenceProviderConfig presenceConfig = new PresenceProviderConfig();
         presenceConfig.setActivityProvider(activityProvider);
         presenceConfig.setStatusProvider(statusProvider);
-        presenceConfig.setIdleProvider(idleProvider);
         final ThreadingProviderConfig threadingConfig = new ThreadingProviderConfig(rateLimitPoolProvider, gatewayPoolProvider, callbackPoolProvider, eventPoolProvider, audioPoolProvider, threadFactory);
         final ShardingSessionConfig sessionConfig = new ShardingSessionConfig(sessionController, voiceDispatchInterceptor, httpClient, httpClientBuilder, wsFactory, audioSendFactory, flags, shardingFlags, maxReconnectDelay, largeThreshold);
         final ShardingMetaConfig metaConfig = new ShardingMetaConfig(maxBufferSize, contextProvider, cacheFlags, flags, compression, encoding);

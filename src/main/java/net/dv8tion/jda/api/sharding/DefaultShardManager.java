@@ -536,8 +536,6 @@ public class DefaultShardManager implements ShardManager
         PresenceImpl presence = ((PresenceImpl) jda.getPresence());
         if (presenceConfig.getActivityProvider() != null)
             presence.setCacheActivity(presenceConfig.getActivityProvider().apply(shardId));
-        if (presenceConfig.getIdleProvider() != null)
-            presence.setCacheIdle(presenceConfig.getIdleProvider().apply(shardId));
         if (presenceConfig.getStatusProvider() != null)
             presence.setCacheStatus(presenceConfig.getStatusProvider().apply(shardId));
 
@@ -610,13 +608,6 @@ public class DefaultShardManager implements ShardManager
     {
         ShardManager.super.setActivityProvider(activityProvider);
         presenceConfig.setActivityProvider(activityProvider);
-    }
-
-    @Override
-    public void setIdleProvider(@Nonnull IntFunction<Boolean> idleProvider)
-    {
-        ShardManager.super.setIdleProvider(idleProvider);
-        presenceConfig.setIdleProvider(idleProvider);
     }
 
     @Override

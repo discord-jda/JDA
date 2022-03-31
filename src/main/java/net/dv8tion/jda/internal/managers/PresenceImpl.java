@@ -38,7 +38,6 @@ import java.util.Collections;
 public class PresenceImpl implements Presence
 {
     private final JDAImpl api;
-    private boolean idle = false;
     private Activity activity = null;
     private OnlineStatus status = OnlineStatus.ONLINE;
 
@@ -77,12 +76,6 @@ public class PresenceImpl implements Presence
         return activity;
     }
 
-    @Override
-    public boolean isIdle()
-    {
-        return idle;
-    }
-
 
     /* -- Public Setters -- */
 
@@ -90,7 +83,7 @@ public class PresenceImpl implements Presence
     @Override
     public void setStatus(OnlineStatus status)
     {
-        setPresence(status, activity, idle);
+        setPresence(status, activity);
     }
 
     @Override
@@ -100,41 +93,15 @@ public class PresenceImpl implements Presence
     }
 
     @Override
-    public void setIdle(boolean idle)
-    {
-        setPresence(status, idle);
-    }
-
-    @Override
-    public void setPresence(OnlineStatus status, Activity activity, boolean idle)
+    public void setPresence(OnlineStatus status, Activity activity)
     {
         Checks.check(status != OnlineStatus.UNKNOWN,
                 "Cannot set the presence status to an unknown OnlineStatus!");
         if (status == OnlineStatus.OFFLINE || status == null)
             status = OnlineStatus.INVISIBLE;
-
-        this.idle = idle;
         this.status = status;
         this.activity = activity;
         update();
-    }
-
-    @Override
-    public void setPresence(OnlineStatus status, Activity activity)
-    {
-        setPresence(status, activity, idle);
-    }
-
-    @Override
-    public void setPresence(OnlineStatus status, boolean idle)
-    {
-        setPresence(status, activity, idle);
-    }
-
-    @Override
-    public void setPresence(Activity game, boolean idle)
-    {
-        setPresence(status, game, idle);
     }
 
 
@@ -157,12 +124,6 @@ public class PresenceImpl implements Presence
         return this;
     }
 
-    public PresenceImpl setCacheIdle(boolean idle)
-    {
-        this.idle = idle;
-        return this;
-    }
-
 
     /* -- Internal Methods -- */
 
@@ -171,7 +132,6 @@ public class PresenceImpl implements Presence
     {
         DataObject activity = getGameJson(this.activity);
         return DataObject.empty()
-              .put("afk", idle)
               .put("since", System.currentTimeMillis())
               .put("activities", DataArray.fromCollection(activity == null // this is done so that nested DataObject is converted to a Map
                       ? Collections.emptyList()
