@@ -37,6 +37,8 @@ import net.dv8tion.jda.api.requests.restaction.order.CategoryOrderAction;
 import net.dv8tion.jda.api.requests.restaction.order.ChannelOrderAction;
 import net.dv8tion.jda.api.requests.restaction.order.RoleOrderAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.AuditLogPaginationAction;
+import net.dv8tion.jda.api.requests.restaction.pagination.BanPaginationAction;
+import net.dv8tion.jda.api.requests.restaction.pagination.PaginationAction;
 import net.dv8tion.jda.api.utils.cache.*;
 import net.dv8tion.jda.api.utils.concurrent.Task;
 import net.dv8tion.jda.api.utils.data.DataArray;
@@ -52,6 +54,8 @@ import net.dv8tion.jda.internal.requests.restaction.order.CategoryOrderActionImp
 import net.dv8tion.jda.internal.requests.restaction.order.ChannelOrderActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.order.RoleOrderActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.pagination.AuditLogPaginationActionImpl;
+import net.dv8tion.jda.internal.requests.restaction.pagination.BanPaginationActionImpl;
+import net.dv8tion.jda.internal.requests.restaction.pagination.PaginationActionImpl;
 import net.dv8tion.jda.internal.utils.*;
 import net.dv8tion.jda.internal.utils.cache.AbstractCacheView;
 import net.dv8tion.jda.internal.utils.cache.MemberCacheViewImpl;
@@ -754,26 +758,27 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public RestActionImpl<List<Ban>> retrieveBanList()
+    public BanPaginationActionImpl retrieveBanList()
     {
         if (!getSelfMember().hasPermission(Permission.BAN_MEMBERS))
             throw new InsufficientPermissionException(this, Permission.BAN_MEMBERS);
 
-        Route.CompiledRoute route = Route.Guilds.GET_BANS.compile(getId());
-        return new RestActionImpl<>(getJDA(), route, (response, request) ->
-        {
-            EntityBuilder builder = api.getEntityBuilder();
-            List<Ban> bans = new LinkedList<>();
-            DataArray bannedArr = response.getArray();
-
-            for (int i = 0; i < bannedArr.length(); i++)
-            {
-                final DataObject object = bannedArr.getObject(i);
-                DataObject user = object.getObject("user");
-                bans.add(new Ban(builder.createUser(user), object.getString("reason", null)));
-            }
-            return Collections.unmodifiableList(bans);
-        });
+        return new BanPaginationActionImpl(this);
+//        Route.CompiledRoute route = Route.Guilds.GET_BANS.compile(getId());
+//        return new RestActionImpl<>(getJDA(), route, (response, request) ->
+//        {
+//            EntityBuilder builder = api.getEntityBuilder();
+//            List<Ban> bans = new LinkedList<>();
+//            DataArray bannedArr = response.getArray();
+//
+//            for (int i = 0; i < bannedArr.length(); i++)
+//            {
+//                final DataObject object = bannedArr.getObject(i);
+//                DataObject user = object.getObject("user");
+//                bans.add(new Ban(builder.createUser(user), object.getString("reason", null)));
+//            }
+//            return Collections.unmodifiableList(bans);
+//        });
     }
 
     @Nonnull
