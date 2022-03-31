@@ -1882,8 +1882,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#BAN_MEMBERS} permission.
      *
-     * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@literal List<}{@link net.dv8tion.jda.api.entities.Guild.Ban Ban}{@literal >}
-     *         <br>Retrieves an immutable list of all users currently banned from this Guild
+     * @return The {@link net.dv8tion.jda.api.requests.restaction.pagination.BanPaginationAction BanPaginationAction} of the guild's bans.
      */
     @Nonnull
     @CheckReturnValue

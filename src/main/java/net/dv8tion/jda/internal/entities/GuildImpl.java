@@ -764,21 +764,6 @@ public class GuildImpl implements Guild
             throw new InsufficientPermissionException(this, Permission.BAN_MEMBERS);
 
         return new BanPaginationActionImpl(this);
-//        Route.CompiledRoute route = Route.Guilds.GET_BANS.compile(getId());
-//        return new RestActionImpl<>(getJDA(), route, (response, request) ->
-//        {
-//            EntityBuilder builder = api.getEntityBuilder();
-//            List<Ban> bans = new LinkedList<>();
-//            DataArray bannedArr = response.getArray();
-//
-//            for (int i = 0; i < bannedArr.length(); i++)
-//            {
-//                final DataObject object = bannedArr.getObject(i);
-//                DataObject user = object.getObject("user");
-//                bans.add(new Ban(builder.createUser(user), object.getString("reason", null)));
-//            }
-//            return Collections.unmodifiableList(bans);
-//        });
     }
 
     @Nonnull
