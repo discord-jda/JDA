@@ -21,7 +21,6 @@ import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.restaction.pagination.BanPaginationAction;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
-import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.requests.Route;
 
@@ -50,25 +49,6 @@ public class BanPaginationActionImpl
     }
 
     @Override
-    protected Route.CompiledRoute finalizeRoute()
-    {
-        Route.CompiledRoute route = super.finalizeRoute();
-
-        String after = null;
-        String limit = String.valueOf(getLimit());
-        long last = this.lastKey;
-        if (last != 0)
-            after = Long.toUnsignedString(last);
-
-        route = route.withQueryParams("limit", limit);
-
-        if (after != null)
-            route = route.withQueryParams("after", after);
-
-        return route;
-    }
-
-    @Override
     protected void handleSuccess(Response response, Request<List<Guild.Ban>> request)
     {
         EntityBuilder builder = api.getEntityBuilder();
@@ -81,13 +61,27 @@ public class BanPaginationActionImpl
             try
             {
                 DataObject user = object.getObject("user");
+                Guild.Ban ban = new Guild.Ban(builder.createUser(user), object.getString("reason", null));
 
-                bans.add(new Guild.Ban(builder.createUser(user), object.getString("reason", null)));
+                bans.add(ban);
+                last = ban;
+                lastKey = ban.getUser().getIdLong();
             } catch (Throwable t)
             {
                 LOG.error("Got an unexpected error while decoding ban index {} for guild {}: {}\n\tData: {}",
                         i, guild.getId(), t.getMessage(), object);
             }
+        }
+
+        if (order == PaginationOrder.FORWARD)
+            Collections.reverse(bans);
+        if (useCache)
+            cached.addAll(bans);
+
+        if (!bans.isEmpty())
+        {
+            last = bans.get(bans.size() - 1);
+            lastKey = last.getUser().getIdLong();
         }
 
         request.onSuccess(Collections.unmodifiableList(bans));
