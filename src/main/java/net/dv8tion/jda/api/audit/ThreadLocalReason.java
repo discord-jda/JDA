@@ -28,7 +28,7 @@ import java.util.function.Consumer;
  * thread-local reason set through this handle. Thus audit-log reasons done by callbacks will also use the one set
  * from the executing thread.
  *
- * <h1>Example without closable</h1>
+ * <h2>Example without closable</h2>
  * <pre><code>
  * String previousReason = ThreadLocalReason.getCurrent();
  * ThreadLocalReason.setCurrent("Hello World");
@@ -44,7 +44,7 @@ import java.util.function.Consumer;
  * guild.kick(user).queue();
  * </code></pre>
  *
- * <h1>Example with closable</h1>
+ * <h2>Example with closable</h2>
  * <pre><code>
  * try (ThreadLocalReason.Closable __ = ThreadLocalReason.closable("Hello World")) {
  *     guild.ban(user, 0).queue(v -&gt; {

@@ -34,7 +34,7 @@ import java.util.concurrent.locks.Lock;
  * <p>This closes automatically when {@link #hasNext()} returns {@code false} but
  * its recommended to only be used within a {@code try-with-resources} block for safety.
  *
- * <h3>Example</h3>
+ * <h2>Example</h2>
  * This can handle any exceptions thrown while iterating and ensures the lock is released correctly.
  * <pre>{@code
  * try (ClosableIterator<T> it = cacheView.lockedIterator()) {
