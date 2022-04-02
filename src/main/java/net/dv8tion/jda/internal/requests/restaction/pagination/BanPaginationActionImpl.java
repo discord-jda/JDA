@@ -27,7 +27,8 @@ public class BanPaginationActionImpl
     }
 
     @Override
-    public @NotNull Guild getGuild()
+    @Nonnull
+    public Guild getGuild()
     {
         return guild;
     }
