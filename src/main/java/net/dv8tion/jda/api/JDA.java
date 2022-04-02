@@ -208,7 +208,7 @@ public interface JDA extends IGuildChannelContainer
 
     /**
      * The {@link GatewayIntent GatewayIntents} for this JDA session.
-     * 
+     *
      * @return {@link EnumSet} of active gateway intents
      */
     @Nonnull
@@ -255,7 +255,7 @@ public interface JDA extends IGuildChannelContainer
      * The time in milliseconds that discord took to respond to a REST request.
      * <br>This will request the current user from the API and calculate the time the response took.
      *
-     * <h2>Example</h2>
+     * <h4>Example</h4>
      * <pre><code>
      * jda.getRestPing().queue( (time) {@literal ->}
      *     channel.sendMessageFormat("Ping: %d ms", time).queue()
@@ -285,7 +285,7 @@ public interface JDA extends IGuildChannelContainer
     /**
      * This method will block until JDA has reached the specified connection status.
      *
-     * <h2>Login Cycle</h2>
+     * <h4>Login Cycle</h4>
      * <ol>
      *  <li>{@link net.dv8tion.jda.api.JDA.Status#INITIALIZING INITIALIZING}</li>
      *  <li>{@link net.dv8tion.jda.api.JDA.Status#INITIALIZED INITIALIZED}</li>
@@ -321,7 +321,7 @@ public interface JDA extends IGuildChannelContainer
     /**
      * This method will block until JDA has reached the specified connection status.
      *
-     * <h2>Login Cycle</h2>
+     * <h4>Login Cycle</h4>
      * <ol>
      *  <li>{@link net.dv8tion.jda.api.JDA.Status#INITIALIZING INITIALIZING}</li>
      *  <li>{@link net.dv8tion.jda.api.JDA.Status#INITIALIZED INITIALIZED}</li>
@@ -612,7 +612,7 @@ public interface JDA extends IGuildChannelContainer
      * <p><b>Global commands can take up to <u>1 hour</u> to propagate to the clients.</b>
      * For testing, it is recommended to use a test guild with guild commands.
      *
-     * <h2>Examples</h2>
+     * <h4>Examples</h4>
      * <pre>{@code
      * // Set list to 2 commands
      * jda.updateCommands()
@@ -1379,7 +1379,7 @@ public interface JDA extends IGuildChannelContainer
      * <br>This will fail with {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_USER UNKNOWN_USER}
      * if the user does not exist.
      *
-     * <h2>Example</h2>
+     * <h4>Example</h4>
      * <pre>{@code
      * public void sendMessage(JDA jda, long userId, String content) {
      *     jda.openPrivateChannelById(userId)
@@ -1407,7 +1407,7 @@ public interface JDA extends IGuildChannelContainer
      * <br>This will fail with {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_USER UNKNOWN_USER}
      * if the user does not exist.
      *
-     * <h2>Example</h2>
+     * <h4>Example</h4>
      * <pre>{@code
      * public void sendMessage(JDA jda, String userId, String content) {
      *     jda.openPrivateChannelById(userId)

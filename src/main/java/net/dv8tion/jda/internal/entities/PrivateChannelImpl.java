@@ -16,26 +16,28 @@
 
 package net.dv8tion.jda.internal.entities;
 
-import net.dv8tion.jda.api.AccountType;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.PrivateChannel;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.mixin.channel.middleman.MessageChannelMixin;
+import net.dv8tion.jda.internal.requests.CompletedRestAction;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public class PrivateChannelImpl extends AbstractChannelImpl<PrivateChannelImpl> implements PrivateChannel, MessageChannelMixin<PrivateChannelImpl>
 {
     private User user;
     private long latestMessageId;
 
-    public PrivateChannelImpl(long id, User user)
+    public PrivateChannelImpl(JDA api, long id, @Nullable User user)
     {
-        super(id, user.getJDA());
+        super(id, api);
         this.user = user;
     }
 
@@ -46,7 +48,7 @@ public class PrivateChannelImpl extends AbstractChannelImpl<PrivateChannelImpl> 
         return ChannelType.PRIVATE;
     }
 
-    @Nonnull
+    @Nullable
     @Override
     public User getUser()
     {
@@ -56,16 +58,34 @@ public class PrivateChannelImpl extends AbstractChannelImpl<PrivateChannelImpl> 
 
     @Nonnull
     @Override
-    public String getName()
+    public RestAction<User> retrieveUser()
     {
-        return getUser().getName();
+        User user = getUser();
+        if (user != null)
+            return new CompletedRestAction<>(getJDA(), user);
+        //even if the user blocks the bot, this does not fail.
+        return retrievePrivateChannel()
+                .map(PrivateChannel::getUser);
     }
 
     @Nonnull
     @Override
-    public JDA getJDA()
+    public String getName()
     {
-        return user.getJDA();
+        User user = getUser();
+        if (user == null)
+        {
+            //don't break or override the contract of @NonNull
+            return "";
+        }
+        return user.getName();
+    }
+
+    @Nonnull
+    private RestAction<PrivateChannel> retrievePrivateChannel()
+    {
+        Route.CompiledRoute route = Route.Channels.GET_CHANNEL.compile(getId());
+        return new RestActionImpl<>(getJDA(), route, (response, request) -> ((JDAImpl) getJDA()).getEntityBuilder().createPrivateChannel(response.getObject()));
     }
 
     @Nonnull
@@ -85,7 +105,12 @@ public class PrivateChannelImpl extends AbstractChannelImpl<PrivateChannelImpl> 
     @Override
     public boolean canTalk()
     {
-        return !user.isBot();
+        //The only way user is null is when an event is dispatched that doesn't give us enough information to build the recipient user,
+        // which only happens if this bot sends a message (or otherwise triggers an event) from a shard other than shard 0.
+        // The event will be received on shard 0 and not have enough information to build the recipient user.
+        //As such, since events will only happen in this channel if it is between the bot and the user, a null user is a valid channel state. 
+        // Events cannot happen between a bot and another bot, so the user would never be null in that case.
+        return user == null || !user.isBot();
     }
 
     @Override
@@ -120,6 +145,11 @@ public class PrivateChannelImpl extends AbstractChannelImpl<PrivateChannelImpl> 
         return false;
     }
 
+    public void setUser(User user)
+    {
+        this.user = user;
+    }
+
     @Override
     public PrivateChannelImpl setLatestMessageIdLong(long latestMessageId)
     {
@@ -149,11 +179,14 @@ public class PrivateChannelImpl extends AbstractChannelImpl<PrivateChannelImpl> 
     @Override
     public String toString()
     {
-        return "PC:" + getUser().getName() + '(' + getId() + ')';
+        return "PC:" + getName() + '(' + getId() + ')';
     }
 
     private void updateUser()
     {
+        //if the user is null then we don't even know their ID, and so we have to check that first
+        if (user == null)
+            return;
         // Load user from cache if one exists, otherwise we might have an outdated user instance
         User realUser = getJDA().getUserById(user.getIdLong());
         if (realUser != null)
@@ -162,7 +195,12 @@ public class PrivateChannelImpl extends AbstractChannelImpl<PrivateChannelImpl> 
 
     private void checkBot()
     {
-        if (getUser().isBot() && getJDA().getAccountType() == AccountType.BOT)
+        //The only way user is null is when an event is dispatched that doesn't give us enough information to build the recipient user,
+        // which only happens if this bot sends a message (or otherwise triggers an event) from a shard other than shard 0.
+        // The event will be received on shard 0 and not have enough information to build the recipient user.
+        //As such, since events will only happen in this channel if it is between the bot and the user, a null user is a valid channel state. 
+        // Events cannot happen between a bot and another bot, so the user would never be null in that case.
+        if (getUser() != null && getUser().isBot())
             throw new UnsupportedOperationException("Cannot send a private message between bots.");
     }
 }
