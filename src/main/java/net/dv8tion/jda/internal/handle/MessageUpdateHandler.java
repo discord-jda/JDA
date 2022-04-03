@@ -93,6 +93,16 @@ public class MessageUpdateHandler extends SocketHandler
                 case EntityBuilder.MISSING_CHANNEL:
                 {
                     final long channelId = content.getLong("channel_id");
+                    if (guild != null)
+                    {
+                        GuildChannel guildChannel = guild.getGuildChannelById(channelId);
+                        if (guildChannel != null)
+                        {
+                            WebSocketClient.LOG.debug("Discarding MESSAGE_UPDATE event for unexpected channel type. Channel: {}", guildChannel);
+                            return null;
+                        }
+                    }
+
                     getJDA().getEventCache().cache(EventCache.Type.CHANNEL, channelId, responseNumber, allContent, this::handle);
                     EventCache.LOG.debug("Received a message update for a channel that JDA does not currently have cached");
                     return null;
@@ -126,15 +136,20 @@ public class MessageUpdateHandler extends SocketHandler
         final long channelId = content.getLong("channel_id");
         LinkedList<MessageEmbed> embeds = new LinkedList<>();
 
-        //TODO-v5-unified-channel-cache
-        //TODO-v5: handle for threads.
-        MessageChannel channel = getJDA().getTextChannelsView().get(channelId);
-        if (channel == null)
-            channel = getJDA().getNewsChannelById(channelId);
-        if (channel == null)
-            channel = getJDA().getPrivateChannelsView().get(channelId);
+        MessageChannel channel = getJDA().getChannelById(MessageChannel.class, channelId);
         if (channel == null)
         {
+            Guild guild = getJDA().getGuildById(content.getUnsignedLong("guild_id", 0L));
+            if (guild != null)
+            {
+                GuildChannel guildChannel = guild.getGuildChannelById(channelId);
+                if (guildChannel != null)
+                {
+                    WebSocketClient.LOG.debug("Discarding MESSAGE_UPDATE event for unexpected channel type. Channel: {}", guildChannel);
+                    return null;
+                }
+            }
+
             getJDA().getEventCache().cache(EventCache.Type.CHANNEL, channelId, responseNumber, allContent, this::handle);
             EventCache.LOG.debug("Received message update for embeds for a channel/group that JDA does not have cached yet.");
             return null;
@@ -145,9 +160,9 @@ public class MessageUpdateHandler extends SocketHandler
             embeds.add(builder.createMessageEmbed(embedsJson.getObject(i)));
 
         getJDA().handleEvent(
-                new MessageEmbedEvent(
-                        getJDA(), responseNumber,
-                        messageId, channel, embeds));
+            new MessageEmbedEvent(
+                getJDA(), responseNumber,
+                messageId, channel, embeds));
         return null;
     }
 }

@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.internal.handle;
 
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.events.interaction.GenericInteractionCreateEvent;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionEvent;
@@ -55,10 +57,20 @@ public class InteractionCreateHandler extends SocketHandler
         }
 
         long guildId = content.getUnsignedLong("guild_id", 0);
+        Guild guild = api.getGuildById(guildId);
         if (api.getGuildSetupController().isLocked(guildId))
             return guildId;
-        if (guildId != 0 && api.getGuildById(guildId) == null)
+        if (guildId != 0 && guild == null)
             return null; // discard event if it is not from a guild we are currently in
+        if (guild != null)
+        {
+            GuildChannel channel = guild.getGuildChannelById(content.getUnsignedLong("channel_id", 0));
+            if (channel == null || !channel.getType().isMessage()) // TODO: This might break when interactions can be used outside of message channels in the future, not the case right now though!
+            {
+                WebSocketClient.LOG.debug("Discarding INTERACTION_CREATE event from unexpected channel type. Channel: {}", channel);
+                return null;
+            }
+        }
 
         switch (InteractionType.fromKey(type))
         {
