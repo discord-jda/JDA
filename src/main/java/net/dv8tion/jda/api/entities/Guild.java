@@ -3254,10 +3254,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      *         The ID of the {@link GuildScheduledEvent}
      *
      * @throws IllegalArgumentException
-     *         If the specified ID is {@code null} or empty
-     *
-     * @throws NumberFormatException
-     *         If the specified ID cannot be parsed by {@link Long#parseLong(String)}
+     *         If the specified ID is not a valid snowflake
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvent}
      *
