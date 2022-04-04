@@ -3239,27 +3239,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    RestAction<GuildScheduledEvent> retrieveScheduledEventById(String id);
-
-    /**
-     * Retrieves a {@link GuildScheduledEvent} by its ID.
-     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_GUILD_SCHEDULED_EVENT ErrorResponse.UNKOWN_GUILD_SCHEDULED_EVENT}
-     *     <br>A scheduled event with the specified ID does not exist in this guild, or the currently logged in user does not
-     *     have access to it.</li>
-     * </ul>
-     *
-     * @param  id
-     *         The ID of the {@link GuildScheduledEvent}
-     *
-     * @throws IllegalArgumentException
-     *         If the specified ID is not a valid snowflake
-     *
-     * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvent}
-     *
-     * @see    #getScheduledEventById(long)
-     */
+    RestAction<GuildScheduledEvent> retrieveScheduledEventById(@Nonnull String id);
 
     /* From GuildController */
 
