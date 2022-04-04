@@ -36,30 +36,6 @@ import java.util.Objects;
  * <p>Can be used to detect when the {@link GuildScheduledEvent} status has changed.
  *
  * <p>Identifier: {@code location}
- *
- * <h2> Example </h2>
- * <pre>{@code
- * Location location = guildScheduledEventUpdateLocationEvent.getNewLocation();
- * GuildScheduledEvent.Type locationType = location.getType();
- * String logMessage = "";
- * switch (locationType)
- * {
- *     case EXTERNAL:
- *         String externalLocation = location.getExternalLocation();
- *         logMessage = "This event will now take place at " + externalLocation;
- *         break;
- *     case STAGE_INSTANCE:
- *         StageChannel stageChannel = location.getStageChannel();
- *         logMessage = "This event will now take place at the following Stage Channel: " + stageChannel.getAsMention();
- *         break;
- *     case VOICE:
- *         VoiceChannel voiceChannel = location.getVoiceChannel();
- *         logMessage = "This event will now take place at the following Voice Channel: " + voiceChannel.getAsMention();
- *         break;
- *     case UNKNOWN:
- *         logMessage = "Sorry, this bot cannot determine the location of the event";
- * }
- * }</pre>
  */
 public class GuildScheduledEventUpdateLocationEvent extends GenericGuildScheduledEventUpdateEvent<Location>
 {
