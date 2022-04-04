@@ -1428,7 +1428,6 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * @param  id
      *         The id of the {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvent}.
      *
-     *
      * @return Possibly-null {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvent} with matching id.
      */
     @Nullable
