@@ -22,8 +22,7 @@ import net.dv8tion.jda.api.entities.User;
 import javax.annotation.Nonnull;
 
 /**
- * Indicates that a {@link net.dv8tion.jda.api.entities.User User} has shown that they are no longer intertested/have unsubscribed
- * to a {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvent}.
+ * Indicates that a {@link net.dv8tion.jda.api.entities.User User} is no longer interested or has unsubscribed from a {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvent}.
  *
  * Can be used to detect when someone has indicated that they are no longer interested in an event and also retrieve their
  * {@link net.dv8tion.jda.api.entities.User User} object as well as the {@link GuildScheduledEvent}.
@@ -53,8 +52,9 @@ public class GuildScheduledEventUserRemoveEvent extends GenericGuildScheduledEve
      *
      * @return The string user id
      */
+    @Nonnull
     public String getUserId()
     {
-        return String.valueOf(userId);
+        return Long.toUnsignedString(userId);
     }
 }

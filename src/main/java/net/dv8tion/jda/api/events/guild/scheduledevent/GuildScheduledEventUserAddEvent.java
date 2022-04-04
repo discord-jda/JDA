@@ -22,8 +22,7 @@ import net.dv8tion.jda.api.entities.User;
 import javax.annotation.Nonnull;
 
 /**
- * Indicates that a {@link net.dv8tion.jda.api.entities.User User} has shown that they are intertested/have subscribed
- * to a {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvent}.
+ * Indicates that a {@link net.dv8tion.jda.api.entities.User User} is interested/have subscribed to a {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvent}.
  *
  * Can be used to detect when someone has indicated that they are interested in an event and also retrieve their
  * {@link net.dv8tion.jda.api.entities.User User} object as well as the {@link GuildScheduledEvent}.
@@ -53,8 +52,9 @@ public class GuildScheduledEventUserAddEvent extends GenericGuildScheduledEventG
      *
      * @return The string user id
      */
+    @Nonnull
     public String getUserId()
     {
-        return String.valueOf(userId);
+        return Long.toUnsignedString(userId);
     }
 }
