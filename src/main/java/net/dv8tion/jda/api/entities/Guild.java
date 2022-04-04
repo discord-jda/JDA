@@ -5494,7 +5494,6 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * @throws java.lang.IllegalArgumentException
      *         If a required parameter is not set.
      *
-     *
      * <h2>Example</h2>
      * <pre>{@code
      * guild.createScheduledEvent()
