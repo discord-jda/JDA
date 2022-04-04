@@ -25,8 +25,8 @@ import javax.annotation.Nonnull;
  * Indicates that a gateway event relating to a {@link GuildScheduledEvent}
  * has been fired.
  *
- * <p> It should be noted that {@link GuildScheduledEvents} are not
- * actual gateway events found in the {@link net.dv8tion.jda.api.events} package, but are rather entities similar to
+ * <p> It should be noted that a {@link GuildScheduledEvent} is not an
+ * actual gateway event found in the {@link net.dv8tion.jda.api.events} package, but are rather entities similar to
  * {@link net.dv8tion.jda.api.entities.User User} or {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} objects
  * representing a <a href="https://support.discord.com/hc/en-us/articles/4409494125719-Scheduled-Events">guild's scheduled events</a>.
  *
