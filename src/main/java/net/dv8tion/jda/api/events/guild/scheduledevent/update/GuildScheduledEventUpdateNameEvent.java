@@ -25,11 +25,11 @@ import javax.annotation.Nonnull;
  *
  * <p>Can be used to detect when the {@link GuildScheduledEvent} name had changed.
  *
- * <p>Identifier: {@code guild_scheduled_event_name}
+ * <p>Identifier: {@code name}
  */
 public class GuildScheduledEventUpdateNameEvent extends GenericGuildScheduledEventUpdateEvent<String>
 {
-    public static final String IDENTIFIER = "guild_scheduled_event_name";
+    public static final String IDENTIFIER = "name";
 
     public GuildScheduledEventUpdateNameEvent(@Nonnull JDA api, long responseNumber, @Nonnull GuildScheduledEvent guildScheduledEvent, @Nonnull String previous)
     {

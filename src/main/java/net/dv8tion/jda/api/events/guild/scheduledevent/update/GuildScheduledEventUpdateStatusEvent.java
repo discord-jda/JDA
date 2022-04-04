@@ -26,11 +26,11 @@ import javax.annotation.Nonnull;
  *
  * <p>Can be used to detect when the {@link GuildScheduledEvent} status has changed.
  *
- * <p>Identifier: {@code guild_scheduled_event_status}
+ * <p>Identifier: {@code status}
  */
 public class GuildScheduledEventUpdateStatusEvent extends GenericGuildScheduledEventUpdateEvent<GuildScheduledEvent.Status>
 {
-    public static final String IDENTIFIER = "guild_scheduled_event_status";
+    public static final String IDENTIFIER = "status";
 
     public GuildScheduledEventUpdateStatusEvent(@Nonnull JDA api, long responseNumber, @Nonnull GuildScheduledEvent guildScheduledEvent, @Nonnull GuildScheduledEvent.Status previous)
     {

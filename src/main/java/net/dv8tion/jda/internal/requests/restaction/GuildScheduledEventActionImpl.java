@@ -176,7 +176,7 @@ public class GuildScheduledEventActionImpl extends AuditableRestActionImpl<Guild
         return getRequestBody(object);
     }
 
-    void preChecks()
+    private void preChecks()
     {
         Checks.check(name != null, "Missing required parameter: Name");
         Checks.check(startTime != null, "Missing required parameter: Start Time");

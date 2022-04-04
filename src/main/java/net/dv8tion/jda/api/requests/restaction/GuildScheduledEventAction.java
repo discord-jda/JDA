@@ -162,7 +162,7 @@ public interface GuildScheduledEventAction extends AuditableRestAction<GuildSche
      *         that the event is being created in.
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have
-     *         {@link net.dv8tion.jda.api.Permission#MANAGE_EVENTS Permission.ManageEvents},
+     *         {@link net.dv8tion.jda.api.Permission#MANAGE_EVENTS Permission.MANAGE_EVENTS},
      *         {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL Permission.MANAGE_CHANNEL},
      *         {@link net.dv8tion.jda.api.Permission#VOICE_MUTE_OTHERS Permission.VOICE_MUTE_OTHERS},
      *         or {@link net.dv8tion.jda.api.Permission#VOICE_MOVE_OTHERS Permission.VOICE_MOVE_OTHERS}, in the provided
@@ -189,7 +189,7 @@ public interface GuildScheduledEventAction extends AuditableRestAction<GuildSche
      *         that the event is being created in.
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have
-     *         {@link net.dv8tion.jda.api.Permission#MANAGE_EVENTS Permission.ManageEvents},
+     *         {@link net.dv8tion.jda.api.Permission#MANAGE_EVENTS Permission.MANAGE_EVENTS},
      *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}, or
      *         {@link net.dv8tion.jda.api.Permission#VOICE_CONNECT Permission.VOICE_CONNECT} in the provided
      *         Voice Channel.
@@ -241,8 +241,8 @@ public interface GuildScheduledEventAction extends AuditableRestAction<GuildSche
      * @param  startTime
      *         The time that the new {@link GuildScheduledEvent} should start at
      *
-     * @throws java.lang.IllegalArgumentException If the provided start time is {@code null}, or takes place after the
-     * end time.
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided start time is {@code null}, or takes place after the end time.
      *
      * @return The current GuildScheduledEventAction, for chaining convenience
      *

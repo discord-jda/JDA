@@ -30,7 +30,6 @@ import javax.annotation.Nonnull;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 
-
 public class GuildScheduledEventManagerImpl extends ManagerBase<GuildScheduledEventManager> implements GuildScheduledEventManager
 {
     protected GuildScheduledEvent event;
@@ -182,7 +181,7 @@ public class GuildScheduledEventManagerImpl extends ManagerBase<GuildScheduledEv
         return getRequestBody(object);
     }
 
-    void preChecks()
+    private void preChecks()
     {
         if (shouldUpdate(LOCATION))
         {

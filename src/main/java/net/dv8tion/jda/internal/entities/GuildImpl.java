@@ -574,7 +574,6 @@ public class GuildImpl implements Guild
         return retrieveScheduledEventById(String.valueOf(id));
     }
 
-
     @Override
     @Nonnull
     public List<GuildScheduledEvent> getScheduledEvents()

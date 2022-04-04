@@ -65,12 +65,13 @@ public class GuildScheduledEventUpdateHandler extends SocketHandler
         else
             channel = guild.getGuildChannelById(location);
 
-
         if (!Objects.equals(name, event.getName()))
         {
             String oldName = event.getName();
             event.setName(name);
-            getJDA().handleEvent(new GuildScheduledEventUpdateNameEvent(getJDA(), responseNumber, event, oldName));
+            getJDA().handleEvent(
+                new GuildScheduledEventUpdateNameEvent(getJDA(), responseNumber,
+                    event, oldName));
         }
         if (!Objects.equals(description, event.getDescription()))
         {

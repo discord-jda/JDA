@@ -56,7 +56,7 @@ public interface GuildScheduledEventManager extends Manager<GuildScheduledEventM
     /** Used to reset the image field */
     long IMAGE        = 1 << 5;
     /** Used to reset the status field */
-    long STATUS        = 1 << 6;
+    long STATUS       = 1 << 6;
 
     /**
      * Resets the fields specified by the provided bit-flag pattern.
@@ -86,7 +86,7 @@ public interface GuildScheduledEventManager extends Manager<GuildScheduledEventM
     /**
      * Resets the fields specified by the provided bit-flag patterns.
      * You can specify a combination by using a bitwise OR concat of the flag constants.
-     * <br>Example: {@code manager.reset(GuildScheduledEventManager.DESCRIPTION, GuildScheduledEventManager.END_TIME );}
+     * <br>Example: {@code manager.reset(GuildScheduledEventManager.DESCRIPTION, GuildScheduledEventManager.END_TIME);}
      *
      * <p><b>Flag Constants:</b>
      * <ul>

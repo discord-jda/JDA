@@ -650,7 +650,7 @@ public class DataObject implements SerializableData
 
     /**
      * Resolves an {@link OffsetDateTime} to a key.
-     * <br><b>NOte:</b> This method should be used on ISO8601 timestamps
+     * <br><b>Note:</b> This method should be used on ISO8601 timestamps
      *
      * @param key
      *        The key to check for a value

@@ -71,6 +71,7 @@ public class GuildScheduledEventMembersPaginationActionImpl extends PaginationAc
         lastKey = last.getIdLong();
         request.onSuccess(members);
     }
+
     @Override
     protected long getKey(Member it)
     {

@@ -52,7 +52,8 @@ public class GuildScheduledEventImpl implements GuildScheduledEvent
     private StageChannel stageChannel;
     private VoiceChannel voiceChannel;
 
-    public GuildScheduledEventImpl(long id, Guild guild) {
+    public GuildScheduledEventImpl(long id, Guild guild)
+    {
         this.id = id;
         this.guild = guild;
     }
