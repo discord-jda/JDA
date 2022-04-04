@@ -16,20 +16,12 @@
 
 package net.dv8tion.jda.internal.handle;
 
-import gnu.trove.set.TLongSet;
-import net.dv8tion.jda.api.audio.hooks.ConnectionStatus;
-import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.guild.GuildLeaveEvent;
 import net.dv8tion.jda.api.events.guild.GuildUnavailableEvent;
-import net.dv8tion.jda.api.managers.AudioManager;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.GuildImpl;
-import net.dv8tion.jda.internal.managers.AudioManagerImpl;
 import net.dv8tion.jda.internal.requests.WebSocketClient;
-import net.dv8tion.jda.internal.utils.UnlockHook;
-import net.dv8tion.jda.internal.utils.cache.AbstractCacheView;
-import net.dv8tion.jda.internal.utils.cache.SnowflakeCacheViewImpl;
 
 public class GuildDeleteHandler extends SocketHandler
 {
@@ -134,6 +126,9 @@ public class GuildDeleteHandler extends SocketHandler
                 return true;
             });
         }
+
+        // Detach the guild cache from the global cache (also removes users if necessary)
+        guild.invalidate();
 
         if (unavailable)
         {
