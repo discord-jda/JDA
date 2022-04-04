@@ -53,80 +53,6 @@ public class GuildDeleteHandler extends SocketHandler
         if (setupController.isUnavailable(id) && unavailable)
             return null;
 
-        //Remove everything from global cache
-        // this prevents some race-conditions for getting audio managers from guilds
-        SnowflakeCacheViewImpl<Guild> guildView = getJDA().getGuildsView();
-        SnowflakeCacheViewImpl<StageChannel> stageView = getJDA().getStageChannelView();
-        SnowflakeCacheViewImpl<TextChannel> textView = getJDA().getTextChannelsView();
-        SnowflakeCacheViewImpl<ThreadChannel> threadView = getJDA().getThreadChannelsView();
-        SnowflakeCacheViewImpl<NewsChannel> newsView = getJDA().getNewsChannelView();
-        SnowflakeCacheViewImpl<VoiceChannel> voiceView = getJDA().getVoiceChannelsView();
-        SnowflakeCacheViewImpl<Category> categoryView = getJDA().getCategoriesView();
-
-        guildView.remove(id);
-
-        try (UnlockHook hook = stageView.writeLock())
-        {
-            guild.getStageChannelCache()
-                    .forEachUnordered(chan -> stageView.getMap().remove(chan.getIdLong()));
-        }
-        try (UnlockHook hook = textView.writeLock())
-        {
-            guild.getTextChannelCache()
-                 .forEachUnordered(chan -> textView.getMap().remove(chan.getIdLong()));
-        }
-
-        try (UnlockHook hook = threadView.writeLock())
-        {
-            guild.getThreadChannelsView()
-                    .forEachUnordered(chan -> threadView.getMap().remove(chan.getIdLong()));
-        }
-
-        try (UnlockHook hook = newsView.writeLock())
-        {
-            guild.getNewsChannelCache()
-                    .forEachUnordered(chan -> newsView.getMap().remove(chan.getIdLong()));
-        }
-        try (UnlockHook hook = voiceView.writeLock())
-        {
-            guild.getVoiceChannelCache()
-                 .forEachUnordered(chan -> voiceView.getMap().remove(chan.getIdLong()));
-        }
-        try (UnlockHook hook = categoryView.writeLock())
-        {
-            guild.getCategoryCache()
-                 .forEachUnordered(chan -> categoryView.getMap().remove(chan.getIdLong()));
-        }
-
-        // Clear audio connection
-        getJDA().getClient().removeAudioConnection(id);
-        final AbstractCacheView<AudioManager> audioManagerView = getJDA().getAudioManagersView();
-        final AudioManagerImpl manager = (AudioManagerImpl) audioManagerView.get(id); //read-lock access/release
-        if (manager != null)
-            manager.closeAudioConnection(ConnectionStatus.DISCONNECTED_REMOVED_FROM_GUILD); //connection-lock access/release
-        audioManagerView.remove(id); //write-lock access/release
-
-        //cleaning up all users that we do not share a guild with anymore
-        // Anything left in memberIds will be removed from the main userMap
-        //Use a new HashSet so that we don't actually modify the Member map so it doesn't affect Guild#getMembers for the leave event.
-        TLongSet memberIds = guild.getMembersView().keySet(); // copies keys
-        getJDA().getGuildCache().stream()
-                .map(GuildImpl.class::cast)
-                .forEach(g -> memberIds.removeAll(g.getMembersView().keySet()));
-        // Remember, everything left in memberIds is removed from the userMap
-        SnowflakeCacheViewImpl<User> userView = getJDA().getUsersView();
-        try (UnlockHook hook = userView.writeLock())
-        {
-            long selfId = getJDA().getSelfUser().getIdLong();
-            memberIds.forEach(memberId -> {
-                if (memberId == selfId)
-                    return true; // don't remove selfUser from cache
-                userView.remove(memberId);
-                getJDA().getEventCache().clear(EventCache.Type.USER, memberId);
-                return true;
-            });
-        }
-
         // Detach the guild cache from the global cache (also removes users if necessary)
         guild.invalidate();
 
@@ -134,16 +60,16 @@ public class GuildDeleteHandler extends SocketHandler
         {
             setupController.onUnavailable(id);
             getJDA().handleEvent(
-                new GuildUnavailableEvent(
-                    getJDA(), responseNumber,
-                    guild));
+                    new GuildUnavailableEvent(
+                            getJDA(), responseNumber,
+                            guild));
         }
         else
         {
             getJDA().handleEvent(
-                new GuildLeaveEvent(
-                    getJDA(), responseNumber,
-                    guild));
+                    new GuildLeaveEvent(
+                            getJDA(), responseNumber,
+                            guild));
         }
         getJDA().getEventCache().clear(EventCache.Type.GUILD, id);
         return null;
