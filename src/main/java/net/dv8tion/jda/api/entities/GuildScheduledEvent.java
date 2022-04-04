@@ -163,6 +163,21 @@ public interface GuildScheduledEvent extends ISnowflake, Comparable<GuildSchedul
     OffsetDateTime getEndTime();
 
     /**
+     * The guild channel the event is set to take place at.
+     * <br>Note that this method is only applicable to events which are of {@link Type#EXTERNAL Type.EXTERNAL}.
+     *
+     * @return The guild channel, or {@code null} if the guild channel was deleted
+     *         or if the event is of {@link Type#EXTERNAL Type.EXTERNAL}
+     *
+     * @see    #getType()
+     * @see    #getVoiceChannel()
+     * @see    #getStageChannel()
+     * @see    #getExternalLocation()
+     */
+    @Nullable
+    GuildChannel getChannel();
+
+    /**
      * The stage channel the event is set to take place at.
      * <br>Note that this method is only applicable to events which are of {@link Type#STAGE_INSTANCE Type.STAGE_INSTANCE}.
      *
@@ -170,6 +185,7 @@ public interface GuildScheduledEvent extends ISnowflake, Comparable<GuildSchedul
      *         or if the event is not of {@link Type#STAGE_INSTANCE Type.STAGE_INSTANCE}
      *
      * @see    #getType()
+     * @see    #getChannel()
      * @see    #getVoiceChannel()
      * @see    #getExternalLocation()
      */
@@ -184,6 +200,7 @@ public interface GuildScheduledEvent extends ISnowflake, Comparable<GuildSchedul
      *         or if the event is not of {@link Type#STAGE_INSTANCE Type.VOICE}
      *
      * @see    #getType()
+     * @see    #getChannel()
      * @see    #getStageChannel()
      * @see    #getExternalLocation()
      */
@@ -197,6 +214,7 @@ public interface GuildScheduledEvent extends ISnowflake, Comparable<GuildSchedul
      * @return The location, or {@code null} if the event is not of {@link Type#EXTERNAL Type.EXTERNAL}
      *
      * @see    #getType()
+     * @see    #getChannel()
      * @see    #getStageChannel()
      * @see    #getVoiceChannel()
      */

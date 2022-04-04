@@ -127,6 +127,17 @@ public class GuildScheduledEventImpl implements GuildScheduledEvent
 
     @Nullable
     @Override
+    public GuildChannel getChannel()
+    {
+        if (stageChannel != null)
+            return stageChannel;
+        if (voiceChannel != null)
+            return voiceChannel;
+        return null;
+    }
+
+    @Nullable
+    @Override
     public StageChannel getStageChannel()
     {
         return stageChannel;
