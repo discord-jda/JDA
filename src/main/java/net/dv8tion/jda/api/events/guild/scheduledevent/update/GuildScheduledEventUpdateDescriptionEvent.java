@@ -26,11 +26,11 @@ import javax.annotation.Nullable;
  *
  * <p>Can be used to detect when the {@link GuildScheduledEvent} description has changed.
  *
- * <p>Identifier: {@code guild_scheduled_event_description}
+ * <p>Identifier: {@code description}
  */
 public class GuildScheduledEventUpdateDescriptionEvent extends GenericGuildScheduledEventUpdateEvent<String>
 {
-    public static final String IDENTIFIER = "guild_scheduled_event_description";
+    public static final String IDENTIFIER = "description";
 
     public GuildScheduledEventUpdateDescriptionEvent(@Nonnull JDA api, long responseNumber, @Nonnull GuildScheduledEvent guildScheduledEvent, @Nullable String previous)
     {

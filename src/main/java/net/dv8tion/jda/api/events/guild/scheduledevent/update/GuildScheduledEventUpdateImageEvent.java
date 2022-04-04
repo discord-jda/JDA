@@ -25,11 +25,11 @@ import javax.annotation.Nonnull;
  *
  * <p>Can be used to detect when the {@link GuildScheduledEvent} image had changed.
  *
- * <p>Identifier: {@code guild_scheduled_event_image}
+ * <p>Identifier: {@code image}
  */
 public class GuildScheduledEventUpdateImageEvent extends GenericGuildScheduledEventUpdateEvent<String>
 {
-    public static final String IDENTIFIER = "guild_scheduled_event_image";
+    public static final String IDENTIFIER = "image";
 
     public GuildScheduledEventUpdateImageEvent(@Nonnull JDA api, long responseNumber, @Nonnull GuildScheduledEvent guildScheduledEvent, @Nonnull String previous)
     {

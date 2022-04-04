@@ -35,7 +35,7 @@ import java.util.Objects;
  *
  * <p>Can be used to detect when the {@link GuildScheduledEvent} status has changed.
  *
- * <p>Identifier: {@code guild_scheduled_event_status}
+ * <p>Identifier: {@code location}
  *
  * <h2> Example </h2>
  * <pre>{@code
@@ -63,7 +63,7 @@ import java.util.Objects;
  */
 public class GuildScheduledEventUpdateLocationEvent extends GenericGuildScheduledEventUpdateEvent<Location>
 {
-    public static final String IDENTIFIER = "guild_scheduled_event_location";
+    public static final String IDENTIFIER = "location";
 
     public GuildScheduledEventUpdateLocationEvent(@Nonnull JDA api, long responseNumber, @Nonnull GuildScheduledEvent guildScheduledEvent, @Nonnull Location previous)
     {

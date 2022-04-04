@@ -27,11 +27,11 @@ import java.time.OffsetDateTime;
  *
  * <p>Can be used to detect when the {@link GuildScheduledEvent} end time has changed.
  *
- * <p>Identifier: {@code guild_scheduled_event_end_time}
+ * <p>Identifier: {@code end_time}
  */
 public class GuildScheduledEventUpdateEndTimeEvent extends GenericGuildScheduledEventUpdateEvent<OffsetDateTime>
 {
-    public static final String IDENTIFIER = "guild_scheduled_event_end_time";
+    public static final String IDENTIFIER = "end_time";
 
     public GuildScheduledEventUpdateEndTimeEvent(@Nonnull JDA api, long responseNumber, @Nonnull GuildScheduledEvent guildScheduledEvent, @Nullable OffsetDateTime previous)
     {
