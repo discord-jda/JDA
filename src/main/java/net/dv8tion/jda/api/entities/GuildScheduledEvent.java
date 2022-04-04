@@ -51,7 +51,7 @@ public interface GuildScheduledEvent extends ISnowflake, Comparable<GuildSchedul
     /**
      * The name of the event.
      *
-     * @return The name
+     * @return The event's name
      */
     @Nonnull
     String getName();
@@ -127,10 +127,10 @@ public interface GuildScheduledEvent extends ISnowflake, Comparable<GuildSchedul
 
     /**
      * Returns the type of the event. Possible types include
-     * {@link Type#STAGE_INSTANCE Type.STAGE_INSTANCE}, {@link Type#VOICE Type.VOICE} and {@link Type#EXTERNAL Type.EXTERNAL}
+     * {@link Type#STAGE_INSTANCE}, {@link Type#VOICE} and {@link Type#EXTERNAL}
      * (the latter indicates that the events location is manually set to a custom location).
      *
-     * @return The type, or {@link Type#UNKNOWN Type.UNKOWN} if the event type is unknown to JDA.
+     * @return The type, or {@link Type#UNKNOWN} if the event type is unknown to JDA.
      */
     @Nonnull
     Type getType();
@@ -151,7 +151,7 @@ public interface GuildScheduledEvent extends ISnowflake, Comparable<GuildSchedul
      * which are events that are not associated with a stage or voice channel.
      *
      * @return The time the event is set to end at. This can't be {@code null} for events of
-     *         {@link Type#EXTERNAL Type.EXTERNAL}, but can be null for other types.
+     *         {@link Type#EXTERNAL}, but can be null for other types.
      *
      * @see    #getType()
      * @see    #getStartTime()
@@ -161,10 +161,10 @@ public interface GuildScheduledEvent extends ISnowflake, Comparable<GuildSchedul
 
     /**
      * The guild channel the event is set to take place at.
-     * <br>Note that this method is only applicable to events which are of {@link Type#EXTERNAL Type.EXTERNAL}.
+     * <br>Note that this method is only applicable to events which are of {@link Type#EXTERNAL}.
      *
      * @return The guild channel, or {@code null} if the guild channel was deleted
-     *         or if the event is of {@link Type#EXTERNAL Type.EXTERNAL}
+     *         or if the event is of {@link Type#EXTERNAL}
      *
      * @see    #getType()
      * @see    #getVoiceChannel()
@@ -176,10 +176,10 @@ public interface GuildScheduledEvent extends ISnowflake, Comparable<GuildSchedul
 
     /**
      * The stage channel the event is set to take place at.
-     * <br>Note that this method is only applicable to events which are of {@link Type#STAGE_INSTANCE Type.STAGE_INSTANCE}.
+     * <br>Note that this method is only applicable to events which are of {@link Type#STAGE_INSTANCE}.
      *
      * @return The stage channel, or {@code null} if the stage channel was deleted
-     *         or if the event is not of {@link Type#STAGE_INSTANCE Type.STAGE_INSTANCE}
+     *         or if the event is not of {@link Type#STAGE_INSTANCE}
      *
      * @see    #getType()
      * @see    #getChannel()
@@ -191,10 +191,10 @@ public interface GuildScheduledEvent extends ISnowflake, Comparable<GuildSchedul
 
     /**
      * The voice channel the event is set to take place at.
-     * <br>Note that this method is only applicable to events which are of {@link Type#VOICE Type.VOICE}.
+     * <br>Note that this method is only applicable to events which are of {@link Type#VOICE}.
      *
      * @return The voice channel, or {@code null} if the voice channel was deleted
-     *         or if the event is not of {@link Type#STAGE_INSTANCE Type.VOICE}
+     *         or if the event is not of {@link Type#STAGE_INSTANCE}
      *
      * @see    #getType()
      * @see    #getChannel()
@@ -206,9 +206,9 @@ public interface GuildScheduledEvent extends ISnowflake, Comparable<GuildSchedul
 
     /**
      * The external location the event is set to take place at.
-     * <br>Note that this method is only applicable to events which are of {@link Type#EXTERNAL Type.EXTERNAL}.
+     * <br>Note that this method is only applicable to events which are of {@link Type#EXTERNAL}.
      *
-     * @return The location, or {@code null} if the event is not of {@link Type#EXTERNAL Type.EXTERNAL}
+     * @return The location, or {@code null} if the event is not of {@link Type#EXTERNAL}
      *
      * @see    #getType()
      * @see    #getChannel()
@@ -223,7 +223,7 @@ public interface GuildScheduledEvent extends ISnowflake, Comparable<GuildSchedul
      *
      * <p>Possible ErrorResponses include:
      * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_GUILD_SCHEDULED_EVENT}
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_GUILD_SCHEDULED_EVENT UNKNOWN_GUILD_SCHEDULED_EVENT}
      *     <br>If the the event was already deleted.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
@@ -237,14 +237,14 @@ public interface GuildScheduledEvent extends ISnowflake, Comparable<GuildSchedul
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If we don't have the permission to {@link net.dv8tion.jda.api.Permission#MANAGE_EVENTS MANAGE_EVENTS}
      *
-     * @return {@link net.dv8tion.jda.api.requests.RestAction}
+     * @return {@link AuditableRestAction}
      */
     @Nonnull
     @CheckReturnValue
     AuditableRestAction<Void> delete();
 
     /**
-     * A {@link PaginationAction PaginationAction} implementation
+     * A {@link PaginationAction} implementation
      * that allows to {@link Iterable iterate} over all {@link net.dv8tion.jda.api.entities.User Users} interested in this Event.
      *
      * <br>This iterates in ascending order by user id.
@@ -258,14 +258,14 @@ public interface GuildScheduledEvent extends ISnowflake, Comparable<GuildSchedul
      *
      * <p>Possible ErrorResponses include:
      * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_GUILD_SCHEDULED_EVENT}
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_GUILD_SCHEDULED_EVENT UNKNOWN_GUILD_SCHEDULED_EVENT}
      *     <br>If the the event was already deleted.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
      *     <br>If we were removed from the Guild or can't view the events channel (Location)</li>
      * </ul>
      *
-     * @return {@link GuildScheduledEventUsersPaginationAction GuildScheduledEventUsersPaginationAction}
+     * @return {@link GuildScheduledEventUsersPaginationAction}
      */
     @Nonnull
     @CheckReturnValue
@@ -335,7 +335,7 @@ public interface GuildScheduledEvent extends ISnowflake, Comparable<GuildSchedul
     /**
      * The {@link GuildScheduledEventManager} for this event.
      * <br>In the GuildScheduledEventManager, you can modify all its values, and can also start, end, or cancel events.
-     * You modify multiple fields in one request by chaining setters before calling {@link net.dv8tion.jda.api.requests.RestAction#queue() RestAction.queue()}.
+     * <br>You modify multiple fields in one request by chaining setters before calling {@link net.dv8tion.jda.api.requests.RestAction#queue() RestAction.queue()}.
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have {@link net.dv8tion.jda.api.Permission#MANAGE_EVENTS Permission.MANAGE_EVENTS}

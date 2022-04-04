@@ -1304,10 +1304,10 @@ public interface JDA extends IGuildChannelContainer
         return getRoleCache().getElementsByName(name, ignoreCase);
     }
     /**
-     * {@link net.dv8tion.jda.api.utils.cache.SnowflakeCacheView SnowflakeCacheView} of
+     * {@link SnowflakeCacheView} of
      * all cached {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvents} visible to this JDA session.
      *
-     * @return {@link net.dv8tion.jda.api.utils.cache.SnowflakeCacheView SnowflakeCacheView}
+     * @return {@link SnowflakeCacheView}
      */
     @Nonnull
     SnowflakeCacheView<GuildScheduledEvent> getGuildScheduledEventCache();
@@ -1321,7 +1321,7 @@ public interface JDA extends IGuildChannelContainer
      * a local variable or use {@link #getGuildScheduledEventCache()} and use its more efficient
      * versions of handling these values.
      *
-     * @return Possibly-empty list of all known {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvents}.
+     * @return Possibly-empty immutable list of all known {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvents}.
      */
     @Nonnull
     default List<GuildScheduledEvent> getGuildScheduledEvents()
@@ -1330,17 +1330,17 @@ public interface JDA extends IGuildChannelContainer
     }
     
     /**
-     * This returns the {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvent} which has the same id as the one provided.
-     * <br>If there is no known {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvent} with an id that matches the provided
+     * This returns the {@link GuildScheduledEvent} which has the same id as the one provided.
+     * <br>If there is no known {@link GuildScheduledEvent} with an id that matches the provided
      * one, then this returns {@code null}.
      *
      * @param  id
-     *         The id of the {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvent}.
+     *         The id of the {@link GuildScheduledEvent}.
      *
      * @throws java.lang.NumberFormatException
      *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
      *
-     * @return Possibly-null {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvent} with a matching id.
+     * @return Possibly-null {@link GuildScheduledEvent} with a matching id.
      */
     @Nullable
     default GuildScheduledEvent getGuildScheduledEventById(@Nonnull String id)
@@ -1349,14 +1349,14 @@ public interface JDA extends IGuildChannelContainer
     }
     
     /**
-     * This returns the {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvent} which has the same id as the one provided.
-     * <br>If there is no known {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvent} with an id that matches the provided
+     * This returns the {@link GuildScheduledEvent} which has the same id as the one provided.
+     * <br>If there is no known {@link GuildScheduledEvent} with an id that matches the provided
      * one, then this returns {@code null}.
      *
      * @param  id
-     *         The id of the {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvent}.
+     *         The id of the {@link GuildScheduledEvent}.
      *
-     * @return Possibly-null {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvent} with a matching id.
+     * @return Possibly-null {@link GuildScheduledEvent} with a matching id.
      */
     @Nullable
     default GuildScheduledEvent getGuildScheduledEventById(long id)
@@ -1369,11 +1369,11 @@ public interface JDA extends IGuildChannelContainer
      * <br>If there are no {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvents} with the provided name, then this returns an empty list.
      *
      * @param  name
-     *         The name of the requested {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvent}.
+     *         The name of the requested {@link GuildScheduledEvent}.
      * @param  ignoreCase
-     *         Whether to ignore case or not when comparing the provided name to each {@link net.dv8tion.jda.api.entities.GuildScheduledEvent#getName()}.
+     *         Whether to ignore case or not when comparing the provided name to each {@link GuildScheduledEvent#getName()}.
      *
-     * @return Possibly-empty list of all the {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvents} that all have the
+     * @return Possibly-empty immutable list of all the {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvents} that all have the
      *         same name as the provided name.
      */
     @Nonnull

@@ -22,15 +22,15 @@ import net.dv8tion.jda.api.events.guild.GenericGuildEvent;
 import javax.annotation.Nonnull;
 
 /**
- * Indicates that a gateway event relating to a {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvent}
+ * Indicates that a gateway event relating to a {@link GuildScheduledEvent}
  * has been fired.
  *
- * <p> It should be noted that {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvents} are not
+ * <p> It should be noted that {@link GuildScheduledEvents} are not
  * actual gateway events found in the {@link net.dv8tion.jda.api.events} package, but are rather entities similar to
  * {@link net.dv8tion.jda.api.entities.User User} or {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} objects
  * representing a <a href="https://support.discord.com/hc/en-us/articles/4409494125719-Scheduled-Events">guild's scheduled events</a>.
  *
- * <p> This class may be used to check if a gateway event is related to a {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvent}
+ * <p> This class may be used to check if a gateway event is related to a {@link GuildScheduledEvent}
  * as all gateway events in the {@link net.dv8tion.jda.api.events.guild.scheduledevent} package extend this class.
  */
 public abstract class GenericGuildScheduledEventGatewayEvent extends GenericGuildEvent
