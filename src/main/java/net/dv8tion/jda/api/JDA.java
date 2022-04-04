@@ -1373,6 +1373,9 @@ public interface JDA extends IGuildChannelContainer
      * @param  ignoreCase
      *         Whether to ignore case or not when comparing the provided name to each {@link GuildScheduledEvent#getName()}.
      *
+     * @throws IllegalArgumentException
+     *         If the provided name is null.
+     *
      * @return Possibly-empty immutable list of all the {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvents} that all have the
      *         same name as the provided name.
      */
