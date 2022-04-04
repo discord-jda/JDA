@@ -1410,7 +1410,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * @throws java.lang.NumberFormatException
      *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
      *
-     * @return Possibly-null {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvents} with matching id.
+     * @return Possibly-null {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvent} with matching id.
      */
     @Nullable
     default GuildScheduledEvent getScheduledEventById(@Nonnull String id)
