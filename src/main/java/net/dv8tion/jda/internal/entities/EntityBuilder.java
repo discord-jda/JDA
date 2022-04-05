@@ -163,6 +163,28 @@ public class EntityBuilder
         }
     }
 
+    private void createGuildScheduledEventPass(GuildImpl guildObj, DataArray array)
+    {
+        if (!getJDA().isCacheFlagSet(CacheFlag.GUILD_SCHEDULED_EVENTS))
+            return;
+        SnowflakeCacheViewImpl<GuildScheduledEvent> eventView = guildObj.getScheduledEventsView();
+        try (UnlockHook hook = eventView.writeLock())
+        {
+            TLongObjectMap<GuildScheduledEvent> eventMap = eventView.getMap();
+            for (int i = 0; i < array.length(); i++)
+            {
+                DataObject object = array.getObject(i);
+                if (object.isNull("id"))
+                {
+                    LOG.error("Received GUILD_CREATE with a scheduled event with a null ID. JSON: {}", object);
+                    continue;
+                }
+                final long eventId = object.getLong("id");
+                eventMap.put(eventId, createGuildScheduledEvent(guildObj, object, guildObj.getIdLong()));
+            }
+        }
+    }
+
     public TLongObjectMap<DataObject> convertToUserMap(ToLongFunction<DataObject> getId, DataArray array)
     {
         TLongObjectMap<DataObject> map = new TLongObjectHashMap<>();
@@ -300,12 +322,7 @@ public class EntityBuilder
             createThreadChannel(guildObj, threadJson, guildObj.getIdLong());
         }
 
-        for (int i = 0; i < scheduledEventsArray.length(); i++)
-        {
-            DataObject scheduledEventJson = scheduledEventsArray.getObject(i);
-            createGuildScheduledEvent(guildObj, scheduledEventJson, guildObj.getIdLong());
-        }
-
+        createGuildScheduledEventPass(guildObj, scheduledEventsArray);
         createGuildEmotePass(guildObj, emotesArray);
         guildJson.optArray("stage_instances")
                 .map(arr -> arr.stream(DataArray::getObject))
