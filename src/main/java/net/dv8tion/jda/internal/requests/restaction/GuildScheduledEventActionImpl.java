@@ -25,8 +25,6 @@ import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
 import okhttp3.RequestBody;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -82,7 +80,7 @@ public class GuildScheduledEventActionImpl extends AuditableRestActionImpl<Guild
     @Nonnull
     @Override
     @CheckReturnValue
-    public GuildScheduledEventActionImpl setName(@NotNull String name)
+    public GuildScheduledEventActionImpl setName(@Nonnull String name)
     {
         Checks.notBlank(name, "Name");
         name = name.trim();
@@ -95,59 +93,59 @@ public class GuildScheduledEventActionImpl extends AuditableRestActionImpl<Guild
     @Nonnull
     @Override
     @CheckReturnValue
-    public GuildScheduledEventActionImpl setDescription(@NotNull String description)
+    public GuildScheduledEventActionImpl setDescription(@Nonnull String description)
     {
         Checks.notLonger(description, GuildScheduledEvent.MAX_DESCRIPTION_LENGTH, "Description");
         this.description = description;
         return this;
     }
 
-    @NotNull
+    @Nonnull
     @Override
-    public GuildScheduledEventAction setImage(@NotNull Icon icon)
+    public GuildScheduledEventAction setImage(@Nonnull Icon icon)
     {
         this.image = icon;
         return this;
     }
 
-    @NotNull
+    @Nonnull
     @Override
-    public GuildScheduledEventAction setLocation(@NotNull StageChannel stageChannel)
+    public GuildScheduledEventAction setLocation(@Nonnull StageChannel stageChannel)
     {
         this.channelId = stageChannel.getIdLong();
         this.entityType = 1;
         return this;
     }
 
-    @NotNull
+    @Nonnull
     @Override
-    public GuildScheduledEventAction setLocation(@NotNull VoiceChannel voiceChannel)
+    public GuildScheduledEventAction setLocation(@Nonnull VoiceChannel voiceChannel)
     {
         this.channelId = voiceChannel.getIdLong();
         this.entityType = 2;
         return this;
     }
 
-    @NotNull
+    @Nonnull
     @Override
-    public GuildScheduledEventAction setLocation(@NotNull String externalLocation)
+    public GuildScheduledEventAction setLocation(@Nonnull String externalLocation)
     {
         this.location = externalLocation;
         this.entityType = 3;
         return this;
     }
 
-    @NotNull
+    @Nonnull
     @Override
-    public GuildScheduledEventAction setStartTime(@NotNull OffsetDateTime startTime)
+    public GuildScheduledEventAction setStartTime(@Nonnull OffsetDateTime startTime)
     {
         this.startTime = startTime;
         return this;
     }
 
-    @NotNull
+    @Nonnull
     @Override
-    public GuildScheduledEventAction setEndTime(@Nullable OffsetDateTime endTime)
+    public GuildScheduledEventAction setEndTime(@Nonnull OffsetDateTime endTime)
     {
         this.endTime = endTime;
         return this;

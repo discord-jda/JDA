@@ -22,11 +22,10 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
 import okhttp3.RequestBody;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -73,9 +72,9 @@ public class GuildScheduledEventManagerImpl extends ManagerBase<GuildScheduledEv
         return this;
     }
 
-    @NotNull
+    @Nonnull
     @Override
-    public GuildScheduledEventManager setDescription(@NotNull String description)
+    public GuildScheduledEventManager setDescription(@Nonnull String description)
     {
         Checks.notLonger(description, GuildScheduledEvent.MAX_DESCRIPTION_LENGTH, "Description");
         this.description = description;
@@ -83,18 +82,18 @@ public class GuildScheduledEventManagerImpl extends ManagerBase<GuildScheduledEv
         return this;
     }
 
-    @NotNull
+    @Nonnull
     @Override
-    public GuildScheduledEventManager setImage(@NotNull Icon icon)
+    public GuildScheduledEventManager setImage(@Nonnull Icon icon)
     {
         this.image = icon;
         set |= IMAGE;
         return this;
     }
 
-    @NotNull
+    @Nonnull
     @Override
-    public GuildScheduledEventManager setLocation(@NotNull StageChannel stageChannel)
+    public GuildScheduledEventManager setLocation(@Nonnull StageChannel stageChannel)
     {
         this.channelId = stageChannel.getIdLong();
         this.entityType = 1;
@@ -102,9 +101,9 @@ public class GuildScheduledEventManagerImpl extends ManagerBase<GuildScheduledEv
         return this;
     }
 
-    @NotNull
+    @Nonnull
     @Override
-    public GuildScheduledEventManager setLocation(@NotNull VoiceChannel voiceChannel)
+    public GuildScheduledEventManager setLocation(@Nonnull VoiceChannel voiceChannel)
     {
         this.channelId = voiceChannel.getIdLong();
         this.entityType = 2;
@@ -112,9 +111,9 @@ public class GuildScheduledEventManagerImpl extends ManagerBase<GuildScheduledEv
         return this;
     }
 
-    @NotNull
+    @Nonnull
     @Override
-    public GuildScheduledEventManager setLocation(@NotNull String externalLocation)
+    public GuildScheduledEventManager setLocation(@Nonnull String externalLocation)
     {
         this.location = externalLocation;
         this.entityType = 3;
@@ -122,16 +121,16 @@ public class GuildScheduledEventManagerImpl extends ManagerBase<GuildScheduledEv
         return this;
     }
 
-    @NotNull
+    @Nonnull
     @Override
-    public GuildScheduledEventManager setStartTime(@NotNull OffsetDateTime startTime)
+    public GuildScheduledEventManager setStartTime(@Nonnull OffsetDateTime startTime)
     {
         this.startTime = startTime;
         set |= START_TIME;
         return this;
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public GuildScheduledEventManager setEndTime(@Nullable OffsetDateTime endTime)
     {
@@ -140,9 +139,9 @@ public class GuildScheduledEventManagerImpl extends ManagerBase<GuildScheduledEv
         return this;
     }
 
-    @NotNull
+    @Nonnull
     @Override
-    public GuildScheduledEventManager setStatus(@NotNull GuildScheduledEvent.Status status)
+    public GuildScheduledEventManager setStatus(@Nonnull GuildScheduledEvent.Status status)
     {
         this.status = status;
         set |= STATUS;
