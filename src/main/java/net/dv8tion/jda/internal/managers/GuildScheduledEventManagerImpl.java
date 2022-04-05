@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.managers.GuildScheduledEventManager;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.Helpers;
 import okhttp3.RequestBody;
 
 import javax.annotation.CheckReturnValue;
@@ -28,6 +29,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAccessor;
 
 public class GuildScheduledEventManagerImpl extends ManagerBase<GuildScheduledEventManager> implements GuildScheduledEventManager
 {
@@ -124,18 +126,20 @@ public class GuildScheduledEventManagerImpl extends ManagerBase<GuildScheduledEv
 
     @Nonnull
     @Override
-    public GuildScheduledEventManager setStartTime(@Nonnull OffsetDateTime startTime)
+    public GuildScheduledEventManager setStartTime(@Nonnull TemporalAccessor startTime)
     {
-        this.startTime = startTime;
+        Checks.notNull(startTime, "Temporal");
+        this.startTime = Helpers.toOffsetDateTime(startTime);
         set |= START_TIME;
         return this;
     }
 
     @Nonnull
     @Override
-    public GuildScheduledEventManager setEndTime(@Nullable OffsetDateTime endTime)
+    public GuildScheduledEventManager setEndTime(@Nullable TemporalAccessor endTime)
     {
-        this.endTime = endTime;
+        Checks.notNull(endTime, "Temporal");
+        this.endTime = Helpers.toOffsetDateTime(endTime);
         set |= END_TIME;
         return this;
     }

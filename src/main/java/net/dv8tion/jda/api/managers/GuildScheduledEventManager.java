@@ -20,7 +20,7 @@ import net.dv8tion.jda.api.entities.*;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.time.OffsetDateTime;
+import java.time.temporal.TemporalAccessor;
 
 
 /**
@@ -242,7 +242,7 @@ public interface GuildScheduledEventManager extends Manager<GuildScheduledEventM
      *
      * @return GuildScheduledEventManager for chaining convenience
      *
-     * @see    #setEndTime(OffsetDateTime)
+     * @see    #setEndTime(TemporalAccessor)
      * @see    #setLocation(StageChannel)
      * @see    #setLocation(VoiceChannel)
      */
@@ -265,11 +265,11 @@ public interface GuildScheduledEventManager extends Manager<GuildScheduledEventM
      *
      * @return GuildScheduledEventManager for chaining convenience
      *
-     * @see    #setEndTime(OffsetDateTime)
+     * @see    #setEndTime(TemporalAccessor)
      */
     @Nonnull
     @CheckReturnValue
-    GuildScheduledEventManager setStartTime(@Nonnull OffsetDateTime startTime);
+    GuildScheduledEventManager setStartTime(@Nonnull TemporalAccessor startTime);
 
     /**
      * Sets the time that the selected {@link GuildScheduledEvent} should end at.
@@ -289,11 +289,11 @@ public interface GuildScheduledEventManager extends Manager<GuildScheduledEventM
      *
      * @return GuildScheduledEventManager for chaining convenience
      *
-     * @see    #setStartTime(OffsetDateTime)
+     * @see    #setStartTime(TemporalAccessor)
      */
     @Nonnull
     @CheckReturnValue
-    GuildScheduledEventManager setEndTime(@Nullable OffsetDateTime endTime);
+    GuildScheduledEventManager setEndTime(@Nullable TemporalAccessor endTime);
 
     /**
      * Sets the status of the event. This method may be used to start, end or cancel an event but can only be used to

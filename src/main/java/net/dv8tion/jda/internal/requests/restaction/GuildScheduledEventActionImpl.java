@@ -24,6 +24,7 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.Helpers;
 import okhttp3.RequestBody;
 
 import javax.annotation.CheckReturnValue;
@@ -31,6 +32,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAccessor;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 
@@ -139,17 +141,19 @@ public class GuildScheduledEventActionImpl extends AuditableRestActionImpl<Guild
 
     @Nonnull
     @Override
-    public GuildScheduledEventAction setStartTime(@Nonnull OffsetDateTime startTime)
+    public GuildScheduledEventAction setStartTime(@Nonnull TemporalAccessor startTime)
     {
-        this.startTime = startTime;
+        Checks.notNull(startTime, "Temporal");
+        this.startTime = Helpers.toOffsetDateTime(startTime);
         return this;
     }
 
     @Nonnull
     @Override
-    public GuildScheduledEventAction setEndTime(@Nullable OffsetDateTime endTime)
+    public GuildScheduledEventAction setEndTime(@Nullable TemporalAccessor endTime)
     {
-        this.endTime = endTime;
+        Checks.notNull(endTime, "Temporal");
+        this.endTime = Helpers.toOffsetDateTime(endTime);
         return this;
     }
 

@@ -16,12 +16,11 @@
 package net.dv8tion.jda.api.requests.restaction;
 
 import net.dv8tion.jda.api.entities.*;
-import net.dv8tion.jda.api.managers.GuildScheduledEventManager;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.time.OffsetDateTime;
+import java.time.temporal.TemporalAccessor;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 
@@ -203,7 +202,7 @@ public interface GuildScheduledEventAction extends AuditableRestAction<GuildSche
     /**
      * Sets the location for the new {@link GuildScheduledEvent} to take place "externally",
      * or at a custom location opposed to a specific Voice or Stage Channel. <u>Please note that it is required to set an end time using
-     * {@link #setEndTime(OffsetDateTime)} before this method is called.</u>
+     * {@link #setEndTime(TemporalAccessor)} before this method is called.</u>
      * <p>This will also change the event's type to {@link GuildScheduledEvent.Type#EXTERNAL}, and any previously set voice or
      * stage channel info will be lost!
      * <p><b>Note:</b> A location is required to be sent by either this method, {@link #setLocation(StageChannel)} or {@link #setLocation(VoiceChannel)} before the
@@ -222,7 +221,7 @@ public interface GuildScheduledEventAction extends AuditableRestAction<GuildSche
      *
      * @return The current GuildScheduledEventAction, for chaining convenience
      *
-     * @see    #setEndTime(OffsetDateTime)
+     * @see    #setEndTime(TemporalAccessor)
      * @see    #setLocation(StageChannel)
      * @see    #setLocation(VoiceChannel)
      */
@@ -246,11 +245,11 @@ public interface GuildScheduledEventAction extends AuditableRestAction<GuildSche
      *
      * @return The current GuildScheduledEventAction, for chaining convenience
      *
-     * @see    #setEndTime(OffsetDateTime)
+     * @see    #setEndTime(TemporalAccessor)
      */
     @Nonnull
     @CheckReturnValue
-    GuildScheduledEventAction setStartTime(@Nonnull OffsetDateTime startTime);
+    GuildScheduledEventAction setStartTime(@Nonnull TemporalAccessor startTime);
 
     /**
      * Sets the time that the new {@link GuildScheduledEvent} should end at.
@@ -273,9 +272,9 @@ public interface GuildScheduledEventAction extends AuditableRestAction<GuildSche
      *
      * @return The current GuildScheduledEventAction, for chaining convenience
      *
-     * @see    #setStartTime(OffsetDateTime)
+     * @see    #setStartTime(TemporalAccessor)
      */
     @Nonnull
     @CheckReturnValue
-    GuildScheduledEventAction setEndTime(@Nullable OffsetDateTime endTime);
+    GuildScheduledEventAction setEndTime(@Nullable TemporalAccessor endTime);
 }
