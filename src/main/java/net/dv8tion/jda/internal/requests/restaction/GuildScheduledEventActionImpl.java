@@ -28,6 +28,7 @@ import okhttp3.RequestBody;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.concurrent.TimeUnit;
@@ -93,16 +94,17 @@ public class GuildScheduledEventActionImpl extends AuditableRestActionImpl<Guild
     @Nonnull
     @Override
     @CheckReturnValue
-    public GuildScheduledEventActionImpl setDescription(@Nonnull String description)
+    public GuildScheduledEventActionImpl setDescription(@Nullable String description)
     {
-        Checks.notLonger(description, GuildScheduledEvent.MAX_DESCRIPTION_LENGTH, "Description");
+        if (description != null)
+            Checks.notLonger(description, GuildScheduledEvent.MAX_DESCRIPTION_LENGTH, "Description");
         this.description = description;
         return this;
     }
 
     @Nonnull
     @Override
-    public GuildScheduledEventAction setImage(@Nonnull Icon icon)
+    public GuildScheduledEventAction setImage(@Nullable Icon icon)
     {
         this.image = icon;
         return this;
@@ -145,7 +147,7 @@ public class GuildScheduledEventActionImpl extends AuditableRestActionImpl<Guild
 
     @Nonnull
     @Override
-    public GuildScheduledEventAction setEndTime(@Nonnull OffsetDateTime endTime)
+    public GuildScheduledEventAction setEndTime(@Nullable OffsetDateTime endTime)
     {
         this.endTime = endTime;
         return this;

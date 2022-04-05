@@ -158,7 +158,7 @@ public interface GuildScheduledEventManager extends Manager<GuildScheduledEventM
      */
     @Nonnull
     @CheckReturnValue
-    GuildScheduledEventManager setDescription(@Nonnull String description);
+    GuildScheduledEventManager setDescription(@Nullable String description);
 
     /**
      * Sets the cover image for the new {@link GuildScheduledEvent GuildScheduledEvent}.
@@ -171,7 +171,7 @@ public interface GuildScheduledEventManager extends Manager<GuildScheduledEventM
      */
     @Nonnull
     @CheckReturnValue
-    GuildScheduledEventManager setImage(@Nonnull Icon icon);
+    GuildScheduledEventManager setImage(@Nullable Icon icon);
 
     /**
      * Sets the location of the selected {@link GuildScheduledEvent} to take place in a specified stage channel.

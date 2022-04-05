@@ -74,9 +74,10 @@ public class GuildScheduledEventManagerImpl extends ManagerBase<GuildScheduledEv
 
     @Nonnull
     @Override
-    public GuildScheduledEventManager setDescription(@Nonnull String description)
+    public GuildScheduledEventManager setDescription(@Nullable String description)
     {
-        Checks.notLonger(description, GuildScheduledEvent.MAX_DESCRIPTION_LENGTH, "Description");
+        if (description != null)
+            Checks.notLonger(description, GuildScheduledEvent.MAX_DESCRIPTION_LENGTH, "Description");
         this.description = description;
         set |= DESCRIPTION;
         return this;
@@ -84,7 +85,7 @@ public class GuildScheduledEventManagerImpl extends ManagerBase<GuildScheduledEv
 
     @Nonnull
     @Override
-    public GuildScheduledEventManager setImage(@Nonnull Icon icon)
+    public GuildScheduledEventManager setImage(@Nullable Icon icon)
     {
         this.image = icon;
         set |= IMAGE;

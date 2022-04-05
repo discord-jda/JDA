@@ -132,7 +132,7 @@ public interface GuildScheduledEventAction extends AuditableRestAction<GuildSche
      */
     @Nonnull
     @CheckReturnValue
-    GuildScheduledEventAction setDescription(@Nonnull String description);
+    GuildScheduledEventAction setDescription(@Nullable String description);
 
     /**
      * Sets the cover image for the new {@link GuildScheduledEvent GuildScheduledEvent}.
@@ -145,7 +145,7 @@ public interface GuildScheduledEventAction extends AuditableRestAction<GuildSche
      */
     @Nonnull
     @CheckReturnValue
-    GuildScheduledEventAction setImage(@Nonnull Icon icon);
+    GuildScheduledEventAction setImage(@Nullable Icon icon);
 
     /**
      * Sets the location for the new {@link GuildScheduledEvent} to take place in a specified stage channel.
