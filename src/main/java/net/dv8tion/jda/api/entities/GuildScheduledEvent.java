@@ -249,13 +249,6 @@ public interface GuildScheduledEvent extends ISnowflake, Comparable<GuildSchedul
      *
      * <br>This iterates in ascending order by user id.
      *
-     * <h4>Examples</h4>
-     * <pre>{@code
-     *     GuildScheduledEvent event = guild.getScheduledEventById(id);
-     *     ArrayList<User> users = new ArrayList<>();
-     *     event.retrieveGuildScheduledEventUsers().queue(users::addAll);
-     * }</pre>
-     *
      * <p>Possible ErrorResponses include:
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_GUILD_SCHEDULED_EVENT UNKNOWN_GUILD_SCHEDULED_EVENT}
@@ -276,13 +269,6 @@ public interface GuildScheduledEvent extends ISnowflake, Comparable<GuildSchedul
      * that allows to {@link Iterable iterate} over all {@link net.dv8tion.jda.api.entities.Member Members} interested in this Event.
      *
      * <br>This iterates in ascending order by member id.
-     *
-     * <h4>Examples</h4>
-     * <pre>{@code
-     *     GuildScheduledEvent event = guild.getScheduledEventById(id);
-     *     ArrayList<Member> members = new ArrayList<>();
-     *     event.retrieveGuildScheduledEventMembers().queue(members::addAll);
-     * }</pre>
      *
      * <p>Possible ErrorResponses include:
      * <ul>

@@ -32,13 +32,12 @@ import javax.annotation.Nonnull;
  *
  * <h2>Example</h2>
  * <pre>{@code
- * // Get every member interested in this event and DM them a notification
+ * // Get every member interested in this event print the members names
  * public static void getInterestedMembers(GuildScheduledEvent event) {
  *     // get paginator
- *     GuildScheduledEventMembersPagination members = event.retrieveGuildScheduledEventMembers();
- *     // DM every member
- *     members.forEachAsync((member) ->
- *         member.getUser().openPrivateChannel().queue(privateChannel -> privateChannel.sendMessage("Event starts in 30 minutes!").queue());
+ *     GuildScheduledEventUsersPagination members = event.retrieveInterestedMembers();
+ *     // print the name of every interested member
+ *     members.forEachAsync(member -> System.out.println(member.getEffectiveName()));
  *     );
  * }
  * }</pre>
