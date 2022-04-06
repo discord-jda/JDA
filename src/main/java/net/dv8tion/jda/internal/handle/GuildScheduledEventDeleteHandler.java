@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.entities.GuildScheduledEvent;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.guild.scheduledevent.GuildScheduledEventDeleteEvent;
 import net.dv8tion.jda.api.events.role.RoleDeleteEvent;
+import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.EmoteImpl;
@@ -38,6 +39,8 @@ public class GuildScheduledEventDeleteHandler extends SocketHandler
     @Override
     protected Long handleInternally(DataObject content)
     {
+        if (!getJDA().isCacheFlagSet(CacheFlag.GUILD_SCHEDULED_EVENTS))
+            return null;
         final long guildId = content.getLong("guild_id");
         if (getJDA().getGuildSetupController().isLocked(guildId))
             return guildId;

@@ -18,6 +18,7 @@ package net.dv8tion.jda.internal.handle;
 
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.guild.scheduledevent.update.*;
+import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.GuildImpl;
@@ -36,6 +37,8 @@ public class GuildScheduledEventUpdateHandler extends SocketHandler
     @Override
     protected Long handleInternally(DataObject content)
     {
+        if (!getJDA().isCacheFlagSet(CacheFlag.GUILD_SCHEDULED_EVENTS))
+            return null;
         long guildId = content.getUnsignedLong("guild_id", 0L);
         if (getJDA().getGuildSetupController().isLocked(guildId))
             return guildId;
