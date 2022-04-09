@@ -155,6 +155,14 @@ public interface Message extends ISnowflake, Formattable
     int MAX_REACTIONS = 20;
 
     /**
+     * The maximum amount of Embeds that can be added to one message ({@value})
+     *
+     * @see    MessageChannel#sendMessageEmbeds(Collection)
+     * @see    MessageAction#setEmbeds(Collection)
+     */
+    int MAX_EMBED_COUNT = 10;
+
+    /**
      * Pattern used to find instant invites in strings.
      *
      * <p>The only named group is at index 1 with the name {@code "code"}.
@@ -1345,7 +1353,7 @@ public interface Message extends ISnowflake, Formattable
      *         Additional embeds to reply with
      *
      * @throws IllegalArgumentException
-     *         If null is provided, any of the embeds are not {@link MessageEmbed#isSendable() sendable}, more than 10 embeds are provided,
+     *         If null is provided, any of the embeds are not {@link MessageEmbed#isSendable() sendable}, more than {@value Message#MAX_EMBED_COUNT} embeds are provided,
      *         or the sum of {@link MessageEmbed#getLength()} is greater than {@link MessageEmbed#EMBED_MAX_LENGTH_BOT}
      *
      * @return {@link MessageAction} Providing the {@link Message} created from this upload.
@@ -1375,7 +1383,7 @@ public interface Message extends ISnowflake, Formattable
      *         The embeds to reply with
      *
      * @throws IllegalArgumentException
-     *         If null is provided, any of the embeds are not {@link MessageEmbed#isSendable() sendable}, more than 10 embeds are provided,
+     *         If null is provided, any of the embeds are not {@link MessageEmbed#isSendable() sendable}, more than {@value Message#MAX_EMBED_COUNT} embeds are provided,
      *         or the sum of {@link MessageEmbed#getLength()} is greater than {@link MessageEmbed#EMBED_MAX_LENGTH_BOT}
      *
      * @return {@link MessageAction} Providing the {@link Message} created from this upload.

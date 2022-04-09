@@ -124,7 +124,7 @@ public class MessageBuilder implements Appendable
     }
 
     /**
-     * Adds up to 10 {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbeds} to the Message. Embeds can be built using
+     * Adds up to {@value Message#MAX_EMBED_COUNT} {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbeds} to the Message. Embeds can be built using
      * the {@link net.dv8tion.jda.api.EmbedBuilder} and offer specialized formatting.
      *
      * @param  embeds
@@ -144,7 +144,7 @@ public class MessageBuilder implements Appendable
     }
 
     /**
-     * Adds up to 10 {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbeds} to the Message. Embeds can be built using
+     * Adds up to {@value Message#MAX_EMBED_COUNT} {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbeds} to the Message. Embeds can be built using
      * the {@link net.dv8tion.jda.api.EmbedBuilder} and offer specialized formatting.
      *
      * @param  embeds
@@ -166,7 +166,7 @@ public class MessageBuilder implements Appendable
                 "Provided Message contains an empty embed or an embed with a length greater than %d characters, which is the max for bot accounts!",
                 MessageEmbed.EMBED_MAX_LENGTH_BOT)
         );
-        Checks.check(embeds.size() <= 10, "Cannot have more than 10 embeds in a message!");
+        Checks.check(embeds.size() <= Message.MAX_EMBED_COUNT, "Cannot have more than %d embeds in a message!", Message.MAX_EMBED_COUNT);
         Checks.check(embeds.stream().mapToInt(MessageEmbed::getLength).sum() <= MessageEmbed.EMBED_MAX_LENGTH_BOT, "The sum of all MessageEmbeds may not exceed %d!", MessageEmbed.EMBED_MAX_LENGTH_BOT);
         this.embeds.clear();
         this.embeds.addAll(embeds);
