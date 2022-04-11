@@ -117,6 +117,9 @@ import java.util.stream.Collectors;
  */
 public interface Message extends ISnowflake, Formattable
 {
+    /** Template for {@link #getJumpUrl()}.*/
+    String JUMP_URL = "https://discord.com/channels/%s/%s/%s";
+
     /**
      * The maximum sendable file size (8 MiB)
      *
