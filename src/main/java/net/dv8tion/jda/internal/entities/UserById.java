@@ -17,11 +17,11 @@
 package net.dv8tion.jda.internal.entities;
 
 import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.entities.UserReference;
+import net.dv8tion.jda.api.entities.UserSnowflake;
 
 import javax.annotation.Nonnull;
 
-public class UserById implements UserReference
+public class UserById implements UserSnowflake
 {
     protected final long id;
 

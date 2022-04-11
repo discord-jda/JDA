@@ -500,7 +500,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * @param  accessToken
      *         The access token
      * @param  user
-     *         The {@link UserReference} for the member to add.
+     *         The {@link UserSnowflake} for the member to add.
      *         This can be a member or user instance or {@link User#fromId(long)}.
      *
      * @throws IllegalArgumentException
@@ -517,7 +517,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    MemberAction addMember(@Nonnull String accessToken, @Nonnull UserReference user);
+    MemberAction addMember(@Nonnull String accessToken, @Nonnull UserSnowflake user);
 
     /**
      * Whether this guild has loaded members.
@@ -985,21 +985,21 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     Timeout getAfkTimeout();
 
     /**
-     * Used to determine if the provided {@link UserReference UserReference} is a member of this Guild.
+     * Used to determine if the provided {@link UserSnowflake} is a member of this Guild.
      *
      * <p>This will only check cached members! If the cache is not loaded (see {@link #isLoaded()}), this may return false despite the user being a member.
-     * This is false when {@link #getMember(UserReference)} returns {@code null}.
+     * This is false when {@link #getMember(UserSnowflake)} returns {@code null}.
      *
      * @param  user
      *         The user to check
      *
      * @return True - if this user is present and cached in this guild
      */
-    boolean isMember(@Nonnull UserReference user);
+    boolean isMember(@Nonnull UserSnowflake user);
 
     /**
      * Gets the {@link net.dv8tion.jda.api.entities.Member Member} object of the currently logged in account in this guild.
-     * <br>This is basically {@link net.dv8tion.jda.api.JDA#getSelfUser()} being provided to {@link #getMember(UserReference)}.
+     * <br>This is basically {@link net.dv8tion.jda.api.JDA#getSelfUser()} being provided to {@link #getMember(UserSnowflake)}.
      *
      * @return The Member object of the currently logged in account.
      */
@@ -1019,13 +1019,13 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
 
     /**
      * Gets the Guild specific {@link net.dv8tion.jda.api.entities.Member Member} object for the provided
-     * {@link UserReference UserReference}.
+     * {@link UserSnowflake}.
      * <br>If the user is not in this guild or currently uncached, {@code null} is returned.
      *
      * <p>This will only check cached members!
      *
      * @param  user
-     *         The {@link UserReference} for the member to get.
+     *         The {@link UserSnowflake} for the member to get.
      *         This can be a member or user instance or {@link User#fromId(long)}.
      *
      * @throws java.lang.IllegalArgumentException
@@ -1033,15 +1033,15 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      *
      * @return Possibly-null {@link net.dv8tion.jda.api.entities.Member Member} for the related {@link net.dv8tion.jda.api.entities.User User}.
      *
-     * @see    #retrieveMember(UserReference)
+     * @see    #retrieveMember(UserSnowflake)
      */
     @Nullable
-    Member getMember(@Nonnull UserReference user);
+    Member getMember(@Nonnull UserSnowflake user);
 
     /**
      * Gets a {@link net.dv8tion.jda.api.entities.Member Member} object via the id of the user. The id relates to
      * {@link net.dv8tion.jda.api.entities.User#getId()}, and this method is similar to {@link JDA#getUserById(String)}
-     * <br>This is more efficient that using {@link JDA#getUserById(String)} and {@link #getMember(UserReference)}.
+     * <br>This is more efficient that using {@link JDA#getUserById(String)} and {@link #getMember(UserSnowflake)}.
      * <br>If no Member in this Guild has the {@code userId} provided, this returns {@code null}.
      *
      * <p>This will only check cached members!
@@ -1065,7 +1065,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     /**
      * Gets a {@link net.dv8tion.jda.api.entities.Member Member} object via the id of the user. The id relates to
      * {@link net.dv8tion.jda.api.entities.User#getIdLong()}, and this method is similar to {@link JDA#getUserById(long)}
-     * <br>This is more efficient that using {@link JDA#getUserById(long)} and {@link #getMember(UserReference)}.
+     * <br>This is more efficient that using {@link JDA#getUserById(long)} and {@link #getMember(UserSnowflake)}.
      * <br>If no Member in this Guild has the {@code userId} provided, this returns {@code null}.
      *
      * <p>This will only check cached members!
@@ -1807,8 +1807,8 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
 
     /**
      * Retrieves an immutable list of the currently banned {@link net.dv8tion.jda.api.entities.User Users}.
-     * <br>If you wish to ban or unban a user, use either {@link #ban(UserReference, int)} or
-     * {@link #unban(UserReference)}.
+     * <br>If you wish to ban or unban a user, use either {@link #ban(UserSnowflake, int)} or
+     * {@link #unban(UserSnowflake)}.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
      * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
@@ -1829,8 +1829,8 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
 
 
     /**
-     * Retrieves a {@link net.dv8tion.jda.api.entities.Guild.Ban Ban} of the provided {@link UserReference}.
-     * <br>If you wish to ban or unban a user, use either {@link #ban(UserReference, int)} or {@link #unban(UserReference)}.
+     * Retrieves a {@link net.dv8tion.jda.api.entities.Guild.Ban Ban} of the provided {@link UserSnowflake}.
+     * <br>If you wish to ban or unban a user, use either {@link #ban(UserSnowflake, int)} or {@link #unban(UserSnowflake)}.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
      * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
@@ -1843,7 +1843,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * </ul>
      *
      * @param  user
-     *         The {@link UserReference UserReference} for the banned user.
+     *         The {@link UserSnowflake} for the banned user.
      *         This can be a user instance or {@link User#fromId(long)}.
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
@@ -1854,7 +1854,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    RestAction<Ban> retrieveBan(@Nonnull UserReference user);
+    RestAction<Ban> retrieveBan(@Nonnull UserSnowflake user);
 
 
     /**
@@ -2374,7 +2374,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     Task<Void> loadMembers(@Nonnull Consumer<Member> callback);
 
     /**
-     * Load the member for the specified {@link UserReference}.
+     * Load the member for the specified {@link UserSnowflake}.
      * <br>If the member is already loaded it will be retrieved from {@link #getMemberById(long)}
      * and immediately provided if the member information is consistent. The cache consistency directly
      * relies on the enabled {@link GatewayIntent GatewayIntents} as {@link GatewayIntent#GUILD_MEMBERS GatewayIntent.GUILD_MEMBERS}
@@ -2394,7 +2394,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * </ul>
      *
      * @param  user
-     *         The {@link UserReference} for the member to retrieve.
+     *         The {@link UserSnowflake} for the member to retrieve.
      *         This can be a member or user instance or {@link User#fromId(long)}.
      *
      * @throws IllegalArgumentException
@@ -2406,7 +2406,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * @see    #unloadMember(long)
      */
     @Nonnull
-    default RestAction<Member> retrieveMember(@Nonnull UserReference user)
+    default RestAction<Member> retrieveMember(@Nonnull UserSnowflake user)
     {
         Checks.notNull(user, "User");
         return retrieveMemberById(user.getId());
@@ -2682,13 +2682,13 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    default Task<List<Member>> retrieveMembers(@Nonnull Collection<? extends UserReference> users)
+    default Task<List<Member>> retrieveMembers(@Nonnull Collection<? extends UserSnowflake> users)
     {
         Checks.noneNull(users, "Users");
         if (users.isEmpty())
             return new GatewayTask<>(CompletableFuture.completedFuture(Collections.emptyList()), () -> {});
 
-        long[] ids = users.stream().mapToLong(UserReference::getIdLong).toArray();
+        long[] ids = users.stream().mapToLong(UserSnowflake::getIdLong).toArray();
         return retrieveMembersByIds(ids);
     }
 
@@ -2833,13 +2833,13 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    default Task<List<Member>> retrieveMembers(boolean includePresence, @Nonnull Collection<? extends UserReference> users)
+    default Task<List<Member>> retrieveMembers(boolean includePresence, @Nonnull Collection<? extends UserSnowflake> users)
     {
         Checks.noneNull(users, "Users");
         if (users.isEmpty())
             return new GatewayTask<>(CompletableFuture.completedFuture(Collections.emptyList()), () -> {});
 
-        long[] ids = users.stream().mapToLong(UserReference::getIdLong).toArray();
+        long[] ids = users.stream().mapToLong(UserSnowflake::getIdLong).toArray();
         return retrieveMembersByIds(includePresence, ids);
     }
 
@@ -3210,7 +3210,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     AuditableRestAction<Integer> prune(int days, boolean wait, @Nonnull Role... roles);
 
     /**
-     * Kicks the {@link UserReference} from the {@link net.dv8tion.jda.api.entities.Guild Guild}.
+     * Kicks the {@link UserSnowflake} from the {@link net.dv8tion.jda.api.entities.Guild Guild}.
      *
      * <p><b>Note:</b> {@link net.dv8tion.jda.api.entities.Guild#getMembers()} will still contain the {@link net.dv8tion.jda.api.entities.User User}
      * until Discord sends the {@link net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent GuildMemberRemoveEvent}.
@@ -3226,7 +3226,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * </ul>
      *
      * @param  user
-     *         The {@link UserReference} for the user to kick.
+     *         The {@link UserSnowflake} for the user to kick.
      *         This can be a member or user instance or {@link User#fromId(long)}.
      * @param  reason
      *         The reason for this action or {@code null} if there is no specified reason
@@ -3245,7 +3245,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    AuditableRestAction<Void> kick(@Nonnull UserReference user, @Nullable String reason);
+    AuditableRestAction<Void> kick(@Nonnull UserSnowflake user, @Nullable String reason);
 
     /**
      * Kicks a {@link net.dv8tion.jda.api.entities.Member Member} from the {@link net.dv8tion.jda.api.entities.Guild Guild}.
@@ -3264,7 +3264,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * </ul>
      *
      * @param  user
-     *         The {@link UserReference} for the user to kick.
+     *         The {@link UserSnowflake} for the user to kick.
      *         This can be a member or user instance or {@link User#fromId(long)}.
      *
      * @throws java.lang.IllegalArgumentException
@@ -3279,16 +3279,16 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    default AuditableRestAction<Void> kick(@Nonnull UserReference user)
+    default AuditableRestAction<Void> kick(@Nonnull UserSnowflake user)
     {
         return kick(user, null);
     }
 
     /**
-     * Bans the user specified by the provided {@link UserReference} and deletes messages sent by the user based on the amount of delDays.
+     * Bans the user specified by the provided {@link UserSnowflake} and deletes messages sent by the user based on the amount of delDays.
      * <br>If you wish to ban a user without deleting any messages, provide delDays with a value of 0.
      *
-     * <p>You can unban a user with {@link net.dv8tion.jda.api.entities.Guild#unban(UserReference) Guild.unban(UserReference)}.
+     * <p>You can unban a user with {@link net.dv8tion.jda.api.entities.Guild#unban(UserSnowflake) Guild.unban(UserReference)}.
      *
      * <p><b>Note:</b> {@link net.dv8tion.jda.api.entities.Guild#getMembers()} will still contain the {@link net.dv8tion.jda.api.entities.User User's}
      * {@link net.dv8tion.jda.api.entities.Member Member} object (if the User was in the Guild)
@@ -3305,7 +3305,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * </ul>
      *
      * @param  user
-     *         The {@link UserReference} for the user to ban.
+     *         The {@link UserSnowflake} for the user to ban.
      *         This can be a member or user instance or {@link User#fromId(long)}.
      * @param  delDays
      *         The history of messages, in days, that will be deleted.
@@ -3329,13 +3329,13 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    AuditableRestAction<Void> ban(@Nonnull UserReference user, int delDays, @Nullable String reason);
+    AuditableRestAction<Void> ban(@Nonnull UserSnowflake user, int delDays, @Nullable String reason);
 
     /**
-     * Bans the {@link UserReference} and deletes messages sent by the user based on the amount of delDays.
+     * Bans the {@link UserSnowflake} and deletes messages sent by the user based on the amount of delDays.
      * <br>If you wish to ban a member without deleting any messages, provide delDays with a value of 0.
      *
-     * <p>You can unban a user with {@link net.dv8tion.jda.api.entities.Guild#unban(UserReference) Guild.unban(UserReference)}.
+     * <p>You can unban a user with {@link net.dv8tion.jda.api.entities.Guild#unban(UserSnowflake) Guild.unban(UserReference)}.
      *
      * <p><b>Note:</b> {@link net.dv8tion.jda.api.entities.Guild#getMembers()} will still contain the
      * {@link net.dv8tion.jda.api.entities.Member Member} until Discord sends the
@@ -3352,7 +3352,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * </ul>
      *
      * @param  user
-     *         The {@link UserReference} for the user to ban.
+     *         The {@link UserSnowflake} for the user to ban.
      *         This can be a member or user instance or {@link User#fromId(long)}.
      * @param  delDays
      *         The history of messages, in days, that will be deleted.
@@ -3373,13 +3373,13 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    default AuditableRestAction<Void> ban(@Nonnull UserReference user, int delDays)
+    default AuditableRestAction<Void> ban(@Nonnull UserSnowflake user, int delDays)
     {
         return ban(user, delDays, null);
     }
 
     /**
-     * Unbans the specified {@link UserReference UserReference} from this Guild.
+     * Unbans the specified {@link UserSnowflake} from this Guild.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
      * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
@@ -3392,7 +3392,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * </ul>
      *
      * @param  user
-     *         The {@link UserReference UserReference} to unban.
+     *         The {@link UserSnowflake} to unban.
      *         This can be a member or user instance or {@link User#fromId(long)}.
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
@@ -3404,7 +3404,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    AuditableRestAction<Void> unban(@Nonnull UserReference user);
+    AuditableRestAction<Void> unban(@Nonnull UserSnowflake user);
 
     /**
      * Puts the specified Member in time out in this {@link net.dv8tion.jda.api.entities.Guild Guild} for a specific amount of time.
@@ -3421,7 +3421,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * </ul>
      *
      * @param  user
-     *         The {@link UserReference} to timeout.
+     *         The {@link UserSnowflake} to timeout.
      *         This can be a member or user instance or {@link User#fromId(long)}.
      * @param  amount
      *         The amount of the provided {@link TimeUnit unit} to put the specified Member in time out for
@@ -3445,7 +3445,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    default AuditableRestAction<Void> timeoutFor(@Nonnull UserReference user, long amount, @Nonnull TimeUnit unit)
+    default AuditableRestAction<Void> timeoutFor(@Nonnull UserSnowflake user, long amount, @Nonnull TimeUnit unit)
     {
         Checks.check(amount >= 1, "The amount must be more than 0");
         Checks.notNull(unit, "TimeUnit");
@@ -3468,7 +3468,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * </ul>
      *
      * @param  user
-     *         The {@link UserReference} to timeout.
+     *         The {@link UserSnowflake} to timeout.
      *         This can be a member or user instance or {@link User#fromId(long)}.
      * @param  duration
      *         The duration to put the specified Member in time out for
@@ -3490,7 +3490,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    default AuditableRestAction<Void> timeoutFor(@Nonnull UserReference user, @Nonnull Duration duration)
+    default AuditableRestAction<Void> timeoutFor(@Nonnull UserSnowflake user, @Nonnull Duration duration)
     {
         Checks.notNull(duration, "Duration");
         return timeoutUntil(user, Helpers.toOffset(System.currentTimeMillis() + duration.toMillis()));
@@ -3512,7 +3512,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * </ul>
      *
      * @param  user
-     *         The {@link UserReference UserReference} to timeout.
+     *         The {@link UserSnowflake} to timeout.
      *         This can be a member or user instance or {@link User#fromId(long)}.
      * @param  temporal
      *         The time the specified Member will be released from time out or null to remove the time out
@@ -3533,7 +3533,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    AuditableRestAction<Void> timeoutUntil(@Nonnull UserReference user, @Nonnull TemporalAccessor temporal);
+    AuditableRestAction<Void> timeoutUntil(@Nonnull UserSnowflake user, @Nonnull TemporalAccessor temporal);
 
     /**
      * Removes a time out from the specified Member in this {@link net.dv8tion.jda.api.entities.Guild Guild}.
@@ -3549,7 +3549,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * </ul>
      *
      * @param  user
-     *         The {@link UserReference} to timeout.
+     *         The {@link UserSnowflake} to timeout.
      *         This can be a member or user instance or {@link User#fromId(long)}.
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MODERATE_MEMBERS} permission.
@@ -3559,7 +3559,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      */
     @Nonnull
-    AuditableRestAction<Void> removeTimeout(@Nonnull UserReference user);
+    AuditableRestAction<Void> removeTimeout(@Nonnull UserSnowflake user);
 
     /**
      * Sets the Guild Deafened state of the {@link net.dv8tion.jda.api.entities.Member Member} based on the provided
@@ -3582,7 +3582,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * </ul>
      *
      * @param  user
-     *         The {@link UserReference} who's {@link GuildVoiceState} to change.
+     *         The {@link UserSnowflake} who's {@link GuildVoiceState} to change.
      *         This can be a member or user instance or {@link User#fromId(long)}.
      * @param  deafen
      *         Whether this {@link net.dv8tion.jda.api.entities.Member Member} should be deafened or undeafened.
@@ -3598,7 +3598,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    AuditableRestAction<Void> deafen(@Nonnull UserReference user, boolean deafen);
+    AuditableRestAction<Void> deafen(@Nonnull UserSnowflake user, boolean deafen);
 
     /**
      * Sets the Guild Muted state of the {@link net.dv8tion.jda.api.entities.Member Member} based on the provided
@@ -3621,7 +3621,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * </ul>
      *
      * @param  user
-     *         The {@link UserReference} who's {@link GuildVoiceState} to change.
+     *         The {@link UserSnowflake} who's {@link GuildVoiceState} to change.
      *         This can be a member or user instance or {@link User#fromId(long)}.
      * @param  mute
      *         Whether this {@link net.dv8tion.jda.api.entities.Member Member} should be muted or unmuted.
@@ -3637,7 +3637,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    AuditableRestAction<Void> mute(@Nonnull UserReference user, boolean mute);
+    AuditableRestAction<Void> mute(@Nonnull UserSnowflake user, boolean mute);
 
     /**
      * Atomically assigns the provided {@link net.dv8tion.jda.api.entities.Role Role} to the specified {@link net.dv8tion.jda.api.entities.Member Member}.
@@ -3662,7 +3662,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * </ul>
      *
      * @param  user
-     *         The {@link UserReference} to change roles for.
+     *         The {@link UserSnowflake} to change roles for.
      *         This can be a member or user instance or {@link User#fromId(long)}.
      * @param  role
      *         The role which should be assigned atomically
@@ -3682,7 +3682,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    AuditableRestAction<Void> addRoleToMember(@Nonnull UserReference user, @Nonnull Role role);
+    AuditableRestAction<Void> addRoleToMember(@Nonnull UserSnowflake user, @Nonnull Role role);
 
     /**
      * Atomically removes the provided {@link net.dv8tion.jda.api.entities.Role Role} from the specified {@link net.dv8tion.jda.api.entities.Member Member}.
@@ -3707,7 +3707,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * </ul>
      *
      * @param  user
-     *         The {@link UserReference} to change roles for.
+     *         The {@link UserSnowflake} to change roles for.
      *         This can be a member or user instance or {@link User#fromId(long)}.
      * @param  role
      *         The role which should be removed atomically
@@ -3727,7 +3727,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    AuditableRestAction<Void> removeRoleFromMember(@Nonnull UserReference user, @Nonnull Role role);
+    AuditableRestAction<Void> removeRoleFromMember(@Nonnull UserSnowflake user, @Nonnull Role role);
 
     /**
      * Modifies the {@link net.dv8tion.jda.api.entities.Role Roles} of the specified {@link net.dv8tion.jda.api.entities.Member Member}
@@ -3760,7 +3760,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * RestAction<Void> action = guild.modifyMemberRoles(member, roles);
      * }</pre>
      *
-     * <p>You can use {@link #addRoleToMember(UserReference, Role)} and {@link #removeRoleFromMember(UserReference, Role)} to make updates
+     * <p>You can use {@link #addRoleToMember(UserSnowflake, Role)} and {@link #removeRoleFromMember(UserSnowflake, Role)} to make updates
      * independent of the cache.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by

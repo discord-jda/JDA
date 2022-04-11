@@ -20,7 +20,7 @@ import net.dv8tion.jda.api.audit.ActionType;
 import net.dv8tion.jda.api.audit.AuditLogEntry;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.entities.UserReference;
+import net.dv8tion.jda.api.entities.UserSnowflake;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -90,15 +90,15 @@ public interface AuditLogPaginationAction extends PaginationAction<AuditLogEntry
     AuditLogPaginationAction type(@Nullable ActionType type);
 
     /**
-     * Filters retrieved entities by the specified {@link UserReference}.
+     * Filters retrieved entities by the specified {@link UserSnowflake}.
      * <br>This specified the action issuer and not the target of an action. (Targets need not be users)
      *
      * @param  user
-     *         The {@link UserReference} used to filter or {@code null} to remove user filtering.
+     *         The {@link UserSnowflake} used to filter or {@code null} to remove user filtering.
      *         This can be a member or user instance or {@link User#fromId(long)}.
      *
      * @return The current AuditLogPaginationAction for chaining convenience
      */
     @Nonnull
-    AuditLogPaginationAction user(@Nullable UserReference user);
+    AuditLogPaginationAction user(@Nullable UserSnowflake user);
 }

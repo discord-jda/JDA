@@ -22,7 +22,7 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.audit.ActionType;
 import net.dv8tion.jda.api.audit.AuditLogEntry;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.UserReference;
+import net.dv8tion.jda.api.entities.UserSnowflake;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.exceptions.ParsingException;
 import net.dv8tion.jda.api.requests.Request;
@@ -67,7 +67,7 @@ public class AuditLogPaginationActionImpl
 
     @Nonnull
     @Override
-    public AuditLogPaginationActionImpl user(UserReference user)
+    public AuditLogPaginationActionImpl user(UserSnowflake user)
     {
         this.userId = user == null ? null : user.getId();
         return this;

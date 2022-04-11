@@ -289,7 +289,7 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public MemberAction addMember(@Nonnull String accessToken, @Nonnull UserReference user)
+    public MemberAction addMember(@Nonnull String accessToken, @Nonnull UserSnowflake user)
     {
         Checks.notBlank(accessToken, "Access-Token");
         Checks.notNull(user, "User");
@@ -530,7 +530,7 @@ public class GuildImpl implements Guild
     }
 
     @Override
-    public boolean isMember(@Nonnull UserReference user)
+    public boolean isMember(@Nonnull UserSnowflake user)
     {
         return memberCache.get(user.getIdLong()) != null;
     }
@@ -546,7 +546,7 @@ public class GuildImpl implements Guild
     }
 
     @Override
-    public Member getMember(@Nonnull UserReference user)
+    public Member getMember(@Nonnull UserSnowflake user)
     {
         Checks.notNull(user, "User");
         return getMemberById(user.getIdLong());
@@ -764,7 +764,7 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public RestAction<Ban> retrieveBan(@Nonnull UserReference user)
+    public RestAction<Ban> retrieveBan(@Nonnull UserSnowflake user)
     {
         if (!getSelfMember().hasPermission(Permission.BAN_MEMBERS))
             throw new InsufficientPermissionException(this, Permission.BAN_MEMBERS);
@@ -1303,7 +1303,7 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public AuditableRestAction<Void> kick(@Nonnull UserReference user, String reason)
+    public AuditableRestAction<Void> kick(@Nonnull UserSnowflake user, String reason)
     {
         Checks.notNull(user, "User");
         checkPermission(Permission.KICK_MEMBERS);
@@ -1322,7 +1322,7 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public AuditableRestAction<Void> ban(@Nonnull UserReference user, int delDays, String reason)
+    public AuditableRestAction<Void> ban(@Nonnull UserSnowflake user, int delDays, String reason)
     {
         Checks.notNull(user, "User");
         Checks.notNegative(delDays, "Deletion Days");
@@ -1350,7 +1350,7 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public AuditableRestAction<Void> unban(@Nonnull UserReference user)
+    public AuditableRestAction<Void> unban(@Nonnull UserSnowflake user)
     {
         Checks.notNull(user, "User");
         checkPermission(Permission.BAN_MEMBERS);
@@ -1361,7 +1361,7 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public AuditableRestAction<Void> timeoutUntil(@Nonnull UserReference user, @Nonnull TemporalAccessor temporal)
+    public AuditableRestAction<Void> timeoutUntil(@Nonnull UserSnowflake user, @Nonnull TemporalAccessor temporal)
     {
         Checks.notNull(user, "User");
         Checks.notNull(temporal, "Temporal");
@@ -1375,7 +1375,7 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public AuditableRestAction<Void> removeTimeout(@Nonnull UserReference user)
+    public AuditableRestAction<Void> removeTimeout(@Nonnull UserSnowflake user)
     {
         Checks.notNull(user, "User");
         return timeoutUntilById0(user.getId(), null);
@@ -1391,7 +1391,7 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public AuditableRestAction<Void> deafen(@Nonnull UserReference user, boolean deafen)
+    public AuditableRestAction<Void> deafen(@Nonnull UserSnowflake user, boolean deafen)
     {
         Checks.notNull(user, "User");
         checkPermission(Permission.VOICE_DEAF_OTHERS);
@@ -1417,7 +1417,7 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public AuditableRestAction<Void> mute(@Nonnull UserReference user, boolean mute)
+    public AuditableRestAction<Void> mute(@Nonnull UserSnowflake user, boolean mute)
     {
         Checks.notNull(user, "User");
         checkPermission(Permission.VOICE_MUTE_OTHERS);
@@ -1443,7 +1443,7 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public AuditableRestAction<Void> addRoleToMember(@Nonnull UserReference user, @Nonnull Role role)
+    public AuditableRestAction<Void> addRoleToMember(@Nonnull UserSnowflake user, @Nonnull Role role)
     {
         Checks.notNull(user, "User");
         Checks.notNull(role, "Role");
@@ -1457,7 +1457,7 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public AuditableRestAction<Void> removeRoleFromMember(@Nonnull UserReference user, @Nonnull Role role)
+    public AuditableRestAction<Void> removeRoleFromMember(@Nonnull UserSnowflake user, @Nonnull Role role)
     {
         Checks.notNull(user, "User");
         Checks.notNull(role, "Role");
@@ -1732,7 +1732,7 @@ public class GuildImpl implements Guild
         });
     }
 
-    private Member resolveMember(UserReference user)
+    private Member resolveMember(UserSnowflake user)
     {
         Member member = getMemberById(user.getIdLong());
         if (member == null && user instanceof Member)

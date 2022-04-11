@@ -71,7 +71,7 @@ import java.util.regex.Pattern;
  *
  * @see JDA#retrieveUserById(String)
  */
-public interface User extends UserReference
+public interface User extends UserSnowflake
 {
     /**
      * Compiled pattern for a Discord Tag: {@code (.{2,32})#(\d{4})}
@@ -98,10 +98,10 @@ public interface User extends UserReference
      * @return A user instance
      *
      * @see    JDA#retrieveUserById(long)
-     * @see    UserReference#fromId(long)
+     * @see    UserSnowflake#fromId(long)
      */
     @Nonnull
-    static UserReference fromId(long id)
+    static UserSnowflake fromId(long id)
     {
         return new UserById(id);
     }
@@ -119,10 +119,10 @@ public interface User extends UserReference
      * @return A user instance
      *
      * @see    JDA#retrieveUserById(String)
-     * @see    UserReference#fromId(String)
+     * @see    UserSnowflake#fromId(String)
      */
     @Nonnull
-    static UserReference fromId(@Nonnull String id)
+    static UserSnowflake fromId(@Nonnull String id)
     {
         return fromId(MiscUtil.parseSnowflake(id));
     }
