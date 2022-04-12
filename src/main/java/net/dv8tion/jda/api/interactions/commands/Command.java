@@ -648,8 +648,8 @@ public interface Command extends ISnowflake
                 && Objects.equals(other.channelTypes, channelTypes)
                 && Objects.equals(other.minValue, minValue)
                 && Objects.equals(other.maxValue, maxValue)
-                && Objects.equals(other.required, required)
-                && Objects.equals(other.autoComplete, autoComplete)
+                && other.required == required
+                && other.autoComplete == autoComplete
                 && other.type == type;
         }
 
