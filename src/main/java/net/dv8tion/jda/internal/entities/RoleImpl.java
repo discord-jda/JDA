@@ -60,7 +60,7 @@ public class RoleImpl implements Role
     private long rawPermissions;
     private int color;
     private int rawPosition;
-    private int realPosition = Integer.MIN_VALUE; // this is used exclusively for delete events
+    private int frozenPosition = Integer.MIN_VALUE; // this is used exclusively for delete events
     private RoleIcon icon;
 
     public RoleImpl(long id, Guild guild)
@@ -74,8 +74,8 @@ public class RoleImpl implements Role
     @Override
     public int getPosition()
     {
-        if (realPosition > Integer.MIN_VALUE)
-            return realPosition;
+        if (frozenPosition > Integer.MIN_VALUE)
+            return frozenPosition;
         Guild guild = getGuild();
         if (equals(guild.getPublicRole()))
             return -1;
@@ -463,7 +463,7 @@ public class RoleImpl implements Role
 
     public void freezePosition()
     {
-        this.realPosition = getPosition();
+        this.frozenPosition = getPosition();
     }
 
     public static class RoleTagsImpl implements RoleTags
