@@ -178,8 +178,8 @@ public interface TextInput extends ActionComponent
         private String label;
         private String value;
         private String placeholder;
-        private int minLength = 0;
-        private int maxLength = MAX_VALUE_LENGTH;
+        private int minLength = -1;
+        private int maxLength = -1;
         private TextInputStyle style;
         private boolean required;
 
@@ -278,7 +278,7 @@ public interface TextInput extends ActionComponent
         }
 
         /**
-         * Sets the minimum length of this input field. Default is 0.
+         * Sets the minimum length of this input field. Default is -1 (No minimum length).
          *
          * <b>This has to be between 0 and {@value #MAX_VALUE_LENGTH}</b>
          *
@@ -300,7 +300,7 @@ public interface TextInput extends ActionComponent
         }
 
         /**
-         * Sets the maximum length of this input field. Default is {@value #MAX_VALUE_LENGTH}.
+         * Sets the maximum length of this input field. Default is -1 (No maximum length).
          *
          * <p><b>This has to be between 1 and {@value #MAX_VALUE_LENGTH}</b>
          *
@@ -487,7 +487,7 @@ public interface TextInput extends ActionComponent
         @Nonnull
         public TextInput build()
         {
-            if (maxLength < minLength)
+            if (maxLength < minLength && maxLength != -1)
                 throw new IllegalArgumentException("maxLength cannot be smaller than minLength!");
 
             return new TextInputImpl(id, style, label, minLength, maxLength, required, value, placeholder);
