@@ -47,7 +47,7 @@ public interface ModalInteraction extends IReplyCallback, IMessageEditCallback
     String getModalId();
 
     /**
-     * Returns a List of {@link net.dv8tion.jda.api.interactions.modals.ModalMapping ModalMappings} the modal submitted. These are the submitted values and their respective field names.
+     * Returns a List of {@link net.dv8tion.jda.api.interactions.modals.ModalMapping ModalMappings} representing the values input by the user for each field when the modal was submitted.
      *
      * @return Immutable List of {@link net.dv8tion.jda.api.interactions.modals.ModalMapping ModalMappings}
      *

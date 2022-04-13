@@ -40,8 +40,8 @@ public class TextInputImpl implements TextInput
                 object.getString("custom_id"),
                 TextInputStyle.fromKey(object.getInt("style", -1)),
                 object.getString("label", null),
-                object.getInt("min_Length", -1),
-                object.getInt("max_length", -1),
+                object.getInt("min_Length", 0),
+                object.getInt("max_length", TextInput.MAX_VALUE_LENGTH),
                 object.getBoolean("required", false),
                 object.getString("value", null),
                 object.getString("placeholder", null)
@@ -60,13 +60,6 @@ public class TextInputImpl implements TextInput
         this.required = required;
         this.value = value;
         this.placeholder = placeholder;
-    }
-
-    @Nonnull
-    @Override
-    public Type getType()
-    {
-        return Type.TEXT_INPUT;
     }
 
     @Nonnull
@@ -131,9 +124,9 @@ public class TextInputImpl implements TextInput
                     .put("custom_id", id)
                     .put("style", style.getRaw())
                     .put("label", label);
-        if (minLength != -1)
+        if (minLength > 0)
             obj.put("min_length", minLength);
-        if (maxLength != -1)
+        if (maxLength < TextInput.MAX_VALUE_LENGTH)
             obj.put("max_length", maxLength);
         if (required)
             obj.put("required", true);

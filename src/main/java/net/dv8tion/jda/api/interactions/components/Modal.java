@@ -70,17 +70,17 @@ public interface Modal extends SerializableData
     /**
      * The maximum amount of components a Modal can have. ({@value})
      */
-    int MODAL_MAX_COMPONENTS = 5;
+    int MAX_COMPONENTS = 5;
 
     /**
      * The maximum length a modal custom id can have. ({@value})
      */
-    int ID_MAX_LENGTH = 100;
+    int MAX_ID_LENGTH = 100;
 
     /**
      * The maximum length a modal title can have. ({@value})
      */
-    int TITLE_MAX_LENGTH = 45;
+    int MAX_TITLE_LENGTH = 45;
 
     /**
      * The custom id of this modal
@@ -132,8 +132,8 @@ public interface Modal extends SerializableData
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If the provided customId or title are null, empty, or blank.</li>
-     *             <li>If the provided customId is longer than {@value ID_MAX_LENGTH} characters</li>
-     *             <li>If the provided title is longer than {@value #TITLE_MAX_LENGTH} characters</li>
+     *             <li>If the provided customId is longer than {@value MAX_ID_LENGTH} characters</li>
+     *             <li>If the provided title is longer than {@value #MAX_TITLE_LENGTH} characters</li>
      *         </ul>
      *
      * @return {@link Builder Builder} instance to customize this modal further
@@ -167,7 +167,7 @@ public interface Modal extends SerializableData
          *         Custom id
          *
          * @throws IllegalArgumentException
-         *         If the provided id is null, blank, or is longer than {@value #ID_MAX_LENGTH} characters.
+         *         If the provided id is null, blank, or is longer than {@value #MAX_ID_LENGTH} characters.
          *
          * @return The same builder instance for chaining
          */
@@ -175,7 +175,7 @@ public interface Modal extends SerializableData
         public Builder setId(@Nonnull String customId)
         {
             Checks.notBlank(customId, "ID");
-            Checks.notLonger(customId, ID_MAX_LENGTH, "ID");
+            Checks.notLonger(customId, MAX_ID_LENGTH, "ID");
             this.id = customId;
             return this;
         }
@@ -187,7 +187,7 @@ public interface Modal extends SerializableData
          *         The title
          *
          * @throws IllegalArgumentException
-         *         If the provided title is null, blank or longer than {@value #TITLE_MAX_LENGTH} characters
+         *         If the provided title is null, blank or longer than {@value #MAX_TITLE_LENGTH} characters
          *
          * @return The same builder instance for chaining
          */
@@ -195,7 +195,7 @@ public interface Modal extends SerializableData
         public Builder setTitle(@Nonnull String title)
         {
             Checks.notBlank(title, "Title");
-            Checks.notLonger(title, TITLE_MAX_LENGTH, "Title");
+            Checks.notLonger(title, MAX_TITLE_LENGTH, "Title");
             this.title = title;
             return this;
         }
@@ -343,7 +343,7 @@ public interface Modal extends SerializableData
         public Modal build()
         {
             Checks.check(!components.isEmpty(), "Cannot make a modal without components!");
-            Checks.check(components.size() <= MODAL_MAX_COMPONENTS, "Cannot make a modal with more than 5 components!");
+            Checks.check(components.size() <= MAX_COMPONENTS, "Cannot make a modal with more than 5 components!");
 
             return new ModalImpl(id, title, components);
         }

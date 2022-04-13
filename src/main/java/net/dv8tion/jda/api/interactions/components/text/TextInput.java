@@ -33,22 +33,22 @@ public interface TextInput extends ActionComponent
     /**
      * The maximum length a TextInput value can have. ({@value})
      */
-    int TEXT_INPUT_MAX_LENGTH = 4000;
+    int MAX_VALUE_LENGTH = 4000;
 
     /**
      * The maximum length a TextInput custom id can have. ({@value})
      */
-    int ID_MAX_LENGTH = 100;
+    int MAX_ID_LENGTH = 100;
 
     /**
      * The maximum length a TextInput placeholder can have. ({@value})
      */
-    int PLACEHOLDER_MAX_LENGTH = 100;
+    int MAX_PLACEHOLDER_LENGTH = 100;
 
     /**
      * The maximum length a TextInput label can have. ({@value})
      */
-    int LABEL_MAX_LENGTH = 45;
+    int MAX_LABEL_LENGTH = 45;
 
     /**
      * The {@link TextInputStyle TextInputStyle} of this TextInput component.
@@ -136,6 +136,13 @@ public interface TextInput extends ActionComponent
         throw new UnsupportedOperationException("Text Inputs cannot be disabled!");
     }
 
+    @Nonnull
+    @Override
+    default Type getType()
+    {
+        return Type.TEXT_INPUT;
+    }
+
     /**
      * Creates a new TextInput Builder.
      *
@@ -150,8 +157,8 @@ public interface TextInput extends ActionComponent
      *         <ul>
      *             <li>If either id or label are null or blank</li>
      *             <li>If style is null or {@link TextInputStyle#UNKNOWN UNKNOWN}</li>
-     *             <li>If id is longer than {@value #ID_MAX_LENGTH} characters</li>
-     *             <li>If label is longer than {@value #LABEL_MAX_LENGTH} characters</li>
+     *             <li>If id is longer than {@value #MAX_ID_LENGTH} characters</li>
+     *             <li>If label is longer than {@value #MAX_LABEL_LENGTH} characters</li>
      *         </ul>
      *
      * @return a new TextInput Builder.
@@ -171,8 +178,8 @@ public interface TextInput extends ActionComponent
         private String label;
         private String value;
         private String placeholder;
-        private int minLength = -1;
-        private int maxLength = -1;
+        private int minLength = 0;
+        private int maxLength = MAX_VALUE_LENGTH;
         private TextInputStyle style;
         private boolean required;
 
@@ -193,7 +200,7 @@ public interface TextInput extends ActionComponent
          * @throws IllegalArgumentException
          *         <ul>
          *             <li>If id is null or blank</li>
-         *             <li>If id is longer than {@value #ID_MAX_LENGTH} characters</li>
+         *             <li>If id is longer than {@value #MAX_ID_LENGTH} characters</li>
          *         </ul>
          *
          * @return The same Builder for chaining convenience.
@@ -202,7 +209,7 @@ public interface TextInput extends ActionComponent
         public Builder setId(@Nonnull String id)
         {
             Checks.notBlank(id, "ID");
-            Checks.notLonger(id, ID_MAX_LENGTH, "ID");
+            Checks.notLonger(id, MAX_ID_LENGTH, "ID");
             this.id = id;
             return this;
         }
@@ -216,7 +223,7 @@ public interface TextInput extends ActionComponent
          * @throws IllegalArgumentException
          *         <ul>
          *             <li>If label is null or blank</li>
-         *             <li>If label is longer than {@value #LABEL_MAX_LENGTH} characters</li>
+         *             <li>If label is longer than {@value #MAX_LABEL_LENGTH} characters</li>
          *         </ul>
          *
          * @return The same Builder for chaining convenience.
@@ -225,7 +232,7 @@ public interface TextInput extends ActionComponent
         public Builder setLabel(@Nonnull String label)
         {
             Checks.notBlank(label, "Label");
-            Checks.notLonger(label, LABEL_MAX_LENGTH, "Label");
+            Checks.notLonger(label, MAX_LABEL_LENGTH, "Label");
             this.label = label;
             return this;
         }
@@ -271,15 +278,15 @@ public interface TextInput extends ActionComponent
         }
 
         /**
-         * Sets the minimum length of this input field. Default is -1 (No min length).
+         * Sets the minimum length of this input field. Default is 0.
          *
-         * <b>This has to be between 0 and {@value #TEXT_INPUT_MAX_LENGTH}</b>
+         * <b>This has to be between 0 and {@value #MAX_VALUE_LENGTH}</b>
          *
          * @param  minLength
          *         The minimum amount of characters that need to be written
          *
          * @throws IllegalArgumentException
-         *         If minLength is negative or greater than {@value #TEXT_INPUT_MAX_LENGTH}
+         *         If minLength is negative or greater than {@value #MAX_VALUE_LENGTH}
          *
          * @return The same builder instance for chaining
          */
@@ -287,21 +294,21 @@ public interface TextInput extends ActionComponent
         public Builder setMinLength(int minLength)
         {
             Checks.notNegative(minLength, "Minimum length");
-            Checks.check(minLength <= TEXT_INPUT_MAX_LENGTH, "Minimum length cannot be longer than %d characters!", TEXT_INPUT_MAX_LENGTH);
+            Checks.check(minLength <= MAX_VALUE_LENGTH, "Minimum length cannot be longer than %d characters!", MAX_VALUE_LENGTH);
             this.minLength = minLength;
             return this;
         }
 
         /**
-         * Sets the maximum length of this input field. Default is -1 (No max length).
+         * Sets the maximum length of this input field. Default is {@value #MAX_VALUE_LENGTH}.
          *
-         * <p><b>This has to be between 1 and {@value #TEXT_INPUT_MAX_LENGTH}</b>
+         * <p><b>This has to be between 1 and {@value #MAX_VALUE_LENGTH}</b>
          *
          * @param  maxLength 
          *         The maximum amount of characters that need to be written
          *
          * @throws IllegalArgumentException
-         *         If maxLength is smaller than 1 or greater than {@value #TEXT_INPUT_MAX_LENGTH}
+         *         If maxLength is smaller than 1 or greater than {@value #MAX_VALUE_LENGTH}
          *
          * @return The same builder instance for chaining
          */
@@ -309,7 +316,7 @@ public interface TextInput extends ActionComponent
         public Builder setMaxLength(int maxLength)
         {
             Checks.check(maxLength >= 1, "Maximum length cannot be smaller than 1 character!");
-            Checks.check(maxLength <= TEXT_INPUT_MAX_LENGTH, "Maximum length cannot be longer than " + TEXT_INPUT_MAX_LENGTH + " characters!");
+            Checks.check(maxLength <= MAX_VALUE_LENGTH, "Maximum length cannot be longer than " + MAX_VALUE_LENGTH + " characters!");
 
             this.maxLength = maxLength;
             return this;
@@ -325,8 +332,8 @@ public interface TextInput extends ActionComponent
 
          * @throws IllegalArgumentException
          *         <ul>
-         *             <li>If min is negative or greater than {@link #TEXT_INPUT_MAX_LENGTH}</li>
-         *             <li>If max is smaller than 1, smaller than min or greater than {@link #TEXT_INPUT_MAX_LENGTH}</li>
+         *             <li>If min is negative or greater than {@link #MAX_VALUE_LENGTH}</li>
+         *             <li>If max is smaller than 1, smaller than min or greater than {@link #MAX_VALUE_LENGTH}</li>
          *         </ul>
          *
          * @return The same builder instance for chaining
@@ -366,7 +373,7 @@ public interface TextInput extends ActionComponent
          *         The placeholder
          *
          * @throws IllegalArgumentException
-         *         If the provided placeholder is longer than {@link #PLACEHOLDER_MAX_LENGTH} characters
+         *         If the provided placeholder is longer than {@link #MAX_PLACEHOLDER_LENGTH} characters
          *
          * @return The same builder instance for chaining
          */
@@ -374,7 +381,8 @@ public interface TextInput extends ActionComponent
         public Builder setPlaceholder(@Nullable String placeholder)
         {
             if (placeholder != null)
-                Checks.notLonger(placeholder, PLACEHOLDER_MAX_LENGTH, "Placeholder");
+                Checks.notLonger(placeholder, MAX_PLACEHOLDER_LENGTH, "Placeholder");
+            Checks.notBlank(placeholder, "Placeholder");
             this.placeholder = placeholder;
             return this;
         }
