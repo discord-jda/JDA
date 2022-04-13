@@ -388,9 +388,9 @@ public interface TextInput extends ActionComponent
         }
 
         /**
-         * The minimum length
+         * The minimum length. This is -1 if none has been set.
          *
-         * @return Minimum length
+         * @return Minimum length or -1
          */
         public int getMinLength()
         {
@@ -398,9 +398,9 @@ public interface TextInput extends ActionComponent
         }
 
         /**
-         * The maximum length
+         * The maximum length. This is -1 if none has been set.
          *
-         * @return Maximum length
+         * @return Maximum length or -1
          */
         public int getMaxLength()
         {
