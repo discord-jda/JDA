@@ -28,8 +28,8 @@ import javax.annotation.Nonnull;
  * <br>These are used to extend messages with interactive elements such as buttons or select menus.
  * Components are also the primary building blocks for {@link Modal Modals}.
  *
- * <br><p>Not every component can be used in {@link net.dv8tion.jda.api.entities.Message Messages} or {@link Modal Modals},
- * use {@link Type#isMessageCompatible()} and {@link Type#isModalCompatible()} to check whether a component can be used.
+ * <br><p>Not every component can be used in {@link net.dv8tion.jda.api.entities.Message Messages} or {@link Modal Modals}.
+ * Use {@link Type#isMessageCompatible()} and {@link Type#isModalCompatible()} to check whether a component can be used.
  *
  *
  * @see ActionRow

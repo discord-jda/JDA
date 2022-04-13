@@ -25,7 +25,7 @@ import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 
 /**
- * Interactions which allow sending modals.
+ * Interactions which allow sending modals as a response.
  *
  * <p>Sending a modal using {@link #replyModal(Modal)} will automatically acknowledge this interaction.
  */

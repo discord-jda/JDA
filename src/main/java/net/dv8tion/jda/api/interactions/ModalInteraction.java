@@ -27,10 +27,10 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 /**
- * Interaction on a {@link Modal Modal}
+ * Interaction on a {@link Modal}
  *
  * <p>If the modal of this interaction was a reply to a {@link net.dv8tion.jda.api.interactions.components.ComponentInteraction ComponentInteraction},
- * you can also use {@link #deferEdit()} to edit the message instead of replying.
+ * you can also use {@link #deferEdit()} to edit the original message that contained the component instead of replying.
  *
  * @see    net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
  */

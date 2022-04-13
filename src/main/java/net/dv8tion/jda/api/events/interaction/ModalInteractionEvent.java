@@ -28,7 +28,7 @@ import javax.annotation.Nonnull;
 import java.util.List;
 
 /**
- * Indicates that a {@link Modal Modal} was submitted.
+ * Indicates that a {@link Modal} was submitted.
  *
  * <h2>Requirements</h2>
  * To receive these events, you must unset the <b>Interactions Endpoint URL</b> in your application dashboard.

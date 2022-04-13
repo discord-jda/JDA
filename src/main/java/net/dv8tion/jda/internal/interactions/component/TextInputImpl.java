@@ -127,7 +127,7 @@ public class TextInputImpl implements TextInput
     public DataObject toData()
     {
         DataObject obj = DataObject.empty()
-                    .put("type", 4)
+                    .put("type", getType().getKey())
                     .put("custom_id", id)
                     .put("style", style.getRaw())
                     .put("label", label);
