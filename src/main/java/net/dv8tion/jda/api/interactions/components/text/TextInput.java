@@ -361,6 +361,12 @@ public interface TextInput extends ActionComponent
         @Nonnull
         public Builder setValue(@Nullable String value)
         {
+            if (value != null)
+            {
+                Checks.notLonger(value, MAX_VALUE_LENGTH, "Value");
+                Checks.notBlank(value, "Value");
+            }
+
             this.value = value;
             return this;
         }
