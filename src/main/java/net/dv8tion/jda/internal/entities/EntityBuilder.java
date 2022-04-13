@@ -2104,12 +2104,12 @@ public class EntityBuilder
                     .stream(DataArray::getString)
                     .collect(Collectors.toList());
 
-        final long defaultAuthUrlPerms = object.optObject("install_params")
-                    .map(o -> o.getLong("permissions"))
+        final Optional<DataObject> installParams = object.optObject("install_params");
+
+        final long defaultAuthUrlPerms = installParams.map(o -> o.getLong("permissions"))
                     .orElse(0L);
 
-        final List<String> defaultAuthUrlScopes = object.optObject("install_params")
-                    .map(obj -> obj.getArray("scopes")
+        final List<String> defaultAuthUrlScopes = installParams.map(obj -> obj.getArray("scopes")
                             .stream(DataArray::getString)
                             .collect(Collectors.toList()))
                     .orElse(Collections.emptyList());
