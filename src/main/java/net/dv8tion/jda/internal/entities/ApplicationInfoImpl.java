@@ -51,7 +51,8 @@ public class ApplicationInfoImpl implements ApplicationInfo
     private String scopes = "bot";
 
     public ApplicationInfoImpl(JDA api, String description, boolean doesBotRequireCodeGrant, String iconId, long id,
-            boolean isBotPublic, String name, String termsOfServiceUrl, String privacyPolicyUrl, User owner, ApplicationTeam team, List<String> tags, String customAuthUrl, long defaultAuthUrlPerms, List<String> defaultAuthUrlScopes)
+            boolean isBotPublic, String name, String termsOfServiceUrl, String privacyPolicyUrl, User owner, ApplicationTeam team,
+            List<String> tags, String customAuthUrl, long defaultAuthUrlPerms, List<String> defaultAuthUrlScopes)
     {
         this.api = api;
         this.description = description;
@@ -68,7 +69,6 @@ public class ApplicationInfoImpl implements ApplicationInfo
         this.customAuthUrl = customAuthUrl;
         this.defaultAuthUrlPerms = defaultAuthUrlPerms;
         this.defaultAuthUrlScopes = Collections.unmodifiableList(defaultAuthUrlScopes);
-
     }
 
     @Override
