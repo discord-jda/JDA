@@ -16,16 +16,15 @@
 
 package net.dv8tion.jda.internal.entities;
 
-import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.UserSnowflake;
 
 import javax.annotation.Nonnull;
 
-public class UserById implements UserSnowflake
+public class UserSnowflakeImpl implements UserSnowflake
 {
     protected final long id;
 
-    public UserById(long id)
+    public UserSnowflakeImpl(long id)
     {
         this.id = id;
     }
@@ -54,9 +53,9 @@ public class UserById implements UserSnowflake
     {
         if (obj == this)
             return true;
-        if (!(obj instanceof User))
+        if (!(obj instanceof UserSnowflakeImpl))
             return false;
-        return ((User) obj).getIdLong() == this.id;
+        return ((UserSnowflakeImpl) obj).getIdLong() == this.id;
     }
 
     @Override

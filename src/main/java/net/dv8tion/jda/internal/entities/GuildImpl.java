@@ -1307,6 +1307,7 @@ public class GuildImpl implements Guild
     {
         Checks.notNull(user, "User");
         checkPermission(Permission.KICK_MEMBERS);
+        Checks.check(user.getIdLong() != ownerId, "Cannot kick the owner of a guild!");
         Member member = resolveMember(user);
         if (member != null) // If user is in guild. Check if we are able to ban.
             checkPosition(member);
@@ -1328,6 +1329,7 @@ public class GuildImpl implements Guild
         Checks.notNegative(delDays, "Deletion Days");
         Checks.check(delDays <= 7, "Deletion Days must not be bigger than 7.");
         checkPermission(Permission.BAN_MEMBERS);
+        Checks.check(user.getIdLong() != ownerId, "Cannot ban the owner of a guild!");
 
         Member member = resolveMember(user);
         if (member != null) // If user is in guild. Check if we are able to ban.
@@ -1369,6 +1371,7 @@ public class GuildImpl implements Guild
         Checks.check(date.isAfter(OffsetDateTime.now()), "Cannot put a member in time out with date in the past. Provided: %s", date);
         Checks.check(date.isBefore(OffsetDateTime.now().plusDays(Member.MAX_TIME_OUT_LENGTH)), "Cannot put a member in time out for more than 28 days. Provided: %s", date);
         checkPermission(Permission.MODERATE_MEMBERS);
+        Checks.check(user.getIdLong() != ownerId, "Cannot put the owner of a guild in time out!");
 
         return timeoutUntilById0(user.getId(), date);
     }

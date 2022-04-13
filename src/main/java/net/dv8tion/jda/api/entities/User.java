@@ -19,7 +19,7 @@ package net.dv8tion.jda.api.entities;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
-import net.dv8tion.jda.internal.entities.UserById;
+import net.dv8tion.jda.internal.entities.UserSnowflakeImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.CheckReturnValue;
@@ -90,12 +90,11 @@ public interface User extends UserSnowflake
 
     /**
      * Creates a User instance which only wraps an ID.
-     * <br>All other methods beside {@link #getIdLong()} and {@link #getId()} will throw {@link UnsupportedOperationException}.
      *
      * @param  id
      *         The user id
      *
-     * @return A user instance
+     * @return A {@link UserSnowflake} instance
      *
      * @see    JDA#retrieveUserById(long)
      * @see    UserSnowflake#fromId(long)
@@ -103,12 +102,11 @@ public interface User extends UserSnowflake
     @Nonnull
     static UserSnowflake fromId(long id)
     {
-        return new UserById(id);
+        return new UserSnowflakeImpl(id);
     }
 
     /**
      * Creates a User instance which only wraps an ID.
-     * <br>All other methods beside {@link #getIdLong()} and {@link #getId()} will throw {@link UnsupportedOperationException}.
      *
      * @param  id
      *         The user id
@@ -116,7 +114,7 @@ public interface User extends UserSnowflake
      * @throws IllegalArgumentException
      *         If the provided ID is not a valid snowflake
      *
-     * @return A user instance
+     * @return A {@link UserSnowflake} instance
      *
      * @see    JDA#retrieveUserById(String)
      * @see    UserSnowflake#fromId(String)

@@ -18,7 +18,7 @@ package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.utils.MiscUtil;
-import net.dv8tion.jda.internal.entities.UserById;
+import net.dv8tion.jda.internal.entities.UserSnowflakeImpl;
 
 import javax.annotation.Nonnull;
 
@@ -32,24 +32,22 @@ public interface UserSnowflake extends IMentionable // Make this a value type wh
 {
     /**
      * Creates a User instance which only wraps an ID.
-     * <br>All other methods beside {@link #getIdLong()} and {@link #getId()} will throw {@link UnsupportedOperationException}.
      *
      * @param  id
      *         The user id
      *
-     * @return A user instance
+     * @return A user snowflake instance
      *
      * @see    JDA#retrieveUserById(long)
      */
     @Nonnull
     static UserSnowflake fromId(long id)
     {
-        return new UserById(id);
+        return new UserSnowflakeImpl(id);
     }
 
     /**
      * Creates a User instance which only wraps an ID.
-     * <br>All other methods beside {@link #getIdLong()} and {@link #getId()} will throw {@link UnsupportedOperationException}.
      *
      * @param  id
      *         The user id
@@ -57,7 +55,7 @@ public interface UserSnowflake extends IMentionable // Make this a value type wh
      * @throws IllegalArgumentException
      *         If the provided ID is not a valid snowflake
      *
-     * @return A user instance
+     * @return A user snowflake instance
      *
      * @see    JDA#retrieveUserById(String)
      */
