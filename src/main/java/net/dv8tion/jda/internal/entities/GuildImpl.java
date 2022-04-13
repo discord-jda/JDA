@@ -1729,7 +1729,7 @@ public class GuildImpl implements Guild
         roles.forEach(role ->
         {
             Checks.notNull(role, "Role in roles to " + type);
-            checkGuild(role.getGuild(), "Role: " + role.toString());
+            checkGuild(role.getGuild(), "Role: " + role);
             checkPosition(role);
             Checks.check(!role.isManaged(), "Cannot %s a managed role %s a Member. Role: %s", type, preposition, role.toString());
         });
@@ -1739,7 +1739,12 @@ public class GuildImpl implements Guild
     {
         Member member = getMemberById(user.getIdLong());
         if (member == null && user instanceof Member)
+        {
             member = (Member) user;
+            // Only resolve if member is in the same guild, otherwise role information is not accurate
+            if (!equals(member.getGuild()))
+                member = null;
+        }
         return member;
     }
 
