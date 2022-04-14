@@ -180,6 +180,16 @@ public interface User extends IMentionable
         String avatarId = getAvatarId();
         return avatarId == null ? null : String.format(AVATAR_URL, getId(), avatarId, avatarId.startsWith("a_") ? "gif" : "png");
     }
+    
+    @Nullable
+    default String getAvatarUrl(int size)
+    {
+        if(size != 16 && size != 32 && size != 64 && size != 128 && size != 256 && size != 512 && size != 1024 && size != 2048 && size != 4096){
+            return null;
+        }
+        String avatarId = getAvatarId();
+        return avatarId == null ? null : String.format(AVATAR_URL, getId(), avatarId, avatarId.startsWith("a_") ? "gif" : "png") + "?size=" + size;
+    }
 
     /**
      * The Discord Id for this user's default avatar image.
