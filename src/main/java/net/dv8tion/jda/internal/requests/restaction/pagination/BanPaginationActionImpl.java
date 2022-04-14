@@ -64,7 +64,6 @@ public class BanPaginationActionImpl
                 Guild.Ban ban = new Guild.Ban(builder.createUser(user), object.getString("reason", null));
 
                 bans.add(ban);
-                last = ban;
             }
             catch (Throwable t)
             {
