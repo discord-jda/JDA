@@ -1402,7 +1402,6 @@ public class GuildImpl implements Guild
         Member member = resolveMember(user);
         if (member != null)
         {
-            checkGuild(member.getGuild(), "Member");
             GuildVoiceState voiceState = member.getVoiceState();
             if (voiceState != null)
             {
@@ -1428,7 +1427,6 @@ public class GuildImpl implements Guild
         Member member = resolveMember(user);
         if (member != null)
         {
-            checkGuild(member.getGuild(), "Member");
             GuildVoiceState voiceState = member.getVoiceState();
             if (voiceState != null)
             {

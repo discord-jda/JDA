@@ -3590,9 +3590,9 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#VOICE_DEAF_OTHERS} permission.
      * @throws IllegalArgumentException
-     *         If the provided member is not from this Guild or null.
+     *         If the provided user is null.
      * @throws java.lang.IllegalStateException
-     *         If the provided member is not currently connected to a voice channel.
+     *         If the provided user is not currently connected to a voice channel.
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      */
@@ -3629,9 +3629,9 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#VOICE_DEAF_OTHERS} permission.
      * @throws java.lang.IllegalArgumentException
-     *         If the provided member is not from this Guild or null.
+     *         If the provided user is null.
      * @throws java.lang.IllegalStateException
-     *         If the provided member is not currently connected to a voice channel.
+     *         If the provided user is not currently connected to a voice channel.
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      */
