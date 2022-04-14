@@ -384,8 +384,9 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
     {
         Checks.noneNull(rows, "ActionRows");
 
-        if (Arrays.stream(rows).anyMatch(actionRow -> !actionRow.isMessageCompatible()))
-            throw new IllegalArgumentException("Provided ActionRow is not compatible with Messages!");
+        Checks.checkComponents("Some components are incompatible with Messages",
+                               Arrays.asList(rows),
+                               component -> component.getType().isMessageCompatible());
 
         if (components == null)
             components = new ArrayList<>();

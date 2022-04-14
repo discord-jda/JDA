@@ -34,23 +34,13 @@ public interface ItemComponent extends Component
         return getType().getMaxPerRow();
     }
 
-    /**
-     * Whether this component can be used in {@link Modal Modals}.
-     *
-     * @return Whether this component can be used in Modals.
-     *
-     * @see    Type#isModalCompatible()
-     */
+    @Override
     default boolean isModalCompatible()
     {
         return getType().isModalCompatible();
     }
 
-    /**
-     * Whether this component can be used in {@link net.dv8tion.jda.api.entities.Message Messages}.
-     *
-     * @return Whether this component can be used in Messages.
-     */
+    @Override
     default boolean isMessageCompatible()
     {
         return getType().isMessageCompatible();

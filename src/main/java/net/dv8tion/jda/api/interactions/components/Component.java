@@ -49,6 +49,22 @@ public interface Component extends SerializableData
     Type getType();
 
     /**
+     * Whether this Component is compatible with {@link net.dv8tion.jda.api.entities.Message Messages}.
+     * <br>If the component in question is a {@link LayoutComponent}, this also checks every component inside it.
+     *
+     * @return True, if this Component is compatible with messages.
+     */
+    boolean isMessageCompatible();
+
+    /**
+     * Whether this Component is compatible with {@link Modal Modals}.
+     * <br>If the component in question is a {@link LayoutComponent}, this also checks every component inside it.
+     *
+     * @return True, if this Component is compatible with modals.
+     */
+    boolean isModalCompatible();
+
+    /**
      * The component types
      */
     enum Type
