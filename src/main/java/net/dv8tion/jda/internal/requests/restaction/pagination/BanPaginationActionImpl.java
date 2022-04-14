@@ -65,12 +65,10 @@ public class BanPaginationActionImpl
 
                 bans.add(ban);
             }
-            catch (Throwable t)
+            catch (Exception t)
             {
-                if (t instanceof Error)
-                    throw t;
-                LOG.error(String.format("Got an unexpected error while decoding ban index %d for guild %s:\n\tData: %s",
-                        i, guild.getId(), object), t);
+                LOG.error("Got an unexpected error while decoding ban index {} for guild {}:\nData: {}",
+                          i, guild.getId(), object, t);
             }
         }
 
