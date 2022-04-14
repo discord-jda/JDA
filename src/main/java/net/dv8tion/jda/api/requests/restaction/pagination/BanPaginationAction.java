@@ -37,14 +37,12 @@ import javax.annotation.Nonnull;
  * public static void findBansWithReason(Guild guild, String reason) {
  *     BanPaginationAction bans = guild.retrieveBanList();
  *     bans.forEachAsync((ban) -> {
- *         if (ban.getReason().equals(reason)) {
+ *         if (reason.equals(ban.getReason())) {
  *             guild.unban(ban.getUser()).queue();
  *         }
  *     });
  * }
  * }</pre>
- *
- * @since 5.0
  *
  * @see Guild#retrieveBanList()
  * @see Guild#retrieveBanById(long)

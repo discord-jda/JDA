@@ -25,8 +25,8 @@ import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.requests.Route;
 
 import javax.annotation.Nonnull;
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 
 public class BanPaginationActionImpl
@@ -52,8 +52,8 @@ public class BanPaginationActionImpl
     protected void handleSuccess(Response response, Request<List<Guild.Ban>> request)
     {
         EntityBuilder builder = api.getEntityBuilder();
-        List<Guild.Ban> bans = new LinkedList<>();
         DataArray bannedArr = response.getArray();
+        List<Guild.Ban> bans = new ArrayList<>(bannedArr.length());
 
         for (int i = 0; i < bannedArr.length(); i++)
         {
@@ -65,11 +65,12 @@ public class BanPaginationActionImpl
 
                 bans.add(ban);
                 last = ban;
-                lastKey = ban.getUser().getIdLong();
             } catch (Throwable t)
             {
-                LOG.error("Got an unexpected error while decoding ban index {} for guild {}: {}\n\tData: {}",
-                        i, guild.getId(), t.getMessage(), object);
+                if (t instanceof Error)
+                    throw t;
+                LOG.error(String.format("Got an unexpected error while decoding ban index %d for guild %s:\n\tData: %s",
+                        i, guild.getId(), object), t);
             }
         }
 
