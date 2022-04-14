@@ -16,20 +16,20 @@
 
 package net.dv8tion.jda.internal.requests.restaction.interactions;
 
-import net.dv8tion.jda.api.interactions.InteractionHook;
+import net.dv8tion.jda.api.interactions.callbacks.IModalCallback;
 import net.dv8tion.jda.api.interactions.components.Modal;
 import net.dv8tion.jda.api.requests.restaction.interactions.InteractionCallbackAction;
 import net.dv8tion.jda.api.requests.restaction.interactions.ModalCallbackAction;
 import net.dv8tion.jda.api.utils.data.DataObject;
-import net.dv8tion.jda.internal.interactions.InteractionHookImpl;
+import net.dv8tion.jda.internal.interactions.InteractionImpl;
 
-public class ModalCallbackActionImpl extends DeferrableCallbackActionImpl implements ModalCallbackAction
+public class ModalCallbackActionImpl extends InteractionCallbackImpl<Void> implements ModalCallbackAction
 {
     private final Modal modal;
 
-    public ModalCallbackActionImpl(InteractionHook hook, Modal modal)
+    public ModalCallbackActionImpl(IModalCallback interaction, Modal modal)
     {
-        super((InteractionHookImpl) hook);
+        super((InteractionImpl) interaction);
         this.modal = modal;
     }
 

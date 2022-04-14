@@ -16,10 +16,9 @@
 
 package net.dv8tion.jda.api.interactions.callbacks;
 
+import net.dv8tion.jda.api.interactions.Interaction;
 import net.dv8tion.jda.api.interactions.components.Modal;
 import net.dv8tion.jda.api.requests.restaction.interactions.ModalCallbackAction;
-import net.dv8tion.jda.internal.requests.restaction.interactions.ModalCallbackActionImpl;
-import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -29,7 +28,7 @@ import javax.annotation.Nonnull;
  *
  * <p>Sending a modal using {@link #replyModal(Modal)} will automatically acknowledge this interaction.
  */
-public interface IModalCallback extends IDeferrableCallback
+public interface IModalCallback extends Interaction
 {
     /**
      * Acknowledgement of this interaction with a {@link net.dv8tion.jda.api.interactions.components.Modal Modal}.
@@ -51,10 +50,5 @@ public interface IModalCallback extends IDeferrableCallback
      */
     @Nonnull
     @CheckReturnValue
-    default ModalCallbackAction replyModal(@Nonnull Modal modal)
-    {
-        Checks.notNull(modal, "Modal");
-
-        return new ModalCallbackActionImpl(getHook(), modal);
-    }
+    ModalCallbackAction replyModal(@Nonnull Modal modal);
 }
