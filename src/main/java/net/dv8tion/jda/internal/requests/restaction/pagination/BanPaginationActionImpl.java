@@ -65,7 +65,8 @@ public class BanPaginationActionImpl
 
                 bans.add(ban);
                 last = ban;
-            } catch (Throwable t)
+            }
+            catch (Throwable t)
             {
                 if (t instanceof Error)
                     throw t;
