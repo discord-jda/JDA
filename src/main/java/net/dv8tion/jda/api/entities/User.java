@@ -262,7 +262,6 @@ public interface User extends IMentionable
     default ImageProxy getEffectiveAvatar()
     {
         final ImageProxy avatar = getAvatar();
-
         return avatar == null ? getDefaultAvatar() : avatar;
     }
 
