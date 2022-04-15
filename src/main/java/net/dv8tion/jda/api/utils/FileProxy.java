@@ -210,7 +210,6 @@ public class FileProxy
                 // The random number is generated until a filename becomes valid, so, the file doesn't exist in the tmp directory
                 final Path tmpPath = Files.createTempFile(path.getFileName().toString(), ".part");
                 Files.copy(stream, tmpPath, StandardCopyOption.REPLACE_EXISTING);
-
                 Files.move(tmpPath, path, StandardCopyOption.REPLACE_EXISTING);
                 return path;
             }
