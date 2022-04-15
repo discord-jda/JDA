@@ -95,7 +95,8 @@ public interface ApplicationTeam extends ISnowflake
      * @see    #getIconUrl()
      */
     @Nullable
-    default ImageProxy getIcon() {
+    default ImageProxy getIcon()
+    {
         final String iconUrl = getIconUrl();
         return iconUrl == null ? null : new ImageProxy(iconUrl);
     }
