@@ -80,7 +80,7 @@ public class OptionData implements SerializableData
     private final EnumSet<ChannelType> channelTypes = EnumSet.noneOf(ChannelType.class);
     private Number minValue;
     private Number maxValue;
-    private DataArray choices;
+    private List<Command.Choice> choices;
 
     /**
      * Create an option builder.
@@ -166,7 +166,7 @@ public class OptionData implements SerializableData
         setDescription(description);
         setRequired(isRequired);
         if (type.canSupportChoices())
-            choices = DataArray.empty();
+            choices = new ArrayList<>();
         setAutoComplete(isAutoComplete);
     }
 
@@ -279,9 +279,7 @@ public class OptionData implements SerializableData
     {
         if (choices == null || choices.isEmpty())
             return Collections.emptyList();
-        return choices.stream(DataArray::getObject)
-                .map(Command.Choice::new)
-                .collect(Collectors.toList());
+        return Collections.unmodifiableList(choices);
     }
 
     /**
@@ -633,7 +631,7 @@ public class OptionData implements SerializableData
         Checks.notLonger(name, MAX_CHOICE_NAME_LENGTH, "Name");
         Checks.check(value >= MIN_NEGATIVE_NUMBER, "Double value may not be lower than %f", MIN_NEGATIVE_NUMBER);
         Checks.check(value <= MAX_POSITIVE_NUMBER, "Double value may not be larger than %f", MAX_POSITIVE_NUMBER);
-        Checks.check(choices.length() < MAX_CHOICES, "Cannot have more than 25 choices for an option!");
+        Checks.check(choices.size() < MAX_CHOICES, "Cannot have more than 25 choices for an option!");
         if (isAutoComplete)
             throw new IllegalStateException("Cannot add choices to auto-complete options");
         if (type != OptionType.NUMBER)
@@ -670,7 +668,7 @@ public class OptionData implements SerializableData
         Checks.notLonger(name, MAX_CHOICE_NAME_LENGTH, "Name");
         Checks.check(value >= MIN_NEGATIVE_NUMBER, "Long value may not be lower than %f", MIN_NEGATIVE_NUMBER);
         Checks.check(value <= MAX_POSITIVE_NUMBER, "Long value may not be larger than %f", MAX_POSITIVE_NUMBER);
-        Checks.check(choices.length() < MAX_CHOICES, "Cannot have more than 25 choices for an option!");
+        Checks.check(choices.size() < MAX_CHOICES, "Cannot have more than 25 choices for an option!");
         if (isAutoComplete)
             throw new IllegalStateException("Cannot add choices to auto-complete options");
         if (type != OptionType.INTEGER)
@@ -707,7 +705,7 @@ public class OptionData implements SerializableData
         Checks.notEmpty(value, "Value");
         Checks.notLonger(name, MAX_CHOICE_NAME_LENGTH, "Name");
         Checks.notLonger(value, MAX_CHOICE_VALUE_LENGTH, "Value");
-        Checks.check(choices.length() < MAX_CHOICES, "Cannot have more than 25 choices for an option!");
+        Checks.check(choices.size() < MAX_CHOICES, "Cannot have more than 25 choices for an option!");
         if (isAutoComplete)
             throw new IllegalStateException("Cannot add choices to auto-complete options");
         if (type != OptionType.STRING)
@@ -771,10 +769,8 @@ public class OptionData implements SerializableData
         Checks.noneNull(choices, "Choices");
         if (isAutoComplete)
             throw new IllegalStateException("Cannot add choices to auto-complete options");
-        Checks.check(choices.size() + this.choices.length() <= MAX_CHOICES, "Cannot have more than 25 choices for one option!");
-        this.choices.addAll(choices.stream()
-                .map(choice -> choice.toData(type))
-                .collect(Collectors.toList()));
+        Checks.check(choices.size() + this.choices.size() <= MAX_CHOICES, "Cannot have more than 25 choices for one option!");
+        this.choices.addAll(choices);
         return this;
     }
 
@@ -795,7 +791,11 @@ public class OptionData implements SerializableData
         }
         if (choices != null && !choices.isEmpty())
         {
-            json.put("choices", choices);
+            json.put("choices", DataArray.fromCollection(
+                    choices.stream()
+                            .map(choice -> choice.toData(type))
+                            .collect(Collectors.toList())
+            ));
         }
         if (type == OptionType.CHANNEL && !channelTypes.isEmpty())
             json.put("channel_types", channelTypes.stream().map(ChannelType::getId).collect(Collectors.toList()));
