@@ -28,6 +28,7 @@ import net.dv8tion.jda.api.utils.TimeUtil;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.DataType;
+import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.internal.interactions.LocalizationMap;
 import net.dv8tion.jda.internal.interactions.command.CommandImpl;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -315,7 +316,7 @@ public interface Command extends ISnowflake
      * @see net.dv8tion.jda.api.interactions.commands.build.OptionData#addChoices(Command.Choice...)
      * @see net.dv8tion.jda.api.interactions.commands.build.OptionData#addChoices(Collection)
      */
-    class Choice
+    class Choice implements SerializableData
     {
         private final String name;
         private LocalizationMap nameLocalizations = new LocalizationMap();
@@ -505,6 +506,26 @@ public interface Command extends ISnowflake
             this.intValue = 0;
             this.stringValue = value;
             this.type = OptionType.STRING;
+        }
+
+        @Nonnull
+        @Override
+        public DataObject toData()
+        {
+            final Object value;
+            if (type == OptionType.INTEGER)
+                value = getAsLong();
+            else if (type == OptionType.STRING)
+                value = getAsString();
+            else if (type == OptionType.NUMBER)
+                value = getAsDouble();
+            else
+                throw new IllegalArgumentException("Cannot transform choice into data for type " + type);
+
+            return DataObject.empty()
+                    .put("name", name)
+                    .put("value", value)
+                    .put("name_localizations", nameLocalizations);
         }
     }
 

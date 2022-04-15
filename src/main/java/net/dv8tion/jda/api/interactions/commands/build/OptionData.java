@@ -79,7 +79,7 @@ public class OptionData implements SerializableData
     private final EnumSet<ChannelType> channelTypes = EnumSet.noneOf(ChannelType.class);
     private Number minValue;
     private Number maxValue;
-    private Map<String, Object> choices;
+    private DataArray choices;
 
     /**
      * Create an option builder.
@@ -165,7 +165,7 @@ public class OptionData implements SerializableData
         setDescription(description);
         setRequired(isRequired);
         if (type.canSupportChoices())
-            choices = new LinkedHashMap<>();
+            choices = DataArray.empty();
         setAutoComplete(isAutoComplete);
     }
 
@@ -268,7 +268,7 @@ public class OptionData implements SerializableData
      * The choices for this option.
      * <br>This is empty by default and can only be configured for specific option types.
      *
-     * @return Immutable list of {@link net.dv8tion.jda.api.interactions.commands.Command.Choice Choices}
+     * @return Immutable list of {@link Command.Choice Choices}
      *
      * @see #addChoice(String, long)
      * @see #addChoice(String, String)
@@ -278,15 +278,8 @@ public class OptionData implements SerializableData
     {
         if (choices == null || choices.isEmpty())
             return Collections.emptyList();
-        return choices.entrySet().stream()
-                .map(entry ->
-                {
-                    if (entry.getValue() instanceof String)
-                        return new Command.Choice(entry.getKey(), entry.getValue().toString());
-                    else if (entry.getValue() instanceof Double)
-                        return new Command.Choice(entry.getKey(), ((Number) entry.getValue()).doubleValue());
-                    return new Command.Choice(entry.getKey(), ((Number) entry.getValue()).longValue());
-                })
+        return choices.stream(DataArray::getObject)
+                .map(Command.Choice::new)
                 .collect(Collectors.toList());
     }
 
@@ -641,12 +634,12 @@ public class OptionData implements SerializableData
         Checks.notLonger(name, MAX_CHOICE_NAME_LENGTH, "Name");
         Checks.check(value >= MIN_NEGATIVE_NUMBER, "Double value may not be lower than %f", MIN_NEGATIVE_NUMBER);
         Checks.check(value <= MAX_POSITIVE_NUMBER, "Double value may not be larger than %f", MAX_POSITIVE_NUMBER);
-        Checks.check(choices.size() < MAX_CHOICES, "Cannot have more than 25 choices for an option!");
+        Checks.check(choices.length() < MAX_CHOICES, "Cannot have more than 25 choices for an option!");
         if (isAutoComplete)
             throw new IllegalStateException("Cannot add choices to auto-complete options");
         if (type != OptionType.NUMBER)
             throw new IllegalArgumentException("Cannot add double choice for OptionType." + type);
-        choices.put(name, value);
+        choices.add(new Command.Choice(name, value));
         return this;
     }
 
@@ -678,12 +671,12 @@ public class OptionData implements SerializableData
         Checks.notLonger(name, MAX_CHOICE_NAME_LENGTH, "Name");
         Checks.check(value >= MIN_NEGATIVE_NUMBER, "Long value may not be lower than %f", MIN_NEGATIVE_NUMBER);
         Checks.check(value <= MAX_POSITIVE_NUMBER, "Long value may not be larger than %f", MAX_POSITIVE_NUMBER);
-        Checks.check(choices.size() < MAX_CHOICES, "Cannot have more than 25 choices for an option!");
+        Checks.check(choices.length() < MAX_CHOICES, "Cannot have more than 25 choices for an option!");
         if (isAutoComplete)
             throw new IllegalStateException("Cannot add choices to auto-complete options");
         if (type != OptionType.INTEGER)
             throw new IllegalArgumentException("Cannot add long choice for OptionType." + type);
-        choices.put(name, value);
+        choices.add(new Command.Choice(name, value));
         return this;
     }
 
@@ -715,12 +708,12 @@ public class OptionData implements SerializableData
         Checks.notEmpty(value, "Value");
         Checks.notLonger(name, MAX_CHOICE_NAME_LENGTH, "Name");
         Checks.notLonger(value, MAX_CHOICE_VALUE_LENGTH, "Value");
-        Checks.check(choices.size() < MAX_CHOICES, "Cannot have more than 25 choices for an option!");
+        Checks.check(choices.length() < MAX_CHOICES, "Cannot have more than 25 choices for an option!");
         if (isAutoComplete)
             throw new IllegalStateException("Cannot add choices to auto-complete options");
         if (type != OptionType.STRING)
             throw new IllegalArgumentException("Cannot add string choice for OptionType." + type);
-        choices.put(name, value);
+        choices.add(new Command.Choice(name, value));
         return this;
     }
 
@@ -746,26 +739,8 @@ public class OptionData implements SerializableData
     @Nonnull
     public OptionData addChoices(@Nonnull Command.Choice... choices)
     {
-        if (choices.length == 0)
-            return this;
-        if (this.choices == null || !type.canSupportChoices())
-            throw new IllegalStateException("Cannot add choices for an option of type " + type);
         Checks.noneNull(choices, "Choices");
-        if (isAutoComplete)
-            throw new IllegalStateException("Cannot add choices to auto-complete options");
-        Checks.check(choices.length + this.choices.size() <= MAX_CHOICES, "Cannot have more than 25 choices for one option!");
-        for (Command.Choice choice : choices)
-        {
-            if (type == OptionType.INTEGER)
-                addChoice(choice.getName(), choice.getAsLong());
-            else if (type == OptionType.STRING)
-                addChoice(choice.getName(), choice.getAsString());
-            else if (type == OptionType.NUMBER)
-                addChoice(choice.getName(), choice.getAsDouble());
-            else
-                throw new IllegalArgumentException("Cannot add choice for type " + type);
-        }
-        return this;
+        return addChoices(Arrays.asList(choices));
     }
 
     /**
@@ -790,8 +765,16 @@ public class OptionData implements SerializableData
     @Nonnull
     public OptionData addChoices(@Nonnull Collection<? extends Command.Choice> choices)
     {
+        if (choices.size() == 0)
+            return this;
+        if (this.choices == null || !type.canSupportChoices())
+            throw new IllegalStateException("Cannot add choices for an option of type " + type);
         Checks.noneNull(choices, "Choices");
-        return addChoices(choices.toArray(new Command.Choice[0]));
+        if (isAutoComplete)
+            throw new IllegalStateException("Cannot add choices to auto-complete options");
+        Checks.check(choices.size() + this.choices.length() <= MAX_CHOICES, "Cannot have more than 25 choices for one option!");
+        this.choices.addAll(choices);
+        return this;
     }
 
     @Nonnull
@@ -811,10 +794,7 @@ public class OptionData implements SerializableData
         }
         if (choices != null && !choices.isEmpty())
         {
-            json.put("choices", DataArray.fromCollection(choices.entrySet()
-                    .stream()
-                    .map(entry -> DataObject.empty().put("name", entry.getKey()).put("value", entry.getValue()))
-                    .collect(Collectors.toList())));
+            json.put("choices", choices);
         }
         if (type == OptionType.CHANNEL && !channelTypes.isEmpty())
             json.put("channel_types", channelTypes.stream().map(ChannelType::getId).collect(Collectors.toList()));
