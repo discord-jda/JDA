@@ -38,6 +38,9 @@ public class AttachmentProxy extends FileProxy
      * Constructs a new {@link AttachmentProxy} for the provided URL
      *
      * @param url The URL to download the attachment from
+     *
+     * @throws IllegalArgumentException
+     *         If the provided URL is null
      */
     public AttachmentProxy(@Nonnull String url)
     {

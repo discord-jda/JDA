@@ -34,6 +34,9 @@ public class ImageProxy extends FileProxy
      * Constructs a new {@link ImageProxy} for the provided URL
      *
      * @param url The URL to download the image from
+     *
+     * @throws IllegalArgumentException
+     *         If the provided URL is null
      */
     public ImageProxy(@Nonnull String url)
     {

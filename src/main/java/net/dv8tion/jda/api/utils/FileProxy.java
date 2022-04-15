@@ -54,6 +54,9 @@ public class FileProxy
      *
      * @param url
      *        The URL to download from
+     *
+     * @throws IllegalArgumentException
+     *         If the provided URL is null
      */
     public FileProxy(@Nonnull String url)
     {
