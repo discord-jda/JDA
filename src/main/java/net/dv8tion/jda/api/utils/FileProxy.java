@@ -232,7 +232,7 @@ public class FileProxy
     /**
      * Retrieves the {@link InputStream} of this file
      *
-     * @return a {@link CompletableFuture} which holds an {@link InputStream}
+     * @return a {@link CompletableFuture} which holds an {@link InputStream}, the {@link InputStream} must be closed manually
      */
     @Nonnull
     public CompletableFuture<InputStream> download()

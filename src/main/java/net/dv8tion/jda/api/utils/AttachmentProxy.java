@@ -67,7 +67,7 @@ public class AttachmentProxy extends FileProxy
      *             <li>The requested height is negative or 0</li>
      *         </ul>
      *
-     * @return a {@link CompletableFuture} which holds an {@link InputStream}
+     * @return a {@link CompletableFuture} which holds an {@link InputStream}, the {@link InputStream} must be closed manually
      */
     @Nonnull
     public CompletableFuture<InputStream> download(int width, int height)

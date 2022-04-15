@@ -57,7 +57,7 @@ public class ImageProxy extends FileProxy
      * @param  size
      *         The size of this image
      *
-     * @return a {@link CompletableFuture} which holds an {@link InputStream}
+     * @return a {@link CompletableFuture} which holds an {@link InputStream}, the {@link InputStream} must be closed manually
      */
     @Nonnull
     public CompletableFuture<InputStream> download(int size)
