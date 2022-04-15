@@ -34,7 +34,6 @@ import java.util.Locale;
  */
 public interface SlashCommandData extends CommandData
 {
-
     @Nonnull
     @Override
     SlashCommandData setName(@Nonnull String name);

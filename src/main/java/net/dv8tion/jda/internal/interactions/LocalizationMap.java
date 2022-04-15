@@ -38,9 +38,7 @@ public class LocalizationMap implements SerializableData
     public void setTranslations(@Nonnull String string, @Nonnull Locale... locales)
     {
         for (Locale locale : locales)
-        {
             data.put(locale.toLanguageTag(), string);
-        }
     }
 
     public String get(@Nonnull String languageTag)
@@ -53,9 +51,7 @@ public class LocalizationMap implements SerializableData
         final Map<String, String> map = new HashMap<>();
 
         for (String key : data.keys())
-        {
             map.put(key, data.getString(key));
-        }
 
         return map;
     }

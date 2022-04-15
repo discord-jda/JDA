@@ -311,7 +311,6 @@ public class OptionData implements SerializableData
     public OptionData setName(@Nonnull String name, @Nonnull Locale... locales)
     {
         nameLocalizations.setTranslations(name, locales);
-
         return this;
     }
 
@@ -340,7 +339,6 @@ public class OptionData implements SerializableData
     public OptionData setDescription(@Nonnull String description, @Nonnull Locale... locales)
     {
         descriptionLocalizations.setTranslations(description, locales);
-
         return this;
     }
 

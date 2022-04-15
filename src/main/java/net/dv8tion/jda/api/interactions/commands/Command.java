@@ -416,7 +416,6 @@ public interface Command extends ISnowflake
 
         public Choice setName(@Nonnull String name, @Nonnull Locale... locales) {
             nameLocalizations.setTranslations(name, locales);
-
             return this;
         }
 
