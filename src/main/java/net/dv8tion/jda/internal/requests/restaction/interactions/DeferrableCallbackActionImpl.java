@@ -38,7 +38,7 @@ public abstract class DeferrableCallbackActionImpl extends InteractionCallbackIm
     @Override
     protected void handleSuccess(Response response, Request<InteractionHook> request)
     {
-        hook.ready();
+        interaction.releaseHook(true);
         request.onSuccess(hook);
     }
 
