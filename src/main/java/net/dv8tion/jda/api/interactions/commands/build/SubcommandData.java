@@ -22,12 +22,14 @@ import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.SerializableData;
+import net.dv8tion.jda.internal.interactions.LocalizationMap;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -38,6 +40,7 @@ public class SubcommandData implements SerializableData
 {
     protected final DataArray options = DataArray.empty();
     protected String name, description;
+    private final LocalizationMap nameLocalizations = new LocalizationMap(), descriptionLocalizations = new LocalizationMap();
     private boolean allowRequired = true;
 
     /**
@@ -82,6 +85,14 @@ public class SubcommandData implements SerializableData
         return this;
     }
 
+    @Nonnull
+    public SubcommandData setName(@Nonnull String name, @Nonnull Locale... locales)
+    {
+        //TODO checks
+        nameLocalizations.setTranslations(name, locales);
+        return this;
+    }
+
     /**
      * Configure the description
      *
@@ -99,6 +110,14 @@ public class SubcommandData implements SerializableData
         Checks.notEmpty(description, "Description");
         Checks.notLonger(description, 100, "Description");
         this.description = description;
+        return this;
+    }
+
+    @Nonnull
+    public SubcommandData setDescription(@Nonnull String description, @Nonnull Locale... locales)
+    {
+        //TODO checks
+        descriptionLocalizations.setTranslations(description, locales);
         return this;
     }
 
@@ -309,7 +328,9 @@ public class SubcommandData implements SerializableData
                 .put("type", OptionType.SUB_COMMAND.getKey())
                 .put("name", name)
                 .put("description", description)
-                .put("options", options);
+                .put("options", options)
+                .put("name_localizations", nameLocalizations)
+                .put("description_localizations", descriptionLocalizations);
     }
 
     /**
