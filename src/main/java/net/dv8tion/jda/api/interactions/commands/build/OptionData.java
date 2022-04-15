@@ -773,7 +773,9 @@ public class OptionData implements SerializableData
         if (isAutoComplete)
             throw new IllegalStateException("Cannot add choices to auto-complete options");
         Checks.check(choices.size() + this.choices.length() <= MAX_CHOICES, "Cannot have more than 25 choices for one option!");
-        this.choices.addAll(choices);
+        this.choices.addAll(choices.stream()
+                .map(choice -> choice.toData(type))
+                .collect(Collectors.toList()));
         return this;
     }
 

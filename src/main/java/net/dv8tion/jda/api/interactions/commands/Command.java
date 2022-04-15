@@ -28,7 +28,6 @@ import net.dv8tion.jda.api.utils.TimeUtil;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.DataType;
-import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.internal.interactions.LocalizationMap;
 import net.dv8tion.jda.internal.interactions.command.CommandImpl;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -316,7 +315,7 @@ public interface Command extends ISnowflake
      * @see net.dv8tion.jda.api.interactions.commands.build.OptionData#addChoices(Command.Choice...)
      * @see net.dv8tion.jda.api.interactions.commands.build.OptionData#addChoices(Collection)
      */
-    class Choice implements SerializableData
+    class Choice
     {
         private final String name;
         private LocalizationMap nameLocalizations = new LocalizationMap();
@@ -508,19 +507,20 @@ public interface Command extends ISnowflake
             this.type = OptionType.STRING;
         }
 
+        //Before I changed how choices are made, the specific value getters were used in OptionData#addChoices, which made INTEGER options use rounded values for NUMBER choices.
+        // The goal is to replicate this here
         @Nonnull
-        @Override
-        public DataObject toData()
+        public DataObject toData(OptionType optionType)
         {
             final Object value;
-            if (type == OptionType.INTEGER)
+            if (optionType == OptionType.INTEGER)
                 value = getAsLong();
-            else if (type == OptionType.STRING)
+            else if (optionType == OptionType.STRING)
                 value = getAsString();
-            else if (type == OptionType.NUMBER)
+            else if (optionType == OptionType.NUMBER)
                 value = getAsDouble();
             else
-                throw new IllegalArgumentException("Cannot transform choice into data for type " + type);
+                throw new IllegalArgumentException("Cannot transform choice into data for type " + optionType);
 
             return DataObject.empty()
                     .put("name", name)
