@@ -209,6 +209,10 @@ public class FileProxy
                 //Temporary file follows this pattern: filename + random_number + ".part"
                 // The random number is generated until a filename becomes valid, so, the file doesn't exist in the tmp directory
                 final Path tmpPath = Files.createTempFile(path.getFileName().toString(), ".part");
+                //A user might use a file's presence as an indicator of something being successfully downloaded,
+                //This might prevent a file from being partial, say, if the user shuts down its bot while it's downloading something
+                //Meanwhile, the time window to "corrupt" a file is very small when moving it
+                //This is why we copy the file into a temporary file and then move it.
                 Files.copy(stream, tmpPath, StandardCopyOption.REPLACE_EXISTING);
                 Files.move(tmpPath, path, StandardCopyOption.REPLACE_EXISTING);
                 return path;
