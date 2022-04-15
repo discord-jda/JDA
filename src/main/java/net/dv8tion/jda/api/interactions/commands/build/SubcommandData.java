@@ -40,7 +40,8 @@ public class SubcommandData implements SerializableData
 {
     protected final DataArray options = DataArray.empty();
     protected String name, description;
-    private final LocalizationMap nameLocalizations = new LocalizationMap(), descriptionLocalizations = new LocalizationMap();
+    private final LocalizationMap nameLocalizations = new LocalizationMap();
+    private final LocalizationMap descriptionLocalizations = new LocalizationMap();
     private boolean allowRequired = true;
 
     /**

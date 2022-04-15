@@ -39,7 +39,8 @@ public class SubcommandGroupData implements SerializableData
 {
     private final DataArray options = DataArray.empty();
     private String name, description;
-    private final LocalizationMap nameLocalizations = new LocalizationMap(), descriptionLocalizations = new LocalizationMap();
+    private final LocalizationMap nameLocalizations = new LocalizationMap();
+    private final LocalizationMap descriptionLocalizations = new LocalizationMap();
 
     /**
      * Create an group builder.

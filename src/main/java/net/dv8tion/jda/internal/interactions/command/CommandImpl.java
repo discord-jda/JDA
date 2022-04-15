@@ -48,7 +48,8 @@ public class CommandImpl implements Command
     private final JDAImpl api;
     private final Guild guild;
     private final String name, description;
-    private final LocalizationMap nameLocalizations, descriptionLocalizations;
+    private final LocalizationMap nameLocalizations;
+    private final LocalizationMap descriptionLocalizations;
     private final List<Command.Option> options;
     private final List<Command.SubcommandGroup> groups;
     private final List<Command.Subcommand> subcommands;

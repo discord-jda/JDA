@@ -74,7 +74,8 @@ public class OptionData implements SerializableData
 
     private final OptionType type;
     private String name, description;
-    private final LocalizationMap nameLocalizations = new LocalizationMap(), descriptionLocalizations = new LocalizationMap();
+    private final LocalizationMap nameLocalizations = new LocalizationMap();
+    private final LocalizationMap descriptionLocalizations = new LocalizationMap();
     private boolean isRequired, isAutoComplete;
     private final EnumSet<ChannelType> channelTypes = EnumSet.noneOf(ChannelType.class);
     private Number minValue;

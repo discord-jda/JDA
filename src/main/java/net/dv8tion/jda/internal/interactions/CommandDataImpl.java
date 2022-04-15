@@ -37,7 +37,8 @@ public class CommandDataImpl implements SlashCommandData
 {
     protected final DataArray options = DataArray.empty();
     protected String name, description = "";
-    protected final LocalizationMap nameLocalizations = new LocalizationMap(), descriptionLocalizations = new LocalizationMap();
+    private final LocalizationMap nameLocalizations = new LocalizationMap();
+    private final LocalizationMap descriptionLocalizations = new LocalizationMap();
 
     private boolean allowSubcommands = true;
     private boolean allowGroups = true;

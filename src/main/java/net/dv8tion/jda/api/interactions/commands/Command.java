@@ -534,7 +534,8 @@ public interface Command extends ISnowflake
     class Option
     {
         private final String name, description;
-        private final LocalizationMap nameLocalizations, descriptionLocalizations;
+        private final LocalizationMap nameLocalizations;
+        private final LocalizationMap descriptionLocalizations;
         private final int type;
         private final boolean required, autoComplete;
         private final Set<ChannelType> channelTypes;
@@ -724,7 +725,8 @@ public interface Command extends ISnowflake
     class Subcommand
     {
         private final String name, description;
-        private final LocalizationMap nameLocalizations, descriptionLocalizations;
+        private final LocalizationMap nameLocalizations;
+        private final LocalizationMap descriptionLocalizations;
         private final List<Option> options;
 
         public Subcommand(DataObject json)
@@ -811,7 +813,8 @@ public interface Command extends ISnowflake
     class SubcommandGroup
     {
         private final String name, description;
-        private final LocalizationMap nameLocalizations, descriptionLocalizations;
+        private final LocalizationMap nameLocalizations;
+        private final LocalizationMap descriptionLocalizations;
         private final List<Subcommand> subcommands;
 
         public SubcommandGroup(DataObject json)
