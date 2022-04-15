@@ -51,6 +51,10 @@ public interface CommandData extends SerializableData
     @Nonnull
     CommandData setName(@Nonnull String name);
 
+    //TODO docs
+    @Nonnull
+    CommandData setName(@Nonnull String name, @Nonnull Locale... locales);
+
     /**
      * Whether this command is available to everyone by default.
      * <br>If this is disabled, you need to explicitly whitelist users and roles per guild.
@@ -73,9 +77,6 @@ public interface CommandData extends SerializableData
      */
     @Nonnull
     String getName();
-
-    @Nonnull
-    CommandData addTranslation(@Nonnull String baseName, @Nonnull Locale... locales);
 
     /**
      * Whether this command is available to everyone by default.

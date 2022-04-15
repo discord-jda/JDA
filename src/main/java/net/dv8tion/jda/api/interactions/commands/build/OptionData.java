@@ -24,6 +24,7 @@ import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.DataType;
 import net.dv8tion.jda.api.utils.data.SerializableData;
+import net.dv8tion.jda.internal.interactions.LocalizationMap;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
@@ -73,6 +74,7 @@ public class OptionData implements SerializableData
 
     private final OptionType type;
     private String name, description;
+    private final LocalizationMap nameLocalizations = new LocalizationMap(), descriptionLocalizations = new LocalizationMap();
     private boolean isRequired, isAutoComplete;
     private final EnumSet<ChannelType> channelTypes = EnumSet.noneOf(ChannelType.class);
     private Number minValue;
@@ -311,6 +313,15 @@ public class OptionData implements SerializableData
         return this;
     }
 
+    //TODO docs
+    @Nonnull
+    public OptionData setName(@Nonnull String name, @Nonnull Locale... locales)
+    {
+        nameLocalizations.setTranslations(name, locales);
+
+        return this;
+    }
+
     /**
      * Configure the description
      *
@@ -328,6 +339,15 @@ public class OptionData implements SerializableData
         Checks.notEmpty(description, "Description");
         Checks.notLonger(description, MAX_DESCRIPTION_LENGTH, "Description");
         this.description = description;
+        return this;
+    }
+
+    //TODO docs
+    @Nonnull
+    public OptionData setDescription(@Nonnull String name, @Nonnull Locale... locales)
+    {
+        descriptionLocalizations.setTranslations(name, locales);
+
         return this;
     }
 
@@ -781,7 +801,9 @@ public class OptionData implements SerializableData
         DataObject json = DataObject.empty()
                 .put("type", type.getKey())
                 .put("name", name)
-                .put("description", description);
+                .put("description", description)
+                .put("name_localizations", nameLocalizations)
+                .put("description_localizations", descriptionLocalizations);
         if (type != OptionType.SUB_COMMAND && type != OptionType.SUB_COMMAND_GROUP)
         {
             json.put("required", isRequired);

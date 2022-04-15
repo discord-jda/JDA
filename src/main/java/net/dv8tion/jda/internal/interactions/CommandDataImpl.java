@@ -30,7 +30,6 @@ import javax.annotation.Nonnull;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
-import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -38,9 +37,7 @@ public class CommandDataImpl implements SlashCommandData
 {
     protected final DataArray options = DataArray.empty();
     protected String name, description = "";
-
-    protected final LocalizationMap nameLocalizations = new LocalizationMap();
-    protected final LocalizationMap descriptionLocalizations = new LocalizationMap();
+    protected final LocalizationMap nameLocalizations = new LocalizationMap(), descriptionLocalizations = new LocalizationMap();
 
     private boolean allowSubcommands = true;
     private boolean allowGroups = true;
@@ -230,6 +227,15 @@ public class CommandDataImpl implements SlashCommandData
 
     @Nonnull
     @Override
+    public CommandDataImpl setName(@Nonnull String name, @Nonnull Locale... locales)
+    {
+        //TODO checks
+        nameLocalizations.setTranslations(name, locales);
+        return this;
+    }
+
+    @Nonnull
+    @Override
     public CommandDataImpl setDescription(@Nonnull String description)
     {
         checkType(Command.Type.SLASH, "set description");
@@ -241,15 +247,10 @@ public class CommandDataImpl implements SlashCommandData
 
     @Nonnull
     @Override
-    public CommandDataImpl addTranslation(@Nonnull String baseName, @Nonnull Locale... locales)
+    public CommandDataImpl setDescription(@Nonnull String name, @Nonnull Locale... locales)
     {
-        for (Locale locale : locales)
-        {
-            final ResourceBundle bundle = ResourceBundle.getBundle(baseName, locale);
-            nameLocalizations.tryAddTranslation(bundle, locale, name + ".name");
-            descriptionLocalizations.tryAddTranslation(bundle, locale, name + ".description");
-        }
-
+        //TODO checks
+        descriptionLocalizations.setTranslations(name, locales);
         return this;
     }
 

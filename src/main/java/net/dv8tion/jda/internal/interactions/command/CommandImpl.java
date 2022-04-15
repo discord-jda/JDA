@@ -30,10 +30,9 @@ import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.CommandEditActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -78,7 +77,7 @@ public class CommandImpl implements Command
     }
 
     @Nullable
-    public static Map<String, String> parseLocalization(@NotNull DataObject json, @NotNull String localizationProperty) {
+    public static Map<String, String> parseLocalization(@Nonnull DataObject json, @Nonnull String localizationProperty) {
         return json.optObject(localizationProperty)
                 .map(dict -> {
                     final Map<String, String> map = new HashMap<>();

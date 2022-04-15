@@ -93,15 +93,6 @@ public class CommandCreateActionImpl extends RestActionImpl<Command> implements 
         return data.getName();
     }
 
-    @Nonnull
-    @Override
-    public CommandCreateAction addTranslation(@Nonnull String baseName, @Nonnull Locale... locales)
-    {
-        data.addTranslation(baseName, locales);
-
-        return this;
-    }
-
     @Override
     public boolean isDefaultEnabled()
     {
@@ -135,11 +126,29 @@ public class CommandCreateActionImpl extends RestActionImpl<Command> implements 
 
     @Nonnull
     @Override
+    public CommandCreateAction setName(@Nonnull String name, @Nonnull Locale... locales)
+    {
+        //TODO checks
+        data.setName(name, locales);
+        return this;
+    }
+
+    @Nonnull
+    @Override
     public CommandCreateAction setDescription(@Nonnull String description)
     {
         Checks.notEmpty(description, "Description");
         Checks.notLonger(description, 100, "Description");
         data.setDescription(description);
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    public CommandCreateAction setDescription(@Nonnull String name, @Nonnull Locale... locales)
+    {
+        //TODO checks
+        data.setDescription(name, locales);
         return this;
     }
 

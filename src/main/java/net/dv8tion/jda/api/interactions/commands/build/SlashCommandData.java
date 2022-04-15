@@ -41,6 +41,10 @@ public interface SlashCommandData extends CommandData
 
     @Nonnull
     @Override
+    SlashCommandData setName(@Nonnull String name, @Nonnull Locale... locales);
+
+    @Nonnull
+    @Override
     SlashCommandData setDefaultEnabled(boolean enabled);
 
     /**
@@ -57,10 +61,9 @@ public interface SlashCommandData extends CommandData
     @Nonnull
     SlashCommandData setDescription(@Nonnull String description);
 
-    //TODO docs, specify MissingResourceException
+    //TODO docs
     @Nonnull
-    @Override
-    SlashCommandData addTranslation(@Nonnull String baseName, @Nonnull Locale... locales);
+    SlashCommandData setDescription(@Nonnull String name, @Nonnull Locale... locales);
 
     /**
      * The configured description

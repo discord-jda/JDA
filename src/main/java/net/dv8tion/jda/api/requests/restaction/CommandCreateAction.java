@@ -65,17 +65,23 @@ public interface CommandCreateAction extends RestAction<Command>, SlashCommandDa
 
     @Nonnull
     @Override
-    CommandCreateAction addTranslation(@Nonnull String baseName, @Nonnull Locale... locales);
-
-    @Nonnull
-    @Override
     @CheckReturnValue
     CommandCreateAction setName(@Nonnull String name);
 
     @Nonnull
     @Override
     @CheckReturnValue
+    CommandCreateAction setName(@Nonnull String name, @Nonnull Locale... locales);
+
+    @Nonnull
+    @Override
+    @CheckReturnValue
     CommandCreateAction setDescription(@Nonnull String description);
+
+    @Nonnull
+    @Override
+    @CheckReturnValue
+    CommandCreateAction setDescription(@Nonnull String name, @Nonnull Locale... locales);
 
     @Nonnull
     @Override
