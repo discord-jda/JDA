@@ -26,6 +26,7 @@ import net.dv8tion.jda.api.requests.restaction.CommandEditAction;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
+import net.dv8tion.jda.internal.interactions.LocalizationMap;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.CommandEditActionImpl;
@@ -47,7 +48,7 @@ public class CommandImpl implements Command
     private final JDAImpl api;
     private final Guild guild;
     private final String name, description;
-    private final Map<String, String> nameLocalizations, descriptionLocalizations;
+    private final LocalizationMap nameLocalizations, descriptionLocalizations;
     private final List<Command.Option> options;
     private final List<Command.SubcommandGroup> groups;
     private final List<Command.Subcommand> subcommands;
@@ -76,19 +77,10 @@ public class CommandImpl implements Command
     }
 
     @Nonnull
-    public static Map<String, String> parseLocalization(@Nonnull DataObject json, @Nonnull String localizationProperty) {
+    public static LocalizationMap parseLocalization(@Nonnull DataObject json, @Nonnull String localizationProperty) {
         return json.optObject(localizationProperty)
-                .map(dict -> {
-                    final Map<String, String> map = new HashMap<>();
-
-                    for (String key : dict.keys())
-                    {
-                        map.put(key, dict.getString(key));
-                    }
-
-                    return Collections.unmodifiableMap(map);
-                })
-                .orElse(Collections.emptyMap());
+                .map(LocalizationMap::fromData)
+                .orElse(new LocalizationMap());
     }
 
     public static <T> List<T> parseOptions(DataObject json, Predicate<DataObject> test, Function<DataObject, T> transform)
@@ -172,7 +164,7 @@ public class CommandImpl implements Command
 
     @Override
     @Nonnull
-    public Map<String, String> getNameLocalizations()
+    public LocalizationMap getNameLocalizations()
     {
         return nameLocalizations;
     }
@@ -186,7 +178,7 @@ public class CommandImpl implements Command
 
     @Override
     @Nonnull
-    public Map<String, String> getDescriptionLocalizations()
+    public LocalizationMap getDescriptionLocalizations()
     {
         return descriptionLocalizations;
     }

@@ -101,7 +101,9 @@ public class AutoCompleteCallbackActionImpl extends InteractionCallbackImpl<Void
         DataObject data = DataObject.empty();
         DataArray array = DataArray.empty();
         choices.forEach(choice -> {
-            DataObject json = DataObject.empty().put("name", choice.getName());
+            DataObject json = DataObject.empty()
+                    .put("name", choice.getName())
+                    .put("name_localizations", choice.getNameLocalizations());
             switch (type)
             {
             case INTEGER:

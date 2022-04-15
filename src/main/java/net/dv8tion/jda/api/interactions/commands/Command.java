@@ -28,6 +28,7 @@ import net.dv8tion.jda.api.utils.TimeUtil;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.DataType;
+import net.dv8tion.jda.internal.interactions.LocalizationMap;
 import net.dv8tion.jda.internal.interactions.command.CommandImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
@@ -174,7 +175,7 @@ public interface Command extends ISnowflake
 
     //TODO docs
     @Nonnull
-    Map<String, String> getNameLocalizations();
+    LocalizationMap getNameLocalizations();
 
     /**
      * The description of this command.
@@ -186,7 +187,7 @@ public interface Command extends ISnowflake
 
     //TODO docs
     @Nonnull
-    Map<String, String> getDescriptionLocalizations();
+    LocalizationMap getDescriptionLocalizations();
 
     /**
      * Whether this command is enabled for everyone by default.
@@ -317,7 +318,7 @@ public interface Command extends ISnowflake
     class Choice
     {
         private final String name;
-        private Map<String, String> nameLocalizations = new HashMap<>();
+        private LocalizationMap nameLocalizations = new LocalizationMap();
         private long intValue = 0;
         private double doubleValue = Double.NaN;
         private String stringValue = null;
@@ -408,9 +409,15 @@ public interface Command extends ISnowflake
             return name;
         }
 
-        public Map<String, String> getNameLocalizations()
+        public LocalizationMap getNameLocalizations()
         {
             return nameLocalizations;
+        }
+
+        public Choice setName(@Nonnull String name, @Nonnull Locale... locales) {
+            nameLocalizations.setTranslations(name, locales);
+
+            return this;
         }
 
         /**
@@ -507,7 +514,7 @@ public interface Command extends ISnowflake
     class Option
     {
         private final String name, description;
-        private final Map<String, String> nameLocalizations, descriptionLocalizations;
+        private final LocalizationMap nameLocalizations, descriptionLocalizations;
         private final int type;
         private final boolean required, autoComplete;
         private final Set<ChannelType> channelTypes;
@@ -549,7 +556,7 @@ public interface Command extends ISnowflake
         }
 
         @Nonnull
-        public Map<String, String> getNameLocalizations()
+        public LocalizationMap getNameLocalizations()
         {
             return nameLocalizations;
         }
@@ -566,7 +573,7 @@ public interface Command extends ISnowflake
         }
 
         @Nonnull
-        public Map<String, String> getDescriptionLocalizations()
+        public LocalizationMap getDescriptionLocalizations()
         {
             return descriptionLocalizations;
         }
@@ -698,7 +705,7 @@ public interface Command extends ISnowflake
     class Subcommand
     {
         private final String name, description;
-        private final Map<String, String> nameLocalizations, descriptionLocalizations;
+        private final LocalizationMap nameLocalizations, descriptionLocalizations;
         private final List<Option> options;
 
         public Subcommand(DataObject json)
@@ -723,7 +730,7 @@ public interface Command extends ISnowflake
         }
 
         @Nonnull
-        public Map<String, String> getNameLocalizations()
+        public LocalizationMap getNameLocalizations()
         {
             return nameLocalizations;
         }
@@ -740,7 +747,7 @@ public interface Command extends ISnowflake
         }
 
         @Nonnull
-        public Map<String, String> getDescriptionLocalizations()
+        public LocalizationMap getDescriptionLocalizations()
         {
             return descriptionLocalizations;
         }
@@ -786,7 +793,7 @@ public interface Command extends ISnowflake
     class SubcommandGroup
     {
         private final String name, description;
-        private final Map<String, String> nameLocalizations, descriptionLocalizations;
+        private final LocalizationMap nameLocalizations, descriptionLocalizations;
         private final List<Subcommand> subcommands;
 
         public SubcommandGroup(DataObject json)
@@ -811,7 +818,7 @@ public interface Command extends ISnowflake
         }
 
         @Nonnull
-        public Map<String, String> getNameLocalizations()
+        public LocalizationMap getNameLocalizations()
         {
             return nameLocalizations;
         }
@@ -828,7 +835,7 @@ public interface Command extends ISnowflake
         }
 
         @Nonnull
-        public Map<String, String> getDescriptionLocalizations()
+        public LocalizationMap getDescriptionLocalizations()
         {
             return descriptionLocalizations;
         }
