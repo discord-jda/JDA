@@ -29,6 +29,8 @@ import net.dv8tion.jda.internal.utils.Checks;
 import javax.annotation.Nonnull;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
+import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -36,6 +38,9 @@ public class CommandDataImpl implements SlashCommandData
 {
     protected final DataArray options = DataArray.empty();
     protected String name, description = "";
+
+    protected final LocalizationMap nameLocalizations = new LocalizationMap();
+    protected final LocalizationMap descriptionLocalizations = new LocalizationMap();
 
     private boolean allowSubcommands = true;
     private boolean allowGroups = true;
@@ -74,7 +79,9 @@ public class CommandDataImpl implements SlashCommandData
                 .put("default_permission", defaultPermissions)
                 .put("type", type.getId())
                 .put("name", name)
-                .put("options", options);
+                .put("options", options)
+                .put("name_localizations", nameLocalizations)
+                .put("description_localizations", descriptionLocalizations);
         if (type == Command.Type.SLASH)
             json.put("description", description);
         return json;
@@ -229,6 +236,20 @@ public class CommandDataImpl implements SlashCommandData
         Checks.notEmpty(description, "Description");
         Checks.notLonger(description, 100, "Description");
         this.description = description;
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    public CommandDataImpl addTranslation(@Nonnull String baseName, @Nonnull Locale... locales)
+    {
+        for (Locale locale : locales)
+        {
+            final ResourceBundle bundle = ResourceBundle.getBundle(baseName, locale);
+            nameLocalizations.tryAddTranslation(bundle, locale, name + ".name");
+            descriptionLocalizations.tryAddTranslation(bundle, locale, name + ".description");
+        }
+
         return this;
     }
 

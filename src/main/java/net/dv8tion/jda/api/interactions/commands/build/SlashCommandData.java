@@ -27,12 +27,14 @@ import net.dv8tion.jda.internal.utils.Checks;
 import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Extension of {@link CommandData} which allows setting slash-command specific settings such as options and subcommands.
  */
 public interface SlashCommandData extends CommandData
 {
+
     @Nonnull
     @Override
     SlashCommandData setName(@Nonnull String name);
@@ -54,6 +56,11 @@ public interface SlashCommandData extends CommandData
      */
     @Nonnull
     SlashCommandData setDescription(@Nonnull String description);
+
+    //TODO docs, specify MissingResourceException
+    @Nonnull
+    @Override
+    SlashCommandData addTranslation(@Nonnull String baseName, @Nonnull Locale... locales);
 
     /**
      * The configured description

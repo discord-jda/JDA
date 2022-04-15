@@ -26,6 +26,7 @@ import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
 import java.util.Collection;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -72,6 +73,9 @@ public interface CommandData extends SerializableData
      */
     @Nonnull
     String getName();
+
+    @Nonnull
+    CommandData addTranslation(@Nonnull String baseName, @Nonnull Locale... locales);
 
     /**
      * Whether this command is available to everyone by default.

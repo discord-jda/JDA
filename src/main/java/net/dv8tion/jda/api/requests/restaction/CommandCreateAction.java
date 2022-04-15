@@ -28,6 +28,7 @@ import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Collection;
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 
@@ -61,6 +62,10 @@ public interface CommandCreateAction extends RestAction<Command>, SlashCommandDa
     @Override
     @CheckReturnValue
     CommandCreateAction setDefaultEnabled(boolean enabled);
+
+    @Nonnull
+    @Override
+    CommandCreateAction addTranslation(@Nonnull String baseName, @Nonnull Locale... locales);
 
     @Nonnull
     @Override
