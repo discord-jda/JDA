@@ -307,7 +307,8 @@ public class FileProxy
         return downloadToPath(url, path);
     }
 
-    protected static class DownloadTask {
+    protected static class DownloadTask
+    {
         private final Call call;
         private final CompletableFuture<InputStream> future;
 
