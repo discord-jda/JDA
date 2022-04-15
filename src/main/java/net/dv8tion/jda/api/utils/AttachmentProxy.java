@@ -29,13 +29,13 @@ import java.nio.file.Path;
 import java.util.concurrent.CompletableFuture;
 
 /**
- * A utility class to retrieve attachments
- * <br>This supports downloading the images from the normal URL, as well as downloading the image with a specific width and height
+ * A utility class to retrieve attachments.
+ * <br>This supports downloading the images from the normal URL, as well as downloading the image with a specific width and height.
  */
 public class AttachmentProxy extends FileProxy
 {
     /**
-     * Constructs a new {@link AttachmentProxy} for the provided URL
+     * Constructs a new {@link AttachmentProxy} for the provided URL.
      *
      * @param url The URL to download the attachment from
      *
@@ -57,9 +57,9 @@ public class AttachmentProxy extends FileProxy
     }
 
     /**
-     * Retrieves the {@link InputStream} of this attachment at the specified width and height
-     * <br>The attachment, if an image, may be resized at any size, however if the size does not fit the ratio of the image, then it will be cropped as to fit the target size
-     * <br>If the attachment is not an image then the size parameters are ignored and the file is downloaded
+     * Retrieves the {@link InputStream} of this attachment at the specified width and height.
+     * <br>The attachment, if an image, may be resized at any size, however if the size does not fit the ratio of the image, then it will be cropped as to fit the target size.
+     * <br>If the attachment is not an image then the size parameters are ignored and the file is downloaded.
      *
      * @param  width
      *         The width of this image, must be positive
@@ -73,7 +73,7 @@ public class AttachmentProxy extends FileProxy
      *             <li>The requested height is negative or 0</li>
      *         </ul>
      *
-     * @return a {@link CompletableFuture} which holds an {@link InputStream}, the {@link InputStream} must be closed manually
+     * @return a {@link CompletableFuture} which holds an {@link InputStream}, the {@link InputStream} must be closed manually.
      */
     @Nonnull
     public CompletableFuture<InputStream> download(int width, int height)
@@ -82,12 +82,12 @@ public class AttachmentProxy extends FileProxy
     }
 
     /**
-     * Downloads the data of this attachment, at the specified width and height, and stores it in a file with the same name as the queried file name (this would be the last segment of the URL)
-     * <br>The attachment, if an image, may be resized at any size, however if the size does not fit the ratio of the image, then it will be cropped as to fit the target size
-     * <br>If the attachment is not an image then the size parameters are ignored and the file is downloaded
+     * Downloads the data of this attachment, at the specified width and height, and stores it in a file with the same name as the queried file name (this would be the last segment of the URL).
+     * <br>The attachment, if an image, may be resized at any size, however if the size does not fit the ratio of the image, then it will be cropped as to fit the target size.
+     * <br>If the attachment is not an image then the size parameters are ignored and the file is downloaded.
      *
      * <p><b>Implementation note:</b>
-     *       The file is first downloaded into a temporary file, the file is then moved to its real destination when the download is complete
+     *       The file is first downloaded into a temporary file, the file is then moved to its real destination when the download is complete.
      *
      * @param  width
      *         The width of this image, must be positive
@@ -102,7 +102,7 @@ public class AttachmentProxy extends FileProxy
      *             <li>The URL's scheme is neither http or https</li>
      *         </ul>
      *
-     * @return a {@link CompletableFuture} which holds a {@link Path} which corresponds to the location the file has been downloaded
+     * @return a {@link CompletableFuture} which holds a {@link Path} which corresponds to the location the file has been downloaded.
      *
      */
     @Nonnull
@@ -112,12 +112,12 @@ public class AttachmentProxy extends FileProxy
     }
 
     /**
-     * Downloads the data of this attachment, at the specified width and height, and stores it in the specified file
-     * <br>The attachment, if an image, may be resized at any size, however if the size does not fit the ratio of the image, then it will be cropped as to fit the target size
-     * <br>If the attachment is not an image then the size parameters are ignored and the file is downloaded
+     * Downloads the data of this attachment, at the specified width and height, and stores it in the specified file.
+     * <br>The attachment, if an image, may be resized at any size, however if the size does not fit the ratio of the image, then it will be cropped as to fit the target size.
+     * <br>If the attachment is not an image then the size parameters are ignored and the file is downloaded.
      *
      * <p><b>Implementation note:</b>
-     *       The file is first downloaded into a temporary file, the file is then moved to its real destination when the download is complete
+     *       The file is first downloaded into a temporary file, the file is then moved to its real destination when the download is complete.
      *
      * @param  file
      *         The file in which to download the image
@@ -135,7 +135,7 @@ public class AttachmentProxy extends FileProxy
      *             <li>The requested height is negative or 0</li>
      *         </ul>
      *
-     * @return a {@link CompletableFuture} which holds a {@link File}, it is the same as the file passed in the parameters
+     * @return a {@link CompletableFuture} which holds a {@link File}, it is the same as the file passed in the parameters.
      */
     @Nonnull
     public CompletableFuture<File> downloadToFile(@Nonnull File file, int width, int height)
@@ -147,13 +147,13 @@ public class AttachmentProxy extends FileProxy
     }
 
     /**
-     * Downloads the data of this attachment, at the specified size, and stores it in the specified file
-     * <br>The attachment, if an image, may be resized at any size, however if the size does not fit the ratio of the image, then it will be cropped as to fit the target size
-     * <br>If the attachment is not an image then the size parameters are ignored and the file is downloaded
+     * Downloads the data of this attachment, at the specified size, and stores it in the specified file.
+     * <br>The attachment, if an image, may be resized at any size, however if the size does not fit the ratio of the image, then it will be cropped as to fit the target size.
+     * <br>If the attachment is not an image then the size parameters are ignored and the file is downloaded.
      *
      * <p><b>Implementation note:</b>
      *       The file is first downloaded into a temporary file, the file is then moved to its real destination when the download is complete.
-     *       <br>The given path can also target filesystems such as a ZIP filesystem
+     *       <br>The given path can also target filesystems such as a ZIP filesystem.
      *
      * @param  path
      *         The file in which to download the image
@@ -162,7 +162,7 @@ public class AttachmentProxy extends FileProxy
      * @param  height
      *         The height of this image, must be positive
      *
-     * @return a {@link CompletableFuture} which holds a {@link Path}, it is the same as the path passed in the parameters
+     * @return a {@link CompletableFuture} which holds a {@link Path}, it is the same as the path passed in the parameters.
      *
      * @throws IllegalArgumentException
      *         If any of the follow checks are true
@@ -182,16 +182,16 @@ public class AttachmentProxy extends FileProxy
     }
 
     /**
-     * Downloads the data of this attachment, at the specified size, and constructs an {@link Icon} from the data
-     * <br>The attachment, if an image, may be resized at any size, however if the size does not fit the ratio of the image, then it will be cropped as to fit the target size
-     * <br>If the attachment is not an image then the size parameters are ignored and the file is downloaded
+     * Downloads the data of this attachment, at the specified size, and constructs an {@link Icon} from the data.
+     * <br>The attachment, if an image, may be resized at any size, however if the size does not fit the ratio of the image, then it will be cropped as to fit the target size.
+     * <br>If the attachment is not an image then the size parameters are ignored and the file is downloaded.
      *
      * @param  width
      *         The width of this image, must be positive
      * @param  height
      *         The height of this image, must be positive
      *
-     * @return a {@link CompletableFuture} which holds an {@link Icon}
+     * @return a {@link CompletableFuture} which holds an {@link Icon}.
      *
      * @throws IllegalArgumentException
      *         If any of the follow checks are true

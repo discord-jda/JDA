@@ -40,7 +40,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
 /**
- * A utility class to download files
+ * A utility class to download files.
  */
 public class FileProxy
 {
@@ -50,7 +50,7 @@ public class FileProxy
     private OkHttpClient customHttpClient;
 
     /**
-     * Constructs a new {@link FileProxy} for the provided URL
+     * Constructs a new {@link FileProxy} for the provided URL.
      *
      * @param url
      *        The URL to download from
@@ -66,8 +66,8 @@ public class FileProxy
     }
 
     /**
-     * Sets the default OkHttpClient used by {@link FileProxy} and {@link ImageProxy}
-     * <br>This can still be overridden on a per-instance basis with {@link #withClient(OkHttpClient)}
+     * Sets the default OkHttpClient used by {@link FileProxy} and {@link ImageProxy}.
+     * <br>This can still be overridden on a per-instance basis with {@link #withClient(OkHttpClient)}.
      *
      * @param  httpClient
      *         The default {@link OkHttpClient} to use while making HTTP requests
@@ -83,10 +83,10 @@ public class FileProxy
     }
 
     /**
-     * Returns the URL that has been passed to this proxy
-     * <br>This URL is always from Discord
+     * Returns the URL that has been passed to this proxy.
+     * <br>This URL is always from Discord.
      *
-     * @return The URL of the file
+     * @return The URL of the file.
      */
     @Nonnull
     public String getUrl()
@@ -95,7 +95,7 @@ public class FileProxy
     }
 
     /**
-     * Sets the custom OkHttpClient used by this instance, regardless of if {@link #setHttpClient(OkHttpClient)} has been used or not
+     * Sets the custom OkHttpClient used by this instance, regardless of if {@link #setHttpClient(OkHttpClient)} has been used or not.
      *
      * @param  customHttpClient
      *         The custom {@link OkHttpClient} to use while making HTTP requests
@@ -103,7 +103,7 @@ public class FileProxy
      * @throws IllegalArgumentException
      *         If the provided {@link OkHttpClient} is null
      *
-     * @return This proxy for chaining convenience
+     * @return This proxy for chaining convenience.
      */
     @Nonnull
     public FileProxy withClient(@Nonnull OkHttpClient customHttpClient)
@@ -246,12 +246,12 @@ public class FileProxy
     }
 
     /**
-     * Downloads the data of this file, and stores it in a file with the same name as the queried file name (this would be the last segment of the URL)
+     * Downloads the data of this file, and stores it in a file with the same name as the queried file name (this would be the last segment of the URL).
      *
      * <p><b>Implementation note:</b>
-     *       The file is first downloaded into a temporary file, the file is then moved to its real destination when the download is complete
+     *       The file is first downloaded into a temporary file, the file is then moved to its real destination when the download is complete.
      *
-     * @return a {@link CompletableFuture} which holds a {@link Path} which corresponds to the location the file has been downloaded
+     * @return a {@link CompletableFuture} which holds a {@link Path} which corresponds to the location the file has been downloaded.
      */
     @Nonnull
     public CompletableFuture<Path> downloadToPath()
@@ -260,10 +260,10 @@ public class FileProxy
     }
 
     /**
-     * Downloads the data of this file into the specified file
+     * Downloads the data of this file into the specified file.
      *
      * <p><b>Implementation note:</b>
-     *       The file is first downloaded into a temporary file, the file is then moved to its real destination when the download is complete
+     *       The file is first downloaded into a temporary file, the file is then moved to its real destination when the download is complete.
      *
      * @param  file
      *         The file in which to download the data
@@ -275,7 +275,7 @@ public class FileProxy
      *             <li>The parent folder of the target file does not exist</li>
      *         </ul>
      *
-     * @return a {@link CompletableFuture} which holds a {@link File}, it is the same as the file passed in the parameters
+     * @return a {@link CompletableFuture} which holds a {@link File}, it is the same as the file passed in the parameters.
      */
     @Nonnull
     public CompletableFuture<File> downloadToFile(@Nonnull File file)
@@ -287,16 +287,16 @@ public class FileProxy
     }
 
     /**
-     * Downloads the data of this file into the specified file
+     * Downloads the data of this file into the specified file.
      *
      * <p><b>Implementation note:</b>
      *       The file is first downloaded into a temporary file, the file is then moved to its real destination when the download is complete.
-     *       <br>The given path can also target filesystems such as a ZIP filesystem
+     *       <br>The given path can also target filesystems such as a ZIP filesystem.
      *
      * @param  path
      *         The file in which to download the image
      *
-     * @return a {@link CompletableFuture} which holds a {@link Path}, it is the same as the path passed in the parameters
+     * @return a {@link CompletableFuture} which holds a {@link Path}, it is the same as the path passed in the parameters.
      *
      * @throws IllegalArgumentException
      *         If any of the follow checks are true
