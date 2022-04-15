@@ -132,7 +132,8 @@ public class TemplateGuild implements ISnowflake
      * @see    #getIconUrl()
      */
     @Nullable
-    public ImageProxy getIcon() {
+    public ImageProxy getIcon()
+    {
         final String iconUrl = getIconUrl();
         return iconUrl == null ? null : new ImageProxy(iconUrl);
     }
