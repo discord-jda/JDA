@@ -172,11 +172,25 @@ public class CommandImpl implements Command
         return name;
     }
 
+    @Override
+    @Nonnull
+    public Map<String, String> getNameLocalizations()
+    {
+        return nameLocalizations;
+    }
+
     @Nonnull
     @Override
     public String getDescription()
     {
         return description;
+    }
+
+    @Override
+    @Nonnull
+    public Map<String, String> getDescriptionLocalizations()
+    {
+        return descriptionLocalizations;
     }
 
     @Override

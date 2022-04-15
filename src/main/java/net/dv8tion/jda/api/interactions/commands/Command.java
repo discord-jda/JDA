@@ -172,6 +172,10 @@ public interface Command extends ISnowflake
     @Nonnull
     String getName();
 
+    //TODO docs
+    @Nonnull
+    Map<String, String> getNameLocalizations();
+
     /**
      * The description of this command.
      *
@@ -179,6 +183,10 @@ public interface Command extends ISnowflake
      */
     @Nonnull
     String getDescription();
+
+    //TODO docs
+    @Nonnull
+    Map<String, String> getDescriptionLocalizations();
 
     /**
      * Whether this command is enabled for everyone by default.
