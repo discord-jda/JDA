@@ -115,7 +115,8 @@ public class FileProxy
 
     // INTERNAL DOWNLOAD METHODS
 
-    protected OkHttpClient getHttpClient() {
+    protected OkHttpClient getHttpClient()
+    {
         // Return custom HTTP client if set
         if (customHttpClient != null)
         {
