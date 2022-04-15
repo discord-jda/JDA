@@ -15,13 +15,16 @@
  */
 package net.dv8tion.jda.api.utils;
 
+import net.dv8tion.jda.api.entities.Icon;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.FutureUtil;
 import net.dv8tion.jda.internal.utils.IOUtil;
 
 import javax.annotation.Nonnull;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.UncheckedIOException;
 import java.nio.file.Path;
 import java.util.concurrent.CompletableFuture;
 
@@ -173,5 +176,44 @@ public class AttachmentProxy extends FileProxy
         Checks.notNull(path, "Path");
 
         return downloadToPath(getUrl(width, height), path);
+    }
+
+    /**
+     * Downloads the data of this attachment, at the specified size, and constructs an {@link Icon} from the data
+     * <br>The attachment, if an image, may be resized at any size, however if the size does not fit the ratio of the image, then it will be cropped as to fit the target size
+     * <br>If the attachment is not an image then the size parameters are ignored and the file is downloaded
+     *
+     * @param  width
+     *         The width of this image, must be positive
+     * @param  height
+     *         The height of this image, must be positive
+     *
+     * @return a {@link CompletableFuture} which holds an {@link Icon}
+     *
+     * @throws IllegalArgumentException
+     *         If any of the follow checks are true
+     *         <ul>
+     *             <li>The requested width is negative or 0</li>
+     *             <li>The requested height is negative or 0</li>
+     *         </ul>
+     */
+    @Nonnull
+    public CompletableFuture<Icon> downloadAsIcon(int width, int height) {
+        final CompletableFuture<InputStream> downloadFuture = download(getUrl(width, height));
+        return FutureUtil.thenApplyCancellable(downloadFuture, stream ->
+        {
+            try
+            {
+                return Icon.from(stream);
+            }
+            catch (IOException e)
+            {
+                throw new UncheckedIOException(e);
+            }
+            finally
+            {
+                IOUtil.silentClose(stream);
+            }
+        });
     }
 }
