@@ -408,6 +408,11 @@ public interface Command extends ISnowflake
             return name;
         }
 
+        public Map<String, String> getNameLocalizations()
+        {
+            return nameLocalizations;
+        }
+
         /**
          * The value of this choice.
          *
@@ -543,6 +548,12 @@ public interface Command extends ISnowflake
             return name;
         }
 
+        @Nonnull
+        public Map<String, String> getNameLocalizations()
+        {
+            return nameLocalizations;
+        }
+
         /**
          * The description of this option, subcommand, or subcommand group.
          *
@@ -552,6 +563,12 @@ public interface Command extends ISnowflake
         public String getDescription()
         {
             return description;
+        }
+
+        @Nonnull
+        public Map<String, String> getDescriptionLocalizations()
+        {
+            return descriptionLocalizations;
         }
 
         /**
@@ -705,6 +722,12 @@ public interface Command extends ISnowflake
             return name;
         }
 
+        @Nonnull
+        public Map<String, String> getNameLocalizations()
+        {
+            return nameLocalizations;
+        }
+
         /**
          * The description of this subcommand.
          *
@@ -714,6 +737,12 @@ public interface Command extends ISnowflake
         public String getDescription()
         {
             return description;
+        }
+
+        @Nonnull
+        public Map<String, String> getDescriptionLocalizations()
+        {
+            return descriptionLocalizations;
         }
 
         /**
@@ -781,6 +810,12 @@ public interface Command extends ISnowflake
             return name;
         }
 
+        @Nonnull
+        public Map<String, String> getNameLocalizations()
+        {
+            return nameLocalizations;
+        }
+
         /**
          * The description of this subcommand group.
          *
@@ -790,6 +825,12 @@ public interface Command extends ISnowflake
         public String getDescription()
         {
             return description;
+        }
+
+        @Nonnull
+        public Map<String, String> getDescriptionLocalizations()
+        {
+            return descriptionLocalizations;
         }
 
         /**
