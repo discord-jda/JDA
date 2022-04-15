@@ -306,7 +306,6 @@ public interface Member extends IMentionable, IPermissionHolder
     default ImageProxy getEffectiveAvatar()
     {
         final ImageProxy avatar = getAvatar();
-
         return avatar == null ? getUser().getEffectiveAvatar() : avatar;
     }
 
