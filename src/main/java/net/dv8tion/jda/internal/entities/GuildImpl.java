@@ -18,8 +18,10 @@ package net.dv8tion.jda.internal.entities;
 
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
+import gnu.trove.set.TLongSet;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.Region;
+import net.dv8tion.jda.api.audio.hooks.ConnectionStatus;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.templates.Template;
 import net.dv8tion.jda.api.exceptions.HierarchyException;
@@ -42,6 +44,7 @@ import net.dv8tion.jda.api.utils.concurrent.Task;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
+import net.dv8tion.jda.internal.handle.EventCache;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 import net.dv8tion.jda.internal.interactions.command.CommandImpl;
 import net.dv8tion.jda.internal.managers.AudioManagerImpl;
@@ -124,6 +127,81 @@ public class GuildImpl implements Guild
             memberPresences = new CacheView.SimpleCacheView<>(MemberPresenceImpl.class, null);
         else
             memberPresences = null;
+    }
+
+    public void invalidate()
+    {
+        //Remove everything from global cache
+        // this prevents some race-conditions for getting audio managers from guilds
+        SnowflakeCacheViewImpl<Guild> guildView = getJDA().getGuildsView();
+        SnowflakeCacheViewImpl<StageChannel> stageView = getJDA().getStageChannelView();
+        SnowflakeCacheViewImpl<TextChannel> textView = getJDA().getTextChannelsView();
+        SnowflakeCacheViewImpl<ThreadChannel> threadView = getJDA().getThreadChannelsView();
+        SnowflakeCacheViewImpl<NewsChannel> newsView = getJDA().getNewsChannelView();
+        SnowflakeCacheViewImpl<VoiceChannel> voiceView = getJDA().getVoiceChannelsView();
+        SnowflakeCacheViewImpl<Category> categoryView = getJDA().getCategoriesView();
+
+        guildView.remove(id);
+
+        try (UnlockHook hook = stageView.writeLock())
+        {
+            getStageChannelCache()
+                .forEachUnordered(chan -> stageView.getMap().remove(chan.getIdLong()));
+        }
+        try (UnlockHook hook = textView.writeLock())
+        {
+            getTextChannelCache()
+                .forEachUnordered(chan -> textView.getMap().remove(chan.getIdLong()));
+        }
+        try (UnlockHook hook = threadView.writeLock())
+        {
+            getThreadChannelsView()
+                .forEachUnordered(chan -> threadView.getMap().remove(chan.getIdLong()));
+        }
+        try (UnlockHook hook = newsView.writeLock())
+        {
+            getNewsChannelCache()
+                .forEachUnordered(chan -> newsView.getMap().remove(chan.getIdLong()));
+        }
+        try (UnlockHook hook = voiceView.writeLock())
+        {
+            getVoiceChannelCache()
+                .forEachUnordered(chan -> voiceView.getMap().remove(chan.getIdLong()));
+        }
+        try (UnlockHook hook = categoryView.writeLock())
+        {
+            getCategoryCache()
+                .forEachUnordered(chan -> categoryView.getMap().remove(chan.getIdLong()));
+        }
+
+        // Clear audio connection
+        getJDA().getClient().removeAudioConnection(id);
+        final AbstractCacheView<AudioManager> audioManagerView = getJDA().getAudioManagersView();
+        final AudioManagerImpl manager = (AudioManagerImpl) audioManagerView.get(id); //read-lock access/release
+        if (manager != null)
+            manager.closeAudioConnection(ConnectionStatus.DISCONNECTED_REMOVED_FROM_GUILD); //connection-lock access/release
+        audioManagerView.remove(id); //write-lock access/release
+
+        //cleaning up all users that we do not share a guild with anymore
+        // Anything left in memberIds will be removed from the main userMap
+        //Use a new HashSet so that we don't actually modify the Member map so it doesn't affect Guild#getMembers for the leave event.
+        TLongSet memberIds = getMembersView().keySet(); // copies keys
+        getJDA().getGuildCache().stream()
+                .map(GuildImpl.class::cast)
+                .forEach(g -> memberIds.removeAll(g.getMembersView().keySet()));
+        // Remember, everything left in memberIds is removed from the userMap
+        SnowflakeCacheViewImpl<User> userView = getJDA().getUsersView();
+        try (UnlockHook hook = userView.writeLock())
+        {
+            long selfId = getJDA().getSelfUser().getIdLong();
+            memberIds.forEach(memberId -> {
+                if (memberId == selfId)
+                    return true; // don't remove selfUser from cache
+                userView.remove(memberId);
+                getJDA().getEventCache().clear(EventCache.Type.USER, memberId);
+                return true;
+            });
+        }
     }
 
     @Nonnull
