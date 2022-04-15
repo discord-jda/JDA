@@ -344,9 +344,9 @@ public class OptionData implements SerializableData
 
     //TODO docs
     @Nonnull
-    public OptionData setDescription(@Nonnull String name, @Nonnull Locale... locales)
+    public OptionData setDescription(@Nonnull String description, @Nonnull Locale... locales)
     {
-        descriptionLocalizations.setTranslations(name, locales);
+        descriptionLocalizations.setTranslations(description, locales);
 
         return this;
     }

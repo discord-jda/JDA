@@ -247,10 +247,10 @@ public class CommandDataImpl implements SlashCommandData
 
     @Nonnull
     @Override
-    public CommandDataImpl setDescription(@Nonnull String name, @Nonnull Locale... locales)
+    public CommandDataImpl setDescription(@Nonnull String description, @Nonnull Locale... locales)
     {
         //TODO checks
-        descriptionLocalizations.setTranslations(name, locales);
+        descriptionLocalizations.setTranslations(description, locales);
         return this;
     }
 

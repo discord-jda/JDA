@@ -63,7 +63,7 @@ public interface SlashCommandData extends CommandData
 
     //TODO docs
     @Nonnull
-    SlashCommandData setDescription(@Nonnull String name, @Nonnull Locale... locales);
+    SlashCommandData setDescription(@Nonnull String description, @Nonnull Locale... locales);
 
     /**
      * The configured description

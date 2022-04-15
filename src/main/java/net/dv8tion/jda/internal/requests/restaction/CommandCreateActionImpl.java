@@ -145,10 +145,10 @@ public class CommandCreateActionImpl extends RestActionImpl<Command> implements 
 
     @Nonnull
     @Override
-    public CommandCreateAction setDescription(@Nonnull String name, @Nonnull Locale... locales)
+    public CommandCreateAction setDescription(@Nonnull String description, @Nonnull Locale... locales)
     {
         //TODO checks
-        data.setDescription(name, locales);
+        data.setDescription(description, locales);
         return this;
     }
 
