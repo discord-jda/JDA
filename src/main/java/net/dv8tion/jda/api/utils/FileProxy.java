@@ -119,19 +119,16 @@ public class FileProxy
     {
         // Return custom HTTP client if set
         if (customHttpClient != null)
-        {
             return customHttpClient;
-        }
 
         // Otherwise, see if a default one has been assigned
         //  If there is no client then create a default one
         if (defaultHttpClient == null)
         {
-            synchronized (this) {
+            synchronized (this)
+            {
                 if (defaultHttpClient == null)
-                {
                     defaultHttpClient = new OkHttpClient();
-                }
             }
         }
 
