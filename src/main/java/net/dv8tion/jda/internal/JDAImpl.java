@@ -862,9 +862,12 @@ public class JDAImpl implements JDA
 
     @Nonnull
     @Override
-    public RestAction<List<Command>> retrieveCommands()
+    public RestAction<List<Command>> retrieveCommands(boolean withLocalizations)
     {
-        Route.CompiledRoute route = Route.Interactions.GET_COMMANDS.compile(getSelfUser().getApplicationId());
+        Route.CompiledRoute route = Route.Interactions.GET_COMMANDS
+                .compile(getSelfUser().getApplicationId())
+                .withQueryParams("with_localizations", String.valueOf(withLocalizations));
+
         return new RestActionImpl<>(this, route,
             (response, request) ->
                 response.getArray()
