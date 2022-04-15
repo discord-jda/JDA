@@ -35,6 +35,7 @@ import okhttp3.RequestBody;
 import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 
@@ -91,6 +92,13 @@ public class CommandCreateActionImpl extends RestActionImpl<Command> implements 
     public String getName()
     {
         return data.getName();
+    }
+
+    @Nonnull
+    @Override
+    public Map<Locale, String> getNameLocalizations()
+    {
+        return data.getNameLocalizations();
     }
 
     @Override
@@ -157,6 +165,13 @@ public class CommandCreateActionImpl extends RestActionImpl<Command> implements 
     public String getDescription()
     {
         return data.getDescription();
+    }
+
+    @Nonnull
+    @Override
+    public Map<Locale, String> getDescriptionLocalizations()
+    {
+        return data.getDescriptionLocalizations();
     }
 
     @Nonnull

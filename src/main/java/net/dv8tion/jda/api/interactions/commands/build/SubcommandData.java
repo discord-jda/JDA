@@ -23,13 +23,11 @@ import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.internal.interactions.LocalizationMap;
+import net.dv8tion.jda.internal.interactions.command.CommandImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -40,8 +38,8 @@ public class SubcommandData implements SerializableData
 {
     protected final DataArray options = DataArray.empty();
     protected String name, description;
-    private final LocalizationMap nameLocalizations = new LocalizationMap();
-    private final LocalizationMap descriptionLocalizations = new LocalizationMap();
+    private LocalizationMap nameLocalizations = new LocalizationMap();
+    private LocalizationMap descriptionLocalizations = new LocalizationMap();
     private boolean allowRequired = true;
 
     /**
@@ -310,6 +308,12 @@ public class SubcommandData implements SerializableData
         return name;
     }
 
+    @Nonnull
+    public Map<Locale, String> getNameLocalizations()
+    {
+        return nameLocalizations.toMap();
+    }
+
     /**
      * The configured description
      *
@@ -319,6 +323,12 @@ public class SubcommandData implements SerializableData
     public String getDescription()
     {
         return description;
+    }
+
+    @Nonnull
+    public Map<Locale, String> getDescriptionLocalizations()
+    {
+        return descriptionLocalizations.toMap();
     }
 
     @Nonnull
@@ -359,6 +369,10 @@ public class SubcommandData implements SerializableData
                         .map(OptionData::fromData)
                         .forEach(sub::addOptions)
         );
+
+        sub.nameLocalizations = CommandImpl.parseLocalization(json, "name_localizations");
+        sub.descriptionLocalizations = CommandImpl.parseLocalization(json, "description_localizations");
+
         return sub;
     }
 

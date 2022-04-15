@@ -28,6 +28,7 @@ import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * Extension of {@link CommandData} which allows setting slash-command specific settings such as options and subcommands.
@@ -71,6 +72,9 @@ public interface SlashCommandData extends CommandData
      */
     @Nonnull
     String getDescription();
+
+    @Nonnull
+    Map<Locale, String> getDescriptionLocalizations();
 
     /**
      * The {@link SubcommandData Subcommands} in this command.

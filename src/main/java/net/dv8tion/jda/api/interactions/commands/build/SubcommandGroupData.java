@@ -22,13 +22,11 @@ import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.internal.interactions.LocalizationMap;
+import net.dv8tion.jda.internal.interactions.command.CommandImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -39,8 +37,8 @@ public class SubcommandGroupData implements SerializableData
 {
     private final DataArray options = DataArray.empty();
     private String name, description;
-    private final LocalizationMap nameLocalizations = new LocalizationMap();
-    private final LocalizationMap descriptionLocalizations = new LocalizationMap();
+    private LocalizationMap nameLocalizations = new LocalizationMap();
+    private LocalizationMap descriptionLocalizations = new LocalizationMap();
 
     /**
      * Create an group builder.
@@ -138,6 +136,12 @@ public class SubcommandGroupData implements SerializableData
         return name;
     }
 
+    @Nonnull
+    public Map<Locale, String> getNameLocalizations()
+    {
+        return nameLocalizations.toMap();
+    }
+
     /**
      * The description for this  subcommand group
      *
@@ -147,6 +151,12 @@ public class SubcommandGroupData implements SerializableData
     public String getDescription()
     {
         return description;
+    }
+
+    @Nonnull
+    public Map<Locale, String> getDescriptionLocalizations()
+    {
+        return descriptionLocalizations.toMap();
     }
 
     /**
@@ -246,6 +256,10 @@ public class SubcommandGroupData implements SerializableData
                         .map(SubcommandData::fromData)
                         .forEach(group::addSubcommands)
         );
+
+        group.nameLocalizations = CommandImpl.parseLocalization(json, "name_localizations");
+        group.descriptionLocalizations = CommandImpl.parseLocalization(json, "description_localizations");
+
         return group;
     }
 

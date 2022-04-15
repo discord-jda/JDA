@@ -175,7 +175,7 @@ public interface Command extends ISnowflake
 
     //TODO docs
     @Nonnull
-    LocalizationMap getNameLocalizations();
+    Map<Locale, String> getNameLocalizations();
 
     /**
      * The description of this command.
@@ -187,7 +187,7 @@ public interface Command extends ISnowflake
 
     //TODO docs
     @Nonnull
-    LocalizationMap getDescriptionLocalizations();
+    Map<Locale, String> getDescriptionLocalizations();
 
     /**
      * Whether this command is enabled for everyone by default.
@@ -409,9 +409,10 @@ public interface Command extends ISnowflake
             return name;
         }
 
-        public LocalizationMap getNameLocalizations()
+        @Nonnull
+        public Map<Locale, String> getNameLocalizations()
         {
-            return nameLocalizations;
+            return nameLocalizations.toMap();
         }
 
         public Choice setName(@Nonnull String name, @Nonnull Locale... locales) {
@@ -576,9 +577,9 @@ public interface Command extends ISnowflake
         }
 
         @Nonnull
-        public LocalizationMap getNameLocalizations()
+        public Map<Locale, String> getNameLocalizations()
         {
-            return nameLocalizations;
+            return nameLocalizations.toMap();
         }
 
         /**
@@ -593,9 +594,9 @@ public interface Command extends ISnowflake
         }
 
         @Nonnull
-        public LocalizationMap getDescriptionLocalizations()
+        public Map<Locale, String> getDescriptionLocalizations()
         {
-            return descriptionLocalizations;
+            return descriptionLocalizations.toMap();
         }
 
         /**
@@ -750,9 +751,9 @@ public interface Command extends ISnowflake
         }
 
         @Nonnull
-        public LocalizationMap getNameLocalizations()
+        public Map<Locale, String> getNameLocalizations()
         {
-            return nameLocalizations;
+            return nameLocalizations.toMap();
         }
 
         /**
@@ -767,9 +768,9 @@ public interface Command extends ISnowflake
         }
 
         @Nonnull
-        public LocalizationMap getDescriptionLocalizations()
+        public Map<Locale, String> getDescriptionLocalizations()
         {
-            return descriptionLocalizations;
+            return descriptionLocalizations.toMap();
         }
 
         /**
@@ -838,9 +839,9 @@ public interface Command extends ISnowflake
         }
 
         @Nonnull
-        public LocalizationMap getNameLocalizations()
+        public Map<Locale, String> getNameLocalizations()
         {
-            return nameLocalizations;
+            return nameLocalizations.toMap();
         }
 
         /**
@@ -855,9 +856,9 @@ public interface Command extends ISnowflake
         }
 
         @Nonnull
-        public LocalizationMap getDescriptionLocalizations()
+        public Map<Locale, String> getDescriptionLocalizations()
         {
-            return descriptionLocalizations;
+            return descriptionLocalizations.toMap();
         }
 
         /**

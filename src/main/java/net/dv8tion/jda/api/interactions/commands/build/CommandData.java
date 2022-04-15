@@ -78,6 +78,9 @@ public interface CommandData extends SerializableData
     @Nonnull
     String getName();
 
+    @Nonnull
+    Map<Locale, String> getNameLocalizations();
+
     /**
      * Whether this command is available to everyone by default.
      *

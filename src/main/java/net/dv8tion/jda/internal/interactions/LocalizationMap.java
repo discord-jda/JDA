@@ -46,12 +46,12 @@ public class LocalizationMap implements SerializableData
         return data.getString(languageTag);
     }
 
-    public Map<String, String> toMap()
+    public Map<Locale, String> toMap()
     {
-        final Map<String, String> map = new HashMap<>();
+        final Map<Locale, String> map = new HashMap<>();
 
         for (String key : data.keys())
-            map.put(key, data.getString(key));
+            map.put(Locale.forLanguageTag(key), data.getString(key));
 
         return map;
     }

@@ -164,9 +164,9 @@ public class CommandImpl implements Command
 
     @Override
     @Nonnull
-    public LocalizationMap getNameLocalizations()
+    public Map<Locale, String> getNameLocalizations()
     {
-        return nameLocalizations;
+        return nameLocalizations.toMap();
     }
 
     @Nonnull
@@ -178,9 +178,9 @@ public class CommandImpl implements Command
 
     @Override
     @Nonnull
-    public LocalizationMap getDescriptionLocalizations()
+    public Map<Locale, String> getDescriptionLocalizations()
     {
-        return descriptionLocalizations;
+        return descriptionLocalizations.toMap();
     }
 
     @Override

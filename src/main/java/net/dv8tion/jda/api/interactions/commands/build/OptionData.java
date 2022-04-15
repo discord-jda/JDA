@@ -192,6 +192,12 @@ public class OptionData implements SerializableData
         return name;
     }
 
+    @Nonnull
+    public Map<Locale, String> getNameLocalizations()
+    {
+        return nameLocalizations.toMap();
+    }
+
     /**
      * The description for this option
      *
@@ -201,6 +207,12 @@ public class OptionData implements SerializableData
     public String getDescription()
     {
         return description;
+    }
+
+    @Nonnull
+    public Map<Locale, String> getDescriptionLocalizations()
+    {
+        return descriptionLocalizations.toMap();
     }
 
     /**
