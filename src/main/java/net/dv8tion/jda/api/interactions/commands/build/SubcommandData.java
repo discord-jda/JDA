@@ -369,7 +369,6 @@ public class SubcommandData implements SerializableData
                         .map(OptionData::fromData)
                         .forEach(sub::addOptions)
         );
-
         sub.nameLocalizations = CommandImpl.parseLocalization(json, "name_localizations");
         sub.descriptionLocalizations = CommandImpl.parseLocalization(json, "description_localizations");
 

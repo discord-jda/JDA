@@ -38,8 +38,8 @@ public class CommandDataImpl implements SlashCommandData
 {
     protected final DataArray options = DataArray.empty();
     protected String name, description = "";
-    private final LocalizationMap nameLocalizations = new LocalizationMap();
-    private final LocalizationMap descriptionLocalizations = new LocalizationMap();
+    private LocalizationMap nameLocalizations = new LocalizationMap();
+    private LocalizationMap descriptionLocalizations = new LocalizationMap();
 
     private boolean allowSubcommands = true;
     private boolean allowGroups = true;
@@ -236,6 +236,11 @@ public class CommandDataImpl implements SlashCommandData
         return this;
     }
 
+    public void setNameLocalizations(@Nonnull LocalizationMap nameLocalizations)
+    {
+        this.nameLocalizations = nameLocalizations;
+    }
+
     @Nonnull
     @Override
     public CommandDataImpl setDescription(@Nonnull String description)
@@ -254,6 +259,11 @@ public class CommandDataImpl implements SlashCommandData
         //TODO checks
         descriptionLocalizations.setTranslations(description, locales);
         return this;
+    }
+
+    public void setDescriptionLocalizations(@Nonnull LocalizationMap descriptionLocalizations)
+    {
+        this.descriptionLocalizations = descriptionLocalizations;
     }
 
     @Nonnull

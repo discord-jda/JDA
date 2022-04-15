@@ -25,6 +25,7 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.DataType;
 import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.internal.interactions.LocalizationMap;
+import net.dv8tion.jda.internal.interactions.command.CommandImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
@@ -74,8 +75,8 @@ public class OptionData implements SerializableData
 
     private final OptionType type;
     private String name, description;
-    private final LocalizationMap nameLocalizations = new LocalizationMap();
-    private final LocalizationMap descriptionLocalizations = new LocalizationMap();
+    private LocalizationMap nameLocalizations = new LocalizationMap();
+    private LocalizationMap descriptionLocalizations = new LocalizationMap();
     private boolean isRequired, isAutoComplete;
     private final EnumSet<ChannelType> channelTypes = EnumSet.noneOf(ChannelType.class);
     private Number minValue;
@@ -868,16 +869,13 @@ public class OptionData implements SerializableData
                     .orElse(Collections.emptySet()));
         }
         json.optArray("choices").ifPresent(choices1 ->
-                choices1.stream(DataArray::getObject).forEach(o ->
-                {
-                    if (o.isType("value", DataType.FLOAT))
-                        option.addChoice(o.getString("name"), o.getDouble("value"));
-                    else if (o.isType("value", DataType.INT))
-                        option.addChoice(o.getString("name"), o.getLong("value"));
-                    else
-                        option.addChoice(o.getString("name"), o.get("value").toString());
-                })
+                option.addChoices(choices1.stream(DataArray::getObject)
+                        .map(Command.Choice::new)
+                        .collect(Collectors.toList())
+                )
         );
+        option.nameLocalizations = CommandImpl.parseLocalization(json, "name_localizations");
+        option.descriptionLocalizations = CommandImpl.parseLocalization(json, "description_localizations");
         return option;
     }
 

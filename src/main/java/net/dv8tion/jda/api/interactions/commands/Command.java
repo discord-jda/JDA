@@ -393,7 +393,6 @@ public interface Command extends ISnowflake
             {
                 setStringValue(json.getString("value"));
             }
-
             this.nameLocalizations = CommandImpl.parseLocalization(json, "name_localizations");
         }
 

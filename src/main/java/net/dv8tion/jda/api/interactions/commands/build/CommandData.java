@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.interactions.commands.privileges.CommandPrivilege;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
+import net.dv8tion.jda.internal.interactions.command.CommandImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
@@ -147,7 +148,12 @@ public interface CommandData extends SerializableData
         String name = object.getString("name");
         Command.Type commandType = Command.Type.fromId(object.getInt("type", 1));
         if (commandType != Command.Type.SLASH)
-            return new CommandDataImpl(commandType, name);
+        {
+            final CommandDataImpl data = new CommandDataImpl(commandType, name);
+            data.setNameLocalizations(CommandImpl.parseLocalization(object, "name_localizations"));
+
+            return data;
+        }
 
         return SlashCommandData.fromData(object);
     }

@@ -256,7 +256,6 @@ public class SubcommandGroupData implements SerializableData
                         .map(SubcommandData::fromData)
                         .forEach(group::addSubcommands)
         );
-
         group.nameLocalizations = CommandImpl.parseLocalization(json, "name_localizations");
         group.descriptionLocalizations = CommandImpl.parseLocalization(json, "description_localizations");
 
