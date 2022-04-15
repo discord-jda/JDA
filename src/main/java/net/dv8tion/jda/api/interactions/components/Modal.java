@@ -38,7 +38,7 @@ import java.util.*;
  * {
  *     if (event.getName().equals("modmail"))
  *     {
- *         TextInput email = TextInput.create("subject", "Subject", TextInputStyle.SHORT)
+ *         TextInput subject = TextInput.create("subject", "Subject", TextInputStyle.SHORT)
  *                 .setPlaceholder("Subject of this ticket")
  *                 .setRequired(true)
  *                 .setMinLength(10)
@@ -53,7 +53,7 @@ import java.util.*;
  *                 .build();
  *
  *         Modal modal = Modal.create("modmail", "Modmail")
- *                 .addActionRows(ActionRow.of(email), ActionRow.of(body))
+ *                 .addActionRows(ActionRow.of(subject), ActionRow.of(body))
  *                 .build();
  *
  *         event.replyModal(modal).queue();
