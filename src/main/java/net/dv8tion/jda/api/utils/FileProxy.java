@@ -197,7 +197,8 @@ public class FileProxy
         return downloadToPath(Paths.get(fileName));
     }
 
-    protected CompletableFuture<Path> downloadToPath(String url, Path path) {
+    protected CompletableFuture<Path> downloadToPath(String url, Path path)
+    {
         //Check if the parent path, the folder, exists
         Checks.check(Files.notExists(path.getParent()), "Parent folder of the file '" + path.toAbsolutePath() + "' does not exist.");
 
