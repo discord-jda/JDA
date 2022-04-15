@@ -52,7 +52,8 @@ public class FileProxy
     /**
      * Constructs a new {@link FileProxy} for the provided URL
      *
-     * @param url The URL to download from
+     * @param url
+     *        The URL to download from
      */
     public FileProxy(@Nonnull String url)
     {
