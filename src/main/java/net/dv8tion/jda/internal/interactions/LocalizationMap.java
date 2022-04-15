@@ -19,7 +19,9 @@ public class LocalizationMap implements SerializableData
         return object;
     }
 
-    public void tryAddTranslation(@Nonnull ResourceBundle resourceBundle, Locale locale, @Nonnull String key) {
+    public void tryAddTranslation(@Nonnull ResourceBundle resourceBundle, Locale locale, @Nonnull String... keyComponents) {
+        final String key = String.join(".", keyComponents);
+
         if (resourceBundle.containsKey(key))
         {
             object.put(locale.toLanguageTag(), resourceBundle.getString(key));
