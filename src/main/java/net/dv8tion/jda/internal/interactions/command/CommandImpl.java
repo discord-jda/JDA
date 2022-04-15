@@ -32,7 +32,6 @@ import net.dv8tion.jda.internal.requests.restaction.CommandEditActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -76,7 +75,7 @@ public class CommandImpl implements Command
         this.descriptionLocalizations = parseLocalization(json, "description_localizations");
     }
 
-    @Nullable
+    @Nonnull
     public static Map<String, String> parseLocalization(@Nonnull DataObject json, @Nonnull String localizationProperty) {
         return json.optObject(localizationProperty)
                 .map(dict -> {
@@ -89,7 +88,7 @@ public class CommandImpl implements Command
 
                     return Collections.unmodifiableMap(map);
                 })
-                .orElse(null);
+                .orElse(Collections.emptyMap());
     }
 
     public static <T> List<T> parseOptions(DataObject json, Predicate<DataObject> test, Function<DataObject, T> transform)
