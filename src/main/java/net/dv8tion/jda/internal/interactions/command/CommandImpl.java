@@ -61,7 +61,9 @@ public class CommandImpl implements Command
         this.api = api;
         this.guild = guild;
         this.name = json.getString("name");
+        this.nameLocalizations = parseLocalization(json, "name_localizations");
         this.description = json.getString("description", "");
+        this.descriptionLocalizations = parseLocalization(json, "description_localizations");
         this.type = Command.Type.fromId(json.getInt("type", 1));
         this.id = json.getUnsignedLong("id");
         this.defaultEnabled = json.getBoolean("default_permission");
@@ -71,9 +73,6 @@ public class CommandImpl implements Command
         this.groups = parseOptions(json, GROUP_TEST, Command.SubcommandGroup::new);
         this.subcommands = parseOptions(json, SUBCOMMAND_TEST, Command.Subcommand::new);
         this.version = json.getUnsignedLong("version", id);
-
-        this.nameLocalizations = parseLocalization(json, "name_localizations");
-        this.descriptionLocalizations = parseLocalization(json, "description_localizations");
     }
 
     @Nonnull
