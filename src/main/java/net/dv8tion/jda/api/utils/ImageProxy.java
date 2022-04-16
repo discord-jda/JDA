@@ -44,8 +44,17 @@ public class ImageProxy extends FileProxy
         super(url);
     }
 
+    /**
+     * Returns the image URL for the specified size.
+     * <br>The size is a best-effort resize from Discord.
+     *
+     * @param  size
+     *         The size of the image
+     *
+     * @return URL of the image with the specified size
+     */
     @Nonnull
-    private String getUrl(int size)
+    public String getUrl(int size)
     {
         Checks.positive(size, "Image size");
 

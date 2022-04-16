@@ -48,8 +48,19 @@ public class AttachmentProxy extends FileProxy
         super(url);
     }
 
+    /**
+     * Returns the attachment URL for the specified width & height.
+     * <br>The width and height is a best-effort resize from Discord.
+     *
+     * @param  width
+     *         The width of the image
+     * @param  height
+     *         The height of the image
+     *
+     * @return URL of the attachment with the specified width & height
+     */
     @Nonnull
-    private String getUrl(int width, int height)
+    public String getUrl(int width, int height)
     {
         Checks.positive(width, "Image width");
         Checks.positive(height, "Image height");
