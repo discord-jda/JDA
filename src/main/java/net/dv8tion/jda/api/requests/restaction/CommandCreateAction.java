@@ -17,6 +17,7 @@
 package net.dv8tion.jda.api.requests.restaction;
 
 import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.commands.LocalizationMapper;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
@@ -62,6 +63,10 @@ public interface CommandCreateAction extends RestAction<Command>, SlashCommandDa
     @Override
     @CheckReturnValue
     CommandCreateAction setDefaultEnabled(boolean enabled);
+
+    @Nonnull
+    @Override
+    CommandCreateAction setLocalizationMapper(@Nonnull LocalizationMapper localizationMapper);
 
     @Nonnull
     @Override

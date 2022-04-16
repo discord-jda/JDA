@@ -19,6 +19,7 @@ package net.dv8tion.jda.api.interactions.commands.build;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.LocalizationMap;
 import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.commands.LocalizationMapper;
 import net.dv8tion.jda.api.interactions.commands.privileges.CommandPrivilege;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.SerializableData;
@@ -39,6 +40,9 @@ import java.util.Map;
  */
 public interface CommandData extends SerializableData
 {
+    @Nonnull
+    CommandData setLocalizationMapper(@Nonnull LocalizationMapper localizationMapper);
+
     /**
      * Configure the command name.
      *

@@ -18,6 +18,7 @@ package net.dv8tion.jda.internal.requests.restaction;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.LocalizationMap;
 import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.commands.LocalizationMapper;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
@@ -84,6 +85,14 @@ public class CommandCreateActionImpl extends RestActionImpl<Command> implements 
     public CommandCreateAction setDefaultEnabled(boolean enabled)
     {
         data.setDefaultEnabled(enabled);
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    public CommandCreateAction setLocalizationMapper(@Nonnull LocalizationMapper localizationMapper)
+    {
+        data.setLocalizationMapper(localizationMapper);
         return this;
     }
 

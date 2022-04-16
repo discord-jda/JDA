@@ -18,6 +18,7 @@ package net.dv8tion.jda.internal.interactions;
 
 import net.dv8tion.jda.api.interactions.LocalizationMap;
 import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.commands.LocalizationMapper;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
@@ -38,6 +39,7 @@ public class CommandDataImpl implements SlashCommandData
 {
     protected final DataArray options = DataArray.empty();
     protected String name, description = "";
+    private LocalizationMapper localizationMapper;
     private LocalizationMap nameLocalizations = new LocalizationMap();
     private LocalizationMap descriptionLocalizations = new LocalizationMap();
 
@@ -74,6 +76,8 @@ public class CommandDataImpl implements SlashCommandData
     @Override
     public DataObject toData()
     {
+        if (localizationMapper != null) localizationMapper.localizeCommand(this, options);
+
         DataObject json = DataObject.empty()
                 .put("default_permission", defaultPermissions)
                 .put("type", type.getId())
@@ -210,6 +214,13 @@ public class CommandDataImpl implements SlashCommandData
         allowOption = false;
         for (SubcommandGroupData data : groups)
             options.add(data);
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    public CommandDataImpl setLocalizationMapper(@Nonnull LocalizationMapper localizationMapper) {
+        this.localizationMapper = localizationMapper;
         return this;
     }
 

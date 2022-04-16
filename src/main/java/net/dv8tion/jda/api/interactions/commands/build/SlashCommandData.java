@@ -19,6 +19,7 @@ package net.dv8tion.jda.api.interactions.commands.build;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.interactions.LocalizationMap;
 import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.commands.LocalizationMapper;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
@@ -36,6 +37,10 @@ import java.util.Locale;
  */
 public interface SlashCommandData extends CommandData
 {
+    @Nonnull
+    @Override
+    SlashCommandData setLocalizationMapper(@Nonnull LocalizationMapper localizationMapper);
+
     @Nonnull
     @Override
     SlashCommandData setName(@Nonnull String name);
