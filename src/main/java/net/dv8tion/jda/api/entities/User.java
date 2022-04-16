@@ -243,7 +243,7 @@ public interface User extends IMentionable
 
     /**
      * The "tag" for this user
-     * <p>This is the equivalent of calling {@link java.lang.String#format(String, Object...) String.format}("%#s", user)
+     * <p>This is the equivalent of calling {@link java.lang.String#format(String, Object...) String.format("%s#%s", user.getName(), user.getDiscriminator())}
      *
      * @throws UnsupportedOperationException
      *         If this User was created with {@link #fromId(long)}
