@@ -37,7 +37,8 @@ public class AttachmentProxy extends FileProxy
     /**
      * Constructs a new {@link AttachmentProxy} for the provided URL.
      *
-     * @param url The URL to download the attachment from
+     * @param  url
+     *         The URL to download the attachment from
      *
      * @throws IllegalArgumentException
      *         If the provided URL is null
@@ -73,7 +74,7 @@ public class AttachmentProxy extends FileProxy
      *             <li>The requested height is negative or 0</li>
      *         </ul>
      *
-     * @return a {@link CompletableFuture} which holds an {@link InputStream}, the {@link InputStream} must be closed manually.
+     * @return {@link CompletableFuture} which holds an {@link InputStream}, the {@link InputStream} must be closed manually.
      */
     @Nonnull
     public CompletableFuture<InputStream> download(int width, int height)
@@ -102,7 +103,7 @@ public class AttachmentProxy extends FileProxy
      *             <li>The URL's scheme is neither http or https</li>
      *         </ul>
      *
-     * @return a {@link CompletableFuture} which holds a {@link Path} which corresponds to the location the file has been downloaded.
+     * @return {@link CompletableFuture} which holds a {@link Path} which corresponds to the location the file has been downloaded.
      *
      */
     @Nonnull
@@ -135,7 +136,7 @@ public class AttachmentProxy extends FileProxy
      *             <li>The requested height is negative or 0</li>
      *         </ul>
      *
-     * @return a {@link CompletableFuture} which holds a {@link File}, it is the same as the file passed in the parameters.
+     * @return {@link CompletableFuture} which holds a {@link File}, it is the same as the file passed in the parameters.
      */
     @Nonnull
     public CompletableFuture<File> downloadToFile(@Nonnull File file, int width, int height)
@@ -162,7 +163,7 @@ public class AttachmentProxy extends FileProxy
      * @param  height
      *         The height of this image, must be positive
      *
-     * @return a {@link CompletableFuture} which holds a {@link Path}, it is the same as the path passed in the parameters.
+     * @return {@link CompletableFuture} which holds a {@link Path}, it is the same as the path passed in the parameters.
      *
      * @throws IllegalArgumentException
      *         If any of the follow checks are true
@@ -191,7 +192,7 @@ public class AttachmentProxy extends FileProxy
      * @param  height
      *         The height of this image, must be positive
      *
-     * @return a {@link CompletableFuture} which holds an {@link Icon}.
+     * @return {@link CompletableFuture} which holds an {@link Icon}.
      *
      * @throws IllegalArgumentException
      *         If any of the follow checks are true
@@ -201,7 +202,8 @@ public class AttachmentProxy extends FileProxy
      *         </ul>
      */
     @Nonnull
-    public CompletableFuture<Icon> downloadAsIcon(int width, int height) {
+    public CompletableFuture<Icon> downloadAsIcon(int width, int height)
+    {
         final CompletableFuture<InputStream> downloadFuture = download(getUrl(width, height));
         return FutureUtil.thenApplyCancellable(downloadFuture, stream ->
         {

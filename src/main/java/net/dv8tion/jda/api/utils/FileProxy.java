@@ -61,7 +61,6 @@ public class FileProxy
     public FileProxy(@Nonnull String url)
     {
         Checks.notNull(url, "URL");
-
         this.url = url;
     }
 
@@ -78,7 +77,6 @@ public class FileProxy
     public static void setHttpClient(@Nonnull OkHttpClient httpClient)
     {
         Checks.notNull(httpClient, "Default OkHttpClient");
-
         FileProxy.defaultHttpClient = httpClient;
     }
 
@@ -109,9 +107,7 @@ public class FileProxy
     public FileProxy withClient(@Nonnull OkHttpClient customHttpClient)
     {
         Checks.notNull(customHttpClient, "Custom HTTP client");
-
         this.customHttpClient = customHttpClient;
-
         return this;
     }
 
@@ -211,7 +207,7 @@ public class FileProxy
             try
             {
                 //Temporary file follows this pattern: filename + random_number + ".part"
-                // The random number is generated until a filename becomes valid, so, the file doesn't exist in the tmp directory
+                // The random number is generated until a filename becomes valid, until no file with the same name exists in the tmp directory
                 final Path tmpPath = Files.createTempFile(path.getFileName().toString(), ".part");
                 //A user might use a file's presence as an indicator of something being successfully downloaded,
                 //This might prevent a file from being partial, say, if the user shuts down its bot while it's downloading something
@@ -238,7 +234,7 @@ public class FileProxy
     /**
      * Retrieves the {@link InputStream} of this file
      *
-     * @return a {@link CompletableFuture} which holds an {@link InputStream}, the {@link InputStream} must be closed manually
+     * @return {@link CompletableFuture} which holds an {@link InputStream}, the {@link InputStream} must be closed manually
      */
     @Nonnull
     public CompletableFuture<InputStream> download()
@@ -252,7 +248,7 @@ public class FileProxy
      * <p><b>Implementation note:</b>
      *       The file is first downloaded into a temporary file, the file is then moved to its real destination when the download is complete.
      *
-     * @return a {@link CompletableFuture} which holds a {@link Path} which corresponds to the location the file has been downloaded.
+     * @return {@link CompletableFuture} which holds a {@link Path} which corresponds to the location the file has been downloaded.
      */
     @Nonnull
     public CompletableFuture<Path> downloadToPath()
@@ -276,7 +272,7 @@ public class FileProxy
      *             <li>The parent folder of the target file does not exist</li>
      *         </ul>
      *
-     * @return a {@link CompletableFuture} which holds a {@link File}, it is the same as the file passed in the parameters.
+     * @return {@link CompletableFuture} which holds a {@link File}, it is the same as the file passed in the parameters.
      */
     @Nonnull
     public CompletableFuture<File> downloadToFile(@Nonnull File file)
@@ -297,7 +293,7 @@ public class FileProxy
      * @param  path
      *         The file in which to download the image
      *
-     * @return a {@link CompletableFuture} which holds a {@link Path}, it is the same as the path passed in the parameters.
+     * @return {@link CompletableFuture} which holds a {@link Path}, it is the same as the path passed in the parameters.
      *
      * @throws IllegalArgumentException
      *         If any of the follow checks are true

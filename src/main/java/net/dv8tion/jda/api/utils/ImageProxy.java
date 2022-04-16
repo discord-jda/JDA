@@ -33,7 +33,8 @@ public class ImageProxy extends FileProxy
     /**
      * Constructs a new {@link ImageProxy} for the provided URL.
      *
-     * @param url The URL to download the image from
+     * @param  url
+     *         The URL to download the image from
      *
      * @throws IllegalArgumentException
      *         If the provided URL is null
@@ -60,7 +61,7 @@ public class ImageProxy extends FileProxy
      * @param  size
      *         The size of this image
      *
-     * @return a {@link CompletableFuture} which holds an {@link InputStream}, the {@link InputStream} must be closed manually.
+     * @return {@link CompletableFuture} which holds an {@link InputStream}, the {@link InputStream} must be closed manually.
      */
     @Nonnull
     public CompletableFuture<InputStream> download(int size)

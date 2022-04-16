@@ -2851,9 +2851,10 @@ public interface Message extends ISnowflake, Formattable
          *
          * @return {@link java.util.concurrent.CompletableFuture} - Type: {@link java.io.InputStream}
          */
-        @Deprecated
-        @ReplaceWith("getProxy#download")
         @Nonnull
+        @Deprecated
+        @ForRemoval
+        @ReplaceWith("getProxy().download()")
         public CompletableFuture<InputStream> retrieveInputStream() // it is expected that the response is closed by the callback!
         {
             CompletableFuture<InputStream> future = new CompletableFuture<>();
@@ -2902,6 +2903,7 @@ public interface Message extends ISnowflake, Formattable
          */
         @Nonnull
         @Deprecated
+        @ForRemoval
         @ReplaceWith("getProxy().downloadToFile()")
         public CompletableFuture<File> downloadToFile() // using relative path
         {
@@ -2939,7 +2941,8 @@ public interface Message extends ISnowflake, Formattable
          */
         @Nonnull
         @Deprecated
-        @ReplaceWith("getProxy().downloadToFile(File)")
+        @ForRemoval
+        @ReplaceWith("getProxy().downloadToFile(new File(String))")
         public CompletableFuture<File> downloadToFile(String path)
         {
             Checks.notNull(path, "Path");
@@ -2977,6 +2980,7 @@ public interface Message extends ISnowflake, Formattable
          */
         @SuppressWarnings("ResultOfMethodCallIgnored")
         @Nonnull
+        @ForRemoval
         @ReplaceWith("getProxy().downloadToFile(File)")
         public CompletableFuture<File> downloadToFile(File file)
         {
