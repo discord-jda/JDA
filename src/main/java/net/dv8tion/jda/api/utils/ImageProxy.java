@@ -87,7 +87,7 @@ public class ImageProxy extends FileProxy
      *             <li>The URL's scheme is neither http or https</li>
      *         </ul>
      *
-     * @return a {@link CompletableFuture} which holds a {@link Path} which corresponds to the location the file has been downloaded.
+     * @return {@link CompletableFuture} which holds a {@link Path} which corresponds to the location the file has been downloaded.
      */
     @Nonnull
     public CompletableFuture<Path> downloadToPath(int size)
