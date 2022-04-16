@@ -115,7 +115,7 @@ public class ImageProxy extends FileProxy
      *             <li>The requested size is negative or 0</li>
      *         </ul>
      *
-     * @return a {@link CompletableFuture} which holds a {@link File}, it is the same as the file passed in the parameters.
+     * @return {@link CompletableFuture} which holds a {@link File}, it is the same as the file passed in the parameters.
      */
     @Nonnull
     public CompletableFuture<File> downloadToFile(@Nonnull File file, int size)
