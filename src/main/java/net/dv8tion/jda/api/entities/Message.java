@@ -2851,6 +2851,8 @@ public interface Message extends ISnowflake, Formattable
          * }</pre>
          *
          * @return {@link java.util.concurrent.CompletableFuture} - Type: {@link java.io.InputStream}
+         *
+         * @deprecated Replaced by {@link #getProxy}, see {@link AttachmentProxy#download()}
          */
         @Nonnull
         @Deprecated
