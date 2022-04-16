@@ -140,17 +140,13 @@ public class LocalizationMapper
         for (Bundle bundle : bundles)
         {
             final TranslationContext ctx = new TranslationContext(bundle);
-
             ctx.withKey(commandData.getName(), () ->
             {
                 ctx.trySetTranslation(commandData.getNameLocalizations(), "name");
-
                 if (commandData instanceof SlashCommandData)
                 {
                     final SlashCommandData slashCommandData = (SlashCommandData) commandData;
-
                     ctx.trySetTranslation(slashCommandData.getDescriptionLocalizations(), "description");
-
                     localizeOptionArray(optionArray, ctx);
                 }
             });
