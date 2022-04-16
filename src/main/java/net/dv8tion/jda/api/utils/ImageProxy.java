@@ -46,7 +46,7 @@ public class ImageProxy extends FileProxy
 
     /**
      * Returns the image URL for the specified size.
-     * <br>The size is a best-effort resize from Discord.
+     * <br>The size is a best-effort resize from Discord, with recommended size values as powers of 2 such as 1024 or 512.
      *
      * @param  size
      *         The size of the image
