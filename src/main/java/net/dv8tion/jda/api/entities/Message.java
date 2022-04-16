@@ -3048,10 +3048,10 @@ public interface Message extends ISnowflake, Formattable
          *
          * @return {@link java.util.concurrent.CompletableFuture} - Type: {@link net.dv8tion.jda.api.entities.Icon}
          *
-         * @deprecated Replaced by {@link #getProxy}, see {@link AttachmentProxy#downloadAsIcon(int, int)}
+         * @deprecated Replaced by {@link #getProxy}, see {@link AttachmentProxy#downloadAsIcon()}
          */
         @Nonnull
-        @ReplaceWith("getProxy().downloadAsIcon(int, int)")
+        @ReplaceWith("getProxy().downloadAsIcon()")
         public CompletableFuture<Icon> retrieveAsIcon()
         {
             if (!isImage())

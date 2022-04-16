@@ -192,6 +192,34 @@ public class AttachmentProxy extends FileProxy
         return downloadToPath(getUrl(width, height), path);
     }
 
+    @Nonnull
+    private CompletableFuture<Icon> downloadAsIcon(String url)
+    {
+        final CompletableFuture<InputStream> downloadFuture = download(url);
+        return FutureUtil.thenApplyCancellable(downloadFuture, stream ->
+        {
+            try (final InputStream ignored = stream)
+            {
+                return Icon.from(stream);
+            }
+            catch (IOException e)
+            {
+                throw new UncheckedIOException(e);
+            }
+        });
+    }
+
+    /**
+     * Downloads the data of this attachment, and constructs an {@link Icon} from the data.
+     *
+     * @return {@link CompletableFuture} which holds an {@link Icon}.
+     */
+    @Nonnull
+    public CompletableFuture<Icon> downloadAsIcon()
+    {
+        return downloadAsIcon(getUrl());
+    }
+
     /**
      * Downloads the data of this attachment, at the specified size, and constructs an {@link Icon} from the data.
      * <br>The attachment, if an image, may be resized at any size, however if the size does not fit the ratio of the image, then it will be cropped as to fit the target size.
@@ -214,17 +242,6 @@ public class AttachmentProxy extends FileProxy
     @Nonnull
     public CompletableFuture<Icon> downloadAsIcon(int width, int height)
     {
-        final CompletableFuture<InputStream> downloadFuture = download(getUrl(width, height));
-        return FutureUtil.thenApplyCancellable(downloadFuture, stream ->
-        {
-            try (final InputStream ignored = stream)
-            {
-                return Icon.from(stream);
-            }
-            catch (IOException e)
-            {
-                throw new UncheckedIOException(e);
-            }
-        });
+        return downloadAsIcon(getUrl(width, height));
     }
 }
