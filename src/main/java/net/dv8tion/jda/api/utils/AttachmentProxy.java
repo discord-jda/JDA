@@ -18,7 +18,6 @@ package net.dv8tion.jda.api.utils;
 import net.dv8tion.jda.api.entities.Icon;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.FutureUtil;
-import net.dv8tion.jda.internal.utils.IOUtil;
 
 import javax.annotation.Nonnull;
 import java.io.File;
@@ -218,17 +217,13 @@ public class AttachmentProxy extends FileProxy
         final CompletableFuture<InputStream> downloadFuture = download(getUrl(width, height));
         return FutureUtil.thenApplyCancellable(downloadFuture, stream ->
         {
-            try
+            try (final InputStream ignored = stream)
             {
                 return Icon.from(stream);
             }
             catch (IOException e)
             {
                 throw new UncheckedIOException(e);
-            }
-            finally
-            {
-                IOUtil.silentClose(stream);
             }
         });
     }
