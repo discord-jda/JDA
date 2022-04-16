@@ -140,8 +140,6 @@ public class ImageProxy extends FileProxy
      * @param  path
      *         The file in which to download the image
      *
-     * @return {@link CompletableFuture} which holds a {@link Path}, it is the same as the path passed in the parameters.
-     *
      * @throws IllegalArgumentException
      *         If any of the follow checks are true
      *         <ul>
@@ -149,6 +147,8 @@ public class ImageProxy extends FileProxy
      *             <li>The parent folder of the target path does not exist</li>
      *             <li>The requested size is negative or 0</li>
      *         </ul>
+     *
+     * @return {@link CompletableFuture} which holds a {@link Path}, it is the same as the path passed in the parameters.
      */
     @Nonnull
     public CompletableFuture<Path> downloadToPath(@Nonnull Path path, int size)

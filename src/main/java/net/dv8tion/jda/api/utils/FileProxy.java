@@ -293,14 +293,14 @@ public class FileProxy
      * @param  path
      *         The file in which to download the image
      *
-     * @return {@link CompletableFuture} which holds a {@link Path}, it is the same as the path passed in the parameters.
-     *
      * @throws IllegalArgumentException
      *         If any of the follow checks are true
      *         <ul>
      *             <li>The target path is null</li>
      *             <li>The parent folder of the target path does not exist</li>
      *         </ul>
+     *
+     * @return {@link CompletableFuture} which holds a {@link Path}, it is the same as the path passed in the parameters.
      */
     @Nonnull
     public CompletableFuture<Path> downloadToPath(@Nonnull Path path)

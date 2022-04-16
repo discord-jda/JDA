@@ -163,8 +163,6 @@ public class AttachmentProxy extends FileProxy
      * @param  height
      *         The height of this image, must be positive
      *
-     * @return {@link CompletableFuture} which holds a {@link Path}, it is the same as the path passed in the parameters.
-     *
      * @throws IllegalArgumentException
      *         If any of the follow checks are true
      *         <ul>
@@ -173,6 +171,8 @@ public class AttachmentProxy extends FileProxy
      *             <li>The requested width is negative or 0</li>
      *             <li>The requested height is negative or 0</li>
      *         </ul>
+     *
+     * @return {@link CompletableFuture} which holds a {@link Path}, it is the same as the path passed in the parameters.
      */
     @Nonnull
     public CompletableFuture<Path> downloadToPath(@Nonnull Path path, int width, int height)
@@ -192,14 +192,14 @@ public class AttachmentProxy extends FileProxy
      * @param  height
      *         The height of this image, must be positive
      *
-     * @return {@link CompletableFuture} which holds an {@link Icon}.
-     *
      * @throws IllegalArgumentException
      *         If any of the follow checks are true
      *         <ul>
      *             <li>The requested width is negative or 0</li>
      *             <li>The requested height is negative or 0</li>
      *         </ul>
+     *
+     * @return {@link CompletableFuture} which holds an {@link Icon}.
      */
     @Nonnull
     public CompletableFuture<Icon> downloadAsIcon(int width, int height)
