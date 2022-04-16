@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.internal.interactions;
 
+import net.dv8tion.jda.api.interactions.LocalizationMap;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
@@ -30,7 +31,6 @@ import javax.annotation.Nonnull;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -275,9 +275,9 @@ public class CommandDataImpl implements SlashCommandData
 
     @Nonnull
     @Override
-    public Map<Locale, String> getNameLocalizations()
+    public LocalizationMap getNameLocalizations()
     {
-        return nameLocalizations.toMap();
+        return nameLocalizations;
     }
 
     @Nonnull
@@ -289,9 +289,9 @@ public class CommandDataImpl implements SlashCommandData
 
     @Nonnull
     @Override
-    public Map<Locale, String> getDescriptionLocalizations()
+    public LocalizationMap getDescriptionLocalizations()
     {
-        return descriptionLocalizations.toMap();
+        return descriptionLocalizations;
     }
 
     @Nonnull

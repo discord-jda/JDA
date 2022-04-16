@@ -18,13 +18,13 @@ package net.dv8tion.jda.api.interactions.commands.build;
 
 import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
+import net.dv8tion.jda.api.interactions.LocalizationMap;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.DataType;
 import net.dv8tion.jda.api.utils.data.SerializableData;
-import net.dv8tion.jda.internal.interactions.LocalizationMap;
 import net.dv8tion.jda.internal.interactions.command.CommandImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
@@ -194,9 +194,9 @@ public class OptionData implements SerializableData
     }
 
     @Nonnull
-    public Map<Locale, String> getNameLocalizations()
+    public LocalizationMap getNameLocalizations()
     {
-        return nameLocalizations.toMap();
+        return nameLocalizations;
     }
 
     /**
@@ -211,9 +211,9 @@ public class OptionData implements SerializableData
     }
 
     @Nonnull
-    public Map<Locale, String> getDescriptionLocalizations()
+    public LocalizationMap getDescriptionLocalizations()
     {
-        return descriptionLocalizations.toMap();
+        return descriptionLocalizations;
     }
 
     /**

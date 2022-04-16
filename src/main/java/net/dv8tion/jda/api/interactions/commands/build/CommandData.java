@@ -17,6 +17,7 @@
 package net.dv8tion.jda.api.interactions.commands.build;
 
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.interactions.LocalizationMap;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.privileges.CommandPrivilege;
 import net.dv8tion.jda.api.utils.data.DataObject;
@@ -80,7 +81,7 @@ public interface CommandData extends SerializableData
     String getName();
 
     @Nonnull
-    Map<Locale, String> getNameLocalizations();
+    LocalizationMap getNameLocalizations();
 
     /**
      * Whether this command is available to everyone by default.

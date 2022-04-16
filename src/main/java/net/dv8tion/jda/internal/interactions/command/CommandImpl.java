@@ -18,6 +18,7 @@ package net.dv8tion.jda.internal.interactions.command;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.interactions.LocalizationMap;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.privileges.CommandPrivilege;
@@ -26,7 +27,6 @@ import net.dv8tion.jda.api.requests.restaction.CommandEditAction;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
-import net.dv8tion.jda.internal.interactions.LocalizationMap;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.CommandEditActionImpl;
@@ -164,9 +164,9 @@ public class CommandImpl implements Command
 
     @Override
     @Nonnull
-    public Map<Locale, String> getNameLocalizations()
+    public LocalizationMap getNameLocalizations()
     {
-        return nameLocalizations.toMap();
+        return nameLocalizations;
     }
 
     @Nonnull
@@ -178,9 +178,9 @@ public class CommandImpl implements Command
 
     @Override
     @Nonnull
-    public Map<Locale, String> getDescriptionLocalizations()
+    public LocalizationMap getDescriptionLocalizations()
     {
-        return descriptionLocalizations.toMap();
+        return descriptionLocalizations;
     }
 
     @Override

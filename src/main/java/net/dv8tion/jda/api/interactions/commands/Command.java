@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.ISnowflake;
+import net.dv8tion.jda.api.interactions.LocalizationMap;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.privileges.CommandPrivilege;
 import net.dv8tion.jda.api.requests.RestAction;
@@ -28,7 +29,6 @@ import net.dv8tion.jda.api.utils.TimeUtil;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.DataType;
-import net.dv8tion.jda.internal.interactions.LocalizationMap;
 import net.dv8tion.jda.internal.interactions.command.CommandImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
@@ -175,7 +175,7 @@ public interface Command extends ISnowflake
 
     //TODO docs
     @Nonnull
-    Map<Locale, String> getNameLocalizations();
+    LocalizationMap getNameLocalizations();
 
     /**
      * The description of this command.
@@ -187,7 +187,7 @@ public interface Command extends ISnowflake
 
     //TODO docs
     @Nonnull
-    Map<Locale, String> getDescriptionLocalizations();
+    LocalizationMap getDescriptionLocalizations();
 
     /**
      * Whether this command is enabled for everyone by default.
@@ -409,9 +409,9 @@ public interface Command extends ISnowflake
         }
 
         @Nonnull
-        public Map<Locale, String> getNameLocalizations()
+        public LocalizationMap getNameLocalizations()
         {
-            return nameLocalizations.toMap();
+            return nameLocalizations;
         }
 
         public Choice setName(@Nonnull String name, @Nonnull Locale... locales) {
@@ -576,9 +576,9 @@ public interface Command extends ISnowflake
         }
 
         @Nonnull
-        public Map<Locale, String> getNameLocalizations()
+        public LocalizationMap getNameLocalizations()
         {
-            return nameLocalizations.toMap();
+            return nameLocalizations;
         }
 
         /**
@@ -593,9 +593,9 @@ public interface Command extends ISnowflake
         }
 
         @Nonnull
-        public Map<Locale, String> getDescriptionLocalizations()
+        public LocalizationMap getDescriptionLocalizations()
         {
-            return descriptionLocalizations.toMap();
+            return descriptionLocalizations;
         }
 
         /**
@@ -750,9 +750,9 @@ public interface Command extends ISnowflake
         }
 
         @Nonnull
-        public Map<Locale, String> getNameLocalizations()
+        public LocalizationMap getNameLocalizations()
         {
-            return nameLocalizations.toMap();
+            return nameLocalizations;
         }
 
         /**
@@ -767,9 +767,9 @@ public interface Command extends ISnowflake
         }
 
         @Nonnull
-        public Map<Locale, String> getDescriptionLocalizations()
+        public LocalizationMap getDescriptionLocalizations()
         {
-            return descriptionLocalizations.toMap();
+            return descriptionLocalizations;
         }
 
         /**
@@ -838,9 +838,9 @@ public interface Command extends ISnowflake
         }
 
         @Nonnull
-        public Map<Locale, String> getNameLocalizations()
+        public LocalizationMap getNameLocalizations()
         {
-            return nameLocalizations.toMap();
+            return nameLocalizations;
         }
 
         /**
@@ -855,9 +855,9 @@ public interface Command extends ISnowflake
         }
 
         @Nonnull
-        public Map<Locale, String> getDescriptionLocalizations()
+        public LocalizationMap getDescriptionLocalizations()
         {
-            return descriptionLocalizations.toMap();
+            return descriptionLocalizations;
         }
 
         /**

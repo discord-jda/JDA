@@ -16,6 +16,7 @@
 package net.dv8tion.jda.internal.requests.restaction;
 
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.interactions.LocalizationMap;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
@@ -35,7 +36,6 @@ import okhttp3.RequestBody;
 import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 
@@ -96,7 +96,7 @@ public class CommandCreateActionImpl extends RestActionImpl<Command> implements 
 
     @Nonnull
     @Override
-    public Map<Locale, String> getNameLocalizations()
+    public LocalizationMap getNameLocalizations()
     {
         return data.getNameLocalizations();
     }
@@ -169,7 +169,7 @@ public class CommandCreateActionImpl extends RestActionImpl<Command> implements 
 
     @Nonnull
     @Override
-    public Map<Locale, String> getDescriptionLocalizations()
+    public LocalizationMap getDescriptionLocalizations()
     {
         return data.getDescriptionLocalizations();
     }

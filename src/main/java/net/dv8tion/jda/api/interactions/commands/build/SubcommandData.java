@@ -17,17 +17,20 @@
 package net.dv8tion.jda.api.interactions.commands.build;
 
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
+import net.dv8tion.jda.api.interactions.LocalizationMap;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.SerializableData;
-import net.dv8tion.jda.internal.interactions.LocalizationMap;
 import net.dv8tion.jda.internal.interactions.command.CommandImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -309,9 +312,9 @@ public class SubcommandData implements SerializableData
     }
 
     @Nonnull
-    public Map<Locale, String> getNameLocalizations()
+    public LocalizationMap getNameLocalizations()
     {
-        return nameLocalizations.toMap();
+        return nameLocalizations;
     }
 
     /**
@@ -326,9 +329,9 @@ public class SubcommandData implements SerializableData
     }
 
     @Nonnull
-    public Map<Locale, String> getDescriptionLocalizations()
+    public LocalizationMap getDescriptionLocalizations()
     {
-        return descriptionLocalizations.toMap();
+        return descriptionLocalizations;
     }
 
     @Nonnull
