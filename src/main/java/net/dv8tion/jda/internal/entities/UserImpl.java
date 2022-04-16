@@ -107,7 +107,7 @@ public class UserImpl extends UserById implements User
     @Override
     public String getAsTag()
     {
-        return getName() + '#' + getDiscriminator();
+        return String.format("%s#%s", getName(), getDiscriminator());
     }
 
     @Override
