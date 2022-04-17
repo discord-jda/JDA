@@ -52,13 +52,7 @@ public class TypingStartHandler extends SocketHandler
         }
 
         final long channelId = content.getLong("channel_id");
-
-        //TODO-v5-unified-channel-cache
-        MessageChannel channel = getJDA().getTextChannelsView().get(channelId);
-        if (channel == null)
-            channel = getJDA().getNewsChannelView().get(channelId);
-        if (channel == null)
-            channel = getJDA().getPrivateChannelsView().get(channelId);
+        MessageChannel channel = getJDA().getChannelById(MessageChannel.class, channelId);
         if (channel == null)
             return null;    //We don't have the channel cached yet. We chose not to cache this event
                             // because that happen very often and could easily fill up the EventCache if

@@ -422,7 +422,7 @@ public interface MessageAction extends RestAction<Message>, Appendable, AllowedM
     MessageAction content(@Nullable final String content);
 
     /**
-     * Sets up to 10 {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbeds}
+     * Sets up to {@value Message#MAX_EMBED_COUNT} {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbeds}
      * that should be used for this Message.
      * Refer to {@link net.dv8tion.jda.api.EmbedBuilder EmbedBuilder} for more information.
      *
@@ -442,7 +442,7 @@ public interface MessageAction extends RestAction<Message>, Appendable, AllowedM
     MessageAction setEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds);
 
     /**
-     * Sets up to 10 {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbeds}
+     * Sets up to {@value Message#MAX_EMBED_COUNT} {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbeds}
      * that should be used for this Message.
      * Refer to {@link net.dv8tion.jda.api.EmbedBuilder EmbedBuilder} for more information.
      *

@@ -15,12 +15,14 @@
  */
 package net.dv8tion.jda.internal.handle;
 
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.events.message.MessageDeleteEvent;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.ThreadChannelImpl;
-import net.dv8tion.jda.internal.entities.mixin.channel.middleman.MessageChannelMixin;
+import net.dv8tion.jda.internal.requests.WebSocketClient;
 
 public class MessageDeleteHandler extends SocketHandler
 {
@@ -33,26 +35,38 @@ public class MessageDeleteHandler extends SocketHandler
     @Override
     protected Long handleInternally(DataObject content)
     {
+        Guild guild = null;
         if (!content.isNull("guild_id"))
         {
             long guildId = content.getLong("guild_id");
             if (getJDA().getGuildSetupController().isLocked(guildId))
                 return guildId;
+
+            guild = api.getGuildById(guildId);
+            if (guild == null)
+            {
+                EventCache.LOG.debug("Caching MESSAGE_DELETE event for guild that is not currently cached. GuildID: {}", guildId);
+                api.getEventCache().cache(EventCache.Type.GUILD, guildId, responseNumber, allContent, this::handle);
+                return null;
+            }
         }
 
         final long messageId = content.getLong("id");
         final long channelId = content.getLong("channel_id");
 
-        //TODO-v5-unified-channel-cache
-        MessageChannel channel = getJDA().getTextChannelById(channelId);
-        if (channel == null)
-            channel = getJDA().getNewsChannelById(channelId);
-        if (channel == null)
-            channel = getJDA().getThreadChannelById(channelId);
-        if (channel == null)
-            channel = getJDA().getPrivateChannelById(channelId);
+        MessageChannel channel = getJDA().getChannelById(MessageChannel.class, channelId);
         if (channel == null)
         {
+            if (guild != null)
+            {
+                GuildChannel guildChannel = guild.getGuildChannelById(channelId);
+                if (guildChannel != null)
+                {
+                    WebSocketClient.LOG.debug("Discarding MESSAGE_DELETE event for unexpected channel type. Channel: {}", guildChannel);
+                    return null;
+                }
+            }
+
             getJDA().getEventCache().cache(EventCache.Type.CHANNEL, channelId, responseNumber, allContent, this::handle);
             EventCache.LOG.debug("Got message delete for a channel/group that is not yet cached. ChannelId: {}", channelId);
             return null;

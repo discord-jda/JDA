@@ -121,16 +121,19 @@ public class MessageReactionHandler extends SocketHandler
             }
         }
 
-        //TODO-v5-unified-channel-cache
-        MessageChannel channel = api.getTextChannelById(channelId);
-        if (channel == null)
-            channel = api.getNewsChannelById(channelId);
-        if (channel == null)
-            channel = api.getThreadChannelById(channelId);
-        if (channel == null)
-            channel = api.getPrivateChannelById(channelId);
+        MessageChannel channel = api.getChannelById(MessageChannel.class, channelId);
         if (channel == null)
         {
+            if (guild != null)
+            {
+                GuildChannel guildChannel = guild.getGuildChannelById(channelId);
+                if (guildChannel != null)
+                {
+                    WebSocketClient.LOG.debug("Discarding reaction event for unexpected channel type. Channel: {}", guildChannel);
+                    return null;
+                }
+            }
+
             if (guildId != 0)
             {
                 api.getEventCache().cache(EventCache.Type.CHANNEL, channelId, responseNumber, allContent, this::handle);

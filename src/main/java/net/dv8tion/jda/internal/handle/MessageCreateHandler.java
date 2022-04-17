@@ -74,6 +74,12 @@ public class MessageCreateHandler extends SocketHandler
                 case EntityBuilder.MISSING_CHANNEL:
                 {
                     final long channelId = content.getLong("channel_id");
+                    if (guild != null && guild.getGuildChannelById(channelId) != null)
+                    {
+                        WebSocketClient.LOG.debug("Discarding MESSAGE_CREATE event for unexpected channel type. Channel: {}", guild.getGuildChannelById(channelId));
+                        return null;
+                    }
+
                     jda.getEventCache().cache(EventCache.Type.CHANNEL, channelId, responseNumber, allContent, this::handle);
                     EventCache.LOG.debug("Received a message for a channel that JDA does not currently have cached");
                     return null;

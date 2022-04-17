@@ -23,6 +23,8 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.entities.MemberImpl;
+import net.dv8tion.jda.internal.entities.PrivateChannelImpl;
+import net.dv8tion.jda.internal.entities.UserImpl;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -73,7 +75,15 @@ public class InteractionImpl implements Interaction
                 );
             }
             this.channel = channel;
-            user = channel.getUser();
+
+            User user = channel.getUser();
+            if (user == null)
+            {
+                user = jda.getEntityBuilder().createUser(data.getObject("user"));
+                ((PrivateChannelImpl) channel).setUser(user);
+                ((UserImpl) user).setPrivateChannel(channel);
+            }
+            this.user = user;
         }
     }
 
