@@ -7,88 +7,29 @@ import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
-import java.util.*;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Stack;
+import java.util.StringJoiner;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
 public class LocalizationMapper
 {
-    private static final class Bundle
-    {
-        private final Locale targetLocale;
-        private final ResourceBundle resourceBundle;
+    private final LocalizationFunction localizationFunction;
 
-        public Bundle(Locale targetLocale, ResourceBundle resourceBundle)
-        {
-            this.targetLocale = targetLocale;
-            this.resourceBundle = resourceBundle;
-        }
-
-        @Override
-        public boolean equals(Object o)
-        {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-
-            Bundle bundle = (Bundle) o;
-
-            if (!targetLocale.equals(bundle.targetLocale)) return false;
-            return resourceBundle.equals(bundle.resourceBundle);
-        }
-
-        @Override
-        public int hashCode()
-        {
-            int result = targetLocale.hashCode();
-            result = 31 * result + resourceBundle.hashCode();
-            return result;
-        }
-    }
-
-    private final Set<Bundle> bundles = new HashSet<>();
-
-    private LocalizationMapper() {}
-
-    @Nonnull
-    public static LocalizationMapper fromBundle(@Nonnull Locale locale, @Nonnull ResourceBundle resourceBundle)
-    {
-        return new LocalizationMapper()
-                .addBundle(resourceBundle, locale);
+    private LocalizationMapper(LocalizationFunction localizationFunction) {
+        this.localizationFunction = localizationFunction;
     }
 
     @Nonnull
-    public static LocalizationMapper empty()
-    {
-        return new LocalizationMapper();
+    public static LocalizationMapper fromFunction(@Nonnull LocalizationFunction localizationFunction) {
+        return new LocalizationMapper(localizationFunction);
     }
 
-    @Nonnull
-    public LocalizationMapper addBundle(@Nonnull ResourceBundle resourceBundle, @Nonnull Locale locale)
+    private class TranslationContext
     {
-        bundles.add(new Bundle(locale, resourceBundle));
-        return this;
-    }
-
-    @Nonnull
-    public LocalizationMapper addBundles(@Nonnull String baseName, @Nonnull Locale... locales)
-    {
-        for (Locale locale : locales)
-        {
-            final ResourceBundle resourceBundle = ResourceBundle.getBundle(baseName, locale);
-            bundles.add(new Bundle(locale, resourceBundle));
-        }
-        return this;
-    }
-
-    private static class TranslationContext
-    {
-        private final Bundle bundle;
         private final Stack<String> keyComponents = new Stack<>();
-
-        private TranslationContext(Bundle bundle)
-        {
-            this.bundle = bundle;
-        }
 
         private void forObjects(DataArray source, Function<DataObject, String> keyExtractor, Consumer<DataObject> consumer)
         {
@@ -121,36 +62,31 @@ public class LocalizationMapper
         private void trySetTranslation(LocalizationMap localizationMap, String finalComponent)
         {
             final String key = getKey(finalComponent);
-            final ResourceBundle resourceBundle = bundle.resourceBundle;
-            if (resourceBundle.containsKey(key))
-                localizationMap.setTranslation(resourceBundle.getString(key), bundle.targetLocale);
+            final Map<Locale, String> data = localizationFunction.apply(key);
+            localizationMap.putTranslations(data);
         }
 
         private void trySetTranslation(DataObject localizationMap, String finalComponent)
         {
             final String key = getKey(finalComponent);
-            final ResourceBundle resourceBundle = bundle.resourceBundle;
-            if (resourceBundle.containsKey(key))
-                localizationMap.put(bundle.targetLocale.toLanguageTag(), resourceBundle.getString(key));
+            final Map<Locale, String> data = localizationFunction.apply(key);
+            data.forEach((locale, localizedValue) -> localizationMap.put(locale.toLanguageTag(), localizedValue));
         }
     }
 
     public void localizeCommand(CommandData commandData, DataArray optionArray)
     {
-        for (Bundle bundle : bundles)
+        final TranslationContext ctx = new TranslationContext();
+        ctx.withKey(commandData.getName(), () ->
         {
-            final TranslationContext ctx = new TranslationContext(bundle);
-            ctx.withKey(commandData.getName(), () ->
+            ctx.trySetTranslation(commandData.getNameLocalizations(), "name");
+            if (commandData instanceof SlashCommandData)
             {
-                ctx.trySetTranslation(commandData.getNameLocalizations(), "name");
-                if (commandData instanceof SlashCommandData)
-                {
-                    final SlashCommandData slashCommandData = (SlashCommandData) commandData;
-                    ctx.trySetTranslation(slashCommandData.getDescriptionLocalizations(), "description");
-                    localizeOptionArray(optionArray, ctx);
-                }
-            });
-        }
+                final SlashCommandData slashCommandData = (SlashCommandData) commandData;
+                ctx.trySetTranslation(slashCommandData.getDescriptionLocalizations(), "description");
+                localizeOptionArray(optionArray, ctx);
+            }
+        });
     }
 
     private void localizeOptionArray(DataArray optionArray, TranslationContext ctx)

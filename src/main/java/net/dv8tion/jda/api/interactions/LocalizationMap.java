@@ -43,6 +43,11 @@ public class LocalizationMap implements SerializableData
             map.put(locale, value);
     }
 
+    public void putTranslations(@Nonnull Map<Locale, String> map)
+    {
+        this.map.putAll(map);
+    }
+
     public void setTranslation(@Nonnull String value, @Nonnull Locale locale) {
         map.put(locale, value);
     }
