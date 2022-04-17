@@ -1536,8 +1536,8 @@ public class EntityBuilder
 
         GuildImpl guild = channel instanceof GuildChannel ? ((AbstractGuildChannelImpl<?>) channel).getGuild() : null;
         MessageMentions mentions = new MessageMentionsImpl(
-            api, guild, content, messageReference != null,
-            mentionsEveryone, jsonObject.getArray("mentions"), jsonObject.getArray("mention_roles")
+            api, guild, content, mentionsEveryone,
+            jsonObject.getArray("mentions"), jsonObject.getArray("mention_roles")
         );
 
         if (!type.isSystem())

@@ -83,7 +83,7 @@ public class CommandInteractionPayloadImpl extends InteractionImpl implements Co
     private void parseOptions(DataArray options)
     {
         options.stream(DataArray::getObject)
-                .map(json -> new OptionMapping(json, resolved))
+                .map(json -> new OptionMapping(json, resolved, getJDA(), getGuild()))
                 .forEach(this.options::add);
     }
 

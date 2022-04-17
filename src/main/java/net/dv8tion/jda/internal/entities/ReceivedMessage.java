@@ -105,8 +105,6 @@ public class ReceivedMessage extends AbstractMessage
         this.components = Collections.unmodifiableList(components);
         this.flags = flags;
         this.interaction = interaction;
-
-        ((MessageMentionsImpl) mentions).setMessage(this);
     }
 
     public ReceivedMessage withHook(InteractionHook hook)
@@ -410,7 +408,7 @@ public class ReceivedMessage extends AbstractMessage
             {
                 tmp = tmp.replace(emote.getAsMention(), ":" + emote.getName() + ":");
             }
-            for (TextChannel mentionedChannel : mentions.getChannels())
+            for (GuildChannel mentionedChannel : mentions.getChannels())
             {
                 tmp = tmp.replace(mentionedChannel.getAsMention(), '#' + mentionedChannel.getName());
             }
