@@ -31,7 +31,6 @@ import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 import net.dv8tion.jda.internal.interactions.command.CommandImpl;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
-import net.dv8tion.jda.internal.utils.Checks;
 import okhttp3.RequestBody;
 
 import javax.annotation.Nonnull;
@@ -134,9 +133,6 @@ public class CommandCreateActionImpl extends RestActionImpl<Command> implements 
     @Override
     public CommandCreateAction setName(@Nonnull String name)
     {
-        Checks.notEmpty(name, "Name");
-        Checks.notLonger(name, 32, "Name");
-        Checks.matches(name, Checks.ALPHANUMERIC_WITH_DASH, "Name");
         data.setName(name);
         return this;
     }
@@ -145,9 +141,6 @@ public class CommandCreateActionImpl extends RestActionImpl<Command> implements 
     @Override
     public CommandCreateAction setName(@Nonnull String name, @Nonnull Locale... locales)
     {
-        Checks.notEmpty(name, "Name");
-        Checks.notLonger(name, 32, "Name");
-        Checks.matches(name, Checks.ALPHANUMERIC_WITH_DASH, "Name");
         data.setName(name, locales);
         return this;
     }
@@ -156,8 +149,6 @@ public class CommandCreateActionImpl extends RestActionImpl<Command> implements 
     @Override
     public CommandCreateAction setDescription(@Nonnull String description)
     {
-        Checks.notEmpty(description, "Description");
-        Checks.notLonger(description, 100, "Description");
         data.setDescription(description);
         return this;
     }
@@ -166,8 +157,6 @@ public class CommandCreateActionImpl extends RestActionImpl<Command> implements 
     @Override
     public CommandCreateAction setDescription(@Nonnull String description, @Nonnull Locale... locales)
     {
-        Checks.notEmpty(description, "Description");
-        Checks.notLonger(description, 100, "Description");
         data.setDescription(description, locales);
         return this;
     }
