@@ -193,6 +193,11 @@ public class OptionData implements SerializableData
         return name;
     }
 
+    /**
+     * The name localizations of this option.
+     *
+     * @return The {@link LocalizationMap} containing the mapping from {@link Locale} to the localized name
+     */
     @Nonnull
     public LocalizationMap getNameLocalizations()
     {
@@ -210,6 +215,11 @@ public class OptionData implements SerializableData
         return description;
     }
 
+    /**
+     * The description localizations of this option.
+     *
+     * @return The {@link LocalizationMap} containing the mapping from {@link Locale} to the localized description
+     */
     @Nonnull
     public LocalizationMap getDescriptionLocalizations()
     {

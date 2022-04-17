@@ -84,6 +84,11 @@ public interface CommandData extends SerializableData
     @Nonnull
     String getName();
 
+    /**
+     * The name localizations of this command.
+     *
+     * @return The {@link LocalizationMap} containing the mapping from {@link Locale} to the localized name
+     */
     @Nonnull
     LocalizationMap getNameLocalizations();
 

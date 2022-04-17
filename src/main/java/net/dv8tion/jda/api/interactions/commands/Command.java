@@ -173,7 +173,11 @@ public interface Command extends ISnowflake
     @Nonnull
     String getName();
 
-    //TODO docs
+    /**
+     * The name localizations of this command.
+     *
+     * @return The {@link LocalizationMap} containing the mapping from {@link Locale} to the localized name
+     */
     @Nonnull
     LocalizationMap getNameLocalizations();
 
@@ -185,7 +189,11 @@ public interface Command extends ISnowflake
     @Nonnull
     String getDescription();
 
-    //TODO docs
+    /**
+     * The description localizations of this command.
+     *
+     * @return The {@link LocalizationMap} containing the mapping from {@link Locale} to the localized description
+     */
     @Nonnull
     LocalizationMap getDescriptionLocalizations();
 
@@ -408,6 +416,11 @@ public interface Command extends ISnowflake
             return name;
         }
 
+        /**
+         * The name localizations of this choice.
+         *
+         * @return The {@link LocalizationMap} containing the mapping from {@link Locale} to the localized name
+         */
         @Nonnull
         public LocalizationMap getNameLocalizations()
         {
@@ -575,6 +588,11 @@ public interface Command extends ISnowflake
             return name;
         }
 
+        /**
+         * The name localizations of this option, subcommand or subcommand group.
+         *
+         * @return The {@link LocalizationMap} containing the mapping from {@link Locale} to the localized name
+         */
         @Nonnull
         public LocalizationMap getNameLocalizations()
         {
@@ -592,6 +610,11 @@ public interface Command extends ISnowflake
             return description;
         }
 
+        /**
+         * The description localizations of this option, subcommand, or subcommand group.
+         *
+         * @return The {@link LocalizationMap} containing the mapping from {@link Locale} to the localized description
+         */
         @Nonnull
         public LocalizationMap getDescriptionLocalizations()
         {
@@ -749,6 +772,11 @@ public interface Command extends ISnowflake
             return name;
         }
 
+        /**
+         * The name localizations of this subcommand.
+         *
+         * @return The {@link LocalizationMap} containing the mapping from {@link Locale} to the localized name
+         */
         @Nonnull
         public LocalizationMap getNameLocalizations()
         {
@@ -766,6 +794,11 @@ public interface Command extends ISnowflake
             return description;
         }
 
+        /**
+         * The description localizations of this subcommand.
+         *
+         * @return The {@link LocalizationMap} containing the mapping from {@link Locale} to the localized description
+         */
         @Nonnull
         public LocalizationMap getDescriptionLocalizations()
         {
@@ -837,6 +870,11 @@ public interface Command extends ISnowflake
             return name;
         }
 
+        /**
+         * The name localizations of this subcommand group.
+         *
+         * @return The {@link LocalizationMap} containing the mapping from {@link Locale} to the localized name
+         */
         @Nonnull
         public LocalizationMap getNameLocalizations()
         {
@@ -854,6 +892,11 @@ public interface Command extends ISnowflake
             return description;
         }
 
+        /**
+         * The description localizations of this subcommand group.
+         *
+         * @return The {@link LocalizationMap} containing the mapping from {@link Locale} to the localized description
+         */
         @Nonnull
         public LocalizationMap getDescriptionLocalizations()
         {

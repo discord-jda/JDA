@@ -92,6 +92,15 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
         return retrieveCommands(false);
     }
 
+    /**
+     * Retrieves the list of guild commands.
+     * <br>This list does not include global commands! Use {@link JDA#retrieveCommands()} for global commands.
+     *
+     * @param  withLocalizations
+     *         {@code true} if the localization data (such as name and description) should be included
+     *
+     * @return {@link RestAction} - Type: {@link List} of {@link Command}
+     */
     @Nonnull
     @CheckReturnValue
     RestAction<List<Command>> retrieveCommands(boolean withLocalizations);

@@ -162,8 +162,8 @@ public class CommandImpl implements Command
         return name;
     }
 
-    @Override
     @Nonnull
+    @Override
     public LocalizationMap getNameLocalizations()
     {
         return nameLocalizations;
@@ -176,8 +176,8 @@ public class CommandImpl implements Command
         return description;
     }
 
-    @Override
     @Nonnull
+    @Override
     public LocalizationMap getDescriptionLocalizations()
     {
         return descriptionLocalizations;
