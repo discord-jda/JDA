@@ -24,7 +24,7 @@ import net.dv8tion.jda.api.exceptions.MissingAccessException;
 import net.dv8tion.jda.api.exceptions.PermissionException;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
-import net.dv8tion.jda.api.interactions.components.ComponentLayout;
+import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
@@ -343,7 +343,7 @@ public class ReceivedMessage extends AbstractMessage
     @Override
     public String getJumpUrl()
     {
-        return String.format("https://discord.com/channels/%s/%s/%s", isFromGuild() ? getGuild().getId() : "@me", getChannel().getId(), getId());
+        return String.format(Message.JUMP_URL, isFromGuild() ? getGuild().getId() : "@me", getChannel().getId(), getId());
     }
 
     @Override
@@ -500,6 +500,15 @@ public class ReceivedMessage extends AbstractMessage
         return (TextChannel) channel;
     }
 
+    @Nonnull
+    @Override
+    public NewsChannel getNewsChannel()
+    {
+        if (!isFromType(ChannelType.NEWS))
+            throw new IllegalStateException("This message was not sent in a news channel");
+        return (NewsChannel) channel;
+    }
+
     @Override
     public Category getCategory()
     {
@@ -610,7 +619,7 @@ public class ReceivedMessage extends AbstractMessage
 
     @Nonnull
     @Override
-    public MessageAction editMessageComponents(@Nonnull Collection<? extends ComponentLayout> components)
+    public MessageAction editMessageComponents(@Nonnull Collection<? extends LayoutComponent> components)
     {
         checkUser();
         return ((MessageActionImpl) channel.editMessageComponentsById(getId(), components)).withHook(interactionHook);

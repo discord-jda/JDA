@@ -86,7 +86,7 @@ public enum ErrorResponse
     ANNOUNCEMENT_RATE_LIMIT(                  20022, "This message cannot be edited due to announcement rate limits"),
     CHANNEL_WRITE_RATE_LIMIT(                 20028, "The channel you are writing has hit the write rate limit"),
     GUILD_EXPLICIT_CONTENT_FILTER(            20031, "Your Stage topic, server name, server description, or channel names contain words that are not allowed"),
-    GUILD_OREMIUM_LEVE_TOO_LOW(               20035, "Guild premium subscription level too low"),
+    GUILD_PREMIUM_LEVEL_TOO_LOW(              20035, "Guild premium subscription level too low"),
     MAX_GUILDS(                               30001, "Maximum number of Guilds reached (100)"),
     MAX_FRIENDS(                              30002, "Maximum number of Friends reached (1000)"),
     MAX_MESSAGE_PINS(                         30003, "Maximum number of pinned messages reached (50)"),

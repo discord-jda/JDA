@@ -93,7 +93,7 @@ public interface PaginationAction<T, M extends PaginationAction<T, M>> extends R
      *
      * <p>Fails if cache is enabled and the target id is newer than the current last id {@literal (id > last)}.
      *
-     * <h2>Example</h2>
+     * <h4>Example</h4>
      * <pre>{@code
      * public MessagePaginationAction getOlderThan(MessageChannel channel, long time) {
      *     final long timestamp = TimeUtil.getDiscordTimestamp(time);
@@ -114,7 +114,7 @@ public interface PaginationAction<T, M extends PaginationAction<T, M>> extends R
      *         The snowflake ID to skip before, this is exclusive rather than inclusive
      *
      * @throws IllegalArgumentException
-     *         If cache is enabled and you are attempting to skip forward in time {@literal (id > last)}
+     *         If cache is enabled, and you are attempting to skip forward in time {@literal (id > last)}
      *
      * @return The current PaginationAction for chaining convenience
      *
@@ -145,6 +145,68 @@ public interface PaginationAction<T, M extends PaginationAction<T, M>> extends R
     @Nonnull
     @Override
     M deadline(long timestamp);
+
+    /**
+     * The supported {@link PaginationOrder PaginationOrders} for this pagination action.
+     * <br>All enum values that are not returned will cause a throw for {@link #order(PaginationOrder)}.
+     *
+     * <p>Most pagination endpoints only support a single order, however some endpoints such as message pagination supports both.
+     *
+     * @return {@link EnumSet} of {@link PaginationOrder} (Modifying this set does not affect this class)
+     */
+    @Nonnull
+    default EnumSet<PaginationOrder> getSupportedOrders()
+    {
+        return EnumSet.allOf(PaginationOrder.class);
+    }
+
+    /**
+     * The current iteration order.
+     * <br>This defaults to {@link PaginationOrder#BACKWARD}, meaning most recent first, for most pagination endpoints.
+     *
+     * @return The {@link PaginationOrder}
+     *
+     * @see    #order(PaginationOrder)
+     */
+    @Nonnull
+    PaginationOrder getOrder();
+
+    /**
+     * Configure the {@link PaginationOrder} of this pagination action.
+     *
+     * <p>You can only supply supported orders, see {@link #getSupportedOrders()}.
+     *
+     * @param  order
+     *         The pagination order
+     *
+     * @throws IllegalArgumentException
+     *         If the provided pagination order is null or unsupported
+     * @throws IllegalStateException
+     *         If this pagination action has already been used to retrieve entities
+     *
+     * @return The current PaginationAction implementation instance
+     *
+     * @see    #getSupportedOrders()
+     * @see    #reverse()
+     */
+    @Nonnull
+    M order(@Nonnull PaginationOrder order);
+
+    /**
+     * Flips the {@link #order(PaginationOrder)} of this pagination action.
+     *
+     * @throws IllegalArgumentException
+     *         If this pagination action does not support the reversed order
+     *
+     * @return The current PaginationAction implementation instance
+     */
+    @Nonnull
+    default M reverse()
+    {
+        if (getOrder() == PaginationOrder.BACKWARD)
+            return order(PaginationOrder.FORWARD);
+        return order(PaginationOrder.BACKWARD);
+    }
 
     /**
      * The current amount of cached entities for this PaginationAction
@@ -429,7 +491,7 @@ public interface PaginationAction<T, M extends PaginationAction<T, M>> extends R
      * <p><b>This iteration will include already cached entities, in order to exclude cached
      * entities use {@link #forEachRemainingAsync(Procedure)}</b>
      *
-     * <h1>Example</h1>
+     * <h4>Example</h4>
      * <pre>{@code
      * //deletes messages until it finds a user that is still in guild
      * public void cleanupMessages(MessagePaginationAction action)
@@ -470,7 +532,7 @@ public interface PaginationAction<T, M extends PaginationAction<T, M>> extends R
      * <p><b>This iteration will include already cached entities, in order to exclude cached
      * entities use {@link #forEachRemainingAsync(Procedure, Consumer)}</b>
      *
-     * <h1>Example</h1>
+     * <h4>Example</h4>
      * <pre>{@code
      * //deletes messages until it finds a user that is still in guild
      * public void cleanupMessages(MessagePaginationAction action)
@@ -510,7 +572,7 @@ public interface PaginationAction<T, M extends PaginationAction<T, M>> extends R
      * <p><b>This iteration will exclude already cached entities, in order to include cached
      * entities use {@link #forEachAsync(Procedure)}</b>
      *
-     * <h1>Example</h1>
+     * <h4>Example</h4>
      * <pre>{@code
      * //deletes messages until it finds a user that is still in guild
      * public void cleanupMessages(MessagePaginationAction action)
@@ -551,7 +613,7 @@ public interface PaginationAction<T, M extends PaginationAction<T, M>> extends R
      * <p><b>This iteration will exclude already cached entities, in order to include cached
      * entities use {@link #forEachAsync(Procedure, Consumer)}</b>
      *
-     * <h1>Example</h1>
+     * <h4>Example</h4>
      * <pre>{@code
      * //deletes messages until it finds a user that is still in guild
      * public void cleanupMessages(MessagePaginationAction action)
@@ -631,6 +693,39 @@ public interface PaginationAction<T, M extends PaginationAction<T, M>> extends R
     @Nonnull
     @Override
     PaginationIterator<T> iterator();
+
+    /**
+     * Defines the pagination order for a pagination endpoint.
+     */
+    enum PaginationOrder
+    {
+        /**
+         * Iterates backwards in time, listing the most recent entities first.
+         */
+        BACKWARD("before"),
+        /**
+         * Iterates forward in time, listing the oldest entities first.
+         */
+        FORWARD("after");
+
+        private final String key;
+
+        PaginationOrder(String key)
+        {
+            this.key = key;
+        }
+
+        /**
+         * The API query parameter key
+         *
+         * @return The query key
+         */
+        @Nonnull
+        public String getKey()
+        {
+            return key;
+        }
+    }
 
     /**
      * Iterator implementation for a {@link PaginationAction PaginationAction}.

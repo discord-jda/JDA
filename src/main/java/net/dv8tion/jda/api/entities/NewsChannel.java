@@ -13,7 +13,19 @@ import net.dv8tion.jda.internal.utils.Checks;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 
-//TODO-v5: Docs
+/**
+ * Represents {@link BaseGuildMessageChannel} that are News Channels.
+ *
+ * The Discord client may refer to these as Announcement Channels.
+ *
+ * Members can subscribe channels in their own guilds to receive messages crossposted from this channel.
+ * This is referred to as following this channel.
+ *
+ * Messages sent in this channel can be crossposted, at which point they will be sent (via webhook) to all subscribed channels.
+ *
+ * @see Message#getFlags()
+ * @see net.dv8tion.jda.api.entities.Message.MessageFlag#CROSSPOSTED
+ */
 public interface NewsChannel extends BaseGuildMessageChannel
 {
     /**
@@ -165,7 +177,7 @@ public interface NewsChannel extends BaseGuildMessageChannel
             throw new MissingAccessException(this, Permission.VIEW_CHANNEL);
         Route.CompiledRoute route = Route.Messages.CROSSPOST_MESSAGE.compile(getId(), messageId);
         return new RestActionImpl<>(getJDA(), route,
-                (response, request) -> request.getJDA().getEntityBuilder().createMessage(response.getObject()));
+                (response, request) -> request.getJDA().getEntityBuilder().createMessageWithChannel(response.getObject(), this, false));
     }
 
     /**

@@ -17,7 +17,7 @@ package net.dv8tion.jda.api;
 
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
-import net.dv8tion.jda.api.interactions.components.ComponentLayout;
+import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import net.dv8tion.jda.internal.entities.DataMessage;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -42,7 +42,7 @@ public class MessageBuilder implements Appendable
     protected final StringBuilder builder = new StringBuilder();
 
     protected final List<MessageEmbed> embeds = new ArrayList<>();
-    protected final List<ComponentLayout> components = new ArrayList<>();
+    protected final List<LayoutComponent> components = new ArrayList<>();
     protected boolean isTTS = false;
     protected String nonce;
     protected EnumSet<Message.MentionType> allowedMentions = null;
@@ -124,7 +124,7 @@ public class MessageBuilder implements Appendable
     }
 
     /**
-     * Adds up to 10 {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbeds} to the Message. Embeds can be built using
+     * Adds up to {@value Message#MAX_EMBED_COUNT} {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbeds} to the Message. Embeds can be built using
      * the {@link net.dv8tion.jda.api.EmbedBuilder} and offer specialized formatting.
      *
      * @param  embeds
@@ -144,7 +144,7 @@ public class MessageBuilder implements Appendable
     }
 
     /**
-     * Adds up to 10 {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbeds} to the Message. Embeds can be built using
+     * Adds up to {@value Message#MAX_EMBED_COUNT} {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbeds} to the Message. Embeds can be built using
      * the {@link net.dv8tion.jda.api.EmbedBuilder} and offer specialized formatting.
      *
      * @param  embeds
@@ -166,7 +166,7 @@ public class MessageBuilder implements Appendable
                 "Provided Message contains an empty embed or an embed with a length greater than %d characters, which is the max for bot accounts!",
                 MessageEmbed.EMBED_MAX_LENGTH_BOT)
         );
-        Checks.check(embeds.size() <= 10, "Cannot have more than 10 embeds in a message!");
+        Checks.check(embeds.size() <= Message.MAX_EMBED_COUNT, "Cannot have more than %d embeds in a message!", Message.MAX_EMBED_COUNT);
         Checks.check(embeds.stream().mapToInt(MessageEmbed::getLength).sum() <= MessageEmbed.EMBED_MAX_LENGTH_BOT, "The sum of all MessageEmbeds may not exceed %d!", MessageEmbed.EMBED_MAX_LENGTH_BOT);
         this.embeds.clear();
         this.embeds.addAll(embeds);
@@ -1023,7 +1023,7 @@ public class MessageBuilder implements Appendable
 
         String[] ids = new String[0];
         return new DataMessage(isTTS, message, nonce, embeds,
-                allowedMentions, mentionedUsers.toArray(ids), mentionedRoles.toArray(ids), components.toArray(new ComponentLayout[0]));
+                allowedMentions, mentionedUsers.toArray(ids), mentionedRoles.toArray(ids), components.toArray(new LayoutComponent[0]));
     }
 
     /**
@@ -1091,7 +1091,7 @@ public class MessageBuilder implements Appendable
     {
         String[] ids = new String[0];
         return new DataMessage(isTTS, builder.substring(beginIndex, endIndex), null, null,
-                allowedMentions, mentionedUsers.toArray(ids), mentionedRoles.toArray(ids), components.toArray(new ComponentLayout[0]));
+                allowedMentions, mentionedUsers.toArray(ids), mentionedRoles.toArray(ids), components.toArray(new LayoutComponent[0]));
     }
 
     private String[] toStringArray(long[] users)

@@ -11,7 +11,15 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-//TODO-v5: Docs
+
+/**
+ * Represents all message channels present in guilds.
+ *
+ * This includes channels that are not included in {@link BaseGuildMessageChannel BaseGuildMessageChannel}, such as {@link ThreadChannel}.
+ *
+ * @see BaseGuildMessageChannel
+ *
+ */
 public interface GuildMessageChannel extends GuildChannel, MessageChannel
 {
     @Override
@@ -461,7 +469,7 @@ public interface GuildMessageChannel extends GuildChannel, MessageChannel
     /**
      * Removes all reactions for the specified emoji.
      *
-     * <h2>Example</h2>
+     * <h4>Example</h4>
      * <pre><code>
      * // custom
      * channel.clearReactions(messageId, "minn:245267426227388416").queue();
@@ -543,7 +551,7 @@ public interface GuildMessageChannel extends GuildChannel, MessageChannel
     /**
      * Removes all reactions for the specified emoji.
      *
-     * <h2>Example</h2>
+     * <h4>Example</h4>
      * <pre><code>
      * // custom
      * channel.clearReactions(messageId, "minn:245267426227388416").queue();

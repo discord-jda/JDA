@@ -18,7 +18,6 @@ package net.dv8tion.jda.internal.interactions;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.interactions.Interaction;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
@@ -44,7 +43,7 @@ import java.util.function.Function;
 public class InteractionHookImpl extends AbstractWebhookClient<Message> implements InteractionHook
 {
     public static final String TIMEOUT_MESSAGE = "Timed out waiting for interaction acknowledgement";
-    private final InteractionImpl interaction;
+    private final DeferrableInteractionImpl interaction;
     private final List<TriggerRestAction<?>> readyCallbacks = new LinkedList<>();
     private final Future<?> timeoutHandle;
     private final ReentrantLock mutex = new ReentrantLock();
@@ -52,11 +51,7 @@ public class InteractionHookImpl extends AbstractWebhookClient<Message> implemen
     private boolean isReady;
     private boolean ephemeral;
 
-    //This is used to give a proper error when an interaction is ack'd twice
-    // By default, discord only responds with "unknown interaction" which is horrible UX so we add a check manually here
-    private volatile boolean isAck;
-
-    public InteractionHookImpl(@Nonnull InteractionImpl interaction, @Nonnull JDA api)
+    public InteractionHookImpl(@Nonnull DeferrableInteractionImpl interaction, @Nonnull JDA api)
     {
         super(api.getSelfUser().getApplicationIdLong(), interaction.getToken(), api);
         this.interaction = interaction;
@@ -64,16 +59,14 @@ public class InteractionHookImpl extends AbstractWebhookClient<Message> implemen
         this.timeoutHandle = api.getGatewayPool().schedule(() -> this.fail(new TimeoutException(TIMEOUT_MESSAGE)), 10, TimeUnit.SECONDS);
     }
 
-    public synchronized boolean ack()
+    public boolean ack()
     {
-        boolean wasAck = isAck;
-        this.isAck = true;
-        return wasAck;
+        return interaction.ack();
     }
 
-    public synchronized boolean isAck()
+    public boolean isAck()
     {
-        return isAck;
+        return interaction.isAcknowledged();
     }
 
     public void ready()
@@ -116,7 +109,7 @@ public class InteractionHookImpl extends AbstractWebhookClient<Message> implemen
 
     @Nonnull
     @Override
-    public Interaction getInteraction()
+    public InteractionImpl getInteraction()
     {
         return interaction;
     }
@@ -143,7 +136,7 @@ public class InteractionHookImpl extends AbstractWebhookClient<Message> implemen
         JDAImpl jda = (JDAImpl) getJDA();
         Route.CompiledRoute route = Route.Interactions.GET_ORIGINAL.compile(jda.getSelfUser().getApplicationId(), interaction.getToken());
         return onReady(new TriggerRestAction<>(jda, route, (response, request) ->
-                jda.getEntityBuilder().createMessage(response.getObject(), getInteraction().getMessageChannel(), false)));
+                jda.getEntityBuilder().createMessageWithChannel(response.getObject(), getInteraction().getMessageChannel(), false)));
     }
 
     @Nonnull
@@ -152,7 +145,7 @@ public class InteractionHookImpl extends AbstractWebhookClient<Message> implemen
     {
         Route.CompiledRoute route = Route.Interactions.CREATE_FOLLOWUP.compile(getJDA().getSelfUser().getApplicationId(), interaction.getToken());
         route = route.withQueryParams("wait", "true");
-        Function<DataObject, Message> transform = (json) -> ((JDAImpl) api).getEntityBuilder().createMessage(json, getInteraction().getMessageChannel(), false).withHook(this);
+        Function<DataObject, Message> transform = (json) -> ((JDAImpl) api).getEntityBuilder().createMessageWithChannel(json, getInteraction().getMessageChannel(), false).withHook(this);
         return onReady(new WebhookMessageActionImpl<>(getJDA(), interaction.getMessageChannel(), route, transform)).setEphemeral(ephemeral);
     }
 
@@ -164,7 +157,7 @@ public class InteractionHookImpl extends AbstractWebhookClient<Message> implemen
             Checks.isSnowflake(messageId);
         Route.CompiledRoute route = Route.Interactions.EDIT_FOLLOWUP.compile(getJDA().getSelfUser().getApplicationId(), interaction.getToken(), messageId);
         route = route.withQueryParams("wait", "true");
-        Function<DataObject, Message> transform = (json) -> ((JDAImpl) api).getEntityBuilder().createMessage(json, getInteraction().getMessageChannel(), false).withHook(this);
+        Function<DataObject, Message> transform = (json) -> ((JDAImpl) api).getEntityBuilder().createMessageWithChannel(json, getInteraction().getMessageChannel(), false).withHook(this);
         return onReady(new WebhookMessageUpdateActionImpl<>(getJDA(), route, transform));
     }
 

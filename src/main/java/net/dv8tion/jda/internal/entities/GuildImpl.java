@@ -18,8 +18,10 @@ package net.dv8tion.jda.internal.entities;
 
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
+import gnu.trove.set.TLongSet;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.Region;
+import net.dv8tion.jda.api.audio.hooks.ConnectionStatus;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.templates.Template;
 import net.dv8tion.jda.api.exceptions.HierarchyException;
@@ -42,6 +44,9 @@ import net.dv8tion.jda.api.utils.concurrent.Task;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
+import net.dv8tion.jda.internal.handle.EventCache;
+import net.dv8tion.jda.internal.interactions.CommandDataImpl;
+import net.dv8tion.jda.internal.interactions.command.CommandImpl;
 import net.dv8tion.jda.internal.managers.AudioManagerImpl;
 import net.dv8tion.jda.internal.managers.GuildManagerImpl;
 import net.dv8tion.jda.internal.requests.*;
@@ -61,6 +66,8 @@ import okhttp3.RequestBody;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.time.OffsetDateTime;
+import java.time.temporal.TemporalAccessor;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
@@ -75,7 +82,6 @@ public class GuildImpl implements Guild
 
     private final SortedSnowflakeCacheViewImpl<Category> categoryCache = new SortedSnowflakeCacheViewImpl<>(Category.class, Channel::getName, Comparator.naturalOrder());
     private final SortedSnowflakeCacheViewImpl<VoiceChannel> voiceChannelCache = new SortedSnowflakeCacheViewImpl<>(VoiceChannel.class, Channel::getName, Comparator.naturalOrder());
-    private final SortedSnowflakeCacheViewImpl<StoreChannel> storeChannelCache = new SortedSnowflakeCacheViewImpl<>(StoreChannel.class, Channel::getName, Comparator.naturalOrder());
     private final SortedSnowflakeCacheViewImpl<TextChannel> textChannelCache = new SortedSnowflakeCacheViewImpl<>(TextChannel.class, Channel::getName, Comparator.naturalOrder());
     private final SortedSnowflakeCacheViewImpl<NewsChannel> newsChannelCache = new SortedSnowflakeCacheViewImpl<>(NewsChannel.class, Channel::getName, Comparator.naturalOrder());
     private final SortedSnowflakeCacheViewImpl<StageChannel> stageChannelCache = new SortedSnowflakeCacheViewImpl<>(StageChannel.class, Channel::getName, Comparator.naturalOrder());
@@ -109,7 +115,7 @@ public class GuildImpl implements Guild
     private NSFWLevel nsfwLevel = NSFWLevel.UNKNOWN;
     private Timeout afkTimeout;
     private BoostTier boostTier = BoostTier.NONE;
-    private Locale preferredLocale = Locale.ENGLISH;
+    private Locale preferredLocale = Locale.US;
     private int memberCount;
     private boolean boostProgressBarEnabled;
 
@@ -123,6 +129,81 @@ public class GuildImpl implements Guild
             memberPresences = null;
     }
 
+    public void invalidate()
+    {
+        //Remove everything from global cache
+        // this prevents some race-conditions for getting audio managers from guilds
+        SnowflakeCacheViewImpl<Guild> guildView = getJDA().getGuildsView();
+        SnowflakeCacheViewImpl<StageChannel> stageView = getJDA().getStageChannelView();
+        SnowflakeCacheViewImpl<TextChannel> textView = getJDA().getTextChannelsView();
+        SnowflakeCacheViewImpl<ThreadChannel> threadView = getJDA().getThreadChannelsView();
+        SnowflakeCacheViewImpl<NewsChannel> newsView = getJDA().getNewsChannelView();
+        SnowflakeCacheViewImpl<VoiceChannel> voiceView = getJDA().getVoiceChannelsView();
+        SnowflakeCacheViewImpl<Category> categoryView = getJDA().getCategoriesView();
+
+        guildView.remove(id);
+
+        try (UnlockHook hook = stageView.writeLock())
+        {
+            getStageChannelCache()
+                .forEachUnordered(chan -> stageView.getMap().remove(chan.getIdLong()));
+        }
+        try (UnlockHook hook = textView.writeLock())
+        {
+            getTextChannelCache()
+                .forEachUnordered(chan -> textView.getMap().remove(chan.getIdLong()));
+        }
+        try (UnlockHook hook = threadView.writeLock())
+        {
+            getThreadChannelsView()
+                .forEachUnordered(chan -> threadView.getMap().remove(chan.getIdLong()));
+        }
+        try (UnlockHook hook = newsView.writeLock())
+        {
+            getNewsChannelCache()
+                .forEachUnordered(chan -> newsView.getMap().remove(chan.getIdLong()));
+        }
+        try (UnlockHook hook = voiceView.writeLock())
+        {
+            getVoiceChannelCache()
+                .forEachUnordered(chan -> voiceView.getMap().remove(chan.getIdLong()));
+        }
+        try (UnlockHook hook = categoryView.writeLock())
+        {
+            getCategoryCache()
+                .forEachUnordered(chan -> categoryView.getMap().remove(chan.getIdLong()));
+        }
+
+        // Clear audio connection
+        getJDA().getClient().removeAudioConnection(id);
+        final AbstractCacheView<AudioManager> audioManagerView = getJDA().getAudioManagersView();
+        final AudioManagerImpl manager = (AudioManagerImpl) audioManagerView.get(id); //read-lock access/release
+        if (manager != null)
+            manager.closeAudioConnection(ConnectionStatus.DISCONNECTED_REMOVED_FROM_GUILD); //connection-lock access/release
+        audioManagerView.remove(id); //write-lock access/release
+
+        //cleaning up all users that we do not share a guild with anymore
+        // Anything left in memberIds will be removed from the main userMap
+        //Use a new HashSet so that we don't actually modify the Member map so it doesn't affect Guild#getMembers for the leave event.
+        TLongSet memberIds = getMembersView().keySet(); // copies keys
+        getJDA().getGuildCache().stream()
+                .map(GuildImpl.class::cast)
+                .forEach(g -> memberIds.removeAll(g.getMembersView().keySet()));
+        // Remember, everything left in memberIds is removed from the userMap
+        SnowflakeCacheViewImpl<User> userView = getJDA().getUsersView();
+        try (UnlockHook hook = userView.writeLock())
+        {
+            long selfId = getJDA().getSelfUser().getIdLong();
+            memberIds.forEach(memberId -> {
+                if (memberId == selfId)
+                    return true; // don't remove selfUser from cache
+                userView.remove(memberId);
+                getJDA().getEventCache().clear(EventCache.Type.USER, memberId);
+                return true;
+            });
+        }
+    }
+
     @Nonnull
     @Override
     public RestAction<List<Command>> retrieveCommands()
@@ -132,7 +213,7 @@ public class GuildImpl implements Guild
                 (response, request) ->
                         response.getArray()
                                 .stream(DataArray::getObject)
-                                .map(json -> new Command(getJDA(), this, json))
+                                .map(json -> new CommandImpl(getJDA(), this, json))
                                 .collect(Collectors.toList()));
     }
 
@@ -142,7 +223,7 @@ public class GuildImpl implements Guild
     {
         Checks.isSnowflake(id);
         Route.CompiledRoute route = Route.Interactions.GET_GUILD_COMMAND.compile(getJDA().getSelfUser().getApplicationId(), getId(), id);
-        return new RestActionImpl<>(getJDA(), route, (response, request) -> new Command(getJDA(), this, response.getObject()));
+        return new RestActionImpl<>(getJDA(), route, (response, request) -> new CommandImpl(getJDA(), this, response.getObject()));
     }
 
     @Nonnull
@@ -150,7 +231,7 @@ public class GuildImpl implements Guild
     public CommandCreateAction upsertCommand(@Nonnull CommandData command)
     {
         Checks.notNull(command, "CommandData");
-        return new CommandCreateActionImpl(this, command);
+        return new CommandCreateActionImpl(this, (CommandDataImpl) command);
     }
 
     @Nonnull
@@ -218,7 +299,7 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public RestAction<Map<String, List<CommandPrivilege>>> updateCommandPrivileges(@Nonnull Map<String, Collection<? extends CommandPrivilege>> privileges)
+    public RestAction<Map<String, List<CommandPrivilege>>> updateCommandPrivileges(@Nonnull Map<String, ? extends Collection<CommandPrivilege>> privileges)
     {
         Checks.notNull(privileges, "Privileges");
         privileges.forEach((key, value) -> {
@@ -565,13 +646,6 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public SortedSnowflakeCacheView<StoreChannel> getStoreChannelCache()
-    {
-        return storeChannelCache;
-    }
-
-    @Nonnull
-    @Override
     public SortedSnowflakeCacheView<TextChannel> getTextChannelCache()
     {
         return textChannelCache;
@@ -638,10 +712,8 @@ public class GuildImpl implements Guild
         SnowflakeCacheViewImpl<StageChannel> stageView = getStageChannelsView();
         SnowflakeCacheViewImpl<TextChannel> textView = getTextChannelsView();
         SnowflakeCacheViewImpl<NewsChannel> newsView = getNewsChannelView();
-        SnowflakeCacheViewImpl<StoreChannel> storeView = getStoreChannelView();
         List<TextChannel> textChannels;
         List<NewsChannel> newsChannels;
-        List<StoreChannel> storeChannels;
         List<VoiceChannel> voiceChannels;
         List<StageChannel> stageChannels;
         List<Category> categories;
@@ -649,12 +721,10 @@ public class GuildImpl implements Guild
              UnlockHook voiceHook = voiceView.readLock();
              UnlockHook textHook = textView.readLock();
              UnlockHook newsHook = newsView.readLock();
-             UnlockHook storeHook = storeView.readLock();
              UnlockHook stageHook = stageView.readLock())
         {
             if (includeHidden)
             {
-                storeChannels = storeView.asList();
                 textChannels = textView.asList();
                 newsChannels = newsView.asList();
                 voiceChannels = voiceView.asList();
@@ -662,17 +732,15 @@ public class GuildImpl implements Guild
             }
             else
             {
-                storeChannels = storeView.stream().filter(filterHidden).collect(Collectors.toList());
                 textChannels = textView.stream().filter(filterHidden).collect(Collectors.toList());
                 newsChannels = newsView.stream().filter(filterHidden).collect(Collectors.toList());
                 voiceChannels = voiceView.stream().filter(filterHidden).collect(Collectors.toList());
                 stageChannels = stageView.stream().filter(filterHidden).collect(Collectors.toList());
             }
             categories = categoryView.asList(); // we filter categories out when they are empty (no visible channels inside)
-            channels = new ArrayList<>((int) categoryView.size() + voiceChannels.size() + textChannels.size() + newsChannels.size() + storeChannels.size() + stageChannels.size());
+            channels = new ArrayList<>((int) categoryView.size() + voiceChannels.size() + textChannels.size() + newsChannels.size() + stageChannels.size());
         }
 
-        storeChannels.stream().filter(it -> it.getParentCategory() == null).forEach(channels::add);
         textChannels.stream().filter(it -> it.getParentCategory() == null).forEach(channels::add);
         newsChannels.stream().filter(it -> it.getParentCategory() == null).forEach(channels::add);
         voiceChannels.stream().filter(it -> it.getParentCategory() == null).forEach(channels::add);
@@ -814,12 +882,13 @@ public class GuildImpl implements Guild
 
     @Nullable
     @Override
-    public TextChannel getDefaultChannel()
+    public BaseGuildMessageChannel getDefaultChannel()
     {
         final Role role = getPublicRole();
-        return getTextChannelsView().stream()
-                                    .filter(c -> role.hasPermission(c, Permission.VIEW_CHANNEL))
-                                    .min(Comparator.naturalOrder()).orElse(null);
+        return Stream.concat(getTextChannelCache().stream(), getNewsChannelCache().stream())
+                .filter(c -> role.hasPermission(c, Permission.VIEW_CHANNEL))
+                .min(Comparator.naturalOrder())
+                .orElse(null);
     }
 
     @Nonnull
@@ -933,11 +1002,13 @@ public class GuildImpl implements Guild
         }
 
         AudioChannel channel = getSelfMember().getVoiceState().getChannel();
-        StageInstance instance = channel instanceof StageChannel ? ((StageChannel) channel).getStageInstance() : null;
-        if (instance == null)
-            return new GatewayTask<>(CompletableFuture.completedFuture(null), () -> {});
-        CompletableFuture<Void> future = instance.cancelRequestToSpeak().submit();
-        return new GatewayTask<>(future, () -> future.cancel(false));
+        if (channel instanceof StageChannel)
+        {
+            CompletableFuture<Void> future = ((StageChannel) channel).cancelRequestToSpeak().submit();
+            return new GatewayTask<>(future, () -> future.cancel(false));
+        }
+
+        return new GatewayTask<>(CompletableFuture.completedFuture(null), () -> {});
     }
 
     @Nonnull
@@ -1404,6 +1475,36 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
+    public AuditableRestAction<Void> timeoutUntilById(@Nonnull String userId, @Nonnull TemporalAccessor temporal)
+    {
+        Checks.isSnowflake(userId, "User ID");
+        Checks.notNull(temporal, "Temporal");
+        OffsetDateTime date = Helpers.toOffsetDateTime(temporal);
+        Checks.check(date.isAfter(OffsetDateTime.now()), "Cannot put a member in time out with date in the past. Provided: %s", date);
+        Checks.check(date.isBefore(OffsetDateTime.now().plusDays(Member.MAX_TIME_OUT_LENGTH)), "Cannot put a member in time out for more than 28 days. Provided: %s", date);
+        checkPermission(Permission.MODERATE_MEMBERS);
+
+        return timeoutUntilById0(userId, date);
+    }
+
+    @Nonnull
+    @Override
+    public AuditableRestAction<Void> removeTimeoutById(@Nonnull String userId)
+    {
+        Checks.isSnowflake(userId, "User ID");
+        return timeoutUntilById0(userId, null);
+    }
+
+    @Nonnull
+    private AuditableRestAction<Void> timeoutUntilById0(@Nonnull String userId, @Nullable OffsetDateTime date)
+    {
+        DataObject body = DataObject.empty().put("communication_disabled_until", date == null ? null : date.toString());
+        Route.CompiledRoute route = Route.Guilds.MODIFY_MEMBER.compile(getId(), userId);
+        return new AuditableRestActionImpl<>(getJDA(), route, body);
+    }
+
+    @Nonnull
+    @Override
     public AuditableRestAction<Void> deafen(@Nonnull Member member, boolean deafen)
     {
         Checks.notNull(member, "Member");
@@ -1752,14 +1853,19 @@ public class GuildImpl implements Guild
         if (!(connectedChannel instanceof StageChannel))
             return;
         StageChannel stage = (StageChannel) connectedChannel;
-        StageInstance instance = stage.getStageInstance();
-        if (instance == null)
-            return;
-
         CompletableFuture<Void> future = pendingRequestToSpeak;
         pendingRequestToSpeak = null;
 
-        instance.requestToSpeak().queue((v) -> future.complete(null), future::completeExceptionally);
+        try
+        {
+            stage.requestToSpeak().queue((v) -> future.complete(null), future::completeExceptionally);
+        }
+        catch (Throwable ex)
+        {
+            future.completeExceptionally(ex);
+            if (ex instanceof Error)
+                throw ex;
+        }
     }
 
     // ---- Setters -----
@@ -1933,11 +2039,6 @@ public class GuildImpl implements Guild
     public SortedSnowflakeCacheViewImpl<Category> getCategoriesView()
     {
         return categoryCache;
-    }
-
-    public SortedSnowflakeCacheViewImpl<StoreChannel> getStoreChannelView()
-    {
-        return storeChannelCache;
     }
 
     public SortedSnowflakeCacheViewImpl<TextChannel> getTextChannelsView()

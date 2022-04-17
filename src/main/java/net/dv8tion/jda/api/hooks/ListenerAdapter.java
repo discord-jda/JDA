@@ -16,10 +16,6 @@
 package net.dv8tion.jda.api.hooks;
 
 import net.dv8tion.jda.api.events.*;
-import net.dv8tion.jda.api.events.application.ApplicationCommandCreateEvent;
-import net.dv8tion.jda.api.events.application.ApplicationCommandDeleteEvent;
-import net.dv8tion.jda.api.events.application.ApplicationCommandUpdateEvent;
-import net.dv8tion.jda.api.events.application.GenericApplicationCommandEvent;
 import net.dv8tion.jda.api.events.channel.ChannelCreateEvent;
 import net.dv8tion.jda.api.events.channel.ChannelDeleteEvent;
 import net.dv8tion.jda.api.events.channel.GenericChannelEvent;
@@ -43,7 +39,12 @@ import net.dv8tion.jda.api.events.guild.override.PermissionOverrideUpdateEvent;
 import net.dv8tion.jda.api.events.guild.update.*;
 import net.dv8tion.jda.api.events.guild.voice.*;
 import net.dv8tion.jda.api.events.http.HttpRequestEvent;
-import net.dv8tion.jda.api.events.interaction.*;
+import net.dv8tion.jda.api.events.interaction.GenericAutoCompleteInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.GenericInteractionCreateEvent;
+import net.dv8tion.jda.api.events.interaction.command.*;
+import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
+import net.dv8tion.jda.api.events.interaction.component.SelectMenuInteractionEvent;
 import net.dv8tion.jda.api.events.message.*;
 import net.dv8tion.jda.api.events.message.react.*;
 import net.dv8tion.jda.api.events.role.GenericRoleEvent;
@@ -121,14 +122,12 @@ public abstract class ListenerAdapter implements EventListener
     public void onException(@Nonnull ExceptionEvent event) {}
 
     //Interaction Events
-    public void onSlashCommand(@Nonnull SlashCommandEvent event) {}
-    public void onButtonClick(@Nonnull ButtonClickEvent event) {}
-    public void onSelectionMenu(@Nonnull SelectionMenuEvent event) {}
-
-    //Application Events
-    public void onApplicationCommandUpdate(@Nonnull ApplicationCommandUpdateEvent event) {}
-    public void onApplicationCommandDelete(@Nonnull ApplicationCommandDeleteEvent event) {}
-    public void onApplicationCommandCreate(@Nonnull ApplicationCommandCreateEvent event) {}
+    public void onSlashCommandInteraction(@Nonnull SlashCommandInteractionEvent event) {}
+    public void onUserContextInteraction(@Nonnull UserContextInteractionEvent event) {}
+    public void onMessageContextInteraction(@Nonnull MessageContextInteractionEvent event) {}
+    public void onButtonInteraction(@Nonnull ButtonInteractionEvent event) {}
+    public void onSelectMenuInteraction(@Nonnull SelectMenuInteractionEvent event) {}
+    public void onCommandAutoCompleteInteraction(@Nonnull CommandAutoCompleteInteractionEvent event) {}
 
     //User Events
     public void onUserUpdateName(@Nonnull UserUpdateNameEvent event) {}
@@ -252,6 +251,7 @@ public abstract class ListenerAdapter implements EventListener
     public void onGuildMemberUpdateAvatar(@Nonnull GuildMemberUpdateAvatarEvent event) {}
     public void onGuildMemberUpdateBoostTime(@Nonnull GuildMemberUpdateBoostTimeEvent event) {}
     public void onGuildMemberUpdatePending(@Nonnull GuildMemberUpdatePendingEvent event) {}
+    public void onGuildMemberUpdateTimeOut(@Nonnull GuildMemberUpdateTimeOutEvent event) {}
 
     //Guild Voice Events
     public void onGuildVoiceUpdate(@Nonnull GuildVoiceUpdateEvent event) {}
@@ -294,9 +294,11 @@ public abstract class ListenerAdapter implements EventListener
     public void onHttpRequest(@Nonnull HttpRequestEvent event) {}
 
     //Generic Events
-    public void onGenericApplicationCommand(@Nonnull GenericApplicationCommandEvent event) {}
     public void onGenericInteractionCreate(@Nonnull GenericInteractionCreateEvent event) {}
+    public void onGenericAutoCompleteInteraction(@Nonnull GenericAutoCompleteInteractionEvent event) {}
     public void onGenericComponentInteractionCreate(@Nonnull GenericComponentInteractionCreateEvent event) {}
+    public void onGenericCommandInteraction(@Nonnull GenericCommandInteractionEvent event) {}
+    public void onGenericContextInteraction(@Nonnull GenericContextInteractionEvent<?> event) {}
     public void onGenericMessage(@Nonnull GenericMessageEvent event) {}
     public void onGenericMessageReaction(@Nonnull GenericMessageReactionEvent event) {}
     public void onGenericUser(@Nonnull GenericUserEvent event) {}

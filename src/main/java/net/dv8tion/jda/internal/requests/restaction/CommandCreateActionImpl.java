@@ -17,7 +17,6 @@ package net.dv8tion.jda.internal.requests.restaction;
 
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.commands.Command;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
@@ -26,28 +25,31 @@ import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.restaction.CommandCreateAction;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
+import net.dv8tion.jda.internal.interactions.CommandDataImpl;
+import net.dv8tion.jda.internal.interactions.command.CommandImpl;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
 import okhttp3.RequestBody;
 
 import javax.annotation.Nonnull;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 
 public class CommandCreateActionImpl extends RestActionImpl<Command> implements CommandCreateAction
 {
     private final Guild guild;
-    private CommandData data;
+    private CommandDataImpl data;
 
-    public CommandCreateActionImpl(JDAImpl api, CommandData command)
+    public CommandCreateActionImpl(JDAImpl api, CommandDataImpl command)
     {
         super(api, Route.Interactions.CREATE_COMMAND.compile(api.getSelfUser().getApplicationId()));
         this.guild = null;
         this.data = command;
     }
 
-    public CommandCreateActionImpl(Guild guild, CommandData command)
+    public CommandCreateActionImpl(Guild guild, CommandDataImpl command)
     {
         super(guild.getJDA(), Route.Interactions.CREATE_GUILD_COMMAND.compile(guild.getJDA().getSelfUser().getApplicationId(), guild.getId()));
         this.guild = guild;
@@ -85,6 +87,26 @@ public class CommandCreateActionImpl extends RestActionImpl<Command> implements 
 
     @Nonnull
     @Override
+    public String getName()
+    {
+        return data.getName();
+    }
+
+    @Override
+    public boolean isDefaultEnabled()
+    {
+        return data.isDefaultEnabled();
+    }
+
+    @Nonnull
+    @Override
+    public Command.Type getType()
+    {
+        return data.getType();
+    }
+
+    @Nonnull
+    @Override
     public CommandCreateAction timeout(long timeout, @Nonnull TimeUnit unit)
     {
         return (CommandCreateAction) super.timeout(timeout, unit);
@@ -109,6 +131,34 @@ public class CommandCreateActionImpl extends RestActionImpl<Command> implements 
         Checks.notLonger(description, 100, "Description");
         data.setDescription(description);
         return this;
+    }
+
+    @Nonnull
+    @Override
+    public String getDescription()
+    {
+        return data.getDescription();
+    }
+
+    @Nonnull
+    @Override
+    public List<SubcommandData> getSubcommands()
+    {
+        return data.getSubcommands();
+    }
+
+    @Nonnull
+    @Override
+    public List<SubcommandGroupData> getSubcommandGroups()
+    {
+        return data.getSubcommandGroups();
+    }
+
+    @Nonnull
+    @Override
+    public List<OptionData> getOptions()
+    {
+        return data.getOptions();
     }
 
     @Nonnull
@@ -145,6 +195,13 @@ public class CommandCreateActionImpl extends RestActionImpl<Command> implements 
     protected void handleSuccess(Response response, Request<Command> request)
     {
         DataObject json = response.getObject();
-        request.onSuccess(new Command(api, guild, json));
+        request.onSuccess(new CommandImpl(api, guild, json));
+    }
+
+    @Nonnull
+    @Override
+    public DataObject toData()
+    {
+        return data.toData();
     }
 }

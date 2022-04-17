@@ -15,10 +15,7 @@
  */
 package net.dv8tion.jda.internal.handle;
 
-import net.dv8tion.jda.api.entities.ChannelType;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageChannel;
-import net.dv8tion.jda.api.entities.MessageType;
+import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
@@ -44,18 +41,31 @@ public class MessageCreateHandler extends SocketHandler
             return null;
         }
 
+        // Drop ephemeral messages since they are broken due to missing guild_id
+        if ((content.getInt("flags", 0) & 64) != 0)
+            return null;
+
         JDAImpl jda = getJDA();
+        Guild guild = null;
         if (!content.isNull("guild_id"))
         {
             long guildId = content.getLong("guild_id");
             if (jda.getGuildSetupController().isLocked(guildId))
                 return guildId;
+
+            guild = api.getGuildById(guildId);
+            if (guild == null)
+            {
+                api.getEventCache().cache(EventCache.Type.GUILD, guildId, responseNumber, allContent, this::handle);
+                EventCache.LOG.debug("Received message for a guild that JDA does not currently have cached");
+                return null;
+            }
         }
 
         Message message;
         try
         {
-            message = jda.getEntityBuilder().createMessage(content, true);
+            message = jda.getEntityBuilder().createMessageWithLookup(content, guild, true);
         }
         catch (IllegalArgumentException e)
         {
@@ -64,6 +74,12 @@ public class MessageCreateHandler extends SocketHandler
                 case EntityBuilder.MISSING_CHANNEL:
                 {
                     final long channelId = content.getLong("channel_id");
+                    if (guild != null && guild.getGuildChannelById(channelId) != null)
+                    {
+                        WebSocketClient.LOG.debug("Discarding MESSAGE_CREATE event for unexpected channel type. Channel: {}", guild.getGuildChannelById(channelId));
+                        return null;
+                    }
+
                     jda.getEventCache().cache(EventCache.Type.CHANNEL, channelId, responseNumber, allContent, this::handle);
                     EventCache.LOG.debug("Received a message for a channel that JDA does not currently have cached");
                     return null;
@@ -99,7 +115,7 @@ public class MessageCreateHandler extends SocketHandler
 
                 //Discord will only ever allow this property to show up to 50,
                 // so we don't want to update it to be over 50 because we don't want users to use it incorrectly.
-                int newMessageCount = Math.max(gThread.getMessageCount() + 1, 50);
+                int newMessageCount = Math.min(gThread.getMessageCount() + 1, 50);
                 gThread.setMessageCount(newMessageCount);
             }
         }

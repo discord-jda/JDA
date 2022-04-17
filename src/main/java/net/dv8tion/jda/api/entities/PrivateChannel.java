@@ -15,7 +15,11 @@
  */
 package net.dv8tion.jda.api.entities;
 
+import net.dv8tion.jda.api.requests.RestAction;
+
+import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Represents the connection used for direct messaging.
@@ -27,8 +31,51 @@ public interface PrivateChannel extends MessageChannel
     /**
      * The {@link net.dv8tion.jda.api.entities.User User} that this {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel} communicates with.
      *
-     * @return A non-null {@link net.dv8tion.jda.api.entities.User User}.
+     * <p>This user is only null if this channel is currently uncached, and one the following occur:
+     * <ul>
+     *     <li>A reaction is removed</li>
+     *     <li>A reaction is added</li>
+     *     <li>A message is deleted</li>
+     *     <li>This account sends a message to a user from another shard (not shard 0)</li>
+     * </ul>
+     * The consequence of this is that for any message this bot receives from a guild or from other users, the user will not be null.
+     *
+     * <br>In order to retrieve a user that is null, use {@link #retrieveUser()}
+     *
+     * @return Possibly-null {@link net.dv8tion.jda.api.entities.User User}.
+     *
+     * @see #retrieveUser()
+     */
+    @Nullable
+    User getUser();
+
+    /**
+     * Retrieves the {@link User User} that this {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel} communicates with.
+     *
+     * <br>This method fetches the channel from the API and retrieves the User from that.
+     *
+     * @return A {@link RestAction RestAction} to retrieve the {@link User User} that this {@link PrivateChannel PrivateChannel} communicates with.
      */
     @Nonnull
-    User getUser();
+    @CheckReturnValue
+    RestAction<User> retrieveUser();
+
+    /**
+     * The human-readable name of this channel.
+     *
+     * If getUser returns null, this method will return an empty String.
+     * This happens when JDA does not have enough information to populate the channel name.
+     *
+     * This will occur only when {@link #getUser()} is null, and the reasons are given in {@link #getUser()}
+     *
+     * If the channel name is important, {@link #retrieveUser()} should be used, instead.
+     *
+     * @return The name of this channel
+     *
+     * @see #retrieveUser()
+     * @see #getUser()
+     */
+    @Nonnull
+    @Override
+    String getName();
 }

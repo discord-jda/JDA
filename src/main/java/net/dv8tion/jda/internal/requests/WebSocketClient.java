@@ -749,11 +749,15 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
         api.getTextChannelsView().clear();
         api.getVoiceChannelsView().clear();
-        api.getStoreChannelsView().clear();
         api.getCategoriesView().clear();
+        api.getNewsChannelView().clear();
+        api.getPrivateChannelsView().clear();
+        api.getStageChannelView().clear();
+        api.getThreadChannelsView().clear();
+
         api.getGuildsView().clear();
         api.getUsersView().clear();
-        api.getPrivateChannelsView().clear();
+
         api.getEventCache().clear();
         api.getGuildSetupController().clearCache();
         chunkManager.clear();
@@ -1319,9 +1323,6 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     protected void setupHandlers()
     {
         final SocketHandler.NOPHandler nopHandler =   new SocketHandler.NOPHandler(api);
-        handlers.put("APPLICATION_COMMAND_UPDATE",    new ApplicationCommandUpdateHandler(api));
-        handlers.put("APPLICATION_COMMAND_DELETE",    new ApplicationCommandDeleteHandler(api));
-        handlers.put("APPLICATION_COMMAND_CREATE",    new ApplicationCommandCreateHandler(api));
         handlers.put("CHANNEL_CREATE",                new ChannelCreateHandler(api));
         handlers.put("CHANNEL_DELETE",                new ChannelDeleteHandler(api));
         handlers.put("CHANNEL_UPDATE",                new ChannelUpdateHandler(api));

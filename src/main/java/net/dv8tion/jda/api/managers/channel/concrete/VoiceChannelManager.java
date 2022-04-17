@@ -26,6 +26,7 @@ import net.dv8tion.jda.api.managers.channel.middleman.AudioChannelManager;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 
+//TODO-v5: Docs
 public interface VoiceChannelManager extends
         AudioChannelManager<VoiceChannel, VoiceChannelManager>,
         ICategorizableChannelManager<VoiceChannel, VoiceChannelManager>,

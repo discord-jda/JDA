@@ -16,9 +16,9 @@
 
 package net.dv8tion.jda.api.entities;
 
-import net.dv8tion.jda.api.interactions.Interaction;
+import net.dv8tion.jda.api.interactions.callbacks.IDeferrableCallback;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
-import net.dv8tion.jda.api.interactions.components.ComponentLayout;
+import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.WebhookMessageAction;
 import net.dv8tion.jda.api.requests.restaction.WebhookMessageUpdateAction;
@@ -32,7 +32,7 @@ import java.util.*;
 
 /**
  * Interface which allows sending messages through the webhooks API.
- * <br>Interactions can use these through {@link Interaction#getHook()}.
+ * <br>Interactions can use these through {@link IDeferrableCallback#getHook()}.
  *
  * @see Webhook
  * @see net.dv8tion.jda.api.interactions.InteractionHook
@@ -126,10 +126,10 @@ public interface WebhookClient<T>
      * </ul>
      *
      * @param  embeds
-     *         {@link MessageEmbed MessageEmbeds} to use (up to 10 in total)
+     *         {@link MessageEmbed MessageEmbeds} to use (up to {@value Message#MAX_EMBED_COUNT} in total)
      *
      * @throws IllegalArgumentException
-     *         If any of the embeds are null, more than 10, or longer than {@link MessageEmbed#EMBED_MAX_LENGTH_BOT}.
+     *         If any of the embeds are null, more than {@value Message#MAX_EMBED_COUNT}, or longer than {@link MessageEmbed#EMBED_MAX_LENGTH_BOT}.
      *
      * @return {@link WebhookMessageAction}
      */
@@ -151,10 +151,10 @@ public interface WebhookClient<T>
      * @param  embed
      *         {@link MessageEmbed} to use
      * @param  embeds
-     *         Additional {@link MessageEmbed MessageEmbeds} to use (up to 10 in total)
+     *         Additional {@link MessageEmbed MessageEmbeds} to use (up to {@value Message#MAX_EMBED_COUNT} in total)
      *
      * @throws IllegalArgumentException
-     *         If any of the embeds are null, more than 10, or longer than {@link MessageEmbed#EMBED_MAX_LENGTH_BOT}.
+     *         If any of the embeds are null, more than {@value Message#MAX_EMBED_COUNT}, or longer than {@link MessageEmbed#EMBED_MAX_LENGTH_BOT}.
      *
      * @return {@link WebhookMessageAction}
      */
@@ -572,10 +572,10 @@ public interface WebhookClient<T>
      * @param  messageId
      *         The message id. For interactions this supports {@code "@original"} to edit the source message of the interaction.
      * @param  embeds
-     *         {@link MessageEmbed MessageEmbeds} to use (up to 10 in total)
+     *         {@link MessageEmbed MessageEmbeds} to use (up to {@value Message#MAX_EMBED_COUNT} in total)
      *
      * @throws IllegalArgumentException
-     *         If the provided embeds are null, or more than 10
+     *         If the provided embeds are null, or more than {@value Message#MAX_EMBED_COUNT}
      *
      * @return {@link WebhookMessageUpdateAction}
      */
@@ -599,10 +599,10 @@ public interface WebhookClient<T>
      * @param  messageId
      *         The message id. For interactions this supports {@code "@original"} to edit the source message of the interaction.
      * @param  embeds
-     *         {@link MessageEmbed MessageEmbeds} to use (up to 10 in total)
+     *         {@link MessageEmbed MessageEmbeds} to use (up to {@value Message#MAX_EMBED_COUNT} in total)
      *
      * @throws IllegalArgumentException
-     *         If the provided embeds are null, or more than 10
+     *         If the provided embeds are null, or more than {@value Message#MAX_EMBED_COUNT}
      *
      * @return {@link WebhookMessageUpdateAction}
      */
@@ -699,7 +699,7 @@ public interface WebhookClient<T>
      */
     @Nonnull
     @CheckReturnValue
-    WebhookMessageUpdateAction<T> editMessageComponentsById(@Nonnull String messageId, @Nonnull Collection<? extends ComponentLayout> components); // We use ComponentLayout for forward compatibility here
+    WebhookMessageUpdateAction<T> editMessageComponentsById(@Nonnull String messageId, @Nonnull Collection<? extends LayoutComponent> components); // We use LayoutComponent for forward compatibility here
 
     /**
      * Edit an existing message sent by this webhook.
@@ -726,7 +726,7 @@ public interface WebhookClient<T>
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageUpdateAction<T> editMessageComponentsById(long messageId, @Nonnull Collection<? extends ComponentLayout> components)
+    default WebhookMessageUpdateAction<T> editMessageComponentsById(long messageId, @Nonnull Collection<? extends LayoutComponent> components)
     {
         return editMessageComponentsById(Long.toUnsignedString(messageId), components);
     }
@@ -756,9 +756,9 @@ public interface WebhookClient<T>
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageUpdateAction<T> editMessageComponentsById(@Nonnull String messageId, @Nonnull ComponentLayout... components)
+    default WebhookMessageUpdateAction<T> editMessageComponentsById(@Nonnull String messageId, @Nonnull LayoutComponent... components)
     {
-        Checks.noneNull(components, "ComponentLayouts");
+        Checks.noneNull(components, "LayoutComponents");
         return editMessageComponentsById(messageId, Arrays.asList(components));
     }
 
@@ -787,7 +787,7 @@ public interface WebhookClient<T>
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageUpdateAction<T> editMessageComponentsById(long messageId, @Nonnull ComponentLayout... components)
+    default WebhookMessageUpdateAction<T> editMessageComponentsById(long messageId, @Nonnull LayoutComponent... components)
     {
         return editMessageComponentsById(Long.toUnsignedString(messageId), components);
     }

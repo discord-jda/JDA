@@ -81,7 +81,7 @@ public class GuildUpdateHandler extends SocketHandler
         Guild.NSFWLevel nsfwLevel = Guild.NSFWLevel.fromKey(content.getInt("nsfw_level", -1));
         Guild.ExplicitContentLevel explicitContentLevel = Guild.ExplicitContentLevel.fromKey(content.getInt("explicit_content_filter"));
         Guild.Timeout afkTimeout = Guild.Timeout.fromKey(content.getInt("afk_timeout"));
-        Locale locale = Locale.forLanguageTag(content.getString("preferred_locale"));
+        Locale locale = Locale.forLanguageTag(content.getString("preferred_locale", "en-US"));
         VoiceChannel afkChannel = content.isNull("afk_channel_id")
                 ? null : guild.getVoiceChannelsView().get(content.getLong("afk_channel_id"));
         TextChannel systemChannel = content.isNull("system_channel_id")
