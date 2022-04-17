@@ -222,8 +222,7 @@ public interface MessageMentions
      * <p>If no MentionType values are given this will fallback to all types.
      *
      * @param  types
-     *         Amount of {@link net.dv8tion.jda.api.entities.Message.MentionType MentionTypes}
-     *         to include in the list of mentions
+     *         {@link net.dv8tion.jda.api.entities.Message.MentionType MentionTypes} to include
      *
      * @throws java.lang.IllegalArgumentException
      *         If provided with {@code null}

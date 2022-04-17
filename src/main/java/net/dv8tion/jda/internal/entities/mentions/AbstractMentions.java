@@ -26,10 +26,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.bag.HashBag;
 
 import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 
@@ -149,6 +146,7 @@ public abstract class AbstractMentions implements MessageMentions
 
     @Nonnull
     @Override
+    @SuppressWarnings("ConstantConditions")
     public List<IMentionable> getMentions(@Nonnull Message.MentionType... types)
     {
         if (types == null || types.length == 0)
@@ -188,6 +186,9 @@ public abstract class AbstractMentions implements MessageMentions
                 emote = true;
             }
         }
+
+        // Sort mentions by occurrence
+        mentions.sort(Comparator.comparingInt(it -> content.indexOf(it.getId())));
         return Collections.unmodifiableList(mentions);
     }
 
