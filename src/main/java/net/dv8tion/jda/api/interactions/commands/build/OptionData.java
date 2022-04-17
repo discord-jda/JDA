@@ -328,10 +328,23 @@ public class OptionData implements SerializableData
         return this;
     }
 
-    //TODO docs
+    /**
+     * Sets the name localizations of this option.
+     *
+     * @param  name
+     *         The translated name to put
+     * @param  locales
+     *         The locales to associate the translated name with
+     *
+     * @return This builder instance, for chaining
+     */
     @Nonnull
     public OptionData setName(@Nonnull String name, @Nonnull Locale... locales)
     {
+        Checks.notEmpty(name, "Name");
+        Checks.notLonger(name, MAX_NAME_LENGTH, "Name");
+        Checks.isLowercase(name, "Name");
+        Checks.matches(name, Checks.ALPHANUMERIC_WITH_DASH, "Name");
         nameLocalizations.setTranslations(name, locales);
         return this;
     }
@@ -356,10 +369,21 @@ public class OptionData implements SerializableData
         return this;
     }
 
-    //TODO docs
+    /**
+     * Sets the description localizations of this option.
+     *
+     * @param  description
+     *         The translated description to put
+     * @param  locales
+     *         The locales to associate the translated description with
+     *
+     * @return This builder instance, for chaining
+     */
     @Nonnull
     public OptionData setDescription(@Nonnull String description, @Nonnull Locale... locales)
     {
+        Checks.notEmpty(description, "Description");
+        Checks.notLonger(description, MAX_DESCRIPTION_LENGTH, "Description");
         descriptionLocalizations.setTranslations(description, locales);
         return this;
     }

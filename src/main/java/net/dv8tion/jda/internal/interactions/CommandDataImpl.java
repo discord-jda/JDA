@@ -242,7 +242,12 @@ public class CommandDataImpl implements SlashCommandData
     @Override
     public CommandDataImpl setName(@Nonnull String name, @Nonnull Locale... locales)
     {
-        //TODO checks
+        Checks.inRange(name, 1, 32, "Name");
+        if (type == Command.Type.SLASH)
+        {
+            Checks.matches(name, Checks.ALPHANUMERIC_WITH_DASH, "Name");
+            Checks.isLowercase(name, "Name");
+        }
         nameLocalizations.setTranslations(name, locales);
         return this;
     }
@@ -267,7 +272,9 @@ public class CommandDataImpl implements SlashCommandData
     @Override
     public CommandDataImpl setDescription(@Nonnull String description, @Nonnull Locale... locales)
     {
-        //TODO checks
+        checkType(Command.Type.SLASH, "set description");
+        Checks.notEmpty(description, "Description");
+        Checks.notLonger(description, 100, "Description");
         descriptionLocalizations.setTranslations(description, locales);
         return this;
     }

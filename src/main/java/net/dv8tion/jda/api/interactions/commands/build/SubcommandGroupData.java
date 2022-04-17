@@ -92,10 +92,23 @@ public class SubcommandGroupData implements SerializableData
         return this;
     }
 
+    /**
+     * Sets the name localizations of this subcommand group.
+     *
+     * @param  name
+     *         The translated name to put
+     * @param  locales
+     *         The locales to associate the translated name with
+     *
+     * @return This builder instance, for chaining
+     */
     @Nonnull
     public SubcommandGroupData setName(@Nonnull String name, @Nonnull Locale... locales)
     {
-        //TODO checks
+        Checks.notEmpty(name, "Name");
+        Checks.notLonger(name, 32, "Name");
+        Checks.isLowercase(name, "Name");
+        Checks.matches(name, Checks.ALPHANUMERIC_WITH_DASH, "Name");
         nameLocalizations.setTranslations(name, locales);
         return this;
     }
@@ -120,10 +133,21 @@ public class SubcommandGroupData implements SerializableData
         return this;
     }
 
+    /**
+     * Sets the description localizations of this subcommand group.
+     *
+     * @param  description
+     *         The translated description to put
+     * @param  locales
+     *         The locales to associate the translated description with
+     *
+     * @return This builder instance, for chaining
+     */
     @Nonnull
     public SubcommandGroupData setDescription(@Nonnull String description, @Nonnull Locale... locales)
     {
-        //TODO checks
+        Checks.notEmpty(description, "Description");
+        Checks.notLonger(description, 100, "Description");
         descriptionLocalizations.setTranslations(description, locales);
         return this;
     }

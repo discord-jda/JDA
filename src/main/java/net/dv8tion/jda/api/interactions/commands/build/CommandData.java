@@ -57,7 +57,16 @@ public interface CommandData extends SerializableData
     @Nonnull
     CommandData setName(@Nonnull String name);
 
-    //TODO docs
+    /**
+     * Sets the name localizations of this command.
+     *
+     * @param  name
+     *         The translated name to put
+     * @param  locales
+     *         The locales to associate the translated name with
+     *
+     * @return This builder instance, for chaining
+     */
     @Nonnull
     CommandData setName(@Nonnull String name, @Nonnull Locale... locales);
 

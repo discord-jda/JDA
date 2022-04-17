@@ -145,7 +145,9 @@ public class CommandCreateActionImpl extends RestActionImpl<Command> implements 
     @Override
     public CommandCreateAction setName(@Nonnull String name, @Nonnull Locale... locales)
     {
-        //TODO checks
+        Checks.notEmpty(name, "Name");
+        Checks.notLonger(name, 32, "Name");
+        Checks.matches(name, Checks.ALPHANUMERIC_WITH_DASH, "Name");
         data.setName(name, locales);
         return this;
     }
@@ -164,7 +166,8 @@ public class CommandCreateActionImpl extends RestActionImpl<Command> implements 
     @Override
     public CommandCreateAction setDescription(@Nonnull String description, @Nonnull Locale... locales)
     {
-        //TODO checks
+        Checks.notEmpty(description, "Description");
+        Checks.notLonger(description, 100, "Description");
         data.setDescription(description, locales);
         return this;
     }

@@ -67,7 +67,16 @@ public interface SlashCommandData extends CommandData
     @Nonnull
     SlashCommandData setDescription(@Nonnull String description);
 
-    //TODO docs
+    /**
+     * Sets the description localizations of this command.
+     *
+     * @param  description
+     *         The translated description to put
+     * @param  locales
+     *         The locales to associate the translated description with
+     *
+     * @return This builder instance, for chaining
+     */
     @Nonnull
     SlashCommandData setDescription(@Nonnull String description, @Nonnull Locale... locales);
 

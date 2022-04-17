@@ -427,6 +427,16 @@ public interface Command extends ISnowflake
             return nameLocalizations;
         }
 
+        /**
+         * Sets the name localizations of this choice.
+         *
+         * @param  name
+         *         The translated name to put
+         * @param  locales
+         *         The locales to associate the translated name with
+         *
+         * @return This builder instance, for chaining
+         */
         public Choice setName(@Nonnull String name, @Nonnull Locale... locales) {
             nameLocalizations.setTranslations(name, locales);
             return this;

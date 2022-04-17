@@ -87,10 +87,22 @@ public class SubcommandData implements SerializableData
         return this;
     }
 
+    /**
+     * Sets the name localizations of this subcommand.
+     *
+     * @param  name
+     *         The translated name to put
+     * @param  locales
+     *         The locales to associate the translated name with
+     *
+     * @return This builder instance, for chaining
+     */
     @Nonnull
     public SubcommandData setName(@Nonnull String name, @Nonnull Locale... locales)
     {
-        //TODO checks
+        Checks.inRange(name, 1, 32, "Name");
+        Checks.matches(name, Checks.ALPHANUMERIC_WITH_DASH, "Name");
+        Checks.isLowercase(name, "Name");
         nameLocalizations.setTranslations(name, locales);
         return this;
     }
@@ -115,10 +127,21 @@ public class SubcommandData implements SerializableData
         return this;
     }
 
+    /**
+     * Sets the description localizations of this subcommand.
+     *
+     * @param  description
+     *         The translated description to put
+     * @param  locales
+     *         The locales to associate the translated description with
+     *
+     * @return This builder instance, for chaining
+     */
     @Nonnull
     public SubcommandData setDescription(@Nonnull String description, @Nonnull Locale... locales)
     {
-        //TODO checks
+        Checks.notEmpty(description, "Description");
+        Checks.notLonger(description, 100, "Description");
         descriptionLocalizations.setTranslations(description, locales);
         return this;
     }
