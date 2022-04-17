@@ -70,6 +70,20 @@ public class SubcommandGroupData implements SerializableData
         this.description = description;
     }
 
+    protected void checkName(@Nonnull String name)
+    {
+        Checks.notEmpty(name, "Name");
+        Checks.notLonger(name, 32, "Name");
+        Checks.isLowercase(name, "Name");
+        Checks.matches(name, Checks.ALPHANUMERIC_WITH_DASH, "Name");
+    }
+
+    protected void checkDescription(@Nonnull String description)
+    {
+        Checks.notEmpty(description, "Description");
+        Checks.notLonger(description, 100, "Description");
+    }
+
     /**
      * Configure the name
      *
@@ -84,10 +98,7 @@ public class SubcommandGroupData implements SerializableData
     @Nonnull
     public SubcommandGroupData setName(@Nonnull String name)
     {
-        Checks.notEmpty(name, "Name");
-        Checks.notLonger(name, 32, "Name");
-        Checks.isLowercase(name, "Name");
-        Checks.matches(name, Checks.ALPHANUMERIC_WITH_DASH, "Name");
+        checkName(name);
         this.name = name;
         return this;
     }
@@ -105,10 +116,7 @@ public class SubcommandGroupData implements SerializableData
     @Nonnull
     public SubcommandGroupData setName(@Nonnull String name, @Nonnull Locale... locales)
     {
-        Checks.notEmpty(name, "Name");
-        Checks.notLonger(name, 32, "Name");
-        Checks.isLowercase(name, "Name");
-        Checks.matches(name, Checks.ALPHANUMERIC_WITH_DASH, "Name");
+        checkName(name);
         nameLocalizations.setTranslations(name, locales);
         return this;
     }
@@ -127,8 +135,7 @@ public class SubcommandGroupData implements SerializableData
     @Nonnull
     public SubcommandGroupData setDescription(@Nonnull String description)
     {
-        Checks.notEmpty(description, "Description");
-        Checks.notLonger(description, 100, "Description");
+        checkDescription(description);
         this.description = description;
         return this;
     }
@@ -146,8 +153,7 @@ public class SubcommandGroupData implements SerializableData
     @Nonnull
     public SubcommandGroupData setDescription(@Nonnull String description, @Nonnull Locale... locales)
     {
-        Checks.notEmpty(description, "Description");
-        Checks.notLonger(description, 100, "Description");
+        checkDescription(description);
         descriptionLocalizations.setTranslations(description, locales);
         return this;
     }

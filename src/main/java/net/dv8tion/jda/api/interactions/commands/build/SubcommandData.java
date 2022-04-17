@@ -66,6 +66,19 @@ public class SubcommandData implements SerializableData
         setDescription(description);
     }
 
+    protected void checkName(@Nonnull String name)
+    {
+        Checks.inRange(name, 1, 32, "Name");
+        Checks.matches(name, Checks.ALPHANUMERIC_WITH_DASH, "Name");
+        Checks.isLowercase(name, "Name");
+    }
+
+    protected void checkDescription(@Nonnull String description)
+    {
+        Checks.notEmpty(description, "Description");
+        Checks.notLonger(description, 100, "Description");
+    }
+
     /**
      * Configure the name
      *
@@ -80,9 +93,7 @@ public class SubcommandData implements SerializableData
     @Nonnull
     public SubcommandData setName(@Nonnull String name)
     {
-        Checks.inRange(name, 1, 32, "Name");
-        Checks.matches(name, Checks.ALPHANUMERIC_WITH_DASH, "Name");
-        Checks.isLowercase(name, "Name");
+        checkName(name);
         this.name = name;
         return this;
     }
@@ -100,9 +111,7 @@ public class SubcommandData implements SerializableData
     @Nonnull
     public SubcommandData setName(@Nonnull String name, @Nonnull Locale... locales)
     {
-        Checks.inRange(name, 1, 32, "Name");
-        Checks.matches(name, Checks.ALPHANUMERIC_WITH_DASH, "Name");
-        Checks.isLowercase(name, "Name");
+        checkName(name);
         nameLocalizations.setTranslations(name, locales);
         return this;
     }
@@ -121,8 +130,7 @@ public class SubcommandData implements SerializableData
     @Nonnull
     public SubcommandData setDescription(@Nonnull String description)
     {
-        Checks.notEmpty(description, "Description");
-        Checks.notLonger(description, 100, "Description");
+        checkDescription(description);
         this.description = description;
         return this;
     }
@@ -140,8 +148,7 @@ public class SubcommandData implements SerializableData
     @Nonnull
     public SubcommandData setDescription(@Nonnull String description, @Nonnull Locale... locales)
     {
-        Checks.notEmpty(description, "Description");
-        Checks.notLonger(description, 100, "Description");
+        checkDescription(description);
         descriptionLocalizations.setTranslations(description, locales);
         return this;
     }

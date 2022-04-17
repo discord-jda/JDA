@@ -171,6 +171,20 @@ public class OptionData implements SerializableData
         setAutoComplete(isAutoComplete);
     }
 
+    protected void checkName(@Nonnull String name)
+    {
+        Checks.notEmpty(name, "Name");
+        Checks.notLonger(name, MAX_NAME_LENGTH, "Name");
+        Checks.isLowercase(name, "Name");
+        Checks.matches(name, Checks.ALPHANUMERIC_WITH_DASH, "Name");
+    }
+
+    protected void checkDescription(@Nonnull String description)
+    {
+        Checks.notEmpty(description, "Description");
+        Checks.notLonger(description, MAX_DESCRIPTION_LENGTH, "Description");
+    }
+
     /**
      * The {@link OptionType} for this option
      *
@@ -320,10 +334,7 @@ public class OptionData implements SerializableData
     @Nonnull
     public OptionData setName(@Nonnull String name)
     {
-        Checks.notEmpty(name, "Name");
-        Checks.notLonger(name, MAX_NAME_LENGTH, "Name");
-        Checks.isLowercase(name, "Name");
-        Checks.matches(name, Checks.ALPHANUMERIC_WITH_DASH, "Name");
+        checkName(name);
         this.name = name;
         return this;
     }
@@ -341,10 +352,7 @@ public class OptionData implements SerializableData
     @Nonnull
     public OptionData setName(@Nonnull String name, @Nonnull Locale... locales)
     {
-        Checks.notEmpty(name, "Name");
-        Checks.notLonger(name, MAX_NAME_LENGTH, "Name");
-        Checks.isLowercase(name, "Name");
-        Checks.matches(name, Checks.ALPHANUMERIC_WITH_DASH, "Name");
+        checkName(name);
         nameLocalizations.setTranslations(name, locales);
         return this;
     }
@@ -363,8 +371,7 @@ public class OptionData implements SerializableData
     @Nonnull
     public OptionData setDescription(@Nonnull String description)
     {
-        Checks.notEmpty(description, "Description");
-        Checks.notLonger(description, MAX_DESCRIPTION_LENGTH, "Description");
+        checkDescription(description);
         this.description = description;
         return this;
     }
@@ -382,8 +389,7 @@ public class OptionData implements SerializableData
     @Nonnull
     public OptionData setDescription(@Nonnull String description, @Nonnull Locale... locales)
     {
-        Checks.notEmpty(description, "Description");
-        Checks.notLonger(description, MAX_DESCRIPTION_LENGTH, "Description");
+        checkDescription(description);
         descriptionLocalizations.setTranslations(description, locales);
         return this;
     }

@@ -72,6 +72,23 @@ public class CommandDataImpl implements SlashCommandData
             throw new IllegalStateException("Cannot " + action + " for commands of type " + type);
     }
 
+    protected void checkName(@Nonnull String name)
+    {
+        Checks.inRange(name, 1, 32, "Name");
+        if (type == Command.Type.SLASH)
+        {
+            Checks.matches(name, Checks.ALPHANUMERIC_WITH_DASH, "Name");
+            Checks.isLowercase(name, "Name");
+        }
+    }
+
+    protected void checkDescription(@Nonnull String description)
+    {
+        checkType(Command.Type.SLASH, "set description");
+        Checks.notEmpty(description, "Description");
+        Checks.notLonger(description, 100, "Description");
+    }
+
     @Nonnull
     @Override
     public DataObject toData()
@@ -228,12 +245,7 @@ public class CommandDataImpl implements SlashCommandData
     @Override
     public CommandDataImpl setName(@Nonnull String name)
     {
-        Checks.inRange(name, 1, 32, "Name");
-        if (type == Command.Type.SLASH)
-        {
-            Checks.matches(name, Checks.ALPHANUMERIC_WITH_DASH, "Name");
-            Checks.isLowercase(name, "Name");
-        }
+        checkName(name);
         this.name = name;
         return this;
     }
@@ -242,12 +254,7 @@ public class CommandDataImpl implements SlashCommandData
     @Override
     public CommandDataImpl setName(@Nonnull String name, @Nonnull Locale... locales)
     {
-        Checks.inRange(name, 1, 32, "Name");
-        if (type == Command.Type.SLASH)
-        {
-            Checks.matches(name, Checks.ALPHANUMERIC_WITH_DASH, "Name");
-            Checks.isLowercase(name, "Name");
-        }
+        checkName(name);
         nameLocalizations.setTranslations(name, locales);
         return this;
     }
@@ -261,9 +268,7 @@ public class CommandDataImpl implements SlashCommandData
     @Override
     public CommandDataImpl setDescription(@Nonnull String description)
     {
-        checkType(Command.Type.SLASH, "set description");
-        Checks.notEmpty(description, "Description");
-        Checks.notLonger(description, 100, "Description");
+        checkDescription(description);
         this.description = description;
         return this;
     }
@@ -272,9 +277,7 @@ public class CommandDataImpl implements SlashCommandData
     @Override
     public CommandDataImpl setDescription(@Nonnull String description, @Nonnull Locale... locales)
     {
-        checkType(Command.Type.SLASH, "set description");
-        Checks.notEmpty(description, "Description");
-        Checks.notLonger(description, 100, "Description");
+        checkDescription(description);
         descriptionLocalizations.setTranslations(description, locales);
         return this;
     }
