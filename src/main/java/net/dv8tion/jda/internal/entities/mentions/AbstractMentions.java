@@ -98,8 +98,10 @@ public abstract class AbstractMentions implements MessageMentions
 
     @Nonnull
     @Override
-    public List<Role> getRoles()
+    public synchronized List<Role> getRoles()
     {
+        if (guild == null)
+            return Collections.emptyList();
         if (mentionedRoles != null)
             return mentionedRoles;
         return mentionedRoles = Collections.unmodifiableList(processMentions(Message.MentionType.ROLE, new ArrayList<>(), true, this::matchRole));
@@ -109,12 +111,14 @@ public abstract class AbstractMentions implements MessageMentions
     @Override
     public Bag<Role> getRolesBag()
     {
+        if (guild == null)
+            return new HashBag<>();
         return processMentions(Message.MentionType.ROLE, new HashBag<>(), true, this::matchRole);
     }
 
     @Nonnull
     @Override
-    public List<Emote> getEmotes()
+    public synchronized List<Emote> getEmotes()
     {
         if (mentionedEmotes != null)
             return mentionedEmotes;
@@ -130,8 +134,10 @@ public abstract class AbstractMentions implements MessageMentions
 
     @Nonnull
     @Override
-    public List<Member> getMembers()
+    public synchronized List<Member> getMembers()
     {
+        if (guild == null)
+            return Collections.emptyList();
         if (mentionedMembers != null)
             return mentionedMembers;
         return mentionedMembers = Collections.unmodifiableList(processMentions(Message.MentionType.USER, new ArrayList<>(), true, this::matchMember));
@@ -141,6 +147,8 @@ public abstract class AbstractMentions implements MessageMentions
     @Override
     public Bag<Member> getMembersBag()
     {
+        if (guild == null)
+            return new HashBag<>();
         return processMentions(Message.MentionType.USER, new HashBag<>(), true, this::matchMember);
     }
 
