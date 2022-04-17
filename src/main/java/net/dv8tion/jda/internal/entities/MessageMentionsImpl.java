@@ -16,51 +16,67 @@
 
 package net.dv8tion.jda.internal.entities;
 
+import gnu.trove.map.TLongObjectMap;
+import gnu.trove.map.hash.TLongObjectHashMap;
 import gnu.trove.set.TLongSet;
+import gnu.trove.set.hash.TLongHashSet;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.utils.MiscUtil;
+import net.dv8tion.jda.api.utils.data.DataArray;
+import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
-import net.dv8tion.jda.internal.entities.EmoteImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import org.apache.commons.collections4.Bag;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.bag.HashBag;
 
 import javax.annotation.Nonnull;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.function.Function;
 import java.util.regex.Matcher;
+import java.util.stream.Collectors;
 
 public class MessageMentionsImpl implements MessageMentions
 {
-    private Message message;
-
+    private final JDAImpl jda;
+    private final GuildImpl guild;
+    private final String content;
+    private final boolean hasMessageReference;
     private final boolean mentionsEveryone;
-    private final TLongSet mentionedUsers;
-    private final TLongSet mentionedRoles;
+    private final TLongObjectMap<DataObject> mentionedMembers;
+    private final TLongObjectMap<DataObject> mentionedRoles;
 
-    private List<User> userMentions = null;
     private List<Member> memberMentions = null;
     private List<Emote> emoteMentions = null;
     private List<Role> roleMentions = null;
-    private List<TextChannel> channelMentions = null;
+    private List<GuildChannel> channelMentions = null;
 
-    public MessageMentionsImpl(boolean mentionsEveryone, TLongSet mentionedUsers, TLongSet mentionedRoles)
+    public MessageMentionsImpl(JDAImpl jda, GuildImpl guild, String content, boolean hasReference,
+                               boolean mentionsEveryone, DataArray userMentions, DataArray roleMentions)
     {
+        this.jda = jda;
+        this.guild = guild;
+        this.content = content;
+        this.hasMessageReference = hasReference;
         this.mentionsEveryone = mentionsEveryone;
-        this.mentionedUsers = mentionedUsers;
-        this.mentionedRoles = mentionedRoles;
+        this.mentionedMembers = new TLongObjectHashMap<>(userMentions.length());
+        this.mentionedRoles = new TLongObjectHashMap<>(roleMentions.length());
+
+        userMentions.stream(DataArray::getObject)
+                .forEach(obj -> mentionedMembers.put(obj.getObject("user").getUnsignedLong("id"), obj));
+        roleMentions.stream(DataArray::getObject)
+                .forEach(obj -> mentionedRoles.put(obj.getUnsignedLong("id"), obj));
     }
 
+    @Nonnull
+    @Override
     public JDA getJDA()
     {
-        return message.getJDA();
-    }
-
-    public Message getMessage()
-    {
-        return message;
+        return jda;
     }
 
     @Override
@@ -69,40 +85,39 @@ public class MessageMentionsImpl implements MessageMentions
         return mentionsEveryone;
     }
 
+    @Nonnull
     @Override
-    public synchronized List<User> getUsers()
+    public List<User> getUsers()
     {
-        if (userMentions == null)
-            userMentions = Collections.unmodifiableList(processMentions(Message.MentionType.USER, new ArrayList<>(), true, this::matchUser));
-        return userMentions;
+        List<Member> members = getMembers();
+        return members.stream().map(Member::getUser).collect(Collectors.toList());
     }
 
-    @Override
     @Nonnull
+    @Override
     public Bag<User> getUsersBag()
     {
         return processMentions(Message.MentionType.USER, new HashBag<>(), false, this::matchUser);
     }
 
-    @Override
     @Nonnull
-    public synchronized List<TextChannel> getChannels()
+    @Override
+    public synchronized List<GuildChannel> getChannels()
     {
-        //TODO-MessageMentions: This needs to be updated as you can match.. quie a few more chanels than just TextChannels
         if (channelMentions == null)
-            channelMentions = Collections.unmodifiableList(processMentions(Message.MentionType.CHANNEL, new ArrayList<>(), true, this::matchTextChannel));
+            channelMentions = Collections.unmodifiableList(processMentions(Message.MentionType.CHANNEL, new ArrayList<>(), true, this::matchChannel));
         return channelMentions;
     }
 
-    @Override
     @Nonnull
-    public Bag<TextChannel> getChannelsBag()
+    @Override
+    public Bag<GuildChannel> getChannelsBag()
     {
-        return processMentions(Message.MentionType.CHANNEL, new HashBag<>(), false, this::matchTextChannel);
+        return processMentions(Message.MentionType.CHANNEL, new HashBag<>(), false, this::matchChannel);
     }
 
-    @Override
     @Nonnull
+    @Override
     public synchronized List<Role> getRoles()
     {
         if (roleMentions == null)
@@ -110,60 +125,71 @@ public class MessageMentionsImpl implements MessageMentions
         return roleMentions;
     }
 
-    @Override
     @Nonnull
+    @Override
     public Bag<Role> getRolesBag()
     {
         return processMentions(Message.MentionType.ROLE, new HashBag<>(), false, this::matchRole);
     }
 
-    @Override
     @Nonnull
-    public List<Member> getMembers(@Nonnull Guild guild)
+    @Override
+    public synchronized List<Member> getMembers()
     {
-        Checks.notNull(guild, "Guild");
-        if (message.isFromGuild() && guild.equals(message.getGuild()) && memberMentions != null)
+        if (guild == null)
+            return Collections.emptyList();
+        if (memberMentions != null)
             return memberMentions;
-        List<User> mentionedUsers = getUsers();
-        List<Member> members = new ArrayList<>();
-        for (User user : mentionedUsers)
-        {
-            Member member = guild.getMember(user);
-            if (member != null)
-                members.add(member);
-        }
 
-        return Collections.unmodifiableList(members);
+        // Parse members from mentions array in order of appearance
+        EntityBuilder entityBuilder = jda.getEntityBuilder();
+        TLongSet unseen = new TLongHashSet(mentionedMembers.keySet());
+        ArrayList<Member> members = processMentions(Message.MentionType.USER, new ArrayList<>(), true, (matcher) -> {
+            long id = Long.parseUnsignedLong(matcher.group(1));
+            DataObject member = mentionedMembers.get(id);
+            unseen.remove(id);
+            return member == null ? null : entityBuilder.createMember(guild, member);
+        });
+
+        // Add reply mention at first index
+        if (hasMessageReference && !unseen.isEmpty())
+            members.add(0, entityBuilder.createMember(guild, mentionedMembers.get(unseen.iterator().next())));
+
+        // Update member cache
+        members.stream()
+               .map(MemberImpl.class::cast)
+               .forEach(entityBuilder::updateMemberCache);
+
+        return memberMentions = Collections.unmodifiableList(members);
     }
 
-    @Override
     @Nonnull
-    public List<Member> getMembers()
+    @Override
+    public Bag<Member> getMembersBag()
     {
-        if (message.isFromGuild())
-            return getMembers(message.getGuild());
-        else
-            throw new IllegalStateException("You must specify a Guild for Messages which are not sent from a TextChannel!");
+        if (guild == null)
+            return new HashBag<>();
+        return processMentions(Message.MentionType.USER, new HashBag<>(), false, this::matchMember);
     }
 
-    @Override
     @Nonnull
+    @Override
     public synchronized List<Emote> getEmotes()
     {
-        if (this.emoteMentions == null)
+        if (emoteMentions == null)
             emoteMentions = Collections.unmodifiableList(processMentions(Message.MentionType.EMOTE, new ArrayList<>(), true, this::matchEmote));
         return emoteMentions;
     }
 
-    @Override
     @Nonnull
+    @Override
     public Bag<Emote> getEmotesBag()
     {
         return processMentions(Message.MentionType.EMOTE, new HashBag<>(), false, this::matchEmote);
     }
 
-    @Override
     @Nonnull
+    @Override
     public List<IMentionable> getMentions(@Nonnull Message.MentionType... types)
     {
         if (types == null || types.length == 0)
@@ -189,7 +215,7 @@ public class MessageMentionsImpl implements MessageMentions
                 break;
             case USER:
                 if (!user)
-                    mentions.addAll(getUsers());
+                    mentions.addAll(getMembers());
                 user = true;
                 break;
             case ROLE:
@@ -265,34 +291,11 @@ public class MessageMentionsImpl implements MessageMentions
         return false;
     }
 
-    // ======== Setters ============
-
-    public void setMessage(Message message)
-    {
-        this.message = message;
-    }
-
-    public void setUserMemberMentions(List<User> users, List<Member> members)
-    {
-        String content = message.getContentRaw();
-        users.sort(Comparator.comparing((user) ->
-                Math.max(content.indexOf("<@" + user.getId() + ">"),
-                        content.indexOf("<@!" + user.getId() + ">")
-                )));
-        members.sort(Comparator.comparing((user) ->
-                Math.max(content.indexOf("<@" + user.getId() + ">"),
-                        content.indexOf("<@!" + user.getId() + ">")
-                )));
-
-        this.userMentions = Collections.unmodifiableList(users);
-        this.memberMentions = Collections.unmodifiableList(members);
-    }
-
     // ============= Internal Helpers =================
 
     private <T, C extends Collection<T>> C processMentions(Message.MentionType type, C collection, boolean distinct, Function<Matcher, T> map)
     {
-        Matcher matcher = type.getPattern().matcher(message.getContentRaw());
+        Matcher matcher = type.getPattern().matcher(content);
         while (matcher.find())
         {
             try
@@ -310,27 +313,49 @@ public class MessageMentionsImpl implements MessageMentions
     private User matchUser(Matcher matcher)
     {
         long userId = MiscUtil.parseSnowflake(matcher.group(1));
-        if (!mentionedUsers.contains(userId))
+        if (!mentionedMembers.containsKey(userId))
             return null;
         User user = getJDA().getUserById(userId);
-        if (user == null && userMentions != null)
-            user = userMentions.stream().filter(it -> it.getIdLong() == userId).findFirst().orElse(null);
+        if (user == null)
+        {
+            user = getMembers().stream()
+                        .filter(it -> it.getIdLong() == userId)
+                        .map(Member::getUser)
+                        .findFirst()
+                        .orElse(null);
+        }
         return user;
     }
 
-    private TextChannel matchTextChannel(Matcher matcher)
+    private Member matchMember(Matcher matcher)
+    {
+        long userId = MiscUtil.parseSnowflake(matcher.group(1));
+        if (!mentionedMembers.containsKey(userId))
+            return null;
+        Member member = guild.getMemberById(userId);
+        if (member == null)
+        {
+            member = getMembers().stream()
+                        .filter(it -> it.getIdLong() == userId)
+                        .findFirst()
+                        .orElse(null);
+        }
+        return member;
+    }
+
+    private GuildChannel matchChannel(Matcher matcher)
     {
         long channelId = MiscUtil.parseSnowflake(matcher.group(1));
-        return getJDA().getTextChannelById(channelId);
+        return getJDA().getGuildChannelById(channelId);
     }
 
     private Role matchRole(Matcher matcher)
     {
         long roleId = MiscUtil.parseSnowflake(matcher.group(1));
-        if (!mentionedRoles.contains(roleId))
+        if (!mentionedRoles.containsKey(roleId))
             return null;
-        if (message.getChannelType().isGuild())
-            return message.getGuild().getRoleById(roleId);
+        if (guild != null)
+            return guild.getRoleById(roleId);
         else
             return getJDA().getRoleById(roleId);
     }
@@ -342,7 +367,7 @@ public class MessageMentionsImpl implements MessageMentions
         boolean animated = m.group(0).startsWith("<a:");
         Emote emote = getJDA().getEmoteById(emoteId);
         if (emote == null)
-            emote = new EmoteImpl(emoteId, (JDAImpl) message.getJDA()).setName(name).setAnimated(animated);
+            emote = new EmoteImpl(emoteId, jda).setName(name).setAnimated(animated);
         return emote;
     }
 
@@ -371,9 +396,9 @@ public class MessageMentionsImpl implements MessageMentions
             final Member member = (Member) mentionable;
             return CollectionUtils.containsAny(getRoles(), member.getRoles());
         }
-        else if (message.isFromGuild() && mentionable instanceof User)
+        else if (guild != null && mentionable instanceof User)
         {
-            final Member member = message.getGuild().getMember((User) mentionable);
+            final Member member = guild.getMember((User) mentionable);
             return member != null && CollectionUtils.containsAny(getRoles(), member.getRoles());
         }
         return false;
@@ -381,6 +406,6 @@ public class MessageMentionsImpl implements MessageMentions
 
     private boolean isMass(String s)
     {
-        return mentionsEveryone && message.getContentRaw().contains(s);
+        return mentionsEveryone && content.contains(s);
     }
 }

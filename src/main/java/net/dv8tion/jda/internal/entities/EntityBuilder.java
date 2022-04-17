@@ -1389,6 +1389,10 @@ public class EntityBuilder
 
     private ReceivedMessage createMessage0(DataObject jsonObject, @Nonnull MessageChannel channel, boolean modifyCache)
     {
+        MessageType type = MessageType.fromId(jsonObject.getInt("type"));
+        if (type == MessageType.UNKNOWN)
+            throw new IllegalArgumentException(UNKNOWN_MESSAGE_TYPE);
+
         final long id = jsonObject.getLong("id");
         final DataObject author = jsonObject.getObject("author");
         final long authorId = author.getLong("id");
@@ -1472,10 +1476,6 @@ public class EntityBuilder
                 mentionedRoles.add(arr.getLong(i));
         });
 
-        MessageMentions mentions = new MessageMentionsImpl(mentionsEveryone, mentionedUsers, mentionedRoles);
-
-        MessageType type = MessageType.fromId(jsonObject.getInt("type"));
-        ReceivedMessage message;
         Message referencedMessage = null;
         if (!jsonObject.isNull("referenced_message"))
         {
@@ -1534,56 +1534,22 @@ public class EntityBuilder
             messageInteraction = createMessageInteraction(guild, jsonObject.getObject("interaction"));
         }
 
-        if (type == MessageType.UNKNOWN)
-            throw new IllegalArgumentException(UNKNOWN_MESSAGE_TYPE);
+        GuildImpl guild = channel instanceof GuildChannel ? ((AbstractGuildChannelImpl<?>) channel).getGuild() : null;
+        MessageMentions mentions = new MessageMentionsImpl(
+            api, guild, content, messageReference != null,
+            mentionsEveryone, jsonObject.getArray("mentions"), jsonObject.getArray("mention_roles")
+        );
+
         if (!type.isSystem())
         {
-            message = new ReceivedMessage(id, channel, type, messageReference, fromWebhook, tts, pinned,
+            return new ReceivedMessage(id, channel, type, messageReference, fromWebhook, tts, pinned,
                     content, nonce, user, member, activity, editTime, mentions, reactions, attachments, embeds, stickers, components, flags, messageInteraction);
         }
         else
         {
-            message = new SystemMessage(id, channel, type, messageReference, fromWebhook, tts, pinned,
+            return new SystemMessage(id, channel, type, messageReference, fromWebhook, tts, pinned,
                     content, nonce, user, member, activity, editTime, mentions, reactions, attachments, embeds, stickers, flags);
-
-            return message; // We don't need to parse mentions for system messages, they are always empty anyway
         }
-
-        GuildImpl guild = message.isFromGuild() ? (GuildImpl) message.getGuild() : null;
-
-        // Load users/members from message object through mentions
-        List<User> mentionedUsersList = new ArrayList<>();
-        List<Member> mentionedMembersList = new ArrayList<>();
-        DataArray userMentions = jsonObject.getArray("mentions");
-
-        for (int i = 0; i < userMentions.length(); i++)
-        {
-            DataObject mentionJson = userMentions.getObject(i);
-            if (guild == null || mentionJson.isNull("member"))
-            {
-                // Can't load user without member context so fake them if possible
-                User mentionedUser = createUser(mentionJson);
-                mentionedUsersList.add(mentionedUser);
-                if (guild != null)
-                {
-                    Member mentionedMember = guild.getMember(mentionedUser);
-                    if (mentionedMember != null)
-                        mentionedMembersList.add(mentionedMember);
-                }
-                continue;
-            }
-
-            // Load member/user from mention (gateway messages only)
-            DataObject memberJson = mentionJson.getObject("member");
-            mentionJson.remove("member");
-            memberJson.put("user", mentionJson);
-            Member mentionedMember = createMember(guild, memberJson);
-            mentionedMembersList.add(mentionedMember);
-            mentionedUsersList.add(mentionedMember.getUser());
-        }
-
-        ((MessageMentionsImpl) message.getMentions()).setUserMemberMentions(mentionedUsersList, mentionedMembersList);
-        return message;
     }
 
     private static MessageActivity createMessageActivity(DataObject jsonObject)

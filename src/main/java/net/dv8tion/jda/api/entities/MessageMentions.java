@@ -26,16 +26,11 @@ import java.util.List;
 public interface MessageMentions
 {
     //TODO-v5 | Docs
+    @Nonnull
     JDA getJDA();
 
-    //TODO-v5 | Docs
-    Message getMessage();
-
     /**
-     * Indicates if this Message mentions everyone using @everyone or @here.
-     *
-     * @throws java.lang.UnsupportedOperationException
-     *         If this is a system message
+     * Indicates if this Message mentions everyone, using @everyone or @here.
      *
      * @return True, if message is mentioning everyone
      */
@@ -46,11 +41,9 @@ public interface MessageMentions
      * <br>If no user was mentioned, this list is empty. Elements are sorted in order of appearance. This only
      * counts direct mentions of the user and not mentions through roles or the everyone tag.
      *
-     * @throws java.lang.UnsupportedOperationException
-     *         If this is a system message
-     *
      * @return immutable list of mentioned users
      */
+    @Nonnull
     List<User> getUsers();
 
     /**
@@ -62,8 +55,8 @@ public interface MessageMentions
      * <pre>{@code
      * void sendCount(Message msg)
      * {
-     *     List<User> mentions = msg.getMentionedUsers(); // distinct list, in order of appearance
-     *     Bag<User> count = msg.getMentionedUsersBag();
+     *     List<User> mentions = msg.getMentions().getUsers(); // distinct list, in order of appearance
+     *     Bag<User> count = msg.getMentions().getUsersBag();
      *     StringBuilder content = new StringBuilder();
      *     for (User user : mentions)
      *     {
@@ -76,9 +69,6 @@ public interface MessageMentions
      * }
      * }</pre>
      *
-     * @throws java.lang.UnsupportedOperationException
-     *         If this is a system message
-     *
      * @return {@link org.apache.commons.collections4.Bag Bag} of mentioned users
      *
      * @see    #getUsers()
@@ -87,18 +77,15 @@ public interface MessageMentions
     Bag<User> getUsersBag();
 
     /**
-     * A immutable list of all mentioned {@link net.dv8tion.jda.api.entities.TextChannel TextChannels}.
+     * A immutable list of all mentioned {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannels}.
      * <br>If none were mentioned, this list is empty. Elements are sorted in order of appearance.
      *
-     * <p><b>This may include TextChannels from other {@link net.dv8tion.jda.api.entities.Guild Guilds}</b>
-     *
-     * @throws java.lang.UnsupportedOperationException
-     *         If this is a system message
+     * <p><b>This may include GuildChannels from other {@link net.dv8tion.jda.api.entities.Guild Guilds}</b>
      *
      * @return immutable list of mentioned TextChannels
      */
     @Nonnull
-    List<TextChannel> getChannels();
+    List<GuildChannel> getChannels();
 
     /**
      * A {@link org.apache.commons.collections4.Bag Bag} of mentioned channels.
@@ -108,10 +95,10 @@ public interface MessageMentions
      * <pre>{@code
      * void sendCount(Message msg)
      * {
-     *     List<TextChannel> mentions = msg.getMentionedTextChannels(); // distinct list, in order of appearance
-     *     Bag<TextChannel> count = msg.getMentionedTextChannelsBag();
+     *     List<GuildChannel> mentions = msg.getMentions().getChannels(); // distinct list, in order of appearance
+     *     Bag<GuildChannel> count = msg.getMentions().getChannelsBag();
      *     StringBuilder content = new StringBuilder();
-     *     for (TextChannel channel : mentions)
+     *     for (GuildChannel channel : mentions)
      *     {
      *         content.append("#")
      *                .append(channel.getName())
@@ -123,15 +110,12 @@ public interface MessageMentions
      * }
      * }</pre>
      *
-     * @throws java.lang.UnsupportedOperationException
-     *         If this is a system message
-     *
      * @return {@link org.apache.commons.collections4.Bag Bag} of mentioned channels
      *
      * @see    #getChannels()
      */
     @Nonnull
-    Bag<TextChannel> getChannelsBag();
+    Bag<GuildChannel> getChannelsBag();
 
     /**
      * A immutable list of all mentioned {@link net.dv8tion.jda.api.entities.Role Roles}.
@@ -139,9 +123,6 @@ public interface MessageMentions
      * counts direct mentions of the role and not mentions through the everyone tag.
      *
      * <p><b>This may include Roles from other {@link net.dv8tion.jda.api.entities.Guild Guilds}</b>
-     *
-     * @throws java.lang.UnsupportedOperationException
-     *         If this is a system message
      *
      * @return immutable list of mentioned Roles
      */
@@ -152,14 +133,13 @@ public interface MessageMentions
      * A {@link org.apache.commons.collections4.Bag Bag} of mentioned roles.
      * <br>This can be used to retrieve the amount of times a role was mentioned in this message. This only
      * counts direct mentions of the role and not mentions through the everyone tag.
-     * If a role is not {@link net.dv8tion.jda.api.entities.Role#isMentionable() mentionable} it will not be included.
      *
      * <h2>Example</h2>
      * <pre>{@code
      * void sendCount(Message msg)
      * {
-     *     List<Role> mentions = msg.getMentionedRoles(); // distinct list, in order of appearance
-     *     Bag<Role> count = msg.getMentionedRolesBag();
+     *     List<Role> mentions = msg.getMentions().getRoles(); // distinct list, in order of appearance
+     *     Bag<Role> count = msg.getMentions().getRolesBag();
      *     StringBuilder content = new StringBuilder();
      *     for (Role role : mentions)
      *     {
@@ -171,9 +151,6 @@ public interface MessageMentions
      *     msg.getChannel().sendMessage(content.toString()).queue();
      * }
      * }</pre>
-     *
-     * @throws java.lang.UnsupportedOperationException
-     *         If this is a system message
      *
      * @return {@link org.apache.commons.collections4.Bag Bag} of mentioned roles
      *
@@ -190,9 +167,6 @@ public interface MessageMentions
      *
      * <p><b><u>Unicode emojis are not included as {@link net.dv8tion.jda.api.entities.Emote Emote}!</u></b>
      *
-     * @throws java.lang.UnsupportedOperationException
-     *         If this is a system message
-     *
      * @return An immutable list of the Emotes used in this message (example match {@literal <:jda:230988580904763393>})
      */
     @Nonnull
@@ -206,8 +180,8 @@ public interface MessageMentions
      * <pre>{@code
      * void sendCount(Message msg)
      * {
-     *     List<Emote> emotes = msg.getEmotes(); // distinct list, in order of appearance
-     *     Bag<Emote> count = msg.getEmotesBag();
+     *     List<Emote> emotes = msg.getMentions().getEmotes(); // distinct list, in order of appearance
+     *     Bag<Emote> count = msg.getMentions().getEmotesBag();
      *     StringBuilder content = new StringBuilder();
      *     for (Emote emote : emotes)
      *     {
@@ -220,9 +194,6 @@ public interface MessageMentions
      * }
      * }</pre>
      *
-     * @throws java.lang.UnsupportedOperationException
-     *         If this is a system message
-     *
      * @return {@link org.apache.commons.collections4.Bag Bag} of used emotes
      *
      * @see    #getEmotes()
@@ -232,50 +203,21 @@ public interface MessageMentions
 
     /**
      * Creates an immutable list of {@link net.dv8tion.jda.api.entities.Member Members}
-     * representing the users of {@link #getUsers()} in the specified
-     * {@link net.dv8tion.jda.api.entities.Guild Guild}.
-     * <br>This is only a convenience method and will skip all users that are not in the specified
-     * Guild.
-     *
-     * @param  guild
-     *         Non-null {@link net.dv8tion.jda.api.entities.Guild Guild}
-     *         that will be used to retrieve Members.
-     *
-     * @throws java.lang.UnsupportedOperationException
-     *         If this is a system message
-     * @throws java.lang.IllegalArgumentException
-     *         If the specified Guild is {@code null}
-     *
-     * @return Immutable list of mentioned Members
-     *
-     * @since  3.4.0
-     */
-    @Nonnull
-    List<Member> getMembers(@Nonnull Guild guild);
-
-    /**
-     * Creates an immutable list of {@link net.dv8tion.jda.api.entities.Member Members}
      * representing the users of {@link #getUsers()} in the
      * {@link net.dv8tion.jda.api.entities.Guild Guild} this Message was sent in.
-     * <br>This is only a convenience method and will skip all users that are not in the specified Guild.
-     * <br>It will provide the {@link Message()#getGuild() Message's Guild} to {@link #getMembers(Guild)}.
      *
-     * @throws java.lang.UnsupportedOperationException
-     *         If this is a system message
-     * @throws java.lang.IllegalStateException
-     *         If this message was not sent in a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
-     *
-     * @return Immutable list of mentioned Members
-     *
-     * @since  3.4.0
+     * @return Immutable list of mentioned Members, or an empty list if this message was not sent in a guild
      */
     @Nonnull
     List<Member> getMembers();
 
+    @Nonnull
+    Bag<Member> getMembersBag();
+
     /**
      * Combines all instances of {@link net.dv8tion.jda.api.entities.IMentionable IMentionable}
      * filtered by the specified {@link net.dv8tion.jda.api.entities.Message.MentionType MentionType} values.
-     * <br>This does not include {@link #getMembers()} to avoid duplicates.
+     * <br>This does not include {@link #getUsers()} to avoid duplicates.
      *
      * <p>If no MentionType values are given this will fallback to all types.
      *
@@ -283,14 +225,10 @@ public interface MessageMentions
      *         Amount of {@link net.dv8tion.jda.api.entities.Message.MentionType MentionTypes}
      *         to include in the list of mentions
      *
-     * @throws java.lang.UnsupportedOperationException
-     *         If this is a system message
      * @throws java.lang.IllegalArgumentException
      *         If provided with {@code null}
      *
      * @return Immutable list of filtered {@link net.dv8tion.jda.api.entities.IMentionable IMentionable} instances
-     *
-     * @since  3.4.0
      */
     @Nonnull
     List<IMentionable> getMentions(@Nonnull Message.MentionType... types);
@@ -311,9 +249,6 @@ public interface MessageMentions
      * @param  types
      *         The types to include when checking whether this type was mentioned.
      *         This will be used with {@link #getMentions(Message.MentionType...) getMentions(MentionType...)}
-     *
-     * @throws java.lang.UnsupportedOperationException
-     *         If this is a system message
      *
      * @return True, if the given mentionable was mentioned in this message
      */
