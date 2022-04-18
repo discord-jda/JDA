@@ -10,6 +10,10 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+/**
+ * Class which contains a mapping from {@link Locale} to a translated String, similar to a {@code Map<Locale, String>}.
+ * <br>This is used for command localization.
+ */
 public class LocalizationMap implements SerializableData
 {
     private final Map<Locale, String> map = new HashMap<>();
@@ -22,6 +26,18 @@ public class LocalizationMap implements SerializableData
             map.put(Locale.forLanguageTag(key), data.getString(key));
     }
 
+    /**
+     * Parses the provided serialization back into an LocalizationMap instance.
+     * <br>This is the reverse function for {@link #toData()}.
+     *
+     * @param  data
+     *         The serialized {@link DataObject} representing the localization map
+     *
+     * @throws net.dv8tion.jda.api.exceptions.ParsingException
+     *         If the serialized object is missing required fields
+     *
+     * @return The parsed LocalizationMap instance, which can be further configured through setters
+     */
     @Nonnull
     public static LocalizationMap fromData(@Nonnull DataObject data)
     {
