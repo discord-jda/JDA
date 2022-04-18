@@ -123,8 +123,8 @@ dependencies {
     //General Utility
     implementation("net.sf.trove4j:trove4j:3.0.3")
     // Match the minor version of lavaplayers jackson dependency
-    implementation("com.fasterxml.jackson.core:jackson-core:2.10.5")
-    implementation("com.fasterxml.jackson.core:jackson-databind:2.10.5.1")
+    implementation("com.fasterxml.jackson.core:jackson-core:2.13.2")
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.13.2.2")
 
     //Sets the dependencies for the examples
     configurations["examplesImplementation"].withDependencies {
@@ -264,8 +264,7 @@ javadoc.apply {
         opt.tags("incubating:a:Incubating:")
         opt.links(
                 "https://docs.oracle.com/javase/8/docs/api/",
-                "https://takahikokawasaki.github.io/nv-websocket-client/",
-                "https://javadoc.io/doc/com.squareup.okhttp3/okhttp/3.13.0/")
+                "https://takahikokawasaki.github.io/nv-websocket-client/")
         if (JavaVersion.VERSION_1_8 < javaVersion) {
             opt.addBooleanOption("html5", true) // Adds search bar
             opt.addStringOption("-release", "8")
