@@ -114,11 +114,11 @@ public class AnnotatedEventManager implements IEventManager
         methods.clear();
         for (Object listener : listeners)
         {
-            addMethod(listener);
+            scanListenerForMethods(listener);
         }
     }
 
-    private void addMethod(@Nonnull Object listener)
+    private void scanListenerForMethods(@Nonnull Object listener)
     {
         boolean isClass = listener instanceof Class;
         Class<?> c = isClass ? (Class<?>) listener : listener.getClass();
