@@ -72,7 +72,7 @@ public class BanPaginationActionImpl
             }
         }
 
-        if (order == PaginationOrder.FORWARD)
+        if (order == PaginationOrder.BACKWARD)
             Collections.reverse(bans);
         if (useCache)
             cached.addAll(bans);
