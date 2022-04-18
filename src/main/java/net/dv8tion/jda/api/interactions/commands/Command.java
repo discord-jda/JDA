@@ -401,7 +401,7 @@ public interface Command extends ISnowflake
             {
                 setStringValue(json.getString("value"));
             }
-            this.nameLocalizations = CommandImpl.parseLocalization(json, "name_localizations");
+            this.nameLocalizations = LocalizationMap.fromProperty(json, "name_localizations");
         }
 
         /**
@@ -569,9 +569,9 @@ public interface Command extends ISnowflake
         public Option(@Nonnull DataObject json)
         {
             this.name = json.getString("name");
-            this.nameLocalizations = CommandImpl.parseLocalization(json, "name_localizations");
+            this.nameLocalizations = LocalizationMap.fromProperty(json, "name_localizations");
             this.description = json.getString("description");
-            this.descriptionLocalizations = CommandImpl.parseLocalization(json, "description_localizations");
+            this.descriptionLocalizations = LocalizationMap.fromProperty(json, "description_localizations");
             this.type = json.getInt("type");
             this.required = json.getBoolean("required");
             this.autoComplete = json.getBoolean("autocomplete");
@@ -765,9 +765,9 @@ public interface Command extends ISnowflake
         public Subcommand(DataObject json)
         {
             this.name = json.getString("name");
-            this.nameLocalizations = CommandImpl.parseLocalization(json, "name_localizations");
+            this.nameLocalizations = LocalizationMap.fromProperty(json, "name_localizations");
             this.description = json.getString("description");
-            this.descriptionLocalizations = CommandImpl.parseLocalization(json, "description_localizations");
+            this.descriptionLocalizations = LocalizationMap.fromProperty(json, "description_localizations");
             this.options = CommandImpl.parseOptions(json, CommandImpl.OPTION_TEST, Option::new);
         }
 
@@ -863,9 +863,9 @@ public interface Command extends ISnowflake
         public SubcommandGroup(DataObject json)
         {
             this.name = json.getString("name");
-            this.nameLocalizations = CommandImpl.parseLocalization(json, "name_localizations");
+            this.nameLocalizations = LocalizationMap.fromProperty(json, "name_localizations");
             this.description = json.getString("description");
-            this.descriptionLocalizations = CommandImpl.parseLocalization(json, "description_localizations");
+            this.descriptionLocalizations = LocalizationMap.fromProperty(json, "description_localizations");
             this.subcommands = CommandImpl.parseOptions(json, CommandImpl.SUBCOMMAND_TEST, Subcommand::new);
         }
 

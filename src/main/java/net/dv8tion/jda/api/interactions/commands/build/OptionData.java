@@ -25,7 +25,6 @@ import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.DataType;
 import net.dv8tion.jda.api.utils.data.SerializableData;
-import net.dv8tion.jda.internal.interactions.command.CommandImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
@@ -914,8 +913,8 @@ public class OptionData implements SerializableData
                         .collect(Collectors.toList())
                 )
         );
-        option.nameLocalizations = CommandImpl.parseLocalization(json, "name_localizations");
-        option.descriptionLocalizations = CommandImpl.parseLocalization(json, "description_localizations");
+        option.nameLocalizations = LocalizationMap.fromProperty(json, "name_localizations");
+        option.descriptionLocalizations = LocalizationMap.fromProperty(json, "description_localizations");
         return option;
     }
 

@@ -23,7 +23,6 @@ import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.SerializableData;
-import net.dv8tion.jda.internal.interactions.command.CommandImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
@@ -412,8 +411,8 @@ public class SubcommandData implements SerializableData
                         .map(OptionData::fromData)
                         .forEach(sub::addOptions)
         );
-        sub.nameLocalizations = CommandImpl.parseLocalization(json, "name_localizations");
-        sub.descriptionLocalizations = CommandImpl.parseLocalization(json, "description_localizations");
+        sub.nameLocalizations = LocalizationMap.fromProperty(json, "name_localizations");
+        sub.descriptionLocalizations = LocalizationMap.fromProperty(json, "description_localizations");
 
         return sub;
     }

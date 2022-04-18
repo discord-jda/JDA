@@ -29,6 +29,13 @@ public class LocalizationMap implements SerializableData
     }
 
     @Nonnull
+    public static LocalizationMap fromProperty(@Nonnull DataObject json, @Nonnull String localizationProperty) {
+        return json.optObject(localizationProperty)
+                .map(LocalizationMap::fromData)
+                .orElse(new LocalizationMap());
+    }
+
+    @Nonnull
     @Override
     public DataObject toData()
     {

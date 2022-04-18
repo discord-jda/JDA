@@ -24,7 +24,6 @@ import net.dv8tion.jda.api.interactions.commands.privileges.CommandPrivilege;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
-import net.dv8tion.jda.internal.interactions.command.CommandImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
@@ -169,7 +168,7 @@ public interface CommandData extends SerializableData
         if (commandType != Command.Type.SLASH)
         {
             final CommandDataImpl data = new CommandDataImpl(commandType, name);
-            data.setNameLocalizations(CommandImpl.parseLocalization(object, "name_localizations"));
+            data.setNameLocalizations(LocalizationMap.fromProperty(object, "name_localizations"));
 
             return data;
         }
