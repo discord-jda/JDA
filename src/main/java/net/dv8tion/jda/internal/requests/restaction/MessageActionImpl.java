@@ -500,6 +500,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
         return builder.build();
     }
 
+    @SuppressWarnings("deprecation")
     protected RequestBody asJSON()
     {
         return RequestBody.create(Requester.MEDIA_TYPE_JSON, getJSON().toJson());
