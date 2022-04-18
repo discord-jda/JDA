@@ -75,12 +75,12 @@ public class LocalizationMap implements SerializableData
     }
 
     /**
-     * Sets the given localized string to be used for the specified locales
+     * Sets the given localized string to be used for the specified locales.
      *
      * @param  localizedString
      *         The localized string to use
      * @param  locales
-     *         The locales on which to apply the localized strings
+     *         The locales on which to apply the localized string
      */
     public void setTranslations(@Nonnull String localizedString, @Nonnull Locale... locales)
     {
@@ -88,21 +88,49 @@ public class LocalizationMap implements SerializableData
             map.put(locale, localizedString);
     }
 
+    /**
+     * Adds all the translations from the supplied map into this LocalizationMap.
+     *
+     * @param  map
+     *         The map containing the localized strings
+     */
     public void putTranslations(@Nonnull Map<Locale, String> map)
     {
         this.map.putAll(map);
     }
 
+    /**
+     * Sets the given localized string to be used for the specified locale.
+     *
+     * @param  localizedString
+     *         The localized string to use
+     * @param  locale
+     *         The locale on which to apply the localized string
+     */
     public void setTranslation(@Nonnull String localizedString, @Nonnull Locale locale) {
         map.put(locale, localizedString);
     }
 
+    /**
+     * Gets the localized string for the specified {@link Locale}.
+     *
+     * @param  locale
+     *         The locale from which to get the localized string
+     *
+     * @return Possibly-null localized string
+     */
     @Nullable
     public String get(@Nonnull Locale locale)
     {
         return map.get(locale);
     }
 
+    /**
+     * Gets the <b>unmodifiable</b> map representing this LocalizationMap.
+     * <br>The changes on this LocalizationMap will be reflected on the returned map.
+     *
+     * @return The unmodifiable map of this LocalizationMap
+     */
     @Nonnull
     public Map<Locale, String> toMap()
     {
