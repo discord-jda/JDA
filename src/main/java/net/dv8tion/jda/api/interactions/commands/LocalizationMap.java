@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.function.Consumer;
 
 /**
  * Class which contains a mapping from {@link Locale} to a translated String, similar to a {@code Map<Locale, String>}.
@@ -16,12 +17,18 @@ import java.util.Map;
  */
 public class LocalizationMap implements SerializableData
 {
+    public static final Consumer<String> UNMODIFIABLE_CHECK = s -> { throw new IllegalStateException("This LocalizationMap is unmodifiable."); };
+
     private final Map<Locale, String> map = new HashMap<>();
+    private final Consumer<String> checkConsumer;
 
-    public LocalizationMap() {}
+    public LocalizationMap(@Nonnull Consumer<String> checkConsumer) {
+        this.checkConsumer = checkConsumer;
+    }
 
-    private LocalizationMap(@Nonnull DataObject data)
+    private LocalizationMap(@Nonnull Consumer<String> checkConsumer, @Nonnull DataObject data)
     {
+        this(checkConsumer);
         for (String key : data.keys())
             setTranslation(data.getString(key), Locale.forLanguageTag(key));
     }
@@ -39,9 +46,9 @@ public class LocalizationMap implements SerializableData
      * @return The parsed LocalizationMap instance, which can be further configured through setters
      */
     @Nonnull
-    public static LocalizationMap fromData(@Nonnull DataObject data)
+    public static LocalizationMap fromData(@Nonnull Consumer<String> checkConsumer, @Nonnull DataObject data)
     {
-        return new LocalizationMap(data);
+        return new LocalizationMap(checkConsumer, data);
     }
 
     /**
@@ -59,10 +66,10 @@ public class LocalizationMap implements SerializableData
      * @return The parsed LocalizationMap instance, which can be further configured through setters
      */
     @Nonnull
-    public static LocalizationMap fromProperty(@Nonnull DataObject json, @Nonnull String localizationProperty) {
+    public static LocalizationMap fromProperty(@Nonnull DataObject json, @Nonnull String localizationProperty, @Nonnull Consumer<String> checkConsumer) {
         return json.optObject(localizationProperty)
-                .map(LocalizationMap::fromData)
-                .orElse(new LocalizationMap());
+                .map(data -> fromData(checkConsumer, data))
+                .orElse(new LocalizationMap(checkConsumer));
     }
 
     @Nonnull
@@ -84,6 +91,7 @@ public class LocalizationMap implements SerializableData
      */
     public void setTranslations(@Nonnull String localizedString, @Nonnull Locale... locales)
     {
+        checkConsumer.accept(localizedString);
         for (Locale locale : locales)
             map.put(locale, localizedString);
     }
@@ -96,6 +104,8 @@ public class LocalizationMap implements SerializableData
      */
     public void putTranslations(@Nonnull Map<Locale, String> map)
     {
+        for (String localizedString : map.values())
+            checkConsumer.accept(localizedString);
         this.map.putAll(map);
     }
 
@@ -108,6 +118,7 @@ public class LocalizationMap implements SerializableData
      *         The locale on which to apply the localized string
      */
     public void setTranslation(@Nonnull String localizedString, @Nonnull Locale locale) {
+        checkConsumer.accept(localizedString);
         map.put(locale, localizedString);
     }
 

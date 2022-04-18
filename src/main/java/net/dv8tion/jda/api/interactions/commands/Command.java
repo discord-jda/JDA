@@ -38,6 +38,8 @@ import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static net.dv8tion.jda.api.interactions.commands.LocalizationMap.UNMODIFIABLE_CHECK;
+
 /**
  * Represents a Discord slash-command.
  * <br>This can be used to edit or delete the command.
@@ -325,7 +327,7 @@ public interface Command extends ISnowflake
     class Choice
     {
         private final String name;
-        private LocalizationMap nameLocalizations = new LocalizationMap();
+        private LocalizationMap nameLocalizations = new LocalizationMap(s -> {});
         private long intValue = 0;
         private double doubleValue = Double.NaN;
         private String stringValue = null;
@@ -400,7 +402,7 @@ public interface Command extends ISnowflake
             {
                 setStringValue(json.getString("value"));
             }
-            this.nameLocalizations = LocalizationMap.fromProperty(json, "name_localizations");
+            this.nameLocalizations = LocalizationMap.fromProperty(json, "name_localizations", s -> {});
         }
 
         /**
@@ -568,9 +570,9 @@ public interface Command extends ISnowflake
         public Option(@Nonnull DataObject json)
         {
             this.name = json.getString("name");
-            this.nameLocalizations = LocalizationMap.fromProperty(json, "name_localizations");
+            this.nameLocalizations = LocalizationMap.fromProperty(json, "name_localizations", UNMODIFIABLE_CHECK);
             this.description = json.getString("description");
-            this.descriptionLocalizations = LocalizationMap.fromProperty(json, "description_localizations");
+            this.descriptionLocalizations = LocalizationMap.fromProperty(json, "description_localizations", UNMODIFIABLE_CHECK);
             this.type = json.getInt("type");
             this.required = json.getBoolean("required");
             this.autoComplete = json.getBoolean("autocomplete");
@@ -764,9 +766,9 @@ public interface Command extends ISnowflake
         public Subcommand(DataObject json)
         {
             this.name = json.getString("name");
-            this.nameLocalizations = LocalizationMap.fromProperty(json, "name_localizations");
+            this.nameLocalizations = LocalizationMap.fromProperty(json, "name_localizations", UNMODIFIABLE_CHECK);
             this.description = json.getString("description");
-            this.descriptionLocalizations = LocalizationMap.fromProperty(json, "description_localizations");
+            this.descriptionLocalizations = LocalizationMap.fromProperty(json, "description_localizations", UNMODIFIABLE_CHECK);
             this.options = CommandImpl.parseOptions(json, CommandImpl.OPTION_TEST, Option::new);
         }
 
@@ -862,9 +864,9 @@ public interface Command extends ISnowflake
         public SubcommandGroup(DataObject json)
         {
             this.name = json.getString("name");
-            this.nameLocalizations = LocalizationMap.fromProperty(json, "name_localizations");
+            this.nameLocalizations = LocalizationMap.fromProperty(json, "name_localizations", UNMODIFIABLE_CHECK);
             this.description = json.getString("description");
-            this.descriptionLocalizations = LocalizationMap.fromProperty(json, "description_localizations");
+            this.descriptionLocalizations = LocalizationMap.fromProperty(json, "description_localizations", UNMODIFIABLE_CHECK);
             this.subcommands = CommandImpl.parseOptions(json, CommandImpl.SUBCOMMAND_TEST, Subcommand::new);
         }
 

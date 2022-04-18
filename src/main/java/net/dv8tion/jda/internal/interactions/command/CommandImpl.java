@@ -38,6 +38,8 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import static net.dv8tion.jda.api.interactions.commands.LocalizationMap.UNMODIFIABLE_CHECK;
+
 public class CommandImpl implements Command
 {
     public static final EnumSet<OptionType> OPTIONS = EnumSet.complementOf(EnumSet.of(OptionType.SUB_COMMAND, OptionType.SUB_COMMAND_GROUP));
@@ -62,9 +64,9 @@ public class CommandImpl implements Command
         this.api = api;
         this.guild = guild;
         this.name = json.getString("name");
-        this.nameLocalizations = LocalizationMap.fromProperty(json, "name_localizations");
+        this.nameLocalizations = LocalizationMap.fromProperty(json, "name_localizations", UNMODIFIABLE_CHECK);
         this.description = json.getString("description", "");
-        this.descriptionLocalizations = LocalizationMap.fromProperty(json, "description_localizations");
+        this.descriptionLocalizations = LocalizationMap.fromProperty(json, "description_localizations", UNMODIFIABLE_CHECK);
         this.type = Command.Type.fromId(json.getInt("type", 1));
         this.id = json.getUnsignedLong("id");
         this.defaultEnabled = json.getBoolean("default_permission");

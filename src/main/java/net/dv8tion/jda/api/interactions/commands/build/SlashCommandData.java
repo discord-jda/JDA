@@ -401,8 +401,8 @@ public interface SlashCommandData extends CommandData
         String description = object.getString("description");
         DataArray options = object.optArray("options").orElseGet(DataArray::empty);
         CommandDataImpl command = new CommandDataImpl(name, description);
-        command.setNameLocalizations(LocalizationMap.fromProperty(object, "name_localizations"));
-        command.setDescriptionLocalizations(LocalizationMap.fromProperty(object, "description_localizations"));
+        command.setNameLocalizations(LocalizationMap.fromProperty(object, "name_localizations", command::checkName));
+        command.setDescriptionLocalizations(LocalizationMap.fromProperty(object, "description_localizations", command::checkDescription));
         options.stream(DataArray::getObject).forEach(opt ->
         {
             OptionType type = OptionType.fromKey(opt.getInt("type"));

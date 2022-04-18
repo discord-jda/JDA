@@ -39,8 +39,8 @@ public class SubcommandGroupData implements SerializableData
 {
     private final DataArray options = DataArray.empty();
     private String name, description;
-    private LocalizationMap nameLocalizations = new LocalizationMap();
-    private LocalizationMap descriptionLocalizations = new LocalizationMap();
+    private LocalizationMap nameLocalizations = new LocalizationMap(this::checkName);
+    private LocalizationMap descriptionLocalizations = new LocalizationMap(this::checkDescription);
 
     /**
      * Create an group builder.
@@ -115,7 +115,7 @@ public class SubcommandGroupData implements SerializableData
     @Nonnull
     public SubcommandGroupData setName(@Nonnull String name, @Nonnull Locale... locales)
     {
-        checkName(name);
+        //Checks are done in LocalizationMap
         nameLocalizations.setTranslations(name, locales);
         return this;
     }
@@ -152,7 +152,7 @@ public class SubcommandGroupData implements SerializableData
     @Nonnull
     public SubcommandGroupData setDescription(@Nonnull String description, @Nonnull Locale... locales)
     {
-        checkDescription(description);
+        //Checks are done in LocalizationMap
         descriptionLocalizations.setTranslations(description, locales);
         return this;
     }
@@ -298,8 +298,8 @@ public class SubcommandGroupData implements SerializableData
                         .map(SubcommandData::fromData)
                         .forEach(group::addSubcommands)
         );
-        group.nameLocalizations = LocalizationMap.fromProperty(json, "name_localizations");
-        group.descriptionLocalizations = LocalizationMap.fromProperty(json, "description_localizations");
+        group.nameLocalizations = LocalizationMap.fromProperty(json, "name_localizations", group::checkName);
+        group.descriptionLocalizations = LocalizationMap.fromProperty(json, "description_localizations", group::checkDescription);
 
         return group;
     }

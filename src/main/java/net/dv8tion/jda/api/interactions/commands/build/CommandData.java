@@ -168,7 +168,7 @@ public interface CommandData extends SerializableData
         if (commandType != Command.Type.SLASH)
         {
             final CommandDataImpl data = new CommandDataImpl(commandType, name);
-            data.setNameLocalizations(LocalizationMap.fromProperty(object, "name_localizations"));
+            data.setNameLocalizations(LocalizationMap.fromProperty(object, "name_localizations", data::checkName));
 
             return data;
         }

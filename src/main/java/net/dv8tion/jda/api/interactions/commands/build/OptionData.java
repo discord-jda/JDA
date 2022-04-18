@@ -74,8 +74,8 @@ public class OptionData implements SerializableData
 
     private final OptionType type;
     private String name, description;
-    private LocalizationMap nameLocalizations = new LocalizationMap();
-    private LocalizationMap descriptionLocalizations = new LocalizationMap();
+    private LocalizationMap nameLocalizations = new LocalizationMap(this::checkName);
+    private LocalizationMap descriptionLocalizations = new LocalizationMap(this::checkDescription);
     private boolean isRequired, isAutoComplete;
     private final EnumSet<ChannelType> channelTypes = EnumSet.noneOf(ChannelType.class);
     private Number minValue;
@@ -351,7 +351,7 @@ public class OptionData implements SerializableData
     @Nonnull
     public OptionData setName(@Nonnull String name, @Nonnull Locale... locales)
     {
-        checkName(name);
+        //Checks are done in LocalizationMap
         nameLocalizations.setTranslations(name, locales);
         return this;
     }
@@ -388,7 +388,7 @@ public class OptionData implements SerializableData
     @Nonnull
     public OptionData setDescription(@Nonnull String description, @Nonnull Locale... locales)
     {
-        checkDescription(description);
+        //Checks are done in LocalizationMap
         descriptionLocalizations.setTranslations(description, locales);
         return this;
     }
@@ -913,8 +913,8 @@ public class OptionData implements SerializableData
                         .collect(Collectors.toList())
                 )
         );
-        option.nameLocalizations = LocalizationMap.fromProperty(json, "name_localizations");
-        option.descriptionLocalizations = LocalizationMap.fromProperty(json, "description_localizations");
+        option.nameLocalizations = LocalizationMap.fromProperty(json, "name_localizations", option::checkName);
+        option.descriptionLocalizations = LocalizationMap.fromProperty(json, "description_localizations", option::checkDescription);
         return option;
     }
 

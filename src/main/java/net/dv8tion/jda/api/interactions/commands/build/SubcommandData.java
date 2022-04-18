@@ -40,8 +40,8 @@ public class SubcommandData implements SerializableData
 {
     protected final DataArray options = DataArray.empty();
     protected String name, description;
-    private LocalizationMap nameLocalizations = new LocalizationMap();
-    private LocalizationMap descriptionLocalizations = new LocalizationMap();
+    private LocalizationMap nameLocalizations = new LocalizationMap(this::checkName);
+    private LocalizationMap descriptionLocalizations = new LocalizationMap(this::checkDescription);
     private boolean allowRequired = true;
 
     /**
@@ -110,7 +110,7 @@ public class SubcommandData implements SerializableData
     @Nonnull
     public SubcommandData setName(@Nonnull String name, @Nonnull Locale... locales)
     {
-        checkName(name);
+        //Checks are done in LocalizationMap
         nameLocalizations.setTranslations(name, locales);
         return this;
     }
@@ -147,7 +147,7 @@ public class SubcommandData implements SerializableData
     @Nonnull
     public SubcommandData setDescription(@Nonnull String description, @Nonnull Locale... locales)
     {
-        checkDescription(description);
+        //Checks are done in LocalizationMap
         descriptionLocalizations.setTranslations(description, locales);
         return this;
     }
@@ -411,8 +411,8 @@ public class SubcommandData implements SerializableData
                         .map(OptionData::fromData)
                         .forEach(sub::addOptions)
         );
-        sub.nameLocalizations = LocalizationMap.fromProperty(json, "name_localizations");
-        sub.descriptionLocalizations = LocalizationMap.fromProperty(json, "description_localizations");
+        sub.nameLocalizations = LocalizationMap.fromProperty(json, "name_localizations", sub::checkName);
+        sub.descriptionLocalizations = LocalizationMap.fromProperty(json, "description_localizations", sub::checkDescription);
 
         return sub;
     }

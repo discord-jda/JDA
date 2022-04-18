@@ -40,8 +40,8 @@ public class CommandDataImpl implements SlashCommandData
     protected final DataArray options = DataArray.empty();
     protected String name, description = "";
     private LocalizationMapper localizationMapper;
-    private LocalizationMap nameLocalizations = new LocalizationMap();
-    private LocalizationMap descriptionLocalizations = new LocalizationMap();
+    private LocalizationMap nameLocalizations = new LocalizationMap(this::checkName);
+    private LocalizationMap descriptionLocalizations = new LocalizationMap(this::checkDescription);
 
     private boolean allowSubcommands = true;
     private boolean allowGroups = true;
@@ -72,7 +72,7 @@ public class CommandDataImpl implements SlashCommandData
             throw new IllegalStateException("Cannot " + action + " for commands of type " + type);
     }
 
-    protected void checkName(@Nonnull String name)
+    public void checkName(@Nonnull String name)
     {
         Checks.inRange(name, 1, 32, "Name");
         if (type == Command.Type.SLASH)
@@ -82,7 +82,7 @@ public class CommandDataImpl implements SlashCommandData
         }
     }
 
-    protected void checkDescription(@Nonnull String description)
+    public void checkDescription(@Nonnull String description)
     {
         checkType(Command.Type.SLASH, "set description");
         Checks.notEmpty(description, "Description");
@@ -254,7 +254,7 @@ public class CommandDataImpl implements SlashCommandData
     @Override
     public CommandDataImpl setName(@Nonnull String name, @Nonnull Locale... locales)
     {
-        checkName(name);
+        //Checks are done in LocalizationMap
         nameLocalizations.setTranslations(name, locales);
         return this;
     }
@@ -277,7 +277,7 @@ public class CommandDataImpl implements SlashCommandData
     @Override
     public CommandDataImpl setDescription(@Nonnull String description, @Nonnull Locale... locales)
     {
-        checkDescription(description);
+        //Checks are done in LocalizationMap
         descriptionLocalizations.setTranslations(description, locales);
         return this;
     }
