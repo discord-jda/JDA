@@ -83,6 +83,12 @@ public class GenericCommandInteractionEvent extends GenericInteractionCreateEven
         return getInteraction().getCommandIdLong();
     }
 
+    @Override
+    public boolean isGuildCommand()
+    {
+        return getInteraction().isGuildCommand();
+    }
+
     @Nonnull
     @Override
     public List<OptionMapping> getOptions()
