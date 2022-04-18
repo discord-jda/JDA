@@ -67,18 +67,6 @@ public interface StageInstance extends ISnowflake
     PrivacyLevel getPrivacyLevel();
 
     /**
-     * Whether this stage instance can be found in stage discovery.
-     *
-     * @return True if this is a public stage that can be found in stage discovery
-     *
-     * @deprecated Stage discovery has been removed from the platform
-     */
-    @Deprecated
-    @ForRemoval
-    @DeprecatedSince("5.0.0")
-    boolean isDiscoverable();
-
-    /**
      * All current speakers of this stage instance.
      *
      * <p>A member is considered a <b>speaker</b> when they are currently connected to the stage channel
