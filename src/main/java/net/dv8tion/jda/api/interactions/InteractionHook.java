@@ -242,10 +242,10 @@ public interface InteractionHook extends WebhookClient<Message>
      * </ul>
      *
      * @param  embeds
-     *         {@link MessageEmbed MessageEmbeds} to use (up to 10 in total)
+     *         {@link MessageEmbed MessageEmbeds} to use (up to {@value Message#MAX_EMBED_COUNT} in total)
      *
      * @throws IllegalArgumentException
-     *         If the provided embeds are null, or more than 10
+     *         If the provided embeds are null, or more than {@value Message#MAX_EMBED_COUNT}
      *
      * @return {@link WebhookMessageUpdateAction}
      */

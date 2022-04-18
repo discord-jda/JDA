@@ -99,6 +99,12 @@ public class CommandAutoCompleteInteractionEvent extends GenericAutoCompleteInte
         return interaction.getCommandIdLong();
     }
 
+    @Override
+    public boolean isGuildCommand()
+    {
+        return interaction.isGuildCommand();
+    }
+
     @Nonnull
     @Override
     public List<OptionMapping> getOptions()
