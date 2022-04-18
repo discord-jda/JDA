@@ -45,7 +45,7 @@ import javax.annotation.Nonnull;
  * }</pre>
  *
  * @see Guild#retrieveBanList()
- * @see Guild#retrieveBanById(long)
+ * @see Guild#retrieveBan(net.dv8tion.jda.api.entities.UserSnowflake)
  */
 public interface BanPaginationAction extends PaginationAction<Guild.Ban, BanPaginationAction>
 {
