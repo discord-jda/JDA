@@ -1244,7 +1244,7 @@ public class MessageBuilder implements Appendable
         if (this.isEmpty())
             throw new IllegalStateException("Cannot build a Message with no content. (You never added any content to the message)");
         if (message.length() > Message.MAX_CONTENT_LENGTH)
-            throw new IllegalStateException("Cannot build a Message with more than 2000 characters. Please limit your input.");
+            throw new IllegalStateException("Cannot build a Message with more than " + Message.MAX_CONTENT_LENGTH + " characters. Please limit your input.");
 
         String[] ids = new String[0];
         return new DataMessage(isTTS, message, nonce, embeds,
@@ -1346,7 +1346,7 @@ public class MessageBuilder implements Appendable
         /**
          * Splits exactly after 2000 chars.
          */
-        SplitPolicy ANYWHERE = (i, b) -> Math.min(i + 2000, b.length());
+        SplitPolicy ANYWHERE = (i, b) -> Math.min(i + Message.MAX_CONTENT_LENGTH, b.length());
 
         /**
          * Creates a new {@link SplitPolicy} splitting on the specified chars.

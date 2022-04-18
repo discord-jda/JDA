@@ -55,6 +55,22 @@ public interface ApplicationInfo extends ISnowflake
     String getDescription();
 
     /**
+     * The URL for the application's terms of service.
+     *
+     * @return The URL for the application's terms of service or {@code null} if none is set
+     */
+    @Nullable
+    String getTermsOfServiceUrl();
+
+    /**
+     * The URL for the application's privacy policy.
+     *
+     * @return The URL for the application's privacy policy or {@code null} if none is set
+     */
+    @Nullable
+    String getPrivacyPolicyUrl();
+
+    /**
      * The icon id of the bot's application.
      * <br>The application icon is <b>not</b> necessarily the same as the bot's avatar!
      * 

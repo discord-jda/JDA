@@ -16,6 +16,7 @@
 package net.dv8tion.jda.internal.handle;
 
 import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.RoleIcon;
 import net.dv8tion.jda.api.events.role.update.*;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
@@ -64,6 +65,8 @@ public class GuildRoleUpdateHandler extends SocketHandler
         long permissions = rolejson.getLong("permissions");
         boolean hoisted = rolejson.getBoolean("hoist");
         boolean mentionable = rolejson.getBoolean("mentionable");
+        String iconId = rolejson.getString("icon", null);
+        String emoji = rolejson.getString("unicode_emoji", null);
 
         if (!Objects.equals(name, role.getName()))
         {
@@ -120,6 +123,19 @@ public class GuildRoleUpdateHandler extends SocketHandler
                     new RoleUpdateMentionableEvent(
                             getJDA(), responseNumber,
                             role, wasMentionable));
+        }
+
+        RoleIcon oldIcon = role.getIcon();
+        RoleIcon newIcon = iconId == null && emoji == null
+                ? null
+                : new RoleIcon(iconId, emoji, roleId);
+        if (!Objects.equals(oldIcon, newIcon))
+        {
+            role.setIcon(newIcon);
+            getJDA().handleEvent(
+                    new RoleUpdateIconEvent(
+                            getJDA(), responseNumber,
+                            role, oldIcon));
         }
         return null;
     }
