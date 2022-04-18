@@ -23,7 +23,7 @@ public class LocalizationMap implements SerializableData
     private LocalizationMap(@Nonnull DataObject data)
     {
         for (String key : data.keys())
-            map.put(Locale.forLanguageTag(key), data.getString(key));
+            setTranslation(data.getString(key), Locale.forLanguageTag(key));
     }
 
     /**
@@ -44,6 +44,20 @@ public class LocalizationMap implements SerializableData
         return new LocalizationMap(data);
     }
 
+    /**
+     * Parses the provided localization property, in the serialization, back into an LocalizationMap instance.
+     * <br>This is the reverse function for {@link #toData()}.
+     *
+     * @param  json
+     *         The serialized {@link DataObject} containing the localization map
+     * @param  localizationProperty
+     *         The name of the property which represents the localization map
+     *
+     * @throws net.dv8tion.jda.api.exceptions.ParsingException
+     *         If the serialized object is missing required fields
+     *
+     * @return The parsed LocalizationMap instance, which can be further configured through setters
+     */
     @Nonnull
     public static LocalizationMap fromProperty(@Nonnull DataObject json, @Nonnull String localizationProperty) {
         return json.optObject(localizationProperty)
@@ -56,14 +70,22 @@ public class LocalizationMap implements SerializableData
     public DataObject toData()
     {
         final DataObject data = DataObject.empty();
-        map.forEach((locale, value) -> data.put(locale.toLanguageTag(), value));
+        map.forEach((locale, localizedString) -> data.put(locale.toLanguageTag(), localizedString));
         return data;
     }
 
-    public void setTranslations(@Nonnull String value, @Nonnull Locale... locales)
+    /**
+     * Sets the given localized string to be used for the specified locales
+     *
+     * @param  localizedString
+     *         The localized string to use
+     * @param  locales
+     *         The locales on which to apply the localized strings
+     */
+    public void setTranslations(@Nonnull String localizedString, @Nonnull Locale... locales)
     {
         for (Locale locale : locales)
-            map.put(locale, value);
+            map.put(locale, localizedString);
     }
 
     public void putTranslations(@Nonnull Map<Locale, String> map)
@@ -71,8 +93,8 @@ public class LocalizationMap implements SerializableData
         this.map.putAll(map);
     }
 
-    public void setTranslation(@Nonnull String value, @Nonnull Locale locale) {
-        map.put(locale, value);
+    public void setTranslation(@Nonnull String localizedString, @Nonnull Locale locale) {
+        map.put(locale, localizedString);
     }
 
     @Nullable
