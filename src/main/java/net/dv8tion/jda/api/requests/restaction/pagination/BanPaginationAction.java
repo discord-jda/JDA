@@ -31,7 +31,7 @@ import javax.annotation.Nonnull;
  * Minimum - 1
  * <br>Maximum - 1000
  *
- * <h1>Example</h1>
+ * <h2>Example</h2>
  * <pre>{@code
  * // Revoke all bans from a guild with a certain reason
  * public static void findBansWithReason(Guild guild, String reason) {
