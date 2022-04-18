@@ -88,7 +88,7 @@ public class MessageEditCallbackActionImpl extends DeferrableCallbackActionImpl 
     public MessageEditCallbackAction setEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
     {
         Checks.noneNull(embeds, "MessageEmbed");
-        Checks.check(embeds.size() <= 10, "Cannot have more than 10 embeds per message!");
+        Checks.check(embeds.size() <= Message.MAX_EMBED_COUNT, "Cannot have more than %d embeds per message!", Message.MAX_EMBED_COUNT);
         for (MessageEmbed embed : embeds)
         {
             Checks.check(embed.isSendable(),

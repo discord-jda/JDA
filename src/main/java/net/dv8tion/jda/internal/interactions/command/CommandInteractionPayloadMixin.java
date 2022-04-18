@@ -68,4 +68,10 @@ public interface CommandInteractionPayloadMixin extends CommandInteractionPayloa
     {
         return getCommandPayload().getOptions();
     }
+
+    @Override
+    default boolean isGuildCommand()
+    {
+        return getCommandPayload().isGuildCommand();
+    }
 }

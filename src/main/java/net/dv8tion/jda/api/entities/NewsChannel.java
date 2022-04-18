@@ -177,7 +177,7 @@ public interface NewsChannel extends BaseGuildMessageChannel
             throw new MissingAccessException(this, Permission.VIEW_CHANNEL);
         Route.CompiledRoute route = Route.Messages.CROSSPOST_MESSAGE.compile(getId(), messageId);
         return new RestActionImpl<>(getJDA(), route,
-                (response, request) -> request.getJDA().getEntityBuilder().createMessage(response.getObject()));
+                (response, request) -> request.getJDA().getEntityBuilder().createMessageWithChannel(response.getObject(), this, false));
     }
 
     /**

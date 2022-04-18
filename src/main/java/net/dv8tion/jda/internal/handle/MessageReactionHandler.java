@@ -25,6 +25,7 @@ import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.EmoteImpl;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.entities.MemberImpl;
+import net.dv8tion.jda.internal.entities.PrivateChannelImpl;
 import net.dv8tion.jda.internal.requests.WebSocketClient;
 import net.dv8tion.jda.internal.utils.JDALogger;
 
@@ -120,16 +121,19 @@ public class MessageReactionHandler extends SocketHandler
             }
         }
 
-        //TODO-v5-unified-channel-cache
-        MessageChannel channel = api.getTextChannelById(channelId);
-        if (channel == null)
-            channel = api.getNewsChannelById(channelId);
-        if (channel == null)
-            channel = api.getThreadChannelById(channelId);
-        if (channel == null)
-            channel = api.getPrivateChannelById(channelId);
+        MessageChannel channel = api.getChannelById(MessageChannel.class, channelId);
         if (channel == null)
         {
+            if (guild != null)
+            {
+                GuildChannel guildChannel = guild.getGuildChannelById(channelId);
+                if (guildChannel != null)
+                {
+                    WebSocketClient.LOG.debug("Discarding reaction event for unexpected channel type. Channel: {}", guildChannel);
+                    return null;
+                }
+            }
+
             if (guildId != 0)
             {
                 api.getEventCache().cache(EventCache.Type.CHANNEL, channelId, responseNumber, allContent, this::handle);
@@ -168,7 +172,15 @@ public class MessageReactionHandler extends SocketHandler
         MessageReaction reaction = new MessageReaction(channel, rEmote, messageId, userId == api.getSelfUser().getIdLong(), -1);
 
         if (channel.getType() == ChannelType.PRIVATE)
+        {
             api.usedPrivateChannel(reaction.getChannel().getIdLong());
+            PrivateChannelImpl priv = (PrivateChannelImpl) channel;
+            //try to add the user here if we need to, as we have their ID
+            if (priv.getUser() == null && user != null)
+            {
+                priv.setUser(user);
+            }
+        }
 
         if (add)
         {

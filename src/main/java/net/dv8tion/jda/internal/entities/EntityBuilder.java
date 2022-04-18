@@ -60,6 +60,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.map.CaseInsensitiveMap;
 import org.slf4j.Logger;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.time.Instant;
 import java.time.OffsetDateTime;
@@ -1217,7 +1218,7 @@ public class EntityBuilder
             if (recipient != null)
             {
                 //update the channel if we have found the user
-                channel.setUser(user);
+                channel.setUser(recipient);
             }
         }
         if (recipient != null)
@@ -1327,55 +1328,71 @@ public class EntityBuilder
         return role;
     }
 
-    public Message createMessage(DataObject jsonObject) { return createMessage(jsonObject, false); }
-    public Message createMessage(DataObject jsonObject, boolean modifyCache)
+    public ReceivedMessage createMessageWithChannel(DataObject json, @Nonnull MessageChannel channel, boolean modifyCache)
     {
-        final long channelId = jsonObject.getLong("channel_id");
-
-        //TODO-v5-unified-channel-cache
-        MessageChannel chan = getJDA().getTextChannelById(channelId);
-        if (chan == null)
-            chan = getJDA().getNewsChannelById(channelId);
-        if (chan == null)
-            chan = getJDA().getPrivateChannelById(channelId);
-        if (chan == null)
-            chan = getJDA().getThreadChannelById(channelId);
-        if (chan == null && !jsonObject.isNull("guild_id"))
-            throw new IllegalArgumentException(MISSING_CHANNEL);
-
-        return createMessage(jsonObject, chan, modifyCache);
+        // Use channel directly if message is from a known guild channel
+        if (channel instanceof GuildMessageChannel)
+            return createMessage0(json, channel, modifyCache);
+        // Try to resolve private channel recipient if needed
+        if (channel instanceof PrivateChannel)
+            return createMessageWithLookup(json, null, modifyCache);
+        throw new IllegalArgumentException(MISSING_CHANNEL);
     }
-    public ReceivedMessage createMessage(DataObject jsonObject, @Nullable MessageChannel channel, boolean modifyCache)
+
+    public ReceivedMessage createMessageWithLookup(DataObject json, @Nullable Guild guild, boolean modifyCache)
     {
-        long channelId = jsonObject.getUnsignedLong("channel_id");
-        if (channel != null && channelId != channel.getIdLong())
+        //Private channels may be partial in our cache and missing recipient information
+        // we can try and derive the user from the message here
+        if (guild == null)
+            return createMessage0(json, createPrivateChannelByMessage(json), modifyCache);
+        //If we know that the message was sent in a guild, we can use the guild to resolve the channel directly
+        MessageChannel channel = guild.getChannelById(MessageChannel.class, json.getUnsignedLong("channel_id"));
+        if (channel == null)
+            throw new IllegalArgumentException(MISSING_CHANNEL);
+        return createMessage0(json, channel, modifyCache);
+    }
+
+    // This tries to build a private channel instance through an arbitrary message object
+    private PrivateChannel createPrivateChannelByMessage(DataObject message)
+    {
+        final long channelId = message.getLong("channel_id");
+        final DataObject author = message.getObject("author");
+        final long authorId = author.getLong("id");
+
+        PrivateChannelImpl channel = (PrivateChannelImpl) getJDA().getPrivateChannelById(channelId);
+        boolean isAuthorSelfUser = authorId == getJDA().getSelfUser().getIdLong();
+        if (channel == null)
         {
-            //TODO-v5-unified-channel-cache
-            channel = api.getTextChannelById(channelId);
-            if (channel == null)
-                channel = api.getNewsChannelById(channelId);
-            if (channel == null)
-                channel = api.getPrivateChannelById(channelId);
+            DataObject channelData = DataObject.empty()
+                    .put("id", channelId);
+
+            //if we see an author that isn't us, we can assume that is the other side of this private channel
+            //if the author is us, we learn no information about the user at the other end
+            if (!isAuthorSelfUser)
+                channelData.put("recipient", author);
+
+            //even without knowing the user at the other end, we can still construct a minimal channel
+            channel = (PrivateChannelImpl) createPrivateChannel(channelData);
+        }
+        else if (channel.getUser() == null && !isAuthorSelfUser)
+        {
+            //In this situation, we already know the channel
+            // but the message provided us with the recipient
+            // which we can now add to the channel
+            UserImpl user = createUser(author);
+            channel.setUser(user);
+            user.setPrivateChannel(channel);
         }
 
+        return channel;
+    }
+
+    private ReceivedMessage createMessage0(DataObject jsonObject, @Nonnull MessageChannel channel, boolean modifyCache)
+    {
         final long id = jsonObject.getLong("id");
         final DataObject author = jsonObject.getObject("author");
         final long authorId = author.getLong("id");
         MemberImpl member = null;
-
-        if (channel == null && jsonObject.isNull("guild_id"))
-        {
-            DataObject channelData = DataObject.empty()
-                    .put("id", channelId);
-            //if we see an author that isn't us, we can assume that is the other side of this private channel
-            //if the author is us, we learn no information about the user at the other end
-            if (authorId != getJDA().getSelfUser().getIdLong())
-                    channelData.put("recipient", author);
-            //even without knowing the user at the other end, we can still construct a minimal channel
-            channel = createPrivateChannel(channelData);
-        }
-        else if (channel == null)
-            throw new IllegalArgumentException(MISSING_CHANNEL);
 
         if (channel.getType().isGuild() && !jsonObject.isNull("member"))
         {
@@ -1412,7 +1429,8 @@ public class EntityBuilder
             activity = createMessageActivity(jsonObject);
 
         User user;
-        if (channel.getType().isGuild()) {
+        if (channel.getType().isGuild())
+        {
             Guild guild = ((GuildChannel) channel).getGuild();
             if (member == null)
                 member = (MemberImpl) guild.getMemberById(authorId);
@@ -1425,12 +1443,21 @@ public class EntityBuilder
                     throw new IllegalArgumentException(MISSING_USER); // Specifically for MESSAGE_CREATE
             }
         }
-        else {
+        else
+        {
             //Assume private channel
             if (authorId == getJDA().getSelfUser().getIdLong())
+            {
                 user = getJDA().getSelfUser();
+            }
             else
+            {
+                //Note, while PrivateChannel.getUser() can produce null, this invocation of it WILL NOT produce null
+                // because when the bot receives a message in a private channel that was _not authored by the bot_ then
+                // the message had to have come from the user, so that means that we had all the information to build
+                // the channel properly (or fill-in the missing user info of an existing partial channel)
                 user = ((PrivateChannel) channel).getUser();
+            }
         }
 
         if (modifyCache && !fromWebhook) // update the user information on message receive
@@ -1453,7 +1480,7 @@ public class EntityBuilder
             DataObject referenceJson = jsonObject.getObject("referenced_message");
             try
             {
-                referencedMessage = createMessage(referenceJson, channel, false);
+                referencedMessage = createMessage0(referenceJson, channel, false);
             }
             catch (IllegalArgumentException ex)
             {
@@ -2097,9 +2124,23 @@ public class EntityBuilder
         final boolean isBotPublic = object.getBoolean("bot_public");
         final User owner = createUser(object.getObject("owner"));
         final ApplicationTeam team = !object.isNull("team") ? createApplicationTeam(object.getObject("team")) : null;
+        final String customAuthUrl = object.getString("custom_install_url", null);
+        final List<String> tags = object.optArray("tags").orElseGet(DataArray::empty)
+                    .stream(DataArray::getString)
+                    .collect(Collectors.toList());
+
+        final Optional<DataObject> installParams = object.optObject("install_params");
+
+        final long defaultAuthUrlPerms = installParams.map(o -> o.getLong("permissions"))
+                    .orElse(0L);
+
+        final List<String> defaultAuthUrlScopes = installParams.map(obj -> obj.getArray("scopes")
+                            .stream(DataArray::getString)
+                            .collect(Collectors.toList()))
+                    .orElse(Collections.emptyList());
 
         return new ApplicationInfoImpl(getJDA(), description, doesBotRequireCodeGrant, iconId, id, isBotPublic, name,
-                termsOfServiceUrl, privacyPolicyUrl, owner, team);
+                termsOfServiceUrl, privacyPolicyUrl, owner, team, tags, customAuthUrl, defaultAuthUrlPerms, defaultAuthUrlScopes);
     }
 
     public ApplicationTeam createApplicationTeam(DataObject object)

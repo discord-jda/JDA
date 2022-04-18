@@ -133,8 +133,8 @@ public class ReplyCallbackActionImpl extends DeferrableCallbackActionImpl implem
                 MessageEmbed.EMBED_MAX_LENGTH_BOT);
         }
 
-        if (embeds.size() + this.embeds.size() > 10)
-            throw new IllegalStateException("Cannot have more than 10 embeds per message!");
+        if (embeds.size() + this.embeds.size() > Message.MAX_EMBED_COUNT)
+            throw new IllegalStateException(String.format("Cannot have more than %d embeds per message!", Message.MAX_EMBED_COUNT));
         this.embeds.addAll(embeds);
         return this;
     }

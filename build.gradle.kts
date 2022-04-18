@@ -40,11 +40,13 @@ plugins {
 }
 
 val javaVersion = JavaVersion.current()
-val versionObj = Version(major = "5", minor = "0", revision = "0", classifier = "alpha.6")
+val versionObj = Version(major = "5", minor = "0", revision = "0", classifier = "alpha.9")
 val isCI = System.getProperty("BUILD_NUMBER") != null // jenkins
         || System.getenv("BUILD_NUMBER") != null
         || System.getProperty("GIT_COMMIT") != null // jitpack
         || System.getenv("GIT_COMMIT") != null
+        || System.getProperty("GITHUB_ACTIONS") != null // Github Actions
+        || System.getenv("GITHUB_ACTIONS") != null
 
 // Check the commit hash and version information
 val commitHash: String by lazy {
@@ -253,7 +255,7 @@ jar.apply {
 }
 
 javadoc.apply {
-    isFailOnError = false
+    isFailOnError = isCI
     options.memberLevel = JavadocMemberLevel.PUBLIC
     options.encoding = "UTF-8"
 
