@@ -2334,6 +2334,15 @@ public interface Message extends ISnowflake, Formattable
     boolean isEphemeral();
 
     /**
+     * Returns a possibly {@code null} {@link net.dv8tion.jda.api.entities.ThreadChannel ThreadChannel} that this message started.
+     * This can be {@code null} due to no ThreadChannel being started from it or the ThreadChannel later being deleted.
+     * 
+     * @return The {@link net.dv8tion.jda.api.entities.ThreadChannel ThreadChannel} that this message started
+     */
+    @Nullable
+    ThreadChannel getStartedThread();
+
+    /**
      * This specifies the {@link net.dv8tion.jda.api.entities.MessageType MessageType} of this Message.
      *
      * <p>Messages can represent more than just simple text sent by Users, they can also be special messages that

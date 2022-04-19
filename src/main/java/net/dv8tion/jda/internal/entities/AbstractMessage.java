@@ -525,6 +525,14 @@ public abstract class AbstractMessage implements Message
         return false;
     }
 
+    @Nullable
+    @Override
+    public ThreadChannel getStartedThread()
+    {
+        unsupported();
+        return null;
+    }
+
     @Nonnull
     @Override
     public MessageType getType()

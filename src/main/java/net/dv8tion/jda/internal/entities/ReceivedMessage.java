@@ -68,6 +68,7 @@ public class ReceivedMessage extends AbstractMessage
     protected final List<ActionRow> components;
     protected final int flags;
     protected final Message.Interaction interaction;
+    protected final ThreadChannel startedThread;
 
     protected InteractionHook interactionHook = null; // late-init
 
@@ -81,7 +82,7 @@ public class ReceivedMessage extends AbstractMessage
             long id, MessageChannel channel, MessageType type, MessageReference messageReference,
             boolean fromWebhook, boolean tts, boolean pinned, String content, String nonce, User author,
             Member member, MessageActivity activity, OffsetDateTime editTime, Mentions mentions, List<MessageReaction> reactions,
-            List<Attachment> attachments, List<MessageEmbed> embeds, List<MessageSticker> stickers, List<ActionRow> components, int flags, Message.Interaction interaction)
+            List<Attachment> attachments, List<MessageEmbed> embeds, List<MessageSticker> stickers, List<ActionRow> components, int flags, Message.Interaction interaction, ThreadChannel startedThread)
     {
         super(content, nonce, tts);
         this.id = id;
@@ -103,6 +104,7 @@ public class ReceivedMessage extends AbstractMessage
         this.components = Collections.unmodifiableList(components);
         this.flags = flags;
         this.interaction = interaction;
+        this.startedThread = startedThread;
     }
 
     public ReceivedMessage withHook(InteractionHook hook)
@@ -718,6 +720,13 @@ public class ReceivedMessage extends AbstractMessage
     public boolean isEphemeral()
     {
         return (this.flags & MessageFlag.EPHEMERAL.getValue()) != 0;
+    }
+
+    @Nullable
+    @Override
+    public ThreadChannel getStartedThread()
+    {
+        return this.startedThread;
     }
 
     @Override

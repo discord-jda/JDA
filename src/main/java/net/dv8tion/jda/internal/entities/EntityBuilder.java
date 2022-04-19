@@ -1524,16 +1524,20 @@ public class EntityBuilder
             api, guild, content, mentionsEveryone,
             jsonObject.getArray("mentions"), jsonObject.getArray("mention_roles")
         );
+        
+        ThreadChannel startedThread = null;
+        if (guild != null && !jsonObject.isNull("thread"))
+            startedThread = createThreadChannel(guild, jsonObject.getObject("thread"), guild.getIdLong());
 
         if (!type.isSystem())
         {
             return new ReceivedMessage(id, channel, type, messageReference, fromWebhook, tts, pinned,
-                    content, nonce, user, member, activity, editTime, mentions, reactions, attachments, embeds, stickers, components, flags, messageInteraction);
+                    content, nonce, user, member, activity, editTime, mentions, reactions, attachments, embeds, stickers, components, flags, messageInteraction, startedThread);
         }
         else
         {
             return new SystemMessage(id, channel, type, messageReference, fromWebhook, tts, pinned,
-                    content, nonce, user, member, activity, editTime, mentions, reactions, attachments, embeds, stickers, flags);
+                    content, nonce, user, member, activity, editTime, mentions, reactions, attachments, embeds, stickers, flags, startedThread);
         }
     }
 
