@@ -41,14 +41,12 @@ import java.util.stream.Collectors;
  *     {
  *         TextInput subject = TextInput.create("subject", "Subject", TextInputStyle.SHORT)
  *                 .setPlaceholder("Subject of this ticket")
- *                 .setRequired(true)
  *                 .setMinLength(10)
  *                 .setMaxLength(100) // or setRequiredRange(10, 100)
  *                 .build();
  *
  *         TextInput body = TextInput.create("body", "Body", TextInputStyle.PARAGRAPH)
  *                 .setPlaceholder("Your concerns go here")
- *                 .setRequired(true)
  *                 .setMinLength(30)
  *                 .setMaxLength(1000)
  *                 .build();

@@ -181,7 +181,7 @@ public interface TextInput extends ActionComponent
         private int minLength = -1;
         private int maxLength = -1;
         private TextInputStyle style;
-        private boolean required;
+        private boolean required = true;
 
         protected Builder(String id, String label, TextInputStyle style)
         {
@@ -263,7 +263,7 @@ public interface TextInput extends ActionComponent
         }
 
         /**
-         * Sets whether the user is required to write in this TextInput. Default is false.
+         * Sets whether the user is required to write in this TextInput. Default is true.
          *
          * @param  required 
          *         If this TextInput should be required
