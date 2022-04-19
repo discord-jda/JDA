@@ -109,8 +109,8 @@ public class MessageEditCallbackActionImpl extends DeferrableCallbackActionImpl 
         Checks.noneNull(rows, "ActionRows");
 
         Checks.checkComponents("Some components are incompatible with Messages",
-                                Arrays.asList(rows),
-                                component -> component.getType().isMessageCompatible());
+            rows,
+            component -> component.getType().isMessageCompatible());
 
         Checks.check(rows.length <= 5, "Can only have 5 action rows per message!");
         Checks.checkDuplicateIds(Arrays.stream(rows));

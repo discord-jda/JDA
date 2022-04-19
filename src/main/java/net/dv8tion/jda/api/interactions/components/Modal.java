@@ -246,8 +246,8 @@ public interface Modal extends SerializableData
             Checks.noneNull(actionRows, "Components");
 
             Checks.checkComponents("Some components are incompatible with Modals",
-                                   actionRows.stream().map(row -> (Component) row).collect(Collectors.toList()),
-                                   component -> component.getType().isModalCompatible());
+                actionRows,
+                component -> component.getType().isModalCompatible());
 
             this.components.addAll(actionRows);
             return this;

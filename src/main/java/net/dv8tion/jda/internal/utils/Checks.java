@@ -233,7 +233,7 @@ public class Checks
         );
     }
 
-    public static void checkComponents(String errorMessage, Collection<Component> components, Predicate<Component> predicate)
+    public static void checkComponents(String errorMessage, Collection<? extends Component> components, Predicate<Component> predicate)
     {
         StringBuilder sb = new StringBuilder();
 

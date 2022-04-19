@@ -118,8 +118,6 @@ public class GenericCommandInteractionEvent extends GenericInteractionCreateEven
     @Override
     public ModalCallbackAction replyModal(@Nonnull Modal modal)
     {
-        Checks.notNull(modal, "Modal");
-
-        return new ModalCallbackActionImpl(getInteraction(), modal);
+        return getInteraction().replyModal(modal);
     }
 }

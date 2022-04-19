@@ -146,8 +146,8 @@ public class ReplyCallbackActionImpl extends DeferrableCallbackActionImpl implem
         Checks.noneNull(rows, "ActionRows");
 
         Checks.checkComponents("Some components are incompatible with Messages",
-                                Arrays.asList(rows),
-                                component -> component.getType().isMessageCompatible());
+            rows,
+            component -> component.getType().isMessageCompatible());
 
         Checks.check(components.size() + rows.length <= 5, "Can only have 5 action rows per message!");
         Checks.checkDuplicateIds(Stream.concat(this.components.stream(), Arrays.stream(rows)));
