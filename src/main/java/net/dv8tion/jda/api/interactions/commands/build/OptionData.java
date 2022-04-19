@@ -160,7 +160,7 @@ public class OptionData implements SerializableData
     public OptionData(@Nonnull OptionType type, @Nonnull String name, @Nonnull String description, boolean isRequired, boolean isAutoComplete)
     {
         Checks.notNull(type, "Type");
-        Checks.check(type != OptionType.UNKNOWN, "Cannot make option of unknown type");
+        Checks.check(type != OptionType.UNKNOWN, "Cannot make option of unknown type!");
         this.type = type;
 
         setName(name);
