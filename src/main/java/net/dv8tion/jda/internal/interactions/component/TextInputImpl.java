@@ -42,7 +42,7 @@ public class TextInputImpl implements TextInput
                 object.getString("label", null),
                 object.getInt("min_Length", -1),
                 object.getInt("max_length", -1),
-                object.getBoolean("required", false),
+                object.getBoolean("required", true),
                 object.getString("value", null),
                 object.getString("placeholder", null)
         );
