@@ -162,7 +162,7 @@ public interface Activity
 
     /**
      * Creates a new Activity instance with the specified name.
-     * <br>This will display as {@code Listening name} in the official client
+     * <br>This will display as {@code Listening to name} in the official client
      *
      * @param  name
      *         The not-null name of the newly created game

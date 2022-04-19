@@ -1252,7 +1252,6 @@ public class EntityBuilder
 
         long id = json.getUnsignedLong("id");
         String topic = json.getString("topic");
-        boolean discoverable = !json.getBoolean("discoverable_disabled");
         StageInstance.PrivacyLevel level = StageInstance.PrivacyLevel.fromKey(json.getInt("privacy_level", -1));
 
 
@@ -1265,7 +1264,6 @@ public class EntityBuilder
 
         return instance
                 .setPrivacyLevel(level)
-                .setDiscoverable(discoverable)
                 .setTopic(topic);
     }
 
@@ -2124,9 +2122,23 @@ public class EntityBuilder
         final boolean isBotPublic = object.getBoolean("bot_public");
         final User owner = createUser(object.getObject("owner"));
         final ApplicationTeam team = !object.isNull("team") ? createApplicationTeam(object.getObject("team")) : null;
+        final String customAuthUrl = object.getString("custom_install_url", null);
+        final List<String> tags = object.optArray("tags").orElseGet(DataArray::empty)
+                    .stream(DataArray::getString)
+                    .collect(Collectors.toList());
+
+        final Optional<DataObject> installParams = object.optObject("install_params");
+
+        final long defaultAuthUrlPerms = installParams.map(o -> o.getLong("permissions"))
+                    .orElse(0L);
+
+        final List<String> defaultAuthUrlScopes = installParams.map(obj -> obj.getArray("scopes")
+                            .stream(DataArray::getString)
+                            .collect(Collectors.toList()))
+                    .orElse(Collections.emptyList());
 
         return new ApplicationInfoImpl(getJDA(), description, doesBotRequireCodeGrant, iconId, id, isBotPublic, name,
-                termsOfServiceUrl, privacyPolicyUrl, owner, team);
+                termsOfServiceUrl, privacyPolicyUrl, owner, team, tags, customAuthUrl, defaultAuthUrlPerms, defaultAuthUrlScopes);
     }
 
     public ApplicationTeam createApplicationTeam(DataObject object)

@@ -25,6 +25,7 @@ import net.dv8tion.jda.internal.utils.Checks;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Represents a Discord Modal
@@ -38,7 +39,7 @@ import java.util.*;
  * {
  *     if (event.getName().equals("modmail"))
  *     {
- *         TextInput email = TextInput.create("subject", "Subject", TextInputStyle.SHORT)
+ *         TextInput subject = TextInput.create("subject", "Subject", TextInputStyle.SHORT)
  *                 .setPlaceholder("Subject of this ticket")
  *                 .setRequired(true)
  *                 .setMinLength(10)
@@ -53,7 +54,7 @@ import java.util.*;
  *                 .build();
  *
  *         Modal modal = Modal.create("modmail", "Modmail")
- *                 .addActionRows(ActionRow.of(email), ActionRow.of(body))
+ *                 .addActionRows(ActionRow.of(subject), ActionRow.of(body))
  *                 .build();
  *
  *         event.replyModal(modal).queue();
@@ -131,7 +132,7 @@ public interface Modal extends SerializableData
      *
      * @throws IllegalArgumentException
      *         <ul>
-     *             <li>If the provided customId or title are null, empty, or blank.</li>
+     *             <li>If the provided customId or title are null, empty, or blank</li>
      *             <li>If the provided customId is longer than {@value MAX_ID_LENGTH} characters</li>
      *             <li>If the provided title is longer than {@value #MAX_TITLE_LENGTH} characters</li>
      *         </ul>
@@ -244,8 +245,9 @@ public interface Modal extends SerializableData
         {
             Checks.noneNull(actionRows, "Components");
 
-            if (actionRows.stream().anyMatch(actionRow -> !actionRow.isModalCompatible()))
-                throw new IllegalArgumentException("ActionRow contains components that are not compatible with Modals!");
+            Checks.checkComponents("Some components are incompatible with Modals",
+                                   actionRows.stream().map(row -> (Component) row).collect(Collectors.toList()),
+                                   component -> component.getType().isModalCompatible());
 
             this.components.addAll(actionRows);
             return this;
@@ -259,7 +261,7 @@ public interface Modal extends SerializableData
          *
          * @throws IllegalArgumentException
          *         <ul>
-         *             <li>If any of the provided ItemComponents are null, or an invalid number of components are provided.</li>
+         *             <li>If any of the provided ItemComponents are null, or an invalid number of components are provided</li>
          *             <li>If any of the provided ItemComponents are not compatible with Modals</li>
          *         </ul>
          *
@@ -281,7 +283,7 @@ public interface Modal extends SerializableData
          *
          * @throws IllegalArgumentException
          *         <ul>
-         *             <li>If any of the provided ItemComponents are null, or an invalid number of components are provided.</li>
+         *             <li>If any of the provided ItemComponents are null, or an invalid number of components are provided</li>
          *             <li>If any of the provided ItemComponents are not compatible with Modals</li>
          *         </ul>
          *

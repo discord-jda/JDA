@@ -363,7 +363,7 @@ public interface MessageChannel extends Channel, Formattable
     }
 
     /**
-     * Sends up to 10 specified {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbeds} as a {@link net.dv8tion.jda.api.entities.Message Message}
+     * Sends up to {@value Message#MAX_EMBED_COUNT} specified {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbeds} as a {@link net.dv8tion.jda.api.entities.Message Message}
      * to this channel.
      * <br>This will fail if this channel is an instance of {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} and
      * the currently logged in account does not have permissions to send a message to this channel.
@@ -387,7 +387,7 @@ public interface MessageChannel extends Channel, Formattable
      *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_EMBED_LINKS Permission.MESSAGE_EMBED_LINKS}</li>
      *         </ul>
      * @throws java.lang.IllegalArgumentException
-     *         If null is provided, any of the embeds are not {@link MessageEmbed#isSendable() sendable}, more than 10 embeds are provided,
+     *         If null is provided, any of the embeds are not {@link MessageEmbed#isSendable() sendable}, more than {@value Message#MAX_EMBED_COUNT} embeds are provided,
      *         or the sum of {@link MessageEmbed#getLength()} is greater than {@link MessageEmbed#EMBED_MAX_LENGTH_BOT}
      * @throws java.lang.UnsupportedOperationException
      *         If this is a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}
@@ -412,7 +412,7 @@ public interface MessageChannel extends Channel, Formattable
     }
 
     /**
-     * Sends up to 10 specified {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbeds} as a {@link net.dv8tion.jda.api.entities.Message Message}
+     * Sends up to {@value Message#MAX_EMBED_COUNT} specified {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbeds} as a {@link net.dv8tion.jda.api.entities.Message Message}
      * to this channel.
      * <br>This will fail if this channel is an instance of {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} and
      * the currently logged in account does not have permissions to send a message to this channel.
@@ -2969,7 +2969,7 @@ public interface MessageChannel extends Channel, Formattable
      * @param  messageId
      *         The id referencing the Message that should be edited
      * @param  newEmbeds
-     *         Up to 10 new {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbeds} for the edited message
+     *         Up to {@value Message#MAX_EMBED_COUNT} new {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbeds} for the edited message
      *
      * @throws IllegalArgumentException
      *         <ul>
@@ -3018,7 +3018,7 @@ public interface MessageChannel extends Channel, Formattable
      * @param  messageId
      *         The id referencing the Message that should be edited
      * @param  newEmbeds
-     *         Up to 10 new {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbeds} for the edited message
+     *         Up to {@value Message#MAX_EMBED_COUNT} new {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbeds} for the edited message
      *
      * @throws IllegalArgumentException
      *         <ul>
@@ -3066,7 +3066,7 @@ public interface MessageChannel extends Channel, Formattable
      * @param  messageId
      *         The id referencing the Message that should be edited
      * @param  newEmbeds
-     *         Up to 10 new {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbeds} for the edited message
+     *         Up to {@value Message#MAX_EMBED_COUNT} new {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbeds} for the edited message
      *
      * @throws IllegalArgumentException
      *         <ul>
@@ -3115,7 +3115,7 @@ public interface MessageChannel extends Channel, Formattable
      * @param  messageId
      *         The id referencing the Message that should be edited
      * @param  newEmbeds
-     *         Up to 10 new {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbeds} for the edited message
+     *         Up to {@value Message#MAX_EMBED_COUNT} new {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbeds} for the edited message
      *
      * @throws IllegalArgumentException
      *         <ul>

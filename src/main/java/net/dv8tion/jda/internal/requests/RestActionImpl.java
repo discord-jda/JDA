@@ -131,6 +131,7 @@ public class RestActionImpl<T> implements RestAction<T>
         this(api, route, (RequestBody) null, handler);
     }
 
+    @SuppressWarnings("deprecation")
     public RestActionImpl(JDA api, Route.CompiledRoute route, DataObject data, BiFunction<Response, Request<T>, T> handler)
     {
         this(api, route, data == null ? null : RequestBody.create(Requester.MEDIA_TYPE_JSON, data.toJson()), handler);
@@ -241,6 +242,7 @@ public class RestActionImpl<T> implements RestAction<T>
     protected CaseInsensitiveMap<String, String> finalizeHeaders() { return null; }
     protected BooleanSupplier finalizeChecks() { return null; }
 
+    @SuppressWarnings("deprecation")
     protected RequestBody getRequestBody(DataObject object)
     {
         this.rawData = object;
@@ -248,6 +250,7 @@ public class RestActionImpl<T> implements RestAction<T>
         return object == null ? null : RequestBody.create(Requester.MEDIA_TYPE_JSON, object.toJson());
     }
 
+    @SuppressWarnings("deprecation")
     protected RequestBody getRequestBody(DataArray array)
     {
         this.rawData = array;

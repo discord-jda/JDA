@@ -51,7 +51,7 @@ public interface TextInput extends ActionComponent
     int MAX_LABEL_LENGTH = 45;
 
     /**
-     * The {@link TextInputStyle TextInputStyle} of this TextInput component.
+     * The {@link TextInputStyle} of this TextInput component.
      *
      * @return The style of this TextInput component.
      */
@@ -61,7 +61,7 @@ public interface TextInput extends ActionComponent
     /**
      * The custom id of this TextInput component.
      *
-     * <p>This is used to uniquely identify the modal. Similar to {@link net.dv8tion.jda.api.interactions.components.buttons.Button Buttons}.
+     * <p>This is used to uniquely identify the TextInput. Similar to {@link net.dv8tion.jda.api.interactions.components.buttons.Button Buttons}.
      *
      * @return The custom id of this component.
      */
@@ -133,7 +133,7 @@ public interface TextInput extends ActionComponent
     @Override
     default ActionComponent withDisabled(boolean disabled)
     {
-        throw new UnsupportedOperationException("Text Inputs cannot be disabled!");
+        throw new UnsupportedOperationException("TextInputs cannot be disabled!");
     }
 
     @Nonnull
@@ -387,8 +387,10 @@ public interface TextInput extends ActionComponent
         public Builder setPlaceholder(@Nullable String placeholder)
         {
             if (placeholder != null)
+            {
                 Checks.notLonger(placeholder, MAX_PLACEHOLDER_LENGTH, "Placeholder");
-            Checks.notBlank(placeholder, "Placeholder");
+                Checks.notBlank(placeholder, "Placeholder");
+            }
             this.placeholder = placeholder;
             return this;
         }
