@@ -40,8 +40,8 @@ public class TextInputImpl implements TextInput
                 object.getString("custom_id"),
                 TextInputStyle.fromKey(object.getInt("style", -1)),
                 object.getString("label", null),
-                object.getInt("min_Length", 0),
-                object.getInt("max_length", TextInput.MAX_VALUE_LENGTH),
+                object.getInt("min_Length", -1),
+                object.getInt("max_length", -1),
                 object.getBoolean("required", false),
                 object.getString("value", null),
                 object.getString("placeholder", null)

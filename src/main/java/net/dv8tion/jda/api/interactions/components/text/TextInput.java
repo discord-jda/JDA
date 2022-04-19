@@ -496,7 +496,7 @@ public interface TextInput extends ActionComponent
         public TextInput build()
         {
             if (maxLength < minLength && maxLength != -1)
-                throw new IllegalArgumentException("maxLength cannot be smaller than minLength!");
+                throw new IllegalStateException("maxLength cannot be smaller than minLength!");
 
             return new TextInputImpl(id, style, label, minLength, maxLength, required, value, placeholder);
         }

@@ -124,8 +124,6 @@ public class GenericComponentInteractionCreateEvent extends GenericInteractionCr
     @Override
     public ModalCallbackAction replyModal(@Nonnull Modal modal)
     {
-        Checks.notNull(modal, "Modal");
-
-        return new ModalCallbackActionImpl(getInteraction(), modal);
+        return interaction.replyModal(modal);
     }
 }
