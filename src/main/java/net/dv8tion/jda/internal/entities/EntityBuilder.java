@@ -18,8 +18,6 @@ package net.dv8tion.jda.internal.entities;
 
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
-import gnu.trove.set.TLongSet;
-import gnu.trove.set.hash.TLongHashSet;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.audit.ActionType;
@@ -1397,14 +1395,16 @@ public class EntityBuilder
         final DataObject author = jsonObject.getObject("author");
         final long authorId = author.getLong("id");
         MemberImpl member = null;
+        GuildImpl guild = null;
+        if (channel instanceof GuildChannel)
+            guild = (GuildImpl) ((GuildChannel) channel).getGuild();
 
+        // Member details for author
         if (channel.getType().isGuild() && !jsonObject.isNull("member"))
         {
             DataObject memberJson = jsonObject.getObject("member");
             memberJson.put("user", author);
-            GuildChannel guildChannel = (GuildChannel) channel;
-            Guild guild = guildChannel.getGuild();
-            member = createMember((GuildImpl) guild, memberJson);
+            member = createMember(guild, memberJson);
             if (modifyCache)
             {
                 // Update member cache with new information if needed
@@ -1421,21 +1421,22 @@ public class EntityBuilder
         final String nonce = jsonObject.isNull("nonce") ? null : jsonObject.get("nonce").toString();
         final int flags = jsonObject.getInt("flags", 0);
 
+        // Message accessories
         MessageChannel tmpChannel = channel; // because java
         final List<Message.Attachment> attachments = map(jsonObject, "attachments",   this::createMessageAttachment);
         final List<MessageEmbed>       embeds      = map(jsonObject, "embeds",        this::createMessageEmbed);
         final List<MessageReaction>    reactions   = map(jsonObject, "reactions",     (obj) -> createMessageReaction(tmpChannel, id, obj));
         final List<MessageSticker>     stickers    = map(jsonObject, "sticker_items", this::createSticker);
 
+        // Message activity (for game invites/spotify)
         MessageActivity activity = null;
-
         if (!jsonObject.isNull("activity"))
             activity = createMessageActivity(jsonObject);
 
+        // Message Author
         User user;
-        if (channel.getType().isGuild())
+        if (guild != null)
         {
-            Guild guild = ((GuildChannel) channel).getGuild();
             if (member == null)
                 member = (MemberImpl) guild.getMemberById(authorId);
             user = member != null ? member.getUser() : null;
@@ -1467,15 +1468,7 @@ public class EntityBuilder
         if (modifyCache && !fromWebhook) // update the user information on message receive
             updateUser((UserImpl) user, author);
 
-        TLongSet mentionedRoles = new TLongHashSet();
-        TLongSet mentionedUsers = new TLongHashSet(map(jsonObject, "mentions", (o) -> o.getLong("id")));
-        Optional<DataArray> roleMentionArr = jsonObject.optArray("mention_roles");
-        roleMentionArr.ifPresent((arr) ->
-        {
-            for (int i = 0; i < arr.length(); i++)
-                mentionedRoles.add(arr.getLong(i));
-        });
-
+        // Message Reference (Reply or Pin)
         Message referencedMessage = null;
         if (!jsonObject.isNull("referenced_message"))
         {
@@ -1498,7 +1491,6 @@ public class EntityBuilder
         }
 
         MessageReference messageReference = null;
-
         if (!jsonObject.isNull("message_reference")) // always contains the channel + message id for a referenced message
         {                                                // used for when referenced_message is not provided
             DataObject messageReferenceJson = jsonObject.getObject("message_reference");
@@ -1512,6 +1504,7 @@ public class EntityBuilder
             );
         }
 
+        // Message Components
         List<ActionRow> components = Collections.emptyList();
         Optional<DataArray> componentsArrayOpt = jsonObject.optArray("components");
         if (componentsArrayOpt.isPresent())
@@ -1523,18 +1516,12 @@ public class EntityBuilder
                     .collect(Collectors.toList());
         }
 
+        // Application command and component replies
         Message.Interaction messageInteraction = null;
         if (!jsonObject.isNull("interaction"))
-        {
-            GuildImpl guild = null;
-            if (channel instanceof GuildChannel)
-            {
-                guild = (GuildImpl) ((GuildChannel) (channel)).getGuild();
-            }
             messageInteraction = createMessageInteraction(guild, jsonObject.getObject("interaction"));
-        }
 
-        GuildImpl guild = channel instanceof GuildChannel ? ((AbstractGuildChannelImpl<?>) channel).getGuild() : null;
+        // Lazy Mention parsing and caching (includes reply mentions)
         MessageMentions mentions = new MessageMentionsImpl(
             api, guild, content, mentionsEveryone,
             jsonObject.getArray("mentions"), jsonObject.getArray("mention_roles")
