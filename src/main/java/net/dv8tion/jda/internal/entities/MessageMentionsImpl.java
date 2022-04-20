@@ -49,7 +49,12 @@ public class MessageMentionsImpl extends AbstractMentions
         this.mentionedRoles = new TLongObjectHashMap<>(roleMentions.length());
 
         userMentions.stream(DataArray::getObject)
-                .forEach(obj -> memberMentions.put(obj.getObject("user").getUnsignedLong("id"), obj));
+                .forEach(obj -> {
+                    DataObject member = obj.getObject("member");
+                    obj.remove("user");
+                    member.put("user", obj);
+                    memberMentions.put(obj.getUnsignedLong("id"), member);
+                });
         roleMentions.stream(DataArray::getObject)
                 .forEach(obj -> mentionedRoles.put(obj.getUnsignedLong("id"), obj));
     }
@@ -69,7 +74,6 @@ public class MessageMentionsImpl extends AbstractMentions
         ArrayList<Member> members = processMentions(Message.MentionType.USER, new ArrayList<>(), true, (matcher) -> {
             long id = Long.parseUnsignedLong(matcher.group(1));
             DataObject member = memberMentions.get(id);
-            unseen.remove(id);
             return member == null ? null : entityBuilder.createMember(guild, member);
         });
 
