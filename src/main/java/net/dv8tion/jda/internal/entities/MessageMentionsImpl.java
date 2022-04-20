@@ -108,6 +108,8 @@ public class MessageMentionsImpl extends AbstractMentions
     {
         long userId = MiscUtil.parseSnowflake(matcher.group(1));
         DataObject mention = mentionedUsers.get(userId);
+        if (mention == null)
+            return null;
         if (!mention.getBoolean("is_member"))
             return jda.getEntityBuilder().createUser(mention);
         Member member = matchMember(matcher);
