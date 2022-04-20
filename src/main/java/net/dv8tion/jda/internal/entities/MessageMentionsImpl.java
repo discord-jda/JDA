@@ -33,18 +33,19 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
+import java.util.stream.Collectors;
 
 public class MessageMentionsImpl extends AbstractMentions
 {
     private final TLongObjectMap<DataObject> userMentionMap;
-    private final TLongObjectMap<DataObject> roleMentionMap;
+    private final TLongSet roleMentionMap;
 
     public MessageMentionsImpl(JDAImpl jda, GuildImpl guild, String content,
                                boolean mentionsEveryone, DataArray userMentions, DataArray roleMentions)
     {
         super(content, jda, guild, mentionsEveryone);
         this.userMentionMap = new TLongObjectHashMap<>(userMentions.length());
-        this.roleMentionMap = new TLongObjectHashMap<>(roleMentions.length());
+        this.roleMentionMap = new TLongHashSet(roleMentions.stream(DataArray::getUnsignedLong).collect(Collectors.toList()));
 
         userMentions.stream(DataArray::getObject)
                 .forEach(obj -> {
@@ -60,8 +61,7 @@ public class MessageMentionsImpl extends AbstractMentions
                     this.userMentionMap.put(obj.getUnsignedLong("id"), member);
                 });
 
-        roleMentions.stream(DataArray::getObject)
-                .forEach(obj -> roleMentionMap.put(obj.getUnsignedLong("id"), obj));
+
 
         // Eager parsing member mentions for caching purposes
         getMembers();
@@ -158,7 +158,7 @@ public class MessageMentionsImpl extends AbstractMentions
     protected Role matchRole(Matcher matcher)
     {
         long roleId = MiscUtil.parseSnowflake(matcher.group(1));
-        if (!roleMentionMap.containsKey(roleId))
+        if (!roleMentionMap.contains(roleId))
             return null;
         if (guild != null)
             return guild.getRoleById(roleId);
