@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.internal.entities.mentions;
 
+import gnu.trove.map.TLongObjectMap;
+import gnu.trove.map.hash.TLongObjectHashMap;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.internal.JDAImpl;
@@ -180,7 +182,14 @@ public abstract class AbstractMentions implements MessageMentions
                 break;
             case USER:
                 if (!user)
-                    mentions.addAll(getMembers());
+                {
+                    TLongObjectMap<IMentionable> set = new TLongObjectHashMap<>();
+                    for (User u : getUsers())
+                        set.put(u.getIdLong(), u);
+                    for (Member m : getMembers())
+                        set.put(m.getIdLong(), m);
+                    mentions.addAll(set.valueCollection());
+                }
                 user = true;
                 break;
             case ROLE:
