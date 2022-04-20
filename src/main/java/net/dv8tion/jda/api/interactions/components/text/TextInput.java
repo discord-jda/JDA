@@ -487,7 +487,7 @@ public interface TextInput extends ActionComponent
         /**
          * Builds a new TextInput from this Builder
          *
-         * @throws IllegalArgumentException
+         * @throws IllegalStateException
          *         If maxLength is smaller than minLength
          *
          * @return the TextInput instance
