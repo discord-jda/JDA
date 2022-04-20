@@ -45,6 +45,24 @@ public interface LayoutComponent extends SerializableData, Iterable<ItemComponen
     @Nonnull
     List<ItemComponent> getComponents();
 
+    @Override
+    default boolean isMessageCompatible()
+    {
+        if (!getType().isMessageCompatible())
+            return false;
+
+        return getComponents().stream().allMatch(ItemComponent::isMessageCompatible);
+    }
+
+    @Override
+    default boolean isModalCompatible()
+    {
+        if (!getType().isModalCompatible())
+            return false;
+
+        return getComponents().stream().allMatch(ItemComponent::isModalCompatible);
+    }
+
     /**
      * Immutable filtered copy of {@link #getComponents()} elements which are {@link ActionComponent ActionComponents}.
      *

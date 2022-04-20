@@ -14,20 +14,15 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.interactions.commands;
-
-import net.dv8tion.jda.api.interactions.callbacks.IModalCallback;
-import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback;
-import net.dv8tion.jda.api.interactions.commands.context.ContextInteraction;
+package net.dv8tion.jda.api.requests.restaction.interactions;
 
 /**
- * Interaction of any Application Command.
+ * An {@link InteractionCallbackAction} that can be used to send Modals.
  *
- * <p>This includes all context menu commands and slash commands.
- *
- * @see ContextInteraction
- * @see SlashCommandInteraction
+ * @see    net.dv8tion.jda.api.interactions.callbacks.IModalCallback
+ * @see    net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
  */
-public interface CommandInteraction extends IReplyCallback, CommandInteractionPayload, IModalCallback
+public interface ModalCallbackAction extends InteractionCallbackAction<Void>
 {
+
 }

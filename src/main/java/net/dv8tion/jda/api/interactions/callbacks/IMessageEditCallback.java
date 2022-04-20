@@ -130,9 +130,14 @@ public interface IMessageEditCallback extends IDeferrableCallback
      *         The new message components, such as {@link ActionRow}
      *
      * @throws IllegalArgumentException
-     *         If the provided components are null
+     *         <ul>
+     *             <li>If any of the provided LayoutComponents is null</li>
+     *             <li>If any of the provided Components are not compatible with messages</li>
+     *         </ul>
      *
      * @return {@link MessageEditCallbackAction} that can be used to further update the message
+     *
+     * @see    LayoutComponent#isMessageCompatible()
      */
     @Nonnull
     @CheckReturnValue
@@ -158,9 +163,14 @@ public interface IMessageEditCallback extends IDeferrableCallback
      *         The new message components, such as {@link ActionRow}
      *
      * @throws IllegalArgumentException
-     *         If the provided components are null
+     *         <ul>
+     *             <li>If any of the provided LayoutComponents are null</li>
+     *             <li>If any of the provided Components are not compatible with messages</li>
+     *         </ul>
      *
      * @return {@link MessageEditCallbackAction} that can be used to further update the message
+     *
+     * @see    LayoutComponent#isMessageCompatible()
      */
     @Nonnull
     @CheckReturnValue

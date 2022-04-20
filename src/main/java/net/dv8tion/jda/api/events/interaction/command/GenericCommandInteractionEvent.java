@@ -22,7 +22,11 @@ import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.CommandInteraction;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
+import net.dv8tion.jda.api.interactions.components.Modal;
+import net.dv8tion.jda.api.requests.restaction.interactions.ModalCallbackAction;
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction;
+import net.dv8tion.jda.internal.requests.restaction.interactions.ModalCallbackActionImpl;
+import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -108,5 +112,12 @@ public class GenericCommandInteractionEvent extends GenericInteractionCreateEven
     public ReplyCallbackAction deferReply()
     {
         return getInteraction().deferReply();
+    }
+
+    @Nonnull
+    @Override
+    public ModalCallbackAction replyModal(@Nonnull Modal modal)
+    {
+        return getInteraction().replyModal(modal);
     }
 }

@@ -31,7 +31,7 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * Indicates that a user is typing in a {@link net.dv8tion.jda.api.interactions.commands.build.OptionData option} which
+ * Indicates that a user is typing in an {@link net.dv8tion.jda.api.interactions.commands.build.OptionData option} which
  * supports {@link net.dv8tion.jda.api.interactions.commands.build.OptionData#setAutoComplete(boolean) auto-complete}.
  *
  * <h2>Requirements</h2>
