@@ -161,6 +161,7 @@ public interface SlashCommandData extends CommandData
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If you try to mix subcommands/options/groups in one command.</li>
+     *             <li>If the option type is {@link OptionType#UNKNOWN UNKNOWN}.</li>
      *             <li>If the option type is {@link OptionType#SUB_COMMAND} or {@link OptionType#SUB_COMMAND_GROUP}.</li>
      *             <li>If the provided option type does not support auto-complete</li>
      *             <li>If this option is required and you already added a non-required option.</li>
@@ -196,6 +197,7 @@ public interface SlashCommandData extends CommandData
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If you try to mix subcommands/options/groups in one command.</li>
+     *             <li>If the option type is {@link OptionType#UNKNOWN UNKNOWN}.</li>
      *             <li>If the option type is {@link OptionType#SUB_COMMAND} or {@link OptionType#SUB_COMMAND_GROUP}.</li>
      *             <li>If this option is required and you already added a non-required option.</li>
      *             <li>If more than 25 options are provided.</li>
@@ -227,6 +229,7 @@ public interface SlashCommandData extends CommandData
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If you try to mix subcommands/options/groups in one command.</li>
+     *             <li>If the option type is {@link OptionType#UNKNOWN UNKNOWN}.</li>
      *             <li>If the option type is {@link OptionType#SUB_COMMAND} or {@link OptionType#SUB_COMMAND_GROUP}.</li>
      *             <li>If this option is required and you already added a non-required option.</li>
      *             <li>If more than 25 options are provided.</li>
