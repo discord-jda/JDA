@@ -67,17 +67,6 @@ public class InteractionMentions extends AbstractMentions
         return it instanceof Role ? (Role) it : null;
     }
 
-    protected Emote matchEmote(Matcher m)
-    {
-        long emoteId = MiscUtil.parseSnowflake(m.group(2));
-        String name = m.group(1);
-        boolean animated = m.group(0).startsWith("<a:");
-        Emote emote = getJDA().getEmoteById(emoteId);
-        if (emote == null)
-            emote = new EmoteImpl(emoteId, jda).setName(name).setAnimated(animated);
-        return emote;
-    }
-
     protected boolean isUserMentioned(IMentionable mentionable)
     {
         return resolved.containsKey(mentionable.getIdLong());

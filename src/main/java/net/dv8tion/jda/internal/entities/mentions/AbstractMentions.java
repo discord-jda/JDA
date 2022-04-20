@@ -20,7 +20,9 @@ import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.JDAImpl;
+import net.dv8tion.jda.internal.entities.EmoteImpl;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import org.apache.commons.collections4.Bag;
@@ -295,7 +297,16 @@ public abstract class AbstractMentions implements MessageMentions
 
     protected abstract Role matchRole(Matcher matcher);
 
-    protected abstract Emote matchEmote(Matcher m);
+    protected Emote matchEmote(Matcher m)
+    {
+        long emoteId = MiscUtil.parseSnowflake(m.group(2));
+        String name = m.group(1);
+        boolean animated = m.group(0).startsWith("<a:");
+        Emote emote = getJDA().getEmoteById(emoteId);
+        if (emote == null)
+            emote = new EmoteImpl(emoteId, jda).setName(name).setAnimated(animated);
+        return emote;
+    }
 
     protected boolean isUserMentioned(IMentionable mentionable)
     {
