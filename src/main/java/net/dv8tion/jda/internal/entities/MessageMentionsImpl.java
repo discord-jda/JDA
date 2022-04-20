@@ -27,8 +27,6 @@ import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.mentions.AbstractMentions;
-import org.apache.commons.collections4.Bag;
-import org.apache.commons.collections4.bag.HashBag;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -38,32 +36,32 @@ import java.util.regex.Matcher;
 
 public class MessageMentionsImpl extends AbstractMentions
 {
-    private final TLongObjectMap<DataObject> mentionedUsers;
-    private final TLongObjectMap<DataObject> mentionedRoles;
+    private final TLongObjectMap<DataObject> userMentionMap;
+    private final TLongObjectMap<DataObject> roleMentionMap;
 
     public MessageMentionsImpl(JDAImpl jda, GuildImpl guild, String content,
                                boolean mentionsEveryone, DataArray userMentions, DataArray roleMentions)
     {
         super(content, jda, guild, mentionsEveryone);
-        this.mentionedUsers = new TLongObjectHashMap<>(userMentions.length());
-        this.mentionedRoles = new TLongObjectHashMap<>(roleMentions.length());
+        this.userMentionMap = new TLongObjectHashMap<>(userMentions.length());
+        this.roleMentionMap = new TLongObjectHashMap<>(roleMentions.length());
 
         userMentions.stream(DataArray::getObject)
                 .forEach(obj -> {
                     if (obj.isNull("member"))
                     {
-                        this.mentionedUsers.put(obj.getUnsignedLong("id"), obj.put("is_member", false));
+                        this.userMentionMap.put(obj.getUnsignedLong("id"), obj.put("is_member", false));
                         return;
                     }
 
                     DataObject member = obj.getObject("member");
                     obj.remove("user");
                     member.put("user", obj).put("is_member", true);
-                    this.mentionedUsers.put(obj.getUnsignedLong("id"), member);
+                    this.userMentionMap.put(obj.getUnsignedLong("id"), member);
                 });
 
         roleMentions.stream(DataArray::getObject)
-                .forEach(obj -> mentionedRoles.put(obj.getUnsignedLong("id"), obj));
+                .forEach(obj -> roleMentionMap.put(obj.getUnsignedLong("id"), obj));
 
         // Eager parsing member mentions for caching purposes
         getMembers();
@@ -80,12 +78,19 @@ public class MessageMentionsImpl extends AbstractMentions
 
         // Parse members from mentions array in order of appearance
         EntityBuilder entityBuilder = jda.getEntityBuilder();
-        TLongSet unseen = new TLongHashSet(mentionedUsers.keySet());
-        ArrayList<Member> members = processMentions(Message.MentionType.USER, new ArrayList<>(), true, this::matchMember);
+        TLongSet unseen = new TLongHashSet(userMentionMap.keySet());
+        ArrayList<Member> members = processMentions(Message.MentionType.USER, new ArrayList<>(), true, (matcher) -> {
+            unseen.remove(Long.parseUnsignedLong(matcher.group(1)));
+            return matchMember(matcher);
+        });
 
         // Add reply mentions at beginning
         for (TLongIterator iter = unseen.iterator(); iter.hasNext();)
-            members.add(0, entityBuilder.createMember(guild, mentionedUsers.get(iter.next())));
+        {
+            DataObject mention = userMentionMap.get(iter.next());
+            if (mention.getBoolean("is_member"))
+                members.add(0, entityBuilder.createMember(guild, mention));
+        }
 
         // Update member cache
         members.stream()
@@ -97,17 +102,36 @@ public class MessageMentionsImpl extends AbstractMentions
 
     @Nonnull
     @Override
-    public Bag<Member> getMembersBag()
+    public synchronized List<User> getUsers()
     {
-        if (guild == null)
-            return new HashBag<>();
-        return processMentions(Message.MentionType.USER, new HashBag<>(), false, this::matchMember);
+        if (mentionedUsers != null)
+            return mentionedUsers;
+
+        // Parse members from mentions array in order of appearance
+        EntityBuilder entityBuilder = jda.getEntityBuilder();
+        TLongSet unseen = new TLongHashSet(userMentionMap.keySet());
+        List<User> users = processMentions(Message.MentionType.USER, new ArrayList<>(), true, (matcher) -> {
+            unseen.remove(Long.parseUnsignedLong(matcher.group(1)));
+            return matchUser(matcher);
+        });
+
+        // Add reply mentions at beginning
+        for (TLongIterator iter = unseen.iterator(); iter.hasNext();)
+        {
+            DataObject mention = userMentionMap.get(iter.next());
+            if (mention.getBoolean("is_member"))
+                users.add(0, entityBuilder.createUser(mention.getObject("user")));
+            else
+                users.add(0, entityBuilder.createUser(mention));
+        }
+
+        return mentionedUsers = Collections.unmodifiableList(users);
     }
 
     protected User matchUser(Matcher matcher)
     {
         long userId = MiscUtil.parseSnowflake(matcher.group(1));
-        DataObject mention = mentionedUsers.get(userId);
+        DataObject mention = userMentionMap.get(userId);
         if (mention == null)
             return null;
         if (!mention.getBoolean("is_member"))
@@ -119,7 +143,7 @@ public class MessageMentionsImpl extends AbstractMentions
     protected Member matchMember(Matcher matcher)
     {
         long id = Long.parseUnsignedLong(matcher.group(1));
-        DataObject member = mentionedUsers.get(id);
+        DataObject member = userMentionMap.get(id);
         return member != null && member.getBoolean("is_member")
                 ? jda.getEntityBuilder().createMember(guild, member)
                 : null;
@@ -134,7 +158,7 @@ public class MessageMentionsImpl extends AbstractMentions
     protected Role matchRole(Matcher matcher)
     {
         long roleId = MiscUtil.parseSnowflake(matcher.group(1));
-        if (!mentionedRoles.containsKey(roleId))
+        if (!roleMentionMap.containsKey(roleId))
             return null;
         if (guild != null)
             return guild.getRoleById(roleId);
