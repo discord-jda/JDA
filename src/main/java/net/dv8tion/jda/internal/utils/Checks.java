@@ -248,6 +248,11 @@ public class Checks
             throw new IllegalArgumentException(errorMessage + "\n" + sb.toString().trim());
     }
 
+    public static void checkComponents(String errorMessage, Component[] components, Predicate<Component> predicate)
+    {
+        checkComponents(errorMessage, Arrays.asList(components), predicate);
+    }
+
     private static void handleComponent(Component component, Predicate<Component> predicate, StringBuilder sb, String path)
     {
         if (!predicate.test(component))

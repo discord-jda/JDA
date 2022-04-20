@@ -385,7 +385,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
         Checks.noneNull(rows, "ActionRows");
 
         Checks.checkComponents("Some components are incompatible with Messages",
-            Arrays.asList(rows),
+            rows,
             component -> component.getType().isMessageCompatible());
 
         if (components == null)
