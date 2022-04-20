@@ -38,25 +38,35 @@ import java.util.regex.Matcher;
 
 public class MessageMentionsImpl extends AbstractMentions
 {
-    private final TLongObjectMap<DataObject> memberMentions;
+    private final TLongObjectMap<DataObject> mentionedUsers;
     private final TLongObjectMap<DataObject> mentionedRoles;
 
     public MessageMentionsImpl(JDAImpl jda, GuildImpl guild, String content,
                                boolean mentionsEveryone, DataArray userMentions, DataArray roleMentions)
     {
         super(content, jda, guild, mentionsEveryone);
-        this.memberMentions = new TLongObjectHashMap<>(userMentions.length());
+        this.mentionedUsers = new TLongObjectHashMap<>(userMentions.length());
         this.mentionedRoles = new TLongObjectHashMap<>(roleMentions.length());
 
         userMentions.stream(DataArray::getObject)
                 .forEach(obj -> {
+                    if (obj.isNull("member"))
+                    {
+                        this.mentionedUsers.put(obj.getUnsignedLong("id"), obj.put("is_member", false));
+                        return;
+                    }
+
                     DataObject member = obj.getObject("member");
                     obj.remove("user");
-                    member.put("user", obj);
-                    memberMentions.put(obj.getUnsignedLong("id"), member);
+                    member.put("user", obj).put("is_member", true);
+                    this.mentionedUsers.put(obj.getUnsignedLong("id"), member);
                 });
+
         roleMentions.stream(DataArray::getObject)
                 .forEach(obj -> mentionedRoles.put(obj.getUnsignedLong("id"), obj));
+
+        // Eager parsing member mentions for caching purposes
+        getMembers();
     }
 
     @Nonnull
@@ -70,16 +80,12 @@ public class MessageMentionsImpl extends AbstractMentions
 
         // Parse members from mentions array in order of appearance
         EntityBuilder entityBuilder = jda.getEntityBuilder();
-        TLongSet unseen = new TLongHashSet(memberMentions.keySet());
-        ArrayList<Member> members = processMentions(Message.MentionType.USER, new ArrayList<>(), true, (matcher) -> {
-            long id = Long.parseUnsignedLong(matcher.group(1));
-            DataObject member = memberMentions.get(id);
-            return member == null ? null : entityBuilder.createMember(guild, member);
-        });
+        TLongSet unseen = new TLongHashSet(mentionedUsers.keySet());
+        ArrayList<Member> members = processMentions(Message.MentionType.USER, new ArrayList<>(), true, this::matchMember);
 
         // Add reply mentions at beginning
         for (TLongIterator iter = unseen.iterator(); iter.hasNext();)
-            members.add(0, entityBuilder.createMember(guild, memberMentions.get(iter.next())));
+            members.add(0, entityBuilder.createMember(guild, mentionedUsers.get(iter.next())));
 
         // Update member cache
         members.stream()
@@ -101,34 +107,20 @@ public class MessageMentionsImpl extends AbstractMentions
     protected User matchUser(Matcher matcher)
     {
         long userId = MiscUtil.parseSnowflake(matcher.group(1));
-        if (!memberMentions.containsKey(userId))
-            return null;
-        User user = getJDA().getUserById(userId);
-        if (user == null)
-        {
-            user = getMembers().stream()
-                        .filter(it -> it.getIdLong() == userId)
-                        .map(Member::getUser)
-                        .findFirst()
-                        .orElse(null);
-        }
-        return user;
+        DataObject mention = mentionedUsers.get(userId);
+        if (!mention.getBoolean("is_member"))
+            return jda.getEntityBuilder().createUser(mention);
+        Member member = matchMember(matcher);
+        return member == null ? null : member.getUser();
     }
 
     protected Member matchMember(Matcher matcher)
     {
-        long userId = MiscUtil.parseSnowflake(matcher.group(1));
-        if (!memberMentions.containsKey(userId))
-            return null;
-        Member member = guild.getMemberById(userId);
-        if (member == null)
-        {
-            member = getMembers().stream()
-                        .filter(it -> it.getIdLong() == userId)
-                        .findFirst()
-                        .orElse(null);
-        }
-        return member;
+        long id = Long.parseUnsignedLong(matcher.group(1));
+        DataObject member = mentionedUsers.get(id);
+        return member != null && member.getBoolean("is_member")
+                ? jda.getEntityBuilder().createMember(guild, member)
+                : null;
     }
 
     protected GuildChannel matchChannel(Matcher matcher)
