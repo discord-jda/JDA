@@ -20,7 +20,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.ImageProxy;
 import net.dv8tion.jda.api.utils.MiscUtil;
-import net.dv8tion.jda.internal.entities.UserById;
+import net.dv8tion.jda.internal.entities.UserSnowflakeImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.CheckReturnValue;
@@ -72,7 +72,7 @@ import java.util.regex.Pattern;
  *
  * @see JDA#retrieveUserById(String)
  */
-public interface User extends IMentionable
+public interface User extends UserSnowflake
 {
     /**
      * Compiled pattern for a Discord Tag: {@code (.{2,32})#(\d{4})}
@@ -91,26 +91,23 @@ public interface User extends IMentionable
 
     /**
      * Creates a User instance which only wraps an ID.
-     * <br>All other methods beside {@link #getIdLong()} and {@link #getId()} will throw {@link UnsupportedOperationException}.
      *
      * @param  id
      *         The user id
      *
-     * @return A user instance
+     * @return A {@link UserSnowflake} instance
      *
      * @see    JDA#retrieveUserById(long)
-     *
-     * @since  4.2.1
+     * @see    UserSnowflake#fromId(long)
      */
     @Nonnull
-    static User fromId(long id)
+    static UserSnowflake fromId(long id)
     {
-        return new UserById(id);
+        return new UserSnowflakeImpl(id);
     }
 
     /**
      * Creates a User instance which only wraps an ID.
-     * <br>All other methods beside {@link #getIdLong()} and {@link #getId()} will throw {@link UnsupportedOperationException}.
      *
      * @param  id
      *         The user id
@@ -118,14 +115,13 @@ public interface User extends IMentionable
      * @throws IllegalArgumentException
      *         If the provided ID is not a valid snowflake
      *
-     * @return A user instance
+     * @return A {@link UserSnowflake} instance
      *
      * @see    JDA#retrieveUserById(String)
-     *
-     * @since  4.2.1
+     * @see    UserSnowflake#fromId(String)
      */
     @Nonnull
-    static User fromId(@Nonnull String id)
+    static UserSnowflake fromId(@Nonnull String id)
     {
         return fromId(MiscUtil.parseSnowflake(id));
     }

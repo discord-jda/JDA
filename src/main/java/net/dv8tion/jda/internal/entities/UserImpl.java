@@ -35,7 +35,7 @@ import java.util.FormattableFlags;
 import java.util.Formatter;
 import java.util.List;
 
-public class UserImpl extends UserById implements User
+public class UserImpl extends UserSnowflakeImpl implements User
 {
     protected final JDAImpl api;
 
