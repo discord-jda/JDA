@@ -164,45 +164,31 @@ public abstract class AbstractMentions implements MessageMentions
         if (types == null || types.length == 0)
             return getMentions(Message.MentionType.values());
         List<IMentionable> mentions = new ArrayList<>();
-        // boolean duplicate checks
-        // not using Set because channel and role might have the same ID
-        boolean channel = false;
-        boolean role = false;
-        boolean user = false;
-        boolean emote = false;
-        for (Message.MentionType type : types)
+        // Conversion to set to prevent duplication of types
+        for (Message.MentionType type : EnumSet.of(types[0], types))
         {
             switch (type)
             {
-            case EVERYONE:
-            case HERE:
-            default: continue;
             case CHANNEL:
-                if (!channel)
-                    mentions.addAll(getChannels());
-                channel = true;
+                mentions.addAll(getChannels());
                 break;
             case USER:
-                if (!user)
-                {
-                    TLongObjectMap<IMentionable> set = new TLongObjectHashMap<>();
-                    for (User u : getUsers())
-                        set.put(u.getIdLong(), u);
-                    for (Member m : getMembers())
-                        set.put(m.getIdLong(), m);
-                    mentions.addAll(set.valueCollection());
-                }
-                user = true;
+                TLongObjectMap<IMentionable> set = new TLongObjectHashMap<>();
+                for (User u : getUsers())
+                    set.put(u.getIdLong(), u);
+                for (Member m : getMembers())
+                    set.put(m.getIdLong(), m);
+                mentions.addAll(set.valueCollection());
                 break;
             case ROLE:
-                if (!role)
-                    mentions.addAll(getRoles());
-                role = true;
+                mentions.addAll(getRoles());
                 break;
             case EMOTE:
-                if (!emote)
-                    mentions.addAll(getEmotes());
-                emote = true;
+                mentions.addAll(getEmotes());
+                break;
+//            case EVERYONE:
+//            case HERE:
+//            default: continue;
             }
         }
 
@@ -222,48 +208,30 @@ public abstract class AbstractMentions implements MessageMentions
             switch (type)
             {
             case HERE:
-            {
                 if (isMass("@here") && mentionable instanceof UserSnowflake)
                     return true;
                 break;
-            }
             case EVERYONE:
-            {
                 if (isMass("@everyone") && mentionable instanceof UserSnowflake)
                     return true;
                 break;
-            }
             case USER:
-            {
                 if (isUserMentioned(mentionable))
                     return true;
                 break;
-            }
             case ROLE:
-            {
                 if (isRoleMentioned(mentionable))
                     return true;
                 break;
-            }
             case CHANNEL:
-            {
-                if (mentionable instanceof TextChannel)
-                {
-                    if (getChannels().contains(mentionable))
-                        return true;
-                }
+                if (mentionable instanceof GuildChannel && getChannels().contains(mentionable))
+                    return true;
                 break;
-            }
             case EMOTE:
-            {
-                if (mentionable instanceof Emote)
-                {
-                    if (getEmotes().contains(mentionable))
-                        return true;
-                }
+                if (mentionable instanceof Emote && getEmotes().contains(mentionable))
+                    return true;
                 break;
-            }
-//              default: continue;
+//           default: continue;
             }
         }
         return false;
