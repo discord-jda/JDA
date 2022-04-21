@@ -280,20 +280,13 @@ public abstract class AbstractMentions implements Mentions
     protected boolean isRoleMentioned(IMentionable mentionable)
     {
         if (mentionable instanceof Role)
-        {
             return getRoles().contains(mentionable);
-        }
-        else if (mentionable instanceof Member)
-        {
-            final Member member = (Member) mentionable;
-            return CollectionUtils.containsAny(getRoles(), member.getRoles());
-        }
+        Member member = null;
+        if (mentionable instanceof Member)
+            member = (Member) mentionable;
         else if (guild != null && mentionable instanceof User)
-        {
-            final Member member = guild.getMember((User) mentionable);
-            return member != null && CollectionUtils.containsAny(getRoles(), member.getRoles());
-        }
-        return false;
+            member = guild.getMember((User) mentionable);
+        return member != null && CollectionUtils.containsAny(getRoles(), member.getRoles());
     }
 
     protected boolean isMass(String s)
