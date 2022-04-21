@@ -19,12 +19,16 @@ package net.dv8tion.jda.internal.interactions.component;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.interactions.components.ComponentInteraction;
+import net.dv8tion.jda.api.interactions.components.Modal;
+import net.dv8tion.jda.api.requests.restaction.interactions.ModalCallbackAction;
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.interactions.DeferrableInteractionImpl;
 import net.dv8tion.jda.internal.requests.restaction.interactions.MessageEditCallbackActionImpl;
+import net.dv8tion.jda.internal.requests.restaction.interactions.ModalCallbackActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.interactions.ReplyCallbackActionImpl;
+import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
 
@@ -87,5 +91,14 @@ public abstract class ComponentInteractionImpl extends DeferrableInteractionImpl
     public ReplyCallbackAction deferReply()
     {
         return new ReplyCallbackActionImpl(this.hook);
+    }
+
+    @Nonnull
+    @Override
+    public ModalCallbackAction replyModal(@Nonnull Modal modal)
+    {
+        Checks.notNull(modal, "Modal");
+
+        return new ModalCallbackActionImpl(this, modal);
     }
 }

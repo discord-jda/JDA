@@ -383,8 +383,14 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
     public MessageActionImpl setActionRows(@Nonnull ActionRow... rows)
     {
         Checks.noneNull(rows, "ActionRows");
+
+        Checks.checkComponents("Some components are incompatible with Messages",
+            rows,
+            component -> component.getType().isMessageCompatible());
+
         if (components == null)
             components = new ArrayList<>();
+
         Checks.check(rows.length <= 5, "Can only have 5 action rows per message!");
         Checks.checkDuplicateIds(Arrays.stream(rows));
         this.components.clear();
@@ -500,6 +506,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
         return builder.build();
     }
 
+    @SuppressWarnings("deprecation")
     protected RequestBody asJSON()
     {
         return RequestBody.create(Requester.MEDIA_TYPE_JSON, getJSON().toJson());

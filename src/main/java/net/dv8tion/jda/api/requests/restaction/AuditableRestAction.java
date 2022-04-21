@@ -17,6 +17,7 @@
 package net.dv8tion.jda.api.requests.restaction;
 
 import net.dv8tion.jda.api.audit.ThreadLocalReason;
+import net.dv8tion.jda.api.entities.UserSnowflake;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.AuditLogPaginationAction;
 
@@ -49,7 +50,7 @@ public interface AuditableRestAction<T> extends RestAction<T>
      *
      * <p>This will specify the reason via the {@code X-Audit-Log-Reason} Request Header.
      * <br>Using methods with a reason parameter will always work and <u>override</u> this header.
-     * (ct. {@link net.dv8tion.jda.api.entities.Guild#ban(net.dv8tion.jda.api.entities.User, int, String) Guild.ban(User, int, String)})
+     * (ct. {@link net.dv8tion.jda.api.entities.Guild#ban(UserSnowflake, int, String) Guild.ban(UserSnowflake, int, String)})
      *
      * @param  reason
      *         The reason for this action which should be logged in the Guild's AuditLogs

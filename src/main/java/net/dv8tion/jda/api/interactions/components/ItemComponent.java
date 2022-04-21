@@ -33,4 +33,16 @@ public interface ItemComponent extends Component
     {
         return getType().getMaxPerRow();
     }
+
+    @Override
+    default boolean isModalCompatible()
+    {
+        return getType().isModalCompatible();
+    }
+
+    @Override
+    default boolean isMessageCompatible()
+    {
+        return getType().isMessageCompatible();
+    }
 }

@@ -965,7 +965,7 @@ public interface JDA extends IGuildChannelContainer
      *
      * @return Immutable list of all {@link Guild Guild} instances which have all {@link net.dv8tion.jda.api.entities.User Users} in them.
      *
-     * @see    Guild#isMember(net.dv8tion.jda.api.entities.User)
+     * @see    Guild#isMember(UserSnowflake)
      */
     @Nonnull
     List<Guild> getMutualGuilds(@Nonnull User... users);

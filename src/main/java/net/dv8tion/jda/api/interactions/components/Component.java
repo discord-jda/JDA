@@ -18,18 +18,25 @@ package net.dv8tion.jda.api.interactions.components;
 
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;
+import net.dv8tion.jda.api.interactions.components.text.TextInput;
 import net.dv8tion.jda.api.utils.data.SerializableData;
 
 import javax.annotation.Nonnull;
 
 /**
- * Component of a Message.
+ * Component of a Message or Modal.
  * <br>These are used to extend messages with interactive elements such as buttons or select menus.
+ * Components are also the primary building blocks for {@link Modal Modals}.
+ *
+ * <br><p>Not every component can be used in {@link net.dv8tion.jda.api.entities.Message Messages} or {@link Modal Modals}.
+ * Use {@link Type#isMessageCompatible()} and {@link Type#isModalCompatible()} to check whether a component can be used.
+ *
  *
  * @see ActionRow
  *
  * @see Button
  * @see SelectMenu
+ * @see TextInput
  */
 public interface Component extends SerializableData
 {
@@ -42,26 +49,48 @@ public interface Component extends SerializableData
     Type getType();
 
     /**
+     * Whether this Component is compatible with {@link net.dv8tion.jda.api.entities.Message Messages}.
+     * <br>If the component in question is a {@link LayoutComponent}, this also checks every component inside it.
+     *
+     * @return True, if this Component is compatible with messages.
+     */
+    boolean isMessageCompatible();
+
+    /**
+     * Whether this Component is compatible with {@link Modal Modals}.
+     * <br>If the component in question is a {@link LayoutComponent}, this also checks every component inside it.
+     *
+     * @return True, if this Component is compatible with modals.
+     */
+    boolean isModalCompatible();
+
+    /**
      * The component types
      */
     enum Type
     {
-        UNKNOWN(-1, 0),
+        UNKNOWN(-1, 0, false, false),
         /** A row of components */
-        ACTION_ROW(1, 0),
+        ACTION_ROW(1, 0, true, true),
         /** A button */
-        BUTTON(2, 5),
+        BUTTON(2, 5, true, false),
         /** A select menu */
-        SELECT_MENU(3, 1),
+        SELECT_MENU(3, 1, true, false),
+        /** A text input field */
+        TEXT_INPUT(4, 1, false, true)
         ;
 
         private final int key;
         private final int maxPerRow;
+        private final boolean messageCompatible;
+        private final boolean modalCompatible;
 
-        Type(int key, int maxPerRow)
+        Type(int key, int maxPerRow, boolean messageCompatible, boolean modalCompatible)
         {
             this.key = key;
             this.maxPerRow = maxPerRow;
+            this.messageCompatible = messageCompatible;
+            this.modalCompatible = modalCompatible;
         }
 
         /**
@@ -72,6 +101,38 @@ public interface Component extends SerializableData
         public int getMaxPerRow()
         {
             return maxPerRow;
+        }
+
+        /**
+         * Raw int representing this ComponentType
+         *
+         * <p>This returns -1 if it's of type {@link #UNKNOWN}.
+         *
+         * @return Raw int representing this ComponentType
+         */
+        public int getKey()
+        {
+            return key;
+        }
+
+        /**
+         * Whether this component can be used in {@link net.dv8tion.jda.api.entities.Message Messages}.
+         *
+         * @return Whether this component can be used in Messages.
+         */
+        public boolean isMessageCompatible()
+        {
+            return messageCompatible;
+        }
+
+        /**
+         * Whether this component can be used in {@link Modal Modals}.
+         *
+         * @return Whether this component can be used in Modals.
+         */
+        public boolean isModalCompatible()
+        {
+            return modalCompatible;
         }
 
         /**

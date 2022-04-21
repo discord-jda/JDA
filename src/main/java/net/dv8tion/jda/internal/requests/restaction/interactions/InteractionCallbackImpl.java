@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.internal.requests.restaction.interactions;
 
+import net.dv8tion.jda.api.requests.Request;
+import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.interactions.InteractionCallbackAction;
 import net.dv8tion.jda.api.utils.data.DataObject;
@@ -66,15 +68,17 @@ public abstract class InteractionCallbackImpl<T> extends RestActionImpl<T> imple
         return body.build();
     }
 
+
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Here we intercept calls to queue/submit/complete to prevent double ack/reply scenarios with a better error message than discord provides //
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // This is an exception factory method that only returns an exception if we would have to throw it or fail in another way.
-    protected final IllegalStateException tryAck() // note that hook.ack() is already synchronized so this is actually thread-safe!
+    protected final IllegalStateException tryAck() // note that interaction.ack() is already synchronized so this is actually thread-safe!
     {
         // true => we already called this before => this will never succeed!
-        return interaction.ack() ? new IllegalStateException("This interaction has already been acknowledged or replied to. You can only reply or acknowledge an interaction once!")
+        return interaction.ack()
+                ? new IllegalStateException("This interaction has already been acknowledged or replied to. You can only reply or acknowledge an interaction once!")
                 : null; // null indicates we were successful, no exception means we can't fail :)
     }
 
@@ -107,5 +111,25 @@ public abstract class InteractionCallbackImpl<T> extends RestActionImpl<T> imple
         }
 
         return super.submit(shouldQueue);
+    }
+
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Here we handle the interaction hook, which awaits the signal that the interaction was acknowledged before sending any requests. //
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    @Override
+    protected void handleSuccess(Response response, Request<T> request)
+    {
+        interaction.releaseHook(true); // sends followup messages
+        super.handleSuccess(response, request);
+    }
+
+    @Override
+    public void handleResponse(Response response, Request<T> request)
+    {
+        if (!response.isOk())
+            interaction.releaseHook(false); // cancels followup messages with an exception
+        super.handleResponse(response, request);
     }
 }
