@@ -34,6 +34,7 @@ public class InteractionMentions extends AbstractMentions
         this.resolved = resolved;
     }
 
+    @Override
     protected User matchUser(Matcher matcher)
     {
         long userId = MiscUtil.parseSnowflake(matcher.group(1));
@@ -45,6 +46,7 @@ public class InteractionMentions extends AbstractMentions
                     : null;
     }
 
+    @Override
     protected Member matchMember(Matcher matcher)
     {
         long userId = MiscUtil.parseSnowflake(matcher.group(1));
@@ -52,6 +54,7 @@ public class InteractionMentions extends AbstractMentions
         return it instanceof Member ? (Member) it : null;
     }
 
+    @Override
     protected GuildChannel matchChannel(Matcher matcher)
     {
         long channelId = MiscUtil.parseSnowflake(matcher.group(1));
@@ -59,6 +62,7 @@ public class InteractionMentions extends AbstractMentions
         return it instanceof GuildChannel ? (GuildChannel) it : null;
     }
 
+    @Override
     protected Role matchRole(Matcher matcher)
     {
         long roleId = MiscUtil.parseSnowflake(matcher.group(1));
@@ -66,6 +70,7 @@ public class InteractionMentions extends AbstractMentions
         return it instanceof Role ? (Role) it : null;
     }
 
+    @Override
     protected boolean isUserMentioned(IMentionable mentionable)
     {
         return resolved.containsKey(mentionable.getIdLong());

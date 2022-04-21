@@ -128,6 +128,7 @@ public class MessageMentionsImpl extends AbstractMentions
         return mentionedUsers = Collections.unmodifiableList(users);
     }
 
+    @Override
     protected User matchUser(Matcher matcher)
     {
         long userId = MiscUtil.parseSnowflake(matcher.group(1));
@@ -140,6 +141,7 @@ public class MessageMentionsImpl extends AbstractMentions
         return member == null ? null : member.getUser();
     }
 
+    @Override
     protected Member matchMember(Matcher matcher)
     {
         long id = Long.parseUnsignedLong(matcher.group(1));
@@ -149,12 +151,14 @@ public class MessageMentionsImpl extends AbstractMentions
                 : null;
     }
 
+    @Override
     protected GuildChannel matchChannel(Matcher matcher)
     {
         long channelId = MiscUtil.parseSnowflake(matcher.group(1));
         return getJDA().getGuildChannelById(channelId);
     }
 
+    @Override
     protected Role matchRole(Matcher matcher)
     {
         long roleId = MiscUtil.parseSnowflake(matcher.group(1));
