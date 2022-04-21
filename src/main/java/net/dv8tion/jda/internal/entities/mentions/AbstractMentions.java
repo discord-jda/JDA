@@ -307,10 +307,7 @@ public abstract class AbstractMentions implements MessageMentions
         return emote;
     }
 
-    protected boolean isUserMentioned(IMentionable mentionable)
-    {
-        return mentionable instanceof UserSnowflake && getUsers().stream().anyMatch(user -> user.getIdLong() == mentionable.getIdLong());
-    }
+    protected abstract boolean isUserMentioned(IMentionable mentionable);
 
     protected boolean isRoleMentioned(IMentionable mentionable)
     {

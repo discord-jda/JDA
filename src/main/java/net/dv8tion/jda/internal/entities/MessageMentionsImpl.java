@@ -165,4 +165,10 @@ public class MessageMentionsImpl extends AbstractMentions
         else
             return getJDA().getRoleById(roleId);
     }
+
+    @Override
+    protected boolean isUserMentioned(IMentionable mentionable)
+    {
+        return userMentionMap.containsKey(mentionable.getIdLong());
+    }
 }

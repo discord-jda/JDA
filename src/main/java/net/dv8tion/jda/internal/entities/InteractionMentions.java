@@ -21,7 +21,6 @@ import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.mentions.AbstractMentions;
-import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.regex.Matcher;
 
@@ -70,24 +69,5 @@ public class InteractionMentions extends AbstractMentions
     protected boolean isUserMentioned(IMentionable mentionable)
     {
         return resolved.containsKey(mentionable.getIdLong());
-    }
-
-    protected boolean isRoleMentioned(IMentionable mentionable)
-    {
-        if (mentionable instanceof Role)
-        {
-            return getRoles().contains(mentionable);
-        }
-        else if (mentionable instanceof Member)
-        {
-            final Member member = (Member) mentionable;
-            return CollectionUtils.containsAny(getRoles(), member.getRoles());
-        }
-        else if (guild != null && mentionable instanceof User)
-        {
-            final Member member = guild.getMember((User) mentionable);
-            return member != null && CollectionUtils.containsAny(getRoles(), member.getRoles());
-        }
-        return false;
     }
 }
