@@ -81,7 +81,7 @@ public abstract class AbstractMentions implements MessageMentions
     @Override
     public Bag<User> getUsersBag()
     {
-        return processMentions(Message.MentionType.USER, new HashBag<>(), true, this::matchUser);
+        return processMentions(Message.MentionType.USER, new HashBag<>(), false, this::matchUser);
     }
 
     @Nonnull
@@ -97,7 +97,7 @@ public abstract class AbstractMentions implements MessageMentions
     @Override
     public Bag<GuildChannel> getChannelsBag()
     {
-        return processMentions(Message.MentionType.CHANNEL, new HashBag<>(), true, this::matchChannel);
+        return processMentions(Message.MentionType.CHANNEL, new HashBag<>(), false, this::matchChannel);
     }
 
     @Nonnull
@@ -117,7 +117,7 @@ public abstract class AbstractMentions implements MessageMentions
     {
         if (guild == null)
             return new HashBag<>();
-        return processMentions(Message.MentionType.ROLE, new HashBag<>(), true, this::matchRole);
+        return processMentions(Message.MentionType.ROLE, new HashBag<>(), false, this::matchRole);
     }
 
     @Nonnull
@@ -133,7 +133,7 @@ public abstract class AbstractMentions implements MessageMentions
     @Override
     public Bag<Emote> getEmotesBag()
     {
-        return processMentions(Message.MentionType.EMOTE, new HashBag<>(), true, this::matchEmote);
+        return processMentions(Message.MentionType.EMOTE, new HashBag<>(), false, this::matchEmote);
     }
 
     @Nonnull
@@ -153,7 +153,7 @@ public abstract class AbstractMentions implements MessageMentions
     {
         if (guild == null)
             return new HashBag<>();
-        return processMentions(Message.MentionType.USER, new HashBag<>(), true, this::matchMember);
+        return processMentions(Message.MentionType.USER, new HashBag<>(), false, this::matchMember);
     }
 
     @Nonnull
@@ -217,20 +217,19 @@ public abstract class AbstractMentions implements MessageMentions
         Checks.notNull(types, "Mention Types");
         if (types.length == 0)
             return isMentioned(mentionable, Message.MentionType.values());
-        final boolean isUserEntity = mentionable instanceof User || mentionable instanceof Member;
         for (Message.MentionType type : types)
         {
             switch (type)
             {
             case HERE:
             {
-                if (isMass("@here") && isUserEntity)
+                if (isMass("@here") && mentionable instanceof UserSnowflake)
                     return true;
                 break;
             }
             case EVERYONE:
             {
-                if (isMass("@everyone") && isUserEntity)
+                if (isMass("@everyone") && mentionable instanceof UserSnowflake)
                     return true;
                 break;
             }
@@ -310,16 +309,7 @@ public abstract class AbstractMentions implements MessageMentions
 
     protected boolean isUserMentioned(IMentionable mentionable)
     {
-        if (mentionable instanceof User)
-        {
-            return getUsers().contains(mentionable);
-        }
-        else if (mentionable instanceof Member)
-        {
-            final Member member = (Member) mentionable;
-            return getUsers().contains(member.getUser());
-        }
-        return false;
+        return mentionable instanceof UserSnowflake && getUsers().stream().anyMatch(user -> user.getIdLong() == mentionable.getIdLong());
     }
 
     protected boolean isRoleMentioned(IMentionable mentionable)
