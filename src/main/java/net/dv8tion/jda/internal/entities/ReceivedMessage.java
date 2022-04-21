@@ -30,7 +30,6 @@ import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationAction;
 import net.dv8tion.jda.api.utils.MarkdownSanitizer;
-import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.requests.CompletedRestAction;
@@ -62,7 +61,7 @@ public class ReceivedMessage extends AbstractMessage
     protected final Member member;
     protected final MessageActivity activity;
     protected final OffsetDateTime editedTime;
-    protected final MessageMentions mentions;
+    protected final Mentions mentions;
     protected final List<MessageReaction> reactions;
     protected final List<Attachment> attachments;
     protected final List<MessageEmbed> embeds;
@@ -80,10 +79,10 @@ public class ReceivedMessage extends AbstractMessage
     protected List<String> invites = null;
 
     public ReceivedMessage(
-        long id, MessageChannel channel, MessageType type, MessageReference messageReference,
-        boolean fromWebhook, boolean tts, boolean pinned, String content, String nonce, User author,
-        Member member, MessageActivity activity, OffsetDateTime editTime, MessageMentions mentions, List<MessageReaction> reactions,
-        List<Attachment> attachments, List<MessageEmbed> embeds, List<MessageSticker> stickers, List<ActionRow> components, int flags, Message.Interaction interaction)
+            long id, MessageChannel channel, MessageType type, MessageReference messageReference,
+            boolean fromWebhook, boolean tts, boolean pinned, String content, String nonce, User author,
+            Member member, MessageActivity activity, OffsetDateTime editTime, Mentions mentions, List<MessageReaction> reactions,
+            List<Attachment> attachments, List<MessageEmbed> embeds, List<MessageSticker> stickers, List<ActionRow> components, int flags, Message.Interaction interaction)
     {
         super(content, nonce, tts);
         this.id = id;
@@ -539,7 +538,7 @@ public class ReceivedMessage extends AbstractMessage
 
     @Nonnull
     @Override
-    public MessageMentions getMentions()
+    public Mentions getMentions()
     {
         return mentions;
     }

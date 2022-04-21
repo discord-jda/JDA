@@ -34,7 +34,7 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 
-public abstract class AbstractMentions implements MessageMentions
+public abstract class AbstractMentions implements Mentions
 {
     protected final String content;
     protected final JDAImpl jda;

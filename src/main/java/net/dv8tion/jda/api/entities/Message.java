@@ -260,7 +260,7 @@ public interface Message extends ISnowflake, Formattable
 
     //TODO | Docs
     @Nonnull
-    MessageMentions getMentions();
+    Mentions getMentions();
 
     /**
      * Returns whether or not this Message has been edited before.

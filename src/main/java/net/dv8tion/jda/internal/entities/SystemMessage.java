@@ -16,7 +16,6 @@
 
 package net.dv8tion.jda.internal.entities;
 
-import gnu.trove.set.TLongSet;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.requests.RestAction;
@@ -33,7 +32,7 @@ public class SystemMessage extends ReceivedMessage
     public SystemMessage(
         long id, MessageChannel channel, MessageType type, MessageReference messageReference,
         boolean fromWebhook, boolean tts, boolean pinned,
-        String content, String nonce, User author, Member member, MessageActivity activity, OffsetDateTime editTime, MessageMentions mentions,
+        String content, String nonce, User author, Member member, MessageActivity activity, OffsetDateTime editTime, Mentions mentions,
         List<MessageReaction> reactions, List<Attachment> attachments, List<MessageEmbed> embeds, List<MessageSticker> stickers, int flags)
     {
         super(id, channel, type, messageReference, fromWebhook, tts, pinned, content, nonce, author, member,

@@ -46,7 +46,7 @@ public class OptionMapping
     private final OptionType type;
     private final String name;
     private final TLongObjectMap<Object> resolved;
-    private final MessageMentions mentions;
+    private final Mentions mentions;
 
     public OptionMapping(DataObject data, TLongObjectMap<Object> resolved, JDA jda, Guild guild)
     {
@@ -66,14 +66,14 @@ public class OptionMapping
      * Mentions are sorted by occurrence.
      *
      * <p>Mentioned {@link Member members} and {@link Role roles} are always of the same guild.
-     * If the interaction {@link Interaction#getUser() user}, mentions users from other guilds, they will only be provided by {@link MessageMentions#getUsers()}.
+     * If the interaction {@link Interaction#getUser() user}, mentions users from other guilds, they will only be provided by {@link net.dv8tion.jda.api.entities.Mentions#getUsers()}.
      *
      * <p>This is not supported for {@link CommandAutoCompleteInteraction}.
      *
-     * @return {@link MessageMentions} for this option
+     * @return {@link net.dv8tion.jda.api.entities.Mentions} for this option
      */
     @Nonnull
-    public MessageMentions getMentions()
+    public Mentions getMentions()
     {
         return mentions;
     }

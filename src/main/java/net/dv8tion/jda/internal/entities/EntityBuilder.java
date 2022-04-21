@@ -1520,7 +1520,7 @@ public class EntityBuilder
             messageInteraction = createMessageInteraction(guild, jsonObject.getObject("interaction"));
 
         // Lazy Mention parsing and caching (includes reply mentions)
-        MessageMentions mentions = new MessageMentionsImpl(
+        Mentions mentions = new MessageMentionsImpl(
             api, guild, content, mentionsEveryone,
             jsonObject.getArray("mentions"), jsonObject.getArray("mention_roles")
         );

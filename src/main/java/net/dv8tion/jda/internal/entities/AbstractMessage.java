@@ -116,7 +116,7 @@ public abstract class AbstractMessage implements Message
 
     @Nonnull
     @Override
-    public MessageMentions getMentions()
+    public Mentions getMentions()
     {
         unsupported();
         return null;

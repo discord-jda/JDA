@@ -23,7 +23,7 @@ import javax.annotation.Nonnull;
 import java.util.List;
 
 //TODO-v5 | Docs
-public interface MessageMentions
+public interface Mentions
 {
     //TODO-v5 | Docs
     @Nonnull
