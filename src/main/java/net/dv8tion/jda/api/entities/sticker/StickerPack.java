@@ -19,6 +19,7 @@ package net.dv8tion.jda.api.entities.sticker;
 import net.dv8tion.jda.api.entities.ISnowflake;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.List;
 
 public interface StickerPack extends ISnowflake
@@ -36,25 +37,28 @@ public interface StickerPack extends ISnowflake
 
     long getCoverIdLong();
 
-    @Nonnull
+    @Nullable
     default String getCoverId()
     {
-        return Long.toUnsignedString(getCoverIdLong());
+        long id = getCoverIdLong();
+        return id == 0 ? null : Long.toUnsignedString(id);
     }
 
     long getBannerIdLong();
 
-    @Nonnull
+    @Nullable
     default String getBannerId()
     {
-        return Long.toUnsignedString(getBannerIdLong());
+        long id = getBannerIdLong();
+        return id == 0 ? null : Long.toUnsignedString(id);
     }
 
     long getSkuIdLong();
 
-    @Nonnull
+    @Nullable
     default String getSkuId()
     {
-        return Long.toUnsignedString(getSkuIdLong());
+        long id = getSkuIdLong();
+        return id == 0 ? null : Long.toUnsignedString(id);
     }
 }
