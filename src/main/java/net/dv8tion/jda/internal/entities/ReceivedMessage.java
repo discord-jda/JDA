@@ -37,7 +37,6 @@ import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.MessageActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
-import org.apache.commons.collections4.Bag;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -395,7 +394,7 @@ public class ReceivedMessage extends AbstractMessage
                     name = user.getName();
                 tmp = tmp.replaceAll("<@!?" + Pattern.quote(user.getId()) + '>', '@' + Matcher.quoteReplacement(name));
             }
-            for (Emote emote : getEmotes())
+            for (Emote emote : mentions.getEmotes())
             {
                 tmp = tmp.replace(emote.getAsMention(), ":" + emote.getName() + ":");
             }
@@ -541,20 +540,6 @@ public class ReceivedMessage extends AbstractMessage
     public Mentions getMentions()
     {
         return mentions;
-    }
-
-    @Nonnull
-    @Override
-    public List<Emote> getEmotes()
-    {
-        return mentions.getEmotes();
-    }
-
-    @Nonnull
-    @Override
-    public Bag<Emote> getEmotesBag()
-    {
-        return mentions.getEmotesBag();
     }
 
     @Nonnull

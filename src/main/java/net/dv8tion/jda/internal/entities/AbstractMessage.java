@@ -25,7 +25,6 @@ import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationAction;
 import net.dv8tion.jda.internal.utils.Helpers;
-import org.apache.commons.collections4.Bag;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -279,22 +278,6 @@ public abstract class AbstractMessage implements Message
     @Nonnull
     @Override
     public List<ActionRow> getActionRows()
-    {
-        unsupported();
-        return null;
-    }
-
-    @Nonnull
-    @Override
-    public List<Emote> getEmotes()
-    {
-        unsupported();
-        return null;
-    }
-
-    @Nonnull
-    @Override
-    public Bag<Emote> getEmotesBag()
     {
         unsupported();
         return null;
