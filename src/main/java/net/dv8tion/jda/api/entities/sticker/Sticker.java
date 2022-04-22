@@ -70,7 +70,7 @@ public interface Sticker extends ISnowflake
          */
         LOTTIE(3, "json"),
         /**
-         * Represents any unknown or unsupported {@link net.dv8tion.jda.api.entities.MessageSticker MessageSticker} format types.
+         * Represents any unknown or unsupported format types.
          */
         UNKNOWN(-1, null);
 
