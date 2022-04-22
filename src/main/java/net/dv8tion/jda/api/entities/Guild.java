@@ -19,6 +19,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.Region;
 import net.dv8tion.jda.api.entities.channel.IGuildChannelContainer;
+import net.dv8tion.jda.api.entities.sticker.GuildSticker;
 import net.dv8tion.jda.api.entities.templates.Template;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.interactions.commands.Command;
@@ -1804,6 +1805,21 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
             }
             return null;
         }, () -> retrieveEmoteById(emote.getId()));
+    }
+
+    @Nonnull
+    @CheckReturnValue
+    RestAction<List<GuildSticker>> retrieveStickers();
+
+    @Nonnull
+    @CheckReturnValue
+    RestAction<GuildSticker> retrieveSticker(@Nonnull String id);
+
+    @Nonnull
+    @CheckReturnValue
+    default RestAction<GuildSticker> retrieveSticker(long id)
+    {
+        return retrieveSticker(Long.toUnsignedString(id));
     }
 
     /**

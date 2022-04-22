@@ -23,9 +23,11 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.Region;
 import net.dv8tion.jda.api.audio.hooks.ConnectionStatus;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.sticker.GuildSticker;
 import net.dv8tion.jda.api.entities.templates.Template;
 import net.dv8tion.jda.api.exceptions.HierarchyException;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
+import net.dv8tion.jda.api.exceptions.ParsingException;
 import net.dv8tion.jda.api.exceptions.PermissionException;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
@@ -815,6 +817,47 @@ public class GuildImpl implements Guild
                 EntityBuilder builder = GuildImpl.this.getJDA().getEntityBuilder();
                 return builder.createEmote(GuildImpl.this, response.getObject());
             });
+        });
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<List<GuildSticker>> retrieveStickers()
+    {
+        Route.CompiledRoute route = Route.Guilds.GET_GUILD_STICKERS.compile(getId());
+        return new RestActionImpl<>(getJDA(), route, (response, request) -> {
+            DataArray array = response.getArray();
+            List<GuildSticker> stickers = new ArrayList<>(array.length());
+            EntityBuilder builder = api.getEntityBuilder();
+            for (int i = 0; i < array.length(); i++)
+            {
+                DataObject object = null;
+                try
+                {
+                    object = array.getObject(i);
+                    GuildSticker sticker = builder.createGuildSticker(object);
+                    stickers.add(sticker);
+                }
+                catch (ParsingException ex)
+                {
+                    EntityBuilder.LOG.error("Failed to parse sticker for JSON: {}", object, ex);
+                }
+            }
+
+            return Collections.unmodifiableList(stickers);
+        });
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<GuildSticker> retrieveSticker(@Nonnull String id)
+    {
+        Checks.isSnowflake(id);
+        Route.CompiledRoute route = Route.Guilds.GET_GUILD_STICKER.compile(getId(), id);
+        return new RestActionImpl<>(getJDA(), route, (response, request) -> {
+            DataObject object = response.getObject();
+            EntityBuilder builder = api.getEntityBuilder();
+            return builder.createGuildSticker(object);
         });
     }
 

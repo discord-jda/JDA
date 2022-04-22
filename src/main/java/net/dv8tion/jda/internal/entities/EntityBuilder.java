@@ -31,6 +31,9 @@ import net.dv8tion.jda.api.entities.Guild.NotificationLevel;
 import net.dv8tion.jda.api.entities.Guild.Timeout;
 import net.dv8tion.jda.api.entities.Guild.VerificationLevel;
 import net.dv8tion.jda.api.entities.MessageEmbed.*;
+import net.dv8tion.jda.api.entities.sticker.GuildSticker;
+import net.dv8tion.jda.api.entities.sticker.MessageSticker;
+import net.dv8tion.jda.api.entities.sticker.Sticker;
 import net.dv8tion.jda.api.entities.templates.Template;
 import net.dv8tion.jda.api.entities.templates.TemplateChannel;
 import net.dv8tion.jda.api.entities.templates.TemplateGuild;
@@ -50,6 +53,8 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.mixin.channel.attribute.IPermissionContainerMixin;
 import net.dv8tion.jda.internal.entities.mixin.channel.middleman.AudioChannelMixin;
+import net.dv8tion.jda.internal.entities.sticker.GuildStickerImpl;
+import net.dv8tion.jda.internal.entities.sticker.MessageStickerImpl;
 import net.dv8tion.jda.internal.handle.EventCache;
 import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.JDALogger;
@@ -1419,7 +1424,7 @@ public class EntityBuilder
         final List<Message.Attachment> attachments = map(jsonObject, "attachments",   this::createMessageAttachment);
         final List<MessageEmbed>       embeds      = map(jsonObject, "embeds",        this::createMessageEmbed);
         final List<MessageReaction>    reactions   = map(jsonObject, "reactions",     (obj) -> createMessageReaction(tmpChannel, id, obj));
-        final List<MessageSticker>     stickers    = map(jsonObject, "sticker_items", this::createSticker);
+        final List<MessageSticker>     stickers    = map(jsonObject, "sticker_items", this::createMessageSticker);
 
         MessageActivity activity = null;
 
@@ -1761,13 +1766,25 @@ public class EntityBuilder
             color, thumbnail, siteProvider, author, videoInfo, footer, image, fields);
     }
 
-    public MessageSticker createSticker(DataObject content)
+    public MessageSticker createMessageSticker(DataObject content)
     {
-        final long id = content.getLong("id");
-        final String name = content.getString("name");
-        final String description = content.getString("description", "");
-        final long packId = content.getLong("pack_id", content.getLong("guild_id", 0L));
-        final MessageSticker.StickerFormat format = MessageSticker.StickerFormat.fromId(content.getInt("format_type"));
+        long id = content.getLong("id");
+        String name = content.getString("name");
+        Sticker.StickerFormat format = Sticker.StickerFormat.fromId(content.getInt("format_type"));
+        return new MessageStickerImpl(id, format, name);
+    }
+
+    public GuildSticker createGuildSticker(DataObject content)
+    {
+        long id = content.getLong("id");
+        String name = content.getString("name");
+        Sticker.StickerFormat format = Sticker.StickerFormat.fromId(content.getInt("format_type"));
+        boolean available = content.getBoolean("available");
+        String description = content.getString("description", "");
+        Sticker.Type type = Sticker.Type.fromId(content.getInt("type", -1));
+        long guildId = content.getUnsignedLong("guild_id", 0L);
+        Guild guild = api.getGuildById(guildId);
+        User owner = content.isNull("user") ? null : createUser(content.getObject("user"));
         final Set<String> tags;
         if (content.isNull("tags"))
         {
@@ -1779,7 +1796,8 @@ public class EntityBuilder
             final Set<String> tmp = new HashSet<>(Arrays.asList(split));
             tags = Collections.unmodifiableSet(tmp);
         }
-        return new MessageSticker(id, name, description, packId, format, tags);
+
+        return new GuildStickerImpl(id, format, name, type, tags, description, available, guild, owner);
     }
 
     public Message.Interaction createMessageInteraction(GuildImpl guildImpl, DataObject content)

@@ -13,45 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.dv8tion.jda.api.entities;
 
+package net.dv8tion.jda.api.entities.sticker;
+
+import net.dv8tion.jda.api.entities.ISnowflake;
 import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.Nonnull;
-import java.util.Set;
 
-/**
- * An object representing a sticker in a Discord message.
- *
- * @see Message#getStickers()
- */
-public class MessageSticker implements ISnowflake
+public interface Sticker extends ISnowflake
 {
-    private final long id;
-    private final String name;
-    private final String description;
-    private final long packId;
-    private final StickerFormat formatType;
-    private final Set<String> tags;
-
     /** Template for {@link #getIconUrl()} */
-    public static final String ICON_URL = "https://cdn.discordapp.com/stickers/%s.%s";
+    String ICON_URL = "https://cdn.discordapp.com/stickers/%s.%s";
 
-    public MessageSticker(final long id, final String name, final String description, final long packId, final StickerFormat formatType, final Set<String> tags)
-    {
-        this.id = id;
-        this.name = name;
-        this.description = description;
-        this.packId = packId;
-        this.formatType = formatType;
-        this.tags = tags;
-    }
-
-    @Override
-    public long getIdLong()
-    {
-        return id;
-    }
+    StickerFormat getFormatType();
 
     /**
      * The name of the sticker.
@@ -59,46 +34,7 @@ public class MessageSticker implements ISnowflake
      * @return the name of the sticker
      */
     @Nonnull
-    public String getName()
-    {
-        return name;
-    }
-
-    /**
-     * The description of the sticker or empty String if the sticker doesn't have one.
-     *
-     * @return Possibly-empty String containing the description of the sticker
-     */
-    @Nonnull
-    public String getDescription()
-    {
-        return description;
-    }
-
-    /**
-     * The ID of the pack the sticker is from.
-     *
-     * <p>If this sticker is from a guild, this will be the guild id instead.
-     *
-     * @return the ID of the pack the sticker is from
-     */
-    @Nonnull
-    public String getPackId()
-    {
-        return Long.toUnsignedString(getPackIdLong());
-    }
-
-    /**
-     * The ID of the pack the sticker is from.
-     *
-     * <p>If this sticker is from a guild, this will be the guild id instead.
-     *
-     * @return the ID of the pack the sticker is from
-     */
-    public long getPackIdLong()
-    {
-        return packId;
-    }
+    String getName();
 
     /**
      * The url of the sticker image.
@@ -109,34 +45,14 @@ public class MessageSticker implements ISnowflake
      * @return The image url of the sticker
      */
     @Nonnull
-    public String getIconUrl()
+    default String getIconUrl()
     {
-        return Helpers.format(ICON_URL, getId(), formatType.getExtension());
+        return Helpers.format(ICON_URL, getId(), getFormatType().getExtension());
     }
 
-    /**
-     * The {@link StickerFormat Format} of the sticker.
-     *
-     * @return the format of the sticker
-     */
-    @Nonnull
-    public StickerFormat getFormatType()
-    {
-        return formatType;
-    }
+    // TODO getIconProxy
 
-    /**
-     * Set of tags of the sticker. Tags can be used instead of the name of the sticker as aliases.
-     *
-     * @return Possibly-empty unmodifiable Set of tags of the sticker
-     */
-    @Nonnull
-    public Set<String> getTags()
-    {
-        return tags;
-    }
-
-    public enum StickerFormat
+    enum StickerFormat
     {
         /**
          * The PNG format.
@@ -192,12 +108,36 @@ public class MessageSticker implements ISnowflake
          * @return The representative StickerFormat or UNKNOWN if it can't be resolved
          */
         @Nonnull
-        public static MessageSticker.StickerFormat fromId(int id)
+        public static StickerFormat fromId(int id)
         {
-            for (MessageSticker.StickerFormat stickerFormat : values())
+            for (StickerFormat stickerFormat : values())
             {
                 if (stickerFormat.id == id)
                     return stickerFormat;
+            }
+            return UNKNOWN;
+        }
+    }
+
+    enum Type
+    {
+        STANDARD(1),
+        GUILD(2),
+        UNKNOWN(-1);
+
+        private final int id;
+
+        Type(int id)
+        {
+            this.id = id;
+        }
+
+        public static Type fromId(int id)
+        {
+            for (Type type : values())
+            {
+                if (type.id == id)
+                    return type;
             }
             return UNKNOWN;
         }

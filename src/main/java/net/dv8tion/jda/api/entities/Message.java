@@ -17,6 +17,7 @@ package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.sticker.MessageSticker;
 import net.dv8tion.jda.api.exceptions.HttpException;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.interactions.InteractionType;
@@ -982,7 +983,7 @@ public interface Message extends ISnowflake, Formattable
     List<MessageReaction> getReactions();
 
     /**
-     * All {@link net.dv8tion.jda.api.entities.MessageSticker MessageStickers} that are in this Message.
+     * All {@link MessageSticker MessageStickers} that are in this Message.
      * <br>The returned MessageStickers may only contain necessary information such as the sticker id, format type, name, and icon url.
      *
      * @throws java.lang.UnsupportedOperationException
