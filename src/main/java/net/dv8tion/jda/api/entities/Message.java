@@ -262,7 +262,7 @@ public interface Message extends ISnowflake, Formattable
      * The {@link Mentions} used in this message.
      *
      * <p>This includes {@link Member Members}, {@link GuildChannel GuildChannels}, {@link Role Roles}, and {@link Emote Emotes}.
-     * Can also be used to check if a message mentions {@code @everyone} or {@link @here}.
+     * Can also be used to check if a message mentions {@code @everyone} or {@code @here}.
      *
      * <h3>Example</h3>
      * {@code
