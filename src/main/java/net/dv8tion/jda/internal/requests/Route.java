@@ -179,6 +179,12 @@ public class Route
         public static final Route GET_EMOTE    = new Route(GET,    "guilds/{guild_id}/emojis/{emoji_id}");
     }
 
+    public static class Stickers
+    {
+        public static final Route GET_STICKER = new Route(GET, "stickers/{sticker_id}");
+        public static final Route LIST_PACKS  = new Route(GET, "sticker-packs");
+    }
+
     public static class Webhooks
     {
         public static final Route GET_WEBHOOK          = new Route(GET,    "webhooks/{webhook_id}");

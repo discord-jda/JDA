@@ -16,27 +16,34 @@
 
 package net.dv8tion.jda.api.entities.sticker;
 
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.User;
-
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
-public interface GuildSticker extends RichSticker
+public interface StandardSticker extends RichSticker
 {
-    boolean isAvailable();
+    /**
+     * The ID of the pack the sticker is from.
+     *
+     * @return the ID of the pack the sticker is from
+     *
+     */
+    long getPackIdLong();
 
-    long getGuildIdLong();
-
+    /**
+     * The ID of the pack the sticker is from.
+     *
+     * @return the ID of the pack the sticker is from
+     *
+     */
     @Nonnull
-    default String getGuildId()
+    default String getPackId()
     {
-        return Long.toUnsignedString(getGuildIdLong());
+        return Long.toUnsignedString(getPackIdLong());
     }
 
-    @Nullable
-    Guild getGuild();
-
-    @Nonnull
-    User getOwner();
+    /**
+     * The sticker's sort order within its pack
+     *
+     * @return The sort order value
+     */
+    int getSortValue();
 }

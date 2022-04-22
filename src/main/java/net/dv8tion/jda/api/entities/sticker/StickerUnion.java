@@ -16,6 +16,13 @@
 
 package net.dv8tion.jda.api.entities.sticker;
 
-public interface MessageSticker extends Sticker
+import javax.annotation.Nonnull;
+
+public interface StickerUnion extends RichSticker
 {
+    @Nonnull
+    StandardSticker asStandardSticker();
+
+    @Nonnull
+    GuildSticker asGuildSticker();
 }

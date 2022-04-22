@@ -17,7 +17,7 @@ package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.sticker.MessageSticker;
+import net.dv8tion.jda.api.entities.sticker.StickerItem;
 import net.dv8tion.jda.api.exceptions.HttpException;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.interactions.InteractionType;
@@ -983,7 +983,7 @@ public interface Message extends ISnowflake, Formattable
     List<MessageReaction> getReactions();
 
     /**
-     * All {@link MessageSticker MessageStickers} that are in this Message.
+     * All {@link StickerItem MessageStickers} that are in this Message.
      * <br>The returned MessageStickers may only contain necessary information such as the sticker id, format type, name, and icon url.
      *
      * @throws java.lang.UnsupportedOperationException
@@ -992,7 +992,7 @@ public interface Message extends ISnowflake, Formattable
      * @return Immutable list of all MessageStickers in this message.
      */
     @Nonnull
-    List<MessageSticker> getStickers();
+    List<StickerItem> getStickers();
 
     /**
      * Defines whether or not this Message triggers TTS (Text-To-Speech).

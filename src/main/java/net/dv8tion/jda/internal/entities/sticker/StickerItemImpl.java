@@ -16,17 +16,17 @@
 
 package net.dv8tion.jda.internal.entities.sticker;
 
-import net.dv8tion.jda.api.entities.sticker.MessageSticker;
+import net.dv8tion.jda.api.entities.sticker.StickerItem;
 
 import javax.annotation.Nonnull;
 
-public class MessageStickerImpl implements MessageSticker
+public class StickerItemImpl implements StickerItem
 {
     private final long id;
     private final StickerFormat format;
     private final String name;
 
-    public MessageStickerImpl(long id, StickerFormat format, String name)
+    public StickerItemImpl(long id, StickerFormat format, String name)
     {
         this.id = id;
         this.format = format;

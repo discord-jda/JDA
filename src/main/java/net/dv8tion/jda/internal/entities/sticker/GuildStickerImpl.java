@@ -19,51 +19,26 @@ package net.dv8tion.jda.internal.entities.sticker;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.sticker.GuildSticker;
-import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nonnull;
 import java.util.Set;
 
-public class GuildStickerImpl extends MessageStickerImpl implements GuildSticker
+public class GuildStickerImpl extends RichStickerImpl implements GuildSticker
 {
-    private final Type type;
-    private final Set<String> tags;
-    private final String description;
     private final boolean available;
+    private final long guildId;
     private final Guild guild;
     private final User owner;
 
     public GuildStickerImpl(long id, StickerFormat format, String name,
                             Type type, Set<String> tags, String description,
-                            boolean available, Guild guild, User owner)
+                            boolean available, long guildId, Guild guild, User owner)
     {
-        super(id, format, name);
-        this.type = type;
-        this.tags = tags;
-        this.description = description;
+        super(id, format, name, type, tags, description);
         this.available = available;
+        this.guildId = guildId;
         this.guild = guild;
         this.owner = owner;
-    }
-
-    @NotNull
-    @Override
-    public Type getType()
-    {
-        return type;
-    }
-
-    @NotNull
-    @Override
-    public Set<String> getTags()
-    {
-        return tags;
-    }
-
-    @NotNull
-    @Override
-    public String getDescription()
-    {
-        return description;
     }
 
     @Override
@@ -72,14 +47,20 @@ public class GuildStickerImpl extends MessageStickerImpl implements GuildSticker
         return available;
     }
 
-    @NotNull
+    @Override
+    public long getGuildIdLong()
+    {
+        return guildId;
+    }
+
+    @Nonnull
     @Override
     public Guild getGuild()
     {
         return guild;
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public User getOwner()
     {

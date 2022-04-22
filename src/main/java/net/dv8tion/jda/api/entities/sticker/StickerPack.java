@@ -16,27 +16,45 @@
 
 package net.dv8tion.jda.api.entities.sticker;
 
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.ISnowflake;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import java.util.List;
 
-public interface GuildSticker extends RichSticker
+public interface StickerPack extends ISnowflake
 {
-    boolean isAvailable();
-
-    long getGuildIdLong();
+    @Nonnull
+    List<StandardSticker> getStickers();
 
     @Nonnull
-    default String getGuildId()
+    String getName();
+
+    @Nonnull
+    String getDescription();
+
+    // TODO: URLs and Proxies
+
+    long getCoverIdLong();
+
+    @Nonnull
+    default String getCoverId()
     {
-        return Long.toUnsignedString(getGuildIdLong());
+        return Long.toUnsignedString(getCoverIdLong());
     }
 
-    @Nullable
-    Guild getGuild();
+    long getBannerIdLong();
 
     @Nonnull
-    User getOwner();
+    default String getBannerId()
+    {
+        return Long.toUnsignedString(getBannerIdLong());
+    }
+
+    long getSkuIdLong();
+
+    @Nonnull
+    default String getSkuId()
+    {
+        return Long.toUnsignedString(getSkuIdLong());
+    }
 }

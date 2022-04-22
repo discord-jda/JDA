@@ -835,10 +835,10 @@ public class GuildImpl implements Guild
                 try
                 {
                     object = array.getObject(i);
-                    GuildSticker sticker = builder.createGuildSticker(object);
+                    GuildSticker sticker = (GuildSticker) builder.createRichSticker(object);
                     stickers.add(sticker);
                 }
-                catch (ParsingException ex)
+                catch (ParsingException | ClassCastException ex)
                 {
                     EntityBuilder.LOG.error("Failed to parse sticker for JSON: {}", object, ex);
                 }
@@ -857,7 +857,7 @@ public class GuildImpl implements Guild
         return new RestActionImpl<>(getJDA(), route, (response, request) -> {
             DataObject object = response.getObject();
             EntityBuilder builder = api.getEntityBuilder();
-            return builder.createGuildSticker(object);
+            return (GuildSticker) builder.createRichSticker(object);
         });
     }
 

@@ -16,27 +16,6 @@
 
 package net.dv8tion.jda.api.entities.sticker;
 
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.User;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
-public interface GuildSticker extends RichSticker
+public interface StickerItem extends Sticker
 {
-    boolean isAvailable();
-
-    long getGuildIdLong();
-
-    @Nonnull
-    default String getGuildId()
-    {
-        return Long.toUnsignedString(getGuildIdLong());
-    }
-
-    @Nullable
-    Guild getGuild();
-
-    @Nonnull
-    User getOwner();
 }

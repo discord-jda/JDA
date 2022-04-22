@@ -31,9 +31,7 @@ import net.dv8tion.jda.api.entities.Guild.NotificationLevel;
 import net.dv8tion.jda.api.entities.Guild.Timeout;
 import net.dv8tion.jda.api.entities.Guild.VerificationLevel;
 import net.dv8tion.jda.api.entities.MessageEmbed.*;
-import net.dv8tion.jda.api.entities.sticker.GuildSticker;
-import net.dv8tion.jda.api.entities.sticker.MessageSticker;
-import net.dv8tion.jda.api.entities.sticker.Sticker;
+import net.dv8tion.jda.api.entities.sticker.*;
 import net.dv8tion.jda.api.entities.templates.Template;
 import net.dv8tion.jda.api.entities.templates.TemplateChannel;
 import net.dv8tion.jda.api.entities.templates.TemplateGuild;
@@ -45,6 +43,7 @@ import net.dv8tion.jda.api.events.user.update.UserUpdateAvatarEvent;
 import net.dv8tion.jda.api.events.user.update.UserUpdateDiscriminatorEvent;
 import net.dv8tion.jda.api.events.user.update.UserUpdateFlagsEvent;
 import net.dv8tion.jda.api.events.user.update.UserUpdateNameEvent;
+import net.dv8tion.jda.api.exceptions.ParsingException;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.api.utils.cache.CacheView;
@@ -54,7 +53,9 @@ import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.mixin.channel.attribute.IPermissionContainerMixin;
 import net.dv8tion.jda.internal.entities.mixin.channel.middleman.AudioChannelMixin;
 import net.dv8tion.jda.internal.entities.sticker.GuildStickerImpl;
-import net.dv8tion.jda.internal.entities.sticker.MessageStickerImpl;
+import net.dv8tion.jda.internal.entities.sticker.StandardStickerImpl;
+import net.dv8tion.jda.internal.entities.sticker.StickerItemImpl;
+import net.dv8tion.jda.internal.entities.sticker.StickerPackImpl;
 import net.dv8tion.jda.internal.handle.EventCache;
 import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.JDALogger;
@@ -1424,7 +1425,7 @@ public class EntityBuilder
         final List<Message.Attachment> attachments = map(jsonObject, "attachments",   this::createMessageAttachment);
         final List<MessageEmbed>       embeds      = map(jsonObject, "embeds",        this::createMessageEmbed);
         final List<MessageReaction>    reactions   = map(jsonObject, "reactions",     (obj) -> createMessageReaction(tmpChannel, id, obj));
-        final List<MessageSticker>     stickers    = map(jsonObject, "sticker_items", this::createMessageSticker);
+        final List<StickerItem>        stickers    = map(jsonObject, "sticker_items", this::createStickerItem);
 
         MessageActivity activity = null;
 
@@ -1766,38 +1767,74 @@ public class EntityBuilder
             color, thumbnail, siteProvider, author, videoInfo, footer, image, fields);
     }
 
-    public MessageSticker createMessageSticker(DataObject content)
+    public StickerItem createStickerItem(DataObject content)
     {
         long id = content.getLong("id");
         String name = content.getString("name");
         Sticker.StickerFormat format = Sticker.StickerFormat.fromId(content.getInt("format_type"));
-        return new MessageStickerImpl(id, format, name);
+        return new StickerItemImpl(id, format, name);
     }
 
-    public GuildSticker createGuildSticker(DataObject content)
+    public RichSticker createRichSticker(DataObject content)
     {
         long id = content.getLong("id");
         String name = content.getString("name");
         Sticker.StickerFormat format = Sticker.StickerFormat.fromId(content.getInt("format_type"));
-        boolean available = content.getBoolean("available");
-        String description = content.getString("description", "");
         Sticker.Type type = Sticker.Type.fromId(content.getInt("type", -1));
-        long guildId = content.getUnsignedLong("guild_id", 0L);
-        Guild guild = api.getGuildById(guildId);
-        User owner = content.isNull("user") ? null : createUser(content.getObject("user"));
-        final Set<String> tags;
-        if (content.isNull("tags"))
+
+        String description = content.getString("description", "");
+        Set<String> tags = Collections.emptySet();
+        if (!content.isNull("tags"))
         {
-            tags = Collections.emptySet();
-        }
-        else
-        {
-            final String[] split = content.getString("tags").split(", ");
-            final Set<String> tmp = new HashSet<>(Arrays.asList(split));
-            tags = Collections.unmodifiableSet(tmp);
+            String[] array = content.getString("tags").split(", ");
+            tags = new HashSet<>(array.length);
+            Collections.addAll(tags, array);
         }
 
-        return new GuildStickerImpl(id, format, name, type, tags, description, available, guild, owner);
+        switch (type)
+        {
+        case GUILD:
+            boolean available = content.getBoolean("available");
+            long guildId = content.getUnsignedLong("guild_id", 0L);
+            Guild guild = api.getGuildById(guildId);
+            User owner = content.isNull("user") ? null : createUser(content.getObject("user"));
+            return new GuildStickerImpl(id, format, name, type, tags, description, available, guildId, guild, owner);
+        case STANDARD:
+            long packId = content.getUnsignedLong("pack_id", 0L);
+            int sortValue = content.getInt("sort_value", -1);
+            return new StandardStickerImpl(id, format, name, type, tags, description, packId, sortValue);
+        default:
+            throw new IllegalArgumentException("Unknown sticker type. Type: " + type  +" JSON: " + content);
+        }
+    }
+
+    public StickerPack createStickerPack(DataObject content)
+    {
+        long id = content.getUnsignedLong("id");
+        String name = content.getString("name");
+        String description = content.getString("description", "");
+        long skuId = content.getUnsignedLong("sku_id", 0);
+        long coverId = content.getUnsignedLong("cover_sticker_id", 0);
+        long bannerId = content.getUnsignedLong("banner_asset_id", 0);
+
+        DataArray stickerArr = content.getArray("stickers");
+        List<StandardSticker> stickers = new ArrayList<>(stickerArr.length());
+        for (int i = 0; i < stickerArr.length(); i++)
+        {
+            DataObject object = null;
+            try
+            {
+                object = stickerArr.getObject(i);
+                StandardSticker sticker = (StandardSticker) createRichSticker(object);
+                stickers.add(sticker);
+            }
+            catch (ParsingException | ClassCastException ex)
+            {
+                LOG.error("Sticker contained in pack {} ({}) could not be parsed. JSON: {}", name, id, object);
+            }
+        }
+
+        return new StickerPackImpl(id, stickers, name, description, coverId, bannerId, skuId);
     }
 
     public Message.Interaction createMessageInteraction(GuildImpl guildImpl, DataObject content)

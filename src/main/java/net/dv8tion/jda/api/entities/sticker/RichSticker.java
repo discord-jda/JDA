@@ -16,27 +16,27 @@
 
 package net.dv8tion.jda.api.entities.sticker;
 
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.User;
-
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import java.util.Set;
 
-public interface GuildSticker extends RichSticker
+public interface RichSticker extends Sticker
 {
-    boolean isAvailable();
-
-    long getGuildIdLong();
-
     @Nonnull
-    default String getGuildId()
-    {
-        return Long.toUnsignedString(getGuildIdLong());
-    }
+    Sticker.Type getType();
 
-    @Nullable
-    Guild getGuild();
-
+    /**
+     * Set of tags of the sticker. Tags can be used instead of the name of the sticker as aliases.
+     *
+     * @return Possibly-empty unmodifiable Set of tags of the sticker
+     */
     @Nonnull
-    User getOwner();
+    Set<String> getTags();
+
+    /**
+     * The description of the sticker, or empty String if the sticker doesn't have one.
+     *
+     * @return Possibly-empty String containing the description of the sticker
+     */
+    @Nonnull
+    String getDescription();
 }

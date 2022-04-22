@@ -18,6 +18,8 @@ package net.dv8tion.jda.api;
 
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.IGuildChannelContainer;
+import net.dv8tion.jda.api.entities.sticker.StickerPack;
+import net.dv8tion.jda.api.entities.sticker.StickerUnion;
 import net.dv8tion.jda.api.hooks.IEventManager;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
@@ -1530,6 +1532,14 @@ public interface JDA extends IGuildChannelContainer
     {
         return getEmoteCache().getElementsByName(name, ignoreCase);
     }
+
+    @Nonnull
+    @CheckReturnValue
+    RestAction<StickerUnion> retrieveSticker(@Nonnull String id);
+
+    @Nonnull
+    @CheckReturnValue
+    RestAction<List<StickerPack>> retrieveNitroStickerPacks();
 
     /**
      * The EventManager used by this JDA instance.

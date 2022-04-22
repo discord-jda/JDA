@@ -26,10 +26,13 @@ import net.dv8tion.jda.api.audio.factory.DefaultSendFactory;
 import net.dv8tion.jda.api.audio.factory.IAudioSendFactory;
 import net.dv8tion.jda.api.audio.hooks.ConnectionStatus;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.sticker.StickerPack;
+import net.dv8tion.jda.api.entities.sticker.StickerUnion;
 import net.dv8tion.jda.api.events.GatewayPingEvent;
 import net.dv8tion.jda.api.events.GenericEvent;
 import net.dv8tion.jda.api.events.StatusChangeEvent;
 import net.dv8tion.jda.api.exceptions.AccountTypeException;
+import net.dv8tion.jda.api.exceptions.ParsingException;
 import net.dv8tion.jda.api.exceptions.RateLimitedException;
 import net.dv8tion.jda.api.hooks.IEventManager;
 import net.dv8tion.jda.api.hooks.InterfacedEventManager;
@@ -54,6 +57,7 @@ import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.entities.UserImpl;
+import net.dv8tion.jda.internal.entities.sticker.StickerUnionImpl;
 import net.dv8tion.jda.internal.handle.EventCache;
 import net.dv8tion.jda.internal.handle.GuildSetupController;
 import net.dv8tion.jda.internal.hooks.EventManagerProxy;
@@ -618,6 +622,44 @@ public class JDAImpl implements JDA
     public SnowflakeCacheView<Emote> getEmoteCache()
     {
         return CacheView.allSnowflakes(() -> guildCache.stream().map(Guild::getEmoteCache));
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<StickerUnion> retrieveSticker(@Nonnull String id)
+    {
+        Checks.isSnowflake(id);
+        Route.CompiledRoute route = Route.Stickers.GET_STICKER.compile(id);
+        return new RestActionImpl<>(this, route,
+            (response, request) -> new StickerUnionImpl(entityBuilder.createRichSticker(response.getObject()))
+        );
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<List<StickerPack>> retrieveNitroStickerPacks()
+    {
+        Route.CompiledRoute route = Route.Stickers.LIST_PACKS.compile();
+        return new RestActionImpl<>(this, route, (response, request) ->
+        {
+            DataArray array = response.getObject().getArray("sticker_packs");
+            List<StickerPack> packs = new ArrayList<>(array.length());
+            for (int i = 0; i < array.length(); i++)
+            {
+                DataObject object = null;
+                try
+                {
+                    object = array.getObject(i);
+                    StickerPack pack = entityBuilder.createStickerPack(object);
+                    packs.add(pack);
+                }
+                catch (ParsingException ex)
+                {
+                    EntityBuilder.LOG.error("Failed to parse sticker pack. JSON: {}", object);
+                }
+            }
+            return Collections.unmodifiableList(packs);
+        });
     }
 
     @Nonnull
