@@ -73,6 +73,7 @@ public class InteractionMentions extends AbstractMentions
     @Override
     protected boolean isUserMentioned(IMentionable mentionable)
     {
-        return resolved.containsKey(mentionable.getIdLong());
+        return resolved.containsKey(mentionable.getIdLong())
+                && (content.contains("<@!" + mentionable.getId() + ">") || content.contains("<@" + mentionable.getId() + ">"));
     }
 }
