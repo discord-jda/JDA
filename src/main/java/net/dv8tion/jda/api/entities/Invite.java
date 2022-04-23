@@ -404,7 +404,7 @@ public interface Invite
         String getSplashUrl();
 
         /**
-         * Returns an {@link ImageProxy} for this invite guild's icon
+         * Returns an {@link ImageProxy} for this invite guild's icon.
          *
          * @return Possibly-null {@link ImageProxy} of this invite guild's icon
          *
@@ -491,7 +491,7 @@ public interface Invite
         String getIconUrl();
 
         /**
-         * Returns an {@link ImageProxy} for this group invite's icon
+         * Returns an {@link ImageProxy} for this group invite's icon.
          *
          * @return Possibly-null {@link ImageProxy} of this group invite's icon
          *
@@ -634,7 +634,7 @@ public interface Invite
         String getIconUrl();
 
         /**
-         * Returns an {@link ImageProxy} for this application invite's icon
+         * Returns an {@link ImageProxy} for this application invite's icon.
          *
          * @return Possibly-null {@link ImageProxy} of this application invite's icon
          *

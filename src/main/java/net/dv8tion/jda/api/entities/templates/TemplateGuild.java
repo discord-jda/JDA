@@ -125,7 +125,7 @@ public class TemplateGuild implements ISnowflake
     }
 
     /**
-     * Returns an {@link ImageProxy} for this template guild's icon
+     * Returns an {@link ImageProxy} for this template guild's icon.
      *
      * @return Possibly-null {@link ImageProxy} of this template guild's icon
      *

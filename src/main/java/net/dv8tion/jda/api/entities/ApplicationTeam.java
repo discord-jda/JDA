@@ -88,7 +88,7 @@ public interface ApplicationTeam extends ISnowflake
     }
 
     /**
-     * Returns an {@link ImageProxy} for this application team's icon
+     * Returns an {@link ImageProxy} for this application team's icon.
      *
      * @return The {@link ImageProxy} of this application team's icon, or null if no icon is applied
      *

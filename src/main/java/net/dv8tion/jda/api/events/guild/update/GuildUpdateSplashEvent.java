@@ -62,9 +62,9 @@ public class GuildUpdateSplashEvent extends GenericGuildUpdateEvent<String>
     }
 
     /**
-     * Returns an {@link ImageProxy} for this guild's old splash image
+     * Returns an {@link ImageProxy} for this guild's old splash image.
      * <p>
-     * <b>Note:</b> the old splash may not always be downloadable as it might have been removed from Discord
+     * <b>Note:</b> the old splash may not always be downloadable as it might have been removed from Discord.
      *
      * @return Possibly-null {@link ImageProxy} of this guild's old splash image
      *
@@ -100,7 +100,7 @@ public class GuildUpdateSplashEvent extends GenericGuildUpdateEvent<String>
     }
 
     /**
-     * Returns an {@link ImageProxy} for this guild's new splash image
+     * Returns an {@link ImageProxy} for this guild's new splash image.
      *
      * @return Possibly-null {@link ImageProxy} of this guild's new splash image
      *

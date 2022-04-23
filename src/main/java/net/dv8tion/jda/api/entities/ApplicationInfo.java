@@ -89,7 +89,7 @@ public interface ApplicationInfo extends ISnowflake
     String getIconUrl();
 
     /**
-     * Returns an {@link ImageProxy} for this application info's icon
+     * Returns an {@link ImageProxy} for this application info's icon.
      *
      * @return The {@link ImageProxy} of this application info's icon or null if no icon is defined
      *

@@ -268,7 +268,7 @@ public interface Member extends IMentionable, IPermissionHolder, UserSnowflake
     }
 
     /**
-     * Returns an {@link ImageProxy} for this member's avatar
+     * Returns an {@link ImageProxy} for this member's avatar.
      *
      * @return Possibly-null {@link ImageProxy} of this member's avatar
      *
@@ -296,7 +296,7 @@ public interface Member extends IMentionable, IPermissionHolder, UserSnowflake
     }
 
     /**
-     * Returns an {@link ImageProxy} for this member's effective avatar image
+     * Returns an {@link ImageProxy} for this member's effective avatar image.
      *
      * @return Never-null {@link ImageProxy} of this member's effective avatar image
      *

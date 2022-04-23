@@ -2792,7 +2792,7 @@ public interface Message extends ISnowflake, Formattable
         }
 
         /**
-         * Returns an {@link AttachmentProxy} for this attachment
+         * Returns an {@link AttachmentProxy} for this attachment.
          *
          * @return The {@link AttachmentProxy} of this attachment
          *

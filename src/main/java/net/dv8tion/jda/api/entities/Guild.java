@@ -623,7 +623,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     }
 
     /**
-     * Returns an {@link ImageProxy} for this guild's icon
+     * Returns an {@link ImageProxy} for this guild's icon.
      *
      * @return The {@link ImageProxy} of this guild's icon
      *
@@ -678,7 +678,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     }
 
     /**
-     * Returns an {@link ImageProxy} for this guild's splash icon
+     * Returns an {@link ImageProxy} for this guild's splash icon.
      *
      * @return Possibly-null {@link ImageProxy} of this guild's splash icon
      *
@@ -805,7 +805,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     }
 
     /**
-     * Returns an {@link ImageProxy} for this guild's banner icon
+     * Returns an {@link ImageProxy} for this guild's banner icon.
      *
      * @return Possibly-null {@link ImageProxy} of this guild's banner icon
      *

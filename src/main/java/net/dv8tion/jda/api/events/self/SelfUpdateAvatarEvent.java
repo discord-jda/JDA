@@ -62,9 +62,9 @@ public class SelfUpdateAvatarEvent extends GenericSelfUpdateEvent<String>
     }
 
     /**
-     * Returns an {@link ImageProxy} for this bot's new avatar image
+     * Returns an {@link ImageProxy} for this bot's new avatar image.
      * <p>
-     * <b>Note:</b> the old avatar may not always be downloadable as it might have been removed from Discord
+     * <b>Note:</b> the old avatar may not always be downloadable as it might have been removed from Discord.
      *
      * @return Possibly-null {@link ImageProxy} of this bot's new avatar image
      *
@@ -100,7 +100,7 @@ public class SelfUpdateAvatarEvent extends GenericSelfUpdateEvent<String>
     }
 
     /**
-     * Returns an {@link ImageProxy} for this bot's new avatar image
+     * Returns an {@link ImageProxy} for this bot's new avatar image.
      *
      * @return Possibly-null {@link ImageProxy} of this bot's new avatar image
      *

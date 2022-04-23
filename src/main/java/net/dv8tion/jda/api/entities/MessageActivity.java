@@ -136,7 +136,7 @@ public class MessageActivity
         }
 
         /**
-         * Returns an {@link ImageProxy} for this application's icon
+         * Returns an {@link ImageProxy} for this application's icon.
          *
          * @return Possibly-null {@link ImageProxy} of this application's icon
          *
@@ -172,7 +172,7 @@ public class MessageActivity
         }
 
         /**
-         * Returns an {@link ImageProxy} for this cover's icon
+         * Returns an {@link ImageProxy} for this cover's icon.
          *
          * @return Possibly-null {@link ImageProxy} of this cover's icon
          *

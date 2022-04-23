@@ -646,7 +646,7 @@ public class WidgetUtil
             }
 
             /**
-             * Returns an {@link ImageProxy} for this user's avatar image
+             * Returns an {@link ImageProxy} for this user's avatar image.
              *
              * @return Possibly-null {@link ImageProxy} of this user's avatar image
              *
@@ -684,7 +684,7 @@ public class WidgetUtil
             }
 
             /**
-             * Returns an {@link ImageProxy} for this user's default avatar image
+             * Returns an {@link ImageProxy} for this user's default avatar image.
              *
              * @return Never-null {@link ImageProxy} of this user's default avatar image
              *
@@ -711,7 +711,7 @@ public class WidgetUtil
             }
 
             /**
-             * Returns an {@link ImageProxy} for this user's effective avatar image
+             * Returns an {@link ImageProxy} for this user's effective avatar image.
              *
              * @return Never-null {@link ImageProxy} of this user's effective avatar image
              *

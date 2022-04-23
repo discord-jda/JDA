@@ -75,7 +75,7 @@ public class RoleIcon
     }
 
     /**
-     * Returns an {@link ImageProxy} for this role's icon
+     * Returns an {@link ImageProxy} for this role's icon.
      *
      * @return Possibly-null {@link ImageProxy} of this role's icon
      *

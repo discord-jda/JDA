@@ -72,9 +72,9 @@ public class GuildMemberUpdateAvatarEvent extends GenericGuildMemberUpdateEvent<
     }
 
     /**
-     * Returns an {@link ImageProxy} for this member's old avatar
+     * Returns an {@link ImageProxy} for this member's old avatar.
      * <p>
-     * <b>Note:</b> the old avatar may not always be downloadable as it might have been removed from Discord
+     * <b>Note:</b> the old avatar may not always be downloadable as it might have been removed from Discord.
      *
      * @return Possibly-null {@link ImageProxy} of this member's old avatar
      *
@@ -110,7 +110,7 @@ public class GuildMemberUpdateAvatarEvent extends GenericGuildMemberUpdateEvent<
     }
 
     /**
-     * Returns an {@link ImageProxy} for this member's new avatar
+     * Returns an {@link ImageProxy} for this member's new avatar.
      *
      * @return Possibly-null {@link ImageProxy} of this member's new avatar
      *

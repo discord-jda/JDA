@@ -541,9 +541,9 @@ public class MessageEmbed implements SerializableData
         }
 
         /**
-         * Returns an {@link AttachmentProxy} for this embed thumbnail
+         * Returns an {@link AttachmentProxy} for this embed thumbnail.
          *
-         * @return The {@link AttachmentProxy} of this embed thumbnail
+         * @return Possibly-null {@link AttachmentProxy} of this embed thumbnail
          *
          * @see    #getProxyUrl()
          */
@@ -747,9 +747,9 @@ public class MessageEmbed implements SerializableData
         }
 
         /**
-         * Returns an {@link AttachmentProxy} for this embed image
+         * Returns an {@link AttachmentProxy} for this embed image.
          *
-         * @return The {@link AttachmentProxy} of this embed image
+         * @return Possibly-null {@link AttachmentProxy} of this embed image
          *
          * @see    #getProxyUrl()
          */
@@ -847,7 +847,7 @@ public class MessageEmbed implements SerializableData
         }
 
         /**
-         * Returns an {@link ImageProxy} for this author's icon
+         * Returns an {@link ImageProxy} for this author's icon.
          *
          * @return Possibly-null {@link ImageProxy} of this author's icon
          *
@@ -872,7 +872,7 @@ public class MessageEmbed implements SerializableData
         }
 
         /**
-         * Returns an {@link ImageProxy} for this proxied author's icon
+         * Returns an {@link ImageProxy} for this proxied author's icon.
          *
          * @return Possibly-null {@link ImageProxy} of this proxied author's icon
          *
@@ -936,7 +936,7 @@ public class MessageEmbed implements SerializableData
         }
 
         /**
-         * Returns an {@link ImageProxy} for this footer's icon
+         * Returns an {@link ImageProxy} for this footer's icon.
          *
          * @return Possibly-null {@link ImageProxy} of this footer's icon
          *
@@ -961,7 +961,7 @@ public class MessageEmbed implements SerializableData
         }
 
         /**
-         * Returns an {@link ImageProxy} for this proxied footer's icon
+         * Returns an {@link ImageProxy} for this proxied footer's icon.
          *
          * @return Possibly-null {@link ImageProxy} of this proxied footer's icon
          *
