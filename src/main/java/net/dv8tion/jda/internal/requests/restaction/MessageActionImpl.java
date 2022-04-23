@@ -30,6 +30,7 @@ import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import net.dv8tion.jda.api.utils.AttachmentOption;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.internal.entities.DataMessage;
 import net.dv8tion.jda.internal.requests.Requester;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
@@ -176,6 +177,11 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
         if (embeds != null && !embeds.isEmpty())
             setEmbeds(embeds.stream().filter(e -> e != null && e.getType() == EmbedType.RICH).collect(Collectors.toList()));
         files.clear();
+
+        if (message instanceof DataMessage)
+            setStickers(((DataMessage) message).getStickerSnowflakes());
+        else
+            setStickers(message.getStickers());
 
         components = new ArrayList<>();
         components.addAll(message.getActionRows());
@@ -405,6 +411,8 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
     @Override
     public MessageAction setStickers(@Nullable Collection<? extends StickerSnowflake> stickers)
     {
+        if (isEdit())
+            throw new IllegalStateException("Cannot edit stickers on messages!");
         if (stickers == null || stickers.isEmpty())
         {
             this.stickers = new ArrayList<>();
@@ -413,7 +421,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
 
         // TODO: Check GuildSticker#isAvailable?
         Checks.noneNull(stickers, "Stickers");
-        Checks.check(stickers.size() <= 3, "Cannot send more than 3 stickers in a message!");
+        Checks.check(stickers.size() <= 3, "Cannot send more than 3 stickers in a message!"); // TODO: Make this a constant
         this.stickers = stickers.stream().map(StickerSnowflake::getId).collect(Collectors.toList());
 
         return this;
@@ -554,10 +562,6 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
                 obj.put("components", DataArray.empty());
             else
                 obj.put("components", DataArray.fromCollection(components));
-            if (stickers == null)
-                obj.put("sticker_ids", DataObject.empty());
-            else
-                obj.put("sticker_ids", DataArray.fromCollection(stickers));
             if (retainedAttachments != null)
                 obj.put("attachments", DataArray.fromCollection(retainedAttachments.stream()
                         .map(id -> DataObject.empty()
