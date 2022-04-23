@@ -31,8 +31,8 @@ import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationAction;
 import net.dv8tion.jda.api.utils.AttachmentOption;
-import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.AttachmentProxy;
+import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.requests.FunctionalCallback;
 import net.dv8tion.jda.internal.requests.Requester;
@@ -2794,7 +2794,7 @@ public interface Message extends ISnowflake, Formattable
         /**
          * Returns an {@link AttachmentProxy} for this attachment.
          *
-         * @return The {@link AttachmentProxy} of this attachment
+         * @return Non-null {@link AttachmentProxy} of this attachment
          *
          * @see    #getProxyUrl()
          */
