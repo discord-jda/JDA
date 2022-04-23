@@ -74,7 +74,7 @@ public class FileProxy
      * @throws IllegalArgumentException
      *         If the provided {@link OkHttpClient} is null
      */
-    public static void setHttpClient(@Nonnull OkHttpClient httpClient)
+    public static void setDefaultHttpClient(@Nonnull OkHttpClient httpClient)
     {
         Checks.notNull(httpClient, "Default OkHttpClient");
         FileProxy.defaultHttpClient = httpClient;
@@ -93,7 +93,7 @@ public class FileProxy
     }
 
     /**
-     * Sets the custom OkHttpClient used by this instance, regardless of if {@link #setHttpClient(OkHttpClient)} has been used or not.
+     * Sets the custom OkHttpClient used by this instance, regardless of if {@link #setDefaultHttpClient(OkHttpClient)} has been used or not.
      *
      * @param  customHttpClient
      *         The custom {@link OkHttpClient} to use while making HTTP requests
