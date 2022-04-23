@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.sticker.StickerSnowflake;
 import net.dv8tion.jda.api.interactions.components.ActionComponent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.ItemComponent;
@@ -892,6 +893,19 @@ public interface MessageAction extends RestAction<Message>, Appendable, AllowedM
     default MessageAction setActionRow(@Nonnull ItemComponent... components)
     {
         return setActionRows(ActionRow.of(components));
+    }
+
+    @Nonnull
+    @CheckReturnValue
+    MessageAction setStickers(@Nullable Collection<? extends StickerSnowflake> stickers);
+
+    @Nonnull
+    @CheckReturnValue
+    default MessageAction setStickers(@Nullable StickerSnowflake... stickers)
+    {
+        if (stickers != null)
+            Checks.noneNull(stickers, "Sticker");
+        return setStickers(stickers == null ? null : Arrays.asList(stickers));
     }
 
 

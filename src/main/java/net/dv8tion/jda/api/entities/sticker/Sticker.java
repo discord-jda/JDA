@@ -16,15 +16,27 @@
 
 package net.dv8tion.jda.api.entities.sticker;
 
-import net.dv8tion.jda.api.entities.ISnowflake;
+import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.Nonnull;
 
-public interface Sticker extends ISnowflake
+public interface Sticker extends StickerSnowflake
 {
     /** Template for {@link #getIconUrl()} */
     String ICON_URL = "https://cdn.discordapp.com/stickers/%s.%s";
+
+    @Nonnull
+    static StickerSnowflake fromId(long id)
+    {
+        return StickerSnowflake.fromId(id);
+    }
+
+    @Nonnull
+    static StickerSnowflake fromId(@Nonnull String id)
+    {
+        return fromId(MiscUtil.parseSnowflake(id));
+    }
 
     StickerFormat getFormatType();
 

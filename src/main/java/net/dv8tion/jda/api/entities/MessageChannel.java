@@ -16,6 +16,7 @@
 package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.AccountType;
+import net.dv8tion.jda.api.entities.sticker.StickerSnowflake;
 import net.dv8tion.jda.api.exceptions.AccountTypeException;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
@@ -273,6 +274,22 @@ public interface MessageChannel extends Channel, Formattable
         for (long messageId : sortedIds)
             list.add(deleteMessageById(messageId).submit());
         return list;
+    }
+
+    @Nonnull
+    @CheckReturnValue
+    default MessageAction sendStickers(@Nonnull Collection<? extends StickerSnowflake> stickers)
+    {
+        // TODO: Permission checks
+        return new MessageActionImpl(getJDA(), null, this).setStickers(stickers);
+    }
+
+    @Nonnull
+    @CheckReturnValue
+    default MessageAction sendStickers(@Nonnull StickerSnowflake... stickers)
+    {
+        // TODO: Permission checks
+        return new MessageActionImpl(getJDA(), null, this).setStickers(stickers);
     }
 
     /**

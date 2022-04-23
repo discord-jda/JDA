@@ -19,6 +19,7 @@ package net.dv8tion.jda.internal.requests.restaction;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.sticker.StickerSnowflake;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.exceptions.MissingAccessException;
 import net.dv8tion.jda.api.interactions.InteractionHook;
@@ -62,6 +63,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
     protected List<ActionRow> components;
     protected List<String> retainedAttachments;
     protected List<MessageEmbed> embeds = null;
+    protected List<String> stickers = null;
     protected String nonce = null;
     protected boolean tts = false, override = false;
     protected boolean failOnInvalidReply = defaultFailOnInvalidReply;
@@ -152,7 +154,8 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
     {
         return !isEdit() // PATCH can be technically empty since you can update stuff like components or remove embeds etc
             && Helpers.isBlank(content)
-            && (embeds == null || embeds.isEmpty() || !hasPermission(Permission.MESSAGE_EMBED_LINKS));
+            && (embeds == null || embeds.isEmpty() || !hasPermission(Permission.MESSAGE_EMBED_LINKS))
+            && stickers == null;
     }
 
     @Override
@@ -400,6 +403,24 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
 
     @Nonnull
     @Override
+    public MessageAction setStickers(@Nullable Collection<? extends StickerSnowflake> stickers)
+    {
+        if (stickers == null || stickers.isEmpty())
+        {
+            this.stickers = new ArrayList<>();
+            return this;
+        }
+
+        // TODO: Check GuildSticker#isAvailable?
+        Checks.noneNull(stickers, "Stickers");
+        Checks.check(stickers.size() <= 3, "Cannot send more than 3 stickers in a message!");
+        this.stickers = stickers.stream().map(StickerSnowflake::getId).collect(Collectors.toList());
+
+        return this;
+    }
+
+    @Nonnull
+    @Override
     @CheckReturnValue
     public MessageActionImpl override(final boolean bool)
     {
@@ -533,6 +554,10 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
                 obj.put("components", DataArray.empty());
             else
                 obj.put("components", DataArray.fromCollection(components));
+            if (stickers == null)
+                obj.put("sticker_ids", DataObject.empty());
+            else
+                obj.put("sticker_ids", DataArray.fromCollection(stickers));
             if (retainedAttachments != null)
                 obj.put("attachments", DataArray.fromCollection(retainedAttachments.stream()
                         .map(id -> DataObject.empty()
@@ -551,6 +576,8 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
                 obj.put("nonce", nonce);
             if (components != null)
                 obj.put("components", DataArray.fromCollection(components));
+            if (stickers != null)
+                obj.put("sticker_ids", DataArray.fromCollection(stickers));
             if (retainedAttachments != null)
                 obj.put("attachments", DataArray.fromCollection(retainedAttachments.stream()
                         .map(id -> DataObject.empty()
