@@ -1796,9 +1796,8 @@ public class EntityBuilder
         case GUILD:
             boolean available = content.getBoolean("available");
             long guildId = content.getUnsignedLong("guild_id", 0L);
-            Guild guild = api.getGuildById(guildId);
             User owner = content.isNull("user") ? null : createUser(content.getObject("user"));
-            return new GuildStickerImpl(id, format, name, type, tags, description, available, guildId, guild, owner);
+            return new GuildStickerImpl(id, format, name, type, tags, description, available, guildId, api, owner);
         case STANDARD:
             long packId = content.getUnsignedLong("pack_id", 0L);
             int sortValue = content.getInt("sort_value", -1);

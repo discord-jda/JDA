@@ -16,12 +16,18 @@
 
 package net.dv8tion.jda.internal.entities.sticker;
 
+import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.sticker.GuildSticker;
+import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
+import net.dv8tion.jda.internal.requests.Route;
+import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Objects;
 import java.util.Set;
 
@@ -29,17 +35,19 @@ public class GuildStickerImpl extends RichStickerImpl implements GuildSticker
 {
     private final boolean available;
     private final long guildId;
-    private final Guild guild;
-    private final User owner;
+    private final JDA jda;
+    private Guild guild;
+    private User owner;
 
     public GuildStickerImpl(long id, StickerFormat format, String name,
                             Type type, Set<String> tags, String description,
-                            boolean available, long guildId, Guild guild, User owner)
+                            boolean available, long guildId, JDA jda, User owner)
     {
         super(id, format, name, type, tags, description);
         this.available = available;
         this.guildId = guildId;
-        this.guild = guild;
+        this.jda = jda;
+        this.guild = jda.getGuildById(guildId);
         this.owner = owner;
     }
 
@@ -59,14 +67,43 @@ public class GuildStickerImpl extends RichStickerImpl implements GuildSticker
     @Override
     public Guild getGuild()
     {
+        Guild realGuild = jda.getGuildById(guildId);
+        if (realGuild != null)
+            guild = realGuild;
         return guild;
+    }
+
+    @Nullable
+    @Override
+    public User getOwner()
+    {
+        if (owner != null)
+        {
+            User realOwner = jda.getUserById(owner.getIdLong());
+            if (realOwner != null)
+                owner = realOwner;
+        }
+        return owner;
     }
 
     @Nonnull
     @Override
-    public User getOwner()
+    public RestAction<User> retrieveOwner()
     {
-        return owner;
+        return jda.retrieveSticker(getId()).map(union -> {
+            this.owner = union.asGuildSticker().getOwner();
+            return this.owner;
+        });
+    }
+
+    @Nonnull
+    @Override
+    public AuditableRestAction<Void> delete()
+    {
+        if (guild != null)
+            return guild.deleteSticker(this);
+        Route.CompiledRoute route = Route.Stickers.DELETE_STICKER.compile(getGuildId(), getId());
+        return new AuditableRestActionImpl<>(jda, route);
     }
 
     @Override
@@ -78,7 +115,7 @@ public class GuildStickerImpl extends RichStickerImpl implements GuildSticker
     @Override
     public int hashCode()
     {
-        return Objects.hash(id, format, name, type, tags, description, available, guildId, owner.getIdLong());
+        return Objects.hash(id, format, name, type, tags, description, available, guildId);
     }
 
     @Override
@@ -96,7 +133,6 @@ public class GuildStickerImpl extends RichStickerImpl implements GuildSticker
             && guildId == other.guildId
             && Objects.equals(name, other.name)
             && Objects.equals(description, other.description)
-            && Objects.equals(owner, other.owner)
             && Helpers.deepEqualsUnordered(tags, other.tags);
     }
 }
