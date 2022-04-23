@@ -18,7 +18,9 @@ package net.dv8tion.jda.api.entities.sticker;
 
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 
+import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -39,4 +41,14 @@ public interface GuildSticker extends RichSticker
 
     @Nonnull
     User getOwner();
+
+    @Nonnull
+    @CheckReturnValue
+    default AuditableRestAction<Void> delete()
+    {
+        Guild guild = getGuild();
+        if (guild == null)
+            throw new IllegalStateException("Cannot delete stickers without knowing guild. Use Guild#deleteSticker instead!");
+        return guild.deleteSticker(this);
+    }
 }

@@ -24,6 +24,7 @@ import net.dv8tion.jda.api.Region;
 import net.dv8tion.jda.api.audio.hooks.ConnectionStatus;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.sticker.GuildSticker;
+import net.dv8tion.jda.api.entities.sticker.StickerSnowflake;
 import net.dv8tion.jda.api.entities.templates.Template;
 import net.dv8tion.jda.api.exceptions.HierarchyException;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
@@ -1759,6 +1760,15 @@ public class GuildImpl implements Guild
             DataObject obj = response.getObject();
             return jda.getEntityBuilder().createEmote(this, obj);
         });
+    }
+
+    @Nonnull
+    @Override
+    public AuditableRestAction<Void> deleteSticker(@Nonnull StickerSnowflake id)
+    {
+        Checks.notNull(id, "Sticker");
+        Route.CompiledRoute route = Route.Stickers.DELETE_STICKER.compile(id.getId());
+        return new AuditableRestActionImpl<>(api, route);
     }
 
     @Nonnull
