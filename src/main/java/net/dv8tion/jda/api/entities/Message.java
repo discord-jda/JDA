@@ -18,6 +18,7 @@ package net.dv8tion.jda.api.entities;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.sticker.StickerItem;
+import net.dv8tion.jda.api.entities.sticker.StickerSnowflake;
 import net.dv8tion.jda.api.exceptions.HttpException;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.interactions.InteractionType;
@@ -1321,6 +1322,20 @@ public interface Message extends ISnowflake, Formattable
     @Nonnull
     @CheckReturnValue
     MessageAction editMessage(@Nonnull Message newContent);
+
+    @Nonnull
+    @CheckReturnValue
+    default MessageAction replyStickers(@Nonnull Collection<? extends StickerSnowflake> stickers)
+    {
+        return getChannel().sendStickers(stickers).reference(this);
+    }
+
+    @Nonnull
+    @CheckReturnValue
+    default MessageAction replyStickers(@Nonnull StickerSnowflake... stickers)
+    {
+        return getChannel().sendStickers(stickers).reference(this);
+    }
 
     /**
      * Replies and references this message.

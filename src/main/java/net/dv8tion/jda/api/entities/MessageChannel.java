@@ -281,6 +281,7 @@ public interface MessageChannel extends Channel, Formattable
     default MessageAction sendStickers(@Nonnull Collection<? extends StickerSnowflake> stickers)
     {
         // TODO: Permission checks
+        Checks.notEmpty(stickers, "Stickers");
         return new MessageActionImpl(getJDA(), null, this).setStickers(stickers);
     }
 
@@ -289,6 +290,7 @@ public interface MessageChannel extends Channel, Formattable
     default MessageAction sendStickers(@Nonnull StickerSnowflake... stickers)
     {
         // TODO: Permission checks
+        Checks.notEmpty(stickers, "Stickers");
         return new MessageActionImpl(getJDA(), null, this).setStickers(stickers);
     }
 
