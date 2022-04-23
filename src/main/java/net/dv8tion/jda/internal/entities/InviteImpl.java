@@ -23,7 +23,6 @@ import net.dv8tion.jda.api.entities.Guild.VerificationLevel;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
-import net.dv8tion.jda.api.utils.ImageProxy;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
@@ -359,20 +358,6 @@ public class InviteImpl implements Invite
         {
             return this.iconId == null ? null
                     : "https://cdn.discordapp.com/icons/" + this.id + "/" + this.iconId + ".png";
-        }
-
-        /**
-         * Returns an {@link ImageProxy} for this guild's icon
-         *
-         * @return Possibly-null {@link ImageProxy} of this guild's icon
-         *
-         * @see    #getIconUrl()
-         */
-        @Nullable
-        public ImageProxy getIcon()
-        {
-            final String iconUrl = getIconUrl();
-            return iconUrl == null ? null : new ImageProxy(iconUrl);
         }
 
         @Override

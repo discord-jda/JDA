@@ -376,6 +376,20 @@ public interface Invite
         String getIconUrl();
 
         /**
+         * Returns an {@link ImageProxy} for this guild's icon
+         *
+         * @return Possibly-null {@link ImageProxy} of this guild's icon
+         *
+         * @see    #getIconUrl()
+         */
+        @Nullable
+        default ImageProxy getIcon()
+        {
+            final String iconUrl = getIconUrl();
+            return iconUrl == null ? null : new ImageProxy(iconUrl);
+        }
+
+        /**
          * The name of this guild.
          *
          * @return The guild's name
