@@ -45,4 +45,27 @@ public class StandardStickerImpl extends RichStickerImpl implements StandardStic
     {
         return sortValue;
     }
+
+    @Override
+    public String toString()
+    {
+        return "RichSticker:" + type + ":" + name + '(' + getId() + ",pack=" + getPackId() + ')';
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return Long.hashCode(id);
+    }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (obj == this)
+            return true;
+        if (!(obj instanceof StandardStickerImpl))
+            return false;
+        StandardStickerImpl other = (StandardStickerImpl) obj;
+        return id == other.id; // Standard stickers shouldn't change, so we can just compare id
+    }
 }

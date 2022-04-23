@@ -19,12 +19,13 @@ package net.dv8tion.jda.internal.entities.sticker;
 import net.dv8tion.jda.api.entities.sticker.StickerItem;
 
 import javax.annotation.Nonnull;
+import java.util.Objects;
 
 public class StickerItemImpl implements StickerItem
 {
-    private final long id;
-    private final StickerFormat format;
-    private final String name;
+    protected final long id;
+    protected final StickerFormat format;
+    protected final String name;
 
     public StickerItemImpl(long id, StickerFormat format, String name)
     {
@@ -50,5 +51,30 @@ public class StickerItemImpl implements StickerItem
     public String getName()
     {
         return name;
+    }
+
+    @Override
+    public String toString()
+    {
+        return "StickerItem:" + name + '(' + getId() + ')';
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return Objects.hash(id, format, name);
+    }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (obj == this)
+            return true;
+        if (!(obj instanceof StickerItemImpl))
+            return false;
+        StickerItemImpl other = (StickerItemImpl) obj;
+        return id == other.id
+            && format == other.format
+            && Objects.equals(name, other.name);
     }
 }

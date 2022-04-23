@@ -87,4 +87,27 @@ public class StickerPackImpl implements StickerPack
     {
         return skuId;
     }
+
+    @Override
+    public String toString()
+    {
+        return "StickerPack:" + name + '(' + getId() + ')';
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return Long.hashCode(id);
+    }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (obj == this)
+            return true;
+        if (!(obj instanceof StickerPackImpl))
+            return false;
+        StickerPackImpl other = (StickerPackImpl) obj;
+        return id == other.id;
+    }
 }

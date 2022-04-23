@@ -91,4 +91,10 @@ public class StickerUnionImpl implements StickerUnion
             return (GuildSticker) sticker;
         throw new IllegalStateException("Cannot convert sticker of type " + getType() + " to GuildSticker!");
     }
+
+    @Override
+    public String toString()
+    {
+        return "StickerUnion:" + getType() + ':' + getName() + '(' + getId() + ')';
+    }
 }

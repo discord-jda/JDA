@@ -17,16 +17,18 @@
 package net.dv8tion.jda.internal.entities.sticker;
 
 import net.dv8tion.jda.api.entities.sticker.RichSticker;
+import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.Nonnull;
 import java.util.Collections;
+import java.util.Objects;
 import java.util.Set;
 
 public class RichStickerImpl extends StickerItemImpl implements RichSticker
 {
-    private final Type type;
-    private final Set<String> tags;
-    private final String description;
+    protected final Type type;
+    protected final Set<String> tags;
+    protected final String description;
 
     public RichStickerImpl(long id, StickerFormat format, String name,
                            Type type, Set<String> tags, String description)
@@ -56,5 +58,33 @@ public class RichStickerImpl extends StickerItemImpl implements RichSticker
     public String getDescription()
     {
         return description;
+    }
+
+    @Override
+    public String toString()
+    {
+        return "RichSticker:" + type + ':' + name + '(' + getId() + ')';
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return Objects.hash(id, format, name, type, tags, description);
+    }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (obj == this)
+            return true;
+        if (!(obj instanceof RichStickerImpl))
+            return false;
+        RichStickerImpl other = (RichStickerImpl) obj;
+        return id == other.id
+                && format == other.format
+                && type == other.type
+                && Objects.equals(name, other.name)
+                && Objects.equals(description, other.description)
+                && Helpers.deepEqualsUnordered(tags, other.tags);
     }
 }

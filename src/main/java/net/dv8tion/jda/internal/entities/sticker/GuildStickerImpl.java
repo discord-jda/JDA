@@ -19,8 +19,10 @@ package net.dv8tion.jda.internal.entities.sticker;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.sticker.GuildSticker;
+import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.Nonnull;
+import java.util.Objects;
 import java.util.Set;
 
 public class GuildStickerImpl extends RichStickerImpl implements GuildSticker
@@ -65,5 +67,36 @@ public class GuildStickerImpl extends RichStickerImpl implements GuildSticker
     public User getOwner()
     {
         return owner;
+    }
+
+    @Override
+    public String toString()
+    {
+        return "RichSticker:" + type + ':' + name + '(' + getId() + ",guild=" + getGuildId() + ')';
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return Objects.hash(id, format, name, type, tags, description, available, guildId, owner.getIdLong());
+    }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (obj == this)
+            return true;
+        if (!(obj instanceof GuildStickerImpl))
+            return false;
+        GuildStickerImpl other = (GuildStickerImpl) obj;
+        return id == other.id
+            && format == other.format
+            && type == other.type
+            && available == other.available
+            && guildId == other.guildId
+            && Objects.equals(name, other.name)
+            && Objects.equals(description, other.description)
+            && Objects.equals(owner, other.owner)
+            && Helpers.deepEqualsUnordered(tags, other.tags);
     }
 }
