@@ -19,6 +19,7 @@ package net.dv8tion.jda.internal.requests.restaction;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.sticker.GuildSticker;
 import net.dv8tion.jda.api.entities.sticker.StickerSnowflake;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.exceptions.MissingAccessException;
@@ -419,9 +420,24 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
             return this;
         }
 
-        // TODO: Check GuildSticker#isAvailable?
+        if (!(channel instanceof GuildChannel))
+            throw new IllegalStateException("Cannot send stickers in direct messages!");
+        GuildChannel guildChannel = (GuildChannel) channel;
+
         Checks.noneNull(stickers, "Stickers");
         Checks.check(stickers.size() <= 3, "Cannot send more than 3 stickers in a message!"); // TODO: Make this a constant
+        for (StickerSnowflake sticker : stickers)
+        {
+            if (sticker instanceof GuildSticker)
+            {
+                GuildSticker guildSticker = (GuildSticker) sticker;
+                Checks.check(guildSticker.isAvailable(),
+                    "Cannot use unavailable sticker. The guild may have lost the boost level required to use this sticker!");
+                Checks.check(guildSticker.getGuildIdLong() == guildChannel.getGuild().getIdLong(),
+                    "Sticker must be from the same guild. Cross-guild sticker posting is not supported!");
+            }
+        }
+
         this.stickers = stickers.stream().map(StickerSnowflake::getId).collect(Collectors.toList());
 
         return this;
