@@ -59,6 +59,13 @@ import net.dv8tion.jda.api.events.stage.StageInstanceDeleteEvent;
 import net.dv8tion.jda.api.events.stage.update.GenericStageInstanceUpdateEvent;
 import net.dv8tion.jda.api.events.stage.update.StageInstanceUpdatePrivacyLevelEvent;
 import net.dv8tion.jda.api.events.stage.update.StageInstanceUpdateTopicEvent;
+import net.dv8tion.jda.api.events.sticker.GenericGuildStickerEvent;
+import net.dv8tion.jda.api.events.sticker.GuildStickerAddedEvent;
+import net.dv8tion.jda.api.events.sticker.GuildStickerRemovedEvent;
+import net.dv8tion.jda.api.events.sticker.update.GenericGuildStickerUpdateEvent;
+import net.dv8tion.jda.api.events.sticker.update.GuildStickerUpdateDescriptionEvent;
+import net.dv8tion.jda.api.events.sticker.update.GuildStickerUpdateNameEvent;
+import net.dv8tion.jda.api.events.sticker.update.GuildStickerUpdateTagsEvent;
 import net.dv8tion.jda.api.events.thread.GenericThreadEvent;
 import net.dv8tion.jda.api.events.thread.ThreadHiddenEvent;
 import net.dv8tion.jda.api.events.thread.ThreadRevealedEvent;
@@ -292,6 +299,15 @@ public abstract class ListenerAdapter implements EventListener
     public void onEmoteUpdateName(@Nonnull EmoteUpdateNameEvent event) {}
     public void onEmoteUpdateRoles(@Nonnull EmoteUpdateRolesEvent event) {}
 
+    //Sticker Events
+    public void onGuildStickerAdded(@Nonnull GuildStickerAddedEvent event) {}
+    public void onGuildStickerRemoved(@Nonnull GuildStickerRemovedEvent event) {}
+
+    //Sticker Update Events
+    public void onGuildStickerUpdateName(@Nonnull GuildStickerUpdateNameEvent event) {}
+    public void onGuildStickerUpdateTags(@Nonnull GuildStickerUpdateTagsEvent event) {}
+    public void onGuildStickerUpdateDescription(@Nonnull GuildStickerUpdateDescriptionEvent event) {}
+
     // Debug Events
     public void onHttpRequest(@Nonnull HttpRequestEvent event) {}
 
@@ -322,6 +338,8 @@ public abstract class ListenerAdapter implements EventListener
     public void onGenericRoleUpdate(@Nonnull GenericRoleUpdateEvent event) {}
     public void onGenericEmote(@Nonnull GenericEmoteEvent event) {}
     public void onGenericEmoteUpdate(@Nonnull GenericEmoteUpdateEvent event) {}
+    public void onGenericGuildSticker(@Nonnull GenericGuildStickerEvent event) {}
+    public void onGenericGuildStickerUpdate(@Nonnull GenericGuildStickerUpdateEvent event) {}
     public void onGenericPermissionOverride(@Nonnull GenericPermissionOverrideEvent event) {}
 
     private static final MethodHandles.Lookup lookup = MethodHandles.lookup();

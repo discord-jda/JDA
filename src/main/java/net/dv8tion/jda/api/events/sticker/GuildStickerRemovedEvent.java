@@ -14,14 +14,19 @@
  * limitations under the License.
  */
 
-/**
- * Events that track updates for existing {@link net.dv8tion.jda.api.entities.Emote Emotes}
- *
- * <h2>Requirements</h2>
- *
- * <p>These events require the {@link net.dv8tion.jda.api.utils.cache.CacheFlag#EMOTE EMOTE} CacheFlag to be enabled, which requires
- * the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_EMOJIS_AND_STICKERS GUILD_EMOJIS_AND_STICKERS} intent.
- *
- * <br>{@link net.dv8tion.jda.api.JDABuilder#createLight(String) createLight(String)} disables that CacheFlag by default!
- */
-package net.dv8tion.jda.api.events.emote.update;
+package net.dv8tion.jda.api.events.sticker;
+
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.sticker.GuildSticker;
+
+import javax.annotation.Nonnull;
+
+public class GuildStickerRemovedEvent extends GenericGuildStickerEvent
+{
+    public GuildStickerRemovedEvent(@Nonnull JDA api, long responseNumber,
+                                    @Nonnull Guild guild, @Nonnull GuildSticker sticker)
+    {
+        super(api, responseNumber, guild, sticker);
+    }
+}

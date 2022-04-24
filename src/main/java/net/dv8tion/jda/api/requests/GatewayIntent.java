@@ -89,9 +89,9 @@ public enum GatewayIntent
      */
     GUILD_BANS(2),
     /**
-     * Emote add/update/delete events.
+     * Emote and sticker add/update/delete events.
      */
-    GUILD_EMOJIS(3),
+    GUILD_EMOJIS_AND_STICKERS(3),
 //    /**
 //     * Integration events. (unused)
 //     */
@@ -352,7 +352,7 @@ public enum GatewayIntent
             else if (GuildBanEvent.class.isAssignableFrom(event) || GuildUnbanEvent.class.isAssignableFrom(event))
                 intents.add(GUILD_BANS);
             else if (GenericEmoteEvent.class.isAssignableFrom(event))
-                intents.add(GUILD_EMOJIS);
+                intents.add(GUILD_EMOJIS_AND_STICKERS);
             else if (GenericGuildInviteEvent.class.isAssignableFrom(event))
                 intents.add(GUILD_INVITES);
             else if (GenericGuildVoiceEvent.class.isAssignableFrom(event))

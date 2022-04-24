@@ -15,13 +15,16 @@
  */
 
 /**
- * Events that track updates for existing {@link net.dv8tion.jda.api.entities.Emote Emotes}
+ * Events that track {@link net.dv8tion.jda.api.events.sticker.GuildStickerAddedEvent added stickers}
+ * and {@link net.dv8tion.jda.api.events.sticker.GuildStickerRemovedEvent removed stickers}.
  *
  * <h2>Requirements</h2>
  *
- * <p>These events require the {@link net.dv8tion.jda.api.utils.cache.CacheFlag#EMOTE EMOTE} CacheFlag to be enabled, which requires
+ * <p>These events require the {@link net.dv8tion.jda.api.utils.cache.CacheFlag#STICKER STICKER} CacheFlag to be enabled, which requires
  * the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_EMOJIS_AND_STICKERS GUILD_EMOJIS_AND_STICKERS} intent.
  *
  * <br>{@link net.dv8tion.jda.api.JDABuilder#createLight(String) createLight(String)} disables that CacheFlag by default!
+ *
+ * @since 3.1
  */
-package net.dv8tion.jda.api.events.emote.update;
+package net.dv8tion.jda.api.events.sticker;
