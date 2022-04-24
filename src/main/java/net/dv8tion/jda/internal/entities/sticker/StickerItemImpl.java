@@ -25,7 +25,7 @@ public class StickerItemImpl implements StickerItem
 {
     protected final long id;
     protected final StickerFormat format;
-    protected final String name;
+    protected String name;
 
     public StickerItemImpl(long id, StickerFormat format, String name)
     {
@@ -51,6 +51,13 @@ public class StickerItemImpl implements StickerItem
     public String getName()
     {
         return name;
+    }
+
+    public String setName(String name)
+    {
+        String old = this.name;
+        this.name = name;
+        return old;
     }
 
     @Override

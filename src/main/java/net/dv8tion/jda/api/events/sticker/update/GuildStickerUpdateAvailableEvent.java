@@ -21,22 +21,21 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.sticker.GuildSticker;
 
 import javax.annotation.Nonnull;
-import java.util.Set;
 
-public class GuildStickerUpdateTagsEvent extends GenericGuildStickerUpdateEvent<Set<String>>
+public class GuildStickerUpdateAvailableEvent extends GenericGuildStickerUpdateEvent<Boolean>
 {
-    public static final String IDENTIFIER = "tags";
+    public static final String IDENTIFIER = "available";
 
-    public GuildStickerUpdateTagsEvent(@Nonnull JDA api, long responseNumber,
-                                       @Nonnull Guild guild, @Nonnull GuildSticker sticker, @Nonnull Set<String> oldValue)
+    public GuildStickerUpdateAvailableEvent(@Nonnull JDA api, long responseNumber,
+                                            @Nonnull Guild guild, @Nonnull GuildSticker sticker, boolean oldValue)
     {
-        super(api, responseNumber, guild, sticker, IDENTIFIER, oldValue, sticker.getTags());
+        super(api, responseNumber, guild, sticker, IDENTIFIER, oldValue, sticker.isAvailable());
     }
 
     @Nonnull
     @Override
     @SuppressWarnings("ConstantConditions")
-    public Set<String> getOldValue()
+    public Boolean getOldValue()
     {
         return super.getOldValue();
     }
@@ -44,7 +43,7 @@ public class GuildStickerUpdateTagsEvent extends GenericGuildStickerUpdateEvent<
     @Nonnull
     @Override
     @SuppressWarnings("ConstantConditions")
-    public Set<String> getNewValue()
+    public Boolean getNewValue()
     {
         return super.getNewValue();
     }

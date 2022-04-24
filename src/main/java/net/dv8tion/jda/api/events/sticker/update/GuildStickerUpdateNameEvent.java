@@ -27,10 +27,9 @@ public class GuildStickerUpdateNameEvent extends GenericGuildStickerUpdateEvent<
     public static final String IDENTIFIER = "name";
 
     public GuildStickerUpdateNameEvent(@Nonnull JDA api, long responseNumber,
-                                       @Nonnull Guild guild, @Nonnull GuildSticker sticker,
-                                       @Nonnull String identifier, @Nonnull String oldValue)
+                                       @Nonnull Guild guild, @Nonnull GuildSticker sticker, @Nonnull String oldValue)
     {
-        super(api, responseNumber, guild, sticker, identifier, oldValue, sticker.getName());
+        super(api, responseNumber, guild, sticker, IDENTIFIER, oldValue, sticker.getName());
     }
 
     @Nonnull

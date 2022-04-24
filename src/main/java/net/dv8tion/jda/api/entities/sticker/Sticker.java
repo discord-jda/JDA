@@ -153,5 +153,10 @@ public interface Sticker extends StickerSnowflake
             }
             return UNKNOWN;
         }
+
+        public int getId()
+        {
+            return id;
+        }
     }
 }

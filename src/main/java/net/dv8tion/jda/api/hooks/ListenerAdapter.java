@@ -62,10 +62,7 @@ import net.dv8tion.jda.api.events.stage.update.StageInstanceUpdateTopicEvent;
 import net.dv8tion.jda.api.events.sticker.GenericGuildStickerEvent;
 import net.dv8tion.jda.api.events.sticker.GuildStickerAddedEvent;
 import net.dv8tion.jda.api.events.sticker.GuildStickerRemovedEvent;
-import net.dv8tion.jda.api.events.sticker.update.GenericGuildStickerUpdateEvent;
-import net.dv8tion.jda.api.events.sticker.update.GuildStickerUpdateDescriptionEvent;
-import net.dv8tion.jda.api.events.sticker.update.GuildStickerUpdateNameEvent;
-import net.dv8tion.jda.api.events.sticker.update.GuildStickerUpdateTagsEvent;
+import net.dv8tion.jda.api.events.sticker.update.*;
 import net.dv8tion.jda.api.events.thread.GenericThreadEvent;
 import net.dv8tion.jda.api.events.thread.ThreadHiddenEvent;
 import net.dv8tion.jda.api.events.thread.ThreadRevealedEvent;
@@ -307,6 +304,7 @@ public abstract class ListenerAdapter implements EventListener
     public void onGuildStickerUpdateName(@Nonnull GuildStickerUpdateNameEvent event) {}
     public void onGuildStickerUpdateTags(@Nonnull GuildStickerUpdateTagsEvent event) {}
     public void onGuildStickerUpdateDescription(@Nonnull GuildStickerUpdateDescriptionEvent event) {}
+    public void onGuildStickerUpdateAvailable(@Nonnull GuildStickerUpdateAvailableEvent event) {}
 
     // Debug Events
     public void onHttpRequest(@Nonnull HttpRequestEvent event) {}

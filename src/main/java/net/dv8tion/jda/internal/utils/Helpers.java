@@ -225,6 +225,13 @@ public final class Helpers
         return col == null || col.isEmpty() ? EnumSet.noneOf(clazz) : EnumSet.copyOf(col);
     }
 
+    public static <T> Set<T> setOf(T... elements)
+    {
+        Set<T> set = new HashSet<>(elements.length);
+        Collections.addAll(set, elements);
+        return set;
+    }
+
     // ## ExceptionUtils ##
 
     public static <T extends Throwable> T appendCause(T throwable, Throwable cause)

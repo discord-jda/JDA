@@ -1699,6 +1699,106 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     SnowflakeCacheView<Emote> getEmoteCache();
 
     /**
+     * Gets a {@link net.dv8tion.jda.api.entities.sticker.GuildSticker GuildSticker} from this guild that has the same id as the
+     * one provided.
+     * <br>If there is no {@link net.dv8tion.jda.api.entities.sticker.GuildSticker GuildSticker} with an id that matches the provided
+     * one, then this returns {@code null}.
+     *
+     * <p>This requires the {@link net.dv8tion.jda.api.utils.cache.CacheFlag#STICKER CacheFlag.STICKER} to be enabled!
+     *
+     * @param  id
+     *         the sticker id
+     *
+     * @throws java.lang.NumberFormatException
+     *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
+     *
+     * @return A Sticker matching the specified id
+     *
+     * @see    #retrieveSticker(String)
+     */
+    @Nullable
+    default GuildSticker getStrickerById(@Nonnull String id)
+    {
+        return getStickerCache().getElementById(id);
+    }
+
+    /**
+     * Gets a {@link net.dv8tion.jda.api.entities.sticker.GuildSticker GuildSticker} from this guild that has the same id as the
+     * one provided.
+     * <br>If there is no {@link net.dv8tion.jda.api.entities.sticker.GuildSticker GuildSticker} with an id that matches the provided
+     * one, then this returns {@code null}.
+     *
+     * <p>This requires the {@link net.dv8tion.jda.api.utils.cache.CacheFlag#STICKER CacheFlag.STICKER} to be enabled!
+     *
+     * @param  id
+     *         the sticker id
+     *
+     * @return A Sticker matching the specified id
+     *
+     * @see    #retrieveSticker(long)
+     */
+    @Nullable
+    default GuildSticker getStrickerById(long id)
+    {
+        return getStickerCache().getElementById(id);
+    }
+
+    /**
+     * Gets all custom {@link net.dv8tion.jda.api.entities.sticker.GuildSticker GuildStickers} belonging to this {@link net.dv8tion.jda.api.entities.Guild Guild}.
+     * <br>GuildStickers are not ordered in any specific way in the returned list.
+     *
+     * <p>This copies the backing store into a list. This means every call
+     * creates a new list with O(n) complexity. It is recommended to store this into
+     * a local variable or use {@link #getStickerCache()} and use its more efficient
+     * versions of handling these values.
+     *
+     * <p>This requires the {@link net.dv8tion.jda.api.utils.cache.CacheFlag#STICKER CacheFlag.STICKER} to be enabled!
+     *
+     * @return An immutable List of {@link net.dv8tion.jda.api.entities.sticker.GuildSticker GuildStickers}.
+     *
+     * @see    #retrieveStickers()
+     */
+    @Nonnull
+    default List<GuildSticker> getStickers()
+    {
+        return getStickerCache().asList();
+    }
+
+    /**
+     * Gets a list of all {@link net.dv8tion.jda.api.entities.sticker.GuildSticker GuildStickers} in this Guild that have the same
+     * name as the one provided.
+     * <br>If there are no {@link net.dv8tion.jda.api.entities.sticker.GuildSticker GuildStickers} with the provided name, then this returns an empty list.
+     *
+     * <p>This requires the {@link net.dv8tion.jda.api.utils.cache.CacheFlag#STICKER CacheFlag.STICKER} to be enabled!
+     *
+     * @param  name
+     *         The name used to filter the returned {@link net.dv8tion.jda.api.entities.sticker.GuildSticker GuildStickers}. Without colons.
+     * @param  ignoreCase
+     *         Determines if the comparison ignores case when comparing. True - case insensitive.
+     *
+     * @return Possibly-empty immutable list of all Stickers that match the provided name.
+     */
+    @Nonnull
+    default List<GuildSticker> getStickersByName(@Nonnull String name, boolean ignoreCase)
+    {
+        return getStickerCache().getElementsByName(name, ignoreCase);
+    }
+
+    /**
+     * {@link net.dv8tion.jda.api.utils.cache.SnowflakeCacheView SnowflakeCacheView} of
+     * all cached {@link net.dv8tion.jda.api.entities.sticker.GuildSticker GuildStickers} of this Guild.
+     * <br>This will be empty if {@link net.dv8tion.jda.api.utils.cache.CacheFlag#STICKER} is disabled.
+     *
+     * <p>This requires the {@link net.dv8tion.jda.api.utils.cache.CacheFlag#STICKER CacheFlag.STICKER} to be enabled!
+     *
+     * @return {@link net.dv8tion.jda.api.utils.cache.SnowflakeCacheView SnowflakeCacheView}
+     *
+     * @see    #retrieveStickers()
+     */
+    @Nonnull
+    SnowflakeCacheView<GuildSticker> getStickerCache();
+
+    /**
      * Retrieves an immutable list of emotes together with their respective creators.
      *
      * <p>Note that {@link ListedEmote#getUser()} is only available if the currently

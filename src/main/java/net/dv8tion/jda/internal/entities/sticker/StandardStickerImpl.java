@@ -18,6 +18,7 @@ package net.dv8tion.jda.internal.entities.sticker;
 
 import net.dv8tion.jda.api.entities.sticker.StandardSticker;
 
+import javax.annotation.Nonnull;
 import java.util.Set;
 
 public class StandardStickerImpl extends RichStickerImpl implements StandardSticker
@@ -26,12 +27,19 @@ public class StandardStickerImpl extends RichStickerImpl implements StandardStic
     private final int sortValue;
 
     public StandardStickerImpl(long id, StickerFormat format, String name,
-                               Type type, Set<String> tags, String description,
+                               Set<String> tags, String description,
                                long packId, int sortValue)
     {
-        super(id, format, name, type, tags, description);
+        super(id, format, name, tags, description);
         this.packId = packId;
         this.sortValue = sortValue;
+    }
+
+    @Nonnull
+    @Override
+    public Type getType()
+    {
+        return Type.STANDARD;
     }
 
     @Override
@@ -49,7 +57,7 @@ public class StandardStickerImpl extends RichStickerImpl implements StandardStic
     @Override
     public String toString()
     {
-        return "RichSticker:" + type + ":" + name + '(' + getId() + ",pack=" + getPackId() + ')';
+        return "RichSticker:" + getType() + ":" + name + '(' + getId() + ",pack=" + getPackId() + ')';
     }
 
     @Override

@@ -24,27 +24,22 @@ import java.util.Collections;
 import java.util.Objects;
 import java.util.Set;
 
-public class RichStickerImpl extends StickerItemImpl implements RichSticker
+public abstract class RichStickerImpl extends StickerItemImpl implements RichSticker
 {
-    protected final Type type;
-    protected final Set<String> tags;
-    protected final String description;
+    protected Set<String> tags;
+    protected String description;
 
     public RichStickerImpl(long id, StickerFormat format, String name,
-                           Type type, Set<String> tags, String description)
+                           Set<String> tags, String description)
     {
         super(id, format, name);
-        this.type = type;
         this.tags = Collections.unmodifiableSet(tags);
         this.description = description;
     }
 
     @Nonnull
     @Override
-    public Type getType()
-    {
-        return type;
-    }
+    public abstract Type getType();
 
     @Nonnull
     @Override
@@ -60,16 +55,31 @@ public class RichStickerImpl extends StickerItemImpl implements RichSticker
         return description;
     }
 
+
+    public Set<String> setTags(Set<String> tags)
+    {
+        Set<String> old = this.tags;
+        this.tags = Collections.unmodifiableSet(tags);
+        return old;
+    }
+
+    public String setDescription(String description)
+    {
+        String old = this.description;
+        this.description = description;
+        return old;
+    }
+
     @Override
     public String toString()
     {
-        return "RichSticker:" + type + ':' + name + '(' + getId() + ')';
+        return "RichSticker:" + getType() + ':' + name + '(' + getId() + ')';
     }
 
     @Override
     public int hashCode()
     {
-        return Objects.hash(id, format, name, type, tags, description);
+        return Objects.hash(id, format, name, getType(), tags, description);
     }
 
     @Override
@@ -82,7 +92,7 @@ public class RichStickerImpl extends StickerItemImpl implements RichSticker
         RichStickerImpl other = (RichStickerImpl) obj;
         return id == other.id
                 && format == other.format
-                && type == other.type
+                && getType() == other.getType()
                 && Objects.equals(name, other.name)
                 && Objects.equals(description, other.description)
                 && Helpers.deepEqualsUnordered(tags, other.tags);

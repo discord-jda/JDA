@@ -169,6 +169,34 @@ public class EntityBuilder
         }
     }
 
+    private void createGuildStickerPass(GuildImpl guildObj, DataArray array)
+    {
+        if (!getJDA().isCacheFlagSet(CacheFlag.STICKER))
+            return;
+        SnowflakeCacheViewImpl<GuildSticker> stickerView = guildObj.getStickersView();
+        try (UnlockHook hook = stickerView.writeLock())
+        {
+            TLongObjectMap<GuildSticker> stickerMap = stickerView.getMap();
+            for (int i = 0; i < array.length(); i++)
+            {
+                DataObject object = array.getObject(i);
+                if (object.isNull("id"))
+                {
+                    LOG.error("Received GUILD_CREATE with a sticker with a null ID. JSON: {}", object);
+                    continue;
+                }
+                if (object.getInt("type", -1) != Sticker.Type.GUILD.getId())
+                {
+                    LOG.error("Received GUILD_CREATE with sticker that had an unexpected type. Type: {} JSON: {}", object.getInt("type", -1), object);
+                    continue;
+                }
+
+                RichSticker sticker = createRichSticker(object);
+                stickerMap.put(sticker.getIdLong(), (GuildSticker) sticker);
+            }
+        }
+    }
+
     public TLongObjectMap<DataObject> convertToUserMap(ToLongFunction<DataObject> getId, DataArray array)
     {
         TLongObjectMap<DataObject> map = new TLongObjectHashMap<>();
@@ -195,6 +223,7 @@ public class EntityBuilder
         final DataArray channelArray = guildJson.getArray("channels");
         final DataArray threadArray = guildJson.getArray("threads");
         final DataArray emotesArray = guildJson.getArray("emojis");
+        final DataArray stickersArray = guildJson.getArray("stickers");
         final DataArray voiceStateArray = guildJson.getArray("voice_states");
         final Optional<DataArray> featuresArray = guildJson.optArray("features");
         final Optional<DataArray> presencesArray = guildJson.optArray("presences");
@@ -306,6 +335,7 @@ public class EntityBuilder
         }
 
         createGuildEmotePass(guildObj, emotesArray);
+        createGuildStickerPass(guildObj, stickersArray);
         guildJson.optArray("stage_instances")
                 .map(arr -> arr.stream(DataArray::getObject))
                 .ifPresent(list -> list.forEach(it -> createStageInstance(guildObj, it)));
@@ -1786,9 +1816,8 @@ public class EntityBuilder
         Set<String> tags = Collections.emptySet();
         if (!content.isNull("tags"))
         {
-            String[] array = content.getString("tags").split(", ");
-            tags = new HashSet<>(array.length);
-            Collections.addAll(tags, array);
+            String[] array = content.getString("tags").split(",\\s*");
+            tags = Helpers.setOf(array);
         }
 
         switch (type)
@@ -1797,11 +1826,11 @@ public class EntityBuilder
             boolean available = content.getBoolean("available");
             long guildId = content.getUnsignedLong("guild_id", 0L);
             User owner = content.isNull("user") ? null : createUser(content.getObject("user"));
-            return new GuildStickerImpl(id, format, name, type, tags, description, available, guildId, api, owner);
+            return new GuildStickerImpl(id, format, name, tags, description, available, guildId, api, owner);
         case STANDARD:
             long packId = content.getUnsignedLong("pack_id", 0L);
             int sortValue = content.getInt("sort_value", -1);
-            return new StandardStickerImpl(id, format, name, type, tags, description, packId, sortValue);
+            return new StandardStickerImpl(id, format, name, tags, description, packId, sortValue);
         default:
             throw new IllegalArgumentException("Unknown sticker type. Type: " + type  +" JSON: " + content);
         }

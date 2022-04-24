@@ -34,22 +34,30 @@ import java.util.Set;
 
 public class GuildStickerImpl extends RichStickerImpl implements GuildSticker
 {
-    private final boolean available;
     private final long guildId;
     private final JDA jda;
     private Guild guild;
     private User owner;
 
+    private boolean available;
+
     public GuildStickerImpl(long id, StickerFormat format, String name,
-                            Type type, Set<String> tags, String description,
+                            Set<String> tags, String description,
                             boolean available, long guildId, JDA jda, User owner)
     {
-        super(id, format, name, type, tags, description);
+        super(id, format, name, tags, description);
         this.available = available;
         this.guildId = guildId;
         this.jda = jda;
         this.guild = jda.getGuildById(guildId);
         this.owner = owner;
+    }
+
+    @Nonnull
+    @Override
+    public Type getType()
+    {
+        return Type.GUILD;
     }
 
     @Override
@@ -109,16 +117,28 @@ public class GuildStickerImpl extends RichStickerImpl implements GuildSticker
         return new AuditableRestActionImpl<>(jda, route);
     }
 
+    public boolean setAvailable(boolean available)
+    {
+        boolean old = this.available;
+        this.available = available;
+        return old;
+    }
+
+    public GuildStickerImpl copy()
+    {
+        return new GuildStickerImpl(id, format, name, tags, description, available, guildId, jda, owner);
+    }
+
     @Override
     public String toString()
     {
-        return "RichSticker:" + type + ':' + name + '(' + getId() + ",guild=" + getGuildId() + ')';
+        return "RichSticker:" + getType() + ':' + name + '(' + getId() + ",guild=" + getGuildId() + ')';
     }
 
     @Override
     public int hashCode()
     {
-        return Objects.hash(id, format, name, type, tags, description, available, guildId);
+        return Objects.hash(id, format, name, getType(), tags, description, available, guildId);
     }
 
     @Override
@@ -131,7 +151,7 @@ public class GuildStickerImpl extends RichStickerImpl implements GuildSticker
         GuildStickerImpl other = (GuildStickerImpl) obj;
         return id == other.id
             && format == other.format
-            && type == other.type
+            && getType() == other.getType()
             && available == other.available
             && guildId == other.guildId
             && Objects.equals(name, other.name)

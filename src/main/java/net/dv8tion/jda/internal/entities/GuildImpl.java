@@ -92,6 +92,7 @@ public class GuildImpl implements Guild
     private final SortedSnowflakeCacheViewImpl<ThreadChannel> threadChannelCache = new SortedSnowflakeCacheViewImpl<>(ThreadChannel.class, Channel::getName, Comparator.naturalOrder());
     private final SortedSnowflakeCacheViewImpl<Role> roleCache = new SortedSnowflakeCacheViewImpl<>(Role.class, Role::getName, Comparator.reverseOrder());
     private final SnowflakeCacheViewImpl<Emote> emoteCache = new SnowflakeCacheViewImpl<>(Emote.class, Emote::getName);
+    private final SnowflakeCacheViewImpl<GuildSticker> stickerCache = new SnowflakeCacheViewImpl<>(GuildSticker.class, GuildSticker::getName);
     private final MemberCacheViewImpl memberCache = new MemberCacheViewImpl();
     private final CacheView.SimpleCacheView<MemberPresenceImpl> memberPresences;
 
@@ -696,6 +697,13 @@ public class GuildImpl implements Guild
     public SnowflakeCacheView<Emote> getEmoteCache()
     {
         return emoteCache;
+    }
+
+    @Nonnull
+    @Override
+    public SnowflakeCacheView<GuildSticker> getStickerCache()
+    {
+        return stickerCache;
     }
 
     @Nonnull
@@ -2099,6 +2107,11 @@ public class GuildImpl implements Guild
     public SnowflakeCacheViewImpl<Emote> getEmotesView()
     {
         return emoteCache;
+    }
+
+    public SnowflakeCacheViewImpl<GuildSticker> getStickersView()
+    {
+        return stickerCache;
     }
 
     public MemberCacheViewImpl getMembersView()
