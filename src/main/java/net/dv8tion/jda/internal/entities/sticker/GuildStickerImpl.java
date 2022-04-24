@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.sticker.GuildSticker;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
+import net.dv8tion.jda.internal.requests.DeferredRestAction;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.utils.Helpers;
@@ -63,7 +64,7 @@ public class GuildStickerImpl extends RichStickerImpl implements GuildSticker
         return guildId;
     }
 
-    @Nonnull
+    @Nullable
     @Override
     public Guild getGuild()
     {
@@ -88,12 +89,14 @@ public class GuildStickerImpl extends RichStickerImpl implements GuildSticker
 
     @Nonnull
     @Override
-    public RestAction<User> retrieveOwner()
+    public RestAction<User> retrieveOwner(boolean update)
     {
-        return jda.retrieveSticker(getId()).map(union -> {
-            this.owner = union.asGuildSticker().getOwner();
-            return this.owner;
-        });
+        return new DeferredRestAction<>(jda, User.class,
+                () -> update ? null : getOwner(),
+                () -> jda.retrieveSticker(getId()).map(union -> {
+                    this.owner = union.asGuildSticker().getOwner();
+                    return this.owner;
+                }));
     }
 
     @Nonnull

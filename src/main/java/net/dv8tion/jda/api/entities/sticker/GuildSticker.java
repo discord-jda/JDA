@@ -45,7 +45,14 @@ public interface GuildSticker extends RichSticker
 
     @Nonnull
     @CheckReturnValue
-    RestAction<User> retrieveOwner();
+    default RestAction<User> retrieveOwner()
+    {
+        return retrieveOwner(false);
+    }
+
+    @Nonnull
+    @CheckReturnValue
+    RestAction<User> retrieveOwner(boolean update);
 
     @Nonnull
     @CheckReturnValue
