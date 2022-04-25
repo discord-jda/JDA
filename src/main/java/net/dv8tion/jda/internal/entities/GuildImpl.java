@@ -24,6 +24,7 @@ import net.dv8tion.jda.api.Region;
 import net.dv8tion.jda.api.audio.hooks.ConnectionStatus;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.sticker.GuildSticker;
+import net.dv8tion.jda.api.entities.sticker.StandardSticker;
 import net.dv8tion.jda.api.entities.sticker.StickerSnowflake;
 import net.dv8tion.jda.api.entities.templates.Template;
 import net.dv8tion.jda.api.exceptions.HierarchyException;
@@ -35,6 +36,7 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.privileges.CommandPrivilege;
 import net.dv8tion.jda.api.managers.AudioManager;
 import net.dv8tion.jda.api.managers.GuildManager;
+import net.dv8tion.jda.api.managers.GuildStickerManager;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.*;
@@ -52,6 +54,7 @@ import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 import net.dv8tion.jda.internal.interactions.command.CommandImpl;
 import net.dv8tion.jda.internal.managers.AudioManagerImpl;
 import net.dv8tion.jda.internal.managers.GuildManagerImpl;
+import net.dv8tion.jda.internal.managers.GuildStickerManagerImpl;
 import net.dv8tion.jda.internal.requests.*;
 import net.dv8tion.jda.internal.requests.restaction.*;
 import net.dv8tion.jda.internal.requests.restaction.order.CategoryOrderActionImpl;
@@ -859,15 +862,26 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public RestAction<GuildSticker> retrieveSticker(@Nonnull String id)
+    public RestAction<GuildSticker> retrieveSticker(@Nonnull StickerSnowflake sticker)
     {
-        Checks.isSnowflake(id);
-        Route.CompiledRoute route = Route.Guilds.GET_GUILD_STICKER.compile(getId(), id);
+        Checks.notNull(sticker, "Sticker");
+        Route.CompiledRoute route = Route.Guilds.GET_GUILD_STICKER.compile(getId(), sticker.getId());
         return new RestActionImpl<>(getJDA(), route, (response, request) -> {
             DataObject object = response.getObject();
             EntityBuilder builder = api.getEntityBuilder();
             return (GuildSticker) builder.createRichSticker(object);
         });
+    }
+
+    @Nonnull
+    @Override
+    public GuildStickerManager editSticker(@Nonnull StickerSnowflake sticker)
+    {
+        Checks.notNull(sticker, "Sticker");
+        if (sticker instanceof GuildSticker)
+            Checks.check(((GuildSticker) sticker).getGuildIdLong() == id, "Cannot edit a sticker from another guild!");
+        Checks.check(!(sticker instanceof StandardSticker), "Cannot edit a standard sticker.");
+        return new GuildStickerManagerImpl(this, sticker);
     }
 
     @Nonnull

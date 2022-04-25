@@ -20,8 +20,10 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.sticker.GuildSticker;
+import net.dv8tion.jda.api.managers.GuildStickerManager;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
+import net.dv8tion.jda.internal.managers.GuildStickerManagerImpl;
 import net.dv8tion.jda.internal.requests.DeferredRestAction;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
@@ -115,6 +117,16 @@ public class GuildStickerImpl extends RichStickerImpl implements GuildSticker
             return guild.deleteSticker(this);
         Route.CompiledRoute route = Route.Stickers.DELETE_STICKER.compile(getGuildId(), getId());
         return new AuditableRestActionImpl<>(jda, route);
+    }
+
+    @Nonnull
+    @Override
+    public GuildStickerManager getManager()
+    {
+        Guild guild = getGuild();
+        if (guild == null)
+            throw new IllegalStateException("Cannot manage sticker without known guild. Use Guild#editSticker instead!");
+        return new GuildStickerManagerImpl(getGuild(), this);
     }
 
     public boolean setAvailable(boolean available)

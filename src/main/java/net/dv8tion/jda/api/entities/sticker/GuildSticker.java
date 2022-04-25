@@ -18,8 +18,10 @@ package net.dv8tion.jda.api.entities.sticker;
 
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.managers.GuildStickerManager;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
+import org.jetbrains.annotations.Contract;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -57,4 +59,9 @@ public interface GuildSticker extends RichSticker
     @Nonnull
     @CheckReturnValue
     AuditableRestAction<Void> delete();
+
+    @Nonnull
+    @CheckReturnValue
+    @Contract("->new")
+    GuildStickerManager getManager();
 }

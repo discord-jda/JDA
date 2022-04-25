@@ -29,6 +29,7 @@ import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.privileges.CommandPrivilege;
 import net.dv8tion.jda.api.managers.AudioManager;
 import net.dv8tion.jda.api.managers.GuildManager;
+import net.dv8tion.jda.api.managers.GuildStickerManager;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.*;
@@ -1714,7 +1715,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      *
      * @return A Sticker matching the specified id
      *
-     * @see    #retrieveSticker(String)
+     * @see    #retrieveSticker(StickerSnowflake)
      */
     @Nullable
     default GuildSticker getStrickerById(@Nonnull String id)
@@ -1735,7 +1736,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      *
      * @return A Sticker matching the specified id
      *
-     * @see    #retrieveSticker(long)
+     * @see    #retrieveSticker(StickerSnowflake)
      */
     @Nullable
     default GuildSticker getStrickerById(long id)
@@ -1914,14 +1915,11 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
 
     @Nonnull
     @CheckReturnValue
-    RestAction<GuildSticker> retrieveSticker(@Nonnull String id);
+    RestAction<GuildSticker> retrieveSticker(@Nonnull StickerSnowflake sticker);
 
     @Nonnull
     @CheckReturnValue
-    default RestAction<GuildSticker> retrieveSticker(long id)
-    {
-        return retrieveSticker(Long.toUnsignedString(id));
-    }
+    GuildStickerManager editSticker(@Nonnull StickerSnowflake sticker);
 
     /**
      * Retrieves an immutable list of the currently banned {@link net.dv8tion.jda.api.entities.User Users}.
