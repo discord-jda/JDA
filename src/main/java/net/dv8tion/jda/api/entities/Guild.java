@@ -1718,7 +1718,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * @see    #retrieveSticker(StickerSnowflake)
      */
     @Nullable
-    default GuildSticker getStrickerById(@Nonnull String id)
+    default GuildSticker getStickerById(@Nonnull String id)
     {
         return getStickerCache().getElementById(id);
     }
@@ -1739,7 +1739,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * @see    #retrieveSticker(StickerSnowflake)
      */
     @Nullable
-    default GuildSticker getStrickerById(long id)
+    default GuildSticker getStickerById(long id)
     {
         return getStickerCache().getElementById(id);
     }
