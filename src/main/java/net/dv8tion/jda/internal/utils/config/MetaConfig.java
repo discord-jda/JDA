@@ -43,7 +43,7 @@ public class MetaConfig
         this.cacheFlags = cacheFlags == null ? EnumSet.allOf(CacheFlag.class) : cacheFlags;
         this.enableMDC = flags.contains(ConfigFlag.MDC_CONTEXT);
         if (enableMDC)
-            this.mdcContextMap = mdcContextMap == null ? new ConcurrentHashMap<>() : null;
+            this.mdcContextMap = mdcContextMap == null ? new ConcurrentHashMap<>() : mdcContextMap;
         else
             this.mdcContextMap = null;
         this.useShutdownHook = flags.contains(ConfigFlag.SHUTDOWN_HOOK);
