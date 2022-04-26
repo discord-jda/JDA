@@ -87,6 +87,11 @@ public class InteractionImpl implements Interaction
         }
     }
 
+    // Used to allow interaction hook to send messages after acknowledgements
+    // This is implemented only in DeferrableInteractionImpl where a hook is present!
+    public synchronized void releaseHook(boolean success) {}
+
+    // Ensures that one cannot acknowledge an interaction twice
     public synchronized boolean ack()
     {
         boolean wasAck = isAck;

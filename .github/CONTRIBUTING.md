@@ -26,7 +26,7 @@ Based on the current `master` changes!
       (See [Syncing a Fork](https://help.github.com/articles/syncing-a-fork/)
       or [Keeping a Fork Updated](https://robots.thoughtbot.com/keeping-a-github-fork-updated))
       
-4. Only open Pull Requests to feature/experimental/development
+4. Only open Pull Requests to master
     - Look at the [Repository Structure](https://github.com/DV8FromTheWorld/JDA/wiki/11%29-Repository-Structure) for further details
       
 For more information please consult the [Contributing](https://github.com/DV8FromTheWorld/JDA/wiki/5%29-Contributing)

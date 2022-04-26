@@ -38,7 +38,9 @@ public class MapRestAction<I, O> extends RestActionOperator<I, O>
     @Override
     public void queue(@Nullable Consumer<? super O> success, @Nullable Consumer<? super Throwable> failure)
     {
-        action.queue((result) -> doSuccess(success, function.apply(result)), contextWrap(failure));
+        handle(action, failure,
+            (result) -> doSuccess(success, function.apply(result))
+        );
     }
 
     @Override

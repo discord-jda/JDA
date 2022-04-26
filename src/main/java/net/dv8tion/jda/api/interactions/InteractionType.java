@@ -31,6 +31,7 @@ public enum InteractionType
     COMMAND(2),
     COMPONENT(3),
     COMMAND_AUTOCOMPLETE(4),
+    MODAL_SUBMIT(5),
     ;
 
     private final int key;
@@ -59,6 +60,8 @@ public enum InteractionType
             return COMPONENT;
         case 4:
             return COMMAND_AUTOCOMPLETE;
+        case 5:
+            return MODAL_SUBMIT;
         default:
             return UNKNOWN;
         }

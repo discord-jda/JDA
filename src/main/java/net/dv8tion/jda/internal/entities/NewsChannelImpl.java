@@ -27,6 +27,7 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.entities.mixin.channel.middleman.BaseGuildMessageChannelMixin;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
+import net.dv8tion.jda.internal.managers.channel.concrete.NewsChannelManagerImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
@@ -137,7 +138,7 @@ public class NewsChannelImpl extends AbstractGuildChannelImpl<NewsChannelImpl> i
     @Override
     public NewsChannelManager getManager()
     {
-        return null;
+        return new NewsChannelManagerImpl(this);
     }
 
     @Override

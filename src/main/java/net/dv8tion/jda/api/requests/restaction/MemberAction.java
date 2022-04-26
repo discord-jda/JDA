@@ -19,6 +19,7 @@ package net.dv8tion.jda.api.requests.restaction;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.UserSnowflake;
 import net.dv8tion.jda.api.requests.RestAction;
 
 import javax.annotation.CheckReturnValue;
@@ -35,9 +36,7 @@ import java.util.function.BooleanSupplier;
  *
  * @since  3.7.0
  *
- * @see    Guild#addMember(String, User)
- * @see    Guild#addMember(String, long)
- * @see    Guild#addMember(String, String)
+ * @see    Guild#addMember(String, UserSnowflake)
  * @see    <a href="https://discord.com/developers/docs/topics/oauth2" target="_blank">Discord OAuth2 Documentation</a>
  */
 public interface MemberAction extends RestAction<Void>

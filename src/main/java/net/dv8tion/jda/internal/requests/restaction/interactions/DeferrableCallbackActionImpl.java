@@ -38,15 +38,10 @@ public abstract class DeferrableCallbackActionImpl extends InteractionCallbackIm
     @Override
     protected void handleSuccess(Response response, Request<InteractionHook> request)
     {
-        hook.ready();
+        //releaseHook would be called by the super class's handling of this success, however
+        // we also need to provide the hook itself to the success callback of the RestAction,
+        // so we override this functionality
+        interaction.releaseHook(true);
         request.onSuccess(hook);
-    }
-
-    @Override
-    public void handleResponse(Response response, Request<InteractionHook> request)
-    {
-        if (!response.isOk())
-            hook.fail(new InteractionFailureException());
-        super.handleResponse(response, request);
     }
 }

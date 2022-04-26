@@ -1252,7 +1252,6 @@ public class EntityBuilder
 
         long id = json.getUnsignedLong("id");
         String topic = json.getString("topic");
-        boolean discoverable = !json.getBoolean("discoverable_disabled");
         StageInstance.PrivacyLevel level = StageInstance.PrivacyLevel.fromKey(json.getInt("privacy_level", -1));
 
 
@@ -1265,7 +1264,6 @@ public class EntityBuilder
 
         return instance
                 .setPrivacyLevel(level)
-                .setDiscoverable(discoverable)
                 .setTopic(topic);
     }
 

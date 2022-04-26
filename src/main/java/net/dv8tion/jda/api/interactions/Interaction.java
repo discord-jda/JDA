@@ -18,11 +18,9 @@ package net.dv8tion.jda.api.interactions;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
-import net.dv8tion.jda.api.interactions.callbacks.IAutoCompleteCallback;
-import net.dv8tion.jda.api.interactions.callbacks.IDeferrableCallback;
-import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback;
-import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback;
+import net.dv8tion.jda.api.interactions.callbacks.*;
 import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.components.Modal;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -30,8 +28,8 @@ import java.util.Locale;
 
 /**
  * Abstract representation for any kind of Discord interaction.
- * <br>This includes things such as {@link net.dv8tion.jda.api.interactions.commands.SlashCommandInteraction Slash-Commands}
- * or {@link net.dv8tion.jda.api.interactions.components.buttons.ButtonInteraction Buttons}.
+ * <br>This includes things such as {@link net.dv8tion.jda.api.interactions.commands.SlashCommandInteraction Slash-Commands},
+ * {@link net.dv8tion.jda.api.interactions.components.buttons.ButtonInteraction Buttons} or {@link net.dv8tion.jda.api.interactions.ModalInteraction Modals}.
  *
  * <p>To properly handle an interaction you must acknowledge it.
  * Each interaction has different callbacks which acknowledge the interaction. These are added by the individual {@code I...Callback} interfaces:
@@ -42,6 +40,8 @@ import java.util.Locale;
  *     <br>Which supports direct message edits and deferred message edits (or no-operation) via {@link IMessageEditCallback#editMessage(String)} and {@link IMessageEditCallback#deferEdit()}</li>
  *     <li>{@link IAutoCompleteCallback}
  *     <br>Which supports choice suggestions for auto-complete interactions via {@link IAutoCompleteCallback#replyChoices(Command.Choice...)}</li>
+ *     <li>{@link IModalCallback}
+ *     <br>Which supports replying using a {@link Modal} via {@link IModalCallback#replyModal(Modal)}</li>
  * </ul>
  *
  * <p>Once the interaction is acknowledged, you can not reply with these methods again. If the interaction is a {@link IDeferrableCallback deferrable},
