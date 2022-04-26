@@ -800,6 +800,9 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * <br>The list is sorted by {@link net.dv8tion.jda.api.entities.Member#getTimeBoosted()} ascending.
      * This means the first element will be the member who has been boosting for the longest time.
      *
+     * <p>This will only check cached members!
+     * <br>See {@link net.dv8tion.jda.api.utils.MemberCachePolicy MemberCachePolicy}
+     *
      * @return Possibly-immutable list of members who boost this guild
      */
     @Nonnull
