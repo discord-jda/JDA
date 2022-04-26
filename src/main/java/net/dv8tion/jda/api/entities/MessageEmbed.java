@@ -847,19 +847,6 @@ public class MessageEmbed implements SerializableData
         }
 
         /**
-         * Returns an {@link ImageProxy} for this author's icon.
-         *
-         * @return Possibly-null {@link ImageProxy} of this author's icon
-         *
-         * @see    #getIconUrl()
-         */
-        @Nullable
-        public ImageProxy getIcon()
-        {
-            return iconUrl == null ? null : new ImageProxy(iconUrl);
-        }
-
-        /**
          * The url of the author's icon, proxied by Discord
          * <br>This url is used to access the image through Discord instead of directly to prevent ip scraping.
          *
@@ -933,19 +920,6 @@ public class MessageEmbed implements SerializableData
         public String getIconUrl()
         {
             return iconUrl;
-        }
-
-        /**
-         * Returns an {@link ImageProxy} for this footer's icon.
-         *
-         * @return Possibly-null {@link ImageProxy} of this footer's icon
-         *
-         * @see    #getIconUrl()
-         */
-        @Nullable
-        public ImageProxy getIcon()
-        {
-            return iconUrl == null ? null : new ImageProxy(iconUrl);
         }
 
         /**
