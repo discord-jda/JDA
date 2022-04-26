@@ -18,6 +18,8 @@ package net.dv8tion.jda.internal.handle;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 
+import javax.annotation.Nullable;
+
 public abstract class SocketHandler
 {
     protected final JDAImpl api;
@@ -39,6 +41,7 @@ public abstract class SocketHandler
         this.allContent = null;
     }
 
+    @Nullable
     protected DataObject getPassthrough() {
         return api.isEventPassthrough() ? allContent : null;
     }

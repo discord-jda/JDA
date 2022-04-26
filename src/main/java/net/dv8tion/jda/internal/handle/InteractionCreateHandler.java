@@ -89,7 +89,7 @@ public class InteractionCreateHandler extends SocketHandler
                 break;
             case MODAL_SUBMIT:
                 api.handleEvent(
-                    new ModalInteractionEvent(api, responseNumber,
+                    new ModalInteractionEvent(api, responseNumber, getPassthrough(),
                         new ModalInteractionImpl(api, content)));
                 break;
             default:
