@@ -150,6 +150,9 @@ public class BotRateLimiter extends RateLimiter
                 // If the requests of the bucket are drained and the reset is expired the bucket has no valuable information
                 else if (bucket.requests.isEmpty() && bucket.reset <= getNow())
                     entries.remove();
+                // Remove empty buckets when the rate limiter is stopped
+                else if (bucket.requests.isEmpty() && isStopped)
+                    entries.remove();
             }
             // Log how many buckets were removed
             size -= buckets.size();

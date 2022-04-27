@@ -62,7 +62,7 @@ import java.util.EnumSet;
  *     <li><b>DIRECT_MESSAGE_TYPING</b> - This is used to track when a user starts typing in private channels (DMs). Almost no bot will have a use for this.</li>
  * </ol>
  *
- * If an intent is not specifically mentioned to be <b>privileged</b>, it is not required to be on the whitelist to use if (and its related events).
+ * If an intent is not specifically mentioned to be <b>privileged</b>, it is not required to be on the whitelist to use it (and its related events).
  * To get whitelisted you either need to contact discord support (for bots in more than 100 guilds)
  * or enable it in the developer dashboard of your application.
  *

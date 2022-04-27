@@ -39,6 +39,8 @@ public interface InteractionCallbackAction<T> extends RestAction<T>
         MESSAGE_UPDATE(7),
         /** Provide auto-complete choices for a command */
         COMMAND_AUTOCOMPLETE_CHOICES(8),
+        /** Respond with a modal */
+        MODAL(9),
         ;
         private final int raw;
 

@@ -30,8 +30,6 @@ import java.util.EnumSet;
  * permission overrides that can be set for channels.
  *
  * @see IPermissionContainer#upsertPermissionOverride(IPermissionHolder)
- * @see IPermissionContainer#createPermissionOverride(IPermissionHolder)
- * @see IPermissionContainer#putPermissionOverride(IPermissionHolder)
  *
  * @see IPermissionContainer#getPermissionOverrides()
  * @see IPermissionContainer#getPermissionOverride(IPermissionHolder)

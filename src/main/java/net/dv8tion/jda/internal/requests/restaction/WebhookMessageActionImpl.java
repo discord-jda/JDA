@@ -161,6 +161,11 @@ public class WebhookMessageActionImpl<T>
     public WebhookMessageActionImpl<T> addActionRows(@Nonnull ActionRow... rows)
     {
         Checks.noneNull(rows, "ActionRows");
+
+        Checks.checkComponents("Some components are incompatible with Messages",
+            rows,
+            component -> component.getType().isMessageCompatible());
+
         Checks.check(rows.length + components.size() <= 5, "Can only have 5 action rows per message!");
         Checks.checkDuplicateIds(Stream.concat(components.stream(), Arrays.stream(rows)));
         Collections.addAll(components, rows);

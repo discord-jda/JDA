@@ -36,11 +36,11 @@ plugins {
 
     id("io.codearte.nexus-staging") version "0.30.0"
     id("de.marcphilipp.nexus-publish") version "0.4.0"
-    id("com.github.johnrengelman.shadow") version "7.1.0"
+    id("com.github.johnrengelman.shadow") version "7.1.2"
 }
 
 val javaVersion = JavaVersion.current()
-val versionObj = Version(major = "5", minor = "0", revision = "0", classifier = "alpha.9")
+val versionObj = Version(major = "5", minor = "0", revision = "0", classifier = "alpha.11")
 val isCI = System.getProperty("BUILD_NUMBER") != null // jenkins
         || System.getenv("BUILD_NUMBER") != null
         || System.getProperty("GIT_COMMIT") != null // jitpack
@@ -98,20 +98,20 @@ dependencies {
 
     //Code safety
     api("com.google.code.findbugs:jsr305:3.0.2")
-    api("org.jetbrains:annotations:16.0.1")
+    api("org.jetbrains:annotations:23.0.0")
 
     //Logger
-    api("org.slf4j:slf4j-api:1.7.25")
+    api("org.slf4j:slf4j-api:1.7.36")
 
     //Web Connection Support
     api("com.neovisionaries:nv-websocket-client:2.14")
-    api("com.squareup.okhttp3:okhttp:3.13.0")
+    api("com.squareup.okhttp3:okhttp:4.9.3")
 
     //Opus library support
     api("club.minnced:opus-java:1.1.1")
 
     //Collections Utility
-    api("org.apache.commons:commons-collections4:4.1")
+    api("org.apache.commons:commons-collections4:4.4")
 
     //we use this only together with opus-java
     // if that dependency is excluded it also doesn't need jna anymore
@@ -122,7 +122,9 @@ dependencies {
 
     //General Utility
     implementation("net.sf.trove4j:trove4j:3.0.3")
-    implementation("com.fasterxml.jackson.core:jackson-databind:2.10.1")
+    // Match the minor version of lavaplayers jackson dependency
+    implementation("com.fasterxml.jackson.core:jackson-core:2.13.2")
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.13.2.2")
 
     //Sets the dependencies for the examples
     configurations["examplesImplementation"].withDependencies {
@@ -130,7 +132,7 @@ dependencies {
         addAll(configurations["implementation"].allDependencies)
     }
 
-    testImplementation("org.junit.jupiter:junit-jupiter:5.4.0")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.8.2")
 }
 
 val compileJava: JavaCompile by tasks
@@ -262,8 +264,7 @@ javadoc.apply {
         opt.tags("incubating:a:Incubating:")
         opt.links(
                 "https://docs.oracle.com/javase/8/docs/api/",
-                "https://takahikokawasaki.github.io/nv-websocket-client/",
-                "https://javadoc.io/doc/com.squareup.okhttp3/okhttp/3.13.0/")
+                "https://takahikokawasaki.github.io/nv-websocket-client/")
         if (JavaVersion.VERSION_1_8 < javaVersion) {
             opt.addBooleanOption("html5", true) // Adds search bar
             opt.addStringOption("-release", "8")
@@ -461,11 +462,17 @@ tasks.withType<BaseStagingTask> {
 tasks.getByName("getStagingProfile").enabled = ossrhConfigured
 
 tasks.create("release") {
+    // Only close repository after release is published
+    val closeRepository by tasks
+    closeRepository.mustRunAfter(tasks.withType<PublishToMavenRepository>())
+    dependsOn(tasks.withType<PublishToMavenRepository>())
+
+    // Closes the sonatype repository and publishes to maven central
     val closeAndReleaseRepository: Task by tasks
-    closeAndReleaseRepository.mustRunAfter(tasks.withType<PublishToMavenRepository>())
-    dependsOn(tasks.withType<PublishToMavenRepository>()) // uploads artifacts to sonatype
-    dependsOn(closeAndReleaseRepository) // does the maven central sync
-    dependsOn(build) // builds all jars for jenkins
+    dependsOn(closeAndReleaseRepository)
+
+    // Builds all jars for publications
+    dependsOn(build)
     enabled = shouldPublish
 
     doLast { // Only runs when shouldPublish = true
