@@ -44,10 +44,10 @@ public class LocalizationMap implements SerializableData
      * <br>This might be useful if you want to make a LocalizationMap modifiable again, with a valid check.
      * <br>This is mostly used internally.
      *
-     * @param checkConsumer
-     *        The check to run on every localization entry insertion
-     * @param map
-     *        The map from which to get the localization entries from
+     * @param  checkConsumer
+     *         The check to run on every localization entry insertion
+     * @param  map
+     *         The map from which to get the localization entries from
      *
      * @return The copied LocalizationMap instance, which can be further configured through setters
      */
@@ -61,6 +61,8 @@ public class LocalizationMap implements SerializableData
      * Parses the provided serialization back into an LocalizationMap instance.
      * <br>This is the reverse function for {@link #toData()}.
      *
+     * @param  checkConsumer
+     *         The check to run on every localization entry insertion
      * @param  data
      *         The serialized {@link DataObject} representing the localization map
      *
@@ -83,6 +85,8 @@ public class LocalizationMap implements SerializableData
      *         The serialized {@link DataObject} containing the localization map
      * @param  localizationProperty
      *         The name of the property which represents the localization map
+     * @param  checkConsumer
+     *         The check to run on every localization entry insertion
      *
      * @throws net.dv8tion.jda.api.exceptions.ParsingException
      *         If the serialized object is missing required fields
