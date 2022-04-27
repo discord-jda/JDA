@@ -50,8 +50,6 @@ public class RoleImpl implements Role
     private final JDAImpl api;
     private Guild guild;
 
-    private RoleManager manager;
-
     private RoleTagsImpl tags;
     private String name;
     private boolean managed;
@@ -299,9 +297,7 @@ public class RoleImpl implements Role
     @Override
     public RoleManager getManager()
     {
-        if (manager == null)
-            return manager = new RoleManagerImpl(this);
-        return manager;
+        return new RoleManagerImpl(this);
     }
 
     @Nonnull
