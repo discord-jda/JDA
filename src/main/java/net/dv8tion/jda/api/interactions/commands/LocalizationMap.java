@@ -33,6 +33,30 @@ public class LocalizationMap implements SerializableData
             map.put(Locale.forLanguageTag(key), data.getString(key));
     }
 
+    private LocalizationMap(Consumer<String> checkConsumer, LocalizationMap map)
+    {
+        this(checkConsumer);
+        this.map.putAll(map.map); //This is safe as the LocalizationMap being given is already validated
+    }
+
+    /**
+     * Copies the provided LocalizationMap into a new one.
+     * <br>This might be useful if you want to make a LocalizationMap modifiable again, with a valid check.
+     * <br>This is mostly used internally.
+     *
+     * @param checkConsumer
+     *        The check to run on every localization entry insertion
+     * @param map
+     *        The map from which to get the localization entries from
+     *
+     * @return The copied LocalizationMap instance, which can be further configured through setters
+     */
+    @Nonnull
+    public static LocalizationMap fromMap(@Nonnull Consumer<String> checkConsumer, @Nonnull LocalizationMap map)
+    {
+        return new LocalizationMap(checkConsumer, map);
+    }
+
     /**
      * Parses the provided serialization back into an LocalizationMap instance.
      * <br>This is the reverse function for {@link #toData()}.

@@ -136,8 +136,13 @@ public interface CommandData extends SerializableData
     {
         Checks.notNull(command, "Command");
         if (command.getType() != Command.Type.SLASH)
-            return new CommandDataImpl(command.getType(), command.getName())
-                    .setDefaultEnabled(command.isDefaultEnabled());
+        {
+            final CommandDataImpl data = new CommandDataImpl(command.getType(), command.getName());
+            //Command localizations are unmodifiable, make a copy
+            final LocalizationMap nameLocalizations = LocalizationMap.fromMap(data::checkName, command.getNameLocalizations());
+            return data.setDefaultEnabled(command.isDefaultEnabled())
+                    .setNameLocalizations(nameLocalizations);
+        }
 
         return SlashCommandData.fromCommand(command);
     }

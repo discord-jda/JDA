@@ -320,6 +320,8 @@ public class SubcommandGroupData implements SerializableData
     {
         Checks.notNull(group, "Subcommand Group");
         SubcommandGroupData data = new SubcommandGroupData(group.getName(), group.getDescription());
+        data.nameLocalizations = LocalizationMap.fromMap(data::checkName, group.getNameLocalizations());
+        data.descriptionLocalizations = LocalizationMap.fromMap(data::checkDescription, group.getDescriptionLocalizations());
         group.getSubcommands()
                 .stream()
                 .map(SubcommandData::fromSubcommand)

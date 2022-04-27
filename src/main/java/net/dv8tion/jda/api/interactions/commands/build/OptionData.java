@@ -941,6 +941,8 @@ public class OptionData implements SerializableData
         data.setRequired(option.isRequired());
         data.setAutoComplete(option.isAutoComplete());
         data.addChoices(option.getChoices());
+        data.nameLocalizations = LocalizationMap.fromMap(data::checkName, option.getNameLocalizations());
+        data.descriptionLocalizations = LocalizationMap.fromMap(data::checkDescription, option.getDescriptionLocalizations());
         Number min = option.getMinValue(), max = option.getMaxValue();
         switch (option.getType())
         {

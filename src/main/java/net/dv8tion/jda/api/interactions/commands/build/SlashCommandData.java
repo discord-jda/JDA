@@ -360,6 +360,9 @@ public interface SlashCommandData extends CommandData
 
         CommandDataImpl data = new CommandDataImpl(command.getName(), command.getDescription());
         data.setDefaultEnabled(command.isDefaultEnabled());
+        //Command localizations are unmodifiable, make a copy
+        data.setNameLocalizations(LocalizationMap.fromMap(data::checkName, command.getNameLocalizations()));
+        data.setDescriptionLocalizations(LocalizationMap.fromMap(data::checkDescription, command.getDescriptionLocalizations()));
         command.getOptions()
                 .stream()
                 .map(OptionData::fromOption)

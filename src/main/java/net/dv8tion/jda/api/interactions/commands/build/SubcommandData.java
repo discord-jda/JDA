@@ -433,6 +433,8 @@ public class SubcommandData implements SerializableData
     {
         Checks.notNull(subcommand, "Subcommand");
         SubcommandData data = new SubcommandData(subcommand.getName(), subcommand.getDescription());
+        data.nameLocalizations = LocalizationMap.fromMap(data::checkName, subcommand.getNameLocalizations());
+        data.descriptionLocalizations = LocalizationMap.fromMap(data::checkDescription, subcommand.getDescriptionLocalizations());
         subcommand.getOptions()
                 .stream()
                 .map(OptionData::fromOption)

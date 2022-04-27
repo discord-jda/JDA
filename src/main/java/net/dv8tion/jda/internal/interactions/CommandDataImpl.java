@@ -259,9 +259,10 @@ public class CommandDataImpl implements SlashCommandData
         return this;
     }
 
-    public void setNameLocalizations(@Nonnull LocalizationMap nameLocalizations)
+    public CommandDataImpl setNameLocalizations(@Nonnull LocalizationMap nameLocalizations)
     {
         this.nameLocalizations = nameLocalizations;
+        return this;
     }
 
     @Nonnull
