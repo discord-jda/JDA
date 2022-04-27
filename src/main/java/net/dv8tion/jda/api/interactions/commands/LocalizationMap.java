@@ -30,7 +30,7 @@ public class LocalizationMap implements SerializableData
     {
         this(checkConsumer);
         for (String key : data.keys())
-            setTranslation(data.getString(key), Locale.forLanguageTag(key));
+            map.put(Locale.forLanguageTag(key), data.getString(key));
     }
 
     /**
