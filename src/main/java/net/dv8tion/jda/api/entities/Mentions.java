@@ -132,6 +132,61 @@ public interface Mentions
     Bag<GuildChannel> getChannelsBag();
 
     /**
+     * An immutable list of all mentioned {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannels} of type {@code clazz}.
+     * <br>If none were mentioned, this list is empty. Elements are sorted in order of appearance.
+     *
+     * <p><b>This may include GuildChannels from other {@link net.dv8tion.jda.api.entities.Guild Guilds}</b>
+     *
+     * @param  clazz
+     *         The {@link GuildChannel} sub-class {@link Class class object} of the type of channel desired
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If {@code clazz} is {@code null}
+     *
+     * @return Immutable list of mentioned GuildChannels that are of type {@code clazz}.
+     */
+    @Nonnull
+    <T extends GuildChannel> List<T> getChannels(Class<T> clazz);
+
+    /**
+     * A {@link org.apache.commons.collections4.Bag Bag} of mentioned channels of type {@code clazz}.
+     * <br>This can be used to retrieve the amount of times a channel was mentioned.
+     *
+     * <p><b>This may include GuildChannels from other {@link net.dv8tion.jda.api.entities.Guild Guilds}</b>
+     *
+     * <h2>Example</h2>
+     * <pre>{@code
+     * void sendCount(Message msg)
+     * {
+     *     List<GuildMessageChannel> mentions = msg.getMentions().getChannels(GuildMessageChannel.class); // distinct list, in order of appearance
+     *     Bag<GuildMessageChannel> count = msg.getMentions().getChannelsBag(GuildMessageChannel.class);
+     *     StringBuilder content = new StringBuilder();
+     *     for (GuildMessageChannel channel : mentions)
+     *     {
+     *         content.append("#")
+     *                .append(channel.getName())
+     *                .append(": ")
+     *                .append(count.getCount(channel))
+     *                .append("\n");
+     *     }
+     *     msg.getChannel().sendMessage(content.toString()).queue();
+     * }
+     * }</pre>
+     *
+     * @param  clazz
+     *         The {@link GuildChannel} sub-class {@link Class class object} of the type of channel desired
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If {@code clazz} is {@code null}
+     *
+     * @return {@link org.apache.commons.collections4.Bag Bag} of mentioned channels of type {@code clazz}
+     *
+     * @see    #getChannels(Class)
+     */
+    @Nonnull
+    <T extends GuildChannel> Bag<T> getChannelsBag(Class<T> clazz);
+
+    /**
      * An immutable list of all mentioned {@link net.dv8tion.jda.api.entities.Role Roles}.
      * <br>If none were mentioned, this list is empty. Elements are sorted in order of appearance. This only
      * counts direct mentions of the role and not mentions through everyone mentions.

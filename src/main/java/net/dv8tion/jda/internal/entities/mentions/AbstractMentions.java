@@ -33,6 +33,7 @@ import javax.annotation.Nonnull;
 import java.util.*;
 import java.util.function.Function;
 import java.util.regex.Matcher;
+import java.util.stream.Collectors;
 
 public abstract class AbstractMentions implements Mentions
 {
@@ -98,6 +99,31 @@ public abstract class AbstractMentions implements Mentions
     public Bag<GuildChannel> getChannelsBag()
     {
         return processMentions(Message.MentionType.CHANNEL, new HashBag<>(), false, this::matchChannel);
+    }
+
+    @Nonnull
+    @Override
+    public <T extends GuildChannel> List<T> getChannels(Class<T> clazz)
+    {
+        Checks.notNull(clazz, "clazz");
+        return getChannels().stream()
+                .filter(clazz::isInstance)
+                .map(clazz::cast)
+                .collect(Collectors.toList());
+    }
+
+    @Nonnull
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T extends GuildChannel> Bag<T> getChannelsBag(Class<T> clazz)
+    {
+        Checks.notNull(clazz, "clazz");
+        Function<Matcher, T> matchTypedChannel = matcher -> {
+          GuildChannel channel = this.matchChannel(matcher);
+            return clazz.isInstance(channel) ? (T) channel : null;
+        };
+
+        return processMentions(Message.MentionType.CHANNEL, new HashBag<>(), false, matchTypedChannel);
     }
 
     @Nonnull
