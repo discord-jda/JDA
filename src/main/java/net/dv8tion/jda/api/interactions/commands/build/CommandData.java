@@ -71,6 +71,7 @@ public interface CommandData extends SerializableData
     /**
      * Sets the default {@link Permission Permissions} a user must have in order to see and use this command.
      * <br>By default, everyone can use this command.
+     * <p>Passing {@code EnumSet.allOf(Permission.class)} will deny everyone from using this command.
      *
      * @param permissions Collection of {@link Permission Permissions} a user must have to execute this command.
      *
@@ -82,6 +83,7 @@ public interface CommandData extends SerializableData
     /**
      * Sets the default {@link Permission Permissions} a user must have in order to see and use this command.
      * <br>By default, everyone can use this command.
+     * <p>Passing nothing will deny everyone from using this command.
      *
      * @param permissions Vararg of {@link Permission Permissions} a user must have to execute this command.
      *
@@ -97,6 +99,7 @@ public interface CommandData extends SerializableData
     /**
      * Sets the default raw permission bitfield representing the permissions a user must have in order to see and use this command.
      * <br>By default, everyone can use this command.
+     * <p>Passing 0 will deny everyone from using this command.
      *
      * @param  raw Raw permission bitfield representing the permissions a user must have to execute this command.
      *
