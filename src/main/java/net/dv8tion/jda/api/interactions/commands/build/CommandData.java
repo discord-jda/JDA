@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.interactions.commands.build;
 
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.privileges.CommandPrivilege;
@@ -25,7 +26,9 @@ import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.EnumSet;
 import java.util.Map;
 
 /**
@@ -66,6 +69,50 @@ public interface CommandData extends SerializableData
     CommandData setDefaultEnabled(boolean enabled);
 
     /**
+     * Sets the default {@link Permission Permissions} a user must have in order to see and use this command.
+     * <br>By default, everyone can use this command.
+     *
+     * @param permissions Collection of {@link Permission Permissions} a user must have to execute this command.
+     *
+     * @return The builder instance, for chaining
+     */
+    @Nonnull
+    CommandData setDefaultPermissions(@Nonnull Collection<Permission> permissions);
+
+    /**
+     * Sets the default {@link Permission Permissions} a user must have in order to see and use this command.
+     * <br>By default, everyone can use this command.
+     *
+     * @param permissions Vararg of {@link Permission Permissions} a user must have to execute this command.
+     *
+     * @return The builder instance, for chaining
+     */
+    @Nonnull
+    default CommandData setDefaultPermissions(@Nonnull Permission... permissions)
+    {
+        Checks.noneNull(permissions, "Permissions");
+        return setDefaultPermissions(Arrays.asList(permissions));
+    }
+
+    /**
+     * Sets the default raw permission bitfield representing the permissions a user must have in order to see and use this command.
+     * <br>By default, everyone can use this command.
+     *
+     * @param  raw Raw permission bitfield representing the permissions a user must have to execute this command.
+     *
+     * @throws IllegalArgumentException
+     *         If raw is smaller than 0
+     *
+     * @return The builder instance, for chaining
+     */
+    @Nonnull
+    default CommandData setDefaultPermissions(long raw)
+    {
+        Checks.check(raw >= 0, "Raw permissions cannot be smaller than 0!");
+        return setDefaultPermissions(Permission.getPermissions(raw));
+    }
+
+    /**
      * The current command name
      *
      * @return The command name
@@ -90,6 +137,12 @@ public interface CommandData extends SerializableData
      */
     @Nonnull
     Command.Type getType();
+
+    @Nonnull
+    EnumSet<Permission> getDefaultPermissions();
+
+    @Nonnull
+    long getDefaultPermissionsRaw();
 
     /**
      * Converts the provided {@link Command} into a CommandData instance.
