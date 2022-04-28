@@ -170,21 +170,29 @@ public interface CommandData extends SerializableData
     Command.Type getType();
 
     /**
-     * The default {@link Permission Permissions} of this command.
-     * <br>A user will not be able to execute this command if he does not have any of these permissions.
-     *
-     * @return {@link EnumSet} of containing the default Permissions of this command.
-     */
-    @Nonnull
-    EnumSet<Permission> getDefaultPermissions();
-
-    /**
      * The raw permission bitfield representing the default Permissions of this command.
      * <br>This is -1 if no permissions have been set, 0 would mean nobody can access the command.
      *
      * @return raw permission bitfield representing the default Permissions of this command.
      */
     long getDefaultPermissionsRaw();
+
+    /**
+     * The default {@link Permission Permissions} of this command.
+     * <br>A user will not be able to execute this command if he does not have any of these permissions.
+     *
+     * @return {@link EnumSet} of containing the default Permissions of this command.
+     */
+    @Nonnull
+    default EnumSet<Permission> getDefaultPermissions()
+    {
+        long defaultPermissions = getDefaultPermissionsRaw();
+        if (defaultPermissions == -1)
+            return EnumSet.noneOf(Permission.class);
+        if (defaultPermissions == 0)
+            return Permission.getPermissions(Permission.ALL_PERMISSIONS);
+        return Permission.getPermissions(getDefaultPermissionsRaw());
+    }
 
     /**
      * Whether the command can be accessed via Direct Messages.

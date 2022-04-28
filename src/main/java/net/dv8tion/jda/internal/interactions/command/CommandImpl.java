@@ -50,8 +50,8 @@ public class CommandImpl implements Command
     private final List<Command.Option> options;
     private final List<Command.SubcommandGroup> groups;
     private final List<Command.Subcommand> subcommands;
-    private final long id, guildId, applicationId, version;
-    private final boolean defaultEnabled;
+    private final long id, guildId, applicationId, version, defaultMemberPermissions;
+    private final boolean defaultEnabled, enabledInDMs;
     private final Command.Type type;
 
     public CommandImpl(JDAImpl api, Guild guild, DataObject json)
@@ -69,6 +69,8 @@ public class CommandImpl implements Command
         this.groups = parseOptions(json, GROUP_TEST, Command.SubcommandGroup::new);
         this.subcommands = parseOptions(json, SUBCOMMAND_TEST, Command.Subcommand::new);
         this.version = json.getUnsignedLong("version", id);
+        this.defaultMemberPermissions = json.getLong("default_member_permissions", -1L);
+        this.enabledInDMs = json.getBoolean("dm_permission", true);
     }
 
     public static <T> List<T> parseOptions(DataObject json, Predicate<DataObject> test, Function<DataObject, T> transform)
@@ -194,6 +196,18 @@ public class CommandImpl implements Command
     public long getVersion()
     {
         return version;
+    }
+
+    @Override
+    public long getDefaultPermissionsRaw()
+    {
+        return defaultMemberPermissions;
+    }
+
+    @Override
+    public boolean isCommandEnabledInDMs()
+    {
+        return enabledInDMs;
     }
 
     @Override

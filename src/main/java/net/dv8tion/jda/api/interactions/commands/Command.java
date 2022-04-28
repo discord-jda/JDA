@@ -17,6 +17,7 @@
 package net.dv8tion.jda.api.interactions.commands;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.ISnowflake;
@@ -252,6 +253,39 @@ public interface Command extends ISnowflake
     {
         return TimeUtil.getTimeCreated(getVersion());
     }
+
+    /**
+     * The raw permission bitfield representing the default Permissions of this command.
+     * <br>This is -1 if no permissions have been set, 0 would mean nobody can access the command.
+     *
+     * @return raw permission bitfield representing the default Permissions of this command.
+     */
+    long getDefaultPermissionsRaw();
+
+    /**
+     * The default {@link Permission Permissions} of this command.
+     * <br>A user will not be able to execute this command if he does not have any of these permissions.
+     *
+     * @return {@link EnumSet} of containing the default Permissions of this command.
+     */
+    @Nonnull
+    default EnumSet<Permission> getDefaultPermissions()
+    {
+        long defaultPermissions = getDefaultPermissionsRaw();
+        if (defaultPermissions == -1)
+            return EnumSet.noneOf(Permission.class);
+        if (defaultPermissions == 0)
+            return Permission.getPermissions(Permission.ALL_PERMISSIONS);
+        return Permission.getPermissions(getDefaultPermissionsRaw());
+    }
+
+    /**
+     * Whether the command can be accessed via Direct Messages.
+     * <br>If this is a guild-command, this has no effect.
+     *
+     * @return False, if the command cannot be used in DMs
+     */
+    boolean isCommandEnabledInDMs();
 
     /**
      * Possible command types
