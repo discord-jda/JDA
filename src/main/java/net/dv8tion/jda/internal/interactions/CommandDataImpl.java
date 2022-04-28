@@ -42,6 +42,7 @@ public class CommandDataImpl implements SlashCommandData
     private boolean allowOption = true;
     private boolean defaultPermissions = true; // whether the command uses default_permissions (blacklist/whitelist)
     private boolean allowRequired = true;
+    private boolean enabledInDMs = true;
     private long defaultMemberPermissions = -1;
 
     private final Command.Type type;
@@ -78,6 +79,8 @@ public class CommandDataImpl implements SlashCommandData
                 .put("options", options);
         if (type == Command.Type.SLASH)
             json.put("description", description);
+        if (!enabledInDMs)
+            json.put("dm_permission", false);
         if (defaultMemberPermissions != -1)
             json.put("default_member_permissions", String.valueOf(defaultMemberPermissions));
         return json;
@@ -103,6 +106,12 @@ public class CommandDataImpl implements SlashCommandData
     public long getDefaultPermissionsRaw()
     {
         return defaultMemberPermissions;
+    }
+
+    @Override
+    public boolean isCommandEnabledInDMs()
+    {
+        return enabledInDMs;
     }
 
     @Nonnull
@@ -148,6 +157,14 @@ public class CommandDataImpl implements SlashCommandData
         Checks.noneNull(permissions, "Permissions");
         permissions.forEach(permission -> Checks.check(permission != Permission.UNKNOWN, "Cannot use Permission#UNKNOWN!"));
         defaultMemberPermissions = Permission.getRaw(permissions);
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    public CommandData setCommandEnabledInDMs(boolean enabledInDMs)
+    {
+        this.enabledInDMs = enabledInDMs;
         return this;
     }
 

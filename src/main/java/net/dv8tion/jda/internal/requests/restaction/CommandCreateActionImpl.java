@@ -101,6 +101,14 @@ public class CommandCreateActionImpl extends RestActionImpl<Command> implements 
 
     @Nonnull
     @Override
+    public CommandData setCommandEnabledInDMs(boolean enabledInDMs)
+    {
+        data.setCommandEnabledInDMs(enabledInDMs);
+        return this;
+    }
+
+    @Nonnull
+    @Override
     public String getName()
     {
         return data.getName();
@@ -131,6 +139,12 @@ public class CommandCreateActionImpl extends RestActionImpl<Command> implements 
     public long getDefaultPermissionsRaw()
     {
         return data.getDefaultPermissionsRaw();
+    }
+
+    @Override
+    public boolean isCommandEnabledInDMs()
+    {
+        return data.isCommandEnabledInDMs();
     }
 
     @Nonnull

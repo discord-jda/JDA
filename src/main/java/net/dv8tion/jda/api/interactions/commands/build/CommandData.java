@@ -113,6 +113,17 @@ public interface CommandData extends SerializableData
     }
 
     /**
+     * Sets whether this command can be used in DMs.
+     * <br>This only has an effect if this command is registered globally.
+     *
+     * @param enabledInDMs Whether to enable this command in DMs
+     *
+     * @return The builder instance, for chaining
+     */
+    @Nonnull
+    CommandData setCommandEnabledInDMs(boolean enabledInDMs);
+
+    /**
      * The current command name
      *
      * @return The command name
@@ -138,11 +149,30 @@ public interface CommandData extends SerializableData
     @Nonnull
     Command.Type getType();
 
+    /**
+     * The default {@link Permission Permissions} of this command.
+     * <br>A user will not be able to execute this command if he does not have any of these permissions.
+     *
+     * @return {@link EnumSet} of containing the default Permissions of this command.
+     */
     @Nonnull
     EnumSet<Permission> getDefaultPermissions();
 
-    @Nonnull
+    /**
+     * The raw permission bitfield representing the default Permissions of this command.
+     * <br>This is 0 if no permissions have been set
+     *
+     * @return raw permission bitfield representing the default Permissions of this command.
+     */
     long getDefaultPermissionsRaw();
+
+    /**
+     * Whether the command can be accessed via Direct Messages.
+     * <br>If this is a guild-command, this has no effect.
+     *
+     * @return False, if the command cannot be used in DMs
+     */
+    boolean isCommandEnabledInDMs();
 
     /**
      * Converts the provided {@link Command} into a CommandData instance.
