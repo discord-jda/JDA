@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.api.interactions.commands.build;
 
+import net.dv8tion.jda.annotations.DeprecatedSince;
+import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.commands.Command;
@@ -64,7 +66,12 @@ public interface CommandData extends SerializableData
      *         True, if this command is enabled by default for everyone. (Default: true)
      *
      * @return The builder instance, for chaining
+     *
+     * @deprecated This has been deprecated in favor of {@link #setDefaultPermissions(Collection)}
      */
+    @Deprecated
+    @ForRemoval
+    @DeprecatedSince("5.0.0")
     @Nonnull
     CommandData setDefaultEnabled(boolean enabled);
 
@@ -141,7 +148,12 @@ public interface CommandData extends SerializableData
      *
      * @see    #setDefaultEnabled(boolean)
      * @see    CommandPrivilege
+     *
+     * @deprecated This has been deprecated in favor of {@link #getDefaultPermissions()}.
      */
+    @Deprecated
+    @ForRemoval
+    @DeprecatedSince("5.0.0")
     boolean isDefaultEnabled();
 
     /**
