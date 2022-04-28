@@ -805,9 +805,9 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     }
 
     /**
-     * Returns an {@link ImageProxy} for this guild's banner icon.
+     * Returns an {@link ImageProxy} for this guild's banner image.
      *
-     * @return Possibly-null {@link ImageProxy} of this guild's banner icon
+     * @return Possibly-null {@link ImageProxy} of this guild's banner image
      *
      * @see    #getBannerUrl()
      */

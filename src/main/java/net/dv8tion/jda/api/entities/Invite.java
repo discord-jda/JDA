@@ -418,11 +418,11 @@ public interface Invite
         String getSplashUrl();
 
         /**
-         * Returns an {@link ImageProxy} for this invite guild's icon.
+         * Returns an {@link ImageProxy} for this invite guild's splash image.
          *
-         * @return Possibly-null {@link ImageProxy} of this invite guild's icon
+         * @return Possibly-null {@link ImageProxy} of this invite guild's splash image
          *
-         * @see    #getIconUrl()
+         * @see    #getSplashUrl()
          */
         @Nullable
         default ImageProxy getSplash()
