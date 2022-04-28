@@ -109,15 +109,14 @@ public interface Mentions
      * <pre>{@code
      * void sendCount(Message msg)
      * {
-     *     List<GuildChannel> mentions = msg.getMentions().getChannels(); // distinct list, in order of appearance
-     *     Bag<GuildChannel> count = msg.getMentions().getChannelsBag();
+     *     Bag<GuildChannel> mentions = msg.getMentions().getChannelsBag();
      *     StringBuilder content = new StringBuilder();
-     *     for (GuildChannel channel : mentions)
+     *     for (GuildChannel channel : mentions.uniqueSet())
      *     {
      *         content.append("#")
      *                .append(channel.getName())
      *                .append(": ")
-     *                .append(count.getCount(channel))
+     *                .append(mentions.getCount(channel))
      *                .append("\n");
      *     }
      *     msg.getChannel().sendMessage(content.toString()).queue();
@@ -136,6 +135,17 @@ public interface Mentions
      * <br>If none were mentioned, this list is empty. Elements are sorted in order of appearance.
      *
      * <p><b>This may include GuildChannels from other {@link net.dv8tion.jda.api.entities.Guild Guilds}</b>
+     *
+     * <h2>Example</h2>
+     * <pre>{@code
+     * List<GuildMessageChannel> getCoolMessageChannels(Message msg)
+     * {
+     *     List<GuildMessageChannel> channels = msg.getMentions().getChannels(GuildMessageChannel.class);
+     *     return channels.stream()
+     *         .filter(channel -> channel.getName().contains("cool"))
+     *         .collect(Collectors.toList());
+     * }
+     * }</pre>
      *
      * @param  clazz
      *         The {@link GuildChannel} sub-class {@link Class class object} of the type of channel desired
@@ -158,15 +168,14 @@ public interface Mentions
      * <pre>{@code
      * void sendCount(Message msg)
      * {
-     *     List<GuildMessageChannel> mentions = msg.getMentions().getChannels(GuildMessageChannel.class); // distinct list, in order of appearance
-     *     Bag<GuildMessageChannel> count = msg.getMentions().getChannelsBag(GuildMessageChannel.class);
+     *     Bag<GuildMessageChannel> mentions = msg.getMentions().getChannelsBag(GuildMessageChannel.class);
      *     StringBuilder content = new StringBuilder();
-     *     for (GuildMessageChannel channel : mentions)
+     *     for (GuildMessageChannel channel : mentions.uniqueSet())
      *     {
      *         content.append("#")
      *                .append(channel.getName())
      *                .append(": ")
-     *                .append(count.getCount(channel))
+     *                .append(mentions.getCount(channel))
      *                .append("\n");
      *     }
      *     msg.getChannel().sendMessage(content.toString()).queue();
