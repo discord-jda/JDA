@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.internal.requests.restaction;
 
+import net.dv8tion.jda.annotations.DeprecatedSince;
+import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.commands.Command;
@@ -85,6 +87,9 @@ public class CommandEditActionImpl extends RestActionImpl<Command> implements Co
         return this;
     }
 
+    @Deprecated
+    @ForRemoval
+    @DeprecatedSince("5.0.0")
     @Nonnull
     @Override
     public CommandEditAction setDefaultEnabled(boolean enabled)

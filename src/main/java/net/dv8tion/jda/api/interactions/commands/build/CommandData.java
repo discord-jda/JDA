@@ -175,7 +175,7 @@ public interface CommandData extends SerializableData
 
     /**
      * The raw permission bitfield representing the default Permissions of this command.
-     * <br>This is 0 if no permissions have been set
+     * <br>This is -1 if no permissions have been set, 0 would mean nobody can access the command.
      *
      * @return raw permission bitfield representing the default Permissions of this command.
      */
@@ -207,8 +207,7 @@ public interface CommandData extends SerializableData
     {
         Checks.notNull(command, "Command");
         if (command.getType() != Command.Type.SLASH)
-            return new CommandDataImpl(command.getType(), command.getName())
-                    .setDefaultEnabled(command.isDefaultEnabled());
+            return new CommandDataImpl(command.getType(), command.getName());
 
         return SlashCommandData.fromCommand(command);
     }

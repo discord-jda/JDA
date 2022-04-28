@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.api.interactions.commands.build;
 
+import net.dv8tion.jda.annotations.DeprecatedSince;
+import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
@@ -37,6 +39,9 @@ public interface SlashCommandData extends CommandData
     @Override
     SlashCommandData setName(@Nonnull String name);
 
+    @Deprecated
+    @ForRemoval
+    @DeprecatedSince("5.0.0")
     @Nonnull
     @Override
     SlashCommandData setDefaultEnabled(boolean enabled);
@@ -332,7 +337,6 @@ public interface SlashCommandData extends CommandData
             throw new IllegalArgumentException("Cannot convert command of type " + command.getType() + " to SlashCommandData!");
 
         CommandDataImpl data = new CommandDataImpl(command.getName(), command.getDescription());
-        data.setDefaultEnabled(command.isDefaultEnabled());
         command.getOptions()
                 .stream()
                 .map(OptionData::fromOption)

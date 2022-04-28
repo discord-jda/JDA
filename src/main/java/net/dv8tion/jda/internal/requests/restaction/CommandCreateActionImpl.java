@@ -15,6 +15,8 @@
  */
 package net.dv8tion.jda.internal.requests.restaction;
 
+import net.dv8tion.jda.annotations.DeprecatedSince;
+import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.commands.Command;
@@ -83,6 +85,9 @@ public class CommandCreateActionImpl extends RestActionImpl<Command> implements 
 
     @Nonnull
     @Override
+    @Deprecated
+    @ForRemoval
+    @DeprecatedSince("5.0.0")
     public CommandCreateAction setDefaultEnabled(boolean enabled)
     {
         data.setDefaultEnabled(enabled);
@@ -114,6 +119,9 @@ public class CommandCreateActionImpl extends RestActionImpl<Command> implements 
         return data.getName();
     }
 
+    @Deprecated
+    @ForRemoval
+    @DeprecatedSince("5.0.0")
     @Override
     public boolean isDefaultEnabled()
     {
@@ -134,7 +142,6 @@ public class CommandCreateActionImpl extends RestActionImpl<Command> implements 
         return data.getDefaultPermissions();
     }
 
-    @Nonnull
     @Override
     public long getDefaultPermissionsRaw()
     {

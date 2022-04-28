@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.api.requests.restaction;
 
+import net.dv8tion.jda.annotations.DeprecatedSince;
+import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
@@ -57,6 +59,9 @@ public interface CommandCreateAction extends RestAction<Command>, SlashCommandDa
     @CheckReturnValue
     CommandCreateAction deadline(long timestamp);
 
+    @Deprecated
+    @ForRemoval
+    @DeprecatedSince("5.0.0")
     @Nonnull
     @Override
     @CheckReturnValue

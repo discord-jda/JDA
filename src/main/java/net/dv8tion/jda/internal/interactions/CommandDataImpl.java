@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.internal.interactions;
 
+import net.dv8tion.jda.annotations.DeprecatedSince;
+import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
@@ -99,6 +101,8 @@ public class CommandDataImpl implements SlashCommandData
     {
         if (defaultMemberPermissions == -1)
             return EnumSet.noneOf(Permission.class);
+        if (defaultMemberPermissions == 0) // Setting it to 0 means nobody can access the command by default
+            return EnumSet.allOf(Permission.class);
         return Permission.getPermissions(defaultMemberPermissions);
     }
 
@@ -142,6 +146,9 @@ public class CommandDataImpl implements SlashCommandData
                 .collect(Collectors.toList());
     }
 
+    @Deprecated
+    @ForRemoval
+    @DeprecatedSince("5.0.0")
     @Nonnull
     @Override
     public CommandDataImpl setDefaultEnabled(boolean enabled)
@@ -168,6 +175,9 @@ public class CommandDataImpl implements SlashCommandData
         return this;
     }
 
+    @Deprecated
+    @ForRemoval
+    @DeprecatedSince("5.0.0")
     @Override
     public boolean isDefaultEnabled()
     {
