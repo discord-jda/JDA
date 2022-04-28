@@ -82,6 +82,9 @@ public interface CommandData extends SerializableData
      *
      * @param permissions Collection of {@link Permission Permissions} a user must have to execute this command.
      *
+     * @throws IllegalArgumentException
+     *         If any of the provided Permissions are null or {@link Permission#UNKNOWN UNKNOWN}.
+     *
      * @return The builder instance, for chaining
      */
     @Nonnull
@@ -94,12 +97,14 @@ public interface CommandData extends SerializableData
      *
      * @param permissions Vararg of {@link Permission Permissions} a user must have to execute this command.
      *
+     * @throws IllegalArgumentException
+     *         If any of the provided Permissions are null or {@link Permission#UNKNOWN UNKNOWN}.
+     *
      * @return The builder instance, for chaining
      */
     @Nonnull
     default CommandData setDefaultPermissions(@Nonnull Permission... permissions)
     {
-        Checks.noneNull(permissions, "Permissions");
         return setDefaultPermissions(Arrays.asList(permissions));
     }
 
