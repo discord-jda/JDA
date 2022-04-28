@@ -532,6 +532,11 @@ public enum ActionType
      */
     THREAD_DELETE(112, TargetType.THREAD),
 
+    /**
+     * A user updated an interaction-commands' permission
+     */
+    APPLICATION_COMMAND_PERMISSION_UPDATE(121, TargetType.INTEGRATION),
+
     UNKNOWN(-1, TargetType.UNKNOWN);
 
     private final int key;
