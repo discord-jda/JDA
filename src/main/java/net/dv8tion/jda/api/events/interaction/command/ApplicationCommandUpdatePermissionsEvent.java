@@ -21,7 +21,6 @@ import net.dv8tion.jda.api.events.guild.GenericGuildEvent;
 import net.dv8tion.jda.api.interactions.commands.CommandPermission;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
-import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import java.util.Collections;
@@ -39,7 +38,7 @@ public class ApplicationCommandUpdatePermissionsEvent extends GenericGuildEvent
     private final long applicationId;
     private final List<CommandPermission> permissions;
 
-    public ApplicationCommandUpdatePermissionsEvent(@NotNull JDA api, long responseNumber, @NotNull Guild guild, DataObject json)
+    public ApplicationCommandUpdatePermissionsEvent(@Nonnull JDA api, long responseNumber, @Nonnull Guild guild, @Nonnull DataObject json)
     {
         super(api, responseNumber, guild);
         this.commandId = Long.parseLong(json.getString("id"));
