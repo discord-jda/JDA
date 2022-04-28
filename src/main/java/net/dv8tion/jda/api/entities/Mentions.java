@@ -146,7 +146,7 @@ public interface Mentions
      * @return Immutable list of mentioned GuildChannels that are of type {@code clazz}.
      */
     @Nonnull
-    <T extends GuildChannel> List<T> getChannels(Class<T> clazz);
+    <T extends GuildChannel> List<T> getChannels(@Nonnull Class<T> clazz);
 
     /**
      * A {@link org.apache.commons.collections4.Bag Bag} of mentioned channels of type {@code clazz}.
@@ -184,7 +184,7 @@ public interface Mentions
      * @see    #getChannels(Class)
      */
     @Nonnull
-    <T extends GuildChannel> Bag<T> getChannelsBag(Class<T> clazz);
+    <T extends GuildChannel> Bag<T> getChannelsBag(@Nonnull Class<T> clazz);
 
     /**
      * An immutable list of all mentioned {@link net.dv8tion.jda.api.entities.Role Roles}.

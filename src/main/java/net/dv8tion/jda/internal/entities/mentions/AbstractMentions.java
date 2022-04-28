@@ -103,7 +103,7 @@ public abstract class AbstractMentions implements Mentions
 
     @Nonnull
     @Override
-    public <T extends GuildChannel> List<T> getChannels(Class<T> clazz)
+    public <T extends GuildChannel> List<T> getChannels(@Nonnull Class<T> clazz)
     {
         Checks.notNull(clazz, "clazz");
         return getChannels().stream()
@@ -114,13 +114,12 @@ public abstract class AbstractMentions implements Mentions
 
     @Nonnull
     @Override
-    @SuppressWarnings("unchecked")
-    public <T extends GuildChannel> Bag<T> getChannelsBag(Class<T> clazz)
+    public <T extends GuildChannel> Bag<T> getChannelsBag(@Nonnull Class<T> clazz)
     {
         Checks.notNull(clazz, "clazz");
         Function<Matcher, T> matchTypedChannel = matcher -> {
-          GuildChannel channel = this.matchChannel(matcher);
-            return clazz.isInstance(channel) ? (T) channel : null;
+            GuildChannel channel = this.matchChannel(matcher);
+            return clazz.isInstance(channel) ? clazz.cast(channel) : null;
         };
 
         return processMentions(Message.MentionType.CHANNEL, new HashBag<>(), false, matchTypedChannel);
