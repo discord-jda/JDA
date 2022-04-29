@@ -106,8 +106,9 @@ public class GuildVoiceStateImpl implements GuildVoiceState
 
     private RestAction<Void> update(boolean suppress)
     {
-        if (requestToSpeak == 0L || !(connectedChannel instanceof StageChannel))
+        if (!(connectedChannel instanceof StageChannel) || suppress == isSuppressed())
             return new CompletedRestAction<>(api, null);
+
         Member selfMember = getGuild().getSelfMember();
         boolean isSelf = selfMember.equals(member);
         if (!isSelf && !selfMember.hasPermission(connectedChannel, Permission.VOICE_MUTE_OTHERS))
