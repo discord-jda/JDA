@@ -347,6 +347,12 @@ public abstract class PaginationActionImpl<T, M extends PaginationAction<T, M>>
         }
     }
 
+    @Nonnull
+    protected String getLastKeyValue(long last)
+    {
+        return Long.toUnsignedString(last);
+    }
+
     @Override
     protected Route.CompiledRoute finalizeRoute()
     {
@@ -357,8 +363,16 @@ public abstract class PaginationActionImpl<T, M extends PaginationAction<T, M>>
 
         route = route.withQueryParams("limit", limit);
 
+        //About #getLastKeyValue:
+        // Thread channel pagination (example: TextChannel#retrieveArchivedPublicThreadChannels) has an exception thrown
+        // where Discord complained about received a snowflake
+        // the snowflake came from this class, while the correct value was set by ThreadChannelPaginationActionImpl
+        // However since withQueryParams is a simple string append, Discord only saw the first value
+        // If you debug, you'll see some fields on the compiled route are duplicated
+        // The fix here is to let the implementor supply the "last" string value, which would be a ISO8601 timestamp
+        // And so normal pagination instances would still use the snowflake
         if (last != 0)
-            route = route.withQueryParams(order.getKey(), Long.toUnsignedString(last));
+            route = route.withQueryParams(order.getKey(), getLastKeyValue(last));
         else if (order == PaginationOrder.FORWARD)
             route = route.withQueryParams("after", "0");
 

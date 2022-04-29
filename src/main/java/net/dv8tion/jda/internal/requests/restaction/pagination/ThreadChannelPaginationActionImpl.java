@@ -46,23 +46,15 @@ public class ThreadChannelPaginationActionImpl extends PaginationActionImpl<Thre
         return EnumSet.of(PaginationOrder.BACKWARD);
     }
 
+    //Thread pagination supplies ISO8601 timestamps for some cases, see constructor
+    @Nonnull
     @Override
-    protected Route.CompiledRoute finalizeRoute()
+    protected String getLastKeyValue(long last)
     {
-        Route.CompiledRoute route = super.finalizeRoute();
-
-        final String limit = String.valueOf(this.limit.get());
-        final long last = this.lastKey;
-
-        route = route.withQueryParams("limit", limit);
-
-        if (last == 0)
-            return route;
-
         if (useID)
-            return route = route.withQueryParams("before", Long.toUnsignedString(last));
+            return Long.toUnsignedString(last);
         // OffsetDateTime#toString() is defined to be ISO8601, needs no helper method.
-        return route = route.withQueryParams("before", TimeUtil.getTimeCreated(last).toString());
+        return TimeUtil.getTimeCreated(last).toString();
     }
 
     @Override
