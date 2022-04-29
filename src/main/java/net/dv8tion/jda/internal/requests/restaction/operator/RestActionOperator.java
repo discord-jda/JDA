@@ -54,6 +54,22 @@ public abstract class RestActionOperator<I, O> implements RestAction<O>
             throw (Error) throwable;
     }
 
+    protected void handle(RestAction<I> action, Consumer<? super Throwable> failure, Consumer<? super I> success)
+    {
+        Consumer<? super Throwable> catcher = contextWrap(failure);
+        action.queue((result) -> {
+            try
+            {
+                if (success != null)
+                    success.accept(result);
+            }
+            catch (Throwable ex)
+            {
+                doFailure(catcher, ex);
+            }
+        }, catcher);
+    }
+
     @Nonnull
     @Override
     public JDA getJDA()
@@ -86,6 +102,7 @@ public abstract class RestActionOperator<I, O> implements RestAction<O>
         return this;
     }
 
+    @Nullable
     protected <T> RestAction<T> applyContext(RestAction<T> action)
     {
         if (action == null)
@@ -97,6 +114,7 @@ public abstract class RestActionOperator<I, O> implements RestAction<O>
         return action;
     }
 
+    @Nullable
     protected Consumer<? super Throwable> contextWrap(@Nullable Consumer<? super Throwable> callback)
     {
         if (callback instanceof ContextException.ContextConsumer)

@@ -305,29 +305,21 @@ public class ReceivedMessage extends AbstractMessage
     }
 
     @Override
-    public MessageReaction.ReactionEmote getReactionByUnicode(@Nonnull String unicode)
+    public MessageReaction getReactionByUnicode(@Nonnull String unicode)
     {
         Checks.notEmpty(unicode, "Emoji");
         Checks.noWhitespace(unicode, "Emoji");
 
         return this.reactions.stream()
-            .map(MessageReaction::getReactionEmote)
-            .filter(r -> r.isEmoji() && r.getEmoji().equals(unicode))
+            .filter(r -> r.getReactionEmote().isEmoji() && r.getReactionEmote().getEmoji().equals(unicode))
             .findFirst().orElse(null);
     }
 
     @Override
-    public MessageReaction.ReactionEmote getReactionById(@Nonnull String id)
-    {
-        return getReactionById(MiscUtil.parseSnowflake(id));
-    }
-
-    @Override
-    public MessageReaction.ReactionEmote getReactionById(long id)
+    public MessageReaction getReactionById(long id)
     {
         return this.reactions.stream()
-            .map(MessageReaction::getReactionEmote)
-            .filter(r -> r.isEmote() && r.getIdLong() == id)
+            .filter(r -> r.getReactionEmote().isEmote() && r.getReactionEmote().getIdLong() == id)
             .findFirst().orElse(null);
     }
 
@@ -355,7 +347,7 @@ public class ReceivedMessage extends AbstractMessage
     @Override
     public String getJumpUrl()
     {
-        return String.format("https://discord.com/channels/%s/%s/%s", isFromGuild() ? getGuild().getId() : "@me", getChannel().getId(), getId());
+        return String.format(Message.JUMP_URL, isFromGuild() ? getGuild().getId() : "@me", getChannel().getId(), getId());
     }
 
     private User matchUser(Matcher matcher)

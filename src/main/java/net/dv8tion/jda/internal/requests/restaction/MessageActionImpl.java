@@ -247,7 +247,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
                 "Provided Message contains an empty embed or an embed with a length greater than %d characters, which is the max for bot accounts!",
                 MessageEmbed.EMBED_MAX_LENGTH_BOT)
         );
-        Checks.check(embeds.size() <= 10, "Cannot have more than 10 embeds in a message!");
+        Checks.check(embeds.size() <= Message.MAX_EMBED_COUNT, "Cannot have more than %d embeds in a message!", Message.MAX_EMBED_COUNT);
         Checks.check(embeds.stream().mapToInt(MessageEmbed::getLength).sum() <= MessageEmbed.EMBED_MAX_LENGTH_BOT, "The sum of all MessageEmbeds may not exceed %d!", MessageEmbed.EMBED_MAX_LENGTH_BOT);
         if (this.embeds == null)
             this.embeds = new ArrayList<>();
@@ -383,8 +383,14 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
     public MessageActionImpl setActionRows(@Nonnull ActionRow... rows)
     {
         Checks.noneNull(rows, "ActionRows");
+
+        Checks.checkComponents("Some components are incompatible with Messages",
+            rows,
+            component -> component.getType().isMessageCompatible());
+
         if (components == null)
             components = new ArrayList<>();
+
         Checks.check(rows.length <= 5, "Can only have 5 action rows per message!");
         Checks.checkDuplicateIds(Arrays.stream(rows));
         this.components.clear();
@@ -500,6 +506,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
         return builder.build();
     }
 
+    @SuppressWarnings("deprecation")
     protected RequestBody asJSON()
     {
         return RequestBody.create(Requester.MEDIA_TYPE_JSON, getJSON().toJson());

@@ -88,7 +88,7 @@ public class MessageEditCallbackActionImpl extends DeferrableCallbackActionImpl 
     public MessageEditCallbackAction setEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
     {
         Checks.noneNull(embeds, "MessageEmbed");
-        Checks.check(embeds.size() <= 10, "Cannot have more than 10 embeds per message!");
+        Checks.check(embeds.size() <= Message.MAX_EMBED_COUNT, "Cannot have more than %d embeds per message!", Message.MAX_EMBED_COUNT);
         for (MessageEmbed embed : embeds)
         {
             Checks.check(embed.isSendable(),
@@ -107,6 +107,11 @@ public class MessageEditCallbackActionImpl extends DeferrableCallbackActionImpl 
     public MessageEditCallbackAction setActionRows(@Nonnull ActionRow... rows)
     {
         Checks.noneNull(rows, "ActionRows");
+
+        Checks.checkComponents("Some components are incompatible with Messages",
+            rows,
+            component -> component.getType().isMessageCompatible());
+
         Checks.check(rows.length <= 5, "Can only have 5 action rows per message!");
         Checks.checkDuplicateIds(Arrays.stream(rows));
         this.components = new ArrayList<>();

@@ -39,8 +39,6 @@ public class PermissionOverrideImpl implements PermissionOverride
     private final JDAImpl api;
     private IPermissionContainer channel;
 
-    protected PermissionOverrideAction manager;
-
     private long allow;
     private long deny;
 
@@ -150,10 +148,7 @@ public class PermissionOverrideImpl implements PermissionOverride
     public PermissionOverrideAction getManager()
     {
         checkPermissions();
-
-        if (manager == null)
-            return manager = new PermissionOverrideActionImpl(this).setOverride(false);
-        return manager;
+        return new PermissionOverrideActionImpl(this).setOverride(false);
     }
 
     @Nonnull

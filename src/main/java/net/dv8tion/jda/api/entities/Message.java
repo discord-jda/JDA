@@ -29,6 +29,7 @@ import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationAction;
 import net.dv8tion.jda.api.utils.AttachmentOption;
+import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.requests.FunctionalCallback;
 import net.dv8tion.jda.internal.requests.Requester;
@@ -117,6 +118,9 @@ import java.util.stream.Collectors;
  */
 public interface Message extends ISnowflake, Formattable
 {
+    /** Template for {@link #getJumpUrl()}.*/
+    String JUMP_URL = "https://discord.com/channels/%s/%s/%s";
+
     /**
      * The maximum sendable file size (8 MiB)
      *
@@ -153,6 +157,14 @@ public interface Message extends ISnowflake, Formattable
     * @see Message#addReaction(net.dv8tion.jda.api.entities.Emote)
     */
     int MAX_REACTIONS = 20;
+
+    /**
+     * The maximum amount of Embeds that can be added to one message ({@value})
+     *
+     * @see    MessageChannel#sendMessageEmbeds(Collection)
+     * @see    MessageAction#setEmbeds(Collection)
+     */
+    int MAX_EMBED_COUNT = 10;
 
     /**
      * Pattern used to find instant invites in strings.
@@ -985,6 +997,8 @@ public interface Message extends ISnowflake, Formattable
      *         If this is a system message
      *
      * @return Immutable list of all MessageReactions on this message.
+     *
+     * @see    net.dv8tion.jda.api.entities.MessageReaction
      */
     @Nonnull
     List<MessageReaction> getReactions();
@@ -1367,7 +1381,7 @@ public interface Message extends ISnowflake, Formattable
      *         Additional embeds to reply with
      *
      * @throws IllegalArgumentException
-     *         If null is provided, any of the embeds are not {@link MessageEmbed#isSendable() sendable}, more than 10 embeds are provided,
+     *         If null is provided, any of the embeds are not {@link MessageEmbed#isSendable() sendable}, more than {@value Message#MAX_EMBED_COUNT} embeds are provided,
      *         or the sum of {@link MessageEmbed#getLength()} is greater than {@link MessageEmbed#EMBED_MAX_LENGTH_BOT}
      *
      * @return {@link MessageAction} Providing the {@link Message} created from this upload.
@@ -1397,7 +1411,7 @@ public interface Message extends ISnowflake, Formattable
      *         The embeds to reply with
      *
      * @throws IllegalArgumentException
-     *         If null is provided, any of the embeds are not {@link MessageEmbed#isSendable() sendable}, more than 10 embeds are provided,
+     *         If null is provided, any of the embeds are not {@link MessageEmbed#isSendable() sendable}, more than {@value Message#MAX_EMBED_COUNT} embeds are provided,
      *         or the sum of {@link MessageEmbed#getLength()} is greater than {@link MessageEmbed#EMBED_MAX_LENGTH_BOT}
      *
      * @return {@link MessageAction} Providing the {@link Message} created from this upload.
@@ -2319,11 +2333,11 @@ public interface Message extends ISnowflake, Formattable
     ReactionPaginationAction retrieveReactionUsers(@Nonnull String unicode);
 
     /**
-     * This obtains the {@link net.dv8tion.jda.api.entities.MessageReaction.ReactionEmote ReactionEmote} for the given unicode reaction on this message.
+     * This obtains the {@link net.dv8tion.jda.api.entities.MessageReaction MessageReaction} for the given unicode reaction on this message.
      *
      * <p>Messages also store reactions using unicode values.
      *
-     * <p>An instance of the related {@link net.dv8tion.jda.api.entities.MessageReaction.ReactionEmote ReactionEmote} can be
+     * <p>An instance of the related {@link net.dv8tion.jda.api.entities.MessageReaction MessageReaction} can be
      * obtained through this method by using the emoji's unicode value.
      *
      * @param  unicode
@@ -2334,20 +2348,23 @@ public interface Message extends ISnowflake, Formattable
      * @throws java.lang.IllegalArgumentException
      *         If the provided unicode value is null or empty.
      *
-     * @return The {@link net.dv8tion.jda.api.entities.MessageReaction.ReactionEmote ReactionEmote} of this message or null if not present.
+     * @return The {@link net.dv8tion.jda.api.entities.MessageReaction MessageReaction} of this message or null if not present.
+     *
+     * @see    #getReactionById(long)
+     * @see    net.dv8tion.jda.api.entities.MessageReaction
      *
      * @since  4.1.0
      */
     @Nullable
     @CheckReturnValue
-    MessageReaction.ReactionEmote getReactionByUnicode(@Nonnull String unicode);
+    MessageReaction getReactionByUnicode(@Nonnull String unicode);
 
     /**
-     * This obtains the {@link net.dv8tion.jda.api.entities.MessageReaction.ReactionEmote ReactionEmote} for the given reaction id on this message.
+     * This obtains the {@link net.dv8tion.jda.api.entities.MessageReaction MessageReaction} for the given reaction id on this message.
      *
      * <p>Messages store reactions by keeping a list of reaction names.
      *
-     * <p>An instance of the related {@link net.dv8tion.jda.api.entities.MessageReaction.ReactionEmote ReactionEmote} can be
+     * <p>An instance of the related {@link net.dv8tion.jda.api.entities.MessageReaction MessageReaction} can be
      * obtained through this method by using the emote's id.
      *
      * @param  id
@@ -2358,20 +2375,27 @@ public interface Message extends ISnowflake, Formattable
      * @throws java.lang.IllegalArgumentException
      *         If the provided id is not a valid snowflake.
      *
-     * @return The {@link net.dv8tion.jda.api.entities.MessageReaction.ReactionEmote ReactionEmote} of this message or null if not present.
+     * @return The {@link net.dv8tion.jda.api.entities.MessageReaction MessageReaction} of this message or null if not present.
+     *
+     * @see    #getReactionById(long)
+     * @see    #getReactionByUnicode(String)
+     * @see    net.dv8tion.jda.api.entities.MessageReaction
      *
      * @since  4.1.0
      */
     @Nullable
     @CheckReturnValue
-    MessageReaction.ReactionEmote getReactionById(@Nonnull String id);
+    default MessageReaction getReactionById(@Nonnull String id)
+    {
+        return getReactionById(MiscUtil.parseSnowflake(id));
+    }
 
     /**
-     * This obtains the {@link net.dv8tion.jda.api.entities.MessageReaction.ReactionEmote ReactionEmote} for the given reaction id on this message.
+     * This obtains the {@link net.dv8tion.jda.api.entities.MessageReaction MessageReaction} for the given reaction id on this message.
      *
      * <p>Messages store reactions by keeping a list of reaction names.
      *
-     * <p>An instance of the related {@link net.dv8tion.jda.api.entities.MessageReaction.ReactionEmote ReactionEmote} can be
+     * <p>An instance of the related {@link net.dv8tion.jda.api.entities.MessageReaction MessageReaction} can be
      * obtained through this method by using the emote's id.
      *
      * @param  id
@@ -2380,13 +2404,17 @@ public interface Message extends ISnowflake, Formattable
      * @throws java.lang.UnsupportedOperationException
      *         If this is a system message
      *
-     * @return The {@link net.dv8tion.jda.api.entities.MessageReaction.ReactionEmote ReactionEmote} of this message or null if not present.
+     * @return The {@link net.dv8tion.jda.api.entities.MessageReaction MessageReaction} of this message or null if not present.
+     *
+     * @see    #getReactionById(String)
+     * @see    #getReactionByUnicode(String)
+     * @see    net.dv8tion.jda.api.entities.MessageReaction
      *
      * @since  4.1.0
      */
     @Nullable
     @CheckReturnValue
-    MessageReaction.ReactionEmote getReactionById(long id);
+    MessageReaction getReactionById(long id);
 
     /**
      * Enables/Disables suppression of Embeds on this Message.

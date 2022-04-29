@@ -95,6 +95,7 @@ public class OptionData implements SerializableData
      *         If any of the following checks fail
      *         <ul>
      *             <li>{@code type} is not null</li>
+     *             <li>{@code type} is not {@link OptionType#UNKNOWN UNKNOWN}</li>
      *             <li>{@code name} is alphanumeric (with dash), lowercase and between 1 and {@value #MAX_NAME_LENGTH} characters long</li>
      *             <li>{@code description} is between 1 and {@value #MAX_DESCRIPTION_LENGTH} characters long</li>
      *         </ul>
@@ -121,6 +122,7 @@ public class OptionData implements SerializableData
      *         If any of the following checks fail
      *         <ul>
      *             <li>{@code type} is not null</li>
+     *             <li>{@code type} is not {@link OptionType#UNKNOWN UNKNOWN}</li>
      *             <li>{@code name} is alphanumeric (with dash), lowercase and between 1 and {@value #MAX_NAME_LENGTH} characters long</li>
      *             <li>{@code description} is between 1 and {@value #MAX_DESCRIPTION_LENGTH} characters long</li>
      *         </ul>
@@ -149,6 +151,7 @@ public class OptionData implements SerializableData
      *         If any of the following checks fail
      *         <ul>
      *             <li>{@code type} is not null</li>
+     *             <li>{@code type} is not {@link OptionType#UNKNOWN UNKNOWN}</li>
      *             <li>{@code name} is alphanumeric (with dash), lowercase and between 1 and {@value #MAX_NAME_LENGTH} characters long</li>
      *             <li>{@code description} is between 1 and {@value #MAX_DESCRIPTION_LENGTH} characters long</li>
      *             <li>{@link OptionType#canSupportChoices()} is false then {@code isAutoComplete} is also false</li>
@@ -157,6 +160,7 @@ public class OptionData implements SerializableData
     public OptionData(@Nonnull OptionType type, @Nonnull String name, @Nonnull String description, boolean isRequired, boolean isAutoComplete)
     {
         Checks.notNull(type, "Type");
+        Checks.check(type != OptionType.UNKNOWN, "Cannot make option of unknown type!");
         this.type = type;
 
         setName(name);

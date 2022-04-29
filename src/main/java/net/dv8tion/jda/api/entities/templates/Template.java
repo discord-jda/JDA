@@ -55,8 +55,6 @@ public class Template
     private final TemplateGuild guild;
     private final boolean synced;
 
-    protected TemplateManager manager;
-
     public Template(final JDAImpl api, final String code, final String name, final String description,
                     final int uses, final User creator, final OffsetDateTime createdAt, final OffsetDateTime updatedAt,
                     final TemplateGuild guild, final boolean synced)
@@ -277,9 +275,7 @@ public class Template
     public TemplateManager getManager()
     {
         checkInteraction();
-        if (manager == null)
-            return manager = new TemplateManagerImpl(this);
-        return manager;
+        return new TemplateManagerImpl(this);
     }
 
     private void checkInteraction()

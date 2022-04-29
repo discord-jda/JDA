@@ -133,8 +133,8 @@ public class ReplyCallbackActionImpl extends DeferrableCallbackActionImpl implem
                 MessageEmbed.EMBED_MAX_LENGTH_BOT);
         }
 
-        if (embeds.size() + this.embeds.size() > 10)
-            throw new IllegalStateException("Cannot have more than 10 embeds per message!");
+        if (embeds.size() + this.embeds.size() > Message.MAX_EMBED_COUNT)
+            throw new IllegalStateException(String.format("Cannot have more than %d embeds per message!", Message.MAX_EMBED_COUNT));
         this.embeds.addAll(embeds);
         return this;
     }
@@ -144,6 +144,11 @@ public class ReplyCallbackActionImpl extends DeferrableCallbackActionImpl implem
     public ReplyCallbackAction addActionRows(@Nonnull ActionRow... rows)
     {
         Checks.noneNull(rows, "ActionRows");
+
+        Checks.checkComponents("Some components are incompatible with Messages",
+            rows,
+            component -> component.getType().isMessageCompatible());
+
         Checks.check(components.size() + rows.length <= 5, "Can only have 5 action rows per message!");
         Checks.checkDuplicateIds(Stream.concat(this.components.stream(), Arrays.stream(rows)));
 

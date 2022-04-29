@@ -37,8 +37,8 @@ public class MessageReactionBulkRemoveHandler extends SocketHandler
         final long messageId = content.getLong("message_id");
         final long channelId = content.getLong("channel_id");
         JDAImpl jda = getJDA();
-        Guild guild = null;
 
+        Guild guild = null;
         if (!content.isNull("guild_id"))
         {
             long guildId = content.getUnsignedLong("guild_id");

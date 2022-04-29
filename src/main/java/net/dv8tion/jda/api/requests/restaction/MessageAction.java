@@ -422,7 +422,7 @@ public interface MessageAction extends RestAction<Message>, Appendable, AllowedM
     MessageAction content(@Nullable final String content);
 
     /**
-     * Sets up to 10 {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbeds}
+     * Sets up to {@value Message#MAX_EMBED_COUNT} {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbeds}
      * that should be used for this Message.
      * Refer to {@link net.dv8tion.jda.api.EmbedBuilder EmbedBuilder} for more information.
      *
@@ -442,7 +442,7 @@ public interface MessageAction extends RestAction<Message>, Appendable, AllowedM
     MessageAction setEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds);
 
     /**
-     * Sets up to 10 {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbeds}
+     * Sets up to {@value Message#MAX_EMBED_COUNT} {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbeds}
      * that should be used for this Message.
      * Refer to {@link net.dv8tion.jda.api.EmbedBuilder EmbedBuilder} for more information.
      *
@@ -803,10 +803,15 @@ public interface MessageAction extends RestAction<Message>, Appendable, AllowedM
      *         The new action rows
      *
      * @throws IllegalArgumentException
-     *         If null is provided, more than 5 action rows are provided,
-     *         or any custom {@link ActionComponent#getId() id} is duplicated
+     *         <ul>
+     *             <li>If null is provided, or more than 5 action rows are provided</li>
+     *             <li>If any custom {@link ActionComponent#getId() id} is duplicated</li>
+     *             <li>If any of the provided action rows are not compatible with messages</li>
+     *         </ul>
      *
      * @return Updated MessageAction for chaining convenience
+     *
+     * @see    ActionRow#isMessageCompatible()
      */
     @Nonnull
     @CheckReturnValue
@@ -823,10 +828,15 @@ public interface MessageAction extends RestAction<Message>, Appendable, AllowedM
      *         The new action rows
      *
      * @throws IllegalArgumentException
-     *         If null is provided, more than 5 action rows are provided,
-     *         or any custom {@link ActionComponent#getId() id} is duplicated
+     *         <ul>
+     *             <li>If null is provided, or more than 5 action rows are provided</li>
+     *             <li>If any custom {@link ActionComponent#getId() id} is duplicated</li>
+     *             <li>If any of the provided action rows are not compatible with messages</li>
+     *         </ul>
      *
      * @return Updated MessageAction for chaining convenience
+     *
+     * @see    ActionRow#isMessageCompatible()
      */
     @Nonnull
     @CheckReturnValue
@@ -840,12 +850,16 @@ public interface MessageAction extends RestAction<Message>, Appendable, AllowedM
      *         The components for this action row
      *
      * @throws IllegalArgumentException
-     *         If null is provided, an invalid number of components is provided,
-     *         or any custom {@link ActionComponent#getId() id} is duplicated
+     *         <ul>
+     *             <li>If null is provided, or more than 5 ItemComponents are provided</li>
+     *             <li>If any custom {@link ActionComponent#getId() id} is duplicated</li>
+     *             <li>If any of the provided ItemComponents are not compatible with messages</li>
+     *         </ul>
      *
      * @return Updated MessageAction for chaining convenience
      *
      * @see    ActionRow#of(Collection)
+     * @see    ItemComponent#isMessageCompatible()
      */
     @Nonnull
     @CheckReturnValue
@@ -862,12 +876,16 @@ public interface MessageAction extends RestAction<Message>, Appendable, AllowedM
      *         The components for this action row
      *
      * @throws IllegalArgumentException
-     *         If null is provided, an invalid number of components is provided,
-     *         or any custom {@link ActionComponent#getId() id} is duplicated
+     *         <ul>
+     *             <li>If null is provided, or more than 5 ItemComponents are provided</li>
+     *             <li>If any custom {@link ActionComponent#getId() id} is duplicated</li>
+     *             <li>If any of the provided ItemComponents are not compatible with messages</li>
+     *         </ul>
      *
      * @return Updated MessageAction for chaining convenience
      *
      * @see    ActionRow#of(ItemComponent...)
+     * @see    ItemComponent#isMessageCompatible()
      */
     @Nonnull
     @CheckReturnValue
