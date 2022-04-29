@@ -60,9 +60,9 @@ public class ThreadChannelPaginationActionImpl extends PaginationActionImpl<Thre
             return route;
 
         if (useID)
-            return route.withQueryParams("before", Long.toUnsignedString(last));
+            return route = route.withQueryParams("before", Long.toUnsignedString(last));
         // OffsetDateTime#toString() is defined to be ISO8601, needs no helper method.
-        return route.withQueryParams("before", TimeUtil.getTimeCreated(last).toString());
+        return route = route.withQueryParams("before", TimeUtil.getTimeCreated(last).toString());
     }
 
     @Override
