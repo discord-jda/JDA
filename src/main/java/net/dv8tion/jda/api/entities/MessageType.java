@@ -192,6 +192,17 @@ public enum MessageType
     }
 
     /**
+     * Whether messages of this type can be deleted.
+     * <br>Currently the only type that cannot be deleted is {@link #AUTO_MODERATION_ACTION}.
+     *
+     * @return True, if delete is supported
+     */
+    public boolean canDelete()
+    {
+        return this != AUTO_MODERATION_ACTION;
+    }
+
+    /**
      * Used to retrieve a MessageType based on the Discord id key.
      * <br>If the {@code id} provided is not a known id, {@link #UNKNOWN} is returned
      *

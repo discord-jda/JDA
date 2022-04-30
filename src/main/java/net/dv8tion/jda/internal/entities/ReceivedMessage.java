@@ -927,6 +927,8 @@ public class ReceivedMessage extends AbstractMessage
             else if (!sMember.hasPermission(gChan, Permission.MESSAGE_MANAGE))
                 throw new InsufficientPermissionException(gChan, Permission.MESSAGE_MANAGE);
         }
+        if (!type.canDelete())
+            throw new IllegalStateException("Cannot delete messages of type " + type);
         return channel.deleteMessageById(getIdLong());
     }
 
