@@ -758,7 +758,8 @@ public class JDAImpl implements JDA
         guildSetupController.close();
 
         // stop accepting new requests
-        requester.stop(); // the requester calls shutdownRequester when its done
+        if (requester.stop()) // returns true if no more requests will be executed
+            shutdownRequester(); // in that case shutdown entirely
         threadConfig.shutdown();
 
         if (shutdownHook != null)
