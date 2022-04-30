@@ -48,6 +48,37 @@ public class Emoji implements SerializableData, IMentionable
     }
 
     /**
+     * Converts the unicode name into codepoint notation like {@code U+1F602}.
+     *
+     * @throws java.lang.IllegalStateException
+     *         If this is not an emoji reaction, see {@link #isUnicode()}
+     *
+     * @return String containing the codepoint representation of the reaction emoji
+     */
+    @Nonnull
+    public String getAsCodepoints()
+    {
+        if (!isUnicode())
+            throw new IllegalStateException("Cannot get codepoint for custom emotes");
+        return EncodingUtil.encodeCodepoints(name);
+    }
+
+    /**
+     * The code for this Reaction.
+     * <br>For unicode emojis this will be the unicode of said emoji rather than an alias like {@code :smiley:}.
+     * <br>For custom emotes this will be the name and id of said emote in the format {@code <name>:<id>}.
+     *
+     * @return The unicode if it is an emoji, or the name and id in the format {@code <name>:<id>}
+     */
+    @Nonnull
+    public String getAsReactionCode()
+    {
+        return isCustom()
+                ? name + ":" + id
+                : name;
+    }
+
+    /**
      * The name of this emoji.
      * <br>This will be the unicode characters if this emoji is not {@link #isCustom() custom}.
      *
@@ -245,15 +276,18 @@ public class Emoji implements SerializableData, IMentionable
     @Override
     public boolean equals(Object obj)
     {
-        if (obj == this) return true;
-        if (!(obj instanceof Emoji)) return false;
+        if (obj == this)
+            return true;
+        if (!(obj instanceof Emoji))
+            return false;
         Emoji other = (Emoji) obj;
-        return other.id == id && other.animated == animated && Objects.equals(other.name, name);
+        return other.id == id && Objects.equals(other.name, name);
     }
 
     @Override
     public String toString()
     {
-        return "E:" + name + "(" + id + ")";
+        return isCustom() ? "Emoji:" + name + "(" + id + ")"
+                          : "Emoji(" + getAsCodepoints() + ')';
     }
 }

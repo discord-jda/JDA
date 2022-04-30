@@ -17,6 +17,7 @@
 package net.dv8tion.jda.internal.entities;
 
 import net.dv8tion.jda.api.entities.ActivityFlag;
+import net.dv8tion.jda.api.entities.Emoji;
 import net.dv8tion.jda.api.entities.RichPresence;
 
 import javax.annotation.Nonnull;

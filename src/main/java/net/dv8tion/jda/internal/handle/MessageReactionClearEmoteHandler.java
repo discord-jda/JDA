@@ -20,7 +20,6 @@ import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.message.react.MessageReactionRemoveEmoteEvent;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
-import net.dv8tion.jda.internal.entities.EmoteImpl;
 import net.dv8tion.jda.internal.requests.WebSocketClient;
 
 public class MessageReactionClearEmoteHandler extends SocketHandler
@@ -63,22 +62,17 @@ public class MessageReactionClearEmoteHandler extends SocketHandler
 
         long messageId = content.getUnsignedLong("message_id");
         DataObject emoji = content.getObject("emoji");
-        MessageReaction.ReactionEmote reactionEmote = null;
+        String name = emoji.getString("name");
+        Emoji reactionEmote = null;
         if (emoji.isNull("id"))
         {
-            reactionEmote = MessageReaction.ReactionEmote.fromUnicode(emoji.getString("name"), getJDA());
+            reactionEmote = Emoji.fromUnicode(name);
         }
         else
         {
             long emoteId = emoji.getUnsignedLong("id");
-            Emote emote = getJDA().getEmoteById(emoteId);
-            if (emote == null)
-            {
-                emote = new EmoteImpl(emoteId, getJDA())
-                    .setAnimated(emoji.getBoolean("animated"))
-                    .setName(emoji.getString("name", ""));
-            }
-            reactionEmote = MessageReaction.ReactionEmote.fromCustom(emote);
+            boolean animated = emoji.getBoolean("animated");
+            reactionEmote = Emoji.fromEmote(name, emoteId, animated);
         }
 
         MessageReaction reaction = new MessageReaction(channel, reactionEmote, messageId, false, 0);

@@ -807,14 +807,14 @@ public class EntityBuilder
             timestamps = new RichPresence.Timestamps(start, end);
         }
 
-        Activity.Emoji emoji = null;
+        Emoji emoji = null;
         if (!gameJson.isNull("emoji"))
         {
             DataObject emojiJson = gameJson.getObject("emoji");
             String emojiName = emojiJson.getString("name");
             long emojiId = emojiJson.getUnsignedLong("id", 0);
             boolean emojiAnimated = emojiJson.getBoolean("animated");
-            emoji = new Activity.Emoji(emojiName, emojiId, emojiAnimated);
+            emoji = Emoji.fromEmote(emojiName, emojiId, emojiAnimated);
         }
 
         if (type == Activity.ActivityType.CUSTOM_STATUS)
@@ -1619,19 +1619,11 @@ public class EntityBuilder
         final int count = obj.getInt("count", -1);
         final boolean me = obj.getBoolean("me");
 
-        final MessageReaction.ReactionEmote reactionEmote;
+        Emoji reactionEmote;
         if (emojiID != null)
-        {
-            Emote emote = getJDA().getEmoteById(emojiID);
-            // creates fake emoji because no guild has this emoji id
-            if (emote == null)
-                emote = new EmoteImpl(emojiID, getJDA()).setAnimated(animated).setName(name);
-            reactionEmote = MessageReaction.ReactionEmote.fromCustom(emote);
-        }
+            reactionEmote = Emoji.fromEmote(name, emojiID, animated);
         else
-        {
-            reactionEmote = MessageReaction.ReactionEmote.fromUnicode(name, getJDA());
-        }
+            reactionEmote = Emoji.fromUnicode(name);
 
         return new MessageReaction(chan, reactionEmote, id, me, count);
     }

@@ -22,7 +22,6 @@ import net.dv8tion.jda.api.events.message.react.MessageReactionRemoveEvent;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
-import net.dv8tion.jda.internal.entities.EmoteImpl;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.entities.MemberImpl;
 import net.dv8tion.jda.internal.entities.PrivateChannelImpl;
@@ -146,29 +145,13 @@ public class MessageReactionHandler extends SocketHandler
                             .put("id", channelId)
             );
         }
-        MessageReaction.ReactionEmote rEmote;
+
+        Emoji rEmote;
         if (emojiId != null)
-        {
-            Emote emote = api.getEmoteById(emojiId);
-            if (emote == null)
-            {
-                if (emojiName != null)
-                {
-                    emote = new EmoteImpl(emojiId, api).setAnimated(emojiAnimated).setName(emojiName);
-                }
-                else
-                {
-                    WebSocketClient.LOG.debug("Received a reaction {} with a null name. json: {}",
-                        JDALogger.getLazyString(() -> add ? "add" : "remove"), content);
-                    return null;
-                }
-            }
-            rEmote = MessageReaction.ReactionEmote.fromCustom(emote);
-        }
+            rEmote = Emoji.fromEmote(emojiName, emojiId, emojiAnimated);
         else
-        {
-            rEmote = MessageReaction.ReactionEmote.fromUnicode(emojiName, api);
-        }
+            rEmote = Emoji.fromUnicode(emojiName);
+
         MessageReaction reaction = new MessageReaction(channel, rEmote, messageId, userId == api.getSelfUser().getIdLong(), -1);
 
         if (channel.getType() == ChannelType.PRIVATE)

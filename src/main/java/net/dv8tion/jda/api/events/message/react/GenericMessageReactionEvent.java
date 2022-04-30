@@ -125,13 +125,12 @@ public class GenericMessageReactionEvent extends GenericMessageEvent
     }
 
     /**
-     * The {@link net.dv8tion.jda.api.entities.MessageReaction.ReactionEmote ReactionEmote}
-     * of the reaction, shortcut for {@code getReaction().getReactionEmote()}
+     * The {@link Emoji} of the reaction, shortcut for {@code getReaction().getReactionEmote()}
      *
      * @return The ReactionEmote instance
      */
     @Nonnull
-    public MessageReaction.ReactionEmote getReactionEmote()
+    public Emoji getReactionEmote()
     {
         return reaction.getReactionEmote();
     }
