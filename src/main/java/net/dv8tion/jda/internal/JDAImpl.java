@@ -758,8 +758,7 @@ public class JDAImpl implements JDA
         guildSetupController.close();
 
         // stop accepting new requests
-        if (requester.stop()) // returns true if no more requests will be executed
-            shutdownRequester(); // in that case shutdown entirely
+        requester.stop(); // the requester calls shutdownRequester when its done
         threadConfig.shutdown();
 
         if (shutdownHook != null)
@@ -774,7 +773,7 @@ public class JDAImpl implements JDA
         setStatus(Status.SHUTDOWN);
     }
 
-    public synchronized void shutdownRequester()
+    public void shutdownRequester()
     {
         // Stop all request processing
         requester.shutdown();
