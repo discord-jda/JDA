@@ -337,6 +337,10 @@ public interface SlashCommandData extends CommandData
             throw new IllegalArgumentException("Cannot convert command of type " + command.getType() + " to SlashCommandData!");
 
         CommandDataImpl data = new CommandDataImpl(command.getName(), command.getDescription());
+        if (!command.isCommandEnabledInDMs())
+            data.setCommandEnabledInDMs(false);
+        if (command.getDefaultPermissionsRaw() != -1)
+            data.setDefaultPermissions(command.getDefaultPermissionsRaw());
         command.getOptions()
                 .stream()
                 .map(OptionData::fromOption)
@@ -381,6 +385,9 @@ public interface SlashCommandData extends CommandData
         String description = object.getString("description");
         DataArray options = object.optArray("options").orElseGet(DataArray::empty);
         CommandDataImpl command = new CommandDataImpl(name, description);
+        command.setCommandEnabledInDMs(object.getBoolean("dm_permission", true));
+        if (!object.isNull("default_member_permissions"))
+            command.setDefaultPermissions(object.getLong("default_member_permissions"));
         options.stream(DataArray::getObject).forEach(opt ->
         {
             OptionType type = OptionType.fromKey(opt.getInt("type"));
