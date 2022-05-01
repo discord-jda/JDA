@@ -756,7 +756,6 @@ public class JDAImpl implements JDA
     @Override
     public void awaitShutdown() throws InterruptedException
     {
-        threadConfig.awaitTermination();
         WebSocketClient client = getClient();
         if (client != null)
         {
@@ -765,6 +764,7 @@ public class JDAImpl implements JDA
                 Thread.sleep(50);
             }
         }
+        threadConfig.awaitTermination();
     }
 
     public synchronized void shutdownInternals()
