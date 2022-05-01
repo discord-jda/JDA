@@ -94,7 +94,7 @@ public class GuildStickerManagerImpl extends ManagerBase<GuildStickerManager> im
     {
         Checks.notEmpty(tags, "Tags");
         Checks.noneNull(tags, "Tags");
-        String csv = String.join(",", tags); // TODO: Check tag regex?
+        String csv = String.join(",", tags);
         Checks.notLonger(csv, 200, "List of tags");
         this.tags = csv;
         set |= TAGS;
