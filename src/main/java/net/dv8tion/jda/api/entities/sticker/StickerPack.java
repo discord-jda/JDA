@@ -23,21 +23,53 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 
+/**
+ * A pack of {@link StandardSticker StandardStickers} used for nitro.
+ */
 public interface StickerPack extends ISnowflake
 {
+    /**
+     * Format string used for {@link #getBannerUrl()}.
+     * <br>The parameters of the format string are the {@link #getBannerId()} and the file extension (png).
+     */
     String BANNER_URL = "https://cdn.discordapp.com/app-assets/710982414301790216/store/%s.%s";
 
+    /**
+     * The {@link StandardSticker StandardStickers} in this pack.
+     *
+     * @return Immutable List of {@link StandardSticker StandardStickers}
+     */
     @Nonnull
     List<StandardSticker> getStickers();
 
+    /**
+     * The name of this pack.
+     *
+     * @return Pack name
+     */
     @Nonnull
     String getName();
 
+    /**
+     * The description of the sticker pack
+     *
+     * @return The description
+     */
     @Nonnull
     String getDescription();
 
+    /**
+     * The id of the sticker shown as cover.
+     *
+     * @return The sticker id for the cover sticker, or {@code 0} if there is no cover
+     */
     long getCoverIdLong();
 
+    /**
+     * The id of the sticker shown as cover.
+     *
+     * @return The sticker id for the cover sticker, or {@code null} if there is no cover
+     */
     @Nullable
     default String getCoverId()
     {
@@ -45,6 +77,11 @@ public interface StickerPack extends ISnowflake
         return id == 0 ? null : Long.toUnsignedString(id);
     }
 
+    /**
+     * The {@link StandardSticker} shown as cover.
+     *
+     * @return The cover sticker, or {@code null} if there is no cover
+     */
     @Nullable
     default StandardSticker getCoverSticker()
     {
@@ -54,8 +91,20 @@ public interface StickerPack extends ISnowflake
         return getStickers().stream().filter(s -> s.getIdLong() == id).findFirst().orElse(null);
     }
 
+    /**
+     * The id for the pack banner.
+     * <br>This is shown when you at the top of the pack pop-out in the client.
+     *
+     * @return The banner id, or {@code 0} if there is no banner
+     */
     long getBannerIdLong();
 
+    /**
+     * The id for the pack banner.
+     * <br>This is shown when you at the top of the pack pop-out in the client.
+     *
+     * @return The banner id, or {@code null} if there is no banner
+     */
     @Nullable
     default String getBannerId()
     {
@@ -63,12 +112,24 @@ public interface StickerPack extends ISnowflake
         return id == 0 ? null : Long.toUnsignedString(id);
     }
 
+    /**
+     * The url for the pack banner.
+     * <br>This is shown when you at the top of the pack pop-out in the client.
+     *
+     * @return The banner id, or {@code null} if there is no banner
+     */
     @Nullable
     default String getBannerUrl()
     {
         return String.format(BANNER_URL, getBannerId(), "png");
     }
 
+    /**
+     * The {@link ImageProxy} for the pack banner.
+     * <br>This is shown when you at the top of the pack pop-out in the client.
+     *
+     * @return The banner proxy, or {@code null} if there is no banner
+     */
     @Nullable
     default ImageProxy getBanner()
     {
@@ -76,8 +137,21 @@ public interface StickerPack extends ISnowflake
         return url == null ? null : new ImageProxy(url);
     }
 
+    /**
+     * The stock-keeping unit (SKU) for this sticker pack.
+     * <br>This is used for store purchases, if there was a store to buy the pack from.
+     *
+     * @return The SKU id for this pack, or {@code 0} if there is no SKU
+     */
     long getSkuIdLong();
 
+
+    /**
+     * The stock-keeping unit (SKU) for this sticker pack.
+     * <br>This is used for store purchases, if there was a store to buy the pack from.
+     *
+     * @return The SKU id for this pack, or {@code null} if there is no SKU
+     */
     @Nullable
     default String getSkuId()
     {
