@@ -66,6 +66,8 @@ public interface Sticker extends StickerSnowflake
     /**
      * Returns an {@link ImageProxy} for this sticker's image.
      *
+     * <p>The size parameter for {@link ImageProxy} is not supported for stickers of type {@link StickerFormat#LOTTIE LOTTIE}.
+     *
      * @throws java.lang.IllegalStateException
      *         If the {@link StickerFormat} of this sticker is {@link StickerFormat#UNKNOWN UNKNOWN}
      *
@@ -88,7 +90,7 @@ public interface Sticker extends StickerSnowflake
         /**
          * The APNG format.
          */
-        APNG(2, "apng"),
+        APNG(2, "png"),
         /**
          * The LOTTIE format.
          * <br>Lottie isn't a standard renderable image. It is a JSON with data that can be rendered using the lottie library.

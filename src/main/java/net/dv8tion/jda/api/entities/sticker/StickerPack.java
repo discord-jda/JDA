@@ -17,6 +17,7 @@
 package net.dv8tion.jda.api.entities.sticker;
 
 import net.dv8tion.jda.api.entities.ISnowflake;
+import net.dv8tion.jda.api.utils.ImageProxy;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -24,6 +25,8 @@ import java.util.List;
 
 public interface StickerPack extends ISnowflake
 {
+    String BANNER_URL = "https://cdn.discordapp.com/app-assets/710982414301790216/store/%s.%s";
+
     @Nonnull
     List<StandardSticker> getStickers();
 
@@ -32,8 +35,6 @@ public interface StickerPack extends ISnowflake
 
     @Nonnull
     String getDescription();
-
-    // TODO: URLs and Proxies
 
     long getCoverIdLong();
 
@@ -44,6 +45,15 @@ public interface StickerPack extends ISnowflake
         return id == 0 ? null : Long.toUnsignedString(id);
     }
 
+    @Nullable
+    default StandardSticker getCoverSticker()
+    {
+        long id = getCoverIdLong();
+        if (id == 0L)
+            return null;
+        return getStickers().stream().filter(s -> s.getIdLong() == id).findFirst().orElse(null);
+    }
+
     long getBannerIdLong();
 
     @Nullable
@@ -51,6 +61,19 @@ public interface StickerPack extends ISnowflake
     {
         long id = getBannerIdLong();
         return id == 0 ? null : Long.toUnsignedString(id);
+    }
+
+    @Nullable
+    default String getBannerUrl()
+    {
+        return String.format(BANNER_URL, getBannerId(), "png");
+    }
+
+    @Nullable
+    default ImageProxy getBanner()
+    {
+        String url = getBannerUrl();
+        return url == null ? null : new ImageProxy(url);
     }
 
     long getSkuIdLong();
