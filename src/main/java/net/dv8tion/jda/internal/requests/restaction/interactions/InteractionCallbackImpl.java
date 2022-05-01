@@ -20,9 +20,9 @@ import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.interactions.InteractionCallbackAction;
+import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.interactions.InteractionImpl;
-import net.dv8tion.jda.internal.requests.Requester;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.IOUtil;
@@ -30,15 +30,14 @@ import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 
 import javax.annotation.Nonnull;
-import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
 public abstract class InteractionCallbackImpl<T> extends RestActionImpl<T> implements InteractionCallbackAction<T>
 {
-    protected final Map<String, InputStream> files = new HashMap<>();
+    protected final List<FileUpload> files = new ArrayList<>();
     protected final InteractionImpl interaction;
 
     public InteractionCallbackImpl(InteractionImpl interaction)
@@ -56,18 +55,27 @@ public abstract class InteractionCallbackImpl<T> extends RestActionImpl<T> imple
         if (files.isEmpty())
             return getRequestBody(json);
 
-        MultipartBody.Builder body = new MultipartBody.Builder().setType(MultipartBody.FORM);
-        int i = 0;
-        for (Map.Entry<String, InputStream> file : files.entrySet())
-        {
-            RequestBody stream = IOUtil.createRequestBody(Requester.MEDIA_TYPE_OCTET, file.getValue());
-            body.addFormDataPart("files[" + (i++) + "]", file.getKey(), stream);
-        }
+        MultipartBody.Builder body = FileUpload.createMultipartBody(files);
         body.addFormDataPart("payload_json", json.toString());
         files.clear();
         return body.build();
     }
 
+    @Nonnull
+    @Override
+    public InteractionCallbackAction<T> closeResources()
+    {
+        files.forEach(IOUtil::silentClose);
+        files.clear();
+        return this;
+    }
+
+    @Override
+    @SuppressWarnings({"deprecation", "ResultOfMethodCallIgnored"})
+    protected void finalize()
+    {
+        closeResources();
+    }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Here we intercept calls to queue/submit/complete to prevent double ack/reply scenarios with a better error message than discord provides //

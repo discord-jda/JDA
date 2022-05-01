@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.requests.restaction.interactions.MessageEditCallbackAction;
 import net.dv8tion.jda.api.utils.AttachmentOption;
+import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.interactions.InteractionHookImpl;
@@ -129,7 +130,7 @@ public class MessageEditCallbackActionImpl extends DeferrableCallbackActionImpl 
         if (options.length > 0)
             name = "SPOILER_" + name;
 
-        files.put(name, data);
+        files.add(FileUpload.fromData(data, name));
         return this;
     }
 

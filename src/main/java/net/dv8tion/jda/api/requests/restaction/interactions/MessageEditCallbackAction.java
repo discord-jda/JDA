@@ -32,6 +32,8 @@ import javax.annotation.Nullable;
 import java.io.*;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.concurrent.TimeUnit;
+import java.util.function.BooleanSupplier;
 import java.util.stream.Collectors;
 
 /**
@@ -39,6 +41,22 @@ import java.util.stream.Collectors;
  */
 public interface MessageEditCallbackAction extends InteractionCallbackAction<InteractionHook>
 {
+    @Nonnull
+    @Override
+    MessageEditCallbackAction setCheck(@Nullable BooleanSupplier checks);
+
+    @Nonnull
+    @Override
+    MessageEditCallbackAction timeout(long timeout, @Nonnull TimeUnit unit);
+
+    @Nonnull
+    @Override
+    MessageEditCallbackAction deadline(long timestamp);
+
+    @Nonnull
+    @Override
+    MessageEditCallbackAction closeResources();
+
     /**
      * Set the new content for this message.
      *

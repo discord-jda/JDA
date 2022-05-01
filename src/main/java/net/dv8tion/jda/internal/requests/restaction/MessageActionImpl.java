@@ -27,6 +27,7 @@ import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import net.dv8tion.jda.api.utils.AttachmentOption;
+import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.requests.Requester;
@@ -54,8 +55,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
 {
     private static final String CONTENT_TOO_BIG = Helpers.format("A message may not exceed %d characters. Please limit your input!", Message.MAX_CONTENT_LENGTH);
     protected static boolean defaultFailOnInvalidReply = false;
-    protected final Map<String, InputStream> files = new HashMap<>();
-    protected final Set<InputStream> ownedResources = new HashSet<>();
+    protected final List<FileUpload> files = new ArrayList<>();
     protected final StringBuilder content;
     protected final MessageChannel channel;
     protected final AllowedMentionsImpl allowedMentions = new AllowedMentionsImpl();
@@ -289,7 +289,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
         checkFileAmount();
         checkPermission(Permission.MESSAGE_ATTACH_FILES);
         name = applyOptions(name, options);
-        files.put(name, data);
+        files.add(FileUpload.fromData(data, name));
         return this;
     }
 
@@ -306,7 +306,6 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
         try
         {
             FileInputStream data = new FileInputStream(file);
-            ownedResources.add(data);
             name = applyOptions(name, options);
             return addFile(data, name);
         }
@@ -331,8 +330,8 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
     @CheckReturnValue
     public MessageActionImpl clearFiles()
     {
+        files.forEach(IOUtil::silentClose);
         files.clear();
-        clearResources();
         return this;
     }
 
@@ -342,14 +341,12 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
     public MessageActionImpl clearFiles(@Nonnull BiConsumer<String, InputStream> finalizer)
     {
         Checks.notNull(finalizer, "Finalizer");
-        for (Iterator<Map.Entry<String, InputStream>> it = files.entrySet().iterator(); it.hasNext();)
+        for (FileUpload file : files)
         {
-            Map.Entry<String, InputStream> entry = it.next();
-            finalizer.accept(entry.getKey(), entry.getValue());
-            it.remove();
+            if (file.isData())
+                finalizer.accept(file.getName(), file.getData());
         }
-        clearResources();
-        return this;
+        return clearFiles();
     }
 
     @Nonnull
@@ -358,13 +355,12 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
     public MessageActionImpl clearFiles(@Nonnull Consumer<InputStream> finalizer)
     {
         Checks.notNull(finalizer, "Finalizer");
-        for (Iterator<InputStream> it = files.values().iterator(); it.hasNext(); )
+        for (FileUpload file : files)
         {
-            finalizer.accept(it.next());
-            it.remove();
+            if (file.isData())
+                finalizer.accept(file.getData());
         }
-        clearResources();
-        return this;
+        return clearFiles();
     }
 
     @Nonnull
@@ -465,23 +461,6 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
         return name;
     }
 
-    private void clearResources()
-    {
-        for (InputStream ownedResource : ownedResources)
-        {
-            try
-            {
-                ownedResource.close();
-            }
-            catch (IOException ex)
-            {
-                if (!ex.getMessage().toLowerCase().contains("closed"))
-                    LOG.error("Encountered IOException trying to close owned resource", ex);
-            }
-        }
-        ownedResources.clear();
-    }
-
     private long getMaxFileSize()
     {
         if (channel.getType().isGuild())
@@ -491,18 +470,11 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
 
     protected RequestBody asMultipart()
     {
-        final MultipartBody.Builder builder = new MultipartBody.Builder().setType(MultipartBody.FORM);
-        int index = 0;
-        for (Map.Entry<String, InputStream> entry : files.entrySet())
-        {
-            final RequestBody body = IOUtil.createRequestBody(Requester.MEDIA_TYPE_OCTET, entry.getValue());
-            builder.addFormDataPart("files[" + (index++) + "]", entry.getKey(), body);
-        }
+        final MultipartBody.Builder builder = FileUpload.createMultipartBody(files);
         if (messageReference != 0L || components != null || retainedAttachments != null || !isEmpty())
             builder.addFormDataPart("payload_json", getJSON().toString());
         // clear remaining resources, they will be closed after being sent
         files.clear();
-        ownedResources.clear();
         return builder.build();
     }
 
@@ -624,12 +596,10 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
     }
 
     @Override
-    @SuppressWarnings("deprecation") /* If this was in JDK9 we would be using java.lang.ref.Cleaner instead! */
+    @SuppressWarnings({"deprecation", "ResultOfMethodCallIgnored"}) /* If this was in JDK9 we would be using java.lang.ref.Cleaner instead! */
     protected void finalize()
     {
-        if (ownedResources.isEmpty())
-            return;
         LOG.warn("Found unclosed resources in MessageAction instance, closing on finalization step!");
-        clearResources();
+        clearFiles();
     }
 }

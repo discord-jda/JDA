@@ -26,13 +26,12 @@ import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.restaction.WebhookMessageAction;
 import net.dv8tion.jda.api.utils.AttachmentOption;
+import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
-import net.dv8tion.jda.internal.requests.Requester;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.AllowedMentionsImpl;
 import net.dv8tion.jda.internal.utils.Checks;
-import net.dv8tion.jda.internal.utils.IOUtil;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 
@@ -49,7 +48,7 @@ public class WebhookMessageActionImpl<T>
 {
     private final StringBuilder content = new StringBuilder();
     private final List<MessageEmbed> embeds = new ArrayList<>();
-    private final Map<String, InputStream> files = new HashMap<>();
+    private final List<FileUpload> files = new ArrayList<>();
     private final AllowedMentionsImpl allowedMentions = new AllowedMentionsImpl();
     private final List<ActionRow> components = new ArrayList<>();
     private final MessageChannel channel;
@@ -152,7 +151,7 @@ public class WebhookMessageActionImpl<T>
         Checks.check(files.size() < 10, "Cannot have more than 10 files in a message!");
         if (options.length > 0 && options[0] == AttachmentOption.SPOILER)
             name = "SPOILER_" + name;
-        files.put(name, data);
+        files.add(FileUpload.fromData(data, name));
         return this;
     }
 
@@ -199,14 +198,7 @@ public class WebhookMessageActionImpl<T>
         if (files.isEmpty())
             return getRequestBody(data);
 
-        MultipartBody.Builder body = new MultipartBody.Builder().setType(MultipartBody.FORM);
-        int i = 0;
-        for (Map.Entry<String, InputStream> file : files.entrySet())
-        {
-            RequestBody stream = IOUtil.createRequestBody(Requester.MEDIA_TYPE_OCTET, file.getValue());
-            body.addFormDataPart("files[" + (i++) + "]", file.getKey(), stream);
-        }
-
+        MultipartBody.Builder body = FileUpload.createMultipartBody(files);
         body.addFormDataPart("payload_json", data.toString());
         files.clear();
         return body.build();
