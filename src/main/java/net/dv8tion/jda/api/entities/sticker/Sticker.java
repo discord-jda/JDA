@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.entities.sticker;
 
+import net.dv8tion.jda.api.utils.ImageProxy;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.utils.Helpers;
 
@@ -62,7 +63,21 @@ public interface Sticker extends StickerSnowflake
         return Helpers.format(ICON_URL, getId(), getFormatType().getExtension());
     }
 
-    // TODO getIconProxy
+    /**
+     * Returns an {@link ImageProxy} for this sticker's image.
+     *
+     * @throws java.lang.IllegalStateException
+     *         If the {@link StickerFormat} of this sticker is {@link StickerFormat#UNKNOWN UNKNOWN}
+     *
+     * @return Never-null {@link ImageProxy} of this sticker's image
+     *
+     * @see    #getIconUrl()
+     */
+    @Nonnull
+    default ImageProxy getIcon()
+    {
+        return new ImageProxy(getIconUrl());
+    }
 
     enum StickerFormat
     {

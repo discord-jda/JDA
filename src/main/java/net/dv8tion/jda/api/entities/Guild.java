@@ -39,6 +39,7 @@ import net.dv8tion.jda.api.requests.restaction.order.RoleOrderAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.AuditLogPaginationAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.BanPaginationAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.PaginationAction;
+import net.dv8tion.jda.api.utils.ImageProxy;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.api.utils.cache.MemberCacheView;
@@ -625,6 +626,20 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     }
 
     /**
+     * Returns an {@link ImageProxy} for this guild's icon.
+     *
+     * @return The {@link ImageProxy} of this guild's icon
+     *
+     * @see    #getIconUrl()
+     */
+    @Nullable
+    default ImageProxy getIcon()
+    {
+        final String iconUrl = getIconUrl();
+        return iconUrl == null ? null : new ImageProxy(iconUrl);
+    }
+
+    /**
      * The Features of the {@link net.dv8tion.jda.api.entities.Guild Guild}.
      * <p>
      * <a target="_blank" href="https://discord.com/developers/docs/resources/guild#guild-object-guild-features"><b>List of Features</b></a>
@@ -663,6 +678,20 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     {
         String splashId = getSplashId();
         return splashId == null ? null : String.format(SPLASH_URL, getId(), splashId);
+    }
+
+    /**
+     * Returns an {@link ImageProxy} for this guild's splash icon.
+     *
+     * @return Possibly-null {@link ImageProxy} of this guild's splash icon
+     *
+     * @see    #getSplashUrl()
+     */
+    @Nullable
+    default ImageProxy getSplash()
+    {
+        final String splashUrl = getSplashUrl();
+        return splashUrl == null ? null : new ImageProxy(splashUrl);
     }
 
     /**
@@ -779,6 +808,20 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     }
 
     /**
+     * Returns an {@link ImageProxy} for this guild's banner image.
+     *
+     * @return Possibly-null {@link ImageProxy} of this guild's banner image
+     *
+     * @see    #getBannerUrl()
+     */
+    @Nullable
+    default ImageProxy getBanner()
+    {
+        final String bannerUrl = getBannerUrl();
+        return bannerUrl == null ? null : new ImageProxy(bannerUrl);
+    }
+
+    /**
      * The boost tier for this guild.
      * <br>Each tier unlocks new perks for a guild that can be seen in the {@link #getFeatures() features}.
      *
@@ -802,6 +845,9 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * Sorted list of {@link net.dv8tion.jda.api.entities.Member Members} that boost this guild.
      * <br>The list is sorted by {@link net.dv8tion.jda.api.entities.Member#getTimeBoosted()} ascending.
      * This means the first element will be the member who has been boosting for the longest time.
+     *
+     * <p>This will only check cached members!
+     * <br>See {@link net.dv8tion.jda.api.utils.MemberCachePolicy MemberCachePolicy}
      *
      * @return Possibly-immutable list of members who boost this guild
      */

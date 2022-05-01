@@ -29,6 +29,7 @@ import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.EnumSet;
 import java.util.FormattableFlags;
 import java.util.Formatter;
@@ -68,6 +69,7 @@ public class UserImpl extends UserSnowflakeImpl implements User
         return Helpers.format("%04d", discriminator);
     }
 
+    @Nullable
     @Override
     public String getAvatarId()
     {

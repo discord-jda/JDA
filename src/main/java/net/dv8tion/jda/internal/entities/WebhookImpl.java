@@ -42,7 +42,6 @@ public class WebhookImpl extends AbstractWebhookClient<Void> implements Webhook
 {
     private final BaseGuildMessageChannel channel;
     private final WebhookType type;
-    private WebhookManager manager;
 
     private Member owner;
     private User user, ownerUser;
@@ -179,9 +178,7 @@ public class WebhookImpl extends AbstractWebhookClient<Void> implements Webhook
     @Override
     public WebhookManager getManager()
     {
-        if (manager == null)
-            return manager = new WebhookManagerImpl(this);
-        return manager;
+        return new WebhookManagerImpl(this);
     }
 
     @Override

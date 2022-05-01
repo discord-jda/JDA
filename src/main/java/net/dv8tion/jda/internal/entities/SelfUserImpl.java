@@ -27,8 +27,6 @@ import javax.annotation.Nonnull;
 
 public class SelfUserImpl extends UserImpl implements SelfUser
 {
-    protected AccountManager manager;
-
     private boolean verified;
     private boolean mfaEnabled;
     private long applicationId;
@@ -95,9 +93,7 @@ public class SelfUserImpl extends UserImpl implements SelfUser
     @Override
     public AccountManager getManager()
     {
-        if (manager == null)
-            return manager = new AccountManagerImpl(this);
-        return manager;
+        return new AccountManagerImpl(this);
     }
 
     public SelfUserImpl setVerified(boolean verified)

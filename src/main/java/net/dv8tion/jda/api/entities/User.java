@@ -18,6 +18,7 @@ package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.api.utils.ImageProxy;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.entities.UserSnowflakeImpl;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -150,7 +151,7 @@ public interface User extends UserSnowflake
     String getDiscriminator();
 
     /**
-     * The Discord Id for this user's avatar image.
+     * The Discord ID for this user's avatar image.
      * If the user has not set an image, this will return null.
      *
      * @throws UnsupportedOperationException
@@ -178,7 +179,21 @@ public interface User extends UserSnowflake
     }
 
     /**
-     * The Discord Id for this user's default avatar image.
+     * Returns an {@link ImageProxy} for this user's avatar.
+     *
+     * @return Possibly-null {@link ImageProxy} of this user's avatar
+     *
+     * @see    #getAvatarUrl()
+     */
+    @Nullable
+    default ImageProxy getAvatar()
+    {
+        final String avatarUrl = getAvatarUrl();
+        return avatarUrl == null ? null : new ImageProxy(avatarUrl);
+    }
+
+    /**
+     * The Discord ID for this user's default avatar image.
      *
      * @throws UnsupportedOperationException
      *         If this User was created with {@link #fromId(long)}
@@ -189,7 +204,7 @@ public interface User extends UserSnowflake
     String getDefaultAvatarId();
 
     /**
-     * The URL for the for the user's default avatar image.
+     * The URL for the user's default avatar image.
      *
      * @throws UnsupportedOperationException
      *         If this User was created with {@link #fromId(long)}
@@ -200,6 +215,19 @@ public interface User extends UserSnowflake
     default String getDefaultAvatarUrl()
     {
         return String.format(DEFAULT_AVATAR_URL, getDefaultAvatarId());
+    }
+
+    /**
+     * Returns an {@link ImageProxy} for this user's default avatar.
+     *
+     * @return Never-null {@link ImageProxy} of this user's default avatar
+     *
+     * @see    #getDefaultAvatarUrl()
+     */
+    @Nonnull
+    default ImageProxy getDefaultAvatar()
+    {
+        return new ImageProxy(getDefaultAvatarUrl());
     }
 
     /**
@@ -217,6 +245,20 @@ public interface User extends UserSnowflake
     {
         String avatarUrl = getAvatarUrl();
         return avatarUrl == null ? getDefaultAvatarUrl() : avatarUrl;
+    }
+
+    /**
+     * Returns an {@link ImageProxy} for this user's effective avatar image.
+     *
+     * @return Never-null {@link ImageProxy} of this user's effective avatar image
+     *
+     * @see    #getEffectiveAvatarUrl()
+     */
+    @Nonnull
+    default ImageProxy getEffectiveAvatar()
+    {
+        final ImageProxy avatar = getAvatar();
+        return avatar == null ? getDefaultAvatar() : avatar;
     }
 
     /**
@@ -400,6 +442,20 @@ public interface User extends UserSnowflake
         public String getBannerUrl()
         {
             return bannerId == null ? null : String.format(BANNER_URL, Long.toUnsignedString(userId), bannerId, bannerId.startsWith("a_") ? "gif" : "png");
+        }
+
+        /**
+         * Returns an {@link ImageProxy} for this user's banner.
+         *
+         * @return Possibly-null {@link ImageProxy} of this user's banner
+         *
+         * @see    #getBannerUrl()
+         */
+        @Nullable
+        public ImageProxy getBanner()
+        {
+            final String bannerUrl = getBannerUrl();
+            return bannerUrl == null ? null : new ImageProxy(bannerUrl);
         }
 
         /**
