@@ -225,6 +225,7 @@ public final class Helpers
         return col == null || col.isEmpty() ? EnumSet.noneOf(clazz) : EnumSet.copyOf(col);
     }
 
+    @SafeVarargs
     public static <T> Set<T> setOf(T... elements)
     {
         Set<T> set = new HashSet<>(elements.length);

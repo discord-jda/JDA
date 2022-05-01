@@ -656,7 +656,7 @@ public interface GuildMessageChannel extends GuildChannel, MessageChannel
      * @throws IllegalArgumentException
      *         <ul>
      *           <li>If any of the provided stickers is a {@link GuildSticker},
-     *               which is either {@link GuildSticker#isAvailable() unavailable} or from a different guild.</li
+     *               which is either {@link GuildSticker#isAvailable() unavailable} or from a different guild.</li>
      *           <li>If the list is empty or has more than 3 stickers</li>
      *           <li>If null is provided</li>
      *         </ul>
@@ -687,7 +687,7 @@ public interface GuildMessageChannel extends GuildChannel, MessageChannel
      * @throws IllegalArgumentException
      *         <ul>
      *           <li>If any of the provided stickers is a {@link GuildSticker},
-     *               which is either {@link GuildSticker#isAvailable() unavailable} or from a different guild.</li
+     *               which is either {@link GuildSticker#isAvailable() unavailable} or from a different guild.</li>
      *           <li>If the list is empty or has more than 3 stickers</li>
      *           <li>If null is provided</li>
      *         </ul>

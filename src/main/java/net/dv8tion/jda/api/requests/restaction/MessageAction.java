@@ -909,7 +909,7 @@ public interface MessageAction extends RestAction<Message>, Appendable, AllowedM
      * @throws IllegalArgumentException
      *         <ul>
      *           <li>If any of the provided stickers is a {@link GuildSticker},
-     *               which is either {@link GuildSticker#isAvailable() unavailable} or from a different guild.</li
+     *               which is either {@link GuildSticker#isAvailable() unavailable} or from a different guild.</li>
      *           <li>If the collection has more than 3 stickers</li>
      *           <li>If a collection with null entries is provided</li>
      *         </ul>
@@ -934,7 +934,7 @@ public interface MessageAction extends RestAction<Message>, Appendable, AllowedM
      * @throws IllegalArgumentException
      *         <ul>
      *           <li>If any of the provided stickers is a {@link GuildSticker},
-     *               which is either {@link GuildSticker#isAvailable() unavailable} or from a different guild.</li
+     *               which is either {@link GuildSticker#isAvailable() unavailable} or from a different guild.</li>
      *           <li>If the collection has more than 3 stickers</li>
      *           <li>If a collection with null entries is provided</li>
      *         </ul>
