@@ -755,17 +755,23 @@ public class JDAImpl implements JDA
     }
     
     @Override
-    public void awaitShutdown() throws InterruptedException
+    public boolean awaitShutdown(long timeout, TimeUnit unit) throws InterruptedException
     {
+        // timestamp to abort wait and return early
+        // sleep spinning means actual return will be slightly late
+        // but it'll be close enough for practical purposes
+        long timeoutAtMillis = System.currentTimeMillis() + unit.toMillis(timeout);
         WebSocketClient client = getClient();
         if (client != null)
         {
             while (status != Status.SHUTDOWN)
             {
+                if (System.currentTimeMillis() >= timeoutAtMillis)
+                    return false;
                 Thread.sleep(50);
             }
         }
-        threadConfig.awaitTermination();
+        return threadConfig.awaitTermination(timeoutAtMillis);
     }
 
     public synchronized void shutdownInternals()

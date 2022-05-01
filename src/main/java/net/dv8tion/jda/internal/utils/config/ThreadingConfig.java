@@ -132,25 +132,51 @@ public class ThreadingConfig
             audioPool.shutdownNow();
     }
     
-    public void awaitTermination() throws InterruptedException
+    public boolean awaitTermination(long timeoutAtMillis) throws InterruptedException
     {
-        // wait "forever"
-        // common pool needs special handling, this is not foolproof but best we can do
-        if (callbackPool == ForkJoinPool.commonPool())
+        // loop while asking every pool whether they terminated yet
+        boolean isAnyPoolAlive = true;
+        while (isAnyPoolAlive)
         {
-            ForkJoinPool forkJoinPool = (ForkJoinPool) callbackPool;
-            forkJoinPool.awaitQuiescence(Long.MAX_VALUE, TimeUnit.MILLISECONDS);
+            // presume all are dead unless they show signs of life
+            isAnyPoolAlive = false;
+            
+            // isAnyPoolAlive |= x ensures isAnyPoolAlive latches true regardless of any
+            // later pool in the order returning termination
+            
+            if (shutdownCallbackPool)
+            {
+                // common pool needs special handling, this is not foolproof but best we can do
+                if (callbackPool == ForkJoinPool.commonPool())
+                {
+                    ForkJoinPool commonPool = (ForkJoinPool) callbackPool;
+                    isAnyPoolAlive |= !commonPool.isQuiescent();
+                }
+                else
+                {
+                    isAnyPoolAlive |= !callbackPool.isTerminated();
+                }
+            }
+            
+            if (shutdownGatewayPool)
+                isAnyPoolAlive |= !gatewayPool.isTerminated();
+            if (shutdownRateLimitPool)
+                isAnyPoolAlive |= !rateLimitPool.isTerminated();
+            if (eventPool != null && shutdownEventPool)
+                isAnyPoolAlive |= !eventPool.isTerminated();
+            if (audioPool != null && shutdownAudioPool)
+                isAnyPoolAlive |= !audioPool.isTerminated();
+            
+            // if any pool is alive, sleep then recheck
+            if (isAnyPoolAlive)
+            {
+                // timeout hit, return early
+                if (System.currentTimeMillis() >= timeoutAtMillis)
+                    return false;
+                Thread.sleep(50);
+            }
         }
-        else if (shutdownCallbackPool)
-            callbackPool.awaitTermination(Long.MAX_VALUE, TimeUnit.MILLISECONDS);
-        if (shutdownGatewayPool)
-            gatewayPool.awaitTermination(Long.MAX_VALUE, TimeUnit.MILLISECONDS);
-        if (shutdownRateLimitPool)
-            rateLimitPool.awaitTermination(Long.MAX_VALUE, TimeUnit.MILLISECONDS);
-        if (eventPool != null && shutdownEventPool)
-            eventPool.awaitTermination(Long.MAX_VALUE, TimeUnit.MILLISECONDS);
-        if (audioPool != null && shutdownAudioPool)
-            audioPool.awaitTermination(Long.MAX_VALUE, TimeUnit.MILLISECONDS);
+        return true;
     }
 
     @Nonnull

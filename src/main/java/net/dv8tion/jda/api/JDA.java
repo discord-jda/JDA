@@ -51,6 +51,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
@@ -2376,16 +2377,24 @@ public interface JDA
     void shutdownNow();
     
     /**
-     * Blocks until this JDA instance fully shuts down. <b>This method does not shut down JDA.</b>
+     * Blocks until this JDA instance fully shuts down or the timeout expires. <b>This method does not shut down JDA.</b>
      * 
      * <p>If you want to run code after shutting down async, use the {@link ShutdownEvent} in preference to this method.
      * 
+     * @param timeout
+     *        The timeout to wait for shutdown before returning.
+     *        
+     * @param unit
+     *        {@link TimeUnit Unit} for the timeout value.
+     *        
      * @throws InterruptedException
-     *          if the current thread is interrupted while waiting
+     *          if the current thread is interrupted while waiting.
+     *          
+     * @return true if shutdown completed, false if the timeout expires.
      * 
      * @see {@link net.dv8tion.jda.api.events.ShutdownEvent ShutdownEvent}
      */
-    void awaitShutdown() throws InterruptedException;
+    boolean awaitShutdown(long timeout, TimeUnit unit) throws InterruptedException;
 
     ///**
     // * Installs an auxiliary cable into the given port of your system.
