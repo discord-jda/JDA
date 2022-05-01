@@ -86,6 +86,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 public class JDAImpl implements JDA
@@ -346,7 +347,7 @@ public class JDAImpl implements JDA
 
     public void setStatus(Status status)
     {
-        synchronized (Status.class) // only for use as a mutex, status is volatile and no counterpart is needed
+        synchronized (this) // only for use as a mutex, status is volatile and no counterpart is needed
         {
             Status oldStatus = this.status;
             this.status = status;
@@ -759,7 +760,7 @@ public class JDAImpl implements JDA
         WebSocketClient client = getClient();
         if (client != null)
         {
-            while (!client.isShutdownEventFired())
+            while (status != Status.SHUTDOWN)
             {
                 Thread.sleep(50);
             }
