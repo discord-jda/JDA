@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.entities;
 
+import net.dv8tion.jda.api.utils.ImageProxy;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.utils.Checks;
 
@@ -84,6 +85,20 @@ public interface ApplicationTeam extends ISnowflake
     {
         String iconId = getIconId();
         return iconId == null ? null : String.format(ICON_URL, getId(), iconId);
+    }
+
+    /**
+     * Returns an {@link ImageProxy} for this application team's icon.
+     *
+     * @return The {@link ImageProxy} of this application team's icon, or null if no icon is applied
+     *
+     * @see    #getIconUrl()
+     */
+    @Nullable
+    default ImageProxy getIcon()
+    {
+        final String iconUrl = getIconUrl();
+        return iconUrl == null ? null : new ImageProxy(iconUrl);
     }
 
     /**

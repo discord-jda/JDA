@@ -328,7 +328,7 @@ public class InviteImpl implements Invite
         private final VerificationLevel verificationLevel;
         private final Set<String> features;
 
-        public GuildImpl(final long id, final String iconId, final String name, final String splashId, 
+        public GuildImpl(final long id, final String iconId, final String name, final String splashId,
                          final VerificationLevel verificationLevel, final int presenceCount, final int memberCount, final Set<String> features)
         {
             this.id = id;

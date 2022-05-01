@@ -15,6 +15,8 @@
  */
 package net.dv8tion.jda.api.entities;
 
+import net.dv8tion.jda.annotations.ForRemoval;
+import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.exceptions.HttpException;
@@ -29,6 +31,7 @@ import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationAction;
 import net.dv8tion.jda.api.utils.AttachmentOption;
+import net.dv8tion.jda.api.utils.AttachmentProxy;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.requests.FunctionalCallback;
@@ -2789,6 +2792,19 @@ public interface Message extends ISnowflake, Formattable
         }
 
         /**
+         * Returns an {@link AttachmentProxy} for this attachment.
+         *
+         * @return Non-null {@link AttachmentProxy} of this attachment
+         *
+         * @see    #getProxyUrl()
+         */
+        @Nonnull
+        public AttachmentProxy getProxy()
+        {
+            return new AttachmentProxy(getProxyUrl());
+        }
+
+        /**
          * The file name of the Attachment when it was first uploaded.
          *
          * @return Non-null String containing the Attachment file name.
@@ -2863,8 +2879,13 @@ public interface Message extends ISnowflake, Formattable
          * }</pre>
          *
          * @return {@link java.util.concurrent.CompletableFuture} - Type: {@link java.io.InputStream}
+         *
+         * @deprecated Replaced by {@link #getProxy}, see {@link AttachmentProxy#download()}
          */
         @Nonnull
+        @Deprecated
+        @ForRemoval
+        @ReplaceWith("getProxy().download()")
         public CompletableFuture<InputStream> retrieveInputStream() // it is expected that the response is closed by the callback!
         {
             CompletableFuture<InputStream> future = new CompletableFuture<>();
@@ -2908,8 +2929,13 @@ public interface Message extends ISnowflake, Formattable
          * }</pre>
          *
          * @return {@link java.util.concurrent.CompletableFuture} - Type: {@link java.io.File}
+         *
+         * @deprecated Replaced by {@link #getProxy}, see {@link AttachmentProxy#downloadToFile(File)}
          */
         @Nonnull
+        @Deprecated
+        @ForRemoval
+        @ReplaceWith("getProxy().downloadToFile()")
         public CompletableFuture<File> downloadToFile() // using relative path
         {
             return downloadToFile(getFileName());
@@ -2941,8 +2967,13 @@ public interface Message extends ISnowflake, Formattable
          *         If the provided path is null
          *
          * @return {@link java.util.concurrent.CompletableFuture} - Type: {@link java.io.File}
+         *
+         * @deprecated Replaced by {@link #getProxy}, see {@link AttachmentProxy#downloadToFile(File)}
          */
         @Nonnull
+        @Deprecated
+        @ForRemoval
+        @ReplaceWith("getProxy().downloadToFile(new File(String))")
         public CompletableFuture<File> downloadToFile(String path)
         {
             Checks.notNull(path, "Path");
@@ -2975,9 +3006,13 @@ public interface Message extends ISnowflake, Formattable
          *         If the provided file is null or cannot be written to
          *
          * @return {@link java.util.concurrent.CompletableFuture} - Type: {@link java.io.File}
+         *
+         * @deprecated Replaced by {@link #getProxy}, see {@link AttachmentProxy#downloadToFile(File)}
          */
         @SuppressWarnings("ResultOfMethodCallIgnored")
         @Nonnull
+        @ForRemoval
+        @ReplaceWith("getProxy().downloadToFile(File)")
         public CompletableFuture<File> downloadToFile(File file)
         {
             Checks.notNull(file, "File");
@@ -3040,8 +3075,11 @@ public interface Message extends ISnowflake, Formattable
          *         If this is not an image ({@link #isImage()})
          *
          * @return {@link java.util.concurrent.CompletableFuture} - Type: {@link net.dv8tion.jda.api.entities.Icon}
+         *
+         * @deprecated Replaced by {@link #getProxy}, see {@link AttachmentProxy#downloadAsIcon()}
          */
         @Nonnull
+        @ReplaceWith("getProxy().downloadAsIcon()")
         public CompletableFuture<Icon> retrieveAsIcon()
         {
             if (!isImage())
