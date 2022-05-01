@@ -1,7 +1,9 @@
 package net.dv8tion.jda.internal.managers;
 
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.sticker.StickerSnowflake;
+import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.GuildStickerManager;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.requests.Route;
@@ -22,7 +24,8 @@ public class GuildStickerManagerImpl extends ManagerBase<GuildStickerManager> im
     {
         super(guild.getJDA(), Route.Stickers.MODIFY_STICKER.compile(guild.getId(), sticker.getId()));
         this.guild = guild;
-        // TODO: perm checks
+        if (isPermissionChecksEnabled())
+            checkPermissions();
     }
 
     @Nonnull
@@ -110,5 +113,13 @@ public class GuildStickerManagerImpl extends ManagerBase<GuildStickerManager> im
             object.put("tags", tags);
         reset();
         return getRequestBody(object);
+    }
+
+    @Override
+    protected boolean checkPermissions()
+    {
+        if (!getGuild().getSelfMember().hasPermission(Permission.MANAGE_EMOTES_AND_STICKERS))
+            throw new InsufficientPermissionException(getGuild(), Permission.MANAGE_EMOTES_AND_STICKERS);
+        return super.checkPermissions();
     }
 }

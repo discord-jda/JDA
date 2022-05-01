@@ -50,8 +50,6 @@ public enum CacheFlag
      * <p>Requires {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_EMOJIS_AND_STICKERS GUILD_EMOJIS_AND_STICKERS} intent to be enabled.
      */
     EMOTE(GatewayIntent.GUILD_EMOJIS_AND_STICKERS),
-    // TODO: Sticker Cache
-    /*
     /**
      * Enables cache for {@link Guild#getStickerCache()}
      *
