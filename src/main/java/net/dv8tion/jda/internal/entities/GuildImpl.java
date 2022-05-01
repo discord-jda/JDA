@@ -92,7 +92,6 @@ public class GuildImpl implements Guild
     private final MemberCacheViewImpl memberCache = new MemberCacheViewImpl();
     private final CacheView.SimpleCacheView<MemberPresenceImpl> memberPresences;
 
-    private GuildManager manager;
     private CompletableFuture<Void> pendingRequestToSpeak;
 
     private Member owner;
@@ -885,9 +884,7 @@ public class GuildImpl implements Guild
     @Override
     public GuildManager getManager()
     {
-        if (manager == null)
-            return manager = new GuildManagerImpl(this);
-        return manager;
+        return new GuildManagerImpl(this);
     }
 
     @Override
