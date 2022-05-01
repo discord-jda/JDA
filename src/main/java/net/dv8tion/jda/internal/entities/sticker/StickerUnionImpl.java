@@ -95,6 +95,6 @@ public class StickerUnionImpl implements StickerUnion
     @Override
     public String toString()
     {
-        return "StickerUnion:" + getType() + ':' + getName() + '(' + getId() + ')';
+        return "StickerUnion[" + getType() + "]:" + getName() + '(' + getId() + ')';
     }
 }

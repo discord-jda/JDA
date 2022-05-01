@@ -19,8 +19,18 @@ package net.dv8tion.jda.api.entities.sticker;
 import javax.annotation.Nonnull;
 import java.util.Set;
 
+/**
+ * Covers more details of stickers which are missing in messages.
+ *
+ * <p>This is used when stickers are fetched directly from the API or cache, instead of message objects.
+ */
 public interface RichSticker extends Sticker
 {
+    /**
+     * The {@link Sticker.Type Sticker Type}
+     *
+     * @return The type
+     */
     @Nonnull
     Sticker.Type getType();
 

@@ -18,11 +18,33 @@ package net.dv8tion.jda.api.entities.sticker;
 
 import javax.annotation.Nonnull;
 
+/**
+ * Represents possible {@link RichSticker} types.
+ *
+ * <p>This delegates the sticker methods for a rich sticker type,
+ * but can be converted to a concrete type using either {@link #asGuildSticker()} or {@link #asStandardSticker()}.
+ */
 public interface StickerUnion extends RichSticker
 {
+    /**
+     * Returns the underlying {@link StandardSticker} if applicable.
+     *
+     * @throws IllegalStateException
+     *         If this is not a {@link StandardSticker}
+     *
+     * @return The {@link StandardSticker}
+     */
     @Nonnull
     StandardSticker asStandardSticker();
 
+    /**
+     * Returns the underlying {@link GuildSticker} if applicable.
+     *
+     * @throws IllegalStateException
+     *         If this is not a {@link GuildSticker}
+     *
+     * @return The {@link GuildSticker}
+     */
     @Nonnull
     GuildSticker asGuildSticker();
 }

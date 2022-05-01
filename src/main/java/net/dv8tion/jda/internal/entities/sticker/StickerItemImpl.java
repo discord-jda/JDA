@@ -40,6 +40,7 @@ public class StickerItemImpl implements StickerItem
         return id;
     }
 
+    @Nonnull
     @Override
     public StickerFormat getFormatType()
     {

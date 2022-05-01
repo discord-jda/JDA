@@ -626,7 +626,7 @@ public class JDAImpl implements JDA
 
     @Nonnull
     @Override
-    public RestAction<StickerUnion> retrieveSticker(@Nonnull String id)
+    public RestAction<StickerUnion> retrieveStickerById(@Nonnull String id)
     {
         Checks.isSnowflake(id);
         Route.CompiledRoute route = Route.Stickers.GET_STICKER.compile(id);

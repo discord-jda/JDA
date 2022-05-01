@@ -16,20 +16,54 @@
 
 package net.dv8tion.jda.api.entities.sticker;
 
+import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.ISnowflake;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.entities.sticker.StickerSnowflakeImpl;
 
 import javax.annotation.Nonnull;
 
+/**
+ * Represents an abstract sticker reference by only the sticker ID.
+ *
+ * <p>This is used for methods which only need a sticker ID to function, you cannot use this for getting names or similar.
+ * To get information about a sticker by their ID you can use {@link JDA#retrieveStickerById(long)} or {@link JDA#retrieveStickerById(long)} instead.
+ */
 public interface StickerSnowflake extends ISnowflake
 {
+    /**
+     * Creates a sticker snowflake instance which only wraps an ID.
+     *
+     * <p>This is primarily used for message sending purposes.
+     *
+     * @param  id
+     *         The sticker id
+     *
+     * @return A sticker snowflake instance
+     *
+     * @see    JDA#retrieveStickerById(long)
+     */
     @Nonnull
     static StickerSnowflake fromId(long id)
     {
         return new StickerSnowflakeImpl(id);
     }
 
+    /**
+     * Creates a sticker snowflake instance which only wraps an ID.
+     *
+     * <p>This is primarily used for message sending purposes.
+     *
+     * @param  id
+     *         The sticker id
+     *
+     * @throws IllegalArgumentException
+     *         If the provided ID is not a valid snowflake
+     *
+     * @return A sticker snowflake instance
+     *
+     * @see    JDA#retrieveStickerById(String)
+     */
     @Nonnull
     static StickerSnowflake fromId(@Nonnull String id)
     {

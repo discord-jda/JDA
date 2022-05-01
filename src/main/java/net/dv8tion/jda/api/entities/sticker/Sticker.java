@@ -16,29 +16,72 @@
 
 package net.dv8tion.jda.api.entities.sticker;
 
+import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.utils.ImageProxy;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.Nonnull;
 
+/**
+ * Abstract representation of all sticker types.
+ *
+ * <p>This is specialized in {@link StandardSticker} and {@link GuildSticker}.
+ */
 public interface Sticker extends StickerSnowflake
 {
     /** Template for {@link #getIconUrl()} */
     String ICON_URL = "https://cdn.discordapp.com/stickers/%s.%s";
 
+    /**
+     * Creates a sticker snowflake instance which only wraps an ID.
+     *
+     * <p>This is primarily used for message sending purposes.
+     *
+     * @param  id
+     *         The sticker id
+     *
+     * @return A sticker snowflake instance
+     *
+     * @see    JDA#retrieveStickerById(long)
+     */
     @Nonnull
     static StickerSnowflake fromId(long id)
     {
         return StickerSnowflake.fromId(id);
     }
 
+    /**
+     * Creates a sticker snowflake instance which only wraps an ID.
+     *
+     * <p>This is primarily used for message sending purposes.
+     *
+     * @param  id
+     *         The sticker id
+     *
+     * @throws IllegalArgumentException
+     *         If the provided ID is not a valid snowflake
+     *
+     * @return A sticker snowflake instance
+     *
+     * @see    JDA#retrieveStickerById(String)
+     */
     @Nonnull
     static StickerSnowflake fromId(@Nonnull String id)
     {
         return fromId(MiscUtil.parseSnowflake(id));
     }
 
+    /**
+     * The format type of this sticker, used for {@link #getIconUrl()}.
+     * <br>Note that stickers can be of type {@link StickerFormat#LOTTIE LOTTIE}, which don't have simple image icons,
+     * but instead rely on client-side rendering.
+     *
+     * <p>Future stickers might have format {@link StickerFormat#UNKNOWN UNKNOWN}, which cannot be converted to a URL.
+     *
+     * @return The {@link StickerFormat} of this sticker
+     */
+    @Nonnull
     StickerFormat getFormatType();
 
     /**
@@ -51,6 +94,7 @@ public interface Sticker extends StickerSnowflake
 
     /**
      * The url of the sticker image.
+     * <br>Note that {@link StickerFormat#LOTTIE LOTTIE} stickers don't provide an image, but a JSON format.
      *
      * @throws java.lang.IllegalStateException
      *         If the {@link StickerFormat StickerFormat} of this sticker is {@link StickerFormat#UNKNOWN UNKNOWN}
@@ -81,6 +125,9 @@ public interface Sticker extends StickerSnowflake
         return new ImageProxy(getIconUrl());
     }
 
+    /**
+     * The various formats used for stickers and the respective file extensions.
+     */
     enum StickerFormat
     {
         /**
@@ -148,10 +195,23 @@ public interface Sticker extends StickerSnowflake
         }
     }
 
+    /**
+     * The specific types of stickers
+     */
     enum Type
     {
+        /**
+         * A sticker provided by nitro sticker packs. Such as wumpus or doggo stickers.
+         * <br>These are also used for the wave buttons on welcome messages.
+         */
         STANDARD(1),
+        /**
+         * A custom sticker created for a {@link net.dv8tion.jda.api.entities.Guild Guild}.
+         */
         GUILD(2),
+        /**
+         * Placeholder for future stickers which are currently unsupported.
+         */
         UNKNOWN(-1);
 
         private final int id;
@@ -161,6 +221,16 @@ public interface Sticker extends StickerSnowflake
             this.id = id;
         }
 
+        /**
+         * Gets the sticker type related to the provided id.
+         * <br>If an unknown id is provided, this returns {@link #UNKNOWN}.
+         *
+         * @param  id
+         *         The raw id for the type
+         *
+         * @return The Type that has the key provided, or {@link #UNKNOWN}
+         */
+        @Nonnull
         public static Type fromId(int id)
         {
             for (Type type : values())
@@ -171,6 +241,11 @@ public interface Sticker extends StickerSnowflake
             return UNKNOWN;
         }
 
+        /**
+         * The Discord defined id key for this sticker type.
+         *
+         * @return the id key
+         */
         public int getId()
         {
             return id;

@@ -18,8 +18,7 @@ package net.dv8tion.jda.api;
 
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.IGuildChannelContainer;
-import net.dv8tion.jda.api.entities.sticker.StickerPack;
-import net.dv8tion.jda.api.entities.sticker.StickerUnion;
+import net.dv8tion.jda.api.entities.sticker.*;
 import net.dv8tion.jda.api.hooks.IEventManager;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
@@ -1533,10 +1532,59 @@ public interface JDA extends IGuildChannelContainer
         return getEmoteCache().getElementsByName(name, ignoreCase);
     }
 
+    /**
+     * Attempts to retrieve a {@link Sticker} object based on the provided id.
+     * <br>This works for both {@link StandardSticker} and {@link GuildSticker}, and you can resolve them using the provided {@link StickerUnion}.
+     *
+     * <p>If the sticker is not one of the supported {@link Sticker.Type Types}, the request fails with {@link IllegalArgumentException}.
+     *
+     * <p>The returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} can encounter the following Discord errors:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_STICKER UNKNOWN_STICKER}
+     *     <br>Occurs when the provided id does not refer to a sticker known by Discord.</li>
+     * </ul>
+     *
+     * @param  id
+     *         The id of the requested {@link Sticker}.
+     *
+     * @throws IllegalArgumentException
+     *         If the provided id is not a valid snowflake
+     *
+     * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link StickerUnion}
+     *         <br>On request, gets the sticker with id matching provided id from Discord.
+     */
     @Nonnull
     @CheckReturnValue
-    RestAction<StickerUnion> retrieveSticker(@Nonnull String id);
+    RestAction<StickerUnion> retrieveStickerById(@Nonnull String id);
 
+    /**
+     * Attempts to retrieve a {@link Sticker} object based on the provided id.
+     * <br>This works for both {@link StandardSticker} and {@link GuildSticker}, and you can resolve them using the provided {@link StickerUnion}.
+     *
+     * <p>The returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} can encounter the following Discord errors:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_STICKER UNKNOWN_STICKER}
+     *     <br>Occurs when the provided id does not refer to a sticker known by Discord.</li>
+     * </ul>
+     *
+     * @param  id
+     *         The id of the requested {@link Sticker}.
+     *
+     * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link StickerUnion}
+     *         <br>On request, gets the sticker with id matching provided id from Discord.
+     */
+    @Nonnull
+    @CheckReturnValue
+    default RestAction<StickerUnion> retrieveStickerById(long id)
+    {
+        return retrieveStickerById(Long.toUnsignedString(id));
+    }
+
+    /**
+     * Retrieves a list of all the public {@link StickerPack StickerPacks} used for nitro.
+     *
+     * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: List of {@link StickerPack}
+     */
     @Nonnull
     @CheckReturnValue
     RestAction<List<StickerPack>> retrieveNitroStickerPacks();

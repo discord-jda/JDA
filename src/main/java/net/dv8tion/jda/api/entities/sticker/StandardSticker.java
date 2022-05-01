@@ -18,13 +18,17 @@ package net.dv8tion.jda.api.entities.sticker;
 
 import javax.annotation.Nonnull;
 
+/**
+ * Standard stickers used for nitro and wave buttons on welcome messages.
+ *
+ * <p>This includes stickers from {@link StickerPack StickerPacks}, such as wumpus or doggos.
+ */
 public interface StandardSticker extends RichSticker
 {
     /**
      * The ID of the pack the sticker is from.
      *
      * @return the ID of the pack the sticker is from
-     *
      */
     long getPackIdLong();
 
@@ -32,7 +36,6 @@ public interface StandardSticker extends RichSticker
      * The ID of the pack the sticker is from.
      *
      * @return the ID of the pack the sticker is from
-     *
      */
     @Nonnull
     default String getPackId()
