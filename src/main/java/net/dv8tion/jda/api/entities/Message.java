@@ -19,10 +19,13 @@ import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.sticker.GuildSticker;
+import net.dv8tion.jda.api.entities.sticker.Sticker;
 import net.dv8tion.jda.api.entities.sticker.StickerItem;
 import net.dv8tion.jda.api.entities.sticker.StickerSnowflake;
 import net.dv8tion.jda.api.exceptions.HttpException;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
+import net.dv8tion.jda.api.exceptions.MissingAccessException;
 import net.dv8tion.jda.api.interactions.InteractionType;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
@@ -987,13 +990,13 @@ public interface Message extends ISnowflake, Formattable
     List<MessageReaction> getReactions();
 
     /**
-     * All {@link StickerItem MessageStickers} that are in this Message.
-     * <br>The returned MessageStickers may only contain necessary information such as the sticker id, format type, name, and icon url.
+     * All {@link StickerItem StickerItems} that are in this Message.
+     * <br>The returned StickerItems may only contain necessary information such as the sticker id, format type, name, and icon url.
      *
      * @throws java.lang.UnsupportedOperationException
      *         If this is a system message
      *
-     * @return Immutable list of all MessageStickers in this message.
+     * @return Immutable list of all StickerItems in this message.
      */
     @Nonnull
     List<StickerItem> getStickers();
@@ -1326,18 +1329,84 @@ public interface Message extends ISnowflake, Formattable
     @CheckReturnValue
     MessageAction editMessage(@Nonnull Message newContent);
 
+    /**
+     * Replies and references this message.
+     * <br>This is identical to {@code message.getGuildChannel().sendStickers(stickers).reference(message)}.
+     * You can use {@link MessageAction#mentionRepliedUser(boolean) mentionRepliedUser(false)} to not mention the author of the message.
+     * <br>By default there won't be any error thrown if the referenced message does not exist.
+     * This behavior can be changed with {@link MessageAction#failOnInvalidReply(boolean)}.
+     *
+     * <p>For further info, see {@link GuildMessageChannel#sendStickers(Collection)} and {@link MessageAction#reference(Message)}.
+     *
+     * @param  stickers
+     *         The 1-3 stickers to send
+     *
+     * @throws MissingAccessException
+     *         If the currently logged in account does not have {@link Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} in this channel
+     * @throws InsufficientPermissionException
+     *         <ul>
+     *           <li>If this is a {@link ThreadChannel} and the bot does not have {@link Permission#MESSAGE_SEND_IN_THREADS Permission.MESSAGE_SEND_IN_THREADS}</li>
+     *           <li>If this is not a {@link ThreadChannel} and the bot does not have {@link Permission#MESSAGE_SEND Permission.MESSAGE_SEND}</li>
+     *         </ul>
+     * @throws IllegalArgumentException
+     *         <ul>
+     *           <li>If any of the provided stickers is a {@link GuildSticker},
+     *               which is either {@link GuildSticker#isAvailable() unavailable} or from a different guild.</li
+     *           <li>If the list is empty or has more than 3 stickers</li>
+     *           <li>If null is provided</li>
+     *         </ul>
+     * @throws IllegalStateException
+     *         If this was not sent in a {@link Guild}
+     *
+     * @return {@link MessageAction}
+     *
+     * @see    Sticker#fromId(long)
+     */
     @Nonnull
     @CheckReturnValue
     default MessageAction replyStickers(@Nonnull Collection<? extends StickerSnowflake> stickers)
     {
-        return getChannel().sendStickers(stickers).reference(this);
+        return getGuildChannel().sendStickers(stickers).reference(this);
     }
 
+    /**
+     * Replies and references this message.
+     * <br>This is identical to {@code message.getGuildChannel().sendStickers(stickers).reference(message)}.
+     * You can use {@link MessageAction#mentionRepliedUser(boolean) mentionRepliedUser(false)} to not mention the author of the message.
+     * <br>By default there won't be any error thrown if the referenced message does not exist.
+     * This behavior can be changed with {@link MessageAction#failOnInvalidReply(boolean)}.
+     *
+     * <p>For further info, see {@link GuildMessageChannel#sendStickers(Collection)} and {@link MessageAction#reference(Message)}.
+     *
+     * @param  stickers
+     *         The 1-3 stickers to send
+     *
+     * @throws MissingAccessException
+     *         If the currently logged in account does not have {@link Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} in this channel
+     * @throws InsufficientPermissionException
+     *         <ul>
+     *           <li>If this is a {@link ThreadChannel} and the bot does not have {@link Permission#MESSAGE_SEND_IN_THREADS Permission.MESSAGE_SEND_IN_THREADS}</li>
+     *           <li>If this is not a {@link ThreadChannel} and the bot does not have {@link Permission#MESSAGE_SEND Permission.MESSAGE_SEND}</li>
+     *         </ul>
+     * @throws IllegalArgumentException
+     *         <ul>
+     *           <li>If any of the provided stickers is a {@link GuildSticker},
+     *               which is either {@link GuildSticker#isAvailable() unavailable} or from a different guild.</li
+     *           <li>If the list is empty or has more than 3 stickers</li>
+     *           <li>If null is provided</li>
+     *         </ul>
+     * @throws IllegalStateException
+     *         If this was not sent in a {@link Guild}
+     *
+     * @return {@link MessageAction}
+     *
+     * @see    Sticker#fromId(long)
+     */
     @Nonnull
     @CheckReturnValue
     default MessageAction replyStickers(@Nonnull StickerSnowflake... stickers)
     {
-        return getChannel().sendStickers(stickers).reference(this);
+        return getGuildChannel().sendStickers(stickers).reference(this);
     }
 
     /**

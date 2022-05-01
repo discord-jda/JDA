@@ -1,12 +1,18 @@
 package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.sticker.GuildSticker;
+import net.dv8tion.jda.api.entities.sticker.Sticker;
+import net.dv8tion.jda.api.entities.sticker.StickerSnowflake;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
+import net.dv8tion.jda.api.exceptions.MissingAccessException;
 import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -630,5 +636,71 @@ public interface GuildMessageChannel extends GuildChannel, MessageChannel
     default RestAction<Void> clearReactionsById(long messageId, @Nonnull Emote emote)
     {
         return clearReactionsById(Long.toUnsignedString(messageId), emote);
+    }
+
+    /**
+     * Send up to 3 stickers in this channel.
+     * <br>Bots can only send {@link GuildSticker GuildStickers} from the same {@link Guild}.
+     * Bots cannot use {@link net.dv8tion.jda.api.entities.sticker.StandardSticker StandardStickers}.
+     *
+     * @param  stickers
+     *         Collection of 1-3 stickers to send
+     *
+     * @throws MissingAccessException
+     *         If the currently logged in account does not have {@link Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} in this channel
+     * @throws InsufficientPermissionException
+     *         <ul>
+     *           <li>If this is a {@link ThreadChannel} and the bot does not have {@link Permission#MESSAGE_SEND_IN_THREADS Permission.MESSAGE_SEND_IN_THREADS}</li>
+     *           <li>If this is not a {@link ThreadChannel} and the bot does not have {@link Permission#MESSAGE_SEND Permission.MESSAGE_SEND}</li>
+     *         </ul>
+     * @throws IllegalArgumentException
+     *         <ul>
+     *           <li>If any of the provided stickers is a {@link GuildSticker},
+     *               which is either {@link GuildSticker#isAvailable() unavailable} or from a different guild.</li
+     *           <li>If the list is empty or has more than 3 stickers</li>
+     *           <li>If null is provided</li>
+     *         </ul>
+     *
+     * @return {@link MessageAction}
+     *
+     * @see    Sticker#fromId(long)
+     */
+    @Nonnull
+    @CheckReturnValue
+    MessageAction sendStickers(@Nonnull Collection<? extends StickerSnowflake> stickers);
+
+    /**
+     * Send up to 3 stickers in this channel.
+     * <br>Bots can only send {@link GuildSticker GuildStickers} from the same {@link Guild}.
+     * Bots cannot use {@link net.dv8tion.jda.api.entities.sticker.StandardSticker StandardStickers}.
+     *
+     * @param  stickers
+     *         The 1-3 stickers to send
+     *
+     * @throws MissingAccessException
+     *         If the currently logged in account does not have {@link Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} in this channel
+     * @throws InsufficientPermissionException
+     *         <ul>
+     *           <li>If this is a {@link ThreadChannel} and the bot does not have {@link Permission#MESSAGE_SEND_IN_THREADS Permission.MESSAGE_SEND_IN_THREADS}</li>
+     *           <li>If this is not a {@link ThreadChannel} and the bot does not have {@link Permission#MESSAGE_SEND Permission.MESSAGE_SEND}</li>
+     *         </ul>
+     * @throws IllegalArgumentException
+     *         <ul>
+     *           <li>If any of the provided stickers is a {@link GuildSticker},
+     *               which is either {@link GuildSticker#isAvailable() unavailable} or from a different guild.</li
+     *           <li>If the list is empty or has more than 3 stickers</li>
+     *           <li>If null is provided</li>
+     *         </ul>
+     *
+     * @return {@link MessageAction}
+     *
+     * @see    Sticker#fromId(long)
+     */
+    @Nonnull
+    @CheckReturnValue
+    default MessageAction sendStickers(@Nonnull StickerSnowflake... stickers)
+    {
+        Checks.notEmpty(stickers, "Stickers");
+        return sendStickers(Arrays.asList(stickers));
     }
 }

@@ -234,12 +234,27 @@ public class MessageBuilder implements Appendable
         return setActionRows(Arrays.asList(rows));
     }
 
+    /**
+     * Set the stickers to send alongside this message.
+     * <br>This is not supported for message edits.
+     *
+     * @param  stickers
+     *         The 1-3 stickers to send, or null to not send any stickers
+     *
+     * @throws IllegalArgumentException
+     *         If a collection with null elements is provided
+     *
+     * @return The MessageBuilder instance. Useful for chaining.
+     *
+     * @see    Sticker#fromId(long)
+     */
     @Nonnull
     public MessageBuilder setStickers(@Nullable Collection<? extends StickerSnowflake> stickers)
     {
         this.stickers.clear();
         if (stickers == null || stickers.isEmpty())
             return this;
+        Checks.noneNull(stickers, "Stickers");
 
         stickers.stream()
                 .map(StickerSnowflake::getId)
@@ -248,9 +263,25 @@ public class MessageBuilder implements Appendable
         return this;
     }
 
+    /**
+     * Set the stickers to send alongside this message.
+     * <br>This is not supported for message edits.
+     *
+     * @param  stickers
+     *         The 1-3 stickers to send, or null to not send any stickers
+     *
+     * @throws IllegalArgumentException
+     *         If a null sticker is provided
+     *
+     * @return The MessageBuilder instance. Useful for chaining.
+     *
+     * @see    Sticker#fromId(long)
+     */
     @Nonnull
     public MessageBuilder setStickers(@Nullable StickerSnowflake... stickers)
     {
+        if (stickers != null)
+            Checks.noneNull(stickers, "Stickers");
         return setStickers(stickers == null ? null : Arrays.asList(stickers));
     }
 

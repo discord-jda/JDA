@@ -20,6 +20,8 @@ import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.sticker.GuildSticker;
+import net.dv8tion.jda.api.entities.sticker.Sticker;
 import net.dv8tion.jda.api.entities.sticker.StickerSnowflake;
 import net.dv8tion.jda.api.interactions.components.ActionComponent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
@@ -895,10 +897,52 @@ public interface MessageAction extends RestAction<Message>, Appendable, AllowedM
         return setActionRows(ActionRow.of(components));
     }
 
+    /**
+     * Set the stickers to send alongside this message.
+     * <br>This is not supported for message edits.
+     *
+     * @param  stickers
+     *         The 1-3 stickers to send, or null to not send any stickers
+     *
+     * @throws IllegalStateException
+     *         If this request is a message edit request
+     * @throws IllegalArgumentException
+     *         <ul>
+     *           <li>If any of the provided stickers is a {@link GuildSticker},
+     *               which is either {@link GuildSticker#isAvailable() unavailable} or from a different guild.</li
+     *           <li>If the collection has more than 3 stickers</li>
+     *           <li>If a collection with null entries is provided</li>
+     *         </ul>
+     *
+     * @return Updated MessageAction for chaining convenience
+     *
+     * @see    Sticker#fromId(long)
+     */
     @Nonnull
     @CheckReturnValue
     MessageAction setStickers(@Nullable Collection<? extends StickerSnowflake> stickers);
 
+    /**
+     * Set the stickers to send alongside this message.
+     * <br>This is not supported for message edits.
+     *
+     * @param  stickers
+     *         The 1-3 stickers to send, or null to not send any stickers
+     *
+     * @throws IllegalStateException
+     *         If this request is a message edit request
+     * @throws IllegalArgumentException
+     *         <ul>
+     *           <li>If any of the provided stickers is a {@link GuildSticker},
+     *               which is either {@link GuildSticker#isAvailable() unavailable} or from a different guild.</li
+     *           <li>If the collection has more than 3 stickers</li>
+     *           <li>If a collection with null entries is provided</li>
+     *         </ul>
+     *
+     * @return Updated MessageAction for chaining convenience
+     *
+     * @see    Sticker#fromId(long)
+     */
     @Nonnull
     @CheckReturnValue
     default MessageAction setStickers(@Nullable StickerSnowflake... stickers)
