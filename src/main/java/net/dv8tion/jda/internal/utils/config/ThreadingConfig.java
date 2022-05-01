@@ -141,17 +141,23 @@ public class ThreadingConfig
             ForkJoinPool forkJoinPool = (ForkJoinPool) callbackPool;
             forkJoinPool.awaitQuiescence(Long.MAX_VALUE, TimeUnit.MILLISECONDS);
         }
-        else
+        else if (isShutdownCallbackPool())
         {
             callbackPool.awaitTermination(Long.MAX_VALUE, TimeUnit.MILLISECONDS);
         }
-        gatewayPool.awaitTermination(Long.MAX_VALUE, TimeUnit.MILLISECONDS);
-        rateLimitPool.awaitTermination(Long.MAX_VALUE, TimeUnit.MILLISECONDS);
-        if (eventPool != null)
+        if (isShutdownGatewayPool())
+        {
+            gatewayPool.awaitTermination(Long.MAX_VALUE, TimeUnit.MILLISECONDS);
+        }
+        if (isShutdownRateLimitPool())
+        {
+            rateLimitPool.awaitTermination(Long.MAX_VALUE, TimeUnit.MILLISECONDS);
+        }
+        if (eventPool != null && isShutdownEventPool())
         {
             eventPool.awaitTermination(Long.MAX_VALUE, TimeUnit.MILLISECONDS);
         }
-        if (audioPool != null)
+        if (audioPool != null && isShutdownAudioPool())
         {
             audioPool.awaitTermination(Long.MAX_VALUE, TimeUnit.MILLISECONDS);
         }
