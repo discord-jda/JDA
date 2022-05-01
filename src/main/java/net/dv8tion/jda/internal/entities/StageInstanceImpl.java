@@ -34,7 +34,6 @@ public class StageInstanceImpl implements StageInstance
 {
     private final long id;
     private StageChannel channel;
-    private StageInstanceManager manager;
 
     private String topic;
     private PrivacyLevel privacyLevel;
@@ -96,9 +95,7 @@ public class StageInstanceImpl implements StageInstance
     public StageInstanceManager getManager()
     {
         checkPermissions();
-        if (manager == null)
-            manager = new StageInstanceManagerImpl(this);
-        return manager;
+        return new StageInstanceManagerImpl(this);
     }
 
     public StageInstanceImpl setTopic(String topic)

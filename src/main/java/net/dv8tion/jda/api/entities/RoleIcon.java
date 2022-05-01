@@ -17,6 +17,7 @@
 package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.managers.RoleManager;
+import net.dv8tion.jda.api.utils.ImageProxy;
 
 import javax.annotation.Nullable;
 import java.util.Objects;
@@ -71,6 +72,20 @@ public class RoleIcon
     {
         String iconId = getIconId();
         return iconId == null ? null : String.format(ICON_URL, roleId, iconId);
+    }
+
+    /**
+     * Returns an {@link ImageProxy} for this role's icon.
+     *
+     * @return Possibly-null {@link ImageProxy} of this role's icon
+     *
+     * @see    #getIconUrl()
+     */
+    @Nullable
+    public ImageProxy getIcon()
+    {
+        final String iconUrl = getIconUrl();
+        return iconUrl == null ? null : new ImageProxy(iconUrl);
     }
 
     /**

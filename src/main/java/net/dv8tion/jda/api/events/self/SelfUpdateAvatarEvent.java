@@ -18,6 +18,7 @@ package net.dv8tion.jda.api.events.self;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.api.utils.ImageProxy;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -62,6 +63,22 @@ public class SelfUpdateAvatarEvent extends GenericSelfUpdateEvent<String>
     }
 
     /**
+     * Returns an {@link ImageProxy} for this bot's new avatar image.
+     * <p>
+     * <b>Note:</b> the old avatar may not always be downloadable as it might have been removed from Discord.
+     *
+     * @return Possibly-null {@link ImageProxy} of this bot's new avatar image
+     *
+     * @see    #getOldAvatarUrl()
+     */
+    @Nullable
+    public ImageProxy getOldAvatar()
+    {
+        final String oldAvatarUrl = getOldAvatarUrl();
+        return oldAvatarUrl == null ? null : new ImageProxy(oldAvatarUrl);
+    }
+
+    /**
      * The new avatar id
      *
      * @return The new avatar id
@@ -81,5 +98,19 @@ public class SelfUpdateAvatarEvent extends GenericSelfUpdateEvent<String>
     public String getNewAvatarUrl()
     {
         return next == null ? null : String.format(AVATAR_URL, getSelfUser().getId(), next, next.startsWith("a_") ? ".gif" : ".png");
+    }
+
+    /**
+     * Returns an {@link ImageProxy} for this bot's new avatar image.
+     *
+     * @return Possibly-null {@link ImageProxy} of this bot's new avatar image
+     *
+     * @see    #getNewAvatarUrl()
+     */
+    @Nullable
+    public ImageProxy getNewAvatar()
+    {
+        final String newAvatarUrl = getNewAvatarUrl();
+        return newAvatarUrl == null ? null : new ImageProxy(newAvatarUrl);
     }
 }

@@ -779,7 +779,7 @@ public class JDAImpl implements JDA
         setStatus(Status.SHUTDOWN);
     }
 
-    public synchronized void shutdownRequester()
+    public void shutdownRequester()
     {
         // Stop all request processing
         requester.shutdown();
