@@ -22,6 +22,18 @@ import net.dv8tion.jda.api.entities.sticker.GuildSticker;
 
 import javax.annotation.Nonnull;
 
+/**
+ * Indicates that the availability of a {@link GuildSticker} changed.
+ *
+ * <h2>Requirements</h2>
+ *
+ * <p>This event requires the {@link net.dv8tion.jda.api.utils.cache.CacheFlag#STICKER STICKER} CacheFlag to be enabled, which requires
+ * the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_EMOJIS_AND_STICKERS GUILD_EMOJIS_AND_STICKERS} intent.
+ *
+ * <br>{@link net.dv8tion.jda.api.JDABuilder#createLight(String) createLight(String)} disables that CacheFlag by default!
+ *
+ * <p>Identifier: {@code available}
+ */
 public class GuildStickerUpdateAvailableEvent extends GenericGuildStickerUpdateEvent<Boolean>
 {
     public static final String IDENTIFIER = "available";

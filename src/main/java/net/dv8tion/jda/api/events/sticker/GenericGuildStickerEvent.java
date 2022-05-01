@@ -23,7 +23,16 @@ import net.dv8tion.jda.api.events.Event;
 
 import javax.annotation.Nonnull;
 
-// TODO: Add all events to listener adapter
+/**
+ * Indicates that an {@link GuildSticker} was created/removed/updated.
+ *
+ * <h2>Requirements</h2>
+ *
+ * <p>These events require the {@link net.dv8tion.jda.api.utils.cache.CacheFlag#STICKER STICKER} CacheFlag to be enabled, which requires
+ * the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_EMOJIS_AND_STICKERS GUILD_EMOJIS_AND_STICKERS} intent.
+ *
+ * <br>{@link net.dv8tion.jda.api.JDABuilder#createLight(String) createLight(String)} disables that CacheFlag by default!
+ */
 public abstract class GenericGuildStickerEvent extends Event
 {
     protected final Guild guild;
@@ -37,12 +46,22 @@ public abstract class GenericGuildStickerEvent extends Event
         this.sticker = sticker;
     }
 
+    /**
+     * The relevant {@link GuildSticker} for this event
+     *
+     * @return The sticker
+     */
     @Nonnull
     public GuildSticker getSticker()
     {
         return sticker;
     }
 
+    /**
+     * The {@link Guild} this sticker belongs to
+     *
+     * @return The relevant guild
+     */
     @Nonnull
     public Guild getGuild()
     {

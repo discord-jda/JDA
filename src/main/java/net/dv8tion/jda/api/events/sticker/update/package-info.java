@@ -15,7 +15,7 @@
  */
 
 /**
- * Events that track updates for existing {@link net.dv8tion.jda.api.entities.sticker.Sticker Stickers}
+ * Events that track updates for existing {@link net.dv8tion.jda.api.entities.sticker.GuildSticker GuildStickers}.
  *
  * <h2>Requirements</h2>
  *
