@@ -23,6 +23,9 @@ import java.util.List;
 public class ThreadChannelPaginationActionImpl extends PaginationActionImpl<ThreadChannel, ThreadChannelPaginationAction> implements ThreadChannelPaginationAction
 {
     protected final IThreadContainer channel;
+
+    // Whether IDs or ISO8601 timestamps shall be provided for all pagination requests.
+    // Some thread pagination endpoints require this odd and singular behavior throughout the discord api.
     protected final boolean useID;
 
     public ThreadChannelPaginationActionImpl(JDA api, Route.CompiledRoute route, IThreadContainer channel, boolean useID)
@@ -49,7 +52,7 @@ public class ThreadChannelPaginationActionImpl extends PaginationActionImpl<Thre
     //Thread pagination supplies ISO8601 timestamps for some cases, see constructor
     @Nonnull
     @Override
-    protected String getLastKeyValue(long last)
+    protected String formatKeyValue(long last)
     {
         if (useID)
             return Long.toUnsignedString(last);
