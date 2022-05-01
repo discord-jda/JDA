@@ -4637,6 +4637,22 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     @CheckReturnValue
     AuditableRestAction<Emote> createEmote(@Nonnull String name, @Nonnull Icon icon, @Nonnull Role... roles);
 
+    /**
+     * Deletes a sticker from the guild.
+     *
+     * <p>The returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} can encounter the following Discord errors:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_STICKER UNKNOWN_STICKER}
+     *     <br>Occurs when the provided id does not refer to a sticker known by Discord.</li>
+     * </ul>
+     *
+     * @throws IllegalStateException
+     *         If null is provided
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the currently logged in account does not have {@link Permission#MANAGE_EMOTES_AND_STICKERS MANAGE_EMOTES_AND_STICKERS} in the guild.
+     *
+     * @return {@link AuditableRestAction}
+     */
     @Nonnull
     @CheckReturnValue
     AuditableRestAction<Void> deleteSticker(@Nonnull StickerSnowflake id);
