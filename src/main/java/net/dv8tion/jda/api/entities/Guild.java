@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.Region;
 import net.dv8tion.jda.api.entities.channel.IGuildChannelContainer;
 import net.dv8tion.jda.api.entities.sticker.GuildSticker;
+import net.dv8tion.jda.api.entities.sticker.Sticker;
 import net.dv8tion.jda.api.entities.sticker.StickerSnowflake;
 import net.dv8tion.jda.api.entities.templates.Template;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
@@ -1955,14 +1956,102 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
         }, () -> retrieveEmoteById(emote.getId()));
     }
 
+    /**
+     * Retrieves all the stickers from this guild.
+     * <br>This also includes {@link GuildSticker#isAvailable() unavailable} stickers.
+     *
+     * @return {@link RestAction} - Type: List of {@link GuildSticker}
+     */
     @Nonnull
     @CheckReturnValue
     RestAction<List<GuildSticker>> retrieveStickers();
 
+    /**
+     * Attempts to retrieve a {@link GuildSticker} object for this guild based on the provided reference.
+     *
+     * <p>The returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} can encounter the following Discord errors:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_STICKER UNKNOWN_STICKER}
+     *     <br>Occurs when the provided id does not refer to a sticker known by Discord.</li>
+     * </ul>
+     *
+     * @param  sticker
+     *         The {@link StickerSnowflake} for the sticker
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided
+     *
+     * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link GuildSticker}
+     *         <br>On request, gets the sticker with id matching provided id from Discord.
+     */
     @Nonnull
     @CheckReturnValue
     RestAction<GuildSticker> retrieveSticker(@Nonnull StickerSnowflake sticker);
 
+    /**
+     * Attempts to retrieve a {@link GuildSticker} object for this guild based on the provided id.
+     *
+     * <p>The returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} can encounter the following Discord errors:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_STICKER UNKNOWN_STICKER}
+     *     <br>Occurs when the provided id does not refer to a sticker known by Discord.</li>
+     * </ul>
+     *
+     * @param  id
+     *         The id of the requested {@link Sticker}.
+     *
+     * @throws IllegalArgumentException
+     *         If the provided id is not a valid snowflake
+     *
+     * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link GuildSticker}
+     *         <br>On request, gets the sticker with id matching provided id from Discord.
+     */
+    @Nonnull
+    @CheckReturnValue
+    default RestAction<GuildSticker> retrieveStickerById(@Nonnull String id)
+    {
+        return retrieveSticker(Sticker.fromId(id));
+    }
+
+    /**
+     * Attempts to retrieve a {@link GuildSticker} object for this guild based on the provided id.
+     *
+     * <p>The returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} can encounter the following Discord errors:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_STICKER UNKNOWN_STICKER}
+     *     <br>Occurs when the provided id does not refer to a sticker known by Discord.</li>
+     * </ul>
+     *
+     * @param  id
+     *         The id of the requested {@link Sticker}.
+     *
+     * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link GuildSticker}
+     *         <br>On request, gets the sticker with id matching provided id from Discord.
+     */
+    @Nonnull
+    @CheckReturnValue
+    default RestAction<GuildSticker> retrieveStickerById(long id)
+    {
+        return retrieveSticker(Sticker.fromId(id));
+    }
+
+    /**
+     * Modify a sticker using {@link GuildStickerManager}.
+     * <br>You can update multiple fields at once, by calling the respective setters before executing the request.
+     *
+     * <p>The returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} can encounter the following Discord errors:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_STICKER UNKNOWN_STICKER}
+     *     <br>Occurs when the provided id does not refer to a sticker known by Discord.</li>
+     * </ul>
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the currently logged in account does not have {@link Permission#MANAGE_EMOTES_AND_STICKERS MANAGE_EMOTES_AND_STICKERS} in the guild.
+     *
+     * @return {@link GuildStickerManager}
+     */
     @Nonnull
     @CheckReturnValue
     GuildStickerManager editSticker(@Nonnull StickerSnowflake sticker);
