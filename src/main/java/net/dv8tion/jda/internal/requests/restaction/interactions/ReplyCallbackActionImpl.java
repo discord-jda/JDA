@@ -53,6 +53,13 @@ public class ReplyCallbackActionImpl extends DeferrableCallbackActionImpl implem
         super(hook);
     }
 
+    @Nonnull
+    @Override
+    public ReplyCallbackActionImpl closeResources()
+    {
+        return (ReplyCallbackActionImpl) super.closeResources();
+    }
+
     public ReplyCallbackActionImpl applyMessage(Message message)
     {
         this.content = message.getContentRaw();

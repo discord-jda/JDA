@@ -31,6 +31,8 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.InputStream;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
+import java.util.function.BooleanSupplier;
 import java.util.stream.Collectors;
 
 public class MessageEditCallbackActionImpl extends DeferrableCallbackActionImpl implements MessageEditCallbackAction
@@ -43,6 +45,34 @@ public class MessageEditCallbackActionImpl extends DeferrableCallbackActionImpl 
     public MessageEditCallbackActionImpl(InteractionHookImpl hook)
     {
         super(hook);
+    }
+
+    @Nonnull
+    @Override
+    public MessageEditCallbackActionImpl setCheck(BooleanSupplier checks)
+    {
+        return (MessageEditCallbackActionImpl) super.setCheck(checks);
+    }
+
+    @Nonnull
+    @Override
+    public MessageEditCallbackActionImpl timeout(long timeout, @Nonnull TimeUnit unit)
+    {
+        return (MessageEditCallbackActionImpl) super.timeout(timeout, unit);
+    }
+
+    @Nonnull
+    @Override
+    public MessageEditCallbackActionImpl deadline(long timestamp)
+    {
+        return (MessageEditCallbackActionImpl) super.deadline(timestamp);
+    }
+
+    @Nonnull
+    @Override
+    public MessageEditCallbackActionImpl closeResources()
+    {
+        return (MessageEditCallbackActionImpl) super.closeResources();
     }
 
     private boolean isEmpty()
