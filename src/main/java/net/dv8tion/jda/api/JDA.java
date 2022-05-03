@@ -2379,20 +2379,21 @@ public interface JDA
     /**
      * Blocks until this JDA instance fully shuts down or the timeout expires. <b>This method does not shut down JDA.</b>
      * 
-     * <p>If you want to run code after shutting down async, use the {@link ShutdownEvent} in preference to this method.
+     * <p>If you want to run code after shutting down async, use the {@link net.dv8tion.jda.api.events.ShutdownEvent ShutdownEvent}
+     * in preference to this method.
      * 
-     * @param timeout
-     *        The timeout to wait for shutdown before returning.
+     * @param  timeout
+     *          The timeout to wait for shutdown before returning.
      *        
-     * @param unit
-     *        {@link TimeUnit Unit} for the timeout value.
+     * @param  unit
+     *          {@link TimeUnit Unit} for the timeout value.
      *        
      * @throws InterruptedException
      *          if the current thread is interrupted while waiting.
      *          
      * @return true if shutdown completed, false if the timeout expires.
      * 
-     * @see {@link net.dv8tion.jda.api.events.ShutdownEvent ShutdownEvent}
+     * @see    {@link net.dv8tion.jda.api.events.ShutdownEvent ShutdownEvent}
      */
     boolean awaitShutdown(long timeout, TimeUnit unit) throws InterruptedException;
 
