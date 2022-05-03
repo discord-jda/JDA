@@ -25,6 +25,7 @@ import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.restaction.WebhookMessageAction;
+import net.dv8tion.jda.api.utils.AttachedFile;
 import net.dv8tion.jda.api.utils.AttachmentOption;
 import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.data.DataArray;
@@ -48,7 +49,7 @@ public class WebhookMessageActionImpl<T>
 {
     private final StringBuilder content = new StringBuilder();
     private final List<MessageEmbed> embeds = new ArrayList<>();
-    private final List<FileUpload> files = new ArrayList<>();
+    private final List<AttachedFile> files = new ArrayList<>();
     private final AllowedMentionsImpl allowedMentions = new AllowedMentionsImpl();
     private final List<ActionRow> components = new ArrayList<>();
     private final MessageChannel channel;
@@ -198,7 +199,8 @@ public class WebhookMessageActionImpl<T>
         if (files.isEmpty())
             return getRequestBody(data);
 
-        MultipartBody.Builder body = FileUpload.createMultipartBody(files);
+        // TODO: Handle file edits better
+        MultipartBody.Builder body = AttachedFile.createMultipartBody(files, null);
         body.addFormDataPart("payload_json", data.toString());
         files.clear();
         return body.build();

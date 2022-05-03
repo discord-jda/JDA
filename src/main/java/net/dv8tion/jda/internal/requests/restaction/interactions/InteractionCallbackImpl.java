@@ -20,7 +20,7 @@ import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.interactions.InteractionCallbackAction;
-import net.dv8tion.jda.api.utils.FileUpload;
+import net.dv8tion.jda.api.utils.AttachedFile;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.interactions.InteractionImpl;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
@@ -37,7 +37,7 @@ import java.util.function.Consumer;
 
 public abstract class InteractionCallbackImpl<T> extends RestActionImpl<T> implements InteractionCallbackAction<T>
 {
-    protected final List<FileUpload> files = new ArrayList<>();
+    protected final List<AttachedFile> files = new ArrayList<>();
     protected final InteractionImpl interaction;
 
     public InteractionCallbackImpl(InteractionImpl interaction)
@@ -55,7 +55,8 @@ public abstract class InteractionCallbackImpl<T> extends RestActionImpl<T> imple
         if (files.isEmpty())
             return getRequestBody(json);
 
-        MultipartBody.Builder body = FileUpload.createMultipartBody(files);
+        // TODO: Handle file edits better
+        MultipartBody.Builder body = AttachedFile.createMultipartBody(files, null);
         body.addFormDataPart("payload_json", json.toString());
         files.clear();
         return body.build();

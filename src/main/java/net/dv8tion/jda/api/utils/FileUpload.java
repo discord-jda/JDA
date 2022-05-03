@@ -16,33 +16,27 @@
 
 package net.dv8tion.jda.api.utils;
 
-import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.requests.Requester;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.IOUtil;
 import okhttp3.MultipartBody;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.io.ByteArrayInputStream;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
 
-public class FileUpload implements Closeable
+public class FileUpload implements Closeable, AttachedFile
 {
     private final InputStream resource;
     private final String name;
-    private final long id;
-    private IOConsumer<InputStream> onClose;
 
-    protected FileUpload(InputStream resource, String name, long id, IOConsumer<InputStream> onClose)
+    protected FileUpload(InputStream resource, String name)
     {
         this.resource = resource;
         this.name = name;
-        this.id = id;
-        this.onClose = onClose;
     }
 
     @Nonnull
@@ -50,7 +44,7 @@ public class FileUpload implements Closeable
     {
         Checks.notNull(data, "Data");
         Checks.notNull(name, "Name");
-        return new FileUpload(data, name, 0, InputStream::close);
+        return new FileUpload(data, name);
     }
 
     @Nonnull
@@ -61,52 +55,23 @@ public class FileUpload implements Closeable
         return fromData(new ByteArrayInputStream(data), name);
     }
 
-    @Nonnull
-    public static FileUpload fromAttachment(long id)
-    {
-        return new FileUpload(null, null, id, null);
-    }
-
-    @Nonnull
-    public static FileUpload fromAttachment(@Nonnull String id)
-    {
-        return fromAttachment(MiscUtil.parseSnowflake(id));
-    }
-
-    @Nonnull
-    public static FileUpload fromAttachment(@Nonnull Message.Attachment attachment)
-    {
-        Checks.notNull(attachment, "Attachment");
-        return fromAttachment(attachment.getIdLong());
-    }
-
     @Override
     public void close() throws IOException
     {
-        if (onClose != null && resource != null)
-            onClose.accept(resource);
+        if (resource != null)
+            resource.close();
     }
 
-    public boolean isData()
-    {
-        return resource != null;
-    }
-
-    @Nullable
+    @Nonnull
     public String getName()
     {
         return name;
     }
 
-    @Nullable
+    @Nonnull
     public InputStream getData()
     {
         return resource;
-    }
-
-    public long getId()
-    {
-        return id;
     }
 
     public void addPart(MultipartBody.Builder builder, int index)
@@ -114,14 +79,12 @@ public class FileUpload implements Closeable
         builder.addFormDataPart("files[" + index + "]", name, IOUtil.createRequestBody(Requester.MEDIA_TYPE_OCTET, resource));
     }
 
-    public static MultipartBody.Builder createMultipartBody(List<? extends FileUpload> files)
+    @Nonnull
+    @Override
+    public DataObject toAttachmentData(int index)
     {
-        MultipartBody.Builder builder = new MultipartBody.Builder().setType(MultipartBody.FORM);
-        for (int i = 0; i < files.size(); i++)
-        {
-            FileUpload file = files.get(i);
-            file.addPart(builder, i);
-        }
-        return builder;
+        return DataObject.empty()
+                .put("id", index)
+                .put("filename", name);
     }
 }

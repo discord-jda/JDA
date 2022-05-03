@@ -26,6 +26,7 @@ import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
+import net.dv8tion.jda.api.utils.AttachedFile;
 import net.dv8tion.jda.api.utils.AttachmentOption;
 import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.data.DataArray;
@@ -55,7 +56,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
 {
     private static final String CONTENT_TOO_BIG = Helpers.format("A message may not exceed %d characters. Please limit your input!", Message.MAX_CONTENT_LENGTH);
     protected static boolean defaultFailOnInvalidReply = false;
-    protected final List<FileUpload> files = new ArrayList<>();
+    protected final List<AttachedFile> files = new ArrayList<>();
     protected final StringBuilder content;
     protected final MessageChannel channel;
     protected final AllowedMentionsImpl allowedMentions = new AllowedMentionsImpl();
@@ -341,10 +342,13 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
     public MessageActionImpl clearFiles(@Nonnull BiConsumer<String, InputStream> finalizer)
     {
         Checks.notNull(finalizer, "Finalizer");
-        for (FileUpload file : files)
+        for (AttachedFile file : files)
         {
-            if (file.isData())
-                finalizer.accept(file.getName(), file.getData());
+            if (file instanceof FileUpload)
+            {
+                FileUpload upload = (FileUpload) file;
+                finalizer.accept(upload.getName(), upload.getData());
+            }
         }
         return clearFiles();
     }
@@ -355,10 +359,13 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
     public MessageActionImpl clearFiles(@Nonnull Consumer<InputStream> finalizer)
     {
         Checks.notNull(finalizer, "Finalizer");
-        for (FileUpload file : files)
+        for (AttachedFile file : files)
         {
-            if (file.isData())
-                finalizer.accept(file.getData());
+            if (file instanceof FileUpload)
+            {
+                FileUpload upload = (FileUpload) file;
+                finalizer.accept(upload.getData());
+            }
         }
         return clearFiles();
     }
@@ -470,7 +477,8 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
 
     protected RequestBody asMultipart()
     {
-        final MultipartBody.Builder builder = FileUpload.createMultipartBody(files);
+        // TODO: Handle file edits differently
+        MultipartBody.Builder builder = AttachedFile.createMultipartBody(files, null);
         if (messageReference != 0L || components != null || retainedAttachments != null || !isEmpty())
             builder.addFormDataPart("payload_json", getJSON().toString());
         // clear remaining resources, they will be closed after being sent
