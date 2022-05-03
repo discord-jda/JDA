@@ -24,6 +24,10 @@ import net.dv8tion.jda.internal.utils.Checks;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+/**
+ * Represents existing message attachment.
+ * <br>This is primarily used for message edit requests, to specify which attachments to retain in the message after the update.
+ */
 public class AttachmentUpdate implements AttachedFile, ISnowflake
 {
     private final long id;
@@ -35,18 +39,48 @@ public class AttachmentUpdate implements AttachedFile, ISnowflake
         this.name = name;
     }
 
+    /**
+     * Creates an {@link AttachmentUpdate} with the given attachment id.
+     * <br>This is primarily used for message edit requests, to specify which attachments to retain in the message after the update.
+     *
+     * @param  id
+     *         The id of the attachment to retain
+     *
+     * @return {@link AttachmentUpdate}
+     */
     @Nonnull
     public static AttachmentUpdate fromAttachment(long id)
     {
         return new AttachmentUpdate(id, null);
     }
 
+    /**
+     * Creates an {@link AttachmentUpdate} with the given attachment id.
+     * <br>This is primarily used for message edit requests, to specify which attachments to retain in the message after the update.
+     *
+     * @param  id
+     *         The id of the attachment to retain
+     *
+     * @throws IllegalArgumentException
+     *         If the id is not a valid snowflake
+     *
+     * @return {@link AttachmentUpdate}
+     */
     @Nonnull
     public static AttachmentUpdate fromAttachment(@Nonnull String id)
     {
         return fromAttachment(MiscUtil.parseSnowflake(id));
     }
 
+    /**
+     * Creates an {@link AttachmentUpdate} with the given attachment.
+     * <br>This is primarily used for message edit requests, to specify which attachments to retain in the message after the update.
+     *
+     * @param  attachment
+     *         The attachment to retain
+     *
+     * @return {@link AttachmentUpdate}
+     */
     @Nonnull
     public static AttachmentUpdate fromAttachment(@Nonnull Message.Attachment attachment)
     {
@@ -54,6 +88,11 @@ public class AttachmentUpdate implements AttachedFile, ISnowflake
         return new AttachmentUpdate(attachment.getIdLong(), attachment.getFileName());
     }
 
+    /**
+     * The existing attachment filename.
+     *
+     * @return The filename, or {@code null} if not provided
+     */
     @Nullable
     public String getName()
     {

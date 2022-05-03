@@ -28,6 +28,13 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 
+/**
+ * Represents a file that is intended to be uploaded to Discord for arbitrary requests.
+ * <br>This is used to upload data to discord for various purposes.
+ *
+ * <p>The {@link InputStream} will be closed on consumption by the request.
+ * You can use {@link #close()} to close the stream manually.
+ */
 public class FileUpload implements Closeable, AttachedFile
 {
     private final InputStream resource;
@@ -39,6 +46,25 @@ public class FileUpload implements Closeable, AttachedFile
         this.name = name;
     }
 
+    /**
+     * Create a new {@link FileUpload} for an input stream.
+     * <br>This is used to upload data to discord for various purposes.
+     *
+     * <p>The {@link InputStream} will be closed on consumption by the request.
+     * You can use {@link FileUpload#close()} to close the stream manually.
+     *
+     * @param  data
+     *         The {@link InputStream} to upload
+     * @param  name
+     *         The representative name to use for the file
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided or the name is empty
+     *
+     * @return {@link FileUpload}
+     *
+     * @see    java.io.FileInputStream FileInputStream
+     */
     @Nonnull
     public static FileUpload fromData(@Nonnull InputStream data, @Nonnull String name)
     {
@@ -47,6 +73,20 @@ public class FileUpload implements Closeable, AttachedFile
         return new FileUpload(data, name);
     }
 
+    /**
+     * Create a new {@link FileUpload} for a byte array.
+     * <br>This is used to upload data to discord for various purposes.
+     *
+     * @param  data
+     *         The {@code byte[]} to upload
+     * @param  name
+     *         The representative name to use for the file
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided or the name is empty
+     *
+     * @return {@link FileUpload}
+     */
     @Nonnull
     public static FileUpload fromData(@Nonnull byte[] data, @Nonnull String name)
     {
@@ -55,19 +95,22 @@ public class FileUpload implements Closeable, AttachedFile
         return fromData(new ByteArrayInputStream(data), name);
     }
 
-    @Override
-    public void close() throws IOException
-    {
-        if (resource != null)
-            resource.close();
-    }
-
+    /**
+     * The filename for the file.
+     *
+     * @return The filename
+     */
     @Nonnull
     public String getName()
     {
         return name;
     }
 
+    /**
+     * The {@link InputStream} representing the data to upload as a file.
+     *
+     * @return The {@link InputStream}
+     */
     @Nonnull
     public InputStream getData()
     {
@@ -86,5 +129,12 @@ public class FileUpload implements Closeable, AttachedFile
         return DataObject.empty()
                 .put("id", index)
                 .put("filename", name);
+    }
+
+    @Override
+    public void close() throws IOException
+    {
+        if (resource != null)
+            resource.close();
     }
 }
