@@ -760,7 +760,12 @@ public class JDAImpl implements JDA
         // timestamp to abort wait and return early
         // sleep spinning means actual return will be slightly late
         // but it'll be close enough for practical purposes
-        long timeoutAtMillis = System.currentTimeMillis() + unit.toMillis(timeout);
+        long now = System.currentTimeMillis();
+        long timeoutAtMillis = now + unit.toMillis(timeout);
+        // time overflow check (unlikely)
+        if (timeoutAtMillis < now)
+            timeoutAtMillis = Long.MAX_VALUE;
+        
         WebSocketClient client = getClient();
         if (client != null)
         {
