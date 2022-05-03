@@ -75,6 +75,9 @@ public abstract class InteractionCallbackImpl<T> extends RestActionImpl<T> imple
     @SuppressWarnings({"deprecation", "ResultOfMethodCallIgnored"})
     protected void finalize()
     {
+        if (files.isEmpty())
+            return;
+        LOG.warn("Found open resources in interaction callback. Did you forget to close them?");
         closeResources();
     }
 

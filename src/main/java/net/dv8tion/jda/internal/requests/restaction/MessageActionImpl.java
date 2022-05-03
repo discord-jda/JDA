@@ -607,6 +607,8 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
     @SuppressWarnings({"deprecation", "ResultOfMethodCallIgnored"}) /* If this was in JDK9 we would be using java.lang.ref.Cleaner instead! */
     protected void finalize()
     {
+        if (files.isEmpty())
+            return;
         LOG.warn("Found unclosed resources in MessageAction instance, closing on finalization step!");
         clearFiles();
     }
