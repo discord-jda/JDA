@@ -29,12 +29,13 @@ import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.EnumSet;
 import java.util.FormattableFlags;
 import java.util.Formatter;
 import java.util.List;
 
-public class UserImpl extends UserById implements User
+public class UserImpl extends UserSnowflakeImpl implements User
 {
     protected final JDAImpl api;
 
@@ -42,7 +43,7 @@ public class UserImpl extends UserById implements User
     protected String name;
     protected String avatarId;
     protected Profile profile;
-    protected long privateChannel = 0L;
+    protected long privateChannelId = 0L;
     protected boolean bot;
     protected boolean system;
     protected boolean fake = false;
@@ -68,6 +69,7 @@ public class UserImpl extends UserById implements User
         return Helpers.format("%04d", discriminator);
     }
 
+    @Nullable
     @Override
     public String getAvatarId()
     {
@@ -113,7 +115,7 @@ public class UserImpl extends UserById implements User
     @Override
     public boolean hasPrivateChannel()
     {
-        return privateChannel != 0;
+        return privateChannelId != 0;
     }
 
     @Nonnull
@@ -126,7 +128,7 @@ public class UserImpl extends UserById implements User
             return new RestActionImpl<>(getJDA(), route, body, (response, request) ->
             {
                 PrivateChannel priv = api.getEntityBuilder().createPrivateChannel(response.getObject(), this);
-                UserImpl.this.privateChannel = priv.getIdLong();
+                UserImpl.this.privateChannelId = priv.getIdLong();
                 return priv;
             });
         });
@@ -136,8 +138,8 @@ public class UserImpl extends UserById implements User
     {
         if (!hasPrivateChannel())
             return null;
-        PrivateChannel channel = getJDA().getPrivateChannelById(privateChannel);
-        return channel != null ? channel : new PrivateChannelImpl(privateChannel, this);
+        PrivateChannel channel = getJDA().getPrivateChannelById(privateChannelId);
+        return channel != null ? channel : new PrivateChannelImpl(getJDA(), privateChannelId, this);
     }
 
     @Nonnull
@@ -214,7 +216,7 @@ public class UserImpl extends UserById implements User
     public UserImpl setPrivateChannel(PrivateChannel privateChannel)
     {
         if (privateChannel != null)
-            this.privateChannel = privateChannel.getIdLong();
+            this.privateChannelId = privateChannel.getIdLong();
         return this;
     }
 

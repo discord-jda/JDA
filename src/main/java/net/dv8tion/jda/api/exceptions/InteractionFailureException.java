@@ -16,12 +16,12 @@
 
 package net.dv8tion.jda.api.exceptions;
 
-import net.dv8tion.jda.api.requests.restaction.interactions.ReplyAction;
+import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction;
 
 import java.util.concurrent.CancellationException;
 
 /**
- * Exception caused by the failure of {@link ReplyAction ReplyAction}.
+ * Exception caused by the failure of {@link ReplyCallbackAction ReplyAction}.
  *
  * <p>This is used to signal that a {@link net.dv8tion.jda.api.requests.restaction.WebhookMessageAction WebhookMessageAction}
  * was cancelled due to a cascading failure from the initial command acknowledgement.

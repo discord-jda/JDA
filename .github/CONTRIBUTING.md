@@ -5,10 +5,7 @@ Depending on your changes there are certain rules you have to follow if you expe
 your Pull Request to be merged.
 
 **Note**: It is recommended to create a new remote branch for each Pull Request. 
-Based on the current `development` changes!
-
-**Documentation Changes**: If you only adjust documentation and no code you should instead use the `docs/development` branch!
-This branch exists to avoid making releases for every minor typo change in the documentation.
+Based on the current `master` changes!
 
 1. Adding a new Method or Class
     - If your addition is not internal (e.g. an impl class or private method) you have to write documentation.
@@ -29,7 +26,7 @@ This branch exists to avoid making releases for every minor typo change in the d
       (See [Syncing a Fork](https://help.github.com/articles/syncing-a-fork/)
       or [Keeping a Fork Updated](https://robots.thoughtbot.com/keeping-a-github-fork-updated))
       
-4. Only open Pull Requests to feature/experimental/development
+4. Only open Pull Requests to master
     - Look at the [Repository Structure](https://github.com/DV8FromTheWorld/JDA/wiki/11%29-Repository-Structure) for further details
       
 For more information please consult the [Contributing](https://github.com/DV8FromTheWorld/JDA/wiki/5%29-Contributing)

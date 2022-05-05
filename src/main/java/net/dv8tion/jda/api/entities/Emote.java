@@ -19,6 +19,7 @@ package net.dv8tion.jda.api.entities;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.managers.EmoteManager;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
+import net.dv8tion.jda.api.utils.ImageProxy;
 import net.dv8tion.jda.internal.utils.PermissionUtil;
 
 import javax.annotation.CheckReturnValue;
@@ -195,6 +196,19 @@ public interface Emote extends IMentionable
     default String getImageUrl()
     {
         return String.format(ICON_URL, getId(), isAnimated() ? "gif" : "png");
+    }
+
+    /**
+     * Returns an {@link ImageProxy} for this emote's image
+     *
+     * @return Never-null {@link ImageProxy} of this emote's image
+     *
+     * @see    #getImageUrl()
+     */
+    @Nonnull
+    default ImageProxy getImage()
+    {
+        return new ImageProxy(getImageUrl());
     }
 
     /**

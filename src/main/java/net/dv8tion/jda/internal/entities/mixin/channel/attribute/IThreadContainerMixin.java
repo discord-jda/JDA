@@ -29,6 +29,7 @@ import net.dv8tion.jda.internal.requests.restaction.pagination.ThreadChannelPagi
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 
+//TODO-v5: add checks for valid ThreadChannel names (0-100 chars)
 public interface IThreadContainerMixin<T extends IThreadContainerMixin<T>> extends IThreadContainer, GuildChannelMixin<T>
 {
     // ---- Default implementations of interface ----
@@ -77,7 +78,7 @@ public interface IThreadContainerMixin<T extends IThreadContainerMixin<T>> exten
         checkPermission(Permission.MESSAGE_HISTORY);
 
         Route.CompiledRoute route = Route.Channels.LIST_PUBLIC_ARCHIVED_THREADS.compile(getId());
-        return new ThreadChannelPaginationActionImpl(getJDA(), route, this);
+        return new ThreadChannelPaginationActionImpl(getJDA(), route, this, false);
     }
 
     @Nonnull
@@ -89,7 +90,7 @@ public interface IThreadContainerMixin<T extends IThreadContainerMixin<T>> exten
         checkPermission(Permission.MANAGE_THREADS);
 
         Route.CompiledRoute route = Route.Channels.LIST_PRIVATE_ARCHIVED_THREADS.compile(getId());
-        return new ThreadChannelPaginationActionImpl(getJDA(), route, this);
+        return new ThreadChannelPaginationActionImpl(getJDA(), route, this, false);
     }
 
     @Nonnull
@@ -100,6 +101,6 @@ public interface IThreadContainerMixin<T extends IThreadContainerMixin<T>> exten
         checkPermission(Permission.MESSAGE_HISTORY);
 
         Route.CompiledRoute route = Route.Channels.LIST_JOINED_PRIVATE_ARCHIVED_THREADS.compile(getId());
-        return new ThreadChannelPaginationActionImpl(getJDA(), route, this);
+        return new ThreadChannelPaginationActionImpl(getJDA(), route, this, true);
     }
 }

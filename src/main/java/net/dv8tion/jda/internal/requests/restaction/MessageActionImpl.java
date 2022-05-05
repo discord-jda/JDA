@@ -247,7 +247,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
                 "Provided Message contains an empty embed or an embed with a length greater than %d characters, which is the max for bot accounts!",
                 MessageEmbed.EMBED_MAX_LENGTH_BOT)
         );
-        Checks.check(embeds.size() <= 10, "Cannot have more than 10 embeds in a message!");
+        Checks.check(embeds.size() <= Message.MAX_EMBED_COUNT, "Cannot have more than %d embeds in a message!", Message.MAX_EMBED_COUNT);
         Checks.check(embeds.stream().mapToInt(MessageEmbed::getLength).sum() <= MessageEmbed.EMBED_MAX_LENGTH_BOT, "The sum of all MessageEmbeds may not exceed %d!", MessageEmbed.EMBED_MAX_LENGTH_BOT);
         if (this.embeds == null)
             this.embeds = new ArrayList<>();
@@ -318,6 +318,16 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
 
     @Nonnull
     @Override
+    public MessageAction addFile(@Nonnull byte[] data, @Nonnull String name, @Nonnull AttachmentOption... options)
+    {
+        Checks.notNull(data, "Data");
+        final long maxSize = getMaxFileSize();
+        Checks.check(data.length <= maxSize, "File may not exceed the maximum file length of %d bytes!", maxSize);
+        return addFile(new ByteArrayInputStream(data), name, options);
+    }
+
+    @Nonnull
+    @Override
     @CheckReturnValue
     public MessageActionImpl clearFiles()
     {
@@ -373,9 +383,16 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
     public MessageActionImpl setActionRows(@Nonnull ActionRow... rows)
     {
         Checks.noneNull(rows, "ActionRows");
+
+        Checks.checkComponents("Some components are incompatible with Messages",
+            rows,
+            component -> component.getType().isMessageCompatible());
+
         if (components == null)
             components = new ArrayList<>();
+
         Checks.check(rows.length <= 5, "Can only have 5 action rows per message!");
+        Checks.checkDuplicateIds(Arrays.stream(rows));
         this.components.clear();
         Collections.addAll(this.components, rows);
         return this;
@@ -479,7 +496,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
         for (Map.Entry<String, InputStream> entry : files.entrySet())
         {
             final RequestBody body = IOUtil.createRequestBody(Requester.MEDIA_TYPE_OCTET, entry.getValue());
-            builder.addFormDataPart("file" + index++, entry.getKey(), body);
+            builder.addFormDataPart("files[" + (index++) + "]", entry.getKey(), body);
         }
         if (messageReference != 0L || components != null || retainedAttachments != null || !isEmpty())
             builder.addFormDataPart("payload_json", getJSON().toString());
@@ -489,6 +506,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
         return builder.build();
     }
 
+    @SuppressWarnings("deprecation")
     protected RequestBody asJSON()
     {
         return RequestBody.create(Requester.MEDIA_TYPE_JSON, getJSON().toJson());
@@ -602,7 +620,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
     @Override
     protected void handleSuccess(Response response, Request<Message> request)
     {
-        request.onSuccess(api.getEntityBuilder().createMessage(response.getObject(), channel, false));
+        request.onSuccess(api.getEntityBuilder().createMessageWithChannel(response.getObject(), channel, false));
     }
 
     @Override

@@ -256,7 +256,7 @@ public class Bot extends ListenerAdapter
     }
     
     @Override
-    public void onSlashCommand(SlashCommandEvent event)
+    public void onSlashCommandInteraction(SlashCommandInteractionEvent event)
     {
         if (!event.getName().equals("ping")) return; // make sure we handle the right command
         long time = System.currentTimeMillis();
@@ -592,13 +592,11 @@ Created and maintained by [MinnDevelopment](https://github.com/MinnDevelopment).
 
 ```kotlin
 fun main() {
-    val jda = JDABuilder.createDefault(BOT_TOKEN)
-               .injectKTX()
-               .build()
+    val jda = light(BOT_TOKEN)
     
     jda.onCommand("ping") { event ->
         val time = measureTime {
-            event.reply("Pong!").await()
+            event.reply("Pong!").await() // suspending
         }.inWholeMilliseconds
 
         event.hook.editOriginal("Pong: $time ms").queue()
@@ -625,18 +623,16 @@ More information can be found at the wiki page [Contributing](https://github.com
 When a feature is introduced to replace or enhance existing functionality we might deprecate old functionality.
 
 A deprecated method/class usually has a replacement mentioned in its documentation which should be switched to. Deprecated
-functionality might or might not exist in the next minor release. (Hint: The minor version is the `MM` of `XX.MM.RR_BB` in our version format)
+functionality might or might not exist in the next minor release. (Hint: The minor version is the `MM` of `XX.MM.RR` in our version format)
 
 It is possible that some features are deprecated without replacement, in this case the functionality is no longer supported by either the JDA structure
-due to fundamental changes (for example automation of a feature) or due to discord API changes that cause it to be removed.
+due to fundamental changes (for example automation of a feature) or due to Discord API changes that cause it to be removed.
 
-We highly recommend to discontinue usage of deprecated functionality and update by going through each minor release instead of jumping.
+We highly recommend discontinuing usage of deprecated functionality and update by going through each minor release instead of jumping.
 For instance, when updating from version 3.3.0 to version 3.5.1 you should do the following:
 
-- Update to `3.4.RR_BB` and check for deprecation, replace
-- Update to `3.5.1_BB` and check for deprecation, replace
-
-The `BB` indicates the build number specified in the release details.
+- Update to `3.4.RR` and check for deprecation, replace
+- Update to `3.5.1` and check for deprecation, replace
 
 The `RR` in version `3.4.RR` should be replaced by the latest version that was published for `3.4`, you can find out which the latest
 version was by looking at the [release page](https://github.com/DV8FromTheWorld/JDA/releases)
@@ -649,19 +645,19 @@ All dependencies are managed automatically by Gradle.
    * Version: **2.14**
    * [Github](https://github.com/TakahikoKawasaki/nv-websocket-client)
  * OkHttp
-   * Version: **3.13.0**
+   * Version: **4.9.3**
    * [Github](https://github.com/square/okhttp)
  * Apache Commons Collections4
-   * Version: **4.1**
+   * Version: **4.4**
    * [Website](https://commons.apache.org/proper/commons-collections)
  * jackson
-   * Version: **2.10.1**
+   * Version: **2.13.2**
    * [Github](https://github.com/FasterXML/jackson)
  * Trove4j
    * Version: **3.0.3**
    * [BitBucket](https://bitbucket.org/trove4j/trove)
  * slf4j-api
-   * Version: **1.7.25**
+   * Version: **1.7.36**
    * [Website](https://www.slf4j.org/)
  * opus-java (optional)
    * Version: **1.1.1**

@@ -15,19 +15,24 @@
  */
 package net.dv8tion.jda.api.entities;
 
+import net.dv8tion.jda.annotations.ForRemoval;
+import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.exceptions.HttpException;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.interactions.InteractionType;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
-import net.dv8tion.jda.api.interactions.components.Button;
-import net.dv8tion.jda.api.interactions.components.ComponentLayout;
+import net.dv8tion.jda.api.interactions.components.LayoutComponent;
+import net.dv8tion.jda.api.interactions.components.buttons.Button;
+import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationAction;
 import net.dv8tion.jda.api.utils.AttachmentOption;
+import net.dv8tion.jda.api.utils.AttachmentProxy;
+import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.requests.FunctionalCallback;
 import net.dv8tion.jda.internal.requests.Requester;
@@ -76,7 +81,7 @@ import java.util.stream.Collectors;
  * as per interface specifications.
  * <br>Specific operations may have specified information available in the {@code throws} javadoc.
  *
- * <h1>Formattable</h1>
+ * <h2>Formattable</h2>
  * This interface extends {@link java.util.Formattable Formattable} and can be used with a {@link java.util.Formatter Formatter}
  * such as used by {@link String#format(String, Object...) String.format(String, Object...)}
  * or {@link java.io.PrintStream#printf(String, Object...) PrintStream.printf(String, Object...)}.
@@ -116,6 +121,9 @@ import java.util.stream.Collectors;
  */
 public interface Message extends ISnowflake, Formattable
 {
+    /** Template for {@link #getJumpUrl()}.*/
+    String JUMP_URL = "https://discord.com/channels/%s/%s/%s";
+
     /**
      * The maximum sendable file size (8 MiB)
      *
@@ -154,6 +162,14 @@ public interface Message extends ISnowflake, Formattable
     int MAX_REACTIONS = 20;
 
     /**
+     * The maximum amount of Embeds that can be added to one message ({@value})
+     *
+     * @see    MessageChannel#sendMessageEmbeds(Collection)
+     * @see    MessageAction#setEmbeds(Collection)
+     */
+    int MAX_EMBED_COUNT = 10;
+
+    /**
      * Pattern used to find instant invites in strings.
      *
      * <p>The only named group is at index 1 with the name {@code "code"}.
@@ -171,7 +187,7 @@ public interface Message extends ISnowflake, Formattable
     /**
      * Pattern used to find {@link #getJumpUrl() Jump URLs} in strings.
      *
-     * <h2>Groups</h2>
+     * <h4>Groups</h4>
      * <table>
      *   <caption style="display: none">Javadoc is stupid, this is not a required tag</caption>
      *   <tr>
@@ -263,7 +279,7 @@ public interface Message extends ISnowflake, Formattable
      * <br>This can be used to retrieve the amount of times a user was mentioned in this message. This only
      * counts direct mentions of the user and not mentions through roles or the everyone tag.
      *
-     * <h2>Example</h2>
+     * <h4>Example</h4>
      * <pre>{@code
      * public void sendCount(Message msg)
      * {
@@ -309,7 +325,7 @@ public interface Message extends ISnowflake, Formattable
      * A {@link org.apache.commons.collections4.Bag Bag} of mentioned channels.
      * <br>This can be used to retrieve the amount of times a channel was mentioned in this message.
      *
-     * <h2>Example</h2>
+     * <h4>Example</h4>
      * <pre>{@code
      * public void sendCount(Message msg)
      * {
@@ -359,7 +375,7 @@ public interface Message extends ISnowflake, Formattable
      * counts direct mentions of the role and not mentions through the everyone tag.
      * If a role is not {@link net.dv8tion.jda.api.entities.Role#isMentionable() mentionable} it will not be included.
      *
-     * <h2>Example</h2>
+     * <h4>Example</h4>
      * <pre>{@code
      * public void sendCount(Message msg)
      * {
@@ -927,7 +943,7 @@ public interface Message extends ISnowflake, Formattable
      * A {@link org.apache.commons.collections4.Bag Bag} of emotes used in this message.
      * <br>This can be used to retrieve the amount of times an emote was used in this message.
      *
-     * <h2>Example</h2>
+     * <h4>Example</h4>
      * <pre>{@code
      * public void sendCount(Message msg)
      * {
@@ -962,6 +978,8 @@ public interface Message extends ISnowflake, Formattable
      *         If this is a system message
      *
      * @return Immutable list of all MessageReactions on this message.
+     *
+     * @see    net.dv8tion.jda.api.entities.MessageReaction
      */
     @Nonnull
     List<MessageReaction> getReactions();
@@ -1108,11 +1126,11 @@ public interface Message extends ISnowflake, Formattable
     }
 
     /**
-     * Edits this Message's content to the provided {@link net.dv8tion.jda.api.interactions.components.ComponentLayout ComponentLayouts}.
+     * Edits this Message's content to the provided {@link LayoutComponent LayoutComponents}.
      * <br><b>Messages can only be edited by the account that sent them!</b>.
      * <br>This will replace all the current {@link net.dv8tion.jda.api.interactions.components.Component Components},
-     * such as {@link net.dv8tion.jda.api.interactions.components.Button Buttons} or {@link net.dv8tion.jda.api.interactions.components.selections.SelectionMenu SelectionMenus} on this message.
-     * The provided parameters are {@link ComponentLayout ComponentLayout} such as {@link ActionRow} which contain a list of components to arrange in the respective layout.
+     * such as {@link Button Buttons} or {@link SelectMenu SelectMenus} on this message.
+     * The provided parameters are {@link LayoutComponent LayoutComponent} such as {@link ActionRow} which contain a list of components to arrange in the respective layout.
      *
      * <p>This message instance will not be updated by this operation, please use the response message instead.
      *
@@ -1134,7 +1152,7 @@ public interface Message extends ISnowflake, Formattable
      *     <br>The request was attempted after the channel was deleted.</li>
      * </ul>
      *
-     * <h2>Example</h2>
+     * <h4>Example</h4>
      * <pre>{@code
      * List<ActionRow> rows = Arrays.asList(
      *   ActionRow.of(Button.success("prompt:accept", "Accept"), Button.danger("prompt:reject", "Reject")), // 1st row below message
@@ -1144,7 +1162,7 @@ public interface Message extends ISnowflake, Formattable
      * }</pre>
      *
      * @param  components
-     *         Up to 5 new {@link net.dv8tion.jda.api.interactions.components.ComponentLayout ComponentLayouts} for the edited message, such as {@link ActionRow}
+     *         Up to 5 new {@link LayoutComponent LayoutComponents} for the edited message, such as {@link ActionRow}
      *
      * @throws java.lang.UnsupportedOperationException
      *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
@@ -1159,14 +1177,14 @@ public interface Message extends ISnowflake, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    MessageAction editMessageComponents(@Nonnull Collection<? extends ComponentLayout> components);
+    MessageAction editMessageComponents(@Nonnull Collection<? extends LayoutComponent> components);
 
     /**
-     * Edits this Message's content to the provided {@link net.dv8tion.jda.api.interactions.components.ComponentLayout ComponentLayouts}.
+     * Edits this Message's content to the provided {@link LayoutComponent LayoutComponents}.
      * <br><b>Messages can only be edited by the account that sent them!</b>.
      * <br>This will replace all the current {@link net.dv8tion.jda.api.interactions.components.Component Components},
-     * such as {@link net.dv8tion.jda.api.interactions.components.Button Buttons} or {@link net.dv8tion.jda.api.interactions.components.selections.SelectionMenu SelectionMenus} on this message.
-     * The provided parameters are {@link ComponentLayout ComponentLayout} such as {@link ActionRow} which contain a list of components to arrange in the respective layout.
+     * such as {@link Button Buttons} or {@link SelectMenu SelectMenus} on this message.
+     * The provided parameters are {@link LayoutComponent LayoutComponent} such as {@link ActionRow} which contain a list of components to arrange in the respective layout.
      *
      * <p>This message instance will not be updated by this operation, please use the response message instead.
      *
@@ -1188,7 +1206,7 @@ public interface Message extends ISnowflake, Formattable
      *     <br>The request was attempted after the channel was deleted.</li>
      * </ul>
      *
-     * <h2>Example</h2>
+     * <h4>Example</h4>
      * <pre>{@code
      * message.editMessageComponents(
      *   ActionRow.of(Button.success("prompt:accept", "Accept"), Button.danger("prompt:reject", "Reject")), // 1st row below message
@@ -1197,7 +1215,7 @@ public interface Message extends ISnowflake, Formattable
      * }</pre>
      *
      * @param  components
-     *         Up to 5 new {@link net.dv8tion.jda.api.interactions.components.ComponentLayout ComponentLayouts} for the edited message, such as {@link ActionRow}
+     *         Up to 5 new {@link LayoutComponent LayoutComponents} for the edited message, such as {@link ActionRow}
      *
      * @throws java.lang.UnsupportedOperationException
      *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
@@ -1212,7 +1230,7 @@ public interface Message extends ISnowflake, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default MessageAction editMessageComponents(@Nonnull ComponentLayout... components)
+    default MessageAction editMessageComponents(@Nonnull LayoutComponent... components)
     {
         Checks.noneNull(components, "Components");
         return editMessageComponents(Arrays.asList(components));
@@ -1344,7 +1362,7 @@ public interface Message extends ISnowflake, Formattable
      *         Additional embeds to reply with
      *
      * @throws IllegalArgumentException
-     *         If null is provided, any of the embeds are not {@link MessageEmbed#isSendable() sendable}, more than 10 embeds are provided,
+     *         If null is provided, any of the embeds are not {@link MessageEmbed#isSendable() sendable}, more than {@value Message#MAX_EMBED_COUNT} embeds are provided,
      *         or the sum of {@link MessageEmbed#getLength()} is greater than {@link MessageEmbed#EMBED_MAX_LENGTH_BOT}
      *
      * @return {@link MessageAction} Providing the {@link Message} created from this upload.
@@ -1374,7 +1392,7 @@ public interface Message extends ISnowflake, Formattable
      *         The embeds to reply with
      *
      * @throws IllegalArgumentException
-     *         If null is provided, any of the embeds are not {@link MessageEmbed#isSendable() sendable}, more than 10 embeds are provided,
+     *         If null is provided, any of the embeds are not {@link MessageEmbed#isSendable() sendable}, more than {@value Message#MAX_EMBED_COUNT} embeds are provided,
      *         or the sum of {@link MessageEmbed#getLength()} is greater than {@link MessageEmbed#EMBED_MAX_LENGTH_BOT}
      *
      * @return {@link MessageAction} Providing the {@link Message} created from this upload.
@@ -1768,7 +1786,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * <p><b>Neither success nor failure of this request will affect this Message's {@link #getReactions()} return as Message is immutable.</b>
      *
-     * <h2>Examples</h2>
+     * <h4>Examples</h4>
      * <code>
      * // custom<br>
      * message.addReaction("minn:245267426227388416").queue();<br>
@@ -1875,7 +1893,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * <p>Please note that you <b>can't</b> clear reactions if this message was sent in a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}!
      *
-     * <h2>Example</h2>
+     * <h4>Example</h4>
      * <pre><code>
      * // custom
      * message.clearReactions("minn:245267426227388416").queue();
@@ -2094,7 +2112,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * <p><b>Neither success nor failure of this request will affect this Message's {@link #getReactions()} return as Message is immutable.</b>
      *
-     * <h2>Examples</h2>
+     * <h4>Examples</h4>
      * <code>
      * // custom<br>
      * message.removeReaction("minn:245267426227388416").queue();<br>
@@ -2296,11 +2314,11 @@ public interface Message extends ISnowflake, Formattable
     ReactionPaginationAction retrieveReactionUsers(@Nonnull String unicode);
 
     /**
-     * This obtains the {@link net.dv8tion.jda.api.entities.MessageReaction.ReactionEmote ReactionEmote} for the given unicode reaction on this message.
+     * This obtains the {@link net.dv8tion.jda.api.entities.MessageReaction MessageReaction} for the given unicode reaction on this message.
      *
      * <p>Messages also store reactions using unicode values.
      *
-     * <p>An instance of the related {@link net.dv8tion.jda.api.entities.MessageReaction.ReactionEmote ReactionEmote} can be
+     * <p>An instance of the related {@link net.dv8tion.jda.api.entities.MessageReaction MessageReaction} can be
      * obtained through this method by using the emoji's unicode value.
      *
      * @param  unicode
@@ -2311,20 +2329,23 @@ public interface Message extends ISnowflake, Formattable
      * @throws java.lang.IllegalArgumentException
      *         If the provided unicode value is null or empty.
      *
-     * @return The {@link net.dv8tion.jda.api.entities.MessageReaction.ReactionEmote ReactionEmote} of this message or null if not present.
+     * @return The {@link net.dv8tion.jda.api.entities.MessageReaction MessageReaction} of this message or null if not present.
+     *
+     * @see    #getReactionById(long)
+     * @see    net.dv8tion.jda.api.entities.MessageReaction
      *
      * @since  4.1.0
      */
     @Nullable
     @CheckReturnValue
-    MessageReaction.ReactionEmote getReactionByUnicode(@Nonnull String unicode);
+    MessageReaction getReactionByUnicode(@Nonnull String unicode);
 
     /**
-     * This obtains the {@link net.dv8tion.jda.api.entities.MessageReaction.ReactionEmote ReactionEmote} for the given reaction id on this message.
+     * This obtains the {@link net.dv8tion.jda.api.entities.MessageReaction MessageReaction} for the given reaction id on this message.
      *
      * <p>Messages store reactions by keeping a list of reaction names.
      *
-     * <p>An instance of the related {@link net.dv8tion.jda.api.entities.MessageReaction.ReactionEmote ReactionEmote} can be
+     * <p>An instance of the related {@link net.dv8tion.jda.api.entities.MessageReaction MessageReaction} can be
      * obtained through this method by using the emote's id.
      *
      * @param  id
@@ -2335,20 +2356,27 @@ public interface Message extends ISnowflake, Formattable
      * @throws java.lang.IllegalArgumentException
      *         If the provided id is not a valid snowflake.
      *
-     * @return The {@link net.dv8tion.jda.api.entities.MessageReaction.ReactionEmote ReactionEmote} of this message or null if not present.
+     * @return The {@link net.dv8tion.jda.api.entities.MessageReaction MessageReaction} of this message or null if not present.
+     *
+     * @see    #getReactionById(long)
+     * @see    #getReactionByUnicode(String)
+     * @see    net.dv8tion.jda.api.entities.MessageReaction
      *
      * @since  4.1.0
      */
     @Nullable
     @CheckReturnValue
-    MessageReaction.ReactionEmote getReactionById(@Nonnull String id);
+    default MessageReaction getReactionById(@Nonnull String id)
+    {
+        return getReactionById(MiscUtil.parseSnowflake(id));
+    }
 
     /**
-     * This obtains the {@link net.dv8tion.jda.api.entities.MessageReaction.ReactionEmote ReactionEmote} for the given reaction id on this message.
+     * This obtains the {@link net.dv8tion.jda.api.entities.MessageReaction MessageReaction} for the given reaction id on this message.
      *
      * <p>Messages store reactions by keeping a list of reaction names.
      *
-     * <p>An instance of the related {@link net.dv8tion.jda.api.entities.MessageReaction.ReactionEmote ReactionEmote} can be
+     * <p>An instance of the related {@link net.dv8tion.jda.api.entities.MessageReaction MessageReaction} can be
      * obtained through this method by using the emote's id.
      *
      * @param  id
@@ -2357,13 +2385,17 @@ public interface Message extends ISnowflake, Formattable
      * @throws java.lang.UnsupportedOperationException
      *         If this is a system message
      *
-     * @return The {@link net.dv8tion.jda.api.entities.MessageReaction.ReactionEmote ReactionEmote} of this message or null if not present.
+     * @return The {@link net.dv8tion.jda.api.entities.MessageReaction MessageReaction} of this message or null if not present.
+     *
+     * @see    #getReactionById(String)
+     * @see    #getReactionByUnicode(String)
+     * @see    net.dv8tion.jda.api.entities.MessageReaction
      *
      * @since  4.1.0
      */
     @Nullable
     @CheckReturnValue
-    MessageReaction.ReactionEmote getReactionById(long id);
+    MessageReaction getReactionById(long id);
 
     /**
      * Enables/Disables suppression of Embeds on this Message.
@@ -2760,6 +2792,19 @@ public interface Message extends ISnowflake, Formattable
         }
 
         /**
+         * Returns an {@link AttachmentProxy} for this attachment.
+         *
+         * @return Non-null {@link AttachmentProxy} of this attachment
+         *
+         * @see    #getProxyUrl()
+         */
+        @Nonnull
+        public AttachmentProxy getProxy()
+        {
+            return new AttachmentProxy(getProxyUrl());
+        }
+
+        /**
          * The file name of the Attachment when it was first uploaded.
          *
          * @return Non-null String containing the Attachment file name.
@@ -2812,7 +2857,7 @@ public interface Message extends ISnowflake, Formattable
          * Enqueues a request to retrieve the contents of this Attachment.
          * <br><b>The receiver is expected to close the retrieved {@link java.io.InputStream}.</b>
          *
-         * <h2>Example</h2>
+         * <h4>Example</h4>
          * <pre>{@code
          * public void printContents(Message.Attachment attachment)
          * {
@@ -2834,8 +2879,13 @@ public interface Message extends ISnowflake, Formattable
          * }</pre>
          *
          * @return {@link java.util.concurrent.CompletableFuture} - Type: {@link java.io.InputStream}
+         *
+         * @deprecated Replaced by {@link #getProxy}, see {@link AttachmentProxy#download()}
          */
         @Nonnull
+        @Deprecated
+        @ForRemoval
+        @ReplaceWith("getProxy().download()")
         public CompletableFuture<InputStream> retrieveInputStream() // it is expected that the response is closed by the callback!
         {
             CompletableFuture<InputStream> future = new CompletableFuture<>();
@@ -2864,7 +2914,7 @@ public interface Message extends ISnowflake, Formattable
          * <br>This will download the file using the {@link net.dv8tion.jda.api.JDA#getCallbackPool() callback pool}.
          * Alternatively you can use {@link #retrieveInputStream()} and use a continuation with a different executor.
          *
-         * <h2>Example</h2>
+         * <h4>Example</h4>
          * <pre>{@code
          * public void saveLocally(Message.Attachment attachment)
          * {
@@ -2879,8 +2929,13 @@ public interface Message extends ISnowflake, Formattable
          * }</pre>
          *
          * @return {@link java.util.concurrent.CompletableFuture} - Type: {@link java.io.File}
+         *
+         * @deprecated Replaced by {@link #getProxy}, see {@link AttachmentProxy#downloadToFile(File)}
          */
         @Nonnull
+        @Deprecated
+        @ForRemoval
+        @ReplaceWith("getProxy().downloadToFile()")
         public CompletableFuture<File> downloadToFile() // using relative path
         {
             return downloadToFile(getFileName());
@@ -2891,7 +2946,7 @@ public interface Message extends ISnowflake, Formattable
          * <br>This will download the file using the {@link net.dv8tion.jda.api.JDA#getCallbackPool() callback pool}.
          * Alternatively you can use {@link #retrieveInputStream()} and use a continuation with a different executor.
          *
-         * <h2>Example</h2>
+         * <h4>Example</h4>
          * <pre>{@code
          * public void saveLocally(Message.Attachment attachment)
          * {
@@ -2912,8 +2967,13 @@ public interface Message extends ISnowflake, Formattable
          *         If the provided path is null
          *
          * @return {@link java.util.concurrent.CompletableFuture} - Type: {@link java.io.File}
+         *
+         * @deprecated Replaced by {@link #getProxy}, see {@link AttachmentProxy#downloadToFile(File)}
          */
         @Nonnull
+        @Deprecated
+        @ForRemoval
+        @ReplaceWith("getProxy().downloadToFile(new File(String))")
         public CompletableFuture<File> downloadToFile(String path)
         {
             Checks.notNull(path, "Path");
@@ -2925,7 +2985,7 @@ public interface Message extends ISnowflake, Formattable
          * <br>This will download the file using the {@link net.dv8tion.jda.api.JDA#getCallbackPool() callback pool}.
          * Alternatively you can use {@link #retrieveInputStream()} and use a continuation with a different executor.
          *
-         * <h2>Example</h2>
+         * <h4>Example</h4>
          * <pre>{@code
          * public void saveLocally(Message.Attachment attachment)
          * {
@@ -2946,9 +3006,13 @@ public interface Message extends ISnowflake, Formattable
          *         If the provided file is null or cannot be written to
          *
          * @return {@link java.util.concurrent.CompletableFuture} - Type: {@link java.io.File}
+         *
+         * @deprecated Replaced by {@link #getProxy}, see {@link AttachmentProxy#downloadToFile(File)}
          */
         @SuppressWarnings("ResultOfMethodCallIgnored")
         @Nonnull
+        @ForRemoval
+        @ReplaceWith("getProxy().downloadToFile(File)")
         public CompletableFuture<File> downloadToFile(File file)
         {
             Checks.notNull(file, "File");
@@ -2992,7 +3056,7 @@ public interface Message extends ISnowflake, Formattable
          * <br>This will download the file using the {@link net.dv8tion.jda.api.JDA#getCallbackPool() callback pool}.
          * Alternatively you can use {@link #retrieveInputStream()} and use a continuation with a different executor.
          *
-         * <h2>Example</h2>
+         * <h4>Example</h4>
          * <pre>{@code
          * public void changeAvatar(Message.Attachment attachment)
          * {
@@ -3011,8 +3075,11 @@ public interface Message extends ISnowflake, Formattable
          *         If this is not an image ({@link #isImage()})
          *
          * @return {@link java.util.concurrent.CompletableFuture} - Type: {@link net.dv8tion.jda.api.entities.Icon}
+         *
+         * @deprecated Replaced by {@link #getProxy}, see {@link AttachmentProxy#downloadAsIcon()}
          */
         @Nonnull
+        @ReplaceWith("getProxy().downloadAsIcon()")
         public CompletableFuture<Icon> retrieveAsIcon()
         {
             if (!isImage())

@@ -116,11 +116,13 @@ public interface StageInstanceManager extends Manager<StageInstanceManager>
      *         The privacy level
      *
      * @throws IllegalArgumentException
-     *         If the privacy level is null or {@link net.dv8tion.jda.api.entities.StageInstance.PrivacyLevel#UNKNOWN UNKNOWN}
+     *         If the privacy level is null, {@link net.dv8tion.jda.api.entities.StageInstance.PrivacyLevel#UNKNOWN UNKNOWN},
+     *         or {@link net.dv8tion.jda.api.entities.StageInstance.PrivacyLevel#PUBLIC PUBLIC}.
      *
      * @return StageInstanceManager for chaining convenience
      */
     @Nonnull
     @CheckReturnValue
+    @SuppressWarnings("deprecation")
     StageInstanceManager setPrivacyLevel(@Nonnull StageInstance.PrivacyLevel level);
 }

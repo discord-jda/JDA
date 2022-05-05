@@ -11,7 +11,16 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 
-//TODO-v5: Docs
+
+/**
+ * Represents a standard {@link Guild Guild} {@link MessageChannel MessageChannel}.
+ * <br>These are the "<i>normal</i>" message channels that are present in the channel sidebar.
+ * These are <b>not</b> {@link ThreadChannel ThreadChannels}.
+ *
+ * @see net.dv8tion.jda.api.entities.GuildMessageChannel
+ * @see TextChannel
+ * @see NewsChannel
+ */
 public interface BaseGuildMessageChannel extends GuildMessageChannel, IThreadContainer, GuildChannel, ICategorizableChannel, ICopyableChannel, IPermissionContainer, IMemberContainer, IInviteContainer, IPositionableChannel
 {
     //TODO-v5: Docs

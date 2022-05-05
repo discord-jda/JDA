@@ -56,6 +56,12 @@ public class ChannelUpdateHandler extends SocketHandler
             WebSocketClient.LOG.warn("Ignoring CHANNEL_UPDATE for a group which we don't support");
             return null;
         }
+        if (!content.isNull("guild_id"))
+        {
+            long guildId = content.getUnsignedLong("guild_id");
+            if (getJDA().getGuildSetupController().isLocked(guildId))
+                return guildId;
+        }
 
         final long channelId = content.getLong("id");
         final long parentId = content.isNull("parent_id") ? 0 : content.getLong("parent_id");
@@ -79,32 +85,6 @@ public class ChannelUpdateHandler extends SocketHandler
 
         switch (type)
         {
-            case STORE:
-            {
-                StoreChannelImpl storeChannel = (StoreChannelImpl) channel;
-
-                final String oldName = storeChannel.getName();
-                final int oldPosition = storeChannel.getPositionRaw();
-
-                if (!Objects.equals(oldName, name))
-                {
-                    storeChannel.setName(name);
-                    getJDA().handleEvent(
-                        new ChannelUpdateNameEvent(
-                            getJDA(), responseNumber,
-                            storeChannel, oldName, name
-                        ));
-                }
-                if (!Objects.equals(oldPosition, position))
-                {
-                    storeChannel.setPosition(position);
-                    getJDA().handleEvent(
-                        new ChannelUpdatePositionEvent(
-                            getJDA(), responseNumber,
-                            storeChannel, oldPosition, position));
-                }
-                break;
-            }
             case TEXT:
             {
                 final String topic = content.getString("topic", null);

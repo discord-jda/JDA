@@ -203,7 +203,7 @@ public class MessageHistory
             {
                 try
                 {
-                    messages.add(builder.createMessage(historyJson.getObject(i), channel, false));
+                    messages.add(builder.createMessageWithChannel(historyJson.getObject(i), channel, false));
                 }
                 catch (Exception e)
                 {
@@ -281,7 +281,7 @@ public class MessageHistory
             {
                 try
                 {
-                    messages.add(builder.createMessage(historyJson.getObject(i), channel, false));
+                    messages.add(builder.createMessageWithChannel(historyJson.getObject(i), channel, false));
                 }
                 catch (Exception e)
                 {
@@ -504,7 +504,7 @@ public class MessageHistory
      *
      * <p>Alternatively you can use {@link net.dv8tion.jda.api.entities.MessageChannel#getHistoryFromBeginning(int) MessageChannel.getHistoryFromBeginning(...)}
      *
-     * <h2>Example</h2>
+     * <h4>Example</h4>
      * <br>{@code MessageHistory history = MessageHistory.getHistoryFromBeginning(channel).limit(60).complete()}
      * <br>Will return a MessageHistory instance with the first 60 messages of the given {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel}.
 
@@ -601,7 +601,7 @@ public class MessageHistory
                 try
                 {
                     DataObject obj = array.getObject(i);
-                    result.history.put(obj.getLong("id"), builder.createMessage(obj, channel, false));
+                    result.history.put(obj.getLong("id"), builder.createMessageWithChannel(obj, channel, false));
                 }
                 catch (Exception e)
                 {

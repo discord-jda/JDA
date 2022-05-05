@@ -235,7 +235,7 @@ public class ErrorResponseException extends RuntimeException
     /**
      * Ignore the specified set of error responses.
      *
-     * <h2>Example</h2>
+     * <h4>Example</h4>
      * <pre>{@code
      * // Creates a message with the provided content and deletes it 30 seconds later
      * public static void selfDestruct(MessageChannel channel, String content) {
@@ -263,7 +263,7 @@ public class ErrorResponseException extends RuntimeException
     /**
      * Ignore the specified set of error responses.
      *
-     * <h2>Example</h2>
+     * <h4>Example</h4>
      * <pre>{@code
      * // Creates a message with the provided content and deletes it 30 seconds later
      * public static void selfDestruct(MessageChannel channel, String content) {
@@ -293,7 +293,7 @@ public class ErrorResponseException extends RuntimeException
     /**
      * Ignore the specified set of error responses.
      *
-     * <h2>Example</h2>
+     * <h4>Example</h4>
      * <pre>{@code
      * // Creates a message with the provided content and deletes it 30 seconds later
      * public static void selfDestruct(MessageChannel channel, String content) {
@@ -325,7 +325,7 @@ public class ErrorResponseException extends RuntimeException
     /**
      * Ignore the specified set of error responses.
      *
-     * <h2>Example</h2>
+     * <h4>Example</h4>
      * <pre>{@code
      * // Creates a message with the provided content and deletes it 30 seconds later
      * public static void selfDestruct(MessageChannel channel, String content) {

@@ -16,11 +16,18 @@
 
 package net.dv8tion.jda.internal.utils;
 
+import net.dv8tion.jda.api.interactions.components.ActionComponent;
+import net.dv8tion.jda.api.interactions.components.Component;
+import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import org.jetbrains.annotations.Contract;
 
-import java.util.Collection;
-import java.util.Locale;
+import java.util.*;
+import java.util.function.BiFunction;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Checks
 {
@@ -197,4 +204,68 @@ public class Checks
             throw new IllegalArgumentException(name + " may not be negative");
     }
 
+    // Unique streams checks
+
+    public static <T> void checkUnique(Stream<T> stream, String format, BiFunction<Long, T, Object[]> getArgs)
+    {
+        Map<T, Long> counts = stream.collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
+        for (Map.Entry<T, Long> entry : counts.entrySet())
+        {
+            if (entry.getValue() > 1)
+            {
+                Object[] args = getArgs.apply(entry.getValue(), entry.getKey());
+                throw new IllegalArgumentException(Helpers.format(format, args));
+            }
+        }
+    }
+
+    public static void checkDuplicateIds(Stream<? extends LayoutComponent> layouts)
+    {
+        Stream<String> stream = layouts.flatMap(row -> row.getComponents().stream())
+                .filter(ActionComponent.class::isInstance)
+                .map(ActionComponent.class::cast)
+                .map(ActionComponent::getId)
+                .filter(Objects::nonNull);
+
+        checkUnique(stream,
+                "Cannot have components with duplicate custom IDs. Id: \"%s\" appeared %d times!",
+                (count, value) -> new Object[]{ value, count }
+        );
+    }
+
+    public static void checkComponents(String errorMessage, Collection<? extends Component> components, Predicate<Component> predicate)
+    {
+        StringBuilder sb = new StringBuilder();
+
+        int idx = 0;
+        for (Component component : components)
+        {
+            handleComponent(component, predicate, sb, "root.components[" + idx + "]");
+            idx++;
+        }
+
+        if (sb.length() > 0)
+            throw new IllegalArgumentException(errorMessage + "\n" + sb.toString().trim());
+    }
+
+    public static void checkComponents(String errorMessage, Component[] components, Predicate<Component> predicate)
+    {
+        checkComponents(errorMessage, Arrays.asList(components), predicate);
+    }
+
+    private static void handleComponent(Component component, Predicate<Component> predicate, StringBuilder sb, String path)
+    {
+        if (!predicate.test(component))
+            sb.append(" - ").append(path).append(" - <").append(component.getType()).append(">\n");
+
+        if (component instanceof LayoutComponent)
+        {
+            int idx = 0;
+            for (Component child : (LayoutComponent) component)
+            {
+                handleComponent(child, predicate, sb, path + ".components[" + idx + "]");
+                idx++;
+            }
+        }
+    }
 }

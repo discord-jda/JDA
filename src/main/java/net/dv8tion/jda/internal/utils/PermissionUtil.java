@@ -108,20 +108,14 @@ public class PermissionUtil
 
         if(!issuer.getGuild().equals(target.getGuild()))
             throw new IllegalArgumentException("The 2 Roles are not from same Guild!");
-        return target.getPosition() < issuer.getPosition();
+        return target.compareTo(issuer) < 0;
     }
 
     /**
      * Check whether the provided {@link net.dv8tion.jda.api.entities.Member Member} can use the specified {@link net.dv8tion.jda.api.entities.Emote Emote}.
      *
      * <p>If the specified Member is not in the emote's guild or the emote provided is from a message this will return false.
-     * Otherwise it will check if the emote is restricted to any roles and if that is the case if the Member has one of these.
-     *
-     * <p>In the case of an {@link net.dv8tion.jda.api.entities.Emote#isAnimated() animated} Emote, this will
-     * check if the issuer is the currently logged in account, and then check if the account has
-     * {@link net.dv8tion.jda.api.entities.SelfUser#isNitro() nitro}, and return false if it doesn't.
-     * <br>For other accounts, this method will not take into account whether the emote is animated, as there is
-     * no real way to check if the Member can interact with them.
+     * Otherwise, it will check if the emote is restricted to any roles and if that is the case if the Member has one of these.
      *
      * <br><b>Note</b>: This is not checking if the issuer owns the Guild or not.
      *
@@ -314,7 +308,9 @@ public class PermissionUtil
             if (isApplied(permission, Permission.ADMINISTRATOR.getRawValue()))
                 return Permission.ALL_PERMISSIONS;
         }
-
+        // See https://discord.com/developers/docs/topics/permissions#permissions-for-timed-out-members
+        if (member.isTimedOut())
+            permission &= Permission.VIEW_CHANNEL.getRawValue() | Permission.MESSAGE_HISTORY.getRawValue();
         return permission;
     }
 
@@ -354,7 +350,7 @@ public class PermissionUtil
         final long admin = Permission.ADMINISTRATOR.getRawValue();
         if (isApplied(permission, admin))
             return Permission.ALL_PERMISSIONS;
-        
+
         // MANAGE_CHANNEL allows to delete channels within a category (this is undocumented behavior)
         if (channel instanceof ICategorizableChannel) {
             ICategorizableChannel categorizableChannel = (ICategorizableChannel) channel;
@@ -371,8 +367,12 @@ public class PermissionUtil
 
         //When the permission to view the channel or to connect to the channel is not applied it is not granted
         // This means that we have no access to this channel at all
-        final boolean hasConnect = (channel.getType() != ChannelType.VOICE && channel.getType() != ChannelType.STAGE) || isApplied(permission, connectChannel);
+        // See https://github.com/discord/discord-api-docs/issues/1522
+        final boolean hasConnect = !channel.getType().isAudio() || isApplied(permission, connectChannel);
         final boolean hasView = isApplied(permission, viewChannel);
+        // See https://discord.com/developers/docs/topics/permissions#permissions-for-timed-out-members
+        if (member.isTimedOut())
+            permission &= viewChannel | Permission.MESSAGE_HISTORY.getRawValue();
         return hasView && hasConnect ? permission : 0;
     }
 

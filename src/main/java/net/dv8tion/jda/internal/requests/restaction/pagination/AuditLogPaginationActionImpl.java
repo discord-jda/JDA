@@ -22,7 +22,7 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.audit.ActionType;
 import net.dv8tion.jda.api.audit.AuditLogEntry;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.UserSnowflake;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.exceptions.ParsingException;
 import net.dv8tion.jda.api.requests.Request;
@@ -33,10 +33,10 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.requests.Route;
-import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 
 public class AuditLogPaginationActionImpl
@@ -54,6 +54,7 @@ public class AuditLogPaginationActionImpl
         if (!guild.getSelfMember().hasPermission(Permission.VIEW_AUDIT_LOGS))
             throw new InsufficientPermissionException(guild, Permission.VIEW_AUDIT_LOGS);
         this.guild = guild;
+        super.order(PaginationOrder.BACKWARD);
     }
 
     @Nonnull
@@ -66,26 +67,10 @@ public class AuditLogPaginationActionImpl
 
     @Nonnull
     @Override
-    public AuditLogPaginationActionImpl user(User user)
+    public AuditLogPaginationActionImpl user(UserSnowflake user)
     {
-        return user(user == null ? null : user.getId());
-    }
-
-    @Nonnull
-    @Override
-    public AuditLogPaginationActionImpl user(String userId)
-    {
-        if (userId != null)
-            Checks.isSnowflake(userId, "User ID");
-        this.userId = userId;
+        this.userId = user == null ? null : user.getId();
         return this;
-    }
-
-    @Nonnull
-    @Override
-    public AuditLogPaginationActionImpl user(long userId)
-    {
-        return user(Long.toUnsignedString(userId));
     }
 
     @Nonnull
@@ -95,24 +80,23 @@ public class AuditLogPaginationActionImpl
         return guild;
     }
 
+    @Nonnull
+    @Override
+    public EnumSet<PaginationOrder> getSupportedOrders()
+    {
+        return EnumSet.of(PaginationOrder.BACKWARD);
+    }
+
     @Override
     protected Route.CompiledRoute finalizeRoute()
     {
         Route.CompiledRoute route = super.finalizeRoute();
-
-        final String limit = String.valueOf(this.limit.get());
-        final long last = this.lastKey;
-
-        route = route.withQueryParams("limit", limit);
 
         if (type != null)
             route = route.withQueryParams("action_type", String.valueOf(type.getKey()));
 
         if (userId != null)
             route = route.withQueryParams("user_id", userId);
-
-        if (last != 0)
-            route = route.withQueryParams("before", Long.toUnsignedString(last));
 
         return route;
     }

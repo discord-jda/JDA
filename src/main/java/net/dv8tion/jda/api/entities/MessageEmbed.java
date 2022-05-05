@@ -16,6 +16,8 @@
 package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.utils.AttachmentProxy;
+import net.dv8tion.jda.api.utils.ImageProxy;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.SerializableData;
@@ -71,7 +73,7 @@ public class MessageEmbed implements SerializableData
      * @see net.dv8tion.jda.api.EmbedBuilder#setDescription(CharSequence) EmbedBuilder.setDescription(text)
      */
     public static final int DESCRIPTION_MAX_LENGTH = 4096;
-    
+
     /**
      * The maximum length the footer of an embed can have
      *
@@ -151,9 +153,10 @@ public class MessageEmbed implements SerializableData
     }
 
     /**
-     * The that was originally placed into chat that spawned this embed.
+     * The url that was originally placed into chat that spawned this embed.
+     * <br><b>This will return the {@link #getTitle() title url} if the {@link #getType() type} of this embed is {@link EmbedType#RICH RICH}.</b>
      *
-     * @return Possibly-null String containing the original message url.
+     * @return Possibly-null String containing the link that spawned this embed or the title url
      */
     @Nullable
     public String getUrl()
@@ -251,7 +254,7 @@ public class MessageEmbed implements SerializableData
     {
         return videoInfo;
     }
-    
+
     /**
      * The footer (bottom) of the embedded content.
      * <br>This is typically used for timestamps or site icons.
@@ -264,7 +267,7 @@ public class MessageEmbed implements SerializableData
     {
         return footer;
     }
-    
+
     /**
      * The information about the image in the message embed
      *
@@ -276,7 +279,7 @@ public class MessageEmbed implements SerializableData
     {
         return image;
     }
-    
+
     /**
      * The fields in a message embed.
      * <br>Message embeds can contain multiple fields, each with a name, value, and a boolean
@@ -291,7 +294,7 @@ public class MessageEmbed implements SerializableData
     {
         return fields;
     }
-    
+
     /**
      * The color of the stripe on the side of the embed.
      * <br>If the color is 0 (no color), this will return null.
@@ -314,7 +317,7 @@ public class MessageEmbed implements SerializableData
     {
         return color;
     }
-    
+
     /**
      * The timestamp of the embed.
      *
@@ -538,6 +541,20 @@ public class MessageEmbed implements SerializableData
         }
 
         /**
+         * Returns an {@link AttachmentProxy} for this embed thumbnail.
+         *
+         * @return Possibly-null {@link AttachmentProxy} of this embed thumbnail
+         *
+         * @see    #getProxyUrl()
+         */
+        @Nullable
+        public AttachmentProxy getProxy()
+        {
+            final String proxyUrl = getProxyUrl();
+            return proxyUrl == null ? null : new AttachmentProxy(proxyUrl);
+        }
+
+        /**
          * The width of the thumbnail image.
          *
          * @return Never-negative, Never-zero int containing the width of the image.
@@ -687,7 +704,7 @@ public class MessageEmbed implements SerializableData
                 && video.height == height);
         }
     }
-    
+
     /**
      * Represents the information provided to embed an image.
      */
@@ -716,7 +733,7 @@ public class MessageEmbed implements SerializableData
         {
             return url;
         }
-        
+
         /**
          * The url of the image, proxied by Discord
          * <br>This url is used to access the image through Discord instead of directly to prevent ip scraping.
@@ -727,6 +744,20 @@ public class MessageEmbed implements SerializableData
         public String getProxyUrl()
         {
             return proxyUrl;
+        }
+
+        /**
+         * Returns an {@link AttachmentProxy} for this embed image.
+         *
+         * @return Possibly-null {@link AttachmentProxy} of this embed image
+         *
+         * @see    #getProxyUrl()
+         */
+        @Nullable
+        public AttachmentProxy getProxy()
+        {
+            final String proxyUrl = getProxyUrl();
+            return proxyUrl == null ? null : new AttachmentProxy(proxyUrl);
         }
 
         /**
@@ -761,7 +792,7 @@ public class MessageEmbed implements SerializableData
                 && image.height == height);
         }
     }
-    
+
     /**
      * Class that represents the author of content, possibly including an icon
      * that Discord proxies.
@@ -803,7 +834,7 @@ public class MessageEmbed implements SerializableData
         {
             return url;
         }
-        
+
         /**
          * The url of the author's icon.
          *
@@ -814,7 +845,7 @@ public class MessageEmbed implements SerializableData
         {
             return iconUrl;
         }
-        
+
         /**
          * The url of the author's icon, proxied by Discord
          * <br>This url is used to access the image through Discord instead of directly to prevent ip scraping.
@@ -825,6 +856,19 @@ public class MessageEmbed implements SerializableData
         public String getProxyIconUrl()
         {
             return proxyIconUrl;
+        }
+
+        /**
+         * Returns an {@link ImageProxy} for this proxied author's icon.
+         *
+         * @return Possibly-null {@link ImageProxy} of this proxied author's icon
+         *
+         * @see    #getProxyIconUrl()
+         */
+        @Nullable
+        public ImageProxy getProxyIcon()
+        {
+            return proxyIconUrl == null ? null : new ImageProxy(proxyIconUrl);
         }
 
         @Override
@@ -839,7 +883,7 @@ public class MessageEmbed implements SerializableData
                 && Objects.equals(author.proxyIconUrl, proxyIconUrl));
         }
     }
-    
+
     /**
      * Class that represents a footer at the bottom of an embed
      */
@@ -866,7 +910,7 @@ public class MessageEmbed implements SerializableData
         {
             return text;
         }
-        
+
         /**
          * The url of the footer's icon.
          *
@@ -877,7 +921,7 @@ public class MessageEmbed implements SerializableData
         {
             return iconUrl;
         }
-        
+
         /**
          * The url of the footer's icon, proxied by Discord
          * <br>This url is used to access the image through Discord instead of directly to prevent ip scraping.
@@ -888,6 +932,19 @@ public class MessageEmbed implements SerializableData
         public String getProxyIconUrl()
         {
             return proxyIconUrl;
+        }
+
+        /**
+         * Returns an {@link ImageProxy} for this proxied footer's icon.
+         *
+         * @return Possibly-null {@link ImageProxy} of this proxied footer's icon
+         *
+         * @see    #getProxyIconUrl()
+         */
+        @Nullable
+        public ImageProxy getProxyIcon()
+        {
+            return proxyIconUrl == null ? null : new ImageProxy(proxyIconUrl);
         }
 
         @Override
@@ -901,7 +958,7 @@ public class MessageEmbed implements SerializableData
                 && Objects.equals(footer.proxyIconUrl, proxyIconUrl));
         }
     }
-    
+
     /**
      * Represents a field in an embed. A single embed contains an array of
      * embed fields, each with a name and value, and a boolean determining if
@@ -945,7 +1002,7 @@ public class MessageEmbed implements SerializableData
             }
             this.inline = inline;
         }
-        
+
         public Field(String name, String value, boolean inline)
         {
             this(name, value, inline, true);
@@ -972,7 +1029,7 @@ public class MessageEmbed implements SerializableData
         {
             return value;
         }
-        
+
         /**
          * If the field is in line.
          *

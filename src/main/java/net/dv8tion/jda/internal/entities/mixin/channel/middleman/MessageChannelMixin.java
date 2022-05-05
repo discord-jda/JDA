@@ -19,7 +19,7 @@ package net.dv8tion.jda.internal.entities.mixin.channel.middleman;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
-import net.dv8tion.jda.api.interactions.components.ComponentLayout;
+import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
@@ -326,7 +326,7 @@ public interface MessageChannelMixin<T extends MessageChannelMixin<T>> extends M
 
     @Nonnull
     @CheckReturnValue
-    default MessageAction editMessageComponentsById(@Nonnull String messageId, @Nonnull Collection<? extends ComponentLayout> components)
+    default MessageAction editMessageComponentsById(@Nonnull String messageId, @Nonnull Collection<? extends LayoutComponent> components)
     {
         checkCanAccessChannel();
         checkCanSendMessage();

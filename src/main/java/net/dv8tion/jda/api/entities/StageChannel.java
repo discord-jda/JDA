@@ -19,6 +19,7 @@ package net.dv8tion.jda.api.entities;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.channel.concrete.StageChannelManager;
+import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.ChannelAction;
 import net.dv8tion.jda.api.requests.restaction.StageInstanceAction;
 import net.dv8tion.jda.internal.requests.restaction.StageInstanceActionImpl;
@@ -123,4 +124,36 @@ public interface StageChannel extends GuildChannel, AudioChannel, ICategorizable
     @Nonnull
     @Override
     StageChannelManager getManager();
+
+    /**
+     * Sends a {@link GuildVoiceState#getRequestToSpeakTimestamp() request-to-speak} indicator to the stage instance moderators.
+     * <p>If the self member has {@link Permission#VOICE_MUTE_OTHERS} this will immediately promote them to speaker.
+     *
+     * @throws IllegalStateException
+     *         If the self member is not currently connected to the channel
+     *
+     * @return {@link RestAction}
+     *
+     * @see    #cancelRequestToSpeak()
+     */
+    @Nonnull
+    @CheckReturnValue
+    RestAction<Void> requestToSpeak();
+
+    /**
+     * Cancels the {@link #requestToSpeak() Request-to-Speak}.
+     * <br>This can also be used to move back to the audience if you are currently a speaker.
+     *
+     * <p>If there is no request to speak or the member is not currently connected to an active {@link StageInstance}, this does nothing.
+     *
+     * @throws IllegalStateException
+     *         If the self member is not currently connected to the channel
+     *
+     * @return {@link RestAction}
+     *
+     * @see    #requestToSpeak()
+     */
+    @Nonnull
+    @CheckReturnValue
+    RestAction<Void> cancelRequestToSpeak();
 }

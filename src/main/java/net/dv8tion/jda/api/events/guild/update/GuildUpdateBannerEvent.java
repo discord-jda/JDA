@@ -18,6 +18,7 @@ package net.dv8tion.jda.api.events.guild.update;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.utils.ImageProxy;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -61,6 +62,20 @@ public class GuildUpdateBannerEvent extends GenericGuildUpdateEvent<String>
     }
 
     /**
+     * Returns an {@link ImageProxy} for this guild's new banner.
+     *
+     * @return Possibly-null {@link ImageProxy} of this guild's new banner
+     *
+     * @see    #getNewBannerUrl()
+     */
+    @Nullable
+    public ImageProxy getNewBanner()
+    {
+        final String newBannerUrl = getNewBannerUrl();
+        return newBannerUrl == null ? null : new ImageProxy(newBannerUrl);
+    }
+
+    /**
      * The old banner id
      *
      * @return The old banner id, or null if the banner didn't exist
@@ -80,5 +95,21 @@ public class GuildUpdateBannerEvent extends GenericGuildUpdateEvent<String>
     public String getOldBannerUrl()
     {
         return previous == null ? null : String.format(Guild.BANNER_URL, guild.getId(), previous, previous.startsWith("a_") ? "gif" : "png");
+    }
+
+    /**
+     * Returns an {@link ImageProxy} for this guild's old banner.
+     * <p>
+     * <b>Note:</b> the old banner may not always be downloadable as it might have been removed from Discord.
+     *
+     * @return Possibly-null {@link ImageProxy} of this guild's old banner
+     *
+     * @see    #getOldBannerUrl()
+     */
+    @Nullable
+    public ImageProxy getOldBanner()
+    {
+        final String oldBannerUrl = getOldBannerUrl();
+        return oldBannerUrl == null ? null : new ImageProxy(oldBannerUrl);
     }
 }

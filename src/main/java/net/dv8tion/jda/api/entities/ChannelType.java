@@ -48,10 +48,6 @@ public enum ChannelType
      */
     NEWS(5, 0, true),
     /**
-     * A {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannel}, Guild-Only.
-     */
-    STORE(6, 0, true),
-    /**
      * A {@link StageChannel StageChannel}, Guild-Only.
      */
     STAGE(13, 1, true),
@@ -144,7 +140,7 @@ public enum ChannelType
             case GROUP:
                 return true;
             default:
-                return false;
+                return isThread();
         }
     }
 
@@ -154,7 +150,8 @@ public enum ChannelType
      *
      * @return True, if channels of this type are {@link ThreadChannel ThreadChannel}
      */
-    public boolean isThread() {
+    public boolean isThread()
+    {
         switch (this)
         {
             case GUILD_NEWS_THREAD:
