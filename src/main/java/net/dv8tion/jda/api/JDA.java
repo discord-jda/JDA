@@ -1665,17 +1665,17 @@ public interface JDA extends IGuildChannelContainer
      * in preference to this method.
      * 
      * @param  timeout
-     *          The timeout to wait for shutdown before returning.
+     *         The timeout to wait for shutdown before returning.
      *        
      * @param  unit
-     *          {@link TimeUnit Unit} for the timeout value.
+     *         {@link TimeUnit Unit} for the timeout value.
      *        
      * @throws InterruptedException
-     *          if the current thread is interrupted while waiting.
+     *         if the current thread is interrupted while waiting.
      *          
      * @return true if shutdown completed, false if the timeout expires.
      * 
-     * @see    {@link net.dv8tion.jda.api.events.ShutdownEvent ShutdownEvent}
+     * @see    net.dv8tion.jda.api.events.ShutdownEvent ShutdownEvent
      */
     boolean awaitShutdown(long timeout, TimeUnit unit) throws InterruptedException;
 
