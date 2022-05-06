@@ -51,9 +51,9 @@ public class Emoji implements SerializableData, IMentionable
      * Converts the unicode name into codepoint notation like {@code U+1F602}.
      *
      * @throws java.lang.IllegalStateException
-     *         If this is not an emoji reaction, see {@link #isUnicode()}
+     *         If this is a custom emote, see {@link #isUnicode()}
      *
-     * @return String containing the codepoint representation of the reaction emoji
+     * @return String containing the codepoint representation of the emoji
      */
     @Nonnull
     public String getAsCodepoints()
@@ -64,7 +64,7 @@ public class Emoji implements SerializableData, IMentionable
     }
 
     /**
-     * The code for this Reaction.
+     * The reaction code for this emoji.
      * <br>For unicode emojis this will be the unicode of said emoji rather than an alias like {@code :smiley:}.
      * <br>For custom emotes this will be the name and id of said emote in the format {@code <name>:<id>}.
      *
