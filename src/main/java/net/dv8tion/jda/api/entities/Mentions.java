@@ -63,7 +63,7 @@ public interface Mentions
      *
      * <p>This might also contain users which are not present in {@link #getMembers()}.
      *
-     * <h3>Example</h3>
+     * <p><b>Example</b><br>
      * <pre>{@code
      * void sendCount(Message msg)
      * {
@@ -105,7 +105,7 @@ public interface Mentions
      *
      * <p><b>This may include GuildChannels from other {@link net.dv8tion.jda.api.entities.Guild Guilds}</b>
      *
-     * <h3>Example</h3>
+     * <p><b>Example</b><br>
      * <pre>{@code
      * void sendCount(Message msg)
      * {
@@ -136,7 +136,7 @@ public interface Mentions
      *
      * <p><b>This may include GuildChannels from other {@link net.dv8tion.jda.api.entities.Guild Guilds}</b>
      *
-     * <h3>Example</h3>
+     * <p><b>Example</b><br>
      * <pre>{@code
      * List<GuildMessageChannel> getCoolMessageChannels(Message msg)
      * {
@@ -164,7 +164,7 @@ public interface Mentions
      *
      * <p><b>This may include GuildChannels from other {@link net.dv8tion.jda.api.entities.Guild Guilds}</b>
      *
-     * <h3>Example</h3>
+     * <p><b>Example</b><br>
      * <pre>{@code
      * void sendCount(Message msg)
      * {
@@ -214,7 +214,7 @@ public interface Mentions
      *
      * <p><b>This may include Roles from other {@link net.dv8tion.jda.api.entities.Guild Guilds}</b>
      *
-     * <h3>Example</h3>
+     * <p><b>Example</b><br>
      * <pre>{@code
      * void sendCount(Message msg)
      * {
@@ -256,7 +256,7 @@ public interface Mentions
      * A {@link org.apache.commons.collections4.Bag Bag} of emotes used.
      * <br>This can be used to retrieve the amount of times an emote was used.
      *
-     * <h3>Example</h3>
+     * <p><b>Example</b><br>
      * <pre>{@code
      * void sendCount(Message msg)
      * {
@@ -298,7 +298,7 @@ public interface Mentions
      * <br>This can be used to retrieve the amount of times a user was mentioned. This only
      * counts direct mentions of the member and not mentions through roles or everyone mentions.
      *
-     * <h3>Example</h3>
+     * <p><b>Example</b><br>
      * <pre>{@code
      * void sendCount(Message msg)
      * {
