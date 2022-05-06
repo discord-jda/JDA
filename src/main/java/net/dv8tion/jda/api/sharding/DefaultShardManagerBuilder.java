@@ -650,7 +650,7 @@ public class  DefaultShardManagerBuilder
      * <p>It is not recommended to disable {@link GatewayIntent#GUILD_MEMBERS GatewayIntent.GUILD_MEMBERS} when
      * using {@link MemberCachePolicy#ALL MemberCachePolicy.ALL} as the members cannot be removed from cache by a leave event without this intent.
      *
-     * <h4>Example</h4>
+     * <p><b>Example</b><br>
      * <pre>{@code
      * public void configureCache(DefaultShardManagerBuilder builder) {
      *     // Cache members who are in a voice channel

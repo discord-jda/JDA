@@ -67,7 +67,7 @@ import java.util.stream.Collectors;
  * <p><b>This type is not updated. JDA does not keep track of changes to messages, it is advised to do this via events such
  * as {@link net.dv8tion.jda.api.events.message.MessageUpdateEvent MessageUpdateEvent} and similar.</b>
  *
- * <h2>Message Differences</h2>
+ * <p><b>Message Differences</b><br>
  * There are 3 implementations of this interface in JDA.
  * <ol>
  *     <li><b>Received Message</b>
@@ -88,7 +88,7 @@ import java.util.stream.Collectors;
  * as per interface specifications.
  * <br>Specific operations may have specified information available in the {@code throws} javadoc.
  *
- * <h2>Formattable</h2>
+ * <p><b>Formattable</b><br>
  * This interface extends {@link java.util.Formattable Formattable} and can be used with a {@link java.util.Formatter Formatter}
  * such as used by {@link String#format(String, Object...) String.format(String, Object...)}
  * or {@link java.io.PrintStream#printf(String, Object...) PrintStream.printf(String, Object...)}.
@@ -201,7 +201,7 @@ public interface Message extends ISnowflake, Formattable
     /**
      * Pattern used to find {@link #getJumpUrl() Jump URLs} in strings.
      *
-     * <h4>Groups</h4>
+     * <p><b>Groups</b><br>
      * <table>
      *   <caption style="display: none">Javadoc is stupid, this is not a required tag</caption>
      *   <tr>
@@ -900,7 +900,7 @@ public interface Message extends ISnowflake, Formattable
      *     <br>The request was attempted after the channel was deleted.</li>
      * </ul>
      *
-     * <h4>Example</h4>
+     * <p><b>Example</b><br>
      * <pre>{@code
      * List<ActionRow> rows = Arrays.asList(
      *   ActionRow.of(Button.success("prompt:accept", "Accept"), Button.danger("prompt:reject", "Reject")), // 1st row below message
@@ -954,7 +954,7 @@ public interface Message extends ISnowflake, Formattable
      *     <br>The request was attempted after the channel was deleted.</li>
      * </ul>
      *
-     * <h4>Example</h4>
+     * <p><b>Example</b><br>
      * <pre>{@code
      * message.editMessageComponents(
      *   ActionRow.of(Button.success("prompt:accept", "Accept"), Button.danger("prompt:reject", "Reject")), // 1st row below message
@@ -2396,7 +2396,7 @@ public interface Message extends ISnowflake, Formattable
          * Enqueues a request to retrieve the contents of this Attachment.
          * <br><b>The receiver is expected to close the retrieved {@link java.io.InputStream}.</b>
          *
-         * <h4>Example</h4>
+         * <p><b>Example</b><br>
          * <pre>{@code
          * public void printContents(Message.Attachment attachment)
          * {
@@ -2453,7 +2453,7 @@ public interface Message extends ISnowflake, Formattable
          * <br>This will download the file using the {@link net.dv8tion.jda.api.JDA#getCallbackPool() callback pool}.
          * Alternatively you can use {@link #retrieveInputStream()} and use a continuation with a different executor.
          *
-         * <h4>Example</h4>
+         * <p><b>Example</b><br>
          * <pre>{@code
          * public void saveLocally(Message.Attachment attachment)
          * {
@@ -2485,7 +2485,7 @@ public interface Message extends ISnowflake, Formattable
          * <br>This will download the file using the {@link net.dv8tion.jda.api.JDA#getCallbackPool() callback pool}.
          * Alternatively you can use {@link #retrieveInputStream()} and use a continuation with a different executor.
          *
-         * <h4>Example</h4>
+         * <p><b>Example</b><br>
          * <pre>{@code
          * public void saveLocally(Message.Attachment attachment)
          * {
@@ -2524,7 +2524,7 @@ public interface Message extends ISnowflake, Formattable
          * <br>This will download the file using the {@link net.dv8tion.jda.api.JDA#getCallbackPool() callback pool}.
          * Alternatively you can use {@link #retrieveInputStream()} and use a continuation with a different executor.
          *
-         * <h4>Example</h4>
+         * <p><b>Example</b><br>
          * <pre>{@code
          * public void saveLocally(Message.Attachment attachment)
          * {
@@ -2595,7 +2595,7 @@ public interface Message extends ISnowflake, Formattable
          * <br>This will download the file using the {@link net.dv8tion.jda.api.JDA#getCallbackPool() callback pool}.
          * Alternatively you can use {@link #retrieveInputStream()} and use a continuation with a different executor.
          *
-         * <h4>Example</h4>
+         * <p><b>Example</b><br>
          * <pre>{@code
          * public void changeAvatar(Message.Attachment attachment)
          * {

@@ -32,7 +32,7 @@ import java.util.Locale;
  * Indicates that an {@link Interaction} was created.
  * <br>Every interaction event is derived from this event.
  *
- * <h2>Requirements</h2>
+ * <p><b>Requirements</b><br>
  * To receive these events, you must unset the <b>Interactions Endpoint URL</b> in your application dashboard.
  * You can simply remove the URL for this endpoint in your settings at the <a href="https://discord.com/developers/applications" target="_blank">Discord Developers Portal</a>.
  *

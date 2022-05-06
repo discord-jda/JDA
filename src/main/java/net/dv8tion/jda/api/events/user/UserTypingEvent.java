@@ -25,7 +25,7 @@ import java.time.OffsetDateTime;
 /**
  * Indicates that a {@link net.dv8tion.jda.api.entities.User User} started typing. (Similar to the typing indicator in the Discord client)
  *
- * <h2>Requirements</h2>
+ * <p><b>Requirements</b><br>
  *
  * <p>This event requires the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MESSAGE_TYPING GUILD_MESSAGE_TYPING} intent to be enabled to fire
  * for guild channels, and {@link net.dv8tion.jda.api.requests.GatewayIntent#DIRECT_MESSAGE_TYPING DIRECT_MESSAGE_TYPING} to fire for private channels.

@@ -28,7 +28,7 @@ import javax.annotation.Nonnull;
  * <p><b>JDA does not have a cache for messages and is not able to provide previous information due to limitations by the
  * Discord API!</b>
  *
- * <h2>Requirements</h2>
+ * <p><b>Requirements</b><br>
  *
  * <p>This event requires at least one of the following intents (Will not fire at all if neither is enabled):
  * <ul>

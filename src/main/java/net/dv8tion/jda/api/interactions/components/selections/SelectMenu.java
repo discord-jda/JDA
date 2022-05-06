@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
  * <p>The selections a user makes are only visible within their current client session.
  * Other users cannot see the choices selected, and they will disappear when the client restarts or the message is reloaded.
  *
- * <h2>Examples</h2>
+ * <p><b>Examples</b><br>
  * <pre>{@code
  * public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {
  *   if (!event.getName().equals("class")) return;

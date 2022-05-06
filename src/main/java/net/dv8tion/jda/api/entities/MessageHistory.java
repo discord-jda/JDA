@@ -504,7 +504,7 @@ public class MessageHistory
      *
      * <p>Alternatively you can use {@link net.dv8tion.jda.api.entities.MessageChannel#getHistoryFromBeginning(int) MessageChannel.getHistoryFromBeginning(...)}
      *
-     * <h4>Example</h4>
+     * <p><b>Example</b><br>
      * <br>{@code MessageHistory history = MessageHistory.getHistoryFromBeginning(channel).limit(60).complete()}
      * <br>Will return a MessageHistory instance with the first 60 messages of the given {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel}.
 

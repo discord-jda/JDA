@@ -30,11 +30,11 @@ import javax.annotation.Nonnull;
  * <p><b>Must provide not-null {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel} to compile a valid
  * pagination route.</b>
  *
- * <h2>Limits:</h2>
+ * <p><b>Limits:</b><br>
  * Minimum - 1
  * <br>Maximum - 100
  *
- * <h2>Example</h2>
+ * <p><b>Example</b><br>
  * <pre><code>
  * /**
  *  * Iterates messages in an async stream and stops once the limit has been reached.

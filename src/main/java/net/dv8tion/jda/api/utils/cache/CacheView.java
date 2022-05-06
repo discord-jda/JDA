@@ -39,7 +39,7 @@ import java.util.stream.StreamSupport;
  * <br>This can be useful to check information such as size without creating
  * an immutable snapshot first.
  *
- * <h2>Memory Efficient Usage</h2>
+ * <p><b>Memory Efficient Usage</b><br>
  * The {@link #forEach(Consumer)} method can be used to avoid creating a snapshot
  * of the backing data store, it is implemented by first acquiring a read-lock and then iterating the code.
  * The enhanced-for-loop uses the {@link #iterator()} which has to first create a snapshot to avoid
@@ -119,7 +119,7 @@ public interface CacheView<T> extends Iterable<T>
      *
      * <p>The stream will be closed once this method returns and cannot be used anymore.
      *
-     * <h4>Example</h4>
+     * <p><b>Example</b><br>
      * <code>
      * {@literal CacheView<User>} view = jda.getUserCache();<br>
      * long shortNames = view.applyStream(stream {@literal ->} stream.filter(it {@literal ->} it.getName().length() {@literal <} 4).count());<br>
@@ -158,7 +158,7 @@ public interface CacheView<T> extends Iterable<T>
      *
      * <p>The stream will be closed once this method returns and cannot be used anymore.
      *
-     * <h4>Example</h4>
+     * <p><b>Example</b><br>
      * <code>
      * {@literal CacheView<TextChannel>} view = guild.getTextChannelCache();<br>
      * view.acceptStream(stream {@literal ->} stream.filter(it {@literal ->} it.isNSFW()).forEach(it {@literal ->} it.sendMessage("lewd").queue()));

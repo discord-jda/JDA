@@ -28,7 +28,7 @@ import javax.annotation.Nonnull;
  *
  * <p>Can be used to detect any GuildInviteEvent.
  *
- * <h2>Requirements</h2>
+ * <p><b>Requirements</b><br>
  *
  * <p>These events require the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_INVITES GUILD_INVITES} intent to be enabled.
  * <br>These events will only fire for invite events that occur in channels where you can {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL MANAGE_CHANNEL}.

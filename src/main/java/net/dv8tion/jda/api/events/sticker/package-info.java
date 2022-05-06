@@ -18,7 +18,7 @@
  * Events that track {@link net.dv8tion.jda.api.events.sticker.GuildStickerAddedEvent added stickers}
  * and {@link net.dv8tion.jda.api.events.sticker.GuildStickerRemovedEvent removed stickers}.
  *
- * <h2>Requirements</h2>
+ * <p><b>Requirements</b>
  *
  * <p>These events require the {@link net.dv8tion.jda.api.utils.cache.CacheFlag#STICKER STICKER} CacheFlag to be enabled, which requires
  * the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_EMOJIS_AND_STICKERS GUILD_EMOJIS_AND_STICKERS} intent.

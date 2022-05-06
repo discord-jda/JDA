@@ -36,7 +36,7 @@ import javax.annotation.Nullable;
  * <p>Each button has either a {@code custom_id} or URL attached.
  * The id has to be provided by the user and can be used to identify the button in the {@link ButtonInteractionEvent ButtonInteractionEvent}.
  *
- * <h2>Example Usage</h2>
+ * <p><b>Example Usage</b><br>
  * <pre>{@code
  * public class HelloBot extends ListenerAdapter {
  *   public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {

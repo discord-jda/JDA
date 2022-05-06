@@ -27,11 +27,11 @@ import javax.annotation.Nonnull;
  * <p><b>Must provide not-null {@link net.dv8tion.jda.api.entities.Guild Guild} to compile a valid
  * pagination route.</b>
  *
- * <h2>Limits:</h2>
+ * <p><b>Limits:</b><br>
  * Minimum - 1
  * <br>Maximum - 1000
  *
- * <h2>Example</h2>
+ * <p><b>Example</b><br>
  * <pre>{@code
  * // Revoke all bans from a guild with a certain reason
  * public static void findBansWithReason(Guild guild, String reason) {

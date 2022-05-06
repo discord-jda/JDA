@@ -29,7 +29,7 @@ import javax.annotation.Nonnull;
  * <p>This will mark the guild as <b>unavailable</b> and it will not be usable when JDA becomes ready.
  * You can check all unavailable guilds with {@link ReadyEvent#getGuildUnavailableCount()} and {@link JDA#getUnavailableGuilds()}.
  *
- * <h2>Developer Note</h2>
+ * <p><b>Developer Note</b><br>
  *
  * <p>Discord may also explicitly mark guilds as unavailable during the setup, in which case this event will not fire.
  * It is recommended to check for unavailable guilds in the ready event explicitly to avoid any ambiguity.

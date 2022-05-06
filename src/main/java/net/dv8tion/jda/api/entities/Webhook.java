@@ -42,7 +42,7 @@ public interface Webhook extends ISnowflake
     /**
      * Pattern for a Webhook URL.
      *
-     * <h4>Groups</h4>
+     * <p><b>Groups</b><br>
      * <table>
      *   <caption style="display: none">Javadoc is stupid, this is not a required tag</caption>
      *   <tr>

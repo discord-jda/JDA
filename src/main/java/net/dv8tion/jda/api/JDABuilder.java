@@ -651,7 +651,7 @@ public class JDABuilder
      * <p>It is not recommended to disable {@link GatewayIntent#GUILD_MEMBERS GatewayIntent.GUILD_MEMBERS} when
      * using {@link MemberCachePolicy#ALL MemberCachePolicy.ALL} as the members cannot be removed from cache by a leave event without this intent.
      *
-     * <h4>Example</h4>
+     * <p><b>Example</b><br>
      * <pre>{@code
      * public void configureCache(JDABuilder builder) {
      *     // Cache members who are in a voice channel
@@ -781,7 +781,7 @@ public class JDABuilder
      * Sets the token that will be used by the {@link net.dv8tion.jda.api.JDA} instance to log in when
      * {@link net.dv8tion.jda.api.JDABuilder#build() build()} is called.
      *
-     * <h4>For {@link net.dv8tion.jda.api.AccountType#BOT}</h4>
+     * <p><b>For {@link net.dv8tion.jda.api.AccountType#BOT}</b><br>
      * <ol>
      *     <li>Go to your <a href="https://discord.com/developers/applications/me">Discord Applications</a></li>
      *     <li>Create or select an already existing application</li>
