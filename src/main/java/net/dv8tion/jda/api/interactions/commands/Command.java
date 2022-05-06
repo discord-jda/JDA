@@ -257,7 +257,7 @@ public interface Command extends ISnowflake
      * The {@link CommandPermission} of this command.
      * <br>If this command has no default permission set, this returns {@link CommandPermission#ENABLED}.
      *
-     * @return The ApplicationCommandPermission of this command.
+     * @return The CommandPermission of this command.
      */
     @Nonnull
     CommandPermission getDefaultPermissions();

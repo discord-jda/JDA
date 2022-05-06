@@ -135,7 +135,7 @@ public interface CommandData extends SerializableData
      * Gets the {@link CommandPermission} of this command.
      * <br>If no permissions have been set, this returns {@link CommandPermission#ENABLED}.
      *
-     * @return ApplicationCommandPermission of this command.
+     * @return CommandPermission of this command.
      */
     @Nonnull
     CommandPermission getDefaultPermissions();
