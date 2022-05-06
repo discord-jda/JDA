@@ -9,17 +9,16 @@ import net.dv8tion.jda.api.exceptions.ParsingException;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.restaction.pagination.ThreadChannelPaginationAction;
-import net.dv8tion.jda.api.utils.TimeUtil;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
-import net.dv8tion.jda.internal.entities.ThreadChannelImpl;
 import net.dv8tion.jda.internal.requests.Route;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 public class ThreadChannelPaginationActionImpl extends PaginationActionImpl<ThreadChannel, ThreadChannelPaginationAction> implements ThreadChannelPaginationAction
 {
@@ -53,12 +52,24 @@ public class ThreadChannelPaginationActionImpl extends PaginationActionImpl<Thre
     //Thread pagination supplies ISO8601 timestamps for some cases, see constructor
     @Nonnull
     @Override
-    protected String formatKeyValue(long last)
+    protected String getPaginationLastEvaluatedKey(long lastId, ThreadChannel last)
     {
         if (useID)
-            return Long.toUnsignedString(last);
+            return Long.toUnsignedString(lastId);
+
+        if (order == PaginationOrder.FORWARD && lastId == 0)
+        {
+            // first second of 2015 aka discords epoch, hard coding something older makes no sense to me
+            return "2015-01-01T00:00:00.000";
+        }
+
+        // this should be redundant, due to calling this with PaginationAction#getLast() as last param,
+        // but let's have this here.
+        if (last == null)
+            throw new NoSuchElementException("No entities have been retrieved yet.");
+
         // OffsetDateTime#toString() is defined to be ISO8601, needs no helper method.
-        return this.last.getTimeArchiveInfoLastModified().toString();
+        return last.getTimeArchiveInfoLastModified().toString();
     }
 
     @Override

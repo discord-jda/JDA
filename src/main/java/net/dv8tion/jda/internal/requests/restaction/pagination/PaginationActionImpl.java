@@ -363,9 +363,9 @@ public abstract class PaginationActionImpl<T, M extends PaginationAction<T, M>>
     //     The fix here is to let the implementor supply the "last" string value, which could be anything,
     //     while the default implementation still would provide snowflakes
     @Nonnull
-    protected String formatKeyValue(long last)
+    protected String getPaginationLastEvaluatedKey(long lastId, T last)
     {
-        return Long.toUnsignedString(last);
+        return Long.toUnsignedString(lastId);
     }
 
     @Override
@@ -379,9 +379,9 @@ public abstract class PaginationActionImpl<T, M extends PaginationAction<T, M>>
         route = route.withQueryParams("limit", limit);
 
         if (last != 0)
-            route = route.withQueryParams(order.getKey(), formatKeyValue(last));
+            route = route.withQueryParams(order.getKey(), getPaginationLastEvaluatedKey(last, this.getLast()));
         else if (order == PaginationOrder.FORWARD)
-            route = route.withQueryParams("after", formatKeyValue(0));
+            route = route.withQueryParams("after", getPaginationLastEvaluatedKey(0, this.last));
 
         return route;
     }
