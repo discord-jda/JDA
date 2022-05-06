@@ -267,7 +267,7 @@ public interface Message extends ISnowflake, Formattable
      * <p>This includes {@link Member Members}, {@link GuildChannel GuildChannels}, {@link Role Roles}, and {@link Emote Emotes}.
      * Can also be used to check if a message mentions {@code @everyone} or {@code @here}.
      *
-     * <h3>Example</h3>
+     * <p><b>Example</b><br>
      * {@code
      * System.out.println("Message mentioned these users: " + message.getMentions().getUsers());
      * System.out.println("Message used these emotes: " + message.getMentions().getEmotes());
