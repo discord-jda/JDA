@@ -250,7 +250,8 @@ public enum ErrorResponse
         return test(set);
     }
 
-    private static Predicate<Throwable> test(@Nonnull EnumSet<ErrorResponse> responses){
+    private static Predicate<Throwable> test(@Nonnull EnumSet<ErrorResponse> responses)
+    {
         return error -> error instanceof ErrorResponseException && responses.contains(((ErrorResponseException) error).getErrorResponse());
     }
 
