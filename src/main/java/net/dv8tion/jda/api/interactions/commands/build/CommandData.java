@@ -166,7 +166,8 @@ public interface CommandData extends SerializableData
     {
         Checks.notNull(command, "Command");
         if (command.getType() != Command.Type.SLASH)
-            return new CommandDataImpl(command.getType(), command.getName());
+            return new CommandDataImpl(command.getType(), command.getName())
+                    .setDefaultEnabled(command.isDefaultEnabled());
 
         return SlashCommandData.fromCommand(command);
     }
