@@ -66,7 +66,7 @@ public interface CommandData extends SerializableData
      *
      * @return The builder instance, for chaining
      *
-     * @deprecated This has been deprecated in favor of {@link #setDefaultPermissions(Collection)}
+     * @deprecated This has been deprecated in favor of {@link #setDefaultPermissions(ApplicationCommandPermission)}
      */
     @Deprecated
     @ForRemoval
