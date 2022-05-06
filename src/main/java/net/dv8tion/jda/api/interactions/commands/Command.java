@@ -17,7 +17,6 @@
 package net.dv8tion.jda.api.interactions.commands;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.ISnowflake;
@@ -255,37 +254,21 @@ public interface Command extends ISnowflake
     }
 
     /**
-     * The raw permission bitfield representing the default Permissions of this command.
-     * <br>This is -1 if no permissions have been set, 0 would mean nobody can access the command.
+     * The {@link ApplicationCommandPermission} of this command.
+     * <br>If this command has no default permission set, this returns {@link ApplicationCommandPermission#ENABLED}.
      *
-     * @return raw permission bitfield representing the default Permissions of this command.
-     */
-    long getDefaultPermissionsRaw();
-
-    /**
-     * The default {@link Permission Permissions} of this command.
-     * <br>A user will not be able to execute this command if he does not have any of these permissions.
-     *
-     * @return {@link EnumSet} of containing the default Permissions of this command.
+     * @return The ApplicationCommandPermission of this command.
      */
     @Nonnull
-    default EnumSet<Permission> getDefaultPermissions()
-    {
-        long defaultPermissions = getDefaultPermissionsRaw();
-        if (defaultPermissions == -1)
-            return EnumSet.noneOf(Permission.class);
-        if (defaultPermissions == 0)
-            return Permission.getPermissions(Permission.ALL_PERMISSIONS);
-        return Permission.getPermissions(getDefaultPermissionsRaw());
-    }
+    ApplicationCommandPermission getDefaultPermissions();
 
     /**
-     * Whether the command can be accessed via Direct Messages.
+     * Whether the command can only be used in a guild.
      * <br>If this is a guild-command, this has no effect.
      *
-     * @return False, if the command cannot be used in DMs
+     * @return False, if the command is not restricted to guilds.
      */
-    boolean isCommandEnabledInDMs();
+    boolean isGuildOnly();
 
     /**
      * Possible command types

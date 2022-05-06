@@ -17,10 +17,9 @@ package net.dv8tion.jda.internal.requests.restaction;
 
 import net.dv8tion.jda.annotations.DeprecatedSince;
 import net.dv8tion.jda.annotations.ForRemoval;
-import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.interactions.commands.ApplicationCommandPermission;
 import net.dv8tion.jda.api.interactions.commands.Command;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
@@ -37,8 +36,6 @@ import net.dv8tion.jda.internal.utils.Checks;
 import okhttp3.RequestBody;
 
 import javax.annotation.Nonnull;
-import java.util.Collection;
-import java.util.EnumSet;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
@@ -96,19 +93,17 @@ public class CommandCreateActionImpl extends RestActionImpl<Command> implements 
 
     @Nonnull
     @Override
-    public CommandData setDefaultPermissions(@Nonnull Collection<Permission> permissions)
+    public CommandCreateAction setDefaultPermissions(@Nonnull ApplicationCommandPermission permission)
     {
-        Checks.noneNull(permissions, "Permissions");
-        permissions.forEach(permission -> Checks.check(permission != Permission.UNKNOWN, "Cannot use Permission#UNKNOWN!"));
-        data.setDefaultPermissions(permissions);
+        data.setDefaultPermissions(permission);
         return this;
     }
 
     @Nonnull
     @Override
-    public CommandData setCommandEnabledInDMs(boolean enabledInDMs)
+    public CommandCreateAction setGuildOnly(boolean guildOnly)
     {
-        data.setCommandEnabledInDMs(enabledInDMs);
+        data.setGuildOnly(guildOnly);
         return this;
     }
 
@@ -137,21 +132,15 @@ public class CommandCreateActionImpl extends RestActionImpl<Command> implements 
 
     @Nonnull
     @Override
-    public EnumSet<Permission> getDefaultPermissions()
+    public ApplicationCommandPermission getDefaultPermissions()
     {
         return data.getDefaultPermissions();
     }
 
     @Override
-    public long getDefaultPermissionsRaw()
+    public boolean isGuildOnly()
     {
-        return data.getDefaultPermissionsRaw();
-    }
-
-    @Override
-    public boolean isCommandEnabledInDMs()
-    {
-        return data.isCommandEnabledInDMs();
+        return data.isGuildOnly();
     }
 
     @Nonnull

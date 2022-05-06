@@ -18,6 +18,7 @@ package net.dv8tion.jda.internal.interactions.command;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.interactions.commands.ApplicationCommandPermission;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.privileges.CommandPrivilege;
@@ -50,9 +51,10 @@ public class CommandImpl implements Command
     private final List<Command.Option> options;
     private final List<Command.SubcommandGroup> groups;
     private final List<Command.Subcommand> subcommands;
-    private final long id, guildId, applicationId, version, defaultMemberPermissions;
-    private final boolean defaultEnabled, enabledInDMs;
+    private final long id, guildId, applicationId, version;
+    private final boolean defaultEnabled, guildOnly;
     private final Command.Type type;
+    private final Long defaultMemberPermissions;
 
     public CommandImpl(JDAImpl api, Guild guild, DataObject json)
     {
@@ -69,8 +71,12 @@ public class CommandImpl implements Command
         this.groups = parseOptions(json, GROUP_TEST, Command.SubcommandGroup::new);
         this.subcommands = parseOptions(json, SUBCOMMAND_TEST, Command.Subcommand::new);
         this.version = json.getUnsignedLong("version", id);
-        this.defaultMemberPermissions = json.getLong("default_member_permissions", -1L);
-        this.enabledInDMs = json.getBoolean("dm_permission", true);
+
+        this.defaultMemberPermissions = json.isNull("default_member_permissions")
+                ? null
+                : json.getLong("default_member_permissions");
+
+        this.guildOnly = !json.getBoolean("dm_permission", true);
     }
 
     public static <T> List<T> parseOptions(DataObject json, Predicate<DataObject> test, Function<DataObject, T> transform)
@@ -198,16 +204,18 @@ public class CommandImpl implements Command
         return version;
     }
 
+    @Nonnull
     @Override
-    public long getDefaultPermissionsRaw()
+    public ApplicationCommandPermission getDefaultPermissions()
     {
-        return defaultMemberPermissions;
+        return ApplicationCommandPermission.enabledFor(defaultMemberPermissions);
     }
 
+
     @Override
-    public boolean isCommandEnabledInDMs()
+    public boolean isGuildOnly()
     {
-        return enabledInDMs;
+        return guildOnly;
     }
 
     @Override
