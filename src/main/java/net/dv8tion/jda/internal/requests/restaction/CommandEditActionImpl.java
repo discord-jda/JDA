@@ -87,11 +87,11 @@ public class CommandEditActionImpl extends RestActionImpl<Command> implements Co
         return this;
     }
 
+    @Nonnull
+    @Override
     @Deprecated
     @ForRemoval
     @DeprecatedSince("5.0.0")
-    @Nonnull
-    @Override
     public CommandEditAction setDefaultEnabled(boolean enabled)
     {
         data.setDefaultEnabled(enabled);

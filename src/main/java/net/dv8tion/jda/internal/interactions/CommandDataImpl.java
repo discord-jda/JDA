@@ -137,11 +137,11 @@ public class CommandDataImpl implements SlashCommandData
                 .collect(Collectors.toList());
     }
 
+    @Nonnull
+    @Override
     @Deprecated
     @ForRemoval
     @DeprecatedSince("5.0.0")
-    @Nonnull
-    @Override
     public CommandDataImpl setDefaultEnabled(boolean enabled)
     {
         this.defaultPermissions = enabled;

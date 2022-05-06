@@ -40,11 +40,11 @@ public interface SlashCommandData extends CommandData
     @Override
     SlashCommandData setName(@Nonnull String name);
 
+    @Nonnull
+    @Override
     @Deprecated
     @ForRemoval
     @DeprecatedSince("5.0.0")
-    @Nonnull
-    @Override
     SlashCommandData setDefaultEnabled(boolean enabled);
 
     @Nonnull

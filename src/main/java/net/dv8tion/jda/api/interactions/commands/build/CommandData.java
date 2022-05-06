@@ -18,6 +18,7 @@ package net.dv8tion.jda.api.interactions.commands.build;
 
 import net.dv8tion.jda.annotations.DeprecatedSince;
 import net.dv8tion.jda.annotations.ForRemoval;
+import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.commands.CommandPermission;
@@ -68,10 +69,11 @@ public interface CommandData extends SerializableData
      *
      * @deprecated This has been deprecated in favor of {@link #setDefaultPermissions(CommandPermission)}
      */
+    @Nonnull
     @Deprecated
     @ForRemoval
     @DeprecatedSince("5.0.0")
-    @Nonnull
+    @ReplaceWith("CommandData#setDefaultPermissions(CommandPermission)")
     CommandData setDefaultEnabled(boolean enabled);
 
     /**
@@ -121,6 +123,7 @@ public interface CommandData extends SerializableData
     @Deprecated
     @ForRemoval
     @DeprecatedSince("5.0.0")
+    @ReplaceWith("CommandData#getDefaultPermissions")
     boolean isDefaultEnabled();
 
     /**

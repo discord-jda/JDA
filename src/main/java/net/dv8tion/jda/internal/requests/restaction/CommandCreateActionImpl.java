@@ -114,10 +114,10 @@ public class CommandCreateActionImpl extends RestActionImpl<Command> implements 
         return data.getName();
     }
 
+    @Override
     @Deprecated
     @ForRemoval
     @DeprecatedSince("5.0.0")
-    @Override
     public boolean isDefaultEnabled()
     {
         return data.isDefaultEnabled();

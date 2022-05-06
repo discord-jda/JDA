@@ -59,12 +59,12 @@ public interface CommandCreateAction extends RestAction<Command>, SlashCommandDa
     @CheckReturnValue
     CommandCreateAction deadline(long timestamp);
 
-    @Deprecated
-    @ForRemoval
-    @DeprecatedSince("5.0.0")
     @Nonnull
     @Override
+    @Deprecated
+    @ForRemoval
     @CheckReturnValue
+    @DeprecatedSince("5.0.0")
     CommandCreateAction setDefaultEnabled(boolean enabled);
 
     @Nonnull
