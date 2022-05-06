@@ -254,13 +254,13 @@ public interface Command extends ISnowflake
     }
 
     /**
-     * The {@link ApplicationCommandPermission} of this command.
-     * <br>If this command has no default permission set, this returns {@link ApplicationCommandPermission#ENABLED}.
+     * The {@link CommandPermission} of this command.
+     * <br>If this command has no default permission set, this returns {@link CommandPermission#ENABLED}.
      *
      * @return The ApplicationCommandPermission of this command.
      */
     @Nonnull
-    ApplicationCommandPermission getDefaultPermissions();
+    CommandPermission getDefaultPermissions();
 
     /**
      * Whether the command can only be used in a guild.

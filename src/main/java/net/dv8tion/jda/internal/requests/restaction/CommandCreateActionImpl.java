@@ -18,7 +18,7 @@ package net.dv8tion.jda.internal.requests.restaction;
 import net.dv8tion.jda.annotations.DeprecatedSince;
 import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.interactions.commands.ApplicationCommandPermission;
+import net.dv8tion.jda.api.interactions.commands.CommandPermission;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
@@ -93,7 +93,7 @@ public class CommandCreateActionImpl extends RestActionImpl<Command> implements 
 
     @Nonnull
     @Override
-    public CommandCreateAction setDefaultPermissions(@Nonnull ApplicationCommandPermission permission)
+    public CommandCreateAction setDefaultPermissions(@Nonnull CommandPermission permission)
     {
         data.setDefaultPermissions(permission);
         return this;
@@ -132,7 +132,7 @@ public class CommandCreateActionImpl extends RestActionImpl<Command> implements 
 
     @Nonnull
     @Override
-    public ApplicationCommandPermission getDefaultPermissions()
+    public CommandPermission getDefaultPermissions()
     {
         return data.getDefaultPermissions();
     }

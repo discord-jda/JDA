@@ -18,7 +18,7 @@ package net.dv8tion.jda.internal.interactions.command;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.interactions.commands.ApplicationCommandPermission;
+import net.dv8tion.jda.api.interactions.commands.CommandPermission;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.privileges.CommandPrivilege;
@@ -206,9 +206,9 @@ public class CommandImpl implements Command
 
     @Nonnull
     @Override
-    public ApplicationCommandPermission getDefaultPermissions()
+    public CommandPermission getDefaultPermissions()
     {
-        return ApplicationCommandPermission.enabledFor(defaultMemberPermissions);
+        return CommandPermission.enabledFor(defaultMemberPermissions);
     }
 
 

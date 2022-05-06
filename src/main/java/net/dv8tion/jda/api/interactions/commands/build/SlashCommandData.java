@@ -18,9 +18,8 @@ package net.dv8tion.jda.api.interactions.commands.build;
 
 import net.dv8tion.jda.annotations.DeprecatedSince;
 import net.dv8tion.jda.annotations.ForRemoval;
-import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
-import net.dv8tion.jda.api.interactions.commands.ApplicationCommandPermission;
+import net.dv8tion.jda.api.interactions.commands.CommandPermission;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.utils.data.DataArray;
@@ -50,7 +49,7 @@ public interface SlashCommandData extends CommandData
 
     @Nonnull
     @Override
-    SlashCommandData setDefaultPermissions(@Nonnull ApplicationCommandPermission permission);
+    SlashCommandData setDefaultPermissions(@Nonnull CommandPermission permission);
 
     @Nonnull
     @Override
@@ -396,13 +395,12 @@ public interface SlashCommandData extends CommandData
         CommandDataImpl command = new CommandDataImpl(name, description);
         command.setGuildOnly(!object.getBoolean("dm_permission", true));
 
-        if (object.isNull("default_member_permissions"))
-            command.setDefaultPermissions(ApplicationCommandPermission.ENABLED);
-        else if (object.getLong("default_member_permissions") == 0)
-            command.setDefaultPermissions(ApplicationCommandPermission.DISABLED);
-        else
-            command.setDefaultPermissions(ApplicationCommandPermission.enabledFor(
-                    Permission.getPermissions(object.getLong("default_member_permissions"))));
+        command.setDefaultPermissions(
+                object.isNull("default_member_permissions")
+                        ? CommandPermission.ENABLED
+                        : CommandPermission.enabledFor(object.getLong("default_member_permissions"))
+        );
+
         options.stream(DataArray::getObject).forEach(opt ->
         {
             OptionType type = OptionType.fromKey(opt.getInt("type"));

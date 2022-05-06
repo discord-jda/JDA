@@ -32,6 +32,7 @@ import java.util.List;
 public class CommandDataTest
 {
     @Test
+    @SuppressWarnings("deprecation")
     public void testNormal()
     {
         CommandData command = new CommandDataImpl("ban", "Ban a user from this server")
@@ -64,6 +65,7 @@ public class CommandDataTest
     }
 
     @Test
+    @SuppressWarnings("deprecation")
     public void testSubcommand()
     {
         CommandDataImpl command = new CommandDataImpl("mod", "Moderation commands")
