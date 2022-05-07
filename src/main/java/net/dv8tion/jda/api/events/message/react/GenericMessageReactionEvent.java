@@ -93,16 +93,6 @@ public class GenericMessageReactionEvent extends GenericMessageEvent
                 : issuer;
     }
 
-    /**
-     * Returns the jump-to URL for the received message. Clicking this URL in the Discord client will cause the client to
-     * jump to the specified message.
-     *
-     * @return A String representing the jump-to URL for the message
-     */
-    @Nonnull
-    public String getJumpUrl() {
-        return String.format(Message.JUMP_URL, isFromGuild() ? getGuild().getId() : "@me", getChannel().getId(), getMessageId());
-    }
 
     /**
      * The {@link net.dv8tion.jda.api.entities.Member Member} instance for the reacting user

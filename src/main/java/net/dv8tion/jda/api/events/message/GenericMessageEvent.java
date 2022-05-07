@@ -157,6 +157,18 @@ public abstract class GenericMessageEvent extends Event
     }
 
     /**
+     * Returns the jump-to URL for the received message. Clicking this URL in the Discord client will cause the client to
+     * jump to the specified message.
+     *
+     * @return A String representing the jump-to URL for the message
+     */
+    @Nonnull
+    public String getJumpUrl()
+    {
+        return String.format(Message.JUMP_URL, isFromGuild() ? getGuild().getId() : "@me", getChannel().getId(), getMessageId());
+    }
+
+    /**
      * The {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} the Message was received in.
      * <br>If this Message was not received in a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel},
      * this will throw an {@link java.lang.IllegalStateException}.
