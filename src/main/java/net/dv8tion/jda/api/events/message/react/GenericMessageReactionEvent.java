@@ -93,7 +93,6 @@ public class GenericMessageReactionEvent extends GenericMessageEvent
                 : issuer;
     }
 
-
     /**
      * The {@link net.dv8tion.jda.api.entities.Member Member} instance for the reacting user
      * or {@code null} if the reaction was from a user not in this guild.
