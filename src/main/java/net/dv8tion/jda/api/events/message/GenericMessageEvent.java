@@ -157,8 +157,8 @@ public abstract class GenericMessageEvent extends Event
     }
 
     /**
-     * Returns the jump-to URL for the received message. Clicking this URL in the Discord client will cause the client to
-     * jump to the specified message.
+     * Returns the jump-to URL for the received message.
+     * <br>Clicking this URL in the Discord client will cause the client to jump to the specified message.
      *
      * @return A String representing the jump-to URL for the message
      */
