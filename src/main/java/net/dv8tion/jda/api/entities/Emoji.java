@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.EncodingUtil;
+import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.Nonnull;
 import java.util.Objects;
@@ -264,7 +265,7 @@ public class Emoji implements SerializableData, IMentionable
     @Override
     public String getAsMention()
     {
-        return id == 0L ? name : String.format("<%s:%s:%s>", animated ? "a" : "", name, Long.toUnsignedString(id));
+        return isUnicode() ? name : Helpers.format("<%s:%s:%s>", animated ? "a" : "", name, Long.toUnsignedString(id));
     }
 
     @Override
