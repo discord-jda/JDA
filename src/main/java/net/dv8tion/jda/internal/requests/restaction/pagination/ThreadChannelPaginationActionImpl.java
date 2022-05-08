@@ -13,6 +13,7 @@ import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.requests.Route;
+import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -82,14 +83,7 @@ public class ThreadChannelPaginationActionImpl extends PaginationActionImpl<Thre
         List<ThreadChannel> list = new ArrayList<>(threads.length());
         EntityBuilder builder = api.getEntityBuilder();
 
-        TLongObjectMap<DataObject> selfThreadMemberMap = new TLongObjectHashMap<>();
-        for (int i = 0; i < selfThreadMembers.length(); i++)
-        {
-            DataObject selfThreadMember = selfThreadMembers.getObject(i);
-
-            //Store the thread member based on the "id" which is the _thread's_ id, not the member's id (which would be our id)
-            selfThreadMemberMap.put(selfThreadMember.getLong("id"), selfThreadMember);
-        }
+        TLongObjectMap<DataObject> selfThreadMemberMap = Helpers.convertToMap((o) -> o.getUnsignedLong("id"), selfThreadMembers);
 
         for (int i = 0; i < threads.length(); i++)
         {
