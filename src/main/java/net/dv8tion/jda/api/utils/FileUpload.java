@@ -39,6 +39,7 @@ public class FileUpload implements Closeable, AttachedFile
 {
     private final InputStream resource;
     private final String name;
+    private boolean claimed = false;
 
     protected FileUpload(InputStream resource, String name)
     {
@@ -246,6 +247,20 @@ public class FileUpload implements Closeable, AttachedFile
     public InputStream getData()
     {
         return resource;
+    }
+
+    @Override
+    public synchronized void claim()
+    {
+        if (claimed)
+            throw new IllegalStateException("Instances of FileUpload can only be used once. Create a new instance with a new data source for each use.");
+        claimed = true;
+    }
+
+    @Override
+    public synchronized boolean isClaimed()
+    {
+        return claimed;
     }
 
     @Override
