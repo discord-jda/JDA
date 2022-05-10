@@ -18,6 +18,7 @@ package net.dv8tion.jda.api.events.message;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.Event;
+import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.Nonnull;
 
@@ -165,7 +166,7 @@ public abstract class GenericMessageEvent extends Event
     @Nonnull
     public String getJumpUrl()
     {
-        return String.format(Message.JUMP_URL, isFromGuild() ? getGuild().getId() : "@me", getChannel().getId(), getMessageId());
+        return Helpers.format(Message.JUMP_URL, isFromGuild() ? getGuild().getId() : "@me", getChannel().getId(), getMessageId());
     }
 
     /**
