@@ -33,10 +33,10 @@ public class SystemMessage extends ReceivedMessage
         long id, MessageChannel channel, MessageType type, MessageReference messageReference,
         boolean fromWebhook, boolean tts, boolean pinned,
         String content, String nonce, User author, Member member, MessageActivity activity, OffsetDateTime editTime, Mentions mentions,
-        List<MessageReaction> reactions, List<Attachment> attachments, List<MessageEmbed> embeds, List<MessageSticker> stickers, int flags)
+        List<MessageReaction> reactions, List<Attachment> attachments, List<MessageEmbed> embeds, List<MessageSticker> stickers, int flags, ThreadChannel startedThread)
     {
         super(id, channel, type, messageReference, fromWebhook, tts, pinned, content, nonce, author, member,
-                activity, editTime, mentions, reactions, attachments, embeds, stickers, Collections.emptyList(), flags, null);
+                activity, editTime, mentions, reactions, attachments, embeds, stickers, Collections.emptyList(), flags, null, startedThread);
     }
 
     @Nonnull
