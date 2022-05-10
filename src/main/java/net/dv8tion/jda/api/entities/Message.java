@@ -2337,7 +2337,7 @@ public interface Message extends ISnowflake, Formattable
      * Returns a possibly {@code null} {@link net.dv8tion.jda.api.entities.ThreadChannel ThreadChannel} that this message started.
      * This can be {@code null} due to no ThreadChannel being started from it or the ThreadChannel later being deleted.
      * 
-     * @return The {@link net.dv8tion.jda.api.entities.ThreadChannel ThreadChannel} that this message started
+     * @return The {@link net.dv8tion.jda.api.entities.ThreadChannel ThreadChannel} that was started from this message.
      */
     @Nullable
     ThreadChannel getStartedThread();
