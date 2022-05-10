@@ -248,6 +248,7 @@ public class FileUpload implements Closeable, AttachedFile
         return resource;
     }
 
+    @Override
     public void addPart(MultipartBody.Builder builder, int index)
     {
         builder.addFormDataPart("files[" + index + "]", name, IOUtil.createRequestBody(Requester.MEDIA_TYPE_OCTET, resource));
