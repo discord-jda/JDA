@@ -23,8 +23,10 @@ import okhttp3.MultipartBody;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.io.Closeable;
-import java.io.InputStream;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.OpenOption;
+import java.nio.file.Path;
 import java.util.List;
 
 /**
@@ -75,6 +77,112 @@ public interface AttachedFile extends Closeable
     static FileUpload fromData(@Nonnull byte[] data, @Nonnull String name)
     {
         return FileUpload.fromData(data, name);
+    }
+
+    /**
+     * Create a new {@link FileUpload} for a local file.
+     * <br>This is used to upload data to discord for various purposes.
+     *
+     * <p>This opens a {@link FileInputStream}, which will be closed on consumption by the request.
+     * You can use {@link FileUpload#close()} to close the stream manually.
+     *
+     * @param  file
+     *         The {@link File} to upload
+     * @param  name
+     *         The representative name to use for the file
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided or the name is empty
+     * @throws UncheckedIOException
+     *         If an IOException is thrown while opening the file
+     *
+     * @return {@link FileUpload}
+     *
+     * @see    java.io.FileInputStream FileInputStream
+     */
+    @Nonnull
+    static FileUpload fromData(@Nonnull File file, @Nonnull String name)
+    {
+        return FileUpload.fromData(file, name);
+    }
+
+    /**
+     * Create a new {@link FileUpload} for a local file.
+     * <br>This is used to upload data to discord for various purposes.
+     *
+     * <p>This opens a {@link FileInputStream}, which will be closed on consumption by the request.
+     * You can use {@link FileUpload#close()} to close the stream manually.
+     *
+     * @param  file
+     *         The {@link File} to upload
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided
+     * @throws UncheckedIOException
+     *         If an IOException is thrown while opening the file
+     *
+     * @return {@link FileUpload}
+     *
+     * @see    java.io.FileInputStream FileInputStream
+     * @see    #fromData(File, String)
+     */
+    @Nonnull
+    static FileUpload fromData(@Nonnull File file)
+    {
+        return FileUpload.fromData(file);
+    }
+
+    /**
+     * Create a new {@link FileUpload} for a local file.
+     * <br>This is used to upload data to discord for various purposes.
+     *
+     * <p>This opens the path using {@link Files#newInputStream(Path, OpenOption...)}, which will be closed on consumption by the request.
+     * You can use {@link FileUpload#close()} to close the stream manually.
+     *
+     * @param  path
+     *         The {@link Path} of the file to upload
+     * @param  name
+     *         The representative name to use for the file
+     * @param  options
+     *         The {@link OpenOption OpenOptions} specifying how the file is opened
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided or the name is empty
+     * @throws UncheckedIOException
+     *         If an IOException is thrown while opening the file
+     *
+     * @return {@link FileUpload}
+     */
+    @Nonnull
+    static FileUpload fromData(@Nonnull Path path, @Nonnull String name, @Nonnull OpenOption... options)
+    {
+        return FileUpload.fromData(path, name, options);
+    }
+
+    /**
+     * Create a new {@link FileUpload} for a local file.
+     * <br>This is used to upload data to discord for various purposes.
+     * Uses {@link Path#getFileName()} to specify the name of the file.
+     *
+     * <p>This opens the path using {@link Files#newInputStream(Path, OpenOption...)}, which will be closed on consumption by the request.
+     * You can use {@link FileUpload#close()} to close the stream manually.
+     *
+     * @param  path
+     *         The {@link Path} of the file to upload
+     * @param  options
+     *         The {@link OpenOption OpenOptions} specifying how the file is opened
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided
+     * @throws UncheckedIOException
+     *         If an IOException is thrown while opening the file
+     *
+     * @return {@link FileUpload}
+     */
+    @Nonnull
+    static FileUpload fromData(@Nonnull Path path, @Nonnull OpenOption... options)
+    {
+        return FileUpload.fromData(path, path.getFileName().toString(), options);
     }
 
     /**

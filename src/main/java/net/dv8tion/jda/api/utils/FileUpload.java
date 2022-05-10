@@ -23,10 +23,10 @@ import net.dv8tion.jda.internal.utils.IOUtil;
 import okhttp3.MultipartBody;
 
 import javax.annotation.Nonnull;
-import java.io.ByteArrayInputStream;
-import java.io.Closeable;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.OpenOption;
+import java.nio.file.Path;
 
 /**
  * Represents a file that is intended to be uploaded to Discord for arbitrary requests.
@@ -93,6 +93,137 @@ public class FileUpload implements Closeable, AttachedFile
         Checks.notNull(data, "Data");
         Checks.notNull(name, "Name");
         return fromData(new ByteArrayInputStream(data), name);
+    }
+
+    /**
+     * Create a new {@link FileUpload} for a local file.
+     * <br>This is used to upload data to discord for various purposes.
+     *
+     * <p>This opens a {@link FileInputStream}, which will be closed on consumption by the request.
+     * You can use {@link FileUpload#close()} to close the stream manually.
+     *
+     * @param  file
+     *         The {@link File} to upload
+     * @param  name
+     *         The representative name to use for the file
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided or the name is empty
+     * @throws UncheckedIOException
+     *         If an IOException is thrown while opening the file
+     *
+     * @return {@link FileUpload}
+     *
+     * @see    java.io.FileInputStream FileInputStream
+     */
+    @Nonnull
+    public static FileUpload fromData(@Nonnull File file, @Nonnull String name)
+    {
+        Checks.notNull(file, "File");
+        try
+        {
+            return fromData(new FileInputStream(file), name);
+        }
+        catch (FileNotFoundException e)
+        {
+            throw new UncheckedIOException(e);
+        }
+    }
+
+    /**
+     * Create a new {@link FileUpload} for a local file.
+     * <br>This is used to upload data to discord for various purposes.
+     *
+     * <p>This opens a {@link FileInputStream}, which will be closed on consumption by the request.
+     * You can use {@link FileUpload#close()} to close the stream manually.
+     *
+     * @param  file
+     *         The {@link File} to upload
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided
+     * @throws UncheckedIOException
+     *         If an IOException is thrown while opening the file
+     *
+     * @return {@link FileUpload}
+     *
+     * @see    java.io.FileInputStream FileInputStream
+     * @see    #fromData(File, String)
+     */
+    @Nonnull
+    public static FileUpload fromData(@Nonnull File file)
+    {
+        Checks.notNull(file, "File");
+        try
+        {
+            return fromData(new FileInputStream(file), file.getName());
+        }
+        catch (FileNotFoundException e)
+        {
+            throw new UncheckedIOException(e);
+        }
+    }
+
+    /**
+     * Create a new {@link FileUpload} for a local file.
+     * <br>This is used to upload data to discord for various purposes.
+     *
+     * <p>This opens the path using {@link Files#newInputStream(Path, OpenOption...)}, which will be closed on consumption by the request.
+     * You can use {@link FileUpload#close()} to close the stream manually.
+     *
+     * @param  path
+     *         The {@link Path} of the file to upload
+     * @param  name
+     *         The representative name to use for the file
+     * @param  options
+     *         The {@link OpenOption OpenOptions} specifying how the file is opened
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided or the name is empty
+     * @throws UncheckedIOException
+     *         If an IOException is thrown while opening the file
+     *
+     * @return {@link FileUpload}
+     */
+    @Nonnull
+    public static FileUpload fromData(@Nonnull Path path, @Nonnull String name, @Nonnull OpenOption... options)
+    {
+        Checks.notNull(path, "Path");
+        Checks.noneNull(options, "Options");
+        try
+        {
+            return fromData(Files.newInputStream(path, options), name);
+        }
+        catch (IOException e)
+        {
+            throw new UncheckedIOException(e);
+        }
+    }
+
+    /**
+     * Create a new {@link FileUpload} for a local file.
+     * <br>This is used to upload data to discord for various purposes.
+     * Uses {@link Path#getFileName()} to specify the name of the file.
+     *
+     * <p>This opens the path using {@link Files#newInputStream(Path, OpenOption...)}, which will be closed on consumption by the request.
+     * You can use {@link FileUpload#close()} to close the stream manually.
+     *
+     * @param  path
+     *         The {@link Path} of the file to upload
+     * @param  options
+     *         The {@link OpenOption OpenOptions} specifying how the file is opened
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided
+     * @throws UncheckedIOException
+     *         If an IOException is thrown while opening the file
+     *
+     * @return {@link FileUpload}
+     */
+    @Nonnull
+    public static FileUpload fromData(@Nonnull Path path, @Nonnull OpenOption... options)
+    {
+        return fromData(path, path.getFileName().toString(), options);
     }
 
     /**
