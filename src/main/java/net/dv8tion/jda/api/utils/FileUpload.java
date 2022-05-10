@@ -269,4 +269,17 @@ public class FileUpload implements Closeable, AttachedFile
         if (resource != null)
             resource.close();
     }
+
+    @Override
+    @SuppressWarnings("deprecation")
+    protected void finalize()
+    {
+        IOUtil.silentClose(resource);
+    }
+
+    @Override
+    public String toString()
+    {
+        return "AttachedFile[Data]:" + name;
+    }
 }
