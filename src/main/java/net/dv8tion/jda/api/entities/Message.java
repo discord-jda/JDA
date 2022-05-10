@@ -2334,7 +2334,7 @@ public interface Message extends ISnowflake, Formattable
     boolean isEphemeral();
 
     /**
-     * Returns a possibly {@code null} {@link net.dv8tion.jda.api.entities.ThreadChannel ThreadChannel} that this message started.
+     * Returns a possibly {@code null} {@link net.dv8tion.jda.api.entities.ThreadChannel ThreadChannel} that was started from this message.
      * This can be {@code null} due to no ThreadChannel being started from it or the ThreadChannel later being deleted.
      * 
      * @return The {@link net.dv8tion.jda.api.entities.ThreadChannel ThreadChannel} that was started from this message.
