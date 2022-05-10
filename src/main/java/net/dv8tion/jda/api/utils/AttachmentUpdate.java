@@ -20,6 +20,8 @@ import net.dv8tion.jda.api.entities.ISnowflake;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.utils.Checks;
+import okhttp3.MultipartBody;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -105,6 +107,18 @@ public class AttachmentUpdate implements AttachedFile, ISnowflake
         return id;
     }
 
+    @Override
+    public void claim() {}
+
+    @Override
+    public boolean isClaimed()
+    {
+        return false;
+    }
+
+    @Override
+    public void addPart(@NotNull MultipartBody.Builder builder, int index) {}
+
     @Nonnull
     @Override
     public DataObject toAttachmentData(int index)
@@ -121,6 +135,6 @@ public class AttachmentUpdate implements AttachedFile, ISnowflake
     @Override
     public String toString()
     {
-        return "AttachedFile[Attachment]:" + name + '(' + id + ')';
+        return "AttachedFile[Attachment]" + (name == null ? "" : ":" + name) + '(' + id + ')';
     }
 }

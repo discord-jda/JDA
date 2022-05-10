@@ -182,7 +182,7 @@ public interface AttachedFile extends Closeable
     @Nonnull
     static FileUpload fromData(@Nonnull Path path, @Nonnull OpenOption... options)
     {
-        return FileUpload.fromData(path, path.getFileName().toString(), options);
+        return FileUpload.fromData(path, options);
     }
 
     /**
@@ -241,7 +241,7 @@ public interface AttachedFile extends Closeable
      * @throws IllegalStateException
      *         If this attachment has already been used
      */
-    default void claim() {}
+    void claim();
 
     /**
      * Whether this attached file has already been used.
@@ -251,20 +251,19 @@ public interface AttachedFile extends Closeable
      *
      * @return True if this attachment has already been used
      */
-    default boolean isClaimed()
-    {
-        return false;
-    }
+    boolean isClaimed();
 
     /**
      * Used internally to build the multipart request.
+     *
+     * <p>The index can be used as a unique identifier for the multipart name, which is required to be unique by Discord.
      *
      * @param builder
      *        The {@link MultipartBody.Builder} used for the request body
      * @param index
      *        The index of the attachment, ignored for {@link AttachmentUpdate}
      */
-    default void addPart(MultipartBody.Builder builder, int index) {}
+    void addPart(@Nonnull MultipartBody.Builder builder, int index);
 
     /**
      * Used internally to build attachment descriptions for requests.

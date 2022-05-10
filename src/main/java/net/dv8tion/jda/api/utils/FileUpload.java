@@ -70,7 +70,7 @@ public class FileUpload implements Closeable, AttachedFile
     public static FileUpload fromData(@Nonnull InputStream data, @Nonnull String name)
     {
         Checks.notNull(data, "Data");
-        Checks.notNull(name, "Name");
+        Checks.notBlank(name, "Name");
         return new FileUpload(data, name);
     }
 
@@ -191,13 +191,14 @@ public class FileUpload implements Closeable, AttachedFile
     {
         Checks.notNull(path, "Path");
         Checks.noneNull(options, "Options");
+        Checks.check(Files.isReadable(path), "File for specified path cannot be read. Path: %s", path);
         try
         {
             return fromData(Files.newInputStream(path, options), name);
         }
         catch (IOException e)
         {
-            throw new UncheckedIOException(e);
+            throw new UncheckedIOException("Could not open file for specified path. Path: " + path, e);
         }
     }
 
@@ -224,7 +225,10 @@ public class FileUpload implements Closeable, AttachedFile
     @Nonnull
     public static FileUpload fromData(@Nonnull Path path, @Nonnull OpenOption... options)
     {
-        return fromData(path, path.getFileName().toString(), options);
+        Checks.notNull(path, "Path");
+        Path fileName = path.getFileName();
+        Checks.check(fileName != null, "Path does not have a file name. Path: %s", path);
+        return fromData(path, fileName.toString(), options);
     }
 
     /**
@@ -264,7 +268,7 @@ public class FileUpload implements Closeable, AttachedFile
     }
 
     @Override
-    public void addPart(MultipartBody.Builder builder, int index)
+    public void addPart(@Nonnull MultipartBody.Builder builder, int index)
     {
         builder.addFormDataPart("files[" + index + "]", name, IOUtil.createRequestBody(Requester.MEDIA_TYPE_OCTET, resource));
     }
