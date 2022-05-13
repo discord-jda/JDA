@@ -102,7 +102,8 @@ public class GuildStickerManagerImpl extends ManagerBase<GuildStickerManager> im
     public GuildStickerManager setTags(@Nonnull Collection<String> tags)
     {
         Checks.notEmpty(tags, "Tags");
-        Checks.noneNull(tags, "Tags");
+        for (String tag : tags)
+            Checks.notEmpty(tag, "Tags"); // checks for empty and null
         String csv = String.join(",", tags);
         Checks.notLonger(csv, 200, "List of tags");
         this.tags = csv;

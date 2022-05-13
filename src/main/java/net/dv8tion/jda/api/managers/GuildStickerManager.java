@@ -164,7 +164,13 @@ public interface GuildStickerManager extends Manager<GuildStickerManager>
      *         The new tags for the sticker (up to 200 characters)
      *
      * @throws IllegalArgumentException
-     *         If the provided tags is {@code null} or more than 200 characters long
+     *         Thrown if
+     *         <ul>
+     *             <li>{@code tags} is {@code null}</li>
+     *             <li>{@code tags} is empty</li>
+     *             <li>{@code tags} contains {@code null} or empty strings</li>
+     *             <li>The concatenated tags are more than 200 characters long (including commas between tags)</li>
+     *         </ul>
      *
      * @return GuildStickerManager for chaining convenience
      */
@@ -184,7 +190,13 @@ public interface GuildStickerManager extends Manager<GuildStickerManager>
      *         The new tags for the sticker (up to 200 characters)
      *
      * @throws IllegalArgumentException
-     *         If the provided tags is {@code null} or more than 200 characters long
+     *         Thrown if
+     *         <ul>
+     *             <li>{@code tags} is {@code null}</li>
+     *             <li>{@code tags} is empty</li>
+     *             <li>{@code tags} contains {@code null} or empty strings</li>
+     *             <li>The concatenated tags are more than 200 characters long (including commas between tags)</li>
+     *         </ul>
      *
      * @return GuildStickerManager for chaining convenience
      */
