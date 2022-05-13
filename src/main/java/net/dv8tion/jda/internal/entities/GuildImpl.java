@@ -835,7 +835,7 @@ public class GuildImpl implements Guild
     @Override
     public RestAction<List<GuildSticker>> retrieveStickers()
     {
-        Route.CompiledRoute route = Route.Guilds.GET_GUILD_STICKERS.compile(getId());
+        Route.CompiledRoute route = Route.Stickers.GET_GUILD_STICKERS.compile(getId());
         return new RestActionImpl<>(getJDA(), route, (response, request) -> {
             DataArray array = response.getArray();
             List<GuildSticker> stickers = new ArrayList<>(array.length());
@@ -864,7 +864,7 @@ public class GuildImpl implements Guild
     public RestAction<GuildSticker> retrieveSticker(@Nonnull StickerSnowflake sticker)
     {
         Checks.notNull(sticker, "Sticker");
-        Route.CompiledRoute route = Route.Guilds.GET_GUILD_STICKER.compile(getId(), sticker.getId());
+        Route.CompiledRoute route = Route.Stickers.GET_GUILD_STICKER.compile(getId(), sticker.getId());
         return new RestActionImpl<>(getJDA(), route, (response, request) -> {
             DataObject object = response.getObject();
             EntityBuilder builder = api.getEntityBuilder();

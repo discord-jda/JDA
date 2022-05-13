@@ -143,8 +143,6 @@ public class Route
         public static final Route GET_GUILD_EMBED =    new Route(GET,    "guilds/{guild_id}/embed");
         public static final Route MODIFY_GUILD_EMBED = new Route(PATCH,  "guilds/{guild_id}/embed");
         public static final Route GET_GUILD_EMOTES =   new Route(GET,    "guilds/{guild_id}/emojis");
-        public static final Route GET_GUILD_STICKERS = new Route(GET,    "guilds/{guild_id}/stickers");
-        public static final Route GET_GUILD_STICKER =  new Route(GET,    "guilds/{guild_id}/stickers/{sticker_id}");
         public static final Route GET_AUDIT_LOGS =     new Route(GET,    "guilds/{guild_id}/audit-logs");
         public static final Route GET_VOICE_REGIONS =  new Route(GET,    "guilds/{guild_id}/regions");
         public static final Route UPDATE_VOICE_STATE = new Route(PATCH,  "guilds/{guild_id}/voice-states/{user_id}");
@@ -181,6 +179,9 @@ public class Route
 
     public static class Stickers
     {
+        public static final Route GET_GUILD_STICKERS = new Route(GET,    "guilds/{guild_id}/stickers");
+        public static final Route GET_GUILD_STICKER =  new Route(GET,    "guilds/{guild_id}/stickers/{sticker_id}");
+
         public static final Route MODIFY_STICKER = new Route(PATCH,  "guilds/{guild_id}/stickers/{sticker_id}");
         public static final Route DELETE_STICKER = new Route(DELETE, "guilds/{guild_id}/stickers/{sticker_id}");
         public static final Route CREATE_STICKER = new Route(POST,   "guilds/{guild_id}/stickers");
