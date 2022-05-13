@@ -43,7 +43,7 @@ public interface Sticker extends StickerSnowflake
      *
      * @return A sticker snowflake instance
      *
-     * @see    JDA#retrieveStickerById(long)
+     * @see    JDA#retrieveSticker(StickerSnowflake)
      */
     @Nonnull
     static StickerSnowflake fromId(long id)
@@ -64,7 +64,7 @@ public interface Sticker extends StickerSnowflake
      *
      * @return A sticker snowflake instance
      *
-     * @see    JDA#retrieveStickerById(String)
+     * @see    JDA#retrieveSticker(StickerSnowflake)
      */
     @Nonnull
     static StickerSnowflake fromId(@Nonnull String id)

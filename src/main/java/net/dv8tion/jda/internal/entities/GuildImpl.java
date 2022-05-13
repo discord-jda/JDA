@@ -880,7 +880,7 @@ public class GuildImpl implements Guild
         if (sticker instanceof GuildSticker)
             Checks.check(((GuildSticker) sticker).getGuildIdLong() == id, "Cannot edit a sticker from another guild!");
         Checks.check(!(sticker instanceof StandardSticker), "Cannot edit a standard sticker.");
-        return new GuildStickerManagerImpl(this, sticker);
+        return new GuildStickerManagerImpl(this, id, sticker);
     }
 
     @Nonnull

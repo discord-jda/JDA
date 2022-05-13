@@ -27,7 +27,7 @@ import javax.annotation.Nonnull;
  * Represents an abstract sticker reference by only the sticker ID.
  *
  * <p>This is used for methods which only need a sticker ID to function, you cannot use this for getting names or similar.
- * To get information about a sticker by their ID you can use {@link JDA#retrieveStickerById(long)} or {@link JDA#retrieveStickerById(long)} instead.
+ * To get information about a sticker by their ID you can use {@link JDA#retrieveSticker(StickerSnowflake)} instead.
  */
 public interface StickerSnowflake extends ISnowflake
 {
@@ -41,7 +41,7 @@ public interface StickerSnowflake extends ISnowflake
      *
      * @return A sticker snowflake instance
      *
-     * @see    JDA#retrieveStickerById(long)
+     * @see    JDA#retrieveSticker(StickerSnowflake)
      */
     @Nonnull
     static StickerSnowflake fromId(long id)
@@ -62,7 +62,7 @@ public interface StickerSnowflake extends ISnowflake
      *
      * @return A sticker snowflake instance
      *
-     * @see    JDA#retrieveStickerById(String)
+     * @see    JDA#retrieveSticker(StickerSnowflake)
      */
     @Nonnull
     static StickerSnowflake fromId(@Nonnull String id)

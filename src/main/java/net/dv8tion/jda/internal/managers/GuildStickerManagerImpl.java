@@ -11,28 +11,37 @@ import net.dv8tion.jda.internal.utils.Checks;
 import okhttp3.RequestBody;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Collection;
 
 public class GuildStickerManagerImpl extends ManagerBase<GuildStickerManager> implements GuildStickerManager
 {
     private final Guild guild;
+    private final long guildId;
     private String name;
     private String description;
     private String tags;
 
-    public GuildStickerManagerImpl(Guild guild, StickerSnowflake sticker)
+    public GuildStickerManagerImpl(Guild guild, long guildId, StickerSnowflake sticker)
     {
-        super(guild.getJDA(), Route.Stickers.MODIFY_STICKER.compile(guild.getId(), sticker.getId()));
+        super(guild.getJDA(), Route.Stickers.MODIFY_STICKER.compile(Long.toUnsignedString(guildId), sticker.getId()));
         this.guild = guild;
+        this.guildId = guildId;
         if (isPermissionChecksEnabled())
             checkPermissions();
     }
 
-    @Nonnull
+    @Nullable
     @Override
     public Guild getGuild()
     {
         return guild;
+    }
+
+    @Override
+    public long getGuildIdLong()
+    {
+        return guildId;
     }
 
     @Nonnull
@@ -118,8 +127,8 @@ public class GuildStickerManagerImpl extends ManagerBase<GuildStickerManager> im
     @Override
     protected boolean checkPermissions()
     {
-        if (!getGuild().getSelfMember().hasPermission(Permission.MANAGE_EMOTES_AND_STICKERS))
-            throw new InsufficientPermissionException(getGuild(), Permission.MANAGE_EMOTES_AND_STICKERS);
+        if (guild != null && !guild.getSelfMember().hasPermission(Permission.MANAGE_EMOTES_AND_STICKERS))
+            throw new InsufficientPermissionException(guild, Permission.MANAGE_EMOTES_AND_STICKERS);
         return super.checkPermissions();
     }
 }

@@ -130,10 +130,7 @@ public class GuildStickerImpl extends RichStickerImpl implements GuildSticker
     @Override
     public GuildStickerManager getManager()
     {
-        Guild guild = getGuild();
-        if (guild == null)
-            throw new IllegalStateException("Cannot manage sticker without known guild. Use Guild#editSticker instead!");
-        return new GuildStickerManagerImpl(getGuild(), this);
+        return new GuildStickerManagerImpl(getGuild(), getGuildIdLong(), this);
     }
 
     public boolean setAvailable(boolean available)

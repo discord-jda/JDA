@@ -124,8 +124,6 @@ public interface GuildSticker extends RichSticker
      * Modify this sticker using {@link GuildStickerManager}.
      * <br>You can update multiple fields at once, by calling the respective setters before executing the request.
      *
-     * @throws IllegalStateException
-     *         If {@link #getGuild()} is null
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have {@link Permission#MANAGE_EMOTES_AND_STICKERS MANAGE_EMOTES_AND_STICKERS} in the guild.
      *

@@ -23,6 +23,7 @@ import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -97,10 +98,22 @@ public interface GuildStickerManager extends Manager<GuildStickerManager>
     /**
      * The {@link Guild} this Manager's {@link GuildSticker} is in.
      *
-     * @return The {@link Guild Guild}
+     * <p>This is null if {@link GuildSticker#getManager()} is used no a sticker with an uncached guild.
+     *
+     * @return The {@link Guild Guild}, or null if not present.
+     *
+     * @see    #getGuildId()
      */
-    @Nonnull
+    @Nullable
     Guild getGuild();
+
+    long getGuildIdLong();
+
+    @Nonnull
+    default String getGuildId()
+    {
+        return Long.toUnsignedString(getGuildIdLong());
+    }
 
     /**
      * Sets the <b><u>name</u></b> of the sticker.
