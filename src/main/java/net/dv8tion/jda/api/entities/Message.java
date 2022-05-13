@@ -1364,7 +1364,7 @@ public interface Message extends ISnowflake, Formattable
      *           <li>If null is provided</li>
      *         </ul>
      * @throws IllegalStateException
-     *         If this was not sent in a {@link Guild}
+     *         If this message was not sent in a {@link Guild}
      *
      * @return {@link MessageAction}
      *
@@ -1404,7 +1404,7 @@ public interface Message extends ISnowflake, Formattable
      *           <li>If null is provided</li>
      *         </ul>
      * @throws IllegalStateException
-     *         If this was not sent in a {@link Guild}
+     *         If this message was not sent in a {@link Guild}
      *
      * @return {@link MessageAction}
      *
