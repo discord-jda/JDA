@@ -108,7 +108,7 @@ public class AllowedMentionsImpl implements SerializableData, AllowedMentions<Al
         else
         {
             // Only ping everyone if the message also did
-            if (message.mentionsEveryone())
+            if (message.getMentions().mentionsEveryone())
             {
                 String content = message.getContentRaw();
                 EnumSet<Message.MentionType> parse = EnumSet.noneOf(Message.MentionType.class);
@@ -123,8 +123,8 @@ public class AllowedMentionsImpl implements SerializableData, AllowedMentions<Al
                 this.parse = EnumSet.noneOf(Message.MentionType.class);
             }
 
-            this.mention(message.getMentionedUsers())
-                .mention(message.getMentionedRoles());
+            this.mention(message.getMentions().getUsers())
+                .mention(message.getMentions().getRoles());
         }
         return this;
     }

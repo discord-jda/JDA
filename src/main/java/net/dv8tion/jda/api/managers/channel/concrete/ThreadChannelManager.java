@@ -73,9 +73,6 @@ public interface ThreadChannelManager extends ChannelManager<ThreadChannel, Thre
      *
      * @return this ThreadChannelManager for chaining convenience.
      *
-     * @throws IllegalArgumentException
-     *         If the provided duration is not supported by this guild due to the guild boost requirements for higher durations.
-     *
      * @see ThreadChannel#getAutoArchiveDuration()
      */
     ThreadChannelManager setAutoArchiveDuration(ThreadChannel.AutoArchiveDuration autoArchiveDuration);

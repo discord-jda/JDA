@@ -16,7 +16,6 @@
 
 package net.dv8tion.jda.internal.entities;
 
-import gnu.trove.set.TLongSet;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
@@ -32,7 +31,6 @@ import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationAction;
 import net.dv8tion.jda.api.utils.MarkdownSanitizer;
-import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.requests.CompletedRestAction;
@@ -40,15 +38,12 @@ import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.MessageActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
-import org.apache.commons.collections4.Bag;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.bag.HashBag;
+import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.time.OffsetDateTime;
 import java.util.*;
-import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -62,21 +57,20 @@ public class ReceivedMessage extends AbstractMessage
     protected final MessageChannel channel;
     protected final MessageReference messageReference;
     protected final boolean fromWebhook;
-    protected final boolean mentionsEveryone;
     protected final boolean pinned;
     protected final User author;
     protected final Member member;
     protected final MessageActivity activity;
     protected final OffsetDateTime editedTime;
+    protected final Mentions mentions;
     protected final List<MessageReaction> reactions;
     protected final List<Attachment> attachments;
     protected final List<MessageEmbed> embeds;
     protected final List<StickerItem> stickers;
     protected final List<ActionRow> components;
-    protected final TLongSet mentionedUsers;
-    protected final TLongSet mentionedRoles;
     protected final int flags;
     protected final Message.Interaction interaction;
+    protected final ThreadChannel startedThread;
 
     protected InteractionHook interactionHook = null; // late-init
 
@@ -84,18 +78,15 @@ public class ReceivedMessage extends AbstractMessage
     protected String altContent = null;
     protected String strippedContent = null;
 
-    protected List<User> userMentions = null;
-    protected List<Member> memberMentions = null;
-    protected List<Emote> emoteMentions = null;
-    protected List<Role> roleMentions = null;
-    protected List<TextChannel> channelMentions = null;
     protected List<String> invites = null;
 
     public ReceivedMessage(
             long id, MessageChannel channel, MessageType type, MessageReference messageReference,
-            boolean fromWebhook, boolean mentionsEveryone, TLongSet mentionedUsers, TLongSet mentionedRoles, boolean tts, boolean pinned,
+            boolean fromWebhook, boolean  tts, boolean pinned,
             String content, String nonce, User author, Member member, MessageActivity activity, OffsetDateTime editTime,
-            List<MessageReaction> reactions, List<Attachment> attachments, List<MessageEmbed> embeds, List<StickerItem> stickers, List<ActionRow> components, int flags, Message.Interaction interaction)
+            Mentions mentions, List<MessageReaction> reactions, List<Attachment> attachments, List<MessageEmbed> embeds,
+            List<StickerItem> stickers, List<ActionRow> components,
+            int flags, Message.Interaction interaction, ThreadChannel startedThread)
     {
         super(content, nonce, tts);
         this.id = id;
@@ -104,21 +95,20 @@ public class ReceivedMessage extends AbstractMessage
         this.type = type;
         this.api = (channel != null) ? (JDAImpl) channel.getJDA() : null;
         this.fromWebhook = fromWebhook;
-        this.mentionsEveryone = mentionsEveryone;
         this.pinned = pinned;
         this.author = author;
         this.member = member;
         this.activity = activity;
         this.editedTime = editTime;
+        this.mentions = mentions;
         this.reactions = Collections.unmodifiableList(reactions);
         this.attachments = Collections.unmodifiableList(attachments);
         this.embeds = Collections.unmodifiableList(embeds);
         this.stickers = Collections.unmodifiableList(stickers);
         this.components = Collections.unmodifiableList(components);
-        this.mentionedUsers = mentionedUsers;
-        this.mentionedRoles = mentionedRoles;
         this.flags = flags;
         this.interaction = interaction;
+        this.startedThread = startedThread;
     }
 
     public ReceivedMessage withHook(InteractionHook hook)
@@ -347,260 +337,7 @@ public class ReceivedMessage extends AbstractMessage
     @Override
     public String getJumpUrl()
     {
-        return String.format(Message.JUMP_URL, isFromGuild() ? getGuild().getId() : "@me", getChannel().getId(), getId());
-    }
-
-    private User matchUser(Matcher matcher)
-    {
-        long userId = MiscUtil.parseSnowflake(matcher.group(1));
-        if (!mentionedUsers.contains(userId))
-            return null;
-        User user = getJDA().getUserById(userId);
-        if (user == null && userMentions != null)
-            user = userMentions.stream().filter(it -> it.getIdLong() == userId).findFirst().orElse(null);
-        return user;
-    }
-
-    @Nonnull
-    @Override
-    public synchronized List<User> getMentionedUsers()
-    {
-        if (userMentions == null)
-            userMentions = Collections.unmodifiableList(processMentions(MentionType.USER, new ArrayList<>(), true, this::matchUser));
-        return userMentions;
-    }
-
-    @Nonnull
-    @Override
-    public Bag<User> getMentionedUsersBag()
-    {
-        return processMentions(MentionType.USER, new HashBag<>(), false, this::matchUser);
-    }
-
-    private TextChannel matchTextChannel(Matcher matcher)
-    {
-        long channelId = MiscUtil.parseSnowflake(matcher.group(1));
-        return getJDA().getTextChannelById(channelId);
-    }
-
-    @Nonnull
-    @Override
-    public synchronized List<TextChannel> getMentionedChannels()
-    {
-        //TODO-v5: This needs to be updated as you can match.. quie a few more chanels than just TextChannels
-        if (channelMentions == null)
-            channelMentions = Collections.unmodifiableList(processMentions(MentionType.CHANNEL, new ArrayList<>(), true, this::matchTextChannel));
-        return channelMentions;
-    }
-
-    @Nonnull
-    @Override
-    public Bag<TextChannel> getMentionedChannelsBag()
-    {
-        return processMentions(MentionType.CHANNEL, new HashBag<>(), false, this::matchTextChannel);
-    }
-
-    private Role matchRole(Matcher matcher)
-    {
-        long roleId = MiscUtil.parseSnowflake(matcher.group(1));
-        if (!mentionedRoles.contains(roleId))
-            return null;
-        if (getChannelType().isGuild())
-            return getGuild().getRoleById(roleId);
-        else
-            return getJDA().getRoleById(roleId);
-    }
-
-    @Nonnull
-    @Override
-    public synchronized List<Role> getMentionedRoles()
-    {
-        if (roleMentions == null)
-            roleMentions = Collections.unmodifiableList(processMentions(MentionType.ROLE, new ArrayList<>(), true, this::matchRole));
-        return roleMentions;
-    }
-
-    @Nonnull
-    @Override
-    public Bag<Role> getMentionedRolesBag()
-    {
-        return processMentions(MentionType.ROLE, new HashBag<>(), false, this::matchRole);
-    }
-
-    @Nonnull
-    @Override
-    public List<Member> getMentionedMembers(@Nonnull Guild guild)
-    {
-        Checks.notNull(guild, "Guild");
-        if (isFromGuild() && guild.equals(getGuild()) && memberMentions != null)
-            return memberMentions;
-        List<User> mentionedUsers = getMentionedUsers();
-        List<Member> members = new ArrayList<>();
-        for (User user : mentionedUsers)
-        {
-            Member member = guild.getMember(user);
-            if (member != null)
-                members.add(member);
-        }
-
-        return Collections.unmodifiableList(members);
-    }
-
-    @Nonnull
-    @Override
-    public List<Member> getMentionedMembers()
-    {
-        if (isFromGuild())
-            return getMentionedMembers(getGuild());
-        else
-            throw new IllegalStateException("You must specify a Guild for Messages which are not sent from a TextChannel!");
-    }
-
-    @Nonnull
-    @Override
-    public List<IMentionable> getMentions(@Nonnull MentionType... types)
-    {
-        if (types == null || types.length == 0)
-            return getMentions(MentionType.values());
-        List<IMentionable> mentions = new ArrayList<>();
-        // boolean duplicate checks
-        // not using Set because channel and role might have the same ID
-        boolean channel = false;
-        boolean role = false;
-        boolean user = false;
-        boolean emote = false;
-        for (MentionType type : types)
-        {
-            switch (type)
-            {
-                case EVERYONE:
-                case HERE:
-                default: continue;
-                case CHANNEL:
-                    if (!channel)
-                        mentions.addAll(getMentionedChannels());
-                    channel = true;
-                    break;
-                case USER:
-                    if (!user)
-                        mentions.addAll(getMentionedUsers());
-                    user = true;
-                    break;
-                case ROLE:
-                    if (!role)
-                        mentions.addAll(getMentionedRoles());
-                    role = true;
-                    break;
-                case EMOTE:
-                    if (!emote)
-                        mentions.addAll(getEmotes());
-                    emote = true;
-            }
-        }
-        return Collections.unmodifiableList(mentions);
-    }
-
-    @Override
-    public boolean isMentioned(@Nonnull IMentionable mentionable, @Nonnull MentionType... types)
-    {
-        Checks.notNull(types, "Mention Types");
-        if (types.length == 0)
-            return isMentioned(mentionable, MentionType.values());
-        final boolean isUserEntity = mentionable instanceof User || mentionable instanceof Member;
-        for (MentionType type : types)
-        {
-            switch (type)
-            {
-                case HERE:
-                {
-                    if (isMass("@here") && isUserEntity)
-                        return true;
-                    break;
-                }
-                case EVERYONE:
-                {
-                    if (isMass("@everyone") && isUserEntity)
-                        return true;
-                    break;
-                }
-                case USER:
-                {
-                    if (isUserMentioned(mentionable))
-                        return true;
-                    break;
-                }
-                case ROLE:
-                {
-                    if (isRoleMentioned(mentionable))
-                        return true;
-                    break;
-                }
-                case CHANNEL:
-                {
-                    if (mentionable instanceof TextChannel)
-                    {
-                        if (getMentionedChannels().contains(mentionable))
-                            return true;
-                    }
-                    break;
-                }
-                case EMOTE:
-                {
-                    if (mentionable instanceof Emote)
-                    {
-                        if (getEmotes().contains(mentionable))
-                            return true;
-                    }
-                    break;
-                }
-//              default: continue;
-            }
-        }
-        return false;
-    }
-
-    private boolean isUserMentioned(IMentionable mentionable)
-    {
-        if (mentionable instanceof User)
-        {
-            return getMentionedUsers().contains(mentionable);
-        }
-        else if (mentionable instanceof Member)
-        {
-            final Member member = (Member) mentionable;
-            return getMentionedUsers().contains(member.getUser());
-        }
-        return false;
-    }
-
-    private boolean isRoleMentioned(IMentionable mentionable)
-    {
-        if (mentionable instanceof Role)
-        {
-            return getMentionedRoles().contains(mentionable);
-        }
-        else if (mentionable instanceof Member)
-        {
-            final Member member = (Member) mentionable;
-            return CollectionUtils.containsAny(getMentionedRoles(), member.getRoles());
-        }
-        else if (isFromGuild() && mentionable instanceof User)
-        {
-            final Member member = getGuild().getMember((User) mentionable);
-            return member != null && CollectionUtils.containsAny(getMentionedRoles(), member.getRoles());
-        }
-        return false;
-    }
-
-    private boolean isMass(String s)
-    {
-        return mentionsEveryone && content.contains(s);
-    }
-
-    @Override
-    public boolean mentionsEveryone()
-    {
-        return mentionsEveryone;
+        return Helpers.format(Message.JUMP_URL, isFromGuild() ? getGuild().getId() : "@me", getChannel().getId(), getId());
     }
 
     @Override
@@ -648,12 +385,13 @@ public class ReceivedMessage extends AbstractMessage
     {
         if (altContent != null)
             return altContent;
+
         synchronized (mutex)
         {
             if (altContent != null)
                 return altContent;
             String tmp = content;
-            for (User user : getMentionedUsers())
+            for (User user : mentions.getUsers())
             {
                 String name;
                 if (isFromGuild() && getGuild().isMember(user))
@@ -662,15 +400,15 @@ public class ReceivedMessage extends AbstractMessage
                     name = user.getName();
                 tmp = tmp.replaceAll("<@!?" + Pattern.quote(user.getId()) + '>', '@' + Matcher.quoteReplacement(name));
             }
-            for (Emote emote : getEmotes())
+            for (Emote emote : mentions.getEmotes())
             {
                 tmp = tmp.replace(emote.getAsMention(), ":" + emote.getName() + ":");
             }
-            for (TextChannel mentionedChannel : getMentionedChannels())
+            for (GuildChannel mentionedChannel : mentions.getChannels())
             {
                 tmp = tmp.replace(mentionedChannel.getAsMention(), '#' + mentionedChannel.getName());
             }
-            for (Role mentionedRole : getMentionedRoles())
+            for (Role mentionedRole : mentions.getRoles())
             {
                 tmp = tmp.replace(mentionedRole.getAsMention(), '@' + mentionedRole.getName());
             }
@@ -803,31 +541,11 @@ public class ReceivedMessage extends AbstractMessage
         return components;
     }
 
-    private Emote matchEmote(Matcher m)
-    {
-        long emoteId = MiscUtil.parseSnowflake(m.group(2));
-        String name = m.group(1);
-        boolean animated = m.group(0).startsWith("<a:");
-        Emote emote = getJDA().getEmoteById(emoteId);
-        if (emote == null)
-            emote = new EmoteImpl(emoteId, api).setName(name).setAnimated(animated);
-        return emote;
-    }
-
     @Nonnull
     @Override
-    public synchronized List<Emote> getEmotes()
+    public Mentions getMentions()
     {
-        if (this.emoteMentions == null)
-            emoteMentions = Collections.unmodifiableList(processMentions(MentionType.EMOTE, new ArrayList<>(), true, this::matchEmote));
-        return emoteMentions;
-    }
-
-    @Nonnull
-    @Override
-    public Bag<Emote> getEmotesBag()
-    {
-        return processMentions(MentionType.EMOTE, new HashBag<>(), false, this::matchEmote);
+        return mentions;
     }
 
     @Nonnull
@@ -928,6 +646,8 @@ public class ReceivedMessage extends AbstractMessage
             else if (!sMember.hasPermission(gChan, Permission.MESSAGE_MANAGE))
                 throw new InsufficientPermissionException(gChan, Permission.MESSAGE_MANAGE);
         }
+        if (!type.canDelete())
+            throw new IllegalStateException("Cannot delete messages of type " + type);
         return channel.deleteMessageById(getIdLong());
     }
 
@@ -1006,6 +726,13 @@ public class ReceivedMessage extends AbstractMessage
         return (this.flags & MessageFlag.EPHEMERAL.getValue()) != 0;
     }
 
+    @Nullable
+    @Override
+    public ThreadChannel getStartedThread()
+    {
+        return this.startedThread;
+    }
+
     @Override
     public RestAction<ThreadChannel> createThreadChannel(String name)
     {
@@ -1056,49 +783,5 @@ public class ReceivedMessage extends AbstractMessage
             out = out.toUpperCase(formatter.locale());
 
         appendFormat(formatter, width, precision, leftJustified, out);
-    }
-
-    public void setMentions(List<User> users, List<Member> members)
-    {
-        users.sort(Comparator.comparing((user) ->
-                Math.max(content.indexOf("<@" + user.getId() + ">"),
-                        content.indexOf("<@!" + user.getId() + ">")
-                )));
-        members.sort(Comparator.comparing((user) ->
-                Math.max(content.indexOf("<@" + user.getId() + ">"),
-                         content.indexOf("<@!" + user.getId() + ">")
-                )));
-
-        this.userMentions = Collections.unmodifiableList(users);
-        this.memberMentions = Collections.unmodifiableList(members);
-    }
-
-    private <T, C extends Collection<T>> C processMentions(MentionType type, C collection, boolean distinct, Function<Matcher, T> map)
-    {
-        Matcher matcher = type.getPattern().matcher(getContentRaw());
-        while (matcher.find())
-        {
-            try
-            {
-                T elem = map.apply(matcher);
-                if (elem == null || (distinct && collection.contains(elem)))
-                    continue;
-                collection.add(elem);
-            }
-            catch (NumberFormatException ignored) {}
-        }
-        return collection;
-    }
-
-    private static class FormatToken
-    {
-        public final String format;
-        public final int start;
-
-        public FormatToken(String format, int start)
-        {
-            this.format = format;
-            this.start = start;
-        }
     }
 }
