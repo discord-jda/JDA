@@ -20,11 +20,9 @@ import net.dv8tion.jda.api.entities.sticker.GuildSticker;
 import net.dv8tion.jda.api.entities.sticker.RichSticker;
 import net.dv8tion.jda.api.entities.sticker.StandardSticker;
 import net.dv8tion.jda.api.entities.sticker.StickerUnion;
-import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.Nonnull;
 import java.util.Collections;
-import java.util.Objects;
 import java.util.Set;
 
 public abstract class RichStickerImpl extends StickerItemImpl implements RichSticker, StickerUnion
@@ -90,28 +88,6 @@ public abstract class RichStickerImpl extends StickerItemImpl implements RichSti
     @Override
     public String toString()
     {
-        return "RichSticker:" + getType() + ':' + name + '(' + getId() + ')';
-    }
-
-    @Override
-    public int hashCode()
-    {
-        return Objects.hash(id, format, name, getType(), tags, description);
-    }
-
-    @Override
-    public boolean equals(Object obj)
-    {
-        if (obj == this)
-            return true;
-        if (!(obj instanceof RichStickerImpl))
-            return false;
-        RichStickerImpl other = (RichStickerImpl) obj;
-        return id == other.id
-                && format == other.format
-                && getType() == other.getType()
-                && Objects.equals(name, other.name)
-                && Objects.equals(description, other.description)
-                && Helpers.deepEqualsUnordered(tags, other.tags);
+        return "RichSticker[" + getType() + "]:" + name + '(' + getId() + ')';
     }
 }

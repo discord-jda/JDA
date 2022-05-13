@@ -48,4 +48,10 @@ public class StickerSnowflakeImpl implements StickerSnowflake
             return false;
         return ((StickerSnowflakeImpl) obj).id == id;
     }
+
+    @Override
+    public String toString()
+    {
+        return "StickerSnowflake(" + getId() + ')';
+    }
 }

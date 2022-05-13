@@ -151,7 +151,7 @@ public class GuildStickerImpl extends RichStickerImpl implements GuildSticker
     @Override
     public String toString()
     {
-        return "RichSticker:" + getType() + ':' + name + '(' + getId() + ",guild=" + getGuildId() + ')';
+        return "GuildSticker:" + name + '(' + getId() + ", guild=" + getGuildId() + ')';
     }
 
     @Override

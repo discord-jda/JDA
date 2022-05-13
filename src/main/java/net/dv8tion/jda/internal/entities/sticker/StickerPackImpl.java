@@ -18,8 +18,8 @@ package net.dv8tion.jda.internal.entities.sticker;
 
 import net.dv8tion.jda.api.entities.sticker.StandardSticker;
 import net.dv8tion.jda.api.entities.sticker.StickerPack;
-import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nonnull;
 import java.util.Collections;
 import java.util.List;
 
@@ -49,21 +49,21 @@ public class StickerPackImpl implements StickerPack
         return id;
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public List<StandardSticker> getStickers()
     {
         return stickers;
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public String getName()
     {
         return name;
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public String getDescription()
     {

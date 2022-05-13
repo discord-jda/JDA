@@ -64,7 +64,7 @@ public class StandardStickerImpl extends RichStickerImpl implements StandardStic
     @Override
     public String toString()
     {
-        return "RichSticker:" + getType() + ":" + name + '(' + getId() + ",pack=" + getPackId() + ')';
+        return "StandardSticker:" + name + '(' + getId() + ", pack=" + getPackId() + ')';
     }
 
     @Override
