@@ -179,12 +179,14 @@ public class EntityBuilder
                 DataObject object = array.getObject(i);
                 if (object.isNull("id"))
                 {
-                    LOG.error("Received GUILD_CREATE with a sticker with a null ID. JSON: {}", object);
+                    LOG.error("Received GUILD_CREATE with a sticker with a null ID. GuildId: {} JSON: {}",
+                              guildObj.getId(), object);
                     continue;
                 }
                 if (object.getInt("type", -1) != Sticker.Type.GUILD.getId())
                 {
-                    LOG.error("Received GUILD_CREATE with sticker that had an unexpected type. Type: {} JSON: {}", object.getInt("type", -1), object);
+                    LOG.error("Received GUILD_CREATE with sticker that had an unexpected type. GuildId: {} Type: {} JSON: {}",
+                              guildObj.getId(), object.getInt("type", -1), object);
                     continue;
                 }
 
