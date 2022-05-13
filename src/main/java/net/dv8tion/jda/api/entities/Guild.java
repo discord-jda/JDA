@@ -38,6 +38,7 @@ import net.dv8tion.jda.api.requests.restaction.order.RoleOrderAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.AuditLogPaginationAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.BanPaginationAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.PaginationAction;
+import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.ImageProxy;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
@@ -4588,6 +4589,45 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     @Nonnull
     @CheckReturnValue
     AuditableRestAction<Emote> createEmote(@Nonnull String name, @Nonnull Icon icon, @Nonnull Role... roles);
+
+    /**
+     * Creates a new {@link GuildSticker} in this Guild.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#INVALID_FILE_UPLOADED INVALID_FILE_UPLOADED}
+     *     <br>The sticker file asset is not in a supported file format</li>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The sticker could not be created due to a permission discrepancy</li>
+     * </ul>
+     *
+     * @param  name
+     *         The sticker name (2-30 characters)
+     * @param  description
+     *         The sticker description (2-100 characters, or empty)
+     * @param  file
+     *         The sticker file containing the asset (png/apng/lottie) with valid file extension (png or json)
+     * @param  tag
+     *         The sticker tag used for suggestions (emoji or tag words)
+     * @param  tags
+     *         Additional tags to use for suggestions
+     *
+     * @throws InsufficientPermissionException
+     *         If the currently logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_EMOTES_AND_STICKERS MANAGE_EMOTES_AND_STICKERS} permission
+     * @throws IllegalArgumentException
+     *         Thrown if
+     *         <ul>
+     *             <li>The name is not between 2 and 30 characters long</li>
+     *             <li>The description is more than 100 characters long or exactly 1 character long</li>
+     *             <li>The asset file is null or of an invalid format (must be PNG or LOTTIE)</li>
+     *             <li>Anything is {@code null}</li>
+     *         </ul>
+     *
+     * @return {@link AuditableRestAction} - Type: {@link GuildSticker}
+     */
+    @Nonnull
+    @CheckReturnValue
+    AuditableRestAction<GuildSticker> createSticker(@Nonnull String name, @Nonnull String description, @Nonnull FileUpload file, @Nonnull String tag, @Nonnull String... tags);
 
     /**
      * Deletes a sticker from the guild.

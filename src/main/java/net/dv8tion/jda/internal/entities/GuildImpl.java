@@ -44,6 +44,7 @@ import net.dv8tion.jda.api.requests.restaction.order.CategoryOrderAction;
 import net.dv8tion.jda.api.requests.restaction.order.ChannelOrderAction;
 import net.dv8tion.jda.api.requests.restaction.order.RoleOrderAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.AuditLogPaginationAction;
+import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.cache.*;
 import net.dv8tion.jda.api.utils.concurrent.Task;
 import net.dv8tion.jda.api.utils.data.DataArray;
@@ -68,6 +69,8 @@ import net.dv8tion.jda.internal.utils.cache.MemberCacheViewImpl;
 import net.dv8tion.jda.internal.utils.cache.SnowflakeCacheViewImpl;
 import net.dv8tion.jda.internal.utils.cache.SortedSnowflakeCacheViewImpl;
 import net.dv8tion.jda.internal.utils.concurrent.task.GatewayTask;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 
 import javax.annotation.CheckReturnValue;
@@ -1779,6 +1782,62 @@ public class GuildImpl implements Guild
             DataObject obj = response.getObject();
             return jda.getEntityBuilder().createEmote(this, obj);
         });
+    }
+
+    @Nonnull
+    @Override
+    public AuditableRestAction<GuildSticker> createSticker(@Nonnull String name, @Nonnull String description, @Nonnull FileUpload file, @Nonnull String tag, @Nonnull String... tags)
+    {
+        checkPermission(Permission.MANAGE_EMOTES_AND_STICKERS);
+        Checks.inRange(name, 2, 30, "Name");
+        Checks.notNull(file, "File");
+        Checks.notEmpty(tag, "Tags");
+        Checks.notNull(description, "Description");
+        if (!description.isEmpty())
+            Checks.inRange(description, 2, 100, "Description");
+        for (String t : tags)
+            Checks.notEmpty(t, "Tags");
+
+        String csv = tag;
+        if (tags.length > 0)
+            csv += "," + String.join(",", tags);
+        Checks.notLonger(csv, 200, "Tags");
+
+
+        // Add sticker meta data as form parts (because payload_json is broken)
+        MultipartBody.Builder builder = new MultipartBody.Builder().setType(MultipartBody.FORM);
+        builder.addFormDataPart("name", name);
+        builder.addFormDataPart("description", description);
+        builder.addFormDataPart("tags", csv);
+
+        // Extract file extension and map to media type
+        int index = file.getName().lastIndexOf('.');
+        if (index < 0)
+            throw new IllegalArgumentException("Missing file extension for image. Must be PNG or JSON.");
+
+        String extension = file.getName().substring(index + 1).toLowerCase(Locale.ROOT);
+        MediaType mediaType;
+        switch (extension)
+        {
+            case "apng":
+            case "png":
+                mediaType = Requester.MEDIA_TYPE_PNG;
+                break;
+            case "json":
+                mediaType = Requester.MEDIA_TYPE_JSON;
+                break;
+            default:
+                throw new IllegalArgumentException("Unsupported file extension: '." + extension + "', must be PNG or JSON.");
+        }
+
+        // Attach file asset for sticker image/animation
+        builder.addFormDataPart("file", file.getName(), IOUtil.createRequestBody(mediaType, file.getData()));
+
+        MultipartBody body = builder.build();
+        Route.CompiledRoute route = Route.Stickers.CREATE_STICKER.compile(getId());
+        return new AuditableRestActionImpl<>(api, route, body,
+            (response, request) -> (GuildSticker) api.getEntityBuilder().createRichSticker(response.getObject())
+        );
     }
 
     @Nonnull
