@@ -902,7 +902,7 @@ public interface MessageAction extends RestAction<Message>, Appendable, AllowedM
      * <br>This is not supported for message edits.
      *
      * @param  stickers
-     *         The 1-3 stickers to send, or null to not send any stickers
+     *         The stickers to send, or null to not send any stickers
      *
      * @throws IllegalStateException
      *         If this request is a message edit request
@@ -910,7 +910,7 @@ public interface MessageAction extends RestAction<Message>, Appendable, AllowedM
      *         <ul>
      *           <li>If any of the provided stickers is a {@link GuildSticker},
      *               which is either {@link GuildSticker#isAvailable() unavailable} or from a different guild.</li>
-     *           <li>If the collection has more than 3 stickers</li>
+     *           <li>If the collection has more than {@value Message#MAX_STICKER_COUNT} stickers</li>
      *           <li>If a collection with null entries is provided</li>
      *         </ul>
      *
@@ -927,7 +927,7 @@ public interface MessageAction extends RestAction<Message>, Appendable, AllowedM
      * <br>This is not supported for message edits.
      *
      * @param  stickers
-     *         The 1-3 stickers to send, or null to not send any stickers
+     *         The stickers to send, or null to not send any stickers
      *
      * @throws IllegalStateException
      *         If this request is a message edit request
@@ -935,7 +935,7 @@ public interface MessageAction extends RestAction<Message>, Appendable, AllowedM
      *         <ul>
      *           <li>If any of the provided stickers is a {@link GuildSticker},
      *               which is either {@link GuildSticker#isAvailable() unavailable} or from a different guild.</li>
-     *           <li>If the collection has more than 3 stickers</li>
+     *           <li>If the collection has more than {@value Message#MAX_STICKER_COUNT} stickers</li>
      *           <li>If a collection with null entries is provided</li>
      *         </ul>
      *

@@ -425,7 +425,8 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
         GuildChannel guildChannel = (GuildChannel) channel;
 
         Checks.noneNull(stickers, "Stickers");
-        Checks.check(stickers.size() <= 3, "Cannot send more than 3 stickers in a message!"); // TODO: Make this a constant
+        Checks.check(stickers.size() <= Message.MAX_STICKER_COUNT,
+                     "Cannot send more than %d stickers in a message!", Message.MAX_STICKER_COUNT);
         for (StickerSnowflake sticker : stickers)
         {
             if (sticker instanceof GuildSticker)

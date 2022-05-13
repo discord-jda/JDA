@@ -239,10 +239,10 @@ public class MessageBuilder implements Appendable
      * <br>This is not supported for message edits.
      *
      * @param  stickers
-     *         The 1-3 stickers to send, or null to not send any stickers
+     *         The stickers to send, or null to not send any stickers
      *
      * @throws IllegalArgumentException
-     *         If a collection with null elements is provided
+     *         If more than {@value Message#MAX_STICKER_COUNT} stickers or null stickers are provided
      *
      * @return The MessageBuilder instance. Useful for chaining.
      *
@@ -255,7 +255,8 @@ public class MessageBuilder implements Appendable
         if (stickers == null || stickers.isEmpty())
             return this;
         Checks.noneNull(stickers, "Stickers");
-        Checks.check(stickers.size() <= 3, "Can only have up to 3 stickers per message!");
+        Checks.check(stickers.size() <= Message.MAX_STICKER_COUNT,
+                "Cannot send more than %d stickers in a message!", Message.MAX_STICKER_COUNT);
 
         stickers.stream()
                 .map(StickerSnowflake::getId)
@@ -269,10 +270,10 @@ public class MessageBuilder implements Appendable
      * <br>This is not supported for message edits.
      *
      * @param  stickers
-     *         The 1-3 stickers to send, or null to not send any stickers
+     *         The stickers to send, or null to not send any stickers
      *
      * @throws IllegalArgumentException
-     *         If a null sticker is provided
+     *         If more than {@value Message#MAX_STICKER_COUNT} stickers or null stickers are provided
      *
      * @return The MessageBuilder instance. Useful for chaining.
      *

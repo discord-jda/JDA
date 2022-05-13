@@ -175,6 +175,14 @@ public interface Message extends ISnowflake, Formattable
     int MAX_EMBED_COUNT = 10;
 
     /**
+     * The maximum amount of {@link Sticker Stickers} that can be added to a message ({@value})
+     *
+     * @see GuildMessageChannel#sendStickers(StickerSnowflake...)
+     * @see MessageAction#setStickers(StickerSnowflake...)
+     */
+    int MAX_STICKER_COUNT = 3;
+
+    /**
      * Pattern used to find instant invites in strings.
      *
      * <p>The only named group is at index 1 with the name {@code "code"}.
