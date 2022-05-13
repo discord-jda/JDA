@@ -57,7 +57,6 @@ import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.entities.UserImpl;
-import net.dv8tion.jda.internal.entities.sticker.StickerUnionImpl;
 import net.dv8tion.jda.internal.handle.EventCache;
 import net.dv8tion.jda.internal.handle.GuildSetupController;
 import net.dv8tion.jda.internal.hooks.EventManagerProxy;
@@ -631,7 +630,7 @@ public class JDAImpl implements JDA
         Checks.isSnowflake(id);
         Route.CompiledRoute route = Route.Stickers.GET_STICKER.compile(id);
         return new RestActionImpl<>(this, route,
-            (response, request) -> new StickerUnionImpl(entityBuilder.createRichSticker(response.getObject()))
+            (response, request) -> entityBuilder.createRichSticker(response.getObject())
         );
     }
 

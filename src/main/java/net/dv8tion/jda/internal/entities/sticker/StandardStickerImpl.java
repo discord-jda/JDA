@@ -37,6 +37,13 @@ public class StandardStickerImpl extends RichStickerImpl implements StandardStic
 
     @Nonnull
     @Override
+    public StandardSticker asStandardSticker()
+    {
+        return this;
+    }
+
+    @Nonnull
+    @Override
     public Type getType()
     {
         return Type.STANDARD;

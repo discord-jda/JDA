@@ -16,7 +16,10 @@
 
 package net.dv8tion.jda.internal.entities.sticker;
 
+import net.dv8tion.jda.api.entities.sticker.GuildSticker;
 import net.dv8tion.jda.api.entities.sticker.RichSticker;
+import net.dv8tion.jda.api.entities.sticker.StandardSticker;
+import net.dv8tion.jda.api.entities.sticker.StickerUnion;
 import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.Nonnull;
@@ -24,7 +27,7 @@ import java.util.Collections;
 import java.util.Objects;
 import java.util.Set;
 
-public abstract class RichStickerImpl extends StickerItemImpl implements RichSticker
+public abstract class RichStickerImpl extends StickerItemImpl implements RichSticker, StickerUnion
 {
     protected Set<String> tags;
     protected String description;
@@ -35,6 +38,20 @@ public abstract class RichStickerImpl extends StickerItemImpl implements RichSti
         super(id, format, name);
         this.tags = Collections.unmodifiableSet(tags);
         this.description = description;
+    }
+
+    @Nonnull
+    @Override
+    public StandardSticker asStandardSticker()
+    {
+        throw new IllegalStateException("Cannot convert sticker of type " + getType() + " to StandardSticker!");
+    }
+
+    @Nonnull
+    @Override
+    public GuildSticker asGuildSticker()
+    {
+        throw new IllegalStateException("Cannot convert sticker of type " + getType() + " to GuildSticker!");
     }
 
     @Nonnull

@@ -52,10 +52,7 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.mixin.channel.attribute.IPermissionContainerMixin;
 import net.dv8tion.jda.internal.entities.mixin.channel.middleman.AudioChannelMixin;
-import net.dv8tion.jda.internal.entities.sticker.GuildStickerImpl;
-import net.dv8tion.jda.internal.entities.sticker.StandardStickerImpl;
-import net.dv8tion.jda.internal.entities.sticker.StickerItemImpl;
-import net.dv8tion.jda.internal.entities.sticker.StickerPackImpl;
+import net.dv8tion.jda.internal.entities.sticker.*;
 import net.dv8tion.jda.internal.handle.EventCache;
 import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.JDALogger;
@@ -1805,7 +1802,7 @@ public class EntityBuilder
         return new StickerItemImpl(id, format, name);
     }
 
-    public RichSticker createRichSticker(DataObject content)
+    public RichStickerImpl createRichSticker(DataObject content)
     {
         long id = content.getLong("id");
         String name = content.getString("name");

@@ -57,6 +57,13 @@ public class GuildStickerImpl extends RichStickerImpl implements GuildSticker
 
     @Nonnull
     @Override
+    public GuildSticker asGuildSticker()
+    {
+        return this;
+    }
+
+    @Nonnull
+    @Override
     public Type getType()
     {
         return Type.GUILD;
