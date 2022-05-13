@@ -62,7 +62,7 @@ public interface GuildSticker extends RichSticker
     /**
      * The {@link Guild} this sticker belongs to.
      * <br>This is null if the guild is not cached on creation,
-     * Which is often the case for {@link net.dv8tion.jda.api.JDA#retrieveStickerById(String) JDA.retrieveStickerById(...)}.
+     * Which is often the case for {@link net.dv8tion.jda.api.JDA#retrieveSticker(StickerSnowflake) JDA.retrieveSticker(...)}.
      *
      * @return Possibly-null guild of the sticker
      */
@@ -111,8 +111,6 @@ public interface GuildSticker extends RichSticker
     /**
      * Deletes this sticker from the guild.
      *
-     * @throws IllegalStateException
-     *         If {@link #getGuild()} is null
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have {@link Permission#MANAGE_EMOTES_AND_STICKERS MANAGE_EMOTES_AND_STICKERS} in the guild.
      *

@@ -27,6 +27,7 @@ import net.dv8tion.jda.api.audio.factory.IAudioSendFactory;
 import net.dv8tion.jda.api.audio.hooks.ConnectionStatus;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.sticker.StickerPack;
+import net.dv8tion.jda.api.entities.sticker.StickerSnowflake;
 import net.dv8tion.jda.api.entities.sticker.StickerUnion;
 import net.dv8tion.jda.api.events.GatewayPingEvent;
 import net.dv8tion.jda.api.events.GenericEvent;
@@ -625,10 +626,10 @@ public class JDAImpl implements JDA
 
     @Nonnull
     @Override
-    public RestAction<StickerUnion> retrieveStickerById(@Nonnull String id)
+    public RestAction<StickerUnion> retrieveSticker(@Nonnull StickerSnowflake sticker)
     {
-        Checks.isSnowflake(id);
-        Route.CompiledRoute route = Route.Stickers.GET_STICKER.compile(id);
+        Checks.notNull(sticker, "Sticker");
+        Route.CompiledRoute route = Route.Stickers.GET_STICKER.compile(sticker.getId());
         return new RestActionImpl<>(this, route,
             (response, request) -> entityBuilder.createRichSticker(response.getObject())
         );

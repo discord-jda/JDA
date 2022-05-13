@@ -255,6 +255,7 @@ public class MessageBuilder implements Appendable
         if (stickers == null || stickers.isEmpty())
             return this;
         Checks.noneNull(stickers, "Stickers");
+        Checks.check(stickers.size() <= 3, "Can only have up to 3 stickers per message!");
 
         stickers.stream()
                 .map(StickerSnowflake::getId)

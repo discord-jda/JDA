@@ -110,7 +110,7 @@ public class GuildStickerImpl extends RichStickerImpl implements GuildSticker
     {
         return new DeferredRestAction<>(jda, User.class,
                 () -> update ? null : getOwner(),
-                () -> jda.retrieveStickerById(getId()).map(union -> {
+                () -> jda.retrieveSticker(this).map(union -> {
                     this.owner = union.asGuildSticker().getOwner();
                     return this.owner;
                 }));
