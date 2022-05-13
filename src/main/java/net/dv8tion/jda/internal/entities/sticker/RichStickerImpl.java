@@ -71,18 +71,16 @@ public abstract class RichStickerImpl extends StickerItemImpl implements RichSti
     }
 
 
-    public Set<String> setTags(Set<String> tags)
+    public RichStickerImpl setTags(Set<String> tags)
     {
-        Set<String> old = this.tags;
         this.tags = Collections.unmodifiableSet(tags);
-        return old;
+        return this;
     }
 
-    public String setDescription(String description)
+    public RichStickerImpl setDescription(String description)
     {
-        String old = this.description;
         this.description = description;
-        return old;
+        return this;
     }
 
     @Override

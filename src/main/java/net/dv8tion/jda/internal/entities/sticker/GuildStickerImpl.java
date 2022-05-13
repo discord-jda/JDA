@@ -132,11 +132,10 @@ public class GuildStickerImpl extends RichStickerImpl implements GuildSticker
         return new GuildStickerManagerImpl(getGuild(), getGuildIdLong(), this);
     }
 
-    public boolean setAvailable(boolean available)
+    public GuildStickerImpl setAvailable(boolean available)
     {
-        boolean old = this.available;
         this.available = available;
-        return old;
+        return this;
     }
 
     public GuildStickerImpl copy()

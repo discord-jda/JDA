@@ -54,11 +54,10 @@ public class StickerItemImpl implements StickerItem
         return name;
     }
 
-    public String setName(String name)
+    public StickerItemImpl setName(String name)
     {
-        String old = this.name;
         this.name = name;
-        return old;
+        return this;
     }
 
     @Override
