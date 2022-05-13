@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.managers.GuildStickerManager;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
+import net.dv8tion.jda.api.requests.restaction.CacheRestAction;
 import org.jetbrains.annotations.Contract;
 
 import javax.annotation.CheckReturnValue;
@@ -84,29 +85,13 @@ public interface GuildSticker extends RichSticker
     /**
      * Retrieves the sticker owner.
      * <br>If {@link #getOwner()} is present, this will directly return the owner in a completed {@link RestAction} without making a request.
-     * The user information might be outdated, you can use {@link #retrieveOwner(boolean)} to force an update.
+     * The user information might be outdated, you can use {@link CacheRestAction#useCache(boolean) action.useCache(false)} to force an update.
      *
-     * @return {@link RestAction} - Type: {@link User}
+     * @return {@link CacheRestAction} - Type: {@link User}
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<User> retrieveOwner()
-    {
-        return retrieveOwner(false);
-    }
-
-    /**
-     * Retrieves the sticker owner.
-     * <br>If {@link #getOwner()} is present, this will directly return the owner in a completed {@link RestAction} without making a request.
-     *
-     * @param  update
-     *         True, if the request should ignore the cache and always fetch the latest information
-     *
-     * @return {@link RestAction} - Type: {@link User}
-     */
-    @Nonnull
-    @CheckReturnValue
-    RestAction<User> retrieveOwner(boolean update);
+    CacheRestAction<User> retrieveOwner();
 
     /**
      * Deletes this sticker from the guild.
