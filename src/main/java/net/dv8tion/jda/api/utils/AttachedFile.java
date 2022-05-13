@@ -162,7 +162,7 @@ public interface AttachedFile extends Closeable
     /**
      * Create a new {@link FileUpload} for a local file.
      * <br>This is used to upload data to discord for various purposes.
-     * Uses {@link Path#getFileName()} to specify the name of the file.
+     * Uses {@link Path#getFileName()} to specify the name of the file, to customize the filename use {@link #fromData(Path, String, OpenOption...)}.
      *
      * <p>This opens the path using {@link Files#newInputStream(Path, OpenOption...)}, which will be closed on consumption by the request.
      * You can use {@link FileUpload#close()} to close the stream manually.
