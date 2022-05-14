@@ -16,6 +16,9 @@ import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.Nonnull;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
@@ -67,7 +70,7 @@ public class ThreadChannelPaginationActionImpl extends PaginationActionImpl<Thre
         // this should be redundant, due to calling this with PaginationAction#getLast() as last param,
         // but let's have this here.
         if (last == null)
-            throw new NoSuchElementException("No entities have been retrieved yet.");
+            return OffsetDateTime.now(ZoneOffset.UTC).toString();
 
         // OffsetDateTime#toString() is defined to be ISO8601, needs no helper method.
         return last.getTimeArchiveInfoLastModified().toString();

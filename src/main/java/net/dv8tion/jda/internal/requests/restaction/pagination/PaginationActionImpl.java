@@ -352,7 +352,7 @@ public abstract class PaginationActionImpl<T, M extends PaginationAction<T, M>>
     // Introduced for paginating archived threads, because two endpoints require a different request parameter value format.
     // May become more useful if discord introduces more pagination endpoints not using ids.
     // Check ThreadChannelPaginationActionImpl
-    // Background of #formatKeyValue:
+    // Background of #getPaginationLastEvaluatedKey:
     //     Archived thread channel pagination (example: TextChannel#retrieveArchivedPublicThreadChannels) would throw an exception,
     //     where Discord complained about receiving a snowflake instead of an ISO8601 date.
     //     The snowflake originated from this class (creating initial & subsequent requests),
@@ -374,12 +374,12 @@ public abstract class PaginationActionImpl<T, M extends PaginationAction<T, M>>
         Route.CompiledRoute route = super.finalizeRoute();
 
         final String limit = String.valueOf(this.getLimit());
-        final long last = this.lastKey;
+        final long localLastKey = this.lastKey;
 
         route = route.withQueryParams("limit", limit);
 
-        if (last != 0)
-            route = route.withQueryParams(order.getKey(), getPaginationLastEvaluatedKey(last, this.getLast()));
+        if (localLastKey != 0)
+            route = route.withQueryParams(order.getKey(), getPaginationLastEvaluatedKey(localLastKey, this.last));
         else if (order == PaginationOrder.FORWARD)
             route = route.withQueryParams("after", getPaginationLastEvaluatedKey(0, this.last));
 
