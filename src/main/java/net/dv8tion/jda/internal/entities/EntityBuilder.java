@@ -892,7 +892,7 @@ public class EntityBuilder
                 roleSet.add(role);
         }
         if (user != null)
-            emoteObj.setUser(user);
+            emoteObj.setOwner(user);
         return emoteObj
                 .setName(json.getString("name", ""))
                 .setAnimated(json.getBoolean("animated"))

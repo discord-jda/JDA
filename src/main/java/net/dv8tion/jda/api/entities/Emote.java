@@ -18,6 +18,7 @@ package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.managers.EmoteManager;
+import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.internal.utils.PermissionUtil;
 
@@ -147,6 +148,19 @@ public interface Emote extends IMentionable
     User getOwner();
 
     // TODO: CacheRestAction<User> retrieveOwner() once stickers are merged
+    /**
+     * Retrieves the owner of this Emote.
+     * <br>If {@link #getOwner()} is present, this will directly return the owner in a completed {@link RestAction} without making a request.
+     * TODO: CacheRestAction note
+     *
+     * @throws IllegalStateException
+     *         If the guild of this emote is not available, when {@link #getGuild()} is null.
+     *
+     * @return {@link RestAction} - Type: {@link User}
+     */
+    @Nonnull
+    @CheckReturnValue
+    RestAction<User> retrieveOwner();
 
     /**
      * Deletes this Emote.

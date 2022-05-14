@@ -22,11 +22,16 @@ import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.EmoteManager;
+import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
+import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.managers.EmoteManagerImpl;
+import net.dv8tion.jda.internal.requests.DeferredRestAction;
+import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import java.util.Collections;
@@ -51,7 +56,7 @@ public class EmoteImpl implements ListedEmote
     private boolean available = true;
     private boolean animated = false;
     private String name;
-    private User user;
+    private User owner;
 
     public EmoteImpl(long id, GuildImpl guild)
     {
@@ -127,19 +132,40 @@ public class EmoteImpl implements ListedEmote
         return api;
     }
 
+    @Override
+    public User getOwner()
+    {
+        return owner;
+    }
+
+    @NotNull
+    @Override
+    public RestAction<User> retrieveOwner()
+    {
+        if (guild == null)
+            throw new IllegalStateException("Unable to retrieve owner of this emote because this emote is from a message. (We do not know the origin Guild of this emote)");
+        return new DeferredRestAction<>(api, User.class, this::getOwner, () -> {
+            Route.CompiledRoute route = Route.Emotes.GET_EMOTE.compile(guild.getId(), getId());
+            return new RestActionImpl<>(api, route, (response, request) -> {
+                DataObject user = response.getObject().getObject("user");
+                return this.owner = api.getEntityBuilder().createUser(user);
+            });
+        });
+    }
+
     @Nonnull
     @Override
     public User getUser()
     {
         if (!hasUser())
             throw new IllegalStateException("This emote does not have a user");
-        return user;
+        return owner;
     }
 
     @Override
     public boolean hasUser()
     {
-        return user != null;
+        return owner != null;
     }
 
     @Nonnull
@@ -196,9 +222,9 @@ public class EmoteImpl implements ListedEmote
         return this;
     }
 
-    public EmoteImpl setUser(User user)
+    public EmoteImpl setOwner(User user)
     {
-        this.user = user;
+        this.owner = user;
         return this;
     }
 
@@ -239,7 +265,7 @@ public class EmoteImpl implements ListedEmote
     @Override
     public EmoteImpl clone()
     {
-        EmoteImpl copy = new EmoteImpl(id, getGuild()).setUser(user).setManaged(managed).setAnimated(animated).setName(name);
+        EmoteImpl copy = new EmoteImpl(id, getGuild()).setOwner(owner).setManaged(managed).setAnimated(animated).setName(name);
         copy.roles.addAll(roles);
         return copy;
     }
