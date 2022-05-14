@@ -1792,7 +1792,6 @@ public class GuildImpl implements Guild
         Checks.inRange(name, 2, 30, "Name");
         Checks.notNull(file, "File");
         Checks.notNull(description, "Description");
-//        Checks.notEmpty(tags, "Tags");
         if (!description.isEmpty())
             Checks.inRange(description, 2, 100, "Description");
         for (String t : tags)
@@ -1801,17 +1800,11 @@ public class GuildImpl implements Guild
         String csv = String.join(",", tags);
         Checks.notLonger(csv, 200, "Tags");
 
-        // Add sticker meta data as form parts (because payload_json is broken)
-        MultipartBody.Builder builder = new MultipartBody.Builder().setType(MultipartBody.FORM);
-        builder.addFormDataPart("name", name);
-        builder.addFormDataPart("description", description);
-        builder.addFormDataPart("tags", csv);
-
         // Extract file extension and map to media type
         int index = file.getName().lastIndexOf('.');
-        if (index < 0)
-            throw new IllegalArgumentException("Missing file extension for image. Must be PNG or JSON.");
+        Checks.check(index > -1, "Filename for sticker is missing file extension. Provided: '" + file.getName() + "'. Must be PNG or JSON.");
 
+        // Convert file extension to media-type
         String extension = file.getName().substring(index + 1).toLowerCase(Locale.ROOT);
         MediaType mediaType;
         switch (extension)
@@ -1826,6 +1819,12 @@ public class GuildImpl implements Guild
             default:
                 throw new IllegalArgumentException("Unsupported file extension: '." + extension + "', must be PNG or JSON.");
         }
+
+        // Add sticker metadata as form parts (because payload_json is broken)
+        MultipartBody.Builder builder = new MultipartBody.Builder().setType(MultipartBody.FORM);
+        builder.addFormDataPart("name", name);
+        builder.addFormDataPart("description", description);
+        builder.addFormDataPart("tags", csv);
 
         // Attach file asset for sticker image/animation
         builder.addFormDataPart("file", file.getName(), IOUtil.createRequestBody(mediaType, file.getData()));
