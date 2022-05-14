@@ -132,6 +132,23 @@ public interface Emote extends IMentionable
     JDA getJDA();
 
     /**
+     * The user who created this Emote
+     *
+     * <p>This is only available for manually retrieved emotes from {@link Guild#retrieveEmotes()}
+     * and {@link Guild#retrieveEmoteById(long)}.
+     * <br>Requires {@link net.dv8tion.jda.api.Permission#MANAGE_EMOTES_AND_STICKERS Permission.MANAGE_EMOTES_AND_STICKERS}.
+     *
+     * @throws IllegalStateException
+     *         If this emote does not have user information
+     *
+     * @return The user who created this Emote, or null if not provided
+     */
+    @Nullable
+    User getOwner();
+
+    // TODO: CacheRestAction<User> retrieveOwner() once stickers are merged
+
+    /**
      * Deletes this Emote.
      *
      * <p>Possible ErrorResponses include:
