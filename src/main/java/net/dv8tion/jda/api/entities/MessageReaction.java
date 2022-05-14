@@ -18,6 +18,8 @@ package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.channel.unions.GuildMessageChannelUnion;
+import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.exceptions.PermissionException;
 import net.dv8tion.jda.api.requests.RestAction;
@@ -203,21 +205,20 @@ public class MessageReaction
      * @return The channel this Reaction was used in
      */
     @Nonnull
-    public MessageChannel getChannel()
+    public MessageChannelUnion getChannel()
     {
-        return channel;
+        return (MessageChannelUnion) channel;
     }
 
     /**
-     * The {@link net.dv8tion.jda.api.entities.GuildMessageChannel GuildMessageChannel}
-     * this Reaction was used in.
+     * The {@link net.dv8tion.jda.api.entities.GuildMessageChannel channel} this Reaction was used in.
      *
      * @return The channel this Reaction was used in or null if it wasn't used in a Guild
      */
     @Nullable
-    public GuildMessageChannel getGuildChannel()
+    public GuildMessageChannelUnion getGuildChannel()
     {
-        return getChannel() instanceof GuildMessageChannel ? (GuildMessageChannel) getChannel() : null;
+        return getChannel() instanceof GuildMessageChannel ? (GuildMessageChannelUnion) getChannel() : null;
     }
 
     /**

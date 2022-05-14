@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.interactions.components.ActionComponent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.ItemComponent;
@@ -200,7 +201,7 @@ public interface MessageAction extends RestAction<Message>, Appendable, AllowedM
      * @return The target channel
      */
     @Nonnull
-    MessageChannel getChannel();
+    MessageChannelUnion getChannel();
 
     /**
      * Whether this MessageAction has no values set.

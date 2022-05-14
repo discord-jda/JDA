@@ -19,6 +19,7 @@ package net.dv8tion.jda.internal.requests.restaction;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.exceptions.MissingAccessException;
 import net.dv8tion.jda.api.interactions.InteractionHook;
@@ -143,9 +144,9 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
 
     @Nonnull
     @Override
-    public MessageChannel getChannel()
+    public MessageChannelUnion getChannel()
     {
-        return channel;
+        return (MessageChannelUnion) channel;
     }
 
     @Override

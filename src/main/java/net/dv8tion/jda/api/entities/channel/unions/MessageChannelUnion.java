@@ -14,27 +14,27 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.internal.interactions.command;
+package net.dv8tion.jda.api.entities.channel.unions;
 
-import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
-import net.dv8tion.jda.api.interactions.commands.SlashCommandInteraction;
-import net.dv8tion.jda.api.utils.data.DataObject;
-import net.dv8tion.jda.internal.JDAImpl;
+import net.dv8tion.jda.api.entities.*;
 
 import javax.annotation.Nonnull;
 
-public class SlashCommandInteractionImpl extends CommandInteractionImpl implements SlashCommandInteraction
+public interface MessageChannelUnion extends MessageChannel
 {
-    public SlashCommandInteractionImpl(JDAImpl jda, DataObject data)
-    {
-        super(jda, data);
-    }
+    @Nonnull
+    PrivateChannel asPrivateChannel();
 
     @Nonnull
-    @Override
-    @SuppressWarnings("ConstantConditions")
-    public MessageChannelUnion getChannel()
-    {
-        return (MessageChannelUnion) super.getChannel();
-    }
+    TextChannel asTextChannel();
+
+    @Nonnull
+    NewsChannel asNewsChannel();
+
+    @Nonnull
+    ThreadChannel asThreadChannel();
+
+    //TODO: Add asVoiceChannel once TiV is launched
+
+    //TODO: should we also expose the getThreadContainer/getStandardX getters like in GuildMessageChannelUnion?
 }

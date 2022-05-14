@@ -20,6 +20,8 @@ import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.channel.unions.GuildMessageChannelUnion;
+import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.exceptions.HttpException;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.interactions.InteractionType;
@@ -493,7 +495,7 @@ public interface Message extends ISnowflake, Formattable
      * @return The MessageChannel of this Message
      */
     @Nonnull
-    MessageChannel getChannel();
+    MessageChannelUnion getChannel();
 
     /**
      * Returns the {@link net.dv8tion.jda.api.entities.GuildMessageChannel GuildMessageChannel} that this message was sent in
@@ -507,7 +509,7 @@ public interface Message extends ISnowflake, Formattable
      * @return The MessageChannel of this Message
      */
     @Nonnull
-    GuildMessageChannel getGuildChannel();
+    GuildMessageChannelUnion getGuildChannel();
 
     /**
      * Returns the {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel} that this message was sent in.

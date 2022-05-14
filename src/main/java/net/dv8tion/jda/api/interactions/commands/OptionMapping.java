@@ -20,6 +20,7 @@ import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.channel.unions.GuildMessageChannelUnion;
 import net.dv8tion.jda.api.interactions.Interaction;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.utils.data.DataObject;
@@ -342,10 +343,10 @@ public class OptionMapping
      * @return The resolved {@link GuildMessageChannel}, or null if this was not a message channel
      */
     @Nullable
-    public GuildMessageChannel getAsMessageChannel()
+    public GuildMessageChannelUnion getAsMessageChannel()
     {
         Channel value = getAsChannel();
-        return value instanceof GuildMessageChannel ? (GuildMessageChannel) value : null;
+        return value instanceof GuildMessageChannel ? (GuildMessageChannelUnion) value : null;
     }
 
     /**

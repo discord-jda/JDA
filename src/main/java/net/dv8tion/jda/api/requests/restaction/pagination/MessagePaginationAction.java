@@ -19,6 +19,7 @@ package net.dv8tion.jda.api.requests.restaction.pagination;
 import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 
 import javax.annotation.Nonnull;
 
@@ -78,5 +79,5 @@ public interface MessagePaginationAction extends PaginationAction<Message, Messa
      * @return The MessageChannel instance
      */
     @Nonnull
-    MessageChannel getChannel();
+    MessageChannelUnion getChannel();
 }

@@ -17,6 +17,7 @@ package net.dv8tion.jda.api.events.user;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -65,9 +66,9 @@ public class UserTypingEvent extends GenericUserEvent
      * @return The channel
      */
     @Nonnull
-    public MessageChannel getChannel()
+    public MessageChannelUnion getChannel()
     {
-        return channel;
+        return (MessageChannelUnion) channel;
     }
 
     /**

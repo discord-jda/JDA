@@ -14,27 +14,25 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.internal.interactions.command;
+package net.dv8tion.jda.api.entities.channel.unions;
 
-import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
-import net.dv8tion.jda.api.interactions.commands.SlashCommandInteraction;
-import net.dv8tion.jda.api.utils.data.DataObject;
-import net.dv8tion.jda.internal.JDAImpl;
+import net.dv8tion.jda.api.entities.NewsChannel;
+import net.dv8tion.jda.api.entities.StandardGuildChannel;
+import net.dv8tion.jda.api.entities.StandardGuildMessageChannel;
+import net.dv8tion.jda.api.entities.TextChannel;
 
 import javax.annotation.Nonnull;
 
-public class SlashCommandInteractionImpl extends CommandInteractionImpl implements SlashCommandInteraction
+public interface DefaultGuildChannelUnion extends StandardGuildChannel
 {
-    public SlashCommandInteractionImpl(JDAImpl jda, DataObject data)
-    {
-        super(jda, data);
-    }
+    @Nonnull
+    TextChannel asTextChannel();
 
     @Nonnull
-    @Override
-    @SuppressWarnings("ConstantConditions")
-    public MessageChannelUnion getChannel()
-    {
-        return (MessageChannelUnion) super.getChannel();
-    }
+    NewsChannel asNewsChannel();
+
+    //TODO: add asForumChannel() (I think ForumChannels can be the default?)
+
+    @Nonnull
+    StandardGuildMessageChannel asStandardGuildMessageChannel();
 }

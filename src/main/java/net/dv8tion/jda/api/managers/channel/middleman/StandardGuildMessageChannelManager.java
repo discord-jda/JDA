@@ -16,22 +16,19 @@
 
 package net.dv8tion.jda.api.managers.channel.middleman;
 
-import net.dv8tion.jda.api.entities.*;
-import net.dv8tion.jda.api.managers.channel.attribute.ICategorizableChannelManager;
-import net.dv8tion.jda.api.managers.channel.attribute.IPermissionContainerManager;
-import net.dv8tion.jda.api.managers.channel.attribute.IPositionableChannelManager;
+import net.dv8tion.jda.api.entities.StandardGuildMessageChannel;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
- * Manager providing functionality common for all {@link BaseGuildMessageChannel BaseGuildMessageChannels}.
+ * Manager providing functionality common for all {@link net.dv8tion.jda.api.entities.StandardGuildMessageChannel StandardGuildMessageChannels}.
  *
  * <p><b>Example</b>
  * <pre>{@code
  * manager.setName("help")
-          .setTopic("Java is to Javascript as ham is to hamster")
+ *        .setTopic("Java is to Javascript as ham is to hamster")
  *        .queue();
  * manager.reset(ChannelManager.PARENT | ChannelManager.NAME)
  *        .setTopic("nsfw-commits")
@@ -39,26 +36,20 @@ import javax.annotation.Nullable;
  *        .queue();
  * }</pre>
  *
- * @see BaseGuildMessageChannel#getManager()
+ * @see StandardGuildMessageChannel#getManager()
  */
-public interface BaseGuildMessageChannelManager<T extends BaseGuildMessageChannel, M extends BaseGuildMessageChannelManager<T, M>>
-        extends IPermissionContainerManager<T, M>,
-        IPositionableChannelManager<T, M>,
-        ICategorizableChannelManager<T, M>
+public interface StandardGuildMessageChannelManager<T extends StandardGuildMessageChannel, M extends StandardGuildMessageChannelManager<T, M>>
+        extends StandardGuildChannelManager<T, M>
 {
-    /**
-     * Sets the <b><u>topic</u></b> of the selected
-     * {@link TextChannel TextChannel} or {@link StageChannel StageChannel}.
+     /**
+     * Sets the <b><u>topic</u></b> of the selected {@link StandardGuildMessageChannel channel}.
      *
      * <p>A channel topic <b>must not</b> be more than {@code 1024} characters long!
-     * <br><b>This is only available to {@link TextChannel TextChannels}</b>
      *
      * @param  topic
      *         The new topic for the selected channel,
      *         {@code null} or empty String to reset
      *
-     * @throws UnsupportedOperationException
-     *         If the selected {@link GuildChannel GuildChannel}'s type is not {@link ChannelType#TEXT TEXT}
      * @throws IllegalArgumentException
      *         If the provided topic is greater than {@code 1024} in length
      *
@@ -69,13 +60,10 @@ public interface BaseGuildMessageChannelManager<T extends BaseGuildMessageChanne
     M setTopic(@Nullable String topic);
 
     /**
-     * Sets the <b><u>nsfw flag</u></b> of the selected {@link TextChannel TextChannel} or {@link NewsChannel}.
+     * Sets the <b><u>nsfw flag</u></b> of the selected {@link StandardGuildMessageChannel channel}.
      *
      * @param  nsfw
-     *         The new nsfw flag for the selected {@link TextChannel TextChannel},
-     *
-     * @throws IllegalStateException
-     *         If the selected {@link GuildChannel GuildChannel}'s type is not {@link ChannelType#TEXT TEXT}
+     *         The new nsfw flag for the selected {@link StandardGuildMessageChannel channel}.
      *
      * @return ChannelManager for chaining convenience
      */

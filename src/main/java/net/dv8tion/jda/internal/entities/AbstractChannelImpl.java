@@ -17,8 +17,10 @@
 package net.dv8tion.jda.internal.entities;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.mixin.channel.middleman.ChannelMixin;
+import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.Nonnull;
 
@@ -61,5 +63,70 @@ public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> impl
     {
         this.name = name;
         return (T) this;
+    }
+
+    // -- Union Hooks --
+
+    @Nonnull
+    public PrivateChannel asPrivateChannel()
+    {
+        return transformChannel(PrivateChannel.class);
+    }
+
+    @Nonnull
+    public TextChannel asTextChannel()
+    {
+        return transformChannel(TextChannel.class);
+    }
+
+    @Nonnull
+    public NewsChannel asNewsChannel()
+    {
+        return transformChannel(NewsChannel.class);
+    }
+
+    @Nonnull
+    public VoiceChannel asVoiceChannel()
+    {
+        return transformChannel(VoiceChannel.class);
+    }
+
+    @Nonnull
+    public StageChannel asStageChannel()
+    {
+        return transformChannel(StageChannel.class);
+    }
+
+    @Nonnull
+    public ThreadChannel asThreadChannel()
+    {
+        return transformChannel(ThreadChannel.class);
+    }
+
+    @Nonnull
+    public GuildMessageChannel asGuildMessageChannel()
+    {
+        return transformChannel(GuildMessageChannel.class);
+    }
+
+    @Nonnull
+    public StandardGuildChannel asStandardGuildChannel()
+    {
+        return transformChannel(StandardGuildChannel.class);
+    }
+
+    @Nonnull
+    public StandardGuildMessageChannel asStandardGuildMessageChannel()
+    {
+        return transformChannel(StandardGuildMessageChannel.class);
+    }
+
+    private <TOut extends Channel> TOut transformChannel(Class<TOut> toObjectClass)
+    {
+        if (toObjectClass.isInstance(this))
+            return toObjectClass.cast(this);
+
+        String cleanedClassName = this.getClass().getSimpleName().replace("Impl", "");
+        throw new IllegalStateException(Helpers.format("Cannot convert channel of type %s to %s!", cleanedClassName, toObjectClass.getSimpleName()));
     }
 }

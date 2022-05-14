@@ -18,6 +18,7 @@ package net.dv8tion.jda.api.interactions;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.interactions.callbacks.*;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.components.Modal;
@@ -177,11 +178,11 @@ public interface Interaction extends ISnowflake
      * @return The {@link MessageChannel}
      */
     @Nonnull
-    default MessageChannel getMessageChannel()
+    default MessageChannelUnion getMessageChannel()
     {
         Channel channel = getChannel();
         if (channel instanceof MessageChannel)
-            return (MessageChannel) channel;
+            return (MessageChannelUnion) channel;
         throw new IllegalStateException("Cannot convert channel of type " + getChannelType() + " to MessageChannel");
     }
 

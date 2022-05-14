@@ -19,6 +19,8 @@ package net.dv8tion.jda.internal.entities;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.channel.unions.GuildMessageChannelUnion;
+import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.exceptions.MissingAccessException;
 import net.dv8tion.jda.api.exceptions.PermissionException;
@@ -459,18 +461,18 @@ public class ReceivedMessage extends AbstractMessage
 
     @Nonnull
     @Override
-    public MessageChannel getChannel()
+    public MessageChannelUnion getChannel()
     {
-        return channel;
+        return (MessageChannelUnion) channel;
     }
 
     @Nonnull
     @Override
-    public GuildMessageChannel getGuildChannel()
+    public GuildMessageChannelUnion getGuildChannel()
     {
         if (!isFromGuild())
             throw new IllegalStateException("This message was not sent in a guild.");
-        return (GuildMessageChannel) channel;
+        return (GuildMessageChannelUnion) channel;
     }
 
     @Nonnull

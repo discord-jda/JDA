@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.api.entities;
 
+import net.dv8tion.jda.api.entities.channel.unions.GuildMessageChannelUnion;
+import net.dv8tion.jda.api.entities.channel.unions.IThreadContainerUnion;
 import net.dv8tion.jda.api.managers.channel.concrete.ThreadChannelManager;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
@@ -117,7 +119,7 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer
      * @return The parent channel of this thread.
      */
     @Nonnull
-    IThreadContainer getParentChannel();
+    IThreadContainerUnion getParentChannel();
 
     //todo-v5: document additional subclasses of GuildMessageChannel (VoiceChannels and ForumChannels, when needed)
     /**
@@ -131,10 +133,10 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer
      *         If the parent channel is not a {@link GuildMessageChannel}.
      */
     @Nonnull
-    default GuildMessageChannel getParentMessageChannel()
+    default GuildMessageChannelUnion getParentMessageChannel()
     {
         if (getParentChannel() instanceof GuildMessageChannel) {
-            return (GuildMessageChannel) getParentChannel();
+            return (GuildMessageChannelUnion) getParentChannel();
         }
 
         throw new UnsupportedOperationException("Parent of this thread is not a MessageChannel. Parent is type: " + getParentChannel().getType().getId());

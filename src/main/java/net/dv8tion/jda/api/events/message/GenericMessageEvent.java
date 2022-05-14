@@ -17,6 +17,8 @@ package net.dv8tion.jda.api.events.message;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.channel.unions.GuildMessageChannelUnion;
+import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.events.Event;
 import net.dv8tion.jda.internal.utils.Helpers;
 
@@ -54,9 +56,9 @@ public abstract class GenericMessageEvent extends Event
      * @return The MessageChannel
      */
     @Nonnull
-    public MessageChannel getChannel()
+    public MessageChannelUnion getChannel()
     {
-        return channel;
+        return (MessageChannelUnion) channel;
     }
 
     /**
@@ -71,11 +73,11 @@ public abstract class GenericMessageEvent extends Event
      * @return The GuildMessageChannel
      */
     @Nonnull
-    public GuildMessageChannel getGuildChannel()
+    public GuildMessageChannelUnion getGuildChannel()
     {
         if (!isFromGuild())
             throw new IllegalStateException("This message event did not happen in a guild");
-        return (GuildMessageChannel) channel;
+        return (GuildMessageChannelUnion) channel;
     }
 
     /**

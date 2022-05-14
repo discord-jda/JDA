@@ -19,6 +19,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.Region;
 import net.dv8tion.jda.api.entities.channel.IGuildChannelContainer;
+import net.dv8tion.jda.api.entities.channel.unions.DefaultGuildChannelUnion;
 import net.dv8tion.jda.api.entities.templates.Template;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.interactions.commands.Command;
@@ -1943,17 +1944,17 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     Role getPublicRole();
 
     /**
-     * The default {@link net.dv8tion.jda.api.entities.BaseGuildMessageChannel BaseGuildMessageChannel} for a {@link net.dv8tion.jda.api.entities.Guild Guild}.
+     * The default {@link net.dv8tion.jda.api.entities.StandardGuildChannel} for a {@link net.dv8tion.jda.api.entities.Guild Guild}.
      * <br>This is the channel that the Discord client will default to opening when a Guild is opened for the first time when accepting an invite
-     * that is not directed at a specific {@link net.dv8tion.jda.api.entities.BaseGuildMessageChannel BaseGuildMessageChannel}.
+     * that is not directed at a specific {@link IInviteContainer channel}.
      *
      * <p>Note: This channel is the first channel in the guild (ordered by position) that the {@link #getPublicRole()}
      * has the {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} in.
      *
-     * @return The {@link net.dv8tion.jda.api.entities.BaseGuildMessageChannel BaseGuildMessageChannel} representing the default channel for this guild
+     * @return The {@link net.dv8tion.jda.api.entities.StandardGuildChannel channel} representing the default channel for this guild
      */
     @Nullable
-    BaseGuildMessageChannel getDefaultChannel();
+    DefaultGuildChannelUnion getDefaultChannel();
 
     /**
      * Returns the {@link GuildManager GuildManager} for this Guild, used to modify
