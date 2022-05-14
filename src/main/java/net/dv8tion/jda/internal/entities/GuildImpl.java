@@ -1786,23 +1786,20 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public AuditableRestAction<GuildSticker> createSticker(@Nonnull String name, @Nonnull String description, @Nonnull FileUpload file, @Nonnull String tag, @Nonnull String... tags)
+    public AuditableRestAction<GuildSticker> createSticker(@Nonnull String name, @Nonnull String description, @Nonnull FileUpload file, @Nonnull Collection<String> tags)
     {
         checkPermission(Permission.MANAGE_EMOTES_AND_STICKERS);
         Checks.inRange(name, 2, 30, "Name");
         Checks.notNull(file, "File");
-        Checks.notEmpty(tag, "Tags");
         Checks.notNull(description, "Description");
+//        Checks.notEmpty(tags, "Tags");
         if (!description.isEmpty())
             Checks.inRange(description, 2, 100, "Description");
         for (String t : tags)
             Checks.notEmpty(t, "Tags");
 
-        String csv = tag;
-        if (tags.length > 0)
-            csv += "," + String.join(",", tags);
+        String csv = String.join(",", tags);
         Checks.notLonger(csv, 200, "Tags");
-
 
         // Add sticker meta data as form parts (because payload_json is broken)
         MultipartBody.Builder builder = new MultipartBody.Builder().setType(MultipartBody.FORM);
