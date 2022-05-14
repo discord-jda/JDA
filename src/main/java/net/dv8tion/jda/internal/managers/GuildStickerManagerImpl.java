@@ -24,7 +24,7 @@ public class GuildStickerManagerImpl extends ManagerBase<GuildStickerManager> im
 
     public GuildStickerManagerImpl(Guild guild, long guildId, StickerSnowflake sticker)
     {
-        super(guild.getJDA(), Route.Stickers.MODIFY_STICKER.compile(Long.toUnsignedString(guildId), sticker.getId()));
+        super(guild.getJDA(), Route.Stickers.MODIFY_GUILD_STICKER.compile(Long.toUnsignedString(guildId), sticker.getId()));
         this.guild = guild;
         this.guildId = guildId;
         if (isPermissionChecksEnabled())

@@ -182,9 +182,9 @@ public class Route
         public static final Route GET_GUILD_STICKERS = new Route(GET,    "guilds/{guild_id}/stickers");
         public static final Route GET_GUILD_STICKER =  new Route(GET,    "guilds/{guild_id}/stickers/{sticker_id}");
 
-        public static final Route MODIFY_STICKER = new Route(PATCH,  "guilds/{guild_id}/stickers/{sticker_id}");
-        public static final Route DELETE_STICKER = new Route(DELETE, "guilds/{guild_id}/stickers/{sticker_id}");
-        public static final Route CREATE_STICKER = new Route(POST,   "guilds/{guild_id}/stickers");
+        public static final Route MODIFY_GUILD_STICKER = new Route(PATCH,  "guilds/{guild_id}/stickers/{sticker_id}");
+        public static final Route DELETE_GUILD_STICKER = new Route(DELETE, "guilds/{guild_id}/stickers/{sticker_id}");
+        public static final Route CREATE_GUILD_STICKER = new Route(POST,   "guilds/{guild_id}/stickers");
 
         public static final Route GET_STICKER = new Route(GET, "stickers/{sticker_id}");
         public static final Route LIST_PACKS  = new Route(GET, "sticker-packs");

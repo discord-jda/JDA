@@ -1831,7 +1831,7 @@ public class GuildImpl implements Guild
         builder.addFormDataPart("file", file.getName(), IOUtil.createRequestBody(mediaType, file.getData()));
 
         MultipartBody body = builder.build();
-        Route.CompiledRoute route = Route.Stickers.CREATE_STICKER.compile(getId());
+        Route.CompiledRoute route = Route.Stickers.CREATE_GUILD_STICKER.compile(getId());
         return new AuditableRestActionImpl<>(api, route, body,
             (response, request) -> (GuildSticker) api.getEntityBuilder().createRichSticker(response.getObject())
         );
@@ -1842,7 +1842,7 @@ public class GuildImpl implements Guild
     public AuditableRestAction<Void> deleteSticker(@Nonnull StickerSnowflake id)
     {
         Checks.notNull(id, "Sticker");
-        Route.CompiledRoute route = Route.Stickers.DELETE_STICKER.compile(id.getId());
+        Route.CompiledRoute route = Route.Stickers.DELETE_GUILD_STICKER.compile(id.getId());
         return new AuditableRestActionImpl<>(api, route);
     }
 

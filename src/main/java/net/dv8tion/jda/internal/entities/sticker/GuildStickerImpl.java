@@ -121,7 +121,7 @@ public class GuildStickerImpl extends RichStickerImpl implements GuildSticker
     {
         if (guild != null)
             return guild.deleteSticker(this);
-        Route.CompiledRoute route = Route.Stickers.DELETE_STICKER.compile(getGuildId(), getId());
+        Route.CompiledRoute route = Route.Stickers.DELETE_GUILD_STICKER.compile(getGuildId(), getId());
         return new AuditableRestActionImpl<>(jda, route);
     }
 
