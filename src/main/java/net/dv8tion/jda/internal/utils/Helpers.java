@@ -237,8 +237,8 @@ public final class Helpers
         for (int i = 0; i < array.length(); i++)
         {
             DataObject obj = array.getObject(i);
-            long userId = getId.applyAsLong(obj);
-            map.put(userId, obj);
+            long objId = getId.applyAsLong(obj);
+            map.put(objId, obj);
         }
         return map;
     }
