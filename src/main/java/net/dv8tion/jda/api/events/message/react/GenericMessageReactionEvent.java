@@ -125,14 +125,14 @@ public class GenericMessageReactionEvent extends GenericMessageEvent
     }
 
     /**
-     * The {@link Emoji} of the reaction, shortcut for {@code getReaction().getReactionEmote()}
+     * The {@link Emoji} of the reaction, shortcut for {@code getReaction().getEmoji()}
      *
-     * @return The ReactionEmote instance
+     * @return The Emote/Emoji instance
      */
     @Nonnull
-    public Emoji getReactionEmote()
+    public Emoji getEmoji()
     {
-        return reaction.getReactionEmote();
+        return reaction.getEmoji();
     }
 
     /**

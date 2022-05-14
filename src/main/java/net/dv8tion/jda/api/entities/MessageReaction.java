@@ -47,7 +47,7 @@ import java.util.Objects;
 public class MessageReaction
 {
     private final MessageChannel channel;
-    private final Emoji emote;
+    private final Emoji emoji;
     private final long messageId;
     private final boolean self;
     private final int count;
@@ -57,7 +57,7 @@ public class MessageReaction
      *
      * @param  channel
      *         The {@link MessageChannel} this Reaction was used in
-     * @param  emote
+     * @param  emoji
      *         The {@link Emoji} that was used
      * @param  messageId
      *         The message id this reaction is attached to
@@ -66,10 +66,10 @@ public class MessageReaction
      * @param  count
      *         The amount of people that reacted with this Reaction
      */
-    public MessageReaction(@Nonnull MessageChannel channel, @Nonnull Emoji emote, long messageId, boolean self, int count)
+    public MessageReaction(@Nonnull MessageChannel channel, @Nonnull Emoji emoji, long messageId, boolean self, int count)
     {
         this.channel = channel;
-        this.emote = emote;
+        this.emoji = emoji;
         this.messageId = messageId;
         this.self = self;
         this.count = count;
@@ -227,9 +227,9 @@ public class MessageReaction
      * @return The final instance of this Reaction's Emote/Emoji
      */
     @Nonnull
-    public Emoji getReactionEmote()
+    public Emoji getEmoji()
     {
-        return emote;
+        return emoji;
     }
 
     /**
@@ -402,9 +402,9 @@ public class MessageReaction
 
     private String getReactionCode()
     {
-        return emote.isCustom()
-                ? emote.getName() + ":" + emote.getId()
-                : EncodingUtil.encodeUTF8(emote.getName());
+        return emoji.isCustom()
+                ? emoji.getName() + ":" + emoji.getId()
+                : EncodingUtil.encodeUTF8(emoji.getName());
     }
 
     @Override
@@ -415,7 +415,7 @@ public class MessageReaction
         if (!(obj instanceof MessageReaction))
             return false;
         MessageReaction r = (MessageReaction) obj;
-        return r.emote.equals(emote)
+        return r.emoji.equals(emoji)
             && r.self == self
             && r.messageId == messageId;
     }
@@ -423,6 +423,6 @@ public class MessageReaction
     @Override
     public String toString()
     {
-        return "MR:(M:(" + messageId + ") / " + emote + ")";
+        return "MR:(M:(" + messageId + ") / " + emoji + ")";
     }
 }

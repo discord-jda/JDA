@@ -66,7 +66,7 @@ public class ReactionPaginationActionImpl
 
     protected static String getCode(MessageReaction reaction)
     {
-        Emoji emote = reaction.getReactionEmote();
+        Emoji emote = reaction.getEmoji();
 
         return emote.isCustom()
             ? emote.getName() + ":" + emote.getId()

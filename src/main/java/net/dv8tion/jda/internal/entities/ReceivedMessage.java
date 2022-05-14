@@ -176,7 +176,7 @@ public class ReceivedMessage extends AbstractMessage
         Checks.notNull(emote, "Emote");
 
         boolean missingReaction = reactions.stream()
-                   .map(MessageReaction::getReactionEmote)
+                   .map(MessageReaction::getEmoji)
                    .filter(Emoji::isCustom)
                    .noneMatch(r -> r.getIdLong() == emote.getIdLong());
 
@@ -310,7 +310,7 @@ public class ReceivedMessage extends AbstractMessage
         Checks.noWhitespace(unicode, "Emoji");
 
         return this.reactions.stream()
-            .filter(r -> r.getReactionEmote().isUnicode() && r.getReactionEmote().getName().equals(unicode))
+            .filter(r -> r.getEmoji().isUnicode() && r.getEmoji().getName().equals(unicode))
             .findFirst().orElse(null);
     }
 
@@ -318,7 +318,7 @@ public class ReceivedMessage extends AbstractMessage
     public MessageReaction getReactionById(long id)
     {
         return this.reactions.stream()
-            .filter(r -> r.getReactionEmote().isCustom() && r.getReactionEmote().getIdLong() == id)
+            .filter(r -> r.getEmoji().isCustom() && r.getEmoji().getIdLong() == id)
             .findFirst().orElse(null);
     }
 

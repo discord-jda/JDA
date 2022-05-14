@@ -63,13 +63,13 @@ public class MessageReactionRemoveEmoteEvent extends GenericMessageEvent
 
     /**
      * The reaction {@link Emoji}.
-     * <br>Shortcut for {@code getReaction().getReactionEmote()}.
+     * <br>Shortcut for {@code getReaction().getEmoji()}.
      *
-     * @return The ReactionEmote
+     * @return The Emote/Emoji for the reaction
      */
     @Nonnull
-    public Emoji getReactionEmote()
+    public Emoji getEmoji()
     {
-        return reaction.getReactionEmote();
+        return reaction.getEmoji();
     }
 }
