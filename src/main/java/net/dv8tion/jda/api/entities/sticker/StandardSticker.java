@@ -25,6 +25,13 @@ import javax.annotation.Nonnull;
  */
 public interface StandardSticker extends RichSticker
 {
+    @Nonnull
+    @Override
+    default Type getType()
+    {
+        return Type.STANDARD;
+    }
+
     /**
      * The ID of the pack the sticker is from.
      *

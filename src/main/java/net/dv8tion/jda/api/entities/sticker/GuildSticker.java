@@ -34,6 +34,13 @@ import javax.annotation.Nullable;
  */
 public interface GuildSticker extends RichSticker
 {
+    @Nonnull
+    @Override
+    default Type getType()
+    {
+        return Type.GUILD;
+    }
+
     /**
      * Whether this sticker is currently available.
      * <br>A sticker becomes unavailable when the boost level of a guild drops and the slot becomes unusable.

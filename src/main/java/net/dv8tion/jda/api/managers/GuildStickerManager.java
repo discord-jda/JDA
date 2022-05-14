@@ -107,8 +107,18 @@ public interface GuildStickerManager extends Manager<GuildStickerManager>
     @Nullable
     Guild getGuild();
 
+    /**
+     * The ID of the guild this sticker belongs to.
+     *
+     * @return The guild id
+     */
     long getGuildIdLong();
 
+    /**
+     * The ID of the guild this sticker belongs to.
+     *
+     * @return The guild id
+     */
     @Nonnull
     default String getGuildId()
     {

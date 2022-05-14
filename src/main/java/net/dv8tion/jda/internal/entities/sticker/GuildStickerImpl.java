@@ -62,13 +62,6 @@ public class GuildStickerImpl extends RichStickerImpl implements GuildSticker
         return this;
     }
 
-    @Nonnull
-    @Override
-    public Type getType()
-    {
-        return Type.GUILD;
-    }
-
     @Override
     public boolean isAvailable()
     {

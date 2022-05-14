@@ -54,10 +54,6 @@ public abstract class RichStickerImpl extends StickerItemImpl implements RichSti
 
     @Nonnull
     @Override
-    public abstract Type getType();
-
-    @Nonnull
-    @Override
     public Set<String> getTags()
     {
         return tags;

@@ -42,13 +42,6 @@ public class StandardStickerImpl extends RichStickerImpl implements StandardStic
         return this;
     }
 
-    @Nonnull
-    @Override
-    public Type getType()
-    {
-        return Type.STANDARD;
-    }
-
     @Override
     public long getPackIdLong()
     {
