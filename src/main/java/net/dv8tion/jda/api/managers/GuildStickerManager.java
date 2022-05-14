@@ -98,7 +98,7 @@ public interface GuildStickerManager extends Manager<GuildStickerManager>
     /**
      * The {@link Guild} this Manager's {@link GuildSticker} is in.
      *
-     * <p>This is null if {@link GuildSticker#getManager()} is used no a sticker with an uncached guild.
+     * <p>This is null if {@link GuildSticker#getManager()} is used on a sticker with an uncached guild.
      *
      * @return The {@link Guild Guild}, or null if not present.
      *
