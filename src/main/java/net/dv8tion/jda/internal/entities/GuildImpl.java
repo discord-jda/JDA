@@ -1792,6 +1792,7 @@ public class GuildImpl implements Guild
         Checks.inRange(name, 2, 30, "Name");
         Checks.notNull(file, "File");
         Checks.notNull(description, "Description");
+        Checks.notEmpty(tags, "Tags");
         if (!description.isEmpty())
             Checks.inRange(description, 2, 100, "Description");
         for (String t : tags)
