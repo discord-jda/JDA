@@ -591,7 +591,7 @@ public class EntityBuilder
         long responseNumber = getJDA().getResponseTotal();
         if (newRoles != null)
         {
-            updateMemberRoles(member, newRoles, responseNumber);
+            updateMemberRoles(member, newRoles, content, responseNumber);
         }
 
         if (content.hasKey("nick"))
@@ -677,7 +677,7 @@ public class EntityBuilder
         updateUser((UserImpl) member.getUser(), content.getObject("user"));
     }
 
-    private void updateMemberRoles(MemberImpl member, List<Role> newRoles, long responseNumber)
+    private void updateMemberRoles(MemberImpl member, List<Role> newRoles, DataObject content, long responseNumber)
     {
         Set<Role> currentRoles = member.getRoleSet();
         //Find the roles removed.
@@ -706,14 +706,14 @@ public class EntityBuilder
         {
             getJDA().handleEvent(
                 new GuildMemberRoleRemoveEvent(
-                    getJDA(), responseNumber,
-                        member, removedRoles));
+                    getJDA(), responseNumber, api.isEventPassthrough() ? content : null, member,
+                        removedRoles));
         }
         if (newRoles.size() > 0)
         {
             getJDA().handleEvent(
                 new GuildMemberRoleAddEvent(
-                    getJDA(), responseNumber,
+                    getJDA(), responseNumber, api.isEventPassthrough() ? content : null,
                         member, newRoles));
         }
     }
