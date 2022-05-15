@@ -27,6 +27,6 @@ public class ThreadMemberLeaveEvent extends GenericThreadMemberEvent
 {
     public ThreadMemberLeaveEvent(@Nonnull JDA api, long responseNumber, ThreadChannel thread, long threadMemberId, ThreadMember threadMember)
     {
-        super(api, responseNumber, thread, threadMemberId, threadMember);
+        super(api, responseNumber, null, thread, threadMemberId, threadMember);
     }
 }
