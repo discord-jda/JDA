@@ -444,7 +444,7 @@ public class ChannelUpdateHandler extends SocketHandler
             addPermissionHolder(changed, guild, override.getIdLong());
             api.handleEvent(
                 new PermissionOverrideDeleteEvent(
-                    api, responseNumber, null,
+                    api, responseNumber, getPassthrough(),
                     channel, override));
             return true;
         });
