@@ -360,18 +360,18 @@ public class GuildSetupNode
         switch (type)
         {
         case AVAILABLE:
-            api.handleEvent(new GuildAvailableEvent(api, api.getResponseTotal(), guild));
+            api.handleEvent(new GuildAvailableEvent(api, api.getResponseTotal(), getPassthrough(), guild));
             getController().remove(id);
             break;
         case JOIN:
-            api.handleEvent(new GuildJoinEvent(api, api.getResponseTotal(), guild));
+            api.handleEvent(new GuildJoinEvent(api, api.getResponseTotal(), getPassthrough(), guild));
             if (requestedChunk)
                 getController().ready(id);
             else
                 getController().remove(id);
             break;
         default:
-            api.handleEvent(new GuildReadyEvent(api, api.getResponseTotal(), guild));
+            api.handleEvent(new GuildReadyEvent(api, api.getResponseTotal(), getPassthrough(), guild));
             getController().ready(id);
             break;
         }
@@ -379,6 +379,12 @@ public class GuildSetupNode
         GuildSetupController.log.debug("Finished setup for guild {} firing cached events {}", id, cachedEvents.size());
         api.getClient().handle(cachedEvents);
         api.getEventCache().playbackCache(EventCache.Type.GUILD, id);
+    }
+
+    @Nullable
+    private DataObject getPassthrough()
+    {
+        return controller.getJDA().isEventPassthrough() ? getGuildPayload() : null;
     }
 
     private void ensureMembers()

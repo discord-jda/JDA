@@ -551,7 +551,7 @@ public class ChannelUpdateHandler extends SocketHandler
         //Fire these events outside the write locks
         for (ThreadChannel thread : threads)
         {
-            api.handleEvent(new ThreadHiddenEvent(api, responseNumber, thread));
+            api.handleEvent(new ThreadHiddenEvent(api, responseNumber, getPassthrough(), thread));
         }
     }
 }

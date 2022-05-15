@@ -20,8 +20,10 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Emote;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.Event;
+import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Indicates that an {@link net.dv8tion.jda.api.entities.Emote Emote} was created/removed/updated.
@@ -37,9 +39,9 @@ public abstract class GenericEmoteEvent extends Event
 {
     protected final Emote emote;
 
-    public GenericEmoteEvent(@Nonnull JDA api, long responseNumber, @Nonnull Emote emote)
+    public GenericEmoteEvent(@Nonnull JDA api, long responseNumber, @Nullable DataObject rawData, @Nonnull Emote emote)
     {
-        super(api, responseNumber, null);
+        super(api, responseNumber, rawData);
         this.emote = emote;
     }
 
