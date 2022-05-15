@@ -22,8 +22,10 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.user.update.GenericUserPresenceEvent;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
+import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Indicates that a {@link net.dv8tion.jda.api.entities.User User} has started an {@link Activity}
@@ -55,9 +57,9 @@ public class UserActivityStartEvent extends GenericUserEvent implements GenericU
     private final Activity newActivity;
     private final Member member;
 
-    public UserActivityStartEvent(@Nonnull JDA api, long responseNumber, @Nonnull Member member, @Nonnull Activity newActivity)
+    public UserActivityStartEvent(@Nonnull JDA api, long responseNumber, @Nullable DataObject rawData, @Nonnull Member member, @Nonnull Activity newActivity)
     {
-        super(api, responseNumber, null, member.getUser());
+        super(api, responseNumber, rawData, member.getUser());
         this.newActivity = newActivity;
         this.member = member;
     }

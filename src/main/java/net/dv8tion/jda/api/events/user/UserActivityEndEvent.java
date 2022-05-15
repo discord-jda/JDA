@@ -22,8 +22,10 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.user.update.GenericUserPresenceEvent;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
+import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Indicates that a {@link net.dv8tion.jda.api.entities.User User} has stopped an {@link Activity}
@@ -60,9 +62,9 @@ public class UserActivityEndEvent extends GenericUserEvent implements GenericUse
     private final Activity oldActivity;
     private final Member member;
 
-    public UserActivityEndEvent(@Nonnull JDA api, long responseNumber, @Nonnull Member member, @Nonnull Activity oldActivity)
+    public UserActivityEndEvent(@Nonnull JDA api, long responseNumber, @Nullable DataObject rawData, @Nonnull Member member, @Nonnull Activity oldActivity)
     {
-        super(api, responseNumber, null, member.getUser());
+        super(api, responseNumber, rawData, member.getUser());
         this.oldActivity = oldActivity;
         this.member = member;
     }

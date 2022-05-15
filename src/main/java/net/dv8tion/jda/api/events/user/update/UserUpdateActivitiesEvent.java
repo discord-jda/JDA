@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
+import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -55,9 +56,9 @@ public class UserUpdateActivitiesEvent extends GenericUserUpdateEvent<List<Activ
     public static final String IDENTIFIER = "activities";
     private final Member member;
 
-    public UserUpdateActivitiesEvent(@Nonnull JDA api, long responseNumber, @Nonnull Member member, @Nullable List<Activity> previous)
+    public UserUpdateActivitiesEvent(@Nonnull JDA api, long responseNumber, @Nullable DataObject rawData, @Nonnull Member member, @Nullable List<Activity> previous)
     {
-        super(api, responseNumber, null, member.getUser(), previous, member.getActivities(), IDENTIFIER);
+        super(api, responseNumber, rawData, member.getUser(), previous, member.getActivities(), IDENTIFIER);
         this.member = member;
     }
 

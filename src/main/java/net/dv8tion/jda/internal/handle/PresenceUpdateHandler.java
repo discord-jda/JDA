@@ -166,7 +166,7 @@ public class PresenceUpdateHandler extends SocketHandler
             {
                 getJDA().handleEvent(
                     new UserUpdateActivityOrderEvent(
-                        getJDA(), responseNumber,
+                        getJDA(), responseNumber, getPassthrough(),
                             oldActivities, member));
             }
         }
@@ -185,7 +185,7 @@ public class PresenceUpdateHandler extends SocketHandler
             {
                 getJDA().handleEvent(
                     new UserActivityStartEvent(
-                        getJDA(), responseNumber,
+                        getJDA(), responseNumber, getPassthrough(),
                             member, activity));
             }
 
@@ -193,13 +193,13 @@ public class PresenceUpdateHandler extends SocketHandler
             {
                 getJDA().handleEvent(
                     new UserActivityEndEvent(
-                        getJDA(), responseNumber,
+                        getJDA(), responseNumber, getPassthrough(),
                             member, activity));
             }
 
             getJDA().handleEvent(
                 new UserUpdateActivitiesEvent(
-                    getJDA(), responseNumber,
+                    getJDA(), responseNumber, getPassthrough(),
                         member, oldActivities));
         }
     }
