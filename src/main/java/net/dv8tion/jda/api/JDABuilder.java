@@ -529,8 +529,6 @@ public class JDABuilder
      *         True, if JDA should add the raw {@link net.dv8tion.jda.api.utils.data.DataObject} to every discord event.
      *
      * @return The JDABuilder instance. Useful for chaining.
-     *
-     * @since  5.0.0
      */
     @Nonnull
     public JDABuilder setEventPassthrough(boolean enable)
