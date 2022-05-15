@@ -169,7 +169,7 @@ public class MessageListenerExample extends ListenerAdapter
             if (message.isFromType(ChannelType.TEXT))
             {
                 //If no users are provided, we can't kick anyone!
-                if (message.getMentionedUsers().isEmpty())
+                if (message.getMentions().getUsers().isEmpty())
                 {
                     channel.sendMessage("You must mention 1 or more Users to be kicked!").queue();
                 }
@@ -187,7 +187,7 @@ public class MessageListenerExample extends ListenerAdapter
                     }
 
                     //Loop over all mentioned users, kicking them one at a time. Mwauahahah!
-                    List<User> mentionedUsers = message.getMentionedUsers();
+                    List<User> mentionedUsers = message.getMentions().getUsers();
                     for (User user : mentionedUsers)
                     {
                         Member member = guild.getMember(user);  //We get the member object for each mentioned user to kick them!

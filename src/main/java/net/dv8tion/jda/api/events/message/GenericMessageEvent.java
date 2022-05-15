@@ -18,6 +18,7 @@ package net.dv8tion.jda.api.events.message;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.Event;
+import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
@@ -156,6 +157,18 @@ public abstract class GenericMessageEvent extends Event
             throw new IllegalStateException("This message event did not happen in a guild");
 
         return ((GuildChannel) channel).getGuild();
+    }
+
+    /**
+     * Returns the jump-to URL for the received message.
+     * <br>Clicking this URL in the Discord client will cause the client to jump to the specified message.
+     *
+     * @return A String representing the jump-to URL for the message
+     */
+    @Nonnull
+    public String getJumpUrl()
+    {
+        return Helpers.format(Message.JUMP_URL, isFromGuild() ? getGuild().getId() : "@me", getChannel().getId(), getMessageId());
     }
 
     /**

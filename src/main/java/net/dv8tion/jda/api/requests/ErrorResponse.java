@@ -247,8 +247,12 @@ public enum ErrorResponse
     {
         Checks.noneNull(responses, "ErrorResponse");
         EnumSet<ErrorResponse> set = EnumSet.copyOf(responses);
-        return (error) -> error instanceof ErrorResponseException && set.contains(((ErrorResponseException) error).getErrorResponse());
+        return test(set);
+    }
 
+    private static Predicate<Throwable> test(@Nonnull EnumSet<ErrorResponse> responses)
+    {
+        return error -> error instanceof ErrorResponseException && responses.contains(((ErrorResponseException) error).getErrorResponse());
     }
 
     @Nonnull
