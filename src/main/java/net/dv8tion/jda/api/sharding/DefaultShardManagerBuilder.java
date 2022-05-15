@@ -89,10 +89,10 @@ public class  DefaultShardManagerBuilder
     protected WebSocketFactory wsFactory = null;
     protected IAudioSendFactory audioSendFactory = null;
     protected ThreadFactory threadFactory = null;
-    protected ChunkingFilter chunkingFilter;
+    protected ChunkingFilter chunkingFilter = ChunkingFilter.ALL;
     protected MemberCachePolicy memberCachePolicy = MemberCachePolicy.ALL;
 
-    private DefaultShardManagerBuilder(@Nullable String token, int intents)
+    protected DefaultShardManagerBuilder(@Nullable String token, int intents)
     {
         this.token = token;
         this.intents = 1 | intents;
