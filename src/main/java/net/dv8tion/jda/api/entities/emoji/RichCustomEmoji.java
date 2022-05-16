@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.managers.CustomEmojiManager;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
+import net.dv8tion.jda.api.utils.ImageProxy;
 import net.dv8tion.jda.internal.utils.PermissionUtil;
 
 import javax.annotation.CheckReturnValue;
@@ -170,6 +171,46 @@ public interface RichCustomEmoji extends CustomEmoji
     AuditableRestAction<Void> delete();
 
     /**
+     * A String representation of the URL which leads to image displayed within the official Discord&trade; client
+     * when this emoji is used
+     *
+     * @return Discord CDN link to the emoji's image
+     */
+    @Nonnull
+    default String getImageUrl()
+    {
+        return String.format(ICON_URL, getId(), isAnimated() ? "gif" : "png");
+    }
+
+    /**
+     * Returns an {@link ImageProxy} for this emoji's image
+     *
+     * @return Never-null {@link ImageProxy} of this emoji's image
+     *
+     * @see    #getImageUrl()
+     */
+    @Nonnull
+    default ImageProxy getImage()
+    {
+        return new ImageProxy(getImageUrl());
+    }
+
+    /**
+     * Usable representation of this emoji (used to display in the client just like mentions with a specific format)
+     * <br>Emojis are used with the format <code>&lt;:{@link #getName getName()}:{@link #getId getId()}&gt;</code>
+     *
+     * @return A usable String representation for this emoji
+     *
+     * @see    <a href="https://discord.com/developers/docs/resources/channel#message-formatting">Message Formatting</a>
+     */
+    @Nonnull
+    @Override
+    default String getAsMention()
+    {
+        return (isAnimated() ? "<a:" : "<:") + getName() + ":" + getId() + ">";
+    }
+
+    /**
      * The {@link CustomEmojiManager Manager} for this emoji, used to modify
      * properties of the emoji like name and role restrictions.
      * <br>You modify multiple fields in one request by chaining setters before calling {@link net.dv8tion.jda.api.requests.RestAction#queue() RestAction.queue()}.
@@ -185,6 +226,7 @@ public interface RichCustomEmoji extends CustomEmoji
      * @return The CustomEmojiManager for this emoji
      */
     @Nonnull
+    @CheckReturnValue
     CustomEmojiManager getManager();
 
     /**

@@ -18,8 +18,6 @@ package net.dv8tion.jda.internal.entities;
 
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
-import gnu.trove.set.TLongSet;
-import gnu.trove.set.hash.TLongHashSet;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.audit.ActionType;
@@ -166,18 +164,6 @@ public class EntityBuilder
         }
     }
 
-    public TLongObjectMap<DataObject> convertToUserMap(ToLongFunction<DataObject> getId, DataArray array)
-    {
-        TLongObjectMap<DataObject> map = new TLongObjectHashMap<>();
-        for (int i = 0; i < array.length(); i++)
-        {
-            DataObject obj = array.getObject(i);
-            long userId = getId.applyAsLong(obj);
-            map.put(userId, obj);
-        }
-        return map;
-    }
-
     public GuildImpl createGuild(long guildId, DataObject guildJson, TLongObjectMap<DataObject> members, int memberCount)
     {
         final GuildImpl guildObj = new GuildImpl(getJDA(), guildId);
@@ -265,8 +251,8 @@ public class EntityBuilder
             createGuildChannel(guildObj, channelJson);
         }
 
-        TLongObjectMap<DataObject> voiceStates = convertToUserMap((o) -> o.getUnsignedLong("user_id", 0L), voiceStateArray);
-        TLongObjectMap<DataObject> presences = presencesArray.map(o1 -> convertToUserMap(o2 -> o2.getObject("user").getUnsignedLong("id"), o1)).orElseGet(TLongObjectHashMap::new);
+        TLongObjectMap<DataObject> voiceStates = Helpers.convertToMap((o) -> o.getUnsignedLong("user_id", 0L), voiceStateArray);
+        TLongObjectMap<DataObject> presences = presencesArray.map(o1 -> Helpers.convertToMap(o2 -> o2.getObject("user").getUnsignedLong("id"), o1)).orElseGet(TLongObjectHashMap::new);
         try (UnlockHook h1 = guildObj.getMembersView().writeLock();
              UnlockHook h2 = getJDA().getUsersView().writeLock())
         {
@@ -1384,18 +1370,24 @@ public class EntityBuilder
 
     private ReceivedMessage createMessage0(DataObject jsonObject, @Nonnull MessageChannel channel, boolean modifyCache)
     {
+        MessageType type = MessageType.fromId(jsonObject.getInt("type"));
+        if (type == MessageType.UNKNOWN)
+            throw new IllegalArgumentException(UNKNOWN_MESSAGE_TYPE);
+
         final long id = jsonObject.getLong("id");
         final DataObject author = jsonObject.getObject("author");
         final long authorId = author.getLong("id");
         MemberImpl member = null;
+        GuildImpl guild = null;
+        if (channel instanceof GuildChannel)
+            guild = (GuildImpl) ((GuildChannel) channel).getGuild();
 
+        // Member details for author
         if (channel.getType().isGuild() && !jsonObject.isNull("member"))
         {
             DataObject memberJson = jsonObject.getObject("member");
             memberJson.put("user", author);
-            GuildChannel guildChannel = (GuildChannel) channel;
-            Guild guild = guildChannel.getGuild();
-            member = createMember((GuildImpl) guild, memberJson);
+            member = createMember(guild, memberJson);
             if (modifyCache)
             {
                 // Update member cache with new information if needed
@@ -1412,21 +1404,22 @@ public class EntityBuilder
         final String nonce = jsonObject.isNull("nonce") ? null : jsonObject.get("nonce").toString();
         final int flags = jsonObject.getInt("flags", 0);
 
+        // Message accessories
         MessageChannel tmpChannel = channel; // because java
         final List<Message.Attachment> attachments = map(jsonObject, "attachments",   this::createMessageAttachment);
         final List<MessageEmbed>       embeds      = map(jsonObject, "embeds",        this::createMessageEmbed);
         final List<MessageReaction>    reactions   = map(jsonObject, "reactions",     (obj) -> createMessageReaction(tmpChannel, id, obj));
         final List<MessageSticker>     stickers    = map(jsonObject, "sticker_items", this::createSticker);
 
+        // Message activity (for game invites/spotify)
         MessageActivity activity = null;
-
         if (!jsonObject.isNull("activity"))
             activity = createMessageActivity(jsonObject);
 
+        // Message Author
         User user;
-        if (channel.getType().isGuild())
+        if (guild != null)
         {
-            Guild guild = ((GuildChannel) channel).getGuild();
             if (member == null)
                 member = (MemberImpl) guild.getMemberById(authorId);
             user = member != null ? member.getUser() : null;
@@ -1458,17 +1451,7 @@ public class EntityBuilder
         if (modifyCache && !fromWebhook) // update the user information on message receive
             updateUser((UserImpl) user, author);
 
-        TLongSet mentionedRoles = new TLongHashSet();
-        TLongSet mentionedUsers = new TLongHashSet(map(jsonObject, "mentions", (o) -> o.getLong("id")));
-        Optional<DataArray> roleMentionArr = jsonObject.optArray("mention_roles");
-        roleMentionArr.ifPresent((arr) ->
-        {
-            for (int i = 0; i < arr.length(); i++)
-                mentionedRoles.add(arr.getLong(i));
-        });
-
-        MessageType type = MessageType.fromId(jsonObject.getInt("type"));
-        ReceivedMessage message;
+        // Message Reference (Reply or Pin)
         Message referencedMessage = null;
         if (!jsonObject.isNull("referenced_message"))
         {
@@ -1491,7 +1474,6 @@ public class EntityBuilder
         }
 
         MessageReference messageReference = null;
-
         if (!jsonObject.isNull("message_reference")) // always contains the channel + message id for a referenced message
         {                                                // used for when referenced_message is not provided
             DataObject messageReferenceJson = jsonObject.getObject("message_reference");
@@ -1505,6 +1487,7 @@ public class EntityBuilder
             );
         }
 
+        // Message Components
         List<ActionRow> components = Collections.emptyList();
         Optional<DataArray> componentsArrayOpt = jsonObject.optArray("components");
         if (componentsArrayOpt.isPresent())
@@ -1516,68 +1499,31 @@ public class EntityBuilder
                     .collect(Collectors.toList());
         }
 
+        // Application command and component replies
         Message.Interaction messageInteraction = null;
         if (!jsonObject.isNull("interaction"))
-        {
-            GuildImpl guild = null;
-            if (channel instanceof GuildChannel)
-            {
-                guild = (GuildImpl) ((GuildChannel) (channel)).getGuild();
-            }
             messageInteraction = createMessageInteraction(guild, jsonObject.getObject("interaction"));
-        }
 
-        if (type == MessageType.UNKNOWN)
-            throw new IllegalArgumentException(UNKNOWN_MESSAGE_TYPE);
+        // Lazy Mention parsing and caching (includes reply mentions)
+        Mentions mentions = new MessageMentionsImpl(
+            api, guild, content, mentionsEveryone,
+            jsonObject.getArray("mentions"), jsonObject.getArray("mention_roles")
+        );
+        
+        ThreadChannel startedThread = null;
+        if (guild != null && !jsonObject.isNull("thread"))
+            startedThread = createThreadChannel(guild, jsonObject.getObject("thread"), guild.getIdLong());
+
         if (!type.isSystem())
         {
-            message = new ReceivedMessage(id, channel, type, messageReference, fromWebhook,
-                    mentionsEveryone, mentionedUsers, mentionedRoles, tts, pinned,
-                    content, nonce, user, member, activity, editTime, reactions, attachments, embeds, stickers, components, flags, messageInteraction);
+            return new ReceivedMessage(id, channel, type, messageReference, fromWebhook, tts, pinned,
+                    content, nonce, user, member, activity, editTime, mentions, reactions, attachments, embeds, stickers, components, flags, messageInteraction, startedThread);
         }
         else
         {
-            message = new SystemMessage(id, channel, type, messageReference, fromWebhook,
-                    mentionsEveryone, mentionedUsers, mentionedRoles, tts, pinned,
-                    content, nonce, user, member, activity, editTime, reactions, attachments, embeds, stickers, flags);
-            return message; // We don't need to parse mentions for system messages, they are always empty anyway
+            return new SystemMessage(id, channel, type, messageReference, fromWebhook, tts, pinned,
+                    content, nonce, user, member, activity, editTime, mentions, reactions, attachments, embeds, stickers, flags, startedThread);
         }
-
-        GuildImpl guild = message.isFromGuild() ? (GuildImpl) message.getGuild() : null;
-
-        // Load users/members from message object through mentions
-        List<User> mentionedUsersList = new ArrayList<>();
-        List<Member> mentionedMembersList = new ArrayList<>();
-        DataArray userMentions = jsonObject.getArray("mentions");
-
-        for (int i = 0; i < userMentions.length(); i++)
-        {
-            DataObject mentionJson = userMentions.getObject(i);
-            if (guild == null || mentionJson.isNull("member"))
-            {
-                // Can't load user without member context so fake them if possible
-                User mentionedUser = createUser(mentionJson);
-                mentionedUsersList.add(mentionedUser);
-                if (guild != null)
-                {
-                    Member mentionedMember = guild.getMember(mentionedUser);
-                    if (mentionedMember != null)
-                        mentionedMembersList.add(mentionedMember);
-                }
-                continue;
-            }
-
-            // Load member/user from mention (gateway messages only)
-            DataObject memberJson = mentionJson.getObject("member");
-            mentionJson.remove("member");
-            memberJson.put("user", mentionJson);
-            Member mentionedMember = createMember(guild, memberJson);
-            mentionedMembersList.add(mentionedMember);
-            mentionedUsersList.add(mentionedMember.getUser());
-        }
-
-        message.setMentions(mentionedUsersList, mentionedMembersList);
-        return message;
     }
 
     private static MessageActivity createMessageActivity(DataObject jsonObject)

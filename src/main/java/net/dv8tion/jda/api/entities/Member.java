@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
+import net.dv8tion.jda.api.utils.ImageProxy;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -268,6 +269,20 @@ public interface Member extends IMentionable, IPermissionHolder, UserSnowflake
     }
 
     /**
+     * Returns an {@link ImageProxy} for this member's avatar.
+     *
+     * @return Possibly-null {@link ImageProxy} of this member's avatar
+     *
+     * @see    #getAvatarUrl()
+     */
+    @Nullable
+    default ImageProxy getAvatar()
+    {
+        final String avatarUrl = getAvatarUrl();
+        return avatarUrl == null ? null : new ImageProxy(avatarUrl);
+    }
+
+    /**
      * The URL for the member's effective avatar image.
      * If they do not have a per guild avatar set, this will return the URL of
      * their effective {@link User} avatar.
@@ -279,6 +294,20 @@ public interface Member extends IMentionable, IPermissionHolder, UserSnowflake
     {
         String avatarUrl = getAvatarUrl();
         return avatarUrl == null ? getUser().getEffectiveAvatarUrl() : avatarUrl;
+    }
+
+    /**
+     * Returns an {@link ImageProxy} for this member's effective avatar image.
+     *
+     * @return Never-null {@link ImageProxy} of this member's effective avatar image
+     *
+     * @see    #getEffectiveAvatarUrl()
+     */
+    @Nonnull
+    default ImageProxy getEffectiveAvatar()
+    {
+        final ImageProxy avatar = getAvatar();
+        return avatar == null ? getUser().getEffectiveAvatar() : avatar;
     }
 
     /**
