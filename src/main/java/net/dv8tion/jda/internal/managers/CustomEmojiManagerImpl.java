@@ -17,7 +17,6 @@
 package net.dv8tion.jda.internal.managers;
 
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
@@ -44,18 +43,10 @@ public class CustomEmojiManagerImpl extends ManagerBase<CustomEmojiManager> impl
 
     public CustomEmojiManagerImpl(RichCustomEmojiImpl emoji)
     {
-        super(emoji.getJDA(), Route.Emojis.MODIFY_EMOJI.compile(notNullGuild(emoji).getId(), emoji.getId()));
+        super(emoji.getJDA(), Route.Emojis.MODIFY_EMOJI.compile(emoji.getGuild().getId(), emoji.getId()));
         this.emoji = emoji;
         if (isPermissionChecksEnabled())
             checkPermissions();
-    }
-
-    private static Guild notNullGuild(RichCustomEmojiImpl emoji)
-    {
-        Guild g = emoji.getGuild();
-        if (g == null)
-            throw new IllegalStateException("Cannot modify an emoji without shared guild");
-        return g;
     }
 
     @Nonnull

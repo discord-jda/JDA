@@ -86,11 +86,10 @@ public class RichCustomEmojiImpl implements RichCustomEmoji
                 .put("id", id);
     }
 
+    @Nonnull
     @Override
     public GuildImpl getGuild()
     {
-        if (guild == null)
-            return null;
         GuildImpl realGuild = (GuildImpl) api.getGuildById(guild.getIdLong());
         if (realGuild != null)
             guild = realGuild;
@@ -146,8 +145,6 @@ public class RichCustomEmojiImpl implements RichCustomEmoji
     @Override
     public RestAction<User> retrieveOwner()
     {
-        if (guild == null)
-            throw new IllegalStateException("Unable to retrieve owner of this emoji because this emoji is from a message. (We do not know the origin Guild of this emoji)");
         return new DeferredRestAction<>(api, User.class, this::getOwner, () -> {
             Route.CompiledRoute route = Route.Emojis.GET_EMOJI.compile(guild.getId(), getId());
             return new RestActionImpl<>(api, route, (response, request) -> {
@@ -174,8 +171,6 @@ public class RichCustomEmojiImpl implements RichCustomEmoji
     @Override
     public AuditableRestAction<Void> delete()
     {
-        if (getGuild() == null)
-            throw new IllegalStateException("The emoji you are trying to delete is not an actual emoji we have access to (it is from a message)!");
         if (managed)
             throw new UnsupportedOperationException("You cannot delete a managed emoji!");
         if (!getGuild().getSelfMember().hasPermission(Permission.MANAGE_EMOJIS_AND_STICKERS))

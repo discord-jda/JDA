@@ -49,11 +49,9 @@ public interface RichCustomEmoji extends CustomEmoji
     /**
      * The {@link net.dv8tion.jda.api.entities.Guild Guild} this emoji is attached to.
      *
-     * <p><b>This is null if the emoji is created from a message</b>
-     *
-     * @return Guild of this emoji or null if it is created from a message
+     * @return Guild of this emoji
      */
-    @Nullable
+    @Nonnull
     Guild getGuild();
 
     /**
@@ -118,9 +116,6 @@ public interface RichCustomEmoji extends CustomEmoji
      * Retrieves the owner of this emoji.
      * <br>If {@link #getOwner()} is present, this will directly return the owner in a completed {@link RestAction} without making a request.
      * TODO: CacheRestAction note
-     *
-     * @throws IllegalStateException
-     *         If the guild of this emoji is not available, when {@link #getGuild()} is null.
      *
      * @return {@link RestAction} - Type: {@link User}
      */
@@ -203,8 +198,6 @@ public interface RichCustomEmoji extends CustomEmoji
      * <p>This is a lazy idempotent getter. The manager is retained after the first call.
      * This getter is not thread-safe and would require guards by the user.
      *
-     * @throws IllegalStateException
-     *         if this emoji is created from a message or the bot does not have access to the emoji
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have {@link net.dv8tion.jda.api.Permission#MANAGE_EMOJIS_AND_STICKERS Permission.MANAGE_EMOJIS_AND_STICKERS}
      *
