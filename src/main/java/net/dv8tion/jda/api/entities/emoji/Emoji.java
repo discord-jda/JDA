@@ -181,6 +181,15 @@ public interface Emoji extends SerializableData
     String getAsReactionCode();
 
     /**
+     * Formatted string used in messages.
+     * <br>For unicode emoji, this is simply {@link #getName()}. For custom emoji, this will be the mention markdown format {@code <:name:id>}.
+     *
+     * @return The formatted message string
+     */
+    @Nonnull
+    String getFormatted();
+
+    /**
      * Possible emoji types.
      */
     enum Type

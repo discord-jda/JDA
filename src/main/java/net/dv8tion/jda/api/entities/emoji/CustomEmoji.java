@@ -58,4 +58,11 @@ public interface CustomEmoji extends Emoji, IMentionable
     {
         return (isAnimated() ? "<a:" : "<:") + getName() + ":" + getId() + ">";
     }
+
+    @Nonnull
+    @Override
+    default String getFormatted()
+    {
+        return getAsMention();
+    }
 }

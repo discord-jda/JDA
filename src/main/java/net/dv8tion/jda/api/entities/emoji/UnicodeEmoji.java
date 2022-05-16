@@ -30,4 +30,11 @@ public interface UnicodeEmoji extends Emoji
      */
     @Nonnull
     String getAsCodepoints();
+
+    @Nonnull
+    @Override
+    default String getFormatted()
+    {
+        return getName();
+    }
 }
