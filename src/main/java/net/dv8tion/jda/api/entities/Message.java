@@ -160,7 +160,7 @@ public interface Message extends ISnowflake, Formattable
     * The maximum amount of reactions that can be added to one message ({@value})
     *
     * @see Message#addReaction(String)
-    * @see Message#addReaction(RichCustomEmoji)
+    * @see Message#addReaction(Emoji)
     */
     int MAX_REACTIONS = 20;
 
