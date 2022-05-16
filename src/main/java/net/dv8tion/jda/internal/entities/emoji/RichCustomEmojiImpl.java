@@ -20,8 +20,10 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
+import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.CustomEmojiManager;
+import net.dv8tion.jda.api.requests.ErrorResponse;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.utils.data.DataObject;
@@ -32,7 +34,6 @@ import net.dv8tion.jda.internal.requests.DeferredRestAction;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
-import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -141,14 +142,20 @@ public class RichCustomEmojiImpl implements RichCustomEmoji
         return owner;
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public RestAction<User> retrieveOwner()
     {
+        GuildImpl guild = getGuild();
+        if (!guild.getSelfMember().hasPermission(Permission.MANAGE_EMOJIS_AND_STICKERS))
+            throw new InsufficientPermissionException(guild, Permission.MANAGE_EMOJIS_AND_STICKERS);
         return new DeferredRestAction<>(api, User.class, this::getOwner, () -> {
             Route.CompiledRoute route = Route.Emojis.GET_EMOJI.compile(guild.getId(), getId());
             return new RestActionImpl<>(api, route, (response, request) -> {
-                DataObject user = response.getObject().getObject("user");
+                DataObject data = response.getObject();
+                if (data.isNull("user")) // user is not provided when permissions are missing
+                    throw ErrorResponseException.create(ErrorResponse.MISSING_PERMISSIONS, response);
+                DataObject user = data.getObject("user");
                 return this.owner = api.getEntityBuilder().createUser(user);
             });
         });

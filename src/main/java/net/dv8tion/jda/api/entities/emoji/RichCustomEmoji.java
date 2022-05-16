@@ -117,6 +117,10 @@ public interface RichCustomEmoji extends CustomEmoji
      * <br>If {@link #getOwner()} is present, this will directly return the owner in a completed {@link RestAction} without making a request.
      * TODO: CacheRestAction note
      *
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the currently logged in account does not have {@link net.dv8tion.jda.api.Permission#MANAGE_EMOJIS_AND_STICKERS Permission.MANAGE_EMOJIS_AND_STICKERS}
+     *         in this guild
+     *
      * @return {@link RestAction} - Type: {@link User}
      */
     @Nonnull
