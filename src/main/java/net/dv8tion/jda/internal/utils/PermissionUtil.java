@@ -139,8 +139,8 @@ public class PermissionUtil
         if (!issuer.getGuild().equals(emoji.getGuild()))
             throw new IllegalArgumentException("The issuer and target are not in the same Guild");
 
-        return emoji.canProvideRoles() && (emoji.getRoles().isEmpty() // emoji restricted to roles -> check if the issuer has them
-            || CollectionUtils.containsAny(issuer.getRoles(), emoji.getRoles()));
+        return emoji.getRoles().isEmpty() // emoji restricted to roles -> check if the issuer has them
+            || CollectionUtils.containsAny(issuer.getRoles(), emoji.getRoles());
     }
 
     /**

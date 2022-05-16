@@ -70,8 +70,7 @@ public class GuildRoleDeleteHandler extends SocketHandler
         for (RichCustomEmoji emoji : guild.getEmojiCache())
         {
             RichCustomEmojiImpl impl = (RichCustomEmojiImpl) emoji;
-            if (impl.canProvideRoles())
-                impl.getRoleSet().remove(removedRole);
+            impl.getRoleSet().remove(removedRole);
         }
 
         getJDA().handleEvent(

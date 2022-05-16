@@ -35,8 +35,8 @@ import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -60,14 +60,6 @@ public class RichCustomEmojiImpl implements RichCustomEmoji
         this.api = guild.getJDA();
         this.guild = guild;
         this.roles = ConcurrentHashMap.newKeySet();
-    }
-
-    public RichCustomEmojiImpl(long id, JDAImpl api)
-    {
-        this.id = id;
-        this.api = api;
-        this.guild = null;
-        this.roles = null;
     }
 
     @Nonnull
@@ -109,15 +101,7 @@ public class RichCustomEmojiImpl implements RichCustomEmoji
     @Override
     public List<Role> getRoles()
     {
-        if (!canProvideRoles())
-            throw new IllegalStateException("Unable to return roles because this emoji is from a message. (We do not know the origin Guild of this emoji)");
-        return Collections.unmodifiableList(new LinkedList<>(roles));
-    }
-
-    @Override
-    public boolean canProvideRoles()
-    {
-        return roles != null;
+        return Collections.unmodifiableList(new ArrayList<>(roles));
     }
 
     @Nonnull

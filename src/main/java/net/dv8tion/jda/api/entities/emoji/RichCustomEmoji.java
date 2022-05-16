@@ -60,25 +60,10 @@ public interface RichCustomEmoji extends CustomEmoji
      * Roles this emoji is active for.
      * <br><a href="https://discord.com/developers/docs/resources/emoji#emoji-object" target="_blank">Learn More</a>
      *
-     * @throws IllegalStateException
-     *         If this emoji does not have attached roles according to {@link #canProvideRoles()}
-     *
      * @return An immutable list of the roles this emoji is active for (all roles if empty)
-     *
-     * @see    #canProvideRoles()
      */
     @Nonnull
     List<Role> getRoles();
-
-    /**
-     * Whether this emoji has an attached roles list. This might not be the case when the emoji
-     * is retrieved through special cases like audit-logs.
-     *
-     * <p>If this is not true then {@link #getRoles()} will throw {@link IllegalStateException}.
-     *
-     * @return True, if this emoji has an attached roles list
-     */
-    boolean canProvideRoles();
 
     /**
      * Whether this emoji is managed. A managed emoji is controlled by Discord, not the Guild administrator, typical
