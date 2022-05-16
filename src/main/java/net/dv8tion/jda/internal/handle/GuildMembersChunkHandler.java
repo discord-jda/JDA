@@ -25,6 +25,7 @@ import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.entities.MemberImpl;
 import net.dv8tion.jda.internal.requests.WebSocketClient;
+import net.dv8tion.jda.internal.utils.Helpers;
 
 public class GuildMembersChunkHandler extends SocketHandler
 {
@@ -48,7 +49,7 @@ public class GuildMembersChunkHandler extends SocketHandler
             // Chunk handling
             EntityBuilder builder = getJDA().getEntityBuilder();
             TLongObjectMap<DataObject> presences = content.optArray("presences").map(it ->
-                builder.convertToUserMap(o -> o.getObject("user").getUnsignedLong("id"), it)
+                Helpers.convertToMap(o -> o.getObject("user").getUnsignedLong("id"), it)
             ).orElseGet(TLongObjectHashMap::new);
             for (int i = 0; i < members.length(); i++)
             {

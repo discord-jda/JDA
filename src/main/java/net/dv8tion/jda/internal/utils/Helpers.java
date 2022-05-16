@@ -16,12 +16,18 @@
 
 package net.dv8tion.jda.internal.utils;
 
+import gnu.trove.map.TLongObjectMap;
+import gnu.trove.map.hash.TLongObjectHashMap;
+import net.dv8tion.jda.api.utils.data.DataArray;
+import net.dv8tion.jda.api.utils.data.DataObject;
+
 import javax.annotation.Nullable;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAccessor;
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.function.ToLongFunction;
 
 /**
  * This class has major inspiration from <a href="https://commons.apache.org/proper/commons-lang/" target="_blank">Lang 3</a>
@@ -223,6 +229,18 @@ public final class Helpers
     public static <E extends Enum<E>> EnumSet<E> copyEnumSet(Class<E> clazz, Collection<E> col)
     {
         return col == null || col.isEmpty() ? EnumSet.noneOf(clazz) : EnumSet.copyOf(col);
+    }
+
+    public static TLongObjectMap<DataObject> convertToMap(ToLongFunction<DataObject> getId, DataArray array)
+    {
+        TLongObjectMap<DataObject> map = new TLongObjectHashMap<>();
+        for (int i = 0; i < array.length(); i++)
+        {
+            DataObject obj = array.getObject(i);
+            long objId = getId.applyAsLong(obj);
+            map.put(objId, obj);
+        }
+        return map;
     }
 
     // ## ExceptionUtils ##
