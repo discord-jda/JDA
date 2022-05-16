@@ -740,7 +740,7 @@ public class EmbedBuilder
      *
      * @throws java.lang.IllegalArgumentException
      *         <ul>
-     *             <li>If only {@code name} or {@code value} is set. Both must be set.</li>
+     *             <li>If {@code name} or {@code value} are not set. They must be be both set.</li>
      *             <li>If the character limit for {@code name}, defined by {@link net.dv8tion.jda.api.entities.MessageEmbed#TITLE_MAX_LENGTH} as {@value net.dv8tion.jda.api.entities.MessageEmbed#TITLE_MAX_LENGTH},
      *             is exceeded.</li>
      *             <li>If the character limit for {@code value}, defined by {@link net.dv8tion.jda.api.entities.MessageEmbed#VALUE_MAX_LENGTH} as {@value net.dv8tion.jda.api.entities.MessageEmbed#VALUE_MAX_LENGTH},
@@ -750,10 +750,10 @@ public class EmbedBuilder
      * @return the builder after the field has been added
      */
     @Nonnull
-    public EmbedBuilder addField(@Nullable String name, @Nullable String value, boolean inline)
+    public EmbedBuilder addField(@Nonnull String name, @Nonnull String value, boolean inline)
     {
-        if (name == null && value == null)
-            return this;
+        Checks.notNull(name, "Name");
+        Checks.notNull(value, "Value");
         this.fields.add(new MessageEmbed.Field(name, value, inline));
         return this;
     }
