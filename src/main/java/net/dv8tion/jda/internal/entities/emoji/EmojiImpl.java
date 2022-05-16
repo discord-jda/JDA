@@ -100,6 +100,13 @@ public class EmojiImpl implements Emoji, CustomEmoji, UnicodeEmoji
         return getType() == Type.UNICODE ? name : Helpers.format("<%s:%s:%s>", animated ? "a" : "", name, Long.toUnsignedString(id));
     }
 
+    @Nonnull
+    @Override
+    public String getFormatted()
+    {
+        return CustomEmoji.super.getFormatted();
+    }
+
     @Override
     public int hashCode()
     {

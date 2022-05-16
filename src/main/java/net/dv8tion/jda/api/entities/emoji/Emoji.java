@@ -17,6 +17,7 @@
 package net.dv8tion.jda.api.entities.emoji;
 
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.internal.entities.emoji.EmojiImpl;
@@ -24,6 +25,9 @@ import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.EncodingUtil;
 
 import javax.annotation.Nonnull;
+import java.util.Formattable;
+import java.util.FormattableFlags;
+import java.util.Formatter;
 import java.util.regex.Matcher;
 
 /**
@@ -32,7 +36,7 @@ import java.util.regex.Matcher;
  *
  * @see #getName()
  */
-public interface Emoji extends SerializableData
+public interface Emoji extends SerializableData, Formattable
 {
     /**
      * Creates a reference for a unicode emoji with the provided unicode.
@@ -104,17 +108,17 @@ public interface Emoji extends SerializableData
     // either <a?:name:id> or just unicode
 
     /**
-     * Parses the provided markdown formatting to an Emoji instance.
+     * Parses the provided markdown formatting, or unicode characters, to an Emoji instance.
      * <h4>Example</h4>
      * <pre>{@code
      * // animated custom emoji
-     * parseMarkdown("<a:dance:123456789123456789>");
+     * fromFormatted("<a:dance:123456789123456789>");
      * // not animated custom emoji
-     * parseMarkdown("<:dog:123456789123456789>");
+     * fromFormatted("<:dog:123456789123456789>");
      * // unicode emoji, escape codes
-     * parseMarkdown("\uD83D\uDE03");
+     * fromFormatted("\uD83D\uDE03");
      * // unicode emoji
-     * parseMarkdown("😃");
+     * fromFormatted("😃");
      * }</pre>
      *
      * @param  code
@@ -126,7 +130,7 @@ public interface Emoji extends SerializableData
      * @return The emoji instance
      */
     @Nonnull
-    static Emoji fromMarkdown(@Nonnull String code)
+    static Emoji fromFormatted(@Nonnull String code)
     {
         Matcher matcher = Message.MentionType.EMOJI.getPattern().matcher(code);
         if (matcher.matches())
@@ -188,6 +192,14 @@ public interface Emoji extends SerializableData
      */
     @Nonnull
     String getFormatted();
+
+    @Override
+    default void formatTo(Formatter formatter, int flags, int width, int precision)
+    {
+        boolean leftJustified = (flags & FormattableFlags.LEFT_JUSTIFY) == FormattableFlags.LEFT_JUSTIFY;
+        String out = getFormatted();
+        MiscUtil.appendTo(formatter, width, precision, leftJustified, out);
+    }
 
     /**
      * Possible emoji types.

@@ -19,6 +19,7 @@ package net.dv8tion.jda.api.entities.emoji;
 import net.dv8tion.jda.api.entities.IMentionable;
 
 import javax.annotation.Nonnull;
+import java.util.Formatter;
 
 public interface CustomEmoji extends Emoji, IMentionable
 {
@@ -64,5 +65,11 @@ public interface CustomEmoji extends Emoji, IMentionable
     default String getFormatted()
     {
         return getAsMention();
+    }
+
+    @Override
+    default void formatTo(Formatter formatter, int flags, int width, int precision)
+    {
+        Emoji.super.formatTo(formatter, flags, width, precision);
     }
 }
