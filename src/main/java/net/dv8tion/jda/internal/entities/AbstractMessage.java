@@ -18,6 +18,8 @@ package net.dv8tion.jda.internal.entities;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.emoji.CustomEmoji;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.requests.RestAction;
@@ -364,7 +366,7 @@ public abstract class AbstractMessage implements Message
 
     @Nonnull
     @Override
-    public List<Emote> getEmotes()
+    public List<CustomEmoji> getCustomEmojis()
     {
         unsupported();
         return null;
@@ -372,7 +374,7 @@ public abstract class AbstractMessage implements Message
 
     @Nonnull
     @Override
-    public Bag<Emote> getEmotesBag()
+    public Bag<CustomEmoji> getCustomEmojisBag()
     {
         unsupported();
         return null;
@@ -475,7 +477,7 @@ public abstract class AbstractMessage implements Message
 
     @Nonnull
     @Override
-    public RestAction<Void> addReaction(@Nonnull Emote emote)
+    public RestAction<Void> addReaction(@Nonnull Emoji emoji)
     {
         unsupported();
         return null;
@@ -507,7 +509,7 @@ public abstract class AbstractMessage implements Message
 
     @Nonnull
     @Override
-    public RestAction<Void> clearReactions(@Nonnull Emote emote)
+    public RestAction<Void> clearReactions(@Nonnull Emoji emoji)
     {
         unsupported();
         return null;
@@ -515,7 +517,7 @@ public abstract class AbstractMessage implements Message
 
     @Nonnull
     @Override
-    public RestAction<Void> removeReaction(@Nonnull Emote emote)
+    public RestAction<Void> removeReaction(@Nonnull Emoji emoji)
     {
         unsupported();
         return null;
@@ -523,7 +525,7 @@ public abstract class AbstractMessage implements Message
 
     @Nonnull
     @Override
-    public RestAction<Void> removeReaction(@Nonnull Emote emote, @Nonnull User user)
+    public RestAction<Void> removeReaction(@Nonnull Emoji emoji, @Nonnull User user)
     {
         unsupported();
         return null;
@@ -547,7 +549,7 @@ public abstract class AbstractMessage implements Message
 
     @Nonnull
     @Override
-    public ReactionPaginationAction retrieveReactionUsers(@Nonnull Emote emote)
+    public ReactionPaginationAction retrieveReactionUsers(@Nonnull Emoji emoji)
     {
         unsupported();
         return null;

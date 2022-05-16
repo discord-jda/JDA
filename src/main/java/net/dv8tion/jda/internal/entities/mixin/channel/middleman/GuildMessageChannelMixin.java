@@ -92,12 +92,12 @@ public interface GuildMessageChannelMixin<T extends GuildMessageChannelMixin<T>>
     default RestAction<Void> clearReactionsById(@Nonnull String messageId, @Nonnull String unicode)
     {
         Checks.notNull(messageId, "Message ID");
-        Checks.notNull(unicode, "Emote Name");
+        Checks.notNull(unicode, "Emoji Name");
 
         checkPermission(Permission.MESSAGE_MANAGE);
 
         String code = EncodingUtil.encodeReaction(unicode);
-        Route.CompiledRoute route = Route.Messages.CLEAR_EMOTE_REACTIONS.compile(getId(), messageId, code);
+        Route.CompiledRoute route = Route.Messages.CLEAR_EMOJI_REACTIONS.compile(getId(), messageId, code);
         return new RestActionImpl<>(getJDA(), route);
     }
     

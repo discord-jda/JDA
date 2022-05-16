@@ -18,6 +18,8 @@ package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.emoji.CustomEmoji;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.exceptions.PermissionException;
 import net.dv8tion.jda.api.requests.RestAction;
@@ -222,9 +224,9 @@ public class MessageReaction
 
     /**
      * The {@link Emoji} of this Reaction.
-     * <br>This includes both {@link Emoji#isCustom() custom emotes} and {@link Emoji#isUnicode() unicode emoji}.
+     * <br>This includes both {@link Emoji.Type#CUSTOM custom emojis} and {@link Emoji.Type#UNICODE unicode emoji}.
      *
-     * @return The final instance of this Reaction's Emote/Emoji
+     * @return The final instance of this Reaction's Emoji
      */
     @Nonnull
     public Emoji getEmoji()
@@ -402,8 +404,8 @@ public class MessageReaction
 
     private String getReactionCode()
     {
-        return emoji.isCustom()
-                ? emoji.getName() + ":" + emoji.getId()
+        return emoji.getType() == Emoji.Type.CUSTOM
+                ? emoji.getName() + ":" + ((CustomEmoji) emoji).getId()
                 : EncodingUtil.encodeUTF8(emoji.getName());
     }
 

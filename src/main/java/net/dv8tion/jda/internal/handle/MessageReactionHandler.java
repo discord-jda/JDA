@@ -17,6 +17,7 @@
 package net.dv8tion.jda.internal.handle;
 
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionRemoveEvent;
 import net.dv8tion.jda.api.utils.data.DataArray;
@@ -146,13 +147,9 @@ public class MessageReactionHandler extends SocketHandler
             );
         }
 
-        Emoji rEmote;
-        if (emojiId != null)
-            rEmote = Emoji.fromEmote(emojiName, emojiId, emojiAnimated);
-        else
-            rEmote = Emoji.fromUnicode(emojiName);
+        Emoji rEmoji = Emoji.fromData(emoji);
 
-        MessageReaction reaction = new MessageReaction(channel, rEmote, messageId, userId == api.getSelfUser().getIdLong(), -1);
+        MessageReaction reaction = new MessageReaction(channel, rEmoji, messageId, userId == api.getSelfUser().getIdLong(), -1);
 
         if (channel.getType() == ChannelType.PRIVATE)
         {

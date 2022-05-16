@@ -14,27 +14,14 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.events.emote;
-
-import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.Emote;
-
-import javax.annotation.Nonnull;
-
 /**
- * Indicates that an {@link net.dv8tion.jda.api.entities.Emote Emote} was removed from a Guild.
+ * Events that track updates for existing {@link net.dv8tion.jda.api.entities.emoji.RichCustomEmoji Custom Emojis}
  *
  * <h2>Requirements</h2>
  *
- * <p>This event requires the {@link net.dv8tion.jda.api.utils.cache.CacheFlag#EMOTE EMOTE} CacheFlag to be enabled, which requires
+ * <p>These events require the {@link net.dv8tion.jda.api.utils.cache.CacheFlag#EMOJI EMOJI} CacheFlag to be enabled, which requires
  * the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_EMOJIS GUILD_EMOJIS} intent.
  *
  * <br>{@link net.dv8tion.jda.api.JDABuilder#createLight(String) createLight(String)} disables that CacheFlag by default!
  */
-public class EmoteRemovedEvent extends GenericEmoteEvent
-{
-    public EmoteRemovedEvent(@Nonnull JDA api, long responseNumber, @Nonnull Emote emote)
-    {
-        super(api, responseNumber, emote);
-    }
-}
+package net.dv8tion.jda.api.events.emoji.update;

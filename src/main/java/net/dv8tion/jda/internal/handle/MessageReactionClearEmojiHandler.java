@@ -16,15 +16,19 @@
 
 package net.dv8tion.jda.internal.handle;
 
-import net.dv8tion.jda.api.entities.*;
-import net.dv8tion.jda.api.events.message.react.MessageReactionRemoveEmoteEvent;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.GuildChannel;
+import net.dv8tion.jda.api.entities.GuildMessageChannel;
+import net.dv8tion.jda.api.entities.MessageReaction;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
+import net.dv8tion.jda.api.events.message.react.MessageReactionRemoveEmojiEvent;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.requests.WebSocketClient;
 
-public class MessageReactionClearEmoteHandler extends SocketHandler
+public class MessageReactionClearEmojiHandler extends SocketHandler
 {
-    public MessageReactionClearEmoteHandler(JDAImpl api)
+    public MessageReactionClearEmojiHandler(JDAImpl api)
     {
         super(api);
     }
@@ -62,22 +66,11 @@ public class MessageReactionClearEmoteHandler extends SocketHandler
 
         long messageId = content.getUnsignedLong("message_id");
         DataObject emoji = content.getObject("emoji");
-        String name = emoji.getString("name");
-        Emoji reactionEmote = null;
-        if (emoji.isNull("id"))
-        {
-            reactionEmote = Emoji.fromUnicode(name);
-        }
-        else
-        {
-            long emoteId = emoji.getUnsignedLong("id");
-            boolean animated = emoji.getBoolean("animated");
-            reactionEmote = Emoji.fromEmote(name, emoteId, animated);
-        }
+        Emoji reactionEmoji = Emoji.fromData(emoji);
 
-        MessageReaction reaction = new MessageReaction(channel, reactionEmote, messageId, false, 0);
+        MessageReaction reaction = new MessageReaction(channel, reactionEmoji, messageId, false, 0);
 
-        getJDA().handleEvent(new MessageReactionRemoveEmoteEvent(getJDA(), responseNumber, messageId, channel, reaction));
+        getJDA().handleEvent(new MessageReactionRemoveEmojiEvent(getJDA(), responseNumber, messageId, channel, reaction));
         return null;
     }
 }

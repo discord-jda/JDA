@@ -14,14 +14,20 @@
  * limitations under the License.
  */
 
-/**
- * Events that track updates for existing {@link net.dv8tion.jda.api.entities.Emote Emotes}
- *
- * <h2>Requirements</h2>
- *
- * <p>These events require the {@link net.dv8tion.jda.api.utils.cache.CacheFlag#EMOTE EMOTE} CacheFlag to be enabled, which requires
- * the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_EMOJIS GUILD_EMOJIS} intent.
- *
- * <br>{@link net.dv8tion.jda.api.JDABuilder#createLight(String) createLight(String)} disables that CacheFlag by default!
- */
-package net.dv8tion.jda.api.events.emote.update;
+package net.dv8tion.jda.api.entities.emoji;
+
+import javax.annotation.Nonnull;
+
+public interface UnicodeEmoji extends Emoji
+{
+    /**
+     * Converts the unicode name into codepoint notation like {@code U+1F602}.
+     *
+     * @throws java.lang.IllegalStateException
+     *         If this is a custom emoji, see {@link #getType()}
+     *
+     * @return String containing the codepoint representation of the emoji
+     */
+    @Nonnull
+    String getAsCodepoints();
+}

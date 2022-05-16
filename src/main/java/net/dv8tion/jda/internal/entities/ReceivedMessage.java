@@ -20,6 +20,9 @@ import gnu.trove.set.TLongSet;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.emoji.CustomEmoji;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
+import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.exceptions.MissingAccessException;
 import net.dv8tion.jda.api.exceptions.PermissionException;
@@ -85,7 +88,7 @@ public class ReceivedMessage extends AbstractMessage
 
     protected List<User> userMentions = null;
     protected List<Member> memberMentions = null;
-    protected List<Emote> emoteMentions = null;
+    protected List<CustomEmoji> emojiMentions = null;
     protected List<Role> roleMentions = null;
     protected List<TextChannel> channelMentions = null;
     protected List<String> invites = null;
@@ -168,24 +171,23 @@ public class ReceivedMessage extends AbstractMessage
 
     @Nonnull
     @Override
-    public RestAction<Void> addReaction(@Nonnull Emote emote)
+    public RestAction<Void> addReaction(@Nonnull Emoji emoji)
     {
         if (isEphemeral())
             throw new IllegalStateException("Cannot add reactions to ephemeral messages.");
         
-        Checks.notNull(emote, "Emote");
+        Checks.notNull(emoji, "Emoji");
 
         boolean missingReaction = reactions.stream()
                    .map(MessageReaction::getEmoji)
-                   .filter(Emoji::isCustom)
-                   .noneMatch(r -> r.getIdLong() == emote.getIdLong());
+                   .noneMatch(r -> r.getAsReactionCode().equals(emoji.getAsReactionCode()));
 
-        if (missingReaction)
+        if (missingReaction && emoji instanceof RichCustomEmoji)
         {
-            Checks.check(emote.canInteract(getJDA().getSelfUser(), channel),
-                         "Cannot react with the provided emote because it is not available in the current channel.");
+            Checks.check(((RichCustomEmoji) emoji).canInteract(getJDA().getSelfUser(), channel),
+                         "Cannot react with the provided emoji because it is not available in the current channel.");
         }
-        return channel.addReactionById(getId(), emote);
+        return channel.addReactionById(getId(), emoji);
     }
 
     @Nonnull
@@ -222,28 +224,28 @@ public class ReceivedMessage extends AbstractMessage
 
     @Nonnull
     @Override
-    public RestAction<Void> clearReactions(@Nonnull Emote emote)
+    public RestAction<Void> clearReactions(@Nonnull Emoji emoji)
     {
         if (isEphemeral())
             throw new IllegalStateException("Cannot clear reactions from ephemeral messages.");
         if (!isFromGuild())
             throw new IllegalStateException("Cannot clear reactions from a message in a Group or PrivateChannel.");
-        return getGuildChannel().clearReactionsById(getId(), emote);
+        return getGuildChannel().clearReactionsById(getId(), emoji);
     }
 
     @Nonnull
     @Override
-    public RestAction<Void> removeReaction(@Nonnull Emote emote)
+    public RestAction<Void> removeReaction(@Nonnull Emoji emoji)
     {
         if (isEphemeral())
             throw new IllegalStateException("Cannot remove reactions from ephemeral messages.");
         
-        return channel.removeReactionById(getId(), emote);
+        return channel.removeReactionById(getId(), emoji);
     }
 
     @Nonnull
     @Override
-    public RestAction<Void> removeReaction(@Nonnull Emote emote, @Nonnull User user)
+    public RestAction<Void> removeReaction(@Nonnull Emoji emoji, @Nonnull User user)
     {
         Checks.notNull(user, "User");  // to prevent NPEs
         if (isEphemeral())
@@ -251,11 +253,11 @@ public class ReceivedMessage extends AbstractMessage
         // check if the passed user is the SelfUser, then the ChannelType doesn't matter and
         // we can safely remove that
         if (user.equals(getJDA().getSelfUser()))
-            return channel.removeReactionById(getIdLong(), emote);
+            return channel.removeReactionById(getIdLong(), emoji);
 
         if (!isFromGuild())
             throw new IllegalStateException("Cannot remove reactions of others from a message in a Group or PrivateChannel.");
-        return getGuildChannel().removeReactionById(getIdLong(), emote, user);
+        return getGuildChannel().removeReactionById(getIdLong(), emoji, user);
     }
 
     @Nonnull
@@ -285,12 +287,12 @@ public class ReceivedMessage extends AbstractMessage
 
     @Nonnull
     @Override
-    public ReactionPaginationAction retrieveReactionUsers(@Nonnull Emote emote)
+    public ReactionPaginationAction retrieveReactionUsers(@Nonnull Emoji emoji)
     {
         if (isEphemeral())
             throw new IllegalStateException("Cannot retrieve reactions on ephemeral messages.");
         
-        return channel.retrieveReactionUsersById(id, emote);
+        return channel.retrieveReactionUsersById(id, emoji);
     }
 
     @Nonnull
@@ -310,7 +312,7 @@ public class ReceivedMessage extends AbstractMessage
         Checks.noWhitespace(unicode, "Emoji");
 
         return this.reactions.stream()
-            .filter(r -> r.getEmoji().isUnicode() && r.getEmoji().getName().equals(unicode))
+            .filter(r -> r.getEmoji().getType() == Emoji.Type.UNICODE && r.getEmoji().getName().equals(unicode))
             .findFirst().orElse(null);
     }
 
@@ -318,7 +320,7 @@ public class ReceivedMessage extends AbstractMessage
     public MessageReaction getReactionById(long id)
     {
         return this.reactions.stream()
-            .filter(r -> r.getEmoji().isCustom() && r.getEmoji().getIdLong() == id)
+            .filter(r -> r.getEmoji().getType() == Emoji.Type.CUSTOM && ((CustomEmoji) r.getEmoji()).getIdLong() == id)
             .findFirst().orElse(null);
     }
 
@@ -467,7 +469,7 @@ public class ReceivedMessage extends AbstractMessage
         boolean channel = false;
         boolean role = false;
         boolean user = false;
-        boolean emote = false;
+        boolean emoji = false;
         for (MentionType type : types)
         {
             switch (type)
@@ -490,10 +492,10 @@ public class ReceivedMessage extends AbstractMessage
                         mentions.addAll(getMentionedRoles());
                     role = true;
                     break;
-                case EMOTE:
-                    if (!emote)
-                        mentions.addAll(getEmotes());
-                    emote = true;
+                case EMOJI:
+                    if (!emoji)
+                        mentions.addAll(getCustomEmojis());
+                    emoji = true;
             }
         }
         return Collections.unmodifiableList(mentions);
@@ -543,11 +545,11 @@ public class ReceivedMessage extends AbstractMessage
                     }
                     break;
                 }
-                case EMOTE:
+                case EMOJI:
                 {
-                    if (mentionable instanceof Emote)
+                    if (mentionable instanceof RichCustomEmoji)
                     {
-                        if (getEmotes().contains(mentionable))
+                        if (getCustomEmojis().contains(mentionable))
                             return true;
                     }
                     break;
@@ -661,9 +663,9 @@ public class ReceivedMessage extends AbstractMessage
                     name = user.getName();
                 tmp = tmp.replaceAll("<@!?" + Pattern.quote(user.getId()) + '>', '@' + Matcher.quoteReplacement(name));
             }
-            for (Emote emote : getEmotes())
+            for (CustomEmoji emoji : getCustomEmojis())
             {
-                tmp = tmp.replace(emote.getAsMention(), ":" + emote.getName() + ":");
+                tmp = tmp.replace(emoji.getAsMention(), ":" + emoji.getName() + ":");
             }
             for (TextChannel mentionedChannel : getMentionedChannels())
             {
@@ -802,31 +804,31 @@ public class ReceivedMessage extends AbstractMessage
         return components;
     }
 
-    private Emote matchEmote(Matcher m)
+    private CustomEmoji matchEmoji(Matcher m)
     {
-        long emoteId = MiscUtil.parseSnowflake(m.group(2));
+        long id = MiscUtil.parseSnowflake(m.group(2));
         String name = m.group(1);
         boolean animated = m.group(0).startsWith("<a:");
-        Emote emote = getJDA().getEmoteById(emoteId);
-        if (emote == null)
-            emote = new EmoteImpl(emoteId, api).setName(name).setAnimated(animated);
-        return emote;
+        CustomEmoji emoji = getJDA().getEmojiById(id);
+        if (emoji == null)
+            emoji = Emoji.fromCustom(name, this.id, animated);
+        return emoji;
     }
 
     @Nonnull
     @Override
-    public synchronized List<Emote> getEmotes()
+    public synchronized List<CustomEmoji> getCustomEmojis()
     {
-        if (this.emoteMentions == null)
-            emoteMentions = Collections.unmodifiableList(processMentions(MentionType.EMOTE, new ArrayList<>(), true, this::matchEmote));
-        return emoteMentions;
+        if (this.emojiMentions == null)
+            emojiMentions = Collections.unmodifiableList(processMentions(MentionType.EMOJI, new ArrayList<>(), true, this::matchEmoji));
+        return emojiMentions;
     }
 
     @Nonnull
     @Override
-    public Bag<Emote> getEmotesBag()
+    public Bag<CustomEmoji> getCustomEmojisBag()
     {
-        return processMentions(MentionType.EMOTE, new HashBag<>(), false, this::matchEmote);
+        return processMentions(MentionType.EMOJI, new HashBag<>(), false, this::matchEmoji);
     }
 
     @Nonnull

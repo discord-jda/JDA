@@ -26,6 +26,7 @@ import net.dv8tion.jda.api.audio.factory.DefaultSendFactory;
 import net.dv8tion.jda.api.audio.factory.IAudioSendFactory;
 import net.dv8tion.jda.api.audio.hooks.ConnectionStatus;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import net.dv8tion.jda.api.events.GatewayPingEvent;
 import net.dv8tion.jda.api.events.GenericEvent;
 import net.dv8tion.jda.api.events.StatusChangeEvent;
@@ -615,9 +616,9 @@ public class JDAImpl implements JDA
 
     @Nonnull
     @Override
-    public SnowflakeCacheView<Emote> getEmoteCache()
+    public SnowflakeCacheView<RichCustomEmoji> getEmojiCache()
     {
-        return CacheView.allSnowflakes(() -> guildCache.stream().map(Guild::getEmoteCache));
+        return CacheView.allSnowflakes(() -> guildCache.stream().map(Guild::getEmojiCache));
     }
 
     @Nonnull

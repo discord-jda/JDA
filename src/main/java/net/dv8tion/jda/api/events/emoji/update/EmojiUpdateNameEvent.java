@@ -14,70 +14,68 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.events.emote.update;
+package net.dv8tion.jda.api.events.emoji.update;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.Emote;
-import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 
 import javax.annotation.Nonnull;
-import java.util.List;
 
 /**
- * Indicates that the role whitelist for an {@link net.dv8tion.jda.api.entities.Emote Emote} changed.
+ * Indicates that the name of a {@link RichCustomEmoji Custom Emoji} changed.
  *
- * <p>Can be used to retrieve the old role whitelist
+ * <p>Can be used to retrieve the old name
  *
  * <h2>Requirements</h2>
  *
- * <p>This event requires the {@link net.dv8tion.jda.api.utils.cache.CacheFlag#EMOTE EMOTE} CacheFlag to be enabled, which requires
+ * <p>This event requires the {@link net.dv8tion.jda.api.utils.cache.CacheFlag#EMOJI EMOJI} CacheFlag to be enabled, which requires
  * the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_EMOJIS GUILD_EMOJIS} intent.
  *
  * <br>{@link net.dv8tion.jda.api.JDABuilder#createLight(String) createLight(String)} disables that CacheFlag by default!
  *
- * <p>Identifier: {@code roles}
+ * <p>Identifier: {@code name}
  */
-public class EmoteUpdateRolesEvent extends GenericEmoteUpdateEvent<List<Role>>
+public class EmojiUpdateNameEvent extends GenericEmojiUpdateEvent<String>
 {
-    public static final String IDENTIFIER = "roles";
+    public static final String IDENTIFIER = "name";
 
-    public EmoteUpdateRolesEvent(@Nonnull JDA api, long responseNumber, @Nonnull Emote emote, @Nonnull List<Role> oldRoles)
+    public EmojiUpdateNameEvent(@Nonnull JDA api, long responseNumber, @Nonnull RichCustomEmoji emoji, @Nonnull String oldName)
     {
-        super(api, responseNumber, emote, oldRoles, emote.getRoles(), IDENTIFIER);
+        super(api, responseNumber, emoji, oldName, emoji.getName(), IDENTIFIER);
     }
 
     /**
-     * The old role whitelist
+     * The old name
      *
-     * @return The old role whitelist
+     * @return The old name
      */
     @Nonnull
-    public List<Role> getOldRoles()
+    public String getOldName()
     {
         return getOldValue();
     }
 
     /**
-     * The new role whitelist
+     * The new name
      *
-     * @return The new role whitelist
+     * @return The new name
      */
     @Nonnull
-    public List<Role> getNewRoles()
+    public String getNewName()
     {
         return getNewValue();
     }
 
     @Nonnull
     @Override
-    public List<Role> getOldValue()
+    public String getOldValue()
     {
         return super.getOldValue();
     }
 
     @Nonnull
     @Override
-    public List<Role> getNewValue()
+    public String getNewValue()
     {
         return super.getNewValue();
     }

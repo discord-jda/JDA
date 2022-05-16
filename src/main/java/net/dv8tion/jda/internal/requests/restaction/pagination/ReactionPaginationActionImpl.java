@@ -16,7 +16,11 @@
 
 package net.dv8tion.jda.internal.requests.restaction.pagination;
 
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.MessageReaction;
+import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.exceptions.ParsingException;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
@@ -66,11 +70,8 @@ public class ReactionPaginationActionImpl
 
     protected static String getCode(MessageReaction reaction)
     {
-        Emoji emote = reaction.getEmoji();
-
-        return emote.isCustom()
-            ? emote.getName() + ":" + emote.getId()
-            : EncodingUtil.encodeUTF8(emote.getName());
+        Emoji emoji = reaction.getEmoji();
+        return EncodingUtil.encodeUTF8(emoji.getAsReactionCode());
     }
 
     @Nonnull

@@ -16,6 +16,8 @@
 package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.AccountType;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
+import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import net.dv8tion.jda.api.exceptions.AccountTypeException;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
@@ -1840,11 +1842,6 @@ public interface MessageChannel extends Channel, Formattable
      * Attempts to react to a message represented by the specified {@code messageId}
      * in this MessageChannel.
      *
-     * <p><b>An Emote is not the same as an emoji!</b>
-     * <br>Emotes are custom guild-specific images unlike global unicode emojis!
-     *
-     * <p><b><u>Unicode emojis are not included as {@link net.dv8tion.jda.api.entities.Emote Emote}!</u></b>
-     *
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
@@ -1860,7 +1857,7 @@ public interface MessageChannel extends Channel, Formattable
      *         {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_EMOJI UNKNOWN_EMOJI}
-     *     <br>The provided emote was deleted, doesn't exist, or is not available to the currently logged-in account in this channel.</li>
+     *     <br>The provided emoji was deleted, doesn't exist, or is not available to the currently logged-in account in this channel.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
      *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or
@@ -1872,13 +1869,13 @@ public interface MessageChannel extends Channel, Formattable
      *
      * @param  messageId
      *         The messageId to attach the reaction to
-     * @param  emote
-     *         The not-null {@link net.dv8tion.jda.api.entities.Emote} to react with
+     * @param  emoji
+     *         The not-null {@link Emoji} to react with
      *
      * @throws java.lang.IllegalArgumentException
      *         <ul>
      *             <li>If provided {@code messageId} is {@code null} or empty.</li>
-     *             <li>If provided {@code emote} is {@code null}.</li>
+     *             <li>If provided {@code emoji} is {@code null}.</li>
      *         </ul>
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the MessageChannel this message was sent in was a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
@@ -1892,21 +1889,16 @@ public interface MessageChannel extends Channel, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<Void> addReactionById(@Nonnull String messageId, @Nonnull Emote emote)
+    default RestAction<Void> addReactionById(@Nonnull String messageId, @Nonnull Emoji emoji)
     {
-        Checks.notNull(emote, "Emote");
-        return addReactionById(messageId, emote.getName() + ":" + emote.getId());
+        Checks.notNull(emoji, "Emoji");
+        return addReactionById(messageId, emoji.getAsReactionCode());
     }
 
     /**
      * Attempts to react to a message represented by the specified {@code messageId}
      * in this MessageChannel.
      *
-     * <p><b>An Emote is not the same as an emoji!</b>
-     * <br>Emotes are custom guild-specific images unlike global unicode emojis!
-     *
-     * <p><b><u>Unicode emojis are not included as {@link net.dv8tion.jda.api.entities.Emote Emote}!</u></b>
-     *
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
@@ -1922,7 +1914,7 @@ public interface MessageChannel extends Channel, Formattable
      *         {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_EMOJI UNKNOWN_EMOJI}
-     *     <br>The provided emote was deleted, doesn't exist, or is not available to the currently logged-in account in this channel.</li>
+     *     <br>The provided emoji was deleted, doesn't exist, or is not available to the currently logged-in account in this channel.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
      *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or
@@ -1934,13 +1926,13 @@ public interface MessageChannel extends Channel, Formattable
      *
      * @param  messageId
      *         The messageId to attach the reaction to
-     * @param  emote
-     *         The not-null {@link net.dv8tion.jda.api.entities.Emote} to react with
+     * @param  emoji
+     *         The not-null {@link RichCustomEmoji} to react with
      *
      * @throws java.lang.IllegalArgumentException
      *         <ul>
      *             <li>If provided {@code messageId} is not a valid snowflake.</li>
-     *             <li>If provided {@code emote} is {@code null}</li>
+     *             <li>If provided {@code emoji} is {@code null}</li>
      *         </ul>
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the MessageChannel this message was sent in was a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
@@ -1954,9 +1946,9 @@ public interface MessageChannel extends Channel, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<Void> addReactionById(long messageId, @Nonnull Emote emote)
+    default RestAction<Void> addReactionById(long messageId, @Nonnull Emoji emoji)
     {
-        return addReactionById(Long.toUnsignedString(messageId), emote);
+        return addReactionById(Long.toUnsignedString(messageId), emoji);
     }
 
     /**
@@ -2091,9 +2083,6 @@ public interface MessageChannel extends Channel, Formattable
      * Attempts to remove the reaction from a message represented by the specified {@code messageId}
      * in this MessageChannel.
      *
-     * <p><b>An Emote is not the same as an emoji!</b>
-     * <br>Emotes are custom guild-specific images unlike global unicode emojis!
-     *
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
@@ -2109,7 +2098,7 @@ public interface MessageChannel extends Channel, Formattable
      *         {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_EMOJI UNKNOWN_EMOJI}
-     *     <br>The provided emote was deleted, doesn't exist, or is not available to the currently logged-in account in this channel.</li>
+     *     <br>The provided emoji was deleted, doesn't exist, or is not available to the currently logged-in account in this channel.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
      *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or
@@ -2121,32 +2110,29 @@ public interface MessageChannel extends Channel, Formattable
      *
      * @param  messageId
      *         The messageId to remove the reaction from
-     * @param  emote
-     *         The emote to remove
+     * @param  emoji
+     *         The emoji to remove
      *
      * @throws java.lang.IllegalArgumentException
      *         <ul>
      *             <li>If provided {@code messageId} is {@code null} or not a valid snowflake.</li>
-     *             <li>If provided {@code emote} is {@code null}.</li>
+     *             <li>If provided {@code emoji} is {@code null}.</li>
      *         </ul>
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction}
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<Void> removeReactionById(@Nonnull String messageId, @Nonnull Emote emote)
+    default RestAction<Void> removeReactionById(@Nonnull String messageId, @Nonnull Emoji emoji)
     {
-        Checks.notNull(emote, "Emote");
-        return removeReactionById(messageId, emote.getName() + ":" + emote.getId());
+        Checks.notNull(emoji, "Emoji");
+        return removeReactionById(messageId, emoji.getAsReactionCode());
     }
 
     /**
      * Attempts to remove the reaction from a message represented by the specified {@code messageId}
      * in this MessageChannel.
      *
-     * <p><b>An Emote is not the same as an emoji!</b>
-     * <br>Emotes are custom guild-specific images unlike global unicode emojis!
-     *
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
@@ -2162,7 +2148,7 @@ public interface MessageChannel extends Channel, Formattable
      *         {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_EMOJI UNKNOWN_EMOJI}
-     *     <br>The provided emote was deleted, doesn't exist, or is not available to the currently logged-in account in this channel.</li>
+     *     <br>The provided emoji was deleted, doesn't exist, or is not available to the currently logged-in account in this channel.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
      *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or
@@ -2174,22 +2160,22 @@ public interface MessageChannel extends Channel, Formattable
      *
      * @param  messageId
      *         The messageId to remove the reaction from
-     * @param  emote
-     *         The emote to remove
+     * @param  emoji
+     *         The emoji to remove
      *
      * @throws java.lang.IllegalArgumentException
      *         <ul>
      *             <li>If provided {@code messageId} is not a valid snowflake.</li>
-     *             <li>If provided {@code emote} is {@code null}.</li>
+     *             <li>If provided {@code emoji} is {@code null}.</li>
      *         </ul>
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction}
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<Void> removeReactionById(long messageId, @Nonnull Emote emote)
+    default RestAction<Void> removeReactionById(long messageId, @Nonnull Emoji emoji)
     {
-        return removeReactionById(Long.toUnsignedString(messageId), emote);
+        return removeReactionById(Long.toUnsignedString(messageId), emoji);
     }
 
     /**
@@ -2221,7 +2207,7 @@ public interface MessageChannel extends Channel, Formattable
      * @param  messageId
      *         The messageId to retrieve the users from.
      * @param  unicode
-     *         The unicode emote to retrieve users for.
+     *         The unicode emoji to retrieve users for.
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If this is a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} and the
@@ -2233,8 +2219,6 @@ public interface MessageChannel extends Channel, Formattable
      *         </ul>
      *
      * @return The {@link net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationAction ReactionPaginationAction} of the emoji's users.
-     *
-     * @since  4.2.0
      */
     @Nonnull
     @CheckReturnValue
@@ -2276,7 +2260,7 @@ public interface MessageChannel extends Channel, Formattable
      * @param  messageId
      *         The messageId to retrieve the users from.
      * @param  unicode
-     *         The unicode emote to retrieve users for.
+     *         The unicode emoji to retrieve users for.
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If this is a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} and the
@@ -2288,8 +2272,6 @@ public interface MessageChannel extends Channel, Formattable
      *         </ul>
      *
      * @return The {@link net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationAction ReactionPaginationAction} of the emoji's users.
-     *
-     * @since  4.2.0
      */
     @Nonnull
     @CheckReturnValue
@@ -2299,7 +2281,7 @@ public interface MessageChannel extends Channel, Formattable
     }
 
     /**
-     * This obtains the {@link net.dv8tion.jda.api.entities.User users} who reacted to a message using the given {@link net.dv8tion.jda.api.entities.Emote emote}.
+     * This obtains the {@link net.dv8tion.jda.api.entities.User users} who reacted to a message using the given {@link RichCustomEmoji emoji}.
      *
      * <p>Messages maintain a list of reactions, alongside a list of users who added them.
      *
@@ -2314,7 +2296,7 @@ public interface MessageChannel extends Channel, Formattable
      *     <br>Also can happen if the account lost the {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_EMOJI UNKNOWN_EMOJI}
-     *     <br>The provided emote was deleted, doesn't exist, or is not available to the currently logged-in account in this channel.</li>
+     *     <br>The provided emoji was deleted, doesn't exist, or is not available to the currently logged-in account in this channel.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
      *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or
@@ -2323,8 +2305,8 @@ public interface MessageChannel extends Channel, Formattable
      *
      * @param  messageId
      *         The messageId to retrieve the users from.
-     * @param  emote
-     *         The {@link net.dv8tion.jda.api.entities.Emote emote} to retrieve users for.
+     * @param  emoji
+     *         The {@link Emoji} to retrieve users for.
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If this is a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} and the
@@ -2332,25 +2314,23 @@ public interface MessageChannel extends Channel, Formattable
      * @throws java.lang.IllegalArgumentException
      *         <ul>
      *             <li>If provided {@code messageId} is {@code null} or not a valid snowflake.</li>
-     *             <li>If provided {@link net.dv8tion.jda.api.entities.Emote Emote} is {@code null}.</li>
+     *             <li>If provided {@link Emoji emoji} is {@code null}.</li>
      *         </ul>
      *
-     * @return The {@link net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationAction ReactionPaginationAction} of the emote's users.
-     *
-     * @since  4.2.0
+     * @return The {@link net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationAction ReactionPaginationAction} of the emoji's users.
      */
     @Nonnull
     @CheckReturnValue
-    default ReactionPaginationAction retrieveReactionUsersById(@Nonnull String messageId, @Nonnull Emote emote)
+    default ReactionPaginationAction retrieveReactionUsersById(@Nonnull String messageId, @Nonnull Emoji emoji)
     {
         Checks.isSnowflake(messageId, "Message ID");
-        Checks.notNull(emote, "Emote");
+        Checks.notNull(emoji, "Emoji");
 
-        return retrieveReactionUsersById(messageId, String.format("%s:%s", emote.getName(), emote.getId()));
+        return retrieveReactionUsersById(messageId, emoji.getAsReactionCode());
     }
 
     /**
-     * This obtains the {@link net.dv8tion.jda.api.entities.User users} who reacted to a message using the given {@link net.dv8tion.jda.api.entities.Emote emote}.
+     * This obtains the {@link net.dv8tion.jda.api.entities.User users} who reacted to a message using the given {@link Emoji}.
      *
      * <p>Messages maintain a list of reactions, alongside a list of users who added them.
      *
@@ -2365,7 +2345,7 @@ public interface MessageChannel extends Channel, Formattable
      *     <br>Also can happen if the account lost the {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_EMOJI UNKNOWN_EMOJI}
-     *     <br>The provided emote was deleted, doesn't exist, or is not available to the currently logged-in account in this channel.</li>
+     *     <br>The provided emoji was deleted, doesn't exist, or is not available to the currently logged-in account in this channel.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
      *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or
@@ -2374,8 +2354,8 @@ public interface MessageChannel extends Channel, Formattable
      *
      * @param  messageId
      *         The messageId to retrieve the users from.
-     * @param  emote
-     *         The {@link net.dv8tion.jda.api.entities.Emote emote} to retrieve users for.
+     * @param  emoji
+     *         The {@link Emoji} to retrieve users for.
      *
      * @throws java.lang.UnsupportedOperationException
      *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
@@ -2385,18 +2365,18 @@ public interface MessageChannel extends Channel, Formattable
      * @throws java.lang.IllegalArgumentException
      *         <ul>
      *             <li>If provided {@code messageId} is not a valid snowflake.</li>
-     *             <li>If provided {@link net.dv8tion.jda.api.entities.Emote Emote} is {@code null}.</li>
+     *             <li>If provided {@code emoji} is {@code null}.</li>
      *         </ul>
      *
-     * @return The {@link net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationAction ReactionPaginationAction} of the emote's users.
+     * @return The {@link net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationAction ReactionPaginationAction} of the emoji's users.
      *
      * @since  4.2.0
      */
     @Nonnull
     @CheckReturnValue
-    default ReactionPaginationAction retrieveReactionUsersById(long messageId, @Nonnull Emote emote)
+    default ReactionPaginationAction retrieveReactionUsersById(long messageId, @Nonnull Emoji emoji)
     {
-        return retrieveReactionUsersById(Long.toUnsignedString(messageId), emote);
+        return retrieveReactionUsersById(Long.toUnsignedString(messageId), emoji);
     }
 
     /**

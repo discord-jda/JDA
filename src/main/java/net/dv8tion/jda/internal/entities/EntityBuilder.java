@@ -31,6 +31,8 @@ import net.dv8tion.jda.api.entities.Guild.NotificationLevel;
 import net.dv8tion.jda.api.entities.Guild.Timeout;
 import net.dv8tion.jda.api.entities.Guild.VerificationLevel;
 import net.dv8tion.jda.api.entities.MessageEmbed.*;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
+import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import net.dv8tion.jda.api.entities.templates.Template;
 import net.dv8tion.jda.api.entities.templates.TemplateChannel;
 import net.dv8tion.jda.api.entities.templates.TemplateGuild;
@@ -48,6 +50,7 @@ import net.dv8tion.jda.api.utils.cache.CacheView;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
+import net.dv8tion.jda.internal.entities.emoji.RichCustomEmojiImpl;
 import net.dv8tion.jda.internal.entities.mixin.channel.attribute.IPermissionContainerMixin;
 import net.dv8tion.jda.internal.entities.mixin.channel.middleman.AudioChannelMixin;
 import net.dv8tion.jda.internal.handle.EventCache;
@@ -141,14 +144,14 @@ public class EntityBuilder
         return new ActivityImpl(name, url, type);
     }
 
-    private void createGuildEmotePass(GuildImpl guildObj, DataArray array)
+    private void createGuildEmojiPass(GuildImpl guildObj, DataArray array)
     {
-        if (!getJDA().isCacheFlagSet(CacheFlag.EMOTE))
+        if (!getJDA().isCacheFlagSet(CacheFlag.EMOJI))
             return;
-        SnowflakeCacheViewImpl<Emote> emoteView = guildObj.getEmotesView();
-        try (UnlockHook hook = emoteView.writeLock())
+        SnowflakeCacheViewImpl<RichCustomEmoji> emojiView = guildObj.getEmojisView();
+        try (UnlockHook hook = emojiView.writeLock())
         {
-            TLongObjectMap<Emote> emoteMap = emoteView.getMap();
+            TLongObjectMap<RichCustomEmoji> emojiMap = emojiView.getMap();
             for (int i = 0; i < array.length(); i++)
             {
                 DataObject object = array.getObject(i);
@@ -157,8 +160,8 @@ public class EntityBuilder
                     LOG.error("Received GUILD_CREATE with an emoji with a null ID. JSON: {}", object);
                     continue;
                 }
-                final long emoteId = object.getLong("id");
-                emoteMap.put(emoteId, createEmote(guildObj, object));
+                final long emojiId = object.getLong("id");
+                emojiMap.put(emojiId, createEmoji(guildObj, object));
             }
         }
     }
@@ -188,7 +191,7 @@ public class EntityBuilder
         final DataArray roleArray = guildJson.getArray("roles");
         final DataArray channelArray = guildJson.getArray("channels");
         final DataArray threadArray = guildJson.getArray("threads");
-        final DataArray emotesArray = guildJson.getArray("emojis");
+        final DataArray emojisArray = guildJson.getArray("emojis");
         final DataArray voiceStateArray = guildJson.getArray("voice_states");
         final Optional<DataArray> featuresArray = guildJson.optArray("features");
         final Optional<DataArray> presencesArray = guildJson.optArray("presences");
@@ -299,7 +302,7 @@ public class EntityBuilder
             createThreadChannel(guildObj, threadJson, guildObj.getIdLong());
         }
 
-        createGuildEmotePass(guildObj, emotesArray);
+        createGuildEmojiPass(guildObj, emojisArray);
         guildJson.optArray("stage_instances")
                 .map(arr -> arr.stream(DataArray::getObject))
                 .ifPresent(list -> list.forEach(it -> createStageInstance(guildObj, it)));
@@ -809,13 +812,7 @@ public class EntityBuilder
 
         Emoji emoji = null;
         if (!gameJson.isNull("emoji"))
-        {
-            DataObject emojiJson = gameJson.getObject("emoji");
-            String emojiName = emojiJson.getString("name");
-            long emojiId = emojiJson.getUnsignedLong("id", 0);
-            boolean emojiAnimated = emojiJson.getBoolean("animated");
-            emoji = Emoji.fromEmote(emojiName, emojiId, emojiAnimated);
-        }
+            emoji = Emoji.fromData(gameJson.getObject("emoji"));
 
         if (type == Activity.ActivityType.CUSTOM_STATUS)
         {
@@ -874,26 +871,26 @@ public class EntityBuilder
             largeImageKey, largeImageText, smallImageKey, smallImageText);
     }
 
-    public EmoteImpl createEmote(GuildImpl guildObj, DataObject json)
+    public RichCustomEmojiImpl createEmoji(GuildImpl guildObj, DataObject json)
     {
-        DataArray emoteRoles = json.optArray("roles").orElseGet(DataArray::empty);
-        final long emoteId = json.getLong("id");
+        DataArray emojiRoles = json.optArray("roles").orElseGet(DataArray::empty);
+        final long emojiId = json.getLong("id");
         final User user = json.isNull("user") ? null : createUser(json.getObject("user"));
-        EmoteImpl emoteObj = (EmoteImpl) guildObj.getEmoteById(emoteId);
-        if (emoteObj == null)
-            emoteObj = new EmoteImpl(emoteId, guildObj);
-        Set<Role> roleSet = emoteObj.getRoleSet();
+        RichCustomEmojiImpl emojiObj = (RichCustomEmojiImpl) guildObj.getEmojiById(emojiId);
+        if (emojiObj == null)
+            emojiObj = new RichCustomEmojiImpl(emojiId, guildObj);
+        Set<Role> roleSet = emojiObj.getRoleSet();
 
         roleSet.clear();
-        for (int j = 0; j < emoteRoles.length(); j++)
+        for (int j = 0; j < emojiRoles.length(); j++)
         {
-            Role role = guildObj.getRoleById(emoteRoles.getString(j));
+            Role role = guildObj.getRoleById(emojiRoles.getString(j));
             if (role != null)
                 roleSet.add(role);
         }
         if (user != null)
-            emoteObj.setOwner(user);
-        return emoteObj
+            emojiObj.setOwner(user);
+        return emojiObj
                 .setName(json.getString("name", ""))
                 .setAnimated(json.getBoolean("animated"))
                 .setManaged(json.getBoolean("managed"))
@@ -1613,19 +1610,11 @@ public class EntityBuilder
     public MessageReaction createMessageReaction(MessageChannel chan, long id, DataObject obj)
     {
         DataObject emoji = obj.getObject("emoji");
-        final Long emojiID = emoji.isNull("id") ? null : emoji.getLong("id");
-        final String name = emoji.getString("name", "");
-        final boolean animated = emoji.getBoolean("animated");
         final int count = obj.getInt("count", -1);
         final boolean me = obj.getBoolean("me");
+        Emoji emojiObj = Emoji.fromData(emoji);
 
-        Emoji reactionEmote;
-        if (emojiID != null)
-            reactionEmote = Emoji.fromEmote(name, emojiID, animated);
-        else
-            reactionEmote = Emoji.fromUnicode(name);
-
-        return new MessageReaction(chan, reactionEmote, id, me, count);
+        return new MessageReaction(chan, emojiObj, id, me, count);
     }
 
     public Message.Attachment createMessageAttachment(DataObject jsonObject)

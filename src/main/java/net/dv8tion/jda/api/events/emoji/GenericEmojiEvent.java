@@ -14,64 +14,64 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.events.emote;
+package net.dv8tion.jda.api.events.emoji;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.Emote;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import net.dv8tion.jda.api.events.Event;
 
 import javax.annotation.Nonnull;
 
 /**
- * Indicates that an {@link net.dv8tion.jda.api.entities.Emote Emote} was created/removed/updated.
+ * Indicates that a {@link RichCustomEmoji Custom Emoji} was created/removed/updated.
  *
  * <h2>Requirements</h2>
  *
- * <p>These events require the {@link net.dv8tion.jda.api.utils.cache.CacheFlag#EMOTE EMOTE} CacheFlag to be enabled, which requires
+ * <p>These events require the {@link net.dv8tion.jda.api.utils.cache.CacheFlag#EMOJI EMOJI} CacheFlag to be enabled, which requires
  * the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_EMOJIS GUILD_EMOJIS} intent.
  *
  * <br>{@link net.dv8tion.jda.api.JDABuilder#createLight(String) createLight(String)} disables that CacheFlag by default!
  */
-public abstract class GenericEmoteEvent extends Event
+public abstract class GenericEmojiEvent extends Event
 {
-    protected final Emote emote;
+    protected final RichCustomEmoji emoji;
 
-    public GenericEmoteEvent(@Nonnull JDA api, long responseNumber, @Nonnull Emote emote)
+    public GenericEmojiEvent(@Nonnull JDA api, long responseNumber, @Nonnull RichCustomEmoji emoji)
     {
         super(api, responseNumber);
-        this.emote = emote;
+        this.emoji = emoji;
     }
 
     /**
-     * The {@link net.dv8tion.jda.api.entities.Guild Guild} where the emote came from
+     * The {@link net.dv8tion.jda.api.entities.Guild Guild} where the emoji came from
      *
      * @return The origin Guild
      */
     @Nonnull
     public Guild getGuild()
     {
-        return emote.getGuild();
+        return emoji.getGuild();
     }
 
     /**
-     * The responsible {@link net.dv8tion.jda.api.entities.Emote Emote} for this event
+     * The affected {@link RichCustomEmoji} for this event
      *
-     * @return The emote
+     * @return The emoji
      */
     @Nonnull
-    public Emote getEmote()
+    public RichCustomEmoji getEmoji()
     {
-        return emote;
+        return emoji;
     }
 
     /**
-     * Whether this emote is managed by an integration
+     * Whether this emoji is managed by an integration
      *
-     * @return True, if this emote is managed by an integration
+     * @return True, if this emoji is managed by an integration
      */
     public boolean isManaged()
     {
-        return emote.isManaged();
+        return emoji.isManaged();
     }
 }
