@@ -73,7 +73,7 @@ public interface CommandData extends SerializableData
     @Deprecated
     @ForRemoval
     @DeprecatedSince("5.0.0")
-    @ReplaceWith("CommandData#setDefaultPermissions(CommandPermission)")
+    @ReplaceWith("CommandData#setDefaultPermissions(CommandPermissions)")
     CommandData setDefaultEnabled(boolean enabled);
 
     /**

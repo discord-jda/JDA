@@ -211,7 +211,6 @@ public class CommandImpl implements Command
         return defaultMemberPermissions;
     }
 
-
     @Override
     public boolean isGuildOnly()
     {
