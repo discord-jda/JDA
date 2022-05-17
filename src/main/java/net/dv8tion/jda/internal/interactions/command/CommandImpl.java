@@ -54,7 +54,7 @@ public class CommandImpl implements Command
     private final long id, guildId, applicationId, version;
     private final boolean defaultEnabled, guildOnly;
     private final Command.Type type;
-    private final Long defaultMemberPermissions;
+    private final CommandPermissions defaultMemberPermissions;
 
     public CommandImpl(JDAImpl api, Guild guild, DataObject json)
     {
@@ -73,8 +73,8 @@ public class CommandImpl implements Command
         this.version = json.getUnsignedLong("version", id);
 
         this.defaultMemberPermissions = json.isNull("default_member_permissions")
-                ? null
-                : json.getLong("default_member_permissions");
+                ? CommandPermissions.ENABLED
+                : CommandPermissions.enabledFor(json.getLong("default_member_permissions"));
 
         this.guildOnly = !json.getBoolean("dm_permission", true);
     }
@@ -208,7 +208,7 @@ public class CommandImpl implements Command
     @Override
     public CommandPermissions getDefaultPermissions()
     {
-        return CommandPermissions.enabledFor(defaultMemberPermissions);
+        return defaultMemberPermissions;
     }
 
 

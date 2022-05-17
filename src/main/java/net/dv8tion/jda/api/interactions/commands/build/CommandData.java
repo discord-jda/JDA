@@ -199,7 +199,17 @@ public interface CommandData extends SerializableData
         String name = object.getString("name");
         Command.Type commandType = Command.Type.fromId(object.getInt("type", 1));
         if (commandType != Command.Type.SLASH)
-            return new CommandDataImpl(commandType, name);
+        {
+            CommandData data = new CommandDataImpl(commandType, name);
+            if (!object.isNull("default_member_permissions"))
+            {
+                long defaultPermissions = Long.parseLong(object.getString("default_member_permissions"));
+                data.setDefaultPermissions(defaultPermissions == 0 ? CommandPermissions.DISABLED : CommandPermissions.enabledFor(defaultPermissions));
+            }
+
+            data.setGuildOnly(!object.getBoolean("dm_permission", true));
+            return data;
+        }
 
         return SlashCommandData.fromData(object);
     }

@@ -46,7 +46,7 @@ public class CommandDataImpl implements SlashCommandData
     private boolean defaultPermissions = true; // whether the command uses default_permissions (blacklist/whitelist)
     private boolean allowRequired = true;
     private boolean guildOnly = false;
-    private Long defaultMemberPermissions;
+    private CommandPermissions defaultMemberPermissions;
 
     private final Command.Type type;
 
@@ -84,8 +84,8 @@ public class CommandDataImpl implements SlashCommandData
             json.put("description", description);
         if (guildOnly)
             json.put("dm_permission", false);
-        if (defaultMemberPermissions != null)
-            json.put("default_member_permissions", String.valueOf(defaultMemberPermissions));
+        if (defaultMemberPermissions != CommandPermissions.ENABLED)
+            json.put("default_member_permissions", Long.toUnsignedString(defaultMemberPermissions.getPermissionsRaw()));
         return json;
     }
 
@@ -100,7 +100,7 @@ public class CommandDataImpl implements SlashCommandData
     @Override
     public CommandPermissions getDefaultPermissions()
     {
-        return CommandPermissions.enabledFor(defaultMemberPermissions);
+        return defaultMemberPermissions;
     }
 
     @Override
@@ -150,10 +150,10 @@ public class CommandDataImpl implements SlashCommandData
 
     @Nonnull
     @Override
-    public CommandDataImpl setDefaultPermissions(@Nonnull CommandPermissions permission)
+    public CommandDataImpl setDefaultPermissions(@Nonnull CommandPermissions permissions)
     {
-        Checks.notNull(permission, "Permission");
-        this.defaultMemberPermissions = permission.getPermissionsRaw();
+        Checks.notNull(permissions, "Permissions");
+        this.defaultMemberPermissions = permissions;
         return this;
     }
 
