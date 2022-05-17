@@ -139,7 +139,7 @@ public class ApplicationCommandUpdatePermissionsEvent extends GenericGuildEvent
          * @throws IllegalStateException
          *         If this Permission is not of type {@link Type#ROLE ROLE}
          *
-         *  @return affected Role, or {@link Guild#getPublicRole()}
+         * @return affected Role, or {@link Guild#getPublicRole()}
          */
         @Nullable
         public Role getRole()
@@ -236,9 +236,9 @@ public class ApplicationCommandUpdatePermissionsEvent extends GenericGuildEvent
          *     <li>Guild-ID - 1 (All Channels)</li>
          * </ul>
          *
-         * @see    #getType()
-         *
          * @return The raw id of this Permission
+         *
+         * @see    #getType()
          */
         public long getRawId()
         {
