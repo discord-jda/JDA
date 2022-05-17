@@ -24,10 +24,21 @@ import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.Collection;
 
-// TODO: Docs
+/**
+ * Represents the default permissions for a Discord Interaction-Command.
+ * <br>Moderators can manually configure or overwrite these permissions in each guild.
+ */
 public class CommandPermissions
 {
+    /**
+     * Default permissions of a command. (Everyone can see and access this command by default)
+     */
     public static final CommandPermissions ENABLED  = new CommandPermissions(null);
+
+    /**
+     * "Empty" permissions of a command.
+     * <br>Only members with the {@link Permission#ADMINISTRATOR ADMINISTRATOR} permission can see and access this command by default.
+     */
     public static final CommandPermissions DISABLED = new CommandPermissions(0L);
 
     private final Long permissions;
@@ -37,12 +48,32 @@ public class CommandPermissions
         this.permissions = permissions;
     }
 
+    /**
+     * Raw permission integer representing the default permissions of a command.
+     * <br>This returns null if it is of type {@link CommandPermissions#ENABLED ENABLED}
+     * <br>If the CommandPermissions is {@link CommandPermissions#DISABLED DISABLED}, this returns 0
+     *
+     * @return Raw permission integer representing the default permissions of a command
+     */
     @Nullable
     public Long getPermissionsRaw()
     {
         return permissions;
     }
 
+    /**
+     * Returns a CommandPermissions instance with the predefined permissions a member must have to see and access a command.
+     *
+     * <br><b>If the passed Collection is empty, this returns {@link CommandPermissions#ENABLED ENABLED}</b>
+     *
+     * @param  permissions
+     *         Collection of {@link Permission Permissions}
+     *
+     * @throws IllegalArgumentException
+     *         If any of the passed Permission is null
+     *
+     * @return CommandPermissions instance with the predefined permissions
+     */
     @Nonnull
     public static CommandPermissions enabledFor(@Nonnull Collection<Permission> permissions)
     {
@@ -53,12 +84,35 @@ public class CommandPermissions
         return new CommandPermissions(Permission.getRaw(permissions));
     }
 
+    /**
+     * Returns a CommandPermissions instance with the predefined permissions a member must have to see and access a command.
+     *
+     * <br><b>If the passed Array is empty, this returns {@link CommandPermissions#ENABLED ENABLED}</b>
+     *
+     * @param  permissions
+     *         Vararg of {@link Permission Permissions}
+     *
+     * @throws IllegalArgumentException
+     *         If any of the passed Permission is null
+     *
+     * @return CommandPermissions instance with the predefined permissions
+     */
     @Nonnull
     public static CommandPermissions enabledFor(@Nonnull Permission... permissions)
     {
         return enabledFor(Arrays.asList(permissions));
     }
 
+    /**
+     * Returns a CommandPermissions instance with the predefined permissions a member must have to see and access a command.
+     *
+     * <br><b>If the passed permission offset is 0, this returns {@link CommandPermissions#ENABLED ENABLED}</b>
+     *
+     * @param  permissions
+     *         Raw permission bitset
+     *
+     * @return CommandPermissions instance with the predefined permissions
+     */
     @Nonnull
     public static CommandPermissions enabledFor(long permissions)
     {

@@ -78,10 +78,12 @@ public interface CommandData extends SerializableData
 
     /**
      * Sets the default {@link CommandPermissions} for this command.
-     * <br>By default, everyone can use this command.
+     * <br>By default, everyone can use this command. This can be configured or overwritten by moderators in each guild.
+     *
      * <p>Passing {@link CommandPermissions#DISABLED} will only show this command to admins.
      *
-     * @param permission {@link CommandPermissions} representing the default permissions of this command.
+     * @param  permission
+     *         {@link CommandPermissions} representing the default permissions of this command.
      *
      * @throws IllegalArgumentException
      *         If any of the provided Permissions are null or {@link Permission#UNKNOWN UNKNOWN}.
@@ -95,7 +97,8 @@ public interface CommandData extends SerializableData
      * Sets whether this command is only usable in a guild.
      * <br>This only has an effect if this command is registered globally.
      *
-     * @param guildOnly Whether to restrict this command to guilds
+     * @param  guildOnly
+     *         Whether to restrict this command to guilds
      *
      * @return The builder instance, for chaining
      */
@@ -145,9 +148,9 @@ public interface CommandData extends SerializableData
 
     /**
      * Whether the command can only be used inside a guild.
-     * <br>If this is a guild-command, this has no effect.
+     * <br>Always true for guild commands.
      *
-     * @return False, if the command is not restricted to guilds.
+     * @return True, if this command is restricted to guilds.
      */
     boolean isGuildOnly();
 

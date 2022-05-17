@@ -263,10 +263,10 @@ public interface Command extends ISnowflake
     CommandPermissions getDefaultPermissions();
 
     /**
-     * Whether the command can only be used in a guild.
-     * <br>If this is a guild-command, this has no effect.
+     * Whether the command can only be used inside a guild.
+     * <br>Always true for guild commands.
      *
-     * @return False, if the command is not restricted to guilds.
+     * @return True, if this command is restricted to guilds.
      */
     boolean isGuildOnly();
 
