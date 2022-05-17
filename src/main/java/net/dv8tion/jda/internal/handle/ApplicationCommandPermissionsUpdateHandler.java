@@ -32,18 +32,20 @@ public class ApplicationCommandPermissionsUpdateHandler extends SocketHandler
     @Override
     protected Long handleInternally(DataObject content)
     {
-        GuildImpl guild = null;
+        Guild guild = null;
         if (!content.isNull("guild_id"))
         {
             long guildId = content.getUnsignedLong("guild_id");
-            guild = (GuildImpl) getJDA().getGuildById(guildId);
+            guild = getJDA().getGuildById(guildId);
             if (getJDA().getGuildSetupController().isLocked(guildId))
                 return guildId;
             else if (guild == null)
                 return null;
+        } else {
+            return null;
         }
 
-        api.handleEvent(new ApplicationCommandUpdatePermissionsEvent(api, responseNumber, Objects.requireNonNull(guild), content));
+        api.handleEvent(new ApplicationCommandUpdatePermissionsEvent(api, responseNumber, guild, content));
         return null;
     }
 }
