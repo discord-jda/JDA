@@ -46,7 +46,7 @@ public class CommandDataImpl implements SlashCommandData
     private boolean defaultPermissions = true; // whether the command uses default_permissions (blacklist/whitelist)
     private boolean allowRequired = true;
     private boolean guildOnly = false;
-    private CommandPermissions defaultMemberPermissions;
+    private CommandPermissions defaultMemberPermissions = CommandPermissions.ENABLED;
 
     private final Command.Type type;
 
