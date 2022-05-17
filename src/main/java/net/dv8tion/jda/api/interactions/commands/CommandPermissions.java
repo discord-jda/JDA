@@ -60,13 +60,8 @@ public class CommandPermissions
     }
 
     @Nonnull
-    public static CommandPermissions enabledFor(@Nullable Long permissions)
+    public static CommandPermissions enabledFor(long permissions)
     {
-        if (permissions == null)
-            return ENABLED;
-        if (permissions == 0)
-            return DISABLED;
-
         return enabledFor(Permission.getPermissions(permissions));
     }
 }
