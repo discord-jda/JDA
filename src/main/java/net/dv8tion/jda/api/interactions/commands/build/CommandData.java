@@ -170,6 +170,8 @@ public interface CommandData extends SerializableData
         Checks.notNull(command, "Command");
         if (command.getType() != Command.Type.SLASH)
             return new CommandDataImpl(command.getType(), command.getName())
+                    .setDefaultPermissions(command.getDefaultPermissions())
+                    .setGuildOnly(command.isGuildOnly())
                     .setDefaultEnabled(command.isDefaultEnabled());
 
         return SlashCommandData.fromCommand(command);
