@@ -15,12 +15,10 @@
  */
 package net.dv8tion.jda.internal.handle;
 
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.interaction.command.ApplicationCommandUpdatePermissionsEvent;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
-import net.dv8tion.jda.internal.entities.GuildImpl;
-
-import java.util.Objects;
 
 public class ApplicationCommandPermissionsUpdateHandler extends SocketHandler
 {
@@ -32,7 +30,7 @@ public class ApplicationCommandPermissionsUpdateHandler extends SocketHandler
     @Override
     protected Long handleInternally(DataObject content)
     {
-        Guild guild = null;
+        Guild guild;
         if (!content.isNull("guild_id"))
         {
             long guildId = content.getUnsignedLong("guild_id");
