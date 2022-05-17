@@ -25,14 +25,14 @@ import java.util.Arrays;
 import java.util.Collection;
 
 // TODO: Docs
-public class CommandPermission
+public class CommandPermissions
 {
-    public static final CommandPermission ENABLED  = new CommandPermission(null);
-    public static final CommandPermission DISABLED = new CommandPermission(0L);
+    public static final CommandPermissions ENABLED  = new CommandPermissions(null);
+    public static final CommandPermissions DISABLED = new CommandPermissions(0L);
 
     private final Long permissions;
 
-    private CommandPermission(@Nullable Long permissions)
+    private CommandPermissions(@Nullable Long permissions)
     {
         this.permissions = permissions;
     }
@@ -44,23 +44,23 @@ public class CommandPermission
     }
 
     @Nonnull
-    public static CommandPermission enabledFor(@Nonnull Collection<Permission> permissions)
+    public static CommandPermissions enabledFor(@Nonnull Collection<Permission> permissions)
     {
         Checks.noneNull(permissions, "Permissions");
         if (permissions.isEmpty())
             return ENABLED;
 
-        return new CommandPermission(Permission.getRaw(permissions));
+        return new CommandPermissions(Permission.getRaw(permissions));
     }
 
     @Nonnull
-    public static CommandPermission enabledFor(@Nonnull Permission... permissions)
+    public static CommandPermissions enabledFor(@Nonnull Permission... permissions)
     {
         return enabledFor(Arrays.asList(permissions));
     }
 
     @Nonnull
-    public static CommandPermission enabledFor(@Nullable Long permissions)
+    public static CommandPermissions enabledFor(@Nullable Long permissions)
     {
         if (permissions == null)
             return ENABLED;

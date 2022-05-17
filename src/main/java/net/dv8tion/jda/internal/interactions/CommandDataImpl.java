@@ -18,7 +18,7 @@ package net.dv8tion.jda.internal.interactions;
 
 import net.dv8tion.jda.annotations.DeprecatedSince;
 import net.dv8tion.jda.annotations.ForRemoval;
-import net.dv8tion.jda.api.interactions.commands.CommandPermission;
+import net.dv8tion.jda.api.interactions.commands.CommandPermissions;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
@@ -98,9 +98,9 @@ public class CommandDataImpl implements SlashCommandData
 
     @Nonnull
     @Override
-    public CommandPermission getDefaultPermissions()
+    public CommandPermissions getDefaultPermissions()
     {
-        return CommandPermission.enabledFor(defaultMemberPermissions);
+        return CommandPermissions.enabledFor(defaultMemberPermissions);
     }
 
     @Override
@@ -150,7 +150,7 @@ public class CommandDataImpl implements SlashCommandData
 
     @Nonnull
     @Override
-    public CommandDataImpl setDefaultPermissions(@Nonnull CommandPermission permission)
+    public CommandDataImpl setDefaultPermissions(@Nonnull CommandPermissions permission)
     {
         Checks.notNull(permission, "Permission");
         this.defaultMemberPermissions = permission.getPermissionsRaw();
