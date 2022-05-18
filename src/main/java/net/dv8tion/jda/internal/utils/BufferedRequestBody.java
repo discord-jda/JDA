@@ -39,6 +39,16 @@ public class BufferedRequestBody extends RequestBody
         this.type = type;
     }
 
+    @Nonnull
+    public BufferedRequestBody withType(@Nonnull MediaType type)
+    {
+        if (type.equals(this.type))
+            return this;
+        BufferedRequestBody copy = new BufferedRequestBody(source, type);
+        copy.data = data;
+        return copy;
+    }
+
     @Nullable
     @Override
     public MediaType contentType()
@@ -49,16 +59,19 @@ public class BufferedRequestBody extends RequestBody
     @Override
     public void writeTo(@Nonnull BufferedSink sink) throws IOException
     {
-        if (data != null)
+        synchronized (source)
         {
-            sink.write(data);
-            return;
-        }
+            if (data != null)
+            {
+                sink.write(data);
+                return;
+            }
 
-        try (BufferedSource s = Okio.buffer(source))
-        {
-            data = s.readByteArray();
-            sink.write(data);
+            try (BufferedSource s = Okio.buffer(source))
+            {
+                data = s.readByteArray();
+                sink.write(data);
+            }
         }
     }
 }

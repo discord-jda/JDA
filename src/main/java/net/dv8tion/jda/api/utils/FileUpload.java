@@ -18,8 +18,10 @@ package net.dv8tion.jda.api.utils;
 
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.requests.Requester;
+import net.dv8tion.jda.internal.utils.BufferedRequestBody;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.IOUtil;
+import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 
@@ -40,7 +42,7 @@ public class FileUpload implements Closeable, AttachedFile
 {
     private final InputStream resource;
     private final String name;
-    private RequestBody body;
+    private BufferedRequestBody body;
 
     protected FileUpload(InputStream resource, String name)
     {
@@ -254,12 +256,19 @@ public class FileUpload implements Closeable, AttachedFile
         return resource;
     }
 
+    @Nonnull
+    public synchronized RequestBody getRequestBody(@Nonnull MediaType type)
+    {
+        if (body != null) // This allows FileUpload to be used more than once!
+            return body.withType(type);
+        return body = IOUtil.createRequestBody(type, resource);
+    }
+
     @Override
+    @SuppressWarnings("ConstantConditions")
     public synchronized void addPart(@Nonnull MultipartBody.Builder builder, int index)
     {
-        if (body == null) // This allows FileUpload to be used more than once!
-            body = IOUtil.createRequestBody(Requester.MEDIA_TYPE_OCTET, resource);
-        builder.addFormDataPart("files[" + index + "]", name, body);
+        builder.addFormDataPart("files[" + index + "]", name, getRequestBody(Requester.MEDIA_TYPE_OCTET));
     }
 
     @Nonnull

@@ -1828,7 +1828,7 @@ public class GuildImpl implements Guild
         builder.addFormDataPart("tags", csv);
 
         // Attach file asset for sticker image/animation
-        builder.addFormDataPart("file", file.getName(), IOUtil.createRequestBody(mediaType, file.getData()));
+        builder.addFormDataPart("file", file.getName(), file.getRequestBody(mediaType));
 
         MultipartBody body = builder.build();
         Route.CompiledRoute route = Route.Stickers.CREATE_GUILD_STICKER.compile(getId());
