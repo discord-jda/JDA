@@ -24,8 +24,8 @@ import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.CustomEmojiManager;
 import net.dv8tion.jda.api.requests.ErrorResponse;
-import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
+import net.dv8tion.jda.api.requests.restaction.CacheRestAction;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.GuildImpl;
@@ -144,7 +144,7 @@ public class RichCustomEmojiImpl implements RichCustomEmoji
 
     @Nonnull
     @Override
-    public RestAction<User> retrieveOwner()
+    public CacheRestAction<User> retrieveOwner()
     {
         GuildImpl guild = getGuild();
         if (!guild.getSelfMember().hasPermission(Permission.MANAGE_EMOJIS_AND_STICKERS))
