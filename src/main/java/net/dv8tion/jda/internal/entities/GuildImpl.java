@@ -1787,7 +1787,7 @@ public class GuildImpl implements Guild
     @Override
     public AuditableRestAction<GuildSticker> createSticker(@Nonnull String name, @Nonnull String description, @Nonnull FileUpload file, @Nonnull Collection<String> tags)
     {
-        checkPermission(Permission.MANAGE_EMOTES_AND_STICKERS);
+        checkPermission(Permission.MANAGE_EMOJIS_AND_STICKERS);
         Checks.inRange(name, 2, 30, "Name");
         Checks.notNull(file, "File");
         Checks.notNull(description, "Description");

@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.managers.CustomEmojiManager;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
+import net.dv8tion.jda.api.requests.restaction.CacheRestAction;
 import net.dv8tion.jda.api.utils.ImageProxy;
 import net.dv8tion.jda.internal.utils.PermissionUtil;
 
@@ -111,11 +112,10 @@ public interface RichCustomEmoji extends CustomEmoji
     @Nullable
     User getOwner();
 
-    // TODO: CacheRestAction<User> retrieveOwner() once stickers are merged
     /**
      * Retrieves the owner of this emoji.
      * <br>If {@link #getOwner()} is present, this will directly return the owner in a completed {@link RestAction} without making a request.
-     * TODO: CacheRestAction note
+     * The user information might be outdated, you can use {@link CacheRestAction#useCache(boolean) action.useCache(false)} to force an update.
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have {@link net.dv8tion.jda.api.Permission#MANAGE_EMOJIS_AND_STICKERS Permission.MANAGE_EMOJIS_AND_STICKERS}
@@ -125,7 +125,7 @@ public interface RichCustomEmoji extends CustomEmoji
      */
     @Nonnull
     @CheckReturnValue
-    RestAction<User> retrieveOwner();
+    CacheRestAction<User> retrieveOwner();
 
     /**
      * Deletes this emoji.
