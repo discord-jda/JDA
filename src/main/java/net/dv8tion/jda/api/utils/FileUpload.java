@@ -256,9 +256,24 @@ public class FileUpload implements Closeable, AttachedFile
         return resource;
     }
 
+    /**
+     * Creates a re-usable instance of {@link RequestBody} with the specified content-type.
+     *
+     * <p>This body will automatically close the {@link #getData() resource} when the request is done.
+     * However, since the body buffers the data, it can be used multiple times regardless.
+     *
+     * @param  type
+     *         The content-type to use for the body (e.g. {@code "application/octet-stream"})
+     *
+     * @throws IllegalArgumentException
+     *         If the content-type is null
+     *
+     * @return {@link RequestBody}
+     */
     @Nonnull
     public synchronized RequestBody getRequestBody(@Nonnull MediaType type)
     {
+        Checks.notNull(type, "Type");
         if (body != null) // This allows FileUpload to be used more than once!
             return body.withType(type);
         return body = IOUtil.createRequestBody(type, resource);
