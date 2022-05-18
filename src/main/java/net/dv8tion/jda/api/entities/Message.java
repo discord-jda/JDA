@@ -23,8 +23,13 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.emoji.CustomEmoji;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
+import net.dv8tion.jda.api.entities.sticker.GuildSticker;
+import net.dv8tion.jda.api.entities.sticker.Sticker;
+import net.dv8tion.jda.api.entities.sticker.StickerItem;
+import net.dv8tion.jda.api.entities.sticker.StickerSnowflake;
 import net.dv8tion.jda.api.exceptions.HttpException;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
+import net.dv8tion.jda.api.exceptions.MissingAccessException;
 import net.dv8tion.jda.api.interactions.InteractionType;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
@@ -171,6 +176,14 @@ public interface Message extends ISnowflake, Formattable
      * @see    MessageAction#setEmbeds(Collection)
      */
     int MAX_EMBED_COUNT = 10;
+
+    /**
+     * The maximum amount of {@link Sticker Stickers} that can be added to a message ({@value})
+     *
+     * @see GuildMessageChannel#sendStickers(StickerSnowflake...)
+     * @see MessageAction#setStickers(StickerSnowflake...)
+     */
+    int MAX_STICKER_COUNT = 3;
 
     /**
      * Pattern used to find instant invites in strings.
@@ -719,16 +732,16 @@ public interface Message extends ISnowflake, Formattable
     List<MessageReaction> getReactions();
 
     /**
-     * All {@link net.dv8tion.jda.api.entities.MessageSticker MessageStickers} that are in this Message.
-     * <br>The returned MessageStickers may only contain necessary information such as the sticker id, format type, name, and icon url.
+     * All {@link StickerItem StickerItems} that are in this Message.
+     * <br>The returned StickerItems may only contain necessary information such as the sticker id, format type, name, and icon url.
      *
      * @throws UnsupportedOperationException
      *         If this is a Data Message (output of {@link MessageBuilder MessageBuilder})
      *
-     * @return Immutable list of all MessageStickers in this message.
+     * @return Immutable list of all StickerItems in this message.
      */
     @Nonnull
-    List<MessageSticker> getStickers();
+    List<StickerItem> getStickers();
 
     /**
      * Defines whether or not this Message triggers TTS (Text-To-Speech).
@@ -1060,6 +1073,86 @@ public interface Message extends ISnowflake, Formattable
     @Nonnull
     @CheckReturnValue
     MessageAction editMessage(@Nonnull Message newContent);
+
+    /**
+     * Replies and references this message.
+     * <br>This is identical to {@code message.getGuildChannel().sendStickers(stickers).reference(message)}.
+     * You can use {@link MessageAction#mentionRepliedUser(boolean) mentionRepliedUser(false)} to not mention the author of the message.
+     * <br>By default there won't be any error thrown if the referenced message does not exist.
+     * This behavior can be changed with {@link MessageAction#failOnInvalidReply(boolean)}.
+     *
+     * <p>For further info, see {@link GuildMessageChannel#sendStickers(Collection)} and {@link MessageAction#reference(Message)}.
+     *
+     * @param  stickers
+     *         The 1-3 stickers to send
+     *
+     * @throws MissingAccessException
+     *         If the currently logged in account does not have {@link Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} in this channel
+     * @throws InsufficientPermissionException
+     *         <ul>
+     *           <li>If this is a {@link ThreadChannel} and the bot does not have {@link Permission#MESSAGE_SEND_IN_THREADS Permission.MESSAGE_SEND_IN_THREADS}</li>
+     *           <li>If this is not a {@link ThreadChannel} and the bot does not have {@link Permission#MESSAGE_SEND Permission.MESSAGE_SEND}</li>
+     *         </ul>
+     * @throws IllegalArgumentException
+     *         <ul>
+     *           <li>If any of the provided stickers is a {@link GuildSticker},
+     *               which is either {@link GuildSticker#isAvailable() unavailable} or from a different guild.</li>
+     *           <li>If the list is empty or has more than 3 stickers</li>
+     *           <li>If null is provided</li>
+     *         </ul>
+     * @throws IllegalStateException
+     *         If this message was not sent in a {@link Guild}
+     *
+     * @return {@link MessageAction}
+     *
+     * @see    Sticker#fromId(long)
+     */
+    @Nonnull
+    @CheckReturnValue
+    default MessageAction replyStickers(@Nonnull Collection<? extends StickerSnowflake> stickers)
+    {
+        return getGuildChannel().sendStickers(stickers).reference(this);
+    }
+
+    /**
+     * Replies and references this message.
+     * <br>This is identical to {@code message.getGuildChannel().sendStickers(stickers).reference(message)}.
+     * You can use {@link MessageAction#mentionRepliedUser(boolean) mentionRepliedUser(false)} to not mention the author of the message.
+     * <br>By default there won't be any error thrown if the referenced message does not exist.
+     * This behavior can be changed with {@link MessageAction#failOnInvalidReply(boolean)}.
+     *
+     * <p>For further info, see {@link GuildMessageChannel#sendStickers(Collection)} and {@link MessageAction#reference(Message)}.
+     *
+     * @param  stickers
+     *         The 1-3 stickers to send
+     *
+     * @throws MissingAccessException
+     *         If the currently logged in account does not have {@link Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} in this channel
+     * @throws InsufficientPermissionException
+     *         <ul>
+     *           <li>If this is a {@link ThreadChannel} and the bot does not have {@link Permission#MESSAGE_SEND_IN_THREADS Permission.MESSAGE_SEND_IN_THREADS}</li>
+     *           <li>If this is not a {@link ThreadChannel} and the bot does not have {@link Permission#MESSAGE_SEND Permission.MESSAGE_SEND}</li>
+     *         </ul>
+     * @throws IllegalArgumentException
+     *         <ul>
+     *           <li>If any of the provided stickers is a {@link GuildSticker},
+     *               which is either {@link GuildSticker#isAvailable() unavailable} or from a different guild.</li>
+     *           <li>If the list is empty or has more than 3 stickers</li>
+     *           <li>If null is provided</li>
+     *         </ul>
+     * @throws IllegalStateException
+     *         If this message was not sent in a {@link Guild}
+     *
+     * @return {@link MessageAction}
+     *
+     * @see    Sticker#fromId(long)
+     */
+    @Nonnull
+    @CheckReturnValue
+    default MessageAction replyStickers(@Nonnull StickerSnowflake... stickers)
+    {
+        return getGuildChannel().sendStickers(stickers).reference(this);
+    }
 
     /**
      * Replies and references this message.

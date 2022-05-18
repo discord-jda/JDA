@@ -54,6 +54,7 @@ public class Requester
     public static final RequestBody EMPTY_BODY = RequestBody.create(null, new byte[0]);
     public static final MediaType MEDIA_TYPE_JSON  = MediaType.parse("application/json; charset=utf-8");
     public static final MediaType MEDIA_TYPE_OCTET = MediaType.parse("application/octet-stream; charset=utf-8");
+    public static final MediaType MEDIA_TYPE_PNG = MediaType.parse("image/png");
 
     protected final JDAImpl api;
     protected final AuthorizationConfig authConfig;
