@@ -235,25 +235,6 @@ public interface AttachedFile extends Closeable
     }
 
     /**
-     * Marks this attachment as used and throws if it has already been used.
-     * <br>This does nothing on {@link AttachmentUpdate}.
-     *
-     * @throws IllegalStateException
-     *         If this attachment has already been used
-     */
-    void claim();
-
-    /**
-     * Whether this attached file has already been used.
-     * <br>When this is true, {@link #claim()} will throw an {@link IllegalStateException}.
-     *
-     * <p>Resources cannot be read multiple times, so repeated use of this instance is not allowed.
-     *
-     * @return True if this attachment has already been used
-     */
-    boolean isClaimed();
-
-    /**
      * Used internally to build the multipart request.
      *
      * <p>The index can be used as a unique identifier for the multipart name, which is required to be unique by Discord.

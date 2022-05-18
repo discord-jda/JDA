@@ -21,6 +21,7 @@ import net.dv8tion.jda.internal.requests.Requester;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.IOUtil;
 import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 
 import javax.annotation.Nonnull;
 import java.io.*;
@@ -39,7 +40,7 @@ public class FileUpload implements Closeable, AttachedFile
 {
     private final InputStream resource;
     private final String name;
-    private boolean claimed = false;
+    private RequestBody body;
 
     protected FileUpload(InputStream resource, String name)
     {
@@ -254,23 +255,11 @@ public class FileUpload implements Closeable, AttachedFile
     }
 
     @Override
-    public synchronized void claim()
+    public synchronized void addPart(@Nonnull MultipartBody.Builder builder, int index)
     {
-        if (claimed)
-            throw new IllegalStateException("Instances of FileUpload can only be used once. Create a new instance with a new data source for each use.");
-        claimed = true;
-    }
-
-    @Override
-    public synchronized boolean isClaimed()
-    {
-        return claimed;
-    }
-
-    @Override
-    public void addPart(@Nonnull MultipartBody.Builder builder, int index)
-    {
-        builder.addFormDataPart("files[" + index + "]", name, IOUtil.createRequestBody(Requester.MEDIA_TYPE_OCTET, resource));
+        if (body == null) // This allows FileUpload to be used more than once!
+            body = IOUtil.createRequestBody(Requester.MEDIA_TYPE_OCTET, resource);
+        builder.addFormDataPart("files[" + index + "]", name, body);
     }
 
     @Nonnull
