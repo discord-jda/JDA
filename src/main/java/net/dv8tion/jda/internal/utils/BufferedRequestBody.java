@@ -44,9 +44,12 @@ public class BufferedRequestBody extends RequestBody
     {
         if (type.equals(this.type))
             return this;
-        BufferedRequestBody copy = new BufferedRequestBody(source, type);
-        copy.data = data;
-        return copy;
+        synchronized (source)
+        {
+            BufferedRequestBody copy = new BufferedRequestBody(source, type);
+            copy.data = data;
+            return copy;
+        }
     }
 
     @Nullable
