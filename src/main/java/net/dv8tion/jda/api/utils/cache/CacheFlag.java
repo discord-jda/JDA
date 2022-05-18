@@ -47,9 +47,15 @@ public enum CacheFlag
     /**
      * Enables cache for {@link Guild#getEmoteCache()}
      *
-     * <p>Requires {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_EMOJIS GUILD_EMOJIS} intent to be enabled.
+     * <p>Requires {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_EMOJIS_AND_STICKERS GUILD_EMOJIS_AND_STICKERS} intent to be enabled.
      */
-    EMOTE(GatewayIntent.GUILD_EMOJIS),
+    EMOTE(GatewayIntent.GUILD_EMOJIS_AND_STICKERS),
+    /**
+     * Enables cache for {@link Guild#getStickerCache()}
+     *
+     * <p>Requires {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_EMOJIS_AND_STICKERS GUILD_EMOJIS_AND_STICKERS} intent to be enabled.
+     */
+    STICKER(GatewayIntent.GUILD_EMOJIS_AND_STICKERS),
     /**
      * Enables cache for {@link Member#getOnlineStatus(net.dv8tion.jda.api.entities.ClientType) Member.getOnlineStatus(ClientType)}
      *

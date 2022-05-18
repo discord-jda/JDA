@@ -19,6 +19,7 @@ package net.dv8tion.jda.internal.entities;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.sticker.StickerItem;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.exceptions.MissingAccessException;
 import net.dv8tion.jda.api.exceptions.PermissionException;
@@ -65,7 +66,7 @@ public class ReceivedMessage extends AbstractMessage
     protected final List<MessageReaction> reactions;
     protected final List<Attachment> attachments;
     protected final List<MessageEmbed> embeds;
-    protected final List<MessageSticker> stickers;
+    protected final List<StickerItem> stickers;
     protected final List<ActionRow> components;
     protected final int flags;
     protected final Message.Interaction interaction;
@@ -81,9 +82,11 @@ public class ReceivedMessage extends AbstractMessage
 
     public ReceivedMessage(
             long id, MessageChannel channel, MessageType type, MessageReference messageReference,
-            boolean fromWebhook, boolean tts, boolean pinned, String content, String nonce, User author,
-            Member member, MessageActivity activity, OffsetDateTime editTime, Mentions mentions, List<MessageReaction> reactions,
-            List<Attachment> attachments, List<MessageEmbed> embeds, List<MessageSticker> stickers, List<ActionRow> components, int flags, Message.Interaction interaction, ThreadChannel startedThread)
+            boolean fromWebhook, boolean  tts, boolean pinned,
+            String content, String nonce, User author, Member member, MessageActivity activity, OffsetDateTime editTime,
+            Mentions mentions, List<MessageReaction> reactions, List<Attachment> attachments, List<MessageEmbed> embeds,
+            List<StickerItem> stickers, List<ActionRow> components,
+            int flags, Message.Interaction interaction, ThreadChannel startedThread)
     {
         super(content, nonce, tts);
         this.id = id;
@@ -554,7 +557,7 @@ public class ReceivedMessage extends AbstractMessage
 
     @Nonnull
     @Override
-    public List<MessageSticker> getStickers()
+    public List<StickerItem> getStickers()
     {
         return this.stickers;
     }

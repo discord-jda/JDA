@@ -107,15 +107,6 @@ public class AttachmentUpdate implements AttachedFile, ISnowflake
     }
 
     @Override
-    public void claim() {}
-
-    @Override
-    public boolean isClaimed()
-    {
-        return false;
-    }
-
-    @Override
     public void addPart(@Nonnull MultipartBody.Builder builder, int index) {}
 
     @Nonnull

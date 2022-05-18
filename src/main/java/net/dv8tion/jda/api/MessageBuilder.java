@@ -16,6 +16,8 @@
 package net.dv8tion.jda.api;
 
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.sticker.Sticker;
+import net.dv8tion.jda.api.entities.sticker.StickerSnowflake;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
@@ -26,6 +28,7 @@ import net.dv8tion.jda.internal.utils.Helpers;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Builder system used to build {@link net.dv8tion.jda.api.entities.Message Messages}.
@@ -43,6 +46,7 @@ public class MessageBuilder implements Appendable
 
     protected final List<MessageEmbed> embeds = new ArrayList<>();
     protected final List<LayoutComponent> components = new ArrayList<>();
+    protected final List<StickerSnowflake> stickers = new ArrayList<>();
     protected boolean isTTS = false;
     protected String nonce;
     protected EnumSet<Message.MentionType> allowedMentions = null;
@@ -74,6 +78,14 @@ public class MessageBuilder implements Appendable
                     this.allowedMentions = Helpers.copyEnumSet(Message.MentionType.class, data.getAllowedMentions());
                 Collections.addAll(this.mentionedUsers, data.getMentionedUsersWhitelist());
                 Collections.addAll(this.mentionedRoles, data.getMentionedRolesWhitelist());
+                stickers.addAll(data.getStickerSnowflakes());
+            }
+            else
+            {
+                stickers.addAll(message.getStickers().stream()
+                        .map(Sticker::getId)
+                        .map(Sticker::fromId)
+                        .collect(Collectors.toList()));
             }
         }
     }
@@ -87,6 +99,7 @@ public class MessageBuilder implements Appendable
             this.nonce = builder.nonce;
             this.embeds.addAll(builder.embeds);
             this.components.addAll(builder.components);
+            this.stickers.addAll(builder.stickers);
             if (builder.allowedMentions != null)
                 this.allowedMentions = Helpers.copyEnumSet(Message.MentionType.class, builder.allowedMentions);
             this.mentionedRoles.addAll(builder.mentionedRoles);
@@ -219,6 +232,59 @@ public class MessageBuilder implements Appendable
             return this;
         }
         return setActionRows(Arrays.asList(rows));
+    }
+
+    /**
+     * Set the stickers to send alongside this message.
+     * <br>This is not supported for message edits.
+     *
+     * @param  stickers
+     *         The stickers to send, or null to not send any stickers
+     *
+     * @throws IllegalArgumentException
+     *         If more than {@value Message#MAX_STICKER_COUNT} stickers or null stickers are provided
+     *
+     * @return The MessageBuilder instance. Useful for chaining.
+     *
+     * @see    Sticker#fromId(long)
+     */
+    @Nonnull
+    public MessageBuilder setStickers(@Nullable Collection<? extends StickerSnowflake> stickers)
+    {
+        this.stickers.clear();
+        if (stickers == null || stickers.isEmpty())
+            return this;
+        Checks.noneNull(stickers, "Stickers");
+        Checks.check(stickers.size() <= Message.MAX_STICKER_COUNT,
+                "Cannot send more than %d stickers in a message!", Message.MAX_STICKER_COUNT);
+
+        stickers.stream()
+                .map(StickerSnowflake::getId)
+                .map(StickerSnowflake::fromId)
+                .forEach(this.stickers::add);
+        return this;
+    }
+
+    /**
+     * Set the stickers to send alongside this message.
+     * <br>This is not supported for message edits.
+     *
+     * @param  stickers
+     *         The stickers to send, or null to not send any stickers
+     *
+     * @throws IllegalArgumentException
+     *         If more than {@value Message#MAX_STICKER_COUNT} stickers or null stickers are provided
+     *
+     * @return The MessageBuilder instance. Useful for chaining.
+     *
+     * @see    Sticker#fromId(long)
+     */
+    @Nonnull
+    public MessageBuilder setStickers(@Nullable StickerSnowflake... stickers)
+    {
+        if (stickers != null)
+            Checks.noneNull(stickers, "Stickers");
+        return setStickers(stickers == null ? null : Arrays.asList(stickers));
     }
 
     /**
@@ -1023,7 +1089,9 @@ public class MessageBuilder implements Appendable
 
         String[] ids = new String[0];
         return new DataMessage(isTTS, message, nonce, embeds,
-                allowedMentions, mentionedUsers.toArray(ids), mentionedRoles.toArray(ids), components.toArray(new LayoutComponent[0]));
+                allowedMentions, mentionedUsers.toArray(ids), mentionedRoles.toArray(ids),
+                components.toArray(new LayoutComponent[0]),
+                new ArrayList<>(stickers));
     }
 
     /**
@@ -1091,7 +1159,9 @@ public class MessageBuilder implements Appendable
     {
         String[] ids = new String[0];
         return new DataMessage(isTTS, builder.substring(beginIndex, endIndex), null, null,
-                allowedMentions, mentionedUsers.toArray(ids), mentionedRoles.toArray(ids), components.toArray(new LayoutComponent[0]));
+                allowedMentions, mentionedUsers.toArray(ids), mentionedRoles.toArray(ids),
+                components.toArray(new LayoutComponent[0]),
+                new ArrayList<>(stickers));
     }
 
     private String[] toStringArray(long[] users)

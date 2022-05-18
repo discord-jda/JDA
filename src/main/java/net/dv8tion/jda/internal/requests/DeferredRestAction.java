@@ -20,7 +20,9 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.exceptions.RateLimitedException;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
+import net.dv8tion.jda.api.requests.restaction.CacheRestAction;
 import net.dv8tion.jda.internal.utils.Checks;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -30,13 +32,14 @@ import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-public class DeferredRestAction<T, R extends RestAction<T>> implements AuditableRestAction<T>
+public class DeferredRestAction<T, R extends RestAction<T>> implements AuditableRestAction<T>, CacheRestAction<T>
 {
     private final JDA api;
     private final Class<T> type;
     private final Supplier<T> valueSupplier;
     private final Supplier<R> actionSupplier;
 
+    private boolean useCache = true;
     private String reason;
     private long deadline = -1;
     private BooleanSupplier isAction;
@@ -74,7 +77,7 @@ public class DeferredRestAction<T, R extends RestAction<T>> implements Auditable
 
     @Nonnull
     @Override
-    public AuditableRestAction<T> setCheck(BooleanSupplier checks)
+    public DeferredRestAction<T, R> setCheck(BooleanSupplier checks)
     {
         this.transitiveChecks = checks;
         return this;
@@ -89,7 +92,7 @@ public class DeferredRestAction<T, R extends RestAction<T>> implements Auditable
 
     @Nonnull
     @Override
-    public AuditableRestAction<T> timeout(long timeout, @Nonnull TimeUnit unit)
+    public DeferredRestAction<T, R> timeout(long timeout, @Nonnull TimeUnit unit)
     {
         Checks.notNull(unit, "TimeUnit");
         return deadline(timeout <= 0 ? 0 : System.currentTimeMillis() + unit.toMillis(timeout));
@@ -97,9 +100,17 @@ public class DeferredRestAction<T, R extends RestAction<T>> implements Auditable
 
     @Nonnull
     @Override
-    public AuditableRestAction<T> deadline(long timestamp)
+    public DeferredRestAction<T, R> deadline(long timestamp)
     {
         this.deadline = timestamp;
+        return this;
+    }
+
+    @NotNull
+    @Override
+    public CacheRestAction<T> useCache(boolean useCache)
+    {
+        this.useCache = useCache;
         return this;
     }
 
@@ -129,7 +140,7 @@ public class DeferredRestAction<T, R extends RestAction<T>> implements Auditable
         }
 
         T value = valueSupplier.get();
-        if (value == null)
+        if (!useCache || value == null)
         {
             getAction().queue(success, failure);
         }
@@ -151,7 +162,7 @@ public class DeferredRestAction<T, R extends RestAction<T>> implements Auditable
             return CompletableFuture.completedFuture(null);
         }
         T value = valueSupplier.get();
-        if (value != null)
+        if (useCache && value != null)
             return CompletableFuture.completedFuture(value);
         return getAction().submit(shouldQueue);
     }
@@ -167,7 +178,7 @@ public class DeferredRestAction<T, R extends RestAction<T>> implements Auditable
             return null;
         }
         T value = valueSupplier.get();
-        if (value != null)
+        if (useCache && value != null)
             return value;
         return getAction().complete(shouldQueue);
     }
