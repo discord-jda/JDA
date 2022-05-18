@@ -28,6 +28,7 @@ import net.dv8tion.jda.api.events.guild.voice.GenericGuildVoiceEvent;
 import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 import net.dv8tion.jda.api.events.message.MessageBulkDeleteEvent;
 import net.dv8tion.jda.api.events.message.react.GenericMessageReactionEvent;
+import net.dv8tion.jda.api.events.sticker.GenericGuildStickerEvent;
 import net.dv8tion.jda.api.events.user.UserTypingEvent;
 import net.dv8tion.jda.api.events.user.update.GenericUserPresenceEvent;
 import net.dv8tion.jda.api.events.user.update.GenericUserUpdateEvent;
@@ -351,7 +352,7 @@ public enum GatewayIntent
 
             else if (GuildBanEvent.class.isAssignableFrom(event) || GuildUnbanEvent.class.isAssignableFrom(event))
                 intents.add(GUILD_BANS);
-            else if (GenericEmojiEvent.class.isAssignableFrom(event))
+            else if (GenericEmojiEvent.class.isAssignableFrom(event) || GenericGuildStickerEvent.class.isAssignableFrom(event))
                 intents.add(GUILD_EMOJIS_AND_STICKERS);
             else if (GenericGuildInviteEvent.class.isAssignableFrom(event))
                 intents.add(GUILD_INVITES);
