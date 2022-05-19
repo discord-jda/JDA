@@ -18,7 +18,6 @@ package net.dv8tion.jda.internal.entities;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
-import net.dv8tion.jda.api.entities.emoji.CustomEmoji;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.entities.sticker.StickerItem;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
@@ -28,6 +27,7 @@ import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationAction;
 import net.dv8tion.jda.internal.utils.Helpers;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -391,23 +391,7 @@ public abstract class AbstractMessage implements Message
 
     @Nonnull
     @Override
-    public RestAction<Void> addReaction(@Nonnull String unicode)
-    {
-        unsupported();
-        return null;
-    }
-
-    @Nonnull
-    @Override
     public RestAction<Void> clearReactions()
-    {
-        unsupported();
-        return null;
-    }
-
-    @Nonnull
-    @Override
-    public RestAction<Void> clearReactions(@Nonnull String unicode)
     {
         unsupported();
         return null;
@@ -439,45 +423,15 @@ public abstract class AbstractMessage implements Message
 
     @Nonnull
     @Override
-    public RestAction<Void> removeReaction(@Nonnull String unicode)
-    {
-        unsupported();
-        return null;
-    }
-
-    @Nonnull
-    @Override
-    public RestAction<Void> removeReaction(@Nonnull String unicode, @Nonnull User user)
-    {
-        unsupported();
-        return null;
-    }
-
-    @Nonnull
-    @Override
     public ReactionPaginationAction retrieveReactionUsers(@Nonnull Emoji emoji)
     {
         unsupported();
         return null;
     }
 
-    @Nonnull
+    @Nullable
     @Override
-    public ReactionPaginationAction retrieveReactionUsers(@Nonnull String unicode)
-    {
-        unsupported();
-        return null;
-    }
-
-    @Override
-    public MessageReaction getReactionByUnicode(@Nonnull String unicode)
-    {
-        unsupported();
-        return null;
-    }
-
-    @Override
-    public MessageReaction getReactionById(long id)
+    public MessageReaction getReaction(@NotNull Emoji emoji)
     {
         unsupported();
         return null;

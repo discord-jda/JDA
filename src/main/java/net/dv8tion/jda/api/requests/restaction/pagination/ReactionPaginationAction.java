@@ -49,15 +49,10 @@ import javax.annotation.Nonnull;
  * }
  * }</pre>
  *
- * @since  3.1
- *
  * @see    MessageReaction#retrieveUsers()
- * @see    Message#retrieveReactionUsers(String)
  * @see    Message#retrieveReactionUsers(Emoji)
  * @see    MessageChannel#retrieveReactionUsersById(long, Emoji)
  * @see    MessageChannel#retrieveReactionUsersById(String, Emoji)
- * @see    MessageChannel#retrieveReactionUsersById(long, String)
- * @see    MessageChannel#retrieveReactionUsersById(String, String)
  */
 public interface ReactionPaginationAction extends PaginationAction<User, ReactionPaginationAction>
 {

@@ -40,11 +40,8 @@ import java.util.Objects;
  * This is an immutable object and is not updated by method calls or changes in Discord. A new snapshot instance
  * built from Discord is needed to see changes.
  *
- * @since  3.0
- *
  * @see    Message#getReactions()
- * @see    Message#getReactionByUnicode(String)
- * @see    Message#getReactionById(long)
+ * @see    Message#getReaction(Emoji)
  */
 public class MessageReaction
 {

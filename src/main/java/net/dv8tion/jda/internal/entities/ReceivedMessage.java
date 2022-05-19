@@ -183,16 +183,6 @@ public class ReceivedMessage extends AbstractMessage
 
     @Nonnull
     @Override
-    public RestAction<Void> addReaction(@Nonnull String unicode)
-    {
-        if (isEphemeral())
-            throw new IllegalStateException("Cannot add reactions to ephemeral messages.");
-        
-        return channel.addReactionById(getId(), unicode);
-    }
-
-    @Nonnull
-    @Override
     public RestAction<Void> clearReactions()
     {
         if (isEphemeral())
@@ -200,17 +190,6 @@ public class ReceivedMessage extends AbstractMessage
         if (!isFromGuild())
             throw new IllegalStateException("Cannot clear reactions from a message in a Group or PrivateChannel.");
         return getGuildChannel().clearReactionsById(getId());
-    }
-
-    @Nonnull
-    @Override
-    public RestAction<Void> clearReactions(@Nonnull String unicode)
-    {
-        if (isEphemeral())
-            throw new IllegalStateException("Cannot clear reactions from ephemeral messages.");
-        if (!isFromGuild())
-            throw new IllegalStateException("Cannot clear reactions from a message in a Group or PrivateChannel.");
-        return getGuildChannel().clearReactionsById(getId(), unicode);
     }
 
     @Nonnull
@@ -253,31 +232,6 @@ public class ReceivedMessage extends AbstractMessage
 
     @Nonnull
     @Override
-    public RestAction<Void> removeReaction(@Nonnull String unicode)
-    {
-        if (isEphemeral())
-            throw new IllegalStateException("Cannot remove reactions from ephemeral messages.");
-        
-        return channel.removeReactionById(getId(), unicode);
-    }
-
-    @Nonnull
-    @Override
-    public RestAction<Void> removeReaction(@Nonnull String unicode, @Nonnull User user)
-    {
-        Checks.notNull(user, "User");
-        if (user.equals(getJDA().getSelfUser()))
-            return channel.removeReactionById(getIdLong(), unicode);
-
-        if (isEphemeral())
-            throw new IllegalStateException("Cannot remove reactions from ephemeral messages.");
-        if (!isFromGuild())
-            throw new IllegalStateException("Cannot remove reactions of others from a message in a Group or PrivateChannel.");
-        return getGuildChannel().removeReactionById(getId(), unicode, user);
-    }
-
-    @Nonnull
-    @Override
     public ReactionPaginationAction retrieveReactionUsers(@Nonnull Emoji emoji)
     {
         if (isEphemeral())
@@ -286,33 +240,14 @@ public class ReceivedMessage extends AbstractMessage
         return channel.retrieveReactionUsersById(id, emoji);
     }
 
-    @Nonnull
+    @Nullable
     @Override
-    public ReactionPaginationAction retrieveReactionUsers(@Nonnull String unicode)
+    public MessageReaction getReaction(@Nonnull Emoji emoji)
     {
-        if (isEphemeral())
-            throw new IllegalStateException("Cannot retrieve reactions on ephemeral messages.");
-        
-        return channel.retrieveReactionUsersById(id, unicode);
-    }
-
-    @Override
-    public MessageReaction getReactionByUnicode(@Nonnull String unicode)
-    {
-        Checks.notEmpty(unicode, "Emoji");
-        Checks.noWhitespace(unicode, "Emoji");
-
+        Checks.notNull(emoji, "Emoji");
         return this.reactions.stream()
-            .filter(r -> r.getEmoji().getType() == Emoji.Type.UNICODE && r.getEmoji().getName().equals(unicode))
-            .findFirst().orElse(null);
-    }
-
-    @Override
-    public MessageReaction getReactionById(long id)
-    {
-        return this.reactions.stream()
-            .filter(r -> r.getEmoji().getType() == Emoji.Type.CUSTOM && ((CustomEmoji) r.getEmoji()).getIdLong() == id)
-            .findFirst().orElse(null);
+                .filter(r -> emoji.equals(r.getEmoji()))
+                .findFirst().orElse(null);
     }
 
     @Nonnull
