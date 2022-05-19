@@ -17,6 +17,7 @@
 package net.dv8tion.jda.api.entities.emoji;
 
 import net.dv8tion.jda.api.entities.IMentionable;
+import net.dv8tion.jda.api.utils.ImageProxy;
 
 import javax.annotation.Nonnull;
 import java.util.Formatter;
@@ -43,6 +44,19 @@ public interface CustomEmoji extends Emoji, IMentionable
     default String getImageUrl()
     {
         return String.format(ICON_URL, getId(), isAnimated() ? "gif" : "png");
+    }
+
+    /**
+     * Returns an {@link ImageProxy} for this emoji's image.
+     *
+     * @return Never-null {@link ImageProxy} of this emoji's image
+     *
+     * @see    #getImageUrl()
+     */
+    @Nonnull
+    default ImageProxy getImage()
+    {
+        return new ImageProxy(getImageUrl());
     }
 
     /**

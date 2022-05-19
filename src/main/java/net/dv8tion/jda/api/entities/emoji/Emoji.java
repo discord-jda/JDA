@@ -217,5 +217,4 @@ public interface Emoji extends SerializableData, Formattable
          */
         CUSTOM,
     }
-
 }

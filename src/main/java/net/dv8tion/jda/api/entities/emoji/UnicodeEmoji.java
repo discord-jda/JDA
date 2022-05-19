@@ -23,9 +23,6 @@ public interface UnicodeEmoji extends Emoji
     /**
      * Converts the unicode name into codepoint notation like {@code U+1F602}.
      *
-     * @throws java.lang.IllegalStateException
-     *         If this is a custom emoji, see {@link #getType()}
-     *
      * @return String containing the codepoint representation of the emoji
      */
     @Nonnull
