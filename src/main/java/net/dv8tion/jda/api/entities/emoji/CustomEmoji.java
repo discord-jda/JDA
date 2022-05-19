@@ -18,10 +18,21 @@ package net.dv8tion.jda.api.entities.emoji;
 
 import net.dv8tion.jda.api.entities.IMentionable;
 import net.dv8tion.jda.api.utils.ImageProxy;
+import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
 import java.util.Formatter;
 
+/**
+ * Represents a minimal custom emoji.
+ *
+ * <p>This contains the most minimal representation of a custom emoji, via id and name.
+ *
+ * @see Emoji#fromCustom(String, long, boolean)
+ * @see Emoji#fromCustom(CustomEmoji)
+ * @see Emoji#fromFormatted(String)
+ * @see Emoji#fromData(DataObject)
+ */
 public interface CustomEmoji extends Emoji, IMentionable
 {
     /** Template for {@link #getImageUrl()} */

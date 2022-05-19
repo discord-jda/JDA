@@ -34,6 +34,8 @@ import java.util.regex.Matcher;
  * Represents a Discord Emoji.
  * <br>This can either be {@link Type#UNICODE} or {@link Type#CUSTOM}.
  *
+ * <p>Implements {@link Formattable} with {@link #getFormatted()}.
+ *
  * @see #getName()
  */
 public interface Emoji extends SerializableData, Formattable
@@ -41,9 +43,21 @@ public interface Emoji extends SerializableData, Formattable
     /**
      * Creates a reference for a unicode emoji with the provided unicode.
      * <br>This has to be the unicode characters rather than the emoji name.
+     * <br>A reference of unicode emojis can be found here:
+     * <a href="https://unicode.org/emoji/charts/full-emoji-list.html" target="_blank">Emoji Table</a>.
+     *
+     * <p><b>Examples</b><br>
+     * <pre>{@code
+     * // unicode emoji, escape codes
+     * fromUnicode("&#92;uD83D&#92;uDE03");
+     * // codepoint notation
+     * fromUnicode("U+1F602");
+     * // unicode emoji
+     * fromUnicode("😃");
+     * }</pre>
      *
      * @param  code
-     *         The unicode characters, or codepoint notation such as {@code "U+1f649"}
+     *         The unicode characters, or codepoint notation such as {@code "U+1F602"}
      *
      * @throws IllegalArgumentException
      *         If the code is null or empty
@@ -116,7 +130,9 @@ public interface Emoji extends SerializableData, Formattable
      * // not animated custom emoji
      * fromFormatted("<:dog:123456789123456789>");
      * // unicode emoji, escape codes
-     * fromFormatted("\uD83D\uDE03");
+     * fromFormatted("&#92;uD83D&#92;uDE03");
+     * // codepoint notation
+     * fromFormatted("U+1F602");
      * // unicode emoji
      * fromFormatted("😃");
      * }</pre>
