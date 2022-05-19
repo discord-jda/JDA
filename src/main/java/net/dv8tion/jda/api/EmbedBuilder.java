@@ -740,7 +740,7 @@ public class EmbedBuilder
      *
      * @throws java.lang.IllegalArgumentException
      *         <ul>
-     *             <li>If {@code name} or {@code value} are not set. They must be be both set.</li>
+     *             <li>If {@code null} is provided</li>
      *             <li>If the character limit for {@code name}, defined by {@link net.dv8tion.jda.api.entities.MessageEmbed#TITLE_MAX_LENGTH} as {@value net.dv8tion.jda.api.entities.MessageEmbed#TITLE_MAX_LENGTH},
      *             is exceeded.</li>
      *             <li>If the character limit for {@code value}, defined by {@link net.dv8tion.jda.api.entities.MessageEmbed#VALUE_MAX_LENGTH} as {@value net.dv8tion.jda.api.entities.MessageEmbed#VALUE_MAX_LENGTH},
