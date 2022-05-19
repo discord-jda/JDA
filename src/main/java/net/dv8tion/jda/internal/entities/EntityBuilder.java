@@ -18,8 +18,6 @@ package net.dv8tion.jda.internal.entities;
 
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
-import gnu.trove.set.TLongSet;
-import gnu.trove.set.hash.TLongHashSet;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.audit.ActionType;
@@ -31,6 +29,7 @@ import net.dv8tion.jda.api.entities.Guild.NotificationLevel;
 import net.dv8tion.jda.api.entities.Guild.Timeout;
 import net.dv8tion.jda.api.entities.Guild.VerificationLevel;
 import net.dv8tion.jda.api.entities.MessageEmbed.*;
+import net.dv8tion.jda.api.entities.sticker.*;
 import net.dv8tion.jda.api.entities.templates.Template;
 import net.dv8tion.jda.api.entities.templates.TemplateChannel;
 import net.dv8tion.jda.api.entities.templates.TemplateGuild;
@@ -42,6 +41,7 @@ import net.dv8tion.jda.api.events.user.update.UserUpdateAvatarEvent;
 import net.dv8tion.jda.api.events.user.update.UserUpdateDiscriminatorEvent;
 import net.dv8tion.jda.api.events.user.update.UserUpdateFlagsEvent;
 import net.dv8tion.jda.api.events.user.update.UserUpdateNameEvent;
+import net.dv8tion.jda.api.exceptions.ParsingException;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.api.utils.cache.CacheView;
@@ -50,6 +50,7 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.mixin.channel.attribute.IPermissionContainerMixin;
 import net.dv8tion.jda.internal.entities.mixin.channel.middleman.AudioChannelMixin;
+import net.dv8tion.jda.internal.entities.sticker.*;
 import net.dv8tion.jda.internal.handle.EventCache;
 import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.JDALogger;
@@ -163,16 +164,34 @@ public class EntityBuilder
         }
     }
 
-    public TLongObjectMap<DataObject> convertToUserMap(ToLongFunction<DataObject> getId, DataArray array)
+    private void createGuildStickerPass(GuildImpl guildObj, DataArray array)
     {
-        TLongObjectMap<DataObject> map = new TLongObjectHashMap<>();
-        for (int i = 0; i < array.length(); i++)
+        if (!getJDA().isCacheFlagSet(CacheFlag.STICKER))
+            return;
+        SnowflakeCacheViewImpl<GuildSticker> stickerView = guildObj.getStickersView();
+        try (UnlockHook hook = stickerView.writeLock())
         {
-            DataObject obj = array.getObject(i);
-            long userId = getId.applyAsLong(obj);
-            map.put(userId, obj);
+            TLongObjectMap<GuildSticker> stickerMap = stickerView.getMap();
+            for (int i = 0; i < array.length(); i++)
+            {
+                DataObject object = array.getObject(i);
+                if (object.isNull("id"))
+                {
+                    LOG.error("Received GUILD_CREATE with a sticker with a null ID. GuildId: {} JSON: {}",
+                              guildObj.getId(), object);
+                    continue;
+                }
+                if (object.getInt("type", -1) != Sticker.Type.GUILD.getId())
+                {
+                    LOG.error("Received GUILD_CREATE with sticker that had an unexpected type. GuildId: {} Type: {} JSON: {}",
+                              guildObj.getId(), object.getInt("type", -1), object);
+                    continue;
+                }
+
+                RichSticker sticker = createRichSticker(object);
+                stickerMap.put(sticker.getIdLong(), (GuildSticker) sticker);
+            }
         }
-        return map;
     }
 
     public GuildImpl createGuild(long guildId, DataObject guildJson, TLongObjectMap<DataObject> members, int memberCount)
@@ -189,6 +208,7 @@ public class EntityBuilder
         final DataArray channelArray = guildJson.getArray("channels");
         final DataArray threadArray = guildJson.getArray("threads");
         final DataArray emotesArray = guildJson.getArray("emojis");
+        final DataArray stickersArray = guildJson.getArray("stickers");
         final DataArray voiceStateArray = guildJson.getArray("voice_states");
         final Optional<DataArray> featuresArray = guildJson.optArray("features");
         final Optional<DataArray> presencesArray = guildJson.optArray("presences");
@@ -262,8 +282,8 @@ public class EntityBuilder
             createGuildChannel(guildObj, channelJson);
         }
 
-        TLongObjectMap<DataObject> voiceStates = convertToUserMap((o) -> o.getUnsignedLong("user_id", 0L), voiceStateArray);
-        TLongObjectMap<DataObject> presences = presencesArray.map(o1 -> convertToUserMap(o2 -> o2.getObject("user").getUnsignedLong("id"), o1)).orElseGet(TLongObjectHashMap::new);
+        TLongObjectMap<DataObject> voiceStates = Helpers.convertToMap((o) -> o.getUnsignedLong("user_id", 0L), voiceStateArray);
+        TLongObjectMap<DataObject> presences = presencesArray.map(o1 -> Helpers.convertToMap(o2 -> o2.getObject("user").getUnsignedLong("id"), o1)).orElseGet(TLongObjectHashMap::new);
         try (UnlockHook h1 = guildObj.getMembersView().writeLock();
              UnlockHook h2 = getJDA().getUsersView().writeLock())
         {
@@ -300,6 +320,7 @@ public class EntityBuilder
         }
 
         createGuildEmotePass(guildObj, emotesArray);
+        createGuildStickerPass(guildObj, stickersArray);
         guildJson.optArray("stage_instances")
                 .map(arr -> arr.stream(DataArray::getObject))
                 .ifPresent(list -> list.forEach(it -> createStageInstance(guildObj, it)));
@@ -1387,18 +1408,24 @@ public class EntityBuilder
 
     private ReceivedMessage createMessage0(DataObject jsonObject, @Nonnull MessageChannel channel, boolean modifyCache)
     {
+        MessageType type = MessageType.fromId(jsonObject.getInt("type"));
+        if (type == MessageType.UNKNOWN)
+            throw new IllegalArgumentException(UNKNOWN_MESSAGE_TYPE);
+
         final long id = jsonObject.getLong("id");
         final DataObject author = jsonObject.getObject("author");
         final long authorId = author.getLong("id");
         MemberImpl member = null;
+        GuildImpl guild = null;
+        if (channel instanceof GuildChannel)
+            guild = (GuildImpl) ((GuildChannel) channel).getGuild();
 
+        // Member details for author
         if (channel.getType().isGuild() && !jsonObject.isNull("member"))
         {
             DataObject memberJson = jsonObject.getObject("member");
             memberJson.put("user", author);
-            GuildChannel guildChannel = (GuildChannel) channel;
-            Guild guild = guildChannel.getGuild();
-            member = createMember((GuildImpl) guild, memberJson);
+            member = createMember(guild, memberJson);
             if (modifyCache)
             {
                 // Update member cache with new information if needed
@@ -1415,21 +1442,22 @@ public class EntityBuilder
         final String nonce = jsonObject.isNull("nonce") ? null : jsonObject.get("nonce").toString();
         final int flags = jsonObject.getInt("flags", 0);
 
+        // Message accessories
         MessageChannel tmpChannel = channel; // because java
         final List<Message.Attachment> attachments = map(jsonObject, "attachments",   this::createMessageAttachment);
         final List<MessageEmbed>       embeds      = map(jsonObject, "embeds",        this::createMessageEmbed);
         final List<MessageReaction>    reactions   = map(jsonObject, "reactions",     (obj) -> createMessageReaction(tmpChannel, id, obj));
-        final List<MessageSticker>     stickers    = map(jsonObject, "sticker_items", this::createSticker);
+        final List<StickerItem>        stickers    = map(jsonObject, "sticker_items", this::createStickerItem);
 
+        // Message activity (for game invites/spotify)
         MessageActivity activity = null;
-
         if (!jsonObject.isNull("activity"))
             activity = createMessageActivity(jsonObject);
 
+        // Message Author
         User user;
-        if (channel.getType().isGuild())
+        if (guild != null)
         {
-            Guild guild = ((GuildChannel) channel).getGuild();
             if (member == null)
                 member = (MemberImpl) guild.getMemberById(authorId);
             user = member != null ? member.getUser() : null;
@@ -1461,17 +1489,7 @@ public class EntityBuilder
         if (modifyCache && !fromWebhook) // update the user information on message receive
             updateUser((UserImpl) user, author);
 
-        TLongSet mentionedRoles = new TLongHashSet();
-        TLongSet mentionedUsers = new TLongHashSet(map(jsonObject, "mentions", (o) -> o.getLong("id")));
-        Optional<DataArray> roleMentionArr = jsonObject.optArray("mention_roles");
-        roleMentionArr.ifPresent((arr) ->
-        {
-            for (int i = 0; i < arr.length(); i++)
-                mentionedRoles.add(arr.getLong(i));
-        });
-
-        MessageType type = MessageType.fromId(jsonObject.getInt("type"));
-        ReceivedMessage message;
+        // Message Reference (Reply or Pin)
         Message referencedMessage = null;
         if (!jsonObject.isNull("referenced_message"))
         {
@@ -1494,7 +1512,6 @@ public class EntityBuilder
         }
 
         MessageReference messageReference = null;
-
         if (!jsonObject.isNull("message_reference")) // always contains the channel + message id for a referenced message
         {                                                // used for when referenced_message is not provided
             DataObject messageReferenceJson = jsonObject.getObject("message_reference");
@@ -1508,6 +1525,7 @@ public class EntityBuilder
             );
         }
 
+        // Message Components
         List<ActionRow> components = Collections.emptyList();
         Optional<DataArray> componentsArrayOpt = jsonObject.optArray("components");
         if (componentsArrayOpt.isPresent())
@@ -1519,68 +1537,31 @@ public class EntityBuilder
                     .collect(Collectors.toList());
         }
 
+        // Application command and component replies
         Message.Interaction messageInteraction = null;
         if (!jsonObject.isNull("interaction"))
-        {
-            GuildImpl guild = null;
-            if (channel instanceof GuildChannel)
-            {
-                guild = (GuildImpl) ((GuildChannel) (channel)).getGuild();
-            }
             messageInteraction = createMessageInteraction(guild, jsonObject.getObject("interaction"));
-        }
 
-        if (type == MessageType.UNKNOWN)
-            throw new IllegalArgumentException(UNKNOWN_MESSAGE_TYPE);
+        // Lazy Mention parsing and caching (includes reply mentions)
+        Mentions mentions = new MessageMentionsImpl(
+            api, guild, content, mentionsEveryone,
+            jsonObject.getArray("mentions"), jsonObject.getArray("mention_roles")
+        );
+        
+        ThreadChannel startedThread = null;
+        if (guild != null && !jsonObject.isNull("thread"))
+            startedThread = createThreadChannel(guild, jsonObject.getObject("thread"), guild.getIdLong());
+
         if (!type.isSystem())
         {
-            message = new ReceivedMessage(id, channel, type, messageReference, fromWebhook,
-                    mentionsEveryone, mentionedUsers, mentionedRoles, tts, pinned,
-                    content, nonce, user, member, activity, editTime, reactions, attachments, embeds, stickers, components, flags, messageInteraction);
+            return new ReceivedMessage(id, channel, type, messageReference, fromWebhook, tts, pinned,
+                    content, nonce, user, member, activity, editTime, mentions, reactions, attachments, embeds, stickers, components, flags, messageInteraction, startedThread);
         }
         else
         {
-            message = new SystemMessage(id, channel, type, messageReference, fromWebhook,
-                    mentionsEveryone, mentionedUsers, mentionedRoles, tts, pinned,
-                    content, nonce, user, member, activity, editTime, reactions, attachments, embeds, stickers, flags);
-            return message; // We don't need to parse mentions for system messages, they are always empty anyway
+            return new SystemMessage(id, channel, type, messageReference, fromWebhook, tts, pinned,
+                    content, nonce, user, member, activity, editTime, mentions, reactions, attachments, embeds, stickers, flags, startedThread);
         }
-
-        GuildImpl guild = message.isFromGuild() ? (GuildImpl) message.getGuild() : null;
-
-        // Load users/members from message object through mentions
-        List<User> mentionedUsersList = new ArrayList<>();
-        List<Member> mentionedMembersList = new ArrayList<>();
-        DataArray userMentions = jsonObject.getArray("mentions");
-
-        for (int i = 0; i < userMentions.length(); i++)
-        {
-            DataObject mentionJson = userMentions.getObject(i);
-            if (guild == null || mentionJson.isNull("member"))
-            {
-                // Can't load user without member context so fake them if possible
-                User mentionedUser = createUser(mentionJson);
-                mentionedUsersList.add(mentionedUser);
-                if (guild != null)
-                {
-                    Member mentionedMember = guild.getMember(mentionedUser);
-                    if (mentionedMember != null)
-                        mentionedMembersList.add(mentionedMember);
-                }
-                continue;
-            }
-
-            // Load member/user from mention (gateway messages only)
-            DataObject memberJson = mentionJson.getObject("member");
-            mentionJson.remove("member");
-            memberJson.put("user", mentionJson);
-            Member mentionedMember = createMember(guild, memberJson);
-            mentionedMembersList.add(mentionedMember);
-            mentionedUsersList.add(mentionedMember.getUser());
-        }
-
-        message.setMentions(mentionedUsersList, mentionedMembersList);
-        return message;
     }
 
     private static MessageActivity createMessageActivity(DataObject jsonObject)
@@ -1761,25 +1742,72 @@ public class EntityBuilder
             color, thumbnail, siteProvider, author, videoInfo, footer, image, fields);
     }
 
-    public MessageSticker createSticker(DataObject content)
+    public StickerItem createStickerItem(DataObject content)
     {
-        final long id = content.getLong("id");
-        final String name = content.getString("name");
-        final String description = content.getString("description", "");
-        final long packId = content.getLong("pack_id", content.getLong("guild_id", 0L));
-        final MessageSticker.StickerFormat format = MessageSticker.StickerFormat.fromId(content.getInt("format_type"));
-        final Set<String> tags;
-        if (content.isNull("tags"))
+        long id = content.getLong("id");
+        String name = content.getString("name");
+        Sticker.StickerFormat format = Sticker.StickerFormat.fromId(content.getInt("format_type"));
+        return new StickerItemImpl(id, format, name);
+    }
+
+    public RichStickerImpl createRichSticker(DataObject content)
+    {
+        long id = content.getLong("id");
+        String name = content.getString("name");
+        Sticker.StickerFormat format = Sticker.StickerFormat.fromId(content.getInt("format_type"));
+        Sticker.Type type = Sticker.Type.fromId(content.getInt("type", -1));
+
+        String description = content.getString("description", "");
+        Set<String> tags = Collections.emptySet();
+        if (!content.isNull("tags"))
         {
-            tags = Collections.emptySet();
+            String[] array = content.getString("tags").split(",\\s*");
+            tags = Helpers.setOf(array);
         }
-        else
+
+        switch (type)
         {
-            final String[] split = content.getString("tags").split(", ");
-            final Set<String> tmp = new HashSet<>(Arrays.asList(split));
-            tags = Collections.unmodifiableSet(tmp);
+        case GUILD:
+            boolean available = content.getBoolean("available");
+            long guildId = content.getUnsignedLong("guild_id", 0L);
+            User owner = content.isNull("user") ? null : createUser(content.getObject("user"));
+            return new GuildStickerImpl(id, format, name, tags, description, available, guildId, api, owner);
+        case STANDARD:
+            long packId = content.getUnsignedLong("pack_id", 0L);
+            int sortValue = content.getInt("sort_value", -1);
+            return new StandardStickerImpl(id, format, name, tags, description, packId, sortValue);
+        default:
+            throw new IllegalArgumentException("Unknown sticker type. Type: " + type  +" JSON: " + content);
         }
-        return new MessageSticker(id, name, description, packId, format, tags);
+    }
+
+    public StickerPack createStickerPack(DataObject content)
+    {
+        long id = content.getUnsignedLong("id");
+        String name = content.getString("name");
+        String description = content.getString("description", "");
+        long skuId = content.getUnsignedLong("sku_id", 0);
+        long coverId = content.getUnsignedLong("cover_sticker_id", 0);
+        long bannerId = content.getUnsignedLong("banner_asset_id", 0);
+
+        DataArray stickerArr = content.getArray("stickers");
+        List<StandardSticker> stickers = new ArrayList<>(stickerArr.length());
+        for (int i = 0; i < stickerArr.length(); i++)
+        {
+            DataObject object = null;
+            try
+            {
+                object = stickerArr.getObject(i);
+                StandardSticker sticker = (StandardSticker) createRichSticker(object);
+                stickers.add(sticker);
+            }
+            catch (ParsingException | ClassCastException ex)
+            {
+                LOG.error("Sticker contained in pack {} ({}) could not be parsed. JSON: {}", name, id, object);
+            }
+        }
+
+        return new StickerPackImpl(id, stickers, name, description, coverId, bannerId, skuId);
     }
 
     public Message.Interaction createMessageInteraction(GuildImpl guildImpl, DataObject content)

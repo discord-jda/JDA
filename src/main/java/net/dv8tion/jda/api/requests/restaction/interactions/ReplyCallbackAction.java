@@ -52,6 +52,10 @@ public interface ReplyCallbackAction extends InteractionCallbackAction<Interacti
     @Override
     ReplyCallbackAction deadline(long timestamp);
 
+    @Nonnull
+    @Override
+    ReplyCallbackAction closeResources();
+
     /**
      * Add {@link MessageEmbed MessageEmbeds} for the message
      *
