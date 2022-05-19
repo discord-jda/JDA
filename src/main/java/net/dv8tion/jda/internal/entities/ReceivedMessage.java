@@ -245,8 +245,9 @@ public class ReceivedMessage extends AbstractMessage
     public MessageReaction getReaction(@Nonnull Emoji emoji)
     {
         Checks.notNull(emoji, "Emoji");
+        String code = emoji.getAsReactionCode();
         return this.reactions.stream()
-                .filter(r -> emoji.equals(r.getEmoji()))
+                .filter(r -> code.equals(r.getEmoji().getAsReactionCode()))
                 .findFirst().orElse(null);
     }
 
