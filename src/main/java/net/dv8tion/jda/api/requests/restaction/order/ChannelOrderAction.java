@@ -16,11 +16,14 @@
 
 package net.dv8tion.jda.api.requests.restaction.order;
 
+import net.dv8tion.jda.api.entities.Category;
 import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.GuildChannel;
 
+import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.EnumSet;
 
 /**
@@ -70,5 +73,16 @@ public interface ChannelOrderAction extends OrderAction<GuildChannel, ChannelOrd
     default EnumSet<ChannelType> getChannelTypes()
     {
         return ChannelType.fromSortBucket(getSortBucket());
+    }
+
+    @Nonnull
+    @CheckReturnValue
+    ChannelOrderAction setCategory(@Nullable Category category, boolean syncPermissions);
+
+    @Nonnull
+    @CheckReturnValue
+    default ChannelOrderAction setCategory(@Nullable Category category)
+    {
+        return setCategory(category, false);
     }
 }
