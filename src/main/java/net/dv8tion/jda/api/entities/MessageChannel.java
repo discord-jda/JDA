@@ -91,7 +91,7 @@ public interface MessageChannel extends Channel, Formattable
      * and <u><b>the value might point to an already deleted message since the ID is not cleared when the message is deleted,
      * so calling {@link #retrieveMessageById(long)} with this id can result in an {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE} error</b></u>
      *
-     * @return The most recent message's id
+     * @return The most recent message's id or "0" if no messages are present
      */
     @Nonnull
     default String getLatestMessageId()
@@ -107,7 +107,7 @@ public interface MessageChannel extends Channel, Formattable
      * and <u><b>the value might point to an already deleted message since the value is not cleared when the message is deleted,
      * so calling {@link #retrieveMessageById(long)} with this id can result in an {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE} error</b></u>
      *
-     * @return The most recent message's id
+     * @return The most recent message's id or 0 if no messages are present
      */
     long getLatestMessageIdLong();
 
