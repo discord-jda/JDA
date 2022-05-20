@@ -17,7 +17,6 @@
 package net.dv8tion.jda.api.requests.restaction.order;
 
 import net.dv8tion.jda.api.requests.RestAction;
-import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -191,28 +190,10 @@ public interface OrderAction<T, M extends OrderAction<T, M>> extends RestAction<
     M moveTo(int position);
 
     @Nonnull
-    default M moveBelow(@Nonnull T other)
-    {
-        Checks.notNull(other, "Target entity");
-        int index = getCurrentOrder().indexOf(other);
-        Checks.check(index > -1, "Target entity is not managed by this instance.");
-        if (isAscendingOrder())
-            return moveTo(index + 1);
-        else
-            return moveTo(index - 1);
-    }
+    M moveBelow(@Nonnull T other);
 
     @Nonnull
-    default M moveAbove(@Nonnull T other)
-    {
-        Checks.notNull(other, "Target entity");
-        int index = getCurrentOrder().indexOf(other);
-        Checks.check(index > -1, "Target entity is not managed by this instance.");
-        if (isAscendingOrder())
-            return moveTo(index - 1);
-        else
-            return moveTo(index + 1);
-    }
+    M moveAbove(@Nonnull T other);
 
     /**
      * Swaps the currently selected entity with the entity located
