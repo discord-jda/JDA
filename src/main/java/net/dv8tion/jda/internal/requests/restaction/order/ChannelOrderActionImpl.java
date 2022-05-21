@@ -114,6 +114,9 @@ public class ChannelOrderActionImpl
         GuildChannel channel = getSelectedEntity();
         if (!(channel instanceof ICategorizableChannel) && category != null)
             throw new IllegalStateException("Cannot move channel of type " + channel.getType() + " to category!");
+        if (category != null)
+            Checks.check(category.getGuild().equals(getGuild()), "Category is not from the same guild!");
+
         long id = channel.getIdLong();
         parent.put(id, category == null ? 0 : category.getIdLong());
         if (syncPermissions)
