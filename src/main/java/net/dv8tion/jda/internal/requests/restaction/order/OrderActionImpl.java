@@ -225,7 +225,7 @@ public abstract class OrderActionImpl<T, M extends OrderAction<T, M>>
         int index = getCurrentOrder().indexOf(other);
         moveTo(index);
         if (isAscendingOrder())
-            return moveUp(1);
+            return moveDown(1);
         return (M) this;
     }
 
