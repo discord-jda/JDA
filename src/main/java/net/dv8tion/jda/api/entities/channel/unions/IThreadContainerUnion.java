@@ -20,22 +20,125 @@ import net.dv8tion.jda.api.entities.*;
 
 import javax.annotation.Nonnull;
 
+/**
+ * A union representing all channel types that implement {@link IThreadContainer}.
+ * <br>This class extends {@link IThreadContainer} and primarily acts as a discovery tool for
+ * developers to discover some common interfaces that a {@link IThreadContainer} could be cast to.
+ *
+ * <br>This interface represents the follow concrete channel types:
+ * <ul>
+ *     <li>{@link TextChannel}</li>
+ *     <li>{@link NewsChannel}</li>
+ * </ul>
+ */
 public interface IThreadContainerUnion extends IThreadContainer
 {
+    /**
+     * Casts this union to a {@link TextChannel}.
+     * This method exists for developer discoverability.
+     *
+     * Note: This is effectively equivalent to using the cast operator:
+     * <pre><code>
+     * //These are the same!
+     * TextChannel channel = union.asTextChannel();
+     * TextChannel channel2 = (TextChannel) union;
+     * </code></pre>
+     *
+     * @throws IllegalStateException
+     *         If the channel represented by this union is not actually a {@link TextChannel}.
+     *
+     * @return The channel as a {@link TextChannel}
+     */
     @Nonnull
     TextChannel asTextChannel();
 
+    /**
+     * Casts this union to a {@link NewsChannel}.
+     * This method exists for developer discoverability.
+     *
+     * Note: This is effectively equivalent to using the cast operator:
+     * <pre><code>
+     * //These are the same!
+     * NewsChannel channel = union.asNewsChannel();
+     * NewsChannel channel2 = (NewsChannel) union;
+     * </code></pre>
+     *
+     * @throws IllegalStateException
+     *         If the channel represented by this union is not actually a {@link NewsChannel}.
+     *
+     * @return The channel as a {@link NewsChannel}
+     */
     @Nonnull
     NewsChannel asNewsChannel();
 
     //TODO: Add asForumChannel
 
+    /**
+     * Casts this union to a {@link GuildMessageChannel}.
+     * <br>This works for the following channel types represented by this union:
+     * <ul>
+     *     <li>{@link TextChannel}</li>
+     *     <li>{@link NewsChannel}</li>
+     * </ul>
+     *
+     * Note: This is effectively equivalent to using the cast operator:
+     * <pre><code>
+     * //These are the same!
+     * GuildMessageChannel channel = union.asGuildMessageChannel();
+     * GuildMessageChannel channel2 = (GuildMessageChannel) union;
+     * </code></pre>
+     *
+     * @throws IllegalStateException
+     *         If the channel represented by this union is not actually a {@link GuildMessageChannel}.
+     *
+     * @return The channel as a {@link GuildMessageChannel}
+     */
     @Nonnull
     GuildMessageChannel asGuildMessageChannel();
 
+    /**
+     * Casts this union to a {@link StandardGuildChannel}.
+     * <br>This works for the following channel types represented by this union:
+     * <ul>
+     *     <li>{@link TextChannel}</li>
+     *     <li>{@link NewsChannel}</li>
+     * </ul>
+     *
+     * Note: This is effectively equivalent to using the cast operator:
+     * <pre><code>
+     * //These are the same!
+     * StandardGuildChannel channel = union.asStandardGuildChannel();
+     * StandardGuildChannel channel2 = (StandardGuildChannel) union;
+     * </code></pre>
+     *
+     * @throws IllegalStateException
+     *         If the channel represented by this union is not actually a {@link StandardGuildChannel}.
+     *
+     * @return The channel as a {@link StandardGuildChannel}
+     */
     @Nonnull
     StandardGuildChannel asStandardGuildChannel();
 
+    /**
+     * Casts this union to a {@link StandardGuildMessageChannel}.
+     * <br>This works for the following channel types represented by this union:
+     * <ul>
+     *     <li>{@link TextChannel}</li>
+     *     <li>{@link NewsChannel}</li>
+     * </ul>
+     *
+     * Note: This is effectively equivalent to using the cast operator:
+     * <pre><code>
+     * //These are the same!
+     * StandardGuildMessageChannel channel = union.asStandardGuildMessageChannel();
+     * StandardGuildMessageChannel channel2 = (StandardGuildMessageChannel) union;
+     * </code></pre>
+     *
+     * @throws IllegalStateException
+     *         If the channel represented by this union is not actually a {@link StandardGuildMessageChannel}.
+     *
+     * @return The channel as a {@link StandardGuildMessageChannel}
+     */
     @Nonnull
     StandardGuildMessageChannel asStandardGuildMessageChannel();
 }
