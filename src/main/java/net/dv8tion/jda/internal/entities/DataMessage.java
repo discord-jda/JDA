@@ -19,6 +19,7 @@ package net.dv8tion.jda.internal.entities;
 import net.dv8tion.jda.api.entities.MessageActivity;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.MessageType;
+import net.dv8tion.jda.api.entities.sticker.StickerSnowflake;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 
@@ -34,9 +35,11 @@ public class DataMessage extends AbstractMessage
     private final String[] mentionedUsers;
     private final LayoutComponent[] components;
     private Collection<? extends MessageEmbed> embeds;
+    private Collection<? extends StickerSnowflake> stickers;
 
     public DataMessage(boolean tts, String content, String nonce, Collection<? extends MessageEmbed> embeds,
-                       EnumSet<MentionType> allowedMentions, String[] mentionedUsers, String[] mentionedRoles, LayoutComponent[] components)
+                       EnumSet<MentionType> allowedMentions, String[] mentionedUsers, String[] mentionedRoles,
+                       LayoutComponent[] components, Collection<? extends StickerSnowflake> stickers)
     {
         super(content, nonce, tts);
         this.embeds = embeds;
@@ -44,11 +47,12 @@ public class DataMessage extends AbstractMessage
         this.mentionedUsers = mentionedUsers;
         this.mentionedRoles = mentionedRoles;
         this.components = components;
+        this.stickers = stickers;
     }
 
     public DataMessage(boolean tts, String content, String nonce, Collection<? extends MessageEmbed> embeds)
     {
-        this(tts, content, nonce, embeds, null, new String[0], new String[0], new LayoutComponent[0]);
+        this(tts, content, nonce, embeds, null, new String[0], new String[0], new LayoutComponent[0], Collections.emptyList());
     }
 
     public EnumSet<MentionType> getAllowedMentions()
@@ -121,6 +125,12 @@ public class DataMessage extends AbstractMessage
                     .filter(ActionRow.class::isInstance)
                     .map(ActionRow.class::cast)
                     .collect(Collectors.toList());
+    }
+
+    @Nonnull
+    public Collection<? extends StickerSnowflake> getStickerSnowflakes()
+    {
+        return stickers;
     }
 
     // UNSUPPORTED OPERATIONS ON MESSAGE BUILDER OUTPUT
