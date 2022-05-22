@@ -106,7 +106,7 @@ public class ThreadMembersUpdateHandler extends SocketHandler
             ThreadMember threadMember = addedThreadMembers.get(i);
             api.handleEvent(
                     new ThreadMemberJoinEvent(
-                            api, responseNumber, getPassthrough(addedMembersJson.getObject(i)),
+                            api, responseNumber, getPassthrough(),
                             thread, threadMember));
         }
     }
@@ -131,7 +131,7 @@ public class ThreadMembersUpdateHandler extends SocketHandler
         {
             api.handleEvent(
                 new ThreadMemberLeaveEvent( //Well we're not going to pass through a single ID right ?
-                    api, responseNumber,
+                    api, responseNumber, getPassthrough(),
                         thread, threadMemberId, removedThreadMembers.remove(threadMemberId)));
         }
     }

@@ -46,11 +46,6 @@ public abstract class SocketHandler
         return api.isEventPassthrough() ? allContent : null;
     }
 
-    @Nullable
-    protected DataObject getPassthrough(DataObject rawData) {
-        return api.isEventPassthrough() ? rawData : null;
-    }
-
     protected JDAImpl getJDA()
     {
         return api;
