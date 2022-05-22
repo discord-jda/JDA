@@ -89,7 +89,7 @@ public interface IWebhookContainer extends GuildChannel
      * <p>Possible ErrorResponses include:
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_WEBHOOK}
-     *     <br>The provided id does not refer to a WebHook present in this chanel, either due
+     *     <br>The provided id does not refer to a WebHook present in this channel, either due
      *         to it not existing or having already been deleted.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
