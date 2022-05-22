@@ -17,7 +17,6 @@
 package net.dv8tion.jda.internal.entities.mixin.channel.middleman;
 
 import net.dv8tion.jda.api.entities.StandardGuildChannel;
-import net.dv8tion.jda.api.entities.channel.unions.StandardGuildChannelUnion;
 import net.dv8tion.jda.internal.entities.mixin.channel.attribute.ICategorizableChannelMixin;
 import net.dv8tion.jda.internal.entities.mixin.channel.attribute.IInviteContainerMixin;
 import net.dv8tion.jda.internal.entities.mixin.channel.attribute.IPermissionContainerMixin;
@@ -25,7 +24,6 @@ import net.dv8tion.jda.internal.entities.mixin.channel.attribute.IPositionableCh
 
 public interface StandardGuildChannelMixin<T extends StandardGuildChannelMixin<T>> extends
         StandardGuildChannel,
-        StandardGuildChannelUnion,
         ICategorizableChannelMixin<T>,
         IPositionableChannelMixin<T>,
         IPermissionContainerMixin<T>,
