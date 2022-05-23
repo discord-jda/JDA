@@ -2696,7 +2696,7 @@ public interface Message extends ISnowflake, Formattable
         @Nonnull
         public String getProxyUrl()
         {
-            return proxyUrl;
+            return isImage() ? proxyUrl : url;
         }
 
         /**
