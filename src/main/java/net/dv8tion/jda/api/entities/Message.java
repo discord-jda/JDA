@@ -2696,7 +2696,7 @@ public interface Message extends ISnowflake, Formattable
         @Nonnull
         public String getProxyUrl()
         {
-            return isImage() ? proxyUrl : url;
+            return proxyUrl;
         }
 
         /**
@@ -2709,7 +2709,7 @@ public interface Message extends ISnowflake, Formattable
         @Nonnull
         public AttachmentProxy getProxy()
         {
-            return new AttachmentProxy(getProxyUrl());
+            return new AttachmentProxy(isImage() ? proxyUrl : url);
         }
 
         /**
