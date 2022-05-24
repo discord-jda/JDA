@@ -63,7 +63,6 @@ public class MessageReactionHandler extends SocketHandler
 
         final Long emojiId = emoji.isNull("id") ? null : emoji.getLong("id");
         String emojiName = emoji.getString("name", null);
-        final boolean emojiAnimated = emoji.getBoolean("animated");
 
         if (emojiId == null && emojiName == null)
         {
@@ -147,6 +146,9 @@ public class MessageReactionHandler extends SocketHandler
             );
         }
 
+        // reaction remove has null name sometimes
+        if (emoji.isNull("name"))
+            emoji.put("name", "");
         Emoji rEmoji = Emoji.fromData(emoji);
 
         MessageReaction reaction = new MessageReaction(channel, rEmoji, messageId, userId == api.getSelfUser().getIdLong(), -1);

@@ -88,7 +88,7 @@ public class EmojiImpl implements Emoji, CustomEmoji, UnicodeEmoji
         if (id != 0)
         {
             json.put("id", id)
-                    .put("animated", animated);
+                .put("animated", animated);
         }
         return json;
     }

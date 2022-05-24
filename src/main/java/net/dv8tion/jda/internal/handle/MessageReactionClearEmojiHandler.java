@@ -66,6 +66,8 @@ public class MessageReactionClearEmojiHandler extends SocketHandler
 
         long messageId = content.getUnsignedLong("message_id");
         DataObject emoji = content.getObject("emoji");
+        if (emoji.isNull("name"))
+            emoji.put("name", "");
         Emoji reactionEmoji = Emoji.fromData(emoji);
 
         MessageReaction reaction = new MessageReaction(channel, reactionEmoji, messageId, false, 0);
