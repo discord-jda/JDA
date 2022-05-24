@@ -521,12 +521,12 @@ public class JDABuilder
     }
 
     /**
-     * Whether JDA should store the raw {@link net.dv8tion.jda.api.utils.data.DataObject} for every discord event.
+     * Whether JDA should store the raw {@link net.dv8tion.jda.api.utils.data.DataObject DataObject} for every discord event.
      * <br>Warning: be aware that enabling this could consume a lot of memory if your event objects have a long lifetime
      * <br>Default: {@code false}
      *
      * @param  enable
-     *         True, if JDA should add the raw {@link net.dv8tion.jda.api.utils.data.DataObject} to every discord event.
+     *         True, if JDA should add the raw {@link net.dv8tion.jda.api.utils.data.DataObject DataObject} to every discord event.
      *
      * @return The JDABuilder instance. Useful for chaining.
      */
