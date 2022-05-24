@@ -18,7 +18,6 @@ package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.emoji.CustomEmoji;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.exceptions.PermissionException;
@@ -346,16 +345,15 @@ public class MessageReaction
         boolean self = user.equals(getJDA().getSelfUser());
         if (!self)
         {
-            if (!channel.getType().isGuild()) {
+            if (!channel.getType().isGuild())
                 throw new PermissionException("Unable to remove Reaction of other user in non-guild channels!");
-            }
 
             IPermissionContainer permChannel = getGuildChannel().getPermissionContainer();
             if (!permChannel.getGuild().getSelfMember().hasPermission(permChannel, Permission.MESSAGE_MANAGE))
                 throw new InsufficientPermissionException(permChannel, Permission.MESSAGE_MANAGE);
         }
 
-        String code = getReactionCode();
+        String code = EncodingUtil.encodeReaction(emoji.getAsReactionCode());
         String target = self ? "@me" : user.getId();
         Route.CompiledRoute route = Route.Messages.REMOVE_REACTION.compile(channel.getId(), getMessageId(), code, target);
         return new RestActionImpl<>(getJDA(), route);
@@ -396,14 +394,7 @@ public class MessageReaction
         if (!getChannelType().isGuild())
             throw new UnsupportedOperationException("Cannot clear reactions on a message sent from a private channel");
         GuildMessageChannel guildChannel = Objects.requireNonNull(getGuildChannel());
-        return guildChannel.clearReactionsById(getMessageId(), getReactionCode());
-    }
-
-    private String getReactionCode()
-    {
-        return emoji.getType() == Emoji.Type.CUSTOM
-                ? emoji.getName() + ":" + ((CustomEmoji) emoji).getId()
-                : EncodingUtil.encodeUTF8(emoji.getName());
+        return guildChannel.clearReactionsById(getMessageId(), emoji);
     }
 
     @Override
