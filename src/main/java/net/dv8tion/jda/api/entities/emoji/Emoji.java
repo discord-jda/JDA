@@ -148,6 +148,7 @@ public interface Emoji extends SerializableData, Formattable
     @Nonnull
     static Emoji fromFormatted(@Nonnull String code)
     {
+        Checks.notEmpty(code, "Formatting Code");
         Matcher matcher = Message.MentionType.EMOJI.getPattern().matcher(code);
         if (matcher.matches())
             return fromCustom(matcher.group(1), Long.parseUnsignedLong(matcher.group(2)), code.startsWith("<a"));
@@ -168,6 +169,7 @@ public interface Emoji extends SerializableData, Formattable
     @Nonnull
     static Emoji fromData(@Nonnull DataObject emoji)
     {
+        Checks.notNull(emoji, "Emoji Data");
         return new EmojiImpl(emoji.getString("name"),
                 emoji.getUnsignedLong("id", 0),
                 emoji.getBoolean("animated"));
