@@ -369,9 +369,9 @@ public interface Message extends ISnowflake, Formattable
      * <p>This includes resolving:
      * <br>{@link User Users} / {@link net.dv8tion.jda.api.entities.Member Members}
      * to their @Username/@Nickname format,
-     * <br>{@link net.dv8tion.jda.api.entities.TextChannel TextChannels} to their #ChannelName format,
+     * <br>{@link net.dv8tion.jda.api.entities.GuildChannel GuildChannels} to their #ChannelName format,
      * <br>{@link net.dv8tion.jda.api.entities.Role Roles} to their @RoleName format
-     * <br>{@link RichCustomEmoji Custom Emojis} (not unicode emojis!) to their {@code :name:} format.
+     * <br>{@link CustomEmoji Custom Emojis} (not unicode emojis!) to their {@code :name:} format.
      *
      * <p>If you want the actual Content (mentions as {@literal <@id>}), use {@link #getContentRaw()} instead
      *
@@ -1609,7 +1609,7 @@ public interface Message extends ISnowflake, Formattable
      * <p>This message instance will not be updated by this operation.
      *
      * <p>Reactions are the small emoji below a message that have a counter beside them
-     * showing how many users have reacted with the same emoji/emoji.
+     * showing how many users have reacted with the same emoji.
      *
      * <p><b>Neither success nor failure of this request will affect this Message's {@link #getReactions()} return as Message is immutable.</b>
      *

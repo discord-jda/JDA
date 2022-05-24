@@ -17,7 +17,6 @@ package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.AccountType;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
-import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import net.dv8tion.jda.api.exceptions.AccountTypeException;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
@@ -1771,7 +1770,7 @@ public interface MessageChannel extends Channel, Formattable
      * @param  messageId
      *         The messageId to attach the reaction to
      * @param  emoji
-     *         The not-null {@link RichCustomEmoji} to react with
+     *         The {@link Emoji} to react with
      *
      * @throws java.lang.IllegalArgumentException
      *         <ul>
@@ -1899,11 +1898,11 @@ public interface MessageChannel extends Channel, Formattable
     }
 
     /**
-     * This obtains the {@link net.dv8tion.jda.api.entities.User users} who reacted to a message using the given {@link RichCustomEmoji emoji}.
+     * This obtains the {@link net.dv8tion.jda.api.entities.User users} who reacted to a message using the given {@link Emoji}.
      *
      * <p>Messages maintain a list of reactions, alongside a list of users who added them.
      *
-     * <p>Using this data, we can obtain a {@link net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationAction ReactionPaginationAction}
+     * <p>Using this data, we can obtain a {@link ReactionPaginationAction ReactionPaginationAction}
      * of the users who've reacted to the given message.
      *
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
@@ -1932,10 +1931,10 @@ public interface MessageChannel extends Channel, Formattable
      * @throws java.lang.IllegalArgumentException
      *         <ul>
      *             <li>If provided {@code messageId} is {@code null} or not a valid snowflake.</li>
-     *             <li>If provided {@link Emoji emoji} is {@code null}.</li>
+     *             <li>If provided {@code emoji} is {@code null}.</li>
      *         </ul>
      *
-     * @return The {@link net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationAction ReactionPaginationAction} of the emoji's users.
+     * @return The {@link ReactionPaginationAction} of the emoji's users.
      */
     @Nonnull
     @CheckReturnValue
@@ -1952,7 +1951,7 @@ public interface MessageChannel extends Channel, Formattable
      *
      * <p>Messages maintain a list of reactions, alongside a list of users who added them.
      *
-     * <p>Using this data, we can obtain a {@link net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationAction ReactionPaginationAction}
+     * <p>Using this data, we can obtain a {@link ReactionPaginationAction ReactionPaginationAction}
      * of the users who've reacted to the given message.
      *
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
@@ -1986,7 +1985,7 @@ public interface MessageChannel extends Channel, Formattable
      *             <li>If provided {@code emoji} is {@code null}.</li>
      *         </ul>
      *
-     * @return The {@link net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationAction ReactionPaginationAction} of the emoji's users.
+     * @return The {@link ReactionPaginationAction ReactionPaginationAction} of the emoji's users.
      *
      * @since  4.2.0
      */

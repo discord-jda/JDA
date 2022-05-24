@@ -32,7 +32,8 @@ import java.util.List;
 /**
  * Represents a Custom Emoji.
  *
- * <p><b>This does not represent unicode emojis like they are used in the official client! (:smiley: is not a custom emoji)</b>
+ * <p><b>This does not represent unicode emojis like they are used in the official client!
+ * The format {@code :smiley:} is a client-side alias which is replaced by the unicode emoji, not a custom emoji.</b>
  *
  * @see    Guild#getEmojiCache()
  * @see    Guild#getEmojiById(long)
@@ -107,6 +108,8 @@ public interface RichCustomEmoji extends CustomEmoji
      *         If this emoji does not have user information
      *
      * @return The user who created this emoji, or null if not provided
+     *
+     * @see    #retrieveOwner()
      */
     @Nullable
     User getOwner();
@@ -121,6 +124,8 @@ public interface RichCustomEmoji extends CustomEmoji
      *         in this guild
      *
      * @return {@link RestAction} - Type: {@link User}
+     *
+     * @see    #getOwner()
      */
     @Nonnull
     @CheckReturnValue

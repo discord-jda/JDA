@@ -28,6 +28,9 @@ import java.util.Formatter;
  *
  * <p>This contains the most minimal representation of a custom emoji, via id and name.
  *
+ * <p><b>This does not represent unicode emojis like they are used in the official client!
+ * The format {@code :smiley:} is a client-side alias which is replaced by the unicode emoji, not a custom emoji.</b>
+ *
  * @see Emoji#fromCustom(String, long, boolean)
  * @see Emoji#fromCustom(CustomEmoji)
  * @see Emoji#fromFormatted(String)

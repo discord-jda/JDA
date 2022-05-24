@@ -387,7 +387,7 @@ public interface Member extends IMentionable, IPermissionHolder, UserSnowflake
     boolean canInteract(@Nonnull Role role);
 
     /**
-     * Whether this Member can interact with the provided {@link RichCustomEmoji Custom Emoji}
+     * Whether this Member can interact with the provided {@link RichCustomEmoji}
      * (use in a message)
      *
      * @param  emoji

@@ -2,7 +2,6 @@ package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
-import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import net.dv8tion.jda.api.entities.sticker.GuildSticker;
 import net.dv8tion.jda.api.entities.sticker.Sticker;
 import net.dv8tion.jda.api.entities.sticker.StickerSnowflake;
@@ -345,7 +344,7 @@ public interface GuildMessageChannel extends GuildChannel, MessageChannel
      *         or losing the {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL VIEW_CHANNEL} permission</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_EMOJI UNKNOWN_EMOJI}
-     *     <br>The provided {@link RichCustomEmoji} was deleted or doesn't exist.</li>
+     *     <br>The provided {@link Emoji} was deleted or doesn't exist.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
      *     <br>The message was deleted.</li>
@@ -377,7 +376,7 @@ public interface GuildMessageChannel extends GuildChannel, MessageChannel
      *         or losing the {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL VIEW_CHANNEL} permission</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_EMOJI UNKNOWN_EMOJI}
-     *     <br>The provided {@link RichCustomEmoji} was deleted or doesn't exist.</li>
+     *     <br>The provided {@link Emoji} was deleted or doesn't exist.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
      *     <br>The message was deleted.</li>

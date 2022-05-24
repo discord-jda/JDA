@@ -21,7 +21,7 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import javax.annotation.Nonnull;
 
 /**
- * Represents a standard unicode emoji such as {@code :smiley:}.
+ * Represents a standard unicode emoji such as 😃 (client alias: {@code :smiley:}).
  * 
  * <p>This type only encapsulates the unicode character and is unaware of the human-readable aliases used by the discord client.
  * 
