@@ -81,7 +81,7 @@ public class CommandPermissions
         if (permissions.isEmpty())
             return ENABLED;
 
-        return new CommandPermissions(Permission.getRaw(permissions));
+        return enabledFor(Permission.getRaw(permissions));
     }
 
     /**
