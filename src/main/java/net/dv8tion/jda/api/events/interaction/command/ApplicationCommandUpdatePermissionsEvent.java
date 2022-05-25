@@ -187,18 +187,15 @@ public class ApplicationCommandUpdatePermissionsEvent extends GenericGuildEvent
         }
 
         /**
-         * Whether this Permission targets the @everyone Role
+         * Whether this Permission targets the {@literal @everyone} Role
          *
-         * @return Whether this Permission targets the @everyone Role
+         * @return Whether this Permission targets the {@literal @everyone} Role
          *
          * @see    Guild#getPublicRole()
          */
         public boolean isPublicRole()
         {
-            if (type != Type.ROLE)
-                return false;
-
-            return id == guild.getIdLong();
+            return type == Type.ROLE && id == guild.getIdLong();
         }
 
         /**
@@ -208,10 +205,7 @@ public class ApplicationCommandUpdatePermissionsEvent extends GenericGuildEvent
          */
         public boolean isAllChannels()
         {
-            if (type != Type.CHANNEL)
-                return false;
-
-            return id == guild.getIdLong() - 1;
+            return type == Type.CHANNEL && id == guild.getIdLong() - 1;
         }
 
         /**
@@ -310,7 +304,8 @@ public class ApplicationCommandUpdatePermissionsEvent extends GenericGuildEvent
         /**
          * The Type a {@link Permission Permission} can have
          */
-        public enum Type {
+        public enum Type
+        {
             /** Placeholder for future types */
             UNKNOWN(-1),
 
@@ -353,8 +348,10 @@ public class ApplicationCommandUpdatePermissionsEvent extends GenericGuildEvent
             public static Type fromKey(int key)
             {
                 for (Type type : values())
+                {
                     if (type.getKey() == key)
                         return type;
+                }
 
                 return UNKNOWN;
             }

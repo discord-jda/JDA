@@ -533,7 +533,7 @@ public enum ActionType
     THREAD_DELETE(112, TargetType.THREAD),
 
     /**
-     * A user updated an interaction-commands' permission
+     * A moderator updated the permissions for an application
      */
     APPLICATION_COMMAND_PERMISSION_UPDATE(121, TargetType.INTEGRATION),
 

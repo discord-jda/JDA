@@ -39,7 +39,9 @@ public class ApplicationCommandPermissionsUpdateHandler extends SocketHandler
                 return guildId;
             else if (guild == null)
                 return null;
-        } else {
+        }
+        else
+        {
             return null;
         }
 
