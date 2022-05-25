@@ -130,6 +130,13 @@ public class IntegrationPrivilege implements ISnowflake
         return ((IntegrationPrivilege) obj).id == id;
     }
 
+    @Override
+    public String toString()
+    {
+        return String.format("IntegrationPrivilege[type=%s, id=%o, granted=%s, everyone=%s, all_channels=%s]",
+                type, id, enabled, targetsEveryone(), targetsAllChannels());
+    }
+
     /**
      * The target type this privilege applies to.
      */
