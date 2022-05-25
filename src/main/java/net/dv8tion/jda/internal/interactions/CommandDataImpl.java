@@ -16,8 +16,6 @@
 
 package net.dv8tion.jda.internal.interactions;
 
-import net.dv8tion.jda.annotations.DeprecatedSince;
-import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.api.interactions.commands.CommandPermissions;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
@@ -77,13 +75,13 @@ public class CommandDataImpl implements SlashCommandData
         DataObject json = DataObject.empty()
                 .put("type", type.getId())
                 .put("name", name)
-                .put("options", options);
+                .put("options", options)
+                .put("dm_permission", guildOnly)
+                .put("default_member_permissions", defaultMemberPermissions == CommandPermissions.DISABLED
+                        ? null
+                        : Long.toUnsignedString(defaultMemberPermissions.getPermissionsRaw()));
         if (type == Command.Type.SLASH)
             json.put("description", description);
-        if (guildOnly)
-            json.put("dm_permission", false);
-        if (defaultMemberPermissions != CommandPermissions.ENABLED)
-            json.put("default_member_permissions", Long.toUnsignedString(defaultMemberPermissions.getPermissionsRaw()));
         return json;
     }
 
