@@ -77,7 +77,7 @@ public class CommandDataImpl implements SlashCommandData
                 .put("name", name)
                 .put("options", options)
                 .put("dm_permission", guildOnly)
-                .put("default_member_permissions", defaultMemberPermissions == CommandPermissions.DISABLED
+                .put("default_member_permissions", defaultMemberPermissions == CommandPermissions.ENABLED
                         ? null
                         : Long.toUnsignedString(defaultMemberPermissions.getPermissionsRaw()));
         if (type == Command.Type.SLASH)
