@@ -32,11 +32,9 @@ import java.util.List;
 public class CommandDataTest
 {
     @Test
-    @SuppressWarnings("deprecation")
     public void testNormal()
     {
         CommandData command = new CommandDataImpl("ban", "Ban a user from this server")
-                .setDefaultEnabled(false)
                 .addOption(OptionType.USER, "user", "The user to ban", true) // required before non-required
                 .addOption(OptionType.STRING, "reason", "The ban reason") // test that default is false
                 .addOption(OptionType.INTEGER, "days", "The duration of the ban", false); // test with explicit false
@@ -65,11 +63,9 @@ public class CommandDataTest
     }
 
     @Test
-    @SuppressWarnings("deprecation")
     public void testSubcommand()
     {
         CommandDataImpl command = new CommandDataImpl("mod", "Moderation commands")
-                .setDefaultEnabled(true)
                 .addSubcommands(new SubcommandData("ban", "Ban a user from this server")
                     .addOption(OptionType.USER, "user", "The user to ban", true) // required before non-required
                     .addOption(OptionType.STRING, "reason", "The ban reason") // test that default is false
@@ -78,7 +74,6 @@ public class CommandDataTest
         DataObject data = command.toData();
         Assertions.assertEquals("mod", data.getString("name"));
         Assertions.assertEquals("Moderation commands", data.getString("description"));
-        Assertions.assertTrue(data.getBoolean("default_permission"));
 
         DataObject subdata = data.getArray("options").getObject(0);
         Assertions.assertEquals("ban", subdata.getString("name"));
@@ -115,7 +110,6 @@ public class CommandDataTest
         DataObject data = command.toData();
         Assertions.assertEquals("mod", data.getString("name"));
         Assertions.assertEquals("Moderation commands", data.getString("description"));
-        Assertions.assertTrue(data.getBoolean("default_permission"));
 
         DataObject group = data.getArray("options").getObject(0);
         Assertions.assertEquals("ban", group.getString("name"));

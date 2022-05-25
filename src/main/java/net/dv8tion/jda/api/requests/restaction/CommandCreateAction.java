@@ -61,14 +61,6 @@ public interface CommandCreateAction extends RestAction<Command>, SlashCommandDa
 
     @Nonnull
     @Override
-    @Deprecated
-    @ForRemoval
-    @CheckReturnValue
-    @DeprecatedSince("5.0.0")
-    CommandCreateAction setDefaultEnabled(boolean enabled);
-
-    @Nonnull
-    @Override
     @CheckReturnValue
     CommandCreateAction setName(@Nonnull String name);
 

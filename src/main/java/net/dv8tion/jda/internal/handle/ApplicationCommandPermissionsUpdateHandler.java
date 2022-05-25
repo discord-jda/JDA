@@ -16,9 +16,15 @@
 package net.dv8tion.jda.internal.handle;
 
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.events.interaction.command.ApplicationCommandUpdatePermissionsEvent;
+import net.dv8tion.jda.api.events.interaction.command.ApplicationCommandUpdatePrivilegesEvent;
+import net.dv8tion.jda.api.events.interaction.command.ApplicationUpdatePrivilegesEvent;
+import net.dv8tion.jda.api.interactions.commands.privileges.IntegrationPrivilege;
+import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class ApplicationCommandPermissionsUpdateHandler extends SocketHandler
 {
@@ -45,7 +51,19 @@ public class ApplicationCommandPermissionsUpdateHandler extends SocketHandler
             return null;
         }
 
-        api.handleEvent(new ApplicationCommandUpdatePermissionsEvent(api, responseNumber, guild, content));
+        long id = content.getUnsignedLong("id");
+        long applicationId = content.getUnsignedLong("application_id");
+
+        List<IntegrationPrivilege> privileges = content.getArray("permissions")
+                .stream(DataArray::getObject)
+                .map(obj -> new IntegrationPrivilege(guild, IntegrationPrivilege.Type.fromKey(obj.getInt("type")),
+                        obj.getBoolean("permission"), obj.getUnsignedLong("id")))
+                .collect(Collectors.toList());
+
+        if (id != applicationId)
+            api.handleEvent(new ApplicationCommandUpdatePrivilegesEvent(api, responseNumber, guild, id, applicationId, privileges));
+        else
+            api.handleEvent(new ApplicationUpdatePrivilegesEvent(api, responseNumber, guild, applicationId, privileges));
         return null;
     }
 }

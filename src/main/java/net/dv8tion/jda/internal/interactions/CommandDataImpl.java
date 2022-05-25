@@ -43,7 +43,6 @@ public class CommandDataImpl implements SlashCommandData
     private boolean allowSubcommands = true;
     private boolean allowGroups = true;
     private boolean allowOption = true;
-    private boolean defaultPermissions = true; // whether the command uses default_permissions (blacklist/whitelist)
     private boolean allowRequired = true;
     private boolean guildOnly = false;
     private CommandPermissions defaultMemberPermissions = CommandPermissions.ENABLED;
@@ -76,7 +75,6 @@ public class CommandDataImpl implements SlashCommandData
     public DataObject toData()
     {
         DataObject json = DataObject.empty()
-                .put("default_permission", defaultPermissions)
                 .put("type", type.getId())
                 .put("name", name)
                 .put("options", options);
@@ -139,17 +137,6 @@ public class CommandDataImpl implements SlashCommandData
 
     @Nonnull
     @Override
-    @Deprecated
-    @ForRemoval
-    @DeprecatedSince("5.0.0")
-    public CommandDataImpl setDefaultEnabled(boolean enabled)
-    {
-        this.defaultPermissions = enabled;
-        return this;
-    }
-
-    @Nonnull
-    @Override
     public CommandDataImpl setDefaultPermissions(@Nonnull CommandPermissions permissions)
     {
         Checks.notNull(permissions, "Permissions");
@@ -163,15 +150,6 @@ public class CommandDataImpl implements SlashCommandData
     {
         this.guildOnly = guildOnly;
         return this;
-    }
-
-    @Deprecated
-    @ForRemoval
-    @DeprecatedSince("5.0.0")
-    @Override
-    public boolean isDefaultEnabled()
-    {
-        return defaultPermissions;
     }
 
     @Nonnull

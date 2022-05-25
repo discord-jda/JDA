@@ -42,13 +42,6 @@ public interface SlashCommandData extends CommandData
 
     @Nonnull
     @Override
-    @Deprecated
-    @ForRemoval
-    @DeprecatedSince("5.0.0")
-    SlashCommandData setDefaultEnabled(boolean enabled);
-
-    @Nonnull
-    @Override
     SlashCommandData setDefaultPermissions(@Nonnull CommandPermissions permission);
 
     @Nonnull

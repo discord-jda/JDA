@@ -82,17 +82,6 @@ public class CommandCreateActionImpl extends RestActionImpl<Command> implements 
 
     @Nonnull
     @Override
-    @Deprecated
-    @ForRemoval
-    @DeprecatedSince("5.0.0")
-    public CommandCreateAction setDefaultEnabled(boolean enabled)
-    {
-        data.setDefaultEnabled(enabled);
-        return this;
-    }
-
-    @Nonnull
-    @Override
     public CommandCreateAction setDefaultPermissions(@Nonnull CommandPermissions permission)
     {
         data.setDefaultPermissions(permission);
@@ -112,15 +101,6 @@ public class CommandCreateActionImpl extends RestActionImpl<Command> implements 
     public String getName()
     {
         return data.getName();
-    }
-
-    @Override
-    @Deprecated
-    @ForRemoval
-    @DeprecatedSince("5.0.0")
-    public boolean isDefaultEnabled()
-    {
-        return data.isDefaultEnabled();
     }
 
     @Nonnull

@@ -21,7 +21,7 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.commands.CommandPermissions;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.interactions.commands.privileges.CommandPrivilege;
+import net.dv8tion.jda.api.interactions.commands.privileges.IntegrationPrivilege;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.CommandEditAction;
 import net.dv8tion.jda.api.utils.data.DataArray;
@@ -52,7 +52,7 @@ public class CommandImpl implements Command
     private final List<Command.SubcommandGroup> groups;
     private final List<Command.Subcommand> subcommands;
     private final long id, guildId, applicationId, version;
-    private final boolean defaultEnabled, guildOnly;
+    private final boolean guildOnly;
     private final Command.Type type;
     private final CommandPermissions defaultMemberPermissions;
 
@@ -64,7 +64,6 @@ public class CommandImpl implements Command
         this.description = json.getString("description", "");
         this.type = Command.Type.fromId(json.getInt("type", 1));
         this.id = json.getUnsignedLong("id");
-        this.defaultEnabled = json.getBoolean("default_permission");
         this.guildId = guild != null ? guild.getIdLong() : 0L;
         this.applicationId = json.getUnsignedLong("application_id", api.getSelfUser().getApplicationIdLong());
         this.options = parseOptions(json, OPTION_TEST, Command.Option::new);
@@ -113,28 +112,11 @@ public class CommandImpl implements Command
 
     @Nonnull
     @Override
-    public RestAction<List<CommandPrivilege>> retrievePrivileges(@Nonnull Guild guild)
+    public RestAction<List<IntegrationPrivilege>> retrievePrivileges(@Nonnull Guild guild)
     {
         checkSelfUser("Cannot retrieve privileges for a command from another bot!");
         Checks.notNull(guild, "Guild");
         return guild.retrieveCommandPrivilegesById(id);
-    }
-
-    @Nonnull
-    @Override
-    public RestAction<List<CommandPrivilege>> updatePrivileges(@Nonnull Guild guild, @Nonnull Collection<? extends CommandPrivilege> privileges)
-    {
-        checkSelfUser("Cannot update privileges for a command from another bot!");
-        Checks.notNull(guild, "Guild");
-        return guild.updateCommandPrivilegesById(id, privileges);
-    }
-
-    @Nonnull
-    @Override
-    public RestAction<List<CommandPrivilege>> updatePrivileges(@Nonnull Guild guild, @Nonnull CommandPrivilege... privileges)
-    {
-        Checks.noneNull(privileges, "CommandPrivileges");
-        return updatePrivileges(guild, Arrays.asList(privileges));
     }
 
     @Nonnull
@@ -163,12 +145,6 @@ public class CommandImpl implements Command
     public String getDescription()
     {
         return description;
-    }
-
-    @Override
-    public boolean isDefaultEnabled()
-    {
-        return defaultEnabled;
     }
 
     @Nonnull
