@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.commands.CommandPermissions;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
@@ -35,6 +37,8 @@ public class CommandDataTest
     public void testNormal()
     {
         CommandData command = new CommandDataImpl("ban", "Ban a user from this server")
+                .setGuildOnly(true)
+                .setDefaultPermissions(CommandPermissions.enabledFor(Permission.BAN_MEMBERS))
                 .addOption(OptionType.USER, "user", "The user to ban", true) // required before non-required
                 .addOption(OptionType.STRING, "reason", "The ban reason") // test that default is false
                 .addOption(OptionType.INTEGER, "days", "The duration of the ban", false); // test with explicit false
@@ -42,7 +46,8 @@ public class CommandDataTest
         DataObject data = command.toData();
         Assertions.assertEquals("ban", data.getString("name"));
         Assertions.assertEquals("Ban a user from this server", data.getString("description"));
-        Assertions.assertFalse(data.getBoolean("default_permission"));
+        Assertions.assertFalse(data.getBoolean("dm_permission"));
+        Assertions.assertEquals(Permission.BAN_MEMBERS.getRawValue(), data.getUnsignedLong("default_member_permissions"));
 
         DataArray options = data.getArray("options");
 
