@@ -58,9 +58,6 @@ public interface CommandData extends SerializableData
      * @param  permission
      *         {@link CommandPermissions} representing the default permissions of this command.
      *
-     * @throws IllegalArgumentException
-     *         If any of the provided Permissions are null or {@link Permission#UNKNOWN UNKNOWN}.
-     *
      * @return The builder instance, for chaining
      */
     @Nonnull
