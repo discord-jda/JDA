@@ -64,7 +64,7 @@ public interface CommandData extends SerializableData
     CommandData setDefaultPermissions(@Nonnull CommandPermissions permission);
 
     /**
-     * Sets whether this command is only usable in a guild.
+     * Sets whether this command is only usable in a guild (Default: false).
      * <br>This only has an effect if this command is registered globally.
      *
      * @param  guildOnly
