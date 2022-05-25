@@ -116,6 +116,6 @@ public class CommandPermissions
     @Nonnull
     public static CommandPermissions enabledFor(long permissions)
     {
-        return enabledFor(Permission.getPermissions(permissions));
+        return new CommandPermissions(permissions);
     }
 }
