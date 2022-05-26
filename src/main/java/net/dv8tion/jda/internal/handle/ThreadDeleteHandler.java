@@ -18,6 +18,7 @@ package net.dv8tion.jda.internal.handle;
 
 import net.dv8tion.jda.api.entities.ThreadChannel;
 import net.dv8tion.jda.api.events.channel.ChannelDeleteEvent;
+import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.GuildImpl;
@@ -43,7 +44,8 @@ public class ThreadDeleteHandler extends SocketHandler
         ThreadChannel thread = getJDA().getThreadChannelsView().remove(threadId);
         if (thread == null || guild == null)
         {
-            WebSocketClient.LOG.debug("THREAD_DELETE attempted to delete a thread that is not yet cached. JSON: {}", content);
+            if (api.isCacheFlagSet(CacheFlag.CHANNELS_THREAD))
+                WebSocketClient.LOG.debug("THREAD_DELETE attempted to delete a thread that is not yet cached. JSON: {}", content);
             return null;
         }
 

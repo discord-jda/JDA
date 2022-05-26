@@ -75,6 +75,9 @@ public class ChannelUpdateHandler extends SocketHandler
         GuildChannel channel = getJDA().getGuildChannelById(channelId);
         if (channel == null)
         {
+            // Drop event if cache flag is disabled
+            if (CacheFlag.fromChannels(type).stream().noneMatch(api::isCacheFlagSet))
+                return null;
             getJDA().getEventCache().cache(EventCache.Type.CHANNEL, channelId, responseNumber, allContent, this::handle);
             EventCache.LOG.debug("CHANNEL_UPDATE attempted to update a channel that does not exist. JSON: {}", content);
             return null;
