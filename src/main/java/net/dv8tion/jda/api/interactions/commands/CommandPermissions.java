@@ -25,7 +25,7 @@ import java.util.Arrays;
 import java.util.Collection;
 
 /**
- * Represents the default permissions for a Discord Interaction-Command.
+ * Represents the default permissions for a Discord Application-Command.
  * <br>Moderators can manually configure or overwrite these permissions in each guild.
  */
 public class CommandPermissions
