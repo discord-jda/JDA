@@ -69,7 +69,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAccessor;
 import java.util.*;
 import java.util.function.Function;
-import java.util.function.ToLongFunction;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -1098,13 +1097,17 @@ public class EntityBuilder
         return channel;
     }
 
+    @Nullable
     public StageChannel createStageChannel(DataObject json, long guildId)
     {
         return createStageChannel(null, json, guildId);
     }
 
+    @Nullable
     public StageChannel createStageChannel(GuildImpl guild, DataObject json, long guildId)
     {
+        if (!api.isCacheFlagSet(CacheFlag.CHANNELS_STAGE))
+            return null;
         boolean playbackCache = false;
         final long id = json.getLong("id");
         StageChannelImpl channel = ((StageChannelImpl) getJDA().getStageChannelView().get(id));
@@ -1138,13 +1141,17 @@ public class EntityBuilder
         return channel;
     }
 
+    @Nullable
     public ThreadChannel createThreadChannel(DataObject json, long guildId)
     {
         return createThreadChannel(null, json, guildId);
     }
 
+    @Nullable
     public ThreadChannel createThreadChannel(GuildImpl guild, DataObject json, long guildId)
     {
+        if (!api.isCacheFlagSet(CacheFlag.CHANNELS_THREAD))
+            return null;
         boolean playbackCache = false;
         final long id = json.getLong("id");
         final ChannelType type = ChannelType.fromId(json.getInt("type"));

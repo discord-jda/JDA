@@ -82,13 +82,17 @@ public enum CacheFlag
      *
      * @since 4.3.0
      */
-    ONLINE_STATUS(GatewayIntent.GUILD_PRESENCES)
+    ONLINE_STATUS(GatewayIntent.GUILD_PRESENCES),
     /** Enables cache for {@link JDA#getVoiceChannelCache()} */
     CHANNELS_VOICE(null),
+    /** Enables cache for {@link JDA#getStageChannelCache()} */
+    CHANNELS_STAGE(null),
     /** Enables cache for {@link JDA#getTextChannelCache()} */
     CHANNELS_TEXT(null),
-    /** Enables cache for {@link JDA#getStoreChannelCache()} */
-    CHANNELS_STORE(null),
+    /** Enables cache for {@link JDA#getNewsChannelCache()} */
+    CHANNELS_NEWS(null),
+    /** Enables cache for {@link JDA#getThreadChannelCache()} */
+    CHANNELS_THREAD(null),
     /** Enables cache for {@link JDA#getCategoryCache()} */
     CHANNELS_CATEGORY(null)
     ;
@@ -163,8 +167,14 @@ public enum CacheFlag
             {
                 case TEXT: enabled.add(CHANNELS_TEXT); break;
                 case VOICE: enabled.add(CHANNELS_VOICE); break;
-                case STORE: enabled.add(CHANNELS_STORE); break;
+                case STAGE: enabled.add(CHANNELS_STAGE); break;
+                case NEWS: enabled.add(CHANNELS_NEWS); break;
                 case CATEGORY: enabled.add(CHANNELS_CATEGORY); break;
+                case GUILD_NEWS_THREAD:
+                case GUILD_PUBLIC_THREAD:
+                case GUILD_PRIVATE_THREAD:
+                    enabled.add(CHANNELS_THREAD);
+                    break;
             }
         }
         return enabled;
