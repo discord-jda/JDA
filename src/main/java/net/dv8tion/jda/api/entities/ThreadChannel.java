@@ -112,9 +112,9 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer
     /**
      * Gets the {@link IThreadContainer parent channel} of this thread.
      *
-     * @see IThreadContainer#getThreadChannels()
-     *
      * @return The parent channel of this thread.
+     *
+     * @see IThreadContainer#getThreadChannels()
      */
     @Nonnull
     IThreadContainer getParentChannel();
@@ -122,13 +122,12 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer
     //todo-v5: document additional subclasses of GuildMessageChannel (VoiceChannels and ForumChannels, when needed)
     /**
      * Gets the {@link GuildMessageChannel parent channel} of this thread, if it is a {@link TextChannel} or {@link NewsChannel}.
-     * <br>
-     * This is a convenience method that will perform the cast if possible, throwing otherwise.
-     *
-     * @return The parent channel of this thread, as a {@link GuildMessageChannel}.
+     * <br>This is a convenience method that will perform the cast if possible, throwing otherwise.
      *
      * @throws UnsupportedOperationException
      *         If the parent channel is not a {@link GuildMessageChannel}.
+     *
+     * @return The parent channel of this thread, as a {@link GuildMessageChannel}.
      */
     @Nonnull
     default GuildMessageChannel getParentMessageChannel()
