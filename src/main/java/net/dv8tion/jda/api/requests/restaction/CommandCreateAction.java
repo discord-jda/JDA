@@ -24,7 +24,6 @@ import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
 import net.dv8tion.jda.api.requests.RestAction;
-import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -132,11 +131,11 @@ public interface CommandCreateAction extends RestAction<Command>, SlashCommandDa
         return (CommandCreateAction) SlashCommandData.super.addSubcommandGroups(groups);
     }
 
-    @NotNull
+    @Nonnull
     @Override
-    SlashCommandData setDefaultPermissions(@NotNull CommandPermissions permission);
+    SlashCommandData setDefaultPermissions(@Nonnull CommandPermissions permission);
 
-    @NotNull
+    @Nonnull
     @Override
     SlashCommandData setGuildOnly(boolean guildOnly);
 }

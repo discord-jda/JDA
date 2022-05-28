@@ -48,7 +48,7 @@ public class ApplicationCommandUpdatePrivilegesEvent extends GenericGuildEvent
     /**
      * The new {@link IntegrationPrivilege Privileges} of this command.
      *
-     * <p>If this list is empty, the default has been applied ({@literal @everyone} only)
+     * <p>If the moderator "Synced" the privileges of the command in question, this will be empty.
      *
      * @return Possibly empty unmodifiable list containing the new Privileges of the affected command.
      */
@@ -63,9 +63,20 @@ public class ApplicationCommandUpdatePrivilegesEvent extends GenericGuildEvent
      *
      * @return id of the command in question.
      */
-    public long getCommandId()
+    public long getCommandIdLong()
     {
         return commandId;
+    }
+
+    /**
+     * The id of the command in question.
+     *
+     * @return id of the command in question.
+     */
+    @Nonnull
+    public String getCommandId()
+    {
+        return Long.toUnsignedString(commandId);
     }
 
     /**
@@ -73,8 +84,19 @@ public class ApplicationCommandUpdatePrivilegesEvent extends GenericGuildEvent
      *
      * @return id of the application in question.
      */
-    public long getApplicationId()
+    public long getApplicationIdLong()
     {
         return applicationId;
+    }
+
+    /**
+     * The id of the application whose command has changed.
+     *
+     * @return id of the application in question.
+     */
+    @Nonnull
+    public String getApplicationId()
+    {
+        return Long.toUnsignedString(applicationId);
     }
 }

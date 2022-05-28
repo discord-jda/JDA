@@ -46,7 +46,7 @@ public class ApplicationUpdatePrivilegesEvent extends GenericGuildEvent
     /**
      * The new {@link IntegrationPrivilege Privileges} of the application.
      *
-     * <p>If this list is empty, the default has been applied ({@literal @everyone} only)
+     * <p>If the moderator "Synced" the privileges of the application in question, this will be empty.
      *
      * @return Possibly empty unmodifiable list containing the new IntegrationPrivileges of the affected application.
      */
@@ -61,8 +61,19 @@ public class ApplicationUpdatePrivilegesEvent extends GenericGuildEvent
      *
      * @return id of the application in question.
      */
-    public long getApplicationId()
+    public long getApplicationIdLong()
     {
         return applicationId;
+    }
+
+    /**
+     * The id of the application in question.
+     *
+     * @return id of the application in question.
+     */
+    @Nonnull
+    public String getApplicationId()
+    {
+        return Long.toUnsignedString(applicationId);
     }
 }

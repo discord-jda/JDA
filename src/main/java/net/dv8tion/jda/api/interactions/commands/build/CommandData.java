@@ -51,12 +51,15 @@ public interface CommandData extends SerializableData
 
     /**
      * Sets the default {@link CommandPermissions} for this command.
-     * <br>By default, everyone can use this command. This can be configured or overwritten by moderators in each guild.
+     * <br>By default, everyone can use this command ({@link CommandPermissions#ENABLED}). This can be configured or overwritten by moderators in each guild.
      *
      * <p>Passing {@link CommandPermissions#DISABLED} will only show this command to admins.
      *
      * @param  permission
      *         {@link CommandPermissions} representing the default permissions of this command.
+     *
+     * @see CommandPermissions#ENABLED
+     * @see CommandPermissions#DISABLED
      *
      * @return The builder instance, for chaining
      */
@@ -94,6 +97,9 @@ public interface CommandData extends SerializableData
     /**
      * Gets the {@link CommandPermissions} of this command.
      * <br>If no permissions have been set, this returns {@link CommandPermissions#ENABLED}.
+     *
+     * @see CommandPermissions#ENABLED
+     * @see CommandPermissions#DISABLED
      *
      * @return CommandPermissions of this command.
      */

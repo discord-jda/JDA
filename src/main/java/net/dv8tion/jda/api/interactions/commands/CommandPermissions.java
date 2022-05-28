@@ -31,7 +31,7 @@ import java.util.Collection;
 public class CommandPermissions
 {
     /**
-     * Default permissions of a command. (Everyone can see and access this command by default)
+     * Default permissions of a command with no restrictions applied. (Everyone can see and access this command by default)
      */
     public static final CommandPermissions ENABLED  = new CommandPermissions(null);
 

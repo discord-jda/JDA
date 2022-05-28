@@ -17,6 +17,7 @@
 package net.dv8tion.jda.api.requests.restaction;
 
 import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.commands.CommandPermissions;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.*;
 import net.dv8tion.jda.api.requests.RestAction;
@@ -86,6 +87,37 @@ public interface CommandEditAction extends RestAction<Command>
     @Nonnull
     @CheckReturnValue
     CommandEditAction setName(@Nullable String name);
+
+    /**
+     * Sets whether this command is only usable in a guild (Default: false).
+     * <br>This only has an effect if this command is registered globally.
+     *
+     * @param  guildOnly
+     *         Whether to restrict this command to guilds
+     *
+     * @return The CommandEditAction instance, for chaining
+     */
+    @Nonnull
+    @CheckReturnValue
+    CommandEditAction setGuildOnly(boolean guildOnly);
+
+    /**
+     * Sets the default {@link CommandPermissions} for this command.
+     * <br>By default, everyone can use this command ({@link CommandPermissions#ENABLED}). This can be configured or overwritten by moderators in each guild.
+     *
+     * <p>Passing {@link CommandPermissions#DISABLED} will only show this command to admins.
+     *
+     * @param  permission
+     *         {@link CommandPermissions} representing the default permissions of this command.
+     *
+     * @see CommandPermissions#ENABLED
+     * @see CommandPermissions#DISABLED
+     *
+     * @return The CommandEditAction instance, for chaining
+     */
+    @Nonnull
+    @CheckReturnValue
+    CommandEditAction setDefaultPermissions(@Nonnull CommandPermissions permission);
 
     /**
      * Configure the description
