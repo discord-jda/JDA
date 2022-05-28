@@ -117,7 +117,7 @@ public class IntegrationPrivilege implements ISnowflake
     @Override
     public int hashCode()
     {
-        return Long.hashCode(id);
+        return Objects.hash(id, enabled);
     }
 
     @Override
@@ -127,14 +127,14 @@ public class IntegrationPrivilege implements ISnowflake
             return true;
         if (!(obj instanceof IntegrationPrivilege))
             return false;
-        return ((IntegrationPrivilege) obj).id == id;
+        IntegrationPrivilege other = (IntegrationPrivilege) obj;
+        return other.id == id && other.enabled == enabled;
     }
 
     @Override
     public String toString()
     {
-        return String.format("IntegrationPrivilege[type=%s, id=%o, granted=%s, everyone=%s, all_channels=%s]",
-                type, id, enabled, targetsEveryone(), targetsAllChannels());
+        return Helpers.format("IntegrationPrivilege[%s](%s, enabled=%s)", type, id, enabled);
     }
 
     /**

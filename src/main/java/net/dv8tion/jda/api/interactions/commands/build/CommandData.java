@@ -161,7 +161,7 @@ public interface CommandData extends SerializableData
             CommandData data = new CommandDataImpl(commandType, name);
             if (!object.isNull("default_member_permissions"))
             {
-                long defaultPermissions = Long.parseLong(object.getString("default_member_permissions"));
+                long defaultPermissions = object.getLong("default_member_permissions");
                 data.setDefaultPermissions(defaultPermissions == 0 ? CommandPermissions.DISABLED : CommandPermissions.enabledFor(defaultPermissions));
             }
 

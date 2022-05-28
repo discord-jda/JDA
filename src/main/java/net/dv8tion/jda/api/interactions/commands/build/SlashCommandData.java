@@ -339,8 +339,7 @@ public interface SlashCommandData extends CommandData
             throw new IllegalArgumentException("Cannot convert command of type " + command.getType() + " to SlashCommandData!");
 
         CommandDataImpl data = new CommandDataImpl(command.getName(), command.getDescription());
-        if (command.isGuildOnly())
-            data.setGuildOnly(true);
+        data.setGuildOnly(command.isGuildOnly());
         data.setDefaultPermissions(command.getDefaultPermissions());
         command.getOptions()
                 .stream()

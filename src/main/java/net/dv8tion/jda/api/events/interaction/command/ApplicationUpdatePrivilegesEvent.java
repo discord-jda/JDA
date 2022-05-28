@@ -25,8 +25,8 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Indicates that the {@link IntegrationPrivilege Privileges} of an application changed
- * <br>If the privileges of a certain command have been changed, a {@link ApplicationCommandUpdatePrivilegesEvent} will be fired instead.
+ * Indicates that the {@link IntegrationPrivilege Privileges} of an application changed.
+ * <br>If the moderator updates the privileges of a specific command, a {@link ApplicationCommandUpdatePrivilegesEvent} will be fired instead.
  *
  * <p>Can be used to get affected Guild and {@link List} of new {@link IntegrationPrivilege Privileges}
  */
@@ -40,7 +40,7 @@ public class ApplicationUpdatePrivilegesEvent extends GenericGuildEvent
     {
         super(api, responseNumber, guild);
         this.applicationId = applicationId;
-        this.privileges = privileges;
+        this.privileges = Collections.unmodifiableList(privileges);
     }
 
     /**
@@ -53,7 +53,7 @@ public class ApplicationUpdatePrivilegesEvent extends GenericGuildEvent
     @Nonnull
     public List<IntegrationPrivilege> getPrivileges()
     {
-        return Collections.unmodifiableList(privileges);
+        return privileges;
     }
 
     /**
