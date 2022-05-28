@@ -18,8 +18,10 @@ package net.dv8tion.jda.api.interactions.commands.privileges;
 
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.ISnowflake;
+import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.Nonnull;
+import java.util.Objects;
 
 /**
  * Privilege used to restrict access to a command within a {@link net.dv8tion.jda.api.entities.Guild Guild}.
