@@ -41,6 +41,13 @@ public interface UnicodeEmoji extends Emoji
 
     @Nonnull
     @Override
+    default Type getType()
+    {
+        return Type.UNICODE;
+    }
+
+    @Nonnull
+    @Override
     default String getFormatted()
     {
         return getName();

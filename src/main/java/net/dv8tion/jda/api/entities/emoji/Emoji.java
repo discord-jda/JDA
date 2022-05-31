@@ -20,7 +20,8 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.SerializableData;
-import net.dv8tion.jda.internal.entities.emoji.EmojiImpl;
+import net.dv8tion.jda.internal.entities.emoji.CustomEmojiImpl;
+import net.dv8tion.jda.internal.entities.emoji.UnicodeEmojiImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.EncodingUtil;
 
@@ -76,7 +77,7 @@ public interface Emoji extends SerializableData, Formattable
                 emoji.append(codepoint.isEmpty() ? "" : EncodingUtil.decodeCodepoint("U+" + codepoint));
             code = emoji.toString();
         }
-        return new EmojiImpl(code, 0, false);
+        return new UnicodeEmojiImpl(code);
     }
 
     /**
@@ -98,7 +99,7 @@ public interface Emoji extends SerializableData, Formattable
     static CustomEmoji fromCustom(@Nonnull String name, long id, boolean animated)
     {
         Checks.notEmpty(name, "Name");
-        return new EmojiImpl(name, id, animated);
+        return new CustomEmojiImpl(name, id, animated);
     }
 
     /**
@@ -170,9 +171,10 @@ public interface Emoji extends SerializableData, Formattable
     static Emoji fromData(@Nonnull DataObject emoji)
     {
         Checks.notNull(emoji, "Emoji Data");
-        return new EmojiImpl(emoji.getString("name"),
-                emoji.getUnsignedLong("id", 0),
-                emoji.getBoolean("animated"));
+        if (emoji.isNull("id"))
+            return fromUnicode(emoji.getString("name"));
+        else
+            return fromCustom(emoji.getString("name"), emoji.getUnsignedLong("id"), emoji.getBoolean("animated"));
     }
 
     /**

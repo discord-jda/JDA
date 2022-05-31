@@ -17,22 +17,19 @@
 package net.dv8tion.jda.internal.entities.emoji;
 
 import net.dv8tion.jda.api.entities.emoji.CustomEmoji;
-import net.dv8tion.jda.api.entities.emoji.Emoji;
-import net.dv8tion.jda.api.entities.emoji.UnicodeEmoji;
 import net.dv8tion.jda.api.utils.data.DataObject;
-import net.dv8tion.jda.internal.utils.EncodingUtil;
 import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.Nonnull;
 import java.util.Objects;
 
-public class EmojiImpl implements Emoji, CustomEmoji, UnicodeEmoji
+public class CustomEmojiImpl implements CustomEmoji
 {
     private final String name;
     private final long id;
     private final boolean animated;
 
-    public EmojiImpl(String name, long id, boolean animated)
+    public CustomEmojiImpl(String name, long id, boolean animated)
     {
         this.name = name;
         this.id = id;
@@ -40,19 +37,9 @@ public class EmojiImpl implements Emoji, CustomEmoji, UnicodeEmoji
     }
 
     @Nonnull
-    public String getAsCodepoints()
-    {
-        if (getType() != Type.UNICODE)
-            throw new IllegalStateException("Cannot get codepoint for custom emojis");
-        return EncodingUtil.encodeCodepoints(name);
-    }
-
-    @Nonnull
     public String getAsReactionCode()
     {
-        return getType() == Type.CUSTOM
-                ? name + ":" + id
-                : name;
+        return name + ":" + id;
     }
 
     @Nonnull
@@ -75,29 +62,19 @@ public class EmojiImpl implements Emoji, CustomEmoji, UnicodeEmoji
 
     @Nonnull
     @Override
-    public Type getType()
-    {
-        return id != 0 ? Type.CUSTOM : Type.UNICODE;
-    }
-
-    @Nonnull
-    @Override
     public DataObject toData()
     {
-        DataObject json = DataObject.empty().put("name", name);
-        if (id != 0)
-        {
-            json.put("id", id)
+        return DataObject.empty()
+                .put("name", name)
+                .put("id", id)
                 .put("animated", animated);
-        }
-        return json;
     }
 
     @Nonnull
     @Override
     public String getAsMention()
     {
-        return getType() == Type.UNICODE ? name : Helpers.format("<%s:%s:%s>", animated ? "a" : "", name, Long.toUnsignedString(id));
+        return Helpers.format("<%s:%s:%s>", animated ? "a" : "", name, getId());
     }
 
     @Nonnull
@@ -118,17 +95,15 @@ public class EmojiImpl implements Emoji, CustomEmoji, UnicodeEmoji
     {
         if (obj == this)
             return true;
-        if (!(obj instanceof EmojiImpl))
+        if (!(obj instanceof CustomEmoji))
             return false;
-        EmojiImpl other = (EmojiImpl) obj;
-        return other.id == id && Objects.equals(other.name, name);
+        CustomEmoji other = (CustomEmoji) obj;
+        return other.getIdLong() == id;
     }
 
     @Override
     public String toString()
     {
-        return getType() == Type.CUSTOM
-                ? "Emoji:" + name + "(" + id + ")"
-                : "Emoji(" + getAsCodepoints() + ')';
+        return "CustomEmoji:" + name + "(" + id + ")";
     }
 }

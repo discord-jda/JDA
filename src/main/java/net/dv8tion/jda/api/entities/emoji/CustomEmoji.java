@@ -41,6 +41,13 @@ public interface CustomEmoji extends Emoji, IMentionable
     /** Template for {@link #getImageUrl()} */
     String ICON_URL = "https://cdn.discordapp.com/emojis/%s.%s";
 
+    @Nonnull
+    @Override
+    default Type getType()
+    {
+        return Type.CUSTOM;
+    }
+
     /**
      * Whether this emoji is animated.
      *
