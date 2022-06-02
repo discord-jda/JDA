@@ -1842,7 +1842,7 @@ public class GuildImpl implements Guild
     public AuditableRestAction<Void> deleteSticker(@Nonnull StickerSnowflake id)
     {
         Checks.notNull(id, "Sticker");
-        Route.CompiledRoute route = Route.Stickers.DELETE_GUILD_STICKER.compile(id.getId());
+        Route.CompiledRoute route = Route.Stickers.DELETE_GUILD_STICKER.compile(getId(), id.getId());
         return new AuditableRestActionImpl<>(api, route);
     }
 
