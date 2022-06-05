@@ -51,6 +51,7 @@ public class ThreadChannelImpl extends AbstractGuildChannelImpl<ThreadChannelImp
     private boolean locked;
     private boolean archived;
     private boolean invitable;
+    private boolean newlyCreated;
     private long parentChannelId;
     private long archiveTimestamp;
     private long creationTimestamp;
@@ -206,6 +207,12 @@ public class ThreadChannelImpl extends AbstractGuildChannelImpl<ThreadChannelImp
     }
 
     @Override
+    public boolean isNewlyCreated()
+    {
+        return newlyCreated;
+    }
+
+    @Override
     public OffsetDateTime getTimeArchiveInfoLastModified()
     {
         return Helpers.toOffset(archiveTimestamp);
@@ -318,6 +325,12 @@ public class ThreadChannelImpl extends AbstractGuildChannelImpl<ThreadChannelImp
     public ThreadChannelImpl setInvitable(boolean invitable)
     {
         this.invitable = invitable;
+        return this;
+    }
+
+    public ThreadChannelImpl setNewlyCreated(boolean newlyCreated)
+    {
+        this.newlyCreated = newlyCreated;
         return this;
     }
 

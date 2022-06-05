@@ -110,6 +110,15 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer
     boolean isInvitable();
 
     /**
+     * Whether this thread is newly created.
+     * <br>
+     * Indicates whether a thread was newly created in an {@link net.dv8tion.jda.api.events.channel.ChannelCreateEvent event}.
+     *
+     * @return true if this thread was newly created, false if not from an {@link net.dv8tion.jda.api.events.channel.ChannelCreateEvent event} or the self member just joined the thread.
+     */
+    boolean isNewlyCreated();
+
+    /**
      * Gets the {@link IThreadContainer parent channel} of this thread.
      *
      * @see IThreadContainer#getThreadChannels()
