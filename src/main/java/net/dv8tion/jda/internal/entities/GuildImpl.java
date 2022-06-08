@@ -719,7 +719,7 @@ public class GuildImpl implements Guild
         Predicate<GuildChannel> filterHidden = it -> {
             //TODO-v5: Do we need to if-protected cast here? If the channel _isnt_ a IPermissionContainer, then would we even be using this filter on it?
             if (it instanceof IPermissionContainer) {
-                self.hasPermission((IPermissionContainer) it, Permission.VIEW_CHANNEL);
+                return self.hasPermission((IPermissionContainer) it, Permission.VIEW_CHANNEL);
             }
             return false;
         };
