@@ -533,9 +533,9 @@ public enum ActionType
     THREAD_DELETE(112, TargetType.THREAD),
 
     /**
-     * A moderator updated the permissions for an application
+     * A moderator updated the privileges for an application
      */
-    APPLICATION_COMMAND_PERMISSION_UPDATE(121, TargetType.INTEGRATION),
+    APPLICATION_COMMAND_PRIVILEGES_UPDATE(121, TargetType.INTEGRATION),
 
     UNKNOWN(-1, TargetType.UNKNOWN);
 
