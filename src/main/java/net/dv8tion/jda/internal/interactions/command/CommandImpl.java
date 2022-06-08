@@ -116,7 +116,7 @@ public class CommandImpl implements Command
     {
         checkSelfUser("Cannot retrieve privileges for a command from another bot!");
         Checks.notNull(guild, "Guild");
-        return guild.retrieveCommandPrivilegesById(id);
+        return guild.retrieveIntegrationPrivilegesById(id);
     }
 
     @Nonnull

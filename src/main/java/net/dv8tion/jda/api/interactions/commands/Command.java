@@ -75,7 +75,7 @@ public interface Command extends ISnowflake
 
     /**
      * Retrieves the {@link IntegrationPrivilege IntegrationPrivileges} for this command.
-     * <br>This is a shortcut for {@link Guild#retrieveCommandPrivilegesById(String)}.
+     * <br>This is a shortcut for {@link Guild#retrieveIntegrationPrivilegesById(String)}.
      *
      * <p>Moderators of a guild can modify these privileges through the Integrations Menu
      *

@@ -283,15 +283,16 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     }
 
     /**
-     * Retrieves the {@link IntegrationPrivilege IntegrationPrivileges} for the command with the specified ID.
+     * Retrieves the {@link IntegrationPrivilege IntegrationPrivileges} for the target with the specified ID.
+     * <br><b>The ID can either be of a Command or Application!</b>
      *
      * <p>Moderators of a guild can modify these privileges through the Integrations Menu
      *
-     * <p>If there is no command with the provided ID,
+     * <p>If there is no command or application with the provided ID,
      * this RestAction fails with {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_COMMAND ErrorResponse.UNKNOWN_COMMAND}
      *
-     * @param  commandId
-     *         The id of the command, this can be global or guild command
+     * @param  targetId
+     *         The id of the command (global or guild), or application
      *
      * @throws IllegalArgumentException
      *         If the id is not a valid snowflake
@@ -300,18 +301,19 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    RestAction<List<IntegrationPrivilege>> retrieveCommandPrivilegesById(@Nonnull String commandId);
+    RestAction<List<IntegrationPrivilege>> retrieveIntegrationPrivilegesById(@Nonnull String targetId);
 
     /**
-     * Retrieves the {@link IntegrationPrivilege CommandPrivileges} for the command with the specified ID.
+     * Retrieves the {@link IntegrationPrivilege IntegrationPrivileges} for the target with the specified ID.
+     * <br><b>The ID can either be of a Command or Application!</b>
      *
      * <p>Moderators of a guild can modify these privileges through the Integrations Menu
      *
-     * <p>If there is no command with the provided ID,
+     * <p>If there is no command or application with the provided ID,
      * this RestAction fails with {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_COMMAND ErrorResponse.UNKNOWN_COMMAND}
      *
-     * @param  commandId
-     *         The id of the command, this can be global or guild command
+     * @param  targetId
+     *         The id of the command (global or guild), or application
      *
      * @throws IllegalArgumentException
      *         If the id is not a valid snowflake
@@ -320,9 +322,9 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<List<IntegrationPrivilege>> retrieveCommandPrivilegesById(long commandId)
+    default RestAction<List<IntegrationPrivilege>> retrieveIntegrationPrivilegesById(long targetId)
     {
-        return retrieveCommandPrivilegesById(Long.toUnsignedString(commandId));
+        return retrieveIntegrationPrivilegesById(Long.toUnsignedString(targetId));
     }
 
     /**
