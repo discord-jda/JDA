@@ -133,9 +133,9 @@ public interface CommandCreateAction extends RestAction<Command>, SlashCommandDa
 
     @Nonnull
     @Override
-    SlashCommandData setDefaultPermissions(@Nonnull CommandPermissions permission);
+    CommandCreateAction setDefaultPermissions(@Nonnull CommandPermissions permission);
 
     @Nonnull
     @Override
-    SlashCommandData setGuildOnly(boolean guildOnly);
+    CommandCreateAction setGuildOnly(boolean guildOnly);
 }

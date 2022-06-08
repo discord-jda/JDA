@@ -31,7 +31,6 @@ import java.util.Objects;
  * @see Guild#retrieveCommandPrivileges()
  * @see net.dv8tion.jda.api.events.interaction.command.ApplicationCommandUpdatePrivilegesEvent
  * @see net.dv8tion.jda.api.events.interaction.command.ApplicationUpdatePrivilegesEvent
- *
  */
 public class IntegrationPrivilege implements ISnowflake
 {

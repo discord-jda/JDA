@@ -110,10 +110,10 @@ public interface CommandEditAction extends RestAction<Command>
      * @param  permission
      *         {@link CommandPermissions} representing the default permissions of this command.
      *
+     * @return The CommandEditAction instance, for chaining
+     *
      * @see CommandPermissions#ENABLED
      * @see CommandPermissions#DISABLED
-     *
-     * @return The CommandEditAction instance, for chaining
      */
     @Nonnull
     @CheckReturnValue

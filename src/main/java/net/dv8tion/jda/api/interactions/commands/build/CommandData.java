@@ -58,10 +58,10 @@ public interface CommandData extends SerializableData
      * @param  permission
      *         {@link CommandPermissions} representing the default permissions of this command.
      *
+     * @return The builder instance, for chaining
+     *
      * @see CommandPermissions#ENABLED
      * @see CommandPermissions#DISABLED
-     *
-     * @return The builder instance, for chaining
      */
     @Nonnull
     CommandData setDefaultPermissions(@Nonnull CommandPermissions permission);
