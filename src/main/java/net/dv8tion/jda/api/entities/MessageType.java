@@ -144,6 +144,13 @@ public enum MessageType
     CONTEXT_COMMAND(23, false),
 
     /**
+     * This message was created by the automod system.
+     *
+     * Messages from this type usually come with custom embeds containing relevant information, the author is the user that triggered the filter.
+     */
+    AUTO_MODERATION_ACTION(24),
+
+    /**
      * Unknown MessageType.
      */
     UNKNOWN(-1);
@@ -182,6 +189,17 @@ public enum MessageType
     public boolean isSystem()
     {
         return system;
+    }
+
+    /**
+     * Whether messages of this type can be deleted.
+     * <br>Currently the only type that cannot be deleted is {@link #AUTO_MODERATION_ACTION}.
+     *
+     * @return True, if delete is supported
+     */
+    public boolean canDelete()
+    {
+        return this != AUTO_MODERATION_ACTION;
     }
 
     /**
