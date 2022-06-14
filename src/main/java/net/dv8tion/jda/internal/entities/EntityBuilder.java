@@ -17,7 +17,6 @@
 package net.dv8tion.jda.internal.entities;
 
 import gnu.trove.map.TLongObjectMap;
-import gnu.trove.map.hash.TLongObjectHashMap;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.audit.ActionType;
@@ -69,7 +68,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAccessor;
 import java.util.*;
 import java.util.function.Function;
-import java.util.function.ToLongFunction;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -1189,10 +1187,8 @@ public class EntityBuilder
 
     public ThreadMember createThreadMember(GuildImpl guild, ThreadChannelImpl threadChannel, DataObject json)
     {
-        DataObject memberJson = json.getObject("member");
-        DataObject presenceJson = json.isNull("presence") ? null : json.getObject("presence");
-
-        Member member = createMember(guild, memberJson, null, presenceJson);
+        json.optObject("presence").ifPresent(p -> createPresence(guild, p));
+        Member member = createMember(guild, json.getObject("member"));
         return createThreadMember(threadChannel, member, json);
     }
 
