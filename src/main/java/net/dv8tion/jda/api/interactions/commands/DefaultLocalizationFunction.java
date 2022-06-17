@@ -1,5 +1,7 @@
 package net.dv8tion.jda.api.interactions.commands;
 
+import net.dv8tion.jda.api.interactions.DiscordLocale;
+
 import javax.annotation.Nonnull;
 import java.util.*;
 
@@ -12,14 +14,14 @@ public class DefaultLocalizationFunction implements LocalizationFunction
 
     @Nonnull
     @Override
-    public Map<Locale, String> apply(@Nonnull String localizationKey)
+    public Map<DiscordLocale, String> apply(@Nonnull String localizationKey)
     {
-        final Map<Locale, String> map = new HashMap<>();
+        final Map<DiscordLocale, String> map = new HashMap<>();
         for (Bundle bundle : bundles)
         {
             final ResourceBundle resourceBundle = bundle.resourceBundle;
             if (resourceBundle.containsKey(localizationKey))
-                map.put(bundle.targetLocale, resourceBundle.getString(localizationKey));
+                map.put(DiscordLocale.from(bundle.targetLocale), resourceBundle.getString(localizationKey));
         }
 
         return map;

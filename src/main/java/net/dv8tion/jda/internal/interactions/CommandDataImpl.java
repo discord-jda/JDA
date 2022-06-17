@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.internal.interactions;
 
+import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.LocalizationMap;
 import net.dv8tion.jda.api.interactions.commands.LocalizationMapper;
@@ -31,7 +32,6 @@ import net.dv8tion.jda.internal.utils.Checks;
 import javax.annotation.Nonnull;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Locale;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -252,10 +252,10 @@ public class CommandDataImpl implements SlashCommandData
 
     @Nonnull
     @Override
-    public CommandDataImpl setName(@Nonnull String name, @Nonnull Locale... locales)
+    public CommandDataImpl setName(@Nonnull DiscordLocale locale, @Nonnull String name)
     {
         //Checks are done in LocalizationMap
-        nameLocalizations.setTranslations(name, locales);
+        nameLocalizations.setTranslation(locale, name);
         return this;
     }
 
@@ -276,10 +276,10 @@ public class CommandDataImpl implements SlashCommandData
 
     @Nonnull
     @Override
-    public CommandDataImpl setDescription(@Nonnull String description, @Nonnull Locale... locales)
+    public CommandDataImpl setDescription(@Nonnull DiscordLocale locale, @Nonnull String description)
     {
         //Checks are done in LocalizationMap
-        descriptionLocalizations.setTranslations(description, locales);
+        descriptionLocalizations.setTranslation(locale, description);
         return this;
     }
 

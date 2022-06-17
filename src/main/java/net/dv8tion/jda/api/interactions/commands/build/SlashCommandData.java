@@ -17,6 +17,7 @@
 package net.dv8tion.jda.api.interactions.commands.build;
 
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
+import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.LocalizationMap;
 import net.dv8tion.jda.api.interactions.commands.LocalizationMapper;
@@ -29,7 +30,6 @@ import net.dv8tion.jda.internal.utils.Checks;
 import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.List;
-import java.util.Locale;
 
 /**
  * Extension of {@link CommandData} which allows setting slash-command specific settings such as options and subcommands.
@@ -46,7 +46,7 @@ public interface SlashCommandData extends CommandData
 
     @Nonnull
     @Override
-    SlashCommandData setName(@Nonnull String name, @Nonnull Locale... locales);
+    SlashCommandData setName(@Nonnull DiscordLocale locale, @Nonnull String name);
 
     @Nonnull
     @Override
@@ -69,15 +69,16 @@ public interface SlashCommandData extends CommandData
     /**
      * Sets the description localizations of this command.
      *
+     * @param  locale
+     *         The locale to associate the translated description with
+     *
      * @param  description
      *         The translated description to put
-     * @param  locales
-     *         The locales to associate the translated description with
      *
      * @return This builder instance, for chaining
      */
     @Nonnull
-    SlashCommandData setDescription(@Nonnull String description, @Nonnull Locale... locales);
+    SlashCommandData setDescription(@Nonnull DiscordLocale locale, @Nonnull String description);
 
     /**
      * The configured description

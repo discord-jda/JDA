@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.ISnowflake;
+import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.privileges.CommandPrivilege;
 import net.dv8tion.jda.api.requests.RestAction;
@@ -431,15 +432,16 @@ public interface Command extends ISnowflake
         /**
          * Sets the name localizations of this choice.
          *
+         * @param  locale
+         *         The locale to associate the translated name with
+         *
          * @param  name
          *         The translated name to put
-         * @param  locales
-         *         The locales to associate the translated name with
          *
          * @return This builder instance, for chaining
          */
-        public Choice setName(@Nonnull String name, @Nonnull Locale... locales) {
-            nameLocalizations.setTranslations(name, locales);
+        public Choice setName(@Nonnull DiscordLocale locale, @Nonnull String name) {
+            nameLocalizations.setTranslation(locale, name);
             return this;
         }
 

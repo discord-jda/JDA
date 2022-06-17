@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.interactions.commands.build;
 
+import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.LocalizationMap;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
@@ -105,18 +106,19 @@ public class SubcommandGroupData implements SerializableData
     /**
      * Sets the name localizations of this subcommand group.
      *
+     * @param  locale
+     *         The locale to associate the translated name with
+     *
      * @param  name
      *         The translated name to put
-     * @param  locales
-     *         The locales to associate the translated name with
      *
      * @return This builder instance, for chaining
      */
     @Nonnull
-    public SubcommandGroupData setName(@Nonnull String name, @Nonnull Locale... locales)
+    public SubcommandGroupData setName(@Nonnull DiscordLocale locale, @Nonnull String name)
     {
         //Checks are done in LocalizationMap
-        nameLocalizations.setTranslations(name, locales);
+        nameLocalizations.setTranslation(locale, name);
         return this;
     }
 
@@ -142,18 +144,19 @@ public class SubcommandGroupData implements SerializableData
     /**
      * Sets the description localizations of this subcommand group.
      *
+     * @param  locale
+     *         The locale to associate the translated description with
+     *
      * @param  description
      *         The translated description to put
-     * @param  locales
-     *         The locales to associate the translated description with
      *
      * @return This builder instance, for chaining
      */
     @Nonnull
-    public SubcommandGroupData setDescription(@Nonnull String description, @Nonnull Locale... locales)
+    public SubcommandGroupData setDescription(@Nonnull DiscordLocale locale, @Nonnull String description)
     {
         //Checks are done in LocalizationMap
-        descriptionLocalizations.setTranslations(description, locales);
+        descriptionLocalizations.setTranslation(locale, description);
         return this;
     }
 

@@ -16,6 +16,7 @@
 package net.dv8tion.jda.internal.requests.restaction;
 
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.LocalizationMap;
 import net.dv8tion.jda.api.interactions.commands.LocalizationMapper;
@@ -35,7 +36,6 @@ import okhttp3.RequestBody;
 
 import javax.annotation.Nonnull;
 import java.util.List;
-import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 
@@ -139,9 +139,9 @@ public class CommandCreateActionImpl extends RestActionImpl<Command> implements 
 
     @Nonnull
     @Override
-    public CommandCreateAction setName(@Nonnull String name, @Nonnull Locale... locales)
+    public CommandCreateAction setName(@Nonnull DiscordLocale locale, @Nonnull String name)
     {
-        data.setName(name, locales);
+        data.setName(locale, name);
         return this;
     }
 
@@ -155,9 +155,9 @@ public class CommandCreateActionImpl extends RestActionImpl<Command> implements 
 
     @Nonnull
     @Override
-    public CommandCreateAction setDescription(@Nonnull String description, @Nonnull Locale... locales)
+    public CommandCreateAction setDescription(@Nonnull DiscordLocale locale, @Nonnull String description)
     {
-        data.setDescription(description, locales);
+        data.setDescription(locale, description);
         return this;
     }
 

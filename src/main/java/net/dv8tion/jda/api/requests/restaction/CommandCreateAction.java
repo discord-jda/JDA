@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.requests.restaction;
 
+import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.LocalizationMapper;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
@@ -29,7 +30,6 @@ import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Collection;
-import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 
@@ -76,7 +76,7 @@ public interface CommandCreateAction extends RestAction<Command>, SlashCommandDa
     @Nonnull
     @Override
     @CheckReturnValue
-    CommandCreateAction setName(@Nonnull String name, @Nonnull Locale... locales);
+    CommandCreateAction setName(@Nonnull DiscordLocale locale, @Nonnull String name);
 
     @Nonnull
     @Override
@@ -86,7 +86,7 @@ public interface CommandCreateAction extends RestAction<Command>, SlashCommandDa
     @Nonnull
     @Override
     @CheckReturnValue
-    CommandCreateAction setDescription(@Nonnull String description, @Nonnull Locale... locales);
+    CommandCreateAction setDescription(@Nonnull DiscordLocale locale, @Nonnull String description);
 
     @Nonnull
     @Override

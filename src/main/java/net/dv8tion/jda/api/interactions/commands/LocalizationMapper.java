@@ -1,12 +1,12 @@
 package net.dv8tion.jda.api.interactions.commands;
 
+import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Stack;
 import java.util.StringJoiner;
@@ -61,15 +61,15 @@ public class LocalizationMapper
         private void trySetTranslation(LocalizationMap localizationMap, String finalComponent)
         {
             final String key = getKey(finalComponent);
-            final Map<Locale, String> data = localizationFunction.apply(key);
+            final Map<DiscordLocale, String> data = localizationFunction.apply(key);
             localizationMap.putTranslations(data);
         }
 
         private void trySetTranslation(DataObject localizationMap, String finalComponent)
         {
             final String key = getKey(finalComponent);
-            final Map<Locale, String> data = localizationFunction.apply(key);
-            data.forEach((locale, localizedValue) -> localizationMap.put(locale.toLanguageTag(), localizedValue));
+            final Map<DiscordLocale, String> data = localizationFunction.apply(key);
+            data.forEach((locale, localizedValue) -> localizationMap.put(locale.getLocale(), localizedValue));
         }
     }
 

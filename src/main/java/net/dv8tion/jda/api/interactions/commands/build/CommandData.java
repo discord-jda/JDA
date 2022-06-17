@@ -17,6 +17,7 @@
 package net.dv8tion.jda.api.interactions.commands.build;
 
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.LocalizationMap;
 import net.dv8tion.jda.api.interactions.commands.LocalizationMapper;
@@ -59,15 +60,16 @@ public interface CommandData extends SerializableData
     /**
      * Sets the name localizations of this command.
      *
+     * @param  locale
+     *         The locale to associate the translated name with
+     *
      * @param  name
      *         The translated name to put
-     * @param  locales
-     *         The locales to associate the translated name with
      *
      * @return This builder instance, for chaining
      */
     @Nonnull
-    CommandData setName(@Nonnull String name, @Nonnull Locale... locales);
+    CommandData setName(@Nonnull DiscordLocale locale, @Nonnull String name);
 
     /**
      * Whether this command is available to everyone by default.

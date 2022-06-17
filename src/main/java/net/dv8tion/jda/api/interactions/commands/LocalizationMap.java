@@ -1,5 +1,6 @@
 package net.dv8tion.jda.api.interactions.commands;
 
+import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.SerializableData;
 
@@ -12,14 +13,14 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 /**
- * Class which contains a mapping from {@link Locale} to a translated String, similar to a {@code Map<Locale, String>}.
- * <br>This is used for command localization.
+ * Class which contains a mapping from {@link DiscordLocale} to a translated String, similar to a {@code Map<DiscordLocale, String>}.
+ * <br>This is used for command, option and choice localization.
  */
 public class LocalizationMap implements SerializableData
 {
     public static final Consumer<String> UNMODIFIABLE_CHECK = s -> { throw new IllegalStateException("This LocalizationMap is unmodifiable."); };
 
-    private final Map<Locale, String> map = new HashMap<>();
+    private final Map<DiscordLocale, String> map = new HashMap<>();
     private final Consumer<String> checkConsumer;
 
     public LocalizationMap(@Nonnull Consumer<String> checkConsumer) {
@@ -30,7 +31,7 @@ public class LocalizationMap implements SerializableData
     {
         this(checkConsumer);
         for (String key : data.keys())
-            map.put(Locale.forLanguageTag(key), data.getString(key));
+            map.put(DiscordLocale.from(key), data.getString(key));
     }
 
     private LocalizationMap(Consumer<String> checkConsumer, LocalizationMap map)
@@ -105,23 +106,23 @@ public class LocalizationMap implements SerializableData
     public DataObject toData()
     {
         final DataObject data = DataObject.empty();
-        map.forEach((locale, localizedString) -> data.put(locale.toLanguageTag(), localizedString));
+        map.forEach((locale, localizedString) -> data.put(locale.getLocale(), localizedString));
         return data;
     }
 
     /**
      * Sets the given localized string to be used for the specified locales.
      *
+     * @param  locale
+     *         The locale on which to apply the localized string
+     *
      * @param  localizedString
      *         The localized string to use
-     * @param  locales
-     *         The locales on which to apply the localized string
      */
-    public void setTranslations(@Nonnull String localizedString, @Nonnull Locale... locales)
+    public void setTranslation(@Nonnull DiscordLocale locale, @Nonnull String localizedString)
     {
         checkConsumer.accept(localizedString);
-        for (Locale locale : locales)
-            map.put(locale, localizedString);
+        map.put(locale, localizedString);
     }
 
     /**
@@ -130,24 +131,11 @@ public class LocalizationMap implements SerializableData
      * @param  map
      *         The map containing the localized strings
      */
-    public void putTranslations(@Nonnull Map<Locale, String> map)
+    public void putTranslations(@Nonnull Map<DiscordLocale, String> map)
     {
         for (String localizedString : map.values())
             checkConsumer.accept(localizedString);
         this.map.putAll(map);
-    }
-
-    /**
-     * Sets the given localized string to be used for the specified locale.
-     *
-     * @param  localizedString
-     *         The localized string to use
-     * @param  locale
-     *         The locale on which to apply the localized string
-     */
-    public void setTranslation(@Nonnull String localizedString, @Nonnull Locale locale) {
-        checkConsumer.accept(localizedString);
-        map.put(locale, localizedString);
     }
 
     /**
@@ -171,7 +159,7 @@ public class LocalizationMap implements SerializableData
      * @return The unmodifiable map of this LocalizationMap
      */
     @Nonnull
-    public Map<Locale, String> toMap()
+    public Map<DiscordLocale, String> toMap()
     {
         return Collections.unmodifiableMap(map);
     }
