@@ -1149,15 +1149,14 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public RestAction<Member> retrieveMemberById(long id, boolean update)
+    public CacheRestAction<Member> retrieveMemberById(long id, boolean update)
     {
         JDAImpl jda = getJDA();
-        if (id == jda.getSelfUser().getIdLong())
-            return new CompletedRestAction<>(jda, getSelfMember());
-
         return new DeferredRestAction<>(jda, Member.class,
                 () -> getMember(id, update, jda),
                 () -> { // otherwise we need to update the member with a REST request first to get the nickname/roles
+                    if (id == jda.getSelfUser().getIdLong())
+                        return new CompletedRestAction<>(jda, getSelfMember());
                     Route.CompiledRoute route = Route.Guilds.GET_MEMBER.compile(getId(), Long.toUnsignedString(id));
                     return new RestActionImpl<>(jda, route, (resp, req) -> {
                         MemberImpl member = jda.getEntityBuilder().createMember(this, resp.getObject());

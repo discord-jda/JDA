@@ -18,6 +18,7 @@ package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.managers.channel.concrete.ThreadChannelManager;
 import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.api.requests.restaction.CacheRestAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.utils.Checks;
 
@@ -324,11 +325,11 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer
      * @throws IllegalArgumentException
      *         If provided with null
      *
-     * @return {@link RestAction} - Type: {@link ThreadMember}
+     * @return {@link CacheRestAction} - Type: {@link ThreadMember}
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<ThreadMember> retrieveThreadMember(@Nonnull Member member)
+    default CacheRestAction<ThreadMember> retrieveThreadMember(@Nonnull Member member)
     {
         Checks.notNull(member, "Member");
         return retrieveThreadMemberById(member.getIdLong());
@@ -346,11 +347,11 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer
      * @throws IllegalArgumentException
      *         If provided with null
      *
-     * @return {@link RestAction} - Type: {@link ThreadMember}
+     * @return {@link CacheRestAction} - Type: {@link ThreadMember}
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<ThreadMember> retrieveThreadMember(@Nonnull User user)
+    default CacheRestAction<ThreadMember> retrieveThreadMember(@Nonnull User user)
     {
         Checks.notNull(user, "User");
         return retrieveThreadMemberById(user.getIdLong());
@@ -370,11 +371,11 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer
      * @throws NumberFormatException
      *         If the provided id is not a snowflake
      *
-     * @return {@link RestAction} - Type: {@link ThreadMember}
+     * @return {@link CacheRestAction} - Type: {@link ThreadMember}
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<ThreadMember> retrieveThreadMemberById(@Nonnull String id)
+    default CacheRestAction<ThreadMember> retrieveThreadMemberById(@Nonnull String id)
     {
         return retrieveThreadMemberById(MiscUtil.parseSnowflake(id));
     }
@@ -388,11 +389,11 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer
      * @param  id
      *         The user id to load the thread-member from
      *
-     * @return {@link RestAction} - Type: {@link ThreadMember}
+     * @return {@link CacheRestAction} - Type: {@link ThreadMember}
      */
     @Nonnull
     @CheckReturnValue
-    RestAction<ThreadMember> retrieveThreadMemberById(long id);
+    CacheRestAction<ThreadMember> retrieveThreadMemberById(long id);
 
     /**
      * Retrieves the {@link ThreadMember ThreadMembers} of this thread.
