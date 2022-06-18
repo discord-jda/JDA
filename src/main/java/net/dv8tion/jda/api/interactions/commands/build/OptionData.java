@@ -374,7 +374,7 @@ public class OptionData implements SerializableData
     public OptionData setNameLocalizations(@Nonnull Map<DiscordLocale, String> map)
     {
         //Checks are done in LocalizationMap
-        nameLocalizations.putTranslations(map);
+        nameLocalizations.setTranslations(map);
         return this;
     }
 
@@ -428,7 +428,7 @@ public class OptionData implements SerializableData
     public OptionData setDescriptionLocalizations(@Nonnull Map<DiscordLocale, String> map)
     {
         //Checks are done in LocalizationMap
-        descriptionLocalizations.putTranslations(map);
+        descriptionLocalizations.setTranslations(map);
         return this;
     }
 

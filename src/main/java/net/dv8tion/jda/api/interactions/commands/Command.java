@@ -458,7 +458,7 @@ public interface Command extends ISnowflake
         public Choice setNameLocalizations(@Nonnull Map<DiscordLocale, String> map)
         {
             //Checks are done in LocalizationMap
-            nameLocalizations.putTranslations(map);
+            nameLocalizations.setTranslations(map);
             return this;
         }
 

@@ -264,7 +264,7 @@ public class CommandDataImpl implements SlashCommandData
     @Override
     public SlashCommandData setNameLocalizations(@Nonnull Map<DiscordLocale, String> map)
     {
-        nameLocalizations.putTranslations(map);
+        nameLocalizations.setTranslations(map);
         return this;
     }
 
@@ -296,7 +296,7 @@ public class CommandDataImpl implements SlashCommandData
     @Override
     public SlashCommandData setDescriptionLocalizations(@Nonnull Map<DiscordLocale, String> map)
     {
-        descriptionLocalizations.putTranslations(map);
+        descriptionLocalizations.setTranslations(map);
         return this;
     }
 

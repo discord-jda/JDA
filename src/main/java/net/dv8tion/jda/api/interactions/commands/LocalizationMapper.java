@@ -78,7 +78,7 @@ public class LocalizationMapper
         {
             final String key = getKey(finalComponent);
             final Map<DiscordLocale, String> data = localizationFunction.apply(key);
-            localizationMap.putTranslations(data);
+            localizationMap.setTranslations(data);
         }
 
         private void trySetTranslation(DataObject localizationMap, String finalComponent)

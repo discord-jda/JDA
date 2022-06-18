@@ -134,7 +134,7 @@ public class SubcommandGroupData implements SerializableData
     public SubcommandGroupData setNameLocalizations(@Nonnull Map<DiscordLocale, String> map)
     {
         //Checks are done in LocalizationMap
-        nameLocalizations.putTranslations(map);
+        nameLocalizations.setTranslations(map);
         return this;
     }
 
@@ -188,7 +188,7 @@ public class SubcommandGroupData implements SerializableData
     public SubcommandGroupData setDescriptionLocalizations(@Nonnull Map<DiscordLocale, String> map)
     {
         //Checks are done in LocalizationMap
-        descriptionLocalizations.putTranslations(map);
+        descriptionLocalizations.setTranslations(map);
         return this;
     }
 

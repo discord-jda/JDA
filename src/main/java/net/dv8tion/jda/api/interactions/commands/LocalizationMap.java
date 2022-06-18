@@ -160,7 +160,7 @@ public class LocalizationMap implements SerializableData
      * @param  map
      *         The map containing the localized strings
      */
-    public void putTranslations(@Nonnull Map<DiscordLocale, String> map)
+    public void setTranslations(@Nonnull Map<DiscordLocale, String> map)
     {
         Checks.notNull(map, "Map");
         
