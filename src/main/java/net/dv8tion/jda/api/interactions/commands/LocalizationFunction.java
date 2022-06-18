@@ -21,8 +21,37 @@ import net.dv8tion.jda.api.interactions.DiscordLocale;
 import javax.annotation.Nonnull;
 import java.util.Map;
 
+/**
+ * Functional interface accepting a localization key (complete path used to get the appropriate translations)
+ * and returning a map of discord locales to their localized strings
+ *
+ * <p>
+ * <b>Implementation note:</b>
+ * The localization key is composed of the command/option/choice tree being walked, each component are separated by a dot
+ * <br>Note: the final key is lowercase and spaces replaced by underscores
+ * <br>A few examples:
+ *
+ * <ul>
+ *    <li>The name of a command named "ban": {@code ban.name}</li>
+ *    <li>The name of a message context named "Get content raw": {@code get_content_raw.name}</li>
+ *    <li>The description of a command named "ban": {@code ban.description}</li>
+ *    <li>The name of a subcommand "perm" in a command named "ban": {@code ban.perm.name}</li>
+ *    <li>The description of an option "duration" in a subcommand "perm" in a command named "ban": {@code ban.perm.duration.description}</li>
+ *    <li>The name of a choice in an option "duration" in a subcommand "perm" in a command named "ban": {@code ban.perm.duration.choice.name}</li>
+ * </ul>
+ *
+ * @see DefaultLocalizationFunction
+ */
 public interface LocalizationFunction
 {
+    /**
+     * Retrieves the localization mappings of the specified localization key
+     *
+     * @param  localizationKey
+     *         The localization key to get the translations from
+     *
+     * @return Never-null map of discord locales to their localized strings
+     */
     @Nonnull
     Map<DiscordLocale, String> apply(@Nonnull String localizationKey);
 }

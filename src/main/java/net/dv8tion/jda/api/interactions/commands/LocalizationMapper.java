@@ -29,6 +29,13 @@ import java.util.StringJoiner;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+/**
+ * Utility class which maps user-provided translations (from a resource bundle for example) to the command data as well as everything contained in it
+ * <p>You can find default localization functions in {@link DefaultLocalizationFunction}
+ *
+ * @see CommandData#setLocalizationMapper(LocalizationMapper)
+ * @see DefaultLocalizationFunction
+ */
 public class LocalizationMapper
 {
     private final LocalizationFunction localizationFunction;
@@ -37,6 +44,16 @@ public class LocalizationMapper
         this.localizationFunction = localizationFunction;
     }
 
+    /**
+     * Creates a new {@link LocalizationMapper} from the given {@link LocalizationFunction}
+     *
+     * @param  localizationFunction
+     *         The {@link LocalizationFunction} to use
+     *
+     * @return The {@link LocalizationMapper} instance
+     *
+     * @see DefaultLocalizationFunction
+     */
     @Nonnull
     public static LocalizationMapper fromFunction(@Nonnull LocalizationFunction localizationFunction) {
         return new LocalizationMapper(localizationFunction);
@@ -71,7 +88,7 @@ public class LocalizationMapper
             for (String keyComponent : keyComponents)
                 joiner.add(keyComponent.replace(" ", "_")); //Context commands can have spaces, we need to replace them
             joiner.add(finalComponent.replace(" ", "_"));
-            return joiner.toString();
+            return joiner.toString().toLowerCase();
         }
 
         private void trySetTranslation(LocalizationMap localizationMap, String finalComponent)
@@ -89,6 +106,7 @@ public class LocalizationMapper
         }
     }
 
+    //Internal
     public void localizeCommand(CommandData commandData, DataArray optionArray)
     {
         final TranslationContext ctx = new TranslationContext();

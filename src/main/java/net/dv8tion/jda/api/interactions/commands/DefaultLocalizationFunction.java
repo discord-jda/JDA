@@ -21,6 +21,11 @@ import net.dv8tion.jda.api.interactions.DiscordLocale;
 import javax.annotation.Nonnull;
 import java.util.*;
 
+/**
+ * A default implementation for {@link LocalizationFunction}
+ * <p>
+ * This implementation supports Java's {@link ResourceBundle} to be used as a localization source
+ */
 public class DefaultLocalizationFunction implements LocalizationFunction
 {
     private DefaultLocalizationFunction(Set<Bundle> bundles)
