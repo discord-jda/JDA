@@ -30,6 +30,7 @@ import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Collection;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 
@@ -80,6 +81,10 @@ public interface CommandCreateAction extends RestAction<Command>, SlashCommandDa
 
     @Nonnull
     @Override
+    CommandCreateAction setNameLocalizations(@Nonnull Map<DiscordLocale, String> map);
+
+    @Nonnull
+    @Override
     @CheckReturnValue
     CommandCreateAction setDescription(@Nonnull String description);
 
@@ -87,6 +92,10 @@ public interface CommandCreateAction extends RestAction<Command>, SlashCommandDa
     @Override
     @CheckReturnValue
     CommandCreateAction setDescription(@Nonnull DiscordLocale locale, @Nonnull String description);
+
+    @Nonnull
+    @Override
+    CommandCreateAction setDescriptionLocalizations(@Nonnull Map<DiscordLocale, String> map);
 
     @Nonnull
     @Override

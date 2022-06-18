@@ -363,6 +363,22 @@ public class OptionData implements SerializableData
     }
 
     /**
+     * Sets the name localizations of this option.
+     *
+     * @param  map
+     *         The map from which to transfer the translated names
+     *
+     * @return This builder instance, for chaining
+     */
+    @Nonnull
+    public OptionData setNameLocalizations(@Nonnull Map<DiscordLocale, String> map)
+    {
+        //Checks are done in LocalizationMap
+        nameLocalizations.putTranslations(map);
+        return this;
+    }
+
+    /**
      * Configure the description
      *
      * @param  description
@@ -397,6 +413,22 @@ public class OptionData implements SerializableData
     {
         //Checks are done in LocalizationMap
         descriptionLocalizations.setTranslation(locale, description);
+        return this;
+    }
+
+    /**
+     * Sets the description localizations of this option.
+     *
+     * @param  map
+     *         The map from which to transfer the translated descriptions
+     *
+     * @return This builder instance, for chaining
+     */
+    @Nonnull
+    public OptionData setDescriptionLocalizations(@Nonnull Map<DiscordLocale, String> map)
+    {
+        //Checks are done in LocalizationMap
+        descriptionLocalizations.putTranslations(map);
         return this;
     }
 

@@ -26,10 +26,7 @@ import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -123,6 +120,22 @@ public class SubcommandGroupData implements SerializableData
     }
 
     /**
+     * Sets the name localizations of this subcommand group.
+     *
+     * @param  map
+     *         The map from which to transfer the translated names
+     *
+     * @return This builder instance, for chaining
+     */
+    @Nonnull
+    public SubcommandGroupData setNameLocalizations(@Nonnull Map<DiscordLocale, String> map)
+    {
+        //Checks are done in LocalizationMap
+        nameLocalizations.putTranslations(map);
+        return this;
+    }
+
+    /**
      * Configure the description
      *
      * @param  description
@@ -157,6 +170,22 @@ public class SubcommandGroupData implements SerializableData
     {
         //Checks are done in LocalizationMap
         descriptionLocalizations.setTranslation(locale, description);
+        return this;
+    }
+
+    /**
+     * Sets the description localizations of this subcommand group.
+     *
+     * @param  map
+     *         The map from which to transfer the translated descriptions
+     *
+     * @return This builder instance, for chaining
+     */
+    @Nonnull
+    public SubcommandGroupData setDescriptionLocalizations(@Nonnull Map<DiscordLocale, String> map)
+    {
+        //Checks are done in LocalizationMap
+        descriptionLocalizations.putTranslations(map);
         return this;
     }
 

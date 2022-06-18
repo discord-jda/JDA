@@ -30,6 +30,7 @@ import net.dv8tion.jda.internal.utils.Checks;
 import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Extension of {@link CommandData} which allows setting slash-command specific settings such as options and subcommands.
@@ -47,6 +48,10 @@ public interface SlashCommandData extends CommandData
     @Nonnull
     @Override
     SlashCommandData setName(@Nonnull DiscordLocale locale, @Nonnull String name);
+
+    @Nonnull
+    @Override
+    SlashCommandData setNameLocalizations(@Nonnull Map<DiscordLocale, String> map);
 
     @Nonnull
     @Override
@@ -79,6 +84,17 @@ public interface SlashCommandData extends CommandData
      */
     @Nonnull
     SlashCommandData setDescription(@Nonnull DiscordLocale locale, @Nonnull String description);
+
+    /**
+     * Sets the description localizations of this command.
+     *
+     * @param  map
+     *         The map from which to transfer the translated descriptions
+     *
+     * @return This builder instance, for chaining
+     */
+    @Nonnull
+    SlashCommandData setDescriptionLocalizations(@Nonnull Map<DiscordLocale, String> map);
 
     /**
      * The configured description

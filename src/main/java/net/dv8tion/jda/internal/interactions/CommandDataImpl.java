@@ -32,6 +32,7 @@ import net.dv8tion.jda.internal.utils.Checks;
 import javax.annotation.Nonnull;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -259,6 +260,14 @@ public class CommandDataImpl implements SlashCommandData
         return this;
     }
 
+    @Nonnull
+    @Override
+    public SlashCommandData setNameLocalizations(@Nonnull Map<DiscordLocale, String> map)
+    {
+        nameLocalizations.putTranslations(map);
+        return this;
+    }
+
     public CommandDataImpl setNameLocalizations(@Nonnull LocalizationMap nameLocalizations)
     {
         this.nameLocalizations = nameLocalizations;
@@ -280,6 +289,14 @@ public class CommandDataImpl implements SlashCommandData
     {
         //Checks are done in LocalizationMap
         descriptionLocalizations.setTranslation(locale, description);
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    public SlashCommandData setDescriptionLocalizations(@Nonnull Map<DiscordLocale, String> map)
+    {
+        descriptionLocalizations.putTranslations(map);
         return this;
     }
 

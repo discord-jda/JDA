@@ -440,8 +440,25 @@ public interface Command extends ISnowflake
          *
          * @return This builder instance, for chaining
          */
+        @Nonnull
         public Choice setName(@Nonnull DiscordLocale locale, @Nonnull String name) {
             nameLocalizations.setTranslation(locale, name);
+            return this;
+        }
+
+        /**
+         * Sets the name localizations of this choice.
+         *
+         * @param  map
+         *         The map from which to transfer the translated names
+         *
+         * @return This builder instance, for chaining
+         */
+        @Nonnull
+        public Choice setNameLocalizations(@Nonnull Map<DiscordLocale, String> map)
+        {
+            //Checks are done in LocalizationMap
+            nameLocalizations.putTranslations(map);
             return this;
         }
 

@@ -36,6 +36,7 @@ import okhttp3.RequestBody;
 
 import javax.annotation.Nonnull;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 
@@ -147,6 +148,14 @@ public class CommandCreateActionImpl extends RestActionImpl<Command> implements 
 
     @Nonnull
     @Override
+    public CommandCreateAction setNameLocalizations(@Nonnull Map<DiscordLocale, String> map)
+    {
+        data.setNameLocalizations(map);
+        return this;
+    }
+
+    @Nonnull
+    @Override
     public CommandCreateAction setDescription(@Nonnull String description)
     {
         data.setDescription(description);
@@ -158,6 +167,14 @@ public class CommandCreateActionImpl extends RestActionImpl<Command> implements 
     public CommandCreateAction setDescription(@Nonnull DiscordLocale locale, @Nonnull String description)
     {
         data.setDescription(locale, description);
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    public CommandCreateAction setDescriptionLocalizations(@Nonnull Map<DiscordLocale, String> map)
+    {
+        data.setDescriptionLocalizations(map);
         return this;
     }
 

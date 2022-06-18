@@ -72,6 +72,17 @@ public interface CommandData extends SerializableData
     CommandData setName(@Nonnull DiscordLocale locale, @Nonnull String name);
 
     /**
+     * Sets the name localizations of this command.
+     *
+     * @param  map
+     *         The map from which to transfer the translated names
+     *
+     * @return This builder instance, for chaining
+     */
+    @Nonnull
+    CommandData setNameLocalizations(@Nonnull Map<DiscordLocale, String> map);
+
+    /**
      * Whether this command is available to everyone by default.
      * <br>If this is disabled, you need to explicitly whitelist users and roles per guild.
      *
