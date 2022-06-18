@@ -16,10 +16,12 @@
 
 package net.dv8tion.jda.api.interactions;
 
-import javax.annotation.Nullable;
+import javax.annotation.Nonnull;
 import java.util.Locale;
 
-//TODO docs
+/**
+ * Enum representing the locales that Discord supports.
+ */
 public enum DiscordLocale
 {
     DANISH("da","Danish","Dansk"),
@@ -51,7 +53,8 @@ public enum DiscordLocale
     CHINA("zh-CN","Chinese, China","中文"),
     JAPANESE("ja","Japanese","日本語"),
     TAIWAN("zh-TW","Chinese, Taiwan","繁體中文"),
-    KOREAN("ko","Korean","한국어");
+    KOREAN("ko","Korean","한국어"),
+    UNKNOWN("unknown", "Unknown", "Unknown");
 
     private final String locale;
     private final String languageName;
@@ -64,26 +67,45 @@ public enum DiscordLocale
         this.nativeName = nativeName;
     }
 
-    //TODO docs
+    /**
+     * The locale tag, could be parsed by {@link Locale#forLanguageTag(String)}
+     *
+     * @return The locale tag
+     */
     public String getLocale()
     {
         return locale;
     }
 
-    //TODO docs
+    /**
+     * The language's human-readable name, in English.
+     *
+     * @return The English language name
+     */
     public String getLanguageName()
     {
         return languageName;
     }
 
-    //TODO docs
+    /**
+     * The language's human-readable name, translated to the current language.
+     *
+     * @return The native language name
+     */
     public String getNativeName()
     {
         return nativeName;
     }
 
-    //TODO docs
-    @Nullable
+    /**
+     * Converts the provided locale tag (such as {@code en-GB} or {@code fr}) to the enum constant
+     *
+     * @param  localeTag
+     *         The locale tag
+     *
+     * @return The DiscordLocale constant or {@link #UNKNOWN}
+     */
+    @Nonnull
     public static DiscordLocale from(String localeTag) {
         for (DiscordLocale discordLocale : values())
         {
@@ -92,11 +114,18 @@ public enum DiscordLocale
             }
         }
 
-        return null;
+        return UNKNOWN;
     }
 
-    //TODO docs
-    @Nullable
+    /**
+     * Converts the provided {@link Locale} to the enum constant
+     *
+     * @param  locale
+     *         The locale
+     *
+     * @return The DiscordLocale constant or {@link #UNKNOWN}
+     */
+    @Nonnull
     public static DiscordLocale from(Locale locale) {
         return from(locale.toLanguageTag());
     }
