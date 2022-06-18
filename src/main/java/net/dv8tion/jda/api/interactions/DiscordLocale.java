@@ -111,6 +111,9 @@ public enum DiscordLocale
      * @param  localeTag
      *         The locale tag
      *
+     * @throws IllegalArgumentException
+     *         If the locale tag is null
+     *
      * @return The DiscordLocale constant or {@link #UNKNOWN}
      */
     @Nonnull
@@ -134,6 +137,9 @@ public enum DiscordLocale
      *
      * @param  locale
      *         The locale
+     *
+     * @throws IllegalArgumentException
+     *         If the locale is null
      *
      * @return The DiscordLocale constant or {@link #UNKNOWN}
      */

@@ -107,6 +107,14 @@ public class SubcommandData implements SerializableData
      * @param  name
      *         The translated name to put
      *
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If the locale is null</li>
+     *             <li>If the name is null</li>
+     *             <li>If the locale is {@link DiscordLocale#UNKNOWN}</li>
+     *             <li>If the name does not pass the corresponding {@link #setName(String) name checks}</li>
+     *         </ul>
+     *
      * @return This builder instance, for chaining
      */
     @Nonnull
@@ -122,6 +130,12 @@ public class SubcommandData implements SerializableData
      *
      * @param  map
      *         The map from which to transfer the translated names
+     *
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If the map is null</li>
+     *             <li>If the map contains an {@link DiscordLocale#UNKNOWN} key</li>
+     *         </ul>
      *
      * @return This builder instance, for chaining
      */
@@ -161,6 +175,14 @@ public class SubcommandData implements SerializableData
      * @param  description
      *         The translated description to put
      *
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If the locale is null</li>
+     *             <li>If the description is null</li>
+     *             <li>If the locale is {@link DiscordLocale#UNKNOWN}</li>
+     *             <li>If the description does not pass the corresponding {@link #setDescription(String) description checks}</li>
+     *         </ul>
+     *
      * @return This builder instance, for chaining
      */
     @Nonnull
@@ -176,6 +198,12 @@ public class SubcommandData implements SerializableData
      *
      * @param  map
      *         The map from which to transfer the translated descriptions
+     *
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If the map is null</li>
+     *             <li>If the map contains an {@link DiscordLocale#UNKNOWN} key</li>
+     *         </ul>
      *
      * @return This builder instance, for chaining
      */

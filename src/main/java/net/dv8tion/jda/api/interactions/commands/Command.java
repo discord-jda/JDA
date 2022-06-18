@@ -439,6 +439,13 @@ public interface Command extends ISnowflake
          * @param  name
          *         The translated name to put
          *
+         * @throws IllegalArgumentException
+         *         <ul>
+         *             <li>If the locale is null</li>
+         *             <li>If the name is null</li>
+         *             <li>If the locale is {@link DiscordLocale#UNKNOWN}</li>
+         *         </ul>
+         *
          * @return This builder instance, for chaining
          */
         @Nonnull
@@ -452,6 +459,12 @@ public interface Command extends ISnowflake
          *
          * @param  map
          *         The map from which to transfer the translated names
+         *
+         * @throws IllegalArgumentException
+         *         <ul>
+         *             <li>If the map is null</li>
+         *             <li>If the map contains an {@link DiscordLocale#UNKNOWN} key</li>
+         *         </ul>
          *
          * @return This builder instance, for chaining
          */

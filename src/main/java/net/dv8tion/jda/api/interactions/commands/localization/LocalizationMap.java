@@ -165,6 +165,14 @@ public class LocalizationMap implements SerializableData
      *
      * @param  localizedString
      *         The localized string to use
+     *
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If the locale is null</li>
+     *             <li>If the localized string is null</li>
+     *             <li>If the locale is {@link DiscordLocale#UNKNOWN}</li>
+     *             <li>If the localized string does not pass the corresponding attribute check</li>
+     *         </ul>
      */
     public void setTranslation(@Nonnull DiscordLocale locale, @Nonnull String localizedString)
     {
@@ -180,6 +188,12 @@ public class LocalizationMap implements SerializableData
      *
      * @param  map
      *         The map containing the localized strings
+     *
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If the map is null</li>
+     *             <li>If the map contains an {@link DiscordLocale#UNKNOWN} key</li>
+     *         </ul>
      */
     public void setTranslations(@Nonnull Map<DiscordLocale, String> map)
     {
