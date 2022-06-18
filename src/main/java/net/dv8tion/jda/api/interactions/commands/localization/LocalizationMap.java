@@ -32,7 +32,7 @@ import java.util.function.Consumer;
 
 /**
  * Class which contains a mapping from {@link DiscordLocale} to a translated String, similar to a {@code Map<DiscordLocale, String>}.
- * <br>This is used for command, option and choice localization.
+ * <br>This is used for command, option, and choice localization.
  */
 public class LocalizationMap implements SerializableData
 {
