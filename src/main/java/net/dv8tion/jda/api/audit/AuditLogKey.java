@@ -559,7 +559,14 @@ public enum AuditLogKey
      *
      * <p>Expected type: <b>int</b>
      */
-    INVITE_MAX_USES("max_uses");
+    INVITE_MAX_USES("max_uses"),
+
+    /**
+     * The guild were the auto moderation rule was created in
+     *
+     * <p>Expected type: <b>String</b>
+     */
+    AUTO_MODERATION_GUILD("guild_id");
 
 
     private final String key;

@@ -532,6 +532,65 @@ public enum ActionType
      */
     THREAD_DELETE(112, TargetType.THREAD),
 
+    /**
+     * A user created a {@link net.dv8tion.jda.api.entities.AutoModerationRule auto-moderation rule}
+     *
+     * <h4>Possible Keys</h4>
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#ID ID}</li>
+     *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#AUTO_MODERATION_GUILD GUILD}</li>
+     *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#AUTO_MODERATION_RULE_NAME RULE_NAME}</li>
+     *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#AUTO_MODERATION_CREATOR CREATOR}</li>
+     *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#AUTO_MODERATION_EVENT_TYPE EVENT_TYPE}</li>
+     *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#AUTO_MODERATION_TRIGGER_TYPE TRIGGER_TYPE}</li>
+     *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#AUTO_MODERATION_TRIGGER_METADETA METADETA}</li>
+     *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#AUTO_MODERATION_ACTIONS ACTIONS}</li>
+     *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#AUTO_MODERATION_ENABLED ENABLED}</li>
+     *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#AUTO_MODERATION_EXEMPT_ROLES EXEMPT_ROLES}</li>
+     *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#AUTO_MODERATION_EXEMPT_CHANNELS EXEMPT_CHANNELS}</li>
+     */
+    AUTO_MODERATION_RULE_CREATE(140, TargetType.AUTO_MODERATION_RULE),
+
+    /**
+     * A user updated a {@link net.dv8tion.jda.api.entities.AutoModerationRule auto-moderation rule}
+     *
+     * <h4>Possible Keys</h4>
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#ID ID}</li>
+     *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#AUTO_MODERATION_GUILD GUILD}</li>
+     *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#AUTO_MODERATION_RULE_NAME RULE_NAME}</li>
+     *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#AUTO_MODERATION_CREATOR CREATOR}</li>
+     *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#AUTO_MODERATION_EVENT_TYPE EVENT_TYPE}</li>
+     *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#AUTO_MODERATION_TRIGGER_TYPE TRIGGER_TYPE}</li>
+     *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#AUTO_MODERATION_TRIGGER_METADETA METADETA}</li>
+     *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#AUTO_MODERATION_ACTIONS ACTIONS}</li>
+     *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#AUTO_MODERATION_ENABLED ENABLED}</li>
+     *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#AUTO_MODERATION_EXEMPT_ROLES EXEMPT_ROLES}</li>
+     *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#AUTO_MODERATION_EXEMPT_CHANNELS EXEMPT_CHANNELS}</li>
+     */
+    AUTO_MODERATION_RULE_UPDATE(141, TargetType.AUTO_MODERATION_RULE),
+
+    /**
+     * A user deleted a {@link net.dv8tion.jda.api.entities.AutoModerationRule auto-moderation rule}
+     *
+     * <h4>Possible Keys</h4>
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#ID ID}</li>
+     *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#AUTO_MODERATION_GUILD GUILD}</li>
+     *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#AUTO_MODERATION_RULE_NAME RULE_NAME}</li>
+     *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#AUTO_MODERATION_CREATOR CREATOR}</li>
+     *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#AUTO_MODERATION_EVENT_TYPE EVENT_TYPE}</li>
+     *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#AUTO_MODERATION_TRIGGER_TYPE TRIGGER_TYPE}</li>
+     *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#AUTO_MODERATION_TRIGGER_METADETA METADETA}</li>
+     *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#AUTO_MODERATION_ACTIONS ACTIONS}</li>
+     *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#AUTO_MODERATION_ENABLED ENABLED}</li>
+     *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#AUTO_MODERATION_EXEMPT_ROLES EXEMPT_ROLES}</li>
+     *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#AUTO_MODERATION_EXEMPT_CHANNELS EXEMPT_CHANNELS}</li>
+     */
+    AUTO_MODERATION_RULE_DELETE(142, TargetType.AUTO_MODERATION_RULE),
+
+    AUTO_MODERATION_BLOCK_MESSAGE(143, TargetType.AUTO_MODERATION_RULE),
+
     UNKNOWN(-1, TargetType.UNKNOWN);
 
     private final int key;

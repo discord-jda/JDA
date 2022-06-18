@@ -143,12 +143,12 @@ public class AutoModerationRuleImpl implements AutoModerationRule {
         return this;
     }
 
-    public AutoModerationRuleImpl setExampleRoles(List<Role> roles) {
+    public AutoModerationRuleImpl setExemptRoles(List<Role> roles) {
         this.roles = roles;
         return this;
     }
 
-    public AutoModerationRuleImpl setExampleChannels(List<Channel> channels) {
+    public AutoModerationRuleImpl setExemptChannels(List<Channel> channels) {
         this.channels = channels;
         return this;
     }

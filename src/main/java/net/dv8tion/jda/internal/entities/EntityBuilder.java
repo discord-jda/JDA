@@ -2195,27 +2195,27 @@ public class EntityBuilder
         final TriggerMetadata triggerMetadata = createTriggerMetadata(object.getObject("trigger_metadata"));
         final DataArray actionArray = object.getArray("actions");
         final boolean isEnabled = object.getBoolean("enabled");
-        final DataArray exampleRoleArray = object.getArray("example_roles");
-        final DataArray exampleChannelArray = object.getArray("example_channels");
+        final DataArray exemptRoleArray = object.getArray("exempt_roles");
+        final DataArray exemptChannelArray = object.getArray("exempt_channels");
 
-        final List<Role> exampleRoles = new ArrayList<>();
-        for (int i = 0; i < exampleRoleArray.length(); i++)
+        final List<Role> exemptRoles = new ArrayList<>();
+        for (int i = 0; i < exemptRoleArray.length(); i++)
         {
-            final long roleId = exampleRoleArray.getLong(i);
+            final long roleId = exemptRoleArray.getLong(i);
             final Role role = guild.getRoleById(roleId);
             if (role == null)
                 continue;
-            exampleRoles.add(role);
+            exemptRoles.add(role);
         }
 
-        final List<Channel> exampleChannels = new ArrayList<>();
-        for (int i = 0; i < exampleChannelArray.length(); i++)
+        final List<Channel> exemptChannels = new ArrayList<>();
+        for (int i = 0; i < exemptChannelArray.length(); i++)
         {
-            final long channelId = exampleChannelArray.getLong(i);
+            final long channelId = exemptChannelArray.getLong(i);
             final Channel channel = guild.getTextChannelById(channelId);
             if (channel == null)
                 continue;
-            exampleChannels.add(channel);
+            exemptChannels.add(channel);
         }
 
         final List<AutoModerationAction> actions = new ArrayList<>();
@@ -2228,8 +2228,8 @@ public class EntityBuilder
                 .setTriggerType(triggerType)
                 .setTriggerMetadata(triggerMetadata)
                 .setActions(actions)
-                .setExampleRoles(exampleRoles)
-                .setExampleChannels(exampleChannels)
+                .setExemptRoles(exemptRoles)
+                .setExemptChannels(exemptChannels)
                 .setEnabled(isEnabled);
     }
 

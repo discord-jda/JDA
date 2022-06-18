@@ -41,5 +41,6 @@ public enum TargetType
     INTEGRATION,
     STAGE_INSTANCE,
     THREAD,
+    AUTO_MODERATION_RULE,
     UNKNOWN
 }
