@@ -44,6 +44,9 @@ public interface IWebhookContainerUnion extends IWebhookContainer
      * TextChannel channel2 = (TextChannel) union;
      * </code></pre>
      *
+     * You can use {@link #getType()} to see if the channel is of type {@link ChannelType#TEXT} to validate
+     * whether you should call this method in addition to normal instanceof checks: <code>channel instanceof TextChannel</code>
+     *
      * @throws IllegalStateException
      *         If the channel represented by this union is not actually a {@link TextChannel}.
      *
@@ -62,6 +65,9 @@ public interface IWebhookContainerUnion extends IWebhookContainer
      * NewsChannel channel = union.asNewsChannel();
      * NewsChannel channel2 = (NewsChannel) union;
      * </code></pre>
+     *
+     * You can use {@link #getType()} to see if the channel is of type {@link ChannelType#NEWS} to validate
+     * whether you should call this method in addition to normal instanceof checks: <code>channel instanceof NewsChannel</code>
      *
      * @throws IllegalStateException
      *         If the channel represented by this union is not actually a {@link NewsChannel}.
@@ -87,6 +93,9 @@ public interface IWebhookContainerUnion extends IWebhookContainer
      * GuildMessageChannel channel = union.asGuildMessageChannel();
      * GuildMessageChannel channel2 = (GuildMessageChannel) union;
      * </code></pre>
+     *
+     * You can use {@link #getType()}{@link ChannelType#isMessage() .isMessage()} to validate
+     * whether you should call this method in addition to normal instanceof checks: <code>channel instanceof GuildMessageChannel</code>
      *
      * @throws IllegalStateException
      *         If the channel represented by this union is not actually a {@link GuildMessageChannel}.

@@ -23,6 +23,9 @@ import javax.annotation.Nonnull;
 /**
  * A specialized union representing all channel types that can be used for the "default" channel for
  * {@link Guild#getDefaultChannel()} or {@link Member#getDefaultChannel()}.
+ * <br>This is the channel that the Discord client will default to opening when a Guild is opened for the first time
+ * when accepting an invite that is not directed at a specific {@link IInviteContainer channel}.
+ *
  * <br>This class extends {@link StandardGuildChannel} and primarily acts as a discovery tool for
  * developers to understand which channels might be returned as default channels.
  *
@@ -47,6 +50,9 @@ public interface DefaultGuildChannelUnion extends StandardGuildChannel
      * TextChannel channel2 = (TextChannel) union;
      * </code></pre>
      *
+     * You can use {@link #getType()} to see if the channel is of type {@link ChannelType#TEXT} to validate
+     * whether you should call this method in addition to normal instanceof checks: <code>channel instanceof TextChannel</code>
+     *
      * @throws IllegalStateException
      *         If the channel represented by this union is not actually a {@link TextChannel}.
      *
@@ -65,6 +71,9 @@ public interface DefaultGuildChannelUnion extends StandardGuildChannel
      * NewsChannel channel = union.asNewsChannel();
      * NewsChannel channel2 = (NewsChannel) union;
      * </code></pre>
+     *
+     * You can use {@link #getType()} to see if the channel is of type {@link ChannelType#NEWS} to validate
+     * whether you should call this method in addition to normal instanceof checks: <code>channel instanceof NewsChannel</code>
      *
      * @throws IllegalStateException
      *         If the channel represented by this union is not actually a {@link NewsChannel}.

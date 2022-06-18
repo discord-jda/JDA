@@ -423,14 +423,14 @@ public interface Member extends IMentionable, IPermissionHolder, UserSnowflake
     boolean isPending();
 
     /**
-     * The default {@link net.dv8tion.jda.api.entities.StandardGuildChannel channel} for a {@link net.dv8tion.jda.api.entities.Member Member}.
+     * The {@link DefaultGuildChannelUnion default channel} for a {@link net.dv8tion.jda.api.entities.Member Member}.
      * <br>This is the channel that the Discord client will default to opening when a Guild is opened for the first time
      * after joining the guild.
      * <br>The default channel is the channel with the highest position in which the member has
      * {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} permissions. If this requirement doesn't apply for
      * any channel in the guild, this method returns {@code null}.
      *
-     * @return The {@link StandardGuildChannel channel} representing the default channel for this member
+     * @return The {@link DefaultGuildChannelUnion channel} representing the default channel for this member
      *         or null if no such channel exists.
      */
     @Nullable

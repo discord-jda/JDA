@@ -45,6 +45,9 @@ public interface GuildMessageChannelUnion extends GuildMessageChannel
      * TextChannel channel2 = (TextChannel) union;
      * </code></pre>
      *
+     * You can use {@link #getType()} to see if the channel is of type {@link ChannelType#TEXT} to validate
+     * whether you should call this method in addition to normal instanceof checks: <code>channel instanceof TextChannel</code>
+     *
      * @throws IllegalStateException
      *         If the channel represented by this union is not actually a {@link TextChannel}.
      *
@@ -64,6 +67,9 @@ public interface GuildMessageChannelUnion extends GuildMessageChannel
      * NewsChannel channel2 = (NewsChannel) union;
      * </code></pre>
      *
+     * You can use {@link #getType()} to see if the channel is of type {@link ChannelType#NEWS} to validate
+     * whether you should call this method in addition to normal instanceof checks: <code>channel instanceof NewsChannel</code>
+     *
      * @throws IllegalStateException
      *         If the channel represented by this union is not actually a {@link NewsChannel}.
      *
@@ -82,6 +88,9 @@ public interface GuildMessageChannelUnion extends GuildMessageChannel
      * ThreadChannel channel = union.asThreadChannel();
      * ThreadChannel channel2 = (ThreadChannel) union;
      * </code></pre>
+     *
+     * You can use {@link #getType()}{@link ChannelType#isThread() .isThread()} to validate
+     * whether you should call this method in addition to normal instanceof checks: <code>channel instanceof ThreadChannel</code>
      *
      * @throws IllegalStateException
      *         If the channel represented by this union is not actually a {@link ThreadChannel}.
