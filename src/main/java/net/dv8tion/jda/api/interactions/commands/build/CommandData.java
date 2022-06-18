@@ -39,6 +39,18 @@ import java.util.Map;
  */
 public interface CommandData extends SerializableData
 {
+    /**
+     * Sets the {@link LocalizationMapper} for this command?
+     * <br>This enables you to have the entirety of this command to be localized.
+     *
+     * @param  localizationMapper
+     *         The localization mapper
+     *
+     * @throws IllegalArgumentException
+     *         If the localization mapper is null
+     *
+     * @return The builder instance, for chaining
+     */
     @Nonnull
     CommandData setLocalizationMapper(@Nonnull LocalizationMapper localizationMapper);
 

@@ -238,6 +238,8 @@ public class CommandDataImpl implements SlashCommandData
     @Nonnull
     @Override
     public CommandDataImpl setLocalizationMapper(@Nonnull LocalizationMapper localizationMapper) {
+        Checks.notNull(localizationMapper, "Localization mapper");
+
         this.localizationMapper = localizationMapper;
         return this;
     }
