@@ -215,6 +215,7 @@ public class LocalizationMap implements SerializableData
      *         <ul>
      *             <li>If the map is null</li>
      *             <li>If the map contains an {@link DiscordLocale#UNKNOWN} key</li>
+     *             <li>If the map contains a localized string which does not pass the corresponding attribute check</li>
      *         </ul>
      */
     public void setTranslations(@Nonnull Map<DiscordLocale, String> map)

@@ -80,6 +80,14 @@ public interface SlashCommandData extends CommandData
      * @param  description
      *         The translated description to put
      *
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If the locale is null</li>
+     *             <li>If the description is null</li>
+     *             <li>If the locale is {@link DiscordLocale#UNKNOWN}</li>
+     *             <li>If the description does not pass the corresponding {@link #setDescription(String) description check}</li>
+     *         </ul>
+     *
      * @return This builder instance, for chaining
      */
     @Nonnull
@@ -90,6 +98,13 @@ public interface SlashCommandData extends CommandData
      *
      * @param  map
      *         The map from which to transfer the translated descriptions
+     *
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If the map is null</li>
+     *             <li>If the map contains an {@link DiscordLocale#UNKNOWN} key</li>
+     *             <li>If the map contains a description which does not pass the corresponding {@link #setDescription(String) description check}</li>
+     *         </ul>
      *
      * @return This builder instance, for chaining
      */

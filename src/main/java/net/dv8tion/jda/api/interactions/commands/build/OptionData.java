@@ -357,7 +357,7 @@ public class OptionData implements SerializableData
      *             <li>If the locale is null</li>
      *             <li>If the name is null</li>
      *             <li>If the locale is {@link DiscordLocale#UNKNOWN}</li>
-     *             <li>If the name does not pass the corresponding {@link #setName(String) name checks}</li>
+     *             <li>If the name does not pass the corresponding {@link #setName(String) name check}</li>
      *         </ul>
      *
      * @return This builder instance, for chaining
@@ -380,6 +380,7 @@ public class OptionData implements SerializableData
      *         <ul>
      *             <li>If the map is null</li>
      *             <li>If the map contains an {@link DiscordLocale#UNKNOWN} key</li>
+     *             <li>If the map contains a name which does not pass the corresponding {@link #setName(String) name check}</li>
      *         </ul>
      *
      * @return This builder instance, for chaining
@@ -425,7 +426,7 @@ public class OptionData implements SerializableData
      *             <li>If the locale is null</li>
      *             <li>If the description is null</li>
      *             <li>If the locale is {@link DiscordLocale#UNKNOWN}</li>
-     *             <li>If the description does not pass the corresponding {@link #setDescription(String) description checks}</li>
+     *             <li>If the description does not pass the corresponding {@link #setDescription(String) description check}</li>
      *         </ul>
      *
      * @return This builder instance, for chaining
@@ -448,6 +449,7 @@ public class OptionData implements SerializableData
      *         <ul>
      *             <li>If the map is null</li>
      *             <li>If the map contains an {@link DiscordLocale#UNKNOWN} key</li>
+     *             <li>If the map contains a description which does not pass the corresponding {@link #setDescription(String) description check}</li>
      *         </ul>
      *
      * @return This builder instance, for chaining
