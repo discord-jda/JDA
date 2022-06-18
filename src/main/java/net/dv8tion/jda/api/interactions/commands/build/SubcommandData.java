@@ -404,7 +404,7 @@ public class SubcommandData implements SerializableData
     }
 
     /**
-     * The name localizations of this subcommand.
+     * The localizations of this subcommand's name for {@link DiscordLocale various languages}.
      *
      * @return The {@link LocalizationMap} containing the mapping from {@link DiscordLocale} to the localized name
      */
@@ -426,7 +426,7 @@ public class SubcommandData implements SerializableData
     }
 
     /**
-     * The description localizations of this subcommand.
+     * The localizations of this subcommand's description for {@link DiscordLocale various languages}.
      *
      * @return The {@link LocalizationMap} containing the mapping from {@link DiscordLocale} to the localized description
      */

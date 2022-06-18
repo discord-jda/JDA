@@ -232,7 +232,7 @@ public class SubcommandGroupData implements SerializableData
     }
 
     /**
-     * The name localizations of this subcommand group.
+     * The localizations of this subcommand's name for {@link DiscordLocale various languages} group.
      *
      * @return The {@link LocalizationMap} containing the mapping from {@link DiscordLocale} to the localized name
      */
@@ -254,7 +254,7 @@ public class SubcommandGroupData implements SerializableData
     }
 
     /**
-     * The description localizations of this subcommand group.
+     * The localizations of this subcommand's description for {@link DiscordLocale various languages} group.
      *
      * @return The {@link LocalizationMap} containing the mapping from {@link DiscordLocale} to the localized description
      */

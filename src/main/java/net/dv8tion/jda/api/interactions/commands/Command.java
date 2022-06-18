@@ -420,7 +420,7 @@ public interface Command extends ISnowflake
         }
 
         /**
-         * The name localizations of this choice.
+         * The localizations of this choice's name for {@link DiscordLocale various languages}.
          *
          * @return The {@link LocalizationMap} containing the mapping from {@link DiscordLocale} to the localized name
          */

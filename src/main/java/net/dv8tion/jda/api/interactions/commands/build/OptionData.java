@@ -212,7 +212,7 @@ public class OptionData implements SerializableData
     }
 
     /**
-     * The name localizations of this option.
+     * The localizations of this option's name for {@link DiscordLocale various languages}.
      *
      * @return The {@link LocalizationMap} containing the mapping from {@link DiscordLocale} to the localized name
      */
@@ -234,7 +234,7 @@ public class OptionData implements SerializableData
     }
 
     /**
-     * The description localizations of this option.
+     * The localizations of this option's description for {@link DiscordLocale various languages}.
      *
      * @return The {@link LocalizationMap} containing the mapping from {@link DiscordLocale} to the localized description
      */
