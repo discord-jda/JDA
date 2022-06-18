@@ -19,6 +19,7 @@ package net.dv8tion.jda.api.interactions.commands;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.SerializableData;
+import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -70,6 +71,9 @@ public class LocalizationMap implements SerializableData
     @Nonnull
     public static LocalizationMap fromMap(@Nonnull Consumer<String> checkConsumer, @Nonnull LocalizationMap map)
     {
+        Checks.notNull(checkConsumer, "Check consumer");
+        Checks.notNull(map, "Localization map");
+
         return new LocalizationMap(checkConsumer, map);
     }
 
@@ -90,6 +94,9 @@ public class LocalizationMap implements SerializableData
     @Nonnull
     public static LocalizationMap fromData(@Nonnull Consumer<String> checkConsumer, @Nonnull DataObject data)
     {
+        Checks.notNull(checkConsumer, "Check consumer");
+        Checks.notNull(data, "Data object");
+
         return new LocalizationMap(checkConsumer, data);
     }
 
@@ -111,6 +118,10 @@ public class LocalizationMap implements SerializableData
      */
     @Nonnull
     public static LocalizationMap fromProperty(@Nonnull DataObject json, @Nonnull String localizationProperty, @Nonnull Consumer<String> checkConsumer) {
+        Checks.notNull(json, "Data object");
+        Checks.notNull(localizationProperty, "Localization property");
+        Checks.notNull(checkConsumer, "Check consumer");
+
         return json.optObject(localizationProperty)
                 .map(data -> fromData(checkConsumer, data))
                 .orElse(new LocalizationMap(checkConsumer));
@@ -136,6 +147,9 @@ public class LocalizationMap implements SerializableData
      */
     public void setTranslation(@Nonnull DiscordLocale locale, @Nonnull String localizedString)
     {
+        Checks.notNull(locale, "Locale");
+        Checks.notNull(localizedString, "Localized string");
+
         checkConsumer.accept(localizedString);
         map.put(locale, localizedString);
     }
@@ -148,6 +162,8 @@ public class LocalizationMap implements SerializableData
      */
     public void putTranslations(@Nonnull Map<DiscordLocale, String> map)
     {
+        Checks.notNull(map, "Map");
+        
         for (String localizedString : map.values())
             checkConsumer.accept(localizedString);
         this.map.putAll(map);
@@ -164,6 +180,8 @@ public class LocalizationMap implements SerializableData
     @Nullable
     public String get(@Nonnull DiscordLocale locale)
     {
+        Checks.notNull(locale, "Locale");
+
         return map.get(locale);
     }
 
