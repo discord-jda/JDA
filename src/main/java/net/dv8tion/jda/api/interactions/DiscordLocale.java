@@ -21,6 +21,8 @@ import java.util.Locale;
 
 /**
  * Enum representing the locales that Discord supports.
+ *
+ * <p>Based off <a href="https://discord.com/developers/docs/reference#locales" target="_blank">Discord's locale list</a>
  */
 public enum DiscordLocale
 {
