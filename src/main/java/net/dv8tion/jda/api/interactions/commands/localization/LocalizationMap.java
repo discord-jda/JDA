@@ -36,9 +36,8 @@ import java.util.function.Consumer;
  */
 public class LocalizationMap implements SerializableData
 {
+    public static final Logger LOG = JDALogger.getLog(LocalizationMap.class);
     public static final Consumer<String> UNMODIFIABLE_CHECK = s -> { throw new IllegalStateException("This LocalizationMap is unmodifiable."); };
-
-    private static final Logger LOGGER = JDALogger.getLog(LocalizationMap.class);
 
     private final Map<DiscordLocale, String> map = new HashMap<>();
     private final Consumer<String> checkConsumer;
@@ -55,7 +54,7 @@ public class LocalizationMap implements SerializableData
         {
             final DiscordLocale locale = DiscordLocale.from(key);
             if (locale == DiscordLocale.UNKNOWN) {
-                LOGGER.debug("Discord provided an unknown locale, locale tag: {}", key);
+                LOG.debug("Discord provided an unknown locale, locale tag: {}", key);
 
                 continue;
             }
