@@ -55,8 +55,8 @@ public class CommandDataImpl implements SlashCommandData
     public CommandDataImpl(@Nonnull String name, @Nonnull String description)
     {
         this.type = Command.Type.SLASH;
-        setNameLocalization(name);
-        setDescriptionLocalization(description);
+        setName(name);
+        setDescription(description);
     }
 
     public CommandDataImpl(@Nonnull Command.Type type, @Nonnull String name)
@@ -64,7 +64,7 @@ public class CommandDataImpl implements SlashCommandData
         this.type = type;
         Checks.notNull(type, "Command Type");
         Checks.check(type != Command.Type.SLASH, "Cannot create slash command without description. Use `new CommandDataImpl(name, description)` instead.");
-        setNameLocalization(name);
+        setName(name);
     }
 
     protected void checkType(Command.Type required, String action)
@@ -244,7 +244,7 @@ public class CommandDataImpl implements SlashCommandData
 
     @Nonnull
     @Override
-    public CommandDataImpl setNameLocalization(@Nonnull String name)
+    public CommandDataImpl setName(@Nonnull String name)
     {
         checkName(name);
         this.name = name;
@@ -276,7 +276,7 @@ public class CommandDataImpl implements SlashCommandData
 
     @Nonnull
     @Override
-    public CommandDataImpl setDescriptionLocalization(@Nonnull String description)
+    public CommandDataImpl setDescription(@Nonnull String description)
     {
         checkDescription(description);
         this.description = description;

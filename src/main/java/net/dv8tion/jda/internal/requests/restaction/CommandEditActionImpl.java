@@ -116,7 +116,7 @@ public class CommandEditActionImpl extends RestActionImpl<Command> implements Co
             mask &= ~NAME_SET;
             return this;
         }
-        data.setNameLocalization(name);
+        data.setName(name);
         mask |= NAME_SET;
         return this;
     }
@@ -130,7 +130,7 @@ public class CommandEditActionImpl extends RestActionImpl<Command> implements Co
             mask &= ~DESCRIPTION_SET;
             return this;
         }
-        data.setDescriptionLocalization(description);
+        data.setDescription(description);
         mask |= DESCRIPTION_SET;
         return this;
     }

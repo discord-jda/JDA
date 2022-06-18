@@ -62,8 +62,8 @@ public class SubcommandData implements SerializableData
      */
     public SubcommandData(@Nonnull String name, @Nonnull String description)
     {
-        setNameLocalization(name);
-        setDescriptionLocalization(description);
+        setName(name);
+        setDescription(description);
     }
 
     protected void checkName(@Nonnull String name)
@@ -91,7 +91,7 @@ public class SubcommandData implements SerializableData
      * @return The SubcommandData instance, for chaining
      */
     @Nonnull
-    public SubcommandData setNameLocalization(@Nonnull String name)
+    public SubcommandData setName(@Nonnull String name)
     {
         checkName(name);
         this.name = name;
@@ -145,7 +145,7 @@ public class SubcommandData implements SerializableData
      * @return The SubcommandData instance, for chaining
      */
     @Nonnull
-    public SubcommandData setDescriptionLocalization(@Nonnull String description)
+    public SubcommandData setDescription(@Nonnull String description)
     {
         checkDescription(description);
         this.description = description;

@@ -43,7 +43,7 @@ public interface SlashCommandData extends CommandData
 
     @Nonnull
     @Override
-    SlashCommandData setNameLocalization(@Nonnull String name);
+    SlashCommandData setName(@Nonnull String name);
 
     @Nonnull
     @Override
@@ -69,7 +69,7 @@ public interface SlashCommandData extends CommandData
      * @return The builder, for chaining
      */
     @Nonnull
-    SlashCommandData setDescriptionLocalization(@Nonnull String description);
+    SlashCommandData setDescription(@Nonnull String description);
 
     /**
      * Sets the description localizations of this command.

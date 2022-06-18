@@ -132,9 +132,9 @@ public class CommandCreateActionImpl extends RestActionImpl<Command> implements 
 
     @Nonnull
     @Override
-    public CommandCreateAction setNameLocalization(@Nonnull String name)
+    public CommandCreateAction setName(@Nonnull String name)
     {
-        data.setNameLocalization(name);
+        data.setName(name);
         return this;
     }
 
@@ -156,9 +156,9 @@ public class CommandCreateActionImpl extends RestActionImpl<Command> implements 
 
     @Nonnull
     @Override
-    public CommandCreateAction setDescriptionLocalization(@Nonnull String description)
+    public CommandCreateAction setDescription(@Nonnull String description)
     {
-        data.setDescriptionLocalization(description);
+        data.setDescription(description);
         return this;
     }
 

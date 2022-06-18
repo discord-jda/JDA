@@ -167,8 +167,8 @@ public class OptionData implements SerializableData
         Checks.check(type != OptionType.UNKNOWN, "Cannot make option of unknown type!");
         this.type = type;
 
-        setNameLocalization(name);
-        setDescriptionLocalization(description);
+        setName(name);
+        setDescription(description);
         setRequired(isRequired);
         if (type.canSupportChoices())
             choices = new ArrayList<>();
@@ -336,7 +336,7 @@ public class OptionData implements SerializableData
      * @return The OptionData instance, for chaining
      */
     @Nonnull
-    public OptionData setNameLocalization(@Nonnull String name)
+    public OptionData setName(@Nonnull String name)
     {
         checkName(name);
         this.name = name;
@@ -390,7 +390,7 @@ public class OptionData implements SerializableData
      * @return The OptionData instance, for chaining
      */
     @Nonnull
-    public OptionData setDescriptionLocalization(@Nonnull String description)
+    public OptionData setDescription(@Nonnull String description)
     {
         checkDescription(description);
         this.description = description;

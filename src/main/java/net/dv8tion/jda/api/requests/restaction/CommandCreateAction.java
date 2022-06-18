@@ -72,7 +72,7 @@ public interface CommandCreateAction extends RestAction<Command>, SlashCommandDa
     @Nonnull
     @Override
     @CheckReturnValue
-    CommandCreateAction setNameLocalization(@Nonnull String name);
+    CommandCreateAction setName(@Nonnull String name);
 
     @Nonnull
     @Override
@@ -86,7 +86,7 @@ public interface CommandCreateAction extends RestAction<Command>, SlashCommandDa
     @Nonnull
     @Override
     @CheckReturnValue
-    CommandCreateAction setDescriptionLocalization(@Nonnull String description);
+    CommandCreateAction setDescription(@Nonnull String description);
 
     @Nonnull
     @Override

@@ -96,7 +96,7 @@ public class SubcommandGroupData implements SerializableData
      * @return The SubcommandGroupData instance, for chaining
      */
     @Nonnull
-    public SubcommandGroupData setNameLocalization(@Nonnull String name)
+    public SubcommandGroupData setName(@Nonnull String name)
     {
         checkName(name);
         this.name = name;
@@ -150,7 +150,7 @@ public class SubcommandGroupData implements SerializableData
      * @return The SubcommandGroupData instance, for chaining
      */
     @Nonnull
-    public SubcommandGroupData setDescriptionLocalization(@Nonnull String description)
+    public SubcommandGroupData setDescription(@Nonnull String description)
     {
         checkDescription(description);
         this.description = description;
