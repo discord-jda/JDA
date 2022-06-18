@@ -125,5 +125,32 @@ public interface MessageChannelUnion extends MessageChannel
 
     //TODO: Add asVoiceChannel once TiV is launched
 
+    /**
+     * Casts this union to a {@link GuildMessageChannel}.
+     * <br>This works for the following channel types represented by this union:
+     * <ul>
+     *     <li>{@link TextChannel}</li>
+     *     <li>{@link NewsChannel}</li>
+     *     <li>{@link ThreadChannel}</li>
+     * </ul>
+     *
+     * Note: This is effectively equivalent to using the cast operator:
+     * <pre><code>
+     * //These are the same!
+     * GuildMessageChannel channel = union.asGuildMessageChannel();
+     * GuildMessageChannel channel2 = (GuildMessageChannel) union;
+     * </code></pre>
+     *
+     * You can use {@link #getType()}{@link ChannelType#isGuild() .isGuild()} to validate
+     * whether you should call this method in addition to normal instanceof checks: <code>channel instanceof GuildMessageChannel</code>
+     *
+     * @throws IllegalStateException
+     *         If the channel represented by this union is not actually a {@link GuildMessageChannel}.
+     *
+     * @return The channel as a {@link GuildMessageChannel}
+     */
+    @Nonnull
+    GuildMessageChannel asGuildMessageChannel();
+
     //TODO: should we also expose the getThreadContainer/getStandardX getters like in GuildMessageChannelUnion?
 }
