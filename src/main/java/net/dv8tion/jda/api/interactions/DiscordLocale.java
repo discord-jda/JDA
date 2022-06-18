@@ -73,6 +73,7 @@ public enum DiscordLocale
      *
      * @return The locale tag
      */
+    @Nonnull
     public String getLocale()
     {
         return locale;
@@ -83,6 +84,7 @@ public enum DiscordLocale
      *
      * @return The English language name
      */
+    @Nonnull
     public String getLanguageName()
     {
         return languageName;
@@ -93,6 +95,7 @@ public enum DiscordLocale
      *
      * @return The native language name
      */
+    @Nonnull
     public String getNativeName()
     {
         return nativeName;
