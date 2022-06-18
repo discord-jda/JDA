@@ -177,7 +177,7 @@ public interface Command extends ISnowflake
     String getName();
 
     /**
-     * The name localizations of this command.
+     * The localizations of this command's name for {@link DiscordLocale various languages}.
      *
      * @return The {@link LocalizationMap} containing the mapping from {@link DiscordLocale} to the localized name
      */
@@ -193,7 +193,7 @@ public interface Command extends ISnowflake
     String getDescription();
 
     /**
-     * The description localizations of this command.
+     * The localizations of this command's description for {@link DiscordLocale various languages}.
      *
      * @return The {@link LocalizationMap} containing the mapping from {@link DiscordLocale} to the localized description
      */
@@ -618,7 +618,7 @@ public interface Command extends ISnowflake
         }
 
         /**
-         * The name localizations of this option, subcommand or subcommand group.
+         * The localizations of this option's name for {@link DiscordLocale various languages}.
          *
          * @return The {@link LocalizationMap} containing the mapping from {@link DiscordLocale} to the localized name
          */
@@ -640,7 +640,7 @@ public interface Command extends ISnowflake
         }
 
         /**
-         * The description localizations of this option, subcommand, or subcommand group.
+         * The localizations of this option's description for {@link DiscordLocale various languages}.
          *
          * @return The {@link LocalizationMap} containing the mapping from {@link DiscordLocale} to the localized description
          */
@@ -802,7 +802,7 @@ public interface Command extends ISnowflake
         }
 
         /**
-         * The name localizations of this subcommand.
+         * The localizations of this subcommands's name for {@link DiscordLocale various languages}.
          *
          * @return The {@link LocalizationMap} containing the mapping from {@link DiscordLocale} to the localized name
          */
@@ -824,7 +824,7 @@ public interface Command extends ISnowflake
         }
 
         /**
-         * The description localizations of this subcommand.
+         * The localizations of this subcommand's description for {@link DiscordLocale various languages}.
          *
          * @return The {@link LocalizationMap} containing the mapping from {@link DiscordLocale} to the localized description
          */
@@ -900,7 +900,7 @@ public interface Command extends ISnowflake
         }
 
         /**
-         * The name localizations of this subcommand group.
+         * The localizations of this subcommand group's name for {@link DiscordLocale various languages}.
          *
          * @return The {@link LocalizationMap} containing the mapping from {@link DiscordLocale} to the localized name
          */
@@ -922,7 +922,7 @@ public interface Command extends ISnowflake
         }
 
         /**
-         * The description localizations of this subcommand group.
+         * The localizations of this subcommand group's description for {@link DiscordLocale various languages}.
          *
          * @return The {@link LocalizationMap} containing the mapping from {@link DiscordLocale} to the localized description
          */

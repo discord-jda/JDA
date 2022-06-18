@@ -105,7 +105,7 @@ public interface CommandData extends SerializableData
     String getName();
 
     /**
-     * The name localizations of this command.
+     * The localizations of this command's name for {@link DiscordLocale various languages}.
      *
      * @return The {@link LocalizationMap} containing the mapping from {@link DiscordLocale} to the localized name
      */
