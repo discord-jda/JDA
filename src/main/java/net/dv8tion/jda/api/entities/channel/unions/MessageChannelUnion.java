@@ -47,7 +47,7 @@ public interface MessageChannelUnion extends MessageChannel
      * </code></pre>
      *
      * You can use {@link #getType()} to see if the channel is of type {@link ChannelType#PRIVATE} to validate
-     * whether you should call this method in addition to normal instanceof checks: <code>channel instanceof PrivateChannel</code>
+     * whether you can call this method in addition to normal instanceof checks: <code>channel instanceof PrivateChannel</code>
      *
      * @throws IllegalStateException
      *         If the channel represented by this union is not actually a {@link PrivateChannel}.
@@ -69,7 +69,7 @@ public interface MessageChannelUnion extends MessageChannel
      * </code></pre>
      *
      * You can use {@link #getType()} to see if the channel is of type {@link ChannelType#TEXT} to validate
-     * whether you should call this method in addition to normal instanceof checks: <code>channel instanceof TextChannel</code>
+     * whether you can call this method in addition to normal instanceof checks: <code>channel instanceof TextChannel</code>
      *
      * @throws IllegalStateException
      *         If the channel represented by this union is not actually a {@link TextChannel}.
@@ -91,7 +91,7 @@ public interface MessageChannelUnion extends MessageChannel
      * </code></pre>
      *
      * You can use {@link #getType()} to see if the channel is of type {@link ChannelType#NEWS} to validate
-     * whether you should call this method in addition to normal instanceof checks: <code>channel instanceof NewsChannel</code>
+     * whether you can call this method in addition to normal instanceof checks: <code>channel instanceof NewsChannel</code>
      *
      * @throws IllegalStateException
      *         If the channel represented by this union is not actually a {@link NewsChannel}.
@@ -113,7 +113,7 @@ public interface MessageChannelUnion extends MessageChannel
      * </code></pre>
      *
      * You can use {@link #getType()}{@link ChannelType#isThread() .isThread()} to validate
-     * whether you should call this method in addition to normal instanceof checks: <code>channel instanceof ThreadChannel</code>
+     * whether you can call this method in addition to normal instanceof checks: <code>channel instanceof ThreadChannel</code>
      *
      * @throws IllegalStateException
      *         If the channel represented by this union is not actually a {@link ThreadChannel}.
@@ -124,6 +124,30 @@ public interface MessageChannelUnion extends MessageChannel
     ThreadChannel asThreadChannel();
 
     //TODO: Add asVoiceChannel once TiV is launched
+
+    /**
+     * Casts this union to a {@link IThreadContainer}.
+     * <br>This only works for the following channel types represented by this union:
+     * <ul>
+     *     <li>{@link TextChannel}</li>
+     *     <li>{@link NewsChannel}</li>
+     * </ul>
+     *
+     * Note: This is effectively equivalent to using the cast operator:
+     * <pre><code>
+     * //These are the same!
+     * IThreadContainer channel = union.asThreadContainer();
+     * IThreadContainer channel2 = (IThreadContainer) union;
+     * </code></pre>
+     *
+     * You can use <code>channel instanceof IThreadContainer</code> to validate whether you can call this method.
+     *
+     * @throws IllegalStateException
+     *         If the channel represented by this union is not actually a {@link IThreadContainer}.
+     *
+     * @return The channel as a {@link IThreadContainer}
+     */
+    IThreadContainer asThreadContainer();
 
     /**
      * Casts this union to a {@link GuildMessageChannel}.
@@ -142,7 +166,7 @@ public interface MessageChannelUnion extends MessageChannel
      * </code></pre>
      *
      * You can use {@link #getType()}{@link ChannelType#isGuild() .isGuild()} to validate
-     * whether you should call this method in addition to normal instanceof checks: <code>channel instanceof GuildMessageChannel</code>
+     * whether you can call this method in addition to normal instanceof checks: <code>channel instanceof GuildMessageChannel</code>
      *
      * @throws IllegalStateException
      *         If the channel represented by this union is not actually a {@link GuildMessageChannel}.
@@ -151,6 +175,4 @@ public interface MessageChannelUnion extends MessageChannel
      */
     @Nonnull
     GuildMessageChannel asGuildMessageChannel();
-
-    //TODO: should we also expose the getThreadContainer/getStandardX getters like in GuildMessageChannelUnion?
 }

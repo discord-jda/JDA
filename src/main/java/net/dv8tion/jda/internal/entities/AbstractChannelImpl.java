@@ -104,6 +104,12 @@ public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> impl
     }
 
     @Nonnull
+    public IThreadContainer asThreadContainer()
+    {
+        return transformChannel(IThreadContainer.class);
+    }
+
+    @Nonnull
     public GuildMessageChannel asGuildMessageChannel()
     {
         return transformChannel(GuildMessageChannel.class);

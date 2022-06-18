@@ -45,7 +45,7 @@ public interface IWebhookContainerUnion extends IWebhookContainer
      * </code></pre>
      *
      * You can use {@link #getType()} to see if the channel is of type {@link ChannelType#TEXT} to validate
-     * whether you should call this method in addition to normal instanceof checks: <code>channel instanceof TextChannel</code>
+     * whether you can call this method in addition to normal instanceof checks: <code>channel instanceof TextChannel</code>
      *
      * @throws IllegalStateException
      *         If the channel represented by this union is not actually a {@link TextChannel}.
@@ -67,7 +67,7 @@ public interface IWebhookContainerUnion extends IWebhookContainer
      * </code></pre>
      *
      * You can use {@link #getType()} to see if the channel is of type {@link ChannelType#NEWS} to validate
-     * whether you should call this method in addition to normal instanceof checks: <code>channel instanceof NewsChannel</code>
+     * whether you can call this method in addition to normal instanceof checks: <code>channel instanceof NewsChannel</code>
      *
      * @throws IllegalStateException
      *         If the channel represented by this union is not actually a {@link NewsChannel}.
@@ -78,6 +78,30 @@ public interface IWebhookContainerUnion extends IWebhookContainer
     NewsChannel asNewsChannel();
 
     //TODO: Add asForumChannel
+
+    /**
+     * Casts this union to a {@link IThreadContainer}.
+     * <br>This only works for the following channel types represented by this union:
+     * <ul>
+     *     <li>{@link TextChannel}</li>
+     *     <li>{@link NewsChannel}</li>
+     * </ul>
+     *
+     * Note: This is effectively equivalent to using the cast operator:
+     * <pre><code>
+     * //These are the same!
+     * IThreadContainer channel = union.asThreadContainer();
+     * IThreadContainer channel2 = (IThreadContainer) union;
+     * </code></pre>
+     *
+     * You can use <code>channel instanceof IThreadContainer</code> to validate whether you can call this method.
+     *
+     * @throws IllegalStateException
+     *         If the channel represented by this union is not actually a {@link IThreadContainer}.
+     *
+     * @return The channel as a {@link IThreadContainer}
+     */
+    IThreadContainer asThreadContainer();
 
     /**
      * Casts this union to a {@link GuildMessageChannel}.
@@ -95,7 +119,7 @@ public interface IWebhookContainerUnion extends IWebhookContainer
      * </code></pre>
      *
      * You can use {@link #getType()}{@link ChannelType#isMessage() .isMessage()} to validate
-     * whether you should call this method in addition to normal instanceof checks: <code>channel instanceof GuildMessageChannel</code>
+     * whether you can call this method in addition to normal instanceof checks: <code>channel instanceof GuildMessageChannel</code>
      *
      * @throws IllegalStateException
      *         If the channel represented by this union is not actually a {@link GuildMessageChannel}.
