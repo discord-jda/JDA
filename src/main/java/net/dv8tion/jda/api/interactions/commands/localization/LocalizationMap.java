@@ -37,12 +37,16 @@ import java.util.function.Consumer;
 public class LocalizationMap implements SerializableData
 {
     public static final Logger LOG = JDALogger.getLog(LocalizationMap.class);
-    public static final Consumer<String> UNMODIFIABLE_CHECK = s -> { throw new IllegalStateException("This LocalizationMap is unmodifiable."); };
+    public static final Consumer<String> UNMODIFIABLE_CHECK = s ->
+    {
+        throw new IllegalStateException("This LocalizationMap is unmodifiable.");
+    };
 
     private final Map<DiscordLocale, String> map = new HashMap<>();
     private final Consumer<String> checkConsumer;
 
-    public LocalizationMap(@Nonnull Consumer<String> checkConsumer) {
+    public LocalizationMap(@Nonnull Consumer<String> checkConsumer)
+    {
         this.checkConsumer = checkConsumer;
     }
 
@@ -53,9 +57,9 @@ public class LocalizationMap implements SerializableData
         for (String key : data.keys())
         {
             final DiscordLocale locale = DiscordLocale.from(key);
-            if (locale == DiscordLocale.UNKNOWN) {
+            if (locale == DiscordLocale.UNKNOWN)
+            {
                 LOG.debug("Discord provided an unknown locale, locale tag: {}", key);
-
                 continue;
             }
 
@@ -70,9 +74,9 @@ public class LocalizationMap implements SerializableData
         this.map.putAll(map.map); //This is safe as the LocalizationMap being given is already validated
     }
 
-    private void putTranslation(DiscordLocale locale, String translation) {
+    private void putTranslation(DiscordLocale locale, String translation)
+    {
         Checks.check(locale != DiscordLocale.UNKNOWN, "Cannot put an 'UNKNOWN' DiscordLocale");
-
         this.map.put(locale, translation);
     }
 
@@ -137,7 +141,8 @@ public class LocalizationMap implements SerializableData
      * @return The parsed LocalizationMap instance, which can be further configured through setters
      */
     @Nonnull
-    public static LocalizationMap fromProperty(@Nonnull DataObject json, @Nonnull String localizationProperty, @Nonnull Consumer<String> checkConsumer) {
+    public static LocalizationMap fromProperty(@Nonnull DataObject json, @Nonnull String localizationProperty, @Nonnull Consumer<String> checkConsumer)
+    {
         Checks.notNull(json, "Data object");
         Checks.notNull(localizationProperty, "Localization property");
         Checks.notNull(checkConsumer, "Check consumer");
@@ -198,9 +203,9 @@ public class LocalizationMap implements SerializableData
     {
         Checks.notNull(map, "Map");
 
-        map.forEach((discordLocale, localizedString) -> {
+        map.forEach((discordLocale, localizedString) ->
+        {
             checkConsumer.accept(localizedString);
-
             putTranslation(discordLocale, localizedString);
         });
     }
