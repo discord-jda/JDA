@@ -62,8 +62,8 @@ public class SubcommandData implements SerializableData
      */
     public SubcommandData(@Nonnull String name, @Nonnull String description)
     {
-        setName(name);
-        setDescription(description);
+        setNameLocalization(name);
+        setDescriptionLocalization(description);
     }
 
     protected void checkName(@Nonnull String name)
@@ -91,7 +91,7 @@ public class SubcommandData implements SerializableData
      * @return The SubcommandData instance, for chaining
      */
     @Nonnull
-    public SubcommandData setName(@Nonnull String name)
+    public SubcommandData setNameLocalization(@Nonnull String name)
     {
         checkName(name);
         this.name = name;
@@ -110,7 +110,7 @@ public class SubcommandData implements SerializableData
      * @return This builder instance, for chaining
      */
     @Nonnull
-    public SubcommandData setName(@Nonnull DiscordLocale locale, @Nonnull String name)
+    public SubcommandData setNameLocalization(@Nonnull DiscordLocale locale, @Nonnull String name)
     {
         //Checks are done in LocalizationMap
         nameLocalizations.setTranslation(locale, name);
@@ -145,7 +145,7 @@ public class SubcommandData implements SerializableData
      * @return The SubcommandData instance, for chaining
      */
     @Nonnull
-    public SubcommandData setDescription(@Nonnull String description)
+    public SubcommandData setDescriptionLocalization(@Nonnull String description)
     {
         checkDescription(description);
         this.description = description;
@@ -164,7 +164,7 @@ public class SubcommandData implements SerializableData
      * @return This builder instance, for chaining
      */
     @Nonnull
-    public SubcommandData setDescription(@Nonnull DiscordLocale locale, @Nonnull String description)
+    public SubcommandData setDescriptionLocalization(@Nonnull DiscordLocale locale, @Nonnull String description)
     {
         //Checks are done in LocalizationMap
         descriptionLocalizations.setTranslation(locale, description);

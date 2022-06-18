@@ -72,12 +72,12 @@ public interface CommandCreateAction extends RestAction<Command>, SlashCommandDa
     @Nonnull
     @Override
     @CheckReturnValue
-    CommandCreateAction setName(@Nonnull String name);
+    CommandCreateAction setNameLocalization(@Nonnull String name);
 
     @Nonnull
     @Override
     @CheckReturnValue
-    CommandCreateAction setName(@Nonnull DiscordLocale locale, @Nonnull String name);
+    CommandCreateAction setNameLocalization(@Nonnull DiscordLocale locale, @Nonnull String name);
 
     @Nonnull
     @Override
@@ -86,12 +86,12 @@ public interface CommandCreateAction extends RestAction<Command>, SlashCommandDa
     @Nonnull
     @Override
     @CheckReturnValue
-    CommandCreateAction setDescription(@Nonnull String description);
+    CommandCreateAction setDescriptionLocalization(@Nonnull String description);
 
     @Nonnull
     @Override
     @CheckReturnValue
-    CommandCreateAction setDescription(@Nonnull DiscordLocale locale, @Nonnull String description);
+    CommandCreateAction setDescriptionLocalization(@Nonnull DiscordLocale locale, @Nonnull String description);
 
     @Nonnull
     @Override

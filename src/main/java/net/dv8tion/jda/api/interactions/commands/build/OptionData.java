@@ -167,8 +167,8 @@ public class OptionData implements SerializableData
         Checks.check(type != OptionType.UNKNOWN, "Cannot make option of unknown type!");
         this.type = type;
 
-        setName(name);
-        setDescription(description);
+        setNameLocalization(name);
+        setDescriptionLocalization(description);
         setRequired(isRequired);
         if (type.canSupportChoices())
             choices = new ArrayList<>();
@@ -336,7 +336,7 @@ public class OptionData implements SerializableData
      * @return The OptionData instance, for chaining
      */
     @Nonnull
-    public OptionData setName(@Nonnull String name)
+    public OptionData setNameLocalization(@Nonnull String name)
     {
         checkName(name);
         this.name = name;
@@ -355,7 +355,7 @@ public class OptionData implements SerializableData
      * @return This builder instance, for chaining
      */
     @Nonnull
-    public OptionData setName(@Nonnull DiscordLocale locale, @Nonnull String name)
+    public OptionData setNameLocalization(@Nonnull DiscordLocale locale, @Nonnull String name)
     {
         //Checks are done in LocalizationMap
         nameLocalizations.setTranslation(locale, name);
@@ -390,7 +390,7 @@ public class OptionData implements SerializableData
      * @return The OptionData instance, for chaining
      */
     @Nonnull
-    public OptionData setDescription(@Nonnull String description)
+    public OptionData setDescriptionLocalization(@Nonnull String description)
     {
         checkDescription(description);
         this.description = description;
@@ -409,7 +409,7 @@ public class OptionData implements SerializableData
      * @return This builder instance, for chaining
      */
     @Nonnull
-    public OptionData setDescription(@Nonnull DiscordLocale locale, @Nonnull String description)
+    public OptionData setDescriptionLocalization(@Nonnull DiscordLocale locale, @Nonnull String description)
     {
         //Checks are done in LocalizationMap
         descriptionLocalizations.setTranslation(locale, description);

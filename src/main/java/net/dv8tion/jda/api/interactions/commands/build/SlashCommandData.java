@@ -43,11 +43,11 @@ public interface SlashCommandData extends CommandData
 
     @Nonnull
     @Override
-    SlashCommandData setName(@Nonnull String name);
+    SlashCommandData setNameLocalization(@Nonnull String name);
 
     @Nonnull
     @Override
-    SlashCommandData setName(@Nonnull DiscordLocale locale, @Nonnull String name);
+    SlashCommandData setNameLocalization(@Nonnull DiscordLocale locale, @Nonnull String name);
 
     @Nonnull
     @Override
@@ -69,7 +69,7 @@ public interface SlashCommandData extends CommandData
      * @return The builder, for chaining
      */
     @Nonnull
-    SlashCommandData setDescription(@Nonnull String description);
+    SlashCommandData setDescriptionLocalization(@Nonnull String description);
 
     /**
      * Sets the description localizations of this command.
@@ -83,7 +83,7 @@ public interface SlashCommandData extends CommandData
      * @return This builder instance, for chaining
      */
     @Nonnull
-    SlashCommandData setDescription(@Nonnull DiscordLocale locale, @Nonnull String description);
+    SlashCommandData setDescriptionLocalization(@Nonnull DiscordLocale locale, @Nonnull String description);
 
     /**
      * Sets the description localizations of this command.

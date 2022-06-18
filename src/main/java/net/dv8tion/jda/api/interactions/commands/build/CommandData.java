@@ -54,7 +54,7 @@ public interface CommandData extends SerializableData
      * @return The builder instance, for chaining
      */
     @Nonnull
-    CommandData setName(@Nonnull String name);
+    CommandData setNameLocalization(@Nonnull String name);
 
     /**
      * Sets the name localizations of this command.
@@ -68,7 +68,7 @@ public interface CommandData extends SerializableData
      * @return This builder instance, for chaining
      */
     @Nonnull
-    CommandData setName(@Nonnull DiscordLocale locale, @Nonnull String name);
+    CommandData setNameLocalization(@Nonnull DiscordLocale locale, @Nonnull String name);
 
     /**
      * Sets the name localizations of this command.

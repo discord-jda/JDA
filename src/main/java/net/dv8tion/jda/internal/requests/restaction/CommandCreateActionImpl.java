@@ -132,17 +132,17 @@ public class CommandCreateActionImpl extends RestActionImpl<Command> implements 
 
     @Nonnull
     @Override
-    public CommandCreateAction setName(@Nonnull String name)
+    public CommandCreateAction setNameLocalization(@Nonnull String name)
     {
-        data.setName(name);
+        data.setNameLocalization(name);
         return this;
     }
 
     @Nonnull
     @Override
-    public CommandCreateAction setName(@Nonnull DiscordLocale locale, @Nonnull String name)
+    public CommandCreateAction setNameLocalization(@Nonnull DiscordLocale locale, @Nonnull String name)
     {
-        data.setName(locale, name);
+        data.setNameLocalization(locale, name);
         return this;
     }
 
@@ -156,17 +156,17 @@ public class CommandCreateActionImpl extends RestActionImpl<Command> implements 
 
     @Nonnull
     @Override
-    public CommandCreateAction setDescription(@Nonnull String description)
+    public CommandCreateAction setDescriptionLocalization(@Nonnull String description)
     {
-        data.setDescription(description);
+        data.setDescriptionLocalization(description);
         return this;
     }
 
     @Nonnull
     @Override
-    public CommandCreateAction setDescription(@Nonnull DiscordLocale locale, @Nonnull String description)
+    public CommandCreateAction setDescriptionLocalization(@Nonnull DiscordLocale locale, @Nonnull String description)
     {
-        data.setDescription(locale, description);
+        data.setDescriptionLocalization(locale, description);
         return this;
     }
 

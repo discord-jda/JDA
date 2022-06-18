@@ -55,8 +55,8 @@ public class CommandDataImpl implements SlashCommandData
     public CommandDataImpl(@Nonnull String name, @Nonnull String description)
     {
         this.type = Command.Type.SLASH;
-        setName(name);
-        setDescription(description);
+        setNameLocalization(name);
+        setDescriptionLocalization(description);
     }
 
     public CommandDataImpl(@Nonnull Command.Type type, @Nonnull String name)
@@ -64,7 +64,7 @@ public class CommandDataImpl implements SlashCommandData
         this.type = type;
         Checks.notNull(type, "Command Type");
         Checks.check(type != Command.Type.SLASH, "Cannot create slash command without description. Use `new CommandDataImpl(name, description)` instead.");
-        setName(name);
+        setNameLocalization(name);
     }
 
     protected void checkType(Command.Type required, String action)
@@ -244,7 +244,7 @@ public class CommandDataImpl implements SlashCommandData
 
     @Nonnull
     @Override
-    public CommandDataImpl setName(@Nonnull String name)
+    public CommandDataImpl setNameLocalization(@Nonnull String name)
     {
         checkName(name);
         this.name = name;
@@ -253,7 +253,7 @@ public class CommandDataImpl implements SlashCommandData
 
     @Nonnull
     @Override
-    public CommandDataImpl setName(@Nonnull DiscordLocale locale, @Nonnull String name)
+    public CommandDataImpl setNameLocalization(@Nonnull DiscordLocale locale, @Nonnull String name)
     {
         //Checks are done in LocalizationMap
         nameLocalizations.setTranslation(locale, name);
@@ -276,7 +276,7 @@ public class CommandDataImpl implements SlashCommandData
 
     @Nonnull
     @Override
-    public CommandDataImpl setDescription(@Nonnull String description)
+    public CommandDataImpl setDescriptionLocalization(@Nonnull String description)
     {
         checkDescription(description);
         this.description = description;
@@ -285,7 +285,7 @@ public class CommandDataImpl implements SlashCommandData
 
     @Nonnull
     @Override
-    public CommandDataImpl setDescription(@Nonnull DiscordLocale locale, @Nonnull String description)
+    public CommandDataImpl setDescriptionLocalization(@Nonnull DiscordLocale locale, @Nonnull String description)
     {
         //Checks are done in LocalizationMap
         descriptionLocalizations.setTranslation(locale, description);

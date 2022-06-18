@@ -96,7 +96,7 @@ public class SubcommandGroupData implements SerializableData
      * @return The SubcommandGroupData instance, for chaining
      */
     @Nonnull
-    public SubcommandGroupData setName(@Nonnull String name)
+    public SubcommandGroupData setNameLocalization(@Nonnull String name)
     {
         checkName(name);
         this.name = name;
@@ -115,7 +115,7 @@ public class SubcommandGroupData implements SerializableData
      * @return This builder instance, for chaining
      */
     @Nonnull
-    public SubcommandGroupData setName(@Nonnull DiscordLocale locale, @Nonnull String name)
+    public SubcommandGroupData setNameLocalization(@Nonnull DiscordLocale locale, @Nonnull String name)
     {
         //Checks are done in LocalizationMap
         nameLocalizations.setTranslation(locale, name);
@@ -150,7 +150,7 @@ public class SubcommandGroupData implements SerializableData
      * @return The SubcommandGroupData instance, for chaining
      */
     @Nonnull
-    public SubcommandGroupData setDescription(@Nonnull String description)
+    public SubcommandGroupData setDescriptionLocalization(@Nonnull String description)
     {
         checkDescription(description);
         this.description = description;
@@ -169,7 +169,7 @@ public class SubcommandGroupData implements SerializableData
      * @return This builder instance, for chaining
      */
     @Nonnull
-    public SubcommandGroupData setDescription(@Nonnull DiscordLocale locale, @Nonnull String description)
+    public SubcommandGroupData setDescriptionLocalization(@Nonnull DiscordLocale locale, @Nonnull String description)
     {
         //Checks are done in LocalizationMap
         descriptionLocalizations.setTranslation(locale, description);
