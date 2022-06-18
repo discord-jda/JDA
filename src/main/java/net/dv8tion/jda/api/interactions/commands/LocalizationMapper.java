@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
 import java.util.Map;
@@ -102,7 +103,12 @@ public class LocalizationMapper
         {
             final String key = getKey(finalComponent);
             final Map<DiscordLocale, String> data = localizationFunction.apply(key);
-            data.forEach((locale, localizedValue) -> localizationMap.put(locale.getLocale(), localizedValue));
+            data.forEach((locale, localizedValue) ->
+            {
+                Checks.check(locale != DiscordLocale.UNKNOWN, "Localization function returned a map with an 'UNKNOWN' DiscordLocale");
+
+                localizationMap.put(locale.getLocale(), localizedValue);
+            });
         }
     }
 

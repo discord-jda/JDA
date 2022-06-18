@@ -17,6 +17,7 @@
 package net.dv8tion.jda.api.interactions.commands;
 
 import net.dv8tion.jda.api.interactions.DiscordLocale;
+import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
 import java.util.*;
@@ -42,7 +43,13 @@ public class DefaultLocalizationFunction implements LocalizationFunction
         {
             final ResourceBundle resourceBundle = bundle.resourceBundle;
             if (resourceBundle.containsKey(localizationKey))
-                map.put(DiscordLocale.from(bundle.targetLocale), resourceBundle.getString(localizationKey));
+            {
+                final DiscordLocale locale = DiscordLocale.from(bundle.targetLocale);
+                Checks.check(locale != DiscordLocale.UNKNOWN,
+                        "Bundle '%s' uses an unsupported locale: '%s'", bundle.resourceBundle.getBaseBundleName(), bundle.resourceBundle.getLocale().toLanguageTag());
+
+                map.put(locale, resourceBundle.getString(localizationKey));
+            }
         }
 
         return map;

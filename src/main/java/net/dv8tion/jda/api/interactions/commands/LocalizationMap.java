@@ -20,6 +20,8 @@ import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.JDALogger;
+import org.slf4j.Logger;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -36,6 +38,8 @@ public class LocalizationMap implements SerializableData
 {
     public static final Consumer<String> UNMODIFIABLE_CHECK = s -> { throw new IllegalStateException("This LocalizationMap is unmodifiable."); };
 
+    private static final Logger LOGGER = JDALogger.getLog(LocalizationMap.class);
+
     private final Map<DiscordLocale, String> map = new HashMap<>();
     private final Consumer<String> checkConsumer;
 
@@ -43,17 +47,34 @@ public class LocalizationMap implements SerializableData
         this.checkConsumer = checkConsumer;
     }
 
+    //Comes from Discord API
     private LocalizationMap(@Nonnull Consumer<String> checkConsumer, @Nonnull DataObject data)
     {
         this(checkConsumer);
         for (String key : data.keys())
-            map.put(DiscordLocale.from(key), data.getString(key));
+        {
+            final DiscordLocale locale = DiscordLocale.from(key);
+            if (locale == DiscordLocale.UNKNOWN) {
+                LOGGER.debug("Discord provided an unknown locale, locale tag: {}", key);
+
+                continue;
+            }
+
+            map.put(locale, data.getString(key));
+        }
     }
 
+    //Comes from user deserialization
     private LocalizationMap(Consumer<String> checkConsumer, LocalizationMap map)
     {
         this(checkConsumer);
         this.map.putAll(map.map); //This is safe as the LocalizationMap being given is already validated
+    }
+
+    private void putTranslation(DiscordLocale locale, String translation) {
+        Checks.check(locale != DiscordLocale.UNKNOWN, "Cannot put an 'UNKNOWN' DiscordLocale");
+
+        this.map.put(locale, translation);
     }
 
     /**
@@ -151,7 +172,7 @@ public class LocalizationMap implements SerializableData
         Checks.notNull(localizedString, "Localized string");
 
         checkConsumer.accept(localizedString);
-        map.put(locale, localizedString);
+        putTranslation(locale, localizedString);
     }
 
     /**
@@ -163,10 +184,12 @@ public class LocalizationMap implements SerializableData
     public void setTranslations(@Nonnull Map<DiscordLocale, String> map)
     {
         Checks.notNull(map, "Map");
-        
-        for (String localizedString : map.values())
+
+        map.forEach((discordLocale, localizedString) -> {
             checkConsumer.accept(localizedString);
-        this.map.putAll(map);
+
+            putTranslation(discordLocale, localizedString);
+        });
     }
 
     /**
