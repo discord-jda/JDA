@@ -90,6 +90,12 @@ public class LocalizationMap implements SerializableData
      * @param  map
      *         The map from which to get the localization entries from
      *
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If the check consumer is null</li>
+     *             <li>If the localization map is null</li>
+     *         </ul>
+     *
      * @return The copied LocalizationMap instance, which can be further configured through setters
      */
     @Nonnull
@@ -112,6 +118,11 @@ public class LocalizationMap implements SerializableData
      *
      * @throws net.dv8tion.jda.api.exceptions.ParsingException
      *         If the serialized object is missing required fields
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If the check consumer is null</li>
+     *             <li>If the data object is null</li>
+     *         </ul>
      *
      * @return The parsed LocalizationMap instance, which can be further configured through setters
      */
@@ -137,6 +148,13 @@ public class LocalizationMap implements SerializableData
      *
      * @throws net.dv8tion.jda.api.exceptions.ParsingException
      *         If the serialized object is missing required fields
+     *
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If the data object is null</li>
+     *             <li>If the localization property is null</li>
+     *             <li>If the check consumer is null</li>
+     *         </ul>
      *
      * @return The parsed LocalizationMap instance, which can be further configured through setters
      */
