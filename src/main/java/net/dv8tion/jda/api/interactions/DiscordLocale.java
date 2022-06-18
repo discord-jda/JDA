@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.api.interactions;
 
+import net.dv8tion.jda.internal.utils.Checks;
+
 import javax.annotation.Nonnull;
 import java.util.Locale;
 
@@ -112,8 +114,10 @@ public enum DiscordLocale
      * @return The DiscordLocale constant or {@link #UNKNOWN}
      */
     @Nonnull
-    public static DiscordLocale from(String localeTag)
+    public static DiscordLocale from(@Nonnull String localeTag)
     {
+        Checks.notNull(localeTag, "Locale tag");
+
         for (DiscordLocale discordLocale : values())
         {
             if (discordLocale.locale.equals(localeTag))
@@ -134,8 +138,10 @@ public enum DiscordLocale
      * @return The DiscordLocale constant or {@link #UNKNOWN}
      */
     @Nonnull
-    public static DiscordLocale from(Locale locale)
+    public static DiscordLocale from(@Nonnull Locale locale)
     {
+        Checks.notNull(locale, "Locale");
+
         return from(locale.toLanguageTag());
     }
 }
