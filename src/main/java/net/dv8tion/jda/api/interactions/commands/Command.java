@@ -549,8 +549,6 @@ public interface Command extends ISnowflake
             this.type = OptionType.STRING;
         }
 
-        //Before I changed how choices are made, the specific value getters were used in OptionData#addChoices, which made INTEGER options use rounded values for NUMBER choices.
-        // The goal is to replicate this here
         @Nonnull
         public DataObject toData(OptionType optionType)
         {
