@@ -29,7 +29,6 @@ import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
 import java.util.Collection;
-import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -108,7 +107,7 @@ public interface CommandData extends SerializableData
     /**
      * The name localizations of this command.
      *
-     * @return The {@link LocalizationMap} containing the mapping from {@link Locale} to the localized name
+     * @return The {@link LocalizationMap} containing the mapping from {@link DiscordLocale} to the localized name
      */
     @Nonnull
     LocalizationMap getNameLocalizations();

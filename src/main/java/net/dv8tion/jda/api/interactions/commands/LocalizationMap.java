@@ -8,7 +8,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 import java.util.function.Consumer;
 
@@ -139,7 +138,7 @@ public class LocalizationMap implements SerializableData
     }
 
     /**
-     * Gets the localized string for the specified {@link Locale}.
+     * Gets the localized string for the specified {@link DiscordLocale}.
      *
      * @param  locale
      *         The locale from which to get the localized string
@@ -147,7 +146,7 @@ public class LocalizationMap implements SerializableData
      * @return Possibly-null localized string
      */
     @Nullable
-    public String get(@Nonnull Locale locale)
+    public String get(@Nonnull DiscordLocale locale)
     {
         return map.get(locale);
     }

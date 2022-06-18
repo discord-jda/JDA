@@ -27,7 +27,10 @@ import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -375,7 +378,7 @@ public class SubcommandData implements SerializableData
     /**
      * The name localizations of this subcommand.
      *
-     * @return The {@link LocalizationMap} containing the mapping from {@link Locale} to the localized name
+     * @return The {@link LocalizationMap} containing the mapping from {@link DiscordLocale} to the localized name
      */
     @Nonnull
     public LocalizationMap getNameLocalizations()
@@ -397,7 +400,7 @@ public class SubcommandData implements SerializableData
     /**
      * The description localizations of this subcommand.
      *
-     * @return The {@link LocalizationMap} containing the mapping from {@link Locale} to the localized description
+     * @return The {@link LocalizationMap} containing the mapping from {@link DiscordLocale} to the localized description
      */
     @Nonnull
     public LocalizationMap getDescriptionLocalizations()
