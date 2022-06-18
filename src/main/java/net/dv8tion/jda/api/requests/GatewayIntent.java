@@ -139,6 +139,14 @@ public enum GatewayIntent
      * Typing events in private channels.
      */
     DIRECT_MESSAGE_TYPING(14),
+    /**
+     * Used for auto moderation.
+     */
+    AUTO_MODERATION_CONFIGURATION(20),
+    /**
+     * Used when executing auto moderation.
+     */
+    AUTO_MODERATION_EXECUTION(21),
     ;
 
     /**
