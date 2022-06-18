@@ -100,11 +100,11 @@ public class CommandDataImpl implements SlashCommandData
                 .put("default_permission", defaultPermissions)
                 .put("type", type.getId())
                 .put("name", name)
-                .put("options", options)
                 .put("name_localizations", nameLocalizations)
-                .put("description_localizations", descriptionLocalizations);
+                .put("options", options);
         if (type == Command.Type.SLASH)
-            json.put("description", description);
+            json.put("description", description)
+                .put("description_localizations", descriptionLocalizations);
         return json;
     }
 

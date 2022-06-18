@@ -872,8 +872,8 @@ public class OptionData implements SerializableData
         DataObject json = DataObject.empty()
                 .put("type", type.getKey())
                 .put("name", name)
-                .put("description", description)
                 .put("name_localizations", nameLocalizations)
+                .put("description", description)
                 .put("description_localizations", descriptionLocalizations);
         if (type != OptionType.SUB_COMMAND && type != OptionType.SUB_COMMAND_GROUP)
         {

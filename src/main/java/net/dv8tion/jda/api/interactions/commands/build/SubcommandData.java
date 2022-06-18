@@ -415,10 +415,10 @@ public class SubcommandData implements SerializableData
         return DataObject.empty()
                 .put("type", OptionType.SUB_COMMAND.getKey())
                 .put("name", name)
-                .put("description", description)
-                .put("options", options)
                 .put("name_localizations", nameLocalizations)
-                .put("description_localizations", descriptionLocalizations);
+                .put("description", description)
+                .put("description_localizations", descriptionLocalizations)
+                .put("options", options);
     }
 
     /**
