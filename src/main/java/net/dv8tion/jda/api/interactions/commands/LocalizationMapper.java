@@ -32,10 +32,10 @@ import java.util.function.Function;
 
 /**
  * Utility class which maps user-provided translations (from a resource bundle for example) to the command data as well as everything contained in it
- * <p>You can find default localization functions in {@link DefaultLocalizationFunction}
+ * <p>You can find default localization functions in {@link ResourceBundleLocalizationFunction}
  *
  * @see CommandData#setLocalizationMapper(LocalizationMapper)
- * @see DefaultLocalizationFunction
+ * @see ResourceBundleLocalizationFunction
  */
 public class LocalizationMapper
 {
@@ -53,7 +53,7 @@ public class LocalizationMapper
      *
      * @return The {@link LocalizationMapper} instance
      *
-     * @see DefaultLocalizationFunction
+     * @see ResourceBundleLocalizationFunction
      */
     @Nonnull
     public static LocalizationMapper fromFunction(@Nonnull LocalizationFunction localizationFunction) {

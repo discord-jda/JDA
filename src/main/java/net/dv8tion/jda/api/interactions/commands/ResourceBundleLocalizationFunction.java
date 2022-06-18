@@ -27,9 +27,9 @@ import java.util.*;
  * <p>
  * This implementation supports Java's {@link ResourceBundle} to be used as a localization source
  */
-public class DefaultLocalizationFunction implements LocalizationFunction
+public class ResourceBundleLocalizationFunction implements LocalizationFunction
 {
-    private DefaultLocalizationFunction(Set<Bundle> bundles)
+    private ResourceBundleLocalizationFunction(Set<Bundle> bundles)
     {
         this.bundles = bundles;
     }
@@ -131,9 +131,9 @@ public class DefaultLocalizationFunction implements LocalizationFunction
         }
 
         @Nonnull
-        public DefaultLocalizationFunction build()
+        public ResourceBundleLocalizationFunction build()
         {
-            return new DefaultLocalizationFunction(bundles);
+            return new ResourceBundleLocalizationFunction(bundles);
         }
     }
 }

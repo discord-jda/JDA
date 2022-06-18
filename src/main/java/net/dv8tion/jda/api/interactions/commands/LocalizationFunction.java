@@ -40,7 +40,7 @@ import java.util.Map;
  *    <li>The name of a choice in an option "duration" in a subcommand "perm" in a command named "ban": {@code ban.perm.duration.choice.name}</li>
  * </ul>
  *
- * @see DefaultLocalizationFunction
+ * @see ResourceBundleLocalizationFunction
  */
 public interface LocalizationFunction
 {
