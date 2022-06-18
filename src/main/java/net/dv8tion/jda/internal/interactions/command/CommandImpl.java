@@ -19,8 +19,8 @@ package net.dv8tion.jda.internal.interactions.command;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.commands.Command;
-import net.dv8tion.jda.api.interactions.commands.LocalizationMap;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.localization.LocalizationMap;
 import net.dv8tion.jda.api.interactions.commands.privileges.CommandPrivilege;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.CommandEditAction;
@@ -38,7 +38,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import static net.dv8tion.jda.api.interactions.commands.LocalizationMap.UNMODIFIABLE_CHECK;
+import static net.dv8tion.jda.api.interactions.commands.localization.LocalizationMap.UNMODIFIABLE_CHECK;
 
 public class CommandImpl implements Command
 {
