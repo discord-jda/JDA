@@ -2187,6 +2187,87 @@ public class EntityBuilder
         return new AuditLogChange(oldValue, newValue, key);
     }
 
+    public AutoModerationRule createAutoModerationRule(GuildImpl guild, User user, DataObject object) {
+        final long id = object.getLong("id");
+        final String name = object.getString("name");
+        final EventType eventType = EventType.fromValue(object.getInt("event_type"));
+        final TriggerType triggerType = TriggerType.fromValue(object.getInt("trigger_type"));
+        final TriggerMetadata triggerMetadata = createTriggerMetadata(object.getObject("trigger_metadata"));
+        final DataArray actionArray = object.getArray("actions");
+        final boolean isEnabled = object.getBoolean("enabled");
+        final DataArray exampleRoleArray = object.getArray("example_roles");
+        final DataArray exampleChannelArray = object.getArray("example_channels");
+
+        final List<Role> exampleRoles = new ArrayList<>();
+        for (int i = 0; i < exampleRoleArray.length(); i++)
+        {
+            final long roleId = exampleRoleArray.getLong(i);
+            final Role role = guild.getRoleById(roleId);
+            if (role == null)
+                continue;
+            exampleRoles.add(role);
+        }
+
+        final List<Channel> exampleChannels = new ArrayList<>();
+        for (int i = 0; i < exampleChannelArray.length(); i++)
+        {
+            final long channelId = exampleChannelArray.getLong(i);
+            final Channel channel = guild.getTextChannelById(channelId);
+            if (channel == null)
+                continue;
+            exampleChannels.add(channel);
+        }
+
+        final List<AutoModerationAction> actions = new ArrayList<>();
+        for (int i = 0; i < actionArray.length(); i++)
+            actions.add(createAutoModerationAction(guild, actionArray.getObject(i)));
+
+        return new AutoModerationRuleImpl(id)
+                .setName(name)
+                .setEventType(eventType)
+                .setTriggerType(triggerType)
+                .setTriggerMetadata(triggerMetadata)
+                .setActions(actions)
+                .setExampleRoles(exampleRoles)
+                .setExampleChannels(exampleChannels)
+                .setEnabled(isEnabled);
+    }
+
+    public TriggerMetadata createTriggerMetadata(DataObject object) {
+        final DataArray keywordFilterArray = object.getArray("keyword_filter");
+        final DataArray presetsArray = object.getArray("presets");
+
+        List<String> keywordFilters = new ArrayList<>();
+        for (int i = 0; i < keywordFilterArray.length(); i++)
+            keywordFilters.add(keywordFilterArray.getString(i));
+
+        List<KeywordPresetType> presets = new ArrayList<>();
+        for (int i = 0; i < presetsArray.length(); i++)
+            presets.add(KeywordPresetType.fromValue(presetsArray.getInt(i)));
+
+        return new TriggerMetadataImpl()
+                .setKeywords(keywordFilters)
+                .setKeywordPresets(presets);
+    }
+
+    public AutoModerationAction createAutoModerationAction(GuildImpl guild, DataObject object) {
+        final net.dv8tion.jda.api.entities.ActionType actionType = net.dv8tion.jda.api.entities.ActionType.fromValue(object.getInt("action_type"));
+        final ActionMetadata actionMetadata = object.isNull("action_metadata") ? null : createActionMetadata(guild, object.getObject("action_metadata"));
+
+        return new AutoModerationActionImpl()
+                .setType(actionType)
+                .setMetadata(actionMetadata);
+    }
+
+    public ActionMetadata createActionMetadata(GuildImpl guild, DataObject object) {
+        final TextChannel channel = guild.getTextChannelById(object.getLong("channel"));
+        final int duration = object.getInt("duration");
+
+        return new ActionMetadataImpl()
+                .setChannel(channel)
+                .setDuration(duration);
+    }
+
     private Map<String, AuditLogChange> changeToMap(Set<AuditLogChange> changesList)
     {
         return changesList.stream().collect(Collectors.toMap(AuditLogChange::getKey, UnaryOperator.identity()));
