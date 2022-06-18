@@ -16,6 +16,9 @@
 
 package net.dv8tion.jda.api.entities;
 
+/**
+ * This is the keyword which was flagged by the auto-moderation system and caused the action to be excuted.
+ */
 public enum KeywordPresetType {
     /**
      * Words that may be considered forms of swearing or cursing.

@@ -16,7 +16,9 @@
 
 package net.dv8tion.jda.api.entities;
 
-
+/**
+ * This is basically informs you what cased the auto-moderation system to be triggered.
+ */
 public enum TriggerType
 {
     /**

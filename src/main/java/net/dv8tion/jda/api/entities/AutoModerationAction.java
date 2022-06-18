@@ -19,6 +19,9 @@ package net.dv8tion.jda.api.entities;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+/**
+ * This is the action which will be executed by the auto-moderation system when a rule is triggered.
+ */
 public interface AutoModerationAction {
     /**
      * Gets the action type.

@@ -16,6 +16,9 @@
 
 package net.dv8tion.jda.api.entities;
 
+/**
+ * Represents the type of action that was performed when a one rules set in the auto-moderation system was broken.
+ */
 public enum ActionType
 {
     /**
