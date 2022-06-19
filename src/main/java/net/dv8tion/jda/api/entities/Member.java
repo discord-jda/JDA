@@ -20,6 +20,7 @@ import net.dv8tion.jda.annotations.Incubating;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
+import net.dv8tion.jda.api.utils.ImageProxy;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -40,7 +41,7 @@ import java.util.concurrent.TimeUnit;
  *
  * @since 3.0
  *
- * @see   Guild#getMember(User)
+ * @see   Guild#getMember(UserSnowflake)
  * @see   Guild#getMemberCache()
  * @see   Guild#getMemberById(long)
  * @see   Guild#getMemberByTag(String)
@@ -51,7 +52,7 @@ import java.util.concurrent.TimeUnit;
  * @see   Guild#getMembersWithRoles(Role...)
  * @see   Guild#getMembers()
  */
-public interface Member extends IMentionable, IPermissionHolder
+public interface Member extends IMentionable, IPermissionHolder, UserSnowflake
 {
     /** Template for {@link #getAvatarUrl()}. */
     String AVATAR_URL = "https://cdn.discordapp.com/guilds/%s/users/%s/avatars/%s.%s";
@@ -267,6 +268,20 @@ public interface Member extends IMentionable, IPermissionHolder
     }
 
     /**
+     * Returns an {@link ImageProxy} for this member's avatar.
+     *
+     * @return Possibly-null {@link ImageProxy} of this member's avatar
+     *
+     * @see    #getAvatarUrl()
+     */
+    @Nullable
+    default ImageProxy getAvatar()
+    {
+        final String avatarUrl = getAvatarUrl();
+        return avatarUrl == null ? null : new ImageProxy(avatarUrl);
+    }
+
+    /**
      * The URL for the member's effective avatar image.
      * If they do not have a per guild avatar set, this will return the URL of
      * their effective {@link User} avatar.
@@ -281,11 +296,25 @@ public interface Member extends IMentionable, IPermissionHolder
     }
 
     /**
+     * Returns an {@link ImageProxy} for this member's effective avatar image.
+     *
+     * @return Never-null {@link ImageProxy} of this member's effective avatar image
+     *
+     * @see    #getEffectiveAvatarUrl()
+     */
+    @Nonnull
+    default ImageProxy getEffectiveAvatar()
+    {
+        final ImageProxy avatar = getAvatar();
+        return avatar == null ? getUser().getEffectiveAvatar() : avatar;
+    }
+
+    /**
      * The roles applied to this Member.
      * <br>The roles are ordered based on their position. The highest role being at index 0
      * and the lowest at the last index.
      *
-     * <p>A Member's roles can be changed using the {@link Guild#addRoleToMember(Member, Role)}, {@link Guild#removeRoleFromMember(Member, Role)}, and {@link Guild#modifyMemberRoles(Member, Collection, Collection)}
+     * <p>A Member's roles can be changed using the {@link Guild#addRoleToMember(UserSnowflake, Role)}, {@link Guild#removeRoleFromMember(UserSnowflake, Role)}, and {@link Guild#modifyMemberRoles(Member, Collection, Collection)}
      * methods in {@link net.dv8tion.jda.api.entities.Guild Guild}.
      *
      * <p><b>The Public Role ({@code @everyone}) is not included in the returned immutable list of roles
@@ -293,8 +322,8 @@ public interface Member extends IMentionable, IPermissionHolder
      *
      * @return An immutable List of {@link net.dv8tion.jda.api.entities.Role Roles} for this Member.
      *
-     * @see    Guild#addRoleToMember(Member, Role)
-     * @see    Guild#removeRoleFromMember(Member, Role)
+     * @see    Guild#addRoleToMember(UserSnowflake, Role)
+     * @see    Guild#removeRoleFromMember(UserSnowflake, Role)
      * @see    Guild#modifyMemberRoles(Member, Collection, Collection)
      */
     @Nonnull
@@ -410,7 +439,7 @@ public interface Member extends IMentionable, IPermissionHolder
      * Bans this Member and deletes messages sent by the user based on the amount of delDays.
      * <br>If you wish to ban a member without deleting any messages, provide delDays with a value of 0.
      *
-     * <p>You can unban a user with {@link net.dv8tion.jda.api.entities.Guild#unban(User) Guild.unban(User)}.
+     * <p>You can unban a user with {@link net.dv8tion.jda.api.entities.Guild#unban(UserSnowflake) Guild.unban(UserSnowflake)}.
      *
      * <p><b>Note:</b> {@link net.dv8tion.jda.api.entities.Guild#getMembers()} will still contain the
      * {@link net.dv8tion.jda.api.entities.Member Member} until Discord sends the
@@ -455,7 +484,7 @@ public interface Member extends IMentionable, IPermissionHolder
      * Bans this Member and deletes messages sent by the user based on the amount of delDays.
      * <br>If you wish to ban a member without deleting any messages, provide delDays with a value of 0.
      *
-     * <p>You can unban a user with {@link net.dv8tion.jda.api.entities.Guild#unban(User) Guild.unban(User)}.
+     * <p>You can unban a user with {@link net.dv8tion.jda.api.entities.Guild#unban(UserSnowflake) Guild.unban(UserSnowflake)}.
      *
      * <p><b>Note:</b> {@link net.dv8tion.jda.api.entities.Guild#getMembers()} will still contain the
      * {@link net.dv8tion.jda.api.entities.Member Member} until Discord sends the

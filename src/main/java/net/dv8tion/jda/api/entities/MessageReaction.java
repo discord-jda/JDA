@@ -351,7 +351,7 @@ public class MessageReaction
                 throw new PermissionException("Unable to remove Reaction of other user in non-guild channels!");
             }
 
-            IPermissionContainer permChannel = (IPermissionContainer) this.channel;
+            IPermissionContainer permChannel = getGuildChannel().getPermissionContainer();
             if (!permChannel.getGuild().getSelfMember().hasPermission(permChannel, Permission.MESSAGE_MANAGE))
                 throw new InsufficientPermissionException(permChannel, Permission.MESSAGE_MANAGE);
         }

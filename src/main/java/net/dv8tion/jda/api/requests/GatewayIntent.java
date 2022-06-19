@@ -62,7 +62,7 @@ import java.util.EnumSet;
  *     <li><b>DIRECT_MESSAGE_TYPING</b> - This is used to track when a user starts typing in private channels (DMs). Almost no bot will have a use for this.</li>
  * </ol>
  *
- * If an intent is not specifically mentioned to be <b>privileged</b>, it is not required to be on the whitelist to use if (and its related events).
+ * If an intent is not specifically mentioned to be <b>privileged</b>, it is not required to be on the whitelist to use it (and its related events).
  * To get whitelisted you either need to contact discord support (for bots in more than 100 guilds)
  * or enable it in the developer dashboard of your application.
  *
@@ -89,9 +89,9 @@ public enum GatewayIntent
      */
     GUILD_BANS(2),
     /**
-     * Emote add/update/delete events.
+     * Emote and sticker add/update/delete events.
      */
-    GUILD_EMOJIS(3),
+    GUILD_EMOJIS_AND_STICKERS(3),
 //    /**
 //     * Integration events. (unused)
 //     */
@@ -360,7 +360,7 @@ public enum GatewayIntent
             else if (GuildBanEvent.class.isAssignableFrom(event) || GuildUnbanEvent.class.isAssignableFrom(event))
                 intents.add(GUILD_BANS);
             else if (GenericEmoteEvent.class.isAssignableFrom(event))
-                intents.add(GUILD_EMOJIS);
+                intents.add(GUILD_EMOJIS_AND_STICKERS);
             else if (GenericGuildInviteEvent.class.isAssignableFrom(event))
                 intents.add(GUILD_INVITES);
             else if (GenericGuildVoiceEvent.class.isAssignableFrom(event))

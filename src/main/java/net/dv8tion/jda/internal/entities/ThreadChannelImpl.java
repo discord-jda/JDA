@@ -119,6 +119,13 @@ public class ThreadChannelImpl extends AbstractGuildChannelImpl<ThreadChannelImp
         return (IThreadContainer) guild.getGuildChannelById(parentChannelId);
     }
 
+    @Nonnull
+    @Override
+    public RestAction<Message> retrieveParentMessage()
+    {
+        return this.getParentMessageChannel().retrieveMessageById(this.getIdLong());
+    }
+
     @Override
     public IPermissionContainer getPermissionContainer()
     {

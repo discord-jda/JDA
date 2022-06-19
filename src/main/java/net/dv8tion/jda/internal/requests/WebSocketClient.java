@@ -696,18 +696,15 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         LOG.debug("Sending Identify-packet...");
         PresenceImpl presenceObj = (PresenceImpl) api.getPresence();
         DataObject connectionProperties = DataObject.empty()
-            .put("$os", System.getProperty("os.name"))
-            .put("$browser", "JDA")
-            .put("$device", "JDA")
-            .put("$referring_domain", "")
-            .put("$referrer", "");
+            .put("os", System.getProperty("os.name"))
+            .put("browser", "JDA")
+            .put("device", "JDA");
         DataObject payload = DataObject.empty()
             .put("presence", presenceObj.getFullPresence())
             .put("token", getToken())
             .put("properties", connectionProperties)
-            .put("v", JDAInfo.DISCORD_GATEWAY_VERSION)
-            .put("large_threshold", api.getLargeThreshold());
-        payload.put("intents", gatewayIntents);
+            .put("large_threshold", api.getLargeThreshold())
+            .put("intents", gatewayIntents);
 
         DataObject identify = DataObject.empty()
                 .put("op", WebSocketCode.IDENTIFY)
@@ -750,9 +747,14 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         api.getTextChannelsView().clear();
         api.getVoiceChannelsView().clear();
         api.getCategoriesView().clear();
+        api.getNewsChannelView().clear();
+        api.getPrivateChannelsView().clear();
+        api.getStageChannelView().clear();
+        api.getThreadChannelsView().clear();
+
         api.getGuildsView().clear();
         api.getUsersView().clear();
-        api.getPrivateChannelsView().clear();
+
         api.getEventCache().clear();
         api.getGuildSetupController().clearCache();
         chunkManager.clear();
@@ -1335,6 +1337,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         handlers.put("GUILD_ROLE_DELETE",             new GuildRoleDeleteHandler(api));
         handlers.put("GUILD_ROLE_UPDATE",             new GuildRoleUpdateHandler(api));
         handlers.put("GUILD_SYNC",                    new GuildSyncHandler(api));
+        handlers.put("GUILD_STICKERS_UPDATE",         new GuildStickersUpdateHandler(api));
         handlers.put("GUILD_UPDATE",                  new GuildUpdateHandler(api));
         handlers.put("INTERACTION_CREATE",            new InteractionCreateHandler(api));
         handlers.put("INVITE_CREATE",                 new InviteCreateHandler(api));

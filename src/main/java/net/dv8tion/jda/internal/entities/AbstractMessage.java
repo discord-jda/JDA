@@ -18,6 +18,7 @@ package net.dv8tion.jda.internal.entities;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.sticker.StickerItem;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.requests.RestAction;
@@ -25,7 +26,6 @@ import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationAction;
 import net.dv8tion.jda.internal.utils.Helpers;
-import org.apache.commons.collections4.Bag;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -116,88 +116,10 @@ public abstract class AbstractMessage implements Message
 
     @Nonnull
     @Override
-    public Bag<User> getMentionedUsersBag()
+    public Mentions getMentions()
     {
         unsupported();
         return null;
-    }
-
-    @Nonnull
-    @Override
-    public Bag<TextChannel> getMentionedChannelsBag()
-    {
-        unsupported();
-        return null;
-    }
-
-    @Nonnull
-    @Override
-    public Bag<Role> getMentionedRolesBag()
-    {
-        unsupported();
-        return null;
-    }
-
-    @Nonnull
-    @Override
-    public List<User> getMentionedUsers()
-    {
-        unsupported();
-        return null;
-    }
-
-    @Nonnull
-    @Override
-    public List<TextChannel> getMentionedChannels()
-    {
-        unsupported();
-        return null;
-    }
-
-    @Nonnull
-    @Override
-    public List<Role> getMentionedRoles()
-    {
-        unsupported();
-        return null;
-    }
-
-    @Nonnull
-    @Override
-    public List<Member> getMentionedMembers(@Nonnull Guild guild)
-    {
-        unsupported();
-        return null;
-    }
-
-    @Nonnull
-    @Override
-    public List<Member> getMentionedMembers()
-    {
-        unsupported();
-        return null;
-    }
-
-    @Nonnull
-    @Override
-    public List<IMentionable> getMentions(@Nonnull MentionType... types)
-    {
-        unsupported();
-        return null;
-    }
-
-    @Override
-    public boolean isMentioned(@Nonnull IMentionable mentionable, @Nonnull MentionType... types)
-    {
-        unsupported();
-        return false;
-    }
-
-    @Override
-    public boolean mentionsEveryone()
-    {
-        unsupported();
-        return false;
     }
 
     @Override
@@ -364,22 +286,6 @@ public abstract class AbstractMessage implements Message
 
     @Nonnull
     @Override
-    public List<Emote> getEmotes()
-    {
-        unsupported();
-        return null;
-    }
-
-    @Nonnull
-    @Override
-    public Bag<Emote> getEmotesBag()
-    {
-        unsupported();
-        return null;
-    }
-
-    @Nonnull
-    @Override
     public List<MessageReaction> getReactions()
     {
         unsupported();
@@ -388,7 +294,7 @@ public abstract class AbstractMessage implements Message
 
     @Nonnull
     @Override
-    public List<MessageSticker> getStickers()
+    public List<StickerItem> getStickers()
     {
         unsupported();
         return null;
@@ -562,21 +468,14 @@ public abstract class AbstractMessage implements Message
     }
 
     @Override
-    public MessageReaction.ReactionEmote getReactionByUnicode(@Nonnull String unicode)
+    public MessageReaction getReactionByUnicode(@Nonnull String unicode)
     {
         unsupported();
         return null;
     }
 
     @Override
-    public MessageReaction.ReactionEmote getReactionById(@Nonnull String id)
-    {
-        unsupported();
-        return null;
-    }
-
-    @Override
-    public MessageReaction.ReactionEmote getReactionById(long id)
+    public MessageReaction getReactionById(long id)
     {
         unsupported();
         return null;
@@ -625,6 +524,14 @@ public abstract class AbstractMessage implements Message
     {
         unsupported();
         return false;
+    }
+
+    @Nullable
+    @Override
+    public ThreadChannel getStartedThread()
+    {
+        unsupported();
+        return null;
     }
 
     @Nonnull

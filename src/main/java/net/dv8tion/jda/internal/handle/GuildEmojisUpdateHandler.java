@@ -158,5 +158,4 @@ public class GuildEmojisUpdateHandler extends SocketHandler
         }
 
     }
-
 }

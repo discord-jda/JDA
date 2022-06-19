@@ -17,7 +17,10 @@
 package net.dv8tion.jda.internal.utils;
 
 import com.neovisionaries.ws.client.WebSocketFactory;
-import okhttp3.*;
+import okhttp3.ConnectionPool;
+import okhttp3.Dispatcher;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
 import okio.Okio;
 import org.slf4j.Logger;
 
@@ -178,7 +181,7 @@ public class IOUtil
      *
      * @return RequestBody capable of transmitting the provided InputStream of data
      */
-    public static RequestBody createRequestBody(final MediaType contentType, final InputStream stream)
+    public static BufferedRequestBody createRequestBody(final MediaType contentType, final InputStream stream)
     {
         return new BufferedRequestBody(Okio.source(stream), contentType);
     }

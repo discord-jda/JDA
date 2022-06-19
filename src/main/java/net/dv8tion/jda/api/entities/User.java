@@ -18,8 +18,9 @@ package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.api.utils.ImageProxy;
 import net.dv8tion.jda.api.utils.MiscUtil;
-import net.dv8tion.jda.internal.entities.UserById;
+import net.dv8tion.jda.internal.entities.UserSnowflakeImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.CheckReturnValue;
@@ -71,7 +72,7 @@ import java.util.regex.Pattern;
  *
  * @see JDA#retrieveUserById(String)
  */
-public interface User extends IMentionable
+public interface User extends UserSnowflake
 {
     /**
      * Compiled pattern for a Discord Tag: {@code (.{2,32})#(\d{4})}
@@ -90,26 +91,23 @@ public interface User extends IMentionable
 
     /**
      * Creates a User instance which only wraps an ID.
-     * <br>All other methods beside {@link #getIdLong()} and {@link #getId()} will throw {@link UnsupportedOperationException}.
      *
      * @param  id
      *         The user id
      *
-     * @return A user instance
+     * @return A {@link UserSnowflake} instance
      *
      * @see    JDA#retrieveUserById(long)
-     *
-     * @since  4.2.1
+     * @see    UserSnowflake#fromId(long)
      */
     @Nonnull
-    static User fromId(long id)
+    static UserSnowflake fromId(long id)
     {
-        return new UserById(id);
+        return new UserSnowflakeImpl(id);
     }
 
     /**
      * Creates a User instance which only wraps an ID.
-     * <br>All other methods beside {@link #getIdLong()} and {@link #getId()} will throw {@link UnsupportedOperationException}.
      *
      * @param  id
      *         The user id
@@ -117,14 +115,13 @@ public interface User extends IMentionable
      * @throws IllegalArgumentException
      *         If the provided ID is not a valid snowflake
      *
-     * @return A user instance
+     * @return A {@link UserSnowflake} instance
      *
      * @see    JDA#retrieveUserById(String)
-     *
-     * @since  4.2.1
+     * @see    UserSnowflake#fromId(String)
      */
     @Nonnull
-    static User fromId(@Nonnull String id)
+    static UserSnowflake fromId(@Nonnull String id)
     {
         return fromId(MiscUtil.parseSnowflake(id));
     }
@@ -154,7 +151,7 @@ public interface User extends IMentionable
     String getDiscriminator();
 
     /**
-     * The Discord Id for this user's avatar image.
+     * The Discord ID for this user's avatar image.
      * If the user has not set an image, this will return null.
      *
      * @throws UnsupportedOperationException
@@ -182,7 +179,21 @@ public interface User extends IMentionable
     }
 
     /**
-     * The Discord Id for this user's default avatar image.
+     * Returns an {@link ImageProxy} for this user's avatar.
+     *
+     * @return Possibly-null {@link ImageProxy} of this user's avatar
+     *
+     * @see    #getAvatarUrl()
+     */
+    @Nullable
+    default ImageProxy getAvatar()
+    {
+        final String avatarUrl = getAvatarUrl();
+        return avatarUrl == null ? null : new ImageProxy(avatarUrl);
+    }
+
+    /**
+     * The Discord ID for this user's default avatar image.
      *
      * @throws UnsupportedOperationException
      *         If this User was created with {@link #fromId(long)}
@@ -193,7 +204,7 @@ public interface User extends IMentionable
     String getDefaultAvatarId();
 
     /**
-     * The URL for the for the user's default avatar image.
+     * The URL for the user's default avatar image.
      *
      * @throws UnsupportedOperationException
      *         If this User was created with {@link #fromId(long)}
@@ -204,6 +215,19 @@ public interface User extends IMentionable
     default String getDefaultAvatarUrl()
     {
         return String.format(DEFAULT_AVATAR_URL, getDefaultAvatarId());
+    }
+
+    /**
+     * Returns an {@link ImageProxy} for this user's default avatar.
+     *
+     * @return Never-null {@link ImageProxy} of this user's default avatar
+     *
+     * @see    #getDefaultAvatarUrl()
+     */
+    @Nonnull
+    default ImageProxy getDefaultAvatar()
+    {
+        return new ImageProxy(getDefaultAvatarUrl());
     }
 
     /**
@@ -221,6 +245,20 @@ public interface User extends IMentionable
     {
         String avatarUrl = getAvatarUrl();
         return avatarUrl == null ? getDefaultAvatarUrl() : avatarUrl;
+    }
+
+    /**
+     * Returns an {@link ImageProxy} for this user's effective avatar image.
+     *
+     * @return Never-null {@link ImageProxy} of this user's effective avatar image
+     *
+     * @see    #getEffectiveAvatarUrl()
+     */
+    @Nonnull
+    default ImageProxy getEffectiveAvatar()
+    {
+        final ImageProxy avatar = getAvatar();
+        return avatar == null ? getDefaultAvatar() : avatar;
     }
 
     /**
@@ -404,6 +442,20 @@ public interface User extends IMentionable
         public String getBannerUrl()
         {
             return bannerId == null ? null : String.format(BANNER_URL, Long.toUnsignedString(userId), bannerId, bannerId.startsWith("a_") ? "gif" : "png");
+        }
+
+        /**
+         * Returns an {@link ImageProxy} for this user's banner.
+         *
+         * @return Possibly-null {@link ImageProxy} of this user's banner
+         *
+         * @see    #getBannerUrl()
+         */
+        @Nullable
+        public ImageProxy getBanner()
+        {
+            final String bannerUrl = getBannerUrl();
+            return bannerUrl == null ? null : new ImageProxy(bannerUrl);
         }
 
         /**

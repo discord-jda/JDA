@@ -633,7 +633,7 @@ public interface Command extends ISnowflake
         @Override
         public int hashCode()
         {
-            return Objects.hash(name, description, type, choices, channelTypes, minValue, maxValue);
+            return Objects.hash(name, description, type, choices, channelTypes, minValue, maxValue, required, autoComplete);
         }
 
         @Override
@@ -648,6 +648,8 @@ public interface Command extends ISnowflake
                 && Objects.equals(other.channelTypes, channelTypes)
                 && Objects.equals(other.minValue, minValue)
                 && Objects.equals(other.maxValue, maxValue)
+                && other.required == required
+                && other.autoComplete == autoComplete
                 && other.type == type;
         }
 

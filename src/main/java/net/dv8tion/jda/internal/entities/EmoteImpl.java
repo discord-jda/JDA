@@ -46,8 +46,6 @@ public class EmoteImpl implements ListedEmote
     private final JDAImpl api;
     private final Set<Role> roles;
 
-    private EmoteManager manager;
-
     private GuildImpl guild;
     private boolean managed = false;
     private boolean available = true;
@@ -148,9 +146,7 @@ public class EmoteImpl implements ListedEmote
     @Override
     public EmoteManager getManager()
     {
-        if (manager == null)
-            return manager = new EmoteManagerImpl(this);
-        return manager;
+        return new EmoteManagerImpl(this);
     }
 
     @Override

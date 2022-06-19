@@ -18,7 +18,6 @@ package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.managers.channel.attribute.IPermissionContainerManager;
 import net.dv8tion.jda.api.requests.restaction.PermissionOverrideAction;
-import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -110,65 +109,6 @@ public interface IPermissionContainer extends GuildChannel
     }
 
     /**
-     * Creates a {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverride}
-     * for the specified {@link net.dv8tion.jda.api.entities.Member Member} or {@link net.dv8tion.jda.api.entities.Role Role} in this GuildChannel.
-     * You can use {@link #putPermissionOverride(IPermissionHolder)} to replace existing overrides.
-     *
-     * <p>Possible ErrorResponses include:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
-     *     <br>If this channel was already deleted</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>If we were removed from the Guild</li>
-     * </ul>
-     *
-     * @param  permissionHolder
-     *         The Member or Role to create an override for
-     *
-     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         if we don't have the permission to {@link net.dv8tion.jda.api.Permission#MANAGE_PERMISSIONS MANAGE_PERMISSIONS}
-     * @throws IllegalArgumentException
-     *         if the specified permission holder is null or is not from {@link #getGuild()}
-     * @throws java.lang.IllegalStateException
-     *         If the specified permission holder already has a PermissionOverride. Use {@link #getPermissionOverride(IPermissionHolder)} to retrieve it.
-     *         You can use {@link #putPermissionOverride(IPermissionHolder)} to replace existing overrides.
-     *
-     * @return {@link PermissionOverrideAction PermissionOverrideAction}
-     *         Provides the newly created PermissionOverride for the specified permission holder
-     */
-    @Nonnull
-    @CheckReturnValue
-    default PermissionOverrideAction createPermissionOverride(@Nonnull IPermissionHolder permissionHolder)
-    {
-        Checks.notNull(permissionHolder, "PermissionHolder");
-        if (getPermissionOverride(permissionHolder) != null)
-            throw new IllegalStateException("Provided member already has a PermissionOverride in this channel!");
-
-        return putPermissionOverride(permissionHolder);
-    }
-
-    /**
-     * Creates a {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverride}
-     * for the specified {@link net.dv8tion.jda.api.entities.Member Member} or {@link net.dv8tion.jda.api.entities.Role Role} in this GuildChannel.
-     * <br>If the permission holder already has an existing override it will be replaced.
-     *
-     * @param  permissionHolder
-     *         The Member or Role to create the override for
-     *
-     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         if we don't have the permission to {@link net.dv8tion.jda.api.Permission#MANAGE_PERMISSIONS MANAGE_PERMISSIONS}
-     * @throws java.lang.IllegalArgumentException
-     *         If the provided permission holder is null or from a different guild
-     *
-     * @return {@link PermissionOverrideAction PermissionOverrideAction}
-     *         Provides the newly created PermissionOverride for the specified permission holder
-     */
-    @Nonnull
-    @CheckReturnValue
-    PermissionOverrideAction putPermissionOverride(@Nonnull IPermissionHolder permissionHolder);
-
-    /**
      * Creates a new override or updates an existing one.
      * <br>This is similar to calling {@link PermissionOverride#getManager()} if an override exists.
      *
@@ -183,15 +123,11 @@ public interface IPermissionContainer extends GuildChannel
      * @return {@link net.dv8tion.jda.api.requests.restaction.PermissionOverrideAction}
      *         <br>With the current settings of an existing override or a fresh override with no permissions set
      *
-     * @since  4.0.0
+     * @see    PermissionOverrideAction#clear(long)
+     * @see    PermissionOverrideAction#grant(long)
+     * @see    PermissionOverrideAction#deny(long)
      */
     @Nonnull
     @CheckReturnValue
-    default PermissionOverrideAction upsertPermissionOverride(@Nonnull IPermissionHolder permissionHolder)
-    {
-        PermissionOverride override = getPermissionOverride(permissionHolder);
-        if (override != null)
-            return override.getManager();
-        return putPermissionOverride(permissionHolder);
-    }
+    PermissionOverrideAction upsertPermissionOverride(@Nonnull IPermissionHolder permissionHolder);
 }

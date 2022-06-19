@@ -445,7 +445,7 @@ public class MemberImpl implements Member
     @Override
     public String getAsMention()
     {
-        return (nickname == null ? "<@" : "<@!") + user.getId() + '>';
+        return "<@" + user.getId() + '>';
     }
 
     @Nullable

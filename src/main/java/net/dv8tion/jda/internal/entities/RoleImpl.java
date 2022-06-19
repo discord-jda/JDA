@@ -50,8 +50,6 @@ public class RoleImpl implements Role
     private final JDAImpl api;
     private Guild guild;
 
-    private RoleManager manager;
-
     private RoleTagsImpl tags;
     private String name;
     private boolean managed;
@@ -60,6 +58,7 @@ public class RoleImpl implements Role
     private long rawPermissions;
     private int color;
     private int rawPosition;
+    private int frozenPosition = Integer.MIN_VALUE; // this is used exclusively for delete events
     private RoleIcon icon;
 
     public RoleImpl(long id, Guild guild)
@@ -73,6 +72,8 @@ public class RoleImpl implements Role
     @Override
     public int getPosition()
     {
+        if (frozenPosition > Integer.MIN_VALUE)
+            return frozenPosition;
         Guild guild = getGuild();
         if (equals(guild.getPublicRole()))
             return -1;
@@ -289,16 +290,14 @@ public class RoleImpl implements Role
                     .setMentionable(mentionable)
                     .setName(name)
                     .setPermissions(rawPermissions)
-                    .setIcon(icon.getEmoji()); // we can only copy the emoji as we don't have access to the Icon instance
+                    .setIcon(icon == null ? null : icon.getEmoji()); // we can only copy the emoji as we don't have access to the Icon instance
     }
 
     @Nonnull
     @Override
     public RoleManager getManager()
     {
-        if (manager == null)
-            return manager = new RoleManagerImpl(this);
-        return manager;
+        return new RoleManagerImpl(this);
     }
 
     @Nonnull
@@ -456,6 +455,11 @@ public class RoleImpl implements Role
     {
         this.icon = icon;
         return this;
+    }
+
+    public void freezePosition()
+    {
+        this.frozenPosition = getPosition();
     }
 
     public static class RoleTagsImpl implements RoleTags
