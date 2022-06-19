@@ -14,23 +14,17 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.internal.handle;
+package net.dv8tion.jda.api.events.automoderation;
 
-import net.dv8tion.jda.api.utils.data.DataObject;
-import net.dv8tion.jda.internal.JDAImpl;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.AutoModerationRule;
+import org.jetbrains.annotations.NotNull;
 
-public class AutoModerationRuleUpdateHandler extends SocketHandler {
-
-    public AutoModerationRuleUpdateHandler(JDAImpl api) {
-        super(api);
-    }
-
-    @Override
-    protected Long handleInternally(DataObject content) {
-
-        long guildId = content.getLong("guild_id");
-        JDAImpl jda = getJDA();
-
-        return null;
+/**
+ * Indicates that an {@link net.dv8tion.jda.api.entities.AutoModerationRule AutoModerationRule} was deleted.
+ */
+public class AutoModerationRuleDeleteEvent extends GenericAutoModerationEvent {
+    public AutoModerationRuleDeleteEvent(@NotNull JDA api, long responseNumber, AutoModerationRule rule) {
+        super(api, responseNumber, rule);
     }
 }

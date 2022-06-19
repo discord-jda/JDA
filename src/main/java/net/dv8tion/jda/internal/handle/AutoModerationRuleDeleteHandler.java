@@ -16,12 +16,15 @@
 
 package net.dv8tion.jda.internal.handle;
 
+import net.dv8tion.jda.api.events.automoderation.AutoModerationRuleDeleteEvent;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
+import net.dv8tion.jda.api.entities.AutoModerationRule;
+import net.dv8tion.jda.internal.entities.GuildImpl;
 
-public class AutoModerationRuleUpdateHandler extends SocketHandler {
+public class AutoModerationRuleDeleteHandler extends SocketHandler {
 
-    public AutoModerationRuleUpdateHandler(JDAImpl api) {
+    public AutoModerationRuleDeleteHandler(JDAImpl api) {
         super(api);
     }
 
@@ -29,8 +32,14 @@ public class AutoModerationRuleUpdateHandler extends SocketHandler {
     protected Long handleInternally(DataObject content) {
 
         long guildId = content.getLong("guild_id");
-        JDAImpl jda = getJDA();
+        GuildImpl guild = (GuildImpl) getJDA().getGuildById(guildId);
 
+        long ruleId = content.getLong("id");
+        AutoModerationRule rule = guild.getAutoModerationRulesView().remove(ruleId);
+
+        getJDA().handleEvent(new AutoModerationRuleDeleteEvent(getJDA(), responseNumber, rule));
+
+        getJDA().getEventCache().clear(EventCache.Type.AUTO_MODERATION, ruleId);
         return null;
     }
 }

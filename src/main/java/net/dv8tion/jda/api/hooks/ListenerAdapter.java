@@ -17,6 +17,7 @@ package net.dv8tion.jda.api.hooks;
 
 import net.dv8tion.jda.api.events.*;
 import net.dv8tion.jda.api.events.automoderation.AutoModerationRuleCreateEvent;
+import net.dv8tion.jda.api.events.automoderation.AutoModerationRuleDeleteEvent;
 import net.dv8tion.jda.api.events.channel.ChannelCreateEvent;
 import net.dv8tion.jda.api.events.channel.ChannelDeleteEvent;
 import net.dv8tion.jda.api.events.channel.GenericChannelEvent;
@@ -172,6 +173,7 @@ public abstract class ListenerAdapter implements EventListener
 
     // Auto moderation events
     public void onAutoModerationRuleCreate(@Nonnull AutoModerationRuleCreateEvent event) {}
+    public void onAutoModerationRuleDelete(@Nonnull AutoModerationRuleDeleteEvent event) {}
 
     //Channel Events
     public void onChannelCreate(@Nonnull ChannelCreateEvent event) {}

@@ -44,6 +44,7 @@ import net.dv8tion.jda.api.utils.cache.SortedSnowflakeCacheView;
 import net.dv8tion.jda.api.utils.concurrent.Task;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 import net.dv8tion.jda.internal.requests.DeferredRestAction;
+import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -3108,20 +3109,30 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     RestAction<List<ThreadChannel>> retrieveActiveThreads();
 
     /**
-     * Retrieves a single auto moderation rule for this guild.
+     * Gets a single auto moderation rule for this guild from the provided id.
      *
      * @param id The id of the rule to retrieve.
      *
-     * @return {@link Task} handle for the request
+     * @return The rule, or {@code null} if it does not exist.
      */
     @Nonnull
-    @CheckReturnValue
-    default AutoModerationRule retrieveAutoModerationRuleById(long id) {
+    default AutoModerationRule getAutoModerationRuleById(long id) {
         return getAutoModerationRuleCache().getElementById(id);
     }
 
-    default AutoModerationRule retrieveAutoModerationRuleById(String id) {
+    @Nonnull
+    default AutoModerationRule getAutoModerationRuleById(@Nonnull String id) {
         return getAutoModerationRuleCache().getElementById(id);
+    }
+
+    /**
+     * AutoModerationRule a list of the auto moderation rules which are configured for this guild.
+     *
+     * @return A list of auto moderation rule objects for the given guild.
+     */
+    @Nonnull
+    default List<AutoModerationRule> getAutoModerationRules() {
+        return getAutoModerationRuleCache().asList();
     }
 
     /**
@@ -3130,9 +3141,34 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * @return A list of auto moderation rule objects for the given guild.
      */
     @Nonnull
-    @CheckReturnValue
+    RestAction<AutoModerationRule> retrieveAutoModerationRule(String id);
+
+    default RestAction<AutoModerationRule> retrieveAutoModerationRule(long id) {
+        return retrieveAutoModerationRule(Long.toUnsignedString(id));
+    }
+
+    /**
+     * Retrieves a list of the auto moderation rules which are configured for this guild.
+     *
+     * @return A list of auto moderation rule objects for the given guild.
+     */
+    @Nonnull
     RestAction<List<AutoModerationRule>> retrieveAutoModerationRules();
 
+    /**
+     * Deletes an auto moderation rule from this guild.
+     *
+     * @param id The id of the rule to delete.
+     *
+     * @return A {@link RestAction} that can be used to monitor the request.
+     */
+    RestActionImpl<Object> deleteAutoModerationRuleById(String id);
+
+    default RestActionImpl<Object> deleteAutoModerationRuleById(long id) {
+        return deleteAutoModerationRuleById(Long.toUnsignedString(id));
+    }
+
+    @Nonnull
     SnowflakeCacheView<AutoModerationRule> getAutoModerationRuleCache();
 
     /* From GuildController */

@@ -1139,12 +1139,45 @@ public class GuildImpl implements Guild
 
     @NotNull
     @Override
-    public RestAction<List<AutoModerationRule>> retrieveAutoModerationRules() {
-        //TODO: Implement
-        return null;
+    public RestAction<AutoModerationRule> retrieveAutoModerationRule(String id) {
+        Checks.isSnowflake(id);
+        Route.CompiledRoute route = Route.AutoModeration.GET_AUTO_MODERATION_RULE.compile(getId(), id);
+        return new RestActionImpl<>(getJDA(), route, (response, request) -> getJDA().getEntityBuilder().createAutoModerationRule(Long.parseUnsignedLong(id), response.getObject()));
+    }
+
+    @NotNull
+    @Override
+    public RestAction<List<AutoModerationRule>> retrieveAutoModerationRules()
+    {
+        Route.CompiledRoute route = Route.AutoModeration.GET_AUTO_MODERATION_RULES.compile(getId());
+        return new RestActionImpl<>(getJDA(), route, (response, request) -> {
+            DataArray array = response.getArray();
+            List<AutoModerationRule> autoModerationRules = new ArrayList<>(array.length());
+            EntityBuilder builder = api.getEntityBuilder();
+
+            for (int i = 0; i < array.length(); i++) {
+                try {
+                    final DataObject object = array.getObject(i);
+                    autoModerationRules.add(builder.createAutoModerationRule(object.getLong("guild_id"), object));
+                }
+                catch (Exception e) {
+                    JDAImpl.LOG.error("Error creating auto moderation rule object from json", e);
+                }
+            }
+
+            return Collections.unmodifiableList(autoModerationRules);
+        });
     }
 
     @Override
+    public RestActionImpl<Object> deleteAutoModerationRuleById(String id) {
+        Checks.isSnowflake(id);
+        Route.CompiledRoute route = Route.AutoModeration.DELETE_AUTO_MODERATION_RULE.compile(getId(), id);
+        return new RestActionImpl<>(getJDA(), route);
+    }
+
+    @Override
+    @Nonnull
     public SnowflakeCacheView<AutoModerationRule> getAutoModerationRuleCache() {
         return autoModerationRuleCache;
     }
@@ -2015,6 +2048,10 @@ public class GuildImpl implements Guild
     public MemberCacheViewImpl getMembersView()
     {
         return memberCache;
+    }
+
+    public SortedSnowflakeCacheViewImpl<AutoModerationRule> getAutoModerationRulesView() {
+        return autoModerationRuleCache;
     }
 
     @Nonnull
