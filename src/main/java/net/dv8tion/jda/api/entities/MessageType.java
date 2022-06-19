@@ -94,7 +94,7 @@ public enum MessageType
     /**
      * System message related to discovery qualifications.
      */
-    GUILD_DISCOVERY_DISQUALIFIED(14, true, true),
+    GUILD_DISCOVERY_DISQUALIFIED(14, true),
 
     /**
      * System message related to discovery qualifications.
@@ -154,14 +154,6 @@ public enum MessageType
      * Unknown MessageType.
      */
     UNKNOWN(-1, false, true);
-
-    public static void main(String[] args)
-    {
-        System.out.printf("%50s   %5s   %s%n", "identifier", "system", "deletable?");
-        for (MessageType type : values()) {
-            System.out.printf("%50s %6b %b%n", type, type.system, type.deletable);
-        }
-    }
 
     private final int id;
     private final boolean system;
