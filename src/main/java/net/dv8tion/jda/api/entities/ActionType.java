@@ -17,20 +17,20 @@
 package net.dv8tion.jda.api.entities;
 
 /**
- * Represents the type of action that was performed when a one rules set in the auto-moderation system was broken.
+ * Represents a type of action that will be performed when an auto moderation rule is triggered.
  */
 public enum ActionType
 {
     /**
-     * Blocks the message if the message breaks the auto-moderation rules.
+     * BPrevents the message from being sent.
      */
     BLOCK_MESSAGE(1),
     /**
-     * Sends an alert to a specific channel if a member breaks the auto-moderation rules.
+     * Sends an alert message to a specific channel.
      */
     SEND_ALERT_MESSAGE(2),
     /**
-     * Times out the member who broke the auto-moderation rules.
+     * Causes the offending member to timeout.
      */
     TIMEOUT(3),
     /**

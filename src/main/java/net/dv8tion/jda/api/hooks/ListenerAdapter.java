@@ -171,7 +171,7 @@ public abstract class ListenerAdapter implements EventListener
     public void onStageInstanceCreate(@Nonnull StageInstanceCreateEvent event) {}
 
     // Auto moderation events
-    public void onAutoModerationRuleCreateEvent(@Nonnull AutoModerationRuleCreateEvent event) {}
+    public void onAutoModerationRuleCreate(@Nonnull AutoModerationRuleCreateEvent event) {}
 
     //Channel Events
     public void onChannelCreate(@Nonnull ChannelCreateEvent event) {}

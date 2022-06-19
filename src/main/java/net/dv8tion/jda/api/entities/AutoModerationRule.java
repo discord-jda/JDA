@@ -20,15 +20,14 @@ import javax.annotation.Nonnull;
 import java.util.List;
 
 /**
- * Auto Moderation is a feature which allows each guild to set up rules that trigger based on some criteria. For example, a rule can trigger whenever a message contains a specific keyword.
- *  <br> <br>
- * Rules can be configured to automatically execute actions whenever they trigger. For example, if a user tries to send a message which contains a certain keyword, a rule can trigger and block the message before it is sent.
- * <br><br>
- * This is the main object for Auto Moderation.
+ * Represents a Discord auto moderation rule.
+ * <br>
+ * Auto Moderation is a feature which allows each guild to set up rules that trigger based on some criteria.
+ * For example, a rule can trigger whenever a message contains a specific keyword.
  */
 public interface AutoModerationRule extends ISnowflake {
     /**
-     * The Guild in which the role belongs to.
+     * Returns the Guild that the rule belongs to.
      *
      * @return {@link net.dv8tion.jda.api.entities.Guild Guild}
      */
@@ -36,7 +35,7 @@ public interface AutoModerationRule extends ISnowflake {
     Guild getGuild();
 
     /**
-     * The name of the rule.
+     * Returns the name of the rule.
      *
      * @return {@link java.lang.String String}
      */
@@ -44,7 +43,7 @@ public interface AutoModerationRule extends ISnowflake {
     String getName();
 
     /**
-     * The user who created the rule.
+     * Returns the user who created the rule.
      *
      * @return {@link net.dv8tion.jda.api.entities.User User}
      */
@@ -52,7 +51,7 @@ public interface AutoModerationRule extends ISnowflake {
     User getUser();
 
     /**
-     * The event type which triggers the rule.
+     * Returns the type of event that can potentially trigger this rule.
      *
      * @return {@link net.dv8tion.jda.api.entities.EventType EventType}
      */
@@ -60,7 +59,7 @@ public interface AutoModerationRule extends ISnowflake {
     EventType getEventType();
 
     /**
-     * The trigger of the rule.
+     * Returns the type of trigger that can cause this rule to be executed.
      *
      * @return {@link net.dv8tion.jda.api.entities.TriggerType TriggerTypes}
      */
@@ -68,7 +67,7 @@ public interface AutoModerationRule extends ISnowflake {
     TriggerType getTriggerType();
 
     /**
-     * The metadata of the trigger.
+     * Returns additional metadata for the trigger of this rule, used whenever this rule is executed.
      *
      * @return {@link net.dv8tion.jda.api.entities.TriggerMetadata TriggerMetadata}
      */
@@ -76,7 +75,7 @@ public interface AutoModerationRule extends ISnowflake {
     TriggerMetadata getTriggerMetadata();
 
     /**
-     * The actions which will be performed when the rule is triggered.
+     * Returns the actions that will be performed when this rule is executed.
      *
      * @return A {@link java.util.List List} of {@link net.dv8tion.jda.api.entities.AutoModerationAction ActionTypes}
      */
@@ -84,21 +83,21 @@ public interface AutoModerationRule extends ISnowflake {
     List<AutoModerationAction> getActions();
 
     /**
-     * Weather the rule is enabled or not.
+     * Returns whether this rule is enabled or not.
      *
      * @return {@link java.lang.Boolean Boolean}
      */
     boolean isEnabled();
 
     /**
-     * The roles which are exempt from the rules.
+     * Returns the roles that are exempt from this rule.
      *
      * @return A {@link java.util.List List} of {@link net.dv8tion.jda.api.entities.Role Roles} which are exempt from the rules.
      */
     List<Role> getExemptRoles();
 
     /**
-     * The channels which are exempt from the rules.
+     * Returns the channels that are exempt from this rule.
      *
      * @return A {@link java.util.List List} of {@link net.dv8tion.jda.api.entities.Channel Channels} which are exempt from the rules.
      */

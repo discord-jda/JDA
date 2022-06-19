@@ -562,28 +562,28 @@ public enum AuditLogKey
     INVITE_MAX_USES("max_uses"),
 
     /**
-     * The guild where the auto moderation rule was created in.
+     * The guild where the auto moderation rule was created.
      *
      * <p>Expected type: <b>String</b>
      */
     AUTO_MODERATION_GUILD_ID("guild_id"),
 
     /**
-     * The name of the rule which was created/updated/deleted.
+     * The name of the auto moderation rule that was created/updated/deleted.
      *
      * <p>Expected type: <b>String</b>
      */
     AUTO_MODERATION_RULE_NAME("name"),
 
     /**
-     * The name of the user who created/updated/deleted the rule.
+     * The name of the user who created/updated/deleted the auto moderation rule.
      *
      * <p>Expected type: <b>String</b>
      */
     AUTO_MODERATION_CREATOR("user"),
 
     /**
-     * The event will cause the auto-moderation system to check for a specific trigger.
+     * The event that will cause the auto moderation system to check for a specific trigger.
      *
      * <p>Expected type: <b>Integer</b>
      */
@@ -608,7 +608,7 @@ public enum AuditLogKey
     AUTO_MODERATION_TRIGGER_METADATA("trigger_metadata"),
 
     /**
-     * The actions which will carried out when the rule is triggered.
+     * The actions which will be carried out when the auto moderation rule is executed.
      *
      * <p>Expected types:
      * <ul>
@@ -619,21 +619,21 @@ public enum AuditLogKey
     AUTO_MODERATION_ACTIONS("actions"),
 
     /**
-     * Weather this rule is enabled or not.
+     * Whether this auto moderation rule is enabled or not.
      *
      * <p>Expected type: <b>boolean</b>
      */
     AUTO_MODERATION_ENABLED("enabled"),
 
     /**
-     * The role which is exempt from the rules
+     * The roles that are exempt from an auto moderation rule.
      *
      * <p>Expected type: <b>String</b>
      */
     AUTO_MODERATION_EXEMPT_ROLES("exempt_roles"),
 
     /**
-     * The channel which is exempt from the rules
+     * The channels that are exempt from an auto moderation rule.
      *
      * <p>Expected type: <b>String</b>
      */

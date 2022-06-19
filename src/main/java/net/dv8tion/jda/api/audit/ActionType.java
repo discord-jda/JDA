@@ -533,7 +533,7 @@ public enum ActionType
     THREAD_DELETE(112, TargetType.THREAD),
 
     /**
-     * A user created a {@link net.dv8tion.jda.api.entities.AutoModerationRule auto-moderation rule}
+     * A user created an {@link net.dv8tion.jda.api.entities.AutoModerationRule auto-moderation rule}
      *
      * <h4>Possible Keys</h4>
      * <ul>
@@ -553,7 +553,7 @@ public enum ActionType
     AUTO_MODERATION_RULE_CREATE(140, TargetType.AUTO_MODERATION_RULE),
 
     /**
-     * A user updated a {@link net.dv8tion.jda.api.entities.AutoModerationRule auto-moderation rule}
+     * A user updated an {@link net.dv8tion.jda.api.entities.AutoModerationRule auto moderation rule}
      *
      * <h4>Possible Keys</h4>
      * <ul>
@@ -573,7 +573,7 @@ public enum ActionType
     AUTO_MODERATION_RULE_UPDATE(141, TargetType.AUTO_MODERATION_RULE),
 
     /**
-     * A user deleted a {@link net.dv8tion.jda.api.entities.AutoModerationRule auto-moderation rule}
+     * A user deleted an {@link net.dv8tion.jda.api.entities.AutoModerationRule auto moderation rule}
      *
      * <h4>Possible Keys</h4>
      * <ul>
@@ -593,7 +593,7 @@ public enum ActionType
     AUTO_MODERATION_RULE_DELETE(142, TargetType.AUTO_MODERATION_RULE),
 
     /**
-     * When a message is blocked by the {@link net.dv8tion.jda.api.entities.AutoModerationRule auto-moderation rule}
+     * When a message is blocked by an {@link net.dv8tion.jda.api.entities.AutoModerationRule auto moderation rule}
      */
     AUTO_MODERATION_BLOCK_MESSAGE(143, TargetType.AUTO_MODERATION_RULE),
 

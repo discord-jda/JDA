@@ -62,6 +62,7 @@ import org.slf4j.Logger;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
@@ -2263,7 +2264,7 @@ public class EntityBuilder
 
     public ActionMetadata createActionMetadata(GuildImpl guild, DataObject object) {
         final TextChannel channel = guild.getTextChannelById(object.getLong("channel"));
-        final int duration = object.getInt("duration");
+        final Duration duration = Duration.ofSeconds(object.getLong("duration"));
 
         return new ActionMetadataImpl()
                 .setChannel(channel)

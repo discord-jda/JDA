@@ -17,11 +17,11 @@
 package net.dv8tion.jda.api.entities;
 
 /**
- * This is the event which will cause the auto-moderation system to check for a specific trigger.
+ * Represents the type of event which will cause the auto moderation system to check for a specific trigger.
  */
 public enum EventType {
     /**
-     * This event is triggered when a message is sent.
+     * A message was sent.
      */
     MESSAGE_SEND(1),
     /**

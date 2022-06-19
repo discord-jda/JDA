@@ -19,12 +19,14 @@ package net.dv8tion.jda.internal.entities;
 import net.dv8tion.jda.api.entities.ActionMetadata;
 import net.dv8tion.jda.api.entities.TextChannel;
 
+import javax.annotation.Nonnull;
+import java.time.Duration;
 import java.util.Objects;
 
 public class ActionMetadataImpl implements ActionMetadata {
 
     private TextChannel channel;
-    private int duration;
+    private Duration duration;
 
     @Override
     public TextChannel getChannel() {
@@ -32,7 +34,7 @@ public class ActionMetadataImpl implements ActionMetadata {
     }
 
     @Override
-    public int getDuration() {
+    public @Nonnull Duration getDuration() {
         return duration;
     }
 
@@ -41,7 +43,7 @@ public class ActionMetadataImpl implements ActionMetadata {
         return this;
     }
 
-    public ActionMetadataImpl setDuration(int duration) {
+    public ActionMetadataImpl setDuration(Duration duration) {
         this.duration = duration;
         return this;
     }

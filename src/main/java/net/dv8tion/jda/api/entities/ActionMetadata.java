@@ -16,6 +16,9 @@
 
 package net.dv8tion.jda.api.entities;
 
+import javax.annotation.Nonnull;
+import java.time.Duration;
+
 /**
  * This is additional data which is used when an action is executed by the auto-moderation system.
  *
@@ -24,16 +27,17 @@ package net.dv8tion.jda.api.entities;
  */
 public interface ActionMetadata {
     /**
-     * The channel where the logging of the auto-moderation rule breaking should be sent to.
+     * Returns the channel where an alert message will be sent when the rule is executed.
      *
      * @return {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
      */
     TextChannel getChannel();
 
     /**
-     * The duration of the timeout in seconds.
+     * Returns the duration of the timeout.
      *
-     * @return {@link java.lang.Integer Integer}
+     * @return {@link java.time.Duration Duration}
      */
-    int getDuration();
+    @Nonnull
+    Duration getDuration();
 }

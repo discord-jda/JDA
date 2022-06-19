@@ -20,19 +20,19 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
- * This is the action which will be executed by the auto-moderation system when a rule is triggered.
+ * Represents an action that will be executed when an auto moderation rule is triggered.
  */
 public interface AutoModerationAction {
     /**
-     * Gets the action type.
+     * Returns the type of this action.
      *
-     * @return {@link ActionType ActionTypes}
+     * @return {@link ActionType ActionType}
      */
     @Nonnull
     ActionType getActionType();
 
     /**
-     * Additional metadata needed during the execution for this specific action type
+     * Returns additional metadata used during the execution of this specific action type.
      *
      * @return {@link ActionMetadata ActionMetadata}
      */
