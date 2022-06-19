@@ -59,42 +59,42 @@ public enum MessageType
     /**
      * Specialized message used in MessageChannels as a System-Message to announce new pins
      */
-    CHANNEL_PINNED_ADD(6),
+    CHANNEL_PINNED_ADD(6, true, true),
 
     /**
      * Specialized message used to welcome new members in a Guild
      */
-    GUILD_MEMBER_JOIN(7),
+    GUILD_MEMBER_JOIN(7, true, true),
 
     /**
      * Specialized message used to announce a new booster
      */
-    GUILD_MEMBER_BOOST(8),
+    GUILD_MEMBER_BOOST(8, true, true),
 
     /**
      * Specialized message used to announce the server has reached tier 1
      */
-    GUILD_BOOST_TIER_1(9),
+    GUILD_BOOST_TIER_1(9, true, true),
 
     /**
      * Specialized message used to announce the server has reached tier 2
      */
-    GUILD_BOOST_TIER_2(10),
+    GUILD_BOOST_TIER_2(10, true, true),
 
     /**
      * Specialized message used to announce the server has reached tier 3
      */
-    GUILD_BOOST_TIER_3(11),
+    GUILD_BOOST_TIER_3(11, true, true),
 
     /**
      * Specialized message used to announce when a crosspost webhook is added to a channel
      */
-    CHANNEL_FOLLOW_ADD(12),
+    CHANNEL_FOLLOW_ADD(12, true, true),
 
     /**
      * System message related to discovery qualifications.
      */
-    GUILD_DISCOVERY_DISQUALIFIED(14),
+    GUILD_DISCOVERY_DISQUALIFIED(14, true, true),
 
     /**
      * System message related to discovery qualifications.
@@ -115,7 +115,7 @@ public enum MessageType
      * This is sent to a TextChannel when a message thread is created if the message from which the thread was started is "old".
      * The definition of "old" is loose, but is currently a very liberal definition.
      */
-    THREAD_CREATED(18),
+    THREAD_CREATED(18, true, true),
 
     /**
      * Reply to another message. This usually comes with a {@link Message#getReferencedMessage() referenced message}.
@@ -131,12 +131,12 @@ public enum MessageType
      * A new message sent as the first message in threads that are started from an existing message in the parent channel.
      * It only contains a message reference field that points to the message from which the thread was started.
      */
-    THREAD_STARTER_MESSAGE(21),
+    THREAD_STARTER_MESSAGE(21, false),
 
     /**
      * The "Invite your friends" messages that are sent to guild owners in new servers.
      */
-    GUILD_INVITE_REMINDER(22),
+    GUILD_INVITE_REMINDER(22, true, true),
 
     /**
      * This message was created by an interaction. Usually in combination with Context Menus.
@@ -148,25 +148,39 @@ public enum MessageType
      *
      * Messages from this type usually come with custom embeds containing relevant information, the author is the user that triggered the filter.
      */
-    AUTO_MODERATION_ACTION(24),
+    AUTO_MODERATION_ACTION(24, true, true),
 
     /**
      * Unknown MessageType.
      */
-    UNKNOWN(-1);
+    UNKNOWN(-1, false, true);
+
+    public static void main(String[] args)
+    {
+        System.out.printf("%50s   %5s   %s%n", "identifier", "system", "deletable?");
+        for (MessageType type : values()) {
+            System.out.printf("%50s %6b %b%n", type, type.system, type.deletable);
+        }
+    }
 
     private final int id;
     private final boolean system;
+    private final boolean deletable;
 
-    MessageType(int id)
-    {
-        this(id, true); // true as default because the majority are system
-    }
-
-    MessageType(int id, boolean system)
-    {
+    MessageType(int id, boolean system, boolean deletable) {
         this.id = id;
         this.system = system;
+        this.deletable = deletable;
+    }
+
+    MessageType(int id, boolean system) {
+        // most system messages are not deletable, most non-system messages are
+        this(id, system, !system);
+    }
+
+    MessageType(int id) {
+        // most messages are system messages
+        this(id, true);
     }
 
     /**
@@ -181,7 +195,7 @@ public enum MessageType
 
     /**
      * Whether this message type is for system messages.
-     * <br>These are messages that are sent by discord and don't look like messages from users.
+     * <br>These are messages that are sent by Discord and don't look like messages from users.
      * Messages like this have some special restrictions.
      *
      * @return True, if this type is for a system message
@@ -193,13 +207,13 @@ public enum MessageType
 
     /**
      * Whether messages of this type can be deleted.
-     * <br>Currently the only type that cannot be deleted is {@link #AUTO_MODERATION_ACTION}.
+     * <br>This includes most system messages.
      *
      * @return True, if delete is supported
      */
     public boolean canDelete()
     {
-        return this != AUTO_MODERATION_ACTION;
+        return deletable;
     }
 
     /**
