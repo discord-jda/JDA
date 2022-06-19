@@ -23,7 +23,11 @@ import net.dv8tion.jda.api.entities.TriggerType;
 import net.dv8tion.jda.api.entities.User;
 import org.jetbrains.annotations.NotNull;
 
-//TODO: JavaDoc
+/**
+ * Indicates that a {@link net.dv8tion.jda.api.entities.AutoModerationRule AutoModerationRule} was created.
+ *
+ * <p>Can be used to retrieve the created AutoModerationRule.
+ */
 public class AutoModerationRuleCreateEvent extends GenericAutoModerationEvent {
 
     private final long ruleId;
