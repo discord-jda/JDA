@@ -131,7 +131,7 @@ public enum MessageType
      * A new message sent as the first message in threads that are started from an existing message in the parent channel.
      * It only contains a message reference field that points to the message from which the thread was started.
      */
-    THREAD_STARTER_MESSAGE(21),
+    THREAD_STARTER_MESSAGE(21, false, true),
 
     /**
      * The "Invite your friends" messages that are sent to guild owners in new servers.
