@@ -2187,7 +2187,7 @@ public class EntityBuilder
         return new AuditLogChange(oldValue, newValue, key);
     }
 
-    public AutoModerationRule createAutoModerationRule(GuildImpl guild, User user, DataObject object) {
+    public AutoModerationRule createAutoModerationRule(long guildId, DataObject object) {
         final long id = object.getLong("id");
         final String name = object.getString("name");
         final EventType eventType = EventType.fromValue(object.getInt("event_type"));
@@ -2197,6 +2197,8 @@ public class EntityBuilder
         final boolean isEnabled = object.getBoolean("enabled");
         final DataArray exemptRoleArray = object.getArray("exempt_roles");
         final DataArray exemptChannelArray = object.getArray("exempt_channels");
+
+        GuildImpl guild = (GuildImpl) getJDA().getGuildsView().get(guildId);
 
         final List<Role> exemptRoles = new ArrayList<>();
         for (int i = 0; i < exemptRoleArray.length(); i++)
@@ -2252,7 +2254,7 @@ public class EntityBuilder
 
     public AutoModerationAction createAutoModerationAction(GuildImpl guild, DataObject object) {
         final net.dv8tion.jda.api.entities.ActionType actionType = net.dv8tion.jda.api.entities.ActionType.fromValue(object.getInt("action_type"));
-        final ActionMetadata actionMetadata = object.isNull("action_metadata") ? null : createActionMetadata(guild, object.getObject("action_metadata"));
+        final ActionMetadata actionMetadata = !object.isNull("action_metadata") ? createActionMetadata(guild, object.getObject("action_metadata")) : null;
 
         return new AutoModerationActionImpl()
                 .setType(actionType)
