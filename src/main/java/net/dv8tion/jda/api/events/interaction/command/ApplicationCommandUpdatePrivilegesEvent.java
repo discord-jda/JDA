@@ -13,15 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package net.dv8tion.jda.api.events.interaction.command;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
-import net.dv8tion.jda.api.events.guild.GenericGuildEvent;
 import net.dv8tion.jda.api.interactions.commands.privileges.IntegrationPrivilege;
+import net.dv8tion.jda.api.interactions.commands.privileges.PrivilegeTargetType;
 
 import javax.annotation.Nonnull;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -30,73 +30,39 @@ import java.util.List;
  *
  * <p>Can be used to get affected Guild and {@link List} of new {@link IntegrationPrivilege Privileges}
  */
-public class ApplicationCommandUpdatePrivilegesEvent extends GenericGuildEvent
+public class ApplicationCommandUpdatePrivilegesEvent extends GenericPrivilegeUpdateEvent
 {
-    private final long commandId;
-    private final long applicationId;
-    private final List<IntegrationPrivilege> privileges;
-
-    public ApplicationCommandUpdatePrivilegesEvent(@Nonnull JDA api, long responseNumber, @Nonnull Guild guild, long commandId,
-                                                   long applicationId, @Nonnull List<IntegrationPrivilege> privileges)
+    public ApplicationCommandUpdatePrivilegesEvent(@Nonnull JDA api, long responseNumber, @Nonnull Guild guild,
+                                                   long targetId, long applicationId, @Nonnull List<IntegrationPrivilege> privileges)
     {
-        super(api, responseNumber, guild);
-        this.commandId = commandId;
-        this.applicationId = applicationId;
-        this.privileges = Collections.unmodifiableList(privileges);
+        super(api, responseNumber, guild, targetId, applicationId, privileges);
     }
 
-    /**
-     * The new {@link IntegrationPrivilege Privileges} of this command.
-     *
-     * <p>If the moderator "Synced" the privileges of the command in question, this will be empty.
-     *
-     * @return Possibly empty unmodifiable list containing the new Privileges of the affected command.
-     */
     @Nonnull
-    public List<IntegrationPrivilege> getPrivileges()
+    @Override
+    public PrivilegeTargetType getTargetType()
     {
-        return privileges;
+        return PrivilegeTargetType.COMMAND;
     }
 
     /**
-     * The id of the command in question.
+     * The id of the command whose privileges have been changed.
      *
-     * @return id of the command in question.
+     * @return id of the command whose privileges have been changed.
      */
     public long getCommandIdLong()
     {
-        return commandId;
+        return getTargetIdLong();
     }
 
     /**
-     * The id of the command in question.
+     * The id of the command whose privileges have been changed.
      *
-     * @return id of the command in question.
+     * @return id of the command whose privileges have been changed.
      */
     @Nonnull
     public String getCommandId()
     {
-        return Long.toUnsignedString(commandId);
-    }
-
-    /**
-     * The id of the application whose command has changed.
-     *
-     * @return id of the application in question.
-     */
-    public long getApplicationIdLong()
-    {
-        return applicationId;
-    }
-
-    /**
-     * The id of the application whose command has changed.
-     *
-     * @return id of the application in question.
-     */
-    @Nonnull
-    public String getApplicationId()
-    {
-        return Long.toUnsignedString(applicationId);
+        return getTargetId();
     }
 }

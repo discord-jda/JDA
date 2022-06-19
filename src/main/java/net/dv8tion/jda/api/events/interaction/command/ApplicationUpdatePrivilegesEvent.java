@@ -13,15 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package net.dv8tion.jda.api.events.interaction.command;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.events.guild.GenericGuildEvent;
 import net.dv8tion.jda.api.interactions.commands.privileges.IntegrationPrivilege;
+import net.dv8tion.jda.api.interactions.commands.privileges.PrivilegeTargetType;
 
 import javax.annotation.Nonnull;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -30,50 +30,17 @@ import java.util.List;
  *
  * <p>Can be used to get affected Guild and {@link List} of new {@link IntegrationPrivilege Privileges}
  */
-public class ApplicationUpdatePrivilegesEvent extends GenericGuildEvent
+public class ApplicationUpdatePrivilegesEvent extends GenericPrivilegeUpdateEvent
 {
-    private final long applicationId;
-    private final List<IntegrationPrivilege> privileges;
-
-    public ApplicationUpdatePrivilegesEvent(@Nonnull JDA api, long responseNumber, @Nonnull Guild guild, long applicationId,
-                                            @Nonnull List<IntegrationPrivilege> privileges)
+    public ApplicationUpdatePrivilegesEvent(@Nonnull JDA api, long responseNumber, @Nonnull Guild guild, long applicationId, @Nonnull List<IntegrationPrivilege> privileges)
     {
-        super(api, responseNumber, guild);
-        this.applicationId = applicationId;
-        this.privileges = Collections.unmodifiableList(privileges);
+        super(api, responseNumber, guild, applicationId, applicationId, privileges);
     }
 
-    /**
-     * The new {@link IntegrationPrivilege Privileges} of the application.
-     *
-     * <p>If the moderator "Synced" the privileges of the application in question, this will be empty.
-     *
-     * @return Possibly empty unmodifiable list containing the new IntegrationPrivileges of the affected application.
-     */
     @Nonnull
-    public List<IntegrationPrivilege> getPrivileges()
+    @Override
+    public PrivilegeTargetType getTargetType()
     {
-        return privileges;
-    }
-
-    /**
-     * The id of the application in question.
-     *
-     * @return id of the application in question.
-     */
-    public long getApplicationIdLong()
-    {
-        return applicationId;
-    }
-
-    /**
-     * The id of the application in question.
-     *
-     * @return id of the application in question.
-     */
-    @Nonnull
-    public String getApplicationId()
-    {
-        return Long.toUnsignedString(applicationId);
+        return PrivilegeTargetType.INTEGRATION;
     }
 }

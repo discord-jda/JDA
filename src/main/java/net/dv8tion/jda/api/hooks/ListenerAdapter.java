@@ -297,6 +297,7 @@ public abstract class ListenerAdapter implements EventListener
     public void onEmoteUpdateRoles(@Nonnull EmoteUpdateRolesEvent event) {}
 
     // Application command permission update events
+    public void onGenericPrivilegeUpdate(@Nonnull GenericPrivilegeUpdateEvent event) {}
     public void onApplicationCommandUpdatePrivileges(@Nonnull ApplicationCommandUpdatePrivilegesEvent event) {}
     public void onApplicationUpdatePrivileges(@Nonnull ApplicationUpdatePrivilegesEvent event) {}
     
