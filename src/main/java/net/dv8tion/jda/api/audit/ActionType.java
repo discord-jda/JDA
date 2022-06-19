@@ -548,6 +548,7 @@ public enum ActionType
      *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#AUTO_MODERATION_ENABLED ENABLED}</li>
      *     <li>{@link java.util.List}&lt;{@link net.dv8tion.jda.api.audit.AuditLogKey#AUTO_MODERATION_EXEMPT_ROLES}&gt;</li>
      *     <li>{@link java.util.List}&lt;{@link net.dv8tion.jda.api.audit.AuditLogKey#AUTO_MODERATION_EXEMPT_CHANNELS}&gt;</li>
+     * </ul>
      */
     AUTO_MODERATION_RULE_CREATE(140, TargetType.AUTO_MODERATION_RULE),
 
@@ -567,6 +568,7 @@ public enum ActionType
      *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#AUTO_MODERATION_ENABLED ENABLED}</li>
      *     <li>{@link java.util.List}&lt;{@link net.dv8tion.jda.api.audit.AuditLogKey#AUTO_MODERATION_EXEMPT_ROLES}&gt;</li>
      *     <li>{@link java.util.List}&lt;{@link net.dv8tion.jda.api.audit.AuditLogKey#AUTO_MODERATION_EXEMPT_CHANNELS}&gt;</li>
+     * </ul>
      */
     AUTO_MODERATION_RULE_UPDATE(141, TargetType.AUTO_MODERATION_RULE),
 
@@ -586,6 +588,7 @@ public enum ActionType
      *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#AUTO_MODERATION_ENABLED ENABLED}</li>
      *     <li>{@link java.util.List}&lt;{@link net.dv8tion.jda.api.audit.AuditLogKey#AUTO_MODERATION_EXEMPT_ROLES}&gt;</li>
      *     <li>{@link java.util.List}&lt;{@link net.dv8tion.jda.api.audit.AuditLogKey#AUTO_MODERATION_EXEMPT_CHANNELS}&gt;</li>
+     * </ul>
      */
     AUTO_MODERATION_RULE_DELETE(142, TargetType.AUTO_MODERATION_RULE),
 
