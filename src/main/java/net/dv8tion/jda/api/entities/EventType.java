@@ -17,7 +17,7 @@
 package net.dv8tion.jda.api.entities;
 
 /**
- * This is the event which caused the auto-moderation system to trigger.
+ * This is the event which will cause the auto-moderation system to check for a specific trigger.
  */
 public enum EventType {
     /**

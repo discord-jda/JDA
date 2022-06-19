@@ -17,14 +17,14 @@
 package net.dv8tion.jda.api.entities;
 
 /**
- * This is additional data which is used when an action is triggered by the auto-moderation system.
+ * This is additional data which is used when an action is executed by the auto-moderation system.
  *
  * <br>
  * Different values depend on the {@link ActionType ActionType} of the action.
  */
 public interface ActionMetadata {
     /**
-     * The channel were the logging of the auto-moderation rule breaking should be sent to.
+     * The channel where the logging of the auto-moderation rule breaking should be sent to.
      *
      * @return {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
      */

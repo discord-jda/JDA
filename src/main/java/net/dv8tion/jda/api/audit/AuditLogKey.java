@@ -562,12 +562,82 @@ public enum AuditLogKey
     INVITE_MAX_USES("max_uses"),
 
     /**
-     * The guild were the auto moderation rule was created in
+     * The guild where the auto moderation rule was created in.
      *
      * <p>Expected type: <b>String</b>
      */
-    AUTO_MODERATION_GUILD("guild_id");
+    AUTO_MODERATION_GUILD_ID("guild_id"),
 
+    /**
+     * The name of the rule which was created/updated/deleted.
+     *
+     * <p>Expected type: <b>String</b>
+     */
+    AUTO_MODERATION_RULE_NAME("name"),
+
+    /**
+     * The name of the user who created/updated/deleted the rule.
+     *
+     * <p>Expected type: <b>String</b>
+     */
+    AUTO_MODERATION_CREATOR("user"),
+
+    /**
+     * The event will cause the auto-moderation system to check for a specific trigger.
+     *
+     * <p>Expected type: <b>Integer</b>
+     */
+    AUTO_MODERATION_EVENT_TYPE("event_type"),
+
+    /**
+     * What caused the auto moderation system to be triggered.
+     *
+     * <p>Expected type: <b>Integer</b>
+     */
+    AUTO_MODERATION_TRIGGER_TYPE("trigger_type"),
+
+    /**
+     * This is additional data used whether a rule should be executed or not.
+     *
+     * <p>Expected types:
+     * <ul>
+     *      <li>{@link java.util.List}&lt;{@link java.lang.String}&gt;</li>
+     *      <li>{@link java.util.List}&lt;{@link net.dv8tion.jda.api.entities.KeywordPresetType}&gt;</li>
+     * </ul>
+     */
+    AUTO_MODERATION_TRIGGER_METADATA("trigger_metadata"),
+
+    /**
+     * The actions which will carried out when the rule is triggered.
+     *
+     * <p>Expected types:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.entities.ActionType}</li>
+     *     <li>{@link net.dv8tion.jda.api.entities.ActionMetadata}</li>
+     * </ul>
+     */
+    AUTO_MODERATION_ACTIONS("actions"),
+
+    /**
+     * Weather this rule is enabled or not.
+     *
+     * <p>Expected type: <b>boolean</b>
+     */
+    AUTO_MODERATION_ENABLED("enabled"),
+
+    /**
+     * The role which is exempt from the rules
+     *
+     * <p>Expected type: <b>String</b>
+     */
+    AUTO_MODERATION_EXEMPT_ROLES("exempt_roles"),
+
+    /**
+     * The channel which is exempt from the rules
+     *
+     * <p>Expected type: <b>String</b>
+     */
+    AUTO_MODERATION_EXEMPT_CHANNELS("exempt_channels");
 
     private final String key;
 

@@ -18,6 +18,9 @@ package net.dv8tion.jda.api.entities;
 
 import java.util.List;
 
+/**
+ * This is additional data used whether a rule should be executed or not.
+ */
 public interface TriggerMetadata {
     /**
      * The substring which will be searched for in content
