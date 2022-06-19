@@ -183,4 +183,9 @@ public class AutoModerationRuleImpl implements AutoModerationRule {
                 ", channels=" + channels +
                 ')';
     }
+
+    @Override
+    public int compareTo(@NotNull AutoModerationRule o) {
+        return Long.compare(id, o.getIdLong());
+    }
 }

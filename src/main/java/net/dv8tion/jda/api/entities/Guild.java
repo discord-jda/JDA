@@ -3107,6 +3107,34 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     @CheckReturnValue
     RestAction<List<ThreadChannel>> retrieveActiveThreads();
 
+    /**
+     * Retrieves a single auto moderation rule for this guild.
+     *
+     * @param id The id of the rule to retrieve.
+     *
+     * @return {@link Task} handle for the request
+     */
+    @Nonnull
+    @CheckReturnValue
+    default AutoModerationRule retrieveAutoModerationRuleById(long id) {
+        return getAutoModerationRuleCache().getElementById(id);
+    }
+
+    default AutoModerationRule retrieveAutoModerationRuleById(String id) {
+        return getAutoModerationRuleCache().getElementById(id);
+    }
+
+    /**
+     * Retrieves a list of the auto moderation rules which are configured for this guild.
+     *
+     * @return A list of auto moderation rule objects for the given guild.
+     */
+    @Nonnull
+    @CheckReturnValue
+    RestAction<List<AutoModerationRule>> retrieveAutoModerationRules();
+
+    SnowflakeCacheView<AutoModerationRule> getAutoModerationRuleCache();
+
     /* From GuildController */
 
     /**

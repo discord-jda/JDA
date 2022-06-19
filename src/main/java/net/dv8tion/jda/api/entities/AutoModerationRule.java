@@ -25,7 +25,8 @@ import java.util.List;
  * Auto Moderation is a feature which allows each guild to set up rules that trigger based on some criteria.
  * For example, a rule can trigger whenever a message contains a specific keyword.
  */
-public interface AutoModerationRule extends ISnowflake {
+public interface AutoModerationRule extends ISnowflake, Comparable<AutoModerationRule>
+{
     /**
      * Returns the Guild that the rule belongs to.
      *

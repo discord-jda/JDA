@@ -59,6 +59,7 @@ import net.dv8tion.jda.internal.utils.cache.SnowflakeCacheViewImpl;
 import net.dv8tion.jda.internal.utils.cache.SortedSnowflakeCacheViewImpl;
 import net.dv8tion.jda.internal.utils.concurrent.task.GatewayTask;
 import okhttp3.RequestBody;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -86,6 +87,7 @@ public class GuildImpl implements Guild
     private final SortedSnowflakeCacheViewImpl<Role> roleCache = new SortedSnowflakeCacheViewImpl<>(Role.class, Role::getName, Comparator.reverseOrder());
     private final SnowflakeCacheViewImpl<Emote> emoteCache = new SnowflakeCacheViewImpl<>(Emote.class, Emote::getName);
     private final MemberCacheViewImpl memberCache = new MemberCacheViewImpl();
+    private final SortedSnowflakeCacheViewImpl<AutoModerationRule> autoModerationRuleCache = new SortedSnowflakeCacheViewImpl<>(AutoModerationRule.class, AutoModerationRule::getName, Comparator.naturalOrder());
     private final CacheView.SimpleCacheView<MemberPresenceImpl> memberPresences;
 
     private GuildManager manager;
@@ -1133,6 +1135,18 @@ public class GuildImpl implements Guild
 
             return Collections.unmodifiableList(list);
         });
+    }
+
+    @NotNull
+    @Override
+    public RestAction<List<AutoModerationRule>> retrieveAutoModerationRules() {
+        //TODO: Implement
+        return null;
+    }
+
+    @Override
+    public SnowflakeCacheView<AutoModerationRule> getAutoModerationRuleCache() {
+        return autoModerationRuleCache;
     }
 
     @Override
