@@ -17,25 +17,68 @@
 package net.dv8tion.jda.api.events.automoderation;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.Event;
-import net.dv8tion.jda.api.entities.AutoModerationRule;
-import org.jetbrains.annotations.NotNull;
+
+import javax.annotation.Nonnull;
+import java.util.List;
 
 public class GenericAutoModerationEvent extends Event {
     protected final AutoModerationRule rule;
 
-    public GenericAutoModerationEvent(@NotNull JDA api, long responseNumber, AutoModerationRule rule) {
+    public GenericAutoModerationEvent(@Nonnull JDA api, long responseNumber, AutoModerationRule rule) {
         super(api, responseNumber);
         this.rule = rule;
     }
 
-    @NotNull
-    public AutoModerationRule getRule() {
-        return rule;
-    }
-
     public Guild getGuild() {
         return rule.getGuild();
+    }
+
+    @Nonnull
+    public String getName() {
+        return rule.getName();
+    }
+
+    @Nonnull
+    public User getUser() {
+        return rule.getUser();
+    }
+
+    @Nonnull
+    public EventType getEventType() {
+        return rule.getEventType();
+    }
+
+    @Nonnull
+    public TriggerType getTriggerType() {
+        return rule.getTriggerType();
+    }
+
+    @Nonnull
+    public TriggerMetadata getTriggerMetadata() {
+        return rule.getTriggerMetadata();
+    }
+
+    @Nonnull
+    public List<AutoModerationAction> getActions() {
+        return rule.getActions();
+    }
+
+    public boolean isEnabled() {
+        return rule.isEnabled();
+    }
+
+    public List<Role> getExemptRoles() {
+        return rule.getExemptRoles();
+    }
+
+    public List<Channel> getExemptChannels() {
+        return rule.getExemptChannels();
+    }
+
+    @Nonnull
+    public AutoModerationRule getRule() {
+        return rule;
     }
 }

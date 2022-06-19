@@ -23,10 +23,11 @@ import java.util.List;
  */
 public interface TriggerMetadata {
     /**
-     * The substring which will be searched for in content
-     *
+     * Returns the substrings which will be searched for in content.
      * <br>
-     * Associated trigger type is KEYWORD
+     * <br> These substrings can be a phrase which contains multiple words. Wildcard symbols ({@code *}) can also be used to customize how each keyword is matched.
+     * <br>
+     * <br> Associated trigger type is {@link net.dv8tion.jda.api.entities.TriggerType#KEYWORD}.
      *
      * @return A {@link java.util.List List} of {@link java.lang.String Strings}
      */
@@ -36,9 +37,9 @@ public interface TriggerMetadata {
      * The internally pre-defined word sets which will be searched for in content.
      *
      * <br>
-     * Associated trigger type is KEYWORD_PRESET
+     * Associated trigger type is {@link net.dv8tion.jda.api.entities.TriggerType#KEYWORD_PRESET}.
      *
      * @return A {@link java.util.List List} of {@link net.dv8tion.jda.api.entities.KeywordPresetType KeywordPresets}
      */
-    List<KeywordPresetType> KeywordPresetType();
+    List<KeywordPresetType> getKeywordPresetTypes();
 }

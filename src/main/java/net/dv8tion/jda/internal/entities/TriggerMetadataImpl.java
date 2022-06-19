@@ -33,7 +33,7 @@ public class TriggerMetadataImpl implements TriggerMetadata {
     }
 
     @Override
-    public List<KeywordPresetType> KeywordPresetType() {
+    public List<KeywordPresetType> getKeywordPresetTypes() {
         return keywordPresets;
     }
 

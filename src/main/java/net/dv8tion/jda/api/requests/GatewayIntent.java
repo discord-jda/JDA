@@ -140,11 +140,11 @@ public enum GatewayIntent
      */
     DIRECT_MESSAGE_TYPING(14),
     /**
-     * Used for auto moderation.
+     * Auto moderation configuration changes.
      */
     AUTO_MODERATION_CONFIGURATION(20),
     /**
-     * Used when executing auto moderation.
+     * Auto moderation rule execution.
      */
     AUTO_MODERATION_EXECUTION(21),
     ;

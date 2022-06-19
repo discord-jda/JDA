@@ -17,32 +17,34 @@
 package net.dv8tion.jda.api.entities;
 
 /**
- * This is basically informs you what cased the auto-moderation system to be triggered.
+ * Represents the type of trigger that can cause an auto moderation rule to be executed.
  */
 public enum TriggerType
 {
     /**
-     * This checks if the content sent by a member contains a specific word.
+     * Checks if the content sent by a member contains a specific word.
      * <br>
      * The max per guild is 3.
      */
     KEYWORD(1, 3),
     /**
-     * As the name suggests it checks for any links which are found to be harmful.
+     * Checks for any harmful links.
      *
+     * This is not released yet.
      * <br>
      * The max per guild is 1.
      */
     HARMFUL_LINK(2, 1),
     /**
-     * This checks for generic spam.
+     * Checks for generic spam.
      *
+     * This is not released yet.
      * <br>
      * The max per guild is 1.
      */
     SPAM(3, 1),
     /**
-     * This check if the content contains words from internal pre-defined word sets
+     * Checks if the content contains words from internally pre-defined word sets.
      *
      * <br>
      * The max per guild is 1.

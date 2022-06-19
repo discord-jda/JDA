@@ -18,75 +18,15 @@ package net.dv8tion.jda.api.events.automoderation;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.AutoModerationRule;
-import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.entities.TriggerType;
-import net.dv8tion.jda.api.entities.User;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Indicates that a {@link net.dv8tion.jda.api.entities.AutoModerationRule AutoModerationRule} was created.
- *
- * <p>Can be used to retrieve the created AutoModerationRule.
+ * Indicates that an {@link net.dv8tion.jda.api.entities.AutoModerationRule AutoModerationRule} was created.
  */
 public class AutoModerationRuleCreateEvent extends GenericAutoModerationEvent {
 
-    private final long ruleId;
-    private final TriggerType triggerType;
-    private final User user;
-    private final TextChannel channel;
-    private final Long messageId;
-    private final Long alertSystemMessageId;
-    private final String content;
-    private final String matchedKeyword;
-    private final String matchedContent;
-
-    public AutoModerationRuleCreateEvent(@NotNull JDA api, long responseNumber, AutoModerationRule rule, long ruleId, TriggerType triggerType, User user, TextChannel channel, Long messageId, Long alertSystemMessageId, String content, String matchedKeyword, String matchedContent) {
+    public AutoModerationRuleCreateEvent(@NotNull JDA api, long responseNumber, AutoModerationRule rule) {
         super(api, responseNumber, rule);
-        this.ruleId = ruleId;
-        this.triggerType = triggerType;
-        this.user = user;
-        this.channel = channel;
-        this.messageId = messageId;
-        this.alertSystemMessageId = alertSystemMessageId;
-        this.content = content;
-        this.matchedKeyword = matchedKeyword;
-        this.matchedContent = matchedContent;
-    }
-
-    public long getRuleId() {
-        return ruleId;
-    }
-
-    public TriggerType getTriggerType() {
-        return triggerType;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public TextChannel getChannel() {
-        return channel;
-    }
-
-    public Long getMessageId() {
-        return messageId;
-    }
-
-    public Long getAlertSystemMessageId() {
-        return alertSystemMessageId;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public String getMatchedKeyword() {
-        return matchedKeyword;
-    }
-
-    public String getMatchedContent() {
-        return matchedContent;
     }
 }
 
