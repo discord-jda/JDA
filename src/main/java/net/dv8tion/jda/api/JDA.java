@@ -986,7 +986,7 @@ public interface JDA extends IGuildChannelContainer
      * Attempts to retrieve a {@link net.dv8tion.jda.api.entities.User User} object based on the provided id.
      *
      * <p>If {@link #getUserById(long)} is cached, this will directly return the user in a completed {@link RestAction} without making a request.
-     * When the both {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_PRESENCES GUILD_PRESENCES} and {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MEMBERS GUILD_MEMBERS} intents
+     * When both {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_PRESENCES GUILD_PRESENCES} and {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MEMBERS GUILD_MEMBERS} intents
      * are disabled this will always make a request even if the user is cached.
      * You can use {@link CacheRestAction#useCache(boolean) action.useCache(false)} to force an update.
      *
@@ -1022,7 +1022,7 @@ public interface JDA extends IGuildChannelContainer
      * Attempts to retrieve a {@link net.dv8tion.jda.api.entities.User User} object based on the provided id.
      *
      * <p>If {@link #getUserById(long)} is cached, this will directly return the user in a completed {@link RestAction} without making a request.
-     * When the both {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_PRESENCES GUILD_PRESENCES} and {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MEMBERS GUILD_MEMBERS} intents
+     * When both {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_PRESENCES GUILD_PRESENCES} and {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MEMBERS GUILD_MEMBERS} intents
      * are disabled this will always make a request even if the user is cached.
      * You can use {@link CacheRestAction#useCache(boolean) action.useCache(false)} to force an update.
      *
