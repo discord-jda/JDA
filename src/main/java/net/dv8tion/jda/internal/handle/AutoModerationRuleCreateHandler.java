@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.automoderation.AutoModerationRuleCreateEvent;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
+import net.dv8tion.jda.internal.entities.GuildImpl;
 
 public class AutoModerationRuleCreateHandler extends SocketHandler {
 
@@ -31,11 +32,12 @@ public class AutoModerationRuleCreateHandler extends SocketHandler {
     protected Long handleInternally(DataObject dataObject) {
 
         long guildId = dataObject.getLong("guild_id");
-        JDAImpl jda = getJDA();
+        if (api.getGuildSetupController().isLocked(guildId))
+            return guildId;
 
-        AutoModerationRule action = jda.getEntityBuilder().createAutoModerationRule(guildId, dataObject.getObject("action"));
+        AutoModerationRule action = api.getEntityBuilder().createAutoModerationRule((GuildImpl) api.getGuildById(guildId), dataObject.getObject("action"));
 
-        jda.handleEvent(new AutoModerationRuleCreateEvent(jda, responseNumber, action));
+        api.handleEvent(new AutoModerationRuleCreateEvent(api, responseNumber, action));
         return null;
     }
 }

@@ -566,7 +566,7 @@ public enum AuditLogKey
      *
      * <p>Expected type: <b>String</b>
      */
-    AUTO_MODERATION_GUILD_ID("guild_id"),
+    AUTO_MODERATION_GUILD("guild_id"),
 
     /**
      * The name of the auto moderation rule that was created/updated/deleted.
@@ -576,11 +576,11 @@ public enum AuditLogKey
     AUTO_MODERATION_RULE_NAME("name"),
 
     /**
-     * The name of the user who created/updated/deleted the auto moderation rule.
+     * The user who created/updated/deleted the auto moderation rule.
      *
      * <p>Expected type: <b>String</b>
      */
-    AUTO_MODERATION_CREATOR("user"),
+    AUTO_MODERATION_CREATOR("user_id"),
 
     /**
      * The event that will cause the auto moderation system to check for a specific trigger.

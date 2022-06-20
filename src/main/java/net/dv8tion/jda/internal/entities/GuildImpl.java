@@ -1273,7 +1273,7 @@ public class GuildImpl implements Guild
     public RestAction<AutoModerationRule> retrieveAutoModerationRule(String id) {
         Checks.isSnowflake(id);
         Route.CompiledRoute route = Route.AutoModeration.GET_AUTO_MODERATION_RULE.compile(getId(), id);
-        return new RestActionImpl<>(getJDA(), route, (response, request) -> getJDA().getEntityBuilder().createAutoModerationRule(Long.parseUnsignedLong(id), response.getObject()));
+        return new RestActionImpl<>(getJDA(), route, (response, request) -> getJDA().getEntityBuilder().createAutoModerationRule(this, response.getObject()));
     }
 
     @NotNull
@@ -1289,7 +1289,7 @@ public class GuildImpl implements Guild
             for (int i = 0; i < array.length(); i++) {
                 try {
                     final DataObject object = array.getObject(i);
-                    autoModerationRules.add(builder.createAutoModerationRule(object.getLong("guild_id"), object));
+                    autoModerationRules.add(builder.createAutoModerationRule(this, object));
                 }
                 catch (Exception e) {
                     JDAImpl.LOG.error("Error creating auto moderation rule object from json", e);

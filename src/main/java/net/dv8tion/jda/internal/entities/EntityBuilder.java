@@ -2228,9 +2228,10 @@ public class EntityBuilder
         return new AuditLogChange(oldValue, newValue, key);
     }
 
-    public AutoModerationRule createAutoModerationRule(long guildId, DataObject object) {
+    public AutoModerationRule createAutoModerationRule(GuildImpl guild, DataObject object) {
         final long id = object.getLong("id");
         final String name = object.getString("name");
+        final User user = api.getUserById(object.getString("user_id"));
         final EventType eventType = EventType.fromValue(object.getInt("event_type"));
         final TriggerType triggerType = TriggerType.fromValue(object.getInt("trigger_type"));
         final TriggerMetadata triggerMetadata = createTriggerMetadata(object.getObject("trigger_metadata"));
@@ -2238,8 +2239,6 @@ public class EntityBuilder
         final boolean isEnabled = object.getBoolean("enabled");
         final DataArray exemptRoleArray = object.getArray("exempt_roles");
         final DataArray exemptChannelArray = object.getArray("exempt_channels");
-
-        GuildImpl guild = (GuildImpl) getJDA().getGuildsView().get(guildId);
 
         final List<Role> exemptRoles = new ArrayList<>();
         for (int i = 0; i < exemptRoleArray.length(); i++)
@@ -2266,7 +2265,9 @@ public class EntityBuilder
             actions.add(createAutoModerationAction(guild, actionArray.getObject(i)));
 
         return new AutoModerationRuleImpl(id)
+                .setGuild(guild)
                 .setName(name)
+                .setUser(user)
                 .setEventType(eventType)
                 .setTriggerType(triggerType)
                 .setTriggerMetadata(triggerMetadata)
