@@ -1302,23 +1302,36 @@ public class GuildImpl implements Guild
 
     @NotNull
     @Override
-    public RestAction<AutoModerationRule> createAutoModerationRule(@NotNull String name, @NotNull EventType eventType, @NotNull TriggerType triggerType, @Nullable TriggerMetadata triggerMetadata, @NotNull List<AutoModerationAction> actions, boolean enabled, @Nullable List<Role> exemptRoles, @Nullable List<Channel> exemptChannel) {
+    public RestAction<AutoModerationRule> createAutoModerationRule(@Nonnull String name, @Nonnull EventType eventType, @Nonnull TriggerType triggerType, @Nullable TriggerMetadata triggerMetadata, @Nonnull List<AutoModerationAction> actions, boolean enabled, @Nullable List<Role> exemptRoles, @Nullable List<Channel> exemptChannel) {
         checkPermission(Permission.MANAGE_SERVER);
         Checks.notBlank(name, "Name");
         Checks.notNull(eventType, "Event type");
         Checks.notNull(triggerType, "Trigger type");
-
-        name = name.trim();
-
-        Checks.notLonger(name, 100, "Name");
-        if (description != null)
-            Checks.notLonger(description, 120, "Description");
+        Checks.notNull(actions, "Actions");
+        Checks.check(actions.size() > 0, "Actions must contain at least one action");
 
         final Route.CompiledRoute route = Route.AutoModeration.CREATE_AUTO_MODERATION_RULE.compile(getId());
 
         DataObject object = DataObject.empty();
         object.put("name", name);
         object.put("event_type", eventType.getValue());
+        object.put("trigger_type", triggerType.getValue());
+        if (triggerMetadata != null)
+            object.put("trigger_metadata", triggerMetadata);
+        object.put("actions", actions);
+        object.put("enabled", enabled);
+
+        if (exemptRoles != null && exemptRoles.size() >= 20) {
+            object.put("exempt_roles", exemptRoles);
+        } else if (exemptRoles != null) {
+            throw new IllegalArgumentException("Exempt roles must be at least 20 in size");
+        }
+
+        if (exemptChannel != null && exemptChannel.size() > 50) {
+            object.put("exempt_channels", exemptChannel);
+        } else if (exemptChannel != null) {
+            throw new IllegalArgumentException("Exempt channels must be at least 50 in size");
+        }
 
         return new RestActionImpl<>(getJDA(), route, object, (response, request) ->
         {
