@@ -1343,6 +1343,7 @@ public class GuildImpl implements Guild
     @NotNull
     @Override
     public RestAction<AutoModerationRule> modifyAutoModerationRule(@NotNull String name, @NotNull EventType eventType, @Nullable TriggerMetadata triggerMetadata, @NotNull List<AutoModerationAction> actions, boolean enabled, @NotNull List<Role> exemptRoles, @NotNull List<Channel> exemptChannel) {
+        //TODO: Implement
         return null;
     }
 
