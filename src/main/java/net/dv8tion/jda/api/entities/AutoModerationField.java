@@ -67,7 +67,7 @@ public enum AutoModerationField {
     TRIGGER_METADATA("trigger_metadata", AuditLogKey.AUTO_MODERATION_TRIGGER_METADATA),
 
     /**
-     * The {@link List<AutoModerationAction> actions} that should be executed when the rule is triggered.
+     * The List of {@link AutoModerationAction actions} that should be executed when the rule is triggered.
      *
      * @see AutoModerationRule#getActions()
      */
