@@ -3242,6 +3242,20 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     RestAction<List<AutoModerationRule>> retrieveAutoModerationRules();
 
     /**
+     * This can be used to create a {@link AutoModerationRule rule} for this guild.
+     */
+    @Nonnull
+    RestAction<AutoModerationRule> createAutoModerationRule(@Nonnull String name, @Nonnull EventType eventType, @Nonnull TriggerType triggerType, @Nullable TriggerMetadata triggerMetadata,
+                                                            @Nonnull List<AutoModerationAction> actions, boolean enabled, @Nullable List<Role> exemptRoles, @Nullable List<Channel> exemptChannel);
+
+    /**
+     * This can be used to modify an existing {@link AutoModerationRule rule} for this guild.
+     */
+    @Nonnull
+    RestAction<AutoModerationRule> modifyAutoModerationRule(@Nonnull String name, @Nonnull EventType eventType, @Nullable TriggerMetadata triggerMetadata,
+                                                            @Nonnull List<AutoModerationAction> actions, boolean enabled, @Nonnull List<Role> exemptRoles, @Nonnull List<Channel> exemptChannel);
+
+    /**
      * Deletes an auto moderation rule from this guild.
      *
      * @param id The id of the rule to delete.

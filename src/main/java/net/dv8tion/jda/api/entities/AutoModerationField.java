@@ -81,14 +81,14 @@ public enum AutoModerationField {
     ENABLED("enabled", AuditLogKey.AUTO_MODERATION_ENABLED),
 
     /**
-     * The exempt {@link List<Role> roles} from this rule.
+     * The exempt List of {@link Role roles} for this rule.
      *
      * @see AutoModerationRule#getExemptRoles()
      */
     EXEMPT_ROLES("exempt_roles", AuditLogKey.AUTO_MODERATION_EXEMPT_ROLES),
 
     /**
-     * The exempt {@link List<String> channels} from this rule.
+     * The exempt List of {@link Channel channels} for this rule.
      *
      * @see AutoModerationRule#getExemptChannels()
      */

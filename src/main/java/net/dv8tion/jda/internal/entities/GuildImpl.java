@@ -1300,6 +1300,39 @@ public class GuildImpl implements Guild
         });
     }
 
+    @NotNull
+    @Override
+    public RestAction<AutoModerationRule> createAutoModerationRule(@NotNull String name, @NotNull EventType eventType, @NotNull TriggerType triggerType, @Nullable TriggerMetadata triggerMetadata, @NotNull List<AutoModerationAction> actions, boolean enabled, @Nullable List<Role> exemptRoles, @Nullable List<Channel> exemptChannel) {
+        checkPermission(Permission.MANAGE_SERVER);
+        Checks.notBlank(name, "Name");
+        Checks.notNull(eventType, "Event type");
+        Checks.notNull(triggerType, "Trigger type");
+
+        name = name.trim();
+
+        Checks.notLonger(name, 100, "Name");
+        if (description != null)
+            Checks.notLonger(description, 120, "Description");
+
+        final Route.CompiledRoute route = Route.AutoModeration.CREATE_AUTO_MODERATION_RULE.compile(getId());
+
+        DataObject object = DataObject.empty();
+        object.put("name", name);
+        object.put("event_type", eventType.getValue());
+
+        return new RestActionImpl<>(getJDA(), route, object, (response, request) ->
+        {
+            EntityBuilder entityBuilder = api.getEntityBuilder();
+            return entityBuilder.createAutoModerationRule(this, response.getObject());
+        });
+    }
+
+    @NotNull
+    @Override
+    public RestAction<AutoModerationRule> modifyAutoModerationRule(@NotNull String name, @NotNull EventType eventType, @Nullable TriggerMetadata triggerMetadata, @NotNull List<AutoModerationAction> actions, boolean enabled, @NotNull List<Role> exemptRoles, @NotNull List<Channel> exemptChannel) {
+        return null;
+    }
+
     @Override
     public RestActionImpl<Object> deleteAutoModerationRuleById(String id) {
         Checks.isSnowflake(id);

@@ -538,7 +538,7 @@ public enum ActionType
      * <h4>Possible Keys</h4>
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#ID ID}</li>
-     *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#AUTO_MODERATION_GUILD_ID GUILD}</li>
+     *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#AUTO_MODERATION_GUILD GUILD}</li>
      *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#AUTO_MODERATION_RULE_NAME RULE_NAME}</li>
      *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#AUTO_MODERATION_CREATOR CREATOR}</li>
      *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#AUTO_MODERATION_EVENT_TYPE EVENT_TYPE}</li>
@@ -558,7 +558,7 @@ public enum ActionType
      * <h4>Possible Keys</h4>
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#ID ID}</li>
-     *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#AUTO_MODERATION_GUILD_ID GUILD}</li>
+     *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#AUTO_MODERATION_GUILD GUILD}</li>
      *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#AUTO_MODERATION_RULE_NAME RULE_NAME}</li>
      *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#AUTO_MODERATION_CREATOR CREATOR}</li>
      *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#AUTO_MODERATION_EVENT_TYPE EVENT_TYPE}</li>
@@ -578,7 +578,7 @@ public enum ActionType
      * <h4>Possible Keys</h4>
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#ID ID}</li>
-     *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#AUTO_MODERATION_GUILD_ID GUILD}</li>
+     *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#AUTO_MODERATION_GUILD GUILD}</li>
      *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#AUTO_MODERATION_RULE_NAME RULE_NAME}</li>
      *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#AUTO_MODERATION_CREATOR CREATOR}</li>
      *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#AUTO_MODERATION_EVENT_TYPE EVENT_TYPE}</li>
