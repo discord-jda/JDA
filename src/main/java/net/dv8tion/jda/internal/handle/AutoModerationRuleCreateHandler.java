@@ -22,14 +22,17 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 
-public class AutoModerationRuleCreateHandler extends SocketHandler {
+public class AutoModerationRuleCreateHandler extends SocketHandler
+{
 
-    public AutoModerationRuleCreateHandler(JDAImpl api) {
+    public AutoModerationRuleCreateHandler(JDAImpl api)
+    {
         super(api);
     }
 
     @Override
-    protected Long handleInternally(DataObject dataObject) {
+    protected Long handleInternally(DataObject dataObject)
+    {
 
         long guildId = dataObject.getLong("guild_id");
         if (api.getGuildSetupController().isLocked(guildId))

@@ -23,14 +23,17 @@ import net.dv8tion.jda.api.entities.AutoModerationRule;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.requests.WebSocketClient;
 
-public class AutoModerationRuleDeleteHandler extends SocketHandler {
+public class AutoModerationRuleDeleteHandler extends SocketHandler
+{
 
-    public AutoModerationRuleDeleteHandler(JDAImpl api) {
+    public AutoModerationRuleDeleteHandler(JDAImpl api)
+    {
         super(api);
     }
 
     @Override
-    protected Long handleInternally(DataObject content) {
+    protected Long handleInternally(DataObject content)
+    {
 
         long guildId = content.getLong("guild_id");
         if (getJDA().getGuildSetupController().isLocked(guildId))
@@ -41,7 +44,8 @@ public class AutoModerationRuleDeleteHandler extends SocketHandler {
         long ruleId = content.getLong("id");
         AutoModerationRule rule = guild.getAutoModerationRulesView().remove(ruleId);
 
-        if (rule == null || guild == null) {
+        if (rule == null || guild == null)
+        {
             WebSocketClient.LOG.debug("AUTO_MODERATION_RULE_DELETE attempted to delete an auto moderation rule that is not yet cached. JSON: {}", content);
             return null;
         }
