@@ -1282,6 +1282,7 @@ public class GuildImpl implements Guild
     public RestAction<List<AutoModerationRule>> retrieveAutoModerationRules()
     {
         Route.CompiledRoute route = Route.AutoModeration.GET_AUTO_MODERATION_RULES.compile(getId());
+
         return new RestActionImpl<>(getJDA(), route, (response, request) -> {
             DataArray array = response.getArray();
             List<AutoModerationRule> autoModerationRules = new ArrayList<>(array.length());
@@ -1303,8 +1304,7 @@ public class GuildImpl implements Guild
 
     @NotNull
     @Override
-    public RestAction<AutoModerationRule> createAutoModerationRule(@Nonnull String name, @Nonnull EventType eventType, @Nonnull TriggerType triggerType, @Nullable TriggerMetadata triggerMetadata, @Nonnull List<AutoModerationAction> actions,
-                                                                   boolean enabled, @Nullable List<Role> exemptRoles, @Nullable List<Channel> exemptChannel)
+    public AuditableRestAction<AutoModerationRule> createAutoModerationRule(@Nonnull String name, @Nonnull EventType eventType, @Nonnull TriggerType triggerType, @Nullable TriggerMetadata triggerMetadata, @Nonnull List<AutoModerationAction> actions, boolean enabled, @Nullable List<Role> exemptRoles, @Nullable List<Channel> exemptChannel)
     {
         checkPermission(Permission.MANAGE_SERVER);
         Checks.notBlank(name, "Name");
@@ -1336,7 +1336,7 @@ public class GuildImpl implements Guild
             throw new IllegalArgumentException("Exempt channels must be at least 50 in size");
         }
 
-        return new RestActionImpl<>(getJDA(), route, object, (response, request) ->
+        return new AuditableRestActionImpl<>(getJDA(), route, object, (response, request) ->
         {
             EntityBuilder entityBuilder = api.getEntityBuilder();
             return entityBuilder.createAutoModerationRule(this, response.getObject());
@@ -1345,61 +1345,94 @@ public class GuildImpl implements Guild
 
     @NotNull
     @Override
-    public RestAction<AutoModerationRule> modifyAutoModerationRuleName(String ruleId, String name)
+    public AuditableRestAction<AutoModerationRule> modifyAutoModerationRuleName(@Nonnull String ruleId, @Nonnull String name)
     {
         checkPermission(Permission.MANAGE_SERVER);
         Checks.notBlank(ruleId, "Rule Id");
         Checks.notBlank(name, "Name");
-        return null;
+
+        final Route.CompiledRoute route = Route.AutoModeration.MODIFY_AUTO_MODERATION_RULE.compile(getId(), ruleId);
+        DataObject object = DataObject.empty();
+        object.put("name", name);
+
+        return new AuditableRestActionImpl<>(getJDA(), route, object);
     }
 
     @Override
-    public RestAction<AutoModerationRule> modifyAutoModerationRuleEventType(String ruleId, EventType eventType)
+    public AuditableRestAction<AutoModerationRule> modifyAutoModerationRuleEventType(@Nonnull String ruleId, @Nonnull EventType eventType)
     {
         checkPermission(Permission.MANAGE_SERVER);
         Checks.notBlank(ruleId, "Rule Id");
         Checks.notNull(eventType, "Event Type");
-        return null;
+
+        final Route.CompiledRoute route = Route.AutoModeration.MODIFY_AUTO_MODERATION_RULE.compile(getId(), ruleId);
+        DataObject object = DataObject.empty();
+        object.put("event_type", eventType.getValue());
+
+        return new AuditableRestActionImpl<>(getJDA(), route, object);
     }
 
     @Override
-    public RestAction<AutoModerationRule> modifyAutoModerationRuleActions(String ruleId, List<AutoModerationAction> actions)
+    public AuditableRestAction<AutoModerationRule> modifyAutoModerationRuleActions(@Nonnull String ruleId, @Nonnull List<AutoModerationAction> actions)
     {
         checkPermission(Permission.MANAGE_SERVER);
         Checks.notBlank(ruleId, "Rule Id");
-        return null;
+        Checks.notEmpty(actions, "Actions");
+
+        final Route.CompiledRoute route = Route.AutoModeration.MODIFY_AUTO_MODERATION_RULE.compile(getId(), ruleId);
+        DataObject object = DataObject.empty();
+        object.put("actions", actions);
+
+        return new AuditableRestActionImpl<>(getJDA(), route, object);
     }
 
     @Override
-    public RestAction<AutoModerationRule> modifyAutoModerationStatus(String ruleId, boolean enabled)
+    public AuditableRestAction<AutoModerationRule> modifyAutoModerationStatus(@Nonnull String ruleId, boolean enabled)
     {
         checkPermission(Permission.MANAGE_SERVER);
         Checks.notBlank(ruleId, "Rule Id");
-        return null;
+
+        final Route.CompiledRoute route = Route.AutoModeration.MODIFY_AUTO_MODERATION_RULE.compile(getId(), ruleId);
+        DataObject object = DataObject.empty();
+        object.put("enabled", enabled);
+
+        return new AuditableRestActionImpl<>(getJDA(), route, object);
     }
 
     @Override
-    public RestAction<AutoModerationRule> modifyAutoModerationExemptRoles(String ruleId, List<Role> roles)
+    public AuditableRestAction<AutoModerationRule> modifyAutoModerationExemptRoles(@Nonnull String ruleId, @Nonnull List<Role> roles)
     {
         checkPermission(Permission.MANAGE_SERVER);
         Checks.notBlank(ruleId, "Rule Id");
-        return null;
+        Checks.notEmpty(roles, "Roles");
+
+        final Route.CompiledRoute route = Route.AutoModeration.MODIFY_AUTO_MODERATION_RULE.compile(getId(), ruleId);
+        DataObject object = DataObject.empty();
+        object.put("exempt_roles", roles);
+
+        return new AuditableRestActionImpl<>(getJDA(), route, object);
     }
 
     @Override
-    public RestAction<AutoModerationRule> modifyAutoModerationExemptChannels(String ruleId, List<Channel> roles)
+    public AuditableRestAction<AutoModerationRule> modifyAutoModerationExemptChannels(@Nonnull String ruleId, @Nonnull List<Channel> channels)
     {
         checkPermission(Permission.MANAGE_SERVER);
         Checks.notBlank(ruleId, "Rule Id");
-        return null;
+        Checks.notEmpty(channels, "Channels");
+
+        final Route.CompiledRoute route = Route.AutoModeration.MODIFY_AUTO_MODERATION_RULE.compile(getId(), ruleId);
+        DataObject object = DataObject.empty();
+        object.put("exempt_channels", channels);
+
+        return new AuditableRestActionImpl<>(getJDA(), route, object);
     }
 
 
     @Override
-    public RestActionImpl<Object> deleteAutoModerationRuleById(String id) {
+    public AuditableRestAction<Void> deleteAutoModerationRuleById(@Nonnull String id) {
         Checks.isSnowflake(id);
         Route.CompiledRoute route = Route.AutoModeration.DELETE_AUTO_MODERATION_RULE.compile(getId(), id);
-        return new RestActionImpl<>(getJDA(), route);
+        return new AuditableRestActionImpl<>(getJDA(), route);
     }
 
     @Override
