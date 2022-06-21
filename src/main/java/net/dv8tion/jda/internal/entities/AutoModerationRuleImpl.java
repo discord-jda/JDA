@@ -22,7 +22,8 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 import java.util.Objects;
 
-public class AutoModerationRuleImpl implements AutoModerationRule {
+public class AutoModerationRuleImpl implements AutoModerationRule
+{
 
     private final long id;
 
@@ -37,124 +38,147 @@ public class AutoModerationRuleImpl implements AutoModerationRule {
     private List<Role> roles;
     private List<Channel> channels;
 
-    public AutoModerationRuleImpl(long id) {
+    public AutoModerationRuleImpl(long id)
+    {
         this.id = id;
     }
 
     @NotNull
     @Override
-    public Guild getGuild() {
+    public Guild getGuild()
+    {
         return guild;
     }
 
-    @NotNull
-    @Override
-    public String getName() {
-        return name;
-    }
-
-    @NotNull
-    @Override
-    public User getUser() {
-        return user;
-    }
-
-    @NotNull
-    @Override
-    public EventType getEventType() {
-        return eventType;
-    }
-
-    @NotNull
-    @Override
-    public TriggerType getTriggerType() {
-        return triggerType;
-    }
-
-    @NotNull
-    @Override
-    public TriggerMetadata getTriggerMetadata() {
-        return triggerMetadata;
-    }
-
-    @NotNull
-    @Override
-    public List<AutoModerationAction> getActions() {
-        return actions;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return enabled;
-    }
-
-    @Override
-    public List<Role> getExemptRoles() {
-        return roles;
-    }
-
-    @Override
-    public List<Channel> getExemptChannels() {
-        return channels;
-    }
-
-    @Override
-    public long getIdLong() {
-        return id;
-    }
-
-    public AutoModerationRuleImpl setGuild(Guild guild) {
+    public AutoModerationRuleImpl setGuild(Guild guild)
+    {
         this.guild = guild;
         return this;
     }
 
-    public AutoModerationRuleImpl setName(String name) {
+    @NotNull
+    @Override
+    public String getName()
+    {
+        return name;
+    }
+
+    public AutoModerationRuleImpl setName(String name)
+    {
         this.name = name;
         return this;
     }
 
-    public AutoModerationRuleImpl setUser(User user) {
+    @NotNull
+    @Override
+    public User getUser()
+    {
+        return user;
+    }
+
+    public AutoModerationRuleImpl setUser(User user)
+    {
         this.user = user;
         return this;
     }
 
-    public AutoModerationRuleImpl setEventType(EventType eventType) {
+    @NotNull
+    @Override
+    public EventType getEventType()
+    {
+        return eventType;
+    }
+
+    public AutoModerationRuleImpl setEventType(EventType eventType)
+    {
         this.eventType = eventType;
         return this;
     }
 
-    public AutoModerationRuleImpl setTriggerType(TriggerType triggerType) {
+    @NotNull
+    @Override
+    public TriggerType getTriggerType()
+    {
+        return triggerType;
+    }
+
+    public AutoModerationRuleImpl setTriggerType(TriggerType triggerType)
+    {
         this.triggerType = triggerType;
         return this;
     }
 
-    public AutoModerationRuleImpl setTriggerMetadata(TriggerMetadata triggerMetadata) {
+    @NotNull
+    @Override
+    public TriggerMetadata getTriggerMetadata()
+    {
+        return triggerMetadata;
+    }
+
+    public AutoModerationRuleImpl setTriggerMetadata(TriggerMetadata triggerMetadata)
+    {
         this.triggerMetadata = triggerMetadata;
         return this;
     }
 
-    public AutoModerationRuleImpl setActions(List<AutoModerationAction> actions) {
+    @NotNull
+    @Override
+    public List<AutoModerationAction> getActions()
+    {
+        return actions;
+    }
+
+    public AutoModerationRuleImpl setActions(List<AutoModerationAction> actions)
+    {
         this.actions = actions;
         return this;
     }
 
-    public AutoModerationRuleImpl setEnabled(boolean enabled) {
+    @Override
+    public boolean isEnabled()
+    {
+        return enabled;
+    }
+
+    public AutoModerationRuleImpl setEnabled(boolean enabled)
+    {
         this.enabled = enabled;
         return this;
     }
 
-    public AutoModerationRuleImpl setExemptRoles(List<Role> roles) {
+    @Override
+    public List<Role> getExemptRoles()
+    {
+        return roles;
+    }
+
+    public AutoModerationRuleImpl setExemptRoles(List<Role> roles)
+    {
         this.roles = roles;
         return this;
     }
 
-    public AutoModerationRuleImpl setExemptChannels(List<Channel> channels) {
+    @Override
+    public List<Channel> getExemptChannels()
+    {
+        return channels;
+    }
+
+    public AutoModerationRuleImpl setExemptChannels(List<Channel> channels)
+    {
         this.channels = channels;
         return this;
     }
 
     @Override
-    public boolean equals(Object o) {
+    public long getIdLong()
+    {
+        return id;
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         AutoModerationRuleImpl that = (AutoModerationRuleImpl) o;
@@ -162,7 +186,8 @@ public class AutoModerationRuleImpl implements AutoModerationRule {
     }
 
     @Override
-    public int hashCode() {
+    public int hashCode()
+    {
         return Objects.hash(id, guild, name, user, eventType, triggerType, triggerMetadata, actions, enabled, roles, channels);
     }
 
@@ -185,7 +210,8 @@ public class AutoModerationRuleImpl implements AutoModerationRule {
     }
 
     @Override
-    public int compareTo(@NotNull AutoModerationRule o) {
+    public int compareTo(@NotNull AutoModerationRule o)
+    {
         return Long.compare(id, o.getIdLong());
     }
 }

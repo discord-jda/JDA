@@ -1270,7 +1270,8 @@ public class GuildImpl implements Guild
 
     @NotNull
     @Override
-    public RestAction<AutoModerationRule> retrieveAutoModerationRule(String id) {
+    public RestAction<AutoModerationRule> retrieveAutoModerationRule(String id)
+    {
         Checks.isSnowflake(id);
         Route.CompiledRoute route = Route.AutoModeration.GET_AUTO_MODERATION_RULE.compile(getId(), id);
         return new RestActionImpl<>(getJDA(), route, (response, request) -> getJDA().getEntityBuilder().createAutoModerationRule(this, response.getObject()));
@@ -1302,7 +1303,9 @@ public class GuildImpl implements Guild
 
     @NotNull
     @Override
-    public RestAction<AutoModerationRule> createAutoModerationRule(@Nonnull String name, @Nonnull EventType eventType, @Nonnull TriggerType triggerType, @Nullable TriggerMetadata triggerMetadata, @Nonnull List<AutoModerationAction> actions, boolean enabled, @Nullable List<Role> exemptRoles, @Nullable List<Channel> exemptChannel) {
+    public RestAction<AutoModerationRule> createAutoModerationRule(@Nonnull String name, @Nonnull EventType eventType, @Nonnull TriggerType triggerType, @Nullable TriggerMetadata triggerMetadata, @Nonnull List<AutoModerationAction> actions,
+                                                                   boolean enabled, @Nullable List<Role> exemptRoles, @Nullable List<Channel> exemptChannel)
+    {
         checkPermission(Permission.MANAGE_SERVER);
         Checks.notBlank(name, "Name");
         Checks.notNull(eventType, "Event type");
@@ -1342,10 +1345,55 @@ public class GuildImpl implements Guild
 
     @NotNull
     @Override
-    public RestAction<AutoModerationRule> modifyAutoModerationRule(@NotNull String name, @NotNull EventType eventType, @Nullable TriggerMetadata triggerMetadata, @NotNull List<AutoModerationAction> actions, boolean enabled, @NotNull List<Role> exemptRoles, @NotNull List<Channel> exemptChannel) {
-        //TODO: Implement
+    public RestAction<AutoModerationRule> modifyAutoModerationRuleName(String ruleId, String name)
+    {
+        checkPermission(Permission.MANAGE_SERVER);
+        Checks.notBlank(ruleId, "Rule Id");
+        Checks.notBlank(name, "Name");
         return null;
     }
+
+    @Override
+    public RestAction<AutoModerationRule> modifyAutoModerationRuleEventType(String ruleId, EventType eventType)
+    {
+        checkPermission(Permission.MANAGE_SERVER);
+        Checks.notBlank(ruleId, "Rule Id");
+        Checks.notNull(eventType, "Event Type");
+        return null;
+    }
+
+    @Override
+    public RestAction<AutoModerationRule> modifyAutoModerationRuleActions(String ruleId, List<AutoModerationAction> actions)
+    {
+        checkPermission(Permission.MANAGE_SERVER);
+        Checks.notBlank(ruleId, "Rule Id");
+        return null;
+    }
+
+    @Override
+    public RestAction<AutoModerationRule> modifyAutoModerationStatus(String ruleId, boolean enabled)
+    {
+        checkPermission(Permission.MANAGE_SERVER);
+        Checks.notBlank(ruleId, "Rule Id");
+        return null;
+    }
+
+    @Override
+    public RestAction<AutoModerationRule> modifyAutoModerationExemptRoles(String ruleId, List<Role> roles)
+    {
+        checkPermission(Permission.MANAGE_SERVER);
+        Checks.notBlank(ruleId, "Rule Id");
+        return null;
+    }
+
+    @Override
+    public RestAction<AutoModerationRule> modifyAutoModerationExemptChannels(String ruleId, List<Channel> roles)
+    {
+        checkPermission(Permission.MANAGE_SERVER);
+        Checks.notBlank(ruleId, "Rule Id");
+        return null;
+    }
+
 
     @Override
     public RestActionImpl<Object> deleteAutoModerationRuleById(String id) {
@@ -1356,7 +1404,8 @@ public class GuildImpl implements Guild
 
     @Override
     @Nonnull
-    public SnowflakeCacheView<AutoModerationRule> getAutoModerationRuleCache() {
+    public SnowflakeCacheView<AutoModerationRule> getAutoModerationRuleCache()
+    {
         return autoModerationRuleCache;
     }
 
@@ -2280,7 +2329,9 @@ public class GuildImpl implements Guild
         return memberCache;
     }
 
-    public SortedSnowflakeCacheViewImpl<AutoModerationRule> getAutoModerationRulesView() {
+    public SortedSnowflakeCacheViewImpl<AutoModerationRule> getAutoModerationRulesView()
+    {
+
         return autoModerationRuleCache;
     }
 

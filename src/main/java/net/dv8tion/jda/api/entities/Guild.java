@@ -3206,6 +3206,11 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
         return getAutoModerationRuleCache().getElementById(id);
     }
 
+    /**
+     * Gets the auto moderation rule from the cache.
+     *
+     * @return The auto moderation rule, or {@code null} if it does not exist.
+     */
     @Nullable
     default AutoModerationRule getAutoModerationRuleById(@Nonnull String id) {
         return getAutoModerationRuleCache().getElementById(id);
@@ -3229,6 +3234,11 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     @Nonnull
     RestAction<AutoModerationRule> retrieveAutoModerationRule(String id);
 
+    /**
+     * Retrieves a list of the auto moderation rules which are configured for this guild.
+     *
+     * @return A list of auto moderation rule objects for the given guild.
+     */
     default RestAction<AutoModerationRule> retrieveAutoModerationRule(long id) {
         return retrieveAutoModerationRule(Long.toUnsignedString(id));
     }
@@ -3249,11 +3259,96 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
                                                             @Nonnull List<AutoModerationAction> actions, boolean enabled, @Nullable List<Role> exemptRoles, @Nullable List<Channel> exemptChannel);
 
     /**
-     * This can be used to modify an existing {@link AutoModerationRule rule} for this guild.
+     * This can be used to modify an existing {@link AutoModerationRule rule's} name which is in this guild.
+     *
+     * @return an auto moderation rule.
      */
     @Nonnull
-    RestAction<AutoModerationRule> modifyAutoModerationRule(@Nonnull String name, @Nonnull EventType eventType, @Nullable TriggerMetadata triggerMetadata,
-                                                            @Nonnull List<AutoModerationAction> actions, boolean enabled, @Nonnull List<Role> exemptRoles, @Nonnull List<Channel> exemptChannel);
+    RestAction<AutoModerationRule> modifyAutoModerationRuleName(@Nonnull String ruleId, @Nonnull String name);
+
+    /**
+     * This can be used to modify an existing {@link AutoModerationRule rule's} name which is in this guild.
+     *
+     * @return an auto moderation rule.
+     */
+    default RestAction<AutoModerationRule> modifyAutoModerationRuleName(long ruleId, @Nonnull String name) {
+        return modifyAutoModerationRuleName(Long.toUnsignedString(ruleId), name);
+    }
+
+    /**
+     * This can be used to modify an existing {@link AutoModerationRule rule's} event type which is in this guild.
+     *
+     * @return an auto moderation rule.
+     */
+    RestAction<AutoModerationRule> modifyAutoModerationRuleEventType(@Nonnull String ruleId, @Nonnull EventType eventType);
+
+    /**
+     * This can be used to modify an existing {@link AutoModerationRule rule's} event type which is in this guild.
+     *
+     * @return an auto moderation rule.
+     */
+    default RestAction<AutoModerationRule> modifyAutoModerationRuleEventType(long ruleId, @Nonnull EventType eventType) {
+        return modifyAutoModerationRuleEventType(Long.toUnsignedString(ruleId), eventType);
+    }
+
+    /**
+     * This can be used to modify an existing {@link AutoModerationRule rule's} actions which is in this guild.
+     *
+     * @return an auto moderation rule.
+     */
+    RestAction<AutoModerationRule> modifyAutoModerationRuleActions(@Nonnull String ruleId, @Nonnull List<AutoModerationAction> actions);
+
+    default RestAction<AutoModerationRule> modifyAutoModerationRuleActions(long ruleId, @Nonnull List<AutoModerationAction> actions) {
+        return modifyAutoModerationRuleActions(Long.toUnsignedString(ruleId), actions);
+    }
+
+    /**
+     * This can be used to modify an existing {@link AutoModerationRule rule's} status(Enabled/Disabled) which is in this guild.
+     *
+     * @return an auto moderation rule.
+     */
+    RestAction<AutoModerationRule> modifyAutoModerationStatus(@Nonnull String ruleId, boolean enabled);
+
+    /**
+     * This can be used to modify an existing {@link AutoModerationRule rule's} status(Enabled/Disabled) which is in this guild.
+     *
+     * @return an auto moderation rule.
+     */
+    default RestAction<AutoModerationRule> modifyAutoModerationStatus(long ruleId, boolean enabled) {
+        return modifyAutoModerationStatus(Long.toUnsignedString(ruleId), enabled);
+    }
+
+    /**
+     * This can be used to modify an existing {@link AutoModerationRule rule's} exempt roles which is in this guild.
+     *
+     * @return an auto moderation rule.
+     */
+    RestAction<AutoModerationRule> modifyAutoModerationExemptRoles(@Nonnull String ruleId, @Nonnull List<Role> roles);
+
+    /**
+     * This can be used to modify an existing {@link AutoModerationRule rule's} exempt roles which is in this guild.
+     *
+     * @return an auto moderation rule.
+     */
+    default RestAction<AutoModerationRule> modifyAutoModerationExemptRoles(long ruleId, @Nonnull List<Role> roles) {
+        return modifyAutoModerationExemptRoles(Long.toUnsignedString(ruleId), roles);
+    }
+
+    /**
+     * This can be used to modify an existing {@link AutoModerationRule rule's} exempt channels which is in this guild.
+     *
+     * @return an auto moderation rule.
+     */
+    RestAction<AutoModerationRule> modifyAutoModerationExemptChannels(@Nonnull String ruleId, @Nonnull List<Channel> roles);
+
+    /**
+     * This can be used to modify an existing {@link AutoModerationRule rule's} exempt channels which is in this guild.
+     *
+     * @return an auto moderation rule.
+     */
+    default RestAction<AutoModerationRule> modifyAutoModerationExemptChannels(long ruleId, @Nonnull List<Channel> roles) {
+        return modifyAutoModerationExemptChannels(Long.toUnsignedString(ruleId), roles);
+    }
 
     /**
      * Deletes an auto moderation rule from this guild.
@@ -3262,7 +3357,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      *
      * @return A {@link RestAction} that can be used to monitor the request.
      */
-    RestActionImpl<Object> deleteAutoModerationRuleById(String id);
+    RestActionImpl<Object> deleteAutoModerationRuleById(@Nonnull String ruleId);
 
     default RestActionImpl<Object> deleteAutoModerationRuleById(long id) {
         return deleteAutoModerationRuleById(Long.toUnsignedString(id));

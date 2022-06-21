@@ -2228,7 +2228,8 @@ public class EntityBuilder
         return new AuditLogChange(oldValue, newValue, key);
     }
 
-    public AutoModerationRule createAutoModerationRule(GuildImpl guild, DataObject object) {
+    public AutoModerationRule createAutoModerationRule(GuildImpl guild, DataObject object)
+    {
         final long id = object.getLong("id");
         final String name = object.getString("name");
         final User user = api.getUserById(object.getString("user_id"));
@@ -2277,7 +2278,8 @@ public class EntityBuilder
                 .setEnabled(isEnabled);
     }
 
-    public TriggerMetadata createTriggerMetadata(DataObject object) {
+    public TriggerMetadata createTriggerMetadata(DataObject object)
+    {
         final DataArray keywordFilterArray = object.getArray("keyword_filter");
         final DataArray presetsArray = object.getArray("presets");
 
@@ -2294,7 +2296,8 @@ public class EntityBuilder
                 .setKeywordPresets(presets);
     }
 
-    public AutoModerationAction createAutoModerationAction(GuildImpl guild, DataObject object) {
+    public AutoModerationAction createAutoModerationAction(GuildImpl guild, DataObject object)
+    {
         final net.dv8tion.jda.api.entities.ActionType actionType = net.dv8tion.jda.api.entities.ActionType.fromValue(object.getInt("action_type"));
         final ActionMetadata actionMetadata = !object.isNull("action_metadata") ? createActionMetadata(guild, object.getObject("action_metadata")) : null;
 
@@ -2303,7 +2306,8 @@ public class EntityBuilder
                 .setMetadata(actionMetadata);
     }
 
-    public ActionMetadata createActionMetadata(GuildImpl guild, DataObject object) {
+    public ActionMetadata createActionMetadata(GuildImpl guild, DataObject object)
+    {
         final TextChannel channel = guild.getTextChannelById(object.getLong("channel"));
         final Duration duration = Duration.ofSeconds(object.getLong("duration"));
 

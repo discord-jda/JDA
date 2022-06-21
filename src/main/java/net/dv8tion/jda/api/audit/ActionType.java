@@ -533,7 +533,7 @@ public enum ActionType
     THREAD_DELETE(112, TargetType.THREAD),
 
     /**
-     * A user created an {@link net.dv8tion.jda.api.entities.AutoModerationRule auto-moderation rule}
+     * A user created an {@link net.dv8tion.jda.api.entities.AutoModerationRule auto moderation rule}
      *
      * <h4>Possible Keys</h4>
      * <ul>

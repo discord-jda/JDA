@@ -23,33 +23,39 @@ import javax.annotation.Nonnull;
 import java.time.Duration;
 import java.util.Objects;
 
-public class ActionMetadataImpl implements ActionMetadata {
+public class ActionMetadataImpl implements ActionMetadata
+{
 
     private TextChannel channel;
     private Duration duration;
 
     @Override
-    public TextChannel getChannel() {
+    public TextChannel getChannel()
+    {
         return channel;
     }
 
-    @Override
-    public @Nonnull Duration getDuration() {
-        return duration;
-    }
-
-    public ActionMetadataImpl setChannel(TextChannel channel) {
+    public ActionMetadataImpl setChannel(TextChannel channel)
+    {
         this.channel = channel;
         return this;
     }
 
-    public ActionMetadataImpl setDuration(Duration duration) {
+    @Override
+    public @Nonnull Duration getDuration()
+    {
+        return duration;
+    }
+
+    public ActionMetadataImpl setDuration(Duration duration)
+    {
         this.duration = duration;
         return this;
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(Object o)
+    {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ActionMetadataImpl that = (ActionMetadataImpl) o;
@@ -57,12 +63,14 @@ public class ActionMetadataImpl implements ActionMetadata {
     }
 
     @Override
-    public int hashCode() {
+    public int hashCode()
+    {
         return Objects.hash(channel, duration);
     }
 
     @Override
-    public String toString() {
+    public String toString()
+    {
         return "ActionMetadata(channel=" + channel + ", duration=" + duration + ")";
     }
 }

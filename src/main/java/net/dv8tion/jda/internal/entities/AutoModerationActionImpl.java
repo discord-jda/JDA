@@ -24,36 +24,42 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 
-public class AutoModerationActionImpl implements AutoModerationAction {
+public class AutoModerationActionImpl implements AutoModerationAction
+{
 
     private ActionType type;
     private ActionMetadata metadata;
 
     @NotNull
     @Override
-    public ActionType getActionType() {
+    public ActionType getActionType()
+    {
         return type;
     }
 
     @Nullable
     @Override
-    public ActionMetadata getActionMetadata() {
+    public ActionMetadata getActionMetadata()
+    {
         return metadata;
     }
 
-    public AutoModerationActionImpl setType(ActionType type) {
+    public AutoModerationActionImpl setType(ActionType type)
+    {
         this.type = type;
         return this;
     }
 
 
-    public AutoModerationActionImpl setMetadata(ActionMetadata metadata) {
+    public AutoModerationActionImpl setMetadata(ActionMetadata metadata)
+    {
         this.metadata = metadata;
         return this;
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(Object o)
+    {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         AutoModerationActionImpl that = (AutoModerationActionImpl) o;
@@ -61,12 +67,14 @@ public class AutoModerationActionImpl implements AutoModerationAction {
     }
 
     @Override
-    public int hashCode() {
+    public int hashCode()
+    {
         return Objects.hash(type, metadata);
     }
 
     @Override
-    public String toString() {
+    public String toString()
+    {
         return "AutoModerationActionImpl(" +
                 "type=" + type +
                 ", metadata=" + metadata +
