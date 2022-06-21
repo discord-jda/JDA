@@ -3353,7 +3353,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     /**
      * Deletes an auto moderation rule from this guild.
      *
-     * @param id The id of the rule to delete.
+     * @param ruleId The id of the rule to delete.
      *
      * @return A {@link RestAction} that can be used to monitor the request.
      */
