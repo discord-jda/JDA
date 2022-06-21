@@ -23,28 +23,41 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 
-public class AutoModerationRuleNameUpdateEvent extends GenericAutoModerationRuleUpdateEvent<String> {
-    public AutoModerationRuleNameUpdateEvent(@NotNull JDA api, long responseNumber, AutoModerationRule rule, AutoModerationField field, String oldValue, String newValue) {
+/**
+ * Indicates that a {@link net.dv8tion.jda.api.entities.AutoModerationRule rule} updated its name.
+ *
+ * <p>Can be used to retrieve the old name.
+ *
+ * <p>Identifier: {@code name}
+ */
+public class AutoModerationRuleNameUpdateEvent extends GenericAutoModerationRuleUpdateEvent<String>
+{
+    public AutoModerationRuleNameUpdateEvent(@NotNull JDA api, long responseNumber, AutoModerationRule rule, AutoModerationField field, String oldValue, String newValue)
+    {
         super(api, responseNumber, rule, field, oldValue, newValue);
     }
 
-    public String getOldName() {
+    public String getOldName()
+    {
         return getOldValue();
     }
 
-    public String getNewName() {
+    public String getNewName()
+    {
         return getNewValue();
     }
 
     @Nonnull
     @Override
-    public String getOldValue() {
+    public String getOldValue()
+    {
         return super.getOldValue();
     }
 
     @Nonnull
     @Override
-    public String getNewValue() {
+    public String getNewValue()
+    {
         return super.getNewValue();
     }
 }

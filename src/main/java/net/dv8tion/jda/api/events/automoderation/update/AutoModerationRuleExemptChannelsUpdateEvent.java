@@ -25,28 +25,41 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nonnull;
 import java.util.List;
 
-public class AutoModerationRuleExemptChannelsUpdateEvent extends GenericAutoModerationRuleUpdateEvent<List<Channel>> {
-    public AutoModerationRuleExemptChannelsUpdateEvent(@NotNull JDA api, long responseNumber, AutoModerationRule rule, AutoModerationField field, List<Channel> oldValue, List<Channel> newValue) {
+/**
+ * Indicates that a {@link net.dv8tion.jda.api.entities.AutoModerationRule rule} updated the exempt channels.
+ *
+ * <p>Can be used to retrieve the old exempt channels.
+ *
+ * <p>Identifier: {@code exempt_channels}
+ */
+public class AutoModerationRuleExemptChannelsUpdateEvent extends GenericAutoModerationRuleUpdateEvent<List<Channel>>
+{
+    public AutoModerationRuleExemptChannelsUpdateEvent(@NotNull JDA api, long responseNumber, AutoModerationRule rule, AutoModerationField field, List<Channel> oldValue, List<Channel> newValue)
+    {
         super(api, responseNumber, rule, field, oldValue, newValue);
     }
 
-    public List<Channel> getOldExemptChannels() {
+    public List<Channel> getOldExemptChannels()
+    {
         return getOldValue();
     }
 
-    public List<Channel> getNewExemptChannels() {
+    public List<Channel> getNewExemptChannels()
+    {
         return getNewValue();
     }
 
     @Nonnull
     @Override
-    public List<Channel> getOldValue() {
+    public List<Channel> getOldValue()
+    {
         return super.getOldValue();
     }
 
     @Nonnull
     @Override
-    public List<Channel> getNewValue() {
+    public List<Channel> getNewValue()
+    {
         return super.getNewValue();
     }
 }

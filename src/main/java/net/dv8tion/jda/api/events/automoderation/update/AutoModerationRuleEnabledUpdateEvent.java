@@ -23,28 +23,41 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 
-public class AutoModerationRuleEnabledUpdateEvent extends GenericAutoModerationRuleUpdateEvent<Boolean> {
-    public AutoModerationRuleEnabledUpdateEvent(@NotNull JDA api, long responseNumber, AutoModerationRule rule, AutoModerationField field, Boolean oldValue, Boolean newValue) {
+/**
+ * Indicates that a {@link net.dv8tion.jda.api.entities.AutoModerationRule rule} has been enabled/disabled.
+ *
+ * <p>Can be used to retrieve weather it was enabled or disabled prior to the update.
+ *
+ * <p>Identifier: {@code enabled}
+ */
+public class AutoModerationRuleEnabledUpdateEvent extends GenericAutoModerationRuleUpdateEvent<Boolean>
+{
+    public AutoModerationRuleEnabledUpdateEvent(@NotNull JDA api, long responseNumber, AutoModerationRule rule, AutoModerationField field, Boolean oldValue, Boolean newValue)
+    {
         super(api, responseNumber, rule, field, oldValue, newValue);
     }
 
-    public boolean wasEnabled() {
+    public boolean wasEnabled()
+    {
         return getOldValue();
     }
 
-    public boolean isEnabled() {
+    public boolean isEnabled()
+    {
         return getNewValue();
     }
 
     @Nonnull
     @Override
-    public Boolean getOldValue() {
+    public Boolean getOldValue()
+    {
         return super.getOldValue();
     }
 
     @Nonnull
     @Override
-    public Boolean getNewValue() {
+    public Boolean getNewValue()
+    {
         return super.getNewValue();
     }
 }

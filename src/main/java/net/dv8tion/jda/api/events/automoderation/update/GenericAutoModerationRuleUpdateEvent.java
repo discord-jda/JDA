@@ -25,13 +25,21 @@ import net.dv8tion.jda.api.entities.AutoModerationRule;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class GenericAutoModerationRuleUpdateEvent<T> extends GenericAutoModerationEvent implements UpdateEvent<AutoModerationRule, T> {
+/**
+ * Indicates that a {@link net.dv8tion.jda.api.entities.AutoModerationRule rule} was updated.
+ * <br>Every AutoModerationUpdateEvent is derived from this event and can be casted.
+ *
+ * <p>Can be used to detect any AutoModerationUpdateEvent.
+ */
+public class GenericAutoModerationRuleUpdateEvent<T> extends GenericAutoModerationEvent implements UpdateEvent<AutoModerationRule, T>
+{
 
     protected final AutoModerationField field;
     protected final T oldValue;
     protected final T newValue;
 
-    public GenericAutoModerationRuleUpdateEvent(@NotNull JDA api, long responseNumber, AutoModerationRule rule, AutoModerationField field, T oldValue, T newValue) {
+    public GenericAutoModerationRuleUpdateEvent(@NotNull JDA api, long responseNumber, AutoModerationRule rule, AutoModerationField field, T oldValue, T newValue)
+    {
         super(api, responseNumber, rule);
         this.field = field;
         this.oldValue = oldValue;
@@ -40,25 +48,29 @@ public class GenericAutoModerationRuleUpdateEvent<T> extends GenericAutoModerati
 
     @NotNull
     @Override
-    public String getPropertyIdentifier() {
+    public String getPropertyIdentifier()
+    {
         return field.getFieldName();
     }
 
     @NotNull
     @Override
-    public AutoModerationRule getEntity() {
+    public AutoModerationRule getEntity()
+    {
         return getRule();
     }
 
     @Nullable
     @Override
-    public T getOldValue() {
+    public T getOldValue()
+    {
         return oldValue;
     }
 
     @Nullable
     @Override
-    public T getNewValue() {
+    public T getNewValue()
+    {
         return newValue;
     }
 }

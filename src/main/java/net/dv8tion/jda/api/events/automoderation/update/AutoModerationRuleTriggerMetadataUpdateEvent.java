@@ -24,28 +24,41 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 
-public class AutoModerationRuleTriggerMetadataUpdateEvent extends GenericAutoModerationRuleUpdateEvent<TriggerMetadata> {
-    public AutoModerationRuleTriggerMetadataUpdateEvent(@NotNull JDA api, long responseNumber, AutoModerationRule rule, AutoModerationField field, TriggerMetadata oldValue, TriggerMetadata newValue) {
+/**
+ * Indicates that a {@link net.dv8tion.jda.api.entities.AutoModerationRule rule} updated its trigger metadata.
+ *
+ * <p>Can be used to retrieve the old trigger metadata.
+ *
+ * <p>Identifier: {@code trigger_metadata}
+ */
+public class AutoModerationRuleTriggerMetadataUpdateEvent extends GenericAutoModerationRuleUpdateEvent<TriggerMetadata>
+{
+    public AutoModerationRuleTriggerMetadataUpdateEvent(@NotNull JDA api, long responseNumber, AutoModerationRule rule, AutoModerationField field, TriggerMetadata oldValue, TriggerMetadata newValue)
+    {
         super(api, responseNumber, rule, field, oldValue, newValue);
     }
 
-    public TriggerMetadata getOldTriggerMetadata() {
+    public TriggerMetadata getOldTriggerMetadata()
+    {
         return getOldValue();
     }
 
-    public TriggerMetadata getNewTriggerMetadata() {
+    public TriggerMetadata getNewTriggerMetadata()
+    {
         return getNewValue();
     }
 
     @Nonnull
     @Override
-    public TriggerMetadata getOldValue() {
+    public TriggerMetadata getOldValue()
+    {
         return super.getOldValue();
     }
 
     @Nonnull
     @Override
-    public TriggerMetadata getNewValue() {
+    public TriggerMetadata getNewValue()
+    {
         return super.getNewValue();
     }
 }

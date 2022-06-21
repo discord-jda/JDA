@@ -24,34 +24,48 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 
-public class AutoModerationRuleGuildUpdateEvent extends GenericAutoModerationRuleUpdateEvent<Guild> {
-    public AutoModerationRuleGuildUpdateEvent(@NotNull JDA api, long responseNumber, AutoModerationRule rule, AutoModerationField field, Guild oldValue, Guild newValue) {
+/**
+ * Indicates that a {@link net.dv8tion.jda.api.entities.AutoModerationRule rule} updated the guild.
+ *
+ * <p>Can be used to retrieve the old guild.
+ *
+ * <p>Identifier: {@code guild_id}
+ */
+public class AutoModerationRuleGuildUpdateEvent extends GenericAutoModerationRuleUpdateEvent<Guild>
+{
+    public AutoModerationRuleGuildUpdateEvent(@NotNull JDA api, long responseNumber, AutoModerationRule rule, AutoModerationField field, Guild oldValue, Guild newValue)
+    {
         super(api, responseNumber, rule, field, oldValue, newValue);
     }
 
-    public Guild getOldGuild() {
+    public Guild getOldGuild()
+    {
         return getOldValue();
     }
 
-    public Guild getNewGuild() {
+    public Guild getNewGuild()
+    {
         return getNewValue();
     }
 
     @Nonnull
     @Override
-    public Guild getOldValue() {
+    public Guild getOldValue()
+    {
         return super.getOldValue();
     }
 
     @Nonnull
     @Override
-    public Guild getNewValue() {
+    public Guild getNewValue()
+    {
         return super.getNewValue();
     }
 
     @NotNull
     @Override
-    public AutoModerationRule getEntity() {
+    public AutoModerationRule getEntity()
+    {
         return getRule();
     }
 }

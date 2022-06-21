@@ -26,28 +26,41 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nonnull;
 import java.util.List;
 
-public class AutoModerationRuleExemptRolesUpdateEvent extends GenericAutoModerationRuleUpdateEvent<List<Role>> {
-    public AutoModerationRuleExemptRolesUpdateEvent(@NotNull JDA api, long responseNumber, AutoModerationRule rule, AutoModerationField field, List<Role> oldValue, List<Role> newValue) {
+/**
+ * Indicates that a {@link net.dv8tion.jda.api.entities.AutoModerationRule rule} updated the exempt roles.
+ *
+ * <p>Can be used to retrieve the old exempt roles.
+ *
+ * <p>Identifier: {@code exempt_roles}
+ */
+public class AutoModerationRuleExemptRolesUpdateEvent extends GenericAutoModerationRuleUpdateEvent<List<Role>>
+{
+    public AutoModerationRuleExemptRolesUpdateEvent(@NotNull JDA api, long responseNumber, AutoModerationRule rule, AutoModerationField field, List<Role> oldValue, List<Role> newValue)
+    {
         super(api, responseNumber, rule, field, oldValue, newValue);
     }
 
-    public List<Role> getOldExemptRoles() {
+    public List<Role> getOldExemptRoles()
+    {
         return getOldValue();
     }
 
-    public List<Role> getNewExemptRoles() {
+    public List<Role> getNewExemptRoles()
+    {
         return getNewValue();
     }
 
     @Nonnull
     @Override
-    public List<Role> getOldValue() {
+    public List<Role> getOldValue()
+    {
         return super.getOldValue();
     }
 
     @Nonnull
     @Override
-    public List<Role> getNewValue() {
+    public List<Role> getNewValue()
+    {
         return super.getNewValue();
     }
 }

@@ -24,28 +24,41 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 
-public class AutoModerationRuleUserUpdateEvent extends GenericAutoModerationRuleUpdateEvent<User> {
-    public AutoModerationRuleUserUpdateEvent(@NotNull JDA api, long responseNumber, AutoModerationRule rule, AutoModerationField field, User oldValue, User newValue) {
+/**
+ * Indicates that a {@link net.dv8tion.jda.api.entities.AutoModerationRule rule} updated its creator(user).
+ *
+ * <p>Can be used to retrieve the old creator(user).
+ *
+ * <p>Identifier: {@code user_id}
+ */
+public class AutoModerationRuleUserUpdateEvent extends GenericAutoModerationRuleUpdateEvent<User>
+{
+    public AutoModerationRuleUserUpdateEvent(@NotNull JDA api, long responseNumber, AutoModerationRule rule, AutoModerationField field, User oldValue, User newValue)
+    {
         super(api, responseNumber, rule, field, oldValue, newValue);
     }
 
-    public User getOldUser() {
+    public User getOldUser()
+    {
         return getOldValue();
     }
 
-    public User getNewUser() {
+    public User getNewUser()
+    {
         return getNewValue();
     }
 
     @Nonnull
     @Override
-    public User getOldValue() {
+    public User getOldValue()
+    {
         return super.getOldValue();
     }
 
     @Nonnull
     @Override
-    public User getNewValue() {
+    public User getNewValue()
+    {
         return super.getNewValue();
     }
 }

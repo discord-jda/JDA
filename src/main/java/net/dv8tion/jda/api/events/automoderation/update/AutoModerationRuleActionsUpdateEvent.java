@@ -25,28 +25,41 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nonnull;
 import java.util.List;
 
-public class AutoModerationRuleActionsUpdateEvent extends GenericAutoModerationRuleUpdateEvent<List<AutoModerationAction>> {
-    public AutoModerationRuleActionsUpdateEvent(@NotNull JDA api, long responseNumber, AutoModerationRule rule, AutoModerationField field, List<AutoModerationAction> oldValue, List<AutoModerationAction> newValue) {
+/**
+ * Indicates that a {@link net.dv8tion.jda.api.entities.AutoModerationRule rule} updated its actions.
+ *
+ * <p>Can be used to retrieve the old actions.
+ *
+ * <p>Identifier: {@code action}
+ */
+public class AutoModerationRuleActionsUpdateEvent extends GenericAutoModerationRuleUpdateEvent<List<AutoModerationAction>>
+{
+    public AutoModerationRuleActionsUpdateEvent(@NotNull JDA api, long responseNumber, AutoModerationRule rule, AutoModerationField field, List<AutoModerationAction> oldValue, List<AutoModerationAction> newValue)
+    {
         super(api, responseNumber, rule, field, oldValue, newValue);
     }
 
-    public List<AutoModerationAction> getOldActions() {
+    public List<AutoModerationAction> getOldActions()
+    {
         return getOldValue();
     }
 
-    public List<AutoModerationAction> getNewActions() {
+    public List<AutoModerationAction> getNewActions()
+    {
         return getNewValue();
     }
 
     @Nonnull
     @Override
-    public List<AutoModerationAction> getOldValue() {
+    public List<AutoModerationAction> getOldValue()
+    {
         return super.getOldValue();
     }
 
     @Nonnull
     @Override
-    public List<AutoModerationAction> getNewValue() {
+    public List<AutoModerationAction> getNewValue()
+    {
         return super.getNewValue();
     }
 }

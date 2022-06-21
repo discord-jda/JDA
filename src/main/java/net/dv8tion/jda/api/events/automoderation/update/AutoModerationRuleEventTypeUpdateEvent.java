@@ -24,28 +24,41 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 
-public class AutoModerationRuleEventTypeUpdateEvent extends GenericAutoModerationRuleUpdateEvent<EventType> {
-    public AutoModerationRuleEventTypeUpdateEvent(@NotNull JDA api, long responseNumber, AutoModerationRule rule, AutoModerationField field, EventType oldValue, EventType newValue) {
+/**
+ * Indicates that a {@link net.dv8tion.jda.api.entities.AutoModerationRule rule} updated its event type.
+ *
+ * <p>Can be used to retrieve the old event type.
+ *
+ * <p>Identifier: {@code event_type}
+ */
+public class AutoModerationRuleEventTypeUpdateEvent extends GenericAutoModerationRuleUpdateEvent<EventType>
+{
+    public AutoModerationRuleEventTypeUpdateEvent(@NotNull JDA api, long responseNumber, AutoModerationRule rule, AutoModerationField field, EventType oldValue, EventType newValue)
+    {
         super(api, responseNumber, rule, field, oldValue, newValue);
     }
 
-    public EventType getOldEventType() {
+    public EventType getOldEventType()
+    {
         return getOldValue();
     }
 
-    public EventType getNewEventType() {
+    public EventType getNewEventType()
+    {
         return getNewValue();
     }
 
     @Nonnull
     @Override
-    public EventType getOldValue() {
+    public EventType getOldValue()
+    {
         return super.getOldValue();
     }
 
     @Nonnull
     @Override
-    public EventType getNewValue() {
+    public EventType getNewValue()
+    {
         return super.getNewValue();
     }
 }

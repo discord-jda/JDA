@@ -129,7 +129,7 @@ public class EventCache
 
     public enum Type
     {
-        USER, MEMBER, GUILD, CHANNEL, ROLE, RELATIONSHIP, CALL, AUTO_MODERATION;
+        USER, MEMBER, GUILD, CHANNEL, ROLE, RELATIONSHIP, CALL, AUTO_MODERATION
     }
 
     private class CacheNode

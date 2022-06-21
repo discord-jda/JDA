@@ -24,29 +24,42 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 
-public class AutoModerationRuleTriggerTypeUpdateEvent extends GenericAutoModerationRuleUpdateEvent<TriggerType> {
+/**
+ * Indicates that a {@link net.dv8tion.jda.api.entities.AutoModerationRule rule} updated its trigger type.
+ *
+ * <p>Can be used to retrieve the trigger type.
+ *
+ * <p>Identifier: {@code trigger_type}
+ */
+public class AutoModerationRuleTriggerTypeUpdateEvent extends GenericAutoModerationRuleUpdateEvent<TriggerType>
+{
 
-    public AutoModerationRuleTriggerTypeUpdateEvent(@NotNull JDA api, long responseNumber, AutoModerationRule rule, AutoModerationField field, TriggerType oldValue, TriggerType newValue) {
+    public AutoModerationRuleTriggerTypeUpdateEvent(@NotNull JDA api, long responseNumber, AutoModerationRule rule, AutoModerationField field, TriggerType oldValue, TriggerType newValue)
+    {
         super(api, responseNumber, rule, field, oldValue, newValue);
     }
 
-    public TriggerType getOldTriggerType() {
+    public TriggerType getOldTriggerType()
+    {
         return getOldValue();
     }
 
-    public TriggerType getNewTriggerType() {
+    public TriggerType getNewTriggerType()
+    {
         return getNewValue();
     }
 
     @Nonnull
     @Override
-    public TriggerType getOldValue() {
+    public TriggerType getOldValue()
+    {
         return super.getOldValue();
     }
 
     @Nonnull
     @Override
-    public TriggerType getNewValue() {
+    public TriggerType getNewValue()
+    {
         return super.getNewValue();
     }
 }
