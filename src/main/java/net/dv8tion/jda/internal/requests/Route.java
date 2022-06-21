@@ -307,7 +307,8 @@ public class Route
         public static final Route CREATE_GUILD_FROM_TEMPLATE = new Route(POST,   "guilds/templates/{code}");
     }
 
-    public static class AutoModeration {
+    public static class AutoModeration
+    {
         public static final Route GET_AUTO_MODERATION_RULES = new Route(GET, "guilds/{guild_id}/auto-moderation/rules");
         public static final Route GET_AUTO_MODERATION_RULE = new Route(GET, "guilds/{guild_id}/auto-moderation/rules/{code}");
         public static final Route CREATE_AUTO_MODERATION_RULE = new Route(POST, "guilds/{guild_id}/auto-moderation/rules");

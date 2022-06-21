@@ -3359,6 +3359,13 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      */
     RestActionImpl<Object> deleteAutoModerationRuleById(@Nonnull String ruleId);
 
+    /**
+     * Deletes an auto moderation rule from this guild.
+     *
+     * @param ruleId The id of the rule to delete.
+     *
+     * @return A {@link RestAction} that can be used to monitor the request.
+     */
     default RestActionImpl<Object> deleteAutoModerationRuleById(long id) {
         return deleteAutoModerationRuleById(Long.toUnsignedString(id));
     }
