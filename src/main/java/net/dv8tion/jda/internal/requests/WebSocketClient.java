@@ -1323,6 +1323,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         handlers.put("AUTO_MODERATION_RULE_CREATE",   new AutoModerationRuleCreateHandler(api));
         handlers.put("AUTO_MODERATION_RULE_UPDATE",   new AutoModerationRuleUpdateHandler(api));
         handlers.put("AUTO_MODERATION_RULE_DELETE",   new AutoModerationRuleDeleteHandler(api));
+        handlers.put("AUTO_MODERATION_ACTION_EXECUTION", new AutoModerationActionExecutionHandler(api));
         handlers.put("CHANNEL_CREATE",                new ChannelCreateHandler(api));
         handlers.put("CHANNEL_DELETE",                new ChannelDeleteHandler(api));
         handlers.put("CHANNEL_UPDATE",                new ChannelUpdateHandler(api));
