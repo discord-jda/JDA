@@ -14,33 +14,35 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.internal.entities;
+package net.dv8tion.jda.internal.entities.emoji;
 
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.ListedEmote;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
+import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
-import net.dv8tion.jda.api.managers.EmoteManager;
+import net.dv8tion.jda.api.managers.CustomEmojiManager;
+import net.dv8tion.jda.api.requests.ErrorResponse;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
+import net.dv8tion.jda.api.requests.restaction.CacheRestAction;
+import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
-import net.dv8tion.jda.internal.managers.EmoteManagerImpl;
+import net.dv8tion.jda.internal.entities.GuildImpl;
+import net.dv8tion.jda.internal.managers.CustomEmojiManagerImpl;
+import net.dv8tion.jda.internal.requests.DeferredRestAction;
+import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 
 import javax.annotation.Nonnull;
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-/**
- * Represents a Custom Emote. (Emoji in official Discord API terminology)
- *
- * @since  2.2
- */
-public class EmoteImpl implements ListedEmote
+public class RichCustomEmojiImpl implements RichCustomEmoji
 {
     private final long id;
     private final JDAImpl api;
@@ -51,9 +53,9 @@ public class EmoteImpl implements ListedEmote
     private boolean available = true;
     private boolean animated = false;
     private String name;
-    private User user;
+    private User owner;
 
-    public EmoteImpl(long id, GuildImpl guild)
+    public RichCustomEmojiImpl(long id, GuildImpl guild)
     {
         this.id = id;
         this.api = guild.getJDA();
@@ -61,19 +63,34 @@ public class EmoteImpl implements ListedEmote
         this.roles = ConcurrentHashMap.newKeySet();
     }
 
-    public EmoteImpl(long id, JDAImpl api)
+    @Nonnull
+    @Override
+    public Type getType()
     {
-        this.id = id;
-        this.api = api;
-        this.guild = null;
-        this.roles = null;
+        return Type.CUSTOM;
     }
 
+    @Nonnull
+    @Override
+    public String getAsReactionCode()
+    {
+        return name + ":" + id;
+    }
+
+    @Nonnull
+    @Override
+    public DataObject toData()
+    {
+        return DataObject.empty()
+                .put("name", name)
+                .put("animated", animated)
+                .put("id", id);
+    }
+
+    @Nonnull
     @Override
     public GuildImpl getGuild()
     {
-        if (guild == null)
-            return null;
         GuildImpl realGuild = (GuildImpl) api.getGuildById(guild.getIdLong());
         if (realGuild != null)
             guild = realGuild;
@@ -84,15 +101,7 @@ public class EmoteImpl implements ListedEmote
     @Override
     public List<Role> getRoles()
     {
-        if (!canProvideRoles())
-            throw new IllegalStateException("Unable to return roles because this emote is from a message. (We do not know the origin Guild of this emote)");
-        return Collections.unmodifiableList(new LinkedList<>(roles));
-    }
-
-    @Override
-    public boolean canProvideRoles()
-    {
-        return roles != null;
+        return Collections.unmodifiableList(new ArrayList<>(roles));
     }
 
     @Nonnull
@@ -127,26 +136,36 @@ public class EmoteImpl implements ListedEmote
         return api;
     }
 
-    @Nonnull
     @Override
-    public User getUser()
+    public User getOwner()
     {
-        if (!hasUser())
-            throw new IllegalStateException("This emote does not have a user");
-        return user;
-    }
-
-    @Override
-    public boolean hasUser()
-    {
-        return user != null;
+        return owner;
     }
 
     @Nonnull
     @Override
-    public EmoteManager getManager()
+    public CacheRestAction<User> retrieveOwner()
     {
-        return new EmoteManagerImpl(this);
+        GuildImpl guild = getGuild();
+        if (!guild.getSelfMember().hasPermission(Permission.MANAGE_EMOJIS_AND_STICKERS))
+            throw new InsufficientPermissionException(guild, Permission.MANAGE_EMOJIS_AND_STICKERS);
+        return new DeferredRestAction<>(api, User.class, this::getOwner, () -> {
+            Route.CompiledRoute route = Route.Emojis.GET_EMOJI.compile(guild.getId(), getId());
+            return new RestActionImpl<>(api, route, (response, request) -> {
+                DataObject data = response.getObject();
+                if (data.isNull("user")) // user is not provided when permissions are missing
+                    throw ErrorResponseException.create(ErrorResponse.MISSING_PERMISSIONS, response);
+                DataObject user = data.getObject("user");
+                return this.owner = api.getEntityBuilder().createUser(user);
+            });
+        });
+    }
+
+    @Nonnull
+    @Override
+    public CustomEmojiManager getManager()
+    {
+        return new CustomEmojiManagerImpl(this);
     }
 
     @Override
@@ -159,46 +178,44 @@ public class EmoteImpl implements ListedEmote
     @Override
     public AuditableRestAction<Void> delete()
     {
-        if (getGuild() == null)
-            throw new IllegalStateException("The emote you are trying to delete is not an actual emote we have access to (it is from a message)!");
         if (managed)
-            throw new UnsupportedOperationException("You cannot delete a managed emote!");
-        if (!getGuild().getSelfMember().hasPermission(Permission.MANAGE_EMOTES_AND_STICKERS))
-            throw new InsufficientPermissionException(getGuild(), Permission.MANAGE_EMOTES_AND_STICKERS);
+            throw new UnsupportedOperationException("You cannot delete a managed emoji!");
+        if (!getGuild().getSelfMember().hasPermission(Permission.MANAGE_EMOJIS_AND_STICKERS))
+            throw new InsufficientPermissionException(getGuild(), Permission.MANAGE_EMOJIS_AND_STICKERS);
 
-        Route.CompiledRoute route = Route.Emotes.DELETE_EMOTE.compile(getGuild().getId(), getId());
+        Route.CompiledRoute route = Route.Emojis.DELETE_EMOJI.compile(getGuild().getId(), getId());
         return new AuditableRestActionImpl<>(getJDA(), route);
     }
 
     // -- Setters --
 
-    public EmoteImpl setName(String name)
+    public RichCustomEmojiImpl setName(String name)
     {
         this.name = name;
         return this;
     }
 
-    public EmoteImpl setAnimated(boolean animated)
+    public RichCustomEmojiImpl setAnimated(boolean animated)
     {
         this.animated = animated;
         return this;
     }
 
-    public EmoteImpl setManaged(boolean val)
+    public RichCustomEmojiImpl setManaged(boolean val)
     {
         this.managed = val;
         return this;
     }
 
-    public EmoteImpl setAvailable(boolean available)
+    public RichCustomEmojiImpl setAvailable(boolean available)
     {
         this.available = available;
         return this;
     }
 
-    public EmoteImpl setUser(User user)
+    public RichCustomEmojiImpl setOwner(User user)
     {
-        this.user = user;
+        this.owner = user;
         return this;
     }
 
@@ -216,11 +233,11 @@ public class EmoteImpl implements ListedEmote
     {
         if (obj == this)
             return true;
-        if (!(obj instanceof EmoteImpl))
+        if (!(obj instanceof RichCustomEmojiImpl))
             return false;
 
-        EmoteImpl oEmote = (EmoteImpl) obj;
-        return this.id == oEmote.id && getName().equals(oEmote.getName());
+        RichCustomEmojiImpl other = (RichCustomEmojiImpl) obj;
+        return this.id == other.id && getName().equals(other.getName());
     }
 
 
@@ -236,10 +253,9 @@ public class EmoteImpl implements ListedEmote
         return "E:" + getName() + '(' + getIdLong() + ')';
     }
 
-    @Override
-    public EmoteImpl clone()
+    public RichCustomEmojiImpl copy()
     {
-        EmoteImpl copy = new EmoteImpl(id, getGuild()).setUser(user).setManaged(managed).setAnimated(animated).setName(name);
+        RichCustomEmojiImpl copy = new RichCustomEmojiImpl(id, getGuild()).setOwner(owner).setManaged(managed).setAnimated(animated).setName(name);
         copy.roles.addAll(roles);
         return copy;
     }

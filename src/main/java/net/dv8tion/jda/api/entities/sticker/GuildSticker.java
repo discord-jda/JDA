@@ -104,7 +104,7 @@ public interface GuildSticker extends RichSticker
      * Deletes this sticker from the guild.
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the currently logged in account does not have {@link Permission#MANAGE_EMOTES_AND_STICKERS MANAGE_EMOTES_AND_STICKERS} in the guild.
+     *         If the currently logged in account does not have {@link Permission#MANAGE_EMOJIS_AND_STICKERS MANAGE_EMOJIS_AND_STICKERS} in the guild.
      *
      * @return {@link AuditableRestAction}
      */
@@ -117,7 +117,7 @@ public interface GuildSticker extends RichSticker
      * <br>You can update multiple fields at once, by calling the respective setters before executing the request.
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the currently logged in account does not have {@link Permission#MANAGE_EMOTES_AND_STICKERS MANAGE_EMOTES_AND_STICKERS} in the guild.
+     *         If the currently logged in account does not have {@link Permission#MANAGE_EMOJIS_AND_STICKERS MANAGE_EMOJIS_AND_STICKERS} in the guild.
      *
      * @return {@link GuildStickerManager}
      */
