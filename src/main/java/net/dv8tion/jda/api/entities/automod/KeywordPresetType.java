@@ -14,14 +14,17 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.entities;
+package net.dv8tion.jda.api.entities.automod;
+
+import javax.annotation.Nonnull;
 
 /**
  * This is the keyword which was flagged by the auto-moderation system and caused the action to be executed.
  * <br>
- * This is only valid for the trigger type {@link net.dv8tion.jda.api.entities.TriggerType#KEYWORD_PRESET}.
+ * This is only valid for the trigger type {@link TriggerType#KEYWORD_PRESET}.
  */
-public enum KeywordPresetType {
+public enum KeywordPresetType
+{
     /**
      * Words that may be considered forms of swearing or cursing.
      */
@@ -41,17 +44,24 @@ public enum KeywordPresetType {
 
     private final int value;
 
-    KeywordPresetType(int value) {
+    KeywordPresetType(int value)
+    {
         this.value = value;
     }
 
-    public int getValue() {
+
+    public int getValue()
+    {
         return value;
     }
 
-    public static KeywordPresetType fromValue(int value) {
-        for (KeywordPresetType type : values()) {
-            if (type.value == value) {
+    @Nonnull
+    public static KeywordPresetType fromValue(int value)
+    {
+        for (KeywordPresetType type : values())
+        {
+            if (type.value == value)
+            {
                 return type;
             }
         }

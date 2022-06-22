@@ -16,8 +16,8 @@
 
 package net.dv8tion.jda.internal.handle;
 
-import net.dv8tion.jda.api.entities.*;
-import net.dv8tion.jda.api.events.automoderation.AutoModerationRuleCreateEvent;
+import net.dv8tion.jda.api.entities.AutoModerationRule;
+import net.dv8tion.jda.api.events.automod.AutoModerationRuleCreateEvent;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.GuildImpl;

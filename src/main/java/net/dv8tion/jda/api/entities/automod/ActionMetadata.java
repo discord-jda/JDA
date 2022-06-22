@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.entities;
+package net.dv8tion.jda.api.entities.automod;
+
+import net.dv8tion.jda.api.entities.GuildChannel;
+import net.dv8tion.jda.api.entities.TextChannel;
 
 import javax.annotation.Nonnull;
 import java.time.Duration;
@@ -23,20 +26,21 @@ import java.time.Duration;
  * This is additional data which is used when an action is executed by the auto-moderation system.
  *
  * <br>
- * Different values depend on the {@link ActionType ActionType} of the action.
+ * Different values depend on the {@link AutoModerationActionType ActionType} of the action.
  */
-public interface ActionMetadata {
+public interface ActionMetadata
+{
     /**
      * Returns the channel where an alert message will be sent when the rule is executed.
      *
-     * @return {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
+     * @return {@link GuildChannel Guild Channel}
      */
-    TextChannel getChannel();
+    GuildChannel getChannel();
 
     /**
      * Returns the duration of the timeout.
      *
-     * @return {@link java.time.Duration Duration}
+     * @return {@link Duration Duration}
      */
     @Nonnull
     Duration getDuration();

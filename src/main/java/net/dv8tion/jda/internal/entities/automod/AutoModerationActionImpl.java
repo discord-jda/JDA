@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.internal.entities;
+package net.dv8tion.jda.internal.entities.automod;
 
-import net.dv8tion.jda.api.entities.ActionMetadata;
-import net.dv8tion.jda.api.entities.ActionType;
-import net.dv8tion.jda.api.entities.AutoModerationAction;
+import net.dv8tion.jda.api.entities.automod.ActionMetadata;
+import net.dv8tion.jda.api.entities.automod.AutoModerationAction;
+import net.dv8tion.jda.api.entities.automod.AutoModerationActionType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -27,12 +27,12 @@ import java.util.Objects;
 public class AutoModerationActionImpl implements AutoModerationAction
 {
 
-    private ActionType type;
+    private AutoModerationActionType type;
     private ActionMetadata metadata;
 
     @NotNull
     @Override
-    public ActionType getActionType()
+    public AutoModerationActionType getActionType()
     {
         return type;
     }
@@ -44,7 +44,7 @@ public class AutoModerationActionImpl implements AutoModerationAction
         return metadata;
     }
 
-    public AutoModerationActionImpl setType(ActionType type)
+    public AutoModerationActionImpl setType(AutoModerationActionType type)
     {
         this.type = type;
         return this;

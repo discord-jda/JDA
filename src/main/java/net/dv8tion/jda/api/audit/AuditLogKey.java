@@ -20,6 +20,8 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.ICategorizableChannel;
 import net.dv8tion.jda.api.entities.ThreadChannel;
+import net.dv8tion.jda.api.entities.automod.AutoModerationActionType;
+import net.dv8tion.jda.api.entities.automod.KeywordPresetType;
 
 /**
  * Enum of possible/expected keys that can be provided
@@ -602,7 +604,7 @@ public enum AuditLogKey
      * <p>Expected types:
      * <ul>
      *      <li>{@link java.util.List}&lt;{@link java.lang.String}&gt;</li>
-     *      <li>{@link java.util.List}&lt;{@link net.dv8tion.jda.api.entities.KeywordPresetType}&gt;</li>
+     *      <li>{@link java.util.List}&lt;{@link KeywordPresetType}&gt;</li>
      * </ul>
      */
     AUTO_MODERATION_TRIGGER_METADATA("trigger_metadata"),
@@ -612,8 +614,8 @@ public enum AuditLogKey
      *
      * <p>Expected types:
      * <ul>
-     *     <li>{@link net.dv8tion.jda.api.entities.ActionType}</li>
-     *     <li>{@link net.dv8tion.jda.api.entities.ActionMetadata}</li>
+     *     <li><b>action type object</b></li>
+     *     <li><b>action metadata object</b></li>
      * </ul>
      */
     AUTO_MODERATION_ACTIONS("actions"),

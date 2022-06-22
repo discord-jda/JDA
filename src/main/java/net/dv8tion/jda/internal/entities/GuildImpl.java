@@ -23,6 +23,10 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.Region;
 import net.dv8tion.jda.api.audio.hooks.ConnectionStatus;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.automod.AutoModerationAction;
+import net.dv8tion.jda.api.entities.automod.EventType;
+import net.dv8tion.jda.api.entities.automod.TriggerMetadata;
+import net.dv8tion.jda.api.entities.automod.TriggerType;
 import net.dv8tion.jda.api.entities.sticker.GuildSticker;
 import net.dv8tion.jda.api.entities.sticker.StandardSticker;
 import net.dv8tion.jda.api.entities.sticker.StickerSnowflake;
@@ -1345,13 +1349,13 @@ public class GuildImpl implements Guild
 
     @NotNull
     @Override
-    public AuditableRestAction<AutoModerationRule> modifyAutoModerationRuleName(@Nonnull String ruleId, @Nonnull String name)
+    public AuditableRestAction<AutoModerationRule> modifyAutoModerationRuleName(@Nonnull AutoModerationRule rule, @Nonnull String name)
     {
         checkPermission(Permission.MANAGE_SERVER);
-        Checks.notBlank(ruleId, "Rule Id");
+        Checks.notBlank(rule.getId(), "Rule Id");
         Checks.notBlank(name, "Name");
 
-        final Route.CompiledRoute route = Route.AutoModeration.MODIFY_AUTO_MODERATION_RULE.compile(getId(), ruleId);
+        final Route.CompiledRoute route = Route.AutoModeration.MODIFY_AUTO_MODERATION_RULE.compile(getId(), rule.getId());
         DataObject object = DataObject.empty();
         object.put("name", name);
 
@@ -1359,13 +1363,13 @@ public class GuildImpl implements Guild
     }
 
     @Override
-    public AuditableRestAction<AutoModerationRule> modifyAutoModerationRuleEventType(@Nonnull String ruleId, @Nonnull EventType eventType)
+    public AuditableRestAction<AutoModerationRule> modifyAutoModerationRuleEventType(@Nonnull AutoModerationRule rule, @Nonnull EventType eventType)
     {
         checkPermission(Permission.MANAGE_SERVER);
-        Checks.notBlank(ruleId, "Rule Id");
+        Checks.notBlank(rule.getId(), "Rule Id");
         Checks.notNull(eventType, "Event Type");
 
-        final Route.CompiledRoute route = Route.AutoModeration.MODIFY_AUTO_MODERATION_RULE.compile(getId(), ruleId);
+        final Route.CompiledRoute route = Route.AutoModeration.MODIFY_AUTO_MODERATION_RULE.compile(getId(), rule.getId());
         DataObject object = DataObject.empty();
         object.put("event_type", eventType.getValue());
 
@@ -1373,13 +1377,13 @@ public class GuildImpl implements Guild
     }
 
     @Override
-    public AuditableRestAction<AutoModerationRule> modifyAutoModerationRuleActions(@Nonnull String ruleId, @Nonnull List<AutoModerationAction> actions)
+    public AuditableRestAction<AutoModerationRule> modifyAutoModerationRuleActions(@Nonnull AutoModerationRule rule, @Nonnull List<AutoModerationAction> actions)
     {
         checkPermission(Permission.MANAGE_SERVER);
-        Checks.notBlank(ruleId, "Rule Id");
+        Checks.notBlank(rule.getId(), "Rule Id");
         Checks.notEmpty(actions, "Actions");
 
-        final Route.CompiledRoute route = Route.AutoModeration.MODIFY_AUTO_MODERATION_RULE.compile(getId(), ruleId);
+        final Route.CompiledRoute route = Route.AutoModeration.MODIFY_AUTO_MODERATION_RULE.compile(getId(), rule.getId());
         DataObject object = DataObject.empty();
         object.put("actions", actions);
 
@@ -1387,12 +1391,12 @@ public class GuildImpl implements Guild
     }
 
     @Override
-    public AuditableRestAction<AutoModerationRule> modifyAutoModerationStatus(@Nonnull String ruleId, boolean enabled)
+    public AuditableRestAction<AutoModerationRule> modifyAutoModerationStatus(@Nonnull AutoModerationRule rule, boolean enabled)
     {
         checkPermission(Permission.MANAGE_SERVER);
-        Checks.notBlank(ruleId, "Rule Id");
+        Checks.notBlank(rule.getId(), "Rule Id");
 
-        final Route.CompiledRoute route = Route.AutoModeration.MODIFY_AUTO_MODERATION_RULE.compile(getId(), ruleId);
+        final Route.CompiledRoute route = Route.AutoModeration.MODIFY_AUTO_MODERATION_RULE.compile(getId(), rule.getId());
         DataObject object = DataObject.empty();
         object.put("enabled", enabled);
 
@@ -1400,13 +1404,13 @@ public class GuildImpl implements Guild
     }
 
     @Override
-    public AuditableRestAction<AutoModerationRule> modifyAutoModerationExemptRoles(@Nonnull String ruleId, @Nonnull List<Role> roles)
+    public AuditableRestAction<AutoModerationRule> modifyAutoModerationExemptRoles(@Nonnull AutoModerationRule rule, @Nonnull List<Role> roles)
     {
         checkPermission(Permission.MANAGE_SERVER);
-        Checks.notBlank(ruleId, "Rule Id");
+        Checks.notBlank(rule.getId(), "Rule Id");
         Checks.notEmpty(roles, "Roles");
 
-        final Route.CompiledRoute route = Route.AutoModeration.MODIFY_AUTO_MODERATION_RULE.compile(getId(), ruleId);
+        final Route.CompiledRoute route = Route.AutoModeration.MODIFY_AUTO_MODERATION_RULE.compile(getId(), rule.getId());
         DataObject object = DataObject.empty();
         object.put("exempt_roles", roles);
 
@@ -1414,13 +1418,13 @@ public class GuildImpl implements Guild
     }
 
     @Override
-    public AuditableRestAction<AutoModerationRule> modifyAutoModerationExemptChannels(@Nonnull String ruleId, @Nonnull List<Channel> channels)
+    public AuditableRestAction<AutoModerationRule> modifyAutoModerationExemptChannels(@Nonnull AutoModerationRule rule, @Nonnull List<Channel> channels)
     {
         checkPermission(Permission.MANAGE_SERVER);
-        Checks.notBlank(ruleId, "Rule Id");
+        Checks.notBlank(rule.getId(), "Rule Id");
         Checks.notEmpty(channels, "Channels");
 
-        final Route.CompiledRoute route = Route.AutoModeration.MODIFY_AUTO_MODERATION_RULE.compile(getId(), ruleId);
+        final Route.CompiledRoute route = Route.AutoModeration.MODIFY_AUTO_MODERATION_RULE.compile(getId(), rule.getId());
         DataObject object = DataObject.empty();
         object.put("exempt_channels", channels);
 
@@ -1429,9 +1433,9 @@ public class GuildImpl implements Guild
 
 
     @Override
-    public AuditableRestAction<Void> deleteAutoModerationRuleById(@Nonnull String id) {
-        Checks.isSnowflake(id);
-        Route.CompiledRoute route = Route.AutoModeration.DELETE_AUTO_MODERATION_RULE.compile(getId(), id);
+    public AuditableRestAction<Void> deleteAutoModerationRuleById(@Nonnull AutoModerationRule rule) {
+        Checks.isSnowflake(rule.getId());
+        Route.CompiledRoute route = Route.AutoModeration.DELETE_AUTO_MODERATION_RULE.compile(getId(), rule.getId());
         return new AuditableRestActionImpl<>(getJDA(), route);
     }
 

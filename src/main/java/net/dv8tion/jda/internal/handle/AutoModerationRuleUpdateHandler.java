@@ -16,9 +16,12 @@
 
 package net.dv8tion.jda.internal.handle;
 
-import net.dv8tion.jda.api.entities.*;
-import net.dv8tion.jda.api.events.automoderation.AutoModerationRuleDeleteEvent;
-import net.dv8tion.jda.api.events.automoderation.update.*;
+import net.dv8tion.jda.api.entities.Channel;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.automod.*;
+import net.dv8tion.jda.api.events.automod.update.*;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
@@ -58,7 +61,6 @@ public class AutoModerationRuleUpdateHandler extends SocketHandler
             EventCache.LOG.debug("Caching AUTO_MODERATION_RULE_UPDATE event for rule that is not currently cached. RuleID: {}", ruleId);
         }
 
-        long id = content.getLong("id");
         String name = content.getString("name");
         final User user = api.getUserById(content.getString("user_id"));
         EventType eventType = EventType.fromValue(content.getInt("event_type"));

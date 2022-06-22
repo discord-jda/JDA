@@ -17,6 +17,10 @@
 package net.dv8tion.jda.internal.entities;
 
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.automod.AutoModerationAction;
+import net.dv8tion.jda.api.entities.automod.EventType;
+import net.dv8tion.jda.api.entities.automod.TriggerMetadata;
+import net.dv8tion.jda.api.entities.automod.TriggerType;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;

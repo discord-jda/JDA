@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.events.automoderation;
+package net.dv8tion.jda.api.events.automod;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.AutoModerationRule;
@@ -23,9 +23,11 @@ import org.jetbrains.annotations.NotNull;
 /**
  * Indicates that an {@link net.dv8tion.jda.api.entities.AutoModerationRule AutoModerationRule} was created.
  */
-public class AutoModerationRuleCreateEvent extends GenericAutoModerationEvent {
+public class AutoModerationRuleCreateEvent extends GenericAutoModerationEvent
+{
 
-    public AutoModerationRuleCreateEvent(@NotNull JDA api, long responseNumber, AutoModerationRule rule) {
+    public AutoModerationRuleCreateEvent(@NotNull JDA api, long responseNumber, AutoModerationRule rule)
+    {
         super(api, responseNumber, rule);
     }
 }

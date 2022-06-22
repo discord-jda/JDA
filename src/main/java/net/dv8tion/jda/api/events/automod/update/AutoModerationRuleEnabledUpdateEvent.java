@@ -14,51 +14,49 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.events.automoderation.update;
+package net.dv8tion.jda.api.events.automod.update;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.AutoModerationField;
 import net.dv8tion.jda.api.entities.AutoModerationRule;
-import net.dv8tion.jda.api.entities.TriggerType;
+import net.dv8tion.jda.api.entities.automod.AutoModerationField;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 
 /**
- * Indicates that a {@link net.dv8tion.jda.api.entities.AutoModerationRule rule} updated its trigger type.
+ * Indicates that a {@link net.dv8tion.jda.api.entities.AutoModerationRule rule} has been enabled/disabled.
  *
- * <p>Can be used to retrieve the trigger type.
+ * <p>Can be used to retrieve weather it was enabled or disabled prior to the update.
  *
- * <p>Identifier: {@code trigger_type}
+ * <p>Identifier: {@code enabled}
  */
-public class AutoModerationRuleTriggerTypeUpdateEvent extends GenericAutoModerationRuleUpdateEvent<TriggerType>
+public class AutoModerationRuleEnabledUpdateEvent extends GenericAutoModerationRuleUpdateEvent<Boolean>
 {
-
-    public AutoModerationRuleTriggerTypeUpdateEvent(@NotNull JDA api, long responseNumber, AutoModerationRule rule, AutoModerationField field, TriggerType oldValue, TriggerType newValue)
+    public AutoModerationRuleEnabledUpdateEvent(@NotNull JDA api, long responseNumber, AutoModerationRule rule, AutoModerationField field, Boolean oldValue, Boolean newValue)
     {
         super(api, responseNumber, rule, field, oldValue, newValue);
     }
 
-    public TriggerType getOldTriggerType()
+    public boolean wasEnabled()
     {
         return getOldValue();
     }
 
-    public TriggerType getNewTriggerType()
+    public boolean isEnabled()
     {
         return getNewValue();
     }
 
     @Nonnull
     @Override
-    public TriggerType getOldValue()
+    public Boolean getOldValue()
     {
         return super.getOldValue();
     }
 
     @Nonnull
     @Override
-    public TriggerType getNewValue()
+    public Boolean getNewValue()
     {
         return super.getNewValue();
     }

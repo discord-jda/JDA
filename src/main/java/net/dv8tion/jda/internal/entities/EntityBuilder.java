@@ -29,6 +29,7 @@ import net.dv8tion.jda.api.entities.Guild.NotificationLevel;
 import net.dv8tion.jda.api.entities.Guild.Timeout;
 import net.dv8tion.jda.api.entities.Guild.VerificationLevel;
 import net.dv8tion.jda.api.entities.MessageEmbed.*;
+import net.dv8tion.jda.api.entities.automod.*;
 import net.dv8tion.jda.api.entities.sticker.*;
 import net.dv8tion.jda.api.entities.templates.Template;
 import net.dv8tion.jda.api.entities.templates.TemplateChannel;
@@ -48,6 +49,9 @@ import net.dv8tion.jda.api.utils.cache.CacheView;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
+import net.dv8tion.jda.internal.entities.automod.ActionMetadataImpl;
+import net.dv8tion.jda.internal.entities.automod.AutoModerationActionImpl;
+import net.dv8tion.jda.internal.entities.automod.TriggerMetadataImpl;
 import net.dv8tion.jda.internal.entities.mixin.channel.attribute.IPermissionContainerMixin;
 import net.dv8tion.jda.internal.entities.mixin.channel.middleman.AudioChannelMixin;
 import net.dv8tion.jda.internal.entities.sticker.*;
@@ -70,7 +74,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAccessor;
 import java.util.*;
 import java.util.function.Function;
-import java.util.function.ToLongFunction;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -2298,7 +2301,7 @@ public class EntityBuilder
 
     public AutoModerationAction createAutoModerationAction(GuildImpl guild, DataObject object)
     {
-        final net.dv8tion.jda.api.entities.ActionType actionType = net.dv8tion.jda.api.entities.ActionType.fromValue(object.getInt("action_type"));
+        final AutoModerationActionType actionType = AutoModerationActionType.fromValue(object.getInt("action_type"));
         final ActionMetadata actionMetadata = !object.isNull("action_metadata") ? createActionMetadata(guild, object.getObject("action_metadata")) : null;
 
         return new AutoModerationActionImpl()
@@ -2308,7 +2311,7 @@ public class EntityBuilder
 
     public ActionMetadata createActionMetadata(GuildImpl guild, DataObject object)
     {
-        final TextChannel channel = guild.getTextChannelById(object.getLong("channel"));
+        final GuildChannel channel = guild.getGuildChannelById(object.getLong("channel"));
         final Duration duration = Duration.ofSeconds(object.getLong("duration"));
 
         return new ActionMetadataImpl()

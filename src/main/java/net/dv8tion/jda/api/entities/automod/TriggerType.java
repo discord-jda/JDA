@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.entities;
+package net.dv8tion.jda.api.entities.automod;
+
+import javax.annotation.Nonnull;
 
 /**
  * Represents the type of trigger that can cause an auto moderation rule to be executed.
@@ -58,22 +60,29 @@ public enum TriggerType
     private final int value;
     private final int maxPerGuild;
 
-    TriggerType(int value, int maxPerGuild) {
+    TriggerType(int value, int maxPerGuild)
+    {
         this.value = value;
         this.maxPerGuild = maxPerGuild;
     }
 
-    public int getValue() {
+    public int getValue()
+    {
         return value;
     }
 
-    public int getMaxPerGuild() {
+    public int getMaxPerGuild()
+    {
         return maxPerGuild;
     }
 
-    public static TriggerType fromValue(int value) {
-        for (TriggerType type : values()) {
-            if (type.value == value) {
+    @Nonnull
+    public static TriggerType fromValue(int value)
+    {
+        for (TriggerType type : values())
+        {
+            if (type.value == value)
+            {
                 return type;
             }
         }

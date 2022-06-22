@@ -14,71 +14,88 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.events.automoderation;
+package net.dv8tion.jda.api.events.automod;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.automod.AutoModerationAction;
+import net.dv8tion.jda.api.entities.automod.EventType;
+import net.dv8tion.jda.api.entities.automod.TriggerMetadata;
+import net.dv8tion.jda.api.entities.automod.TriggerType;
 import net.dv8tion.jda.api.events.Event;
 
 import javax.annotation.Nonnull;
 import java.util.List;
 
-public class GenericAutoModerationEvent extends Event {
+public class GenericAutoModerationEvent extends Event
+{
     protected final AutoModerationRule rule;
 
-    public GenericAutoModerationEvent(@Nonnull JDA api, long responseNumber, AutoModerationRule rule) {
+    public GenericAutoModerationEvent(@Nonnull JDA api, long responseNumber, AutoModerationRule rule)
+    {
         super(api, responseNumber);
         this.rule = rule;
     }
 
-    public Guild getGuild() {
+    public Guild getGuild()
+    {
         return rule.getGuild();
     }
 
     @Nonnull
-    public String getName() {
+    public String getName()
+    {
         return rule.getName();
     }
 
     @Nonnull
-    public User getUser() {
+    public User getUser()
+    {
         return rule.getUser();
     }
 
     @Nonnull
-    public EventType getEventType() {
+    public EventType getEventType()
+    {
         return rule.getEventType();
     }
 
     @Nonnull
-    public TriggerType getTriggerType() {
+    public TriggerType getTriggerType()
+    {
         return rule.getTriggerType();
     }
 
     @Nonnull
-    public TriggerMetadata getTriggerMetadata() {
+    public TriggerMetadata getTriggerMetadata()
+    {
         return rule.getTriggerMetadata();
     }
 
     @Nonnull
-    public List<AutoModerationAction> getActions() {
+    public List<AutoModerationAction> getActions()
+    {
         return rule.getActions();
     }
 
-    public boolean isEnabled() {
+    public boolean isEnabled()
+    {
         return rule.isEnabled();
     }
 
-    public List<Role> getExemptRoles() {
+    public List<Role> getExemptRoles()
+    {
         return rule.getExemptRoles();
     }
 
-    public List<Channel> getExemptChannels() {
+    public List<Channel> getExemptChannels()
+    {
         return rule.getExemptChannels();
     }
 
     @Nonnull
-    public AutoModerationRule getRule() {
+    public AutoModerationRule getRule()
+    {
         return rule;
     }
 }

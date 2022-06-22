@@ -16,8 +16,13 @@
 
 package net.dv8tion.jda.internal.handle;
 
+import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.automod.AutoModerationAction;
+import net.dv8tion.jda.api.entities.automod.TriggerType;
+import net.dv8tion.jda.api.events.automod.AutoModerationActionExecutionEvent;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
+import net.dv8tion.jda.internal.entities.GuildImpl;
 
 public class AutoModerationActionExecutionHandler extends SocketHandler
 {
@@ -29,7 +34,55 @@ public class AutoModerationActionExecutionHandler extends SocketHandler
     @Override
     protected Long handleInternally(DataObject dataObject)
     {
-        // TODO: https://discord.com/developers/docs/topics/gateway#auto-moderation-action-execution-auto-moderation-action-execution-event-fields
+        long guildId = dataObject.getLong("guild_id");
+        if (api.getGuildSetupController().isLocked(guildId))
+            return guildId;
+
+        Guild guild = api.getGuildById(guildId);
+
+        AutoModerationAction action = api.getEntityBuilder().createAutoModerationAction((GuildImpl) guild, dataObject.getObject("action"));
+
+        AutoModerationRule rule = guild.getAutoModerationRuleById(dataObject.getString("rule_id"));
+
+        TriggerType triggerType = TriggerType.fromValue(dataObject.getInt("rule_trigger_type"));
+
+        User trigger = api.getUserById(dataObject.getString("user_id"));
+
+        GuildChannel channel = null;
+        if (!dataObject.isNull("channel_id"))
+        {
+            channel = api.getGuildChannelById(dataObject.getString("channel_id"));
+            ChannelType channelType = channel.getType();
+
+            if (channelType.isMessage()) {
+                channel = api.getTextChannelById("channel_id");
+            } else if (channelType.isThread()) {
+                channel = api.getThreadChannelById("channel_id");
+            } else {
+                channel = null;
+            }
+        }
+
+        Long messageId = null;
+        if (!dataObject.isNull("message_id"))
+            messageId = dataObject.getLong("message_id");
+
+        Long alertSystemMessageId = null;
+        if (!dataObject.isNull("alert_system_message_id"))
+            alertSystemMessageId = dataObject.getLong("alert_system_message_id");
+
+        String content = dataObject.getString("content");
+
+        String matchedKeyword = null;
+        if (!dataObject.isNull("matched_keyword"))
+            matchedKeyword = dataObject.getString("matched_keyword");
+
+        String matchedContent = null;
+        if (!dataObject.isNull("matched_content"))
+            matchedContent = dataObject.getString("matched_content");
+
+        api.handleEvent(new AutoModerationActionExecutionEvent(api, responseNumber, rule, action, trigger, triggerType, channel,
+                messageId, alertSystemMessageId, content, matchedKeyword, matchedContent));
         return null;
     } 
 }

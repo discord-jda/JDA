@@ -14,28 +14,19 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.entities;
+package net.dv8tion.jda.api.events.automod;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.AutoModerationRule;
+import org.jetbrains.annotations.NotNull;
 
 /**
- * Represents an action that will be executed when an auto moderation rule is triggered.
+ * Indicates that an {@link net.dv8tion.jda.api.entities.AutoModerationRule AutoModerationRule} was deleted.
  */
-public interface AutoModerationAction {
-    /**
-     * Returns the type of this action.
-     *
-     * @return {@link ActionType ActionType}
-     */
-    @Nonnull
-    ActionType getActionType();
-
-    /**
-     * Returns additional metadata used during the execution of this specific action type.
-     *
-     * @return {@link ActionMetadata ActionMetadata}
-     */
-    @Nullable
-    ActionMetadata getActionMetadata();
+public class AutoModerationRuleDeleteEvent extends GenericAutoModerationEvent
+{
+    public AutoModerationRuleDeleteEvent(@NotNull JDA api, long responseNumber, AutoModerationRule rule)
+    {
+        super(api, responseNumber, rule);
+    }
 }

@@ -18,6 +18,10 @@ package net.dv8tion.jda.api.entities;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.Region;
+import net.dv8tion.jda.api.entities.automod.AutoModerationAction;
+import net.dv8tion.jda.api.entities.automod.EventType;
+import net.dv8tion.jda.api.entities.automod.TriggerMetadata;
+import net.dv8tion.jda.api.entities.automod.TriggerType;
 import net.dv8tion.jda.api.entities.channel.IGuildChannelContainer;
 import net.dv8tion.jda.api.entities.sticker.*;
 import net.dv8tion.jda.api.entities.templates.Template;
@@ -48,9 +52,6 @@ import net.dv8tion.jda.api.utils.cache.SortedSnowflakeCacheView;
 import net.dv8tion.jda.api.utils.concurrent.Task;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 import net.dv8tion.jda.internal.requests.DeferredRestAction;
-import net.dv8tion.jda.internal.requests.RestActionImpl;
-import net.dv8tion.jda.internal.requests.Route;
-import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.concurrent.task.GatewayTask;
@@ -3260,110 +3261,59 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     /**
      * This can be used to modify an existing {@link AutoModerationRule rule's} name which is in this guild.
      *
+     * @param rule, the rule which you want to modify.
      * @return an auto moderation rule.
      */
     @Nonnull
-    AuditableRestAction<AutoModerationRule> modifyAutoModerationRuleName(@Nonnull String ruleId, @Nonnull String name);
-
-    /**
-     * This can be used to modify an existing {@link AutoModerationRule rule's} name which is in this guild.
-     *
-     * @return an auto moderation rule.
-     */
-    default AuditableRestAction<AutoModerationRule> modifyAutoModerationRuleName(long ruleId, @Nonnull String name) {
-        return modifyAutoModerationRuleName(Long.toUnsignedString(ruleId), name);
-    }
+    AuditableRestAction<AutoModerationRule> modifyAutoModerationRuleName(@Nonnull AutoModerationRule rule, @Nonnull String name);
 
     /**
      * This can be used to modify an existing {@link AutoModerationRule rule's} event type which is in this guild.
      *
+     * @param rule, the rule which you want to modify.
      * @return an auto moderation rule.
      */
-    AuditableRestAction<AutoModerationRule> modifyAutoModerationRuleEventType(@Nonnull String ruleId, @Nonnull EventType eventType);
-
-    /**
-     * This can be used to modify an existing {@link AutoModerationRule rule's} event type which is in this guild.
-     *
-     * @return an auto moderation rule.
-     */
-    default AuditableRestAction<AutoModerationRule> modifyAutoModerationRuleEventType(long ruleId, @Nonnull EventType eventType) {
-        return modifyAutoModerationRuleEventType(Long.toUnsignedString(ruleId), eventType);
-    }
+    AuditableRestAction<AutoModerationRule> modifyAutoModerationRuleEventType(@Nonnull AutoModerationRule rule, @Nonnull EventType eventType);
 
     /**
      * This can be used to modify an existing {@link AutoModerationRule rule's} actions which is in this guild.
      *
+     * @param rule, the rule which you want to modify.
      * @return an auto moderation rule.
      */
-    AuditableRestAction<AutoModerationRule> modifyAutoModerationRuleActions(@Nonnull String ruleId, @Nonnull List<AutoModerationAction> actions);
-
-    default AuditableRestAction<AutoModerationRule> modifyAutoModerationRuleActions(long ruleId, @Nonnull List<AutoModerationAction> actions) {
-        return modifyAutoModerationRuleActions(Long.toUnsignedString(ruleId), actions);
-    }
+    AuditableRestAction<AutoModerationRule> modifyAutoModerationRuleActions(@Nonnull AutoModerationRule rule, @Nonnull List<AutoModerationAction> actions);
 
     /**
      * This can be used to modify an existing {@link AutoModerationRule rule's} status(Enabled/Disabled) which is in this guild.
      *
+     * @param rule, the rule which you want to modify.
      * @return an auto moderation rule.
      */
-    AuditableRestAction<AutoModerationRule> modifyAutoModerationStatus(@Nonnull String ruleId, boolean enabled);
-
-    /**
-     * This can be used to modify an existing {@link AutoModerationRule rule's} status(Enabled/Disabled) which is in this guild.
-     *
-     * @return an auto moderation rule.
-     */
-    default AuditableRestAction<AutoModerationRule> modifyAutoModerationStatus(long ruleId, boolean enabled) {
-        return modifyAutoModerationStatus(Long.toUnsignedString(ruleId), enabled);
-    }
+    AuditableRestAction<AutoModerationRule> modifyAutoModerationStatus(@Nonnull AutoModerationRule rule, boolean enabled);
 
     /**
      * This can be used to modify an existing {@link AutoModerationRule rule's} exempt roles which is in this guild.
      *
+     * @param rule, the rule which you want to modify.
      * @return an auto moderation rule.
      */
-    AuditableRestAction<AutoModerationRule> modifyAutoModerationExemptRoles(@Nonnull String ruleId, @Nonnull List<Role> roles);
-
-    /**
-     * This can be used to modify an existing {@link AutoModerationRule rule's} exempt roles which is in this guild.
-     *
-     * @return an auto moderation rule.
-     */
-    default AuditableRestAction<AutoModerationRule> modifyAutoModerationExemptRoles(long ruleId, @Nonnull List<Role> roles) {
-        return modifyAutoModerationExemptRoles(Long.toUnsignedString(ruleId), roles);
-    }
+    AuditableRestAction<AutoModerationRule> modifyAutoModerationExemptRoles(@Nonnull AutoModerationRule rule, @Nonnull List<Role> roles);
 
     /**
      * This can be used to modify an existing {@link AutoModerationRule rule's} exempt channels which is in this guild.
      *
+     * @param rule, the rule which you want to modify.
      * @return an auto moderation rule.
      */
-    AuditableRestAction<AutoModerationRule> modifyAutoModerationExemptChannels(@Nonnull String ruleId, @Nonnull List<Channel> channels);
-
-    /**
-     * This can be used to modify an existing {@link AutoModerationRule rule's} exempt channels which is in this guild.
-     *
-     * @return an auto moderation rule.
-     */
-    default AuditableRestAction<AutoModerationRule> modifyAutoModerationExemptChannels(long ruleId, @Nonnull List<Channel> channels) {
-        return modifyAutoModerationExemptChannels(Long.toUnsignedString(ruleId), channels);
-    }
+    AuditableRestAction<AutoModerationRule> modifyAutoModerationExemptChannels(@Nonnull AutoModerationRule rule, @Nonnull List<Channel> channels);
 
     /**
      * Deletes an auto moderation rule from this guild.
      *
+     * @param rule, the rule which you want to delete.
      * @return A {@link RestAction} that can be used to monitor the request.
      */
-    AuditableRestAction<Void> deleteAutoModerationRuleById(@Nonnull String ruleId);
-
-    /**
-     * Deletes an auto moderation rule from this guild.
-     *
-     * @return A {@link RestAction} that can be used to monitor the request.
-     */
-    default AuditableRestAction<Void> deleteAutoModerationRuleById(long id) {
-        return deleteAutoModerationRuleById(Long.toUnsignedString(id));
-    }
+    AuditableRestAction<Void> deleteAutoModerationRuleById(@Nonnull AutoModerationRule rule);
 
     @Nonnull
     SnowflakeCacheView<AutoModerationRule> getAutoModerationRuleCache();

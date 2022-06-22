@@ -14,41 +14,47 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.internal.entities;
+package net.dv8tion.jda.internal.entities.automod;
 
-import net.dv8tion.jda.api.entities.KeywordPresetType;
-import net.dv8tion.jda.api.entities.TriggerMetadata;
+import net.dv8tion.jda.api.entities.automod.KeywordPresetType;
+import net.dv8tion.jda.api.entities.automod.TriggerMetadata;
 
 import java.util.List;
 import java.util.Objects;
 
-public class TriggerMetadataImpl implements TriggerMetadata {
+public class TriggerMetadataImpl implements TriggerMetadata
+{
 
     private List<String> keywords;
     private List<KeywordPresetType> keywordPresets;
 
     @Override
-    public List<String> getKeywords() {
+    public List<String> getKeywords()
+    {
         return keywords;
     }
 
-    @Override
-    public List<KeywordPresetType> getKeywordPresetTypes() {
-        return keywordPresets;
-    }
-
-    public TriggerMetadataImpl setKeywords(List<String> keywords) {
+    public TriggerMetadataImpl setKeywords(List<String> keywords)
+    {
         this.keywords = keywords;
         return this;
     }
 
-    public TriggerMetadataImpl setKeywordPresets(List<KeywordPresetType> keywordPresets) {
+    @Override
+    public List<KeywordPresetType> getKeywordPresetTypes()
+    {
+        return keywordPresets;
+    }
+
+    public TriggerMetadataImpl setKeywordPresets(List<KeywordPresetType> keywordPresets)
+    {
         this.keywordPresets = keywordPresets;
         return this;
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(Object o)
+    {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         TriggerMetadataImpl that = (TriggerMetadataImpl) o;
@@ -56,12 +62,14 @@ public class TriggerMetadataImpl implements TriggerMetadata {
     }
 
     @Override
-    public int hashCode() {
+    public int hashCode()
+    {
         return Objects.hash(keywords, keywordPresets);
     }
 
     @Override
-    public String toString() {
+    public String toString()
+    {
         return "TriggerMetadataImpl(" +
                 "keywords=" + keywords +
                 ", keywordPresets=" + keywordPresets +

@@ -14,50 +14,51 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.events.automoderation.update;
+package net.dv8tion.jda.api.events.automod.update;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.AutoModerationField;
 import net.dv8tion.jda.api.entities.AutoModerationRule;
-import net.dv8tion.jda.api.entities.EventType;
+import net.dv8tion.jda.api.entities.automod.AutoModerationField;
+import net.dv8tion.jda.api.entities.automod.TriggerType;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 
 /**
- * Indicates that a {@link net.dv8tion.jda.api.entities.AutoModerationRule rule} updated its event type.
+ * Indicates that a {@link net.dv8tion.jda.api.entities.AutoModerationRule rule} updated its trigger type.
  *
- * <p>Can be used to retrieve the old event type.
+ * <p>Can be used to retrieve the trigger type.
  *
- * <p>Identifier: {@code event_type}
+ * <p>Identifier: {@code trigger_type}
  */
-public class AutoModerationRuleEventTypeUpdateEvent extends GenericAutoModerationRuleUpdateEvent<EventType>
+public class AutoModerationRuleTriggerTypeUpdateEvent extends GenericAutoModerationRuleUpdateEvent<TriggerType>
 {
-    public AutoModerationRuleEventTypeUpdateEvent(@NotNull JDA api, long responseNumber, AutoModerationRule rule, AutoModerationField field, EventType oldValue, EventType newValue)
+
+    public AutoModerationRuleTriggerTypeUpdateEvent(@NotNull JDA api, long responseNumber, AutoModerationRule rule, AutoModerationField field, TriggerType oldValue, TriggerType newValue)
     {
         super(api, responseNumber, rule, field, oldValue, newValue);
     }
 
-    public EventType getOldEventType()
+    public TriggerType getOldTriggerType()
     {
         return getOldValue();
     }
 
-    public EventType getNewEventType()
+    public TriggerType getNewTriggerType()
     {
         return getNewValue();
     }
 
     @Nonnull
     @Override
-    public EventType getOldValue()
+    public TriggerType getOldValue()
     {
         return super.getOldValue();
     }
 
     @Nonnull
     @Override
-    public EventType getNewValue()
+    public TriggerType getNewValue()
     {
         return super.getNewValue();
     }

@@ -16,10 +16,10 @@
 
 package net.dv8tion.jda.internal.handle;
 
-import net.dv8tion.jda.api.events.automoderation.AutoModerationRuleDeleteEvent;
+import net.dv8tion.jda.api.entities.AutoModerationRule;
+import net.dv8tion.jda.api.events.automod.AutoModerationRuleDeleteEvent;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
-import net.dv8tion.jda.api.entities.AutoModerationRule;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.requests.WebSocketClient;
 

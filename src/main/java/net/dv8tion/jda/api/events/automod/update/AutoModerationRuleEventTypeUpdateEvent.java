@@ -14,49 +14,50 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.events.automoderation.update;
+package net.dv8tion.jda.api.events.automod.update;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.AutoModerationField;
 import net.dv8tion.jda.api.entities.AutoModerationRule;
+import net.dv8tion.jda.api.entities.automod.AutoModerationField;
+import net.dv8tion.jda.api.entities.automod.EventType;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 
 /**
- * Indicates that a {@link net.dv8tion.jda.api.entities.AutoModerationRule rule} has been enabled/disabled.
+ * Indicates that a {@link net.dv8tion.jda.api.entities.AutoModerationRule rule} updated its event type.
  *
- * <p>Can be used to retrieve weather it was enabled or disabled prior to the update.
+ * <p>Can be used to retrieve the old event type.
  *
- * <p>Identifier: {@code enabled}
+ * <p>Identifier: {@code event_type}
  */
-public class AutoModerationRuleEnabledUpdateEvent extends GenericAutoModerationRuleUpdateEvent<Boolean>
+public class AutoModerationRuleEventTypeUpdateEvent extends GenericAutoModerationRuleUpdateEvent<EventType>
 {
-    public AutoModerationRuleEnabledUpdateEvent(@NotNull JDA api, long responseNumber, AutoModerationRule rule, AutoModerationField field, Boolean oldValue, Boolean newValue)
+    public AutoModerationRuleEventTypeUpdateEvent(@NotNull JDA api, long responseNumber, AutoModerationRule rule, AutoModerationField field, EventType oldValue, EventType newValue)
     {
         super(api, responseNumber, rule, field, oldValue, newValue);
     }
 
-    public boolean wasEnabled()
+    public EventType getOldEventType()
     {
         return getOldValue();
     }
 
-    public boolean isEnabled()
+    public EventType getNewEventType()
     {
         return getNewValue();
     }
 
     @Nonnull
     @Override
-    public Boolean getOldValue()
+    public EventType getOldValue()
     {
         return super.getOldValue();
     }
 
     @Nonnull
     @Override
-    public Boolean getNewValue()
+    public EventType getNewValue()
     {
         return super.getNewValue();
     }

@@ -14,51 +14,50 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.events.automoderation.update;
+package net.dv8tion.jda.api.events.automod.update;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.AutoModerationField;
 import net.dv8tion.jda.api.entities.AutoModerationRule;
-import net.dv8tion.jda.api.entities.Channel;
+import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.automod.AutoModerationField;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
-import java.util.List;
 
 /**
- * Indicates that a {@link net.dv8tion.jda.api.entities.AutoModerationRule rule} updated the exempt channels.
+ * Indicates that a {@link net.dv8tion.jda.api.entities.AutoModerationRule rule} updated its creator(user).
  *
- * <p>Can be used to retrieve the old exempt channels.
+ * <p>Can be used to retrieve the old creator(user).
  *
- * <p>Identifier: {@code exempt_channels}
+ * <p>Identifier: {@code user_id}
  */
-public class AutoModerationRuleExemptChannelsUpdateEvent extends GenericAutoModerationRuleUpdateEvent<List<Channel>>
+public class AutoModerationRuleUserUpdateEvent extends GenericAutoModerationRuleUpdateEvent<User>
 {
-    public AutoModerationRuleExemptChannelsUpdateEvent(@NotNull JDA api, long responseNumber, AutoModerationRule rule, AutoModerationField field, List<Channel> oldValue, List<Channel> newValue)
+    public AutoModerationRuleUserUpdateEvent(@NotNull JDA api, long responseNumber, AutoModerationRule rule, AutoModerationField field, User oldValue, User newValue)
     {
         super(api, responseNumber, rule, field, oldValue, newValue);
     }
 
-    public List<Channel> getOldExemptChannels()
+    public User getOldUser()
     {
         return getOldValue();
     }
 
-    public List<Channel> getNewExemptChannels()
+    public User getNewUser()
     {
         return getNewValue();
     }
 
     @Nonnull
     @Override
-    public List<Channel> getOldValue()
+    public User getOldValue()
     {
         return super.getOldValue();
     }
 
     @Nonnull
     @Override
-    public List<Channel> getNewValue()
+    public User getNewValue()
     {
         return super.getNewValue();
     }

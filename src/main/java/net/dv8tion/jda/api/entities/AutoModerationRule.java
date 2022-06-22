@@ -16,6 +16,11 @@
 
 package net.dv8tion.jda.api.entities;
 
+import net.dv8tion.jda.api.entities.automod.AutoModerationAction;
+import net.dv8tion.jda.api.entities.automod.EventType;
+import net.dv8tion.jda.api.entities.automod.TriggerMetadata;
+import net.dv8tion.jda.api.entities.automod.TriggerType;
+
 import javax.annotation.Nonnull;
 import java.util.List;
 
@@ -30,7 +35,7 @@ public interface AutoModerationRule extends ISnowflake, Comparable<AutoModeratio
     /**
      * Returns the Guild that the rule belongs to.
      *
-     * @return {@link net.dv8tion.jda.api.entities.Guild Guild}
+     * @return {@link Guild Guild}
      */
     @Nonnull
     Guild getGuild();
@@ -46,7 +51,7 @@ public interface AutoModerationRule extends ISnowflake, Comparable<AutoModeratio
     /**
      * Returns the user who created the rule.
      *
-     * @return {@link net.dv8tion.jda.api.entities.User User}
+     * @return {@link User User}
      */
     @Nonnull
     User getUser();
@@ -54,7 +59,7 @@ public interface AutoModerationRule extends ISnowflake, Comparable<AutoModeratio
     /**
      * Returns the type of event that can potentially trigger this rule.
      *
-     * @return {@link net.dv8tion.jda.api.entities.EventType EventType}
+     * @return {@link EventType EventType}
      */
     @Nonnull
     EventType getEventType();
@@ -62,7 +67,7 @@ public interface AutoModerationRule extends ISnowflake, Comparable<AutoModeratio
     /**
      * Returns the type of trigger that can cause this rule to be executed.
      *
-     * @return {@link net.dv8tion.jda.api.entities.TriggerType TriggerTypes}
+     * @return {@link TriggerType TriggerTypes}
      */
     @Nonnull
     TriggerType getTriggerType();
@@ -70,7 +75,7 @@ public interface AutoModerationRule extends ISnowflake, Comparable<AutoModeratio
     /**
      * Returns additional metadata for the trigger of this rule, used whenever this rule is executed.
      *
-     * @return {@link net.dv8tion.jda.api.entities.TriggerMetadata TriggerMetadata}
+     * @return {@link TriggerMetadata TriggerMetadata}
      */
     @Nonnull
     TriggerMetadata getTriggerMetadata();
@@ -78,7 +83,7 @@ public interface AutoModerationRule extends ISnowflake, Comparable<AutoModeratio
     /**
      * Returns the actions that will be performed when this rule is executed.
      *
-     * @return A {@link java.util.List List} of {@link net.dv8tion.jda.api.entities.AutoModerationAction ActionTypes}
+     * @return A {@link List List} of {@link AutoModerationAction Actions}
      */
     @Nonnull
     List<AutoModerationAction> getActions();
@@ -86,21 +91,21 @@ public interface AutoModerationRule extends ISnowflake, Comparable<AutoModeratio
     /**
      * Returns whether this rule is enabled or not.
      *
-     * @return {@link java.lang.Boolean Boolean}
+     * @return True, if this is enabled
      */
     boolean isEnabled();
 
     /**
      * Returns the roles that are exempt from this rule.
      *
-     * @return A {@link java.util.List List} of {@link net.dv8tion.jda.api.entities.Role Roles} which are exempt from the rules.
+     * @return A {@link List List} of {@link Role Roles} which are exempt from the rules.
      */
     List<Role> getExemptRoles();
 
     /**
      * Returns the channels that are exempt from this rule.
      *
-     * @return A {@link java.util.List List} of {@link net.dv8tion.jda.api.entities.Channel Channels} which are exempt from the rules.
+     * @return A {@link List List} of {@link Channel Channels} which are exempt from the rules.
      */
     List<Channel> getExemptChannels();
 }

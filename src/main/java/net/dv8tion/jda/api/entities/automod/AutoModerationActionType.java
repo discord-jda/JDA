@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.entities;
+package net.dv8tion.jda.api.entities.automod;
+
+import javax.annotation.Nonnull;
 
 /**
  * Represents a type of action that will be performed when an auto moderation rule is triggered.
  */
-public enum ActionType
+public enum AutoModerationActionType
 {
     /**
      * BPrevents the message from being sent.
@@ -40,17 +42,23 @@ public enum ActionType
 
     private final int value;
 
-    ActionType(int value) {
+    AutoModerationActionType(int value)
+    {
         this.value = value;
     }
 
-    public int getValue() {
+    public int getValue()
+    {
         return value;
     }
 
-    public static ActionType fromValue(int value) {
-        for (ActionType type : values()) {
-            if (type.value == value) {
+    @Nonnull
+    public static AutoModerationActionType fromValue(int value)
+    {
+        for (AutoModerationActionType type : values())
+        {
+            if (type.value == value)
+            {
                 return type;
             }
         }

@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.events.automoderation.update;
+package net.dv8tion.jda.api.events.automod.update;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.AutoModerationField;
 import net.dv8tion.jda.api.entities.AutoModerationRule;
-import net.dv8tion.jda.api.entities.Channel;
 import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.automod.AutoModerationField;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;

@@ -14,20 +14,21 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.entities;
+package net.dv8tion.jda.api.entities.automod;
 
 import java.util.List;
 
 /**
  * This is additional data used whether a rule should be executed or not.
  */
-public interface TriggerMetadata {
+public interface TriggerMetadata
+{
     /**
      * Returns the substrings which will be searched for in content.
      * <br>
      * <br> These substrings can be a phrase which contains multiple words. Wildcard symbols ({@code *}) can also be used to customize how each keyword is matched.
      * <br>
-     * <br> Associated trigger type is {@link net.dv8tion.jda.api.entities.TriggerType#KEYWORD}.
+     * <br> Associated trigger type is {@link TriggerType#KEYWORD}.
      *
      * @return A {@link java.util.List List} of {@link java.lang.String Strings}
      */
@@ -37,9 +38,9 @@ public interface TriggerMetadata {
      * The internally pre-defined word sets which will be searched for in content.
      *
      * <br>
-     * Associated trigger type is {@link net.dv8tion.jda.api.entities.TriggerType#KEYWORD_PRESET}.
+     * Associated trigger type is {@link TriggerType#KEYWORD_PRESET}.
      *
-     * @return A {@link java.util.List List} of {@link net.dv8tion.jda.api.entities.KeywordPresetType KeywordPresets}
+     * @return A {@link java.util.List List} of {@link KeywordPresetType KeywordPresets}
      */
     List<KeywordPresetType> getKeywordPresetTypes();
 }

@@ -14,15 +14,16 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.entities;
+package net.dv8tion.jda.api.entities.automod;
 
 import net.dv8tion.jda.api.audit.AuditLogKey;
+import net.dv8tion.jda.api.entities.*;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.List;
 
-public enum AutoModerationField {
+public enum AutoModerationField
+{
 
     /**
      * The {@link Guild guild} the rule is for.
@@ -97,22 +98,26 @@ public enum AutoModerationField {
     private final String fieldName;
     private final AuditLogKey auditLogKey;
 
-    AutoModerationField(String fieldName, AuditLogKey auditLogKey) {
+    AutoModerationField(String fieldName, AuditLogKey auditLogKey)
+    {
         this.fieldName = fieldName;
         this.auditLogKey = auditLogKey;
     }
 
     @Nonnull
-    public String getFieldName() {
+    public String getFieldName()
+    {
         return fieldName;
     }
 
     @Nullable
-    public AuditLogKey getAuditLogKey() {
+    public AuditLogKey getAuditLogKey()
+    {
         return auditLogKey;
     }
 
-    public String toString() {
+    public String toString()
+    {
         return "AutoModerationField." + name() + '(' + fieldName + ')';
     }
 }

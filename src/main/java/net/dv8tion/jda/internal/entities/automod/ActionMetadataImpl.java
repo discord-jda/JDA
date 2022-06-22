@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.internal.entities;
+package net.dv8tion.jda.internal.entities.automod;
 
-import net.dv8tion.jda.api.entities.ActionMetadata;
+import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.automod.ActionMetadata;
 
 import javax.annotation.Nonnull;
 import java.time.Duration;
@@ -26,16 +27,16 @@ import java.util.Objects;
 public class ActionMetadataImpl implements ActionMetadata
 {
 
-    private TextChannel channel;
+    private GuildChannel channel;
     private Duration duration;
 
     @Override
-    public TextChannel getChannel()
+    public GuildChannel getChannel()
     {
         return channel;
     }
 
-    public ActionMetadataImpl setChannel(TextChannel channel)
+    public ActionMetadataImpl setChannel(GuildChannel channel)
     {
         this.channel = channel;
         return this;

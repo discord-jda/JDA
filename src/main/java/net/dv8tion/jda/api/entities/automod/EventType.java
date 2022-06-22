@@ -14,12 +14,15 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.entities;
+package net.dv8tion.jda.api.entities.automod;
+
+import javax.annotation.Nonnull;
 
 /**
  * Represents the type of event which will cause the auto moderation system to check for a specific trigger.
  */
-public enum EventType {
+public enum EventType
+{
     /**
      * A message was sent.
      */
@@ -32,20 +35,26 @@ public enum EventType {
 
     private final int value;
 
-    EventType(int value) {
+    EventType(int value)
+    {
         this.value = value;
     }
 
-    public int getValue() {
-        return value;
-    }
-
-    public static EventType fromValue(int value) {
-        for (EventType type : values()) {
-            if (type.value == value) {
+    @Nonnull
+    public static EventType fromValue(int value)
+    {
+        for (EventType type : values())
+        {
+            if (type.value == value)
+            {
                 return type;
             }
         }
         return UNKNOWN;
+    }
+
+    public int getValue()
+    {
+        return value;
     }
 }
