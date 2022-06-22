@@ -89,14 +89,18 @@ public class PrivilegeConfig
      *
      * <p>This does not include privileges applied to the application directly. Use {@link #getApplicationPrivileges()} for that.
      *
-     * @param id
-     *        The id of the command
+     * @param  id
+     *         The id of the command
+     *
+     * @throws IllegalArgumentException
+     *         If the provided id is null
      *
      * @return Immutable List containing all IntegrationPrivileges that have been applied to the command with the given id in this guild.
      */
     @Nullable
     public List<IntegrationPrivilege> getCommandPrivileges(@Nonnull String id)
     {
+        Checks.notNull(id, "Id");
         return privileges.get(id);
     }
 
