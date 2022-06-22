@@ -19,6 +19,8 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.Region;
 import net.dv8tion.jda.api.entities.channel.IGuildChannelContainer;
+import net.dv8tion.jda.api.entities.emoji.CustomEmoji;
+import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import net.dv8tion.jda.api.entities.sticker.*;
 import net.dv8tion.jda.api.entities.templates.Template;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
@@ -477,7 +479,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * <br>Shortcut for {@link #retrieveRegions(boolean) retrieveRegions(true)}
      * <br>This will include deprecated voice regions by default.
      *
-     * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type {@link java.util.EnumSet EnumSet}
+     * @return {@link RestAction RestAction} - Type {@link java.util.EnumSet EnumSet}
      */
     @Nonnull
     @CheckReturnValue
@@ -492,7 +494,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * @param  includeDeprecated
      *         Whether to include deprecated regions
      *
-     * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type {@link java.util.EnumSet EnumSet}
+     * @return {@link RestAction RestAction} - Type {@link java.util.EnumSet EnumSet}
      */
     @Nonnull
     @CheckReturnValue
@@ -729,7 +731,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * <p>This action requires the {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} permission.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
+     * the returned {@link RestAction RestAction} include the following:
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#INVITE_CODE_INVALID INVITE_CODE_INVALID}
      *     <br>If this guild does not have a vanity invite</li>
@@ -882,16 +884,14 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     }
 
     /**
-     * The maximum amount of emotes a guild can have based on the guilds boost tier.
+     * The maximum amount of custom emojis a guild can have based on the guilds boost tier.
      *
-     * @return The maximum amount of emotes
-     *
-     * @since 4.0.0
+     * @return The maximum amount of custom emojis
      */
-    default int getMaxEmotes()
+    default int getMaxEmojis()
     {
-        int maxEmotes = getFeatures().contains("MORE_EMOJI") ? 200 : 50;
-        return Math.max(maxEmotes, getBoostTier().getMaxEmotes());
+        int max = getFeatures().contains("MORE_EMOJI") ? 200 : 50;
+        return Math.max(max, getBoostTier().getMaxEmojis());
     }
 
     /**
@@ -1298,18 +1298,18 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     }
 
     /**
-     * Gets a list of {@link net.dv8tion.jda.api.entities.Member Members} that have all {@link net.dv8tion.jda.api.entities.Role Roles} provided.
+     * Gets a list of {@link net.dv8tion.jda.api.entities.Member Members} that have all {@link Role Roles} provided.
      * <br>If there are no {@link net.dv8tion.jda.api.entities.Member Members} with all provided roles, then this returns an empty list.
      *
      * <p>This will only check cached members!
      * <br>See {@link net.dv8tion.jda.api.utils.MemberCachePolicy MemberCachePolicy}
      *
      * @param  roles
-     *         The {@link net.dv8tion.jda.api.entities.Role Roles} that a {@link net.dv8tion.jda.api.entities.Member Member}
+     *         The {@link Role Roles} that a {@link net.dv8tion.jda.api.entities.Member Member}
      *         must have to be included in the returned list.
      *
      * @throws java.lang.IllegalArgumentException
-     *         If a provided {@link net.dv8tion.jda.api.entities.Role Role} is from a different guild or null.
+     *         If a provided {@link Role Role} is from a different guild or null.
      *
      * @return Possibly-empty immutable list of Members with all provided Roles.
      *
@@ -1322,18 +1322,18 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     }
 
     /**
-     * Gets a list of {@link net.dv8tion.jda.api.entities.Member Members} that have all provided {@link net.dv8tion.jda.api.entities.Role Roles}.
+     * Gets a list of {@link net.dv8tion.jda.api.entities.Member Members} that have all provided {@link Role Roles}.
      * <br>If there are no {@link net.dv8tion.jda.api.entities.Member Members} with all provided roles, then this returns an empty list.
      *
      * <p>This will only check cached members!
      * <br>See {@link net.dv8tion.jda.api.utils.MemberCachePolicy MemberCachePolicy}
      *
      * @param  roles
-     *         The {@link net.dv8tion.jda.api.entities.Role Roles} that a {@link net.dv8tion.jda.api.entities.Member Member}
+     *         The {@link Role Roles} that a {@link net.dv8tion.jda.api.entities.Member Member}
      *         must have to be included in the returned list.
      *
      * @throws java.lang.IllegalArgumentException
-     *         If a provided {@link net.dv8tion.jda.api.entities.Role Role} is from a different guild or null.
+     *         If a provided {@link Role Role} is from a different guild or null.
      *
      * @return Possibly-empty immutable list of Members with all provided Roles.
      *
@@ -1442,18 +1442,18 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     List<GuildChannel> getChannels(boolean includeHidden);
 
     /**
-     * Gets a {@link net.dv8tion.jda.api.entities.Role Role} from this guild that has the same id as the
+     * Gets a {@link Role Role} from this guild that has the same id as the
      * one provided.
-     * <br>If there is no {@link net.dv8tion.jda.api.entities.Role Role} with an id that matches the provided
+     * <br>If there is no {@link Role Role} with an id that matches the provided
      * one, then this returns {@code null}.
      *
      * @param  id
-     *         The id of the {@link net.dv8tion.jda.api.entities.Role Role}.
+     *         The id of the {@link Role Role}.
      *
      * @throws java.lang.NumberFormatException
      *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
      *
-     * @return Possibly-null {@link net.dv8tion.jda.api.entities.Role Role} with matching id.
+     * @return Possibly-null {@link Role Role} with matching id.
      */
     @Nullable
     default Role getRoleById(@Nonnull String id)
@@ -1462,15 +1462,15 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     }
 
     /**
-     * Gets a {@link net.dv8tion.jda.api.entities.Role Role} from this guild that has the same id as the
+     * Gets a {@link Role Role} from this guild that has the same id as the
      * one provided.
-     * <br>If there is no {@link net.dv8tion.jda.api.entities.Role Role} with an id that matches the provided
+     * <br>If there is no {@link Role Role} with an id that matches the provided
      * one, then this returns {@code null}.
      *
      * @param  id
-     *         The id of the {@link net.dv8tion.jda.api.entities.Role Role}.
+     *         The id of the {@link Role Role}.
      *
-     * @return Possibly-null {@link net.dv8tion.jda.api.entities.Role Role} with matching id.
+     * @return Possibly-null {@link Role Role} with matching id.
      */
     @Nullable
     default Role getRoleById(long id)
@@ -1479,7 +1479,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     }
 
     /**
-     * Gets all {@link net.dv8tion.jda.api.entities.Role Roles} in this {@link net.dv8tion.jda.api.entities.Guild Guild}.
+     * Gets all {@link Role Roles} in this {@link net.dv8tion.jda.api.entities.Guild Guild}.
      * <br>The roles returned will be sorted according to their position. The highest role being at index 0
      * and the lowest at the last index.
      *
@@ -1488,7 +1488,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * a local variable or use {@link #getRoleCache()} and use its more efficient
      * versions of handling these values.
      *
-     * @return An immutable List of {@link net.dv8tion.jda.api.entities.Role Roles}.
+     * @return An immutable List of {@link Role Roles}.
      */
     @Nonnull
     default List<Role> getRoles()
@@ -1497,12 +1497,12 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     }
 
     /**
-     * Gets a list of all {@link net.dv8tion.jda.api.entities.Role Roles} in this Guild that have the same
+     * Gets a list of all {@link Role Roles} in this Guild that have the same
      * name as the one provided.
-     * <br>If there are no {@link net.dv8tion.jda.api.entities.Role Roles} with the provided name, then this returns an empty list.
+     * <br>If there are no {@link Role Roles} with the provided name, then this returns an empty list.
      *
      * @param  name
-     *         The name used to filter the returned {@link net.dv8tion.jda.api.entities.Role Roles}.
+     *         The name used to filter the returned {@link Role Roles}.
      * @param  ignoreCase
      *         Determines if the comparison ignores case when comparing. True - case insensitive.
      *
@@ -1629,7 +1629,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
 
     /**
      * Sorted {@link net.dv8tion.jda.api.utils.cache.SnowflakeCacheView SnowflakeCacheView} of
-     * all cached {@link net.dv8tion.jda.api.entities.Role Roles} of this Guild.
+     * all cached {@link Role Roles} of this Guild.
      * <br>Roles are sorted according to their position.
      *
      * @return {@link net.dv8tion.jda.api.utils.cache.SortedSnowflakeCacheView SortedSnowflakeCacheView}
@@ -1638,112 +1638,112 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     SortedSnowflakeCacheView<Role> getRoleCache();
 
     /**
-     * Gets an {@link net.dv8tion.jda.api.entities.Emote Emote} from this guild that has the same id as the
+     * Gets a {@link RichCustomEmoji} from this guild that has the same id as the
      * one provided.
-     * <br>If there is no {@link net.dv8tion.jda.api.entities.Emote Emote} with an id that matches the provided
+     * <br>If there is no {@link RichCustomEmoji} with an id that matches the provided
      * one, then this returns {@code null}.
      *
-     * <p><b>Unicode emojis are not included as {@link net.dv8tion.jda.api.entities.Emote Emote}!</b>
+     * <p><b>Unicode emojis are not included as {@link RichCustomEmoji}!</b>
      *
-     * <p>This requires the {@link net.dv8tion.jda.api.utils.cache.CacheFlag#EMOTE CacheFlag.EMOTE} to be enabled!
+     * <p>This requires the {@link net.dv8tion.jda.api.utils.cache.CacheFlag#EMOJI CacheFlag.EMOJI} to be enabled!
      *
      * @param  id
-     *         the emote id
+     *         the emoji id
      *
      * @throws java.lang.NumberFormatException
      *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
      *
-     * @return An Emote matching the specified Id.
+     * @return An Emoji matching the specified id
      *
-     * @see    #retrieveEmoteById(String)
+     * @see    #retrieveEmojiById(String)
      */
     @Nullable
-    default Emote getEmoteById(@Nonnull String id)
+    default RichCustomEmoji getEmojiById(@Nonnull String id)
     {
-        return getEmoteCache().getElementById(id);
+        return getEmojiCache().getElementById(id);
     }
 
     /**
-     * Gets an {@link net.dv8tion.jda.api.entities.Emote Emote} from this guild that has the same id as the
+     * Gets an {@link RichCustomEmoji} from this guild that has the same id as the
      * one provided.
-     * <br>If there is no {@link net.dv8tion.jda.api.entities.Emote Emote} with an id that matches the provided
+     * <br>If there is no {@link RichCustomEmoji} with an id that matches the provided
      * one, then this returns {@code null}.
      *
-     * <p><b>Unicode emojis are not included as {@link net.dv8tion.jda.api.entities.Emote Emote}!</b>
+     * <p><b>Unicode emojis are not included as {@link RichCustomEmoji}!</b>
      *
-     * <p>This requires the {@link net.dv8tion.jda.api.utils.cache.CacheFlag#EMOTE CacheFlag.EMOTE} to be enabled!
+     * <p>This requires the {@link net.dv8tion.jda.api.utils.cache.CacheFlag#EMOJI CacheFlag.EMOJI} to be enabled!
      *
      * @param  id
-     *         the emote id
+     *         the emoji id
      *
-     * @return An Emote matching the specified Id.
+     * @return An emoji matching the specified id
      *
-     * @see    #retrieveEmoteById(long)
+     * @see    #retrieveEmojiById(long)
      */
     @Nullable
-    default Emote getEmoteById(long id)
+    default RichCustomEmoji getEmojiById(long id)
     {
-        return getEmoteCache().getElementById(id);
+        return getEmojiCache().getElementById(id);
     }
 
     /**
-     * Gets all custom {@link net.dv8tion.jda.api.entities.Emote Emotes} belonging to this {@link net.dv8tion.jda.api.entities.Guild Guild}.
-     * <br>Emotes are not ordered in any specific way in the returned list.
+     * Gets all {@link RichCustomEmoji Custom Emojis} belonging to this {@link net.dv8tion.jda.api.entities.Guild Guild}.
+     * <br>Emojis are not ordered in any specific way in the returned list.
      *
-     * <p><b>Unicode emojis are not included as {@link net.dv8tion.jda.api.entities.Emote Emote}!</b>
+     * <p><b>Unicode emojis are not included as {@link RichCustomEmoji}!</b>
      *
      * <p>This copies the backing store into a list. This means every call
      * creates a new list with O(n) complexity. It is recommended to store this into
-     * a local variable or use {@link #getEmoteCache()} and use its more efficient
+     * a local variable or use {@link #getEmojiCache()} and use its more efficient
      * versions of handling these values.
      *
-     * <p>This requires the {@link net.dv8tion.jda.api.utils.cache.CacheFlag#EMOTE CacheFlag.EMOTE} to be enabled!
+     * <p>This requires the {@link net.dv8tion.jda.api.utils.cache.CacheFlag#EMOJI CacheFlag.EMOJI} to be enabled!
      *
-     * @return An immutable List of {@link net.dv8tion.jda.api.entities.Emote Emotes}.
+     * @return An immutable List of {@link RichCustomEmoji Custom Emojis}.
      *
-     * @see    #retrieveEmotes()
+     * @see    #retrieveEmojis()
      */
     @Nonnull
-    default List<Emote> getEmotes()
+    default List<RichCustomEmoji> getEmojis()
     {
-        return getEmoteCache().asList();
+        return getEmojiCache().asList();
     }
 
     /**
-     * Gets a list of all {@link net.dv8tion.jda.api.entities.Emote Emotes} in this Guild that have the same
+     * Gets a list of all {@link RichCustomEmoji Custom Emojis} in this Guild that have the same
      * name as the one provided.
-     * <br>If there are no {@link net.dv8tion.jda.api.entities.Emote Emotes} with the provided name, then this returns an empty list.
+     * <br>If there are no {@link RichCustomEmoji Emojis} with the provided name, then this returns an empty list.
      *
-     * <p><b>Unicode emojis are not included as {@link net.dv8tion.jda.api.entities.Emote Emote}!</b>
+     * <p><b>Unicode emojis are not included as {@link RichCustomEmoji}!</b>
      *
-     * <p>This requires the {@link net.dv8tion.jda.api.utils.cache.CacheFlag#EMOTE CacheFlag.EMOTE} to be enabled!
+     * <p>This requires the {@link net.dv8tion.jda.api.utils.cache.CacheFlag#EMOJI CacheFlag.EMOJI} to be enabled!
      *
      * @param  name
-     *         The name used to filter the returned {@link net.dv8tion.jda.api.entities.Emote Emotes}. Without colons.
+     *         The name used to filter the returned {@link RichCustomEmoji Emojis}. Without colons.
      * @param  ignoreCase
      *         Determines if the comparison ignores case when comparing. True - case insensitive.
      *
-     * @return Possibly-empty immutable list of all Emotes that match the provided name.
+     * @return Possibly-empty immutable list of all Emojis that match the provided name.
      */
     @Nonnull
-    default List<Emote> getEmotesByName(@Nonnull String name, boolean ignoreCase)
+    default List<RichCustomEmoji> getEmojisByName(@Nonnull String name, boolean ignoreCase)
     {
-        return getEmoteCache().getElementsByName(name, ignoreCase);
+        return getEmojiCache().getElementsByName(name, ignoreCase);
     }
 
     /**
      * {@link net.dv8tion.jda.api.utils.cache.SnowflakeCacheView SnowflakeCacheView} of
-     * all cached {@link net.dv8tion.jda.api.entities.Emote Emotes} of this Guild.
-     * <br>This will be empty if {@link net.dv8tion.jda.api.utils.cache.CacheFlag#EMOTE} is disabled.
+     * all cached {@link RichCustomEmoji Custom Emojis} of this Guild.
+     * <br>This will be empty if {@link net.dv8tion.jda.api.utils.cache.CacheFlag#EMOJI} is disabled.
      *
-     * <p>This requires the {@link net.dv8tion.jda.api.utils.cache.CacheFlag#EMOTE CacheFlag.EMOTE} to be enabled!
+     * <p>This requires the {@link net.dv8tion.jda.api.utils.cache.CacheFlag#EMOJI CacheFlag.EMOJI} to be enabled!
      *
      * @return {@link net.dv8tion.jda.api.utils.cache.SnowflakeCacheView SnowflakeCacheView}
      *
-     * @see    #retrieveEmotes()
+     * @see    #retrieveEmojis()
      */
     @Nonnull
-    SnowflakeCacheView<Emote> getEmoteCache();
+    SnowflakeCacheView<RichCustomEmoji> getEmojiCache();
 
     /**
      * Gets a {@link net.dv8tion.jda.api.entities.sticker.GuildSticker GuildSticker} from this guild that has the same id as the
@@ -1846,113 +1846,105 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     SnowflakeCacheView<GuildSticker> getStickerCache();
 
     /**
-     * Retrieves an immutable list of emotes together with their respective creators.
+     * Retrieves an immutable list of Custom Emojis together with their respective creators.
      *
-     * <p>Note that {@link ListedEmote#getUser()} is only available if the currently
-     * logged in account has {@link net.dv8tion.jda.api.Permission#MANAGE_EMOTES_AND_STICKERS Permission.MANAGE_EMOTES_AND_STICKERS}.
+     * <p>Note that {@link RichCustomEmoji#getOwner()} is only available if the currently
+     * logged in account has {@link net.dv8tion.jda.api.Permission#MANAGE_EMOJIS_AND_STICKERS Permission.MANAGE_EMOJIS_AND_STICKERS}.
      *
-     * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: List of {@link net.dv8tion.jda.api.entities.ListedEmote ListedEmote}
-     *
-     * @since  3.8.0
+     * @return {@link RestAction RestAction} - Type: List of {@link RichCustomEmoji}
      */
     @Nonnull
     @CheckReturnValue
-    RestAction<List<ListedEmote>> retrieveEmotes();
+    RestAction<List<RichCustomEmoji>> retrieveEmojis();
 
     /**
-     * Retrieves a listed emote together with its respective creator.
+     * Retrieves a custom emoji together with its respective creator.
      * <br><b>This does not include unicode emoji.</b>
      *
-     * <p>Note that {@link ListedEmote#getUser()} is only available if the currently
-     * logged in account has {@link net.dv8tion.jda.api.Permission#MANAGE_EMOTES_AND_STICKERS Permission.MANAGE_EMOTES_AND_STICKERS}.
+     * <p>Note that {@link RichCustomEmoji#getOwner()} is only available if the currently
+     * logged in account has {@link net.dv8tion.jda.api.Permission#MANAGE_EMOJIS_AND_STICKERS Permission.MANAGE_EMOJIS_AND_STICKERS}.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
+     * the returned {@link RestAction RestAction} include the following:
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_EMOJI UNKNOWN_EMOJI}
-     *     <br>If the provided id does not correspond to an emote in this guild</li>
+     *     <br>If the provided id does not correspond to an emoji in this guild</li>
      * </ul>
      *
      * @param  id
-     *         The emote id
+     *         The emoji id
      *
      * @throws IllegalArgumentException
      *         If the provided id is not a valid snowflake
      *
-     * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.api.entities.ListedEmote ListedEmote}
-     *
-     * @since  3.8.0
+     * @return {@link RestAction RestAction} - Type: {@link RichCustomEmoji}
      */
     @Nonnull
     @CheckReturnValue
-    RestAction<ListedEmote> retrieveEmoteById(@Nonnull String id);
+    RestAction<RichCustomEmoji> retrieveEmojiById(@Nonnull String id);
 
     /**
-     * Retrieves a listed emote together with its respective creator.
+     * Retrieves a Custom Emoji together with its respective creator.
      *
-     * <p>Note that {@link ListedEmote#getUser()} is only available if the currently
-     * logged in account has {@link net.dv8tion.jda.api.Permission#MANAGE_EMOTES_AND_STICKERS Permission.MANAGE_EMOTES_AND_STICKERS}.
+     * <p>Note that {@link RichCustomEmoji#getOwner()} is only available if the currently
+     * logged in account has {@link net.dv8tion.jda.api.Permission#MANAGE_EMOJIS_AND_STICKERS Permission.MANAGE_EMOJIS_AND_STICKERS}.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
+     * the returned {@link RestAction RestAction} include the following:
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_EMOJI UNKNOWN_EMOJI}
-     *     <br>If the provided id does not correspond to an emote in this guild</li>
+     *     <br>If the provided id does not correspond to an emoji in this guild</li>
      * </ul>
      *
      * @param  id
-     *         The emote id
+     *         The emoji id
      *
-     * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.api.entities.ListedEmote ListedEmote}
-     *
-     * @since  3.8.0
+     * @return {@link RestAction RestAction} - Type: {@link RichCustomEmoji}
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<ListedEmote> retrieveEmoteById(long id)
+    default RestAction<RichCustomEmoji> retrieveEmojiById(long id)
     {
-        return retrieveEmoteById(Long.toUnsignedString(id));
+        return retrieveEmojiById(Long.toUnsignedString(id));
     }
 
     /**
-     * Retrieves a listed emote together with its respective creator.
+     * Retrieves a custom emoji together with its respective creator.
      *
-     * <p>Note that {@link ListedEmote#getUser()} is only available if the currently
-     * logged in account has {@link net.dv8tion.jda.api.Permission#MANAGE_EMOTES_AND_STICKERS Permission.MANAGE_EMOTES_AND_STICKERS}.
+     * <p>Note that {@link RichCustomEmoji#getOwner()} is only available if the currently
+     * logged in account has {@link net.dv8tion.jda.api.Permission#MANAGE_EMOJIS_AND_STICKERS Permission.MANAGE_EMOJIS_AND_STICKERS}.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
+     * the returned {@link RestAction RestAction} include the following:
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_EMOJI UNKNOWN_EMOJI}
-     *     <br>If the provided emote does not correspond to an emote in this guild anymore</li>
+     *     <br>If the provided emoji does not correspond to an emoji in this guild anymore</li>
      * </ul>
      *
-     * @param  emote
-     *         The emote
+     * @param  emoji
+     *         The emoji reference to retrieve
      *
-     * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.api.entities.ListedEmote ListedEmote}
-     *
-     * @since  3.8.0
+     * @return {@link RestAction} - Type: {@link RichCustomEmoji}
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<ListedEmote> retrieveEmote(@Nonnull Emote emote)
+    default RestAction<RichCustomEmoji> retrieveEmoji(@Nonnull CustomEmoji emoji)
     {
-        Checks.notNull(emote, "Emote");
-        if (emote.getGuild() != null)
-            Checks.check(emote.getGuild().equals(this), "Emote must be from the same Guild!");
+        Checks.notNull(emoji, "Emoji");
+        if (emoji instanceof RichCustomEmoji && ((RichCustomEmoji) emoji).getGuild() != null)
+            Checks.check(((RichCustomEmoji) emoji).getGuild().equals(this), "Emoji must be from the same Guild!");
 
         JDA jda = getJDA();
-        return new DeferredRestAction<>(jda, ListedEmote.class,
+        return new DeferredRestAction<>(jda, RichCustomEmoji.class,
         () -> {
-            if (emote instanceof ListedEmote)
+            if (emoji instanceof RichCustomEmoji)
             {
-                ListedEmote listedEmote = (ListedEmote) emote;
-                if (listedEmote.hasUser() || !getSelfMember().hasPermission(Permission.MANAGE_EMOTES_AND_STICKERS))
-                    return listedEmote;
+                RichCustomEmoji richEmoji = (RichCustomEmoji) emoji;
+                if (richEmoji.getOwner() != null || !getSelfMember().hasPermission(Permission.MANAGE_EMOJIS_AND_STICKERS))
+                    return richEmoji;
             }
             return null;
-        }, () -> retrieveEmoteById(emote.getId()));
+        }, () -> retrieveEmojiById(emoji.getId()));
     }
 
     /**
@@ -2001,7 +1993,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * @throws IllegalArgumentException
      *         If null is provided
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the currently logged in account does not have {@link Permission#MANAGE_EMOTES_AND_STICKERS MANAGE_EMOTES_AND_STICKERS} in the guild.
+     *         If the currently logged in account does not have {@link Permission#MANAGE_EMOJIS_AND_STICKERS MANAGE_EMOJIS_AND_STICKERS} in the guild.
      *
      * @return {@link GuildStickerManager}
      */
@@ -2015,7 +2007,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * {@link #unban(UserSnowflake)}.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
+     * the returned {@link RestAction RestAction} include the following:
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The ban list cannot be fetched due to a permission discrepancy</li>
@@ -2036,7 +2028,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * <br>If you wish to ban or unban a user, use either {@link #ban(UserSnowflake, int)} or {@link #unban(UserSnowflake)}.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
+     * the returned {@link RestAction RestAction} include the following:
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The ban list cannot be fetched due to a permission discrepancy</li>
@@ -2052,7 +2044,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#BAN_MEMBERS} permission.
      *
-     * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.api.entities.Guild.Ban Ban}
+     * @return {@link RestAction RestAction} - Type: {@link net.dv8tion.jda.api.entities.Guild.Ban Ban}
      *         <br>An unmodifiable ban object for the user banned from this guild
      */
     @Nonnull
@@ -2065,7 +2057,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * Prunability is determined by a Member being offline for at least <i>days</i> days.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
+     * the returned {@link RestAction RestAction} include the following:
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The prune count cannot be fetched due to a permission discrepancy</li>
@@ -2079,7 +2071,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * @throws IllegalArgumentException
      *         If the provided days are less than {@code 1} or more than {@code 30}
      *
-     * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: Integer
+     * @return {@link RestAction RestAction} - Type: Integer
      *         <br>The amount of Members that would be affected.
      */
     @Nonnull
@@ -2087,14 +2079,14 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     RestAction<Integer> retrievePrunableMemberCount(int days);
 
     /**
-     * The @everyone {@link net.dv8tion.jda.api.entities.Role Role} of this {@link net.dv8tion.jda.api.entities.Guild Guild}.
-     * <br>This role is special because its {@link net.dv8tion.jda.api.entities.Role#getPosition() position} is calculated as
+     * The @everyone {@link Role Role} of this {@link net.dv8tion.jda.api.entities.Guild Guild}.
+     * <br>This role is special because its {@link Role#getPosition() position} is calculated as
      * {@code -1}. All other role positions are 0 or greater. This implies that the public role is <b>always</b> below
      * any custom roles created in this Guild. Additionally, all members of this guild are implied to have this role so
      * it is not included in the list returned by {@link net.dv8tion.jda.api.entities.Member#getRoles() Member.getRoles()}.
      * <br>The ID of this Role is the Guild's ID thus it is equivalent to using {@link #getRoleById(long) getRoleById(getIdLong())}.
      *
-     * @return The @everyone {@link net.dv8tion.jda.api.entities.Role Role}
+     * @return The @everyone {@link Role Role}
      */
     @Nonnull
     Role getPublicRole();
@@ -2115,7 +2107,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     /**
      * Returns the {@link GuildManager GuildManager} for this Guild, used to modify
      * all properties and settings of the Guild.
-     * <br>You modify multiple fields in one request by chaining setters before calling {@link net.dv8tion.jda.api.requests.RestAction#queue() RestAction.queue()}.
+     * <br>You modify multiple fields in one request by chaining setters before calling {@link RestAction#queue() RestAction.queue()}.
      *
      * <p>This is a lazy idempotent getter. The manager is retained after the first call.
      * This getter is not thread-safe and would require guards by the user.
@@ -2179,7 +2171,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * @throws java.lang.IllegalStateException
      *         Thrown if the currently logged in account is the Owner of this Guild.
      *
-     * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link java.lang.Void}
+     * @return {@link RestAction RestAction} - Type: {@link java.lang.Void}
      */
     @Nonnull
     @CheckReturnValue
@@ -2194,7 +2186,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * @throws java.lang.IllegalStateException
      *         If the currently logged in account has MFA enabled. ({@link net.dv8tion.jda.api.entities.SelfUser#isMfaEnabled()}).
      *
-     * @return {@link net.dv8tion.jda.api.requests.RestAction} - Type: {@link java.lang.Void}
+     * @return {@link RestAction} - Type: {@link java.lang.Void}
      */
     @Nonnull
     @CheckReturnValue
@@ -2215,7 +2207,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * @throws java.lang.IllegalArgumentException
      *         If the provided {@code mfaCode} is {@code null} or empty when {@link SelfUser#isMfaEnabled()} is true.
      *
-     * @return {@link net.dv8tion.jda.api.requests.RestAction} - Type: {@link java.lang.Void}
+     * @return {@link RestAction} - Type: {@link java.lang.Void}
      */
     @Nonnull
     @CheckReturnValue
@@ -2295,7 +2287,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         if the account does not have {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} in this Guild.
      *
-     * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: List{@literal <}{@link net.dv8tion.jda.api.entities.Invite Invite}{@literal >}
+     * @return {@link RestAction RestAction} - Type: List{@literal <}{@link net.dv8tion.jda.api.entities.Invite Invite}{@literal >}
      *         <br>The list of expanded Invite objects
      *
      * @see     IInviteContainer#retrieveInvites()
@@ -2312,7 +2304,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         if the account does not have {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} in this Guild.
      *
-     * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: List{@literal <}{@link net.dv8tion.jda.api.entities.templates.Template Template}{@literal >}
+     * @return {@link RestAction RestAction} - Type: List{@literal <}{@link net.dv8tion.jda.api.entities.templates.Template Template}{@literal >}
      *         <br>The list of Template objects
      */
     @Nonnull
@@ -2341,7 +2333,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      *         If the provided name is {@code null} or not between 1-100 characters long, or
      *         if the provided description is not between 0-120 characters long
      *
-     * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.api.entities.templates.Template Template}
+     * @return {@link RestAction RestAction} - Type: {@link net.dv8tion.jda.api.entities.templates.Template Template}
      *         <br>The created Template object
      */
     @Nonnull
@@ -2358,7 +2350,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         if the account does not have {@link net.dv8tion.jda.api.Permission#MANAGE_WEBHOOKS MANAGE_WEBHOOKS} in this Guild.
      *
-     * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: List{@literal <}{@link net.dv8tion.jda.api.entities.Webhook Webhook}{@literal >}
+     * @return {@link RestAction RestAction} - Type: List{@literal <}{@link net.dv8tion.jda.api.entities.Webhook Webhook}{@literal >}
      *         <br>A list of all Webhooks in this Guild.
      *
      * @see     TextChannel#retrieveWebhooks()
@@ -3202,7 +3194,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * in the same Guild as the one that you are moving them to.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
+     * the returned {@link RestAction RestAction} include the following:
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The target Member cannot be moved due to a permission discrepancy</li>
@@ -3239,7 +3231,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      *                 {@link net.dv8tion.jda.api.Permission#VOICE_CONNECT} for the destination AudioChannel.</li>
      *         </ul>
      *
-     * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction}
+     * @return {@link RestAction RestAction}
      */
     @Nonnull
     @CheckReturnValue
@@ -3253,7 +3245,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * <p>Equivalent to {@code moveVoiceMember(member, null)}.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
+     * the returned {@link RestAction RestAction} include the following:
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The target Member cannot be moved due to a permission discrepancy</li>
@@ -3280,7 +3272,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      *         If this account doesn't have {@link net.dv8tion.jda.api.Permission#VOICE_MOVE_OTHERS}
      *         in the AudioChannel that the Member is currently in.
      *
-     * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction}
+     * @return {@link RestAction RestAction}
      */
     @Nonnull
     @CheckReturnValue
@@ -3299,7 +3291,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * the Permission {@link net.dv8tion.jda.api.Permission#NICKNAME_MANAGE NICKNAME_MANAGE} is required.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
+     * the returned {@link RestAction RestAction} include the following:
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The nickname of the target Member is not modifiable due to a permission discrepancy</li>
@@ -3344,7 +3336,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * You can use {@code prune(days, false)} to ignore the prune count and avoid a timeout.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
+     * the returned {@link RestAction RestAction} include the following:
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The prune cannot finished due to a permission discrepancy</li>
@@ -3383,7 +3375,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * <p>This might timeout when pruning many members with {@code wait=true}.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
+     * the returned {@link RestAction RestAction} include the following:
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The prune cannot finished due to a permission discrepancy</li>
@@ -3419,7 +3411,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * until Discord sends the {@link net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent GuildMemberRemoveEvent}.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
+     * the returned {@link RestAction RestAction} include the following:
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The target Member cannot be kicked due to a permission discrepancy</li>
@@ -3457,7 +3449,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * until Discord sends the {@link net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent GuildMemberRemoveEvent}.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
+     * the returned {@link RestAction RestAction} include the following:
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The target Member cannot be kicked due to a permission discrepancy</li>
@@ -3498,7 +3490,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * until Discord sends the {@link net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent GuildMemberRemoveEvent}.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
+     * the returned {@link RestAction RestAction} include the following:
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The target Member cannot be banned due to a permission discrepancy</li>
@@ -3545,7 +3537,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * {@link net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent GuildMemberRemoveEvent}.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
+     * the returned {@link RestAction RestAction} include the following:
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The target Member cannot be banned due to a permission discrepancy</li>
@@ -3585,7 +3577,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * Unbans the specified {@link UserSnowflake} from this Guild.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
+     * the returned {@link RestAction RestAction} include the following:
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The target Member cannot be unbanned due to a permission discrepancy</li>
@@ -3614,7 +3606,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * <br>While a Member is in time out, they cannot send messages, reply, react, or speak in voice channels.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
+     * the returned {@link RestAction RestAction} include the following:
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The target Member cannot be put into time out due to a permission discrepancy</li>
@@ -3661,7 +3653,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY MESSAGE_HISTORY} are removed from them.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
+     * the returned {@link RestAction RestAction} include the following:
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The target Member cannot be put into time out due to a permission discrepancy</li>
@@ -3705,7 +3697,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY MESSAGE_HISTORY} are removed from them.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
+     * the returned {@link RestAction RestAction} include the following:
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The target Member cannot be put into time out due to a permission discrepancy</li>
@@ -3742,7 +3734,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * Removes a time out from the specified Member in this {@link net.dv8tion.jda.api.entities.Guild Guild}.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
+     * the returned {@link RestAction RestAction} include the following:
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The time out cannot be removed due to a permission discrepancy</li>
@@ -3772,7 +3764,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * until JDA receives the {@link net.dv8tion.jda.api.events.guild.voice.GuildVoiceGuildDeafenEvent GuildVoiceGuildDeafenEvent} event related to this change.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
+     * the returned {@link RestAction RestAction} include the following:
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The target Member cannot be deafened due to a permission discrepancy</li>
@@ -3811,7 +3803,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * until JDA receives the {@link net.dv8tion.jda.api.events.guild.voice.GuildVoiceGuildMuteEvent GuildVoiceGuildMuteEvent} event related to this change.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
+     * the returned {@link RestAction RestAction} include the following:
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The target Member cannot be muted due to a permission discrepancy</li>
@@ -3843,7 +3835,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     AuditableRestAction<Void> mute(@Nonnull UserSnowflake user, boolean mute);
 
     /**
-     * Atomically assigns the provided {@link net.dv8tion.jda.api.entities.Role Role} to the specified {@link net.dv8tion.jda.api.entities.Member Member}.
+     * Atomically assigns the provided {@link Role Role} to the specified {@link net.dv8tion.jda.api.entities.Member Member}.
      * <br><b>This can be used together with other role modification methods as it does not require an updated cache!</b>
      *
      * <p>If multiple roles should be added/removed (efficiently) in one request
@@ -3852,7 +3844,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * <p>If the specified role is already present in the member's set of roles this does nothing.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
+     * the returned {@link RestAction RestAction} include the following:
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The Members Roles could not be modified due to a permission discrepancy</li>
@@ -3888,7 +3880,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     AuditableRestAction<Void> addRoleToMember(@Nonnull UserSnowflake user, @Nonnull Role role);
 
     /**
-     * Atomically removes the provided {@link net.dv8tion.jda.api.entities.Role Role} from the specified {@link net.dv8tion.jda.api.entities.Member Member}.
+     * Atomically removes the provided {@link Role Role} from the specified {@link net.dv8tion.jda.api.entities.Member Member}.
      * <br><b>This can be used together with other role modification methods as it does not require an updated cache!</b>
      *
      * <p>If multiple roles should be added/removed (efficiently) in one request
@@ -3897,7 +3889,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * <p>If the specified role is not present in the member's set of roles this does nothing.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
+     * the returned {@link RestAction RestAction} include the following:
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The Members Roles could not be modified due to a permission discrepancy</li>
@@ -3933,7 +3925,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     AuditableRestAction<Void> removeRoleFromMember(@Nonnull UserSnowflake user, @Nonnull Role role);
 
     /**
-     * Modifies the {@link net.dv8tion.jda.api.entities.Role Roles} of the specified {@link net.dv8tion.jda.api.entities.Member Member}
+     * Modifies the {@link Role Roles} of the specified {@link net.dv8tion.jda.api.entities.Member Member}
      * by adding and removing a collection of roles.
      * <br>None of the provided roles may be the <u>Public Role</u> of the current Guild.
      * <br>If a role is both in {@code rolesToAdd} and {@code rolesToRemove} it will be removed.
@@ -3967,7 +3959,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * independent of the cache.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
+     * the returned {@link RestAction RestAction} include the following:
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The Members Roles could not be modified due to a permission discrepancy</li>
@@ -3979,10 +3971,10 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * @param  member
      *         The {@link net.dv8tion.jda.api.entities.Member Member} that should be modified
      * @param  rolesToAdd
-     *         A {@link java.util.Collection Collection} of {@link net.dv8tion.jda.api.entities.Role Roles}
+     *         A {@link java.util.Collection Collection} of {@link Role Roles}
      *         to add to the current Roles the specified {@link net.dv8tion.jda.api.entities.Member Member} already has, or null
      * @param  rolesToRemove
-     *         A {@link java.util.Collection Collection} of {@link net.dv8tion.jda.api.entities.Role Roles}
+     *         A {@link java.util.Collection Collection} of {@link Role Roles}
      *         to remove from the current Roles the specified {@link net.dv8tion.jda.api.entities.Member Member} already has, or null
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
@@ -4003,7 +3995,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     AuditableRestAction<Void> modifyMemberRoles(@Nonnull Member member, @Nullable Collection<Role> rolesToAdd, @Nullable Collection<Role> rolesToRemove);
 
     /**
-     * Modifies the complete {@link net.dv8tion.jda.api.entities.Role Role} set of the specified {@link net.dv8tion.jda.api.entities.Member Member}
+     * Modifies the complete {@link Role Role} set of the specified {@link net.dv8tion.jda.api.entities.Member Member}
      * <br>The provided roles will replace all current Roles of the specified Member.
      *
      * <h4>Warning</h4>
@@ -4015,7 +4007,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * <p><b>The new roles <u>must not</u> contain the Public Role of the Guild</b>
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
+     * the returned {@link RestAction RestAction} include the following:
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The Members Roles could not be modified due to a permission discrepancy</li>
@@ -4036,7 +4028,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * @param  member
      *         A {@link net.dv8tion.jda.api.entities.Member Member} of which to override the Roles of
      * @param  roles
-     *         New collection of {@link net.dv8tion.jda.api.entities.Role Roles} for the specified Member
+     *         New collection of {@link Role Roles} for the specified Member
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have {@link net.dv8tion.jda.api.Permission#MANAGE_ROLES Permission.MANAGE_ROLES}
@@ -4047,8 +4039,8 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      *         <ul>
      *             <li>If any of the provided arguments is {@code null}</li>
      *             <li>If any of the provided arguments is not from this Guild</li>
-     *             <li>If any of the specified {@link net.dv8tion.jda.api.entities.Role Roles} is managed</li>
-     *             <li>If any of the specified {@link net.dv8tion.jda.api.entities.Role Roles} is the {@code Public Role} of this Guild</li>
+     *             <li>If any of the specified {@link Role Roles} is managed</li>
+     *             <li>If any of the specified {@link Role Roles} is the {@code Public Role} of this Guild</li>
      *         </ul>
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
@@ -4063,7 +4055,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     }
 
     /**
-     * Modifies the complete {@link net.dv8tion.jda.api.entities.Role Role} set of the specified {@link net.dv8tion.jda.api.entities.Member Member}
+     * Modifies the complete {@link Role Role} set of the specified {@link net.dv8tion.jda.api.entities.Member Member}
      * <br>The provided roles will replace all current Roles of the specified Member.
      *
      * <p><u>The new roles <b>must not</b> contain the Public Role of the Guild</u>
@@ -4075,7 +4067,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * by a {@link net.dv8tion.jda.api.events.guild.member.GenericGuildMemberEvent GenericGuildMemberEvent} targeting the same Member.</b>
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
+     * the returned {@link RestAction RestAction} include the following:
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The Members Roles could not be modified due to a permission discrepancy</li>
@@ -4099,7 +4091,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * @param  member
      *         A {@link net.dv8tion.jda.api.entities.Member Member} of which to override the Roles of
      * @param  roles
-     *         New collection of {@link net.dv8tion.jda.api.entities.Role Roles} for the specified Member
+     *         New collection of {@link Role Roles} for the specified Member
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have {@link net.dv8tion.jda.api.Permission#MANAGE_ROLES Permission.MANAGE_ROLES}
@@ -4110,8 +4102,8 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      *         <ul>
      *             <li>If any of the provided arguments is {@code null}</li>
      *             <li>If any of the provided arguments is not from this Guild</li>
-     *             <li>If any of the specified {@link net.dv8tion.jda.api.entities.Role Roles} is managed</li>
-     *             <li>If any of the specified {@link net.dv8tion.jda.api.entities.Role Roles} is the {@code Public Role} of this Guild</li>
+     *             <li>If any of the specified {@link Role Roles} is managed</li>
+     *             <li>If any of the specified {@link Role Roles} is the {@code Public Role} of this Guild</li>
      *         </ul>
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
@@ -4127,7 +4119,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * <br>Only available if the currently logged in account is the owner of this Guild
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
+     * the returned {@link RestAction RestAction} include the following:
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The currently logged in account lost ownership before completing the task</li>
@@ -4159,7 +4151,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * For this to be successful, the logged in account has to have the {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} Permission
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
+     * the returned {@link RestAction RestAction} include the following:
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The channel could not be created due to a permission discrepancy</li>
@@ -4191,7 +4183,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * For this to be successful, the logged in account has to have the {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} Permission
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
+     * the returned {@link RestAction RestAction} include the following:
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The channel could not be created due to a permission discrepancy</li>
@@ -4223,7 +4215,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * For this to be successful, the logged in account has to have the {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} Permission
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
+     * the returned {@link RestAction RestAction} include the following:
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The channel could not be created due to a permission discrepancy</li>
@@ -4255,7 +4247,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * For this to be successful, the logged in account has to have the {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} Permission
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
+     * the returned {@link RestAction RestAction} include the following:
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The channel could not be created due to a permission discrepancy</li>
@@ -4287,7 +4279,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * For this to be successful, the logged in account has to have the {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} Permission.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
+     * the returned {@link RestAction RestAction} include the following:
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The channel could not be created due to a permission discrepancy</li>
@@ -4319,7 +4311,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * For this to be successful, the logged in account has to have the {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} Permission.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
+     * the returned {@link RestAction RestAction} include the following:
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The channel could not be created due to a permission discrepancy</li>
@@ -4351,7 +4343,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * For this to be successful, the logged in account has to have the {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} Permission.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
+     * the returned {@link RestAction RestAction} include the following:
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The channel could not be created due to a permission discrepancy</li>
@@ -4383,7 +4375,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * For this to be successful, the logged in account has to have the {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} Permission.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
+     * the returned {@link RestAction RestAction} include the following:
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The channel could not be created due to a permission discrepancy</li>
@@ -4415,7 +4407,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * For this to be successful, the logged in account has to have the {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} Permission.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
+     * the returned {@link RestAction RestAction} include the following:
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The channel could not be created due to a permission discrepancy</li>
@@ -4454,7 +4446,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * </ol>
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
+     * the returned {@link RestAction RestAction} include the following:
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The channel could not be created due to a permission discrepancy</li>
@@ -4492,12 +4484,12 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     }
 
     /**
-     * Creates a new {@link net.dv8tion.jda.api.entities.Role Role} in this Guild.
+     * Creates a new {@link Role Role} in this Guild.
      * <br>It will be placed at the bottom (just over the Public Role) to avoid permission hierarchy conflicts.
      * <br>For this to be successful, the logged in account has to have the {@link net.dv8tion.jda.api.Permission#MANAGE_ROLES MANAGE_ROLES} Permission
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
+     * the returned {@link RestAction RestAction} include the following:
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The role could not be created due to a permission discrepancy</li>
@@ -4517,16 +4509,16 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     RoleAction createRole();
 
     /**
-     * Creates a new {@link net.dv8tion.jda.api.entities.Role Role} in this {@link net.dv8tion.jda.api.entities.Guild Guild}
-     * with the same settings as the given {@link net.dv8tion.jda.api.entities.Role Role}.
+     * Creates a new {@link Role Role} in this {@link net.dv8tion.jda.api.entities.Guild Guild}
+     * with the same settings as the given {@link Role Role}.
      * <br>The position of the specified Role does not matter in this case!
      *
      * <p>It will be placed at the bottom (just over the Public Role) to avoid permission hierarchy conflicts.
      * <br>For this to be successful, the logged in account has to have the {@link net.dv8tion.jda.api.Permission#MANAGE_ROLES MANAGE_ROLES} Permission
-     * and all {@link net.dv8tion.jda.api.Permission Permissions} the given {@link net.dv8tion.jda.api.entities.Role Role} has.
+     * and all {@link net.dv8tion.jda.api.Permission Permissions} the given {@link Role Role} has.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
+     * the returned {@link RestAction RestAction} include the following:
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The role could not be created due to a permission discrepancy</li>
@@ -4536,7 +4528,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * </ul>
      *
      * @param  role
-     *         The {@link net.dv8tion.jda.api.entities.Role Role} that should be copied
+     *         The {@link Role Role} that should be copied
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_ROLES} Permission and every Permission the provided Role has
@@ -4544,7 +4536,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      *         If the specified role is {@code null}
      *
      * @return {@link RoleAction RoleAction}
-     *         <br>RoleAction with already copied values from the specified {@link net.dv8tion.jda.api.entities.Role Role}
+     *         <br>RoleAction with already copied values from the specified {@link Role Role}
      */
     @Nonnull
     @CheckReturnValue
@@ -4555,40 +4547,40 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     }
 
     /**
-     * Creates a new {@link net.dv8tion.jda.api.entities.Emote Emote} in this Guild.
-     * <br>If one or more Roles are specified the new Emote will only be available to Members with any of the specified Roles (see {@link Member#canInteract(Emote)})
-     * <br>For this to be successful, the logged in account has to have the {@link net.dv8tion.jda.api.Permission#MANAGE_EMOTES_AND_STICKERS MANAGE_EMOTES_AND_STICKERS} Permission.
+     * Creates a new {@link RichCustomEmoji} in this Guild.
+     * <br>If one or more Roles are specified the new emoji will only be available to Members with any of the specified Roles (see {@link Member#canInteract(RichCustomEmoji)})
+     * <br>For this to be successful, the logged in account has to have the {@link net.dv8tion.jda.api.Permission#MANAGE_EMOJIS_AND_STICKERS MANAGE_EMOJIS_AND_STICKERS} Permission.
      *
-     * <p><b><u>Unicode emojis are not included as {@link net.dv8tion.jda.api.entities.Emote Emote}!</u></b>
+     * <p><b><u>Unicode emojis are not included as {@link RichCustomEmoji}!</u></b>
      *
-     * <p>Note that a guild is limited to 50 normal and 50 animated emotes by default.
-     * Some guilds are able to add additional emotes beyond this limitation due to the
+     * <p>Note that a guild is limited to 50 normal and 50 animated emojis by default.
+     * Some guilds are able to add additional emojis beyond this limitation due to the
      * {@code MORE_EMOJI} feature (see {@link net.dv8tion.jda.api.entities.Guild#getFeatures() Guild.getFeatures()}).
      * <br>Due to simplicity we do not check for these limits.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
+     * the returned {@link RestAction RestAction} include the following:
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
-     *     <br>The emote could not be created due to a permission discrepancy</li>
+     *     <br>The emoji could not be created due to a permission discrepancy</li>
      * </ul>
      *
      * @param  name
-     *         The name for the new Emote
+     *         The name for the new emoji
      * @param  icon
-     *         The {@link net.dv8tion.jda.api.entities.Icon} for the new Emote
+     *         The {@link Icon} for the new emoji
      * @param  roles
-     *         The {@link net.dv8tion.jda.api.entities.Role Roles} the new Emote should be restricted to
-     *         <br>If no roles are provided the Emote will be available to all Members of this Guild
+     *         The {@link Role Roles} the new emoji should be restricted to
+     *         <br>If no roles are provided the emoji will be available to all Members of this Guild
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_EMOTES_AND_STICKERS MANAGE_EMOTES_AND_STICKERS} Permission
+     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_EMOJIS_AND_STICKERS MANAGE_EMOJIS_AND_STICKERS} Permission
      *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction} - Type: {@link net.dv8tion.jda.api.entities.Emote Emote}
+     * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction} - Type: {@link RichCustomEmoji}
      */
     @Nonnull
     @CheckReturnValue
-    AuditableRestAction<Emote> createEmote(@Nonnull String name, @Nonnull Icon icon, @Nonnull Role... roles);
+    AuditableRestAction<RichCustomEmoji> createEmoji(@Nonnull String name, @Nonnull Icon icon, @Nonnull Role... roles);
 
     /**
      * Creates a new {@link GuildSticker} in this Guild.
@@ -4611,7 +4603,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      *         The tags to use for auto-suggestions (Up to 200 characters in total)
      *
      * @throws InsufficientPermissionException
-     *         If the currently logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_EMOTES_AND_STICKERS MANAGE_EMOTES_AND_STICKERS} permission
+     *         If the currently logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_EMOJIS_AND_STICKERS MANAGE_EMOJIS_AND_STICKERS} permission
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If the name is not between 2 and 30 characters long</li>
@@ -4649,7 +4641,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      *         Additional tags to use for suggestions
      *
      * @throws InsufficientPermissionException
-     *         If the currently logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_EMOTES_AND_STICKERS MANAGE_EMOTES_AND_STICKERS} permission
+     *         If the currently logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_EMOJIS_AND_STICKERS MANAGE_EMOJIS_AND_STICKERS} permission
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If the name is not between 2 and 30 characters long</li>
@@ -4682,7 +4674,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * @throws IllegalStateException
      *         If null is provided
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the currently logged in account does not have {@link Permission#MANAGE_EMOTES_AND_STICKERS MANAGE_EMOTES_AND_STICKERS} in the guild.
+     *         If the currently logged in account does not have {@link Permission#MANAGE_EMOJIS_AND_STICKERS MANAGE_EMOJIS_AND_STICKERS} in the guild.
      *
      * @return {@link AuditableRestAction}
      */
@@ -4692,7 +4684,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
 
     /**
      * Modifies the positional order of {@link net.dv8tion.jda.api.entities.Guild#getCategories() Guild.getCategories()}
-     * using a specific {@link net.dv8tion.jda.api.requests.RestAction RestAction} extension to allow moving Channels
+     * using a specific {@link RestAction RestAction} extension to allow moving Channels
      * {@link net.dv8tion.jda.api.requests.restaction.order.OrderAction#moveUp(int) up}/{@link net.dv8tion.jda.api.requests.restaction.order.OrderAction#moveDown(int) down}
      * or {@link net.dv8tion.jda.api.requests.restaction.order.OrderAction#moveTo(int) to} a specific position.
      * <br>This uses <b>ascending</b> order with a 0 based index.
@@ -4714,7 +4706,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
 
     /**
      * Modifies the positional order of {@link net.dv8tion.jda.api.entities.Guild#getTextChannels() Guild.getTextChannels()}
-     * using a specific {@link net.dv8tion.jda.api.requests.RestAction RestAction} extension to allow moving Channels
+     * using a specific {@link RestAction RestAction} extension to allow moving Channels
      * {@link net.dv8tion.jda.api.requests.restaction.order.OrderAction#moveUp(int) up}/{@link net.dv8tion.jda.api.requests.restaction.order.OrderAction#moveDown(int) down}
      * or {@link net.dv8tion.jda.api.requests.restaction.order.OrderAction#moveTo(int) to} a specific position.
      * <br>This uses <b>ascending</b> order with a 0 based index.
@@ -4736,7 +4728,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
 
     /**
      * Modifies the positional order of {@link net.dv8tion.jda.api.entities.Guild#getVoiceChannels() Guild.getVoiceChannels()}
-     * using a specific {@link net.dv8tion.jda.api.requests.RestAction RestAction} extension to allow moving Channels
+     * using a specific {@link RestAction RestAction} extension to allow moving Channels
      * {@link net.dv8tion.jda.api.requests.restaction.order.OrderAction#moveUp(int) up}/{@link net.dv8tion.jda.api.requests.restaction.order.OrderAction#moveDown(int) down}
      * or {@link net.dv8tion.jda.api.requests.restaction.order.OrderAction#moveTo(int) to} a specific position.
      * <br>This uses <b>ascending</b> order with a 0 based index.
@@ -4818,7 +4810,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
 
     /**
      * Modifies the positional order of {@link net.dv8tion.jda.api.entities.Guild#getRoles() Guild.getRoles()}
-     * using a specific {@link net.dv8tion.jda.api.requests.RestAction RestAction} extension to allow moving Roles
+     * using a specific {@link RestAction RestAction} extension to allow moving Roles
      * {@link net.dv8tion.jda.api.requests.restaction.order.OrderAction#moveUp(int) up}/{@link net.dv8tion.jda.api.requests.restaction.order.OrderAction#moveDown(int) down}
      * or {@link net.dv8tion.jda.api.requests.restaction.order.OrderAction#moveTo(int) to} a specific position.
      *
@@ -4849,7 +4841,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
 
     /**
      * Modifies the positional order of {@link net.dv8tion.jda.api.entities.Guild#getRoles() Guild.getRoles()}
-     * using a specific {@link net.dv8tion.jda.api.requests.RestAction RestAction} extension to allow moving Roles
+     * using a specific {@link RestAction RestAction} extension to allow moving Roles
      * {@link net.dv8tion.jda.api.requests.restaction.order.OrderAction#moveUp(int) up}/{@link net.dv8tion.jda.api.requests.restaction.order.OrderAction#moveDown(int) down}
      * or {@link net.dv8tion.jda.api.requests.restaction.order.OrderAction#moveTo(int) to} a specific position.
      *
@@ -5244,13 +5236,13 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
 
         private final int key;
         private final int maxBitrate;
-        private final int maxEmotes;
+        private final int maxEmojis;
 
-        BoostTier(int key, int maxBitrate, int maxEmotes)
+        BoostTier(int key, int maxBitrate, int maxEmojis)
         {
             this.key = key;
             this.maxBitrate = maxBitrate;
-            this.maxEmotes = maxEmotes;
+            this.maxEmojis = maxEmojis;
         }
 
         /**
@@ -5276,15 +5268,15 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
         }
 
         /**
-         * The maximum amount of emotes a guild can have when this tier is reached.
+         * The maximum amount of custom emojis a guild can have when this tier is reached.
          *
-         * @return The maximum emotes
+         * @return The maximum emojis
          *
-         * @see    net.dv8tion.jda.api.entities.Guild#getMaxEmotes()
+         * @see    net.dv8tion.jda.api.entities.Guild#getMaxEmojis()
          */
-        public int getMaxEmotes()
+        public int getMaxEmojis()
         {
-            return maxEmotes;
+            return maxEmojis;
         }
 
         /**

@@ -45,11 +45,11 @@ public enum CacheFlag
      */
     VOICE_STATE(GatewayIntent.GUILD_VOICE_STATES),
     /**
-     * Enables cache for {@link Guild#getEmoteCache()}
+     * Enables cache for {@link Guild#getEmojiCache()}
      *
      * <p>Requires {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_EMOJIS_AND_STICKERS GUILD_EMOJIS_AND_STICKERS} intent to be enabled.
      */
-    EMOTE(GatewayIntent.GUILD_EMOJIS_AND_STICKERS),
+    EMOJI(GatewayIntent.GUILD_EMOJIS_AND_STICKERS),
     /**
      * Enables cache for {@link Guild#getStickerCache()}
      *
