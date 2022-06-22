@@ -140,7 +140,7 @@ public enum GatewayIntent
      */
     DIRECT_MESSAGE_TYPING(14),
     /**
-     * Is is required to receive non-empty values for content fields (content, attachments, embeds, and components).
+     * This is required to receive non-empty values for content fields (content, attachments, embeds, and components).
      */
     MESSAGE_CONTENT(15),
     /**
