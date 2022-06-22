@@ -29,6 +29,7 @@ public class AutoModerationActionExecutionHandler extends SocketHandler
     @Override
     protected Long handleInternally(DataObject dataObject)
     {
+        // TODO: https://discord.com/developers/docs/topics/gateway#auto-moderation-action-execution-auto-moderation-action-execution-event-fields
         return null;
     } 
 }
