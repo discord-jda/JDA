@@ -43,7 +43,7 @@ public class PrivilegeConfig
     public PrivilegeConfig(@Nonnull Guild guild, @Nonnull Map<String, List<IntegrationPrivilege>> privileges)
     {
         this.guild = guild;
-        this.privileges = Collections.synchronizedMap(privileges);
+        this.privileges = Collections.unmodifiableMap(privileges);
     }
 
     /**
@@ -111,7 +111,7 @@ public class PrivilegeConfig
      * <br><b>If {@link #getApplicationPrivileges()} is not null, this will also contain the privileges applied directly
      * on this application with {@link SelfUser#getApplicationId()} as the Key.</b>
      *
-     * @return Map containing all privileges on this guild.
+     * @return Unmodifiable Map containing all privileges on this guild.
      */
     @Nonnull
     public Map<String, List<IntegrationPrivilege>> getAsMap()
