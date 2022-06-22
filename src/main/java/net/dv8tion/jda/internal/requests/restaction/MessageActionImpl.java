@@ -180,10 +180,13 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
             setEmbeds(embeds.stream().filter(e -> e != null && e.getType() == EmbedType.RICH).collect(Collectors.toList()));
         files.clear();
 
-        if (message instanceof DataMessage)
-            setStickers(((DataMessage) message).getStickerSnowflakes());
-        else
-            setStickers(message.getStickers());
+        if (!isEdit())
+        {
+            if (message instanceof DataMessage)
+                setStickers(((DataMessage) message).getStickerSnowflakes());
+            else
+                setStickers(message.getStickers());
+        }
 
         components = new ArrayList<>();
         components.addAll(message.getActionRows());

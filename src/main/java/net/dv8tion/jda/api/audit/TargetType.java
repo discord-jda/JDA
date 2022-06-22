@@ -37,7 +37,7 @@ public enum TargetType
     MEMBER,
     INVITE,
     WEBHOOK,
-    EMOTE,
+    EMOJI,
     INTEGRATION,
     STAGE_INSTANCE,
     THREAD,

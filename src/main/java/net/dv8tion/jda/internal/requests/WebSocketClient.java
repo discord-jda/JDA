@@ -696,18 +696,15 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         LOG.debug("Sending Identify-packet...");
         PresenceImpl presenceObj = (PresenceImpl) api.getPresence();
         DataObject connectionProperties = DataObject.empty()
-            .put("$os", System.getProperty("os.name"))
-            .put("$browser", "JDA")
-            .put("$device", "JDA")
-            .put("$referring_domain", "")
-            .put("$referrer", "");
+            .put("os", System.getProperty("os.name"))
+            .put("browser", "JDA")
+            .put("device", "JDA");
         DataObject payload = DataObject.empty()
             .put("presence", presenceObj.getFullPresence())
             .put("token", getToken())
             .put("properties", connectionProperties)
-            .put("v", JDAInfo.DISCORD_GATEWAY_VERSION)
-            .put("large_threshold", api.getLargeThreshold());
-        payload.put("intents", gatewayIntents);
+            .put("large_threshold", api.getLargeThreshold())
+            .put("intents", gatewayIntents);
 
         DataObject identify = DataObject.empty()
                 .put("op", WebSocketCode.IDENTIFY)
@@ -1350,7 +1347,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         handlers.put("MESSAGE_REACTION_ADD",                   new MessageReactionHandler(api, true));
         handlers.put("MESSAGE_REACTION_REMOVE",                new MessageReactionHandler(api, false));
         handlers.put("MESSAGE_REACTION_REMOVE_ALL",            new MessageReactionBulkRemoveHandler(api));
-        handlers.put("MESSAGE_REACTION_REMOVE_EMOJI",          new MessageReactionClearEmoteHandler(api));
+        handlers.put("MESSAGE_REACTION_REMOVE_EMOJI",          new MessageReactionClearEmojiHandler(api));
         handlers.put("MESSAGE_UPDATE",                         new MessageUpdateHandler(api));
         handlers.put("READY",                                  new ReadyHandler(api));
         handlers.put("STAGE_INSTANCE_CREATE",                  new StageInstanceCreateHandler(api));

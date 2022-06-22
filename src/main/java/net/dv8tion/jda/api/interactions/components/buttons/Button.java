@@ -16,7 +16,7 @@
 
 package net.dv8tion.jda.api.interactions.components.buttons;
 
-import net.dv8tion.jda.api.entities.Emoji;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.interactions.components.ActionComponent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
@@ -114,7 +114,7 @@ public interface Button extends ActionComponent
 
     /**
      * The emoji attached to this button.
-     * <br>This can be either {@link Emoji#isUnicode() unicode} or {@link Emoji#isCustom()} custom.
+     * <br>This can be either {@link Emoji.Type#UNICODE unicode} or {@link Emoji.Type#CUSTOM custom}.
      *
      * <p>You can use {@link #withEmoji(Emoji)} to create a button with an Emoji.
      *
@@ -611,7 +611,7 @@ public interface Button extends ActionComponent
     }
 
     /**
-     * Create a button with the provided {@link ButtonStyle style}, URL or ID, and {@link Emoji emoji}.
+     * Create a button with the provided {@link ButtonStyle style}, URL or ID, and {@link Emoji}.
      * <br>The button is enabled and has no text label.
      * To use labels you can use {@code of(style, idOrUrl, label).withEmoji(emoji)}
      *
@@ -647,7 +647,7 @@ public interface Button extends ActionComponent
     }
 
     /**
-     * Create an enabled button with the provided {@link ButtonStyle style}, URL or ID, label and {@link Emoji emoji}.
+     * Create an enabled button with the provided {@link ButtonStyle style}, URL or ID, label and {@link Emoji}.
      *
      * <p>You can use {@link #asDisabled()} to disable it.
      *
