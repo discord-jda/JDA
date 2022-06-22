@@ -25,6 +25,7 @@ import net.dv8tion.jda.api.entities.sticker.*;
 import net.dv8tion.jda.api.entities.templates.Template;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.commands.PrivilegeConfig;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.privileges.IntegrationPrivilege;
@@ -331,15 +332,15 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
 
     /**
      * Retrieves the {@link IntegrationPrivilege IntegrationPrivileges} for the commands in this guild.
-     * <br>The RestAction provides a {@link Map} from the command id to the list of privileges.
+     * <br>The RestAction provides a {@link PrivilegeConfig} providing the privileges of this application and its commands.
      *
      * <p>Moderators of a guild can modify these privileges through the Integrations Menu
      *
-     * @return {@link RestAction} - Type: {@link Map} from {@link String} Command ID to {@link List} of {@link IntegrationPrivilege}
+     * @return {@link RestAction} - Type: {@link PrivilegeConfig}
      */
     @Nonnull
     @CheckReturnValue
-    RestAction<Map<String, List<IntegrationPrivilege>>> retrieveCommandPrivileges();
+    RestAction<PrivilegeConfig> retrieveCommandPrivileges();
 
     /**
      * Retrieves the available regions for this Guild

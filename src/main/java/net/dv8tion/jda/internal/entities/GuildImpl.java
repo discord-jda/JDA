@@ -33,6 +33,7 @@ import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.exceptions.ParsingException;
 import net.dv8tion.jda.api.exceptions.PermissionException;
 import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.commands.PrivilegeConfig;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.privileges.IntegrationPrivilege;
 import net.dv8tion.jda.api.managers.AudioManager;
@@ -281,17 +282,17 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public RestAction<Map<String, List<IntegrationPrivilege>>> retrieveCommandPrivileges()
+    public RestAction<PrivilegeConfig> retrieveCommandPrivileges()
     {
         Route.CompiledRoute route = Route.Interactions.GET_ALL_COMMAND_PERMISSIONS.compile(getJDA().getSelfUser().getApplicationId(), getId());
         return new RestActionImpl<>(getJDA(), route, (response, request) -> {
             Map<String, List<IntegrationPrivilege>> privileges = new HashMap<>();
             response.getArray().stream(DataArray::getObject).forEach(obj -> {
                 String id = obj.getString("id");
-                List<IntegrationPrivilege> list = parsePrivilegesList(obj);
+                List<IntegrationPrivilege> list = Collections.unmodifiableList(parsePrivilegesList(obj));
                 privileges.put(id, list);
             });
-            return privileges;
+            return new PrivilegeConfig(this, privileges);
         });
     }
 
