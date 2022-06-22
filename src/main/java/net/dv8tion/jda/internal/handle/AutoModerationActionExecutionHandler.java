@@ -29,5 +29,6 @@ public class AutoModerationActionExecutionHandler extends SocketHandler
     @Override
     protected Long handleInternally(DataObject dataObject)
     {
+        return null;
     } 
 }
