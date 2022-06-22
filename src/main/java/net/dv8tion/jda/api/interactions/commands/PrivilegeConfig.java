@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.SelfUser;
 import net.dv8tion.jda.api.interactions.commands.privileges.IntegrationPrivilege;
+import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -92,11 +93,15 @@ public class PrivilegeConfig
      * @param  id
      *         The id of the command
      *
+     * @throws IllegalArgumentException
+     *         If the provided id is null
+     *
      * @return Immutable List containing all IntegrationPrivileges that have been applied to the command with the given id in this guild.
      */
     @Nullable
     public List<IntegrationPrivilege> getCommandPrivileges(@Nonnull String id)
     {
+        Checks.notNull(id, "Id");
         return privileges.get(id);
     }
 
