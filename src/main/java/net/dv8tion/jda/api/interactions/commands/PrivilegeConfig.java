@@ -89,8 +89,8 @@ public class PrivilegeConfig
      *
      * <p>This does not include privileges applied to the application directly. Use {@link #getApplicationPrivileges()} for that.
      *
-     * @param id
-     *        The id of the command
+     * @param  id
+     *         The id of the command
      *
      * @return Immutable List containing all IntegrationPrivileges that have been applied to the command with the given id in this guild.
      */

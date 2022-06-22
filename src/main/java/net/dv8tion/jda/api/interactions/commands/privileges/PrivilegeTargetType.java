@@ -22,12 +22,12 @@ package net.dv8tion.jda.api.interactions.commands.privileges;
 public enum PrivilegeTargetType
 {
     /**
-     * Indicates the privileges have been updated on the integration level.
+     * Indicates that privileges have been updated on the application itself.
      */
     INTEGRATION,
 
     /**
-     * Indicates the privileges have been updated on a command.
+     * Indicates that privileges have been updated on a command.
      */
     COMMAND,
 }
