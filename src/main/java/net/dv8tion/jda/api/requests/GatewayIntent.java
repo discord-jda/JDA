@@ -140,6 +140,10 @@ public enum GatewayIntent
      */
     DIRECT_MESSAGE_TYPING(14),
     /**
+     * Is is required to receive non-empty values for content fields (content, attachments, embeds, and components).
+     */
+    MESSAGE_CONTENT(15),
+    /**
      * Auto moderation configuration changes.
      */
     AUTO_MODERATION_CONFIGURATION(20),
@@ -174,7 +178,7 @@ public enum GatewayIntent
      * You can further configure intents by using {@link net.dv8tion.jda.api.JDABuilder#enableIntents(GatewayIntent, GatewayIntent...) enableIntents(intents)}
      * and {@link net.dv8tion.jda.api.JDABuilder#disableIntents(GatewayIntent, GatewayIntent...) disableIntents(intents)}.
      */
-    public static final int DEFAULT = ALL_INTENTS & ~getRaw(GUILD_MEMBERS, GUILD_PRESENCES, GUILD_WEBHOOKS, GUILD_MESSAGE_TYPING, DIRECT_MESSAGE_TYPING);
+    public static final int DEFAULT = ALL_INTENTS & ~getRaw(GUILD_MEMBERS, GUILD_PRESENCES, GUILD_WEBHOOKS, GUILD_MESSAGE_TYPING, DIRECT_MESSAGE_TYPING, MESSAGE_CONTENT, AUTO_MODERATION_CONFIGURATION, AUTO_MODERATION_EXECUTION);
 
     private final int rawValue;
     private final int offset;
