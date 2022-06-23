@@ -1,7 +1,9 @@
 package net.dv8tion.jda.api.events.automod;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.AutoModerationRule;
+import net.dv8tion.jda.api.entities.GuildChannel;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.automod.AutoModerationAction;
 import net.dv8tion.jda.api.entities.automod.TriggerType;
 import net.dv8tion.jda.api.events.Event;
