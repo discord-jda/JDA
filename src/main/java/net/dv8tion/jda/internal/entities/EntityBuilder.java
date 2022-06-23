@@ -2235,7 +2235,7 @@ public class EntityBuilder
             exemptRoles.add(role);
         }
 
-        final List<Channel> exemptChannels = new ArrayList<>();
+        final List<GuildChannel> exemptChannels = new ArrayList<>();
         for (int i = 0; i < exemptChannelArray.length(); i++)
         {
             final long channelId = exemptChannelArray.getLong(i);
