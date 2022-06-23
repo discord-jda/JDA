@@ -75,7 +75,7 @@ public interface Component extends SerializableData
         /** A button */
         BUTTON(2, 5, true, false),
         /** A select menu */
-        SELECT_MENU(3, 1, true, false),
+        SELECT_MENU(3, 1, true, true),
         /** A text input field */
         TEXT_INPUT(4, 1, false, true)
         ;
