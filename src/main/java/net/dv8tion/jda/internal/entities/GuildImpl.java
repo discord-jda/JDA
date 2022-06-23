@@ -77,7 +77,6 @@ import net.dv8tion.jda.internal.utils.concurrent.task.GatewayTask;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
-import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -1271,7 +1270,7 @@ public class GuildImpl implements Guild
         });
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public RestAction<AutoModerationRule> retrieveAutoModerationRule(String id)
     {
@@ -1280,7 +1279,7 @@ public class GuildImpl implements Guild
         return new RestActionImpl<>(getJDA(), route, (response, request) -> getJDA().getEntityBuilder().createAutoModerationRule(this, response.getObject()));
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public RestAction<List<AutoModerationRule>> retrieveAutoModerationRules()
     {
@@ -1305,7 +1304,7 @@ public class GuildImpl implements Guild
         });
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public AuditableRestAction<AutoModerationRule> createAutoModerationRule(@Nonnull String name, @Nonnull EventType eventType, @Nonnull TriggerType triggerType, @Nullable TriggerMetadata triggerMetadata, @Nonnull List<AutoModerationAction> actions, boolean enabled, @Nullable List<Role> exemptRoles, @Nullable List<Channel> exemptChannel)
     {
@@ -1346,7 +1345,7 @@ public class GuildImpl implements Guild
         });
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public AuditableRestAction<AutoModerationRule> modifyAutoModerationRuleName(@Nonnull AutoModerationRule rule, @Nonnull String name)
     {

@@ -18,14 +18,15 @@ package net.dv8tion.jda.api.events.automod;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.AutoModerationRule;
-import org.jetbrains.annotations.NotNull;
+
+import javax.annotation.Nonnull;
 
 /**
  * Indicates that an {@link net.dv8tion.jda.api.entities.AutoModerationRule AutoModerationRule} was deleted.
  */
 public class AutoModerationRuleDeleteEvent extends GenericAutoModerationEvent
 {
-    public AutoModerationRuleDeleteEvent(@NotNull JDA api, long responseNumber, AutoModerationRule rule)
+    public AutoModerationRuleDeleteEvent(@Nonnull JDA api, long responseNumber, AutoModerationRule rule)
     {
         super(api, responseNumber, rule);
     }

@@ -20,7 +20,6 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.AutoModerationRule;
 import net.dv8tion.jda.api.entities.automod.AutoModerationField;
 import net.dv8tion.jda.api.entities.automod.EventType;
-import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 
@@ -33,7 +32,7 @@ import javax.annotation.Nonnull;
  */
 public class AutoModerationRuleEventTypeUpdateEvent extends GenericAutoModerationRuleUpdateEvent<EventType>
 {
-    public AutoModerationRuleEventTypeUpdateEvent(@NotNull JDA api, long responseNumber, AutoModerationRule rule, AutoModerationField field, EventType oldValue, EventType newValue)
+    public AutoModerationRuleEventTypeUpdateEvent(@Nonnull JDA api, long responseNumber, AutoModerationRule rule, AutoModerationField field, EventType oldValue, EventType newValue)
     {
         super(api, responseNumber, rule, field, oldValue, newValue);
     }

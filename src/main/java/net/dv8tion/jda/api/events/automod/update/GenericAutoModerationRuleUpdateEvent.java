@@ -25,6 +25,8 @@ import net.dv8tion.jda.api.events.automod.GenericAutoModerationEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import javax.annotation.Nonnull;
+
 /**
  * Indicates that a {@link net.dv8tion.jda.api.entities.AutoModerationRule rule} was updated.
  * <br>Every AutoModerationUpdateEvent is derived from this event and can be casted.
@@ -38,7 +40,7 @@ public class GenericAutoModerationRuleUpdateEvent<T> extends GenericAutoModerati
     protected final T oldValue;
     protected final T newValue;
 
-    public GenericAutoModerationRuleUpdateEvent(@NotNull JDA api, long responseNumber, AutoModerationRule rule, AutoModerationField field, T oldValue, T newValue)
+    public GenericAutoModerationRuleUpdateEvent(@Nonnull JDA api, long responseNumber, AutoModerationRule rule, AutoModerationField field, T oldValue, T newValue)
     {
         super(api, responseNumber, rule);
         this.field = field;

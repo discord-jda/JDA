@@ -33,7 +33,7 @@ import javax.annotation.Nonnull;
  */
 public class AutoModerationRuleGuildUpdateEvent extends GenericAutoModerationRuleUpdateEvent<Guild>
 {
-    public AutoModerationRuleGuildUpdateEvent(@NotNull JDA api, long responseNumber, AutoModerationRule rule, AutoModerationField field, Guild oldValue, Guild newValue)
+    public AutoModerationRuleGuildUpdateEvent(@Nonnull JDA api, long responseNumber, AutoModerationRule rule, AutoModerationField field, Guild oldValue, Guild newValue)
     {
         super(api, responseNumber, rule, field, oldValue, newValue);
     }

@@ -18,7 +18,8 @@ package net.dv8tion.jda.api.events.automod;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.AutoModerationRule;
-import org.jetbrains.annotations.NotNull;
+
+import javax.annotation.Nonnull;
 
 /**
  * Indicates that an {@link net.dv8tion.jda.api.entities.AutoModerationRule AutoModerationRule} was created.
@@ -26,7 +27,7 @@ import org.jetbrains.annotations.NotNull;
 public class AutoModerationRuleCreateEvent extends GenericAutoModerationEvent
 {
 
-    public AutoModerationRuleCreateEvent(@NotNull JDA api, long responseNumber, AutoModerationRule rule)
+    public AutoModerationRuleCreateEvent(@Nonnull JDA api, long responseNumber, AutoModerationRule rule)
     {
         super(api, responseNumber, rule);
     }

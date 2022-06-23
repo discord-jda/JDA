@@ -21,8 +21,8 @@ import net.dv8tion.jda.api.entities.automod.AutoModerationAction;
 import net.dv8tion.jda.api.entities.automod.EventType;
 import net.dv8tion.jda.api.entities.automod.TriggerMetadata;
 import net.dv8tion.jda.api.entities.automod.TriggerType;
-import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.Objects;
 
@@ -47,7 +47,7 @@ public class AutoModerationRuleImpl implements AutoModerationRule
         this.id = id;
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public Guild getGuild()
     {
@@ -60,7 +60,7 @@ public class AutoModerationRuleImpl implements AutoModerationRule
         return this;
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public String getName()
     {
@@ -73,7 +73,7 @@ public class AutoModerationRuleImpl implements AutoModerationRule
         return this;
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public User getUser()
     {
@@ -86,7 +86,7 @@ public class AutoModerationRuleImpl implements AutoModerationRule
         return this;
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public EventType getEventType()
     {
@@ -99,7 +99,7 @@ public class AutoModerationRuleImpl implements AutoModerationRule
         return this;
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public TriggerType getTriggerType()
     {
@@ -112,7 +112,7 @@ public class AutoModerationRuleImpl implements AutoModerationRule
         return this;
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public TriggerMetadata getTriggerMetadata()
     {
@@ -125,7 +125,7 @@ public class AutoModerationRuleImpl implements AutoModerationRule
         return this;
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public List<AutoModerationAction> getActions()
     {
@@ -214,7 +214,7 @@ public class AutoModerationRuleImpl implements AutoModerationRule
     }
 
     @Override
-    public int compareTo(@NotNull AutoModerationRule o)
+    public int compareTo(@Nonnull AutoModerationRule o)
     {
         return Long.compare(id, o.getIdLong());
     }

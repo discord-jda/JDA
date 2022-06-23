@@ -43,7 +43,7 @@ public interface AutoModerationRule extends ISnowflake, Comparable<AutoModeratio
     /**
      * Returns the name of the rule.
      *
-     * @return {@link java.lang.String String}
+     * @return {@link String String}
      */
     @Nonnull
     String getName();
