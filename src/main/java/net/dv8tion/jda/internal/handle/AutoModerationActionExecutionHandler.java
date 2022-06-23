@@ -52,15 +52,6 @@ public class AutoModerationActionExecutionHandler extends SocketHandler
         if (!dataObject.isNull("channel_id"))
         {
             channel = api.getGuildChannelById(dataObject.getString("channel_id"));
-            ChannelType channelType = channel.getType();
-
-            if (channelType.isMessage()) {
-                channel = api.getTextChannelById("channel_id");
-            } else if (channelType.isThread()) {
-                channel = api.getThreadChannelById("channel_id");
-            } else {
-                channel = null;
-            }
         }
 
         Long messageId = null;
@@ -84,5 +75,5 @@ public class AutoModerationActionExecutionHandler extends SocketHandler
         api.handleEvent(new AutoModerationActionExecutionEvent(api, responseNumber, rule, action, trigger, triggerType, channel,
                 messageId, alertSystemMessageId, content, matchedKeyword, matchedContent));
         return null;
-    } 
+    }
 }

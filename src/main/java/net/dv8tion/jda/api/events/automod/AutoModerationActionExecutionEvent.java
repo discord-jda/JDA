@@ -4,14 +4,18 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.automod.AutoModerationAction;
 import net.dv8tion.jda.api.entities.automod.TriggerType;
+import net.dv8tion.jda.api.events.Event;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
- * Indicates that an {@link net.dv8tion.jda.api.entities.AutoModerationRule AutoModerationRule} was excuted..
+ * Indicates that an {@link net.dv8tion.jda.api.entities.AutoModerationRule AutoModerationRule} was excuted.
  */
-public class AutoModerationActionExecutionEvent extends GenericAutoModerationEvent {
+public class AutoModerationActionExecutionEvent extends Event
+{
+    protected final AutoModerationRule rule;
+
     private final AutoModerationAction executedAction;
     private final User triggerer;
     private final TriggerType ruleTriggerer;
@@ -25,7 +29,8 @@ public class AutoModerationActionExecutionEvent extends GenericAutoModerationEve
 
     public AutoModerationActionExecutionEvent(@Nonnull JDA api, long responseNumber, @Nonnull AutoModerationRule rule, @Nonnull AutoModerationAction executedAction, @Nonnull User triggerer, @Nonnull TriggerType ruleTriggerer, @Nullable GuildChannel channel, @Nullable long messageId, @Nullable long alertSystemMessageId, @Nonnull String content, @Nullable String matchedKeyword, @Nullable String matchedContent)
     {
-        super(api, responseNumber, rule);
+        super(api, responseNumber);
+        this.rule = rule;
         this.executedAction = executedAction;
         this.triggerer = triggerer;
         this.ruleTriggerer = ruleTriggerer;
@@ -35,6 +40,11 @@ public class AutoModerationActionExecutionEvent extends GenericAutoModerationEve
         this.content = content;
         this.matchedKeyword = matchedKeyword;
         this.matchedContent = matchedContent;
+    }
+
+    public AutoModerationRule getRule()
+    {
+        return rule;
     }
 
     public AutoModerationAction getExecutedAction()

@@ -88,7 +88,7 @@ public class GenericAutoModerationEvent extends Event
         return rule.getExemptRoles();
     }
 
-    public List<Channel> getExemptChannels()
+    public List<GuildChannel> getExemptChannels()
     {
         return rule.getExemptChannels();
     }

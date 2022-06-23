@@ -47,11 +47,6 @@ public enum AutoModerationActionType
         this.value = value;
     }
 
-    public int getValue()
-    {
-        return value;
-    }
-
     @Nonnull
     public static AutoModerationActionType fromValue(int value)
     {
@@ -63,5 +58,10 @@ public enum AutoModerationActionType
             }
         }
         return UNKNOWN;
+    }
+
+    public int getValue()
+    {
+        return value;
     }
 }

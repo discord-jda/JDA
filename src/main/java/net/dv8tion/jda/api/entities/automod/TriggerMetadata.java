@@ -30,7 +30,7 @@ public interface TriggerMetadata
      * <br>
      * <br> Associated trigger type is {@link TriggerType#KEYWORD}.
      *
-     * @return A {@link java.util.List List} of {@link java.lang.String Strings}
+     * @return A {@link List List} of {@link String Strings}
      */
     List<String> getKeywords();
 
@@ -40,7 +40,7 @@ public interface TriggerMetadata
      * <br>
      * Associated trigger type is {@link TriggerType#KEYWORD_PRESET}.
      *
-     * @return A {@link java.util.List List} of {@link KeywordPresetType KeywordPresets}
+     * @return A {@link List List} of {@link KeywordPresetType KeywordPresets}
      */
     List<KeywordPresetType> getKeywordPresetTypes();
 }

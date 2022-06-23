@@ -19,6 +19,7 @@ package net.dv8tion.jda.api.events.automod.update;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.AutoModerationRule;
 import net.dv8tion.jda.api.entities.Channel;
+import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.automod.AutoModerationField;
 import org.jetbrains.annotations.NotNull;
 
@@ -32,33 +33,33 @@ import java.util.List;
  *
  * <p>Identifier: {@code exempt_channels}
  */
-public class AutoModerationRuleExemptChannelsUpdateEvent extends GenericAutoModerationRuleUpdateEvent<List<Channel>>
+public class AutoModerationRuleExemptChannelsUpdateEvent extends GenericAutoModerationRuleUpdateEvent<List<GuildChannel>>
 {
-    public AutoModerationRuleExemptChannelsUpdateEvent(@NotNull JDA api, long responseNumber, AutoModerationRule rule, AutoModerationField field, List<Channel> oldValue, List<Channel> newValue)
+    public AutoModerationRuleExemptChannelsUpdateEvent(@NotNull JDA api, long responseNumber, AutoModerationRule rule, AutoModerationField field, List<GuildChannel> oldValue, List<GuildChannel> newValue)
     {
         super(api, responseNumber, rule, field, oldValue, newValue);
     }
 
-    public List<Channel> getOldExemptChannels()
+    public List<GuildChannel> getOldExemptChannels()
     {
         return getOldValue();
     }
 
-    public List<Channel> getNewExemptChannels()
+    public List<GuildChannel> getNewExemptChannels()
     {
         return getNewValue();
     }
 
     @Nonnull
     @Override
-    public List<Channel> getOldValue()
+    public List<GuildChannel> getOldValue()
     {
         return super.getOldValue();
     }
 
     @Nonnull
     @Override
-    public List<Channel> getNewValue()
+    public List<GuildChannel> getNewValue()
     {
         return super.getNewValue();
     }

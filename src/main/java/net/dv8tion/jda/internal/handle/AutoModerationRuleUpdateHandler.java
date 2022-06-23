@@ -16,10 +16,7 @@
 
 package net.dv8tion.jda.internal.handle;
 
-import net.dv8tion.jda.api.entities.Channel;
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Role;
-import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.automod.*;
 import net.dv8tion.jda.api.events.automod.update.*;
 import net.dv8tion.jda.api.utils.data.DataArray;
@@ -81,11 +78,11 @@ public class AutoModerationRuleUpdateHandler extends SocketHandler
             exemptRoles.add(role);
         }
 
-        final List<Channel> exemptChannels = new ArrayList<>();
+        final List<GuildChannel> exemptChannels = new ArrayList<>();
         for (int i = 0; i < exemptChannelArray.length(); i++)
         {
             final long channelId = exemptChannelArray.getLong(i);
-            final Channel channel = guild.getTextChannelById(channelId);
+            final GuildChannel channel = guild.getGuildChannelById(channelId);
             if (channel == null)
                 continue;
             exemptChannels.add(channel);
@@ -160,7 +157,7 @@ public class AutoModerationRuleUpdateHandler extends SocketHandler
 
         if (!Objects.equals(exemptChannels, rule.getExemptChannels()))
         {
-            List<Channel> oldExemptChannels = rule.getExemptChannels();
+            List<GuildChannel> oldExemptChannels = rule.getExemptChannels();
             rule.setExemptChannels(exemptChannels);
             getJDA().handleEvent(new AutoModerationRuleExemptChannelsUpdateEvent(getJDA(), responseNumber, rule, AutoModerationField.EXEMPT_CHANNELS, oldExemptChannels, exemptChannels));
         }

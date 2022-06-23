@@ -17,7 +17,6 @@
 package net.dv8tion.jda.internal.entities.automod;
 
 import net.dv8tion.jda.api.entities.GuildChannel;
-import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.automod.ActionMetadata;
 
 import javax.annotation.Nonnull;

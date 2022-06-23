@@ -66,16 +66,6 @@ public enum TriggerType
         this.maxPerGuild = maxPerGuild;
     }
 
-    public int getValue()
-    {
-        return value;
-    }
-
-    public int getMaxPerGuild()
-    {
-        return maxPerGuild;
-    }
-
     @Nonnull
     public static TriggerType fromValue(int value)
     {
@@ -87,5 +77,15 @@ public enum TriggerType
             }
         }
         return UNKNOWN;
+    }
+
+    public int getValue()
+    {
+        return value;
+    }
+
+    public int getMaxPerGuild()
+    {
+        return maxPerGuild;
     }
 }

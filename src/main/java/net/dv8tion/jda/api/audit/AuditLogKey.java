@@ -604,8 +604,8 @@ public enum AuditLogKey
      *
      * <p>Expected types:
      * <ul>
-     *      <li>{@link java.util.List}&lt;{@link java.lang.String}&gt;</li>
-     *      <li>{@link java.util.List}&lt;{@link KeywordPresetType}&gt;</li>
+     *      <li><b>A list of keyword filter (String)</b></li>
+     *      <li><b>A list of presets values (int)</b></li>
      * </ul>
      */
     AUTO_MODERATION_TRIGGER_METADATA("trigger_metadata"),
@@ -636,7 +636,7 @@ public enum AuditLogKey
     AUTO_MODERATION_EXEMPT_ROLES("exempt_roles"),
 
     /**
-     * The channels that are exempt from an auto moderation rule.
+     * The guild channels that are exempt from an auto moderation rule.
      *
      * <p>Expected type: <b>String</b>
      */

@@ -49,12 +49,6 @@ public enum KeywordPresetType
         this.value = value;
     }
 
-
-    public int getValue()
-    {
-        return value;
-    }
-
     @Nonnull
     public static KeywordPresetType fromValue(int value)
     {
@@ -66,5 +60,10 @@ public enum KeywordPresetType
             }
         }
         return UNKNOWN;
+    }
+
+    public int getValue()
+    {
+        return value;
     }
 }

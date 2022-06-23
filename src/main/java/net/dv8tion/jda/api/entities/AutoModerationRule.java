@@ -105,7 +105,7 @@ public interface AutoModerationRule extends ISnowflake, Comparable<AutoModeratio
     /**
      * Returns the channels that are exempt from this rule.
      *
-     * @return A {@link List List} of {@link Channel Channels} which are exempt from the rules.
+     * @return A {@link List List} of {@link GuildChannel Channels} which are exempt from the rules.
      */
-    List<Channel> getExemptChannels();
+    List<GuildChannel> getExemptChannels();
 }

@@ -2239,9 +2239,10 @@ public class EntityBuilder
         for (int i = 0; i < exemptChannelArray.length(); i++)
         {
             final long channelId = exemptChannelArray.getLong(i);
-            final Channel channel = guild.getTextChannelById(channelId);
+            final GuildChannel channel = guild.getGuildChannelById(channelId);
             if (channel == null)
                 continue;
+
             exemptChannels.add(channel);
         }
 

@@ -3192,6 +3192,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     /**
      * Gets the auto moderation rule from the cache.
      *
+     * @param id, the id of the rule you want to get
      * @return The auto moderation rule, or {@code null} if it does not exist.
      */
     @Nullable
@@ -3202,6 +3203,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     /**
      * Gets the auto moderation rule from the cache.
      *
+     * @param id, the id of the rule you want to get
      * @return The auto moderation rule, or {@code null} if it does not exist.
      */
     @Nullable
@@ -3222,6 +3224,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     /**
      * Retrieves a list of the auto moderation rules which are configured for this guild.
      *
+     * @param id, the id of the rule you want to retrieve.
      * @return A list of auto moderation rule objects for the given guild.
      */
     @Nonnull
@@ -3230,6 +3233,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     /**
      * Retrieves a list of the auto moderation rules which are configured for this guild.
      *
+     * @param id, the id of the rule you want to retrieve.
      * @return A list of auto moderation rule objects for the given guild.
      */
     default RestAction<AutoModerationRule> retrieveAutoModerationRule(long id) {
@@ -3246,14 +3250,27 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
 
     /**
      * This can be used to create a {@link AutoModerationRule rule} for this guild.
+     *
+     * @param name, the name of the rule you want to create.
+     * @param eventType, the event which will cause the auto moderation system to check for a specific trigger.
+     * @param triggerType, the type of trigger that can cause an auto moderation rule to be executed.
+     * @param triggerMetadata, This is additional data used whether a rule should be executed or not.
+     * @param actions, the action that will be performed when the rule is triggered.
+     * @param enabled, whether the rule is enabled or not.
+     * @param exemptRoles, the roles that will be exempt from the rule.
+     * @param exemptChannels, the channels that will be exempt from the rule.
+     *
+     * @return The new {@link AutoModerationRule rule} that was created.
      */
     @Nonnull
-    AuditableRestAction<AutoModerationRule> createAutoModerationRule(@Nonnull String name, @Nonnull EventType eventType, @Nonnull TriggerType triggerType, @Nullable TriggerMetadata triggerMetadata, @Nonnull List<AutoModerationAction> actions, boolean enabled, @Nullable List<Role> exemptRoles, @Nullable List<Channel> exemptChannel);
+    AuditableRestAction<AutoModerationRule> createAutoModerationRule(@Nonnull String name, @Nonnull EventType eventType, @Nonnull TriggerType triggerType, @Nullable TriggerMetadata triggerMetadata, @Nonnull List<AutoModerationAction> actions, boolean enabled, @Nullable List<Role> exemptRoles, @Nullable List<Channel> exemptChannels);
 
     /**
      * This can be used to modify an existing {@link AutoModerationRule rule's} name which is in this guild.
      *
      * @param rule, the rule which you want to modify.
+     * @param name, modify the name of the rule.
+     *
      * @return an auto moderation rule.
      */
     @Nonnull
@@ -3263,6 +3280,8 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * This can be used to modify an existing {@link AutoModerationRule rule's} event type which is in this guild.
      *
      * @param rule, the rule which you want to modify.
+     * @param eventType, modify the type of event that will cause the auto moderation system to check for a specific trigger.
+     *
      * @return an auto moderation rule.
      */
     AuditableRestAction<AutoModerationRule> modifyAutoModerationRuleEventType(@Nonnull AutoModerationRule rule, @Nonnull EventType eventType);
@@ -3271,6 +3290,8 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * This can be used to modify an existing {@link AutoModerationRule rule's} actions which is in this guild.
      *
      * @param rule, the rule which you want to modify.
+     * @param actions, modify the actions that will be performed when the rule is triggered.
+     *
      * @return an auto moderation rule.
      */
     AuditableRestAction<AutoModerationRule> modifyAutoModerationRuleActions(@Nonnull AutoModerationRule rule, @Nonnull List<AutoModerationAction> actions);
@@ -3279,6 +3300,8 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * This can be used to modify an existing {@link AutoModerationRule rule's} status(Enabled/Disabled) which is in this guild.
      *
      * @param rule, the rule which you want to modify.
+     * @param enabled, weather to enable or disable the rule.
+     *
      * @return an auto moderation rule.
      */
     AuditableRestAction<AutoModerationRule> modifyAutoModerationStatus(@Nonnull AutoModerationRule rule, boolean enabled);
@@ -3287,6 +3310,8 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * This can be used to modify an existing {@link AutoModerationRule rule's} exempt roles which is in this guild.
      *
      * @param rule, the rule which you want to modify.
+     * @param roles, the roles which you want to exempt from the rule you want to modify or to remove from the rule.
+     *
      * @return an auto moderation rule.
      */
     AuditableRestAction<AutoModerationRule> modifyAutoModerationExemptRoles(@Nonnull AutoModerationRule rule, @Nonnull List<Role> roles);
@@ -3295,6 +3320,8 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * This can be used to modify an existing {@link AutoModerationRule rule's} exempt channels which is in this guild.
      *
      * @param rule, the rule which you want to modify.
+     * @param channels, the channels which you want to exempt from the rule you want to modify or to remove from the rule.
+     *
      * @return an auto moderation rule.
      */
     AuditableRestAction<AutoModerationRule> modifyAutoModerationExemptChannels(@Nonnull AutoModerationRule rule, @Nonnull List<Channel> channels);

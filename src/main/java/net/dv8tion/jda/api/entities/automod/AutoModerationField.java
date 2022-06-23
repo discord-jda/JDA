@@ -89,7 +89,7 @@ public enum AutoModerationField
     EXEMPT_ROLES("exempt_roles", AuditLogKey.AUTO_MODERATION_EXEMPT_ROLES),
 
     /**
-     * The exempt List of {@link Channel channels} for this rule.
+     * The exempt List of {@link GuildChannel channels} for this rule.
      *
      * @see AutoModerationRule#getExemptChannels()
      */

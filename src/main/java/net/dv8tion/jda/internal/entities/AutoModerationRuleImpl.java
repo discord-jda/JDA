@@ -40,7 +40,7 @@ public class AutoModerationRuleImpl implements AutoModerationRule
     private List<AutoModerationAction> actions;
     private boolean enabled;
     private List<Role> roles;
-    private List<Channel> channels;
+    private List<GuildChannel> channels;
 
     public AutoModerationRuleImpl(long id)
     {
@@ -163,12 +163,12 @@ public class AutoModerationRuleImpl implements AutoModerationRule
     }
 
     @Override
-    public List<Channel> getExemptChannels()
+    public List<GuildChannel> getExemptChannels()
     {
         return channels;
     }
 
-    public AutoModerationRuleImpl setExemptChannels(List<Channel> channels)
+    public AutoModerationRuleImpl setExemptChannels(List<GuildChannel> channels)
     {
         this.channels = channels;
         return this;
