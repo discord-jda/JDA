@@ -23,6 +23,7 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -103,6 +104,24 @@ public class ModalMapping
         return object.getArray("values")
                 .stream(DataArray::getString)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o) return true;
+        if (!(o instanceof ModalMapping)) return false;
+        ModalMapping that = (ModalMapping) o;
+        if (type != that.type || !Objects.equals(id, that.id))
+            return false;
+
+        if (type == Component.Type.TEXT_INPUT)
+            return Objects.equals(getAsString(), that.getAsString());
+
+        if (type == Component.Type.SELECT_MENU)
+            return Objects.equals(getAsStringList(), that.getAsStringList());
+
+        return false;
     }
 
     @Override
