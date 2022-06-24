@@ -119,8 +119,6 @@ public class ModalMapping
             return getAsString().equals(that.getAsString());
         else
             return getAsStringList().equals(that.getAsStringList());
-
-        return false;
     }
 
     @Override
