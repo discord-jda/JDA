@@ -115,11 +115,10 @@ public class ModalMapping
         if (type != that.type || !Objects.equals(id, that.id))
             return false;
 
-        if (type == Component.Type.TEXT_INPUT)
-            return Objects.equals(getAsString(), that.getAsString());
-
-        if (type == Component.Type.SELECT_MENU)
-            return Objects.equals(getAsStringList(), that.getAsStringList());
+        if (!object.isNull("value"))
+            return getAsString().equals(that.getAsString());
+        else
+            return getAsStringList().equals(that.getAsStringList());
 
         return false;
     }
