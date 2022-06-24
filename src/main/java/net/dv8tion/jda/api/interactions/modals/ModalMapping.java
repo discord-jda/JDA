@@ -109,7 +109,7 @@ public class ModalMapping
     @Override
     public String toString()
     {
-        return "ModalMapping[" + getType() + "](id=" + getId();
+        return "ModalMapping[" + getType() + "](id=" + getId() + ")";
     }
 
     private void typeError(String targetType)
