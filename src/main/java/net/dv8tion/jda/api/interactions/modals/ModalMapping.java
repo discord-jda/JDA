@@ -20,7 +20,6 @@ import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.interactions.components.Component;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
-import net.dv8tion.jda.api.utils.data.DataType;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -70,7 +69,7 @@ public class ModalMapping
     /**
      * The String representation of this component.
      *
-     * <p>For TextInputs, this returns what the User typed in it.
+     * <p>For {@link net.dv8tion.jda.api.interactions.components.text.TextInput TextInputs}, this returns what the User typed in it.
      *
      * @throws IllegalStateException
      *         If the value of this {@link ModalMapping} is a collection, such as selected values in a select menu.
@@ -88,7 +87,7 @@ public class ModalMapping
     /**
      * List of provided values.
      *
-     * <p>For SelectMenus, this returns the values of all the options the user selected.
+     * <p>For {@link net.dv8tion.jda.api.interactions.components.selections.SelectMenu SelectMenus}, this returns the values of all the options the user selected.
      *
      * @throws IllegalStateException
      *         If the value of this {@link ModalMapping} cannot be represented as a List of Strings.
