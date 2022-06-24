@@ -73,32 +73,32 @@ public class ModalMapping
      * <p>For TextInputs, this returns what the User typed in it.
      *
      * @throws IllegalStateException
-     *         If the value of this {@link ModalMapping} cannot be represented as a String.
+     *         If the value of this {@link ModalMapping} is a collection, such as selected values in a select menu.
      *
-     * @return The String representation of this component.
+     * @return The provided value as a string
      */
     @Nonnull
     public String getAsString()
     {
-        if (object.isNull("value") || !object.isType("value", DataType.STRING))
+        if (object.isNull("value"))
             typeError("String");
         return object.getString("value");
     }
 
     /**
-     * The {@link List} representation of this component.
+     * List of provided values.
      *
      * <p>For SelectMenus, this returns the values of all the options the user selected.
      *
      * @throws IllegalStateException
      *         If the value of this {@link ModalMapping} cannot be represented as a List of Strings.
      *
-     * @return The {@link List} representation of this component.
+     * @return The provided values as a list of strings
      */
     @Nonnull
     public List<String> getAsStringList()
     {
-        if (object.isNull("values") || !object.getArray("values").isType(0, DataType.STRING))
+        if (object.isNull("values"))
             typeError("List<String>");
 
         return object.getArray("values")
