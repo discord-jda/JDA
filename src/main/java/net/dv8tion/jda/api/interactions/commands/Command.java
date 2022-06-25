@@ -449,7 +449,8 @@ public interface Command extends ISnowflake
          * @return This builder instance, for chaining
          */
         @Nonnull
-        public Choice setNameLocalization(@Nonnull DiscordLocale locale, @Nonnull String name) {
+        public Choice setNameLocalization(@Nonnull DiscordLocale locale, @Nonnull String name) 
+        {
             nameLocalizations.setTranslation(locale, name);
             return this;
         }
