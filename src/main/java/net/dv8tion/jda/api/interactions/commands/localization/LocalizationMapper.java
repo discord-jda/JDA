@@ -101,20 +101,34 @@ public class LocalizationMapper
         private void trySetTranslation(LocalizationMap localizationMap, String finalComponent)
         {
             final String key = getKey(finalComponent);
-            final Map<DiscordLocale, String> data = localizationFunction.apply(key);
-            localizationMap.setTranslations(data);
+            try
+            {
+                final Map<DiscordLocale, String> data = localizationFunction.apply(key);
+                localizationMap.setTranslations(data);
+            }
+            catch (Exception e)
+            {
+                throw new RuntimeException("An uncaught exception occurred while using a LocalizationFunction, localization key: '" + key + "'", e);
+            }
         }
 
         private void trySetTranslation(DataObject localizationMap, String finalComponent)
         {
             final String key = getKey(finalComponent);
-            final Map<DiscordLocale, String> data = localizationFunction.apply(key);
-            data.forEach((locale, localizedValue) ->
+            try
             {
-                Checks.check(locale != DiscordLocale.UNKNOWN, "Localization function returned a map with an 'UNKNOWN' DiscordLocale");
+                final Map<DiscordLocale, String> data = localizationFunction.apply(key);
+                data.forEach((locale, localizedValue) ->
+                {
+                    Checks.check(locale != DiscordLocale.UNKNOWN, "Localization function returned a map with an 'UNKNOWN' DiscordLocale");
 
-                localizationMap.put(locale.getLocale(), localizedValue);
-            });
+                    localizationMap.put(locale.getLocale(), localizedValue);
+                });
+            }
+            catch (Exception e)
+            {
+                throw new RuntimeException("An uncaught exception occurred while using a LocalizationFunction, localization key: '" + key + "'", e);
+            }
         }
     }
 
