@@ -328,8 +328,10 @@ public interface Command extends ISnowflake
      */
     class Choice
     {
-        private final String name;
-        private LocalizationMap nameLocalizations = new LocalizationMap(s -> {});
+        public static final int MAX_NAME_LENGTH = 100;
+
+        private String name;
+        private LocalizationMap nameLocalizations = new LocalizationMap(this::checkName);
         private long intValue = 0;
         private double doubleValue = Double.NaN;
         private String stringValue = null;
@@ -339,13 +341,13 @@ public interface Command extends ISnowflake
          * Create a Choice tuple
          *
          * @param name
-         *        The display name of this choice
+         *        The display name of this choice, must be less than 100 characters
          * @param value
          *        The integer value you receive in a command option
          */
         public Choice(@Nonnull String name, long value)
         {
-            this.name = name;
+            setName(name);
             setIntValue(value);
         }
 
@@ -353,13 +355,13 @@ public interface Command extends ISnowflake
          * Create a Choice tuple
          *
          * @param name
-         *        The display name of this choice
+         *        The display name of this choice, must be less than 100 characters
          * @param value
          *        The double value you receive in a command option
          */
         public Choice(@Nonnull String name, double value)
         {
-            this.name = name;
+            setName(name);
             setDoubleValue(value);
         }
 
@@ -367,13 +369,13 @@ public interface Command extends ISnowflake
          * Create a Choice tuple
          *
          * @param name
-         *        The display name of this choice
+         *        The display name of this choice, must be less than 100 characters
          * @param value
          *        The string value you receive in a command option
          */
         public Choice(@Nonnull String name, @Nonnull String value)
         {
-            this.name = name;
+            setName(name);
             setStringValue(value);
         }
 
@@ -404,7 +406,7 @@ public interface Command extends ISnowflake
             {
                 setStringValue(json.getString("value"));
             }
-            this.nameLocalizations = LocalizationMap.fromProperty(json, "name_localizations", s -> {});
+            this.nameLocalizations = LocalizationMap.fromProperty(json, "name_localizations", this::checkName);
         }
 
         /**
@@ -417,6 +419,25 @@ public interface Command extends ISnowflake
         public String getName()
         {
             return name;
+        }
+
+        /**
+         * Configure the choice name
+         *
+         * @param  name
+         *         The choice name, {@link #MAX_NAME_LENGTH 1-100 characters long}
+         *
+         * @throws IllegalArgumentException
+         *         If the name is null, empty, or not between 1-{@value #MAX_NAME_LENGTH} characters long,
+         *         as defined by {@link #MAX_NAME_LENGTH}
+         *
+         * @return The Choice instance, for chaining
+         */
+        public Choice setName(@Nonnull String name)
+        {
+            checkName(name);
+            this.name = name;
+            return this;
         }
 
         /**
@@ -444,6 +465,7 @@ public interface Command extends ISnowflake
          *             <li>If the locale is null</li>
          *             <li>If the name is null</li>
          *             <li>If the locale is {@link DiscordLocale#UNKNOWN}</li>
+         *             <li>If the name does not pass the corresponding {@link #setName(String) name check}</li>
          *         </ul>
          *
          * @return This builder instance, for chaining
@@ -465,6 +487,7 @@ public interface Command extends ISnowflake
          *         <ul>
          *             <li>If the map is null</li>
          *             <li>If the map contains an {@link DiscordLocale#UNKNOWN} key</li>
+         *             <li>If the map contains a name which does not pass the corresponding {@link #setName(String) name check}</li>
          *         </ul>
          *
          * @return This builder instance, for chaining
@@ -558,10 +581,17 @@ public interface Command extends ISnowflake
 
         private void setStringValue(@Nonnull String value)
         {
+            Checks.notLonger(value, 100, "Choice value");
             this.doubleValue = Double.NaN;
             this.intValue = 0;
             this.stringValue = value;
             this.type = OptionType.STRING;
+        }
+
+        private void checkName(@Nonnull String name)
+        {
+            Checks.notEmpty(name, "Choice name");
+            Checks.notLonger(name, MAX_NAME_LENGTH, "Choice name");
         }
 
         @Nonnull
