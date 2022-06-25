@@ -371,7 +371,7 @@ public class OptionData implements SerializableData
     }
 
     /**
-     * Sets the name localizations of this option.
+     * Sets multiple {@link DiscordLocale language-specific} localizations of this option's name.
      *
      * @param  map
      *         The map from which to transfer the translated names
@@ -413,7 +413,7 @@ public class OptionData implements SerializableData
     }
 
     /**
-     * Sets the description localizations of this option.
+     * Sets a {@link DiscordLocale language-specific} localization of this option's description.
      *
      * @param  locale
      *         The locale to associate the translated description with
@@ -440,7 +440,7 @@ public class OptionData implements SerializableData
     }
 
     /**
-     * Sets the description localizations of this option.
+     * Sets multiple {@link DiscordLocale language-specific} localizations of this option's description.
      *
      * @param  map
      *         The map from which to transfer the translated descriptions
