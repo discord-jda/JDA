@@ -2,11 +2,11 @@
 [jitpack]: https://img.shields.io/jitpack/v/github/DV8FromTheWorld/JDA?label=Snapshots&color=blue
 [download]: #download
 [discord-invite]: https://discord.gg/0hMr4ce0tIl3SLv5
-[migration]: https://github.com/DV8FromTheWorld/JDA/wiki/0\)-Migrating-to-V4
+[migration]: https://jda.wiki/introduction/migration-v3-v4/
 [jenkins]: https://ci.dv8tion.net/job/JDA5
 [license]: https://github.com/DV8FromTheWorld/JDA/tree/master/LICENSE
-[faq]: https://github.com/DV8FromTheWorld/JDA/wiki/10\)-FAQ
-[troubleshooting]: https://github.com/DV8FromTheWorld/JDA/wiki/19\)-Troubleshooting
+[faq]: https://jda.wiki/introduction/faq/
+[troubleshooting]: https://jda.wiki/using-jda/troubleshooting/
 [discord-shield]: https://discord.com/api/guilds/125227483518861312/widget.png
 [faq-shield]: https://img.shields.io/badge/Wiki-FAQ-blue.svg
 [troubleshooting-shield]: https://img.shields.io/badge/Wiki-Troubleshooting-darkgreen.svg
@@ -88,8 +88,6 @@ public static void main(String[] args) {
     builder.disableCache(CacheFlag.MEMBER_OVERRIDES, CacheFlag.VOICE_STATE);
     // Enable the bulk delete event
     builder.setBulkDeleteSplittingEnabled(false);
-    // Disable compression (not recommended)
-    builder.setCompression(Compression.NONE);
     // Set activity (like "playing Something")
     builder.setActivity(Activity.watching("TV"));
     
@@ -192,43 +190,6 @@ public class MessageListener extends ListenerAdapter
             System.out.printf("[%s][%s] %s: %s\n", event.getGuild().getName(),
                         event.getTextChannel().getName(), event.getMember().getEffectiveName(),
                         event.getMessage().getContentDisplay());
-        }
-    }
-}
-```
-
-**Ping-Pong Bot**:
-
-```java
-public class Bot extends ListenerAdapter
-{
-    public static void main(String[] args) throws LoginException
-    {
-        if (args.length < 1) {
-            System.out.println("You have to provide a token as first argument!");
-            System.exit(1);
-        }
-        // args[0] should be the token
-        // We only need 2 intents in this bot. We only respond to messages in guilds and private channels.
-        // All other events will be disabled.
-        JDABuilder.createLight(args[0], GatewayIntent.GUILD_MESSAGES, GatewayIntent.DIRECT_MESSAGES)
-            .addEventListeners(new Bot())
-            .setActivity(Activity.playing("Type !ping"))
-            .build();
-    }
-    
-    @Override
-    public void onMessageReceived(MessageReceivedEvent event)
-    {
-        Message msg = event.getMessage();
-        if (msg.getContentRaw().equals("!ping"))
-        {
-            MessageChannel channel = event.getChannel();
-            long time = System.currentTimeMillis();
-            channel.sendMessage("Pong!") /* => RestAction<Message> */
-                   .queue(response /* => Message */ -> {
-                       response.editMessageFormat("Pong: %d ms", System.currentTimeMillis() - time).queue();
-                   });
         }
     }
 }
@@ -508,40 +469,40 @@ SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further detail
 JDA currently provides a fallback Logger in case that no SLF4J implementation is present.
 We strongly recommend to use one though, as that can improve speed and allows you to customize the Logger as well as log to files
 
-There is a guide for logback-classic available in our wiki: [Logging Setup](https://github.com/DV8FromTheWorld/JDA/wiki/Logging-Setup)
+There is a guide for logback-classic available in our wiki: [Logging Setup](https://jda.wiki/setup/logging/)
 
 ## Documentation
 
 Docs can be found on the [Jenkins][jenkins] or directly [here](https://ci.dv8tion.net/job/JDA5/javadoc/)
-<br>A simple Wiki can also be found in this repository's [Wiki section](https://github.com/DV8FromTheWorld/JDA/wiki)
+<br>A simple Wiki can also be found in this repository's [Wiki section](https://jda.wiki/)
 
 ### Annotations
 
 We use a number of annotations to indicate future plans for implemented functionality such as new features of
 the Discord API.
 
-- [Incubating](https://github.com/DV8FromTheWorld/JDA/blob/development/src/main/java/net/dv8tion/jda/annotations/Incubating.java)
+- [Incubating](https://github.com/DV8FromTheWorld/JDA/blob/master/src/main/java/net/dv8tion/jda/annotations/Incubating.java)
     <br>This annotation is used to indicate that functionality may change in the future. Often used when a new feature is added.
-- [ReplaceWith](https://github.com/DV8FromTheWorld/JDA/blob/development/src/main/java/net/dv8tion/jda/annotations/ReplaceWith.java)
+- [ReplaceWith](https://github.com/DV8FromTheWorld/JDA/blob/master/src/main/java/net/dv8tion/jda/annotations/ReplaceWith.java)
     <br>Paired with `@Deprecated` this is used to inform you how the new code-fragment is supposed to look once the hereby annotated functionality is removed.
-- [ForRemoval](https://github.com/DV8FromTheWorld/JDA/blob/development/src/main/java/net/dv8tion/jda/annotations/ForRemoval.java)
+- [ForRemoval](https://github.com/DV8FromTheWorld/JDA/blob/master/src/main/java/net/dv8tion/jda/annotations/ForRemoval.java)
     <br>Paired with `@Deprecated` this indicates that we plan to entirely remove the hereby annotated functionality in the future.
-- [DeprecatedSince](https://github.com/DV8FromTheWorld/JDA/blob/development/src/main/java/net/dv8tion/jda/annotations/DeprecatedSince.java)
+- [DeprecatedSince](https://github.com/DV8FromTheWorld/JDA/blob/master/src/main/java/net/dv8tion/jda/annotations/DeprecatedSince.java)
     <br>Paired with `@Deprecated` this specifies when a feature was marked as deprecated.
 
-[Sources](https://github.com/DV8FromTheWorld/JDA/tree/development/src/main/java/net/dv8tion/jda/annotations)
+[Sources](https://github.com/DV8FromTheWorld/JDA/tree/master/src/main/java/net/dv8tion/jda/annotations)
 
 ## Getting Help
 
-For general troubleshooting you can visit our wiki [Troubleshooting](https://github.com/DV8FromTheWorld/JDA/wiki/19\)-Troubleshooting) and [FAQ](https://github.com/DV8FromTheWorld/JDA/wiki/10\)-FAQ).
+For general troubleshooting you can visit our wiki [Troubleshooting][troubleshooting] and [FAQ][faq].
 <br>If you need help, or just want to talk with the JDA or other Devs, you can join the [Official JDA Discord Guild][discord-invite].
 
 Alternatively you can also join the [Unofficial Discord API Guild](https://discord.gg/discord-api).
 Once you joined, you can find JDA-specific help in the `#java_jda` channel.
 
-For guides and setup help you can also take a look at the [wiki](https://github.com/DV8FromTheWorld/JDA/wiki)
-<br>Especially interesting are the [Getting Started](https://github.com/DV8FromTheWorld/JDA/wiki/3\)-Getting-Started)
-and [Setup](https://github.com/DV8FromTheWorld/JDA/wiki/2\)-Setup) Pages.
+For guides and setup help you can also take a look at the [wiki](https://jda.wiki/)
+<br>Especially interesting are the [Getting Started](https://jda.wiki/introduction/jda/)
+and [Setup](https://jda.wiki/setup/intellij/) Pages.
 
 ## Third Party Recommendations
 
@@ -670,4 +631,4 @@ All dependencies are managed automatically by Gradle.
 - [discord.py](https://github.com/Rapptz/discord.py)
 - [serenity](https://github.com/serenity-rs/serenity)
 
-**See also:** https://discord.com/developers/docs/topics/community-resources#libraries
+**See also:** [Discord API Community Libraries](https://github.com/apacheli/discord-api-libs)
