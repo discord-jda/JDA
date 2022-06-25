@@ -344,7 +344,7 @@ public class OptionData implements SerializableData
     }
 
     /**
-     * Sets the name localizations of this option.
+     * Sets a {@link DiscordLocale language-specific} localization of this option's name.
      *
      * @param  locale
      *         The locale to associate the translated name with
