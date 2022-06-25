@@ -107,21 +107,6 @@ public class ModalMapping
     }
 
     @Override
-    public boolean equals(Object o)
-    {
-        if (this == o) return true;
-        if (!(o instanceof ModalMapping)) return false;
-        ModalMapping that = (ModalMapping) o;
-        if (type != that.type || !Objects.equals(id, that.id))
-            return false;
-
-        if (!object.isNull("value"))
-            return getAsString().equals(that.getAsString());
-        else
-            return getAsStringList().equals(that.getAsStringList());
-    }
-
-    @Override
     public String toString()
     {
         return "ModalMapping[" + getType() + "](id=" + getId() + ")";
