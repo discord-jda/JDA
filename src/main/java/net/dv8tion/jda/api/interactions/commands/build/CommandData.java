@@ -178,9 +178,11 @@ public interface CommandData extends SerializableData
         {
             final CommandDataImpl data = new CommandDataImpl(command.getType(), command.getName());
             //Command localizations are unmodifiable, make a copy
-            final LocalizationMap nameLocalizations = LocalizationMap.fromMap(data::checkName, command.getNameLocalizations());
+            final LocalizationMap nameLocalizations = LocalizationMap.fromMap(data::checkName, command.getNameLocalizations()); //TODO remove copies from reconstitution methods
+            final LocalizationMap descriptionLocalizations = LocalizationMap.fromMap(data::checkDescription, command.getDescriptionLocalizations());
             return data.setDefaultEnabled(command.isDefaultEnabled())
-                    .setNameLocalizations(nameLocalizations);
+                    .setNameLocalizations(nameLocalizations)
+                    .setDescriptionLocalizations(descriptionLocalizations);
         }
 
         return SlashCommandData.fromCommand(command);
@@ -213,6 +215,7 @@ public interface CommandData extends SerializableData
         {
             final CommandDataImpl data = new CommandDataImpl(commandType, name);
             data.setNameLocalizations(LocalizationMap.fromProperty(object, "name_localizations", data::checkName));
+            data.setDescriptionLocalizations(LocalizationMap.fromProperty(object, "description_localizations", data::checkDescription));
 
             return data;
         }
