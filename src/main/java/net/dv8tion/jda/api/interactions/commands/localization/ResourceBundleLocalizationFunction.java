@@ -29,6 +29,8 @@ import java.util.*;
  */
 public class ResourceBundleLocalizationFunction implements LocalizationFunction
 {
+    private final Set<Bundle> bundles;
+
     private ResourceBundleLocalizationFunction(Set<Bundle> bundles)
     {
         this.bundles = bundles;
@@ -55,51 +57,14 @@ public class ResourceBundleLocalizationFunction implements LocalizationFunction
         return map;
     }
 
-    private static final class Bundle
-    {
-        private final Locale targetLocale;
-        private final ResourceBundle resourceBundle;
-
-        public Bundle(Locale targetLocale, ResourceBundle resourceBundle)
-        {
-            this.targetLocale = targetLocale;
-            this.resourceBundle = resourceBundle;
-        }
-
-        @Override
-        public boolean equals(Object o)
-        {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-
-            Bundle bundle = (Bundle) o;
-
-            if (!targetLocale.equals(bundle.targetLocale)) return false;
-            return resourceBundle.equals(bundle.resourceBundle);
-        }
-
-        @Override
-        public int hashCode()
-        {
-            int result = targetLocale.hashCode();
-            result = 31 * result + resourceBundle.hashCode();
-            return result;
-        }
-    }
-
-    private final Set<Bundle> bundles;
-
     @Nonnull
     public static Builder fromBundle(@Nonnull Locale locale, @Nonnull ResourceBundle resourceBundle)
     {
+        Checks.notNull(locale, "Locale");
+        Checks.notNull(resourceBundle, "Resource bundle");
+
         return new Builder()
                 .addBundle(resourceBundle, locale);
-    }
-
-    @Nonnull
-    public static Builder fromBundles(@Nonnull String baseName, @Nonnull Locale... locales)
-    {
-        return new Builder().addBundles(baseName, locales);
     }
 
     @Nonnull
@@ -115,18 +80,10 @@ public class ResourceBundleLocalizationFunction implements LocalizationFunction
         @Nonnull
         public Builder addBundle(@Nonnull ResourceBundle resourceBundle, @Nonnull Locale locale)
         {
-            bundles.add(new Bundle(locale, resourceBundle));
-            return this;
-        }
+            Checks.notNull(resourceBundle, "Resource bundle");
+            Checks.notNull(locale, "Locale");
 
-        @Nonnull
-        public Builder addBundles(@Nonnull String baseName, @Nonnull Locale... locales)
-        {
-            for (Locale locale : locales)
-            {
-                final ResourceBundle resourceBundle = ResourceBundle.getBundle(baseName, locale);
-                bundles.add(new Bundle(locale, resourceBundle));
-            }
+            bundles.add(new Bundle(locale, resourceBundle));
             return this;
         }
 
@@ -134,6 +91,36 @@ public class ResourceBundleLocalizationFunction implements LocalizationFunction
         public ResourceBundleLocalizationFunction build()
         {
             return new ResourceBundleLocalizationFunction(bundles);
+        }
+    }
+
+    private static final class Bundle
+    {
+        private final Locale targetLocale;
+        private final ResourceBundle resourceBundle;
+
+        public Bundle(Locale targetLocale, ResourceBundle resourceBundle)
+        {
+            this.targetLocale = targetLocale;
+            this.resourceBundle = resourceBundle;
+        }
+
+        @Override
+        public boolean equals(Object o)
+        {
+            if (this == o) return true;
+            if (!(o instanceof Bundle)) return false;
+
+            Bundle bundle = (Bundle) o;
+
+            if (!targetLocale.equals(bundle.targetLocale)) return false;
+            return resourceBundle.equals(bundle.resourceBundle);
+        }
+
+        @Override
+        public int hashCode()
+        {
+            return Objects.hash(targetLocale, resourceBundle);
         }
     }
 }
