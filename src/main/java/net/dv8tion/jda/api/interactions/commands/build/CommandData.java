@@ -69,7 +69,7 @@ public interface CommandData extends SerializableData
     CommandData setName(@Nonnull String name);
 
     /**
-     * Sets the name localizations of this command.
+     * Sets a {@link DiscordLocale language-specific} localization of this command's name.
      *
      * @param  locale
      *         The locale to associate the translated name with
