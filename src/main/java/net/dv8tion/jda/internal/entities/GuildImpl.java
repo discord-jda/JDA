@@ -1134,14 +1134,14 @@ public class GuildImpl implements Guild
     }
 
     // Helper function for deferred cache access
-    private Member getMember(long id, boolean update, JDAImpl jda)
+    private Member getMember(long id, JDAImpl jda)
     {
-        if (!update || jda.isIntent(GatewayIntent.GUILD_MEMBERS))
+        if (jda.isIntent(GatewayIntent.GUILD_MEMBERS))
         {
             // return member from cache if member tracking is enabled through intents
             Member member = getMemberById(id);
             // if the join time is inaccurate we also have to load it through REST to update this information
-            if (!update || (member != null && member.hasTimeJoined()))
+            if (member != null && member.hasTimeJoined())
                 return member;
         }
         return null;
@@ -1149,11 +1149,11 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public CacheRestAction<Member> retrieveMemberById(long id, boolean update)
+    public CacheRestAction<Member> retrieveMemberById(long id)
     {
         JDAImpl jda = getJDA();
         return new DeferredRestAction<>(jda, Member.class,
-                () -> getMember(id, update, jda),
+                () -> getMember(id, jda),
                 () -> { // otherwise we need to update the member with a REST request first to get the nickname/roles
                     if (id == jda.getSelfUser().getIdLong())
                         return new CompletedRestAction<>(jda, getSelfMember());

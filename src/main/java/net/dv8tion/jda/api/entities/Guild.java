@@ -2581,11 +2581,8 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * <br>If the member is already loaded it will be retrieved from {@link #getMemberById(long)}
      * and immediately provided if the member information is consistent. The cache consistency directly
      * relies on the enabled {@link GatewayIntent GatewayIntents} as {@link GatewayIntent#GUILD_MEMBERS GatewayIntent.GUILD_MEMBERS}
-     * is required to keep the cache updated with the latest information. You can pass {@code update = false} to always
-     * return immediately if the member is cached regardless of cache consistency.
-     *
-     * <p>When the intent {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MEMBERS GUILD_MEMBERS}
-     * is disabled this will always make a request even if the member is cached. You can use {@link #retrieveMember(User, boolean)} to disable this behavior.
+     * is required to keep the cache updated with the latest information. You can use {@link CacheRestAction#useCache(boolean) useCache(true)} to always
+     * make a new request, which is the default behavior if the required intents are disabled.
      *
      * <p>Possible {@link net.dv8tion.jda.api.exceptions.ErrorResponseException ErrorResponseExceptions} include:
      * <ul>
@@ -2609,92 +2606,21 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * @see    #unloadMember(long)
      */
     @Nonnull
-    default RestAction<Member> retrieveMember(@Nonnull UserSnowflake user)
+    default CacheRestAction<Member> retrieveMember(@Nonnull UserSnowflake user)
     {
         Checks.notNull(user, "User");
         return retrieveMemberById(user.getId());
     }
 
     /**
-     * Load the member for the specified user.
-     * <br>If the member is already loaded it will be retrieved from {@link #getMemberById(long)}
-     * and immediately provided if the member information is consistent. The cache consistency directly
-     * relies on the enabled {@link GatewayIntent GatewayIntents} as {@link GatewayIntent#GUILD_MEMBERS GatewayIntent.GUILD_MEMBERS}
-     * is required to keep the cache updated with the latest information. You can pass {@code update = false} to always
-     * return immediately if the member is cached regardless of cache consistency.
-     *
-     * <p>When the intent {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MEMBERS GUILD_MEMBERS}
-     * is disabled this will always make a request even if the member is cached. You can use {@link #retrieveMemberById(String, boolean)} to disable this behavior.
-     *
-     * <p>Possible {@link net.dv8tion.jda.api.exceptions.ErrorResponseException ErrorResponseExceptions} include:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MEMBER}
-     *     <br>The specified user is not a member of this guild</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_USER}
-     *     <br>The specified user does not exist</li>
-     * </ul>
-     *
-     * @param  id
-     *         The user id to load the member from
-     *
-     * @throws IllegalArgumentException
-     *         If the provided id is empty or null
-     * @throws NumberFormatException
-     *         If the provided id is not a snowflake
-     *
-     * @return {@link RestAction} - Type: {@link Member}
-     *
-     * @see    #pruneMemberCache()
-     * @see    #unloadMember(long)
-     */
-    @Nonnull
-    default RestAction<Member> retrieveMemberById(@Nonnull String id)
-    {
-        return retrieveMemberById(MiscUtil.parseSnowflake(id));
-    }
-
-    /**
-     * Load the member for the specified user.
-     * <br>If the member is already loaded it will be retrieved from {@link #getMemberById(long)}
-     * and immediately provided if the member information is consistent. The cache consistency directly
-     * relies on the enabled {@link GatewayIntent GatewayIntents} as {@link GatewayIntent#GUILD_MEMBERS GatewayIntent.GUILD_MEMBERS}
-     * is required to keep the cache updated with the latest information. You can pass {@code update = false} to always
-     * return immediately if the member is cached regardless of cache consistency.
-     *
-     * <p>When {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MEMBERS GatewayIntent.GUILD_MEMBERS}
-     * is disabled this will always make a request even if the member is cached. You can use {@link #retrieveMemberById(long, boolean)} to disable this behavior.
-     *
-     * <p>Possible {@link net.dv8tion.jda.api.exceptions.ErrorResponseException ErrorResponseExceptions} include:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MEMBER}
-     *     <br>The specified user is not a member of this guild</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_USER}
-     *     <br>The specified user does not exist</li>
-     * </ul>
-     *
-     * @param  id
-     *         The user id to load the member from
-     *
-     * @return {@link RestAction} - Type: {@link Member}
-     *
-     * @see    #pruneMemberCache()
-     * @see    #unloadMember(long)
-     */
-    @Nonnull
-    default RestAction<Member> retrieveMemberById(long id)
-    {
-        return retrieveMemberById(id, true);
-    }
-
-    /**
      * Shortcut for {@code guild.retrieveMemberById(guild.getOwnerIdLong())}.
      * <br>This will retrieve the current owner of the guild.
      * It is possible that the owner of a guild is no longer a registered discord user in which case this will fail.
-     *
-     * <p>When {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MEMBERS GatewayIntent.GUILD_MEMBERS}
-     * is disabled this will always make a request even if the member is cached. You can use {@link #retrieveOwner(boolean)} to disable this behavior.
+     * <br>If the member is already loaded it will be retrieved from {@link #getMemberById(long)}
+     * and immediately provided if the member information is consistent. The cache consistency directly
+     * relies on the enabled {@link GatewayIntent GatewayIntents} as {@link GatewayIntent#GUILD_MEMBERS GatewayIntent.GUILD_MEMBERS}
+     * is required to keep the cache updated with the latest information. You can use {@link CacheRestAction#useCache(boolean) useCache(true)} to always
+     * make a new request, which is the default behavior if the required intents are disabled.
      *
      * <p>Possible {@link net.dv8tion.jda.api.exceptions.ErrorResponseException ErrorResponseExceptions} include:
      * <ul>
@@ -2715,7 +2641,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * @see    #retrieveMemberById(long)
      */
     @Nonnull
-    default RestAction<Member> retrieveOwner()
+    default CacheRestAction<Member> retrieveOwner()
     {
         return retrieveMemberById(getOwnerIdLong());
     }
@@ -2725,45 +2651,8 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * <br>If the member is already loaded it will be retrieved from {@link #getMemberById(long)}
      * and immediately provided if the member information is consistent. The cache consistency directly
      * relies on the enabled {@link GatewayIntent GatewayIntents} as {@link GatewayIntent#GUILD_MEMBERS GatewayIntent.GUILD_MEMBERS}
-     * is required to keep the cache updated with the latest information. You can pass {@code update = false} to always
-     * return immediately if the member is cached regardless of cache consistency.
-     *
-     * <p>Possible {@link net.dv8tion.jda.api.exceptions.ErrorResponseException ErrorResponseExceptions} include:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MEMBER}
-     *     <br>The specified user is not a member of this guild</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_USER}
-     *     <br>The specified user does not exist</li>
-     * </ul>
-     *
-     * @param  user
-     *         The user to load the member from
-     * @param  update
-     *         Whether JDA should perform a request even if the member is already cached to update properties such as the name
-     *
-     * @throws IllegalArgumentException
-     *         If provided with null
-     *
-     * @return {@link RestAction} - Type: {@link Member}
-     *
-     * @see    #pruneMemberCache()
-     * @see    #unloadMember(long)
-     */
-    @Nonnull
-    default RestAction<Member> retrieveMember(@Nonnull User user, boolean update)
-    {
-        Checks.notNull(user, "User");
-        return retrieveMemberById(user.getId(), update);
-    }
-
-    /**
-     * Load the member for the specified user.
-     * <br>If the member is already loaded it will be retrieved from {@link #getMemberById(long)}
-     * and immediately provided if the member information is consistent. The cache consistency directly
-     * relies on the enabled {@link GatewayIntent GatewayIntents} as {@link GatewayIntent#GUILD_MEMBERS GatewayIntent.GUILD_MEMBERS}
-     * is required to keep the cache updated with the latest information. You can pass {@code update = false} to always
-     * return immediately if the member is cached regardless of cache consistency.
+     * is required to keep the cache updated with the latest information. You can use {@link CacheRestAction#useCache(boolean) useCache(true)} to always
+     * make a new request, which is the default behavior if the required intents are disabled.
      *
      * <p>Possible {@link net.dv8tion.jda.api.exceptions.ErrorResponseException ErrorResponseExceptions} include:
      * <ul>
@@ -2776,8 +2665,6 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      *
      * @param  id
      *         The user id to load the member from
-     * @param  update
-     *         Whether JDA should perform a request even if the member is already cached to update properties such as the name
      *
      * @throws IllegalArgumentException
      *         If the provided id is empty or null
@@ -2790,9 +2677,9 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * @see    #unloadMember(long)
      */
     @Nonnull
-    default RestAction<Member> retrieveMemberById(@Nonnull String id, boolean update)
+    default CacheRestAction<Member> retrieveMemberById(@Nonnull String id)
     {
-        return retrieveMemberById(MiscUtil.parseSnowflake(id), update);
+        return retrieveMemberById(MiscUtil.parseSnowflake(id));
     }
 
     /**
@@ -2814,48 +2701,14 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      *
      * @param  id
      *         The user id to load the member from
-     * @param  update
-     *         Whether JDA should perform a request even if the member is already cached to update properties such as the name
-     *
-     * @return {@link CacheRestAction} - Type: {@link Member}
-     *
-     * @see    #pruneMemberCache()
-     * @see    #unloadMember(long)
-     */
-    @Nonnull
-    CacheRestAction<Member> retrieveMemberById(long id, boolean update);
-
-    /**
-     * Shortcut for {@code guild.retrieveMemberById(guild.getOwnerIdLong())}.
-     * <br>This will retrieve the current owner of the guild.
-     * It is possible that the owner of a guild is no longer a registered discord user in which case this will fail.
-     *
-     * <p>Possible {@link net.dv8tion.jda.api.exceptions.ErrorResponseException ErrorResponseExceptions} include:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MEMBER}
-     *     <br>The specified user is not a member of this guild</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_USER}
-     *     <br>The specified user does not exist</li>
-     * </ul>
-     *
-     * @param  update
-     *         Whether JDA should perform a request even if the member is already cached to update properties such as the name
      *
      * @return {@link RestAction} - Type: {@link Member}
      *
      * @see    #pruneMemberCache()
      * @see    #unloadMember(long)
-     *
-     * @see    #getOwner()
-     * @see    #getOwnerIdLong()
-     * @see    #retrieveMemberById(long)
      */
     @Nonnull
-    default RestAction<Member> retrieveOwner(boolean update)
-    {
-        return retrieveMemberById(getOwnerIdLong(), update);
-    }
+    CacheRestAction<Member> retrieveMemberById(long id);
 
     /**
      * Retrieves a list of members.
