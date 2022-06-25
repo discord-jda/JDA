@@ -17,7 +17,7 @@
 package net.dv8tion.jda.api.requests.restaction;
 
 import net.dv8tion.jda.api.interactions.commands.Command;
-import net.dv8tion.jda.api.interactions.commands.CommandPermissions;
+import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.*;
 import net.dv8tion.jda.api.requests.RestAction;
@@ -102,22 +102,22 @@ public interface CommandEditAction extends RestAction<Command>
     CommandEditAction setGuildOnly(boolean guildOnly);
 
     /**
-     * Sets the default {@link CommandPermissions} for this command.
-     * <br>By default, everyone can use this command ({@link CommandPermissions#ENABLED}). This can be configured or overwritten by moderators in each guild.
+     * Sets the default {@link DefaultMemberPermissions} for this command.
+     * <br>By default, everyone can use this command ({@link DefaultMemberPermissions#ENABLED}). This can be configured or overwritten by moderators in each guild.
      *
-     * <p>Passing {@link CommandPermissions#DISABLED} will only show this command to admins.
+     * <p>Passing {@link DefaultMemberPermissions#DISABLED} will only show this command to admins.
      *
      * @param  permission
-     *         {@link CommandPermissions} representing the default permissions of this command.
+     *         {@link DefaultMemberPermissions} representing the default permissions of this command.
      *
      * @return The CommandEditAction instance, for chaining
      *
-     * @see CommandPermissions#ENABLED
-     * @see CommandPermissions#DISABLED
+     * @see DefaultMemberPermissions#ENABLED
+     * @see DefaultMemberPermissions#DISABLED
      */
     @Nonnull
     @CheckReturnValue
-    CommandEditAction setDefaultPermissions(@Nonnull CommandPermissions permission);
+    CommandEditAction setDefaultPermissions(@Nonnull DefaultMemberPermissions permission);
 
     /**
      * Configure the description

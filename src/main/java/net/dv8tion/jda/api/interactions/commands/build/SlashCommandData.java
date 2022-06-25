@@ -17,7 +17,7 @@
 package net.dv8tion.jda.api.interactions.commands.build;
 
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
-import net.dv8tion.jda.api.interactions.commands.CommandPermissions;
+import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.utils.data.DataArray;
@@ -40,7 +40,7 @@ public interface SlashCommandData extends CommandData
 
     @Nonnull
     @Override
-    SlashCommandData setDefaultPermissions(@Nonnull CommandPermissions permission);
+    SlashCommandData setDefaultPermissions(@Nonnull DefaultMemberPermissions permission);
 
     @Nonnull
     @Override
@@ -387,8 +387,8 @@ public interface SlashCommandData extends CommandData
 
         command.setDefaultPermissions(
                 object.isNull("default_member_permissions")
-                        ? CommandPermissions.ENABLED
-                        : CommandPermissions.enabledFor(object.getLong("default_member_permissions"))
+                        ? DefaultMemberPermissions.ENABLED
+                        : DefaultMemberPermissions.enabledFor(object.getLong("default_member_permissions"))
         );
 
         options.stream(DataArray::getObject).forEach(opt ->

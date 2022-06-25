@@ -16,8 +16,7 @@
 
 package net.dv8tion.jda.api.interactions.commands.build;
 
-import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.interactions.commands.CommandPermissions;
+import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.SerializableData;
@@ -50,21 +49,21 @@ public interface CommandData extends SerializableData
     CommandData setName(@Nonnull String name);
 
     /**
-     * Sets the default {@link CommandPermissions} for this command.
-     * <br>By default, everyone can use this command ({@link CommandPermissions#ENABLED}). This can be configured or overwritten by moderators in each guild.
+     * Sets the default {@link DefaultMemberPermissions} for this command.
+     * <br>By default, everyone can use this command ({@link DefaultMemberPermissions#ENABLED}). This can be configured or overwritten by moderators in each guild.
      *
-     * <p>Passing {@link CommandPermissions#DISABLED} will only show this command to admins.
+     * <p>Passing {@link DefaultMemberPermissions#DISABLED} will only show this command to admins.
      *
      * @param  permission
-     *         {@link CommandPermissions} representing the default permissions of this command.
+     *         {@link DefaultMemberPermissions} representing the default permissions of this command.
      *
      * @return The builder instance, for chaining
      *
-     * @see CommandPermissions#ENABLED
-     * @see CommandPermissions#DISABLED
+     * @see DefaultMemberPermissions#ENABLED
+     * @see DefaultMemberPermissions#DISABLED
      */
     @Nonnull
-    CommandData setDefaultPermissions(@Nonnull CommandPermissions permission);
+    CommandData setDefaultPermissions(@Nonnull DefaultMemberPermissions permission);
 
     /**
      * Sets whether this command is only usable in a guild (Default: false).
@@ -95,16 +94,16 @@ public interface CommandData extends SerializableData
     Command.Type getType();
 
     /**
-     * Gets the {@link CommandPermissions} of this command.
-     * <br>If no permissions have been set, this returns {@link CommandPermissions#ENABLED}.
+     * Gets the {@link DefaultMemberPermissions} of this command.
+     * <br>If no permissions have been set, this returns {@link DefaultMemberPermissions#ENABLED}.
      *
-     * @return CommandPermissions of this command.
+     * @return DefaultMemberPermissions of this command.
      *
-     * @see    CommandPermissions#ENABLED
-     * @see    CommandPermissions#DISABLED
+     * @see    DefaultMemberPermissions#ENABLED
+     * @see    DefaultMemberPermissions#DISABLED
      */
     @Nonnull
-    CommandPermissions getDefaultPermissions();
+    DefaultMemberPermissions getDefaultPermissions();
 
     /**
      * Whether the command can only be used inside a guild.
@@ -168,7 +167,7 @@ public interface CommandData extends SerializableData
             if (!object.isNull("default_member_permissions"))
             {
                 long defaultPermissions = object.getLong("default_member_permissions");
-                data.setDefaultPermissions(defaultPermissions == 0 ? CommandPermissions.DISABLED : CommandPermissions.enabledFor(defaultPermissions));
+                data.setDefaultPermissions(defaultPermissions == 0 ? DefaultMemberPermissions.DISABLED : DefaultMemberPermissions.enabledFor(defaultPermissions));
             }
 
             data.setGuildOnly(!object.getBoolean("dm_permission", true));

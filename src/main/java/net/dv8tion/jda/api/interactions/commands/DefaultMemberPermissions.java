@@ -28,32 +28,32 @@ import java.util.Collection;
  * Represents the default permissions for a Discord Application-Command.
  * <br>Moderators can manually configure or overwrite these permissions in each guild.
  */
-public class CommandPermissions
+public class DefaultMemberPermissions
 {
     /**
      * Default permissions of a command with no restrictions applied. (Everyone can see and access this command by default)
      */
-    public static final CommandPermissions ENABLED  = new CommandPermissions(null);
+    public static final DefaultMemberPermissions ENABLED  = new DefaultMemberPermissions(null);
 
     /**
      * "Empty" permissions of a command.
      * <br>Only members with the {@link Permission#ADMINISTRATOR ADMINISTRATOR} permission can see and access this command by default.
      */
-    public static final CommandPermissions DISABLED = new CommandPermissions(0L);
+    public static final DefaultMemberPermissions DISABLED = new DefaultMemberPermissions(0L);
 
     private final Long permissions;
 
-    private CommandPermissions(@Nullable Long permissions)
+    private DefaultMemberPermissions(@Nullable Long permissions)
     {
         this.permissions = permissions;
     }
 
     /**
      * Raw permission integer representing the default permissions of a command.
-     * <br>This returns null if it is of type {@link CommandPermissions#ENABLED ENABLED}
-     * <br>If the CommandPermissions is {@link CommandPermissions#DISABLED DISABLED}, this returns 0
+     * <br>This returns null if it is of type {@link DefaultMemberPermissions#ENABLED ENABLED}
+     * <br>If the default member permissions are {@link DefaultMemberPermissions#DISABLED DISABLED}, this returns 0
      *
-     * @return Raw permission integer representing the default permissions of a command
+     * @return Raw permission integer representing the default member permissions of a command
      */
     @Nullable
     public Long getPermissionsRaw()
@@ -62,9 +62,9 @@ public class CommandPermissions
     }
 
     /**
-     * Returns a CommandPermissions instance with the predefined permissions a member must have to see and access a command.
+     * Returns a DefaultMemberPermissions instance with the predefined permissions a member must have to see and access a command.
      *
-     * <br><b>If the passed Collection is empty, this returns {@link CommandPermissions#ENABLED ENABLED}</b>
+     * <br><b>If the passed Collection is empty, this returns {@link DefaultMemberPermissions#ENABLED ENABLED}</b>
      *
      * @param  permissions
      *         Collection of {@link Permission Permissions}
@@ -72,10 +72,10 @@ public class CommandPermissions
      * @throws IllegalArgumentException
      *         If any of the passed Permission is null
      *
-     * @return CommandPermissions instance with the predefined permissions
+     * @return DefaultMemberPermissions instance with the predefined permissions
      */
     @Nonnull
-    public static CommandPermissions enabledFor(@Nonnull Collection<Permission> permissions)
+    public static DefaultMemberPermissions enabledFor(@Nonnull Collection<Permission> permissions)
     {
         Checks.noneNull(permissions, "Permissions");
         if (permissions.isEmpty())
@@ -85,9 +85,9 @@ public class CommandPermissions
     }
 
     /**
-     * Returns a CommandPermissions instance with the predefined permissions a member must have to see and access a command.
+     * Returns a DefaultMemberPermissions instance with the predefined permissions a member must have to see and access a command.
      *
-     * <br><b>If the passed Array is empty, this returns {@link CommandPermissions#ENABLED ENABLED}</b>
+     * <br><b>If the passed Array is empty, this returns {@link DefaultMemberPermissions#ENABLED ENABLED}</b>
      *
      * @param  permissions
      *         Vararg of {@link Permission Permissions}
@@ -95,27 +95,27 @@ public class CommandPermissions
      * @throws IllegalArgumentException
      *         If any of the passed Permission is null
      *
-     * @return CommandPermissions instance with the predefined permissions
+     * @return DefaultMemberPermissions instance with the predefined permissions
      */
     @Nonnull
-    public static CommandPermissions enabledFor(@Nonnull Permission... permissions)
+    public static DefaultMemberPermissions enabledFor(@Nonnull Permission... permissions)
     {
         return enabledFor(Arrays.asList(permissions));
     }
 
     /**
-     * Returns a CommandPermissions instance with the predefined permissions a member must have to see and access a command.
+     * Returns a DefaultMemberPermissions instance with the predefined permissions a member must have to see and access a command.
      *
-     * <br><b>If the passed permission offset is 0, this returns {@link CommandPermissions#ENABLED ENABLED}</b>
+     * <br><b>If the passed permission offset is 0, this returns {@link DefaultMemberPermissions#ENABLED ENABLED}</b>
      *
      * @param  permissions
      *         Raw permission bitset
      *
-     * @return CommandPermissions instance with the predefined permissions
+     * @return DefaultMemberPermissions instance with the predefined permissions
      */
     @Nonnull
-    public static CommandPermissions enabledFor(long permissions)
+    public static DefaultMemberPermissions enabledFor(long permissions)
     {
-        return new CommandPermissions(permissions);
+        return new DefaultMemberPermissions(permissions);
     }
 }

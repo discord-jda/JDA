@@ -16,7 +16,7 @@
 
 package net.dv8tion.jda.internal.interactions;
 
-import net.dv8tion.jda.api.interactions.commands.CommandPermissions;
+import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
@@ -43,7 +43,7 @@ public class CommandDataImpl implements SlashCommandData
     private boolean allowOption = true;
     private boolean allowRequired = true;
     private boolean guildOnly = false;
-    private CommandPermissions defaultMemberPermissions = CommandPermissions.ENABLED;
+    private DefaultMemberPermissions defaultMemberPermissions = DefaultMemberPermissions.ENABLED;
 
     private final Command.Type type;
 
@@ -77,7 +77,7 @@ public class CommandDataImpl implements SlashCommandData
                 .put("name", name)
                 .put("options", options)
                 .put("dm_permission", !guildOnly)
-                .put("default_member_permissions", defaultMemberPermissions == CommandPermissions.ENABLED
+                .put("default_member_permissions", defaultMemberPermissions == DefaultMemberPermissions.ENABLED
                         ? null
                         : Long.toUnsignedString(defaultMemberPermissions.getPermissionsRaw()));
         if (type == Command.Type.SLASH)
@@ -94,7 +94,7 @@ public class CommandDataImpl implements SlashCommandData
 
     @Nonnull
     @Override
-    public CommandPermissions getDefaultPermissions()
+    public DefaultMemberPermissions getDefaultPermissions()
     {
         return defaultMemberPermissions;
     }
@@ -135,7 +135,7 @@ public class CommandDataImpl implements SlashCommandData
 
     @Nonnull
     @Override
-    public CommandDataImpl setDefaultPermissions(@Nonnull CommandPermissions permissions)
+    public CommandDataImpl setDefaultPermissions(@Nonnull DefaultMemberPermissions permissions)
     {
         Checks.notNull(permissions, "Permissions");
         this.defaultMemberPermissions = permissions;

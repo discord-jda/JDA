@@ -24,7 +24,7 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.InteractionHook;
-import net.dv8tion.jda.api.interactions.commands.CommandPermissions;
+import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
@@ -57,7 +57,7 @@ public class SlashBotExample extends ListenerAdapter
                     .setRequiredRange(0, 7)) // Only allow values between 0 and 7 (inclusive)
                 .addOptions(new OptionData(STRING, "reason", "The ban reason to use (default: Banned by <user>)")) // optional reason
                 .setGuildOnly(true) // This way the command can only be executed from a guild, and not the DMs
-                .setDefaultPermissions(CommandPermissions.enabledFor(Permission.BAN_MEMBERS)) // Only members with the BAN_MEMBERS permission are going to see this command
+                .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.BAN_MEMBERS)) // Only members with the BAN_MEMBERS permission are going to see this command
         );
 
         // Simple reply commands
@@ -70,14 +70,14 @@ public class SlashBotExample extends ListenerAdapter
         commands.addCommands(
             Commands.slash("leave", "Make the bot leave the server")
                 .setGuildOnly(true) // this doesn't make sense in DMs
-                .setDefaultPermissions(CommandPermissions.DISABLED) // only admins should be able to use this command.
+                .setDefaultPermissions(DefaultMemberPermissions.DISABLED) // only admins should be able to use this command.
         );
 
         commands.addCommands(
             Commands.slash("prune", "Prune messages from this channel")
                 .addOption(INTEGER, "amount", "How many messages to prune (Default 100)") // simple optional argument
                 .setGuildOnly(true)
-                .setDefaultPermissions(CommandPermissions.enabledFor(Permission.MESSAGE_MANAGE))
+                .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.MESSAGE_MANAGE))
         );
 
         // Send the new set of commands to discord, this will override any existing global commands with the new set provided here

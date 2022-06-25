@@ -18,7 +18,7 @@ package net.dv8tion.jda.internal.interactions.command;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.interactions.commands.CommandPermissions;
+import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.privileges.IntegrationPrivilege;
@@ -54,7 +54,7 @@ public class CommandImpl implements Command
     private final long id, guildId, applicationId, version;
     private final boolean guildOnly;
     private final Command.Type type;
-    private final CommandPermissions defaultMemberPermissions;
+    private final DefaultMemberPermissions defaultMemberPermissions;
 
     public CommandImpl(JDAImpl api, Guild guild, DataObject json)
     {
@@ -72,8 +72,8 @@ public class CommandImpl implements Command
         this.version = json.getUnsignedLong("version", id);
 
         this.defaultMemberPermissions = json.isNull("default_member_permissions")
-                ? CommandPermissions.ENABLED
-                : CommandPermissions.enabledFor(json.getLong("default_member_permissions"));
+                ? DefaultMemberPermissions.ENABLED
+                : DefaultMemberPermissions.enabledFor(json.getLong("default_member_permissions"));
 
         this.guildOnly = !json.getBoolean("dm_permission", true);
     }
@@ -182,7 +182,7 @@ public class CommandImpl implements Command
 
     @Nonnull
     @Override
-    public CommandPermissions getDefaultPermissions()
+    public DefaultMemberPermissions getDefaultPermissions()
     {
         return defaultMemberPermissions;
     }
