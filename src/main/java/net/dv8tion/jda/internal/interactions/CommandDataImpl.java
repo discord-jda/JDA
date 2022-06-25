@@ -38,6 +38,9 @@ import java.util.stream.Stream;
 
 public class CommandDataImpl implements SlashCommandData
 {
+    public static final int MAX_NAME_LENGTH = 32;
+    public static final int MAX_DESCRIPTION_LENGTH = 100;
+
     protected final DataArray options = DataArray.empty();
     protected String name, description = "";
     private LocalizationMapper localizationMapper;
@@ -75,7 +78,7 @@ public class CommandDataImpl implements SlashCommandData
 
     public void checkName(@Nonnull String name)
     {
-        Checks.inRange(name, 1, 32, "Name");
+        Checks.inRange(name, 1, MAX_NAME_LENGTH, "Name");
         if (type == Command.Type.SLASH)
         {
             Checks.matches(name, Checks.ALPHANUMERIC_WITH_DASH, "Name");
@@ -87,7 +90,7 @@ public class CommandDataImpl implements SlashCommandData
     {
         checkType(Command.Type.SLASH, "set description");
         Checks.notEmpty(description, "Description");
-        Checks.notLonger(description, 100, "Description");
+        Checks.notLonger(description, MAX_DESCRIPTION_LENGTH, "Description");
     }
 
     @Nonnull
@@ -264,7 +267,7 @@ public class CommandDataImpl implements SlashCommandData
 
     @Nonnull
     @Override
-    public SlashCommandData setNameLocalizations(@Nonnull Map<DiscordLocale, String> map)
+    public CommandDataImpl setNameLocalizations(@Nonnull Map<DiscordLocale, String> map)
     {
         nameLocalizations.setTranslations(map);
         return this;
@@ -296,15 +299,16 @@ public class CommandDataImpl implements SlashCommandData
 
     @Nonnull
     @Override
-    public SlashCommandData setDescriptionLocalizations(@Nonnull Map<DiscordLocale, String> map)
+    public CommandDataImpl setDescriptionLocalizations(@Nonnull Map<DiscordLocale, String> map)
     {
         descriptionLocalizations.setTranslations(map);
         return this;
     }
 
-    public void setDescriptionLocalizations(@Nonnull LocalizationMap descriptionLocalizations)
+    public CommandDataImpl setDescriptionLocalizations(@Nonnull LocalizationMap descriptionLocalizations)
     {
         this.descriptionLocalizations = descriptionLocalizations;
+        return this;
     }
 
     @Nonnull
