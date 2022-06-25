@@ -119,6 +119,11 @@ public interface SlashCommandData extends CommandData
     @Nonnull
     String getDescription();
 
+    /**
+     * The localizations of this command's description for {@link DiscordLocale various languages}.
+     *
+     * @return The {@link LocalizationMap} containing the mapping from {@link DiscordLocale} to the localized description
+     */
     @Nonnull
     LocalizationMap getDescriptionLocalizations();
 
