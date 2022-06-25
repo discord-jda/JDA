@@ -27,10 +27,10 @@ import java.util.Map;
  *
  * <p>
  * <b>Implementation note:</b>
- * The localization key is composed of the command/option/choice tree being walked with each component being separated by a dot
+ * The localization key is composed of the command/option/choice tree being walked, each component are separated by a dot
  * <br>Note: the final key is lowercase and spaces replaced by underscores
- * <br>A few examples:
- *
+ * <br>
+ * <br>A few examples of localization keys:
  * <ul>
  *    <li>The name of a command named "ban": {@code ban.name}</li>
  *    <li>The name of a message context named "Get content raw": {@code get_content_raw.name}</li>
@@ -40,6 +40,50 @@ import java.util.Map;
  *    <li>The name of a choice in an option "duration" in a subcommand "perm" in a command named "ban": {@code ban.perm.duration.choice.name}</li>
  * </ul>
  *
+ * <br>Extremely naive implementation of LocalizationFunction
+ * <pre><code>
+ * public class MyFunction implements LocalizationFunction {
+ *   &#64;Override
+ *   public Map&lt;DiscordLocale, String&gt; apply(String localizationKey) {
+ *     Map&lt;DiscordLocale, String&gt; map = new HashMap<>();
+ *     switch (localizationKey) {
+ *       case "ban.name":
+ *         map.put(DiscordLocale.SPANISH, "prohibición");
+ *         map.put(DiscordLocale.FRENCH, "bannir");
+ *         break;
+ *       case "ban.description"
+ *         map.put(DiscordLocale.SPANISH, "Prohibir a un usuario del servidor");
+ *         map.put(DiscordLocale.FRENCH, "Bannir un utilisateur du serveur");
+ *         break;
+ *       //etc etc
+ *     }
+ *
+ *     return map;
+ *   }
+ * }
+ * </code></pre>
+ * 
+ * Also, since this is a functional interface, the following is also possible
+ * <pre><code>
+ * LocalizationFunction myfunc = s -> {
+ *   Map&lt;DiscordLocale, String&gt; map = new HashMap<>();
+ *    switch (localizationKey) {
+ *      case "ban.name":
+ *        map.put(DiscordLocale.SPANISH, "prohibición");
+ *        map.put(DiscordLocale.FRENCH, "bannir");
+ *        break;
+ *      case "ban.description"
+ *        map.put(DiscordLocale.SPANISH, "Prohibir a un usuario del servidor");
+ *        map.put(DiscordLocale.FRENCH, "Bannir un utilisateur du serveur");
+ *        break;
+ *      //etc etc
+ *    }
+ *
+ *    return map;
+ * }
+ * </code></pre>
+ *
+ * @see LocalizationMapper#fromFunction(LocalizationFunction)
  * @see ResourceBundleLocalizationFunction
  */
 public interface LocalizationFunction

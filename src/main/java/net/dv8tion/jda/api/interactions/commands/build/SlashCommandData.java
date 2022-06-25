@@ -72,7 +72,7 @@ public interface SlashCommandData extends CommandData
     SlashCommandData setDescription(@Nonnull String description);
 
     /**
-     * Sets the description localizations of this command.
+     * Sets a {@link DiscordLocale language-specific} localizations of this command's description.
      *
      * @param  locale
      *         The locale to associate the translated description with
@@ -94,7 +94,7 @@ public interface SlashCommandData extends CommandData
     SlashCommandData setDescriptionLocalization(@Nonnull DiscordLocale locale, @Nonnull String description);
 
     /**
-     * Sets the description localizations of this command.
+     * Sets multiple {@link DiscordLocale language-specific} localizations of this command's description.
      *
      * @param  map
      *         The map from which to transfer the translated descriptions

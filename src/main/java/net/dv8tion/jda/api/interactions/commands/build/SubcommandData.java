@@ -99,7 +99,7 @@ public class SubcommandData implements SerializableData
     }
 
     /**
-     * Sets the name localizations of this subcommand.
+     * Sets a {@link DiscordLocale language-specific} localization of this subcommand's name.
      *
      * @param  locale
      *         The locale to associate the translated name with
@@ -126,7 +126,7 @@ public class SubcommandData implements SerializableData
     }
 
     /**
-     * Sets the name localizations of this subcommand.
+     * Sets multiple {@link DiscordLocale language-specific} localizations of this subcommand's name.
      *
      * @param  map
      *         The map from which to transfer the translated names
@@ -168,7 +168,7 @@ public class SubcommandData implements SerializableData
     }
 
     /**
-     * Sets the description localizations of this subcommand.
+     * Sets a {@link DiscordLocale language-specific} localization of this subcommand's description.
      *
      * @param  locale
      *         The locale to associate the translated description with
@@ -195,7 +195,7 @@ public class SubcommandData implements SerializableData
     }
 
     /**
-     * Sets the description localizations of this option.
+     * Sets multiple {@link DiscordLocale language-specific} localizations of this subcommand's description.
      *
      * @param  map
      *         The map from which to transfer the translated descriptions

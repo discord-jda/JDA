@@ -180,7 +180,7 @@ public class LocalizationMap implements SerializableData
     }
 
     /**
-     * Sets the given localized string to be used for the specified locales.
+     * Sets the given localized string to be used for the specified locale.
      *
      * @param  locale
      *         The locale on which to apply the localized string

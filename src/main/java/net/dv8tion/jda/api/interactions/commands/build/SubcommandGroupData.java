@@ -104,7 +104,7 @@ public class SubcommandGroupData implements SerializableData
     }
 
     /**
-     * Sets the name localizations of this subcommand group.
+     * Sets a {@link DiscordLocale language-specific} localization of this subcommand group's name.
      *
      * @param  locale
      *         The locale to associate the translated name with
@@ -131,7 +131,7 @@ public class SubcommandGroupData implements SerializableData
     }
 
     /**
-     * Sets the name localizations of this subcommand group.
+     * Sets multiple {@link DiscordLocale language-specific} localizations of this subcommand group's name.
      *
      * @param  map
      *         The map from which to transfer the translated names
@@ -173,7 +173,7 @@ public class SubcommandGroupData implements SerializableData
     }
 
     /**
-     * Sets the description localizations of this subcommand group.
+     * Sets a {@link DiscordLocale language-specific} localization of this subcommand group's description.
      *
      * @param  locale
      *         The locale to associate the translated description with
@@ -200,7 +200,7 @@ public class SubcommandGroupData implements SerializableData
     }
 
     /**
-     * Sets the description localizations of this subcommand group.
+     * Sets multiple {@link DiscordLocale language-specific} localizations of this subcommand group's description.
      *
      * @param  map
      *         The map from which to transfer the translated descriptions

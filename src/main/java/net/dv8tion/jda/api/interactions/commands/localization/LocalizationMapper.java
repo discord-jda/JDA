@@ -31,10 +31,12 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
- * Utility class which maps user-provided translations (from a resource bundle for example) to the command data as well as everything contained in it
- * <p>You can find default localization functions in {@link ResourceBundleLocalizationFunction}
+ * Utility class which maps user-provided translations (from a resource bundle for example) to the command data as well as everything contained in it. This class essentially wraps a {@link LocalizationFunction} to ask the localization function for translations based on command definitions defined in code. The real brain of this system lies in the localization function. The localization function is where the developer can define <i>how</i> to get translations for various parts of commands. The LocalizationMapper is effectively just the context organizer between command definitions and getting their translations.
+ 
+ * <p>You can find a prebuilt localization function that uses {@link @see java.util.ResourceBundle ResourceBundles} at {@link ResourceBundleLocalizationFunction}. 
  *
  * @see CommandData#setLocalizationMapper(LocalizationMapper)
+ * @see LocalizationFunction
  * @see ResourceBundleLocalizationFunction
  */
 public class LocalizationMapper
