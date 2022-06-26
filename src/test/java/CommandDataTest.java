@@ -49,6 +49,14 @@ public class CommandDataTest
         Assertions.assertFalse(data.getBoolean("dm_permission"));
         Assertions.assertEquals(Permission.BAN_MEMBERS.getRawValue(), data.getUnsignedLong("default_member_permissions"));
 
+        command.setDefaultPermissions(DefaultMemberPermissions.DISABLED);
+        data = command.toData();
+        Assertions.assertEquals(0, data.getUnsignedLong("default_member_permissions"));
+
+        command.setDefaultPermissions(DefaultMemberPermissions.ENABLED);
+        data = command.toData();
+        Assertions.assertTrue(data.isNull("default_member_permissions"));
+
         DataArray options = data.getArray("options");
 
         DataObject option = options.getObject(0);
