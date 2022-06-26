@@ -42,6 +42,7 @@ import net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationActi
 import net.dv8tion.jda.api.utils.AttachmentOption;
 import net.dv8tion.jda.api.utils.AttachmentProxy;
 import net.dv8tion.jda.internal.JDAImpl;
+import net.dv8tion.jda.internal.entities.ReceivedMessage;
 import net.dv8tion.jda.internal.requests.FunctionalCallback;
 import net.dv8tion.jda.internal.requests.Requester;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -242,6 +243,14 @@ public interface Message extends ISnowflake, Formattable
             "/channels/(?<guild>\\d+)/(?<channel>\\d+)/(?<message>\\d+)" + // Path
             "(?:\\?\\S*)?(?:#\\S*)?",                                      // Useless query or URN appendix
             Pattern.CASE_INSENSITIVE);
+
+    /**
+     * Suppresses the warning for missing the {@link net.dv8tion.jda.api.requests.GatewayIntent#MESSAGE_CONTENT MESSAGE_CONTENT} intent and using one of the dependent getters.
+     */
+    static void suppressContentIntentWarning()
+    {
+        ReceivedMessage.contentIntentWarning = true;
+    }
 
     /**
      * Returns the {@link MessageReference} for this Message. This will be null if this Message has no reference.
