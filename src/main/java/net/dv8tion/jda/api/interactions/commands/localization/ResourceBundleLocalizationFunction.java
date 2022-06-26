@@ -60,11 +60,14 @@ public class ResourceBundleLocalizationFunction implements LocalizationFunction
     @Nonnull
     public static Builder fromBundle(@Nonnull Locale locale, @Nonnull ResourceBundle resourceBundle)
     {
-        Checks.notNull(locale, "Locale");
-        Checks.notNull(resourceBundle, "Resource bundle");
-
         return new Builder()
                 .addBundle(resourceBundle, locale);
+    }
+
+    @Nonnull
+    public static Builder fromBundles(@Nonnull String baseName, @Nonnull Locale... locales)
+    {
+        return new Builder().addBundles(baseName, locales);
     }
 
     @Nonnull
@@ -84,6 +87,20 @@ public class ResourceBundleLocalizationFunction implements LocalizationFunction
             Checks.notNull(locale, "Locale");
 
             bundles.add(new Bundle(locale, resourceBundle));
+            return this;
+        }
+
+        @Nonnull
+        public Builder addBundles(@Nonnull String baseName, @Nonnull Locale... locales)
+        {
+            Checks.notNull(baseName, "Base name");
+            Checks.noneNull(locales, "Locale");
+
+            for (Locale locale : locales)
+            {
+                final ResourceBundle resourceBundle = ResourceBundle.getBundle(baseName, locale);
+                bundles.add(new Bundle(locale, resourceBundle));
+            }
             return this;
         }
 
