@@ -1320,6 +1320,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     protected void setupHandlers()
     {
         final SocketHandler.NOPHandler nopHandler =            new SocketHandler.NOPHandler(api);
+        handlers.put("APPLICATION_COMMAND_PERMISSIONS_UPDATE", new ApplicationCommandPermissionsUpdateHandler(api));
         handlers.put("CHANNEL_CREATE",                         new ChannelCreateHandler(api));
         handlers.put("CHANNEL_DELETE",                         new ChannelDeleteHandler(api));
         handlers.put("CHANNEL_UPDATE",                         new ChannelUpdateHandler(api));
@@ -1349,6 +1350,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         handlers.put("MESSAGE_REACTION_REMOVE_ALL",            new MessageReactionBulkRemoveHandler(api));
         handlers.put("MESSAGE_REACTION_REMOVE_EMOJI",          new MessageReactionClearEmojiHandler(api));
         handlers.put("MESSAGE_UPDATE",                         new MessageUpdateHandler(api));
+        handlers.put("PRESENCE_UPDATE",                        new PresenceUpdateHandler(api));
         handlers.put("READY",                                  new ReadyHandler(api));
         handlers.put("STAGE_INSTANCE_CREATE",                  new StageInstanceCreateHandler(api));
         handlers.put("STAGE_INSTANCE_DELETE",                  new StageInstanceDeleteHandler(api));
@@ -1359,12 +1361,10 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         handlers.put("THREAD_MEMBERS_UPDATE",                  new ThreadMembersUpdateHandler(api));
         handlers.put("THREAD_MEMBER_UPDATE",                   new ThreadMemberUpdateHandler(api));
         handlers.put("THREAD_UPDATE",                          new ThreadUpdateHandler(api));
+        handlers.put("TYPING_START",                           new TypingStartHandler(api));
         handlers.put("USER_UPDATE",                            new UserUpdateHandler(api));
         handlers.put("VOICE_SERVER_UPDATE",                    new VoiceServerUpdateHandler(api));
         handlers.put("VOICE_STATE_UPDATE",                     new VoiceStateUpdateHandler(api));
-        handlers.put("PRESENCE_UPDATE",                        new PresenceUpdateHandler(api));
-        handlers.put("TYPING_START",                           new TypingStartHandler(api));
-        handlers.put("APPLICATION_COMMAND_PERMISSIONS_UPDATE", new ApplicationCommandPermissionsUpdateHandler(api));
 
         // Unused events
         handlers.put("CHANNEL_PINS_ACK",          nopHandler);
