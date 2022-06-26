@@ -83,7 +83,6 @@ import java.util.Map;
  * }
  * </code></pre>
  *
- * @see LocalizationMapper#fromFunction(LocalizationFunction)
  * @see ResourceBundleLocalizationFunction
  */
 public interface LocalizationFunction

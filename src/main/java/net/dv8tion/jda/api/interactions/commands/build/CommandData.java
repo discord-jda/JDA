@@ -19,8 +19,8 @@ package net.dv8tion.jda.api.interactions.commands.build;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFunction;
 import net.dv8tion.jda.api.interactions.commands.localization.LocalizationMap;
-import net.dv8tion.jda.api.interactions.commands.localization.LocalizationMapper;
 import net.dv8tion.jda.api.interactions.commands.privileges.CommandPrivilege;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.SerializableData;
@@ -40,19 +40,19 @@ import java.util.Map;
 public interface CommandData extends SerializableData
 {
     /**
-     * Sets the {@link LocalizationMapper} for this command?
+     * Sets the {@link LocalizationFunction} for this command
      * <br>This enables you to have the entirety of this command to be localized.
      *
-     * @param  localizationMapper
-     *         The localization mapper
+     * @param  localizationFunction
+     *         The localization function
      *
      * @throws IllegalArgumentException
-     *         If the localization mapper is null
+     *         If the localization function is null
      *
      * @return The builder instance, for chaining
      */
     @Nonnull
-    CommandData setLocalizationMapper(@Nonnull LocalizationMapper localizationMapper);
+    CommandData setLocalizationFunction(@Nonnull LocalizationFunction localizationFunction);
 
     /**
      * Configure the command name.

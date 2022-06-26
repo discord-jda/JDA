@@ -20,8 +20,8 @@ import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInterac
 import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFunction;
 import net.dv8tion.jda.api.interactions.commands.localization.LocalizationMap;
-import net.dv8tion.jda.api.interactions.commands.localization.LocalizationMapper;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
@@ -39,7 +39,7 @@ public interface SlashCommandData extends CommandData
 {
     @Nonnull
     @Override
-    SlashCommandData setLocalizationMapper(@Nonnull LocalizationMapper localizationMapper);
+    SlashCommandData setLocalizationFunction(@Nonnull LocalizationFunction localizationFunction);
 
     @Nonnull
     @Override

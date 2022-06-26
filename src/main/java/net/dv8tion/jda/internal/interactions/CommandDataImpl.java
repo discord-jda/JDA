@@ -23,10 +23,11 @@ import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
+import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFunction;
 import net.dv8tion.jda.api.interactions.commands.localization.LocalizationMap;
-import net.dv8tion.jda.api.interactions.commands.localization.LocalizationMapper;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.internal.interactions.command.localization.LocalizationMapper;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
@@ -240,10 +241,10 @@ public class CommandDataImpl implements SlashCommandData
 
     @Nonnull
     @Override
-    public CommandDataImpl setLocalizationMapper(@Nonnull LocalizationMapper localizationMapper) {
-        Checks.notNull(localizationMapper, "Localization mapper");
+    public CommandDataImpl setLocalizationFunction(@Nonnull LocalizationFunction localizationFunction) {
+        Checks.notNull(localizationFunction, "Localization function");
 
-        this.localizationMapper = localizationMapper;
+        this.localizationMapper = LocalizationMapper.fromFunction(localizationFunction);
         return this;
     }
 
