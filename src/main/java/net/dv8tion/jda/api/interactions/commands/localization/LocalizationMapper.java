@@ -66,6 +66,37 @@ public class LocalizationMapper
         return new LocalizationMapper(localizationFunction);
     }
 
+    //Internal
+    public void localizeCommand(CommandData commandData, DataArray optionArray)
+    {
+        final TranslationContext ctx = new TranslationContext();
+        ctx.withKey(commandData.getName(), () ->
+        {
+            ctx.trySetTranslation(commandData.getNameLocalizations(), "name");
+            if (commandData instanceof SlashCommandData)
+            {
+                final SlashCommandData slashCommandData = (SlashCommandData) commandData;
+                ctx.trySetTranslation(slashCommandData.getDescriptionLocalizations(), "description");
+                localizeOptionArray(optionArray, ctx);
+            }
+        });
+    }
+
+    private void localizeOptionArray(DataArray optionArray, TranslationContext ctx)
+    {
+        ctx.forObjects(optionArray, o -> o.getString("name"), obj ->
+        {
+            if (obj.hasKey("name_localizations"))
+                ctx.trySetTranslation(obj.getObject("name_localizations"), "name");
+            if (obj.hasKey("description_localizations"))
+                ctx.trySetTranslation(obj.getObject("description_localizations"), "description");
+            if (obj.hasKey("options"))
+                localizeOptionArray(obj.getArray("options"), ctx);
+            if (obj.hasKey("choices"))
+                localizeOptionArray(obj.getArray("choices"), ctx);
+        });
+    }
+
     private class TranslationContext
     {
         private final Stack<String> keyComponents = new Stack<>();
@@ -130,36 +161,5 @@ public class LocalizationMapper
                 throw new RuntimeException("An uncaught exception occurred while using a LocalizationFunction, localization key: '" + key + "'", e);
             }
         }
-    }
-
-    //Internal
-    public void localizeCommand(CommandData commandData, DataArray optionArray)
-    {
-        final TranslationContext ctx = new TranslationContext();
-        ctx.withKey(commandData.getName(), () ->
-        {
-            ctx.trySetTranslation(commandData.getNameLocalizations(), "name");
-            if (commandData instanceof SlashCommandData)
-            {
-                final SlashCommandData slashCommandData = (SlashCommandData) commandData;
-                ctx.trySetTranslation(slashCommandData.getDescriptionLocalizations(), "description");
-                localizeOptionArray(optionArray, ctx);
-            }
-        });
-    }
-
-    private void localizeOptionArray(DataArray optionArray, TranslationContext ctx)
-    {
-        ctx.forObjects(optionArray, o -> o.getString("name"), obj ->
-        {
-            if (obj.hasKey("name_localizations"))
-                ctx.trySetTranslation(obj.getObject("name_localizations"), "name");
-            if (obj.hasKey("description_localizations"))
-                ctx.trySetTranslation(obj.getObject("description_localizations"), "description");
-            if (obj.hasKey("options"))
-                localizeOptionArray(obj.getArray("options"), ctx);
-            if (obj.hasKey("choices"))
-                localizeOptionArray(obj.getArray("choices"), ctx);
-        });
     }
 }
