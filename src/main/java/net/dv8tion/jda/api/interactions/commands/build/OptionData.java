@@ -27,6 +27,7 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.DataType;
 import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.localization.LocalizationUtils;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -75,8 +76,8 @@ public class OptionData implements SerializableData
 
     private final OptionType type;
     private String name, description;
-    private LocalizationMap nameLocalizations = new LocalizationMap(this::checkName);
-    private LocalizationMap descriptionLocalizations = new LocalizationMap(this::checkDescription);
+    private final LocalizationMap nameLocalizations = new LocalizationMap(this::checkName);
+    private final LocalizationMap descriptionLocalizations = new LocalizationMap(this::checkDescription);
     private boolean isRequired, isAutoComplete;
     private final EnumSet<ChannelType> channelTypes = EnumSet.noneOf(ChannelType.class);
     private Number minValue;
@@ -984,8 +985,8 @@ public class OptionData implements SerializableData
                         .collect(Collectors.toList())
                 )
         );
-        option.nameLocalizations = LocalizationMap.fromProperty(json, "name_localizations", option::checkName);
-        option.descriptionLocalizations = LocalizationMap.fromProperty(json, "description_localizations", option::checkDescription);
+        option.setNameLocalizations(LocalizationUtils.mapFromProperty(json, "name_localizations"));
+        option.setDescriptionLocalizations(LocalizationUtils.mapFromProperty(json, "description_localizations"));
         return option;
     }
 
@@ -1008,8 +1009,8 @@ public class OptionData implements SerializableData
         data.setRequired(option.isRequired());
         data.setAutoComplete(option.isAutoComplete());
         data.addChoices(option.getChoices());
-        data.nameLocalizations = LocalizationMap.fromMap(data::checkName, option.getNameLocalizations());
-        data.descriptionLocalizations = LocalizationMap.fromMap(data::checkDescription, option.getDescriptionLocalizations());
+        data.setNameLocalizations(option.getNameLocalizations().toMap());
+        data.setDescriptionLocalizations(option.getDescriptionLocalizations().toMap());
         Number min = option.getMinValue(), max = option.getMaxValue();
         switch (option.getType())
         {

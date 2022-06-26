@@ -26,6 +26,7 @@ import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.localization.LocalizationUtils;
 
 import javax.annotation.Nonnull;
 import java.util.Collection;
@@ -398,8 +399,8 @@ public interface SlashCommandData extends CommandData
         CommandDataImpl data = new CommandDataImpl(command.getName(), command.getDescription());
         data.setDefaultEnabled(command.isDefaultEnabled());
         //Command localizations are unmodifiable, make a copy
-        data.setNameLocalizations(LocalizationMap.fromMap(data::checkName, command.getNameLocalizations()));
-        data.setDescriptionLocalizations(LocalizationMap.fromMap(data::checkDescription, command.getDescriptionLocalizations()));
+        data.setNameLocalizations(command.getNameLocalizations().toMap());
+        data.setDescriptionLocalizations(command.getDescriptionLocalizations().toMap());
         command.getOptions()
                 .stream()
                 .map(OptionData::fromOption)
@@ -444,8 +445,8 @@ public interface SlashCommandData extends CommandData
         String description = object.getString("description");
         DataArray options = object.optArray("options").orElseGet(DataArray::empty);
         CommandDataImpl command = new CommandDataImpl(name, description);
-        command.setNameLocalizations(LocalizationMap.fromProperty(object, "name_localizations", command::checkName));
-        command.setDescriptionLocalizations(LocalizationMap.fromProperty(object, "description_localizations", command::checkDescription));
+        command.setNameLocalizations(LocalizationUtils.mapFromProperty(object, "name_localizations"));
+        command.setDescriptionLocalizations(LocalizationUtils.mapFromProperty(object, "description_localizations"));
         options.stream(DataArray::getObject).forEach(opt ->
         {
             OptionType type = OptionType.fromKey(opt.getInt("type"));

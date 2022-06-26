@@ -25,6 +25,7 @@ import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.localization.LocalizationUtils;
 
 import javax.annotation.Nonnull;
 import java.util.Arrays;
@@ -41,8 +42,8 @@ public class SubcommandData implements SerializableData
 {
     protected final DataArray options = DataArray.empty();
     protected String name, description;
-    private LocalizationMap nameLocalizations = new LocalizationMap(this::checkName);
-    private LocalizationMap descriptionLocalizations = new LocalizationMap(this::checkDescription);
+    private final LocalizationMap nameLocalizations = new LocalizationMap(this::checkName);
+    private final LocalizationMap descriptionLocalizations = new LocalizationMap(this::checkDescription);
     private boolean allowRequired = true;
 
     /**
@@ -476,8 +477,8 @@ public class SubcommandData implements SerializableData
                         .map(OptionData::fromData)
                         .forEach(sub::addOptions)
         );
-        sub.nameLocalizations = LocalizationMap.fromProperty(json, "name_localizations", sub::checkName);
-        sub.descriptionLocalizations = LocalizationMap.fromProperty(json, "description_localizations", sub::checkDescription);
+        sub.setNameLocalizations(LocalizationUtils.mapFromProperty(json, "name_localizations"));
+        sub.setDescriptionLocalizations(LocalizationUtils.mapFromProperty(json, "description_localizations"));
 
         return sub;
     }
@@ -498,8 +499,8 @@ public class SubcommandData implements SerializableData
     {
         Checks.notNull(subcommand, "Subcommand");
         SubcommandData data = new SubcommandData(subcommand.getName(), subcommand.getDescription());
-        data.nameLocalizations = LocalizationMap.fromMap(data::checkName, subcommand.getNameLocalizations());
-        data.descriptionLocalizations = LocalizationMap.fromMap(data::checkDescription, subcommand.getDescriptionLocalizations());
+        data.setNameLocalizations(subcommand.getNameLocalizations().toMap());
+        data.setDescriptionLocalizations(subcommand.getDescriptionLocalizations().toMap());
         subcommand.getOptions()
                 .stream()
                 .map(OptionData::fromOption)

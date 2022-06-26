@@ -31,14 +31,13 @@ import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.CommandEditActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.localization.LocalizationUtils;
 
 import javax.annotation.Nonnull;
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-
-import static net.dv8tion.jda.api.interactions.commands.localization.LocalizationMap.UNMODIFIABLE_CHECK;
 
 public class CommandImpl implements Command
 {
@@ -64,9 +63,9 @@ public class CommandImpl implements Command
         this.api = api;
         this.guild = guild;
         this.name = json.getString("name");
-        this.nameLocalizations = LocalizationMap.fromProperty(json, "name_localizations", UNMODIFIABLE_CHECK);
+        this.nameLocalizations = LocalizationUtils.unmodifiableFromProperty(json, "name_localizations");
         this.description = json.getString("description", "");
-        this.descriptionLocalizations = LocalizationMap.fromProperty(json, "description_localizations", UNMODIFIABLE_CHECK);
+        this.descriptionLocalizations = LocalizationUtils.unmodifiableFromProperty(json, "description_localizations");
         this.type = Command.Type.fromId(json.getInt("type", 1));
         this.id = json.getUnsignedLong("id");
         this.defaultEnabled = json.getBoolean("default_permission");

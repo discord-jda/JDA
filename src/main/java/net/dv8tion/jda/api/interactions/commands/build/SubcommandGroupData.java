@@ -24,6 +24,7 @@ import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.localization.LocalizationUtils;
 
 import javax.annotation.Nonnull;
 import java.util.Arrays;
@@ -40,8 +41,8 @@ public class SubcommandGroupData implements SerializableData
 {
     private final DataArray options = DataArray.empty();
     private String name, description;
-    private LocalizationMap nameLocalizations = new LocalizationMap(this::checkName);
-    private LocalizationMap descriptionLocalizations = new LocalizationMap(this::checkDescription);
+    private final LocalizationMap nameLocalizations = new LocalizationMap(this::checkName);
+    private final LocalizationMap descriptionLocalizations = new LocalizationMap(this::checkDescription);
 
     /**
      * Create an group builder.
@@ -363,8 +364,8 @@ public class SubcommandGroupData implements SerializableData
                         .map(SubcommandData::fromData)
                         .forEach(group::addSubcommands)
         );
-        group.nameLocalizations = LocalizationMap.fromProperty(json, "name_localizations", group::checkName);
-        group.descriptionLocalizations = LocalizationMap.fromProperty(json, "description_localizations", group::checkDescription);
+        group.setNameLocalizations(LocalizationUtils.mapFromProperty(json, "name_localizations"));
+        group.setDescriptionLocalizations(LocalizationUtils.mapFromProperty(json, "description_localizations"));
 
         return group;
     }
@@ -385,8 +386,8 @@ public class SubcommandGroupData implements SerializableData
     {
         Checks.notNull(group, "Subcommand Group");
         SubcommandGroupData data = new SubcommandGroupData(group.getName(), group.getDescription());
-        data.nameLocalizations = LocalizationMap.fromMap(data::checkName, group.getNameLocalizations());
-        data.descriptionLocalizations = LocalizationMap.fromMap(data::checkDescription, group.getDescriptionLocalizations());
+        data.setNameLocalizations(group.getNameLocalizations().toMap());
+        data.setDescriptionLocalizations(group.getDescriptionLocalizations().toMap());
         group.getSubcommands()
                 .stream()
                 .map(SubcommandData::fromSubcommand)

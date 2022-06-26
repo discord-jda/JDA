@@ -26,6 +26,7 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.localization.LocalizationUtils;
 
 import javax.annotation.Nonnull;
 import java.util.Collection;
@@ -177,12 +178,9 @@ public interface CommandData extends SerializableData
         if (command.getType() != Command.Type.SLASH)
         {
             final CommandDataImpl data = new CommandDataImpl(command.getType(), command.getName());
-            //Command localizations are unmodifiable, make a copy
-            final LocalizationMap nameLocalizations = LocalizationMap.fromMap(data::checkName, command.getNameLocalizations()); //TODO remove copies from reconstitution methods
-            final LocalizationMap descriptionLocalizations = LocalizationMap.fromMap(data::checkDescription, command.getDescriptionLocalizations());
             return data.setDefaultEnabled(command.isDefaultEnabled())
-                    .setNameLocalizations(nameLocalizations)
-                    .setDescriptionLocalizations(descriptionLocalizations);
+                    .setNameLocalizations(command.getNameLocalizations().toMap())
+                    .setDescriptionLocalizations(command.getDescriptionLocalizations().toMap());
         }
 
         return SlashCommandData.fromCommand(command);
@@ -214,8 +212,8 @@ public interface CommandData extends SerializableData
         if (commandType != Command.Type.SLASH)
         {
             final CommandDataImpl data = new CommandDataImpl(commandType, name);
-            data.setNameLocalizations(LocalizationMap.fromProperty(object, "name_localizations", data::checkName));
-            data.setDescriptionLocalizations(LocalizationMap.fromProperty(object, "description_localizations", data::checkDescription));
+            data.setNameLocalizations(LocalizationUtils.mapFromProperty(object, "name_localizations"));
+            data.setDescriptionLocalizations(LocalizationUtils.mapFromProperty(object, "description_localizations"));
 
             return data;
         }

@@ -45,8 +45,8 @@ public class CommandDataImpl implements SlashCommandData
     protected final DataArray options = DataArray.empty();
     protected String name, description = "";
     private LocalizationMapper localizationMapper;
-    private LocalizationMap nameLocalizations = new LocalizationMap(this::checkName);
-    private LocalizationMap descriptionLocalizations = new LocalizationMap(this::checkDescription);
+    private final LocalizationMap nameLocalizations = new LocalizationMap(this::checkName);
+    private final LocalizationMap descriptionLocalizations = new LocalizationMap(this::checkDescription);
 
     private boolean allowSubcommands = true;
     private boolean allowGroups = true;
@@ -274,12 +274,6 @@ public class CommandDataImpl implements SlashCommandData
         return this;
     }
 
-    public CommandDataImpl setNameLocalizations(@Nonnull LocalizationMap nameLocalizations)
-    {
-        this.nameLocalizations = nameLocalizations;
-        return this;
-    }
-
     @Nonnull
     @Override
     public CommandDataImpl setDescription(@Nonnull String description)
@@ -303,12 +297,6 @@ public class CommandDataImpl implements SlashCommandData
     public CommandDataImpl setDescriptionLocalizations(@Nonnull Map<DiscordLocale, String> map)
     {
         descriptionLocalizations.setTranslations(map);
-        return this;
-    }
-
-    public CommandDataImpl setDescriptionLocalizations(@Nonnull LocalizationMap descriptionLocalizations)
-    {
-        this.descriptionLocalizations = descriptionLocalizations;
         return this;
     }
 
