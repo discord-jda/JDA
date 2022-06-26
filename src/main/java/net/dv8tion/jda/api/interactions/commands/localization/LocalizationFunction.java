@@ -65,7 +65,7 @@ import java.util.Map;
  * 
  * Also, since this is a functional interface, the following is also possible
  * <pre><code>
- * LocalizationFunction myfunc = s -> {
+ * LocalizationFunction myfunc = s -&gt; {
  *   Map&lt;DiscordLocale, String&gt; map = new HashMap&lt;&gt;();
  *    switch (localizationKey) {
  *      case "ban.name":
