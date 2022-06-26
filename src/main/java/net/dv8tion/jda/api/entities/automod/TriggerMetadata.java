@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.entities.automod;
 
+import javax.annotation.Nonnull;
 import java.util.List;
 
 /**
@@ -30,8 +31,9 @@ public interface TriggerMetadata
      * <br>
      * <br> Associated trigger type is {@link TriggerType#KEYWORD}.
      *
-     * @return A {@link List List} of {@link String Strings}
+     * @return A {@link List} of {@link String}
      */
+    @Nonnull
     List<String> getKeywords();
 
     /**
@@ -40,7 +42,8 @@ public interface TriggerMetadata
      * <br>
      * Associated trigger type is {@link TriggerType#KEYWORD_PRESET}.
      *
-     * @return A {@link List List} of {@link KeywordPresetType KeywordPresets}
+     * @return A {@link List} of {@link KeywordPresetType KeywordPresets}
      */
+    @Nonnull
     List<KeywordPresetType> getKeywordPresetTypes();
 }

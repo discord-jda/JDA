@@ -32,14 +32,15 @@ public interface ActionMetadata
     /**
      * Returns the channel where an alert message will be sent when the rule is executed.
      *
-     * @return {@link GuildChannel Guild Channel}
+     * @return {@link GuildChannel}
      */
+    @Nonnull
     GuildChannel getChannel();
 
     /**
      * Returns the duration of the timeout.
      *
-     * @return {@link Duration Duration}
+     * @return {@link Duration}
      */
     @Nonnull
     Duration getDuration();

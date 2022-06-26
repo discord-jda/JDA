@@ -34,7 +34,6 @@ public class AutoModerationRuleDeleteHandler extends SocketHandler
     @Override
     protected Long handleInternally(DataObject content)
     {
-
         long guildId = content.getLong("guild_id");
         if (getJDA().getGuildSetupController().isLocked(guildId))
             return guildId;

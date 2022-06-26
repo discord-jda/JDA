@@ -26,7 +26,7 @@ public enum AutoModerationField
 {
 
     /**
-     * The {@link Guild guild} the rule is for.
+     * The {@link Guild} the rule is for.
      *
      * @see AutoModerationRule#getGuild()
      */
@@ -40,7 +40,7 @@ public enum AutoModerationField
     NAME("name", AuditLogKey.AUTO_MODERATION_RULE_NAME),
 
     /**
-     * The {@link User user} who created the rule.
+     * The {@link User} who created the rule.
      *
      * @see AutoModerationRule#getUser()
      */
@@ -54,21 +54,21 @@ public enum AutoModerationField
     EVENT_TYPE("event_type", AuditLogKey.AUTO_MODERATION_EVENT_TYPE),
 
     /**
-     * The {@link TriggerType trigger} that caused the auto moderation system trigger.
+     * The {@link TriggerType} that caused the auto moderation system trigger.
      *
      * @see AutoModerationRule#getTriggerType()
      */
     TRIGGER_TYPE("trigger_type", AuditLogKey.AUTO_MODERATION_TRIGGER_TYPE),
 
     /**
-     * The {@link TriggerMetadata trigger metadata} is additional data used whether a rule should be executed or not.
+     * The {@link TriggerMetadata } is additional data used whether a rule should be executed or not.
      *
      * @see AutoModerationRule#getTriggerMetadata()
      */
     TRIGGER_METADATA("trigger_metadata", AuditLogKey.AUTO_MODERATION_TRIGGER_METADATA),
 
     /**
-     * The List of {@link AutoModerationAction actions} that should be executed when the rule is triggered.
+     * The List of {@link AutoModerationAction} that should be executed when the rule is triggered.
      *
      * @see AutoModerationRule#getActions()
      */
@@ -89,7 +89,7 @@ public enum AutoModerationField
     EXEMPT_ROLES("exempt_roles", AuditLogKey.AUTO_MODERATION_EXEMPT_ROLES),
 
     /**
-     * The exempt List of {@link GuildChannel channels} for this rule.
+     * The exempt List of {@link GuildChannel guild channels} for this rule.
      *
      * @see AutoModerationRule#getExemptChannels()
      */

@@ -151,7 +151,7 @@ public class AutoModerationRuleImpl implements AutoModerationRule
     }
 
     @Override
-    public List<Role> getExemptRoles()
+    public @Nonnull List<Role> getExemptRoles()
     {
         return roles;
     }
@@ -163,7 +163,7 @@ public class AutoModerationRuleImpl implements AutoModerationRule
     }
 
     @Override
-    public List<GuildChannel> getExemptChannels()
+    public @Nonnull List<GuildChannel> getExemptChannels()
     {
         return channels;
     }

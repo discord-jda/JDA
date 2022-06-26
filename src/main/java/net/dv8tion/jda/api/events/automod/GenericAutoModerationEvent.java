@@ -27,6 +27,13 @@ import net.dv8tion.jda.api.events.Event;
 import javax.annotation.Nonnull;
 import java.util.List;
 
+/**
+ * Indicates that a {@link AutoModerationRule} was created/removed/updated.
+ *
+ * <h2>Requirements</h2>
+ *
+ * <p>These events require the {@link net.dv8tion.jda.api.requests.GatewayIntent#AUTO_MODERATION_CONFIGURATION AUTO_MODERATION_CONFIGURATION} intent.
+ */
 public class GenericAutoModerationEvent extends Event
 {
     protected final AutoModerationRule rule;
@@ -37,62 +44,117 @@ public class GenericAutoModerationEvent extends Event
         this.rule = rule;
     }
 
+    /**
+     * The {@link Guild} where this rule was created/removed/updated.
+     *
+     * @return The origin Guild.
+     */
     public Guild getGuild()
     {
         return rule.getGuild();
     }
 
+    /**
+     * The {@link String name} of this rule that was created/removed/updated.
+     *
+     * @return The name of the rule.
+     */
     @Nonnull
     public String getName()
     {
         return rule.getName();
     }
 
+    /**
+     * The {@link User} that created/removed/updated this rule.
+     *
+     * @return The creator/updater/remover of the rule.
+     */
     @Nonnull
     public User getUser()
     {
         return rule.getUser();
     }
 
+    /**
+     * The {@link EventType} for this rule.
+     *
+     * @return The event type.
+     */
     @Nonnull
     public EventType getEventType()
     {
         return rule.getEventType();
     }
 
+    /**
+     * The {@link TriggerType} for this rule.
+     *
+     * @return The trigger type.
+     */
     @Nonnull
     public TriggerType getTriggerType()
     {
         return rule.getTriggerType();
     }
 
+    /**
+     * The {@link TriggerMetadata} for this rule.
+     *
+     * @return The trigger metadata.
+     */
     @Nonnull
     public TriggerMetadata getTriggerMetadata()
     {
         return rule.getTriggerMetadata();
     }
 
+    /**
+     * The {@link AutoModerationAction} that will be executed when this rule is triggered.
+     *
+     * @return The action.
+     */
     @Nonnull
     public List<AutoModerationAction> getActions()
     {
         return rule.getActions();
     }
 
+    /**
+     * Weather this rule is enabled or not.
+     *
+     * @return True, if enabled.
+     */
     public boolean isEnabled()
     {
         return rule.isEnabled();
     }
 
+    /**
+     * The {@link Role roles} that will be exempted from this rule.
+     *
+     * @return The exempt roles.
+     */
     public List<Role> getExemptRoles()
     {
         return rule.getExemptRoles();
     }
 
+    /**
+     * The {@link GuildChannel channels} that will be exempted from this rule.
+     *
+     * @return The exempt channels.
+     */
     public List<GuildChannel> getExemptChannels()
     {
         return rule.getExemptChannels();
     }
 
+    /**
+     * The {@link AutoModerationRule} that was created/removed/updated.
+     *
+     * @return The rule.
+     */
     @Nonnull
     public AutoModerationRule getRule()
     {

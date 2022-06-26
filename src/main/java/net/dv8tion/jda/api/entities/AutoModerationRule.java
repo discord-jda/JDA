@@ -35,7 +35,7 @@ public interface AutoModerationRule extends ISnowflake, Comparable<AutoModeratio
     /**
      * Returns the Guild that the rule belongs to.
      *
-     * @return {@link Guild Guild}
+     * @return {@link Guild}
      */
     @Nonnull
     Guild getGuild();
@@ -43,7 +43,7 @@ public interface AutoModerationRule extends ISnowflake, Comparable<AutoModeratio
     /**
      * Returns the name of the rule.
      *
-     * @return {@link String String}
+     * @return {@link String}
      */
     @Nonnull
     String getName();
@@ -51,7 +51,7 @@ public interface AutoModerationRule extends ISnowflake, Comparable<AutoModeratio
     /**
      * Returns the user who created the rule.
      *
-     * @return {@link User User}
+     * @return {@link User}
      */
     @Nonnull
     User getUser();
@@ -59,7 +59,7 @@ public interface AutoModerationRule extends ISnowflake, Comparable<AutoModeratio
     /**
      * Returns the type of event that can potentially trigger this rule.
      *
-     * @return {@link EventType EventType}
+     * @return {@link EventType}
      */
     @Nonnull
     EventType getEventType();
@@ -67,7 +67,7 @@ public interface AutoModerationRule extends ISnowflake, Comparable<AutoModeratio
     /**
      * Returns the type of trigger that can cause this rule to be executed.
      *
-     * @return {@link TriggerType TriggerTypes}
+     * @return {@link TriggerType }
      */
     @Nonnull
     TriggerType getTriggerType();
@@ -75,7 +75,7 @@ public interface AutoModerationRule extends ISnowflake, Comparable<AutoModeratio
     /**
      * Returns additional metadata for the trigger of this rule, used whenever this rule is executed.
      *
-     * @return {@link TriggerMetadata TriggerMetadata}
+     * @return {@link TriggerMetadata}
      */
     @Nonnull
     TriggerMetadata getTriggerMetadata();
@@ -83,7 +83,7 @@ public interface AutoModerationRule extends ISnowflake, Comparable<AutoModeratio
     /**
      * Returns the actions that will be performed when this rule is executed.
      *
-     * @return A {@link List List} of {@link AutoModerationAction Actions}
+     * @return A {@link List } of {@link AutoModerationAction actions}
      */
     @Nonnull
     List<AutoModerationAction> getActions();
@@ -98,14 +98,16 @@ public interface AutoModerationRule extends ISnowflake, Comparable<AutoModeratio
     /**
      * Returns the roles that are exempt from this rule.
      *
-     * @return A {@link List List} of {@link Role Roles} which are exempt from the rules.
+     * @return A {@link List} of {@link Role roles} which are exempt from the rules.
      */
+    @Nonnull
     List<Role> getExemptRoles();
 
     /**
      * Returns the channels that are exempt from this rule.
      *
-     * @return A {@link List List} of {@link GuildChannel Channels} which are exempt from the rules.
+     * @return A {@link List} of {@link GuildChannel} which are exempt from the rules.
      */
+    @Nonnull
     List<GuildChannel> getExemptChannels();
 }

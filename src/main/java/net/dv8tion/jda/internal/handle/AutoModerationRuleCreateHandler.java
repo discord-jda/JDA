@@ -33,7 +33,6 @@ public class AutoModerationRuleCreateHandler extends SocketHandler
     @Override
     protected Long handleInternally(DataObject dataObject)
     {
-
         long guildId = dataObject.getLong("guild_id");
         if (api.getGuildSetupController().isLocked(guildId))
             return guildId;

@@ -44,51 +44,109 @@ public class AutoModerationActionExecutionEvent extends Event
         this.matchedContent = matchedContent;
     }
 
+    /**
+     * The {@link net.dv8tion.jda.api.entities.AutoModerationRule} that the action belongs to.
+     *
+     * @return The rule.
+     */
+    @Nonnull
     public AutoModerationRule getRule()
     {
         return rule;
     }
 
+    /**
+     * The {@link AutoModerationAction} that was executed when the rule was triggered.
+     *
+     * @return the executed action.
+     */
+    @Nonnull
     public AutoModerationAction getExecutedAction()
     {
         return executedAction;
     }
 
+    /**
+     * The {@link User} that caused the rule to be triggered.
+     *
+     * @return The user.
+     */
+    @Nonnull
     public User getTriggerer()
     {
         return triggerer;
     }
 
+    /**
+     * The {@link TriggerType} that caused the rule to be triggered.
+     *
+     * @return The trigger type.
+     */
+    @Nonnull
     public TriggerType getRuleTriggerer()
     {
         return ruleTriggerer;
     }
 
+    /**
+     * The {@link GuildChannel} where the rule was triggered.
+     *
+     * @return The channel.
+     */
+    @Nullable
     public GuildChannel getChannel()
     {
         return channel;
     }
 
+    /**
+     * The message Id of the message that triggered the rule.
+     *
+     * @return The message Id.
+     */
     public long getMessageId()
     {
         return messageId;
     }
 
+    /**
+     * The message Id of the auto moderation system message that was sent to the allocated channel.
+     *
+     * @return The alert system message Id.
+     */
     public long getAlertSystemMessageId()
     {
         return alertSystemMessageId;
     }
 
+    /**
+     * The content of the message that triggered the rule.
+     *
+     * @return The content.
+     */
+    @Nonnull
     public String getContent()
     {
         return content;
     }
 
+    /**
+     * The word or phrase configured in the rule that triggered the rule.
+     *
+     * @return The matched keyword.
+     */
+    @Nullable
     public String getMatchedKeyword()
     {
         return matchedKeyword;
     }
 
+    /**
+     * the substring in content that triggered the rule
+     *
+     * @return the matched content.
+     */
+    @Nullable
     public String getMatchedContent()
     {
         return matchedContent;

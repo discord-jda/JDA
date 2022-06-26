@@ -27,7 +27,7 @@ public interface AutoModerationAction
     /**
      * Returns the type of this action.
      *
-     * @return {@link AutoModerationActionType ActionType}
+     * @return {@link AutoModerationActionType}
      */
     @Nonnull
     AutoModerationActionType getActionType();
@@ -35,7 +35,7 @@ public interface AutoModerationAction
     /**
      * Returns additional metadata used during the execution of this specific action type.
      *
-     * @return {@link ActionMetadata ActionMetadata}
+     * @return {@link ActionMetadata}
      */
     @Nullable
     ActionMetadata getActionMetadata();

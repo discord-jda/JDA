@@ -3334,6 +3334,12 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      */
     AuditableRestAction<Void> deleteAutoModerationRuleById(@Nonnull AutoModerationRule rule);
 
+    /**
+     * Sorted {@link SnowflakeCacheView SnowflakeCacheView} of
+     * all cached {@link AutoModerationRule Rules} of this Guild.
+     *
+     * @return {@link SortedSnowflakeCacheView SortedSnowflakeCacheView}
+     */
     @Nonnull
     SnowflakeCacheView<AutoModerationRule> getAutoModerationRuleCache();
 

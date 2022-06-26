@@ -2366,7 +2366,6 @@ public class GuildImpl implements Guild
 
     public SortedSnowflakeCacheViewImpl<AutoModerationRule> getAutoModerationRulesView()
     {
-
         return autoModerationRuleCache;
     }
 
