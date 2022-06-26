@@ -76,7 +76,8 @@ public class AudioEchoExample extends ListenerAdapter
             return;
 
         // We only want to handle message in Guilds
-        if (!event.isFromGuild()) {
+        if (!event.isFromGuild())
+        {
             return;
         }
 

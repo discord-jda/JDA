@@ -64,7 +64,10 @@ import net.dv8tion.jda.internal.requests.restaction.order.ChannelOrderActionImpl
 import net.dv8tion.jda.internal.requests.restaction.order.RoleOrderActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.pagination.AuditLogPaginationActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.pagination.BanPaginationActionImpl;
-import net.dv8tion.jda.internal.utils.*;
+import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.Helpers;
+import net.dv8tion.jda.internal.utils.PermissionUtil;
+import net.dv8tion.jda.internal.utils.UnlockHook;
 import net.dv8tion.jda.internal.utils.cache.AbstractCacheView;
 import net.dv8tion.jda.internal.utils.cache.MemberCacheViewImpl;
 import net.dv8tion.jda.internal.utils.cache.SnowflakeCacheViewImpl;
@@ -1444,12 +1447,14 @@ public class GuildImpl implements Guild
             checkPosition(member);
 
         Route.CompiledRoute route = Route.Guilds.KICK_MEMBER.compile(getId(), user.getId());
+
+        AuditableRestAction<Void> action = new AuditableRestActionImpl<>(getJDA(), route);
         if (!Helpers.isBlank(reason))
         {
             Checks.check(reason.length() <= 512, "Reason cannot be longer than 512 characters.");
-            route = route.withQueryParams("reason", EncodingUtil.encodeUTF8(reason));
+            return action.reason(reason);
         }
-        return new AuditableRestActionImpl<>(getJDA(), route);
+        return action;
     }
 
     @Nonnull
@@ -1469,16 +1474,16 @@ public class GuildImpl implements Guild
         Route.CompiledRoute route = Route.Guilds.BAN.compile(getId(), user.getId());
         DataObject params = DataObject.empty();
 
-        if (!Helpers.isBlank(reason))
-        {
-            Checks.check(reason.length() <= 512, "Reason cannot be longer than 512 characters.");
-            params.put("reason", reason);
-        }
-
         if (delDays > 0)
             params.put("delete_message_days", delDays);
 
-        return new AuditableRestActionImpl<>(getJDA(), route, params);
+        AuditableRestAction<Void> action = new AuditableRestActionImpl<>(getJDA(), route, params);
+        if (!Helpers.isBlank(reason))
+        {
+            Checks.check(reason.length() <= 512, "Reason cannot be longer than 512 characters.");
+            return action.reason(reason);
+        }
+        return action;
     }
 
     @Nonnull
