@@ -106,6 +106,28 @@ public class PrivilegeConfig
     }
 
     /**
+     * The {@link IntegrationPrivilege IntegrationPrivileges} that have been applied to the supplied {@link Command}.
+     *
+     * <br><b>If the privileges are "Synced" (No custom config applied), or this command no longer exists, this will return null.</b>
+     *
+     * <p>This does not include privileges applied to the application directly. Use {@link #getApplicationPrivileges()} for that.
+     *
+     * @param  command
+     *         The {@link Command} to get the privileges from
+     *
+     * @throws IllegalArgumentException
+     *         If the provided command is null
+     *
+     * @return Immutable List containing all IntegrationPrivileges that have been applied to the command in this guild.
+     */
+    @Nullable
+    public List<IntegrationPrivilege> getCommandPrivileges(@Nonnull Command command)
+    {
+        Checks.notNull(command, "Command");
+        return privileges.get(command.getId());
+    }
+
+    /**
      * Map containing all privileges, with the command-id as the Key, and a List of {@link IntegrationPrivilege} as Value.
      *
      * <br><b>If {@link #getApplicationPrivileges()} is not null, this will also contain the privileges applied directly
