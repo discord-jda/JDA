@@ -29,9 +29,9 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Represents the Privilege-Config for this integration in a Guild.
- * <br>Can be used to get a List of {@link net.dv8tion.jda.api.interactions.commands.privileges.IntegrationPrivilege IntegrationPrivileges}
- * applied on the application itself and on each command.
+ * A PrivilegeConfig is the collection of moderator defined {@link IntegrationPrivilege privileges} set on a specific application and its commands
+ * that define what channels the application can be used in and what users/roles are allowed to use it.
+ * These privileges are set by moderators in the guild who have access to the guild's integrations page and permissions to edit them.
  *
  * @see Guild#retrieveCommandPrivileges()
  */
