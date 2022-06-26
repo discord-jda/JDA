@@ -133,9 +133,11 @@ public interface CommandCreateAction extends RestAction<Command>, SlashCommandDa
 
     @Nonnull
     @Override
+    @CheckReturnValue
     CommandCreateAction setDefaultPermissions(@Nonnull DefaultMemberPermissions permission);
 
     @Nonnull
     @Override
+    @CheckReturnValue
     CommandCreateAction setGuildOnly(boolean guildOnly);
 }
