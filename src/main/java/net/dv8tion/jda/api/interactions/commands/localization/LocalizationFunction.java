@@ -45,7 +45,7 @@ import java.util.Map;
  * public class MyFunction implements LocalizationFunction {
  *   &#64;Override
  *   public Map&lt;DiscordLocale, String&gt; apply(String localizationKey) {
- *     Map&lt;DiscordLocale, String&gt; map = new HashMap<>();
+ *     Map&lt;DiscordLocale, String&gt; map = new HashMap&lt;&gt;();
  *     switch (localizationKey) {
  *       case "ban.name":
  *         map.put(DiscordLocale.SPANISH, "prohibición");
@@ -66,7 +66,7 @@ import java.util.Map;
  * Also, since this is a functional interface, the following is also possible
  * <pre><code>
  * LocalizationFunction myfunc = s -> {
- *   Map&lt;DiscordLocale, String&gt; map = new HashMap<>();
+ *   Map&lt;DiscordLocale, String&gt; map = new HashMap&lt;&gt;();
  *    switch (localizationKey) {
  *      case "ban.name":
  *        map.put(DiscordLocale.SPANISH, "prohibición");
