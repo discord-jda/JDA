@@ -16,7 +16,10 @@
 
 package net.dv8tion.jda.internal.handle;
 
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.GuildChannel;
+import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.automod.*;
 import net.dv8tion.jda.api.events.automod.update.*;
 import net.dv8tion.jda.api.utils.data.DataArray;
