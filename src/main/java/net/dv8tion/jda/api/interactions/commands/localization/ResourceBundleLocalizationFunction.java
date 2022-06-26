@@ -57,19 +57,59 @@ public class ResourceBundleLocalizationFunction implements LocalizationFunction
         return map;
     }
 
+    /**
+     * Provides a {@link ResourceBundleLocalizationFunction} builder with the provided bundle having the specified name and locale.
+     *
+     * @param  resourceBundle
+     *         The resource bundle to get the localized strings from
+     *
+     * @param  locale
+     *         The locale of the resources
+     *
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If the resource bundle is null</li>
+     *             <li>If the locale is null</li>
+     *         </ul>
+     *
+     * @return The new builder
+     */
     @Nonnull
-    public static Builder fromBundle(@Nonnull Locale locale, @Nonnull ResourceBundle resourceBundle)
+    public static Builder fromBundle(@Nonnull ResourceBundle resourceBundle, @Nonnull Locale locale)
     {
         return new Builder()
                 .addBundle(resourceBundle, locale);
     }
 
+    /**
+     * Provides a {@link ResourceBundleLocalizationFunction} builder with the provided bundles.
+     * <br>This will insert the resource bundles with the specified name, with each specified locale.
+     *
+     * @param  baseName
+     *         The base name of the resource bundle, for example, the base name of {@code "MyBundle_fr_FR.properties"} would be {@code "MyBundle"}
+     *
+     * @param  locales
+     *         The locales to get from the resource bundle
+     *
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If the base name is null</li>
+     *             <li>If the locales or one of the locale is null</li>
+     *         </ul>
+     *
+     * @return The new builder
+     */
     @Nonnull
     public static Builder fromBundles(@Nonnull String baseName, @Nonnull Locale... locales)
     {
         return new Builder().addBundles(baseName, locales);
     }
 
+    /**
+     * Provides an empty {@link ResourceBundleLocalizationFunction} builder.
+     *
+     * @return The empty builder
+     */
     @Nonnull
     public static Builder empty()
     {
@@ -80,6 +120,23 @@ public class ResourceBundleLocalizationFunction implements LocalizationFunction
     {
         private final Set<Bundle> bundles = new HashSet<>();
 
+        /**
+         * Adds a resource bundle to this builder
+         *
+         * @param  resourceBundle
+         *         The {@link ResourceBundle} to get the localized strings from
+         *
+         * @param  locale
+         *         The {@link Locale} of the resources
+         *
+         * @throws IllegalArgumentException
+         *         <ul>
+         *             <li>If the resource bundle is null</li>
+         *             <li>If the locale is null</li>
+         *         </ul>
+         *
+         * @return This builder for chaining convenience
+         */
         @Nonnull
         public Builder addBundle(@Nonnull ResourceBundle resourceBundle, @Nonnull Locale locale)
         {
@@ -90,6 +147,24 @@ public class ResourceBundleLocalizationFunction implements LocalizationFunction
             return this;
         }
 
+        /**
+         * Adds a resource bundle to this builder
+         * <br>This will insert the resource bundles with the specified name, with each specified locale.
+         *
+         * @param  baseName
+         *         The base name of the resource bundle, for example, the base name of {@code "MyBundle_fr_FR.properties"} would be {@code "MyBundle"}
+         *
+         * @param  locales
+         *         The locales to get from the resource bundle
+         *
+         * @throws IllegalArgumentException
+         *         <ul>
+         *             <li>If the base name is null</li>
+         *             <li>If the locales or one of the locale is null</li>
+         *         </ul>
+         *
+         * @return This builder for chaining convenience
+         */
         @Nonnull
         public Builder addBundles(@Nonnull String baseName, @Nonnull Locale... locales)
         {
@@ -104,6 +179,11 @@ public class ResourceBundleLocalizationFunction implements LocalizationFunction
             return this;
         }
 
+        /**
+         * Builds the resource bundle localization function.
+         *
+         * @return The new {@link ResourceBundleLocalizationFunction}
+         */
         @Nonnull
         public ResourceBundleLocalizationFunction build()
         {
