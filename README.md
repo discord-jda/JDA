@@ -172,7 +172,9 @@ public class MessageListener extends ListenerAdapter
     public static void main(String[] args)
             throws LoginException
     {
-        JDA jda = JDABuilder.createDefault("token").build();
+        JDA jda = JDABuilder.createDefault("token")
+                .enableIntents(GatewayIntent.MESSAGE_CONTENT) // enables explicit access to message.getContentDisplay()
+                .build();
         //You can also add event listeners to the already built JDA instance
         // Note that some events may not be received if the listener is added after calling build()
         // This includes events such as the ReadyEvent

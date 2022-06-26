@@ -49,7 +49,9 @@ public class AudioEchoExample extends ListenerAdapter
             // We need messages in guilds to accept commands from users
             GatewayIntent.GUILD_MESSAGES,
             // We need voice states to connect to the voice channel
-            GatewayIntent.GUILD_VOICE_STATES
+            GatewayIntent.GUILD_VOICE_STATES,
+            // Enable access to message.getContentRaw()
+            GatewayIntent.MESSAGE_CONTENT
         );
 
         // Start the JDA session with default mode (voice member cache)
