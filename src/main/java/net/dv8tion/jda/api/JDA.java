@@ -18,6 +18,7 @@ package net.dv8tion.jda.api;
 
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.IGuildChannelContainer;
+import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import net.dv8tion.jda.api.entities.sticker.*;
 import net.dv8tion.jda.api.hooks.IEventManager;
 import net.dv8tion.jda.api.interactions.commands.Command;
@@ -1454,98 +1455,98 @@ public interface JDA extends IGuildChannelContainer
 
     /**
      * Unified {@link net.dv8tion.jda.api.utils.cache.SnowflakeCacheView SnowflakeCacheView} of
-     * all cached {@link net.dv8tion.jda.api.entities.Emote Emotes} visible to this JDA session.
+     * all cached {@link RichCustomEmoji Custom Emojis} visible to this JDA session.
      *
      * @return Unified {@link net.dv8tion.jda.api.utils.cache.SnowflakeCacheView SnowflakeCacheView}
      *
      * @see    net.dv8tion.jda.api.utils.cache.CacheView#allSnowflakes(java.util.function.Supplier) CacheView.allSnowflakes(...)
      */
     @Nonnull
-    SnowflakeCacheView<Emote> getEmoteCache();
+    SnowflakeCacheView<RichCustomEmoji> getEmojiCache();
 
     /**
-     * A collection of all to us known emotes (managed/restricted included).
-     * <br>This will be empty if {@link net.dv8tion.jda.api.utils.cache.CacheFlag#EMOTE} is disabled.
+     * A collection of all to us known custom emoji (managed/restricted included).
+     * <br>This will be empty if {@link net.dv8tion.jda.api.utils.cache.CacheFlag#EMOJI} is disabled.
      *
-     * <p><b>Hint</b>: To check whether you can use an {@link net.dv8tion.jda.api.entities.Emote Emote} in a specific
-     * context you can use {@link Emote#canInteract(net.dv8tion.jda.api.entities.Member)} or {@link
-     * Emote#canInteract(net.dv8tion.jda.api.entities.User, net.dv8tion.jda.api.entities.MessageChannel)}
+     * <p><b>Hint</b>: To check whether you can use an {@link RichCustomEmoji} in a specific
+     * context you can use {@link RichCustomEmoji#canInteract(net.dv8tion.jda.api.entities.Member)} or {@link
+     * RichCustomEmoji#canInteract(net.dv8tion.jda.api.entities.User, net.dv8tion.jda.api.entities.MessageChannel)}
      *
-     * <p><b>Unicode emojis are not included as {@link net.dv8tion.jda.api.entities.Emote Emote}!</b>
+     * <p><b>Unicode emojis are not included as {@link RichCustomEmoji Custom Emoji}!</b>
      *
      * <p>This copies the backing store into a list. This means every call
      * creates a new list with O(n) complexity. It is recommended to store this into
-     * a local variable or use {@link #getEmoteCache()} and use its more efficient
+     * a local variable or use {@link #getEmojiCache()} and use its more efficient
      * versions of handling these values.
      *
-     * @return An immutable list of Emotes (which may or may not be available to usage).
+     * @return An immutable list of Custom Emojis (which may or may not be available to usage).
      */
     @Nonnull
-    default List<Emote> getEmotes()
+    default List<RichCustomEmoji> getEmojis()
     {
-        return getEmoteCache().asList();
+        return getEmojiCache().asList();
     }
 
     /**
-     * Retrieves an emote matching the specified {@code id} if one is available in our cache.
-     * <br>This will be null if {@link net.dv8tion.jda.api.utils.cache.CacheFlag#EMOTE} is disabled.
+     * Retrieves a custom emoji matching the specified {@code id} if one is available in our cache.
+     * <br>This will be null if {@link net.dv8tion.jda.api.utils.cache.CacheFlag#EMOJI} is disabled.
      *
-     * <p><b>Unicode emojis are not included as {@link net.dv8tion.jda.api.entities.Emote Emote}!</b>
+     * <p><b>Unicode emojis are not included as {@link RichCustomEmoji Custom Emoji}!</b>
      *
      * @param  id
-     *         The id of the requested {@link net.dv8tion.jda.api.entities.Emote}.
+     *         The id of the requested {@link RichCustomEmoji}.
      *
      * @throws java.lang.NumberFormatException
      *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
      *
-     * @return An {@link net.dv8tion.jda.api.entities.Emote Emote} represented by this id or null if none is found in
+     * @return A {@link RichCustomEmoji Custom Emoji} represented by this id or null if none is found in
      *         our cache.
      */
     @Nullable
-    default Emote getEmoteById(@Nonnull String id)
+    default RichCustomEmoji getEmojiById(@Nonnull String id)
     {
-        return getEmoteCache().getElementById(id);
+        return getEmojiCache().getElementById(id);
     }
 
     /**
-     * Retrieves an emote matching the specified {@code id} if one is available in our cache.
-     * <br>This will be null if {@link net.dv8tion.jda.api.utils.cache.CacheFlag#EMOTE} is disabled.
+     * Retrieves a custom emoji matching the specified {@code id} if one is available in our cache.
+     * <br>This will be null if {@link net.dv8tion.jda.api.utils.cache.CacheFlag#EMOJI} is disabled.
      *
-     * <p><b>Unicode emojis are not included as {@link net.dv8tion.jda.api.entities.Emote Emote}!</b>
+     * <p><b>Unicode emojis are not included as {@link RichCustomEmoji Custom Emoji}!</b>
      *
      * @param  id
-     *         The id of the requested {@link net.dv8tion.jda.api.entities.Emote}.
+     *         The id of the requested {@link RichCustomEmoji}.
      *
-     * @return An {@link net.dv8tion.jda.api.entities.Emote Emote} represented by this id or null if none is found in
+     * @return A {@link RichCustomEmoji Custom Emoji} represented by this id or null if none is found in
      *         our cache.
      */
     @Nullable
-    default Emote getEmoteById(long id)
+    default RichCustomEmoji getEmojiById(long id)
     {
-        return getEmoteCache().getElementById(id);
+        return getEmojiCache().getElementById(id);
     }
 
     /**
-     * An unmodifiable list of all {@link net.dv8tion.jda.api.entities.Emote Emotes} that have the same name as the one
-     * provided. <br>If there are no {@link net.dv8tion.jda.api.entities.Emote Emotes} with the provided name, then
+     * An unmodifiable list of all {@link RichCustomEmoji Custom Emojis} that have the same name as the one
+     * provided. <br>If there are no {@link RichCustomEmoji Custom Emojis} with the provided name, then
      * this returns an empty list.
-     * <br>This will be empty if {@link net.dv8tion.jda.api.utils.cache.CacheFlag#EMOTE} is disabled.
+     * <br>This will be empty if {@link net.dv8tion.jda.api.utils.cache.CacheFlag#EMOJI} is disabled.
      *
-     * <p><b>Unicode emojis are not included as {@link net.dv8tion.jda.api.entities.Emote Emote}!</b>
+     * <p><b>Unicode emojis are not included as {@link RichCustomEmoji Custom Emoji}!</b>
      *
      * @param  name
-     *         The name of the requested {@link net.dv8tion.jda.api.entities.Emote Emotes}. Without colons.
+     *         The name of the requested {@link RichCustomEmoji Custom Emojis}. Without colons.
      * @param  ignoreCase
      *         Whether to ignore case or not when comparing the provided name to each {@link
-     *         net.dv8tion.jda.api.entities.Emote#getName()}.
+     *         RichCustomEmoji#getName()}.
      *
-     * @return Possibly-empty list of all the {@link net.dv8tion.jda.api.entities.Emote Emotes} that all have the same
+     * @return Possibly-empty list of all the {@link RichCustomEmoji Custom Emojis} that all have the same
      *         name as the provided name.
      */
     @Nonnull
-    default List<Emote> getEmotesByName(@Nonnull String name, boolean ignoreCase)
+    default List<RichCustomEmoji> getEmojisByName(@Nonnull String name, boolean ignoreCase)
     {
-        return getEmoteCache().getElementsByName(name, ignoreCase);
+        return getEmojiCache().getElementsByName(name, ignoreCase);
     }
 
     /**

@@ -23,6 +23,7 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.Region;
 import net.dv8tion.jda.api.audio.hooks.ConnectionStatus;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import net.dv8tion.jda.api.entities.sticker.GuildSticker;
 import net.dv8tion.jda.api.entities.sticker.StandardSticker;
 import net.dv8tion.jda.api.entities.sticker.StickerSnowflake;
@@ -97,7 +98,7 @@ public class GuildImpl implements Guild
     private final SortedSnowflakeCacheViewImpl<StageChannel> stageChannelCache = new SortedSnowflakeCacheViewImpl<>(StageChannel.class, Channel::getName, Comparator.naturalOrder());
     private final SortedSnowflakeCacheViewImpl<ThreadChannel> threadChannelCache = new SortedSnowflakeCacheViewImpl<>(ThreadChannel.class, Channel::getName, Comparator.naturalOrder());
     private final SortedSnowflakeCacheViewImpl<Role> roleCache = new SortedSnowflakeCacheViewImpl<>(Role.class, Role::getName, Comparator.reverseOrder());
-    private final SnowflakeCacheViewImpl<Emote> emoteCache = new SnowflakeCacheViewImpl<>(Emote.class, Emote::getName);
+    private final SnowflakeCacheViewImpl<RichCustomEmoji> emojicache = new SnowflakeCacheViewImpl<>(RichCustomEmoji.class, RichCustomEmoji::getName);
     private final SnowflakeCacheViewImpl<GuildSticker> stickerCache = new SnowflakeCacheViewImpl<>(GuildSticker.class, GuildSticker::getName);
     private final MemberCacheViewImpl memberCache = new MemberCacheViewImpl();
     private final CacheView.SimpleCacheView<MemberPresenceImpl> memberPresences;
@@ -702,9 +703,9 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public SnowflakeCacheView<Emote> getEmoteCache()
+    public SnowflakeCacheView<RichCustomEmoji> getEmojiCache()
     {
-        return emoteCache;
+        return emojicache;
     }
 
     @Nonnull
@@ -791,19 +792,18 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public RestAction<List<ListedEmote>> retrieveEmotes()
+    public RestAction<List<RichCustomEmoji>> retrieveEmojis()
     {
-        Route.CompiledRoute route = Route.Emotes.GET_EMOTES.compile(getId());
+        Route.CompiledRoute route = Route.Emojis.GET_EMOJIS.compile(getId());
         return new RestActionImpl<>(getJDA(), route, (response, request) ->
         {
-
             EntityBuilder builder = GuildImpl.this.getJDA().getEntityBuilder();
-            DataArray emotes = response.getArray();
-            List<ListedEmote> list = new ArrayList<>(emotes.length());
-            for (int i = 0; i < emotes.length(); i++)
+            DataArray emojis = response.getArray();
+            List<RichCustomEmoji> list = new ArrayList<>(emojis.length());
+            for (int i = 0; i < emojis.length(); i++)
             {
-                DataObject emote = emotes.getObject(i);
-                list.add(builder.createEmote(GuildImpl.this, emote));
+                DataObject emoji = emojis.getObject(i);
+                list.add(builder.createEmoji(GuildImpl.this, emoji));
             }
 
             return Collections.unmodifiableList(list);
@@ -812,27 +812,26 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public RestAction<ListedEmote> retrieveEmoteById(@Nonnull String id)
+    public RestAction<RichCustomEmoji> retrieveEmojiById(@Nonnull String id)
     {
-        Checks.isSnowflake(id, "Emote ID");
+        Checks.isSnowflake(id, "Emoji ID");
 
         JDAImpl jda = getJDA();
-        return new DeferredRestAction<>(jda, ListedEmote.class,
+        return new DeferredRestAction<>(jda, RichCustomEmoji.class,
         () -> {
-            Emote emote = getEmoteById(id);
-            if (emote != null)
+            RichCustomEmoji emoji = getEmojiById(id);
+            if (emoji != null)
             {
-                ListedEmote listedEmote = (ListedEmote) emote;
-                if (listedEmote.hasUser() || !getSelfMember().hasPermission(Permission.MANAGE_EMOTES_AND_STICKERS))
-                    return listedEmote;
+                if (emoji.getOwner() != null || !getSelfMember().hasPermission(Permission.MANAGE_EMOJIS_AND_STICKERS))
+                    return emoji;
             }
             return null;
         }, () -> {
-            Route.CompiledRoute route = Route.Emotes.GET_EMOTE.compile(getId(), id);
+            Route.CompiledRoute route = Route.Emojis.GET_EMOJI.compile(getId(), id);
             return new AuditableRestActionImpl<>(jda, route, (response, request) ->
             {
                 EntityBuilder builder = GuildImpl.this.getJDA().getEntityBuilder();
-                return builder.createEmote(GuildImpl.this, response.getObject());
+                return builder.createEmoji(GuildImpl.this, response.getObject());
             });
         });
     }
@@ -1765,11 +1764,11 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public AuditableRestAction<Emote> createEmote(@Nonnull String name, @Nonnull Icon icon, @Nonnull Role... roles)
+    public AuditableRestAction<RichCustomEmoji> createEmoji(@Nonnull String name, @Nonnull Icon icon, @Nonnull Role... roles)
     {
-        checkPermission(Permission.MANAGE_EMOTES_AND_STICKERS);
-        Checks.inRange(name, 2, 32, "Emote name");
-        Checks.notNull(icon, "Emote icon");
+        checkPermission(Permission.MANAGE_EMOJIS_AND_STICKERS);
+        Checks.inRange(name, 2, 32, "Emoji name");
+        Checks.notNull(icon, "Emoji icon");
         Checks.notNull(roles, "Roles");
 
         DataObject body = DataObject.empty();
@@ -1779,11 +1778,11 @@ public class GuildImpl implements Guild
             body.put("roles", Stream.of(roles).filter(Objects::nonNull).map(ISnowflake::getId).collect(Collectors.toSet()));
 
         JDAImpl jda = getJDA();
-        Route.CompiledRoute route = Route.Emotes.CREATE_EMOTE.compile(getId());
+        Route.CompiledRoute route = Route.Emojis.CREATE_EMOJI.compile(getId());
         return new AuditableRestActionImpl<>(jda, route, body, (response, request) ->
         {
             DataObject obj = response.getObject();
-            return jda.getEntityBuilder().createEmote(this, obj);
+            return jda.getEntityBuilder().createEmoji(this, obj);
         });
     }
 
@@ -1791,7 +1790,7 @@ public class GuildImpl implements Guild
     @Override
     public AuditableRestAction<GuildSticker> createSticker(@Nonnull String name, @Nonnull String description, @Nonnull FileUpload file, @Nonnull Collection<String> tags)
     {
-        checkPermission(Permission.MANAGE_EMOTES_AND_STICKERS);
+        checkPermission(Permission.MANAGE_EMOJIS_AND_STICKERS);
         Checks.inRange(name, 2, 30, "Name");
         Checks.notNull(file, "File");
         Checks.notNull(description, "Description");
@@ -2174,9 +2173,9 @@ public class GuildImpl implements Guild
         return roleCache;
     }
 
-    public SnowflakeCacheViewImpl<Emote> getEmotesView()
+    public SnowflakeCacheViewImpl<RichCustomEmoji> getEmojisView()
     {
-        return emoteCache;
+        return emojicache;
     }
 
     public SnowflakeCacheViewImpl<GuildSticker> getStickersView()
