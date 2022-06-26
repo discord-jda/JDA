@@ -37,12 +37,8 @@ import java.util.function.Consumer;
 public class LocalizationMap implements SerializableData
 {
     public static final Logger LOG = JDALogger.getLog(LocalizationMap.class);
-    public static final Consumer<String> UNMODIFIABLE_CHECK = s ->
-    {
-        throw new IllegalStateException("This LocalizationMap is unmodifiable.");
-    };
 
-    private final Map<DiscordLocale, String> map = new HashMap<>();
+    protected final Map<DiscordLocale, String> map = new HashMap<>();
     private final Consumer<String> checkConsumer;
 
     public LocalizationMap(@Nonnull Consumer<String> checkConsumer)

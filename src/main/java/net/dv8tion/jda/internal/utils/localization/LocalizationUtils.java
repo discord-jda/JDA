@@ -19,6 +19,7 @@ package net.dv8tion.jda.internal.utils.localization;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.interactions.commands.localization.LocalizationMap;
 import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.internal.interactions.command.localization.UnmodifiableLocalizationMap;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.JDALogger;
 import org.slf4j.Logger;
@@ -65,8 +66,6 @@ public class LocalizationUtils
     @Nonnull
     public static LocalizationMap unmodifiableFromProperty(@Nonnull DataObject json, @Nonnull String localizationProperty)
     {
-        final LocalizationMap map = new LocalizationMap(LocalizationMap.UNMODIFIABLE_CHECK);
-        map.setTranslations(mapFromProperty(json, localizationProperty));
-        return map;
+        return new UnmodifiableLocalizationMap(mapFromProperty(json, localizationProperty));
     }
 }
