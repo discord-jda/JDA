@@ -598,6 +598,7 @@ public enum ActionType
      */
     AUTO_MODERATION_BLOCK_MESSAGE(143, TargetType.AUTO_MODERATION_RULE),
     
+    /**
      * A moderator updated the privileges for an application
      */
     APPLICATION_COMMAND_PRIVILEGES_UPDATE(121, TargetType.INTEGRATION),
