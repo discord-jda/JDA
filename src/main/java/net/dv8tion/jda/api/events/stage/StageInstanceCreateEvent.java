@@ -18,10 +18,8 @@ package net.dv8tion.jda.api.events.stage;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.StageInstance;
-import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 /**
  * Indicates that a {@link net.dv8tion.jda.api.entities.StageInstance StageInstance} was created.
@@ -30,8 +28,8 @@ import javax.annotation.Nullable;
  */
 public class StageInstanceCreateEvent extends GenericStageInstanceEvent
 {
-    public StageInstanceCreateEvent(@Nonnull JDA api, long responseNumber, @Nullable DataObject rawData, @Nonnull StageInstance stageInstance)
+    public StageInstanceCreateEvent(@Nonnull JDA api, long responseNumber, @Nonnull StageInstance stageInstance)
     {
-        super(api, responseNumber, rawData, stageInstance);
+        super(api, responseNumber, stageInstance);
     }
 }

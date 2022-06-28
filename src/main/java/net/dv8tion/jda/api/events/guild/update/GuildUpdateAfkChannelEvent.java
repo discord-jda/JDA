@@ -19,7 +19,6 @@ package net.dv8tion.jda.api.events.guild.update;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.VoiceChannel;
-import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -35,9 +34,9 @@ public class GuildUpdateAfkChannelEvent extends GenericGuildUpdateEvent<VoiceCha
 {
     public static final String IDENTIFIER = "afk_channel";
 
-    public GuildUpdateAfkChannelEvent(@Nonnull JDA api, long responseNumber, @Nullable DataObject rawData, @Nonnull Guild guild, @Nullable VoiceChannel oldAfkChannel)
+    public GuildUpdateAfkChannelEvent(@Nonnull JDA api, long responseNumber, @Nonnull Guild guild, @Nullable VoiceChannel oldAfkChannel)
     {
-        super(api, responseNumber, rawData, guild, oldAfkChannel, guild.getAfkChannel(), IDENTIFIER);
+        super(api, responseNumber, guild, oldAfkChannel, guild.getAfkChannel(), IDENTIFIER);
     }
 
     /**

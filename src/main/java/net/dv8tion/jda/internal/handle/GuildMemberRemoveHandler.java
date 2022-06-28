@@ -23,7 +23,10 @@ import net.dv8tion.jda.api.events.guild.voice.GuildVoiceLeaveEvent;
 import net.dv8tion.jda.api.utils.cache.CacheView;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
-import net.dv8tion.jda.internal.entities.*;
+import net.dv8tion.jda.internal.entities.GuildVoiceStateImpl;
+import net.dv8tion.jda.internal.entities.MemberImpl;
+import net.dv8tion.jda.internal.entities.MemberPresenceImpl;
+import net.dv8tion.jda.internal.entities.VoiceChannelImpl;
 import net.dv8tion.jda.internal.entities.mixin.channel.middleman.AudioChannelMixin;
 import net.dv8tion.jda.internal.utils.UnlockHook;
 import net.dv8tion.jda.internal.utils.cache.SnowflakeCacheViewImpl;
@@ -78,16 +81,16 @@ public class GuildMemberRemoveHandler extends SocketHandler
                 {
                     getJDA().handleEvent(
                         new GuildVoiceLeaveEvent(
-                            getJDA(), responseNumber, getPassthrough(),
-                            connected, channel));
+                            getJDA(), responseNumber,
+                                connected, channel));
                 }
             });
 
             // Fire cache independent event, we can still inform the library user about the member removal
             getJDA().handleEvent(
                 new GuildMemberRemoveEvent(
-                    getJDA(), responseNumber, getPassthrough(),
-                    guild, user, null));
+                    getJDA(), responseNumber,
+                        guild, user, null));
             return null;
         }
 
@@ -100,8 +103,8 @@ public class GuildMemberRemoveHandler extends SocketHandler
 
             getJDA().handleEvent(
                 new GuildVoiceLeaveEvent(
-                    getJDA(), responseNumber, getPassthrough(),
-                    member, channel));
+                    getJDA(), responseNumber,
+                        member, channel));
         }
 
         //The user is not in a different guild that we share
@@ -119,8 +122,8 @@ public class GuildMemberRemoveHandler extends SocketHandler
         // Cache independent event
         getJDA().handleEvent(
             new GuildMemberRemoveEvent(
-                getJDA(), responseNumber, getPassthrough(),
-                guild, user, member));
+                getJDA(), responseNumber,
+                    guild, user, member));
         return null;
     }
 }

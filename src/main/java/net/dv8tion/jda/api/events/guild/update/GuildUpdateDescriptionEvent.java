@@ -18,7 +18,6 @@ package net.dv8tion.jda.api.events.guild.update;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -34,9 +33,9 @@ public class GuildUpdateDescriptionEvent extends GenericGuildUpdateEvent<String>
 {
     public static final String IDENTIFIER = "description";
 
-    public GuildUpdateDescriptionEvent(@Nonnull JDA api, long responseNumber, @Nullable DataObject rawData, @Nonnull Guild guild, @Nullable String previous)
+    public GuildUpdateDescriptionEvent(@Nonnull JDA api, long responseNumber, @Nonnull Guild guild, @Nullable String previous)
     {
-        super(api, responseNumber, rawData, guild, previous, guild.getDescription(), IDENTIFIER);
+        super(api, responseNumber, guild, previous, guild.getDescription(), IDENTIFIER);
     }
 
     /**

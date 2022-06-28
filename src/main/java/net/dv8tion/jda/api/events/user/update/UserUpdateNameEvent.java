@@ -18,10 +18,8 @@ package net.dv8tion.jda.api.events.user.update;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 /**
  * Indicates that the username of a {@link net.dv8tion.jda.api.entities.User User} changed. (Not Nickname)
@@ -45,9 +43,9 @@ public class UserUpdateNameEvent extends GenericUserUpdateEvent<String>
 {
     public static final String IDENTIFIER = "name";
 
-    public UserUpdateNameEvent(@Nonnull JDA api, long responseNumber, @Nullable DataObject rawData, @Nonnull User user, @Nonnull String oldName)
+    public UserUpdateNameEvent(@Nonnull JDA api, long responseNumber, @Nonnull User user, @Nonnull String oldName)
     {
-        super(api, responseNumber, rawData, user, oldName, user.getName(), IDENTIFIER);
+        super(api, responseNumber, user, oldName, user.getName(), IDENTIFIER);
     }
 
     /**

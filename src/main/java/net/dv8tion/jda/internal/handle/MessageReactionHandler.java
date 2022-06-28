@@ -186,15 +186,15 @@ public class MessageReactionHandler extends SocketHandler
         {
             api.handleEvent(
                 new MessageReactionAddEvent(
-                    api, responseNumber, getPassthrough(),
-                    user, member, reaction, userId));
+                    api, responseNumber,
+                        user, member, reaction, userId));
         }
         else
         {
             api.handleEvent(
                 new MessageReactionRemoveEvent(
-                    api, responseNumber, getPassthrough(),
-                    user, member, reaction, userId));
+                    api, responseNumber,
+                        user, member, reaction, userId));
         }
         return null;
     }

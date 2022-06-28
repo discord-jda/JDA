@@ -394,8 +394,8 @@ public class EntityBuilder
             userObj.setName(newName);
             jda.handleEvent(
                 new UserUpdateNameEvent(
-                    jda, responseNumber, getJDA().isEventPassthrough() ? user : null,
-                    userObj, oldName));
+                    jda, responseNumber,
+                        userObj, oldName));
         }
 
         if (!oldDiscriminator.equals(newDiscriminator))
@@ -403,8 +403,8 @@ public class EntityBuilder
             userObj.setDiscriminator(newDiscriminator);
             jda.handleEvent(
                 new UserUpdateDiscriminatorEvent(
-                    jda, responseNumber, getJDA().isEventPassthrough() ? user : null,
-                    userObj, oldDiscriminator));
+                    jda, responseNumber,
+                        userObj, oldDiscriminator));
         }
 
         if (!Objects.equals(oldAvatar, newAvatar))
@@ -412,8 +412,8 @@ public class EntityBuilder
             userObj.setAvatarId(newAvatar);
             jda.handleEvent(
                 new UserUpdateAvatarEvent(
-                    jda, responseNumber, getJDA().isEventPassthrough() ? user : null,
-                    userObj, oldAvatar));
+                    jda, responseNumber,
+                        userObj, oldAvatar));
         }
 
         if (oldFlags != newFlags)
@@ -421,8 +421,8 @@ public class EntityBuilder
             userObj.setFlags(newFlags);
             jda.handleEvent(
                     new UserUpdateFlagsEvent(
-                        jda, responseNumber, getJDA().isEventPassthrough() ? user : null,
-                        userObj, User.UserFlag.getFlags(oldFlags)));
+                        jda, responseNumber,
+                            userObj, User.UserFlag.getFlags(oldFlags)));
         }
     }
 
@@ -603,8 +603,8 @@ public class EntityBuilder
                 member.setNickname(newNick);
                 getJDA().handleEvent(
                     new GuildMemberUpdateNicknameEvent(
-                        getJDA(), responseNumber, getJDA().isEventPassthrough() ? content : null,
-                        member, oldNick));
+                        getJDA(), responseNumber,
+                            member, oldNick));
             }
         }
         if (content.hasKey("avatar"))
@@ -616,7 +616,7 @@ public class EntityBuilder
                 member.setAvatarId(newAvatarId);
                 getJDA().handleEvent(
                         new GuildMemberUpdateAvatarEvent(
-                                getJDA(), responseNumber, getJDA().isEventPassthrough() ? content : null,
+                                getJDA(), responseNumber,
                                 member, oldAvatarId));
             }
         }
@@ -631,8 +631,8 @@ public class EntityBuilder
                 member.setBoostDate(epoch);
                 getJDA().handleEvent(
                     new GuildMemberUpdateBoostTimeEvent(
-                        getJDA(), responseNumber, getJDA().isEventPassthrough() ? content : null,
-                        member, oldTime));
+                        getJDA(), responseNumber,
+                            member, oldTime));
             }
         }
 
@@ -647,7 +647,7 @@ public class EntityBuilder
                 member.setTimeOutEnd(epoch);
                 getJDA().handleEvent(
                         new GuildMemberUpdateTimeOutEvent(
-                                getJDA(), responseNumber, getJDA().isEventPassthrough() ? content : null,
+                                getJDA(), responseNumber,
                                 member, oldTime));
             }
         }
@@ -669,8 +669,8 @@ public class EntityBuilder
                 member.setPending(pending);
                 getJDA().handleEvent(
                     new GuildMemberUpdatePendingEvent(
-                        getJDA(), responseNumber, getJDA().isEventPassthrough() ? content : null,
-                        member, oldPending));
+                        getJDA(), responseNumber,
+                            member, oldPending));
             }
         }
 
@@ -706,14 +706,14 @@ public class EntityBuilder
         {
             getJDA().handleEvent(
                 new GuildMemberRoleRemoveEvent(
-                    getJDA(), responseNumber, api.isEventPassthrough() ? content : null, member,
+                    getJDA(), responseNumber, member,
                         removedRoles));
         }
         if (newRoles.size() > 0)
         {
             getJDA().handleEvent(
                 new GuildMemberRoleAddEvent(
-                    getJDA(), responseNumber, api.isEventPassthrough() ? content : null,
+                    getJDA(), responseNumber,
                         member, newRoles));
         }
     }

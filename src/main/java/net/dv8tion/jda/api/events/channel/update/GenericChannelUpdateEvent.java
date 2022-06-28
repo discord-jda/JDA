@@ -21,7 +21,6 @@ import net.dv8tion.jda.api.entities.Channel;
 import net.dv8tion.jda.api.entities.ChannelField;
 import net.dv8tion.jda.api.events.UpdateEvent;
 import net.dv8tion.jda.api.events.channel.GenericChannelEvent;
-import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -33,9 +32,9 @@ public class GenericChannelUpdateEvent<T> extends GenericChannelEvent implements
     protected final T oldValue;
     protected final T newValue;
 
-    public GenericChannelUpdateEvent(@Nonnull JDA api, long responseNumber, @Nullable DataObject rawData, Channel channel, ChannelField channelField, T oldValue, T newValue)
+    public GenericChannelUpdateEvent(@Nonnull JDA api, long responseNumber, Channel channel, ChannelField channelField, T oldValue, T newValue)
     {
-        super(api, responseNumber, rawData, channel);
+        super(api, responseNumber, channel);
 
         this.channelField = channelField;
         this.oldValue = oldValue;

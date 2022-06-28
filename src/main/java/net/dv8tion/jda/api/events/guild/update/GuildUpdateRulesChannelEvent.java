@@ -19,7 +19,6 @@ package net.dv8tion.jda.api.events.guild.update;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -35,9 +34,9 @@ public class GuildUpdateRulesChannelEvent extends GenericGuildUpdateEvent<TextCh
 {
     public static final String IDENTIFIER = "rules_channel";
 
-    public GuildUpdateRulesChannelEvent(@Nonnull JDA api, long responseNumber, @Nullable DataObject rawData, @Nonnull Guild guild, @Nullable TextChannel oldRulesChannel)
+    public GuildUpdateRulesChannelEvent(@Nonnull JDA api, long responseNumber, @Nonnull Guild guild, @Nullable TextChannel oldRulesChannel)
     {
-        super(api, responseNumber, rawData, guild, oldRulesChannel, guild.getRulesChannel(), IDENTIFIER);
+        super(api, responseNumber, guild, oldRulesChannel, guild.getRulesChannel(), IDENTIFIER);
     }
 
     /**

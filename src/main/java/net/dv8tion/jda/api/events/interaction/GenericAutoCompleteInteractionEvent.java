@@ -22,10 +22,8 @@ import net.dv8tion.jda.api.interactions.callbacks.IAutoCompleteCallback;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.requests.restaction.interactions.AutoCompleteCallbackAction;
-import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Collection;
 
 /**
@@ -40,9 +38,9 @@ import java.util.Collection;
  */
 public class GenericAutoCompleteInteractionEvent extends GenericInteractionCreateEvent implements IAutoCompleteCallback
 {
-    public GenericAutoCompleteInteractionEvent(@Nonnull JDA api, long responseNumber, @Nullable DataObject rawData, @Nonnull Interaction interaction)
+    public GenericAutoCompleteInteractionEvent(@Nonnull JDA api, long responseNumber, @Nonnull Interaction interaction)
     {
-        super(api, responseNumber, rawData, interaction);
+        super(api, responseNumber, interaction);
     }
 
     @Nonnull

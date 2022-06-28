@@ -18,10 +18,8 @@ package net.dv8tion.jda.api.events.guild.member;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 /**
  * Fired for every {@link Member} update, regardless of cache.
@@ -42,8 +40,8 @@ import javax.annotation.Nullable;
  */
 public class GuildMemberUpdateEvent extends GenericGuildMemberEvent
 {
-    public GuildMemberUpdateEvent(@Nonnull JDA api, long responseNumber, @Nullable DataObject rawData, @Nonnull Member member)
+    public GuildMemberUpdateEvent(@Nonnull JDA api, long responseNumber, @Nonnull Member member)
     {
-        super(api, responseNumber, rawData, member);
+        super(api, responseNumber, member);
     }
 }

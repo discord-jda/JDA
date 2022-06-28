@@ -112,8 +112,8 @@ public class GuildUpdateHandler extends SocketHandler
             guild.setOwnerId(ownerId);
             getJDA().handleEvent(
                 new GuildUpdateOwnerEvent(
-                    getJDA(), responseNumber, getPassthrough(),
-                    guild, oldOwner,
+                    getJDA(), responseNumber,
+                        guild, oldOwner,
                     oldOwnerId, ownerId));
         }
         if (!Objects.equals(description, guild.getDescription()))
@@ -122,8 +122,8 @@ public class GuildUpdateHandler extends SocketHandler
             guild.setDescription(description);
             getJDA().handleEvent(
                 new GuildUpdateDescriptionEvent(
-                    getJDA(), responseNumber, getPassthrough(),
-                    guild, oldDescription));
+                    getJDA(), responseNumber,
+                        guild, oldDescription));
         }
         if (!Objects.equals(bannerId, guild.getBannerId()))
         {
@@ -131,8 +131,8 @@ public class GuildUpdateHandler extends SocketHandler
             guild.setBannerId(bannerId);
             getJDA().handleEvent(
                 new GuildUpdateBannerEvent(
-                    getJDA(), responseNumber, getPassthrough(),
-                    guild, oldBanner));
+                    getJDA(), responseNumber,
+                        guild, oldBanner));
         }
         if (!Objects.equals(vanityCode, guild.getVanityCode()))
         {
@@ -140,8 +140,8 @@ public class GuildUpdateHandler extends SocketHandler
             guild.setVanityCode(vanityCode);
             getJDA().handleEvent(
                 new GuildUpdateVanityCodeEvent(
-                    getJDA(), responseNumber, getPassthrough(),
-                    guild, oldCode));
+                    getJDA(), responseNumber,
+                        guild, oldCode));
         }
         if (maxMembers != guild.getMaxMembers())
         {
@@ -149,8 +149,8 @@ public class GuildUpdateHandler extends SocketHandler
             guild.setMaxMembers(maxMembers);
             getJDA().handleEvent(
                 new GuildUpdateMaxMembersEvent(
-                    getJDA(), responseNumber, getPassthrough(),
-                    guild, oldMax));
+                    getJDA(), responseNumber,
+                        guild, oldMax));
         }
         if (maxPresences != guild.getMaxPresences())
         {
@@ -158,8 +158,8 @@ public class GuildUpdateHandler extends SocketHandler
             guild.setMaxPresences(maxPresences);
             getJDA().handleEvent(
                 new GuildUpdateMaxPresencesEvent(
-                    getJDA(), responseNumber, getPassthrough(),
-                    guild, oldMax));
+                    getJDA(), responseNumber,
+                        guild, oldMax));
         }
         if (boostCount != guild.getBoostCount())
         {
@@ -167,8 +167,8 @@ public class GuildUpdateHandler extends SocketHandler
             guild.setBoostCount(boostCount);
             getJDA().handleEvent(
                 new GuildUpdateBoostCountEvent(
-                    getJDA(), responseNumber, getPassthrough(),
-                    guild, oldCount));
+                    getJDA(), responseNumber,
+                        guild, oldCount));
         }
         if (Guild.BoostTier.fromKey(boostTier) != guild.getBoostTier())
         {
@@ -176,8 +176,8 @@ public class GuildUpdateHandler extends SocketHandler
             guild.setBoostTier(boostTier);
             getJDA().handleEvent(
                 new GuildUpdateBoostTierEvent(
-                    getJDA(), responseNumber, getPassthrough(),
-                    guild, oldTier));
+                    getJDA(), responseNumber,
+                        guild, oldTier));
         }
         if (!Objects.equals(name, guild.getName()))
         {
@@ -185,7 +185,7 @@ public class GuildUpdateHandler extends SocketHandler
             guild.setName(name);
             getJDA().handleEvent(
                     new GuildUpdateNameEvent(
-                            getJDA(), responseNumber, getPassthrough(),
+                            getJDA(), responseNumber,
                             guild, oldName));
         }
         if (!Objects.equals(iconId, guild.getIconId()))
@@ -194,7 +194,7 @@ public class GuildUpdateHandler extends SocketHandler
             guild.setIconId(iconId);
             getJDA().handleEvent(
                     new GuildUpdateIconEvent(
-                            getJDA(), responseNumber, getPassthrough(),
+                            getJDA(), responseNumber,
                             guild, oldIconId));
         }
         if (!features.equals(guild.getFeatures()))
@@ -203,7 +203,7 @@ public class GuildUpdateHandler extends SocketHandler
             guild.setFeatures(features);
             getJDA().handleEvent(
                     new GuildUpdateFeaturesEvent(
-                            getJDA(), responseNumber, getPassthrough(),
+                            getJDA(), responseNumber,
                             guild, oldFeatures));
         }
         if (!Objects.equals(splashId, guild.getSplashId()))
@@ -212,7 +212,7 @@ public class GuildUpdateHandler extends SocketHandler
             guild.setSplashId(splashId);
             getJDA().handleEvent(
                     new GuildUpdateSplashEvent(
-                            getJDA(), responseNumber, getPassthrough(),
+                            getJDA(), responseNumber,
                             guild, oldSplashId));
         }
         if (!Objects.equals(verificationLevel, guild.getVerificationLevel()))
@@ -221,7 +221,7 @@ public class GuildUpdateHandler extends SocketHandler
             guild.setVerificationLevel(verificationLevel);
             getJDA().handleEvent(
                     new GuildUpdateVerificationLevelEvent(
-                            getJDA(), responseNumber, getPassthrough(),
+                            getJDA(), responseNumber,
                             guild, oldVerificationLevel));
         }
         if (!Objects.equals(notificationLevel, guild.getDefaultNotificationLevel()))
@@ -230,7 +230,7 @@ public class GuildUpdateHandler extends SocketHandler
             guild.setDefaultNotificationLevel(notificationLevel);
             getJDA().handleEvent(
                     new GuildUpdateNotificationLevelEvent(
-                            getJDA(), responseNumber, getPassthrough(),
+                            getJDA(), responseNumber,
                             guild, oldNotificationLevel));
         }
         if (!Objects.equals(mfaLevel, guild.getRequiredMFALevel()))
@@ -239,7 +239,7 @@ public class GuildUpdateHandler extends SocketHandler
             guild.setRequiredMFALevel(mfaLevel);
             getJDA().handleEvent(
                     new GuildUpdateMFALevelEvent(
-                            getJDA(), responseNumber, getPassthrough(),
+                            getJDA(), responseNumber,
                             guild, oldMfaLevel));
         }
         if (!Objects.equals(explicitContentLevel, guild.getExplicitContentLevel()))
@@ -248,7 +248,7 @@ public class GuildUpdateHandler extends SocketHandler
             guild.setExplicitContentLevel(explicitContentLevel);
             getJDA().handleEvent(
                     new GuildUpdateExplicitContentLevelEvent(
-                            getJDA(), responseNumber, getPassthrough(),
+                            getJDA(), responseNumber,
                             guild, oldExplicitContentLevel));
         }
         if (!Objects.equals(afkTimeout, guild.getAfkTimeout()))
@@ -257,7 +257,7 @@ public class GuildUpdateHandler extends SocketHandler
             guild.setAfkTimeout(afkTimeout);
             getJDA().handleEvent(
                     new GuildUpdateAfkTimeoutEvent(
-                            getJDA(), responseNumber, getPassthrough(),
+                            getJDA(), responseNumber,
                             guild, oldAfkTimeout));
         }
         if (!Objects.equals(locale, guild.getLocale()))
@@ -266,8 +266,8 @@ public class GuildUpdateHandler extends SocketHandler
             guild.setLocale(locale.toLanguageTag());
             getJDA().handleEvent(
                 new GuildUpdateLocaleEvent(
-                    getJDA(), responseNumber, getPassthrough(),
-                    guild, oldLocale));
+                    getJDA(), responseNumber,
+                        guild, oldLocale));
         }
         if (!Objects.equals(afkChannel, guild.getAfkChannel()))
         {
@@ -275,7 +275,7 @@ public class GuildUpdateHandler extends SocketHandler
             guild.setAfkChannel(afkChannel);
             getJDA().handleEvent(
                     new GuildUpdateAfkChannelEvent(
-                            getJDA(), responseNumber, getPassthrough(),
+                            getJDA(), responseNumber,
                             guild, oldAfkChannel));
         }
         if (!Objects.equals(systemChannel, guild.getSystemChannel()))
@@ -284,7 +284,7 @@ public class GuildUpdateHandler extends SocketHandler
             guild.setSystemChannel(systemChannel);
             getJDA().handleEvent(
                     new GuildUpdateSystemChannelEvent(
-                            getJDA(), responseNumber, getPassthrough(),
+                            getJDA(), responseNumber,
                             guild, oldSystemChannel));
         }
         if (!Objects.equals(rulesChannel, guild.getRulesChannel()))
@@ -293,7 +293,7 @@ public class GuildUpdateHandler extends SocketHandler
             guild.setRulesChannel(rulesChannel);
             getJDA().handleEvent(
                     new GuildUpdateRulesChannelEvent(
-                            getJDA(), responseNumber, getPassthrough(),
+                            getJDA(), responseNumber,
                             guild, oldRulesChannel));
         }
         if (!Objects.equals(communityUpdatesChannel, guild.getCommunityUpdatesChannel()))
@@ -302,7 +302,7 @@ public class GuildUpdateHandler extends SocketHandler
             guild.setCommunityUpdatesChannel(communityUpdatesChannel);
             getJDA().handleEvent(
                     new GuildUpdateCommunityUpdatesChannelEvent(
-                            getJDA(), responseNumber, getPassthrough(),
+                            getJDA(), responseNumber,
                             guild, oldCommunityUpdatesChannel));
         }
         if (content.hasKey("nsfw_level") && nsfwLevel != guild.getNSFWLevel())
@@ -311,7 +311,7 @@ public class GuildUpdateHandler extends SocketHandler
             guild.setNSFWLevel(nsfwLevel);
             getJDA().handleEvent(
                     new GuildUpdateNSFWLevelEvent(
-                            getJDA(), responseNumber, getPassthrough(),
+                            getJDA(), responseNumber,
                             guild, oldNSFWLevel));
         }
         return null;

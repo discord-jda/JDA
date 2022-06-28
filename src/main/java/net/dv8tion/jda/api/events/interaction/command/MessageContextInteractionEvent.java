@@ -21,7 +21,6 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback;
 import net.dv8tion.jda.api.interactions.commands.context.MessageContextInteraction;
-import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -38,9 +37,9 @@ import javax.annotation.Nullable;
  */
 public class MessageContextInteractionEvent extends GenericContextInteractionEvent<Message> implements MessageContextInteraction
 {
-    public MessageContextInteractionEvent(@Nonnull JDA api, long responseNumber, @Nullable DataObject rawData, @Nonnull MessageContextInteraction interaction)
+    public MessageContextInteractionEvent(@Nonnull JDA api, long responseNumber, @Nonnull MessageContextInteraction interaction)
     {
-        super(api, responseNumber, rawData, interaction);
+        super(api, responseNumber, interaction);
     }
 
     @Nonnull

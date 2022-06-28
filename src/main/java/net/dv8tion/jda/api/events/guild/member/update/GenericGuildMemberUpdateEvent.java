@@ -19,7 +19,6 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.UpdateEvent;
 import net.dv8tion.jda.api.events.guild.member.GenericGuildMemberEvent;
-import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -48,10 +47,10 @@ public abstract class GenericGuildMemberUpdateEvent<T> extends GenericGuildMembe
     protected final String identifier;
 
     public GenericGuildMemberUpdateEvent(
-        @Nonnull JDA api, long responseNumber, @Nullable DataObject rawData, @Nonnull Member member,
-        @Nullable T previous, @Nullable T next, @Nonnull String identifier)
+            @Nonnull JDA api, long responseNumber, @Nonnull Member member,
+            @Nullable T previous, @Nullable T next, @Nonnull String identifier)
     {
-        super(api, responseNumber, rawData, member);
+        super(api, responseNumber, member);
         this.previous = previous;
         this.next = next;
         this.identifier = identifier;

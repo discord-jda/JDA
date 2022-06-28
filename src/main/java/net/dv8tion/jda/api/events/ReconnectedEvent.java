@@ -30,6 +30,6 @@ public class ReconnectedEvent extends Event
 {
     public ReconnectedEvent(@Nonnull JDA api, long responseNumber)
     {
-        super(api, responseNumber, null);
+        super(api, responseNumber);
     }
 }

@@ -18,7 +18,6 @@ package net.dv8tion.jda.api.events.role.update;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Role;
-import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -35,9 +34,9 @@ public class RoleUpdateColorEvent extends GenericRoleUpdateEvent<Integer>
 {
     public static final String IDENTIFIER = "color";
 
-    public RoleUpdateColorEvent(@Nonnull JDA api, long responseNumber, @Nullable DataObject rawData, @Nonnull Role role, int oldColor)
+    public RoleUpdateColorEvent(@Nonnull JDA api, long responseNumber, @Nonnull Role role, int oldColor)
     {
-        super(api, responseNumber, rawData, role, oldColor, role.getColorRaw(), IDENTIFIER);
+        super(api, responseNumber, role, oldColor, role.getColorRaw(), IDENTIFIER);
     }
 
     /**

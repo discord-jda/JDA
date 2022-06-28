@@ -19,7 +19,6 @@ package net.dv8tion.jda.api.events.guild.member.update;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.utils.ImageProxy;
-import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -46,9 +45,9 @@ public class GuildMemberUpdateAvatarEvent extends GenericGuildMemberUpdateEvent<
 {
     public static final String IDENTIFIER = "avatar";
 
-    public GuildMemberUpdateAvatarEvent(@Nonnull JDA api, long responseNumber, @Nullable DataObject rawData, @Nonnull Member member, @Nullable String oldAvatarId)
+    public GuildMemberUpdateAvatarEvent(@Nonnull JDA api, long responseNumber, @Nonnull Member member, @Nullable String oldAvatarId)
     {
-        super(api, responseNumber, rawData, member, oldAvatarId, member.getAvatarId(), IDENTIFIER);
+        super(api, responseNumber, member, oldAvatarId, member.getAvatarId(), IDENTIFIER);
     }
 
     /**

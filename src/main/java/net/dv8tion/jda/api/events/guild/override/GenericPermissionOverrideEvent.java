@@ -19,7 +19,6 @@ package net.dv8tion.jda.api.events.guild.override;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.guild.GenericGuildEvent;
-import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -35,9 +34,9 @@ public class GenericPermissionOverrideEvent extends GenericGuildEvent
     protected final GuildChannel channel;
     protected final PermissionOverride override;
 
-    public GenericPermissionOverrideEvent(@Nonnull JDA api, long responseNumber, @Nullable DataObject rawData, @Nonnull GuildChannel channel, @Nonnull PermissionOverride override)
+    public GenericPermissionOverrideEvent(@Nonnull JDA api, long responseNumber, @Nonnull GuildChannel channel, @Nonnull PermissionOverride override)
     {
-        super(api, responseNumber, rawData, channel.getGuild());
+        super(api, responseNumber, channel.getGuild());
         this.channel = channel;
         this.override = override;
     }

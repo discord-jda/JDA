@@ -21,7 +21,6 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.ThreadChannel;
 import net.dv8tion.jda.api.entities.ThreadMember;
 import net.dv8tion.jda.api.events.thread.GenericThreadEvent;
-import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -32,9 +31,9 @@ public class GenericThreadMemberEvent extends GenericThreadEvent
     protected final long threadMemberId;
     protected final ThreadMember threadMember;
 
-    public GenericThreadMemberEvent(@Nonnull JDA api, long responseNumber, @Nullable DataObject rawData, ThreadChannel thread, long threadMemberId, ThreadMember threadMember)
+    public GenericThreadMemberEvent(@Nonnull JDA api, long responseNumber, ThreadChannel thread, long threadMemberId, ThreadMember threadMember)
     {
-        super(api, responseNumber, rawData, thread);
+        super(api, responseNumber, thread);
 
         this.threadMemberId = threadMemberId;
         this.threadMember = threadMember;

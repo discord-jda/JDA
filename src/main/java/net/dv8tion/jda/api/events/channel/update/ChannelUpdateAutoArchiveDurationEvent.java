@@ -20,18 +20,16 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Channel;
 import net.dv8tion.jda.api.entities.ChannelField;
 import net.dv8tion.jda.api.entities.ThreadChannel;
-import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 //TODO-v5: Docs
 public class ChannelUpdateAutoArchiveDurationEvent extends GenericChannelUpdateEvent<ThreadChannel.AutoArchiveDuration>
 {
     public static final ChannelField FIELD = ChannelField.AUTO_ARCHIVE_DURATION;
 
-    public ChannelUpdateAutoArchiveDurationEvent(@Nonnull JDA api, long responseNumber, @Nullable DataObject rawData, Channel channel, ThreadChannel.AutoArchiveDuration oldValue, ThreadChannel.AutoArchiveDuration newValue)
+    public ChannelUpdateAutoArchiveDurationEvent(@Nonnull JDA api, long responseNumber, Channel channel, ThreadChannel.AutoArchiveDuration oldValue, ThreadChannel.AutoArchiveDuration newValue)
     {
-        super(api, responseNumber, rawData, channel, FIELD, oldValue, newValue);
+        super(api, responseNumber, channel, FIELD, oldValue, newValue);
     }
 }

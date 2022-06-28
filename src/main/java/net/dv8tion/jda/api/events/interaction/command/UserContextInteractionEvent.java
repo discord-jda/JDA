@@ -21,7 +21,6 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback;
 import net.dv8tion.jda.api.interactions.commands.context.UserContextInteraction;
-import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -38,9 +37,9 @@ import javax.annotation.Nullable;
  */
 public class UserContextInteractionEvent extends GenericContextInteractionEvent<User> implements UserContextInteraction
 {
-    public UserContextInteractionEvent(@Nonnull JDA api, long responseNumber, @Nullable DataObject rawData, @Nonnull UserContextInteraction interaction)
+    public UserContextInteractionEvent(@Nonnull JDA api, long responseNumber, @Nonnull UserContextInteraction interaction)
     {
-        super(api, responseNumber, rawData, interaction);
+        super(api, responseNumber, interaction);
     }
 
     @Nonnull

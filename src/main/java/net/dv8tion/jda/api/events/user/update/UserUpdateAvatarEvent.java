@@ -18,7 +18,6 @@ package net.dv8tion.jda.api.events.user.update;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.ImageProxy;
 
 import javax.annotation.Nonnull;
@@ -46,9 +45,9 @@ public class UserUpdateAvatarEvent extends GenericUserUpdateEvent<String>
 {
     public static final String IDENTIFIER = "avatar";
 
-    public UserUpdateAvatarEvent(@Nonnull JDA api, long responseNumber, @Nullable DataObject rawData, @Nonnull User user, @Nullable String oldAvatar)
+    public UserUpdateAvatarEvent(@Nonnull JDA api, long responseNumber, @Nonnull User user, @Nullable String oldAvatar)
     {
-        super(api, responseNumber, rawData, user, oldAvatar, user.getAvatarId(), IDENTIFIER);
+        super(api, responseNumber, user, oldAvatar, user.getAvatarId(), IDENTIFIER);
     }
 
     /**

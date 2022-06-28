@@ -20,7 +20,6 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.UpdateEvent;
 import net.dv8tion.jda.api.events.user.GenericUserEvent;
-import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -50,10 +49,10 @@ public abstract class GenericUserUpdateEvent<T> extends GenericUserEvent impleme
     protected final String identifier;
 
     public GenericUserUpdateEvent(
-        @Nonnull JDA api, long responseNumber, @Nullable DataObject rawData, @Nonnull User user,
-        @Nullable T previous, @Nullable T next, @Nonnull String identifier)
+            @Nonnull JDA api, long responseNumber, @Nonnull User user,
+            @Nullable T previous, @Nullable T next, @Nonnull String identifier)
     {
-        super(api, responseNumber, rawData, user);
+        super(api, responseNumber, user);
         this.previous = previous;
         this.next = next;
         this.identifier = identifier;

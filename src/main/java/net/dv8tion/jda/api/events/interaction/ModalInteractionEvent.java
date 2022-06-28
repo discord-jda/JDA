@@ -23,10 +23,8 @@ import net.dv8tion.jda.api.interactions.components.Modal;
 import net.dv8tion.jda.api.interactions.modals.ModalMapping;
 import net.dv8tion.jda.api.requests.restaction.interactions.MessageEditCallbackAction;
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction;
-import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.List;
 
 /**
@@ -42,9 +40,9 @@ public class ModalInteractionEvent extends GenericInteractionCreateEvent impleme
 {
     private final ModalInteraction interaction;
 
-    public ModalInteractionEvent(@Nonnull JDA api, long responseNumber, @Nullable DataObject rawData, @Nonnull ModalInteraction interaction)
+    public ModalInteractionEvent(@Nonnull JDA api, long responseNumber, @Nonnull ModalInteraction interaction)
     {
-        super(api, responseNumber, rawData, interaction);
+        super(api, responseNumber, interaction);
         this.interaction = interaction;
     }
 

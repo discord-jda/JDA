@@ -19,10 +19,8 @@ package net.dv8tion.jda.api.events.message.react;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.events.message.GenericMessageEvent;
-import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 /**
  * Indicates the the reactions of a message have been cleared by a moderator
@@ -39,8 +37,8 @@ import javax.annotation.Nullable;
  */
 public class MessageReactionRemoveAllEvent extends GenericMessageEvent
 {
-    public MessageReactionRemoveAllEvent(@Nonnull JDA api, long responseNumber, @Nullable DataObject rawData, long messageId, @Nonnull MessageChannel channel)
+    public MessageReactionRemoveAllEvent(@Nonnull JDA api, long responseNumber, long messageId, @Nonnull MessageChannel channel)
     {
-        super(api, responseNumber, rawData, messageId, channel);
+        super(api, responseNumber, messageId, channel);
     }
 }

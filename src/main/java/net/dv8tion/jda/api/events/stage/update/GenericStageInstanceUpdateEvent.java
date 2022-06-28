@@ -20,7 +20,6 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.StageInstance;
 import net.dv8tion.jda.api.events.UpdateEvent;
 import net.dv8tion.jda.api.events.stage.GenericStageInstanceEvent;
-import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -37,9 +36,9 @@ public abstract class GenericStageInstanceUpdateEvent<T> extends GenericStageIns
     protected final T next;
     protected final String identifier;
 
-    public GenericStageInstanceUpdateEvent(@Nonnull JDA api, long responseNumber, @Nullable DataObject rawData, @Nonnull StageInstance stageInstance, T previous, T next, String identifier)
+    public GenericStageInstanceUpdateEvent(@Nonnull JDA api, long responseNumber, @Nonnull StageInstance stageInstance, T previous, T next, String identifier)
     {
-        super(api, responseNumber, rawData, stageInstance);
+        super(api, responseNumber, stageInstance);
         this.previous = previous;
         this.next = next;
         this.identifier = identifier;

@@ -18,8 +18,6 @@ package net.dv8tion.jda.internal.handle;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 
-import javax.annotation.Nullable;
-
 public abstract class SocketHandler
 {
     public static final ThreadLocal<DataObject> CURRENT_EVENT = new ThreadLocal<>();
@@ -44,12 +42,6 @@ public abstract class SocketHandler
             getJDA().getGuildSetupController().cacheEvent(guildId, o);
         this.allContent = null;
         if (getJDA().isEventPassthrough())CURRENT_EVENT.set(null);
-    }
-
-    @Nullable
-    @Deprecated
-    protected DataObject getPassthrough() {
-        return api.isEventPassthrough() ? allContent : null;
     }
 
     protected JDAImpl getJDA()

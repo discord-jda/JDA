@@ -103,7 +103,7 @@ public class ChannelUpdateHandler extends SocketHandler
                     textChannel.setName(name);
                     getJDA().handleEvent(
                             new ChannelUpdateNameEvent(
-                                    getJDA(), responseNumber, getPassthrough(),
+                                    getJDA(), responseNumber,
                                     textChannel, oldName, name));
                 }
                 if (oldParentId != parentId)
@@ -112,15 +112,15 @@ public class ChannelUpdateHandler extends SocketHandler
                     textChannel.setParentCategory(parentId);
                     getJDA().handleEvent(
                            new ChannelUpdateParentEvent(
-                               getJDA(), responseNumber, getPassthrough(),
-                               textChannel, oldParent, textChannel.getParentCategory()));
+                               getJDA(), responseNumber,
+                                   textChannel, oldParent, textChannel.getParentCategory()));
                 }
                 if (!Objects.equals(oldTopic, topic))
                 {
                     textChannel.setTopic(topic);
                     getJDA().handleEvent(
                             new ChannelUpdateTopicEvent(
-                                    getJDA(), responseNumber, getPassthrough(),
+                                    getJDA(), responseNumber,
                                     textChannel, oldTopic, topic));
                 }
                 if (oldPosition != position)
@@ -128,7 +128,7 @@ public class ChannelUpdateHandler extends SocketHandler
                     textChannel.setPosition(position);
                     getJDA().handleEvent(
                             new ChannelUpdatePositionEvent(
-                                    getJDA(), responseNumber, getPassthrough(),
+                                    getJDA(), responseNumber,
                                     textChannel, oldPosition, position));
                 }
 
@@ -137,7 +137,7 @@ public class ChannelUpdateHandler extends SocketHandler
                     textChannel.setNSFW(nsfw);
                     getJDA().handleEvent(
                             new ChannelUpdateNSFWEvent(
-                                    getJDA(), responseNumber, getPassthrough(),
+                                    getJDA(), responseNumber,
                                     textChannel, oldNsfw, nsfw));
                 }
 
@@ -146,7 +146,7 @@ public class ChannelUpdateHandler extends SocketHandler
                     textChannel.setSlowmode(slowmode);
                     getJDA().handleEvent(
                             new ChannelUpdateSlowmodeEvent(
-                                    getJDA(), responseNumber, getPassthrough(),
+                                    getJDA(), responseNumber,
                                     textChannel, oldSlowmode, slowmode));
                 }
                 break;
@@ -168,7 +168,7 @@ public class ChannelUpdateHandler extends SocketHandler
                     newsChannel.setName(name);
                     getJDA().handleEvent(
                             new ChannelUpdateNameEvent(
-                                    getJDA(), responseNumber, getPassthrough(),
+                                    getJDA(), responseNumber,
                                     newsChannel, oldName, name));
                 }
                 if (oldParentId != parentId)
@@ -177,7 +177,7 @@ public class ChannelUpdateHandler extends SocketHandler
                     newsChannel.setParentCategory(parentId);
                     getJDA().handleEvent(
                             new ChannelUpdateParentEvent(
-                                    getJDA(), responseNumber, getPassthrough(),
+                                    getJDA(), responseNumber,
                                     newsChannel, oldParent, newsChannel.getParentCategory()));
                 }
                 if (!Objects.equals(oldTopic, topic))
@@ -185,7 +185,7 @@ public class ChannelUpdateHandler extends SocketHandler
                     newsChannel.setTopic(topic);
                     getJDA().handleEvent(
                             new ChannelUpdateTopicEvent(
-                                    getJDA(), responseNumber, getPassthrough(),
+                                    getJDA(), responseNumber,
                                     newsChannel, oldTopic, topic));
                 }
                 if (oldPosition != position)
@@ -193,7 +193,7 @@ public class ChannelUpdateHandler extends SocketHandler
                     newsChannel.setPosition(position);
                     getJDA().handleEvent(
                             new ChannelUpdatePositionEvent(
-                                    getJDA(), responseNumber, getPassthrough(),
+                                    getJDA(), responseNumber,
                                     newsChannel, oldPosition, position));
                 }
 
@@ -202,7 +202,7 @@ public class ChannelUpdateHandler extends SocketHandler
                     newsChannel.setNSFW(nsfw);
                     getJDA().handleEvent(
                             new ChannelUpdateNSFWEvent(
-                                    getJDA(), responseNumber, getPassthrough(),
+                                    getJDA(), responseNumber,
                                     newsChannel, oldNsfw, nsfw));
                 }
                 break;
@@ -227,7 +227,7 @@ public class ChannelUpdateHandler extends SocketHandler
                     voiceChannel.setName(name);
                     getJDA().handleEvent(
                             new ChannelUpdateNameEvent(
-                                    getJDA(), responseNumber, getPassthrough(),
+                                    getJDA(), responseNumber,
                                     voiceChannel, oldName, name));
                 }
                 if (!Objects.equals(oldRegionRaw, regionRaw))
@@ -236,7 +236,7 @@ public class ChannelUpdateHandler extends SocketHandler
                     voiceChannel.setRegion(regionRaw);
                     getJDA().handleEvent(
                             new ChannelUpdateRegionEvent(
-                                    getJDA(), responseNumber, getPassthrough(),
+                                    getJDA(), responseNumber,
                                     voiceChannel, oldRegion, voiceChannel.getRegion()));
                 }
                 if (oldParentId != parentId)
@@ -245,7 +245,7 @@ public class ChannelUpdateHandler extends SocketHandler
                     voiceChannel.setParentCategory(parentId);
                     getJDA().handleEvent(
                             new ChannelUpdateParentEvent(
-                                    getJDA(), responseNumber, getPassthrough(),
+                                    getJDA(), responseNumber,
                                     voiceChannel, oldParent, voiceChannel.getParentCategory()));
                 }
                 if (oldPosition != position)
@@ -253,7 +253,7 @@ public class ChannelUpdateHandler extends SocketHandler
                     voiceChannel.setPosition(position);
                     getJDA().handleEvent(
                             new ChannelUpdatePositionEvent(
-                                    getJDA(), responseNumber, getPassthrough(),
+                                    getJDA(), responseNumber,
                                     voiceChannel, oldPosition, position));
                 }
                 if (oldLimit != userLimit)
@@ -261,7 +261,7 @@ public class ChannelUpdateHandler extends SocketHandler
                     voiceChannel.setUserLimit(userLimit);
                     getJDA().handleEvent(
                             new ChannelUpdateUserLimitEvent(
-                                    getJDA(), responseNumber, getPassthrough(),
+                                    getJDA(), responseNumber,
                                     voiceChannel, oldLimit, userLimit));
                 }
                 if (oldBitrate != bitrate)
@@ -269,7 +269,7 @@ public class ChannelUpdateHandler extends SocketHandler
                     voiceChannel.setBitrate(bitrate);
                     getJDA().handleEvent(
                             new ChannelUpdateBitrateEvent(
-                                    getJDA(), responseNumber, getPassthrough(),
+                                    getJDA(), responseNumber,
                                     voiceChannel, oldBitrate, bitrate));
                 }
 
@@ -293,7 +293,7 @@ public class ChannelUpdateHandler extends SocketHandler
                     stageChannel.setName(name);
                     getJDA().handleEvent(
                             new ChannelUpdateNameEvent(
-                                    getJDA(), responseNumber, getPassthrough(),
+                                    getJDA(), responseNumber,
                                     stageChannel, oldName, name));
                 }
                 if (!Objects.equals(oldRegionRaw, regionRaw))
@@ -302,7 +302,7 @@ public class ChannelUpdateHandler extends SocketHandler
                     stageChannel.setRegion(regionRaw);
                     getJDA().handleEvent(
                             new ChannelUpdateRegionEvent(
-                                    getJDA(), responseNumber, getPassthrough(),
+                                    getJDA(), responseNumber,
                                     stageChannel, oldRegion, stageChannel.getRegion()));
                 }
                 if (oldParentId != parentId)
@@ -311,7 +311,7 @@ public class ChannelUpdateHandler extends SocketHandler
                     stageChannel.setParentCategory(parentId);
                     getJDA().handleEvent(
                             new ChannelUpdateParentEvent(
-                                    getJDA(), responseNumber, getPassthrough(),
+                                    getJDA(), responseNumber,
                                     stageChannel, oldParent, stageChannel.getParentCategory()));
                 }
                 if (oldPosition != position)
@@ -319,7 +319,7 @@ public class ChannelUpdateHandler extends SocketHandler
                     stageChannel.setPosition(position);
                     getJDA().handleEvent(
                             new ChannelUpdatePositionEvent(
-                                    getJDA(), responseNumber, getPassthrough(),
+                                    getJDA(), responseNumber,
                                     stageChannel, oldPosition, position));
                 }
                 if (oldBitrate != bitrate)
@@ -327,7 +327,7 @@ public class ChannelUpdateHandler extends SocketHandler
                     stageChannel.setBitrate(bitrate);
                     getJDA().handleEvent(
                             new ChannelUpdateBitrateEvent(
-                                    getJDA(), responseNumber, getPassthrough(),
+                                    getJDA(), responseNumber,
                                     stageChannel, oldBitrate, bitrate));
                 }
 
@@ -345,16 +345,16 @@ public class ChannelUpdateHandler extends SocketHandler
                     category.setName(name);
                     getJDA().handleEvent(
                             new ChannelUpdateNameEvent(
-                                getJDA(), responseNumber, getPassthrough(),
-                                category, oldName, name));
+                                getJDA(), responseNumber,
+                                    category, oldName, name));
                 }
                 if (!Objects.equals(oldPosition, position))
                 {
                     category.setPosition(position);
                     getJDA().handleEvent(
                             new ChannelUpdatePositionEvent(
-                                getJDA(), responseNumber, getPassthrough(),
-                                category, oldPosition, position));
+                                getJDA(), responseNumber,
+                                    category, oldPosition, position));
                 }
 
                 break;
@@ -397,8 +397,8 @@ public class ChannelUpdateHandler extends SocketHandler
 
             getJDA().handleEvent(
                 new ChannelUpdateTypeEvent(
-                    getJDA(), responseNumber, getPassthrough(),
-                    textChannel, ChannelType.NEWS, ChannelType.TEXT));
+                    getJDA(), responseNumber,
+                        textChannel, ChannelType.NEWS, ChannelType.TEXT));
 
             return textChannel;
         }
@@ -417,8 +417,8 @@ public class ChannelUpdateHandler extends SocketHandler
 
             getJDA().handleEvent(
                 new ChannelUpdateTypeEvent(
-                    getJDA(), responseNumber, getPassthrough(),
-                    newsChannel, ChannelType.TEXT, ChannelType.NEWS));
+                    getJDA(), responseNumber,
+                        newsChannel, ChannelType.TEXT, ChannelType.NEWS));
 
             return newsChannel;
         }
@@ -444,8 +444,8 @@ public class ChannelUpdateHandler extends SocketHandler
             addPermissionHolder(changed, guild, override.getIdLong());
             api.handleEvent(
                 new PermissionOverrideDeleteEvent(
-                    api, responseNumber, getPassthrough(),
-                    channel, override));
+                    api, responseNumber,
+                        channel, override));
             return true;
         });
     }
@@ -494,8 +494,8 @@ public class ChannelUpdateHandler extends SocketHandler
                 channel.getPermissionOverrideMap().remove(overrideId);
                 api.handleEvent(
                     new PermissionOverrideDeleteEvent(
-                        api, responseNumber, getPassthrough(),
-                        channel, currentOverride));
+                        api, responseNumber,
+                            channel, currentOverride));
                 return true;
             }
 
@@ -503,8 +503,8 @@ public class ChannelUpdateHandler extends SocketHandler
             impl.setDeny(deny);
             api.handleEvent(
                 new PermissionOverrideUpdateEvent(
-                    api, responseNumber, getPassthrough(),
-                    channel, currentOverride, oldAllow, oldDeny));
+                    api, responseNumber,
+                        channel, currentOverride, oldAllow, oldDeny));
         }
         else // New override?
         {
@@ -518,8 +518,8 @@ public class ChannelUpdateHandler extends SocketHandler
             channel.getPermissionOverrideMap().put(overrideId, currentOverride);
             api.handleEvent(
                 new PermissionOverrideCreateEvent(
-                    api, responseNumber, getPassthrough(),
-                    channel, currentOverride));
+                    api, responseNumber,
+                        channel, currentOverride));
         }
 
         return true;
@@ -551,7 +551,7 @@ public class ChannelUpdateHandler extends SocketHandler
         //Fire these events outside the write locks
         for (ThreadChannel thread : threads)
         {
-            api.handleEvent(new ThreadHiddenEvent(api, responseNumber, getPassthrough(), thread));
+            api.handleEvent(new ThreadHiddenEvent(api, responseNumber, thread));
         }
     }
 }

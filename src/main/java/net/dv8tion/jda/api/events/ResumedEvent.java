@@ -29,6 +29,6 @@ public class ResumedEvent extends Event
 {
     public ResumedEvent(@Nonnull JDA api, long responseNumber)
     {
-        super(api, responseNumber, null);
+        super(api, responseNumber);
     }
 }

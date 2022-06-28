@@ -18,7 +18,6 @@ package net.dv8tion.jda.api.events.guild.update;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.ImageProxy;
 
 import javax.annotation.Nonnull;
@@ -35,9 +34,9 @@ public class GuildUpdateIconEvent extends GenericGuildUpdateEvent<String>
 {
     public static final String IDENTIFIER = "icon";
 
-    public GuildUpdateIconEvent(@Nonnull JDA api, long responseNumber, @Nullable DataObject rawData, @Nonnull Guild guild, @Nullable String oldIconId)
+    public GuildUpdateIconEvent(@Nonnull JDA api, long responseNumber, @Nonnull Guild guild, @Nullable String oldIconId)
     {
-        super(api, responseNumber, rawData, guild, oldIconId, guild.getIconId(), IDENTIFIER);
+        super(api, responseNumber, guild, oldIconId, guild.getIconId(), IDENTIFIER);
     }
 
     /**

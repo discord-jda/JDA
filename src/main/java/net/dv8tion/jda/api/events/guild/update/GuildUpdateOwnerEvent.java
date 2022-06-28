@@ -19,7 +19,6 @@ package net.dv8tion.jda.api.events.guild.update;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -36,10 +35,10 @@ public class GuildUpdateOwnerEvent extends GenericGuildUpdateEvent<Member>
     public static final String IDENTIFIER = "owner";
     private final long prevId, nextId;
 
-    public GuildUpdateOwnerEvent(@Nonnull JDA api, long responseNumber, @Nullable DataObject rawData, @Nonnull Guild guild, @Nullable Member oldOwner,
+    public GuildUpdateOwnerEvent(@Nonnull JDA api, long responseNumber, @Nonnull Guild guild, @Nullable Member oldOwner,
                                  long prevId, long nextId)
     {
-        super(api, responseNumber, rawData, guild, oldOwner, guild.getOwner(), IDENTIFIER);
+        super(api, responseNumber, guild, oldOwner, guild.getOwner(), IDENTIFIER);
         this.prevId = prevId;
         this.nextId = nextId;
     }

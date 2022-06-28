@@ -84,18 +84,18 @@ public class InteractionCreateHandler extends SocketHandler
                 break;
             case COMMAND_AUTOCOMPLETE:
                 api.handleEvent(
-                    new CommandAutoCompleteInteractionEvent(api, responseNumber, getPassthrough(),
-                        new CommandAutoCompleteInteractionImpl(api, content)));
+                    new CommandAutoCompleteInteractionEvent(api, responseNumber,
+                            new CommandAutoCompleteInteractionImpl(api, content)));
                 break;
             case MODAL_SUBMIT:
                 api.handleEvent(
-                    new ModalInteractionEvent(api, responseNumber, getPassthrough(),
-                        new ModalInteractionImpl(api, content)));
+                    new ModalInteractionEvent(api, responseNumber,
+                            new ModalInteractionImpl(api, content)));
                 break;
             default:
                 api.handleEvent(
-                    new GenericInteractionCreateEvent(api, responseNumber, getPassthrough(),
-                        new InteractionImpl(api, content)));
+                    new GenericInteractionCreateEvent(api, responseNumber,
+                            new InteractionImpl(api, content)));
         }
 
         return null;
@@ -107,18 +107,18 @@ public class InteractionCreateHandler extends SocketHandler
         {
         case SLASH:
             api.handleEvent(
-                new SlashCommandInteractionEvent(api, responseNumber, getPassthrough(),
-                    new SlashCommandInteractionImpl(api, content)));
+                new SlashCommandInteractionEvent(api, responseNumber,
+                        new SlashCommandInteractionImpl(api, content)));
             break;
         case MESSAGE:
             api.handleEvent(
-                new MessageContextInteractionEvent(api, responseNumber, getPassthrough(),
-                    new MessageContextInteractionImpl(api, content)));
+                new MessageContextInteractionEvent(api, responseNumber,
+                        new MessageContextInteractionImpl(api, content)));
             break;
         case USER:
             api.handleEvent(
-                new UserContextInteractionEvent(api, responseNumber, getPassthrough(),
-                    new UserContextInteractionImpl(api, content)));
+                new UserContextInteractionEvent(api, responseNumber,
+                        new UserContextInteractionImpl(api, content)));
             break;
         }
     }
@@ -129,13 +129,13 @@ public class InteractionCreateHandler extends SocketHandler
         {
         case BUTTON:
             api.handleEvent(
-                new ButtonInteractionEvent(api, responseNumber, getPassthrough(),
-                    new ButtonInteractionImpl(api, content)));
+                new ButtonInteractionEvent(api, responseNumber,
+                        new ButtonInteractionImpl(api, content)));
             break;
         case SELECT_MENU:
             api.handleEvent(
-                new SelectMenuInteractionEvent(api, responseNumber, getPassthrough(),
-                    new SelectMenuInteractionImpl(api, content)));
+                new SelectMenuInteractionEvent(api, responseNumber,
+                        new SelectMenuInteractionImpl(api, content)));
             break;
         }
     }

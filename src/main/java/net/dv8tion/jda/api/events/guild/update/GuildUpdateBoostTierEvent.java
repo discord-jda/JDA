@@ -18,10 +18,8 @@ package net.dv8tion.jda.api.events.guild.update;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 /**
  * Indicates that the {@link net.dv8tion.jda.api.entities.Guild#getBoostTier() boost tier} of a {@link net.dv8tion.jda.api.entities.Guild Guild} changed.
@@ -34,9 +32,9 @@ public class GuildUpdateBoostTierEvent extends GenericGuildUpdateEvent<Guild.Boo
 {
     public static final String IDENTIFIER = "boost_tier";
 
-    public GuildUpdateBoostTierEvent(@Nonnull JDA api, long responseNumber, @Nullable DataObject rawData, @Nonnull Guild guild, @Nonnull Guild.BoostTier previous)
+    public GuildUpdateBoostTierEvent(@Nonnull JDA api, long responseNumber, @Nonnull Guild guild, @Nonnull Guild.BoostTier previous)
     {
-        super(api, responseNumber, rawData, guild, previous, guild.getBoostTier(), IDENTIFIER);
+        super(api, responseNumber, guild, previous, guild.getBoostTier(), IDENTIFIER);
     }
 
     /**

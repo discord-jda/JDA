@@ -17,7 +17,6 @@
 package net.dv8tion.jda.api.events.self;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.ImageProxy;
 
 import javax.annotation.Nonnull;
@@ -35,9 +34,9 @@ public class SelfUpdateAvatarEvent extends GenericSelfUpdateEvent<String>
     public static final String IDENTIFIER = "avatar";
     private static final String AVATAR_URL = "https://cdn.discordapp.com/avatars/%s/%s%s";
 
-    public SelfUpdateAvatarEvent(@Nonnull JDA api, long responseNumber, @Nullable DataObject rawData, @Nullable String oldAvatarId)
+    public SelfUpdateAvatarEvent(@Nonnull JDA api, long responseNumber, @Nullable String oldAvatarId)
     {
-        super(api, responseNumber, rawData, oldAvatarId, api.getSelfUser().getAvatarId(), IDENTIFIER);
+        super(api, responseNumber, oldAvatarId, api.getSelfUser().getAvatarId(), IDENTIFIER);
     }
 
     /**

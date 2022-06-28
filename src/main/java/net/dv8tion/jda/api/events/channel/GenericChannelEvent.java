@@ -22,19 +22,17 @@ import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.events.Event;
-import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 //TODO-v5: Docs
 public class GenericChannelEvent extends Event
 {
     protected final Channel channel;
 
-    public GenericChannelEvent(@Nonnull JDA api, long responseNumber, @Nullable DataObject rawData, Channel channel)
+    public GenericChannelEvent(@Nonnull JDA api, long responseNumber, Channel channel)
     {
-        super(api, responseNumber, rawData);
+        super(api, responseNumber);
 
         this.channel = channel;
     }

@@ -18,10 +18,8 @@ package net.dv8tion.jda.api.events.role.update;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Role;
-import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 /**
  * Indicates that a {@link net.dv8tion.jda.api.entities.Role Role} updated its name.
@@ -34,9 +32,9 @@ public class RoleUpdateNameEvent extends GenericRoleUpdateEvent<String>
 {
     public static final String IDENTIFIER = "name";
 
-    public RoleUpdateNameEvent(@Nonnull JDA api, long responseNumber, @Nullable DataObject rawData, @Nonnull Role role, @Nonnull String oldName)
+    public RoleUpdateNameEvent(@Nonnull JDA api, long responseNumber, @Nonnull Role role, @Nonnull String oldName)
     {
-        super(api, responseNumber, rawData, role, oldName, role.getName(), IDENTIFIER);
+        super(api, responseNumber, role, oldName, role.getName(), IDENTIFIER);
     }
 
     /**

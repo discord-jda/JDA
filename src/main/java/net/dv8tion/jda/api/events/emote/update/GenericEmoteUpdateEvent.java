@@ -20,7 +20,6 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Emote;
 import net.dv8tion.jda.api.events.UpdateEvent;
 import net.dv8tion.jda.api.events.emote.GenericEmoteEvent;
-import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -42,10 +41,10 @@ public abstract class GenericEmoteUpdateEvent<T> extends GenericEmoteEvent imple
     protected final String identifier;
 
     public GenericEmoteUpdateEvent(
-            @Nonnull JDA api, long responseNumber, @Nullable DataObject rawData, @Nonnull Emote emote,
+            @Nonnull JDA api, long responseNumber, @Nonnull Emote emote,
             @Nullable T previous, @Nullable T next, @Nonnull String identifier)
     {
-        super(api, responseNumber, rawData, emote);
+        super(api, responseNumber, emote);
         this.previous = previous;
         this.next = next;
         this.identifier = identifier;

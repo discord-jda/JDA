@@ -24,7 +24,6 @@ import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.CommandAutoCompleteInteraction;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.requests.restaction.interactions.AutoCompleteCallbackAction;
-import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -46,9 +45,9 @@ public class CommandAutoCompleteInteractionEvent extends GenericAutoCompleteInte
 {
     private final CommandAutoCompleteInteraction interaction;
 
-    public CommandAutoCompleteInteractionEvent(@Nonnull JDA api, long responseNumber, @Nullable DataObject rawData, @Nonnull CommandAutoCompleteInteraction interaction)
+    public CommandAutoCompleteInteractionEvent(@Nonnull JDA api, long responseNumber, @Nonnull CommandAutoCompleteInteraction interaction)
     {
-        super(api, responseNumber, rawData, interaction);
+        super(api, responseNumber, interaction);
         this.interaction = interaction;
     }
 

@@ -18,10 +18,8 @@ package net.dv8tion.jda.api.events.message;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
 
@@ -43,9 +41,9 @@ public class MessageEmbedEvent extends GenericMessageEvent
 {
     private final List<MessageEmbed> embeds;
 
-    public MessageEmbedEvent(@Nonnull JDA api, long responseNumber, @Nullable DataObject rawData, long messageId, @Nonnull MessageChannel channel, @Nonnull List<MessageEmbed> embeds)
+    public MessageEmbedEvent(@Nonnull JDA api, long responseNumber, long messageId, @Nonnull MessageChannel channel, @Nonnull List<MessageEmbed> embeds)
     {
-        super(api, responseNumber, rawData, messageId, channel);
+        super(api, responseNumber, messageId, channel);
         this.embeds = Collections.unmodifiableList(embeds);
     }
 

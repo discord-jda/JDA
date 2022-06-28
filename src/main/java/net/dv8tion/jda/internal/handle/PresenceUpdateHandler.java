@@ -123,8 +123,8 @@ public class PresenceUpdateHandler extends SocketHandler
                 getJDA().getEntityBuilder().updateMemberCache(member);
                 getJDA().handleEvent(
                     new UserUpdateOnlineStatusEvent(
-                        getJDA(), responseNumber, getPassthrough(),
-                        member, oldStatus));
+                        getJDA(), responseNumber,
+                            member, oldStatus));
             }
         }
         return null;
@@ -166,7 +166,7 @@ public class PresenceUpdateHandler extends SocketHandler
             {
                 getJDA().handleEvent(
                     new UserUpdateActivityOrderEvent(
-                        getJDA(), responseNumber, getPassthrough(),
+                        getJDA(), responseNumber,
                             oldActivities, member));
             }
         }
@@ -185,7 +185,7 @@ public class PresenceUpdateHandler extends SocketHandler
             {
                 getJDA().handleEvent(
                     new UserActivityStartEvent(
-                        getJDA(), responseNumber, getPassthrough(),
+                        getJDA(), responseNumber,
                             member, activity));
             }
 
@@ -193,13 +193,13 @@ public class PresenceUpdateHandler extends SocketHandler
             {
                 getJDA().handleEvent(
                     new UserActivityEndEvent(
-                        getJDA(), responseNumber, getPassthrough(),
+                        getJDA(), responseNumber,
                             member, activity));
             }
 
             getJDA().handleEvent(
                 new UserUpdateActivitiesEvent(
-                    getJDA(), responseNumber, getPassthrough(),
+                    getJDA(), responseNumber,
                         member, oldActivities));
         }
     }

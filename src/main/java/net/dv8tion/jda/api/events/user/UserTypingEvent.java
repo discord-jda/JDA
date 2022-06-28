@@ -17,7 +17,6 @@ package net.dv8tion.jda.api.events.user;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
-import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -41,9 +40,9 @@ public class UserTypingEvent extends GenericUserEvent
     private final MessageChannel channel;
     private final OffsetDateTime timestamp;
 
-    public UserTypingEvent(@Nonnull JDA api, long responseNumber, @Nullable DataObject rawData, @Nonnull User user, @Nonnull MessageChannel channel, @Nonnull OffsetDateTime timestamp, @Nullable Member member)
+    public UserTypingEvent(@Nonnull JDA api, long responseNumber, @Nonnull User user, @Nonnull MessageChannel channel, @Nonnull OffsetDateTime timestamp, @Nullable Member member)
     {
-        super(api, responseNumber, rawData, user);
+        super(api, responseNumber, user);
         this.member = member;
         this.channel = channel;
         this.timestamp = timestamp;

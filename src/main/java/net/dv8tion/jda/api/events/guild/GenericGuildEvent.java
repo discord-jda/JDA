@@ -18,10 +18,8 @@ package net.dv8tion.jda.api.events.guild;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.Event;
-import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 /**
  * Indicates that a {@link net.dv8tion.jda.api.entities.Guild Guild} event is fired.
@@ -33,9 +31,9 @@ public abstract class GenericGuildEvent extends Event
 {
     protected final Guild guild;
 
-    public GenericGuildEvent(@Nonnull JDA api, long responseNumber, @Nullable DataObject rawData, @Nonnull Guild guild)
+    public GenericGuildEvent(@Nonnull JDA api, long responseNumber, @Nonnull Guild guild)
     {
-        super(api, responseNumber, rawData);
+        super(api, responseNumber);
         this.guild = guild;
     }
 

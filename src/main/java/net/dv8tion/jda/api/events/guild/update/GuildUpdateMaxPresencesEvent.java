@@ -18,10 +18,8 @@ package net.dv8tion.jda.api.events.guild.update;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 /**
  * Indicates that the {@link net.dv8tion.jda.api.entities.Guild#getMaxPresences() maximum presences limit} of a {@link net.dv8tion.jda.api.entities.Guild Guild} changed.
@@ -34,9 +32,9 @@ public class GuildUpdateMaxPresencesEvent extends GenericGuildUpdateEvent<Intege
 {
     public static final String IDENTIFIER = "max_presences";
 
-    public GuildUpdateMaxPresencesEvent(@Nonnull JDA api, long responseNumber, @Nullable DataObject rawData, @Nonnull Guild guild, int previous)
+    public GuildUpdateMaxPresencesEvent(@Nonnull JDA api, long responseNumber, @Nonnull Guild guild, int previous)
     {
-        super(api, responseNumber, rawData, guild, previous, guild.getMaxPresences(), IDENTIFIER);
+        super(api, responseNumber, guild, previous, guild.getMaxPresences(), IDENTIFIER);
     }
 
     /**
