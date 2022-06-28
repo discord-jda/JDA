@@ -101,9 +101,8 @@ public class ThreadMembersUpdateHandler extends SocketHandler
         }
 
         //Emit the events from outside the writeLock
-        for (int i = 0; i < addedThreadMembers.size(); i++)
+        for (ThreadMember threadMember : addedThreadMembers)
         {
-            ThreadMember threadMember = addedThreadMembers.get(i);
             api.handleEvent(
                     new ThreadMemberJoinEvent(
                             api, responseNumber,
@@ -130,7 +129,7 @@ public class ThreadMembersUpdateHandler extends SocketHandler
         for (long threadMemberId : removedMemberIds)
         {
             api.handleEvent(
-                new ThreadMemberLeaveEvent( //Well we're not going to pass through a single ID right ?
+                new ThreadMemberLeaveEvent(
                     api, responseNumber,
                         thread, threadMemberId, removedThreadMembers.remove(threadMemberId)));
         }
