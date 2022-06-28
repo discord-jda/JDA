@@ -16,9 +16,9 @@
 
 package net.dv8tion.jda.api.interactions.commands.build;
 
-import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFunction;
 import net.dv8tion.jda.api.interactions.commands.localization.LocalizationMap;
 import net.dv8tion.jda.api.utils.data.DataObject;
@@ -29,6 +29,7 @@ import net.dv8tion.jda.internal.utils.localization.LocalizationUtils;
 
 import javax.annotation.Nonnull;
 import java.util.Collection;
+import java.util.Map;
 
 /**
  * Builder for Application Commands.
@@ -243,7 +244,7 @@ public interface CommandData extends SerializableData
         Command.Type commandType = Command.Type.fromId(object.getInt("type", 1));
         if (commandType != Command.Type.SLASH)
         {
-            CommandData data = new CommandDataImpl(commandType, name);
+            CommandDataImpl data = new CommandDataImpl(commandType, name);
             if (!object.isNull("default_member_permissions"))
             {
                 long defaultPermissions = object.getLong("default_member_permissions");
