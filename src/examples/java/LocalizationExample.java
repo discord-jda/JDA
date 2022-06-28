@@ -29,28 +29,29 @@ public class LocalizationExample
                 .build();
 
         //Your normal ban command, no need to do anything special here, except at the last line
-        final SlashCommandData slashCommandData = Commands.slash("ban", "Bans someone").addSubcommandGroups(
-                new SubcommandGroupData("member", "Bans a member").addSubcommands(
-                        new SubcommandData("perm", "Bans a member permanently").addOptions(
-                                new OptionData(OptionType.STRING, "user", "The user to ban"),
-                                new OptionData(OptionType.INTEGER, "del_days", "The amount of days to delete messages")
-                                        .addChoices(
-                                                new Command.Choice("1 Day", "1"),
-                                                new Command.Choice("7 Days", "7"),
-                                                new Command.Choice("14 Days", "14")
-                                        )
-                        ),
-                        new SubcommandData("temp", "Bans a member temporarily").addOptions(
-                                new OptionData(OptionType.STRING, "user", "The user to ban"),
-                                new OptionData(OptionType.INTEGER, "del_days", "The amount of days to delete messages")
-                                        .addChoices(
-                                                new Command.Choice("1 Day", "1"),
-                                                new Command.Choice("7 Days", "7"),
-                                                new Command.Choice("14 Days", "14")
-                                        )
+        final SlashCommandData slashCommandData = Commands.slash("ban", "Bans someone")
+                .setLocalizationFunction(localizationFunction) //Sets the localization function to use
+                .addSubcommandGroups(new SubcommandGroupData("member", "Bans a member").addSubcommands(
+                                new SubcommandData("perm", "Bans a member permanently").addOptions(
+                                        new OptionData(OptionType.STRING, "user", "The user to ban"),
+                                        new OptionData(OptionType.INTEGER, "del_days", "The amount of days to delete messages")
+                                                .addChoices(
+                                                        new Command.Choice("1 Day", "1"),
+                                                        new Command.Choice("7 Days", "7"),
+                                                        new Command.Choice("14 Days", "14")
+                                                )
+                                ),
+                                new SubcommandData("temp", "Bans a member temporarily").addOptions(
+                                        new OptionData(OptionType.STRING, "user", "The user to ban"),
+                                        new OptionData(OptionType.INTEGER, "del_days", "The amount of days to delete messages")
+                                                .addChoices(
+                                                        new Command.Choice("1 Day", "1"),
+                                                        new Command.Choice("7 Days", "7"),
+                                                        new Command.Choice("14 Days", "14")
+                                                )
+                                )
                         )
-                )
-        ).setLocalizationFunction(localizationFunction); //Sets the localization function to use
+                );
 
         //Manual approach to localizing commands
         final CommandData messageCommand = Commands.message("Show raw content")
