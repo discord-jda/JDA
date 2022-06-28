@@ -63,6 +63,7 @@ public interface CommandCreateAction extends RestAction<Command>, SlashCommandDa
 
     @Nonnull
     @Override
+    @CheckReturnValue
     CommandCreateAction setLocalizationFunction(@Nonnull LocalizationFunction localizationFunction);
 
     @Nonnull
@@ -77,6 +78,7 @@ public interface CommandCreateAction extends RestAction<Command>, SlashCommandDa
 
     @Nonnull
     @Override
+    @CheckReturnValue
     CommandCreateAction setNameLocalizations(@Nonnull Map<DiscordLocale, String> map);
 
     @Nonnull
@@ -91,6 +93,7 @@ public interface CommandCreateAction extends RestAction<Command>, SlashCommandDa
 
     @Nonnull
     @Override
+    @CheckReturnValue
     CommandCreateAction setDescriptionLocalizations(@Nonnull Map<DiscordLocale, String> map);
 
     @Nonnull
