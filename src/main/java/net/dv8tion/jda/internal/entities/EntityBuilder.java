@@ -591,7 +591,7 @@ public class EntityBuilder
         long responseNumber = getJDA().getResponseTotal();
         if (newRoles != null)
         {
-            updateMemberRoles(member, newRoles, content, responseNumber);
+            updateMemberRoles(member, newRoles, responseNumber);
         }
 
         if (content.hasKey("nick"))
@@ -677,7 +677,7 @@ public class EntityBuilder
         updateUser((UserImpl) member.getUser(), content.getObject("user"));
     }
 
-    private void updateMemberRoles(MemberImpl member, List<Role> newRoles, DataObject content, long responseNumber)
+    private void updateMemberRoles(MemberImpl member, List<Role> newRoles, long responseNumber)
     {
         Set<Role> currentRoles = member.getRoleSet();
         //Find the roles removed.
