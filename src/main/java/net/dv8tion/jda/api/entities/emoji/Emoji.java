@@ -177,6 +177,11 @@ public interface Emoji extends SerializableData, Formattable
             return (EmojiUnion) fromCustom(emoji.getString("name"), emoji.getUnsignedLong("id"), emoji.getBoolean("animated"));
     }
 
+    /**
+     * Converts this to a {@link EmojiUnion}, mostly used for internal conversion.
+     *
+     * @return {@link EmojiUnion}
+     */
     @Nonnull
     EmojiUnion toUnion();
 
