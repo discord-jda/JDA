@@ -19,7 +19,10 @@ package net.dv8tion.jda.internal.entities.emoji;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.emoji.CustomEmoji;
+import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
+import net.dv8tion.jda.api.entities.emoji.UnicodeEmoji;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.CustomEmojiManager;
@@ -42,7 +45,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class RichCustomEmojiImpl implements RichCustomEmoji
+public class RichCustomEmojiImpl implements RichCustomEmoji, EmojiUnion
 {
     private final long id;
     private final JDAImpl api;
@@ -258,5 +261,19 @@ public class RichCustomEmojiImpl implements RichCustomEmoji
         RichCustomEmojiImpl copy = new RichCustomEmojiImpl(id, getGuild()).setOwner(owner).setManaged(managed).setAnimated(animated).setName(name);
         copy.roles.addAll(roles);
         return copy;
+    }
+
+    @Nonnull
+    @Override
+    public UnicodeEmoji asUnicode()
+    {
+        throw new IllegalStateException("Cannot convert CustomEmoji to UnicodeEmoji!");
+    }
+
+    @Nonnull
+    @Override
+    public CustomEmoji asCustom()
+    {
+        return this;
     }
 }

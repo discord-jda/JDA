@@ -465,7 +465,7 @@ public interface SelectMenu extends ActionComponent
         @Nonnull
         public Builder addOption(@Nonnull String label, @Nonnull String value, @Nullable String description, @Nullable Emoji emoji)
         {
-            return addOptions(new SelectOption(label, value, description, false, emoji));
+            return addOptions(new SelectOption(label, value, description, false, emoji != null ? emoji.toUnion() : null));
         }
 
         /**

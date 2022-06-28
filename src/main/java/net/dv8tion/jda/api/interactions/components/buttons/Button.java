@@ -17,6 +17,7 @@
 package net.dv8tion.jda.api.interactions.components.buttons;
 
 import net.dv8tion.jda.api.entities.emoji.Emoji;
+import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.interactions.components.ActionComponent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
@@ -121,7 +122,7 @@ public interface Button extends ActionComponent
      * @return {@link Emoji} for this button
      */
     @Nullable
-    Emoji getEmoji();
+    EmojiUnion getEmoji();
 
     @Nonnull
     @CheckReturnValue
@@ -156,7 +157,7 @@ public interface Button extends ActionComponent
     @CheckReturnValue
     default Button withEmoji(@Nullable Emoji emoji)
     {
-        return new ButtonImpl(getId(), getLabel(), getStyle(), getUrl(), isDisabled(), emoji);
+        return new ButtonImpl(getId(), getLabel(), getStyle(), getUrl(), isDisabled(), emoji != null ? emoji.toUnion() : null);
     }
 
     /**
@@ -318,7 +319,7 @@ public interface Button extends ActionComponent
         Checks.notEmpty(id, "Id");
         Checks.notNull(emoji, "Emoji");
         Checks.notLonger(id, ID_MAX_LENGTH, "Id");
-        return new ButtonImpl(id, "", ButtonStyle.PRIMARY, false, emoji);
+        return new ButtonImpl(id, "", ButtonStyle.PRIMARY, false, emoji.toUnion());
     }
 
     /**
@@ -379,7 +380,7 @@ public interface Button extends ActionComponent
         Checks.notEmpty(id, "Id");
         Checks.notNull(emoji, "Emoji");
         Checks.notLonger(id, ID_MAX_LENGTH, "Id");
-        return new ButtonImpl(id, "", ButtonStyle.SECONDARY, false, emoji);
+        return new ButtonImpl(id, "", ButtonStyle.SECONDARY, false, emoji.toUnion());
     }
 
     /**
@@ -440,7 +441,7 @@ public interface Button extends ActionComponent
         Checks.notEmpty(id, "Id");
         Checks.notNull(emoji, "Emoji");
         Checks.notLonger(id, ID_MAX_LENGTH, "Id");
-        return new ButtonImpl(id, "", ButtonStyle.SUCCESS, false, emoji);
+        return new ButtonImpl(id, "", ButtonStyle.SUCCESS, false, emoji.toUnion());
     }
 
     /**
@@ -501,7 +502,7 @@ public interface Button extends ActionComponent
         Checks.notEmpty(id, "Id");
         Checks.notNull(emoji, "Emoji");
         Checks.notLonger(id, ID_MAX_LENGTH, "Id");
-        return new ButtonImpl(id, "", ButtonStyle.DANGER, false, emoji);
+        return new ButtonImpl(id, "", ButtonStyle.DANGER, false, emoji.toUnion());
     }
 
     /**
@@ -568,7 +569,7 @@ public interface Button extends ActionComponent
         Checks.notEmpty(url, "URL");
         Checks.notNull(emoji, "Emoji");
         Checks.notLonger(url, URL_MAX_LENGTH, "URL");
-        return new ButtonImpl(null, "", ButtonStyle.LINK, url, false, emoji);
+        return new ButtonImpl(null, "", ButtonStyle.LINK, url, false, emoji.toUnion());
     }
 
     /**
@@ -643,7 +644,7 @@ public interface Button extends ActionComponent
             return link(idOrUrl, emoji);
         Checks.notEmpty(idOrUrl, "Id");
         Checks.notLonger(idOrUrl, ID_MAX_LENGTH, "Id");
-        return new ButtonImpl(idOrUrl, "", style, false, emoji);
+        return new ButtonImpl(idOrUrl, "", style, false, emoji.toUnion());
     }
 
     /**

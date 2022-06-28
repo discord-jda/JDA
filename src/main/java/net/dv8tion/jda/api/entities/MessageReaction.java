@@ -19,6 +19,7 @@ package net.dv8tion.jda.api.entities;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
+import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.exceptions.PermissionException;
 import net.dv8tion.jda.api.requests.RestAction;
@@ -45,7 +46,7 @@ import java.util.Objects;
 public class MessageReaction
 {
     private final MessageChannel channel;
-    private final Emoji emoji;
+    private final EmojiUnion emoji;
     private final long messageId;
     private final boolean self;
     private final int count;
@@ -64,7 +65,7 @@ public class MessageReaction
      * @param  count
      *         The amount of people that reacted with this Reaction
      */
-    public MessageReaction(@Nonnull MessageChannel channel, @Nonnull Emoji emoji, long messageId, boolean self, int count)
+    public MessageReaction(@Nonnull MessageChannel channel, @Nonnull EmojiUnion emoji, long messageId, boolean self, int count)
     {
         this.channel = channel;
         this.emoji = emoji;
@@ -225,7 +226,7 @@ public class MessageReaction
      * @return The final instance of this Reaction's Emoji
      */
     @Nonnull
-    public Emoji getEmoji()
+    public EmojiUnion getEmoji()
     {
         return emoji;
     }

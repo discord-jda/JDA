@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.GuildMessageChannel;
 import net.dv8tion.jda.api.entities.MessageReaction;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
+import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
 import net.dv8tion.jda.api.events.message.react.MessageReactionRemoveEmojiEvent;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
@@ -68,7 +69,7 @@ public class MessageReactionClearEmojiHandler extends SocketHandler
         DataObject emoji = content.getObject("emoji");
         if (emoji.isNull("name"))
             emoji.put("name", "");
-        Emoji reactionEmoji = Emoji.fromData(emoji);
+        EmojiUnion reactionEmoji = Emoji.fromData(emoji);
 
         MessageReaction reaction = new MessageReaction(channel, reactionEmoji, messageId, false, 0);
 

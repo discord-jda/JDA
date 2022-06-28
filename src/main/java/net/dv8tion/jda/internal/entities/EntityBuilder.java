@@ -30,6 +30,7 @@ import net.dv8tion.jda.api.entities.Guild.Timeout;
 import net.dv8tion.jda.api.entities.Guild.VerificationLevel;
 import net.dv8tion.jda.api.entities.MessageEmbed.*;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
+import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import net.dv8tion.jda.api.entities.sticker.*;
 import net.dv8tion.jda.api.entities.templates.Template;
@@ -72,7 +73,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAccessor;
 import java.util.*;
 import java.util.function.Function;
-import java.util.function.ToLongFunction;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -831,7 +831,7 @@ public class EntityBuilder
             timestamps = new RichPresence.Timestamps(start, end);
         }
 
-        Emoji emoji = null;
+        EmojiUnion emoji = null;
         if (!gameJson.isNull("emoji"))
             emoji = Emoji.fromData(gameJson.getObject("emoji"));
 
@@ -1593,7 +1593,7 @@ public class EntityBuilder
         DataObject emoji = obj.getObject("emoji");
         final int count = obj.getInt("count", -1);
         final boolean me = obj.getBoolean("me");
-        Emoji emojiObj = Emoji.fromData(emoji);
+        EmojiUnion emojiObj = Emoji.fromData(emoji);
 
         return new MessageReaction(chan, emojiObj, id, me, count);
     }

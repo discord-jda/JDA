@@ -16,7 +16,9 @@
 
 package net.dv8tion.jda.api.interactions.components.selections;
 
+import net.dv8tion.jda.api.entities.emoji.CustomEmoji;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
+import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -48,7 +50,7 @@ public class SelectOption implements SerializableData
     private final String label, value;
     private final String description;
     private final boolean isDefault;
-    private final Emoji emoji;
+    private final EmojiUnion emoji;
 
     /**
      * Creates a new SelectOption instance
@@ -85,7 +87,7 @@ public class SelectOption implements SerializableData
      * @throws IllegalArgumentException
      *         If the an invalid null is provided, or any of the individual parameter requirements are violated.
      */
-    protected SelectOption(@Nonnull String label, @Nonnull String value, @Nullable String description, boolean isDefault, @Nullable Emoji emoji)
+    protected SelectOption(@Nonnull String label, @Nonnull String value, @Nullable String description, boolean isDefault, @Nullable EmojiUnion emoji)
     {
         Checks.notEmpty(label, "Label");
         Checks.notEmpty(value, "Value");
@@ -208,7 +210,12 @@ public class SelectOption implements SerializableData
     @CheckReturnValue
     public SelectOption withEmoji(@Nullable Emoji emoji)
     {
-        return new SelectOption(label, value, description, isDefault, emoji);
+        EmojiUnion union = null;
+        if (emoji instanceof EmojiUnion)
+            union = (EmojiUnion) emoji;
+        else if (emoji != null)
+            union = (EmojiUnion) Emoji.fromCustom((CustomEmoji) emoji);
+        return new SelectOption(label, value, description, isDefault, union);
     }
 
     /**
@@ -260,7 +267,7 @@ public class SelectOption implements SerializableData
      * @return The attached emoji
      */
     @Nullable
-    public Emoji getEmoji()
+    public EmojiUnion getEmoji()
     {
         return emoji;
     }
