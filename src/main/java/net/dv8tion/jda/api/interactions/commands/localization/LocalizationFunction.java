@@ -87,6 +87,7 @@ import java.util.Map;
  * You can look at a complete localization example <a href="https://github.com/DV8FromTheWorld/JDA/blob/master/src/examples/java/LocalizationExample.java" target="_blank">here</a>
  *
  * @see ResourceBundleLocalizationFunction
+ * @see net.dv8tion.jda.api.interactions.commands.build.CommandData#setLocalizationFunction(LocalizationFunction)
  */
 public interface LocalizationFunction
 {
