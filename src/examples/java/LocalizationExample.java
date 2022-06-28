@@ -8,16 +8,13 @@ import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFuncti
 import net.dv8tion.jda.api.interactions.commands.localization.ResourceBundleLocalizationFunction;
 
 import javax.security.auth.login.LoginException;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 
 public class LocalizationExample
 {
-    public static void main(String[] args) throws LoginException, IOException
+    public static void main(String[] args) throws LoginException
     {
         //The token is stored in "Config.txt" in the root folder of this project
-        final String token = Files.readAllLines(Paths.get("Config.txt")).get(0);
+        final String token = "BOT_TOKEN_HERE";
 
         //Pretty standard JDA instance creation
         final JDA jda = JDABuilder.createLight(token).build();
