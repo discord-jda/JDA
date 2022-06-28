@@ -41,7 +41,7 @@ public abstract class SocketHandler
         if (guildId != null)
             getJDA().getGuildSetupController().cacheEvent(guildId, o);
         this.allContent = null;
-        if (getJDA().isEventPassthrough())CURRENT_EVENT.set(null);
+        if (getJDA().isEventPassthrough()) CURRENT_EVENT.set(null);
     }
 
     protected JDAImpl getJDA()
