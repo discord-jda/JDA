@@ -327,7 +327,15 @@ public interface Command extends ISnowflake
      */
     class Choice
     {
+        /**
+         * The maximum length the name of a choice can be.
+         */
         public static final int MAX_NAME_LENGTH = 100;
+
+        /**
+         * The maximum length the value of a choice can be.
+         */
+        public static final int MAX_VALUE_LENGTH = 100;
 
         private String name;
         private final LocalizationMap nameLocalizations = new LocalizationMap(this::checkName);
@@ -343,6 +351,10 @@ public interface Command extends ISnowflake
          *        The display name of this choice, must be less than 100 characters
          * @param value
          *        The integer value you receive in a command option
+         *
+         * @throws IllegalArgumentException
+         *         If the name is null, empty, or not between 1-{@value #MAX_NAME_LENGTH} characters long,
+         *         as defined by {@link #MAX_NAME_LENGTH}
          */
         public Choice(@Nonnull String name, long value)
         {
@@ -357,6 +369,10 @@ public interface Command extends ISnowflake
          *        The display name of this choice, must be less than 100 characters
          * @param value
          *        The double value you receive in a command option
+         *
+         * @throws IllegalArgumentException
+         *         If the name is null, empty, or not between 1-{@value #MAX_NAME_LENGTH} characters long,
+         *         as defined by {@link #MAX_NAME_LENGTH}
          */
         public Choice(@Nonnull String name, double value)
         {
@@ -371,6 +387,15 @@ public interface Command extends ISnowflake
          *        The display name of this choice, must be less than 100 characters
          * @param value
          *        The string value you receive in a command option
+         *
+         * @throws IllegalArgumentException
+         *         <ul>
+         *             <li>If the name is null, empty, or not between 1-{@value #MAX_NAME_LENGTH} characters long,
+         *                 as defined by {@link #MAX_NAME_LENGTH}</li>
+         *             <li>If the value is null or longer than {@value #MAX_VALUE_LENGTH} characters long,
+         *                 as defined by {@link #MAX_VALUE_LENGTH}</li>
+         *         </ul>
+         *
          */
         public Choice(@Nonnull String name, @Nonnull String value)
         {
@@ -580,7 +605,7 @@ public interface Command extends ISnowflake
 
         private void setStringValue(@Nonnull String value)
         {
-            Checks.notLonger(value, 100, "Choice value");
+            Checks.notLonger(value, MAX_VALUE_LENGTH, "Choice value");
             this.doubleValue = Double.NaN;
             this.intValue = 0;
             this.stringValue = value;
