@@ -45,7 +45,7 @@ public class SlashBotExample extends ListenerAdapter
                 .addEventListeners(new SlashBotExample())
                 .build();
 
-        // These commands take up to an hour to be activated after creation/update/delete
+        // These commands might take a few minutes to be active after creation/update/delete
         CommandListUpdateAction commands = jda.updateCommands();
 
         // Moderation commands with required options

@@ -49,7 +49,6 @@ public interface Command extends ISnowflake
 {
     /**
      * Delete this command.
-     * <br>If this is a global command it may take up to 1 hour to vanish from all clients.
      *
      * @throws IllegalStateException
      *         If this command is not owned by this bot

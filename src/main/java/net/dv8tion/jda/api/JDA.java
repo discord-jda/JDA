@@ -549,9 +549,6 @@ public interface JDA extends IGuildChannelContainer
      *
      * <p>You need the OAuth2 scope {@code "applications.commands"} in order to add commands to a guild.
      *
-     * <p><b>Global commands can take up to <u>1 hour</u> to propagate to the clients.</b>
-     * For testing, it is recommended to use a test guild with guild commands.
-     *
      * @param  command
      *         The {@link CommandData} for the command
      *
@@ -579,9 +576,6 @@ public interface JDA extends IGuildChannelContainer
      * <p>To specify a complete list of all commands you can use {@link #updateCommands()} instead.
      *
      * <p>You need the OAuth2 scope {@code "applications.commands"} in order to add commands to a guild.
-     *
-     * <p><b>Global commands can take up to <u>1 hour</u> to propagate to the clients.</b>
-     * For testing, it is recommended to use a test guild with guild commands.
      *
      * @param  name
      *         The lowercase alphanumeric (with dash) name, 1-32 characters
@@ -611,18 +605,21 @@ public interface JDA extends IGuildChannelContainer
      *
      * <p>You need the OAuth2 scope {@code "applications.commands"} in order to add commands to a guild.
      *
-     * <p><b>Global commands can take up to <u>1 hour</u> to propagate to the clients.</b>
-     * For testing, it is recommended to use a test guild with guild commands.
+     * <p><b>Examples</b>
      *
-     * <h4>Examples</h4>
+     * <p>Set list to 2 commands:
      * <pre>{@code
-     * // Set list to 2 commands
      * jda.updateCommands()
      *   .addCommands(Commands.slash("ping", "Gives the current ping"))
      *   .addCommands(Commands.slash("ban", "Ban the target user")
+     *     .setGuildOnly(true)
+     *     .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.BAN_MEMBERS))
      *     .addOption(OptionType.USER, "user", "The user to ban", true))
      *   .queue();
-     * // Delete all commands
+     * }</pre>
+     *
+     * <p>Delete all commands:
+     * <pre>{@code
      * jda.updateCommands().queue();
      * }</pre>
      *
@@ -639,9 +636,6 @@ public interface JDA extends IGuildChannelContainer
      *
      * <p>If there is no command with the provided ID,
      * this RestAction fails with {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_COMMAND ErrorResponse.UNKNOWN_COMMAND}
-     *
-     * <p><b>Global commands can take up to <u>1 hour</u> to propagate to the clients.</b>
-     * For testing, it is recommended to use a test guild with guild commands.
      *
      * @param  id
      *         The id of the command to edit
@@ -661,9 +655,6 @@ public interface JDA extends IGuildChannelContainer
      * <p>If there is no command with the provided ID,
      * this RestAction fails with {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_COMMAND ErrorResponse.UNKNOWN_COMMAND}
      *
-     * <p><b>Global commands can take up to <u>1 hour</u> to propagate to the clients.</b>
-     * For testing, it is recommended to use a test guild with guild commands.
-     *
      * @param  id
      *         The id of the command to edit
      *
@@ -682,9 +673,6 @@ public interface JDA extends IGuildChannelContainer
      * <p>If there is no command with the provided ID,
      * this RestAction fails with {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_COMMAND ErrorResponse.UNKNOWN_COMMAND}
      *
-     * <p><b>Global commands can take up to <u>1 hour</u> to propagate to the clients.</b>
-     * For testing, it is recommended to use a test guild with guild commands.
-     *
      * @param  commandId
      *         The id of the command that should be deleted
      *
@@ -702,9 +690,6 @@ public interface JDA extends IGuildChannelContainer
      *
      * <p>If there is no command with the provided ID,
      * this RestAction fails with {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_COMMAND ErrorResponse.UNKNOWN_COMMAND}
-     *
-     * <p><b>Global commands can take up to <u>1 hour</u> to propagate to the clients.</b>
-     * For testing, it is recommended to use a test guild with guild commands.
      *
      * @param  commandId
      *         The id of the command that should be deleted
