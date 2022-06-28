@@ -19,6 +19,10 @@ package net.dv8tion.jda.internal.entities;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.emoji.CustomEmoji;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
+import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
+import net.dv8tion.jda.api.entities.sticker.StickerItem;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.exceptions.MissingAccessException;
 import net.dv8tion.jda.api.exceptions.PermissionException;
@@ -65,7 +69,7 @@ public class ReceivedMessage extends AbstractMessage
     protected final List<MessageReaction> reactions;
     protected final List<Attachment> attachments;
     protected final List<MessageEmbed> embeds;
-    protected final List<MessageSticker> stickers;
+    protected final List<StickerItem> stickers;
     protected final List<ActionRow> components;
     protected final int flags;
     protected final Message.Interaction interaction;
@@ -81,9 +85,11 @@ public class ReceivedMessage extends AbstractMessage
 
     public ReceivedMessage(
             long id, MessageChannel channel, MessageType type, MessageReference messageReference,
-            boolean fromWebhook, boolean tts, boolean pinned, String content, String nonce, User author,
-            Member member, MessageActivity activity, OffsetDateTime editTime, Mentions mentions, List<MessageReaction> reactions,
-            List<Attachment> attachments, List<MessageEmbed> embeds, List<MessageSticker> stickers, List<ActionRow> components, int flags, Message.Interaction interaction, ThreadChannel startedThread)
+            boolean fromWebhook, boolean  tts, boolean pinned,
+            String content, String nonce, User author, Member member, MessageActivity activity, OffsetDateTime editTime,
+            Mentions mentions, List<MessageReaction> reactions, List<Attachment> attachments, List<MessageEmbed> embeds,
+            List<StickerItem> stickers, List<ActionRow> components,
+            int flags, Message.Interaction interaction, ThreadChannel startedThread)
     {
         super(content, nonce, tts);
         this.id = id;
@@ -156,34 +162,23 @@ public class ReceivedMessage extends AbstractMessage
 
     @Nonnull
     @Override
-    public RestAction<Void> addReaction(@Nonnull Emote emote)
+    public RestAction<Void> addReaction(@Nonnull Emoji emoji)
     {
         if (isEphemeral())
             throw new IllegalStateException("Cannot add reactions to ephemeral messages.");
         
-        Checks.notNull(emote, "Emote");
+        Checks.notNull(emoji, "Emoji");
 
         boolean missingReaction = reactions.stream()
-                   .map(MessageReaction::getReactionEmote)
-                   .filter(MessageReaction.ReactionEmote::isEmote)
-                   .noneMatch(r -> r.getIdLong() == emote.getIdLong());
+                   .map(MessageReaction::getEmoji)
+                   .noneMatch(r -> r.getAsReactionCode().equals(emoji.getAsReactionCode()));
 
-        if (missingReaction)
+        if (missingReaction && emoji instanceof RichCustomEmoji)
         {
-            Checks.check(emote.canInteract(getJDA().getSelfUser(), channel),
-                         "Cannot react with the provided emote because it is not available in the current channel.");
+            Checks.check(((RichCustomEmoji) emoji).canInteract(getJDA().getSelfUser(), channel),
+                         "Cannot react with the provided emoji because it is not available in the current channel.");
         }
-        return channel.addReactionById(getId(), emote);
-    }
-
-    @Nonnull
-    @Override
-    public RestAction<Void> addReaction(@Nonnull String unicode)
-    {
-        if (isEphemeral())
-            throw new IllegalStateException("Cannot add reactions to ephemeral messages.");
-        
-        return channel.addReactionById(getId(), unicode);
+        return channel.addReactionById(getId(), emoji);
     }
 
     @Nonnull
@@ -199,39 +194,28 @@ public class ReceivedMessage extends AbstractMessage
 
     @Nonnull
     @Override
-    public RestAction<Void> clearReactions(@Nonnull String unicode)
+    public RestAction<Void> clearReactions(@Nonnull Emoji emoji)
     {
         if (isEphemeral())
             throw new IllegalStateException("Cannot clear reactions from ephemeral messages.");
         if (!isFromGuild())
             throw new IllegalStateException("Cannot clear reactions from a message in a Group or PrivateChannel.");
-        return getGuildChannel().clearReactionsById(getId(), unicode);
+        return getGuildChannel().clearReactionsById(getId(), emoji);
     }
 
     @Nonnull
     @Override
-    public RestAction<Void> clearReactions(@Nonnull Emote emote)
-    {
-        if (isEphemeral())
-            throw new IllegalStateException("Cannot clear reactions from ephemeral messages.");
-        if (!isFromGuild())
-            throw new IllegalStateException("Cannot clear reactions from a message in a Group or PrivateChannel.");
-        return getGuildChannel().clearReactionsById(getId(), emote);
-    }
-
-    @Nonnull
-    @Override
-    public RestAction<Void> removeReaction(@Nonnull Emote emote)
+    public RestAction<Void> removeReaction(@Nonnull Emoji emoji)
     {
         if (isEphemeral())
             throw new IllegalStateException("Cannot remove reactions from ephemeral messages.");
         
-        return channel.removeReactionById(getId(), emote);
+        return channel.removeReactionById(getId(), emoji);
     }
 
     @Nonnull
     @Override
-    public RestAction<Void> removeReaction(@Nonnull Emote emote, @Nonnull User user)
+    public RestAction<Void> removeReaction(@Nonnull Emoji emoji, @Nonnull User user)
     {
         Checks.notNull(user, "User");  // to prevent NPEs
         if (isEphemeral())
@@ -239,75 +223,32 @@ public class ReceivedMessage extends AbstractMessage
         // check if the passed user is the SelfUser, then the ChannelType doesn't matter and
         // we can safely remove that
         if (user.equals(getJDA().getSelfUser()))
-            return channel.removeReactionById(getIdLong(), emote);
+            return channel.removeReactionById(getIdLong(), emoji);
 
         if (!isFromGuild())
             throw new IllegalStateException("Cannot remove reactions of others from a message in a Group or PrivateChannel.");
-        return getGuildChannel().removeReactionById(getIdLong(), emote, user);
+        return getGuildChannel().removeReactionById(getIdLong(), emoji, user);
     }
 
     @Nonnull
     @Override
-    public RestAction<Void> removeReaction(@Nonnull String unicode)
-    {
-        if (isEphemeral())
-            throw new IllegalStateException("Cannot remove reactions from ephemeral messages.");
-        
-        return channel.removeReactionById(getId(), unicode);
-    }
-
-    @Nonnull
-    @Override
-    public RestAction<Void> removeReaction(@Nonnull String unicode, @Nonnull User user)
-    {
-        Checks.notNull(user, "User");
-        if (user.equals(getJDA().getSelfUser()))
-            return channel.removeReactionById(getIdLong(), unicode);
-
-        if (isEphemeral())
-            throw new IllegalStateException("Cannot remove reactions from ephemeral messages.");
-        if (!isFromGuild())
-            throw new IllegalStateException("Cannot remove reactions of others from a message in a Group or PrivateChannel.");
-        return getGuildChannel().removeReactionById(getId(), unicode, user);
-    }
-
-    @Nonnull
-    @Override
-    public ReactionPaginationAction retrieveReactionUsers(@Nonnull Emote emote)
+    public ReactionPaginationAction retrieveReactionUsers(@Nonnull Emoji emoji)
     {
         if (isEphemeral())
             throw new IllegalStateException("Cannot retrieve reactions on ephemeral messages.");
         
-        return channel.retrieveReactionUsersById(id, emote);
+        return channel.retrieveReactionUsersById(id, emoji);
     }
 
-    @Nonnull
+    @Nullable
     @Override
-    public ReactionPaginationAction retrieveReactionUsers(@Nonnull String unicode)
+    public MessageReaction getReaction(@Nonnull Emoji emoji)
     {
-        if (isEphemeral())
-            throw new IllegalStateException("Cannot retrieve reactions on ephemeral messages.");
-        
-        return channel.retrieveReactionUsersById(id, unicode);
-    }
-
-    @Override
-    public MessageReaction getReactionByUnicode(@Nonnull String unicode)
-    {
-        Checks.notEmpty(unicode, "Emoji");
-        Checks.noWhitespace(unicode, "Emoji");
-
+        Checks.notNull(emoji, "Emoji");
+        String code = emoji.getAsReactionCode();
         return this.reactions.stream()
-            .filter(r -> r.getReactionEmote().isEmoji() && r.getReactionEmote().getEmoji().equals(unicode))
-            .findFirst().orElse(null);
-    }
-
-    @Override
-    public MessageReaction getReactionById(long id)
-    {
-        return this.reactions.stream()
-            .filter(r -> r.getReactionEmote().isEmote() && r.getReactionEmote().getIdLong() == id)
-            .findFirst().orElse(null);
+                .filter(r -> code.equals(r.getEmoji().getAsReactionCode()))
+                .findFirst().orElse(null);
     }
 
     @Nonnull
@@ -397,9 +338,9 @@ public class ReceivedMessage extends AbstractMessage
                     name = user.getName();
                 tmp = tmp.replaceAll("<@!?" + Pattern.quote(user.getId()) + '>', '@' + Matcher.quoteReplacement(name));
             }
-            for (Emote emote : mentions.getEmotes())
+            for (CustomEmoji emoji : mentions.getCustomEmojis())
             {
-                tmp = tmp.replace(emote.getAsMention(), ":" + emote.getName() + ":");
+                tmp = tmp.replace(emoji.getAsMention(), ":" + emoji.getName() + ":");
             }
             for (GuildChannel mentionedChannel : mentions.getChannels())
             {
@@ -554,7 +495,7 @@ public class ReceivedMessage extends AbstractMessage
 
     @Nonnull
     @Override
-    public List<MessageSticker> getStickers()
+    public List<StickerItem> getStickers()
     {
         return this.stickers;
     }

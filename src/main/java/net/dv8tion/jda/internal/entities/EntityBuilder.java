@@ -29,6 +29,9 @@ import net.dv8tion.jda.api.entities.Guild.NotificationLevel;
 import net.dv8tion.jda.api.entities.Guild.Timeout;
 import net.dv8tion.jda.api.entities.Guild.VerificationLevel;
 import net.dv8tion.jda.api.entities.MessageEmbed.*;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
+import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
+import net.dv8tion.jda.api.entities.sticker.*;
 import net.dv8tion.jda.api.entities.templates.Template;
 import net.dv8tion.jda.api.entities.templates.TemplateChannel;
 import net.dv8tion.jda.api.entities.templates.TemplateGuild;
@@ -40,14 +43,17 @@ import net.dv8tion.jda.api.events.user.update.UserUpdateAvatarEvent;
 import net.dv8tion.jda.api.events.user.update.UserUpdateDiscriminatorEvent;
 import net.dv8tion.jda.api.events.user.update.UserUpdateFlagsEvent;
 import net.dv8tion.jda.api.events.user.update.UserUpdateNameEvent;
+import net.dv8tion.jda.api.exceptions.ParsingException;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.api.utils.cache.CacheView;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
+import net.dv8tion.jda.internal.entities.emoji.RichCustomEmojiImpl;
 import net.dv8tion.jda.internal.entities.mixin.channel.attribute.IPermissionContainerMixin;
 import net.dv8tion.jda.internal.entities.mixin.channel.middleman.AudioChannelMixin;
+import net.dv8tion.jda.internal.entities.sticker.*;
 import net.dv8tion.jda.internal.handle.EventCache;
 import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.JDALogger;
@@ -139,14 +145,14 @@ public class EntityBuilder
         return new ActivityImpl(name, url, type);
     }
 
-    private void createGuildEmotePass(GuildImpl guildObj, DataArray array)
+    private void createGuildEmojiPass(GuildImpl guildObj, DataArray array)
     {
-        if (!getJDA().isCacheFlagSet(CacheFlag.EMOTE))
+        if (!getJDA().isCacheFlagSet(CacheFlag.EMOJI))
             return;
-        SnowflakeCacheViewImpl<Emote> emoteView = guildObj.getEmotesView();
-        try (UnlockHook hook = emoteView.writeLock())
+        SnowflakeCacheViewImpl<RichCustomEmoji> emojiView = guildObj.getEmojisView();
+        try (UnlockHook hook = emojiView.writeLock())
         {
-            TLongObjectMap<Emote> emoteMap = emoteView.getMap();
+            TLongObjectMap<RichCustomEmoji> emojiMap = emojiView.getMap();
             for (int i = 0; i < array.length(); i++)
             {
                 DataObject object = array.getObject(i);
@@ -155,22 +161,40 @@ public class EntityBuilder
                     LOG.error("Received GUILD_CREATE with an emoji with a null ID. JSON: {}", object);
                     continue;
                 }
-                final long emoteId = object.getLong("id");
-                emoteMap.put(emoteId, createEmote(guildObj, object));
+                final long emojiId = object.getLong("id");
+                emojiMap.put(emojiId, createEmoji(guildObj, object));
             }
         }
     }
 
-    public TLongObjectMap<DataObject> convertToUserMap(ToLongFunction<DataObject> getId, DataArray array)
+    private void createGuildStickerPass(GuildImpl guildObj, DataArray array)
     {
-        TLongObjectMap<DataObject> map = new TLongObjectHashMap<>();
-        for (int i = 0; i < array.length(); i++)
+        if (!getJDA().isCacheFlagSet(CacheFlag.STICKER))
+            return;
+        SnowflakeCacheViewImpl<GuildSticker> stickerView = guildObj.getStickersView();
+        try (UnlockHook hook = stickerView.writeLock())
         {
-            DataObject obj = array.getObject(i);
-            long userId = getId.applyAsLong(obj);
-            map.put(userId, obj);
+            TLongObjectMap<GuildSticker> stickerMap = stickerView.getMap();
+            for (int i = 0; i < array.length(); i++)
+            {
+                DataObject object = array.getObject(i);
+                if (object.isNull("id"))
+                {
+                    LOG.error("Received GUILD_CREATE with a sticker with a null ID. GuildId: {} JSON: {}",
+                              guildObj.getId(), object);
+                    continue;
+                }
+                if (object.getInt("type", -1) != Sticker.Type.GUILD.getId())
+                {
+                    LOG.error("Received GUILD_CREATE with sticker that had an unexpected type. GuildId: {} Type: {} JSON: {}",
+                              guildObj.getId(), object.getInt("type", -1), object);
+                    continue;
+                }
+
+                RichSticker sticker = createRichSticker(object);
+                stickerMap.put(sticker.getIdLong(), (GuildSticker) sticker);
+            }
         }
-        return map;
     }
 
     public GuildImpl createGuild(long guildId, DataObject guildJson, TLongObjectMap<DataObject> members, int memberCount)
@@ -186,7 +210,8 @@ public class EntityBuilder
         final DataArray roleArray = guildJson.getArray("roles");
         final DataArray channelArray = guildJson.getArray("channels");
         final DataArray threadArray = guildJson.getArray("threads");
-        final DataArray emotesArray = guildJson.getArray("emojis");
+        final DataArray emojisArray = guildJson.getArray("emojis");
+        final DataArray stickersArray = guildJson.getArray("stickers");
         final DataArray voiceStateArray = guildJson.getArray("voice_states");
         final Optional<DataArray> featuresArray = guildJson.optArray("features");
         final Optional<DataArray> presencesArray = guildJson.optArray("presences");
@@ -260,8 +285,8 @@ public class EntityBuilder
             createGuildChannel(guildObj, channelJson);
         }
 
-        TLongObjectMap<DataObject> voiceStates = convertToUserMap((o) -> o.getUnsignedLong("user_id", 0L), voiceStateArray);
-        TLongObjectMap<DataObject> presences = presencesArray.map(o1 -> convertToUserMap(o2 -> o2.getObject("user").getUnsignedLong("id"), o1)).orElseGet(TLongObjectHashMap::new);
+        TLongObjectMap<DataObject> voiceStates = Helpers.convertToMap((o) -> o.getUnsignedLong("user_id", 0L), voiceStateArray);
+        TLongObjectMap<DataObject> presences = presencesArray.map(o1 -> Helpers.convertToMap(o2 -> o2.getObject("user").getUnsignedLong("id"), o1)).orElseGet(TLongObjectHashMap::new);
         try (UnlockHook h1 = guildObj.getMembersView().writeLock();
              UnlockHook h2 = getJDA().getUsersView().writeLock())
         {
@@ -297,7 +322,8 @@ public class EntityBuilder
             createThreadChannel(guildObj, threadJson, guildObj.getIdLong());
         }
 
-        createGuildEmotePass(guildObj, emotesArray);
+        createGuildEmojiPass(guildObj, emojisArray);
+        createGuildStickerPass(guildObj, stickersArray);
         guildJson.optArray("stage_instances")
                 .map(arr -> arr.stream(DataArray::getObject))
                 .ifPresent(list -> list.forEach(it -> createStageInstance(guildObj, it)));
@@ -805,15 +831,9 @@ public class EntityBuilder
             timestamps = new RichPresence.Timestamps(start, end);
         }
 
-        Activity.Emoji emoji = null;
+        Emoji emoji = null;
         if (!gameJson.isNull("emoji"))
-        {
-            DataObject emojiJson = gameJson.getObject("emoji");
-            String emojiName = emojiJson.getString("name");
-            long emojiId = emojiJson.getUnsignedLong("id", 0);
-            boolean emojiAnimated = emojiJson.getBoolean("animated");
-            emoji = new Activity.Emoji(emojiName, emojiId, emojiAnimated);
-        }
+            emoji = Emoji.fromData(gameJson.getObject("emoji"));
 
         if (type == Activity.ActivityType.CUSTOM_STATUS)
         {
@@ -872,26 +892,26 @@ public class EntityBuilder
             largeImageKey, largeImageText, smallImageKey, smallImageText);
     }
 
-    public EmoteImpl createEmote(GuildImpl guildObj, DataObject json)
+    public RichCustomEmojiImpl createEmoji(GuildImpl guildObj, DataObject json)
     {
-        DataArray emoteRoles = json.optArray("roles").orElseGet(DataArray::empty);
-        final long emoteId = json.getLong("id");
+        DataArray emojiRoles = json.optArray("roles").orElseGet(DataArray::empty);
+        final long emojiId = json.getLong("id");
         final User user = json.isNull("user") ? null : createUser(json.getObject("user"));
-        EmoteImpl emoteObj = (EmoteImpl) guildObj.getEmoteById(emoteId);
-        if (emoteObj == null)
-            emoteObj = new EmoteImpl(emoteId, guildObj);
-        Set<Role> roleSet = emoteObj.getRoleSet();
+        RichCustomEmojiImpl emojiObj = (RichCustomEmojiImpl) guildObj.getEmojiById(emojiId);
+        if (emojiObj == null)
+            emojiObj = new RichCustomEmojiImpl(emojiId, guildObj);
+        Set<Role> roleSet = emojiObj.getRoleSet();
 
         roleSet.clear();
-        for (int j = 0; j < emoteRoles.length(); j++)
+        for (int j = 0; j < emojiRoles.length(); j++)
         {
-            Role role = guildObj.getRoleById(emoteRoles.getString(j));
+            Role role = guildObj.getRoleById(emojiRoles.getString(j));
             if (role != null)
                 roleSet.add(role);
         }
         if (user != null)
-            emoteObj.setUser(user);
-        return emoteObj
+            emojiObj.setOwner(user);
+        return emojiObj
                 .setName(json.getString("name", ""))
                 .setAnimated(json.getBoolean("animated"))
                 .setManaged(json.getBoolean("managed"))
@@ -1424,7 +1444,7 @@ public class EntityBuilder
         final List<Message.Attachment> attachments = map(jsonObject, "attachments",   this::createMessageAttachment);
         final List<MessageEmbed>       embeds      = map(jsonObject, "embeds",        this::createMessageEmbed);
         final List<MessageReaction>    reactions   = map(jsonObject, "reactions",     (obj) -> createMessageReaction(tmpChannel, id, obj));
-        final List<MessageSticker>     stickers    = map(jsonObject, "sticker_items", this::createSticker);
+        final List<StickerItem>        stickers    = map(jsonObject, "sticker_items", this::createStickerItem);
 
         // Message activity (for game invites/spotify)
         MessageActivity activity = null;
@@ -1571,27 +1591,11 @@ public class EntityBuilder
     public MessageReaction createMessageReaction(MessageChannel chan, long id, DataObject obj)
     {
         DataObject emoji = obj.getObject("emoji");
-        final Long emojiID = emoji.isNull("id") ? null : emoji.getLong("id");
-        final String name = emoji.getString("name", "");
-        final boolean animated = emoji.getBoolean("animated");
         final int count = obj.getInt("count", -1);
         final boolean me = obj.getBoolean("me");
+        Emoji emojiObj = Emoji.fromData(emoji);
 
-        final MessageReaction.ReactionEmote reactionEmote;
-        if (emojiID != null)
-        {
-            Emote emote = getJDA().getEmoteById(emojiID);
-            // creates fake emoji because no guild has this emoji id
-            if (emote == null)
-                emote = new EmoteImpl(emojiID, getJDA()).setAnimated(animated).setName(name);
-            reactionEmote = MessageReaction.ReactionEmote.fromCustom(emote);
-        }
-        else
-        {
-            reactionEmote = MessageReaction.ReactionEmote.fromUnicode(name, getJDA());
-        }
-
-        return new MessageReaction(chan, reactionEmote, id, me, count);
+        return new MessageReaction(chan, emojiObj, id, me, count);
     }
 
     public Message.Attachment createMessageAttachment(DataObject jsonObject)
@@ -1719,25 +1723,72 @@ public class EntityBuilder
             color, thumbnail, siteProvider, author, videoInfo, footer, image, fields);
     }
 
-    public MessageSticker createSticker(DataObject content)
+    public StickerItem createStickerItem(DataObject content)
     {
-        final long id = content.getLong("id");
-        final String name = content.getString("name");
-        final String description = content.getString("description", "");
-        final long packId = content.getLong("pack_id", content.getLong("guild_id", 0L));
-        final MessageSticker.StickerFormat format = MessageSticker.StickerFormat.fromId(content.getInt("format_type"));
-        final Set<String> tags;
-        if (content.isNull("tags"))
+        long id = content.getLong("id");
+        String name = content.getString("name");
+        Sticker.StickerFormat format = Sticker.StickerFormat.fromId(content.getInt("format_type"));
+        return new StickerItemImpl(id, format, name);
+    }
+
+    public RichStickerImpl createRichSticker(DataObject content)
+    {
+        long id = content.getLong("id");
+        String name = content.getString("name");
+        Sticker.StickerFormat format = Sticker.StickerFormat.fromId(content.getInt("format_type"));
+        Sticker.Type type = Sticker.Type.fromId(content.getInt("type", -1));
+
+        String description = content.getString("description", "");
+        Set<String> tags = Collections.emptySet();
+        if (!content.isNull("tags"))
         {
-            tags = Collections.emptySet();
+            String[] array = content.getString("tags").split(",\\s*");
+            tags = Helpers.setOf(array);
         }
-        else
+
+        switch (type)
         {
-            final String[] split = content.getString("tags").split(", ");
-            final Set<String> tmp = new HashSet<>(Arrays.asList(split));
-            tags = Collections.unmodifiableSet(tmp);
+        case GUILD:
+            boolean available = content.getBoolean("available");
+            long guildId = content.getUnsignedLong("guild_id", 0L);
+            User owner = content.isNull("user") ? null : createUser(content.getObject("user"));
+            return new GuildStickerImpl(id, format, name, tags, description, available, guildId, api, owner);
+        case STANDARD:
+            long packId = content.getUnsignedLong("pack_id", 0L);
+            int sortValue = content.getInt("sort_value", -1);
+            return new StandardStickerImpl(id, format, name, tags, description, packId, sortValue);
+        default:
+            throw new IllegalArgumentException("Unknown sticker type. Type: " + type  +" JSON: " + content);
         }
-        return new MessageSticker(id, name, description, packId, format, tags);
+    }
+
+    public StickerPack createStickerPack(DataObject content)
+    {
+        long id = content.getUnsignedLong("id");
+        String name = content.getString("name");
+        String description = content.getString("description", "");
+        long skuId = content.getUnsignedLong("sku_id", 0);
+        long coverId = content.getUnsignedLong("cover_sticker_id", 0);
+        long bannerId = content.getUnsignedLong("banner_asset_id", 0);
+
+        DataArray stickerArr = content.getArray("stickers");
+        List<StandardSticker> stickers = new ArrayList<>(stickerArr.length());
+        for (int i = 0; i < stickerArr.length(); i++)
+        {
+            DataObject object = null;
+            try
+            {
+                object = stickerArr.getObject(i);
+                StandardSticker sticker = (StandardSticker) createRichSticker(object);
+                stickers.add(sticker);
+            }
+            catch (ParsingException | ClassCastException ex)
+            {
+                LOG.error("Sticker contained in pack {} ({}) could not be parsed. JSON: {}", name, id, object);
+            }
+        }
+
+        return new StickerPackImpl(id, stickers, name, description, coverId, bannerId, skuId);
     }
 
     public Message.Interaction createMessageInteraction(GuildImpl guildImpl, DataObject content)

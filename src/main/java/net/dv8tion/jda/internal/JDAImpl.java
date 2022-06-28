@@ -26,10 +26,15 @@ import net.dv8tion.jda.api.audio.factory.DefaultSendFactory;
 import net.dv8tion.jda.api.audio.factory.IAudioSendFactory;
 import net.dv8tion.jda.api.audio.hooks.ConnectionStatus;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
+import net.dv8tion.jda.api.entities.sticker.StickerPack;
+import net.dv8tion.jda.api.entities.sticker.StickerSnowflake;
+import net.dv8tion.jda.api.entities.sticker.StickerUnion;
 import net.dv8tion.jda.api.events.GatewayPingEvent;
 import net.dv8tion.jda.api.events.GenericEvent;
 import net.dv8tion.jda.api.events.StatusChangeEvent;
 import net.dv8tion.jda.api.exceptions.AccountTypeException;
+import net.dv8tion.jda.api.exceptions.ParsingException;
 import net.dv8tion.jda.api.exceptions.RateLimitedException;
 import net.dv8tion.jda.api.hooks.IEventManager;
 import net.dv8tion.jda.api.hooks.InterfacedEventManager;
@@ -223,8 +228,7 @@ public class JDAImpl implements JDA
         try
         {
             return member.getUser().equals(getSelfUser()) // always cache self
-                    || chunkGuild(member.getGuild().getIdLong())  // always cache if chunking
-                    || memberCachePolicy.cacheMember(member); // ask policy, should we cache?
+                || memberCachePolicy.cacheMember(member); // ask policy, should we cache?
         }
         catch (Exception e)
         {
@@ -620,9 +624,47 @@ public class JDAImpl implements JDA
 
     @Nonnull
     @Override
-    public SnowflakeCacheView<Emote> getEmoteCache()
+    public SnowflakeCacheView<RichCustomEmoji> getEmojiCache()
     {
-        return CacheView.allSnowflakes(() -> guildCache.stream().map(Guild::getEmoteCache));
+        return CacheView.allSnowflakes(() -> guildCache.stream().map(Guild::getEmojiCache));
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<StickerUnion> retrieveSticker(@Nonnull StickerSnowflake sticker)
+    {
+        Checks.notNull(sticker, "Sticker");
+        Route.CompiledRoute route = Route.Stickers.GET_STICKER.compile(sticker.getId());
+        return new RestActionImpl<>(this, route,
+            (response, request) -> entityBuilder.createRichSticker(response.getObject())
+        );
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<List<StickerPack>> retrieveNitroStickerPacks()
+    {
+        Route.CompiledRoute route = Route.Stickers.LIST_PACKS.compile();
+        return new RestActionImpl<>(this, route, (response, request) ->
+        {
+            DataArray array = response.getObject().getArray("sticker_packs");
+            List<StickerPack> packs = new ArrayList<>(array.length());
+            for (int i = 0; i < array.length(); i++)
+            {
+                DataObject object = null;
+                try
+                {
+                    object = array.getObject(i);
+                    StickerPack pack = entityBuilder.createStickerPack(object);
+                    packs.add(pack);
+                }
+                catch (ParsingException ex)
+                {
+                    EntityBuilder.LOG.error("Failed to parse sticker pack. JSON: {}", object);
+                }
+            }
+            return Collections.unmodifiableList(packs);
+        });
     }
 
     @Nonnull

@@ -18,6 +18,8 @@ package net.dv8tion.jda.api;
 
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.IGuildChannelContainer;
+import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
+import net.dv8tion.jda.api.entities.sticker.*;
 import net.dv8tion.jda.api.hooks.IEventManager;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
@@ -547,9 +549,6 @@ public interface JDA extends IGuildChannelContainer
      *
      * <p>You need the OAuth2 scope {@code "applications.commands"} in order to add commands to a guild.
      *
-     * <p><b>Global commands can take up to <u>1 hour</u> to propagate to the clients.</b>
-     * For testing, it is recommended to use a test guild with guild commands.
-     *
      * @param  command
      *         The {@link CommandData} for the command
      *
@@ -577,9 +576,6 @@ public interface JDA extends IGuildChannelContainer
      * <p>To specify a complete list of all commands you can use {@link #updateCommands()} instead.
      *
      * <p>You need the OAuth2 scope {@code "applications.commands"} in order to add commands to a guild.
-     *
-     * <p><b>Global commands can take up to <u>1 hour</u> to propagate to the clients.</b>
-     * For testing, it is recommended to use a test guild with guild commands.
      *
      * @param  name
      *         The lowercase alphanumeric (with dash) name, 1-32 characters
@@ -609,18 +605,21 @@ public interface JDA extends IGuildChannelContainer
      *
      * <p>You need the OAuth2 scope {@code "applications.commands"} in order to add commands to a guild.
      *
-     * <p><b>Global commands can take up to <u>1 hour</u> to propagate to the clients.</b>
-     * For testing, it is recommended to use a test guild with guild commands.
+     * <p><b>Examples</b>
      *
-     * <h4>Examples</h4>
+     * <p>Set list to 2 commands:
      * <pre>{@code
-     * // Set list to 2 commands
      * jda.updateCommands()
      *   .addCommands(Commands.slash("ping", "Gives the current ping"))
      *   .addCommands(Commands.slash("ban", "Ban the target user")
+     *     .setGuildOnly(true)
+     *     .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.BAN_MEMBERS))
      *     .addOption(OptionType.USER, "user", "The user to ban", true))
      *   .queue();
-     * // Delete all commands
+     * }</pre>
+     *
+     * <p>Delete all commands:
+     * <pre>{@code
      * jda.updateCommands().queue();
      * }</pre>
      *
@@ -637,9 +636,6 @@ public interface JDA extends IGuildChannelContainer
      *
      * <p>If there is no command with the provided ID,
      * this RestAction fails with {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_COMMAND ErrorResponse.UNKNOWN_COMMAND}
-     *
-     * <p><b>Global commands can take up to <u>1 hour</u> to propagate to the clients.</b>
-     * For testing, it is recommended to use a test guild with guild commands.
      *
      * @param  id
      *         The id of the command to edit
@@ -659,9 +655,6 @@ public interface JDA extends IGuildChannelContainer
      * <p>If there is no command with the provided ID,
      * this RestAction fails with {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_COMMAND ErrorResponse.UNKNOWN_COMMAND}
      *
-     * <p><b>Global commands can take up to <u>1 hour</u> to propagate to the clients.</b>
-     * For testing, it is recommended to use a test guild with guild commands.
-     *
      * @param  id
      *         The id of the command to edit
      *
@@ -680,9 +673,6 @@ public interface JDA extends IGuildChannelContainer
      * <p>If there is no command with the provided ID,
      * this RestAction fails with {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_COMMAND ErrorResponse.UNKNOWN_COMMAND}
      *
-     * <p><b>Global commands can take up to <u>1 hour</u> to propagate to the clients.</b>
-     * For testing, it is recommended to use a test guild with guild commands.
-     *
      * @param  commandId
      *         The id of the command that should be deleted
      *
@@ -700,9 +690,6 @@ public interface JDA extends IGuildChannelContainer
      *
      * <p>If there is no command with the provided ID,
      * this RestAction fails with {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_COMMAND ErrorResponse.UNKNOWN_COMMAND}
-     *
-     * <p><b>Global commands can take up to <u>1 hour</u> to propagate to the clients.</b>
-     * For testing, it is recommended to use a test guild with guild commands.
      *
      * @param  commandId
      *         The id of the command that should be deleted
@@ -1437,99 +1424,134 @@ public interface JDA extends IGuildChannelContainer
 
     /**
      * Unified {@link net.dv8tion.jda.api.utils.cache.SnowflakeCacheView SnowflakeCacheView} of
-     * all cached {@link net.dv8tion.jda.api.entities.Emote Emotes} visible to this JDA session.
+     * all cached {@link RichCustomEmoji Custom Emojis} visible to this JDA session.
      *
      * @return Unified {@link net.dv8tion.jda.api.utils.cache.SnowflakeCacheView SnowflakeCacheView}
      *
      * @see    net.dv8tion.jda.api.utils.cache.CacheView#allSnowflakes(java.util.function.Supplier) CacheView.allSnowflakes(...)
      */
     @Nonnull
-    SnowflakeCacheView<Emote> getEmoteCache();
+    SnowflakeCacheView<RichCustomEmoji> getEmojiCache();
 
     /**
-     * A collection of all to us known emotes (managed/restricted included).
-     * <br>This will be empty if {@link net.dv8tion.jda.api.utils.cache.CacheFlag#EMOTE} is disabled.
+     * A collection of all to us known custom emoji (managed/restricted included).
+     * <br>This will be empty if {@link net.dv8tion.jda.api.utils.cache.CacheFlag#EMOJI} is disabled.
      *
-     * <p><b>Hint</b>: To check whether you can use an {@link net.dv8tion.jda.api.entities.Emote Emote} in a specific
-     * context you can use {@link Emote#canInteract(net.dv8tion.jda.api.entities.Member)} or {@link
-     * Emote#canInteract(net.dv8tion.jda.api.entities.User, net.dv8tion.jda.api.entities.MessageChannel)}
+     * <p><b>Hint</b>: To check whether you can use an {@link RichCustomEmoji} in a specific
+     * context you can use {@link RichCustomEmoji#canInteract(net.dv8tion.jda.api.entities.Member)} or {@link
+     * RichCustomEmoji#canInteract(net.dv8tion.jda.api.entities.User, net.dv8tion.jda.api.entities.MessageChannel)}
      *
-     * <p><b>Unicode emojis are not included as {@link net.dv8tion.jda.api.entities.Emote Emote}!</b>
+     * <p><b>Unicode emojis are not included as {@link RichCustomEmoji Custom Emoji}!</b>
      *
      * <p>This copies the backing store into a list. This means every call
      * creates a new list with O(n) complexity. It is recommended to store this into
-     * a local variable or use {@link #getEmoteCache()} and use its more efficient
+     * a local variable or use {@link #getEmojiCache()} and use its more efficient
      * versions of handling these values.
      *
-     * @return An immutable list of Emotes (which may or may not be available to usage).
+     * @return An immutable list of Custom Emojis (which may or may not be available to usage).
      */
     @Nonnull
-    default List<Emote> getEmotes()
+    default List<RichCustomEmoji> getEmojis()
     {
-        return getEmoteCache().asList();
+        return getEmojiCache().asList();
     }
 
     /**
-     * Retrieves an emote matching the specified {@code id} if one is available in our cache.
-     * <br>This will be null if {@link net.dv8tion.jda.api.utils.cache.CacheFlag#EMOTE} is disabled.
+     * Retrieves a custom emoji matching the specified {@code id} if one is available in our cache.
+     * <br>This will be null if {@link net.dv8tion.jda.api.utils.cache.CacheFlag#EMOJI} is disabled.
      *
-     * <p><b>Unicode emojis are not included as {@link net.dv8tion.jda.api.entities.Emote Emote}!</b>
+     * <p><b>Unicode emojis are not included as {@link RichCustomEmoji Custom Emoji}!</b>
      *
      * @param  id
-     *         The id of the requested {@link net.dv8tion.jda.api.entities.Emote}.
+     *         The id of the requested {@link RichCustomEmoji}.
      *
      * @throws java.lang.NumberFormatException
      *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
      *
-     * @return An {@link net.dv8tion.jda.api.entities.Emote Emote} represented by this id or null if none is found in
+     * @return A {@link RichCustomEmoji Custom Emoji} represented by this id or null if none is found in
      *         our cache.
      */
     @Nullable
-    default Emote getEmoteById(@Nonnull String id)
+    default RichCustomEmoji getEmojiById(@Nonnull String id)
     {
-        return getEmoteCache().getElementById(id);
+        return getEmojiCache().getElementById(id);
     }
 
     /**
-     * Retrieves an emote matching the specified {@code id} if one is available in our cache.
-     * <br>This will be null if {@link net.dv8tion.jda.api.utils.cache.CacheFlag#EMOTE} is disabled.
+     * Retrieves a custom emoji matching the specified {@code id} if one is available in our cache.
+     * <br>This will be null if {@link net.dv8tion.jda.api.utils.cache.CacheFlag#EMOJI} is disabled.
      *
-     * <p><b>Unicode emojis are not included as {@link net.dv8tion.jda.api.entities.Emote Emote}!</b>
+     * <p><b>Unicode emojis are not included as {@link RichCustomEmoji Custom Emoji}!</b>
      *
      * @param  id
-     *         The id of the requested {@link net.dv8tion.jda.api.entities.Emote}.
+     *         The id of the requested {@link RichCustomEmoji}.
      *
-     * @return An {@link net.dv8tion.jda.api.entities.Emote Emote} represented by this id or null if none is found in
+     * @return A {@link RichCustomEmoji Custom Emoji} represented by this id or null if none is found in
      *         our cache.
      */
     @Nullable
-    default Emote getEmoteById(long id)
+    default RichCustomEmoji getEmojiById(long id)
     {
-        return getEmoteCache().getElementById(id);
+        return getEmojiCache().getElementById(id);
     }
 
     /**
-     * An unmodifiable list of all {@link net.dv8tion.jda.api.entities.Emote Emotes} that have the same name as the one
-     * provided. <br>If there are no {@link net.dv8tion.jda.api.entities.Emote Emotes} with the provided name, then
+     * An unmodifiable list of all {@link RichCustomEmoji Custom Emojis} that have the same name as the one
+     * provided. <br>If there are no {@link RichCustomEmoji Custom Emojis} with the provided name, then
      * this returns an empty list.
-     * <br>This will be empty if {@link net.dv8tion.jda.api.utils.cache.CacheFlag#EMOTE} is disabled.
+     * <br>This will be empty if {@link net.dv8tion.jda.api.utils.cache.CacheFlag#EMOJI} is disabled.
      *
-     * <p><b>Unicode emojis are not included as {@link net.dv8tion.jda.api.entities.Emote Emote}!</b>
+     * <p><b>Unicode emojis are not included as {@link RichCustomEmoji Custom Emoji}!</b>
      *
      * @param  name
-     *         The name of the requested {@link net.dv8tion.jda.api.entities.Emote Emotes}. Without colons.
+     *         The name of the requested {@link RichCustomEmoji Custom Emojis}. Without colons.
      * @param  ignoreCase
      *         Whether to ignore case or not when comparing the provided name to each {@link
-     *         net.dv8tion.jda.api.entities.Emote#getName()}.
+     *         RichCustomEmoji#getName()}.
      *
-     * @return Possibly-empty list of all the {@link net.dv8tion.jda.api.entities.Emote Emotes} that all have the same
+     * @return Possibly-empty list of all the {@link RichCustomEmoji Custom Emojis} that all have the same
      *         name as the provided name.
      */
     @Nonnull
-    default List<Emote> getEmotesByName(@Nonnull String name, boolean ignoreCase)
+    default List<RichCustomEmoji> getEmojisByName(@Nonnull String name, boolean ignoreCase)
     {
-        return getEmoteCache().getElementsByName(name, ignoreCase);
+        return getEmojiCache().getElementsByName(name, ignoreCase);
     }
+
+    /**
+     * Attempts to retrieve a {@link Sticker} object based on the provided snowflake reference.
+     * <br>This works for both {@link StandardSticker} and {@link GuildSticker}, and you can resolve them using the provided {@link StickerUnion}.
+     *
+     * <p>If the sticker is not one of the supported {@link Sticker.Type Types}, the request fails with {@link IllegalArgumentException}.
+     *
+     * <p>The returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} can encounter the following Discord errors:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_STICKER UNKNOWN_STICKER}
+     *     <br>Occurs when the provided id does not refer to a sticker known by Discord.</li>
+     * </ul>
+     *
+     * @param  sticker
+     *         The reference of the requested {@link Sticker}.
+     *         <br>Can be {@link RichSticker}, {@link StickerItem}, or {@link Sticker#fromId(long)}.
+     *
+     * @throws IllegalArgumentException
+     *         If the provided sticker is null
+     *
+     * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link StickerUnion}
+     *         <br>On request, gets the sticker with id matching provided id from Discord.
+     */
+    @Nonnull
+    @CheckReturnValue
+    RestAction<StickerUnion> retrieveSticker(@Nonnull StickerSnowflake sticker);
+
+    /**
+     * Retrieves a list of all the public {@link StickerPack StickerPacks} used for nitro.
+     *
+     * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: List of {@link StickerPack}
+     */
+    @Nonnull
+    @CheckReturnValue
+    RestAction<List<StickerPack>> retrieveNitroStickerPacks();
 
     /**
      * The EventManager used by this JDA instance.

@@ -18,7 +18,7 @@ package net.dv8tion.jda.api.requests;
 
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.GenericEvent;
-import net.dv8tion.jda.api.events.emote.GenericEmoteEvent;
+import net.dv8tion.jda.api.events.emoji.GenericEmojiEvent;
 import net.dv8tion.jda.api.events.guild.GuildBanEvent;
 import net.dv8tion.jda.api.events.guild.GuildUnbanEvent;
 import net.dv8tion.jda.api.events.guild.invite.GenericGuildInviteEvent;
@@ -28,6 +28,7 @@ import net.dv8tion.jda.api.events.guild.voice.GenericGuildVoiceEvent;
 import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 import net.dv8tion.jda.api.events.message.MessageBulkDeleteEvent;
 import net.dv8tion.jda.api.events.message.react.GenericMessageReactionEvent;
+import net.dv8tion.jda.api.events.sticker.GenericGuildStickerEvent;
 import net.dv8tion.jda.api.events.user.UserTypingEvent;
 import net.dv8tion.jda.api.events.user.update.GenericUserPresenceEvent;
 import net.dv8tion.jda.api.events.user.update.GenericUserUpdateEvent;
@@ -49,7 +50,7 @@ import java.util.EnumSet;
  * <ol>
  *     <li><b>GUILD_MEMBERS</b> - This is a <b>privileged</b> gateway intent that is used to update user information and join/leaves (including kicks). This is required to cache all members of a guild (including chunking)</li>
  *     <li><b>GUILD_BANS</b> - This will only track guild bans and unbans</li>
- *     <li><b>GUILD_EMOJIS</b> - This will only track guild emote create/modify/delete. Most bots don't need this since they just use the emote id anyway.</li>
+ *     <li><b>GUILD_EMOJIS</b> - This will only track custom emoji create/modify/delete. Most bots don't need this since they just use the emoji id anyway.</li>
  *     <li><b>GUILD_WEBHOOKS</b> - This will only track guild webhook create/update/delete. Most bots don't need this since related events don't contain any useful information about webhook changes.</li>
  *     <li><b>GUILD_INVITES</b> - This will only track invite create/delete. Most bots don't make use of invites since they are added through OAuth2 authorization by administrators.</li>
  *     <li><b>GUILD_VOICE_STATES</b> - Required to properly get information of members in voice channels and cache them. <u>You cannot connect to a voice channel without this intent</u>.</li>
@@ -89,9 +90,9 @@ public enum GatewayIntent
      */
     GUILD_BANS(2),
     /**
-     * Emote add/update/delete events.
+     * Custom emoji and sticker add/update/delete events.
      */
-    GUILD_EMOJIS(3),
+    GUILD_EMOJIS_AND_STICKERS(3),
 //    /**
 //     * Integration events. (unused)
 //     */
@@ -351,8 +352,8 @@ public enum GatewayIntent
 
             else if (GuildBanEvent.class.isAssignableFrom(event) || GuildUnbanEvent.class.isAssignableFrom(event))
                 intents.add(GUILD_BANS);
-            else if (GenericEmoteEvent.class.isAssignableFrom(event))
-                intents.add(GUILD_EMOJIS);
+            else if (GenericEmojiEvent.class.isAssignableFrom(event) || GenericGuildStickerEvent.class.isAssignableFrom(event))
+                intents.add(GUILD_EMOJIS_AND_STICKERS);
             else if (GenericGuildInviteEvent.class.isAssignableFrom(event))
                 intents.add(GUILD_INVITES);
             else if (GenericGuildVoiceEvent.class.isAssignableFrom(event))

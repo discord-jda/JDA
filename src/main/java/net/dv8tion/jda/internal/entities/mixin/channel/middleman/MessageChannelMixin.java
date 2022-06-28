@@ -18,6 +18,7 @@ package net.dv8tion.jda.internal.entities.mixin.channel.middleman;
 
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.requests.RestAction;
@@ -244,29 +245,29 @@ public interface MessageChannelMixin<T extends MessageChannelMixin<T>> extends M
 
     @Nonnull
     @CheckReturnValue
-    default RestAction<Void> addReactionById(@Nonnull String messageId, @Nonnull String unicode)
+    default RestAction<Void> addReactionById(@Nonnull String messageId, @Nonnull Emoji emoji)
     {
         checkCanAccessChannel();
         checkCanAddReactions();
-        return MessageChannel.super.addReactionById(messageId, unicode);
+        return MessageChannel.super.addReactionById(messageId, emoji);
     }
 
     @Nonnull
     @CheckReturnValue
-    default RestAction<Void> removeReactionById(@Nonnull String messageId, @Nonnull String unicode)
+    default RestAction<Void> removeReactionById(@Nonnull String messageId, @Nonnull Emoji emoji)
     {
         checkCanAccessChannel();
         checkCanRemoveReactions();
-        return MessageChannel.super.removeReactionById(messageId, unicode);
+        return MessageChannel.super.removeReactionById(messageId, emoji);
     }
 
     @Nonnull
     @CheckReturnValue
-    default ReactionPaginationAction retrieveReactionUsersById(@Nonnull String messageId, @Nonnull String unicode)
+    default ReactionPaginationAction retrieveReactionUsersById(@Nonnull String messageId, @Nonnull Emoji emoji)
     {
         checkCanAccessChannel();
         checkCanRemoveReactions();
-        return MessageChannel.super.retrieveReactionUsersById(messageId, unicode);
+        return MessageChannel.super.retrieveReactionUsersById(messageId, emoji);
     }
 
     @Nonnull

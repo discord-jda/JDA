@@ -18,9 +18,12 @@ package net.dv8tion.jda.api.utils;
 
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.requests.Requester;
+import net.dv8tion.jda.internal.utils.BufferedRequestBody;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.IOUtil;
+import okhttp3.MediaType;
 import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 
 import javax.annotation.Nonnull;
 import java.io.*;
@@ -39,7 +42,7 @@ public class FileUpload implements Closeable, AttachedFile
 {
     private final InputStream resource;
     private final String name;
-    private boolean claimed = false;
+    private BufferedRequestBody body;
 
     protected FileUpload(InputStream resource, String name)
     {
@@ -253,24 +256,34 @@ public class FileUpload implements Closeable, AttachedFile
         return resource;
     }
 
-    @Override
-    public synchronized void claim()
+    /**
+     * Creates a re-usable instance of {@link RequestBody} with the specified content-type.
+     *
+     * <p>This body will automatically close the {@link #getData() resource} when the request is done.
+     * However, since the body buffers the data, it can be used multiple times regardless.
+     *
+     * @param  type
+     *         The content-type to use for the body (e.g. {@code "application/octet-stream"})
+     *
+     * @throws IllegalArgumentException
+     *         If the content-type is null
+     *
+     * @return {@link RequestBody}
+     */
+    @Nonnull
+    public synchronized RequestBody getRequestBody(@Nonnull MediaType type)
     {
-        if (claimed)
-            throw new IllegalStateException("Instances of FileUpload can only be used once. Create a new instance with a new data source for each use.");
-        claimed = true;
+        Checks.notNull(type, "Type");
+        if (body != null) // This allows FileUpload to be used more than once!
+            return body.withType(type);
+        return body = IOUtil.createRequestBody(type, resource);
     }
 
     @Override
-    public synchronized boolean isClaimed()
+    @SuppressWarnings("ConstantConditions")
+    public synchronized void addPart(@Nonnull MultipartBody.Builder builder, int index)
     {
-        return claimed;
-    }
-
-    @Override
-    public void addPart(@Nonnull MultipartBody.Builder builder, int index)
-    {
-        builder.addFormDataPart("files[" + index + "]", name, IOUtil.createRequestBody(Requester.MEDIA_TYPE_OCTET, resource));
+        builder.addFormDataPart("files[" + index + "]", name, getRequestBody(Requester.MEDIA_TYPE_OCTET));
     }
 
     @Nonnull
@@ -293,7 +306,8 @@ public class FileUpload implements Closeable, AttachedFile
     @SuppressWarnings("deprecation")
     protected void finalize()
     {
-        IOUtil.silentClose(resource);
+        if (body == null) // Only close if the resource was never used
+            IOUtil.silentClose(resource);
     }
 
     @Override
