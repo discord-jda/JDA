@@ -17,6 +17,8 @@ package net.dv8tion.jda.api.events;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.internal.JDAImpl;
+import net.dv8tion.jda.internal.handle.SocketHandler;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -50,7 +52,7 @@ public abstract class Event implements GenericEvent
     {
         this.api = api;
         this.responseNumber = responseNumber;
-        this.rawData = rawData;
+        this.rawData = ((JDAImpl) api).isEventPassthrough() ? SocketHandler.CURRENT_EVENT.get() : null;
     }
 
     /**
