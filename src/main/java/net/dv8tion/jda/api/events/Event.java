@@ -49,7 +49,7 @@ public abstract class Event implements GenericEvent
     {
         this.api = api;
         this.responseNumber = responseNumber;
-        this.rawData = ((JDAImpl) api).isEventPassthrough() ? SocketHandler.CURRENT_EVENT.get() : null;
+        this.rawData = api instanceof JDAImpl && ((JDAImpl) api).isEventPassthrough() ? SocketHandler.CURRENT_EVENT.get() : null;
     }
 
     /**
