@@ -3065,7 +3065,9 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     /**
      * Gets the auto moderation rule from the cache.
      *
-     * @param id, the id of the rule you want to get
+     * @param  id
+     *         The id of the rule you want to get
+     *
      * @return The auto moderation rule, or {@code null} if it does not exist.
      */
     @Nullable
@@ -3076,7 +3078,9 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     /**
      * Gets the auto moderation rule from the cache.
      *
-     * @param id, the id of the rule you want to get
+     * @param  id
+     *         The id of the rule you want to get
+     *
      * @return The auto moderation rule, or {@code null} if it does not exist.
      */
     @Nullable
@@ -3211,7 +3215,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * Sorted {@link SnowflakeCacheView SnowflakeCacheView} of
      * all cached {@link AutoModerationRule Rules} of this Guild.
      *
-     * @return {@link SortedSnowflakeCacheView SortedSnowflakeCacheView}
+     * @return {@link SortedSnowflakeCacheView}
      */
     @Nonnull
     SnowflakeCacheView<AutoModerationRule> getAutoModerationRuleCache();

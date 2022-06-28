@@ -121,7 +121,7 @@ public class GenericAutoModerationEvent extends Event
     }
 
     /**
-     * Weather this rule is enabled or not.
+     * Whenever this rule is enabled or not.
      *
      * @return True, if enabled.
      */

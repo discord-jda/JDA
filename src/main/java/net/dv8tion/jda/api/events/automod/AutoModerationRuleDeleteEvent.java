@@ -22,7 +22,7 @@ import net.dv8tion.jda.api.entities.AutoModerationRule;
 import javax.annotation.Nonnull;
 
 /**
- * Indicates that an {@link net.dv8tion.jda.api.entities.AutoModerationRule AutoModerationRule} was deleted.
+ * Indicates that an {@link AutoModerationRule AutoModerationRule} was deleted.
  */
 public class AutoModerationRuleDeleteEvent extends GenericAutoModerationEvent
 {

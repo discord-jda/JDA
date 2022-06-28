@@ -22,7 +22,7 @@ import net.dv8tion.jda.api.entities.AutoModerationRule;
 import javax.annotation.Nonnull;
 
 /**
- * Indicates that an {@link net.dv8tion.jda.api.entities.AutoModerationRule AutoModerationRule} was created.
+ * Indicates that an {@link AutoModerationRule AutoModerationRule} was created.
  */
 public class AutoModerationRuleCreateEvent extends GenericAutoModerationEvent
 {

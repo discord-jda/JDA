@@ -61,7 +61,7 @@ public enum AutoModerationField
     TRIGGER_TYPE("trigger_type", AuditLogKey.AUTO_MODERATION_TRIGGER_TYPE),
 
     /**
-     * The {@link TriggerMetadata } is additional data used whether a rule should be executed or not.
+     * The {@link TriggerMetadata} is additional data used whether a rule should be executed or not.
      *
      * @see AutoModerationRule#getTriggerMetadata()
      */

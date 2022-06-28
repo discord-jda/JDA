@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.entities.automod.KeywordPresetType;
 import net.dv8tion.jda.api.entities.automod.TriggerMetadata;
 
 import javax.annotation.Nonnull;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -46,7 +47,7 @@ public class TriggerMetadataImpl implements TriggerMetadata
     @Nonnull
     public List<KeywordPresetType> getKeywordPresetTypes()
     {
-        return keywordPresets;
+        return Collections.unmodifiableList(keywordPresets);
     }
 
     public TriggerMetadataImpl setKeywordPresets(@Nonnull List<KeywordPresetType> keywordPresets)

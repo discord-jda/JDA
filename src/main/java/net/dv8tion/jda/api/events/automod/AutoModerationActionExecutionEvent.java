@@ -45,7 +45,7 @@ public class AutoModerationActionExecutionEvent extends Event
     }
 
     /**
-     * The {@link net.dv8tion.jda.api.entities.AutoModerationRule} that the action belongs to.
+     * The {@link AutoModerationRule} that the action belongs to.
      *
      * @return The rule.
      */
@@ -83,7 +83,7 @@ public class AutoModerationActionExecutionEvent extends Event
      * @return The trigger type.
      */
     @Nonnull
-    public TriggerType getRuleTriggerer()
+    public TriggerType getTriggerType()
     {
         return ruleTriggerer;
     }

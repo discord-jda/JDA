@@ -545,10 +545,10 @@ public enum ActionType
      *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#AUTO_MODERATION_EVENT_TYPE EVENT_TYPE}</li>
      *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#AUTO_MODERATION_TRIGGER_TYPE TRIGGER_TYPE}</li>
      *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#AUTO_MODERATION_TRIGGER_METADATA METADETA}</li>
-     *     <li>{@link java.util.List}&lt;{@link net.dv8tion.jda.api.audit.AuditLogKey#AUTO_MODERATION_ACTIONS}&gt;</li>
+     *     <li>{@link java.util.List List}&lt;{@link net.dv8tion.jda.api.audit.AuditLogKey#AUTO_MODERATION_ACTIONS ACTIONS}&gt;</li>
      *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#AUTO_MODERATION_ENABLED ENABLED}</li>
-     *     <li>{@link java.util.List}&lt;{@link net.dv8tion.jda.api.audit.AuditLogKey#AUTO_MODERATION_EXEMPT_ROLES}&gt;</li>
-     *     <li>{@link java.util.List}&lt;{@link net.dv8tion.jda.api.audit.AuditLogKey#AUTO_MODERATION_EXEMPT_CHANNELS}&gt;</li>
+     *     <li>{@link java.util.List List}&lt;{@link net.dv8tion.jda.api.audit.AuditLogKey#AUTO_MODERATION_EXEMPT_ROLES EXEMPT_ROLES}&gt;</li>
+     *     <li>{@link java.util.List List}&lt;{@link net.dv8tion.jda.api.audit.AuditLogKey#AUTO_MODERATION_EXEMPT_CHANNELS EXEMPT_CHANNELS}&gt;</li>
      * </ul>
      */
     AUTO_MODERATION_RULE_CREATE(140, TargetType.AUTO_MODERATION_RULE),
@@ -565,10 +565,10 @@ public enum ActionType
      *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#AUTO_MODERATION_EVENT_TYPE EVENT_TYPE}</li>
      *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#AUTO_MODERATION_TRIGGER_TYPE TRIGGER_TYPE}</li>
      *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#AUTO_MODERATION_TRIGGER_METADATA METADETA}</li>
-     *     <li>{@link java.util.List}&lt;{@link net.dv8tion.jda.api.audit.AuditLogKey#AUTO_MODERATION_ACTIONS}&gt;</li>
+     *     <li>{@link java.util.List List}&lt;{@link net.dv8tion.jda.api.audit.AuditLogKey#AUTO_MODERATION_ACTIONS ACTIONS}&gt;</li>
      *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#AUTO_MODERATION_ENABLED ENABLED}</li>
-     *     <li>{@link java.util.List}&lt;{@link net.dv8tion.jda.api.audit.AuditLogKey#AUTO_MODERATION_EXEMPT_ROLES}&gt;</li>
-     *     <li>{@link java.util.List}&lt;{@link net.dv8tion.jda.api.audit.AuditLogKey#AUTO_MODERATION_EXEMPT_CHANNELS}&gt;</li>
+     *     <li>{@link java.util.List List}&lt;{@link net.dv8tion.jda.api.audit.AuditLogKey#AUTO_MODERATION_EXEMPT_ROLES EXEMPT_ROLES}&gt;</li>
+     *     <li>{@link java.util.List List}&lt;{@link net.dv8tion.jda.api.audit.AuditLogKey#AUTO_MODERATION_EXEMPT_CHANNELS EXEMPT_CHANNELS}&gt;</li>
      * </ul>
      */
     AUTO_MODERATION_RULE_UPDATE(141, TargetType.AUTO_MODERATION_RULE),
@@ -585,10 +585,10 @@ public enum ActionType
      *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#AUTO_MODERATION_EVENT_TYPE EVENT_TYPE}</li>
      *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#AUTO_MODERATION_TRIGGER_TYPE TRIGGER_TYPE}</li>
      *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#AUTO_MODERATION_TRIGGER_METADATA METADETA}</li>
-     *     <li>{@link java.util.List}&lt;{@link net.dv8tion.jda.api.audit.AuditLogKey#AUTO_MODERATION_ACTIONS}&gt;</li>
+     *     <li>{@link java.util.List List}&lt;{@link net.dv8tion.jda.api.audit.AuditLogKey#AUTO_MODERATION_ACTIONS ACTIONS}&gt;</li>
      *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#AUTO_MODERATION_ENABLED ENABLED}</li>
-     *     <li>{@link java.util.List}&lt;{@link net.dv8tion.jda.api.audit.AuditLogKey#AUTO_MODERATION_EXEMPT_ROLES}&gt;</li>
-     *     <li>{@link java.util.List}&lt;{@link net.dv8tion.jda.api.audit.AuditLogKey#AUTO_MODERATION_EXEMPT_CHANNELS}&gt;</li>
+     *     <li>{@link java.util.List List}&lt;{@link net.dv8tion.jda.api.audit.AuditLogKey#AUTO_MODERATION_EXEMPT_ROLES EXEMPT_ROLES}&gt;</li>
+     *     <li>{@link java.util.List List}&lt;{@link net.dv8tion.jda.api.audit.AuditLogKey#AUTO_MODERATION_EXEMPT_CHANNELS EXEMPT_CHANNELS}&gt;</li>
      * </ul>
      */
     AUTO_MODERATION_RULE_DELETE(142, TargetType.AUTO_MODERATION_RULE),

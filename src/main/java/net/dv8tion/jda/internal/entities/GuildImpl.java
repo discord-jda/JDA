@@ -1272,6 +1272,8 @@ public class GuildImpl implements Guild
         Checks.notNull(actions, "Actions");
         Checks.check(actions.size() > 0, "Actions must contain at least one action");
 
+        int exampleRoleSize = 20;
+        int exampleChannelSize = 50;
         final Route.CompiledRoute route = Route.AutoModeration.CREATE_AUTO_MODERATION_RULE.compile(getId());
 
         DataObject object = DataObject.empty();
@@ -1283,16 +1285,16 @@ public class GuildImpl implements Guild
         object.put("actions", actions);
         object.put("enabled", enabled);
 
-        if (exemptRoles != null && exemptRoles.size() >= 20) {
+        if (exemptRoles != null && exemptRoles.size() >= exampleRoleSize) {
             object.put("exempt_roles", exemptRoles);
         } else if (exemptRoles != null) {
-            throw new IllegalArgumentException("Exempt roles must be at least 20 in size");
+            throw new IllegalArgumentException("Exempt roles must be at least " + exampleRoleSize + " in size");
         }
 
-        if (exemptChannel != null && exemptChannel.size() > 50) {
+        if (exemptChannel != null && exemptChannel.size() > exampleChannelSize) {
             object.put("exempt_channels", exemptChannel);
         } else if (exemptChannel != null) {
-            throw new IllegalArgumentException("Exempt channels must be at least 50 in size");
+            throw new IllegalArgumentException("Exempt channels must be at least " + exampleChannelSize + " in size");
         }
 
         return new AuditableRestActionImpl<>(getJDA(), route, object, (response, request) ->
