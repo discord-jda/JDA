@@ -102,10 +102,9 @@ public interface CommandEditAction extends RestAction<Command>
     CommandEditAction setGuildOnly(boolean guildOnly);
 
     /**
-     * Sets the default {@link DefaultMemberPermissions} for this command.
-     * <br>By default, everyone can use this command ({@link DefaultMemberPermissions#ENABLED}). This can be configured or overwritten by moderators in each guild.
-     *
-     * <p>Passing {@link DefaultMemberPermissions#DISABLED} will only show this command to admins.
+     * Sets the {@link net.dv8tion.jda.api.Permission Permissions} that a user must have in a specific channel to be able to use this command.
+     * <br>By default, everyone can use this command ({@link DefaultMemberPermissions#ENABLED}). Additionally, a command can be disabled for everyone but admins via {@link DefaultMemberPermissions#DISABLED}.
+     * <p>These configurations can be overwritten by moderators in each guild. See {@link Command#retrievePrivileges(net.dv8tion.jda.api.entities.Guild)} to get moderator defined overrides.
      *
      * @param  permission
      *         {@link DefaultMemberPermissions} representing the default permissions of this command.
