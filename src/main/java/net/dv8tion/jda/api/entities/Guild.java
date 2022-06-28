@@ -29,9 +29,10 @@ import net.dv8tion.jda.api.entities.sticker.*;
 import net.dv8tion.jda.api.entities.templates.Template;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.commands.PrivilegeConfig;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
-import net.dv8tion.jda.api.interactions.commands.privileges.CommandPrivilege;
+import net.dv8tion.jda.api.interactions.commands.privileges.IntegrationPrivilege;
 import net.dv8tion.jda.api.managers.AudioManager;
 import net.dv8tion.jda.api.managers.GuildManager;
 import net.dv8tion.jda.api.managers.GuildStickerManager;
@@ -196,15 +197,20 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      *
      * <p>You need the OAuth2 scope {@code "applications.commands"} in order to add commands to a guild.
      *
-     * <h4>Examples</h4>
+     * <p><b>Examples</b>
+     *
+     * <p>Set list to 2 commands:
      * <pre>{@code
-     * // Set list to 2 commands
      * guild.updateCommands()
      *   .addCommands(Commands.slash("ping", "Gives the current ping"))
      *   .addCommands(Commands.slash("ban", "Ban the target user")
      *     .addOption(OptionType.USER, "user", "The user to ban", true))
+     *     .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.BAN_MEMBERS))
      *   .queue();
-     * // Delete all commands
+     * }</pre>
+     *
+     * <p>Delete all commands:
+     * <pre>{@code
      * guild.updateCommands().queue();
      * }</pre>
      *
@@ -289,194 +295,61 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     }
 
     /**
-     * Retrieves the {@link CommandPrivilege CommandPrivileges} for the command with the specified ID.
+     * Retrieves the {@link IntegrationPrivilege IntegrationPrivileges} for the target with the specified ID.
+     * <br><b>The ID can either be of a Command or Application!</b>
      *
-     * <p>These privileges are used to restrict who can use commands through Role/User whitelists/blacklists.
+     * <p>Moderators of a guild can modify these privileges through the Integrations Menu
      *
-     * <p>If there is no command with the provided ID,
+     * <p>If there is no command or application with the provided ID,
      * this RestAction fails with {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_COMMAND ErrorResponse.UNKNOWN_COMMAND}
      *
-     * @param  commandId
-     *         The id of the command, this can be global or guild command
+     * @param  targetId
+     *         The id of the command (global or guild), or application
      *
      * @throws IllegalArgumentException
      *         If the id is not a valid snowflake
      *
-     * @return {@link RestAction} - Type: {@link List} of {@link CommandPrivilege}
+     * @return {@link RestAction} - Type: {@link List} of {@link IntegrationPrivilege}
      */
     @Nonnull
     @CheckReturnValue
-    RestAction<List<CommandPrivilege>> retrieveCommandPrivilegesById(@Nonnull String commandId);
+    RestAction<List<IntegrationPrivilege>> retrieveIntegrationPrivilegesById(@Nonnull String targetId);
 
     /**
-     * Retrieves the {@link CommandPrivilege CommandPrivileges} for the command with the specified ID.
+     * Retrieves the {@link IntegrationPrivilege IntegrationPrivileges} for the target with the specified ID.
+     * <br><b>The ID can either be of a Command or Application!</b>
      *
-     * <p>These privileges are used to restrict who can use commands through Role/User whitelists/blacklists.
+     * <p>Moderators of a guild can modify these privileges through the Integrations Menu
      *
-     * <p>If there is no command with the provided ID,
+     * <p>If there is no command or application with the provided ID,
      * this RestAction fails with {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_COMMAND ErrorResponse.UNKNOWN_COMMAND}
      *
-     * @param  commandId
-     *         The id of the command, this can be global or guild command
+     * @param  targetId
+     *         The id of the command (global or guild), or application
      *
      * @throws IllegalArgumentException
      *         If the id is not a valid snowflake
      *
-     * @return {@link RestAction} - Type: {@link List} of {@link CommandPrivilege}
+     * @return {@link RestAction} - Type: {@link List} of {@link IntegrationPrivilege}
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<List<CommandPrivilege>> retrieveCommandPrivilegesById(long commandId)
+    default RestAction<List<IntegrationPrivilege>> retrieveIntegrationPrivilegesById(long targetId)
     {
-        return retrieveCommandPrivilegesById(Long.toUnsignedString(commandId));
+        return retrieveIntegrationPrivilegesById(Long.toUnsignedString(targetId));
     }
 
     /**
-     * Retrieves the {@link CommandPrivilege CommandPrivileges} for the commands in this guild.
-     * <br>The RestAction provides a {@link Map} from the command id to the list of privileges.
+     * Retrieves the {@link IntegrationPrivilege IntegrationPrivileges} for the commands in this guild.
+     * <br>The RestAction provides a {@link PrivilegeConfig} providing the privileges of this application and its commands.
      *
-     * <p>These privileges are used to restrict who can use commands through Role/User whitelists/blacklists.
+     * <p>Moderators of a guild can modify these privileges through the Integrations Menu
      *
-     * @return {@link RestAction} - Type: {@link Map} from {@link String} Command ID to {@link List} of {@link CommandPrivilege}
+     * @return {@link RestAction} - Type: {@link PrivilegeConfig}
      */
     @Nonnull
     @CheckReturnValue
-    RestAction<Map<String, List<CommandPrivilege>>> retrieveCommandPrivileges();
-
-    /**
-     * Updates the list of {@link CommandPrivilege CommandPrivileges} for the specified command.
-     * <br>Note that commands are enabled by default for all members of a guild, which means you can only <em>blacklist</em> roles and members using this method.
-     * To change this behavior, use {@link CommandData#setDefaultEnabled(boolean)} on your command.
-     *
-     * <p>These privileges are used to restrict who can use commands through Role/User whitelists/blacklists.
-     *
-     * <p>If there is no command with the provided ID,
-     * this RestAction fails with {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_COMMAND ErrorResponse.UNKNOWN_COMMAND}
-     *
-     * @param  id
-     *         The id of the command, this can be global or guild command
-     * @param  privileges
-     *         Complete list of up to 10 {@link CommandPrivilege CommandPrivileges} for this command
-     *
-     * @throws IllegalArgumentException
-     *         If null is provided, the id is not a valid snowflake, or more than 10 privileges are provided
-     *
-     * @return {@link RestAction} - Type: {@link List} or {@link CommandPrivilege}
-     *         The updated list of privileges for this command.
-     */
-    @Nonnull
-    @CheckReturnValue
-    RestAction<List<CommandPrivilege>> updateCommandPrivilegesById(@Nonnull String id, @Nonnull Collection<? extends CommandPrivilege> privileges);
-
-    /**
-     * Updates the list of {@link CommandPrivilege CommandPrivileges} for the specified command.
-     * <br>Note that commands are enabled by default for all members of a guild, which means you can only <em>blacklist</em> roles and members using this method.
-     * To change this behavior, use {@link CommandData#setDefaultEnabled(boolean)} on your command.
-     *
-     * <p>These privileges are used to restrict who can use commands through Role/User whitelists/blacklists.
-     *
-     * <p>If there is no command with the provided ID,
-     * this RestAction fails with {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_COMMAND ErrorResponse.UNKNOWN_COMMAND}
-     *
-     * @param  id
-     *         The id of the command, this can be global or guild command
-     * @param  privileges
-     *         Complete list of up to 10 {@link CommandPrivilege CommandPrivileges} for this command
-     *
-     * @throws IllegalArgumentException
-     *         If null is provided, the id is not a valid snowflake, or more than 10 privileges are provided
-     *
-     * @return {@link RestAction} - Type: {@link List} or {@link CommandPrivilege}
-     *         The updated list of privileges for this command.
-     */
-    @Nonnull
-    @CheckReturnValue
-    default RestAction<List<CommandPrivilege>> updateCommandPrivilegesById(@Nonnull String id, @Nonnull CommandPrivilege... privileges)
-    {
-        Checks.noneNull(privileges, "CommandPrivileges");
-        return updateCommandPrivilegesById(id, Arrays.asList(privileges));
-    }
-
-    /**
-     * Updates the list of {@link CommandPrivilege CommandPrivileges} for the specified command.
-     * <br>Note that commands are enabled by default for all members of a guild, which means you can only <em>blacklist</em> roles and members using this method.
-     * To change this behavior, use {@link CommandData#setDefaultEnabled(boolean)} on your command.
-     *
-     * <p>These privileges are used to restrict who can use commands through Role/User whitelists/blacklists.
-     *
-     * <p>If there is no command with the provided ID,
-     * this RestAction fails with {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_COMMAND ErrorResponse.UNKNOWN_COMMAND}
-     *
-     * @param  id
-     *         The id of the command, this can be global or guild command
-     * @param  privileges
-     *         Complete list of up to 10 {@link CommandPrivilege CommandPrivileges} for this command
-     *
-     * @throws IllegalArgumentException
-     *         If null is provided or more than 10 privileges are provided
-     *
-     * @return {@link RestAction} - Type: {@link List} or {@link CommandPrivilege}
-     *         The updated list of privileges for this command.
-     */
-    @Nonnull
-    @CheckReturnValue
-    default RestAction<List<CommandPrivilege>> updateCommandPrivilegesById(long id, @Nonnull Collection<? extends CommandPrivilege> privileges)
-    {
-        return updateCommandPrivilegesById(Long.toUnsignedString(id), privileges);
-    }
-
-    /**
-     * Updates the list of {@link CommandPrivilege CommandPrivileges} for the specified command.
-     * <br>Note that commands are enabled by default for all members of a guild, which means you can only <em>blacklist</em> roles and members using this method.
-     * To change this behavior, use {@link CommandData#setDefaultEnabled(boolean)} on your command.
-     *
-     * <p>These privileges are used to restrict who can use commands through Role/User whitelists/blacklists.
-     *
-     * <p>If there is no command with the provided ID,
-     * this RestAction fails with {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_COMMAND ErrorResponse.UNKNOWN_COMMAND}
-     *
-     * @param  id
-     *         The id of the command, this can be global or guild command
-     * @param  privileges
-     *         Complete list of up to 10 {@link CommandPrivilege CommandPrivileges} for this command
-     *
-     * @throws IllegalArgumentException
-     *         If null is provided or more than 10 privileges are provided
-     *
-     * @return {@link RestAction} - Type: {@link List} or {@link CommandPrivilege}
-     *         The updated list of privileges for this command.
-     */
-    @Nonnull
-    @CheckReturnValue
-    default RestAction<List<CommandPrivilege>> updateCommandPrivilegesById(long id, @Nonnull CommandPrivilege... privileges)
-    {
-        Checks.noneNull(privileges, "CommandPrivileges");
-        return updateCommandPrivilegesById(id, Arrays.asList(privileges));
-    }
-
-    /**
-     * Updates the list of {@link CommandPrivilege CommandPrivileges} for the specified commands.
-     * <br>The argument for this function is a {@link Map} similar to the one returned by {@link #retrieveCommandPrivileges()}.
-     * <br>Note that commands are enabled by default for all members of a guild, which means you can only <em>blacklist</em> roles and members using this method.
-     * To change this behavior, use {@link CommandData#setDefaultEnabled(boolean)} on your command.
-     *
-     * <p>These privileges are used to restrict who can use commands through Role/User whitelists/blacklists.
-     *
-     * <p>If there is no command with the provided ID,
-     * this RestAction fails with {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_COMMAND ErrorResponse.UNKNOWN_COMMAND}
-     *
-     * @param  privileges
-     *         Complete map of {@link CommandPrivilege CommandPrivileges} for each command
-     *
-     * @throws IllegalArgumentException
-     *         If null is provided, any of the map keys is not a valid snowflake, or more than 10 privileges are provided for any command
-     *
-     * @return {@link RestAction} - Type: {@link Map} from {@link String} Command ID to {@link List} of {@link CommandPrivilege}
-     *         The updated map of command privileges for this guild.
-     */
-    @Nonnull
-    @CheckReturnValue
-    RestAction<Map<String, List<CommandPrivilege>>> updateCommandPrivileges(@Nonnull Map<String, ? extends Collection<CommandPrivilege>> privileges);
+    RestAction<PrivilegeConfig> retrieveCommandPrivileges();
 
     /**
      * Retrieves the available regions for this Guild

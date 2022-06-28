@@ -597,6 +597,10 @@ public enum ActionType
      * When a message is blocked by an {@link net.dv8tion.jda.api.entities.AutoModerationRule auto moderation rule}
      */
     AUTO_MODERATION_BLOCK_MESSAGE(143, TargetType.AUTO_MODERATION_RULE),
+    
+     * A moderator updated the privileges for an application
+     */
+    APPLICATION_COMMAND_PRIVILEGES_UPDATE(121, TargetType.INTEGRATION),
 
     UNKNOWN(-1, TargetType.UNKNOWN);
 
