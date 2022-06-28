@@ -52,7 +52,7 @@ public class GuildMemberAddHandler extends SocketHandler
         getJDA().handleEvent(
             new GuildMemberJoinEvent(
                 getJDA(), responseNumber,
-                    member));
+                member));
         return null;
     }
 }

@@ -48,7 +48,7 @@ public class GuildRoleCreateHandler extends SocketHandler
         getJDA().handleEvent(
             new RoleCreateEvent(
                 getJDA(), responseNumber,
-                    newRole));
+                newRole));
         return null;
     }
 }

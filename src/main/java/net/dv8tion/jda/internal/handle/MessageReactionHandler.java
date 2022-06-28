@@ -169,14 +169,14 @@ public class MessageReactionHandler extends SocketHandler
             api.handleEvent(
                 new MessageReactionAddEvent(
                     api, responseNumber,
-                        user, member, reaction, userId));
+                    user, member, reaction, userId));
         }
         else
         {
             api.handleEvent(
                 new MessageReactionRemoveEvent(
                     api, responseNumber,
-                        user, member, reaction, userId));
+                    user, member, reaction, userId));
         }
         return null;
     }

@@ -381,12 +381,6 @@ public class GuildSetupNode
         api.getEventCache().playbackCache(EventCache.Type.GUILD, id);
     }
 
-    @Nullable
-    private DataObject getPassthrough()
-    {
-        return controller.getJDA().isEventPassthrough() ? getGuildPayload() : null;
-    }
-
     private void ensureMembers()
     {
         expectedMemberCount = partialGuild.getInt("member_count");

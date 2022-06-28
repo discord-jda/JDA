@@ -104,7 +104,7 @@ public class InviteCreateHandler extends SocketHandler
         getJDA().handleEvent(
             new GuildInviteCreateEvent(
                 getJDA(), responseNumber,
-                    invite, realChannel));
+                invite, realChannel));
         return null;
     }
 }

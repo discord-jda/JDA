@@ -72,7 +72,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAccessor;
 import java.util.*;
 import java.util.function.Function;
-import java.util.function.ToLongFunction;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -421,7 +420,7 @@ public class EntityBuilder
             jda.handleEvent(
                 new UserUpdateNameEvent(
                     jda, responseNumber,
-                        userObj, oldName));
+                    userObj, oldName));
         }
 
         if (!oldDiscriminator.equals(newDiscriminator))
@@ -430,7 +429,7 @@ public class EntityBuilder
             jda.handleEvent(
                 new UserUpdateDiscriminatorEvent(
                     jda, responseNumber,
-                        userObj, oldDiscriminator));
+                    userObj, oldDiscriminator));
         }
 
         if (!Objects.equals(oldAvatar, newAvatar))
@@ -439,7 +438,7 @@ public class EntityBuilder
             jda.handleEvent(
                 new UserUpdateAvatarEvent(
                     jda, responseNumber,
-                        userObj, oldAvatar));
+                    userObj, oldAvatar));
         }
 
         if (oldFlags != newFlags)
@@ -448,7 +447,7 @@ public class EntityBuilder
             jda.handleEvent(
                     new UserUpdateFlagsEvent(
                         jda, responseNumber,
-                            userObj, User.UserFlag.getFlags(oldFlags)));
+                        userObj, User.UserFlag.getFlags(oldFlags)));
         }
     }
 
@@ -630,7 +629,7 @@ public class EntityBuilder
                 getJDA().handleEvent(
                     new GuildMemberUpdateNicknameEvent(
                         getJDA(), responseNumber,
-                            member, oldNick));
+                        member, oldNick));
             }
         }
         if (content.hasKey("avatar"))
@@ -658,7 +657,7 @@ public class EntityBuilder
                 getJDA().handleEvent(
                     new GuildMemberUpdateBoostTimeEvent(
                         getJDA(), responseNumber,
-                            member, oldTime));
+                        member, oldTime));
             }
         }
 
@@ -696,7 +695,7 @@ public class EntityBuilder
                 getJDA().handleEvent(
                     new GuildMemberUpdatePendingEvent(
                         getJDA(), responseNumber,
-                            member, oldPending));
+                        member, oldPending));
             }
         }
 
@@ -732,15 +731,15 @@ public class EntityBuilder
         {
             getJDA().handleEvent(
                 new GuildMemberRoleRemoveEvent(
-                    getJDA(), responseNumber, member,
-                        removedRoles));
+                    getJDA(), responseNumber,
+                    member, removedRoles));
         }
         if (newRoles.size() > 0)
         {
             getJDA().handleEvent(
                 new GuildMemberRoleAddEvent(
                     getJDA(), responseNumber,
-                        member, newRoles));
+                    member, newRoles));
         }
     }
 

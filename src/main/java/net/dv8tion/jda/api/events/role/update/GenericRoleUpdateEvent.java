@@ -37,8 +37,8 @@ public abstract class GenericRoleUpdateEvent<T> extends GenericRoleEvent impleme
     protected final String identifier;
 
     public GenericRoleUpdateEvent(
-            @Nonnull JDA api, long responseNumber, @Nonnull Role role,
-            @Nullable T previous, @Nullable T next, @Nonnull String identifier)
+        @Nonnull JDA api, long responseNumber, @Nonnull Role role,
+        @Nullable T previous, @Nullable T next, @Nonnull String identifier)
     {
         super(api, responseNumber, role);
         this.previous = previous;

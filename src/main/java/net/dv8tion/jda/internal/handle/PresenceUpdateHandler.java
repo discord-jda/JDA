@@ -124,7 +124,7 @@ public class PresenceUpdateHandler extends SocketHandler
                 getJDA().handleEvent(
                     new UserUpdateOnlineStatusEvent(
                         getJDA(), responseNumber,
-                            member, oldStatus));
+                        member, oldStatus));
             }
         }
         return null;
@@ -167,7 +167,7 @@ public class PresenceUpdateHandler extends SocketHandler
                 getJDA().handleEvent(
                     new UserUpdateActivityOrderEvent(
                         getJDA(), responseNumber,
-                            oldActivities, member));
+                        oldActivities, member));
             }
         }
         else
@@ -186,7 +186,7 @@ public class PresenceUpdateHandler extends SocketHandler
                 getJDA().handleEvent(
                     new UserActivityStartEvent(
                         getJDA(), responseNumber,
-                            member, activity));
+                        member, activity));
             }
 
             for (Activity activity : stoppedActivities)
@@ -194,13 +194,13 @@ public class PresenceUpdateHandler extends SocketHandler
                 getJDA().handleEvent(
                     new UserActivityEndEvent(
                         getJDA(), responseNumber,
-                            member, activity));
+                        member, activity));
             }
 
             getJDA().handleEvent(
                 new UserUpdateActivitiesEvent(
                     getJDA(), responseNumber,
-                        member, oldActivities));
+                    member, oldActivities));
         }
     }
 

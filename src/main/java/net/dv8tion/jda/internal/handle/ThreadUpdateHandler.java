@@ -55,7 +55,7 @@ public class ThreadUpdateHandler extends SocketHandler
             api.handleEvent(
                 new ChannelUpdateArchivedEvent(
                     api, responseNumber,
-                        thread, true, false));
+                    thread, true, false));
 
             return null;
         }
@@ -84,7 +84,7 @@ public class ThreadUpdateHandler extends SocketHandler
             api.handleEvent(
                 new ChannelUpdateNameEvent(
                     getJDA(), responseNumber,
-                        thread, oldName, name));
+                    thread, oldName, name));
         }
         if (oldSlowmode != slowmode)
         {
@@ -92,7 +92,7 @@ public class ThreadUpdateHandler extends SocketHandler
             api.handleEvent(
                 new ChannelUpdateSlowmodeEvent(
                     api, responseNumber,
-                        thread, oldSlowmode, slowmode));
+                    thread, oldSlowmode, slowmode));
         }
         if (oldAutoArchiveDuration != autoArchiveDuration)
         {
@@ -100,7 +100,7 @@ public class ThreadUpdateHandler extends SocketHandler
             api.handleEvent(
                 new ChannelUpdateAutoArchiveDurationEvent(
                     api, responseNumber,
-                        thread, oldAutoArchiveDuration, autoArchiveDuration));
+                    thread, oldAutoArchiveDuration, autoArchiveDuration));
         }
         if (oldLocked != locked)
         {
@@ -108,7 +108,7 @@ public class ThreadUpdateHandler extends SocketHandler
             api.handleEvent(
                 new ChannelUpdateLockedEvent(
                     api, responseNumber,
-                        thread, oldLocked, locked));
+                    thread, oldLocked, locked));
         }
         if (oldArchived != archived)
         {
@@ -116,7 +116,7 @@ public class ThreadUpdateHandler extends SocketHandler
             api.handleEvent(
                 new ChannelUpdateArchivedEvent(
                     api, responseNumber,
-                        thread, oldArchived, archived));
+                    thread, oldArchived, archived));
         }
         if (oldArchiveTimestamp != archiveTimestamp)
         {
@@ -124,7 +124,7 @@ public class ThreadUpdateHandler extends SocketHandler
             api.handleEvent(
                 new ChannelUpdateArchiveTimestampEvent(
                     api, responseNumber,
-                        thread, oldArchiveTimestamp, archiveTimestamp));
+                    thread, oldArchiveTimestamp, archiveTimestamp));
         }
         if (oldInvitable != invitable)
         {
@@ -132,7 +132,7 @@ public class ThreadUpdateHandler extends SocketHandler
             api.handleEvent(
                 new ChannelUpdateInvitableEvent(
                     api, responseNumber,
-                        thread, oldInvitable, invitable));
+                    thread, oldInvitable, invitable));
         }
 
         return null;

@@ -96,7 +96,7 @@ public class MessageBulkDeleteHandler extends SocketHandler
             getJDA().handleEvent(
                 new MessageBulkDeleteEvent(
                     getJDA(), responseNumber,
-                        channel, messages));
+                    channel, messages));
         }
         return null;
     }

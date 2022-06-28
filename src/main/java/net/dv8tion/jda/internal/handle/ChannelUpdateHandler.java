@@ -113,7 +113,7 @@ public class ChannelUpdateHandler extends SocketHandler
                     getJDA().handleEvent(
                            new ChannelUpdateParentEvent(
                                getJDA(), responseNumber,
-                                   textChannel, oldParent, textChannel.getParentCategory()));
+                               textChannel, oldParent, textChannel.getParentCategory()));
                 }
                 if (!Objects.equals(oldTopic, topic))
                 {
@@ -346,7 +346,7 @@ public class ChannelUpdateHandler extends SocketHandler
                     getJDA().handleEvent(
                             new ChannelUpdateNameEvent(
                                 getJDA(), responseNumber,
-                                    category, oldName, name));
+                                category, oldName, name));
                 }
                 if (!Objects.equals(oldPosition, position))
                 {
@@ -354,7 +354,7 @@ public class ChannelUpdateHandler extends SocketHandler
                     getJDA().handleEvent(
                             new ChannelUpdatePositionEvent(
                                 getJDA(), responseNumber,
-                                    category, oldPosition, position));
+                                category, oldPosition, position));
                 }
 
                 break;
@@ -398,7 +398,7 @@ public class ChannelUpdateHandler extends SocketHandler
             getJDA().handleEvent(
                 new ChannelUpdateTypeEvent(
                     getJDA(), responseNumber,
-                        textChannel, ChannelType.NEWS, ChannelType.TEXT));
+                    textChannel, ChannelType.NEWS, ChannelType.TEXT));
 
             return textChannel;
         }
@@ -418,7 +418,7 @@ public class ChannelUpdateHandler extends SocketHandler
             getJDA().handleEvent(
                 new ChannelUpdateTypeEvent(
                     getJDA(), responseNumber,
-                        newsChannel, ChannelType.TEXT, ChannelType.NEWS));
+                    newsChannel, ChannelType.TEXT, ChannelType.NEWS));
 
             return newsChannel;
         }
@@ -445,7 +445,7 @@ public class ChannelUpdateHandler extends SocketHandler
             api.handleEvent(
                 new PermissionOverrideDeleteEvent(
                     api, responseNumber,
-                        channel, override));
+                    channel, override));
             return true;
         });
     }
@@ -495,7 +495,7 @@ public class ChannelUpdateHandler extends SocketHandler
                 api.handleEvent(
                     new PermissionOverrideDeleteEvent(
                         api, responseNumber,
-                            channel, currentOverride));
+                        channel, currentOverride));
                 return true;
             }
 
@@ -504,7 +504,7 @@ public class ChannelUpdateHandler extends SocketHandler
             api.handleEvent(
                 new PermissionOverrideUpdateEvent(
                     api, responseNumber,
-                        channel, currentOverride, oldAllow, oldDeny));
+                    channel, currentOverride, oldAllow, oldDeny));
         }
         else // New override?
         {
@@ -519,7 +519,7 @@ public class ChannelUpdateHandler extends SocketHandler
             api.handleEvent(
                 new PermissionOverrideCreateEvent(
                     api, responseNumber,
-                        channel, currentOverride));
+                    channel, currentOverride));
         }
 
         return true;

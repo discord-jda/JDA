@@ -62,14 +62,14 @@ public class GuildDeleteHandler extends SocketHandler
             getJDA().handleEvent(
                 new GuildUnavailableEvent(
                     getJDA(), responseNumber,
-                        guild));
+                    guild));
         }
         else
         {
             getJDA().handleEvent(
                 new GuildLeaveEvent(
                     getJDA(), responseNumber,
-                        guild));
+                    guild));
         }
         getJDA().getEventCache().clear(EventCache.Type.GUILD, id);
         return null;

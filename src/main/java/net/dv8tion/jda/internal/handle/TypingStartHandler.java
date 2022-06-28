@@ -82,7 +82,7 @@ public class TypingStartHandler extends SocketHandler
         getJDA().handleEvent(
             new UserTypingEvent(
                 getJDA(), responseNumber,
-                    user, channel, timestamp, member));
+                user, channel, timestamp, member));
         return null;
     }
 }

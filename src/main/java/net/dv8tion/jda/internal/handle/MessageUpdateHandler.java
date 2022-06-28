@@ -162,7 +162,7 @@ public class MessageUpdateHandler extends SocketHandler
         getJDA().handleEvent(
             new MessageEmbedEvent(
                 getJDA(), responseNumber,
-                    messageId, channel, embeds));
+                messageId, channel, embeds));
         return null;
     }
 }

@@ -62,7 +62,7 @@ public class ChannelDeleteHandler extends SocketHandler
                 getJDA().handleEvent(
                     new ChannelDeleteEvent(
                         getJDA(), responseNumber,
-                            channel));
+                        channel));
                 break;
             }
             case NEWS:
@@ -102,7 +102,7 @@ public class ChannelDeleteHandler extends SocketHandler
                 getJDA().handleEvent(
                     new ChannelDeleteEvent(
                         getJDA(), responseNumber,
-                            channel));
+                        channel));
                 break;
             }
             case STAGE:
@@ -118,7 +118,7 @@ public class ChannelDeleteHandler extends SocketHandler
                 getJDA().handleEvent(
                     new ChannelDeleteEvent(
                         getJDA(), responseNumber,
-                            channel));
+                        channel));
             }
 
             case CATEGORY:
@@ -134,7 +134,7 @@ public class ChannelDeleteHandler extends SocketHandler
                 getJDA().handleEvent(
                     new ChannelDeleteEvent(
                         getJDA(), responseNumber,
-                            category));
+                        category));
                 break;
             }
             case PRIVATE:

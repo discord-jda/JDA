@@ -52,7 +52,7 @@ public class ThreadDeleteHandler extends SocketHandler
         getJDA().handleEvent(
             new ChannelDeleteEvent(
                 getJDA(), responseNumber,
-                    thread));
+                thread));
 
         getJDA().getEventCache().clear(EventCache.Type.CHANNEL, threadId);
         return null;

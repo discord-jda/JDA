@@ -79,7 +79,7 @@ public class GuildMemberRemoveHandler extends SocketHandler
                     getJDA().handleEvent(
                         new GuildVoiceLeaveEvent(
                             getJDA(), responseNumber,
-                                connected, channel));
+                            connected, channel));
                 }
             });
 
@@ -87,7 +87,7 @@ public class GuildMemberRemoveHandler extends SocketHandler
             getJDA().handleEvent(
                 new GuildMemberRemoveEvent(
                     getJDA(), responseNumber,
-                        guild, user, null));
+                    guild, user, null));
             return null;
         }
 
@@ -101,7 +101,7 @@ public class GuildMemberRemoveHandler extends SocketHandler
             getJDA().handleEvent(
                 new GuildVoiceLeaveEvent(
                     getJDA(), responseNumber,
-                        member, channel));
+                    member, channel));
         }
 
         //The user is not in a different guild that we share
@@ -120,7 +120,7 @@ public class GuildMemberRemoveHandler extends SocketHandler
         getJDA().handleEvent(
             new GuildMemberRemoveEvent(
                 getJDA(), responseNumber,
-                    guild, user, member));
+                guild, user, member));
         return null;
     }
 }

@@ -104,9 +104,9 @@ public class ThreadMembersUpdateHandler extends SocketHandler
         for (ThreadMember threadMember : addedThreadMembers)
         {
             api.handleEvent(
-                    new ThreadMemberJoinEvent(
-                            api, responseNumber,
-                            thread, threadMember));
+                new ThreadMemberJoinEvent(
+                    api, responseNumber,
+                    thread, threadMember));
         }
     }
 
@@ -131,7 +131,7 @@ public class ThreadMembersUpdateHandler extends SocketHandler
             api.handleEvent(
                 new ThreadMemberLeaveEvent(
                     api, responseNumber,
-                        thread, threadMemberId, removedThreadMembers.remove(threadMemberId)));
+                    thread, threadMemberId, removedThreadMembers.remove(threadMemberId)));
         }
     }
 }

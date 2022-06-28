@@ -182,7 +182,7 @@ public class VoiceStateUpdateHandler extends SocketHandler
                 getJDA().handleEvent(
                     new GuildVoiceJoinEvent(
                         getJDA(), responseNumber,
-                            member));
+                        member));
             }
             else if (channel == null)
             {
@@ -194,7 +194,7 @@ public class VoiceStateUpdateHandler extends SocketHandler
                 getJDA().handleEvent(
                     new GuildVoiceLeaveEvent(
                         getJDA(), responseNumber,
-                            member, oldChannel));
+                        member, oldChannel));
             }
             else
             {
@@ -223,7 +223,7 @@ public class VoiceStateUpdateHandler extends SocketHandler
                 getJDA().handleEvent(
                     new GuildVoiceMoveEvent(
                         getJDA(), responseNumber,
-                            member, oldChannel));
+                        member, oldChannel));
             }
         }
 

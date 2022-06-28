@@ -123,7 +123,7 @@ public class GuildEmojisUpdateHandler extends SocketHandler
             getJDA().handleEvent(
                 new EmojiRemovedEvent(
                     getJDA(), responseNumber,
-                        e));
+                    e));
         }
 
         for (RichCustomEmoji e : newEmojis)
@@ -131,7 +131,7 @@ public class GuildEmojisUpdateHandler extends SocketHandler
             getJDA().handleEvent(
                 new EmojiAddedEvent(
                     getJDA(), responseNumber,
-                        e));
+                    e));
         }
 
         return null;

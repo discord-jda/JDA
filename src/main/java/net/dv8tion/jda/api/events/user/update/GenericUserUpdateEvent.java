@@ -49,8 +49,8 @@ public abstract class GenericUserUpdateEvent<T> extends GenericUserEvent impleme
     protected final String identifier;
 
     public GenericUserUpdateEvent(
-            @Nonnull JDA api, long responseNumber, @Nonnull User user,
-            @Nullable T previous, @Nullable T next, @Nonnull String identifier)
+        @Nonnull JDA api, long responseNumber, @Nonnull User user,
+        @Nullable T previous, @Nullable T next, @Nonnull String identifier)
     {
         super(api, responseNumber, user);
         this.previous = previous;

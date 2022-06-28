@@ -35,8 +35,8 @@ public abstract class GenericGuildUpdateEvent<T> extends GenericGuildEvent imple
     protected final String identifier;
 
     public GenericGuildUpdateEvent(
-            @Nonnull JDA api, long responseNumber, @Nonnull Guild guild,
-            @Nullable T previous, @Nullable T next, @Nonnull String identifier)
+        @Nonnull JDA api, long responseNumber, @Nonnull Guild guild,
+        @Nullable T previous, @Nullable T next, @Nonnull String identifier)
     {
         super(api, responseNumber, guild);
         this.previous = previous;

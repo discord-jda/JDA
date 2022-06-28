@@ -85,17 +85,17 @@ public class InteractionCreateHandler extends SocketHandler
             case COMMAND_AUTOCOMPLETE:
                 api.handleEvent(
                     new CommandAutoCompleteInteractionEvent(api, responseNumber,
-                            new CommandAutoCompleteInteractionImpl(api, content)));
+                        new CommandAutoCompleteInteractionImpl(api, content)));
                 break;
             case MODAL_SUBMIT:
                 api.handleEvent(
                     new ModalInteractionEvent(api, responseNumber,
-                            new ModalInteractionImpl(api, content)));
+                        new ModalInteractionImpl(api, content)));
                 break;
             default:
                 api.handleEvent(
                     new GenericInteractionCreateEvent(api, responseNumber,
-                            new InteractionImpl(api, content)));
+                        new InteractionImpl(api, content)));
         }
 
         return null;
@@ -108,17 +108,17 @@ public class InteractionCreateHandler extends SocketHandler
         case SLASH:
             api.handleEvent(
                 new SlashCommandInteractionEvent(api, responseNumber,
-                        new SlashCommandInteractionImpl(api, content)));
+                    new SlashCommandInteractionImpl(api, content)));
             break;
         case MESSAGE:
             api.handleEvent(
                 new MessageContextInteractionEvent(api, responseNumber,
-                        new MessageContextInteractionImpl(api, content)));
+                    new MessageContextInteractionImpl(api, content)));
             break;
         case USER:
             api.handleEvent(
                 new UserContextInteractionEvent(api, responseNumber,
-                        new UserContextInteractionImpl(api, content)));
+                    new UserContextInteractionImpl(api, content)));
             break;
         }
     }
@@ -130,12 +130,12 @@ public class InteractionCreateHandler extends SocketHandler
         case BUTTON:
             api.handleEvent(
                 new ButtonInteractionEvent(api, responseNumber,
-                        new ButtonInteractionImpl(api, content)));
+                    new ButtonInteractionImpl(api, content)));
             break;
         case SELECT_MENU:
             api.handleEvent(
                 new SelectMenuInteractionEvent(api, responseNumber,
-                        new SelectMenuInteractionImpl(api, content)));
+                    new SelectMenuInteractionImpl(api, content)));
             break;
         }
     }

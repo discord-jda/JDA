@@ -57,7 +57,7 @@ public class UserUpdateHandler extends SocketHandler
             getJDA().handleEvent(
                 new SelfUpdateNameEvent(
                     getJDA(), responseNumber,
-                        oldName));
+                    oldName));
         }
 
         if (!Objects.equals(avatarId, self.getAvatarId()))
@@ -67,7 +67,7 @@ public class UserUpdateHandler extends SocketHandler
             getJDA().handleEvent(
                 new SelfUpdateAvatarEvent(
                     getJDA(), responseNumber,
-                        oldAvatarId));
+                    oldAvatarId));
         }
 
         if (verified != null && verified != self.isVerified())
@@ -77,7 +77,7 @@ public class UserUpdateHandler extends SocketHandler
             getJDA().handleEvent(
                 new SelfUpdateVerifiedEvent(
                     getJDA(), responseNumber,
-                        wasVerified));
+                    wasVerified));
         }
 
         if (mfaEnabled != null && mfaEnabled != self.isMfaEnabled())
@@ -87,7 +87,7 @@ public class UserUpdateHandler extends SocketHandler
             getJDA().handleEvent(
                 new SelfUpdateMFAEvent(
                     getJDA(), responseNumber,
-                        wasMfaEnabled));
+                    wasMfaEnabled));
         }
         return null;
     }
