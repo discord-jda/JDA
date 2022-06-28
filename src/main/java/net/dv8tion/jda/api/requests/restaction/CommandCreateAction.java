@@ -18,6 +18,7 @@ package net.dv8tion.jda.api.requests.restaction;
 
 import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
@@ -59,11 +60,6 @@ public interface CommandCreateAction extends RestAction<Command>, SlashCommandDa
     @Override
     @CheckReturnValue
     CommandCreateAction deadline(long timestamp);
-
-    @Nonnull
-    @Override
-    @CheckReturnValue
-    CommandCreateAction setDefaultEnabled(boolean enabled);
 
     @Nonnull
     @Override
@@ -159,4 +155,14 @@ public interface CommandCreateAction extends RestAction<Command>, SlashCommandDa
     {
         return (CommandCreateAction) SlashCommandData.super.addSubcommandGroups(groups);
     }
+
+    @Nonnull
+    @Override
+    @CheckReturnValue
+    CommandCreateAction setDefaultPermissions(@Nonnull DefaultMemberPermissions permission);
+
+    @Nonnull
+    @Override
+    @CheckReturnValue
+    CommandCreateAction setGuildOnly(boolean guildOnly);
 }

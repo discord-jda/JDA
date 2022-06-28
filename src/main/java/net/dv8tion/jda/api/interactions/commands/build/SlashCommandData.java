@@ -18,6 +18,7 @@ package net.dv8tion.jda.api.interactions.commands.build;
 
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
+import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFunction;
@@ -56,7 +57,11 @@ public interface SlashCommandData extends CommandData
 
     @Nonnull
     @Override
-    SlashCommandData setDefaultEnabled(boolean enabled);
+    SlashCommandData setDefaultPermissions(@Nonnull DefaultMemberPermissions permission);
+
+    @Nonnull
+    @Override
+    SlashCommandData setGuildOnly(boolean guildOnly);
 
     /**
      * Configure the description
@@ -397,7 +402,8 @@ public interface SlashCommandData extends CommandData
             throw new IllegalArgumentException("Cannot convert command of type " + command.getType() + " to SlashCommandData!");
 
         CommandDataImpl data = new CommandDataImpl(command.getName(), command.getDescription());
-        data.setDefaultEnabled(command.isDefaultEnabled());
+        data.setGuildOnly(command.isGuildOnly());
+        data.setDefaultPermissions(command.getDefaultPermissions());
         //Command localizations are unmodifiable, make a copy
         data.setNameLocalizations(command.getNameLocalizations().toMap());
         data.setDescriptionLocalizations(command.getDescriptionLocalizations().toMap());
@@ -445,6 +451,14 @@ public interface SlashCommandData extends CommandData
         String description = object.getString("description");
         DataArray options = object.optArray("options").orElseGet(DataArray::empty);
         CommandDataImpl command = new CommandDataImpl(name, description);
+        command.setGuildOnly(!object.getBoolean("dm_permission", true));
+
+        command.setDefaultPermissions(
+                object.isNull("default_member_permissions")
+                        ? DefaultMemberPermissions.ENABLED
+                        : DefaultMemberPermissions.enabledFor(object.getLong("default_member_permissions"))
+        );
+
         command.setNameLocalizations(LocalizationUtils.mapFromProperty(object, "name_localizations"));
         command.setDescriptionLocalizations(LocalizationUtils.mapFromProperty(object, "description_localizations"));
         options.stream(DataArray::getObject).forEach(opt ->

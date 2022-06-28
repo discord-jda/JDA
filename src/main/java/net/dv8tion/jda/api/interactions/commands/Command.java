@@ -23,7 +23,7 @@ import net.dv8tion.jda.api.entities.ISnowflake;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.localization.LocalizationMap;
-import net.dv8tion.jda.api.interactions.commands.privileges.CommandPrivilege;
+import net.dv8tion.jda.api.interactions.commands.privileges.IntegrationPrivilege;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.CommandEditAction;
 import net.dv8tion.jda.api.utils.TimeUtil;
@@ -52,7 +52,6 @@ public interface Command extends ISnowflake
 {
     /**
      * Delete this command.
-     * <br>If this is a global command it may take up to 1 hour to vanish from all clients.
      *
      * @throws IllegalStateException
      *         If this command is not owned by this bot
@@ -77,10 +76,10 @@ public interface Command extends ISnowflake
     CommandEditAction editCommand();
 
     /**
-     * Retrieves the {@link CommandPrivilege CommandPrivileges} for this command.
-     * <br>This is a shortcut for {@link Guild#retrieveCommandPrivilegesById(String)}.
+     * Retrieves the {@link IntegrationPrivilege IntegrationPrivileges} for this command.
+     * <br>This is a shortcut for {@link Guild#retrieveIntegrationPrivilegesById(String)}.
      *
-     * <p>These privileges are used to restrict who can use commands through Role/User whitelists/blacklists.
+     * <p>Moderators of a guild can modify these privileges through the Integrations Menu
      *
      * <p>If there is no command with the provided ID,
      * this RestAction fails with {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_COMMAND ErrorResponse.UNKNOWN_COMMAND}
@@ -91,65 +90,11 @@ public interface Command extends ISnowflake
      * @throws IllegalArgumentException
      *         If the guild is null
      *
-     * @return {@link RestAction} - Type: {@link List} of {@link CommandPrivilege}
+     * @return {@link RestAction} - Type: {@link List} of {@link IntegrationPrivilege}
      */
     @Nonnull
     @CheckReturnValue
-    RestAction<List<CommandPrivilege>> retrievePrivileges(@Nonnull Guild guild);
-
-    /**
-     * Updates the list of {@link CommandPrivilege CommandPrivileges} for this command.
-     * <br>Note that commands are enabled by default for all members of a guild, which means you can only <em>blacklist</em> roles and members using this method.
-     * To change this behavior, use {@link CommandData#setDefaultEnabled(boolean)} on your command.
-     *
-     * <p>These privileges are used to restrict who can use commands through Role/User whitelists/blacklists.
-     *
-     * <p>If there is no command with the provided ID,
-     * this RestAction fails with {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_COMMAND ErrorResponse.UNKNOWN_COMMAND}
-     *
-     * @param  guild
-     *         The target guild from which to update the privileges
-     * @param  privileges
-     *         Complete list of {@link CommandPrivilege CommandPrivileges} for this command
-     *
-     * @throws IllegalArgumentException
-     *         If null is provided
-     * @throws IllegalStateException
-     *         If this command is not owned by this bot
-     *
-     * @return {@link RestAction} - Type: {@link List} or {@link CommandPrivilege}
-     *         The updated list of privileges for this command.
-     */
-    @Nonnull
-    @CheckReturnValue
-    RestAction<List<CommandPrivilege>> updatePrivileges(@Nonnull Guild guild, @Nonnull Collection<? extends CommandPrivilege> privileges);
-
-    /**
-     * Updates the list of {@link CommandPrivilege CommandPrivileges} for this command.
-     * <br>Note that commands are enabled by default for all members of a guild, which means you can only <em>blacklist</em> roles and members using this method.
-     * To change this behavior, use {@link CommandData#setDefaultEnabled(boolean)} on your command.
-     *
-     * <p>These privileges are used to restrict who can use commands through Role/User whitelists/blacklists.
-     *
-     * <p>If there is no command with the provided ID,
-     * this RestAction fails with {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_COMMAND ErrorResponse.UNKNOWN_COMMAND}
-     *
-     * @param  guild
-     *         The target guild from which to update the privileges
-     * @param  privileges
-     *         Complete list of {@link CommandPrivilege CommandPrivileges} for this command
-     *
-     * @throws IllegalArgumentException
-     *         If null is provided
-     * @throws IllegalStateException
-     *         If this command is not owned by this bot
-     *
-     * @return {@link RestAction} - Type: {@link List} or {@link CommandPrivilege}
-     *         The updated list of privileges for this command.
-     */
-    @Nonnull
-    @CheckReturnValue
-    RestAction<List<CommandPrivilege>> updatePrivileges(@Nonnull Guild guild, @Nonnull CommandPrivilege... privileges);
+    RestAction<List<IntegrationPrivilege>> retrievePrivileges(@Nonnull Guild guild);
 
     /**
      * Returns the {@link JDA JDA} instance of this Command
@@ -198,13 +143,6 @@ public interface Command extends ISnowflake
      */
     @Nonnull
     LocalizationMap getDescriptionLocalizations();
-
-    /**
-     * Whether this command is enabled for everyone by default.
-     *
-     * @return True, if everyone can use this command by default.
-     */
-    boolean isDefaultEnabled();
 
     /**
      * The {@link Option Options} of this command.
@@ -271,6 +209,23 @@ public interface Command extends ISnowflake
     {
         return TimeUtil.getTimeCreated(getVersion());
     }
+
+    /**
+     * The {@link DefaultMemberPermissions} of this command.
+     * <br>If this command has no default permission set, this returns {@link DefaultMemberPermissions#ENABLED}.
+     *
+     * @return The DefaultMemberPermissions of this command.
+     */
+    @Nonnull
+    DefaultMemberPermissions getDefaultPermissions();
+
+    /**
+     * Whether the command can only be used inside a guild.
+     * <br>Always true for guild commands.
+     *
+     * @return True, if this command is restricted to guilds.
+     */
+    boolean isGuildOnly();
 
     /**
      * Possible command types
@@ -495,7 +450,7 @@ public interface Command extends ISnowflake
          * @return This builder instance, for chaining
          */
         @Nonnull
-        public Choice setNameLocalization(@Nonnull DiscordLocale locale, @Nonnull String name) 
+        public Choice setNameLocalization(@Nonnull DiscordLocale locale, @Nonnull String name)
         {
             nameLocalizations.setTranslation(locale, name);
             return this;

@@ -17,6 +17,7 @@
 package net.dv8tion.jda.internal.interactions;
 
 import net.dv8tion.jda.api.interactions.DiscordLocale;
+import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
@@ -48,8 +49,9 @@ public class CommandDataImpl implements SlashCommandData
     private boolean allowSubcommands = true;
     private boolean allowGroups = true;
     private boolean allowOption = true;
-    private boolean defaultPermissions = true; // whether the command uses default_permissions (blacklist/whitelist)
     private boolean allowRequired = true;
+    private boolean guildOnly = false;
+    private DefaultMemberPermissions defaultMemberPermissions = DefaultMemberPermissions.ENABLED;
 
     private final Command.Type type;
 
@@ -98,9 +100,13 @@ public class CommandDataImpl implements SlashCommandData
         if (localizationMapper != null) localizationMapper.localizeCommand(this, options);
 
         DataObject json = DataObject.empty()
-                .put("default_permission", defaultPermissions)
                 .put("type", type.getId())
                 .put("name", name)
+                .put("options", options)
+                .put("dm_permission", !guildOnly)
+                .put("default_member_permissions", defaultMemberPermissions == DefaultMemberPermissions.ENABLED
+                        ? null
+                        : Long.toUnsignedString(defaultMemberPermissions.getPermissionsRaw()))
                 .put("name_localizations", nameLocalizations)
                 .put("options", options);
         if (type == Command.Type.SLASH)
@@ -114,6 +120,19 @@ public class CommandDataImpl implements SlashCommandData
     public Command.Type getType()
     {
         return type;
+    }
+
+    @Nonnull
+    @Override
+    public DefaultMemberPermissions getDefaultPermissions()
+    {
+        return defaultMemberPermissions;
+    }
+
+    @Override
+    public boolean isGuildOnly()
+    {
+        return guildOnly;
     }
 
     @Nonnull
@@ -146,16 +165,19 @@ public class CommandDataImpl implements SlashCommandData
 
     @Nonnull
     @Override
-    public CommandDataImpl setDefaultEnabled(boolean enabled)
+    public CommandDataImpl setDefaultPermissions(@Nonnull DefaultMemberPermissions permissions)
     {
-        this.defaultPermissions = enabled;
+        Checks.notNull(permissions, "Permissions");
+        this.defaultMemberPermissions = permissions;
         return this;
     }
 
+    @Nonnull
     @Override
-    public boolean isDefaultEnabled()
+    public CommandDataImpl setGuildOnly(boolean guildOnly)
     {
-        return defaultPermissions;
+        this.guildOnly = guildOnly;
+        return this;
     }
 
     @Nonnull

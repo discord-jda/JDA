@@ -18,10 +18,11 @@ package net.dv8tion.jda.internal.interactions.command;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.localization.LocalizationMap;
-import net.dv8tion.jda.api.interactions.commands.privileges.CommandPrivilege;
+import net.dv8tion.jda.api.interactions.commands.privileges.IntegrationPrivilege;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.CommandEditAction;
 import net.dv8tion.jda.api.utils.data.DataArray;
@@ -55,8 +56,9 @@ public class CommandImpl implements Command
     private final List<Command.SubcommandGroup> groups;
     private final List<Command.Subcommand> subcommands;
     private final long id, guildId, applicationId, version;
-    private final boolean defaultEnabled;
+    private final boolean guildOnly;
     private final Command.Type type;
+    private final DefaultMemberPermissions defaultMemberPermissions;
 
     public CommandImpl(JDAImpl api, Guild guild, DataObject json)
     {
@@ -68,13 +70,18 @@ public class CommandImpl implements Command
         this.descriptionLocalizations = LocalizationUtils.unmodifiableFromProperty(json, "description_localizations");
         this.type = Command.Type.fromId(json.getInt("type", 1));
         this.id = json.getUnsignedLong("id");
-        this.defaultEnabled = json.getBoolean("default_permission");
         this.guildId = guild != null ? guild.getIdLong() : 0L;
         this.applicationId = json.getUnsignedLong("application_id", api.getSelfUser().getApplicationIdLong());
         this.options = parseOptions(json, OPTION_TEST, Command.Option::new);
         this.groups = parseOptions(json, GROUP_TEST, Command.SubcommandGroup::new);
         this.subcommands = parseOptions(json, SUBCOMMAND_TEST, Command.Subcommand::new);
         this.version = json.getUnsignedLong("version", id);
+
+        this.defaultMemberPermissions = json.isNull("default_member_permissions")
+                ? DefaultMemberPermissions.ENABLED
+                : DefaultMemberPermissions.enabledFor(json.getLong("default_member_permissions"));
+
+        this.guildOnly = !json.getBoolean("dm_permission", true);
     }
 
     public static <T> List<T> parseOptions(DataObject json, Predicate<DataObject> test, Function<DataObject, T> transform)
@@ -111,28 +118,11 @@ public class CommandImpl implements Command
 
     @Nonnull
     @Override
-    public RestAction<List<CommandPrivilege>> retrievePrivileges(@Nonnull Guild guild)
+    public RestAction<List<IntegrationPrivilege>> retrievePrivileges(@Nonnull Guild guild)
     {
         checkSelfUser("Cannot retrieve privileges for a command from another bot!");
         Checks.notNull(guild, "Guild");
-        return guild.retrieveCommandPrivilegesById(id);
-    }
-
-    @Nonnull
-    @Override
-    public RestAction<List<CommandPrivilege>> updatePrivileges(@Nonnull Guild guild, @Nonnull Collection<? extends CommandPrivilege> privileges)
-    {
-        checkSelfUser("Cannot update privileges for a command from another bot!");
-        Checks.notNull(guild, "Guild");
-        return guild.updateCommandPrivilegesById(id, privileges);
-    }
-
-    @Nonnull
-    @Override
-    public RestAction<List<CommandPrivilege>> updatePrivileges(@Nonnull Guild guild, @Nonnull CommandPrivilege... privileges)
-    {
-        Checks.noneNull(privileges, "CommandPrivileges");
-        return updatePrivileges(guild, Arrays.asList(privileges));
+        return guild.retrieveIntegrationPrivilegesById(id);
     }
 
     @Nonnull
@@ -177,12 +167,6 @@ public class CommandImpl implements Command
         return descriptionLocalizations;
     }
 
-    @Override
-    public boolean isDefaultEnabled()
-    {
-        return defaultEnabled;
-    }
-
     @Nonnull
     @Override
     public List<Command.Option> getOptions()
@@ -214,6 +198,19 @@ public class CommandImpl implements Command
     public long getVersion()
     {
         return version;
+    }
+
+    @Nonnull
+    @Override
+    public DefaultMemberPermissions getDefaultPermissions()
+    {
+        return defaultMemberPermissions;
+    }
+
+    @Override
+    public boolean isGuildOnly()
+    {
+        return guildOnly;
     }
 
     @Override
