@@ -55,7 +55,17 @@ public class ResourceBundleLocalizationFunction implements LocalizationFunction
     }
 
     /**
-     * Provides a {@link ResourceBundleLocalizationFunction} builder with the provided bundle having the specified name and locale.
+     * Creates an empty {@link ResourceBundleLocalizationFunction} builder and adds the provided bundle and locale.
+     * <br>This is the same as using {@code ResourceBundleLocalizationFunction.empty().addBundle(resourceBundle, locale)}
+     *
+     * <p><b>Example usage:</b>
+     * <br>This creates a LocalizationFunction from a French ResourceBundle (MyCommands_fr.properties)
+     *
+     * <pre><code>
+     *     final LocalizationFunction localizationFunction = ResourceBundleLocalizationFunction
+     *                 .fromBundle(ResourceBundle.getBundle("MyCommands", Locale.FRENCH), DiscordLocale.FRENCH)
+     *                 .build();
+     * </code></pre>
      *
      * @param  resourceBundle
      *         The resource bundle to get the localized strings from
@@ -80,8 +90,18 @@ public class ResourceBundleLocalizationFunction implements LocalizationFunction
     }
 
     /**
-     * Provides a {@link ResourceBundleLocalizationFunction} builder with the provided bundles.
+     * Creates a {@link ResourceBundleLocalizationFunction} builder with the provided bundles.
      * <br>This will insert the resource bundles with the specified name, with each specified locale.
+     * <br>This is the same as using {@code ResourceBundleLocalizationFunction.empty().addBundles(baseName, locales)}
+     *
+     * <p><b>Example usage:</b>
+     * <br>This creates a LocalizationFunction from 2 resource bundles, one in Spanish (MyCommands_es_ES.properties) and one in French (MyCommands_fr.properties)
+     *
+     * <pre><code>
+     *     final LocalizationFunction localizationFunction = ResourceBundleLocalizationFunction
+     *                         .fromBundles("MyCommands", DiscordLocale.SPANISH, DiscordLocale.FRENCH)
+     *                         .build();
+     * </code></pre>
      *
      * @param  baseName
      *         The base name of the resource bundle, for example, the base name of {@code "MyBundle_fr_FR.properties"} would be {@code "MyBundle"}
@@ -105,7 +125,7 @@ public class ResourceBundleLocalizationFunction implements LocalizationFunction
     }
 
     /**
-     * Provides an empty {@link ResourceBundleLocalizationFunction} builder.
+     * Creates an empty {@link ResourceBundleLocalizationFunction} builder.
      *
      * @return The empty builder
      */
@@ -115,12 +135,20 @@ public class ResourceBundleLocalizationFunction implements LocalizationFunction
         return new Builder();
     }
 
+    /**
+     * Builder for {@link ResourceBundleLocalizationFunction}
+     * <br>Use the factory methods in {@link ResourceBundleLocalizationFunction} to create instances of this builder
+     */
     public static class Builder
     {
         private final Set<Bundle> bundles = new HashSet<>();
 
+        protected Builder() {}
+
         /**
          * Adds a resource bundle to this builder
+         *
+         * <p>You can see {@link #fromBundle(ResourceBundle, DiscordLocale)} for an example
          *
          * @param  resourceBundle
          *         The {@link ResourceBundle} to get the localized strings from
@@ -136,6 +164,8 @@ public class ResourceBundleLocalizationFunction implements LocalizationFunction
          *         </ul>
          *
          * @return This builder for chaining convenience
+         *
+         * @see #fromBundle(ResourceBundle, DiscordLocale)
          */
         @Nonnull
         public Builder addBundle(@Nonnull ResourceBundle resourceBundle, @Nonnull DiscordLocale locale)
@@ -152,6 +182,8 @@ public class ResourceBundleLocalizationFunction implements LocalizationFunction
          * Adds a resource bundle to this builder
          * <br>This will insert the resource bundles with the specified name, with each specified locale.
          *
+         * <p>You can see {@link #fromBundles(String, DiscordLocale...)} for an example
+         *
          * @param  baseName
          *         The base name of the resource bundle, for example, the base name of {@code "MyBundle_fr_FR.properties"} would be {@code "MyBundle"}
          *
@@ -166,6 +198,7 @@ public class ResourceBundleLocalizationFunction implements LocalizationFunction
          *         </ul>
          *
          * @return This builder for chaining convenience
+         * @see #fromBundles(String, DiscordLocale...)
          */
         @Nonnull
         public Builder addBundles(@Nonnull String baseName, @Nonnull DiscordLocale... locales)
