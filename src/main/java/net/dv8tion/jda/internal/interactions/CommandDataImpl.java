@@ -39,9 +39,6 @@ import java.util.stream.Stream;
 
 public class CommandDataImpl implements SlashCommandData
 {
-    public static final int MAX_NAME_LENGTH = 32;
-    public static final int MAX_DESCRIPTION_LENGTH = 100;
-
     protected final DataArray options = DataArray.empty();
     protected String name, description = "";
     private LocalizationMapper localizationMapper;

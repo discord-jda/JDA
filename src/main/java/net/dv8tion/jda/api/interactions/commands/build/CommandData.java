@@ -41,6 +41,16 @@ import java.util.Map;
 public interface CommandData extends SerializableData
 {
     /**
+     * The maximum length the name of a command can be.
+     */
+    int MAX_NAME_LENGTH = 32;
+
+    /**
+     * The maximum length the description of a command can be.
+     */
+    int MAX_DESCRIPTION_LENGTH = 100;
+
+    /**
      * Sets the {@link LocalizationFunction} for this command
      * <br>This enables you to have the entirety of this command to be localized.
      *
