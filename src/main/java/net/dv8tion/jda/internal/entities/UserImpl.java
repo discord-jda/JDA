@@ -19,7 +19,7 @@ package net.dv8tion.jda.internal.entities;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.PrivateChannel;
 import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.api.requests.restaction.CacheRestAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
@@ -78,7 +78,7 @@ public class UserImpl extends UserSnowflakeImpl implements User
 
     @Nonnull
     @Override
-    public RestAction<Profile> retrieveProfile()
+    public CacheRestAction<Profile> retrieveProfile()
     {
         return new DeferredRestAction<>(getJDA(), Profile.class, this::getProfile, () -> {
             Route.CompiledRoute route = Route.Users.GET_USER.compile(getId());
@@ -120,7 +120,7 @@ public class UserImpl extends UserSnowflakeImpl implements User
 
     @Nonnull
     @Override
-    public RestAction<PrivateChannel> openPrivateChannel()
+    public CacheRestAction<PrivateChannel> openPrivateChannel()
     {
         return new DeferredRestAction<>(getJDA(), PrivateChannel.class, this::getPrivateChannel, () -> {
             Route.CompiledRoute route = Route.Self.CREATE_PRIVATE_CHANNEL.compile();

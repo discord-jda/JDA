@@ -970,11 +970,11 @@ public interface JDA extends IGuildChannelContainer
 
     /**
      * Attempts to retrieve a {@link net.dv8tion.jda.api.entities.User User} object based on the provided id.
-     * <br>This first calls {@link #getUserById(long)}, and if that returns {@code null} or the cache is inconsistent due to disabled intents then a request
-     * is made to the Discord servers.
      *
-     * <p>When the both {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_PRESENCES GUILD_PRESENCES} and {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MEMBERS GUILD_MEMBERS} intents
-     * are disabled this will always make a request even if the user is cached. You can use {@link #retrieveUserById(String, boolean)} to disable this behavior.
+     * <p>If {@link #getUserById(long)} is cached, this will directly return the user in a completed {@link RestAction} without making a request.
+     * When both {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_PRESENCES GUILD_PRESENCES} and {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MEMBERS GUILD_MEMBERS} intents
+     * are disabled this will always make a request even if the user is cached.
+     * You can use {@link CacheRestAction#useCache(boolean) action.useCache(false)} to force an update.
      *
      * <p>The returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} can encounter the following Discord errors:
      * <ul>
@@ -985,9 +985,6 @@ public interface JDA extends IGuildChannelContainer
      *
      * @param  id
      *         The id of the requested {@link net.dv8tion.jda.api.entities.User User}.
-     *
-     * @throws net.dv8tion.jda.api.exceptions.AccountTypeException
-     *         This endpoint is {@link AccountType#BOT} only.
      *
      * @throws java.lang.NumberFormatException
      *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
@@ -997,23 +994,23 @@ public interface JDA extends IGuildChannelContainer
      *             <li>If the provided id String is empty.</li>
      *         </ul>
      *
-     * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.api.entities.User User}
+     * @return {@link CacheRestAction} - Type: {@link User}
      *         <br>On request, gets the User with id matching provided id from Discord.
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<User> retrieveUserById(@Nonnull String id)
+    default CacheRestAction<User> retrieveUserById(@Nonnull String id)
     {
-        return retrieveUserById(id, true);
+        return retrieveUserById(MiscUtil.parseSnowflake(id));
     }
 
     /**
      * Attempts to retrieve a {@link net.dv8tion.jda.api.entities.User User} object based on the provided id.
-     * <br>This first calls {@link #getUserById(long)}, and if that returns {@code null} or the cache is inconsistent due to disabled intents then a request
-     * is made to the Discord servers.
      *
-     * <p>When the both {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_PRESENCES GUILD_PRESENCES} and {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MEMBERS GUILD_MEMBERS} intents
-     * are disabled this will always make a request even if the user is cached. You can use {@link #retrieveUserById(String, boolean)} to disable this behavior.
+     * <p>If {@link #getUserById(long)} is cached, this will directly return the user in a completed {@link RestAction} without making a request.
+     * When both {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_PRESENCES GUILD_PRESENCES} and {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MEMBERS GUILD_MEMBERS} intents
+     * are disabled this will always make a request even if the user is cached.
+     * You can use {@link CacheRestAction#useCache(boolean) action.useCache(false)} to force an update.
      *
      * <p>The returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} can encounter the following Discord errors:
      * <ul>
@@ -1023,87 +1020,14 @@ public interface JDA extends IGuildChannelContainer
      * </ul>
      *
      * @param  id
-     *         The id of the requested {@link net.dv8tion.jda.api.entities.User User}.
+     *         The id of the requested {@link User}.
      *
-     * @throws net.dv8tion.jda.api.exceptions.AccountTypeException
-     *         This endpoint is {@link AccountType#BOT} only.
-     *
-     * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.api.entities.User User}
+     * @return {@link CacheRestAction} - Type: {@link User}
      *         <br>On request, gets the User with id matching provided id from Discord.
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<User> retrieveUserById(long id)
-    {
-        return retrieveUserById(id, true);
-    }
-
-    /**
-     * Attempts to retrieve a {@link net.dv8tion.jda.api.entities.User User} object based on the provided id.
-     * <br>If both {@link GatewayIntent#GUILD_MEMBERS GUILD_MEMBERS} and {@link GatewayIntent#GUILD_PRESENCES GUILD_PRESENCES} intents are disabled
-     * this method will update the cached user unless the {@code update} parameter is {@code false}.
-     * <br>If either of those intents is enabled, this will immediately provide the cached user if possible.
-     *
-     * <p>The returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} can encounter the following Discord errors:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_USER ErrorResponse.UNKNOWN_USER}
-     *     <br>Occurs when the provided id does not refer to a {@link net.dv8tion.jda.api.entities.User User}
-     *     known by Discord. Typically occurs when developers provide an incomplete id (cut short).</li>
-     * </ul>
-     *
-     * @param  id
-     *         The id of the requested {@link net.dv8tion.jda.api.entities.User User}.
-     * @param  update
-     *         Whether JDA should perform a request even if the member is already cached to update properties such as the name
-     *
-     * @throws net.dv8tion.jda.api.exceptions.AccountTypeException
-     *         This endpoint is {@link AccountType#BOT} only.
-     *
-     * @throws java.lang.NumberFormatException
-     *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
-     * @throws java.lang.IllegalArgumentException
-     *         <ul>
-     *             <li>If the provided id String is null.</li>
-     *             <li>If the provided id String is empty.</li>
-     *         </ul>
-     *
-     * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.api.entities.User User}
-     *         <br>On request, gets the User with id matching provided id from Discord.
-     */
-    @Nonnull
-    @CheckReturnValue
-    default RestAction<User> retrieveUserById(@Nonnull String id, boolean update)
-    {
-        return retrieveUserById(MiscUtil.parseSnowflake(id), update);
-    }
-
-    /**
-     * Attempts to retrieve a {@link net.dv8tion.jda.api.entities.User User} object based on the provided id.
-     * <br>If both {@link GatewayIntent#GUILD_MEMBERS GUILD_MEMBERS} and {@link GatewayIntent#GUILD_PRESENCES GUILD_PRESENCES} intents are disabled
-     * this method will update the cached user unless the {@code update} parameter is {@code false}.
-     * <br>If either of those intents is enabled, this will immediately provide the cached user if possible.
-     *
-     * <p>The returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} can encounter the following Discord errors:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_USER ErrorResponse.UNKNOWN_USER}
-     *     <br>Occurs when the provided id does not refer to a {@link net.dv8tion.jda.api.entities.User User}
-     *     known by Discord. Typically occurs when developers provide an incomplete id (cut short).</li>
-     * </ul>
-     *
-     * @param  id
-     *         The id of the requested {@link net.dv8tion.jda.api.entities.User User}.
-     * @param  update
-     *         Whether JDA should perform a request even if the member is already cached to update properties such as the name
-     *
-     * @throws net.dv8tion.jda.api.exceptions.AccountTypeException
-     *         This endpoint is {@link AccountType#BOT} only.
-     *
-     * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.api.entities.User User}
-     *         <br>On request, gets the User with id matching provided id from Discord.
-     */
-    @Nonnull
-    @CheckReturnValue
-    RestAction<User> retrieveUserById(long id, boolean update);
+    CacheRestAction<User> retrieveUserById(long id);
 
     /**
      * {@link net.dv8tion.jda.api.utils.cache.SnowflakeCacheView SnowflakeCacheView} of
@@ -1366,6 +1290,9 @@ public interface JDA extends IGuildChannelContainer
      * <br>This will fail with {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_USER UNKNOWN_USER}
      * if the user does not exist.
      *
+     * <p>If the channel is cached, this will directly return the channel in a completed {@link RestAction} without making a request.
+     * You can use {@link CacheRestAction#useCache(boolean) action.useCache(false)} to force an update.
+     *
      * <h4>Example</h4>
      * <pre>{@code
      * public void sendMessage(JDA jda, long userId, String content) {
@@ -1381,13 +1308,13 @@ public interface JDA extends IGuildChannelContainer
      * @throws UnsupportedOperationException
      *         If the target user is the currently logged in account
      *
-     * @return {@link RestAction} - Type: {@link PrivateChannel}
+     * @return {@link CacheRestAction} - Type: {@link PrivateChannel}
      *
      * @see    User#openPrivateChannel()
      */
     @Nonnull
     @CheckReturnValue
-    RestAction<PrivateChannel> openPrivateChannelById(long userId);
+    CacheRestAction<PrivateChannel> openPrivateChannelById(long userId);
 
     /**
      * Opens a {@link PrivateChannel} with the provided user by id.
