@@ -98,70 +98,70 @@ public class AutoModerationRuleUpdateHandler extends SocketHandler
         {
             Guild oldGuild = rule.getGuild();
             rule.setGuild(guild);
-            getJDA().handleEvent(new AutoModerationRuleGuildUpdateEvent(getJDA(), responseNumber, rule, AutoModerationField.GUILD, oldGuild, guild));
+            getJDA().handleEvent(new AutoModerationRuleUpdateGuildEvent(getJDA(), responseNumber, rule, AutoModerationField.GUILD, oldGuild, guild));
         }
 
         if (!Objects.equals(name, rule.getName()))
         {
             String oldName = rule.getName();
             rule.setName(name);
-            getJDA().handleEvent(new AutoModerationRuleNameUpdateEvent(getJDA(), responseNumber, rule, AutoModerationField.NAME, oldName, name));
+            getJDA().handleEvent(new AutoModerationRuleUpdateNameEvent(getJDA(), responseNumber, rule, AutoModerationField.NAME, oldName, name));
         }
 
         if (!Objects.equals(user, rule.getUser()))
         {
             User oldUser = rule.getUser();
             rule.setUser(user);
-            getJDA().handleEvent(new AutoModerationRuleUserUpdateEvent(getJDA(), responseNumber, rule, AutoModerationField.USER, oldUser, user));
+            getJDA().handleEvent(new AutoModerationRuleUpdateUserEvent(getJDA(), responseNumber, rule, AutoModerationField.USER, oldUser, user));
         }
 
         if (!Objects.equals(eventType, rule.getEventType()))
         {
             EventType oldEventType = rule.getEventType();
             rule.setEventType(eventType);
-            getJDA().handleEvent(new AutoModerationRuleEventTypeUpdateEvent(getJDA(), responseNumber, rule, AutoModerationField.EVENT_TYPE, oldEventType, eventType));
+            getJDA().handleEvent(new AutoModerationRuleUpdateEventTypeEvent(getJDA(), responseNumber, rule, AutoModerationField.EVENT_TYPE, oldEventType, eventType));
         }
 
         if (!Objects.equals(triggerType, rule.getTriggerType()))
         {
             TriggerType oldTriggerType = rule.getTriggerType();
             rule.setTriggerType(triggerType);
-            getJDA().handleEvent(new AutoModerationRuleTriggerTypeUpdateEvent(getJDA(), responseNumber, rule, AutoModerationField.TRIGGER_TYPE, oldTriggerType, triggerType));
+            getJDA().handleEvent(new AutoModerationRuleUpdateTriggerTypeEvent(getJDA(), responseNumber, rule, AutoModerationField.TRIGGER_TYPE, oldTriggerType, triggerType));
         }
 
         if (!Objects.equals(triggerMetadata, rule.getTriggerMetadata()))
         {
             TriggerMetadata oldTriggerMetadata = rule.getTriggerMetadata();
             rule.setTriggerMetadata(triggerMetadata);
-            getJDA().handleEvent(new AutoModerationRuleTriggerMetadataUpdateEvent(getJDA(), responseNumber, rule, AutoModerationField.TRIGGER_METADATA, oldTriggerMetadata, triggerMetadata));
+            getJDA().handleEvent(new AutoModerationRuleUpdateTriggerMetadataEvent(getJDA(), responseNumber, rule, AutoModerationField.TRIGGER_METADATA, oldTriggerMetadata, triggerMetadata));
         }
 
         if (!Objects.equals(actions, rule.getActions()))
         {
             List<AutoModerationAction> oldActions = rule.getActions();
             rule.setActions(actions);
-            getJDA().handleEvent(new AutoModerationRuleActionsUpdateEvent(getJDA(), responseNumber, rule, AutoModerationField.ACTIONS, oldActions, actions));
+            getJDA().handleEvent(new AutoModerationRuleUpdateActionsEvent(getJDA(), responseNumber, rule, AutoModerationField.ACTIONS, oldActions, actions));
         }
 
         if (!Objects.equals(isEnabled, rule.isEnabled()))
         {
             boolean oldIsEnabled = rule.isEnabled();
             rule.setEnabled(isEnabled);
-            getJDA().handleEvent(new AutoModerationRuleEnabledUpdateEvent(getJDA(), responseNumber, rule, AutoModerationField.ENABLED, oldIsEnabled, isEnabled));
+            getJDA().handleEvent(new AutoModerationRuleUpdateEnabledEvent(getJDA(), responseNumber, rule, AutoModerationField.ENABLED, oldIsEnabled, isEnabled));
         }
 
         if (!Objects.equals(exemptRoles, rule.getExemptRoles()))
         {
             List<Role> oldExemptRoles = rule.getExemptRoles();
             rule.setExemptRoles(exemptRoles);
-            getJDA().handleEvent(new AutoModerationRuleExemptRolesUpdateEvent(getJDA(), responseNumber, rule, AutoModerationField.EXEMPT_ROLES, oldExemptRoles, exemptRoles));
+            getJDA().handleEvent(new AutoModerationRuleUpdateExemptRolesEvent(getJDA(), responseNumber, rule, AutoModerationField.EXEMPT_ROLES, oldExemptRoles, exemptRoles));
         }
 
         if (!Objects.equals(exemptChannels, rule.getExemptChannels()))
         {
             List<GuildChannel> oldExemptChannels = rule.getExemptChannels();
             rule.setExemptChannels(exemptChannels);
-            getJDA().handleEvent(new AutoModerationRuleExemptChannelsUpdateEvent(getJDA(), responseNumber, rule, AutoModerationField.EXEMPT_CHANNELS, oldExemptChannels, exemptChannels));
+            getJDA().handleEvent(new AutoModerationRuleUpdateExemptChannelsEvent(getJDA(), responseNumber, rule, AutoModerationField.EXEMPT_CHANNELS, oldExemptChannels, exemptChannels));
         }
 
         return null;

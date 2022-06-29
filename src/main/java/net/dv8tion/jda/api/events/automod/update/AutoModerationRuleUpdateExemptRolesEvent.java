@@ -18,45 +18,46 @@ package net.dv8tion.jda.api.events.automod.update;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.AutoModerationRule;
+import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.automod.AutoModerationField;
-import net.dv8tion.jda.api.entities.automod.TriggerMetadata;
 
 import javax.annotation.Nonnull;
+import java.util.List;
 
 /**
- * Indicates that a {@link net.dv8tion.jda.api.entities.AutoModerationRule rule} updated its trigger metadata.
+ * Indicates that a {@link net.dv8tion.jda.api.entities.AutoModerationRule rule} updated the exempt roles.
  *
- * <p>Can be used to retrieve the old trigger metadata.
+ * <p>Can be used to retrieve the old exempt roles.
  *
- * <p>Identifier: {@code trigger_metadata}
+ * <p>Identifier: {@code exempt_roles}
  */
-public class AutoModerationRuleTriggerMetadataUpdateEvent extends GenericAutoModerationRuleUpdateEvent<TriggerMetadata>
+public class AutoModerationRuleUpdateExemptRolesEvent extends GenericAutoModerationUpdateRuleEvent<List<Role>>
 {
-    public AutoModerationRuleTriggerMetadataUpdateEvent(@Nonnull JDA api, long responseNumber, AutoModerationRule rule, AutoModerationField field, TriggerMetadata oldValue, TriggerMetadata newValue)
+    public AutoModerationRuleUpdateExemptRolesEvent(@Nonnull JDA api, long responseNumber, AutoModerationRule rule, AutoModerationField field, List<Role> oldValue, List<Role> newValue)
     {
         super(api, responseNumber, rule, field, oldValue, newValue);
     }
 
-    public TriggerMetadata getOldTriggerMetadata()
+    public List<Role> getOldExemptRoles()
     {
         return getOldValue();
     }
 
-    public TriggerMetadata getNewTriggerMetadata()
+    public List<Role> getNewExemptRoles()
     {
         return getNewValue();
     }
 
     @Nonnull
     @Override
-    public TriggerMetadata getOldValue()
+    public List<Role> getOldValue()
     {
         return super.getOldValue();
     }
 
     @Nonnull
     @Override
-    public TriggerMetadata getNewValue()
+    public List<Role> getNewValue()
     {
         return super.getNewValue();
     }

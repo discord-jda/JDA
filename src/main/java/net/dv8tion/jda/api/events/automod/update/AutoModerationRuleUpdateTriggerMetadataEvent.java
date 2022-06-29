@@ -19,44 +19,44 @@ package net.dv8tion.jda.api.events.automod.update;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.AutoModerationRule;
 import net.dv8tion.jda.api.entities.automod.AutoModerationField;
-import net.dv8tion.jda.api.entities.automod.EventType;
+import net.dv8tion.jda.api.entities.automod.TriggerMetadata;
 
 import javax.annotation.Nonnull;
 
 /**
- * Indicates that a {@link net.dv8tion.jda.api.entities.AutoModerationRule rule} updated its event type.
+ * Indicates that a {@link net.dv8tion.jda.api.entities.AutoModerationRule rule} updated its trigger metadata.
  *
- * <p>Can be used to retrieve the old event type.
+ * <p>Can be used to retrieve the old trigger metadata.
  *
- * <p>Identifier: {@code event_type}
+ * <p>Identifier: {@code trigger_metadata}
  */
-public class AutoModerationRuleEventTypeUpdateEvent extends GenericAutoModerationRuleUpdateEvent<EventType>
+public class AutoModerationRuleUpdateTriggerMetadataEvent extends GenericAutoModerationUpdateRuleEvent<TriggerMetadata>
 {
-    public AutoModerationRuleEventTypeUpdateEvent(@Nonnull JDA api, long responseNumber, AutoModerationRule rule, AutoModerationField field, EventType oldValue, EventType newValue)
+    public AutoModerationRuleUpdateTriggerMetadataEvent(@Nonnull JDA api, long responseNumber, AutoModerationRule rule, AutoModerationField field, TriggerMetadata oldValue, TriggerMetadata newValue)
     {
         super(api, responseNumber, rule, field, oldValue, newValue);
     }
 
-    public EventType getOldEventType()
+    public TriggerMetadata getOldTriggerMetadata()
     {
         return getOldValue();
     }
 
-    public EventType getNewEventType()
+    public TriggerMetadata getNewTriggerMetadata()
     {
         return getNewValue();
     }
 
     @Nonnull
     @Override
-    public EventType getOldValue()
+    public TriggerMetadata getOldValue()
     {
         return super.getOldValue();
     }
 
     @Nonnull
     @Override
-    public EventType getNewValue()
+    public TriggerMetadata getNewValue()
     {
         return super.getNewValue();
     }

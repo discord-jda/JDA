@@ -30,9 +30,9 @@ import javax.annotation.Nonnull;
  *
  * <p>Identifier: {@code user_id}
  */
-public class AutoModerationRuleUserUpdateEvent extends GenericAutoModerationRuleUpdateEvent<User>
+public class AutoModerationRuleUpdateUserEvent extends GenericAutoModerationUpdateRuleEvent<User>
 {
-    public AutoModerationRuleUserUpdateEvent(@Nonnull JDA api, long responseNumber, AutoModerationRule rule, AutoModerationField field, User oldValue, User newValue)
+    public AutoModerationRuleUpdateUserEvent(@Nonnull JDA api, long responseNumber, AutoModerationRule rule, AutoModerationField field, User oldValue, User newValue)
     {
         super(api, responseNumber, rule, field, oldValue, newValue);
     }

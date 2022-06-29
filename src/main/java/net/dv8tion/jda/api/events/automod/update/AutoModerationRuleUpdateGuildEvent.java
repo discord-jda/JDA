@@ -18,47 +18,54 @@ package net.dv8tion.jda.api.events.automod.update;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.AutoModerationRule;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.automod.AutoModerationField;
-import net.dv8tion.jda.api.entities.automod.TriggerType;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 
 /**
- * Indicates that a {@link net.dv8tion.jda.api.entities.AutoModerationRule rule} updated its trigger type.
+ * Indicates that a {@link net.dv8tion.jda.api.entities.AutoModerationRule rule} updated the guild.
  *
- * <p>Can be used to retrieve the trigger type.
+ * <p>Can be used to retrieve the old guild.
  *
- * <p>Identifier: {@code trigger_type}
+ * <p>Identifier: {@code guild_id}
  */
-public class AutoModerationRuleTriggerTypeUpdateEvent extends GenericAutoModerationRuleUpdateEvent<TriggerType>
+public class AutoModerationRuleUpdateGuildEvent extends GenericAutoModerationUpdateRuleEvent<Guild>
 {
-
-    public AutoModerationRuleTriggerTypeUpdateEvent(@Nonnull JDA api, long responseNumber, AutoModerationRule rule, AutoModerationField field, TriggerType oldValue, TriggerType newValue)
+    public AutoModerationRuleUpdateGuildEvent(@Nonnull JDA api, long responseNumber, AutoModerationRule rule, AutoModerationField field, Guild oldValue, Guild newValue)
     {
         super(api, responseNumber, rule, field, oldValue, newValue);
     }
 
-    public TriggerType getOldTriggerType()
+    public Guild getOldGuild()
     {
         return getOldValue();
     }
 
-    public TriggerType getNewTriggerType()
+    public Guild getNewGuild()
     {
         return getNewValue();
     }
 
     @Nonnull
     @Override
-    public TriggerType getOldValue()
+    public Guild getOldValue()
     {
         return super.getOldValue();
     }
 
     @Nonnull
     @Override
-    public TriggerType getNewValue()
+    public Guild getNewValue()
     {
         return super.getNewValue();
+    }
+
+    @NotNull
+    @Override
+    public AutoModerationRule getEntity()
+    {
+        return getRule();
     }
 }

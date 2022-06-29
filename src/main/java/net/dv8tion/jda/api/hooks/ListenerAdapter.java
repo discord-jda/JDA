@@ -184,18 +184,16 @@ public abstract class ListenerAdapter implements EventListener
     public void onAutoModerationRuleDelete(@Nonnull AutoModerationRuleDeleteEvent event) {}
     public void onAutoModerationActionExecution(@Nonnull AutoModerationActionExecutionEvent event) {}
 
-    //TODO: Raname
-    // Auto moderation update events
-    public void onAutoModerationRuleGuildUpdate(@Nonnull AutoModerationRuleGuildUpdateEvent event) {}
-    public void onAutoModerationRuleNameUpdate(@Nonnull AutoModerationRuleNameUpdateEvent event) {}
-    public void onAutoModerationRuleUserUpdate(@Nonnull AutoModerationRuleUserUpdateEvent event) {}
-    public void onAutoModerationRuleEventTypeUpdate(@Nonnull AutoModerationRuleEventTypeUpdateEvent event) {}
-    public void onAutoModerationRuleTriggerTypeUpdate(@Nonnull AutoModerationRuleTriggerTypeUpdateEvent event) {}
-    public void onAutoModerationRuleTriggerMetadataUpdate(@Nonnull AutoModerationRuleTriggerMetadataUpdateEvent event) {}
-    public void onAutoModerationRuleActionsUpdate(@Nonnull AutoModerationRuleActionsUpdateEvent event) {}
-    public void onAutoModerationRuleEnabledUpdate(@Nonnull AutoModerationRuleEnabledUpdateEvent event) {}
-    public void onAutoModerationRuleExemptRolesUpdate(@Nonnull AutoModerationRuleExemptRolesUpdateEvent event) {}
-    public void onAutoModerationRuleExemptChannelsUpdate(@Nonnull AutoModerationRuleExemptChannelsUpdateEvent event) {}
+    public void onAutoModerationRuleUpdateGuild(@Nonnull AutoModerationRuleUpdateGuildEvent event) {}
+    public void onAutoModerationRuleUpdateName(@Nonnull AutoModerationRuleUpdateNameEvent event) {}
+    public void onAutoModerationRuleUpdateUser(@Nonnull AutoModerationRuleUpdateUserEvent event) {}
+    public void onAutoModerationRuleUpdateEventType(@Nonnull AutoModerationRuleUpdateEventTypeEvent event) {}
+    public void onAutoModerationRuleUpdateTriggerType(@Nonnull AutoModerationRuleUpdateTriggerTypeEvent event) {}
+    public void onAutoModerationRuleUpdateTriggerMetadata(@Nonnull AutoModerationRuleUpdateTriggerMetadataEvent event) {}
+    public void onAutoModerationRuleUpdateActions(@Nonnull AutoModerationRuleUpdateActionsEvent event) {}
+    public void onAutoModerationRuleUpdateEnabled(@Nonnull AutoModerationRuleUpdateEnabledEvent event) {}
+    public void onAutoModerationRuleUpdateExemptRoles(@Nonnull AutoModerationRuleUpdateExemptRolesEvent event) {}
+    public void onAutoModerationRuleUpdateExemptChannels(@Nonnull AutoModerationRuleUpdateExemptChannelsEvent event) {}
 
     //Channel Events
     public void onChannelCreate(@Nonnull ChannelCreateEvent event) {}

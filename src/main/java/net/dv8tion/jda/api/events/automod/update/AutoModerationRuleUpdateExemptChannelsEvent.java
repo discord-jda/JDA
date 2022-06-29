@@ -18,44 +18,46 @@ package net.dv8tion.jda.api.events.automod.update;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.AutoModerationRule;
+import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.automod.AutoModerationField;
 
 import javax.annotation.Nonnull;
+import java.util.List;
 
 /**
- * Indicates that a {@link net.dv8tion.jda.api.entities.AutoModerationRule rule} updated its name.
+ * Indicates that a {@link net.dv8tion.jda.api.entities.AutoModerationRule rule} updated the exempt channels.
  *
- * <p>Can be used to retrieve the old name.
+ * <p>Can be used to retrieve the old exempt channels.
  *
- * <p>Identifier: {@code name}
+ * <p>Identifier: {@code exempt_channels}
  */
-public class AutoModerationRuleNameUpdateEvent extends GenericAutoModerationRuleUpdateEvent<String>
+public class AutoModerationRuleUpdateExemptChannelsEvent extends GenericAutoModerationUpdateRuleEvent<List<GuildChannel>>
 {
-    public AutoModerationRuleNameUpdateEvent(@Nonnull JDA api, long responseNumber, AutoModerationRule rule, AutoModerationField field, String oldValue, String newValue)
+    public AutoModerationRuleUpdateExemptChannelsEvent(@Nonnull JDA api, long responseNumber, AutoModerationRule rule, AutoModerationField field, List<GuildChannel> oldValue, List<GuildChannel> newValue)
     {
         super(api, responseNumber, rule, field, oldValue, newValue);
     }
 
-    public String getOldName()
+    public List<GuildChannel> getOldExemptChannels()
     {
         return getOldValue();
     }
 
-    public String getNewName()
+    public List<GuildChannel> getNewExemptChannels()
     {
         return getNewValue();
     }
 
     @Nonnull
     @Override
-    public String getOldValue()
+    public List<GuildChannel> getOldValue()
     {
         return super.getOldValue();
     }
 
     @Nonnull
     @Override
-    public String getNewValue()
+    public List<GuildChannel> getNewValue()
     {
         return super.getNewValue();
     }

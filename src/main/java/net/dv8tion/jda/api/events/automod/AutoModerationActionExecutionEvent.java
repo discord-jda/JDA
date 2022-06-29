@@ -14,7 +14,7 @@ import javax.annotation.Nullable;
 /**
  * Indicates that an {@link net.dv8tion.jda.api.entities.AutoModerationRule AutoModerationRule} was excuted.
  */
-public class AutoModerationActionExecutionEvent extends GenericAutoModerationActionEvent
+public class AutoModerationActionExecutionEvent extends GenericAutoModerationEvent
 {
     protected final AutoModerationRule rule;
 

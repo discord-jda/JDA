@@ -18,46 +18,44 @@ package net.dv8tion.jda.api.events.automod.update;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.AutoModerationRule;
-import net.dv8tion.jda.api.entities.automod.AutoModerationAction;
 import net.dv8tion.jda.api.entities.automod.AutoModerationField;
 
 import javax.annotation.Nonnull;
-import java.util.List;
 
 /**
- * Indicates that a {@link net.dv8tion.jda.api.entities.AutoModerationRule rule} updated its actions.
+ * Indicates that a {@link net.dv8tion.jda.api.entities.AutoModerationRule rule} has been enabled/disabled.
  *
- * <p>Can be used to retrieve the old actions.
+ * <p>Can be used to retrieve weather it was enabled or disabled prior to the update.
  *
- * <p>Identifier: {@code action}
+ * <p>Identifier: {@code enabled}
  */
-public class AutoModerationRuleActionsUpdateEvent extends GenericAutoModerationRuleUpdateEvent<List<AutoModerationAction>>
+public class AutoModerationRuleUpdateEnabledEvent extends GenericAutoModerationUpdateRuleEvent<Boolean>
 {
-    public AutoModerationRuleActionsUpdateEvent(@Nonnull JDA api, long responseNumber, AutoModerationRule rule, AutoModerationField field, List<AutoModerationAction> oldValue, List<AutoModerationAction> newValue)
+    public AutoModerationRuleUpdateEnabledEvent(@Nonnull JDA api, long responseNumber, AutoModerationRule rule, AutoModerationField field, Boolean oldValue, Boolean newValue)
     {
         super(api, responseNumber, rule, field, oldValue, newValue);
     }
 
-    public List<AutoModerationAction> getOldActions()
+    public boolean wasEnabled()
     {
         return getOldValue();
     }
 
-    public List<AutoModerationAction> getNewActions()
+    public boolean isEnabled()
     {
         return getNewValue();
     }
 
     @Nonnull
     @Override
-    public List<AutoModerationAction> getOldValue()
+    public Boolean getOldValue()
     {
         return super.getOldValue();
     }
 
     @Nonnull
     @Override
-    public List<AutoModerationAction> getNewValue()
+    public Boolean getNewValue()
     {
         return super.getNewValue();
     }

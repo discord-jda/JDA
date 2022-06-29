@@ -18,46 +18,45 @@ package net.dv8tion.jda.api.events.automod.update;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.AutoModerationRule;
-import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.automod.AutoModerationField;
+import net.dv8tion.jda.api.entities.automod.EventType;
 
 import javax.annotation.Nonnull;
-import java.util.List;
 
 /**
- * Indicates that a {@link net.dv8tion.jda.api.entities.AutoModerationRule rule} updated the exempt roles.
+ * Indicates that a {@link net.dv8tion.jda.api.entities.AutoModerationRule rule} updated its event type.
  *
- * <p>Can be used to retrieve the old exempt roles.
+ * <p>Can be used to retrieve the old event type.
  *
- * <p>Identifier: {@code exempt_roles}
+ * <p>Identifier: {@code event_type}
  */
-public class AutoModerationRuleExemptRolesUpdateEvent extends GenericAutoModerationRuleUpdateEvent<List<Role>>
+public class AutoModerationRuleUpdateEventTypeEvent extends GenericAutoModerationUpdateRuleEvent<EventType>
 {
-    public AutoModerationRuleExemptRolesUpdateEvent(@Nonnull JDA api, long responseNumber, AutoModerationRule rule, AutoModerationField field, List<Role> oldValue, List<Role> newValue)
+    public AutoModerationRuleUpdateEventTypeEvent(@Nonnull JDA api, long responseNumber, AutoModerationRule rule, AutoModerationField field, EventType oldValue, EventType newValue)
     {
         super(api, responseNumber, rule, field, oldValue, newValue);
     }
 
-    public List<Role> getOldExemptRoles()
+    public EventType getOldEventType()
     {
         return getOldValue();
     }
 
-    public List<Role> getNewExemptRoles()
+    public EventType getNewEventType()
     {
         return getNewValue();
     }
 
     @Nonnull
     @Override
-    public List<Role> getOldValue()
+    public EventType getOldValue()
     {
         return super.getOldValue();
     }
 
     @Nonnull
     @Override
-    public List<Role> getNewValue()
+    public EventType getNewValue()
     {
         return super.getNewValue();
     }

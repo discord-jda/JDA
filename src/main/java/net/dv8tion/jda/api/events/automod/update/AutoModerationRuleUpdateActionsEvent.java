@@ -18,54 +18,47 @@ package net.dv8tion.jda.api.events.automod.update;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.AutoModerationRule;
-import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.automod.AutoModerationAction;
 import net.dv8tion.jda.api.entities.automod.AutoModerationField;
-import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
+import java.util.List;
 
 /**
- * Indicates that a {@link net.dv8tion.jda.api.entities.AutoModerationRule rule} updated the guild.
+ * Indicates that a {@link net.dv8tion.jda.api.entities.AutoModerationRule rule} updated its actions.
  *
- * <p>Can be used to retrieve the old guild.
+ * <p>Can be used to retrieve the old actions.
  *
- * <p>Identifier: {@code guild_id}
+ * <p>Identifier: {@code action}
  */
-public class AutoModerationRuleGuildUpdateEvent extends GenericAutoModerationRuleUpdateEvent<Guild>
+public class AutoModerationRuleUpdateActionsEvent extends GenericAutoModerationUpdateRuleEvent<List<AutoModerationAction>>
 {
-    public AutoModerationRuleGuildUpdateEvent(@Nonnull JDA api, long responseNumber, AutoModerationRule rule, AutoModerationField field, Guild oldValue, Guild newValue)
+    public AutoModerationRuleUpdateActionsEvent(@Nonnull JDA api, long responseNumber, AutoModerationRule rule, AutoModerationField field, List<AutoModerationAction> oldValue, List<AutoModerationAction> newValue)
     {
         super(api, responseNumber, rule, field, oldValue, newValue);
     }
 
-    public Guild getOldGuild()
+    public List<AutoModerationAction> getOldActions()
     {
         return getOldValue();
     }
 
-    public Guild getNewGuild()
+    public List<AutoModerationAction> getNewActions()
     {
         return getNewValue();
     }
 
     @Nonnull
     @Override
-    public Guild getOldValue()
+    public List<AutoModerationAction> getOldValue()
     {
         return super.getOldValue();
     }
 
     @Nonnull
     @Override
-    public Guild getNewValue()
+    public List<AutoModerationAction> getNewValue()
     {
         return super.getNewValue();
-    }
-
-    @NotNull
-    @Override
-    public AutoModerationRule getEntity()
-    {
-        return getRule();
     }
 }

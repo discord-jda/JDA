@@ -19,43 +19,45 @@ package net.dv8tion.jda.api.events.automod.update;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.AutoModerationRule;
 import net.dv8tion.jda.api.entities.automod.AutoModerationField;
+import net.dv8tion.jda.api.entities.automod.TriggerType;
 
 import javax.annotation.Nonnull;
 
 /**
- * Indicates that a {@link net.dv8tion.jda.api.entities.AutoModerationRule rule} has been enabled/disabled.
+ * Indicates that a {@link net.dv8tion.jda.api.entities.AutoModerationRule rule} updated its trigger type.
  *
- * <p>Can be used to retrieve weather it was enabled or disabled prior to the update.
+ * <p>Can be used to retrieve the trigger type.
  *
- * <p>Identifier: {@code enabled}
+ * <p>Identifier: {@code trigger_type}
  */
-public class AutoModerationRuleEnabledUpdateEvent extends GenericAutoModerationRuleUpdateEvent<Boolean>
+public class AutoModerationRuleUpdateTriggerTypeEvent extends GenericAutoModerationUpdateRuleEvent<TriggerType>
 {
-    public AutoModerationRuleEnabledUpdateEvent(@Nonnull JDA api, long responseNumber, AutoModerationRule rule, AutoModerationField field, Boolean oldValue, Boolean newValue)
+
+    public AutoModerationRuleUpdateTriggerTypeEvent(@Nonnull JDA api, long responseNumber, AutoModerationRule rule, AutoModerationField field, TriggerType oldValue, TriggerType newValue)
     {
         super(api, responseNumber, rule, field, oldValue, newValue);
     }
 
-    public boolean wasEnabled()
+    public TriggerType getOldTriggerType()
     {
         return getOldValue();
     }
 
-    public boolean isEnabled()
+    public TriggerType getNewTriggerType()
     {
         return getNewValue();
     }
 
     @Nonnull
     @Override
-    public Boolean getOldValue()
+    public TriggerType getOldValue()
     {
         return super.getOldValue();
     }
 
     @Nonnull
     @Override
-    public Boolean getNewValue()
+    public TriggerType getNewValue()
     {
         return super.getNewValue();
     }

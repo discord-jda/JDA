@@ -32,7 +32,7 @@ public class AutoModerationActionImpl implements AutoModerationAction
 
     @NotNull
     @Override
-    public AutoModerationActionType getActionType()
+    public AutoModerationActionType getType()
     {
         return type;
     }

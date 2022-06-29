@@ -33,14 +33,14 @@ import javax.annotation.Nonnull;
  *
  * <p>Can be used to detect any AutoModerationUpdateEvent.
  */
-public class GenericAutoModerationRuleUpdateEvent<T> extends GenericAutoModerationEvent implements UpdateEvent<AutoModerationRule, T>
+public class GenericAutoModerationUpdateRuleEvent<T> extends GenericAutoModerationEvent implements UpdateEvent<AutoModerationRule, T>
 {
 
     protected final AutoModerationField field;
     protected final T oldValue;
     protected final T newValue;
 
-    public GenericAutoModerationRuleUpdateEvent(@Nonnull JDA api, long responseNumber, AutoModerationRule rule, AutoModerationField field, T oldValue, T newValue)
+    public GenericAutoModerationUpdateRuleEvent(@Nonnull JDA api, long responseNumber, AutoModerationRule rule, AutoModerationField field, T oldValue, T newValue)
     {
         super(api, responseNumber, rule);
         this.field = field;
