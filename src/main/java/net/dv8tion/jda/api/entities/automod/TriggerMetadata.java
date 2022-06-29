@@ -20,7 +20,7 @@ import javax.annotation.Nonnull;
 import java.util.List;
 
 /**
- * This is additional data used whether a rule should be executed or not.
+ * Represents additional data used to determine whether a rule should be executed or not.
  */
 public interface TriggerMetadata
 {

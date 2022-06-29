@@ -45,7 +45,7 @@ public class GenericAutoModerationEvent extends Event
     }
 
     /**
-     * The {@link Guild} where this rule was created/removed/updated.
+     * Returns the {@link Guild} that owns the affected auto moderation rule.
      *
      * @return The origin Guild.
      */
@@ -55,7 +55,7 @@ public class GenericAutoModerationEvent extends Event
     }
 
     /**
-     * The {@link String name} of this rule that was created/removed/updated.
+     * Returns the name of this rule that was created/removed/updated.
      *
      * @return The name of the rule.
      */

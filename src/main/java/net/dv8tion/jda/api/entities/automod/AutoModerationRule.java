@@ -67,7 +67,7 @@ public interface AutoModerationRule extends ISnowflake, Comparable<AutoModeratio
     /**
      * Returns the type of trigger that can cause this rule to be executed.
      *
-     * @return {@link TriggerType }
+     * @return {@link TriggerType}
      */
     @Nonnull
     TriggerType getTriggerType();
@@ -83,7 +83,7 @@ public interface AutoModerationRule extends ISnowflake, Comparable<AutoModeratio
     /**
      * Returns the actions that will be performed when this rule is executed.
      *
-     * @return A {@link List } of {@link AutoModerationAction actions}
+     * @return A {@link List} of {@link AutoModerationAction actions}
      */
     @Nonnull
     List<AutoModerationAction> getActions();
@@ -98,7 +98,7 @@ public interface AutoModerationRule extends ISnowflake, Comparable<AutoModeratio
     /**
      * Returns the roles that are exempt from this rule.
      *
-     * @return A {@link List} of {@link Role roles} which are exempt from the rules.
+     * @return A {@link List} of {@link Role roles} which are exempt from this rule.
      */
     @Nonnull
     List<Role> getExemptRoles();
@@ -106,7 +106,7 @@ public interface AutoModerationRule extends ISnowflake, Comparable<AutoModeratio
     /**
      * Returns the channels that are exempt from this rule.
      *
-     * @return A {@link List} of {@link GuildChannel GuildChannels} which are exempt from the rules.
+     * @return A {@link List} of {@link GuildChannel GuildChannels} which are exempt from this rule.
      */
     @Nonnull
     List<GuildChannel> getExemptChannels();

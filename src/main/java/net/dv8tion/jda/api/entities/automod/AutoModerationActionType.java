@@ -24,7 +24,7 @@ import javax.annotation.Nonnull;
 public enum AutoModerationActionType
 {
     /**
-     * BPrevents the message from being sent.
+     * Prevents the message from being sent.
      */
     BLOCK_MESSAGE(1),
     /**
@@ -32,7 +32,7 @@ public enum AutoModerationActionType
      */
     SEND_ALERT_MESSAGE(2),
     /**
-     * Causes the offending member to timeout.
+     * Causes the offending member to be timed out.
      */
     TIMEOUT(3),
     /**

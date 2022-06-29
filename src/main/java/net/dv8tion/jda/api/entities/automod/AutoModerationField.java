@@ -22,9 +22,17 @@ import net.dv8tion.jda.api.entities.*;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+/**
+ * This enum represents the attributes of an auto moderation rule that can be modified by events.
+ * <br><b>Most</b> of these changes are tracked and reflected by {@link AuditLogKey Audit Log Entries}.
+ * <br>
+ * Values of this enum without an {@link AuditLogKey} are not tracked by the Audit Log.
+ *
+ * @see net.dv8tion.jda.api.events.automod.GenericAutoModerationEvent
+ * @see AuditLogKey
+ */
 public enum AutoModerationField
 {
-
     /**
      * The {@link Guild} the rule is for.
      *
@@ -68,14 +76,14 @@ public enum AutoModerationField
     TRIGGER_METADATA("trigger_metadata", AuditLogKey.AUTO_MODERATION_TRIGGER_METADATA),
 
     /**
-     * The List of {@link AutoModerationAction} that should be executed when the rule is triggered.
+     * The list of {@link AutoModerationAction actions} that should be executed when the rule is triggered.
      *
      * @see AutoModerationRule#getActions()
      */
     ACTIONS("action", AuditLogKey.AUTO_MODERATION_ACTIONS),
 
     /**
-     * Weather the rule is {@link Boolean enabled} or not.
+     * Whether the rule is enabled or not.
      *
      * @see AutoModerationRule#isEnabled()
      */

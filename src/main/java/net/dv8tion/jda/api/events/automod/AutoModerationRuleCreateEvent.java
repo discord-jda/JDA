@@ -26,7 +26,6 @@ import javax.annotation.Nonnull;
  */
 public class AutoModerationRuleCreateEvent extends GenericAutoModerationEvent
 {
-
     public AutoModerationRuleCreateEvent(@Nonnull JDA api, long responseNumber, AutoModerationRule rule)
     {
         super(api, responseNumber, rule);

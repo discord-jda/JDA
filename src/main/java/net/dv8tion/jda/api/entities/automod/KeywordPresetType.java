@@ -19,7 +19,7 @@ package net.dv8tion.jda.api.entities.automod;
 import javax.annotation.Nonnull;
 
 /**
- * This is the keyword which was flagged by the auto-moderation system and caused the action to be executed.
+ * This is the internally pre-defined word set which will be searched for in the content.
  * <br>
  * This is only valid for the trigger type {@link TriggerType#KEYWORD_PRESET}.
  */

@@ -14,7 +14,7 @@ import javax.annotation.Nullable;
 /**
  * Indicates that an {@link net.dv8tion.jda.api.entities.AutoModerationRule AutoModerationRule} was excuted.
  */
-public class AutoModerationActionExecutionEvent extends Event
+public class AutoModerationActionExecutionEvent extends GenericAutoModerationActionEvent
 {
     protected final AutoModerationRule rule;
 
@@ -31,7 +31,7 @@ public class AutoModerationActionExecutionEvent extends Event
 
     public AutoModerationActionExecutionEvent(@Nonnull JDA api, long responseNumber, @Nonnull AutoModerationRule rule, @Nonnull AutoModerationAction executedAction, @Nonnull User triggerer, @Nonnull TriggerType ruleTriggerer, @Nullable GuildChannel channel, @Nullable long messageId, @Nullable long alertSystemMessageId, @Nonnull String content, @Nullable String matchedKeyword, @Nullable String matchedContent)
     {
-        super(api, responseNumber);
+        super(api, responseNumber, rule);
         this.rule = rule;
         this.executedAction = executedAction;
         this.triggerer = triggerer;
@@ -56,7 +56,7 @@ public class AutoModerationActionExecutionEvent extends Event
     }
 
     /**
-     * The {@link AutoModerationAction} that was executed when the rule was triggered.
+     * Returns the {@link AutoModerationAction} that was executed when the rule was triggered.
      *
      * @return the executed action.
      */
@@ -100,7 +100,7 @@ public class AutoModerationActionExecutionEvent extends Event
     }
 
     /**
-     * The message Id of the message that triggered the rule.
+     * Returns the id of the message that triggered the rule.
      *
      * @return The message Id.
      */
@@ -110,17 +110,18 @@ public class AutoModerationActionExecutionEvent extends Event
     }
 
     /**
-     * The message Id of the auto moderation system message that was sent to the allocated channel.
+     * Returns the id of the system message that was sent to the designated alert channel.
      *
      * @return The alert system message Id.
      */
-    public long getAlertSystemMessageId()
+    @Nullable
+    public Long getAlertSystemMessageId()
     {
         return alertSystemMessageId;
     }
 
     /**
-     * The content of the message that triggered the rule.
+     * Returns the content of the message that triggered the rule.
      *
      * @return The content.
      */
@@ -131,7 +132,7 @@ public class AutoModerationActionExecutionEvent extends Event
     }
 
     /**
-     * The word or phrase configured in the rule that triggered the rule.
+     * Returns the word or phrase that triggered the rule.
      *
      * @return The matched keyword.
      */
@@ -142,7 +143,7 @@ public class AutoModerationActionExecutionEvent extends Event
     }
 
     /**
-     * the substring in content that triggered the rule
+     * Returns the substring in the content that triggered the rule.
      *
      * @return the matched content.
      */

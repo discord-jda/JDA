@@ -3093,7 +3093,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      *
      * @return A list of all auto moderation rules, or an empty list if none exist.
      */
-    @Nullable
+    @Nonnull
     default List<AutoModerationRule> getAutoModerationRules() {
         return getAutoModerationRuleCache().asList();
     }

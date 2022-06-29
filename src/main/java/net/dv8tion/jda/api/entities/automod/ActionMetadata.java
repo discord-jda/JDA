@@ -22,7 +22,7 @@ import javax.annotation.Nonnull;
 import java.time.Duration;
 
 /**
- * This is additional data which is used when an action is executed by the auto-moderation system.
+ * Represents additional data used when an {@link AutoModerationAction action} is executed by the auto moderation system.
  *
  * <br>
  * Different values depend on the {@link AutoModerationActionType ActionType} of the action.
@@ -31,6 +31,8 @@ public interface ActionMetadata
 {
     /**
      * Returns the channel where an alert message will be sent when the rule is executed.
+     * <br>
+     * The associated action type is {@link AutoModerationActionType#SEND_ALERT_MESSAGE}
      *
      * @return {@link GuildChannel}
      */
@@ -39,7 +41,9 @@ public interface ActionMetadata
 
     /**
      * Returns the duration of the timeout.
-     *
+     * <br>
+     * The associated action type is {@link AutoModerationActionType#TIMEOUT}
+     * 
      * @return {@link Duration}
      */
     @Nonnull

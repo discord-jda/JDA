@@ -30,7 +30,7 @@ public interface AutoModerationAction
      * @return {@link AutoModerationActionType}
      */
     @Nonnull
-    AutoModerationActionType getActionType();
+    AutoModerationActionType getType();
 
     /**
      * Returns additional metadata used during the execution of this specific action type.

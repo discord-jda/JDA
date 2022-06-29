@@ -579,7 +579,7 @@ public enum AuditLogKey
     AUTO_MODERATION_RULE_NAME("name"),
 
     /**
-     * The user who created/updated/deleted the auto moderation rule.
+     * The user who created the auto moderation rule.
      *
      * <p>Expected type: <b>String</b>
      */

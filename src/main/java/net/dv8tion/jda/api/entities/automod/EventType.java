@@ -32,7 +32,6 @@ public enum EventType
      */
     UNKNOWN(-1);
 
-
     private final int value;
 
     EventType(int value)
