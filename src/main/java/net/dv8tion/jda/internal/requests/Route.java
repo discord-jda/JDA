@@ -310,10 +310,10 @@ public class Route
     public static class AutoModeration
     {
         public static final Route GET_AUTO_MODERATION_RULES =   new Route(GET, "guilds/{guild_id}/auto-moderation/rules");
-        public static final Route GET_AUTO_MODERATION_RULE =    new Route(GET, "guilds/{guild_id}/auto-moderation/rules/{code}");
+        public static final Route GET_AUTO_MODERATION_RULE =    new Route(GET, "guilds/{guild_id}/auto-moderation/rules/{rule_id}");
         public static final Route CREATE_AUTO_MODERATION_RULE = new Route(POST, "guilds/{guild_id}/auto-moderation/rules");
-        public static final Route MODIFY_AUTO_MODERATION_RULE = new Route(PATCH, "guilds/{guild_id}/auto-moderation/rules/{code}");
-        public static final Route DELETE_AUTO_MODERATION_RULE = new Route(DELETE, "guilds/{guild_id}/auto-moderation/rules/{code}");
+        public static final Route MODIFY_AUTO_MODERATION_RULE = new Route(PATCH, "guilds/{guild_id}/auto-moderation/rules/{rule_id}");
+        public static final Route DELETE_AUTO_MODERATION_RULE = new Route(DELETE, "guilds/{guild_id}/auto-moderation/rules/{rule_id}");
     }
 
     @Nonnull
