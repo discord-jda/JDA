@@ -29,9 +29,9 @@ import javax.annotation.Nonnull;
  * <br>This class extends {@link StandardGuildChannel} and primarily acts as a discovery tool for
  * developers to understand which channels might be returned as default channels.
  *
- * <br><br><b>Not all {@link StandardGuildChannel} channels can be used as a default channel!</b>
+ * <p><b>Not all {@link StandardGuildChannel} channels can be used as a default channel!</b>
  *
- * <br><br>This interface represents the follow concrete channel types:
+ * <p>This interface represents the follow concrete channel types:
  * <ul>
  *     <li>{@link TextChannel}</li>
  *     <li>{@link NewsChannel}</li>
