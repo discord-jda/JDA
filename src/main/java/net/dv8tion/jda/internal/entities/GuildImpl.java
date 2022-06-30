@@ -19,6 +19,7 @@ package net.dv8tion.jda.internal.entities;
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import gnu.trove.set.TLongSet;
+import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.Region;
 import net.dv8tion.jda.api.audio.hooks.ConnectionStatus;
@@ -1266,7 +1267,7 @@ public class GuildImpl implements Guild
     public RuleCreateAction createAutoModerationRule(@Nonnull AutoModerationRuledData data)
     {
         Checks.notNull(data, "AutoModerationRuledData");
-        return new RuleCreateActionImpl(getJDA(), data, getId());
+        return new RuleCreateActionImpl((JDA) getJDA(), (AutoModerationRuledDataImpl) data, getId());
     }
 
 
