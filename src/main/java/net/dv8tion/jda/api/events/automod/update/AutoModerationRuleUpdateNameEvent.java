@@ -27,7 +27,7 @@ import javax.annotation.Nonnull;
  *
  * <p>Can be used to retrieve the old name.
  *
- * <p>Identifier: {@code name}
+ * <p>Identifier: {@link AutoModerationField#NAME}
  */
 public class AutoModerationRuleUpdateNameEvent extends GenericAutoModerationUpdateRuleEvent<String>
 {
@@ -36,27 +36,23 @@ public class AutoModerationRuleUpdateNameEvent extends GenericAutoModerationUpda
         super(api, responseNumber, rule, field, oldValue, newValue);
     }
 
+    /**
+     * Returns the old name of the rule.
+     *
+     * @return The old name of the rule.
+     */
     public String getOldName()
     {
         return getOldValue();
     }
 
+    /**
+     * Returns the new name of the rule.
+     *
+     * @return The new name of the rule.
+     */
     public String getNewName()
     {
         return getNewValue();
-    }
-
-    @Nonnull
-    @Override
-    public String getOldValue()
-    {
-        return super.getOldValue();
-    }
-
-    @Nonnull
-    @Override
-    public String getNewValue()
-    {
-        return super.getNewValue();
     }
 }

@@ -17,8 +17,8 @@
 package net.dv8tion.jda.api.events.automod.update;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.automod.AutoModerationRule;
 import net.dv8tion.jda.api.entities.automod.AutoModerationField;
+import net.dv8tion.jda.api.entities.automod.AutoModerationRule;
 
 import javax.annotation.Nonnull;
 
@@ -27,7 +27,7 @@ import javax.annotation.Nonnull;
  *
  * <p>Can be used to retrieve weather it was enabled or disabled prior to the update.
  *
- * <p>Identifier: {@code enabled}
+ * <p>Identifier: {@link AutoModerationField#ENABLED}
  */
 public class AutoModerationRuleUpdateEnabledEvent extends GenericAutoModerationUpdateRuleEvent<Boolean>
 {
@@ -36,27 +36,23 @@ public class AutoModerationRuleUpdateEnabledEvent extends GenericAutoModerationU
         super(api, responseNumber, rule, field, oldValue, newValue);
     }
 
+    /**
+     * Retrieves weather the rule was enabled or disabled prior to the update.
+     *
+     * @return True, if the rule was enabled prior to the update. False, if it was disabled.
+     */
     public boolean wasEnabled()
     {
         return getOldValue();
     }
 
+    /**
+     * Retrieves weather the rule is enabled or disabled after the update.
+     *
+     * @return True, if the rule is enabled after the update. False, if it is disabled.
+     */
     public boolean isEnabled()
     {
         return getNewValue();
-    }
-
-    @Nonnull
-    @Override
-    public Boolean getOldValue()
-    {
-        return super.getOldValue();
-    }
-
-    @Nonnull
-    @Override
-    public Boolean getNewValue()
-    {
-        return super.getNewValue();
     }
 }

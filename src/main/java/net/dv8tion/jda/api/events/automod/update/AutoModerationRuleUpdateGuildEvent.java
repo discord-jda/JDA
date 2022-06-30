@@ -20,16 +20,15 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.automod.AutoModerationField;
 import net.dv8tion.jda.api.entities.automod.AutoModerationRule;
-import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 
 /**
- * Indicates that a {@link AutoModerationRule rule} updated the guild.
+ * Indicates that the guild containing the {@link AutoModerationRule rule} was updated.
  *
  * <p>Can be used to retrieve the old guild.
  *
- * <p>Identifier: {@code guild_id}
+ * <p>Identifier: {@link AutoModerationField#GUILD}
  */
 public class AutoModerationRuleUpdateGuildEvent extends GenericAutoModerationUpdateRuleEvent<Guild>
 {
@@ -38,34 +37,23 @@ public class AutoModerationRuleUpdateGuildEvent extends GenericAutoModerationUpd
         super(api, responseNumber, rule, field, oldValue, newValue);
     }
 
+    /**
+     * Return the old values of the guild.
+     *
+     * @return The old values of the guild.
+     */
     public Guild getOldGuild()
     {
         return getOldValue();
     }
 
+    /**
+     * Return the new values of the guild.
+     *
+     * @return The new values of the guild.
+     */
     public Guild getNewGuild()
     {
         return getNewValue();
-    }
-
-    @Nonnull
-    @Override
-    public Guild getOldValue()
-    {
-        return super.getOldValue();
-    }
-
-    @Nonnull
-    @Override
-    public Guild getNewValue()
-    {
-        return super.getNewValue();
-    }
-
-    @NotNull
-    @Override
-    public AutoModerationRule getEntity()
-    {
-        return getRule();
     }
 }

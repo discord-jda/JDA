@@ -75,4 +75,10 @@ public class GenericAutoModerationUpdateRuleEvent<T> extends GenericAutoModerati
     {
         return newValue;
     }
+
+    @Override
+    public String toString()
+    {
+        return "RuleUpdate[" + getPropertyIdentifier() + "](" + getOldValue() + "->" + getNewValue() + ')';
+    }
 }

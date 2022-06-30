@@ -17,8 +17,8 @@
 package net.dv8tion.jda.api.events.automod.update;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.automod.AutoModerationRule;
 import net.dv8tion.jda.api.entities.automod.AutoModerationField;
+import net.dv8tion.jda.api.entities.automod.AutoModerationRule;
 import net.dv8tion.jda.api.entities.automod.EventType;
 
 import javax.annotation.Nonnull;
@@ -28,7 +28,7 @@ import javax.annotation.Nonnull;
  *
  * <p>Can be used to retrieve the old event type.
  *
- * <p>Identifier: {@code event_type}
+ * <p>Identifier: {@link AutoModerationField#EVENT_TYPE}
  */
 public class AutoModerationRuleUpdateEventTypeEvent extends GenericAutoModerationUpdateRuleEvent<EventType>
 {
@@ -37,27 +37,23 @@ public class AutoModerationRuleUpdateEventTypeEvent extends GenericAutoModeratio
         super(api, responseNumber, rule, field, oldValue, newValue);
     }
 
+    /**
+     * Returns the old event type.
+     *
+     * @return the old event type, or null.
+     */
     public EventType getOldEventType()
     {
         return getOldValue();
     }
 
+    /**
+     * Returns the new event type.
+     *
+     * @return the new event type, or null.
+     */
     public EventType getNewEventType()
     {
         return getNewValue();
-    }
-
-    @Nonnull
-    @Override
-    public EventType getOldValue()
-    {
-        return super.getOldValue();
-    }
-
-    @Nonnull
-    @Override
-    public EventType getNewValue()
-    {
-        return super.getNewValue();
     }
 }

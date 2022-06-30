@@ -29,7 +29,7 @@ import java.util.List;
  *
  * <p>Can be used to retrieve the old exempt roles.
  *
- * <p>Identifier: {@code exempt_roles}
+ * <p>Identifier: {@link AutoModerationField#EXEMPT_ROLES}
  */
 public class AutoModerationRuleUpdateExemptRolesEvent extends GenericAutoModerationUpdateRuleEvent<List<Role>>
 {
@@ -38,27 +38,23 @@ public class AutoModerationRuleUpdateExemptRolesEvent extends GenericAutoModerat
         super(api, responseNumber, rule, field, oldValue, newValue);
     }
 
+    /**
+     * Returns the old roles that were exempt from the rule.
+     *
+     * @return The old roles that were exempt from the rule.
+     */
     public List<Role> getOldExemptRoles()
     {
         return getOldValue();
     }
 
+    /**
+     * Returns the new roles that are exempt from the rule.
+     *
+     * @return The new roles that are exempt from the rule.
+     */
     public List<Role> getNewExemptRoles()
     {
         return getNewValue();
-    }
-
-    @Nonnull
-    @Override
-    public List<Role> getOldValue()
-    {
-        return super.getOldValue();
-    }
-
-    @Nonnull
-    @Override
-    public List<Role> getNewValue()
-    {
-        return super.getNewValue();
     }
 }

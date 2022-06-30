@@ -29,7 +29,7 @@ import java.util.List;
  *
  * <p>Can be used to retrieve the old exempt channels.
  *
- * <p>Identifier: {@code exempt_channels}
+ * <p>Identifier: {@link AutoModerationField#EXEMPT_CHANNELS}
  */
 public class AutoModerationRuleUpdateExemptChannelsEvent extends GenericAutoModerationUpdateRuleEvent<List<GuildChannel>>
 {
@@ -38,27 +38,23 @@ public class AutoModerationRuleUpdateExemptChannelsEvent extends GenericAutoMode
         super(api, responseNumber, rule, field, oldValue, newValue);
     }
 
+    /**
+     * Returns the old channels that were exempt from the rule.
+     *
+     * @return The old channels that were exempt from the rule.
+     */
     public List<GuildChannel> getOldExemptChannels()
     {
         return getOldValue();
     }
 
+    /**
+     * Returns the new channels that are exempt from the rule.
+     *
+     * @return The new channels that are exempt from the rule.
+     */
     public List<GuildChannel> getNewExemptChannels()
     {
         return getNewValue();
-    }
-
-    @Nonnull
-    @Override
-    public List<GuildChannel> getOldValue()
-    {
-        return super.getOldValue();
-    }
-
-    @Nonnull
-    @Override
-    public List<GuildChannel> getNewValue()
-    {
-        return super.getNewValue();
     }
 }

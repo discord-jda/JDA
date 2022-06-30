@@ -28,7 +28,7 @@ import javax.annotation.Nonnull;
  *
  * <p>Can be used to retrieve the trigger type.
  *
- * <p>Identifier: {@code trigger_type}
+ * <p>Identifier: {@link AutoModerationField#TRIGGER_TYPE}
  */
 public class AutoModerationRuleUpdateTriggerTypeEvent extends GenericAutoModerationUpdateRuleEvent<TriggerType>
 {
@@ -38,27 +38,23 @@ public class AutoModerationRuleUpdateTriggerTypeEvent extends GenericAutoModerat
         super(api, responseNumber, rule, field, oldValue, newValue);
     }
 
+    /**
+     * Returns the old trigger type.
+     *
+     * @return The old trigger type.
+     */
     public TriggerType getOldTriggerType()
     {
         return getOldValue();
     }
 
+    /**
+     * Returns the new trigger type.
+     *
+     * @return The new trigger type.
+     */
     public TriggerType getNewTriggerType()
     {
         return getNewValue();
-    }
-
-    @Nonnull
-    @Override
-    public TriggerType getOldValue()
-    {
-        return super.getOldValue();
-    }
-
-    @Nonnull
-    @Override
-    public TriggerType getNewValue()
-    {
-        return super.getNewValue();
     }
 }

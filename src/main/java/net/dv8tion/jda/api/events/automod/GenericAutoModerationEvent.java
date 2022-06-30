@@ -17,7 +17,10 @@
 package net.dv8tion.jda.api.events.automod;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.GuildChannel;
+import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.automod.*;
 import net.dv8tion.jda.api.events.Event;
 
@@ -42,6 +45,17 @@ public class GenericAutoModerationEvent extends Event
     }
 
     /**
+     * Returns the {@link AutoModerationRule} that was created/removed/updated.
+     *
+     * @return The rule.
+     */
+    @Nonnull
+    public AutoModerationRule getRule()
+    {
+        return rule;
+    }
+
+    /**
      * Returns the {@link Guild} that owns the affected auto moderation rule.
      *
      * @return The origin Guild.
@@ -63,7 +77,7 @@ public class GenericAutoModerationEvent extends Event
     }
 
     /**
-     * The {@link User} that created/removed/updated this rule.
+     * Returns the {@link User} that created/removed/updated this rule.
      *
      * @return The creator/updater/remover of the rule.
      */
@@ -74,7 +88,7 @@ public class GenericAutoModerationEvent extends Event
     }
 
     /**
-     * The {@link EventType} for this rule.
+     * Returns the {@link EventType} for this rule.
      *
      * @return The event type.
      */
@@ -85,7 +99,7 @@ public class GenericAutoModerationEvent extends Event
     }
 
     /**
-     * The {@link TriggerType} for this rule.
+     * Returns the {@link TriggerType} for this rule.
      *
      * @return The trigger type.
      */
@@ -96,7 +110,7 @@ public class GenericAutoModerationEvent extends Event
     }
 
     /**
-     * The {@link TriggerMetadata} for this rule.
+     * Returns the {@link TriggerMetadata} for this rule.
      *
      * @return The trigger metadata.
      */
@@ -107,7 +121,7 @@ public class GenericAutoModerationEvent extends Event
     }
 
     /**
-     * The {@link AutoModerationAction} that will be executed when this rule is triggered.
+     * Returns the {@link AutoModerationAction} that will be executed when this rule is triggered.
      *
      * @return The action.
      */
@@ -118,9 +132,9 @@ public class GenericAutoModerationEvent extends Event
     }
 
     /**
-     * Whenever this rule is enabled or not.
+     * Returns weather this rule is enabled or not.
      *
-     * @return True, if enabled.
+     * @return True, if the rule is enabled prior to the update. False, if it is disabled.
      */
     public boolean isEnabled()
     {
@@ -128,7 +142,7 @@ public class GenericAutoModerationEvent extends Event
     }
 
     /**
-     * The {@link Role roles} that will be exempted from this rule.
+     * Returns the {@link Role roles} that will be exempted from this rule.
      *
      * @return The exempt roles.
      */
@@ -138,23 +152,12 @@ public class GenericAutoModerationEvent extends Event
     }
 
     /**
-     * The {@link GuildChannel channels} that will be exempted from this rule.
+     * Returns the {@link GuildChannel channels} that will be exempted from this rule.
      *
      * @return The exempt channels.
      */
     public List<GuildChannel> getExemptChannels()
     {
         return rule.getExemptChannels();
-    }
-
-    /**
-     * The {@link AutoModerationRule} that was created/removed/updated.
-     *
-     * @return The rule.
-     */
-    @Nonnull
-    public AutoModerationRule getRule()
-    {
-        return rule;
     }
 }

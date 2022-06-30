@@ -17,9 +17,9 @@
 package net.dv8tion.jda.api.events.automod.update;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.automod.AutoModerationRule;
 import net.dv8tion.jda.api.entities.automod.AutoModerationAction;
 import net.dv8tion.jda.api.entities.automod.AutoModerationField;
+import net.dv8tion.jda.api.entities.automod.AutoModerationRule;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -29,7 +29,7 @@ import java.util.List;
  *
  * <p>Can be used to retrieve the old actions.
  *
- * <p>Identifier: {@code action}
+ * <p>Identifier: {@link AutoModerationField#ACTIONS}
  */
 public class AutoModerationRuleUpdateActionsEvent extends GenericAutoModerationUpdateRuleEvent<List<AutoModerationAction>>
 {
@@ -38,27 +38,23 @@ public class AutoModerationRuleUpdateActionsEvent extends GenericAutoModerationU
         super(api, responseNumber, rule, field, oldValue, newValue);
     }
 
+    /**
+     * Retrieves the old actions.
+     *
+     * @return The old actions.
+     */
     public List<AutoModerationAction> getOldActions()
     {
         return getOldValue();
     }
 
+    /**
+     * Retrieves the new actions.
+     *
+     * @return The new actions.
+     */
     public List<AutoModerationAction> getNewActions()
     {
         return getNewValue();
-    }
-
-    @Nonnull
-    @Override
-    public List<AutoModerationAction> getOldValue()
-    {
-        return super.getOldValue();
-    }
-
-    @Nonnull
-    @Override
-    public List<AutoModerationAction> getNewValue()
-    {
-        return super.getNewValue();
     }
 }

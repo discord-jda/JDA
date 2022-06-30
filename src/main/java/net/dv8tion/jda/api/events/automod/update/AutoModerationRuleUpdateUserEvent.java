@@ -24,11 +24,11 @@ import net.dv8tion.jda.api.entities.automod.AutoModerationRule;
 import javax.annotation.Nonnull;
 
 /**
- * Indicates that a {@link AutoModerationRule rule} updated its creator(user).
+ * Indicates that the creator(user) of a {@link AutoModerationRule rule} was updated.
  *
  * <p>Can be used to retrieve the old creator(user).
  *
- * <p>Identifier: {@code user_id}
+ * <p>Identifier: {@link AutoModerationField#USER}
  */
 public class AutoModerationRuleUpdateUserEvent extends GenericAutoModerationUpdateRuleEvent<User>
 {
@@ -37,27 +37,23 @@ public class AutoModerationRuleUpdateUserEvent extends GenericAutoModerationUpda
         super(api, responseNumber, rule, field, oldValue, newValue);
     }
 
+    /**
+     * Returns the old values of the creator(user).
+     *
+     * @return The old values of the creator(user).
+     */
     public User getOldUser()
     {
         return getOldValue();
     }
 
+    /**
+     * Returns the new values of the creator(user).
+     *
+     * @return The new values of the creator(user).
+     */
     public User getNewUser()
     {
         return getNewValue();
-    }
-
-    @Nonnull
-    @Override
-    public User getOldValue()
-    {
-        return super.getOldValue();
-    }
-
-    @Nonnull
-    @Override
-    public User getNewValue()
-    {
-        return super.getNewValue();
     }
 }

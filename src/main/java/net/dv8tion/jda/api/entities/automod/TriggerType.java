@@ -31,7 +31,7 @@ public enum TriggerType
     KEYWORD(1, 3),
     /**
      * Checks for any harmful links.
-     *
+     * <p>
      * This is not released yet.
      * <br>
      * The max per guild is 1.
@@ -39,7 +39,7 @@ public enum TriggerType
     HARMFUL_LINK(2, 1),
     /**
      * Checks for generic spam.
-     *
+     * <p>
      * This is not released yet.
      * <br>
      * The max per guild is 1.

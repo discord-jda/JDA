@@ -28,7 +28,7 @@ import javax.annotation.Nonnull;
  *
  * <p>Can be used to retrieve the old trigger metadata.
  *
- * <p>Identifier: {@code trigger_metadata}
+ * <p>Identifier: {@link AutoModerationField#TRIGGER_METADATA}
  */
 public class AutoModerationRuleUpdateTriggerMetadataEvent extends GenericAutoModerationUpdateRuleEvent<TriggerMetadata>
 {
@@ -37,27 +37,23 @@ public class AutoModerationRuleUpdateTriggerMetadataEvent extends GenericAutoMod
         super(api, responseNumber, rule, field, oldValue, newValue);
     }
 
+    /**
+     * Returns the old trigger metadata.
+     *
+     * @return The old trigger metadata.
+     */
     public TriggerMetadata getOldTriggerMetadata()
     {
         return getOldValue();
     }
 
+    /**
+     * Returns the new trigger metadata.
+     *
+     * @return The new trigger metadata.
+     */
     public TriggerMetadata getNewTriggerMetadata()
     {
         return getNewValue();
-    }
-
-    @Nonnull
-    @Override
-    public TriggerMetadata getOldValue()
-    {
-        return super.getOldValue();
-    }
-
-    @Nonnull
-    @Override
-    public TriggerMetadata getNewValue()
-    {
-        return super.getNewValue();
     }
 }

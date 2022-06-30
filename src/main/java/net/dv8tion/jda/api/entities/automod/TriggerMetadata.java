@@ -37,7 +37,7 @@ public interface TriggerMetadata
     List<String> getKeywords();
 
     /**
-     * The internally pre-defined word sets which will be searched for in content.
+     * Returns the internally pre-defined word sets which will be searched for in content.
      *
      * <br>
      * Associated trigger type is {@link TriggerType#KEYWORD_PRESET}.
