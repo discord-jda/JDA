@@ -18,10 +18,7 @@ package net.dv8tion.jda.api.events.automod;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
-import net.dv8tion.jda.api.entities.automod.AutoModerationAction;
-import net.dv8tion.jda.api.entities.automod.EventType;
-import net.dv8tion.jda.api.entities.automod.TriggerMetadata;
-import net.dv8tion.jda.api.entities.automod.TriggerType;
+import net.dv8tion.jda.api.entities.automod.*;
 import net.dv8tion.jda.api.events.Event;
 
 import javax.annotation.Nonnull;

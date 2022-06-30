@@ -14,13 +14,10 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.internal.entities;
+package net.dv8tion.jda.internal.entities.automod;
 
 import net.dv8tion.jda.api.entities.*;
-import net.dv8tion.jda.api.entities.automod.AutoModerationAction;
-import net.dv8tion.jda.api.entities.automod.EventType;
-import net.dv8tion.jda.api.entities.automod.TriggerMetadata;
-import net.dv8tion.jda.api.entities.automod.TriggerType;
+import net.dv8tion.jda.api.entities.automod.*;
 
 import javax.annotation.Nonnull;
 import java.util.List;

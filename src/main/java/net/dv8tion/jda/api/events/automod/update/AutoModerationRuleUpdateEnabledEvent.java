@@ -17,13 +17,13 @@
 package net.dv8tion.jda.api.events.automod.update;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.AutoModerationRule;
+import net.dv8tion.jda.api.entities.automod.AutoModerationRule;
 import net.dv8tion.jda.api.entities.automod.AutoModerationField;
 
 import javax.annotation.Nonnull;
 
 /**
- * Indicates that a {@link net.dv8tion.jda.api.entities.AutoModerationRule rule} has been enabled/disabled.
+ * Indicates that a {@link AutoModerationRule rule} has been enabled/disabled.
  *
  * <p>Can be used to retrieve weather it was enabled or disabled prior to the update.
  *

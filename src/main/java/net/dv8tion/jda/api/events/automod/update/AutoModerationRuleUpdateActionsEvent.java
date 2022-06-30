@@ -17,7 +17,7 @@
 package net.dv8tion.jda.api.events.automod.update;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.AutoModerationRule;
+import net.dv8tion.jda.api.entities.automod.AutoModerationRule;
 import net.dv8tion.jda.api.entities.automod.AutoModerationAction;
 import net.dv8tion.jda.api.entities.automod.AutoModerationField;
 
@@ -25,7 +25,7 @@ import javax.annotation.Nonnull;
 import java.util.List;
 
 /**
- * Indicates that a {@link net.dv8tion.jda.api.entities.AutoModerationRule rule} updated its actions.
+ * Indicates that a {@link AutoModerationRule rule} updated its actions.
  *
  * <p>Can be used to retrieve the old actions.
  *

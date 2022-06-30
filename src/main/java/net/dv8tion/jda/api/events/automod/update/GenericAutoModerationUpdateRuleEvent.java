@@ -18,8 +18,8 @@ package net.dv8tion.jda.api.events.automod.update;
 
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.AutoModerationRule;
 import net.dv8tion.jda.api.entities.automod.AutoModerationField;
+import net.dv8tion.jda.api.entities.automod.AutoModerationRule;
 import net.dv8tion.jda.api.events.UpdateEvent;
 import net.dv8tion.jda.api.events.automod.GenericAutoModerationEvent;
 import org.jetbrains.annotations.NotNull;
@@ -28,7 +28,7 @@ import org.jetbrains.annotations.Nullable;
 import javax.annotation.Nonnull;
 
 /**
- * Indicates that a {@link net.dv8tion.jda.api.entities.AutoModerationRule rule} was updated.
+ * Indicates that a {@link AutoModerationRule rule} was updated.
  * <br>Every AutoModerationUpdateEvent is derived from this event and can be casted.
  *
  * <p>Can be used to detect any AutoModerationUpdateEvent.

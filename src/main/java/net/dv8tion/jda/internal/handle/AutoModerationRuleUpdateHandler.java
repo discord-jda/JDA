@@ -25,8 +25,8 @@ import net.dv8tion.jda.api.events.automod.update.*;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
-import net.dv8tion.jda.internal.entities.AutoModerationRuleImpl;
 import net.dv8tion.jda.internal.entities.GuildImpl;
+import net.dv8tion.jda.internal.entities.automod.AutoModerationRuleImpl;
 
 import java.util.ArrayList;
 import java.util.List;
