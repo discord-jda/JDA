@@ -77,7 +77,6 @@ import net.dv8tion.jda.internal.utils.cache.SortedSnowflakeCacheViewImpl;
 import net.dv8tion.jda.internal.utils.concurrent.task.GatewayTask;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
-import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -1261,9 +1260,9 @@ public class GuildImpl implements Guild
         });
     }
 
-    @NotNull
+    @Nonnull
     @Override
-    public RuleCreateAction createAutoModerationRule(@NotNull AutoModerationRuledDataImpl data)
+    public RuleCreateAction createAutoModerationRule(@Nonnull AutoModerationRuledDataImpl data)
     {
         Checks.notNull(data, "AutoModerationRuledData");
         return new RuleCreateActionImpl(getJDA(), data, getId());
