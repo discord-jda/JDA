@@ -23,7 +23,9 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.Region;
 import net.dv8tion.jda.api.audio.hooks.ConnectionStatus;
 import net.dv8tion.jda.api.entities.*;
-import net.dv8tion.jda.api.entities.automod.*;
+import net.dv8tion.jda.api.entities.automod.AutoModerationAction;
+import net.dv8tion.jda.api.entities.automod.AutoModerationRule;
+import net.dv8tion.jda.api.entities.automod.EventType;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import net.dv8tion.jda.api.entities.sticker.GuildSticker;
 import net.dv8tion.jda.api.entities.sticker.StandardSticker;
@@ -53,6 +55,7 @@ import net.dv8tion.jda.api.utils.concurrent.Task;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
+import net.dv8tion.jda.internal.entities.automod.build.AutoModerationRuledDataImpl;
 import net.dv8tion.jda.internal.handle.EventCache;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 import net.dv8tion.jda.internal.interactions.command.CommandImpl;
@@ -74,7 +77,7 @@ import net.dv8tion.jda.internal.utils.cache.SortedSnowflakeCacheViewImpl;
 import net.dv8tion.jda.internal.utils.concurrent.task.GatewayTask;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
-import okhttp3.RequestBody;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -1258,48 +1261,14 @@ public class GuildImpl implements Guild
         });
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public AuditableRestAction<AutoModerationRule> createAutoModerationRule(@Nonnull String name, @Nonnull EventType eventType, @Nonnull TriggerType triggerType, @Nullable TriggerMetadata triggerMetadata, @Nonnull List<AutoModerationAction> actions, boolean enabled, @Nullable List<Role> exemptRoles, @Nullable List<Channel> exemptChannel)
+    public RuleCreateAction createAutoModerationRule(@NotNull AutoModerationRuledDataImpl data)
     {
-        checkPermission(Permission.MANAGE_SERVER);
-        Checks.notBlank(name, "Name");
-        Checks.notNull(eventType, "Event type");
-        Checks.notNull(triggerType, "Trigger type");
-        Checks.notNull(actions, "Actions");
-        Checks.check(actions.size() > 0, "Actions must contain at least one action");
-
-        int exampleRoleSize = 20;
-        int exampleChannelSize = 50;
-        final Route.CompiledRoute route = Route.AutoModeration.CREATE_AUTO_MODERATION_RULE.compile(getId());
-
-        DataObject object = DataObject.empty();
-        object.put("name", name);
-        object.put("event_type", eventType.getValue());
-        object.put("trigger_type", triggerType.getValue());
-        if (triggerMetadata != null)
-            object.put("trigger_metadata", triggerMetadata);
-        object.put("actions", actions);
-        object.put("enabled", enabled);
-
-        if (exemptRoles != null && exemptRoles.size() >= exampleRoleSize) {
-            object.put("exempt_roles", exemptRoles);
-        } else if (exemptRoles != null) {
-            throw new IllegalArgumentException("Exempt roles must be at least " + exampleRoleSize + " in size");
-        }
-
-        if (exemptChannel != null && exemptChannel.size() > exampleChannelSize) {
-            object.put("exempt_channels", exemptChannel);
-        } else if (exemptChannel != null) {
-            throw new IllegalArgumentException("Exempt channels must be at least " + exampleChannelSize + " in size");
-        }
-
-        return new AuditableRestActionImpl<>(getJDA(), route, object, (response, request) ->
-        {
-            EntityBuilder entityBuilder = api.getEntityBuilder();
-            return entityBuilder.createAutoModerationRule(this, response.getObject());
-        });
+        Checks.notNull(data, "AutoModerationRuledData");
+        return new RuleCreateActionImpl(getJDA(), data, getId());
     }
+
 
     @Nonnull
     @Override

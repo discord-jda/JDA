@@ -21,8 +21,6 @@ import net.dv8tion.jda.api.Region;
 import net.dv8tion.jda.api.entities.automod.AutoModerationAction;
 import net.dv8tion.jda.api.entities.automod.AutoModerationRule;
 import net.dv8tion.jda.api.entities.automod.EventType;
-import net.dv8tion.jda.api.entities.automod.TriggerMetadata;
-import net.dv8tion.jda.api.entities.automod.TriggerType;
 import net.dv8tion.jda.api.entities.channel.IGuildChannelContainer;
 import net.dv8tion.jda.api.entities.emoji.CustomEmoji;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
@@ -54,6 +52,7 @@ import net.dv8tion.jda.api.utils.cache.MemberCacheView;
 import net.dv8tion.jda.api.utils.cache.SnowflakeCacheView;
 import net.dv8tion.jda.api.utils.cache.SortedSnowflakeCacheView;
 import net.dv8tion.jda.api.utils.concurrent.Task;
+import net.dv8tion.jda.internal.entities.automod.build.AutoModerationRuledDataImpl;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 import net.dv8tion.jda.internal.requests.DeferredRestAction;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -3129,19 +3128,13 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     /**
      * This can be used to create a {@link AutoModerationRule rule} for this guild.
      *
-     * @param name, the name of the rule you want to create.
-     * @param eventType, the event which will cause the auto moderation system to check for a specific trigger.
-     * @param triggerType, the type of trigger that can cause an auto moderation rule to be executed.
-     * @param triggerMetadata, This is additional data used whether a rule should be executed or not.
-     * @param actions, the action that will be performed when the rule is triggered.
-     * @param enabled, whether the rule is enabled or not.
-     * @param exemptRoles, the roles that will be exempt from the rule.
-     * @param exemptChannels, the channels that will be exempt from the rule.
+     * @param  data
+     *        The data of the new rule.
      *
      * @return The new {@link AutoModerationRule rule} that was created.
      */
     @Nonnull
-    AuditableRestAction<AutoModerationRule> createAutoModerationRule(@Nonnull String name, @Nonnull EventType eventType, @Nonnull TriggerType triggerType, @Nullable TriggerMetadata triggerMetadata, @Nonnull List<AutoModerationAction> actions, boolean enabled, @Nullable List<Role> exemptRoles, @Nullable List<Channel> exemptChannels);
+    RuleCreateAction createAutoModerationRule(@Nonnull AutoModerationRuledDataImpl data);
 
     /**
      * This can be used to modify an existing {@link AutoModerationRule rule's} name which is in this guild.
