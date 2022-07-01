@@ -55,12 +55,7 @@ public class RuleModifyActionImpl extends RestActionImpl<AutoModerationRule> imp
 
     private AutoModerationRuleDataImpl data = new AutoModerationRuleDataImpl(UNDEFINED, UNDEFINED_EVENT_TYPE, UNDEFINED_TRIGGER_TYPE, UNDEFINED_ACTIONS, UNDEFINED_ENABLED);
 
-    public RuleModifyActionImpl(JDA api, String ruleId, String guildId)
-    {
-        super(api, Route.AutoModeration.MODIFY_AUTO_MODERATION_RULE.compile(ruleId, guildId));
-    }
-
-    public RuleModifyActionImpl(Guild guild, String ruleId)
+    public RuleModifyActionImpl(@Nonnull Guild guild, @Nonnull String ruleId)
     {
         super(guild.getJDA(), Route.AutoModeration.MODIFY_AUTO_MODERATION_RULE.compile(ruleId, guild.getId()));
     }

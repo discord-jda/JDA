@@ -35,9 +35,9 @@ import java.util.function.BooleanSupplier;
 
 public class RuleCreateActionImpl extends RestActionImpl<AutoModerationRule> implements RuleCreateAction
 {
-    private final AutoModerationRuleDataImpl data;
+    private AutoModerationRuleDataImpl data;
 
-    public RuleCreateActionImpl(Guild guild, AutoModerationRuleDataImpl data, String guildId)
+    public RuleCreateActionImpl(@Nonnull Guild guild, @Nonnull AutoModerationRuleDataImpl data, @Nonnull String guildId)
     {
         super(guild.getJDA(), Route.AutoModeration.CREATE_AUTO_MODERATION_RULE.compile(guildId));
         this.data = data;

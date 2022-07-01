@@ -3137,7 +3137,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     RuleCreateAction createAutoModerationRule(@Nonnull AutoModerationRuleData data);
 
     /**
-     * This can be used to modify an existing {@link AutoModerationRule rule's}.
+     * This can be used to modify an existing {@link AutoModerationRule rule}.
      *
      * @param rule,
      *          the rule which you want to modify.

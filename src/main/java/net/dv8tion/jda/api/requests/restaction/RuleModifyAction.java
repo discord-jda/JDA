@@ -29,7 +29,10 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 
-//TODO: java doc
+/**
+ * Specialized {@link RestAction} used to modify an existing auto moderation rule.
+ */
+//TODO: JavaDoc for methods
 public interface RuleModifyAction extends RestAction<AutoModerationRule>
 {
     @Nonnull

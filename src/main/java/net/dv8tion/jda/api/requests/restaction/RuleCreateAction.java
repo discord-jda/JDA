@@ -31,8 +31,8 @@ import java.util.function.BooleanSupplier;
 
 /**
  * Specialized {@link RestAction} used to create or update an auto moderation rule.
- * 
  */
+//TODO: JavaDoc for methods
 public interface RuleCreateAction extends RestAction<AutoModerationRule>, AutoModerationRuleData
 {
     @Nonnull
