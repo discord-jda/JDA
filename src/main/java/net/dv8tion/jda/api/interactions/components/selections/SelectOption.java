@@ -16,7 +16,6 @@
 
 package net.dv8tion.jda.api.interactions.components.selections;
 
-import net.dv8tion.jda.api.entities.emoji.CustomEmoji;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
 import net.dv8tion.jda.api.utils.data.DataObject;
@@ -210,12 +209,7 @@ public class SelectOption implements SerializableData
     @CheckReturnValue
     public SelectOption withEmoji(@Nullable Emoji emoji)
     {
-        EmojiUnion union = null;
-        if (emoji instanceof EmojiUnion)
-            union = (EmojiUnion) emoji;
-        else if (emoji != null)
-            union = (EmojiUnion) Emoji.fromCustom((CustomEmoji) emoji);
-        return new SelectOption(label, value, description, isDefault, union);
+        return new SelectOption(label, value, description, isDefault, (EmojiUnion) emoji);
     }
 
     /**

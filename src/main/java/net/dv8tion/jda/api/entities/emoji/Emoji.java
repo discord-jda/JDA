@@ -178,14 +178,6 @@ public interface Emoji extends SerializableData, Formattable
     }
 
     /**
-     * Converts this to a {@link EmojiUnion}, mostly used for internal conversion.
-     *
-     * @return {@link EmojiUnion}
-     */
-    @Nonnull
-    EmojiUnion toUnion();
-
-    /**
      * The {@link Type} of this emoji.
      *
      * @return The {@link Type}
