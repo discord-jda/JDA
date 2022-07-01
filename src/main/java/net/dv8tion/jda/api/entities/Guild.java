@@ -18,9 +18,7 @@ package net.dv8tion.jda.api.entities;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.Region;
-import net.dv8tion.jda.api.entities.automod.AutoModerationAction;
 import net.dv8tion.jda.api.entities.automod.AutoModerationRule;
-import net.dv8tion.jda.api.entities.automod.EventType;
 import net.dv8tion.jda.api.entities.automod.build.AutoModerationRuleData;
 import net.dv8tion.jda.api.entities.channel.IGuildChannelContainer;
 import net.dv8tion.jda.api.entities.emoji.CustomEmoji;
@@ -3101,7 +3099,9 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     /**
      * Retrieves a list of the auto moderation rules which are configured for this guild.
      *
-     * @param id, the id of the rule you want to retrieve.
+     * @param id,
+     *         the id of the rule you want to retrieve.
+     *
      * @return A list of auto moderation rule objects for the given guild.
      */
     @Nonnull
@@ -3137,70 +3137,24 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     RuleCreateAction createAutoModerationRule(@Nonnull AutoModerationRuleData data);
 
     /**
-     * This can be used to modify an existing {@link AutoModerationRule rule's} name which is in this guild.
+     * This can be used to modify an existing {@link AutoModerationRule rule's}.
      *
-     * @param rule, the rule which you want to modify.
-     * @param name, modify the name of the rule.
+     * @param rule,
+     *          the rule which you want to modify.
+     * @param data,
+     *          the data containing the modified values.
      *
      * @return an auto moderation rule.
      */
     @Nonnull
-    AuditableRestAction<AutoModerationRule> modifyAutoModerationRuleName(@Nonnull AutoModerationRule rule, @Nonnull String name);
-
-    /**
-     * This can be used to modify an existing {@link AutoModerationRule rule's} event type which is in this guild.
-     *
-     * @param rule, the rule which you want to modify.
-     * @param eventType, modify the type of event that will cause the auto moderation system to check for a specific trigger.
-     *
-     * @return an auto moderation rule.
-     */
-    AuditableRestAction<AutoModerationRule> modifyAutoModerationRuleEventType(@Nonnull AutoModerationRule rule, @Nonnull EventType eventType);
-
-    /**
-     * This can be used to modify an existing {@link AutoModerationRule rule's} actions which is in this guild.
-     *
-     * @param rule, the rule which you want to modify.
-     * @param actions, modify the actions that will be performed when the rule is triggered.
-     *
-     * @return an auto moderation rule.
-     */
-    AuditableRestAction<AutoModerationRule> modifyAutoModerationRuleActions(@Nonnull AutoModerationRule rule, @Nonnull List<AutoModerationAction> actions);
-
-    /**
-     * This can be used to modify an existing {@link AutoModerationRule rule's} status(Enabled/Disabled) which is in this guild.
-     *
-     * @param rule, the rule which you want to modify.
-     * @param enabled, weather to enable or disable the rule.
-     *
-     * @return an auto moderation rule.
-     */
-    AuditableRestAction<AutoModerationRule> modifyAutoModerationStatus(@Nonnull AutoModerationRule rule, boolean enabled);
-
-    /**
-     * This can be used to modify an existing {@link AutoModerationRule rule's} exempt roles which is in this guild.
-     *
-     * @param rule, the rule which you want to modify.
-     * @param roles, the roles which you want to exempt from the rule you want to modify or to remove from the rule.
-     *
-     * @return an auto moderation rule.
-     */
-    AuditableRestAction<AutoModerationRule> modifyAutoModerationExemptRoles(@Nonnull AutoModerationRule rule, @Nonnull List<Role> roles);
-
-    /**
-     * This can be used to modify an existing {@link AutoModerationRule rule's} exempt channels which is in this guild.
-     *
-     * @param rule, the rule which you want to modify.
-     * @param channels, the channels which you want to exempt from the rule you want to modify or to remove from the rule.
-     *
-     * @return an auto moderation rule.
-     */
-    AuditableRestAction<AutoModerationRule> modifyAutoModerationExemptChannels(@Nonnull AutoModerationRule rule, @Nonnull List<Channel> channels);
+    RuleModifyAction modifyAutoModerationRule(@Nonnull AutoModerationRule rule, @Nonnull AutoModerationRuleData data);
 
     /**
      * Deletes an auto moderation rule from this guild.
      *
-     * @param rule, the rule which you want to delete.
+     * @param rule,
+     *          the rule which you want to delete.
+     *
      * @return A {@link RestAction} that can be used to monitor the request.
      */
     AuditableRestAction<Void> deleteAutoModerationRuleById(@Nonnull AutoModerationRule rule);

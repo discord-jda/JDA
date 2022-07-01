@@ -16,7 +16,7 @@
 
 package net.dv8tion.jda.internal.requests.restaction;
 
-import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.automod.*;
@@ -26,56 +26,85 @@ import net.dv8tion.jda.internal.entities.automod.build.AutoModerationRuleDataImp
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+import java.util.function.BooleanSupplier;
 
 public class RuleCreateActionImpl extends RestActionImpl<AutoModerationRule> implements RuleCreateAction
 {
     private final AutoModerationRuleDataImpl data;
 
-    public RuleCreateActionImpl(JDA api, AutoModerationRuleDataImpl data, String guildId)
+    public RuleCreateActionImpl(Guild guild, AutoModerationRuleDataImpl data, String guildId)
     {
-        super(api, Route.AutoModeration.CREATE_AUTO_MODERATION_RULE.compile(guildId));
+        super(guild.getJDA(), Route.AutoModeration.CREATE_AUTO_MODERATION_RULE.compile(guildId));
         this.data = data;
     }
 
-
-    @NotNull
+    @Nonnull
     @Override
-    public RuleCreateAction setName(@NotNull String name)
+    public RuleCreateAction setCheck(BooleanSupplier checks)
+    {
+        return (RuleCreateAction) super.addCheck(checks);
+    }
+
+    @Nonnull
+    @Override
+    public RuleCreateAction addCheck(@Nonnull BooleanSupplier checks)
+    {
+        return (RuleCreateAction) super.addCheck(checks);
+    }
+
+    @Nonnull
+    @Override
+    public RuleCreateAction timeout(long timeout, @Nonnull TimeUnit unit)
+    {
+        return (RuleCreateAction) super.timeout(timeout, unit);
+    }
+
+    @Nonnull
+    @Override
+    public RuleCreateAction deadline(long timestamp)
+    {
+        return (RuleCreateAction) super.deadline(timestamp);
+    }
+
+    @Nonnull
+    @Override
+    public RuleCreateAction setName(@Nonnull String name)
     {
         Checks.inRange(name, 1, 100, "Name");
         data.setName(name);
         return this;
     }
 
-    @NotNull
+    @Nonnull
     @Override
-    public RuleCreateAction setEventType(@NotNull EventType eventType)
+    public RuleCreateAction setEventType(@Nonnull EventType eventType)
     {
         data.setEventType(eventType);
         return this;
     }
 
-    @NotNull
+    @Nonnull
     @Override
-    public RuleCreateAction setTriggerType(@NotNull TriggerType triggerType)
+    public RuleCreateAction setTriggerType(@Nonnull TriggerType triggerType)
     {
         data.setTriggerType(triggerType);
         return this;
     }
 
-    @NotNull
+    @Nonnull
     @Override
-    public RuleCreateAction setActions(@NotNull List<AutoModerationAction> actions)
+    public RuleCreateAction setActions(@Nonnull List<AutoModerationAction> actions)
     {
         data.setActions(actions);
         return this;
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public RuleCreateAction setEnabled(boolean enabled)
     {
@@ -85,7 +114,7 @@ public class RuleCreateActionImpl extends RestActionImpl<AutoModerationRule> imp
 
     @Nullable
     @Override
-    public RuleCreateAction setTriggerMetadata(@NotNull TriggerMetadata triggerMetaData)
+    public RuleCreateAction setTriggerMetadata(@Nonnull TriggerMetadata triggerMetaData)
     {
         data.setTriggerMetadata(triggerMetaData);
         return this;
@@ -93,7 +122,7 @@ public class RuleCreateActionImpl extends RestActionImpl<AutoModerationRule> imp
 
     @Nullable
     @Override
-    public RuleCreateAction setExemptRoles(@NotNull List<Role> exemptRoles)
+    public RuleCreateAction setExemptRoles(@Nonnull List<Role> exemptRoles)
     {
         data.setExemptRoles(exemptRoles);
         return this;
@@ -101,27 +130,27 @@ public class RuleCreateActionImpl extends RestActionImpl<AutoModerationRule> imp
 
     @Nullable
     @Override
-    public RuleCreateAction setExemptChannels(@NotNull List<GuildChannel> exemptChannels)
+    public RuleCreateAction setExemptChannels(@Nonnull List<GuildChannel> exemptChannels)
     {
         data.setExemptChannels(exemptChannels);
         return this;
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public String getName()
     {
         return data.getName();
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public EventType getEventType()
     {
         return data.getEventType();
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public TriggerType getTriggerType()
     {
@@ -141,7 +170,7 @@ public class RuleCreateActionImpl extends RestActionImpl<AutoModerationRule> imp
         return data.getTriggerMetadata();
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public DataObject toData()
     {

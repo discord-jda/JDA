@@ -19,14 +19,11 @@ package net.dv8tion.jda.internal.entities;
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import gnu.trove.set.TLongSet;
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.Region;
 import net.dv8tion.jda.api.audio.hooks.ConnectionStatus;
 import net.dv8tion.jda.api.entities.*;
-import net.dv8tion.jda.api.entities.automod.AutoModerationAction;
 import net.dv8tion.jda.api.entities.automod.AutoModerationRule;
-import net.dv8tion.jda.api.entities.automod.EventType;
 import net.dv8tion.jda.api.entities.automod.build.AutoModerationRuleData;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import net.dv8tion.jda.api.entities.sticker.GuildSticker;
@@ -79,6 +76,7 @@ import net.dv8tion.jda.internal.utils.cache.SortedSnowflakeCacheViewImpl;
 import net.dv8tion.jda.internal.utils.concurrent.task.GatewayTask;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -1266,93 +1264,19 @@ public class GuildImpl implements Guild
     @Override
     public RuleCreateAction createAutoModerationRule(@Nonnull AutoModerationRuleData data)
     {
+        checkPermission(Permission.MANAGE_SERVER);
         Checks.notNull(data, "AutoModerationRuledData");
-        return new RuleCreateActionImpl((JDA) getJDA(), (AutoModerationRuleDataImpl) data, getId());
+        return new RuleCreateActionImpl(this, (AutoModerationRuleDataImpl) data, getId());
     }
 
-
-    @Nonnull
+    @NotNull
     @Override
-    public AuditableRestAction<AutoModerationRule> modifyAutoModerationRuleName(@Nonnull AutoModerationRule rule, @Nonnull String name)
+    public RuleModifyAction modifyAutoModerationRule(@NotNull AutoModerationRule rule, @NotNull AutoModerationRuleData data)
     {
         checkPermission(Permission.MANAGE_SERVER);
-        Checks.notBlank(rule.getId(), "Rule Id");
-        Checks.notBlank(name, "Name");
-
-        final Route.CompiledRoute route = Route.AutoModeration.MODIFY_AUTO_MODERATION_RULE.compile(getId(), rule.getId());
-        DataObject object = DataObject.empty();
-        object.put("name", name);
-
-        return new AuditableRestActionImpl<>(getJDA(), route, object);
-    }
-
-    @Override
-    public AuditableRestAction<AutoModerationRule> modifyAutoModerationRuleEventType(@Nonnull AutoModerationRule rule, @Nonnull EventType eventType)
-    {
-        checkPermission(Permission.MANAGE_SERVER);
-        Checks.notBlank(rule.getId(), "Rule Id");
-        Checks.notNull(eventType, "Event Type");
-
-        final Route.CompiledRoute route = Route.AutoModeration.MODIFY_AUTO_MODERATION_RULE.compile(getId(), rule.getId());
-        DataObject object = DataObject.empty();
-        object.put("event_type", eventType.getValue());
-
-        return new AuditableRestActionImpl<>(getJDA(), route, object);
-    }
-
-    @Override
-    public AuditableRestAction<AutoModerationRule> modifyAutoModerationRuleActions(@Nonnull AutoModerationRule rule, @Nonnull List<AutoModerationAction> actions)
-    {
-        checkPermission(Permission.MANAGE_SERVER);
-        Checks.notBlank(rule.getId(), "Rule Id");
-        Checks.notEmpty(actions, "Actions");
-
-        final Route.CompiledRoute route = Route.AutoModeration.MODIFY_AUTO_MODERATION_RULE.compile(getId(), rule.getId());
-        DataObject object = DataObject.empty();
-        object.put("actions", actions);
-
-        return new AuditableRestActionImpl<>(getJDA(), route, object);
-    }
-
-    @Override
-    public AuditableRestAction<AutoModerationRule> modifyAutoModerationStatus(@Nonnull AutoModerationRule rule, boolean enabled)
-    {
-        checkPermission(Permission.MANAGE_SERVER);
-        Checks.notBlank(rule.getId(), "Rule Id");
-
-        final Route.CompiledRoute route = Route.AutoModeration.MODIFY_AUTO_MODERATION_RULE.compile(getId(), rule.getId());
-        DataObject object = DataObject.empty();
-        object.put("enabled", enabled);
-
-        return new AuditableRestActionImpl<>(getJDA(), route, object);
-    }
-
-    @Override
-    public AuditableRestAction<AutoModerationRule> modifyAutoModerationExemptRoles(@Nonnull AutoModerationRule rule, @Nonnull List<Role> roles)
-    {
-        checkPermission(Permission.MANAGE_SERVER);
-        Checks.notBlank(rule.getId(), "Rule Id");
-        Checks.notEmpty(roles, "Roles");
-
-        final Route.CompiledRoute route = Route.AutoModeration.MODIFY_AUTO_MODERATION_RULE.compile(getId(), rule.getId());
-        DataObject object = DataObject.empty();
-        object.put("exempt_roles", roles);
-
-        return new AuditableRestActionImpl<>(getJDA(), route, object);
-    }
-
-    @Override
-    public AuditableRestAction<AutoModerationRule> modifyAutoModerationExemptChannels(@Nonnull AutoModerationRule rule, @Nonnull List<Channel> channels)
-    {
-        checkPermission(Permission.MANAGE_SERVER);
-        Checks.notBlank(rule.getId(), "Rule Id");
-        Checks.notEmpty(channels, "Channels");
-
-        final Route.CompiledRoute route = Route.AutoModeration.MODIFY_AUTO_MODERATION_RULE.compile(getId(), rule.getId());
-        DataObject object = DataObject.empty();
-        object.put("exempt_channels", channels);
-
-        return new AuditableRestActionImpl<>(getJDA(), route, object);
+        Checks.notNull(rule, "AutoModerationRule");
+        Checks.notNull(data, "AutoModerationRuledData");
+        return new RuleModifyActionImpl(this, getId());
     }
 
 

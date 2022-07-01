@@ -29,65 +29,58 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 
-/**
- * Specialized {@link RestAction} used to create or update an auto moderation rule.
- * 
- */
-public interface RuleCreateAction extends RestAction<AutoModerationRule>, AutoModerationRuleData
+//TODO: java doc
+public interface RuleModifyAction extends RestAction<AutoModerationRule>
 {
     @Nonnull
     @Override
-    RuleCreateAction setCheck(@Nullable BooleanSupplier checks);
+    RuleModifyAction setCheck(@Nullable BooleanSupplier checks);
 
     @Nonnull
     @Override
-    RuleCreateAction addCheck(@Nonnull BooleanSupplier checks);
+    RuleModifyAction addCheck(@Nonnull BooleanSupplier checks);
 
     @Nonnull
     @Override
-    RuleCreateAction timeout(long timeout, @Nonnull TimeUnit unit);
+    RuleModifyAction timeout(long timeout, @Nonnull TimeUnit unit);
 
     @Nonnull
     @Override
-    RuleCreateAction deadline(long timestamp);
+    RuleModifyAction deadline(long timestamp);
 
     @Nonnull
-    @Override
     @CheckReturnValue
-    RuleCreateAction setName(@Nonnull String name);
+    RuleModifyAction apply(@Nonnull AutoModerationRuleData ruleData);
 
     @Nonnull
-    @Override
     @CheckReturnValue
-    RuleCreateAction setEventType(@Nonnull EventType eventType);
+    RuleModifyAction setName(@Nullable String name);
 
     @Nonnull
-    @Override
     @CheckReturnValue
-    RuleCreateAction setTriggerType(@Nonnull TriggerType triggerType);
+    RuleModifyAction setEventType(@Nullable EventType eventType);
 
     @Nonnull
-    @Override
     @CheckReturnValue
-    RuleCreateAction setActions(@Nonnull List<AutoModerationAction> actions);
+    RuleModifyAction setTriggerType(@Nullable TriggerType triggerType);
 
     @Nonnull
-    @Override
     @CheckReturnValue
-    RuleCreateAction setEnabled(boolean enabled);
+    RuleModifyAction setActions(@Nullable List<AutoModerationAction> actions);
 
-    @Nullable
-    @Override
+    @Nonnull
     @CheckReturnValue
-    RuleCreateAction setTriggerMetadata(@Nonnull TriggerMetadata triggerMetaData);
+    RuleModifyAction setEnabled(@Nullable Boolean enabled);
 
-    @Nullable
-    @Override
+    @Nonnull
     @CheckReturnValue
-    RuleCreateAction setExemptRoles(@Nonnull List<Role> exemptRoles);
+    RuleModifyAction setTriggerMetadata(@Nullable TriggerMetadata triggerMetaData);
 
-    @Nullable
-    @Override
+    @Nonnull
     @CheckReturnValue
-    RuleCreateAction setExemptChannels(@Nonnull List<GuildChannel> exemptChannels);
+    RuleModifyAction setExemptRoles(@Nullable List<Role> exemptRoles);
+
+    @Nonnull
+    @CheckReturnValue
+    RuleModifyAction setExemptChannels(@Nullable List<GuildChannel> exemptChannels);
 }
