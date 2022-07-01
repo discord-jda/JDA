@@ -34,7 +34,7 @@ public class TriggerMetadataImpl implements TriggerMetadata
     @Nonnull
     public List<String> getKeywords()
     {
-        return keywords;
+        return Collections.unmodifiableList(keywords);
     }
 
     public TriggerMetadataImpl setKeywords(@Nonnull List<String> keywords)

@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.automod.*;
 
 import javax.annotation.Nonnull;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -126,7 +127,7 @@ public class AutoModerationRuleImpl implements AutoModerationRule
     @Override
     public List<AutoModerationAction> getActions()
     {
-        return actions;
+        return Collections.unmodifiableList(actions);
     }
 
     public AutoModerationRuleImpl setActions(List<AutoModerationAction> actions)
@@ -150,7 +151,7 @@ public class AutoModerationRuleImpl implements AutoModerationRule
     @Override
     public @Nonnull List<Role> getExemptRoles()
     {
-        return roles;
+        return Collections.unmodifiableList(roles);
     }
 
     public AutoModerationRuleImpl setExemptRoles(List<Role> roles)
@@ -162,7 +163,7 @@ public class AutoModerationRuleImpl implements AutoModerationRule
     @Override
     public @Nonnull List<GuildChannel> getExemptChannels()
     {
-        return channels;
+        return Collections.unmodifiableList(channels);
     }
 
     public AutoModerationRuleImpl setExemptChannels(List<GuildChannel> channels)
