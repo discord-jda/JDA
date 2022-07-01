@@ -22,7 +22,7 @@ import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.automod.*;
 import net.dv8tion.jda.api.requests.restaction.RuleCreateAction;
 import net.dv8tion.jda.api.utils.data.DataObject;
-import net.dv8tion.jda.internal.entities.automod.build.AutoModerationRuledDataImpl;
+import net.dv8tion.jda.internal.entities.automod.build.AutoModerationRuleDataImpl;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -33,9 +33,9 @@ import java.util.List;
 
 public class RuleCreateActionImpl extends RestActionImpl<AutoModerationRule> implements RuleCreateAction
 {
-    private final AutoModerationRuledDataImpl data;
+    private final AutoModerationRuleDataImpl data;
 
-    public RuleCreateActionImpl(JDA api, AutoModerationRuledDataImpl data, String guildId)
+    public RuleCreateActionImpl(JDA api, AutoModerationRuleDataImpl data, String guildId)
     {
         super(api, Route.AutoModeration.CREATE_AUTO_MODERATION_RULE.compile(guildId));
         this.data = data;

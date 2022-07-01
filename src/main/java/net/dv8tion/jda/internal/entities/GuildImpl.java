@@ -27,7 +27,7 @@ import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.automod.AutoModerationAction;
 import net.dv8tion.jda.api.entities.automod.AutoModerationRule;
 import net.dv8tion.jda.api.entities.automod.EventType;
-import net.dv8tion.jda.api.entities.automod.build.AutoModerationRuledData;
+import net.dv8tion.jda.api.entities.automod.build.AutoModerationRuleData;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import net.dv8tion.jda.api.entities.sticker.GuildSticker;
 import net.dv8tion.jda.api.entities.sticker.StandardSticker;
@@ -57,7 +57,7 @@ import net.dv8tion.jda.api.utils.concurrent.Task;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
-import net.dv8tion.jda.internal.entities.automod.build.AutoModerationRuledDataImpl;
+import net.dv8tion.jda.internal.entities.automod.build.AutoModerationRuleDataImpl;
 import net.dv8tion.jda.internal.handle.EventCache;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 import net.dv8tion.jda.internal.interactions.command.CommandImpl;
@@ -1264,10 +1264,10 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public RuleCreateAction createAutoModerationRule(@Nonnull AutoModerationRuledData data)
+    public RuleCreateAction createAutoModerationRule(@Nonnull AutoModerationRuleData data)
     {
         Checks.notNull(data, "AutoModerationRuledData");
-        return new RuleCreateActionImpl((JDA) getJDA(), (AutoModerationRuledDataImpl) data, getId());
+        return new RuleCreateActionImpl((JDA) getJDA(), (AutoModerationRuleDataImpl) data, getId());
     }
 
 

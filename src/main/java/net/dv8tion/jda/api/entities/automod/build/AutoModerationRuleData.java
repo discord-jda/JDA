@@ -29,43 +29,43 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 //TODO: java doc
-public interface AutoModerationRuledData extends SerializableData
+public interface AutoModerationRuleData extends SerializableData
 {
     @Nonnull
-    AutoModerationRuledData setActions(@Nonnull List<AutoModerationAction> actions);
+    AutoModerationRuleData setActions(@Nonnull List<AutoModerationAction> actions);
 
     @Nullable
-    AutoModerationRuledData setExemptRoles(@Nonnull List<Role> exemptRoles);
+    AutoModerationRuleData setExemptRoles(@Nonnull List<Role> exemptRoles);
 
     @Nullable
-    AutoModerationRuledData setExemptChannels(@Nonnull List<GuildChannel> exemptChannels);
+    AutoModerationRuleData setExemptChannels(@Nonnull List<GuildChannel> exemptChannels);
 
     @Nonnull
     String getName();
 
     @Nonnull
-    AutoModerationRuledData setName(@Nonnull String name);
+    AutoModerationRuleData setName(@Nonnull String name);
 
     @Nonnull
     EventType getEventType();
 
     @Nonnull
-    AutoModerationRuledData setEventType(@Nonnull EventType eventType);
+    AutoModerationRuleData setEventType(@Nonnull EventType eventType);
 
     @Nonnull
     TriggerType getTriggerType();
 
     @Nonnull
-    AutoModerationRuledData setTriggerType(@Nonnull TriggerType triggerType);
+    AutoModerationRuleData setTriggerType(@Nonnull TriggerType triggerType);
 
     boolean isEnabled();
 
     @Nonnull
-    AutoModerationRuledData setEnabled(boolean enabled);
+    AutoModerationRuleData setEnabled(boolean enabled);
 
     @Nullable
     TriggerMetadata getTriggerMetadata();
 
     @Nullable
-    AutoModerationRuledData setTriggerMetadata(@Nonnull TriggerMetadata triggerMetaData);
+    AutoModerationRuleData setTriggerMetadata(@Nonnull TriggerMetadata triggerMetaData);
 }

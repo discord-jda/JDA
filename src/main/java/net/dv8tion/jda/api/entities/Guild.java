@@ -21,7 +21,7 @@ import net.dv8tion.jda.api.Region;
 import net.dv8tion.jda.api.entities.automod.AutoModerationAction;
 import net.dv8tion.jda.api.entities.automod.AutoModerationRule;
 import net.dv8tion.jda.api.entities.automod.EventType;
-import net.dv8tion.jda.api.entities.automod.build.AutoModerationRuledData;
+import net.dv8tion.jda.api.entities.automod.build.AutoModerationRuleData;
 import net.dv8tion.jda.api.entities.channel.IGuildChannelContainer;
 import net.dv8tion.jda.api.entities.emoji.CustomEmoji;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
@@ -3134,7 +3134,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * @return The new {@link AutoModerationRule rule} that was created.
      */
     @Nonnull
-    RuleCreateAction createAutoModerationRule(@Nonnull AutoModerationRuledData data);
+    RuleCreateAction createAutoModerationRule(@Nonnull AutoModerationRuleData data);
 
     /**
      * This can be used to modify an existing {@link AutoModerationRule rule's} name which is in this guild.

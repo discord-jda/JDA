@@ -19,7 +19,7 @@ package net.dv8tion.jda.api.requests.restaction;
 import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.automod.*;
-import net.dv8tion.jda.api.entities.automod.build.AutoModerationRuledData;
+import net.dv8tion.jda.api.entities.automod.build.AutoModerationRuleData;
 import net.dv8tion.jda.api.requests.RestAction;
 
 import javax.annotation.CheckReturnValue;
@@ -28,7 +28,7 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 //TODO: java doc
-public interface RuleCreateAction extends RestAction<AutoModerationRule>, AutoModerationRuledData
+public interface RuleCreateAction extends RestAction<AutoModerationRule>, AutoModerationRuleData
 {
     @Nonnull
     @Override
