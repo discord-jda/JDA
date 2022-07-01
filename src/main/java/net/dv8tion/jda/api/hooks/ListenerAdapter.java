@@ -296,6 +296,11 @@ public abstract class ListenerAdapter implements EventListener
     public void onEmojiUpdateName(@Nonnull EmojiUpdateNameEvent event) {}
     public void onEmojiUpdateRoles(@Nonnull EmojiUpdateRolesEvent event) {}
 
+    // Application command permission update events
+    public void onGenericPrivilegeUpdate(@Nonnull GenericPrivilegeUpdateEvent event) {}
+    public void onApplicationCommandUpdatePrivileges(@Nonnull ApplicationCommandUpdatePrivilegesEvent event) {}
+    public void onApplicationUpdatePrivileges(@Nonnull ApplicationUpdatePrivilegesEvent event) {}
+    
     //Sticker Events
     public void onGuildStickerAdded(@Nonnull GuildStickerAddedEvent event) {}
     public void onGuildStickerRemoved(@Nonnull GuildStickerRemovedEvent event) {}
