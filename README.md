@@ -514,7 +514,7 @@ There is a guide for logback-classic available in our wiki: [Logging Setup](http
 ## Documentation
 
 Docs can be found on the [Jenkins][jenkins] or directly [here](https://ci.dv8tion.net/job/JDA5/javadoc/)
-<br>A simple Wiki can also be found in this repository's [Wiki section](https://jda.wiki/)
+<br>A simple Wiki can also be found at [jda.wiki](https://jda.wiki/)
 
 ### Annotations
 
