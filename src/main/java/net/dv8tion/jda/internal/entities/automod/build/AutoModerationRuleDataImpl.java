@@ -43,7 +43,6 @@ public class AutoModerationRuleDataImpl implements AutoModerationRuleData
     private boolean enabled;
     private TriggerMetadata triggerMetadata;
 
-
     public AutoModerationRuleDataImpl(@Nonnull String name, @Nonnull EventType eventType, @Nonnull TriggerType triggerType, @Nonnull List<AutoModerationAction> actions, boolean enabled)
     {
         setName(name);
