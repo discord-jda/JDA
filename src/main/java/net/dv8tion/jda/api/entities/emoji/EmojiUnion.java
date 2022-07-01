@@ -47,11 +47,4 @@ public interface EmojiUnion extends Emoji
      */
     @Nonnull
     CustomEmoji asCustom();
-
-    @Nonnull
-    @Override
-    default EmojiUnion toUnion()
-    {
-        return this;
-    }
 }
