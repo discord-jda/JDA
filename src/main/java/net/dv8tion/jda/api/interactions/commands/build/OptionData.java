@@ -684,6 +684,37 @@ public class OptionData implements SerializableData
     }
 
     /**
+     * Configure the minimum and maximum length for strings which can be provided for this option.
+     *
+     * @param  minLength
+     *         The minimum length for strings which can be provided for this option.
+     * @param  maxLength
+     *         The maximum length for strings which can be provided for this option.
+     * @throws IllegalArgumentException
+     *         If any of the following checks fail
+     *         <ul>
+     *             <li>{@link OptionType type of this option} is {@link OptionType#STRING STRING}</li>
+     *             <li>{@code minLength} is greater than or equal to {@code 0}</li>
+     *             <li>{@code maxLength} is greater than or equal to {@value MAX_STRING_OPTION_LENGTH_MINIMUM} and
+     *             lower than or equal to {@value MAX_STRING_OPTION_LENGTH}</li>
+     *         </ul>
+     *
+     * @return The OptionData instance, for chaining
+     */
+    @Nonnull
+    public OptionData setRequiredLength(int minLength, int maxLength)
+    {
+        if (type != OptionType.STRING)
+            throw new IllegalArgumentException("Can only set min and max length for options of type STRING");
+        Checks.check(minLength >= 0, "Min length must be greater than or equal to 0");
+        Checks.check(maxLength >= MAX_STRING_OPTION_LENGTH_MINIMUM && maxLength <= MAX_STRING_OPTION_LENGTH,
+                "Max length must be greater than or equal to %d and lower than or equal to %d", MAX_STRING_OPTION_LENGTH_MINIMUM, MAX_STRING_OPTION_LENGTH);
+        this.minLength = minLength;
+        this.maxLength = maxLength;
+        return this;
+    }
+
+    /**
      * Add a predefined choice for this option.
      * <br>The user can only provide one of the choices and cannot specify any other value.
      *
