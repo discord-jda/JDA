@@ -87,11 +87,7 @@ public interface DefaultGuildChannelUnion extends StandardGuildChannel
 
     /**
      * Casts this union to a {@link IThreadContainer}.
-     * <br>This only works for the following channel types represented by this union:
-     * <ul>
-     *     <li>{@link TextChannel}</li>
-     *     <li>{@link NewsChannel}</li>
-     * </ul>
+     * This method exists for developer discoverability.
      *
      * Note: This is effectively equivalent to using the cast operator:
      * <pre><code>
@@ -111,11 +107,7 @@ public interface DefaultGuildChannelUnion extends StandardGuildChannel
 
     /**
      * Casts this union to a {@link StandardGuildMessageChannel}.
-     * <br>This only works for the following channel types represented by this union:
-     * <ul>
-     *     <li>{@link TextChannel}</li>
-     *     <li>{@link NewsChannel}</li>
-     * </ul>
+     * This method exists for developer discoverability.
      *
      * Note: This is effectively equivalent to using the cast operator:
      * <pre><code>
