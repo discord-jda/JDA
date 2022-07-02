@@ -26,35 +26,35 @@ public enum MessageType
     /**
      * The normal text messages received when a user or bot sends a Message.
      */
-    DEFAULT(0, false),
+    DEFAULT(0, false, true),
 
     /**
      * Specialized messages used for Groups as a System-Message showing that a new User has been added to the Group.
      * Also used in message threads to indicate a member has joined that thread.
      */
-    RECIPIENT_ADD(1),
+    RECIPIENT_ADD(1, true, false),
 
     /**
      * Specialized messages used for Groups as a System-Message showing that a new User has been removed from the Group.
      * Also used in message threads to indicate a member has left that thread.
      */
-    RECIPIENT_REMOVE(2),
+    RECIPIENT_REMOVE(2, true, false),
 
     /**
      * Specialized message used for Groups as a System-Message showing that a Call was started.
      */
-    CALL(3),
+    CALL(3, true, false),
 
     /**
      * Specialized message used for Groups as a System-Message showing that the name of the Group was changed.
      * Also used in message threads to indicate the name of that thread has changed.
      */
-    CHANNEL_NAME_CHANGE(4),
+    CHANNEL_NAME_CHANGE(4, true, false),
 
     /**
      * Specialized message used for Groups as a System-Message showing that the icon of the Group was changed.
      */
-    CHANNEL_ICON_CHANGE(5),
+    CHANNEL_ICON_CHANGE(5, true, false),
 
     /**
      * Specialized message used in MessageChannels as a System-Message to announce new pins
@@ -94,22 +94,22 @@ public enum MessageType
     /**
      * System message related to discovery qualifications.
      */
-    GUILD_DISCOVERY_DISQUALIFIED(14, true),
+    GUILD_DISCOVERY_DISQUALIFIED(14, true, false),
 
     /**
      * System message related to discovery qualifications.
      */
-    GUILD_DISCOVERY_REQUALIFIED(15),
+    GUILD_DISCOVERY_REQUALIFIED(15, true, false),
 
     /**
      * System message related to discovery qualifications.
      */
-    GUILD_DISCOVERY_GRACE_PERIOD_INITIAL_WARNING(16),
+    GUILD_DISCOVERY_GRACE_PERIOD_INITIAL_WARNING(16, true, false),
 
     /**
      * System message related to discovery qualifications.
      */
-    GUILD_DISCOVERY_GRACE_PERIOD_FINAL_WARNING(17),
+    GUILD_DISCOVERY_GRACE_PERIOD_FINAL_WARNING(17, true, false),
 
     /**
      * This is sent to a TextChannel when a message thread is created if the message from which the thread was started is "old".
@@ -120,18 +120,18 @@ public enum MessageType
     /**
      * Reply to another message. This usually comes with a {@link Message#getReferencedMessage() referenced message}.
      */
-    INLINE_REPLY(19, false),
+    INLINE_REPLY(19, false, true),
 
     /**
      * This message was created by an interaction. Usually in combination with Slash Commands.
      */
-    SLASH_COMMAND(20, false),
+    SLASH_COMMAND(20, false, true),
 
     /**
      * A new message sent as the first message in threads that are started from an existing message in the parent channel.
      * It only contains a message reference field that points to the message from which the thread was started.
      */
-    THREAD_STARTER_MESSAGE(21, false, true),
+    THREAD_STARTER_MESSAGE(21, false, false),
 
     /**
      * The "Invite your friends" messages that are sent to guild owners in new servers.
@@ -141,7 +141,7 @@ public enum MessageType
     /**
      * This message was created by an interaction. Usually in combination with Context Menus.
      */
-    CONTEXT_COMMAND(23, false),
+    CONTEXT_COMMAND(23, false, true),
 
     /**
      * This message was created by the automod system.
@@ -159,20 +159,11 @@ public enum MessageType
     private final boolean system;
     private final boolean deletable;
 
-    MessageType(int id, boolean system, boolean deletable) {
+    MessageType(int id, boolean system, boolean deletable)
+    {
         this.id = id;
         this.system = system;
         this.deletable = deletable;
-    }
-
-    MessageType(int id, boolean system) {
-        // most system messages are not deletable, most non-system messages are
-        this(id, system, !system);
-    }
-
-    MessageType(int id) {
-        // most messages are system messages
-        this(id, true);
     }
 
     /**
@@ -199,7 +190,22 @@ public enum MessageType
 
     /**
      * Whether messages of this type can be deleted.
-     * <br>This includes most system messages.
+     * <br>These are messages which are required to stay such as thread starter messages.
+     *
+     * <p><b>Messages which cannot be deleted:</b><br>
+     * <ul>
+     *     <li>{@link #RECIPIENT_ADD}</li>
+     *     <li>{@link #RECIPIENT_REMOVE}</li>
+     *     <li>{@link #CALL}</li>
+     *     <li>{@link #CHANNEL_NAME_CHANGE}</li>
+     *     <li>{@link #CHANNEL_ICON_CHANGE}</li>
+     *     <li>{@link #GUILD_DISCOVERY_DISQUALIFIED}</li>
+     *     <li>{@link #GUILD_DISCOVERY_REQUALIFIED}</li>
+     *     <li>{@link #GUILD_DISCOVERY_GRACE_PERIOD_INITIAL_WARNING}</li>
+     *     <li>{@link #GUILD_DISCOVERY_GRACE_PERIOD_FINAL_WARNING}</li>
+     *     <li>{@link #GUILD_DISCOVERY_GRACE_PERIOD_FINAL_WARNING}</li>
+     *     <li>{@link #THREAD_STARTER_MESSAGE}</li>
+     * </ul>
      *
      * @return True, if delete is supported
      */
