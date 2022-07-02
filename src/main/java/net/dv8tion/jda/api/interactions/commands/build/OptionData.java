@@ -71,12 +71,23 @@ public class OptionData implements SerializableData
      */
     public static final int MAX_CHOICES = 25;
 
+    /**
+     * The minimum value for the maximum length for a {@link OptionType#STRING String option}.
+     */
+    public static final int MAX_STRING_OPTION_LENGTH_MINIMUM = 1;
+
+    /**
+     * The maximum length a {@link OptionType#STRING String option} can be.
+     */
+    public static final int MAX_STRING_OPTION_LENGTH = 6000;
+
     private final OptionType type;
     private String name, description;
     private boolean isRequired, isAutoComplete;
     private final EnumSet<ChannelType> channelTypes = EnumSet.noneOf(ChannelType.class);
     private Number minValue;
     private Number maxValue;
+    private Integer minLength, maxLength;
     private Map<String, Object> choices;
 
     /**
@@ -264,6 +275,32 @@ public class OptionData implements SerializableData
     public Number getMaxValue()
     {
         return maxValue;
+    }
+
+    /**
+     * The minimum length for strings which can be provided for this option.
+     * <br>This returns {@code null} if the value is not set or if the option
+     * is not of type {@link OptionType#STRING STRING}.
+     *
+     * @return The minimum length for strings for this option or {@code null}
+     */
+    @Nullable
+    public Integer getMinLength()
+    {
+        return minLength;
+    }
+
+    /**
+     * The maximum length for strings which can be provided for this option.
+     * <br>This returns {@code null} if the value is not set or if the option
+     * is not of type {@link OptionType#STRING STRING}.
+     *
+     * @return The maximum length for strings for this option or {@code null}
+     */
+    @Nullable
+    public Integer getMaxLength()
+    {
+        return maxLength;
     }
 
     /**
@@ -596,6 +633,27 @@ public class OptionData implements SerializableData
         return this;
     }
 
+    @Nonnull
+    public OptionData setMinLength(int minLength)
+    {
+        if (type != OptionType.STRING)
+            throw new IllegalArgumentException("Can only set min length for options of type STRING");
+        Checks.check(minLength >= 0, "Min length must be greater than or equal to 0");
+        this.minLength = minLength;
+        return this;
+    }
+
+    @Nonnull
+    public OptionData setMaxLength(int maxLength)
+    {
+        if (type != OptionType.STRING)
+            throw new IllegalArgumentException("Can only set max length for options of type STRING");
+        Checks.check(maxLength >= MAX_STRING_OPTION_LENGTH_MINIMUM && maxLength <= MAX_STRING_OPTION_LENGTH,
+                "Max length must be greater than or equal to %d and lower than or equal to %d", MAX_STRING_OPTION_LENGTH_MINIMUM, MAX_STRING_OPTION_LENGTH);
+        this.maxLength = maxLength;
+        return this;
+    }
+
     /**
      * Add a predefined choice for this option.
      * <br>The user can only provide one of the choices and cannot specify any other value.
@@ -807,6 +865,13 @@ public class OptionData implements SerializableData
             if (maxValue != null)
                 json.put("max_value", maxValue);
         }
+        if (type == OptionType.STRING)
+        {
+            if (minLength != null)
+                json.put("min_length", minLength);
+            if (maxLength != null)
+                json.put("max_length", maxLength);
+        }
         return json;
     }
 
@@ -856,6 +921,13 @@ public class OptionData implements SerializableData
                     .map(it -> it.stream(DataArray::getInt).map(ChannelType::fromId).collect(Collectors.toSet()))
                     .orElse(Collections.emptySet()));
         }
+        if (type == OptionType.STRING)
+        {
+            if (!json.isNull("min_length"))
+                option.setMinLength(json.getInt("min_length"));
+            if (!json.isNull("max_length"))
+                option.setMaxLength(json.getInt("max_length"));
+        }
         json.optArray("choices").ifPresent(choices1 ->
                 choices1.stream(DataArray::getObject).forEach(o ->
                 {
@@ -890,6 +962,7 @@ public class OptionData implements SerializableData
         data.setAutoComplete(option.isAutoComplete());
         data.addChoices(option.getChoices());
         Number min = option.getMinValue(), max = option.getMaxValue();
+        Integer minLength = option.getMinLength(), maxLength = option.getMaxLength();
         switch (option.getType())
         {
         case CHANNEL:
@@ -906,6 +979,12 @@ public class OptionData implements SerializableData
                 data.setMinValue(min.longValue());
             if (max != null)
                 data.setMaxValue(max.longValue());
+            break;
+        case STRING:
+            if (minLength != null)
+                data.setMinLength(minLength);
+            if (maxLength != null)
+                data.setMaxLength(maxLength);
             break;
         }
         return data;
