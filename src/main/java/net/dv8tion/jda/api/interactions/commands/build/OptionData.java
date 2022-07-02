@@ -633,6 +633,20 @@ public class OptionData implements SerializableData
         return this;
     }
 
+    /**
+     * Configure the minimum length for strings which can be provided for this option.
+     *
+     * @param  minLength
+     *         The minimum length for strings which can be provided for this option.
+     * @throws IllegalArgumentException
+     *         If any of the following checks fail
+     *         <ul>
+     *             <li>{@link OptionType type of this option} is {@link OptionType#STRING STRING}</li>
+     *             <li>{@code minLength} is greater than or equal to {@code 0}</li>
+     *         </ul>
+     *
+     * @return The OptionData instance, for chaining
+     */
     @Nonnull
     public OptionData setMinLength(int minLength)
     {
@@ -643,6 +657,21 @@ public class OptionData implements SerializableData
         return this;
     }
 
+    /**
+     * Configure the maximum length for strings which can be provided for this option.
+     *
+     * @param  maxLength
+     *         The maximum length for strings which can be provided for this option.
+     * @throws IllegalArgumentException
+     *         If any of the following checks fail
+     *         <ul>
+     *             <li>{@link OptionType type of this option} is {@link OptionType#STRING STRING}</li>
+     *             <li>{@code maxLength} is greater than or equal to {@value MAX_STRING_OPTION_LENGTH_MINIMUM} and
+     *             lower than or equal to {@value MAX_STRING_OPTION_LENGTH}</li>
+     *         </ul>
+     *
+     * @return The OptionData instance, for chaining
+     */
     @Nonnull
     public OptionData setMaxLength(int maxLength)
     {
