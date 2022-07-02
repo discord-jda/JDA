@@ -18,6 +18,7 @@ package net.dv8tion.jda.api.events.message.react;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.internal.requests.CompletedRestAction;
@@ -125,15 +126,14 @@ public class GenericMessageReactionEvent extends GenericMessageEvent
     }
 
     /**
-     * The {@link net.dv8tion.jda.api.entities.MessageReaction.ReactionEmote ReactionEmote}
-     * of the reaction, shortcut for {@code getReaction().getReactionEmote()}
+     * The {@link Emoji} of the reaction, shortcut for {@code getReaction().getEmoji()}
      *
-     * @return The ReactionEmote instance
+     * @return The Emoji instance
      */
     @Nonnull
-    public MessageReaction.ReactionEmote getReactionEmote()
+    public Emoji getEmoji()
     {
-        return reaction.getReactionEmote();
+        return reaction.getEmoji();
     }
 
     /**

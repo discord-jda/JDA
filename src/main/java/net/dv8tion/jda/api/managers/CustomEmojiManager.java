@@ -16,9 +16,9 @@
 
 package net.dv8tion.jda.api.managers;
 
-import net.dv8tion.jda.api.entities.Emote;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -26,22 +26,22 @@ import javax.annotation.Nullable;
 import java.util.Set;
 
 /**
- * Manager providing functionality to update one or more fields for an {@link net.dv8tion.jda.api.entities.Emote Emote}.
+ * Manager providing functionality to update one or more fields for an {@link RichCustomEmoji}.
  *
  * <p><b>Example</b>
  * <pre>{@code
  * manager.setName("minn")
  *        .setRoles(null)
  *        .queue();
- * manager.reset(EmoteManager.NAME | EmoteManager.ROLES)
+ * manager.reset(CustomEmojiManager.NAME | CustomEmojiManager.ROLES)
  *        .setName("dv8")
  *        .setRoles(roles)
  *        .queue();
  * }</pre>
  *
- * @see net.dv8tion.jda.api.entities.Emote#getManager()
+ * @see RichCustomEmoji#getManager()
  */
-public interface EmoteManager extends Manager<EmoteManager>
+public interface CustomEmojiManager extends Manager<CustomEmojiManager>
 {
     /** Used to reset the name field */
     long NAME  = 1;
@@ -51,7 +51,7 @@ public interface EmoteManager extends Manager<EmoteManager>
     /**
      * Resets the fields specified by the provided bit-flag pattern.
      * You can specify a combination by using a bitwise OR concat of the flag constants.
-     * <br>Example: {@code manager.reset(EmoteManager.NAME | EmoteManager.ROLES);}
+     * <br>Example: {@code manager.reset(CustomEmojiManager.NAME | CustomEmojiManager.ROLES);}
      *
      * <p><b>Flag Constants:</b>
      * <ul>
@@ -62,16 +62,16 @@ public interface EmoteManager extends Manager<EmoteManager>
      * @param  fields
      *         Integer value containing the flags to reset.
      *
-     * @return EmoteManager for chaining convenience
+     * @return CustomEmojiManager for chaining convenience
      */
     @Nonnull
     @Override
-    EmoteManager reset(long fields);
+    CustomEmojiManager reset(long fields);
 
     /**
      * Resets the fields specified by the provided bit-flag pattern.
      * You can specify a combination by using a bitwise OR concat of the flag constants.
-     * <br>Example: {@code manager.reset(EmoteManager.NAME, EmoteManager.ROLES);}
+     * <br>Example: {@code manager.reset(CustomEmojiManager.NAME, CustomEmojiManager.ROLES);}
      *
      * <p><b>Flag Constants:</b>
      * <ul>
@@ -82,70 +82,69 @@ public interface EmoteManager extends Manager<EmoteManager>
      * @param  fields
      *         Integer values containing the flags to reset.
      *
-     * @return EmoteManager for chaining convenience
+     * @return CustomEmojiManager for chaining convenience
      */
     @Nonnull
     @Override
-    EmoteManager reset(long... fields);
+    CustomEmojiManager reset(long... fields);
 
     /**
      * The {@link net.dv8tion.jda.api.entities.Guild Guild} this Manager's
-     * {@link net.dv8tion.jda.api.entities.Emote Emote} is in.
-     * <br>This is logically the same as calling {@code getEmote().getGuild()}
+     * {@link RichCustomEmoji} is in.
+     * <br>This is logically the same as calling {@code getEmoji().getGuild()}
      *
      * @return The parent {@link net.dv8tion.jda.api.entities.Guild Guild}
      */
     @Nonnull
     default Guild getGuild()
     {
-        return getEmote().getGuild();
+        return getEmoji().getGuild();
     }
 
     /**
-     * The target {@link net.dv8tion.jda.api.entities.Emote Emote}
-     * that will be modified by this Manager
+     * The target {@link RichCustomEmoji} that will be modified by this Manager
      *
-     * @return The target Emote
+     * @return The target emoji
      */
     @Nonnull
-    Emote getEmote();
+    RichCustomEmoji getEmoji();
 
     /**
-     * Sets the <b><u>name</u></b> of the selected {@link net.dv8tion.jda.api.entities.Emote Emote}.
+     * Sets the <b><u>name</u></b> of the selected {@link RichCustomEmoji}.
      *
-     * <p>An emote name <b>must</b> be between 2-32 characters long!
-     * <br>Emote names may only be populated with alphanumeric (with underscore and dash).
+     * <p>An emoji name <b>must</b> be between 2-32 characters long!
+     * <br>Emoji names may only be populated with alphanumeric (with underscore and dash).
      *
      * <p><b>Example</b>: {@code tatDab} or {@code fmgSUP}
      *
      * @param  name
-     *         The new name for the selected {@link net.dv8tion.jda.api.entities.Emote Emote}
+     *         The new name for the selected {@link RichCustomEmoji}
      *
      * @throws IllegalArgumentException
      *         If the provided name is {@code null} or not between 2-32 characters long
      *
-     * @return EmoteManager for chaining convenience
+     * @return CustomEmojiManager for chaining convenience
      */
     @Nonnull
     @CheckReturnValue
-    EmoteManager setName(@Nonnull String name);
+    CustomEmojiManager setName(@Nonnull String name);
 
     /**
-     * Sets the <b><u>restriction roles</u></b> of the selected {@link net.dv8tion.jda.api.entities.Emote Emote}.
-     * <br>If these are empty the Emote will be available to everyone otherwise only available to the specified roles.
+     * Sets the <b><u>restriction roles</u></b> of the selected {@link RichCustomEmoji}.
+     * <br>If these are empty the emoji will be available to everyone otherwise only available to the specified roles.
      *
-     * <p>An emote's restriction roles <b>must not</b> contain {@code null}!
+     * <p>An emoji's restriction roles <b>must not</b> contain {@code null}!
      *
      * @param  roles
-     *         The new set of {@link net.dv8tion.jda.api.entities.Role Roles} for the selected {@link net.dv8tion.jda.api.entities.Emote Emote}
+     *         The new set of {@link net.dv8tion.jda.api.entities.Role Roles} for the selected {@link RichCustomEmoji}
      *         to be restricted to, or {@code null} to clear the roles
      *
      * @throws IllegalArgumentException
      *         If any of the provided values is {@code null}
      *
-     * @return EmoteManager for chaining convenience
+     * @return CustomEmojiManager for chaining convenience
      */
     @Nonnull
     @CheckReturnValue
-    EmoteManager setRoles(@Nullable Set<Role> roles);
+    CustomEmojiManager setRoles(@Nullable Set<Role> roles);
 }

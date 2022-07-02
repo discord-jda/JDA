@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.channel.unions.GuildMessageChannelUnion;
 import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.exceptions.PermissionException;
 import net.dv8tion.jda.api.requests.RestAction;
@@ -40,16 +41,13 @@ import java.util.Objects;
  * This is an immutable object and is not updated by method calls or changes in Discord. A new snapshot instance
  * built from Discord is needed to see changes.
  *
- * @since  3.0
- *
  * @see    Message#getReactions()
- * @see    Message#getReactionByUnicode(String)
- * @see    Message#getReactionById(long)
+ * @see    Message#getReaction(Emoji)
  */
 public class MessageReaction
 {
     private final MessageChannel channel;
-    private final ReactionEmote emote;
+    private final Emoji emoji;
     private final long messageId;
     private final boolean self;
     private final int count;
@@ -58,9 +56,9 @@ public class MessageReaction
      * Creates a new MessageReaction instance
      *
      * @param  channel
-     *         The {@link net.dv8tion.jda.api.entities.MessageChannel} this Reaction was used in
-     * @param  emote
-     *         The {@link net.dv8tion.jda.api.entities.MessageReaction.ReactionEmote ReactionEmote} that was used
+     *         The {@link MessageChannel} this Reaction was used in
+     * @param  emoji
+     *         The {@link Emoji} that was used
      * @param  messageId
      *         The message id this reaction is attached to
      * @param  self
@@ -68,10 +66,10 @@ public class MessageReaction
      * @param  count
      *         The amount of people that reacted with this Reaction
      */
-    public MessageReaction(@Nonnull MessageChannel channel, @Nonnull ReactionEmote emote, long messageId, boolean self, int count)
+    public MessageReaction(@Nonnull MessageChannel channel, @Nonnull Emoji emoji, long messageId, boolean self, int count)
     {
         this.channel = channel;
-        this.emote = emote;
+        this.emoji = emoji;
         this.messageId = messageId;
         this.self = self;
         this.count = count;
@@ -148,7 +146,7 @@ public class MessageReaction
     }
 
     /**
-     * Whether this Reaction was used in a {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel}
+     * Whether this Reaction was used in a {@link MessageChannel}
      * of the specified {@link net.dv8tion.jda.api.entities.ChannelType ChannelType}.
      *
      * @param  type
@@ -199,7 +197,7 @@ public class MessageReaction
     }
 
     /**
-     * The {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel}
+     * The {@link MessageChannel MessageChannel}
      * this Reaction was used in.
      *
      * @return The channel this Reaction was used in
@@ -222,15 +220,15 @@ public class MessageReaction
     }
 
     /**
-     * The {@link net.dv8tion.jda.api.entities.MessageReaction.ReactionEmote ReactionEmote}
-     * of this Reaction
+     * The {@link Emoji} of this Reaction.
+     * <br>This includes both {@link Emoji.Type#CUSTOM custom emojis} and {@link Emoji.Type#UNICODE unicode emoji}.
      *
-     * @return The final instance of this Reaction's Emote/Emoji
+     * @return The final instance of this Reaction's Emoji
      */
     @Nonnull
-    public ReactionEmote getReactionEmote()
+    public Emoji getEmoji()
     {
-        return emote;
+        return emoji;
     }
 
     /**
@@ -348,16 +346,15 @@ public class MessageReaction
         boolean self = user.equals(getJDA().getSelfUser());
         if (!self)
         {
-            if (!channel.getType().isGuild()) {
+            if (!channel.getType().isGuild())
                 throw new PermissionException("Unable to remove Reaction of other user in non-guild channels!");
-            }
 
             IPermissionContainer permChannel = getGuildChannel().getPermissionContainer();
             if (!permChannel.getGuild().getSelfMember().hasPermission(permChannel, Permission.MESSAGE_MANAGE))
                 throw new InsufficientPermissionException(permChannel, Permission.MESSAGE_MANAGE);
         }
 
-        String code = getReactionCode();
+        String code = EncodingUtil.encodeReaction(emoji.getAsReactionCode());
         String target = self ? "@me" : user.getId();
         Route.CompiledRoute route = Route.Messages.REMOVE_REACTION.compile(channel.getId(), getMessageId(), code, target);
         return new RestActionImpl<>(getJDA(), route);
@@ -398,14 +395,7 @@ public class MessageReaction
         if (!getChannelType().isGuild())
             throw new UnsupportedOperationException("Cannot clear reactions on a message sent from a private channel");
         GuildMessageChannel guildChannel = Objects.requireNonNull(getGuildChannel());
-        return guildChannel.clearReactionsById(getMessageId(), getReactionCode());
-    }
-
-    private String getReactionCode()
-    {
-        return emote.isEmote()
-                ? emote.getName() + ":" + emote.getId()
-                : EncodingUtil.encodeUTF8(emote.getName());
+        return guildChannel.clearReactionsById(getMessageId(), emoji);
     }
 
     @Override
@@ -416,7 +406,7 @@ public class MessageReaction
         if (!(obj instanceof MessageReaction))
             return false;
         MessageReaction r = (MessageReaction) obj;
-        return r.emote.equals(emote)
+        return r.emoji.equals(emoji)
             && r.self == self
             && r.messageId == messageId;
     }
@@ -424,188 +414,6 @@ public class MessageReaction
     @Override
     public String toString()
     {
-        return "MR:(M:(" + messageId + ") / " + emote + ")";
-    }
-
-    /**
-     * Represents an Emoji/Emote of a MessageReaction
-     * <br>This is used to wrap both emojis and emotes
-     */
-    public static class ReactionEmote implements ISnowflake
-    {
-        private final JDA api;
-        private final String name;
-        private final long id;
-        private final Emote emote;
-
-        private ReactionEmote(@Nonnull String name, @Nonnull JDA api)
-        {
-            this.name = name;
-            this.api = api;
-            this.id = 0;
-            this.emote = null;
-        }
-
-        private ReactionEmote(@Nonnull Emote emote)
-        {
-            this.api = emote.getJDA();
-            this.name = emote.getName();
-            this.id = emote.getIdLong();
-            this.emote = emote;
-        }
-
-        @Nonnull
-        public static ReactionEmote fromUnicode(@Nonnull String name, @Nonnull JDA api)
-        {
-            return new ReactionEmote(name, api);
-        }
-
-        @Nonnull
-        public static ReactionEmote fromCustom(@Nonnull Emote emote)
-        {
-            return new ReactionEmote(emote);
-        }
-
-        /**
-         * Whether this is an {@link net.dv8tion.jda.api.entities.Emote Emote} wrapper.
-         * <br>This means {@link #getEmoji()} will throw {@link java.lang.IllegalStateException}.
-         *
-         * @return True, if {@link #getEmote()} can be used
-         *
-         * @see    #getEmote()
-         */
-        public boolean isEmote()
-        {
-            return emote != null;
-        }
-
-        /**
-         * Whether this represents a unicode emoji.
-         * <br>This means {@link #getEmote()}, {@link #getId()}, and {@link #getIdLong()} will not be available.
-         *
-         * @return True, if this represents a unicode emoji
-         *
-         * @see    #getEmoji()
-         */
-        public boolean isEmoji()
-        {
-            return emote == null;
-        }
-
-        /**
-         * The name for this emote/emoji
-         * <br>For unicode emojis this will be the unicode of said emoji rather than an alias like {@code :smiley:}.
-         *
-         * <p>For better use in consoles that do not support unicode emoji use {@link #getAsCodepoints()} for a more
-         * readable representation of the emoji.
-         *
-         * <p>Custom emotes may return an empty string for this if the emote was deleted.
-         *
-         * @return The name for this emote/emoji
-         */
-        @Nonnull
-        public String getName()
-        {
-            return name;
-        }
-
-        /**
-         * Converts the unicode name into codepoint notation like {@code U+1F602}.
-         *
-         * @throws java.lang.IllegalStateException
-         *         If this is not an emoji reaction, see {@link #isEmoji()}
-         *
-         * @return String containing the codepoint representation of the reaction emoji
-         */
-        @Nonnull
-        public String getAsCodepoints()
-        {
-            if (!isEmoji())
-                throw new IllegalStateException("Cannot get codepoint for custom emote reaction");
-            return EncodingUtil.encodeCodepoints(name);
-        }
-
-        @Override
-        public long getIdLong()
-        {
-            if (!isEmote())
-                throw new IllegalStateException("Cannot get id for emoji reaction");
-            return id;
-        }
-        
-        /**
-         * The code for this Reaction.
-         * <br>For unicode emojis this will be the unicode of said emoji rather than an alias like {@code :smiley:}.
-         * <br>For custom emotes this will be the name and id of said emote in the format {@code <name>:<id>}.
-         *
-         * @return The unicode if it is an emoji, or the name and id in the format {@code <name>:<id>}
-         */
-        @Nonnull
-        public String getAsReactionCode()
-        {
-            return emote != null
-                    ? name + ":" + id
-                    : name;
-        }
-
-        /**
-         * The unicode representing the emoji used for reacting.
-         *
-         * @throws java.lang.IllegalStateException
-         *         If this is not an emoji reaction, see {@link #isEmoji()}
-         *
-         * @return The unicode for the emoji
-         */
-        @Nonnull
-        public String getEmoji()
-        {
-            if (!isEmoji())
-                throw new IllegalStateException("Cannot get emoji code for custom emote reaction");
-            return getName();
-        }
-
-        /**
-         * The instance of {@link net.dv8tion.jda.api.entities.Emote Emote}
-         * for the Reaction instance.
-         *
-         * @throws java.lang.IllegalStateException
-         *         If this is not a custom emote reaction, see {@link #isEmote()}
-         *
-         * @return The Emote for the Reaction instance
-         */
-        @Nonnull
-        public Emote getEmote()
-        {
-            if (!isEmote())
-                throw new IllegalStateException("Cannot get custom emote for emoji reaction");
-            return emote;
-        }
-
-        /**
-         * The current JDA instance for the Reaction
-         *
-         * @return The JDA instance of the Reaction
-         */
-        @Nonnull
-        public JDA getJDA()
-        {
-            return api;
-        }
-
-        @Override
-        public boolean equals(Object obj)
-        {
-            return obj instanceof ReactionEmote
-                    && Objects.equals(((ReactionEmote) obj).id, id)
-                    && ((ReactionEmote) obj).getName().equals(name);
-        }
-
-        @Override
-        public String toString()
-        {
-            if (isEmoji())
-                return "RE:" + getAsCodepoints();
-            return "RE:" + getName() + "(" + getId() + ")";
-        }
+        return "MR:(M:(" + messageId + ") / " + emoji + ")";
     }
 }

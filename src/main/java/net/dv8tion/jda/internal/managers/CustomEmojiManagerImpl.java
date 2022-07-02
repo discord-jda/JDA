@@ -17,14 +17,13 @@
 package net.dv8tion.jda.internal.managers;
 
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Emote;
-import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
-import net.dv8tion.jda.api.managers.EmoteManager;
+import net.dv8tion.jda.api.managers.CustomEmojiManager;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
-import net.dv8tion.jda.internal.entities.EmoteImpl;
+import net.dv8tion.jda.internal.entities.emoji.RichCustomEmojiImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
 import okhttp3.RequestBody;
@@ -35,46 +34,32 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-public class EmoteManagerImpl extends ManagerBase<EmoteManager> implements EmoteManager
+public class CustomEmojiManagerImpl extends ManagerBase<CustomEmojiManager> implements CustomEmojiManager
 {
-    protected final EmoteImpl emote;
+    protected final RichCustomEmojiImpl emoji;
 
     protected final List<String> roles = new ArrayList<>();
     protected String name;
 
-    /**
-     * Creates a new EmoteManager instance
-     *
-     * @param  emote
-     *         The target {@link net.dv8tion.jda.internal.entities.EmoteImpl EmoteImpl} to modify
-     */
-    public EmoteManagerImpl(EmoteImpl emote)
+    public CustomEmojiManagerImpl(RichCustomEmojiImpl emoji)
     {
-        super(emote.getJDA(), Route.Emotes.MODIFY_EMOTE.compile(notNullGuild(emote).getId(), emote.getId()));
-        this.emote = emote;
+        super(emoji.getJDA(), Route.Emojis.MODIFY_EMOJI.compile(emoji.getGuild().getId(), emoji.getId()));
+        this.emoji = emoji;
         if (isPermissionChecksEnabled())
             checkPermissions();
     }
 
-    private static Guild notNullGuild(EmoteImpl emote)
-    {
-        Guild g = emote.getGuild();
-        if (g == null)
-            throw new IllegalStateException("Cannot modify an emote without shared guild");
-        return g;
-    }
-
     @Nonnull
     @Override
-    public Emote getEmote()
+    public RichCustomEmoji getEmoji()
     {
-        return emote;
+        return emoji;
     }
 
     @Nonnull
     @Override
     @CheckReturnValue
-    public EmoteManagerImpl reset(long fields)
+    public CustomEmojiManagerImpl reset(long fields)
     {
         super.reset(fields);
         if ((fields & ROLES) == ROLES)
@@ -87,7 +72,7 @@ public class EmoteManagerImpl extends ManagerBase<EmoteManager> implements Emote
     @Nonnull
     @Override
     @CheckReturnValue
-    public EmoteManagerImpl reset(long... fields)
+    public CustomEmojiManagerImpl reset(long... fields)
     {
         super.reset(fields);
         return this;
@@ -96,7 +81,7 @@ public class EmoteManagerImpl extends ManagerBase<EmoteManager> implements Emote
     @Nonnull
     @Override
     @CheckReturnValue
-    public EmoteManagerImpl reset()
+    public CustomEmojiManagerImpl reset()
     {
         super.reset();
         withLock(this.roles, List::clear);
@@ -107,7 +92,7 @@ public class EmoteManagerImpl extends ManagerBase<EmoteManager> implements Emote
     @Nonnull
     @Override
     @CheckReturnValue
-    public EmoteManagerImpl setName(@Nonnull String name)
+    public CustomEmojiManagerImpl setName(@Nonnull String name)
     {
         Checks.notBlank(name, "Name");
         name = name.trim();
@@ -120,7 +105,7 @@ public class EmoteManagerImpl extends ManagerBase<EmoteManager> implements Emote
     @Nonnull
     @Override
     @CheckReturnValue
-    public EmoteManagerImpl setRoles(Set<Role> roles)
+    public CustomEmojiManagerImpl setRoles(Set<Role> roles)
     {
         if (roles == null)
         {
@@ -162,8 +147,8 @@ public class EmoteManagerImpl extends ManagerBase<EmoteManager> implements Emote
     @Override
     protected boolean checkPermissions()
     {
-        if (!getGuild().getSelfMember().hasPermission(Permission.MANAGE_EMOTES_AND_STICKERS))
-            throw new InsufficientPermissionException(getGuild(), Permission.MANAGE_EMOTES_AND_STICKERS);
+        if (!getGuild().getSelfMember().hasPermission(Permission.MANAGE_EMOJIS_AND_STICKERS))
+            throw new InsufficientPermissionException(getGuild(), Permission.MANAGE_EMOJIS_AND_STICKERS);
         return super.checkPermissions();
     }
 }
