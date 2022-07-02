@@ -16,7 +16,6 @@
 
 package net.dv8tion.jda.internal.requests.restaction;
 
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.Role;
@@ -57,7 +56,7 @@ public class RuleModifyActionImpl extends RestActionImpl<AutoModerationRule> imp
 
     public RuleModifyActionImpl(@Nonnull Guild guild, @Nonnull String ruleId)
     {
-        super(guild.getJDA(), Route.AutoModeration.MODIFY_AUTO_MODERATION_RULE.compile(ruleId, guild.getId()));
+        super(guild.getJDA(), Route.AutoModeration.MODIFY_AUTO_MODERATION_RULE.compile(guild.getId(), ruleId));
     }
 
     @Nonnull
@@ -142,9 +141,9 @@ public class RuleModifyActionImpl extends RestActionImpl<AutoModerationRule> imp
 
     @Nonnull
     @Override
-    public RuleModifyAction setActions(@Nullable List<AutoModerationAction> actions)
+    public RuleModifyAction setActions(@Nonnull List<AutoModerationAction> actions)
     {
-        if (actions == null)
+        if (actions.isEmpty())
         {
             mask &= ~ACTIONS_SET;
             return this;
@@ -184,9 +183,9 @@ public class RuleModifyActionImpl extends RestActionImpl<AutoModerationRule> imp
 
     @Nonnull
     @Override
-    public RuleModifyAction setExemptRoles(@Nullable List<Role> exemptRoles)
+    public RuleModifyAction setExemptRoles(@Nonnull List<Role> exemptRoles)
     {
-        if (exemptRoles == null)
+        if (exemptRoles.isEmpty())
         {
             mask &= ~TRIGGER_TYPE_SET;
             return this;
@@ -198,9 +197,9 @@ public class RuleModifyActionImpl extends RestActionImpl<AutoModerationRule> imp
 
     @Nonnull
     @Override
-    public RuleModifyAction setExemptChannels(@Nullable List<GuildChannel> exemptChannels)
+    public RuleModifyAction setExemptChannels(@Nonnull List<GuildChannel> exemptChannels)
     {
-        if (exemptChannels == null)
+        if (exemptChannels.isEmpty())
         {
             mask &= ~TRIGGER_TYPE_SET;
             return this;

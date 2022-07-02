@@ -69,7 +69,7 @@ public interface RuleModifyAction extends RestAction<AutoModerationRule>
 
     @Nonnull
     @CheckReturnValue
-    RuleModifyAction setActions(@Nullable List<AutoModerationAction> actions);
+    RuleModifyAction setActions(@Nonnull List<AutoModerationAction> actions);
 
     @Nonnull
     @CheckReturnValue
@@ -81,9 +81,9 @@ public interface RuleModifyAction extends RestAction<AutoModerationRule>
 
     @Nonnull
     @CheckReturnValue
-    RuleModifyAction setExemptRoles(@Nullable List<Role> exemptRoles);
+    RuleModifyAction setExemptRoles(@Nonnull List<Role> exemptRoles);
 
     @Nonnull
     @CheckReturnValue
-    RuleModifyAction setExemptChannels(@Nullable List<GuildChannel> exemptChannels);
+    RuleModifyAction setExemptChannels(@Nonnull List<GuildChannel> exemptChannels);
 }

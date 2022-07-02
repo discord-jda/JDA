@@ -37,9 +37,9 @@ public class RuleCreateActionImpl extends RestActionImpl<AutoModerationRule> imp
 {
     private AutoModerationRuleDataImpl data;
 
-    public RuleCreateActionImpl(@Nonnull Guild guild, @Nonnull AutoModerationRuleDataImpl data, @Nonnull String guildId)
+    public RuleCreateActionImpl(@Nonnull Guild guild, @Nonnull AutoModerationRuleDataImpl data)
     {
-        super(guild.getJDA(), Route.AutoModeration.CREATE_AUTO_MODERATION_RULE.compile(guildId));
+        super(guild.getJDA(), Route.AutoModeration.CREATE_AUTO_MODERATION_RULE.compile(guild.getId()));
         this.data = data;
     }
 

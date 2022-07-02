@@ -1266,7 +1266,7 @@ public class GuildImpl implements Guild
     {
         checkPermission(Permission.MANAGE_SERVER);
         Checks.notNull(data, "AutoModerationRuledData");
-        return new RuleCreateActionImpl(this, (AutoModerationRuleDataImpl) data, getId());
+        return new RuleCreateActionImpl(this, (AutoModerationRuleDataImpl) data);
     }
 
     @NotNull
