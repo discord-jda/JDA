@@ -53,7 +53,7 @@ import java.util.regex.Pattern;
 
 public class ReceivedMessage extends AbstractMessage
 {
-    public static boolean contentIntentWarning = false;
+    public static boolean didContentIntentWarning = false;
     private final Object mutex = new Object();
 
     protected final JDAImpl api;
@@ -98,7 +98,7 @@ public class ReceivedMessage extends AbstractMessage
         this.channel = channel;
         this.messageReference = messageReference;
         this.type = type;
-        this.api = (channel != null) ? (JDAImpl) channel.getJDA() : null;
+        this.api = (JDAImpl) channel.getJDA();
         this.fromWebhook = fromWebhook;
         this.pinned = pinned;
         this.author = author;
@@ -125,12 +125,12 @@ public class ReceivedMessage extends AbstractMessage
     private void checkIntent()
     {
         // Checks whether access to content is limited and the message content intent is not enabled
-        if (api != null && !contentIntentWarning && !api.isIntent(GatewayIntent.MESSAGE_CONTENT))
+        if (!didContentIntentWarning && !api.isIntent(GatewayIntent.MESSAGE_CONTENT))
         {
             SelfUser selfUser = api.getSelfUser();
             if (!Objects.equals(selfUser, author) && !mentions.getUsers().contains(selfUser) && isFromGuild())
             {
-                contentIntentWarning = true;
+                didContentIntentWarning = true;
                 JDAImpl.LOG.warn(
                     "Attempting to access message content without GatewayIntent.MESSAGE_CONTENT.\n" +
                     "Discord now requires to explicitly enable access to this using the MESSAGE_CONTENT intent.\n" +

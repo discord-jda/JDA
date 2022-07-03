@@ -249,7 +249,7 @@ public interface Message extends ISnowflake, Formattable
      */
     static void suppressContentIntentWarning()
     {
-        ReceivedMessage.contentIntentWarning = true;
+        ReceivedMessage.didContentIntentWarning = true;
     }
 
     /**
