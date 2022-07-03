@@ -128,7 +128,7 @@ public class ReceivedMessage extends AbstractMessage
         if (!didContentIntentWarning && !api.isIntent(GatewayIntent.MESSAGE_CONTENT))
         {
             SelfUser selfUser = api.getSelfUser();
-            if (!Objects.equals(selfUser, author) && !mentions.getUsers().contains(selfUser) && isFromGuild())
+            if (!Objects.equals(selfUser, author) && !mentions.getUsers().contains(selfUser) && isFromGuild() && content.isEmpty())
             {
                 didContentIntentWarning = true;
                 JDAImpl.LOG.warn(
