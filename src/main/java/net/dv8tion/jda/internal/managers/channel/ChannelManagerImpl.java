@@ -471,15 +471,6 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
         if (!type.isThread())
             throw new IllegalStateException("Can only set autoArchiveDuration on threads");
 
-        Set<String> features = getGuild().getFeatures();
-        if (autoArchiveDuration == ThreadChannel.AutoArchiveDuration.TIME_3_DAYS && !features.contains("THREE_DAY_THREAD_ARCHIVE"))
-            throw new IllegalArgumentException("Cannot use TIME_3_DAYS archive duration because feature isn't supported on this Guild." +
-                    " Missing THREE_DAY_THREAD_ARCHIVE feature due to boost level being too low.");
-
-        if (autoArchiveDuration == ThreadChannel.AutoArchiveDuration.TIME_1_WEEK && !features.contains("SEVEN_DAY_THREAD_ARCHIVE"))
-            throw new IllegalArgumentException("Cannot use TIME_1_WEEK archive duration because feature isn't supported on this Guild." +
-                    " Missing SEVEN_DAY_THREAD_ARCHIVE feature due to boost level being too low.");
-
         this.autoArchiveDuration = autoArchiveDuration;
         set |= AUTO_ARCHIVE_DURATION;
         return (M) this;

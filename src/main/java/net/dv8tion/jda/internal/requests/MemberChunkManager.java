@@ -25,6 +25,7 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.entities.MemberImpl;
+import net.dv8tion.jda.internal.utils.Helpers;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -193,7 +194,7 @@ public class MemberChunkManager
             EntityBuilder builder = guild.getJDA().getEntityBuilder();
             DataArray memberArray = chunk.getArray("members");
             TLongObjectMap<DataObject> presences = chunk.optArray("presences").map(it ->
-                builder.convertToUserMap(o -> o.getObject("user").getUnsignedLong("id"), it)
+                Helpers.convertToMap(o -> o.getObject("user").getUnsignedLong("id"), it)
             ).orElseGet(TLongObjectHashMap::new);
             List<Member> collect = new ArrayList<>(memberArray.length());
             for (int i = 0; i < memberArray.length(); i++)

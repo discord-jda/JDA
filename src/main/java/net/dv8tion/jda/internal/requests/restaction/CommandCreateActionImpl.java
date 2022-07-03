@@ -16,6 +16,7 @@
 package net.dv8tion.jda.internal.requests.restaction;
 
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
@@ -79,9 +80,17 @@ public class CommandCreateActionImpl extends RestActionImpl<Command> implements 
 
     @Nonnull
     @Override
-    public CommandCreateAction setDefaultEnabled(boolean enabled)
+    public CommandCreateAction setDefaultPermissions(@Nonnull DefaultMemberPermissions permission)
     {
-        data.setDefaultEnabled(enabled);
+        data.setDefaultPermissions(permission);
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    public CommandCreateAction setGuildOnly(boolean guildOnly)
+    {
+        data.setGuildOnly(guildOnly);
         return this;
     }
 
@@ -92,17 +101,24 @@ public class CommandCreateActionImpl extends RestActionImpl<Command> implements 
         return data.getName();
     }
 
-    @Override
-    public boolean isDefaultEnabled()
-    {
-        return data.isDefaultEnabled();
-    }
-
     @Nonnull
     @Override
     public Command.Type getType()
     {
         return data.getType();
+    }
+
+    @Nonnull
+    @Override
+    public DefaultMemberPermissions getDefaultPermissions()
+    {
+        return data.getDefaultPermissions();
+    }
+
+    @Override
+    public boolean isGuildOnly()
+    {
+        return data.isGuildOnly();
     }
 
     @Nonnull

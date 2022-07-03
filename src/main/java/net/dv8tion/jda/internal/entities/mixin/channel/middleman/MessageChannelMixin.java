@@ -18,6 +18,8 @@ package net.dv8tion.jda.internal.entities.mixin.channel.middleman;
 
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.requests.RestAction;
@@ -37,7 +39,9 @@ import java.io.InputStream;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
-public interface MessageChannelMixin<T extends MessageChannelMixin<T>> extends MessageChannel
+public interface MessageChannelMixin<T extends MessageChannelMixin<T>> extends
+        MessageChannel,
+        MessageChannelUnion
 {
     // ---- Default implementations of interface ----
     @Nonnull
@@ -60,7 +64,7 @@ public interface MessageChannelMixin<T extends MessageChannelMixin<T>> extends M
             }
         }
 
-        return MessageChannel.super.purgeMessages(messages);
+        return MessageChannelUnion.super.purgeMessages(messages);
     }
 
     @Nonnull
@@ -71,7 +75,7 @@ public interface MessageChannelMixin<T extends MessageChannelMixin<T>> extends M
 
         //If we can't use the bulk delete system, then use the standard purge defined in MessageChannel
         if (!canDeleteOtherUsersMessages())
-            return MessageChannel.super.purgeMessagesById(messageIds);
+            return MessageChannelUnion.super.purgeMessagesById(messageIds);
 
         // remove duplicates and sort messages
         List<CompletableFuture<Void>> list = new LinkedList<>();
@@ -120,7 +124,7 @@ public interface MessageChannelMixin<T extends MessageChannelMixin<T>> extends M
     {
         checkCanAccessChannel();
         checkCanSendMessage();
-        return MessageChannel.super.sendMessage(text);
+        return MessageChannelUnion.super.sendMessage(text);
     }
 
     @Nonnull
@@ -130,7 +134,7 @@ public interface MessageChannelMixin<T extends MessageChannelMixin<T>> extends M
         checkCanAccessChannel();
         checkCanSendMessage();
         checkCanSendMessageEmbeds();
-        return MessageChannel.super.sendMessageEmbeds(embed, other);
+        return MessageChannelUnion.super.sendMessageEmbeds(embed, other);
     }
 
     @Nonnull
@@ -140,7 +144,7 @@ public interface MessageChannelMixin<T extends MessageChannelMixin<T>> extends M
         checkCanAccessChannel();
         checkCanSendMessage();
         checkCanSendMessageEmbeds();
-        return MessageChannel.super.sendMessageEmbeds(embeds);
+        return MessageChannelUnion.super.sendMessageEmbeds(embeds);
     }
 
     @Nonnull
@@ -149,7 +153,7 @@ public interface MessageChannelMixin<T extends MessageChannelMixin<T>> extends M
     {
         checkCanAccessChannel();
         checkCanSendMessage();
-        return MessageChannel.super.sendMessage(msg);
+        return MessageChannelUnion.super.sendMessage(msg);
     }
 
     @Nonnull
@@ -159,7 +163,7 @@ public interface MessageChannelMixin<T extends MessageChannelMixin<T>> extends M
         checkCanAccessChannel();
         checkCanSendMessage();
         checkCanSendFiles();
-        return MessageChannel.super.sendFile(data, fileName, options);
+        return MessageChannelUnion.super.sendFile(data, fileName, options);
     }
 
     @Nonnull
@@ -168,7 +172,7 @@ public interface MessageChannelMixin<T extends MessageChannelMixin<T>> extends M
     {
         checkCanAccessChannel();
         checkCanViewHistory();
-        return MessageChannel.super.retrieveMessageById(messageId);
+        return MessageChannelUnion.super.retrieveMessageById(messageId);
     }
 
     @Nonnull
@@ -177,7 +181,7 @@ public interface MessageChannelMixin<T extends MessageChannelMixin<T>> extends M
     {
        checkCanAccessChannel();
        //We don't know if this is a Message sent by us or another user, so we can't run checks for Permission.MESSAGE_MANAGE
-       return MessageChannel.super.deleteMessageById(messageId);
+       return MessageChannelUnion.super.deleteMessageById(messageId);
     }
 
     @Nonnull
@@ -186,7 +190,7 @@ public interface MessageChannelMixin<T extends MessageChannelMixin<T>> extends M
     {
         checkCanAccessChannel();
         checkCanViewHistory();
-        return MessageChannel.super.getHistory();
+        return MessageChannelUnion.super.getHistory();
     }
 
     @Nonnull
@@ -195,7 +199,7 @@ public interface MessageChannelMixin<T extends MessageChannelMixin<T>> extends M
     {
         checkCanAccessChannel();
         checkCanViewHistory();
-        return MessageChannel.super.getIterableHistory();
+        return MessageChannelUnion.super.getIterableHistory();
     }
 
     @Nonnull
@@ -204,7 +208,7 @@ public interface MessageChannelMixin<T extends MessageChannelMixin<T>> extends M
     {
         checkCanAccessChannel();
         checkCanViewHistory();
-        return MessageChannel.super.getHistoryAround(messageId, limit);
+        return MessageChannelUnion.super.getHistoryAround(messageId, limit);
     }
 
     @Nonnull
@@ -213,7 +217,7 @@ public interface MessageChannelMixin<T extends MessageChannelMixin<T>> extends M
     {
         checkCanAccessChannel();
         checkCanViewHistory();
-        return MessageChannel.super.getHistoryAfter(messageId, limit);
+        return MessageChannelUnion.super.getHistoryAfter(messageId, limit);
     }
 
     @Nonnull
@@ -222,7 +226,7 @@ public interface MessageChannelMixin<T extends MessageChannelMixin<T>> extends M
     {
         checkCanAccessChannel();
         checkCanViewHistory();
-        return MessageChannel.super.getHistoryBefore(messageId, limit);
+        return MessageChannelUnion.super.getHistoryBefore(messageId, limit);
     }
 
     @Nonnull
@@ -239,34 +243,34 @@ public interface MessageChannelMixin<T extends MessageChannelMixin<T>> extends M
     default RestAction<Void> sendTyping()
     {
         checkCanAccessChannel();
-        return MessageChannel.super.sendTyping();
+        return MessageChannelUnion.super.sendTyping();
     }
 
     @Nonnull
     @CheckReturnValue
-    default RestAction<Void> addReactionById(@Nonnull String messageId, @Nonnull String unicode)
+    default RestAction<Void> addReactionById(@Nonnull String messageId, @Nonnull Emoji emoji)
     {
         checkCanAccessChannel();
         checkCanAddReactions();
-        return MessageChannel.super.addReactionById(messageId, unicode);
+        return MessageChannelUnion.super.addReactionById(messageId, emoji);
     }
 
     @Nonnull
     @CheckReturnValue
-    default RestAction<Void> removeReactionById(@Nonnull String messageId, @Nonnull String unicode)
+    default RestAction<Void> removeReactionById(@Nonnull String messageId, @Nonnull Emoji emoji)
     {
         checkCanAccessChannel();
         checkCanRemoveReactions();
-        return MessageChannel.super.removeReactionById(messageId, unicode);
+        return MessageChannelUnion.super.removeReactionById(messageId, emoji);
     }
 
     @Nonnull
     @CheckReturnValue
-    default ReactionPaginationAction retrieveReactionUsersById(@Nonnull String messageId, @Nonnull String unicode)
+    default ReactionPaginationAction retrieveReactionUsersById(@Nonnull String messageId, @Nonnull Emoji emoji)
     {
         checkCanAccessChannel();
         checkCanRemoveReactions();
-        return MessageChannel.super.retrieveReactionUsersById(messageId, unicode);
+        return MessageChannelUnion.super.retrieveReactionUsersById(messageId, emoji);
     }
 
     @Nonnull
@@ -275,7 +279,7 @@ public interface MessageChannelMixin<T extends MessageChannelMixin<T>> extends M
     {
         checkCanAccessChannel();
         checkCanControlMessagePins();
-        return MessageChannel.super.pinMessageById(messageId);
+        return MessageChannelUnion.super.pinMessageById(messageId);
     }
 
     @Nonnull
@@ -284,7 +288,7 @@ public interface MessageChannelMixin<T extends MessageChannelMixin<T>> extends M
     {
         checkCanAccessChannel();
         checkCanControlMessagePins();
-        return MessageChannel.super.unpinMessageById(messageId);
+        return MessageChannelUnion.super.unpinMessageById(messageId);
     }
 
     @Nonnull
@@ -292,7 +296,7 @@ public interface MessageChannelMixin<T extends MessageChannelMixin<T>> extends M
     default RestAction<List<Message>> retrievePinnedMessages()
     {
         checkCanAccessChannel();
-        return MessageChannel.super.retrievePinnedMessages();
+        return MessageChannelUnion.super.retrievePinnedMessages();
     }
 
     @Nonnull
@@ -301,7 +305,7 @@ public interface MessageChannelMixin<T extends MessageChannelMixin<T>> extends M
     {
         checkCanAccessChannel();
         checkCanSendMessage();
-        return MessageChannel.super.editMessageById(messageId, newContent);
+        return MessageChannelUnion.super.editMessageById(messageId, newContent);
     }
 
     @Nonnull
@@ -310,7 +314,7 @@ public interface MessageChannelMixin<T extends MessageChannelMixin<T>> extends M
     {
        checkCanAccessChannel();
        checkCanSendMessage();
-       return MessageChannel.super.editMessageById(messageId, newContent);
+       return MessageChannelUnion.super.editMessageById(messageId, newContent);
     }
 
 
@@ -321,7 +325,7 @@ public interface MessageChannelMixin<T extends MessageChannelMixin<T>> extends M
         checkCanAccessChannel();
         checkCanSendMessage();
         checkCanSendMessageEmbeds();
-        return MessageChannel.super.editMessageEmbedsById(messageId, newEmbeds);
+        return MessageChannelUnion.super.editMessageEmbedsById(messageId, newEmbeds);
     }
 
     @Nonnull
@@ -330,7 +334,7 @@ public interface MessageChannelMixin<T extends MessageChannelMixin<T>> extends M
     {
         checkCanAccessChannel();
         checkCanSendMessage();
-        return MessageChannel.super.editMessageComponentsById(messageId, components);
+        return MessageChannelUnion.super.editMessageComponentsById(messageId, components);
     }
 
     // ---- State Accessors ----

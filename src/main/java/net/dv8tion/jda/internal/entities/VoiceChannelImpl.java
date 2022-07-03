@@ -22,9 +22,6 @@ import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.managers.channel.concrete.VoiceChannelManager;
 import net.dv8tion.jda.api.requests.restaction.ChannelAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
-import net.dv8tion.jda.internal.entities.mixin.channel.attribute.ICategorizableChannelMixin;
-import net.dv8tion.jda.internal.entities.mixin.channel.attribute.IInviteContainerMixin;
-import net.dv8tion.jda.internal.entities.mixin.channel.attribute.IPositionableChannelMixin;
 import net.dv8tion.jda.internal.entities.mixin.channel.middleman.AudioChannelMixin;
 import net.dv8tion.jda.internal.entities.mixin.channel.middleman.GuildMessageChannelMixin;
 import net.dv8tion.jda.internal.managers.channel.concrete.VoiceChannelManagerImpl;
@@ -36,22 +33,17 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class VoiceChannelImpl extends AbstractGuildChannelImpl<VoiceChannelImpl> implements
+public class VoiceChannelImpl extends AbstractStandardGuildChannelImpl<VoiceChannelImpl> implements
         VoiceChannel,
-        AudioChannelMixin<VoiceChannelImpl>,
         GuildMessageChannelMixin<VoiceChannelImpl>,
-        ICategorizableChannelMixin<VoiceChannelImpl>,
-        IPositionableChannelMixin<VoiceChannelImpl>,
-        IInviteContainerMixin<VoiceChannelImpl>
+        AudioChannelMixin<VoiceChannelImpl>
 {
     private final TLongObjectMap<Member> connectedMembers = MiscUtil.newLongMap();
-    private final TLongObjectMap<PermissionOverride> overrides = MiscUtil.newLongMap();
 
     private String region;
     private long latestMessageId;
     private long parentCategoryId;
     private int bitrate;
-    private int position;
     private int userLimit;
 
     public VoiceChannelImpl(long id, GuildImpl guild)
@@ -77,18 +69,6 @@ public class VoiceChannelImpl extends AbstractGuildChannelImpl<VoiceChannelImpl>
     public String getRegionRaw()
     {
         return region;
-    }
-
-    @Override
-    public long getParentCategoryIdLong()
-    {
-        return parentCategoryId;
-    }
-
-    @Override
-    public int getPositionRaw()
-    {
-        return position;
     }
 
     @Override
@@ -135,23 +115,11 @@ public class VoiceChannelImpl extends AbstractGuildChannelImpl<VoiceChannelImpl>
     }
 
     @Override
-    public TLongObjectMap<PermissionOverride> getPermissionOverrideMap()
-    {
-        return overrides;
-    }
-
-    @Override
     public TLongObjectMap<Member> getConnectedMembersMap()
     {
         return connectedMembers;
     }
 
-    @Override
-    public VoiceChannelImpl setParentCategory(long parentCategoryId)
-    {
-        this.parentCategoryId = parentCategoryId;
-        return this;
-    }
 
     @Override
     public VoiceChannelImpl setBitrate(int bitrate)
@@ -167,18 +135,18 @@ public class VoiceChannelImpl extends AbstractGuildChannelImpl<VoiceChannelImpl>
         return this;
     }
 
-    @Override
-    public VoiceChannelImpl setPosition(int position)
-    {
-        getGuild().getVoiceChannelsView().clearCachedLists();
-        this.position = position;
-        return this;
-    }
-
     public VoiceChannelImpl setUserLimit(int userLimit)
     {
         this.userLimit = userLimit;
         return this;
+    }
+
+    // -- Abstract Hooks --
+
+    @Override
+    protected void onPositionChange()
+    {
+        getGuild().getVoiceChannelsView().clearCachedLists();
     }
 
     @Override

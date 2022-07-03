@@ -18,6 +18,7 @@ package net.dv8tion.jda.api.events.message.react;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.internal.requests.CompletedRestAction;
@@ -89,7 +90,7 @@ public class GenericMessageReactionEvent extends GenericMessageEvent
     public User getUser()
     {
         return issuer == null && isFromType(ChannelType.PRIVATE)
-                ? getPrivateChannel().getUser() // this can't be the self user because then issuer would be nonnull
+                ? getChannel().asPrivateChannel().getUser() // this can't be the self user because then issuer would be nonnull
                 : issuer;
     }
 
@@ -100,7 +101,7 @@ public class GenericMessageReactionEvent extends GenericMessageEvent
      * Use {@link #retrieveMember()} to load the member.
      *
      * @throws java.lang.IllegalStateException
-     *         If this was not sent in a {@link net.dv8tion.jda.api.entities.TextChannel}.
+     *         If this was not sent in a {@link net.dv8tion.jda.api.entities.Guild}.
      *
      * @return Member of the reacting user or null if they are no longer member of this guild
      *
@@ -125,15 +126,14 @@ public class GenericMessageReactionEvent extends GenericMessageEvent
     }
 
     /**
-     * The {@link net.dv8tion.jda.api.entities.MessageReaction.ReactionEmote ReactionEmote}
-     * of the reaction, shortcut for {@code getReaction().getReactionEmote()}
+     * The {@link Emoji} of the reaction, shortcut for {@code getReaction().getEmoji()}
      *
-     * @return The ReactionEmote instance
+     * @return The Emoji instance
      */
     @Nonnull
-    public MessageReaction.ReactionEmote getReactionEmote()
+    public Emoji getEmoji()
     {
-        return reaction.getReactionEmote();
+        return reaction.getEmoji();
     }
 
     /**

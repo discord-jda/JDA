@@ -17,6 +17,7 @@ package net.dv8tion.jda.api.events.user;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -65,9 +66,9 @@ public class UserTypingEvent extends GenericUserEvent
      * @return The channel
      */
     @Nonnull
-    public MessageChannel getChannel()
+    public MessageChannelUnion getChannel()
     {
-        return channel;
+        return (MessageChannelUnion) channel;
     }
 
     /**
@@ -92,54 +93,6 @@ public class UserTypingEvent extends GenericUserEvent
     public ChannelType getType()
     {
         return channel.getType();
-    }
-
-    /**
-     * {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel} in which this users started typing,
-     * or {@code null} if this was not in a PrivateChannel.
-     *
-     * @return Possibly-null {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}
-     */
-    @Nullable
-    public PrivateChannel getPrivateChannel()
-    {
-        return isFromType(ChannelType.PRIVATE) ? (PrivateChannel) channel : null;
-    }
-
-    /**
-     * {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} in which this users started typing,
-     * or {@code null} if this was not in a TextChannel.
-     *
-     * @return Possibly-null {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
-     */
-    @Nullable
-    public TextChannel getTextChannel()
-    {
-        return isFromType(ChannelType.TEXT) ? (TextChannel) channel : null;
-    }
-
-    /**
-     * {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel} in which this users started typing,
-     * or {@code null} if this was not in a VoiceChannel.
-     *
-     * @return Possibly-null {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel}
-     */
-    @Nullable
-    public VoiceChannel getVoiceChannel()
-    {
-        return isFromType(ChannelType.VOICE) ? (VoiceChannel) channel : null;
-    }
-
-    /**
-     * {@link net.dv8tion.jda.api.entities.NewsChannel NewsChannel} in which this users started typing,
-     * or {@code null} if this was not in a NewsChannel.
-     *
-     * @return Possibly-null {@link net.dv8tion.jda.api.entities.NewsChannel NewsChannel}
-     */
-    @Nullable
-    public NewsChannel getNewsChannel()
-    {
-        return isFromType(ChannelType.NEWS) ? (NewsChannel) channel : null;
     }
 
     /**

@@ -19,7 +19,10 @@ package net.dv8tion.jda.api.entities;
 import net.dv8tion.jda.annotations.Incubating;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.OnlineStatus;
+import net.dv8tion.jda.api.entities.channel.unions.DefaultGuildChannelUnion;
+import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
+import net.dv8tion.jda.api.utils.ImageProxy;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -267,6 +270,20 @@ public interface Member extends IMentionable, IPermissionHolder, UserSnowflake
     }
 
     /**
+     * Returns an {@link ImageProxy} for this member's avatar.
+     *
+     * @return Possibly-null {@link ImageProxy} of this member's avatar
+     *
+     * @see    #getAvatarUrl()
+     */
+    @Nullable
+    default ImageProxy getAvatar()
+    {
+        final String avatarUrl = getAvatarUrl();
+        return avatarUrl == null ? null : new ImageProxy(avatarUrl);
+    }
+
+    /**
      * The URL for the member's effective avatar image.
      * If they do not have a per guild avatar set, this will return the URL of
      * their effective {@link User} avatar.
@@ -278,6 +295,20 @@ public interface Member extends IMentionable, IPermissionHolder, UserSnowflake
     {
         String avatarUrl = getAvatarUrl();
         return avatarUrl == null ? getUser().getEffectiveAvatarUrl() : avatarUrl;
+    }
+
+    /**
+     * Returns an {@link ImageProxy} for this member's effective avatar image.
+     *
+     * @return Never-null {@link ImageProxy} of this member's effective avatar image
+     *
+     * @see    #getEffectiveAvatarUrl()
+     */
+    @Nonnull
+    default ImageProxy getEffectiveAvatar()
+    {
+        final ImageProxy avatar = getAvatar();
+        return avatar == null ? getUser().getEffectiveAvatar() : avatar;
     }
 
     /**
@@ -357,20 +388,20 @@ public interface Member extends IMentionable, IPermissionHolder, UserSnowflake
     boolean canInteract(@Nonnull Role role);
 
     /**
-     * Whether this Member can interact with the provided {@link net.dv8tion.jda.api.entities.Emote Emote}
+     * Whether this Member can interact with the provided {@link RichCustomEmoji}
      * (use in a message)
      *
-     * @param  emote
-     *         The target Emote to check
+     * @param  emoji
+     *         The target emoji to check
      *
      * @throws NullPointerException
-     *         if the specified Emote is null
+     *         if the specified emoji is null
      * @throws IllegalArgumentException
-     *         if the specified Emote is not from the same guild
+     *         if the specified emoji is not from the same guild
      *
-     * @return True, if this Member is able to interact with the specified Emote
+     * @return True, if this Member is able to interact with the specified emoji
      */
-    boolean canInteract(@Nonnull Emote emote);
+    boolean canInteract(@Nonnull RichCustomEmoji emoji);
 
     /**
      * Checks whether this member is the owner of its related {@link net.dv8tion.jda.api.entities.Guild Guild}.
@@ -393,18 +424,18 @@ public interface Member extends IMentionable, IPermissionHolder, UserSnowflake
     boolean isPending();
 
     /**
-     * The default {@link net.dv8tion.jda.api.entities.BaseGuildMessageChannel BaseGuildMessageChannel} for a {@link net.dv8tion.jda.api.entities.Member Member}.
+     * The {@link DefaultGuildChannelUnion default channel} for a {@link net.dv8tion.jda.api.entities.Member Member}.
      * <br>This is the channel that the Discord client will default to opening when a Guild is opened for the first time
      * after joining the guild.
      * <br>The default channel is the channel with the highest position in which the member has
      * {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} permissions. If this requirement doesn't apply for
      * any channel in the guild, this method returns {@code null}.
      *
-     * @return The {@link net.dv8tion.jda.api.entities.BaseGuildMessageChannel BaseGuildMessageChannel} representing the default channel for this member
+     * @return The {@link DefaultGuildChannelUnion channel} representing the default channel for this member
      *         or null if no such channel exists.
      */
     @Nullable
-    BaseGuildMessageChannel getDefaultChannel();
+    DefaultGuildChannelUnion getDefaultChannel();
 
     /**
      * Bans this Member and deletes messages sent by the user based on the amount of delDays.

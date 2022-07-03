@@ -93,12 +93,12 @@ public enum ErrorResponse
     MAX_USERS_PER_DM(                         30004, "Maximum number of recipients reached. (10)"),
     MAX_ROLES_PER_GUILD(                      30005, "Maximum number of guild roles reached (250)"),
     MAX_WEBHOOKS(                             30007, "Maximum number of webhooks reached (10)"),
-    MAX_EMOTES(                               30008, "Maximum number of emojis reached"),
+    MAX_EMOJIS(                               30008, "Maximum number of emojis reached"),
     TOO_MANY_REACTIONS(                       30010, "Maximum number of reactions reached (20)"),
     MAX_CHANNELS(                             30013, "Maximum number of guild channels reached (500)"),
     MAX_ATTACHMENTS(                          30015, "Maximum number of attachments in a message reached (10)"),
     MAX_INVITES(                              30016, "Maximum number of invites reached (1000)"),
-    MAX_ANIMATED_EMOTES(                      30018, "Maximum number of animated emojis reached"),
+    MAX_ANIMATED_EMOJIS(                      30018, "Maximum number of animated emojis reached"),
     MAX_MEMBERS(                              30019, "Maximum number of server members reached"),
     MAX_CATEGORIES(                           30030, "Maximum number of server categories has been reached (5)"),
     ALREADY_HAS_TEMPLATE(                     30031, "Guild already has a template"),
@@ -153,6 +153,7 @@ public enum ErrorResponse
     CANNOT_SELF_REDEEM_GIFT(                  50054, "Cannot self-redeem this gift"),
     PAYMENT_SOURCE_REQUIRED(                  50070, "Payment source required to redeem gift"),
     CANNOT_DELETE_CHANNEL_COMMUNITY(          50074, "Cannot delete a channel required for Community guilds"),
+    CANNOT_EDIT_STICKER_MESSAGE(              50080, "Cannot edit a message with stickers"),
     INVALID_STICKER_SENT(                     50081, "Invalid Sticker Sent"),
     ILLEGAL_OPERATION_ARCHIVED_THREAD(        50083, "Tried to perform an operation on an archived thread, such as editing a message or adding a user to the thread"),
     INVALID_THREAD_NOTIFICATION_SETTINGS(     50084, "Invalid thread notification settings"),
@@ -247,8 +248,12 @@ public enum ErrorResponse
     {
         Checks.noneNull(responses, "ErrorResponse");
         EnumSet<ErrorResponse> set = EnumSet.copyOf(responses);
-        return (error) -> error instanceof ErrorResponseException && set.contains(((ErrorResponseException) error).getErrorResponse());
+        return test(set);
+    }
 
+    private static Predicate<Throwable> test(@Nonnull EnumSet<ErrorResponse> responses)
+    {
+        return error -> error instanceof ErrorResponseException && responses.contains(((ErrorResponseException) error).getErrorResponse());
     }
 
     @Nonnull

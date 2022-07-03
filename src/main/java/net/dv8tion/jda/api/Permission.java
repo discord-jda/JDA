@@ -37,7 +37,7 @@ public enum Permission
     MANAGE_ROLES(              28, true,  false, "Manage Roles"),
     MANAGE_PERMISSIONS(        28, false, true,  "Manage Permissions"),
     MANAGE_WEBHOOKS(           29, true,  true,  "Manage Webhooks"),
-    MANAGE_EMOTES_AND_STICKERS(30, true,  false, "Manage Emojis and Stickers"),
+    MANAGE_EMOJIS_AND_STICKERS(30, true,  false, "Manage Emojis and Stickers"),
 
     // Membership Permissions
     CREATE_INSTANT_INVITE(0, true, true,  "Create Instant Invite"),

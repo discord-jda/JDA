@@ -26,9 +26,6 @@ import net.dv8tion.jda.api.requests.restaction.ChannelAction;
 import net.dv8tion.jda.api.requests.restaction.StageInstanceAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.data.DataObject;
-import net.dv8tion.jda.internal.entities.mixin.channel.attribute.ICategorizableChannelMixin;
-import net.dv8tion.jda.internal.entities.mixin.channel.attribute.IInviteContainerMixin;
-import net.dv8tion.jda.internal.entities.mixin.channel.attribute.IPositionableChannelMixin;
 import net.dv8tion.jda.internal.entities.mixin.channel.middleman.AudioChannelMixin;
 import net.dv8tion.jda.internal.managers.channel.concrete.StageChannelManagerImpl;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
@@ -44,21 +41,15 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 
-public class StageChannelImpl extends AbstractGuildChannelImpl<StageChannelImpl> implements 
+public class StageChannelImpl extends AbstractStandardGuildChannelImpl<StageChannelImpl> implements
         StageChannel, 
-        AudioChannelMixin<StageChannelImpl>,
-        ICategorizableChannelMixin<StageChannelImpl>,
-        IPositionableChannelMixin<StageChannelImpl>,
-        IInviteContainerMixin<StageChannelImpl>
+        AudioChannelMixin<StageChannelImpl>
 {
     private final TLongObjectMap<Member> connectedMembers = MiscUtil.newLongMap();
-    private final TLongObjectMap<PermissionOverride> overrides = MiscUtil.newLongMap();
 
     private StageInstance instance;
     private String region;
-    private long parentCategoryId;
     private int bitrate;
-    private int position;
 
     public StageChannelImpl(long id, GuildImpl guild)
     {
@@ -83,18 +74,6 @@ public class StageChannelImpl extends AbstractGuildChannelImpl<StageChannelImpl>
     public String getRegionRaw()
     {
         return region;
-    }
-
-    @Override
-    public long getParentCategoryIdLong()
-    {
-        return parentCategoryId;
-    }
-
-    @Override
-    public int getPositionRaw()
-    {
-        return position;
     }
 
     @Nullable
@@ -191,30 +170,9 @@ public class StageChannelImpl extends AbstractGuildChannelImpl<StageChannelImpl>
     }
 
     @Override
-    public TLongObjectMap<PermissionOverride> getPermissionOverrideMap()
-    {
-        return overrides;
-    }
-
-    @Override
     public TLongObjectMap<Member> getConnectedMembersMap()
     {
         return connectedMembers;
-    }
-
-    @Override
-    public StageChannelImpl setParentCategory(long parentCategoryId)
-    {
-        this.parentCategoryId = parentCategoryId;
-        return this;
-    }
-
-    @Override
-    public StageChannelImpl setPosition(int position)
-    {
-        getGuild().getStageChannelsView().clearCachedLists();
-        this.position = position;
-        return this;
     }
 
     @Override
@@ -235,5 +193,12 @@ public class StageChannelImpl extends AbstractGuildChannelImpl<StageChannelImpl>
     {
         this.instance = instance;
         return this;
+    }
+
+    // -- Abstract Hooks --
+    @Override
+    protected void onPositionChange()
+    {
+        getGuild().getStageChannelsView().clearCachedLists();
     }
 }

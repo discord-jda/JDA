@@ -17,16 +17,21 @@
 package net.dv8tion.jda.api.interactions.commands;
 
 import gnu.trove.map.TLongObjectMap;
+import gnu.trove.map.hash.TLongObjectHashMap;
+import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.channel.unions.GuildChannelUnion;
+import net.dv8tion.jda.api.entities.channel.unions.GuildMessageChannelUnion;
+import net.dv8tion.jda.api.interactions.Interaction;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.internal.JDAImpl;
+import net.dv8tion.jda.internal.entities.GuildImpl;
+import net.dv8tion.jda.internal.entities.InteractionMentions;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.*;
-import java.util.function.Function;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.Objects;
 
 /**
  * Name/Value pair for a {@link CommandInteraction} option.
@@ -43,159 +48,35 @@ public class OptionMapping
     private final OptionType type;
     private final String name;
     private final TLongObjectMap<Object> resolved;
+    private final Mentions mentions;
 
-    public OptionMapping(DataObject data, TLongObjectMap<Object> resolved)
+    public OptionMapping(DataObject data, TLongObjectMap<Object> resolved, JDA jda, Guild guild)
     {
         this.data = data;
         this.type = OptionType.fromKey(data.getInt("type", -1));
         this.name = data.getString("name");
         this.resolved = resolved;
-    }
-
-    private <T, C extends Collection<T>> C parseMentions(C coll, Pattern pattern, boolean duplicates, Function<Matcher, T> resolver)
-    {
-        Matcher matcher = pattern.matcher(getAsString());
-        while (matcher.find())
-        {
-            try
-            {
-                T obj = resolver.apply(matcher);
-                if (obj != null && (duplicates || !coll.contains(obj)))
-                    coll.add(obj);
-            }
-            catch (NumberFormatException ignored) {}
-        }
-
-        return coll;
+        if (type == OptionType.STRING)
+            mentions = new InteractionMentions(getAsString(), resolved, (JDAImpl) jda, (GuildImpl) guild);
+        else
+            mentions = new InteractionMentions("", new TLongObjectHashMap<>(0), (JDAImpl) jda, (GuildImpl) guild);
     }
 
     /**
-     * Resolved {@link Member} mentions for a {@link OptionType#STRING STRING} option.
-     * <br>If this option is not of type {@link OptionType#STRING STRING}, this always returns an empty list.
+     * Resolved mentions for a {@link OptionType#STRING STRING} option.
+     * <br>If this option is not of type {@link OptionType#STRING STRING}, this always returns empty lists.
      * Mentions are sorted by occurrence.
      *
-     * <p>This only contains members of the guild.
-     * If the user mentions users from other guilds, they will only be provided by {@link #getMentionedUsers()}.
+     * <p>Mentioned {@link Member members} and {@link Role roles} are always of the same guild.
+     * If the interaction {@link Interaction#getUser() user}, mentions users from other guilds, they will only be provided by {@link net.dv8tion.jda.api.entities.Mentions#getUsers()}.
      *
      * <p>This is not supported for {@link CommandAutoCompleteInteraction}.
      *
-     * @return {@link List} of {@link Member} the resolved guild user mentions in a string option
+     * @return {@link net.dv8tion.jda.api.entities.Mentions} for this option
      */
     @Nonnull
-    public List<Member> getMentionedMembers()
+    public Mentions getMentions()
     {
-        if (type != OptionType.STRING)
-            return Collections.emptyList();
-
-        return parseMentions(new ArrayList<>(), Message.MentionType.USER.getPattern(), false, (matcher) -> {
-            long id = Long.parseUnsignedLong(matcher.group(1));
-            Object obj = resolved.get(id);
-            return obj instanceof Member ? (Member) obj : null;
-        });
-    }
-
-    /**
-     * Resolved {@link User} mentions for a {@link OptionType#STRING STRING} option.
-     * <br>If this option is not of type {@link OptionType#STRING STRING}, this always returns an empty list.
-     * Mentions are sorted by occurrence.
-     *
-     * <p>This may also contain users which are not members in the guild!
-     *
-     * <p>This is not supported for {@link CommandAutoCompleteInteraction}.
-     *
-     * @return {@link List} of {@link User} the resolved guild user mentions in a string option
-     */
-    @Nonnull
-    public List<User> getMentionedUsers()
-    {
-        if (type != OptionType.STRING)
-            return Collections.emptyList();
-
-        return parseMentions(new ArrayList<>(), Message.MentionType.USER.getPattern(), false, (matcher) -> {
-            long id = Long.parseUnsignedLong(matcher.group(1));
-            Object obj = resolved.get(id);
-            if (obj instanceof User)
-                return (User) obj;
-            if (obj instanceof Member)
-                return ((Member) obj).getUser();
-            return null;
-        });
-    }
-
-    /**
-     * Resolved {@link Role} mentions for a {@link OptionType#STRING STRING} option.
-     * <br>If this option is not of type {@link OptionType#STRING STRING}, this always returns an empty list.
-     * Mentions are sorted by occurrence.
-     *
-     * <p>This is not supported for {@link CommandAutoCompleteInteraction}.
-     *
-     * @return {@link List} of {@link Role} the resolved guild role mentions in a string option
-     */
-    @Nonnull
-    public List<Role> getMentionedRoles()
-    {
-        if (type != OptionType.STRING)
-            return Collections.emptyList();
-
-        return parseMentions(new ArrayList<>(), Message.MentionType.ROLE.getPattern(), false, (matcher) -> {
-            long id = Long.parseUnsignedLong(matcher.group(1));
-            Object obj = resolved.get(id);
-            return obj instanceof Role ? (Role) obj : null;
-        });
-    }
-
-    /**
-     * Resolved {@link GuildChannel} mentions for a {@link OptionType#STRING STRING} option.
-     * <br>If this option is not of type {@link OptionType#STRING STRING}, this always returns an empty list.
-     * Mentions are sorted by occurrence.
-     *
-     * <p>This is not supported for {@link CommandAutoCompleteInteraction}.
-     *
-     * @return {@link List} of {@link GuildChannel} the resolved guild channel mentions in a string option
-     */
-    @Nonnull
-    public List<GuildChannel> getMentionedChannels()
-    {
-        if (type != OptionType.STRING)
-            return Collections.emptyList();
-
-        return parseMentions(new ArrayList<>(), Message.MentionType.CHANNEL.getPattern(), false, (matcher) -> {
-            long id = Long.parseUnsignedLong(matcher.group(1));
-            Object obj = resolved.get(id);
-            return obj instanceof GuildChannel ? (GuildChannel) obj : null;
-        });
-    }
-
-    /**
-     * All resolved {@link IMentionable mentions} for a {@link OptionType#STRING STRING} option.
-     * <br>If this option is not of type {@link OptionType#STRING STRING}, this always returns an empty list.
-     * Mentions are sorted by occurrence.
-     *
-     * <p>This is not supported for {@link CommandAutoCompleteInteraction}.
-     *
-     * This merges {@link #getMentionedUsers()}, {@link #getMentionedMembers()}, {@link #getMentionedRoles()}, and {@link #getMentionedChannels()}.
-     *
-     * @return {@link List} of {@link IMentionable} the resolved mentions in a string option
-     */
-    @Nonnull
-    public List<IMentionable> getMentions()
-    {
-        if (type != OptionType.STRING)
-            return Collections.emptyList();
-
-        List<User> users = getMentionedUsers();
-        List<Member> members = getMentionedMembers();
-        List<Role> roles = getMentionedRoles();
-        List<GuildChannel> channels = getMentionedChannels();
-        users.removeIf(user -> members.stream().anyMatch(m -> m.getIdLong() == user.getIdLong()));
-
-        List<IMentionable> mentions = new ArrayList<>(users.size() + members.size() + roles.size() + channels.size());
-        mentions.addAll(users);
-        mentions.addAll(members);
-        mentions.addAll(roles);
-        mentions.addAll(channels);
-        mentions.sort(Comparator.comparingInt(mention -> getAsString().indexOf(mention.getId())));
-
         return mentions;
     }
 
@@ -429,8 +310,7 @@ public class OptionMapping
     @Nonnull
     public ChannelType getChannelType()
     {
-        Channel channel = getAsChannel();
-        return channel == null ? ChannelType.UNKNOWN : channel.getType();
+        return getAsChannel().getType();
     }
 
     /**
@@ -444,128 +324,17 @@ public class OptionMapping
      * @return The resolved {@link GuildChannel}
      */
     @Nonnull
-    public GuildChannel getAsGuildChannel()
+    public GuildChannelUnion getAsChannel()
     {
-        Channel value = getAsChannel();
-        if (value instanceof GuildChannel)
-            return (GuildChannel) value;
+        if (type != OptionType.CHANNEL)
+            throw new IllegalStateException("Cannot resolve Channel for option " + getName() + " of type " + type);
+
+        Object entity = resolved.get(getAsLong());
+        if (entity instanceof GuildChannel)
+            return (GuildChannelUnion) entity;
+
         throw new IllegalStateException("Could not resolve GuildChannel!");
     }
-
-
-    /**
-     * The resolved {@link GuildMessageChannel} for this option value.
-     * <br>Note that {@link OptionType#CHANNEL OptionType.CHANNEL} can accept channels of any type!
-     *
-     * @throws IllegalStateException
-     *         If this option is not of type {@link OptionType#CHANNEL CHANNEL}
-     *
-     * @return The resolved {@link GuildMessageChannel}, or null if this was not a message channel
-     */
-    @Nullable
-    public GuildMessageChannel getAsMessageChannel()
-    {
-        Channel value = getAsChannel();
-        return value instanceof GuildMessageChannel ? (GuildMessageChannel) value : null;
-    }
-
-    /**
-     * The resolved {@link TextChannel} for this option value.
-     * <br>Note that {@link OptionType#CHANNEL OptionType.CHANNEL} can accept channels of any type!
-     *
-     * @throws IllegalStateException
-     *         If this option is not of type {@link OptionType#CHANNEL CHANNEL}
-     *
-     * @return The resolved {@link TextChannel}, or null if this was not a text channel
-     */
-    @Nullable
-    public TextChannel getAsTextChannel()
-    {
-        Channel channel = getAsChannel();
-        return channel instanceof TextChannel ? (TextChannel) channel : null;
-    }
-
-    /**
-     * The resolved {@link NewsChannel} for this option value.
-     * <br>Note that {@link OptionType#CHANNEL OptionType.CHANNEL} can accept channels of any type!
-     *
-     * @throws IllegalStateException
-     *         If this option is not of type {@link OptionType#CHANNEL CHANNEL}
-     *
-     * @return The resolved {@link NewsChannel}, or null if this was not a news channel
-     */
-    @Nullable
-    public NewsChannel getAsNewsChannel()
-    {
-        Channel channel = getAsChannel();
-        return channel instanceof NewsChannel ? (NewsChannel) channel : null;
-    }
-
-    /**
-     * The resolved {@link ThreadChannel} for this option value.
-     * <br>Note that {@link OptionType#CHANNEL OptionType.CHANNEL} can accept channels of any type!
-     *
-     * @throws IllegalStateException
-     *         If this option is not of type {@link OptionType#CHANNEL CHANNEL}
-     *
-     * @return The resolved {@link ThreadChannel}, or null if this was not a thread channel
-     */
-    @Nullable
-    public ThreadChannel getAsThreadChannel()
-    {
-        Channel channel = getAsChannel();
-        return channel instanceof ThreadChannel ? (ThreadChannel) channel : null;
-    }
-
-
-    /**
-     * The resolved {@link AudioChannel} for this option value.
-     * <br>Note that {@link OptionType#CHANNEL OptionType.CHANNEL} can accept channels of any type!
-     *
-     * @throws IllegalStateException
-     *         If this option is not of type {@link OptionType#CHANNEL CHANNEL}
-     *
-     * @return The resolved {@link AudioChannel}, or null if this was not an audio channel
-     */
-    @Nullable
-    public AudioChannel getAsAudioChannel()
-    {
-        Channel channel = getAsChannel();
-        return channel instanceof AudioChannel ? (AudioChannel) channel : null;
-    }
-
-    /**
-     * The resolved {@link VoiceChannel} for this option value.
-     * <br>Note that {@link OptionType#CHANNEL OptionType.CHANNEL} can accept channels of any type!
-     *
-     * @throws IllegalStateException
-     *         If this option is not of type {@link OptionType#CHANNEL CHANNEL}
-     *
-     * @return The resolved {@link VoiceChannel}, or null if this was not a voice channel
-     */
-    @Nullable
-    public VoiceChannel getAsVoiceChannel()
-    {
-        Channel channel = getAsChannel();
-        return channel instanceof VoiceChannel ? (VoiceChannel) channel : null;
-    }
-
-    /**
-     * The resolved {@link StageChannel} for this option value.
-     * <br>Note that {@link OptionType#CHANNEL OptionType.CHANNEL} can accept channels of any type!
-     *
-     * @throws IllegalStateException
-     *         If this option is not of type {@link OptionType#CHANNEL CHANNEL}
-     *
-     * @return The resolved {@link StageChannel}, or null if this was not a stage channel
-     */
-    @Nullable
-    public StageChannel getAsStageChannel()
-    {
-        Channel channel = getAsChannel();
-        return channel instanceof StageChannel ? (StageChannel) channel : null;
-    }
-
 
     @Override
     public String toString()
@@ -588,13 +357,5 @@ public class OptionMapping
             return false;
         OptionMapping data = (OptionMapping) obj;
         return getType() == data.getType() && getName().equals(data.getName());
-    }
-
-    @Nullable
-    private Channel getAsChannel()
-    {
-        if (type != OptionType.CHANNEL)
-            throw new IllegalStateException("Cannot resolve Channel for option " + getName() + " of type " + type);
-        return (Channel) resolved.get(getAsLong());
     }
 }

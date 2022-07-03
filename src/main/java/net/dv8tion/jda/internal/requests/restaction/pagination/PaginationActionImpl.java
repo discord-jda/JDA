@@ -34,8 +34,8 @@ import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 
 public abstract class PaginationActionImpl<T, M extends PaginationAction<T, M>>
-    extends RestActionImpl<List<T>>
-    implements PaginationAction<T, M>
+        extends RestActionImpl<List<T>>
+        implements PaginationAction<T, M>
 {
     protected final List<T> cached = new CopyOnWriteArrayList<>();
     protected final int maxLimit;
@@ -245,7 +245,8 @@ public abstract class PaginationActionImpl<T, M extends PaginationAction<T, M>>
     @Override
     public CompletableFuture<List<T>> takeAsync(int amount)
     {
-        return takeAsync0(amount, (task, list) -> forEachAsync(val -> {
+        return takeAsync0(amount, (task, list) -> forEachAsync(val ->
+        {
             list.add(val);
             return list.size() < amount;
         }, task::completeExceptionally));
@@ -255,7 +256,8 @@ public abstract class PaginationActionImpl<T, M extends PaginationAction<T, M>>
     @Override
     public CompletableFuture<List<T>> takeRemainingAsync(int amount)
     {
-        return takeAsync0(amount, (task, list) -> forEachRemainingAsync(val -> {
+        return takeAsync0(amount, (task, list) -> forEachRemainingAsync(val ->
+        {
             list.add(val);
             return list.size() < amount;
         }, task::completeExceptionally));
@@ -347,20 +349,39 @@ public abstract class PaginationActionImpl<T, M extends PaginationAction<T, M>>
         }
     }
 
+    // Introduced for paginating archived threads, because two endpoints require a different request parameter value format.
+    // May become more useful if discord introduces more pagination endpoints not using ids.
+    // Check ThreadChannelPaginationActionImpl
+    // Background of #getPaginationLastEvaluatedKey:
+    //     Archived thread channel pagination (example: TextChannel#retrieveArchivedPublicThreadChannels) would throw an exception,
+    //     where Discord complained about receiving a snowflake instead of an ISO8601 date.
+    //     The snowflake originated from this class (creating initial & subsequent requests),
+    //     while the correct value was set in ThreadChannelPaginationActionImpl for the initial request
+    //     and appended as a second value for subsequent requests.
+    //     However, withQueryParams is a simple string append and Discord only reads the first parameter.
+    //     If you debugged, you would see some duplicated fields on the compiled route.
+    //     The fix here is to let the implementor supply the "last" string value, which could be anything,
+    //     while the default implementation still would provide snowflakes
+    @Nonnull
+    protected String getPaginationLastEvaluatedKey(long lastId, T last)
+    {
+        return Long.toUnsignedString(lastId);
+    }
+
     @Override
     protected Route.CompiledRoute finalizeRoute()
     {
         Route.CompiledRoute route = super.finalizeRoute();
 
         final String limit = String.valueOf(this.getLimit());
-        final long last = this.lastKey;
+        final long localLastKey = this.lastKey;
 
         route = route.withQueryParams("limit", limit);
 
-        if (last != 0)
-            route = route.withQueryParams(order.getKey(), Long.toUnsignedString(last));
+        if (localLastKey != 0)
+            route = route.withQueryParams(order.getKey(), getPaginationLastEvaluatedKey(localLastKey, this.last));
         else if (order == PaginationOrder.FORWARD)
-            route = route.withQueryParams("after", "0");
+            route = route.withQueryParams("after", getPaginationLastEvaluatedKey(0, this.last));
 
         return route;
     }

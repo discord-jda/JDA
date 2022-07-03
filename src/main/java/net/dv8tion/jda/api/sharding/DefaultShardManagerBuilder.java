@@ -89,10 +89,10 @@ public class  DefaultShardManagerBuilder
     protected WebSocketFactory wsFactory = null;
     protected IAudioSendFactory audioSendFactory = null;
     protected ThreadFactory threadFactory = null;
-    protected ChunkingFilter chunkingFilter;
+    protected ChunkingFilter chunkingFilter = ChunkingFilter.ALL;
     protected MemberCachePolicy memberCachePolicy = MemberCachePolicy.ALL;
 
-    private DefaultShardManagerBuilder(@Nullable String token, int intents)
+    protected DefaultShardManagerBuilder(@Nullable String token, int intents)
     {
         this.token = token;
         this.intents = 1 | intents;
@@ -1812,9 +1812,8 @@ public class  DefaultShardManagerBuilder
 
     /**
      * The {@link ChunkingFilter} to filter which guilds should use member chunking.
-     * <br>By default this uses {@link ChunkingFilter#ALL}.
      *
-     * <p>If a guild is configured for chunking the {@link #setMemberCachePolicy(MemberCachePolicy)} will be ignored.
+     * <p>Use {@link #setMemberCachePolicy(MemberCachePolicy)} to configure which members to keep in cache from chunking.
      *
      * @param  filter
      *         The filter to apply

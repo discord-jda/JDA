@@ -18,6 +18,7 @@ package net.dv8tion.jda.api.audit;
 
 import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 
 /**
  * ActionTypes for {@link net.dv8tion.jda.api.audit.AuditLogEntry AuditLogEntry} instances
@@ -348,36 +349,36 @@ public enum ActionType
 
 
     /**
-     * An Administrator created an {@link net.dv8tion.jda.api.entities.Emote Emote}.
+     * An Administrator created an {@link RichCustomEmoji Custom Emoji}.
      *
      * <h4>Possible Keys</h4>
      * <ul>
-     *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#EMOTE_NAME EMOTE_NAME}</li>
+     *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#EMOJI_NAME EMOJI_NAME}</li>
      * </ul>
      */
-    EMOTE_CREATE(60, TargetType.EMOTE),
+    EMOJI_CREATE(60, TargetType.EMOJI),
 
     /**
-     * An Administrator updated an {@link net.dv8tion.jda.api.entities.Emote Emote}.
+     * An Administrator updated an {@link RichCustomEmoji Custom Emoji}.
      *
      * <h4>Possible Keys</h4>
      * <ul>
-     *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#EMOTE_NAME EMOTE_NAME}</li>
-     *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#EMOTE_ROLES_ADD EMOTE_ROLES_ADD}</li>
-     *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#EMOTE_ROLES_REMOVE EMOTE_ROLES_REMOVE}</li>
+     *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#EMOJI_NAME EMOJI_NAME}</li>
+     *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#EMOJI_ROLES_ADD EMOJI_ROLES_ADD}</li>
+     *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#EMOJI_ROLES_REMOVE EMOJI_ROLES_REMOVE}</li>
      * </ul>
      */
-    EMOTE_UPDATE(61, TargetType.EMOTE),
+    EMOJI_UPDATE(61, TargetType.EMOJI),
 
     /**
-     * An Administrator deleted an {@link net.dv8tion.jda.api.entities.Emote Emote}.
+     * An Administrator deleted an {@link RichCustomEmoji Custom Emoji}.
      *
      * <h4>Possible Keys</h4>
      * <ul>
-     *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#EMOTE_NAME EMOTE_NAME}</li>
+     *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#EMOJI_NAME EMOJI_NAME}</li>
      * </ul>
      */
-    EMOTE_DELETE(62, TargetType.EMOTE),
+    EMOJI_DELETE(62, TargetType.EMOJI),
 
 
     /**
@@ -531,6 +532,11 @@ public enum ActionType
      * A user deleted a {@link net.dv8tion.jda.api.entities.ThreadChannel ThreadChannel}
      */
     THREAD_DELETE(112, TargetType.THREAD),
+
+    /**
+     * A moderator updated the privileges for an application
+     */
+    APPLICATION_COMMAND_PRIVILEGES_UPDATE(121, TargetType.INTEGRATION),
 
     UNKNOWN(-1, TargetType.UNKNOWN);
 

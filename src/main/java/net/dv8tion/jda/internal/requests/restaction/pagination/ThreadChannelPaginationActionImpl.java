@@ -5,17 +5,21 @@ import gnu.trove.map.hash.TLongObjectHashMap;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.IThreadContainer;
 import net.dv8tion.jda.api.entities.ThreadChannel;
+import net.dv8tion.jda.api.entities.channel.unions.IThreadContainerUnion;
 import net.dv8tion.jda.api.exceptions.ParsingException;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.restaction.pagination.ThreadChannelPaginationAction;
-import net.dv8tion.jda.api.utils.TimeUtil;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.requests.Route;
+import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.Nonnull;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
@@ -23,6 +27,9 @@ import java.util.List;
 public class ThreadChannelPaginationActionImpl extends PaginationActionImpl<ThreadChannel, ThreadChannelPaginationAction> implements ThreadChannelPaginationAction
 {
     protected final IThreadContainer channel;
+
+    // Whether IDs or ISO8601 timestamps shall be provided for all pagination requests.
+    // Some thread pagination endpoints require this odd and singular behavior throughout the discord api.
     protected final boolean useID;
 
     public ThreadChannelPaginationActionImpl(JDA api, Route.CompiledRoute route, IThreadContainer channel, boolean useID)
@@ -34,9 +41,9 @@ public class ThreadChannelPaginationActionImpl extends PaginationActionImpl<Thre
 
     @Nonnull
     @Override
-    public IThreadContainer getChannel()
+    public IThreadContainerUnion getChannel()
     {
-        return channel;
+        return (IThreadContainerUnion) channel;
     }
 
     @Nonnull
@@ -46,23 +53,27 @@ public class ThreadChannelPaginationActionImpl extends PaginationActionImpl<Thre
         return EnumSet.of(PaginationOrder.BACKWARD);
     }
 
+    //Thread pagination supplies ISO8601 timestamps for some cases, see constructor
+    @Nonnull
     @Override
-    protected Route.CompiledRoute finalizeRoute()
+    protected String getPaginationLastEvaluatedKey(long lastId, ThreadChannel last)
     {
-        Route.CompiledRoute route = super.finalizeRoute();
-
-        final String limit = String.valueOf(this.limit.get());
-        final long last = this.lastKey;
-
-        route = route.withQueryParams("limit", limit);
-
-        if (last == 0)
-            return route;
-
         if (useID)
-            return route.withQueryParams("before", Long.toUnsignedString(last));
+            return Long.toUnsignedString(lastId);
+
+        if (order == PaginationOrder.FORWARD && lastId == 0)
+        {
+            // first second of 2015 aka discords epoch, hard coding something older makes no sense to me
+            return "2015-01-01T00:00:00.000";
+        }
+
+        // this should be redundant, due to calling this with PaginationAction#getLast() as last param,
+        // but let's have this here.
+        if (last == null)
+            return OffsetDateTime.now(ZoneOffset.UTC).toString();
+
         // OffsetDateTime#toString() is defined to be ISO8601, needs no helper method.
-        return route.withQueryParams("before", TimeUtil.getTimeCreated(last).toString());
+        return last.getTimeArchiveInfoLastModified().toString();
     }
 
     @Override
@@ -75,14 +86,7 @@ public class ThreadChannelPaginationActionImpl extends PaginationActionImpl<Thre
         List<ThreadChannel> list = new ArrayList<>(threads.length());
         EntityBuilder builder = api.getEntityBuilder();
 
-        TLongObjectMap<DataObject> selfThreadMemberMap = new TLongObjectHashMap<>();
-        for (int i = 0; i < selfThreadMembers.length(); i++)
-        {
-            DataObject selfThreadMember = selfThreadMembers.getObject(i);
-
-            //Store the thread member based on the "id" which is the _thread's_ id, not the member's id (which would be our id)
-            selfThreadMemberMap.put(selfThreadMember.getLong("id"), selfThreadMember);
-        }
+        TLongObjectMap<DataObject> selfThreadMemberMap = Helpers.convertToMap((o) -> o.getUnsignedLong("id"), selfThreadMembers);
 
         for (int i = 0; i < threads.length(); i++)
         {

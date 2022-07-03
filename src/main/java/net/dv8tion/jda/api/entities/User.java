@@ -17,7 +17,8 @@ package net.dv8tion.jda.api.entities;
 
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.api.requests.restaction.CacheRestAction;
+import net.dv8tion.jda.api.utils.ImageProxy;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.entities.UserSnowflakeImpl;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -150,7 +151,7 @@ public interface User extends UserSnowflake
     String getDiscriminator();
 
     /**
-     * The Discord Id for this user's avatar image.
+     * The Discord ID for this user's avatar image.
      * If the user has not set an image, this will return null.
      *
      * @throws UnsupportedOperationException
@@ -178,7 +179,21 @@ public interface User extends UserSnowflake
     }
 
     /**
-     * The Discord Id for this user's default avatar image.
+     * Returns an {@link ImageProxy} for this user's avatar.
+     *
+     * @return Possibly-null {@link ImageProxy} of this user's avatar
+     *
+     * @see    #getAvatarUrl()
+     */
+    @Nullable
+    default ImageProxy getAvatar()
+    {
+        final String avatarUrl = getAvatarUrl();
+        return avatarUrl == null ? null : new ImageProxy(avatarUrl);
+    }
+
+    /**
+     * The Discord ID for this user's default avatar image.
      *
      * @throws UnsupportedOperationException
      *         If this User was created with {@link #fromId(long)}
@@ -189,7 +204,7 @@ public interface User extends UserSnowflake
     String getDefaultAvatarId();
 
     /**
-     * The URL for the for the user's default avatar image.
+     * The URL for the user's default avatar image.
      *
      * @throws UnsupportedOperationException
      *         If this User was created with {@link #fromId(long)}
@@ -200,6 +215,19 @@ public interface User extends UserSnowflake
     default String getDefaultAvatarUrl()
     {
         return String.format(DEFAULT_AVATAR_URL, getDefaultAvatarId());
+    }
+
+    /**
+     * Returns an {@link ImageProxy} for this user's default avatar.
+     *
+     * @return Never-null {@link ImageProxy} of this user's default avatar
+     *
+     * @see    #getDefaultAvatarUrl()
+     */
+    @Nonnull
+    default ImageProxy getDefaultAvatar()
+    {
+        return new ImageProxy(getDefaultAvatarUrl());
     }
 
     /**
@@ -220,19 +248,32 @@ public interface User extends UserSnowflake
     }
 
     /**
+     * Returns an {@link ImageProxy} for this user's effective avatar image.
+     *
+     * @return Never-null {@link ImageProxy} of this user's effective avatar image
+     *
+     * @see    #getEffectiveAvatarUrl()
+     */
+    @Nonnull
+    default ImageProxy getEffectiveAvatar()
+    {
+        final ImageProxy avatar = getAvatar();
+        return avatar == null ? getDefaultAvatar() : avatar;
+    }
+
+    /**
      * Loads the user's {@link User.Profile} data.
      * Returns a completed RestAction if this User has been retrieved using {@link JDA#retrieveUserById(long)}.
+     * You can use {@link CacheRestAction#useCache(boolean) useCache(false)} to force the request for a new profile with up-to-date information.
      *
      * @throws UnsupportedOperationException
      *         If this User was created with {@link #fromId(long)}
      *
-     * @return {@link RestAction} - Type: {@link User.Profile}
-     *
-     * @since 4.3.0
+     * @return {@link CacheRestAction} - Type: {@link User.Profile}
      */
     @Nonnull
     @CheckReturnValue
-    RestAction<Profile> retrieveProfile();
+    CacheRestAction<Profile> retrieveProfile();
 
     /**
      * The "tag" for this user
@@ -258,9 +299,11 @@ public interface User extends UserSnowflake
     boolean hasPrivateChannel();
 
     /**
-     * Opens a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel} with this User.
+     * Opens a {@link PrivateChannel} with this User.
      * <br>If a channel has already been opened with this user, it is immediately returned in the RestAction's
      * success consumer without contacting the Discord API.
+     * You can use {@link CacheRestAction#useCache(boolean) useCache(false)} to force the request for a new channel object,
+     * which is rarely useful since the channel id never changes.
      *
      * <h4>Examples</h4>
      * <pre>{@code
@@ -284,14 +327,14 @@ public interface User extends UserSnowflake
      *         If the recipient User is the currently logged in account (represented by {@link net.dv8tion.jda.api.entities.SelfUser SelfUser})
      *         or if the user was created with {@link #fromId(long)}
      *
-     * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}
+     * @return {@link CacheRestAction} - Type: {@link PrivateChannel}
      *         <br>Retrieves the PrivateChannel to use to directly message this User.
      *
      * @see    JDA#openPrivateChannelById(long)
      */
     @Nonnull
     @CheckReturnValue
-    RestAction<PrivateChannel> openPrivateChannel();
+    CacheRestAction<PrivateChannel> openPrivateChannel();
 
     /**
      * Finds and collects all {@link net.dv8tion.jda.api.entities.Guild Guild} instances that contain this {@link net.dv8tion.jda.api.entities.User User} within the current {@link net.dv8tion.jda.api.JDA JDA} instance.<br>
@@ -400,6 +443,20 @@ public interface User extends UserSnowflake
         public String getBannerUrl()
         {
             return bannerId == null ? null : String.format(BANNER_URL, Long.toUnsignedString(userId), bannerId, bannerId.startsWith("a_") ? "gif" : "png");
+        }
+
+        /**
+         * Returns an {@link ImageProxy} for this user's banner.
+         *
+         * @return Possibly-null {@link ImageProxy} of this user's banner
+         *
+         * @see    #getBannerUrl()
+         */
+        @Nullable
+        public ImageProxy getBanner()
+        {
+            final String bannerUrl = getBannerUrl();
+            return bannerUrl == null ? null : new ImageProxy(bannerUrl);
         }
 
         /**
