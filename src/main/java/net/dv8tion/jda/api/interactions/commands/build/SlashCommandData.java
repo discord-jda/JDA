@@ -17,17 +17,22 @@
 package net.dv8tion.jda.api.interactions.commands.build;
 
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
+import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFunction;
+import net.dv8tion.jda.api.interactions.commands.localization.LocalizationMap;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.localization.LocalizationUtils;
 
 import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Extension of {@link CommandData} which allows setting slash-command specific settings such as options and subcommands.
@@ -36,7 +41,19 @@ public interface SlashCommandData extends CommandData
 {
     @Nonnull
     @Override
+    SlashCommandData setLocalizationFunction(@Nonnull LocalizationFunction localizationFunction);
+
+    @Nonnull
+    @Override
     SlashCommandData setName(@Nonnull String name);
+
+    @Nonnull
+    @Override
+    SlashCommandData setNameLocalization(@Nonnull DiscordLocale locale, @Nonnull String name);
+
+    @Nonnull
+    @Override
+    SlashCommandData setNameLocalizations(@Nonnull Map<DiscordLocale, String> map);
 
     @Nonnull
     @Override
@@ -61,12 +78,60 @@ public interface SlashCommandData extends CommandData
     SlashCommandData setDescription(@Nonnull String description);
 
     /**
+     * Sets a {@link DiscordLocale language-specific} localizations of this command's description.
+     *
+     * @param  locale
+     *         The locale to associate the translated description with
+     *
+     * @param  description
+     *         The translated description to put
+     *
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If the locale is null</li>
+     *             <li>If the description is null</li>
+     *             <li>If the locale is {@link DiscordLocale#UNKNOWN}</li>
+     *             <li>If the description does not pass the corresponding {@link #setDescription(String) description check}</li>
+     *         </ul>
+     *
+     * @return This builder instance, for chaining
+     */
+    @Nonnull
+    SlashCommandData setDescriptionLocalization(@Nonnull DiscordLocale locale, @Nonnull String description);
+
+    /**
+     * Sets multiple {@link DiscordLocale language-specific} localizations of this command's description.
+     *
+     * @param  map
+     *         The map from which to transfer the translated descriptions
+     *
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If the map is null</li>
+     *             <li>If the map contains an {@link DiscordLocale#UNKNOWN} key</li>
+     *             <li>If the map contains a description which does not pass the corresponding {@link #setDescription(String) description check}</li>
+     *         </ul>
+     *
+     * @return This builder instance, for chaining
+     */
+    @Nonnull
+    SlashCommandData setDescriptionLocalizations(@Nonnull Map<DiscordLocale, String> map);
+
+    /**
      * The configured description
      *
      * @return The description
      */
     @Nonnull
     String getDescription();
+
+    /**
+     * The localizations of this command's description for {@link DiscordLocale various languages}.
+     *
+     * @return The {@link LocalizationMap} containing the mapping from {@link DiscordLocale} to the localized description
+     */
+    @Nonnull
+    LocalizationMap getDescriptionLocalizations();
 
     /**
      * The {@link SubcommandData Subcommands} in this command.
@@ -339,6 +404,9 @@ public interface SlashCommandData extends CommandData
         CommandDataImpl data = new CommandDataImpl(command.getName(), command.getDescription());
         data.setGuildOnly(command.isGuildOnly());
         data.setDefaultPermissions(command.getDefaultPermissions());
+        //Command localizations are unmodifiable, make a copy
+        data.setNameLocalizations(command.getNameLocalizations().toMap());
+        data.setDescriptionLocalizations(command.getDescriptionLocalizations().toMap());
         command.getOptions()
                 .stream()
                 .map(OptionData::fromOption)
@@ -391,6 +459,8 @@ public interface SlashCommandData extends CommandData
                         : DefaultMemberPermissions.enabledFor(object.getLong("default_member_permissions"))
         );
 
+        command.setNameLocalizations(LocalizationUtils.mapFromProperty(object, "name_localizations"));
+        command.setDescriptionLocalizations(LocalizationUtils.mapFromProperty(object, "description_localizations"));
         options.stream(DataArray::getObject).forEach(opt ->
         {
             OptionType type = OptionType.fromKey(opt.getInt("type"));

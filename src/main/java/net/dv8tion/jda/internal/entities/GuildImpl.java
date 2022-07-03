@@ -219,9 +219,12 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public RestAction<List<Command>> retrieveCommands()
+    public RestAction<List<Command>> retrieveCommands(boolean withLocalizations)
     {
-        Route.CompiledRoute route = Route.Interactions.GET_GUILD_COMMANDS.compile(getJDA().getSelfUser().getApplicationId(), getId());
+        Route.CompiledRoute route = Route.Interactions.GET_GUILD_COMMANDS
+                .compile(getJDA().getSelfUser().getApplicationId(), getId())
+                .withQueryParams("with_localizations", String.valueOf(withLocalizations));
+
         return new RestActionImpl<>(getJDA(), route,
                 (response, request) ->
                         response.getArray()

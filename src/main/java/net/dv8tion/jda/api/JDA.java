@@ -496,12 +496,28 @@ public interface JDA extends IGuildChannelContainer
     /**
      * Retrieves the list of global commands.
      * <br>This list does not include guild commands! Use {@link Guild#retrieveCommands()} for guild commands.
+     * <br>This list does not include localization data. Use {@link #retrieveCommands(boolean)} to get localization data
      *
      * @return {@link RestAction} - Type: {@link List} of {@link Command}
      */
     @Nonnull
     @CheckReturnValue
-    RestAction<List<Command>> retrieveCommands();
+    default RestAction<List<Command>> retrieveCommands() {
+        return retrieveCommands(false);
+    }
+
+    /**
+     * Retrieves the list of global commands.
+     * <br>This list does not include guild commands! Use {@link Guild#retrieveCommands()} for guild commands.
+     *
+     * @param  withLocalizations
+     *         {@code true} if the localization data (such as name and description) should be included
+     *
+     * @return {@link RestAction} - Type: {@link List} of {@link Command}
+     */
+    @Nonnull
+    @CheckReturnValue
+    RestAction<List<Command>> retrieveCommands(boolean withLocalizations);
 
     /**
      * Retrieves the existing {@link Command} instance by id.
