@@ -138,6 +138,9 @@ public class ResourceBundleLocalizationFunction implements LocalizationFunction
     /**
      * Builder for {@link ResourceBundleLocalizationFunction}
      * <br>Use the factory methods in {@link ResourceBundleLocalizationFunction} to create instances of this builder
+     *
+     * @see ResourceBundleLocalizationFunction#fromBundle(ResourceBundle, DiscordLocale) 
+     * @see ResourceBundleLocalizationFunction#fromBundles(String, DiscordLocale...)
      */
     public static class Builder
     {
