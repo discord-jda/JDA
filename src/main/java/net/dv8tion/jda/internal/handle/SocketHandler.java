@@ -35,9 +35,8 @@ public abstract class SocketHandler
     {
         this.allContent = o;
         this.responseNumber = responseTotal;
-        final DataObject data = o.getObject("d");
-        if (getJDA().isEventPassthrough()) CURRENT_EVENT.set(data);
-        final Long guildId = handleInternally(data);
+        if (getJDA().isEventPassthrough()) CURRENT_EVENT.set(o);
+        final Long guildId = handleInternally(o.getObject("d"));
         if (guildId != null)
             getJDA().getGuildSetupController().cacheEvent(guildId, o);
         this.allContent = null;

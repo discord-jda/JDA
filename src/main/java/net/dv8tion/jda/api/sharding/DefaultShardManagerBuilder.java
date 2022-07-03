@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.GatewayEncoding;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.audio.factory.IAudioSendFactory;
 import net.dv8tion.jda.api.entities.Activity;
+import net.dv8tion.jda.api.events.Event;
 import net.dv8tion.jda.api.hooks.IEventManager;
 import net.dv8tion.jda.api.hooks.VoiceDispatchInterceptor;
 import net.dv8tion.jda.api.requests.GatewayIntent;
@@ -520,6 +521,8 @@ public class  DefaultShardManagerBuilder
 
     /**
      * Whether JDA should store the raw {@link net.dv8tion.jda.api.utils.data.DataObject DataObject} for every discord event, accessible through {@link net.dv8tion.jda.api.events.GenericEvent#getRawData() getRawData()}.
+     * <br>You can expect to receive the full gateway message payload, including sequence, event name and dispatch type of the events
+     * <br>You can read more about payloads <a href="https://discord.com/developers/docs/topics/gateway" target="_blank">here</a> and the different events <a href="https://discord.com/developers/docs/topics/gateway#commands-and-events-gateway-events" target="_blank">here</a>.
      * <br>Warning: be aware that enabling this could consume a lot of memory if your event objects have a long lifetime.
      * <br>Default: {@code false}
      *
@@ -527,6 +530,8 @@ public class  DefaultShardManagerBuilder
      *         True, if JDA should add the raw {@link net.dv8tion.jda.api.utils.data.DataObject DataObject} to every discord event.
      *
      * @return The DefaultShardManagerBuilder instance. Useful for chaining.
+     *
+     * @see    Event#getRawData()
      */
     @Nonnull
     public DefaultShardManagerBuilder setEventPassthrough(boolean enable)

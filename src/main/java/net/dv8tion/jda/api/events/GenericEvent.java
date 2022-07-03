@@ -41,7 +41,7 @@ public interface GenericEvent
 
     /**
      * The passthrough data that this event was serialized from.
-     * <br>This provides the full gateway message payload, including sequence and dispatch type.
+     * <br>This provides the full gateway message payload, including sequence, event name and dispatch type.
      * For details, read the official <a href="https://discord.dev/topics/gateway" target="_blank">Discord Documentation</a>.
      *
      * @throws IllegalStateException 
