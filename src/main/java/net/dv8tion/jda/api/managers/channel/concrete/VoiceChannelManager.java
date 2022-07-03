@@ -19,6 +19,7 @@ package net.dv8tion.jda.api.managers.channel.concrete;
 import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.VoiceChannel;
+import net.dv8tion.jda.api.managers.channel.attribute.IAgeRestrictedChannelManager;
 import net.dv8tion.jda.api.managers.channel.middleman.AudioChannelManager;
 import net.dv8tion.jda.api.managers.channel.middleman.StandardGuildChannelManager;
 
@@ -28,7 +29,8 @@ import javax.annotation.Nonnull;
 //TODO-v5: Docs
 public interface VoiceChannelManager extends
         AudioChannelManager<VoiceChannel, VoiceChannelManager>,
-        StandardGuildChannelManager<VoiceChannel, VoiceChannelManager>
+        StandardGuildChannelManager<VoiceChannel, VoiceChannelManager>,
+        IAgeRestrictedChannelManager<VoiceChannel, VoiceChannelManager>
 {
     /**
      * Sets the <b><u>user-limit</u></b> of the selected {@link VoiceChannel VoiceChannel}.
@@ -50,16 +52,4 @@ public interface VoiceChannelManager extends
     @Nonnull
     @CheckReturnValue
     VoiceChannelManager setUserLimit(int userLimit);
-
-    /**
-     * Sets the <b><u>nsfw flag</u></b> of the selected {@link VoiceChannel channel}.
-     *
-     * @param  nsfw
-     *         The new nsfw flag for the selected {@link VoiceChannel channel}.
-     *
-     * @return ChannelManager for chaining convenience
-     */
-    @Nonnull
-    @CheckReturnValue
-    VoiceChannelManager setNSFW(boolean nsfw);
 }

@@ -16,6 +16,7 @@
 package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.channel.IAgeRestrictedChannel;
 import net.dv8tion.jda.api.managers.channel.concrete.VoiceChannelManager;
 import net.dv8tion.jda.api.requests.restaction.ChannelAction;
 
@@ -39,7 +40,7 @@ import javax.annotation.Nonnull;
  * @see   JDA#getVoiceChannelsByName(String, boolean)
  * @see   JDA#getVoiceChannelById(long)
  */
-public interface VoiceChannel extends AudioChannel, StandardGuildChannel, GuildMessageChannel, IWebhookContainer
+public interface VoiceChannel extends AudioChannel, StandardGuildChannel, GuildMessageChannel, IWebhookContainer, IAgeRestrictedChannel
 {
     /**
      * The maximum amount of {@link net.dv8tion.jda.api.entities.Member Members} that can be in this
@@ -49,13 +50,6 @@ public interface VoiceChannel extends AudioChannel, StandardGuildChannel, GuildM
      * @return The maximum amount of members allowed in this channel at once.
      */
     int getUserLimit();
-
-    /**
-     * Whether or not this channel is considered as "NSFW" (Not-Safe-For-Work)
-     *
-     * @return True, If this channel is considered NSFW by the official Discord Client
-     */
-    boolean isNSFW();
 
     @Nonnull
     @Override
