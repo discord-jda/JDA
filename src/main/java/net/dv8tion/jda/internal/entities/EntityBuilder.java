@@ -72,7 +72,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAccessor;
 import java.util.*;
 import java.util.function.Function;
-import java.util.function.ToLongFunction;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -1073,6 +1072,7 @@ public class EntityBuilder
             .setName(json.getString("name"))
             .setPosition(json.getInt("position"))
             .setUserLimit(json.getInt("user_limit"))
+            .setNSFW(json.getBoolean("nsfw"))
             .setBitrate(json.getInt("bitrate"))
             .setRegion(json.getString("rtc_region", null));
 

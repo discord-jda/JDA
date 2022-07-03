@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.managers.channel.concrete.VoiceChannelManager;
 import net.dv8tion.jda.api.requests.restaction.ChannelAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
+import net.dv8tion.jda.internal.entities.mixin.channel.attribute.IWebhookContainerMixin;
 import net.dv8tion.jda.internal.entities.mixin.channel.middleman.AudioChannelMixin;
 import net.dv8tion.jda.internal.entities.mixin.channel.middleman.GuildMessageChannelMixin;
 import net.dv8tion.jda.internal.managers.channel.concrete.VoiceChannelManagerImpl;
@@ -36,15 +37,16 @@ import java.util.List;
 public class VoiceChannelImpl extends AbstractStandardGuildChannelImpl<VoiceChannelImpl> implements
         VoiceChannel,
         GuildMessageChannelMixin<VoiceChannelImpl>,
-        AudioChannelMixin<VoiceChannelImpl>
+        AudioChannelMixin<VoiceChannelImpl>,
+        IWebhookContainerMixin<VoiceChannelImpl>
 {
     private final TLongObjectMap<Member> connectedMembers = MiscUtil.newLongMap();
 
     private String region;
     private long latestMessageId;
-    private long parentCategoryId;
     private int bitrate;
     private int userLimit;
+    private boolean nsfw;
 
     public VoiceChannelImpl(long id, GuildImpl guild)
     {
@@ -75,6 +77,12 @@ public class VoiceChannelImpl extends AbstractStandardGuildChannelImpl<VoiceChan
     public int getUserLimit()
     {
         return userLimit;
+    }
+
+    @Override
+    public boolean isNSFW()
+    {
+        return nsfw;
     }
 
     @Nonnull
@@ -120,7 +128,6 @@ public class VoiceChannelImpl extends AbstractStandardGuildChannelImpl<VoiceChan
         return connectedMembers;
     }
 
-
     @Override
     public VoiceChannelImpl setBitrate(int bitrate)
     {
@@ -138,6 +145,12 @@ public class VoiceChannelImpl extends AbstractStandardGuildChannelImpl<VoiceChan
     public VoiceChannelImpl setUserLimit(int userLimit)
     {
         this.userLimit = userLimit;
+        return this;
+    }
+
+    public VoiceChannelImpl setNSFW(boolean nsfw)
+    {
+        this.nsfw = nsfw;
         return this;
     }
 

@@ -222,6 +222,7 @@ public class ChannelUpdateHandler extends SocketHandler
                 final int oldPosition = voiceChannel.getPositionRaw();
                 final int oldLimit = voiceChannel.getUserLimit();
                 final int oldBitrate = voiceChannel.getBitrate();
+                final boolean oldNsfw = voiceChannel.isNSFW();
                 if (!Objects.equals(oldName, name))
                 {
                     voiceChannel.setName(name);
@@ -271,6 +272,14 @@ public class ChannelUpdateHandler extends SocketHandler
                             new ChannelUpdateBitrateEvent(
                                     getJDA(), responseNumber,
                                     voiceChannel, oldBitrate, bitrate));
+                }
+                if (oldNsfw != nsfw)
+                {
+                    voiceChannel.setNSFW(nsfw);
+                    getJDA().handleEvent(
+                            new ChannelUpdateNSFWEvent(
+                                    getJDA(), responseNumber,
+                                    voiceChannel, oldNsfw, nsfw));
                 }
 
                 break;

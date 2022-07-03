@@ -42,10 +42,10 @@ public interface StandardGuildMessageChannel extends StandardGuildChannel, Guild
     StandardGuildMessageChannelManager<?, ?> getManager();
 
     /**
-     * The topic set for this TextChannel.
+     * The topic set for this channel.
      * <br>If no topic has been set, this returns null.
      *
-     * @return Possibly-null String containing the topic of this TextChannel.
+     * @return Possibly-null String containing the topic of this channel.
      */
     @Nullable
     String getTopic();
@@ -53,7 +53,7 @@ public interface StandardGuildMessageChannel extends StandardGuildChannel, Guild
     /**
      * Whether or not this channel is considered as "NSFW" (Not-Safe-For-Work)
      *
-     * @return True, If this TextChannel is considered NSFW by the official Discord Client
+     * @return True, If this channel is considered NSFW by the official Discord Client
      */
     boolean isNSFW();
 

@@ -50,4 +50,16 @@ public interface VoiceChannelManager extends
     @Nonnull
     @CheckReturnValue
     VoiceChannelManager setUserLimit(int userLimit);
+
+    /**
+     * Sets the <b><u>nsfw flag</u></b> of the selected {@link VoiceChannel channel}.
+     *
+     * @param  nsfw
+     *         The new nsfw flag for the selected {@link VoiceChannel channel}.
+     *
+     * @return ChannelManager for chaining convenience
+     */
+    @Nonnull
+    @CheckReturnValue
+    VoiceChannelManager setNSFW(boolean nsfw);
 }
