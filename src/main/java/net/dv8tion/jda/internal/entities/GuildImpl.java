@@ -2212,7 +2212,7 @@ public class GuildImpl implements Guild
     {
         return memberCache;
     }
-    
+
     @Nonnull
     @Override
     public NSFWLevel getNSFWLevel()
