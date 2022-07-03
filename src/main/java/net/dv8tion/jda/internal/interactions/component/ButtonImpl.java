@@ -46,19 +46,19 @@ public class ButtonImpl implements Button
             data.optObject("emoji").map(Emoji::fromData).orElse(null));
     }
 
-    public ButtonImpl(String id, String label, ButtonStyle style, boolean disabled, EmojiUnion emoji)
+    public ButtonImpl(String id, String label, ButtonStyle style, boolean disabled, Emoji emoji)
     {
         this(id, label, style, null, disabled, emoji);
     }
 
-    public ButtonImpl(String id, String label, ButtonStyle style, String url, boolean disabled, EmojiUnion emoji)
+    public ButtonImpl(String id, String label, ButtonStyle style, String url, boolean disabled, Emoji emoji)
     {
         this.id = id;
         this.label = label;
         this.style = style;
         this.url = url;  // max length 512
         this.disabled = disabled;
-        this.emoji = emoji;
+        this.emoji = (EmojiUnion) emoji;
     }
 
     @Nonnull

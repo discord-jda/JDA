@@ -84,9 +84,9 @@ public class SelectOption implements SerializableData
      *         The {@link Emoji} shown next to this option, or null
      *
      * @throws IllegalArgumentException
-     *         If the an invalid null is provided, or any of the individual parameter requirements are violated.
+     *         If an unexpected null is provided, or any of the individual parameter requirements are violated.
      */
-    protected SelectOption(@Nonnull String label, @Nonnull String value, @Nullable String description, boolean isDefault, @Nullable EmojiUnion emoji)
+    protected SelectOption(@Nonnull String label, @Nonnull String value, @Nullable String description, boolean isDefault, @Nullable Emoji emoji)
     {
         Checks.notEmpty(label, "Label");
         Checks.notEmpty(value, "Value");
@@ -98,7 +98,7 @@ public class SelectOption implements SerializableData
         this.value = value;
         this.description = description;
         this.isDefault = isDefault;
-        this.emoji = emoji;
+        this.emoji = (EmojiUnion) emoji;
     }
 
     /**
@@ -112,7 +112,7 @@ public class SelectOption implements SerializableData
      *         up to {@value #VALUE_MAX_LENGTH} characters, as defined by {@link #VALUE_MAX_LENGTH}
      *
      * @throws IllegalArgumentException
-     *         If the null is provided, or any of the individual parameter requirements are violated.
+     *         If null is provided, or any of the individual parameter requirements are violated.
      *
      * @return The new select option instance
      */
@@ -209,7 +209,7 @@ public class SelectOption implements SerializableData
     @CheckReturnValue
     public SelectOption withEmoji(@Nullable Emoji emoji)
     {
-        return new SelectOption(label, value, description, isDefault, (EmojiUnion) emoji);
+        return new SelectOption(label, value, description, isDefault, emoji);
     }
 
     /**

@@ -17,7 +17,6 @@
 package net.dv8tion.jda.api.interactions.components.selections;
 
 import net.dv8tion.jda.api.entities.emoji.Emoji;
-import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
 import net.dv8tion.jda.api.interactions.components.ActionComponent;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.interactions.component.SelectMenuImpl;
@@ -466,7 +465,7 @@ public interface SelectMenu extends ActionComponent
         @Nonnull
         public Builder addOption(@Nonnull String label, @Nonnull String value, @Nullable String description, @Nullable Emoji emoji)
         {
-            return addOptions(new SelectOption(label, value, description, false, (EmojiUnion) emoji));
+            return addOptions(new SelectOption(label, value, description, false, emoji));
         }
 
         /**
