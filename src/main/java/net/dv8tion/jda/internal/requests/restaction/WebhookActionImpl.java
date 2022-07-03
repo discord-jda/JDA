@@ -17,9 +17,10 @@
 package net.dv8tion.jda.internal.requests.restaction;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.BaseGuildMessageChannel;
+import net.dv8tion.jda.api.entities.IWebhookContainer;
 import net.dv8tion.jda.api.entities.Icon;
 import net.dv8tion.jda.api.entities.Webhook;
+import net.dv8tion.jda.api.entities.channel.unions.IWebhookContainerUnion;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.restaction.WebhookAction;
@@ -39,11 +40,11 @@ import java.util.function.BooleanSupplier;
  */
 public class WebhookActionImpl extends AuditableRestActionImpl<Webhook> implements WebhookAction
 {
-    protected final BaseGuildMessageChannel channel;
+    protected final IWebhookContainer channel;
     protected String name;
     protected Icon avatar = null;
 
-    public WebhookActionImpl(JDA api, BaseGuildMessageChannel channel, String name)
+    public WebhookActionImpl(JDA api, IWebhookContainer channel, String name)
     {
         super(api, Route.Channels.CREATE_WEBHOOK.compile(channel.getId()));
         this.channel = channel;
@@ -73,9 +74,9 @@ public class WebhookActionImpl extends AuditableRestActionImpl<Webhook> implemen
 
     @Nonnull
     @Override
-    public BaseGuildMessageChannel getChannel()
+    public IWebhookContainerUnion getChannel()
     {
-        return channel;
+        return (IWebhookContainerUnion) channel;
     }
 
     @Nonnull

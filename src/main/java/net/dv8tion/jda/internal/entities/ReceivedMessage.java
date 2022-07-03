@@ -19,6 +19,8 @@ package net.dv8tion.jda.internal.entities;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.channel.unions.GuildMessageChannelUnion;
+import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.entities.emoji.CustomEmoji;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
@@ -400,51 +402,23 @@ public class ReceivedMessage extends AbstractMessage
 
     @Nonnull
     @Override
-    public MessageChannel getChannel()
+    public MessageChannelUnion getChannel()
     {
-        return channel;
+        return (MessageChannelUnion) channel;
     }
 
     @Nonnull
     @Override
-    public GuildMessageChannel getGuildChannel()
+    public GuildMessageChannelUnion getGuildChannel()
     {
         if (!isFromGuild())
             throw new IllegalStateException("This message was not sent in a guild.");
-        return (GuildMessageChannel) channel;
-    }
-
-    @Nonnull
-    @Override
-    public PrivateChannel getPrivateChannel()
-    {
-        if (!isFromType(ChannelType.PRIVATE))
-            throw new IllegalStateException("This message was not sent in a private channel");
-        return (PrivateChannel) channel;
-    }
-
-    @Nonnull
-    @Override
-    public TextChannel getTextChannel()
-    {
-        if (!isFromType(ChannelType.TEXT))
-            throw new IllegalStateException("This message was not sent in a text channel");
-        return (TextChannel) channel;
-    }
-
-    @Nonnull
-    @Override
-    public NewsChannel getNewsChannel()
-    {
-        if (!isFromType(ChannelType.NEWS))
-            throw new IllegalStateException("This message was not sent in a news channel");
-        return (NewsChannel) channel;
+        return (GuildMessageChannelUnion) channel;
     }
 
     @Override
     public Category getCategory()
     {
-        //TODO-v5: Should this actually throw an error here if the GuildMessageChannel doesn't implement ICategorizableChannel?
         GuildMessageChannel chan = getGuildChannel();
         return chan instanceof ICategorizableChannel
             ? ((ICategorizableChannel) chan).getParentCategory()

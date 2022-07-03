@@ -47,6 +47,7 @@ import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.api.requests.restaction.CacheRestAction;
 import net.dv8tion.jda.api.requests.restaction.CommandCreateAction;
 import net.dv8tion.jda.api.requests.restaction.CommandEditAction;
 import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
@@ -558,22 +559,13 @@ public class JDAImpl implements JDA
 
     @Nonnull
     @Override
-    public RestAction<User> retrieveUserById(@Nonnull String id)
+    public CacheRestAction<User> retrieveUserById(long id)
     {
-        return retrieveUserById(MiscUtil.parseSnowflake(id));
-    }
-
-    @Nonnull
-    @Override
-    public RestAction<User> retrieveUserById(long id, boolean update)
-    {
-        if (id == getSelfUser().getIdLong())
-            return new CompletedRestAction<>(this, getSelfUser());
-
-        AccountTypeException.check(getAccountType(), AccountType.BOT);
         return new DeferredRestAction<>(this, User.class,
-                () -> !update || isIntent(GatewayIntent.GUILD_MEMBERS) || isIntent(GatewayIntent.GUILD_PRESENCES) ? getUserById(id) : null,
+                () -> isIntent(GatewayIntent.GUILD_MEMBERS) || isIntent(GatewayIntent.GUILD_PRESENCES) ? getUserById(id) : null,
                 () -> {
+                    if (id == getSelfUser().getIdLong())
+                        return new CompletedRestAction<>(this, getSelfUser());
                     Route.CompiledRoute route = Route.Users.GET_USER.compile(Long.toUnsignedString(id));
                     return new RestActionImpl<>(this, route,
                             (response, request) -> getEntityBuilder().createUser(response.getObject()));
@@ -728,7 +720,7 @@ public class JDAImpl implements JDA
 
     @Nonnull
     @Override
-    public RestAction<PrivateChannel> openPrivateChannelById(long userId)
+    public CacheRestAction<PrivateChannel> openPrivateChannelById(long userId)
     {
         if (selfUser != null && userId == selfUser.getIdLong())
             throw new UnsupportedOperationException("Cannot open private channel with yourself!");
@@ -904,9 +896,12 @@ public class JDAImpl implements JDA
 
     @Nonnull
     @Override
-    public RestAction<List<Command>> retrieveCommands()
+    public RestAction<List<Command>> retrieveCommands(boolean withLocalizations)
     {
-        Route.CompiledRoute route = Route.Interactions.GET_COMMANDS.compile(getSelfUser().getApplicationId());
+        Route.CompiledRoute route = Route.Interactions.GET_COMMANDS
+                .compile(getSelfUser().getApplicationId())
+                .withQueryParams("with_localizations", String.valueOf(withLocalizations));
+
         return new RestActionImpl<>(this, route,
             (response, request) ->
                 response.getArray()

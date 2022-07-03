@@ -20,6 +20,8 @@ import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.channel.unions.GuildMessageChannelUnion;
+import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.entities.emoji.CustomEmoji;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
@@ -331,8 +333,8 @@ public interface Message extends ISnowflake, Formattable
 
     /**
      * Returns the author of this Message as a {@link net.dv8tion.jda.api.entities.Member member}.
-     * <br><b>This is only valid if the Message was actually sent in a TextChannel.</b> This will return {@code null}
-     * if the message was not sent in a TextChannel, or if the message was sent by a Webhook.
+     * <br><b>This is only valid if the Message was actually sent in a GuildMessageChannel.</b> This will return {@code null}
+     * if the message was not sent in a GuildMessageChannel, or if the message was sent by a Webhook.
      * <br>You can check the type of channel this message was sent from using {@link #isFromType(ChannelType)} or {@link #getChannelType()}.
      *
      * <p>Discord does not provide a member object for messages returned by {@link RestAction RestActions} of any kind.
@@ -342,7 +344,7 @@ public interface Message extends ISnowflake, Formattable
      * @throws UnsupportedOperationException
      *         If this is a Data Message (output of {@link MessageBuilder MessageBuilder})
      *
-     * @return Message author, or {@code null} if the message was not sent in a TextChannel, or if the message was sent by a Webhook.
+     * @return Message author, or {@code null} if the message was not sent in a GuildMessageChannel, or if the message was sent by a Webhook.
      *
      * @see    #isWebhookMessage()
      */
@@ -507,7 +509,7 @@ public interface Message extends ISnowflake, Formattable
      * @return The MessageChannel of this Message
      */
     @Nonnull
-    MessageChannel getChannel();
+    MessageChannelUnion getChannel();
 
     /**
      * Returns the {@link net.dv8tion.jda.api.entities.GuildMessageChannel GuildMessageChannel} that this message was sent in
@@ -521,78 +523,12 @@ public interface Message extends ISnowflake, Formattable
      * @return The MessageChannel of this Message
      */
     @Nonnull
-    GuildMessageChannel getGuildChannel();
-
-    /**
-     * Returns the {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel} that this message was sent in.
-     * <br><b>This is only valid if the Message was actually sent in a PrivateChannel.</b>
-     * <br>You can check the type of channel this message was sent from using {@link #isFromType(ChannelType)} or {@link #getChannelType()}.
-     *
-     * <p>Use {@link #getChannel()} for an ambiguous {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel}
-     * if you do not need functionality specific to {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}.
-     *
-     * @throws UnsupportedOperationException
-     *         If this is a Data Message (output of {@link MessageBuilder MessageBuilder})
-     * @throws java.lang.IllegalStateException
-     *         If this was not sent in a {@link net.dv8tion.jda.api.entities.PrivateChannel}.
-     *
-     * @return The PrivateChannel this message was sent in
-     *
-     * @see    #isFromGuild()
-     * @see    #isFromType(ChannelType)
-     * @see    #getChannelType()
-     */
-    @Nonnull
-    PrivateChannel getPrivateChannel();
-
-    /**
-     * Returns the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} that this message was sent in.
-     * <br><b>This is only valid if the Message was actually sent in a TextChannel.</b>
-     * <br>You can check the type of channel this message was sent from using {@link #isFromType(ChannelType)} or {@link #getChannelType()}.
-     *
-     * <p>Use {@link #getChannel()} for an ambiguous {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel}
-     * if you do not need functionality specific to {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}.
-     *
-     * @throws UnsupportedOperationException
-     *         If this is a Data Message (output of {@link MessageBuilder MessageBuilder})
-     * @throws java.lang.IllegalStateException
-     *         If this was not sent in a {@link net.dv8tion.jda.api.entities.TextChannel}.
-     *
-     * @return The TextChannel this message was sent in
-     *
-     * @see    #isFromGuild()
-     * @see    #isFromType(ChannelType)
-     * @see    #getChannelType()
-     */
-    @Nonnull
-    TextChannel getTextChannel();
-
-    /**
-     * Returns the {@link net.dv8tion.jda.api.entities.NewsChannel NewsChannel} that this message was sent in.
-     * <br><b>This is only valid if the Message was actually sent in a NewsChannel.</b>
-     * <br>You can check the type of channel this message was sent from using {@link #isFromType(ChannelType)} or {@link #getChannelType()}.
-     *
-     * <p>Use {@link #getChannel()} for an ambiguous {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel}
-     * if you do not need functionality specific to {@link net.dv8tion.jda.api.entities.NewsChannel NewsChannel}.
-     *
-     * @throws UnsupportedOperationException
-     *         If this is a Data Message (output of {@link MessageBuilder MessageBuilder})
-     * @throws java.lang.IllegalStateException
-     *         If this was not sent in a {@link net.dv8tion.jda.api.entities.NewsChannel}.
-     *
-     * @return The NewsChannel this message was sent in
-     *
-     * @see    #isFromGuild()
-     * @see    #isFromType(ChannelType)
-     * @see    #getChannelType()
-     */
-    @Nonnull
-    NewsChannel getNewsChannel();
+    GuildMessageChannelUnion getGuildChannel();
 
     /**
      * The {@link net.dv8tion.jda.api.entities.Category Category} this
      * message was sent in. This will always be {@code null} for DMs.
-     * <br>Equivalent to {@code getTextChannel().getParentCategory()} if this was sent in a {@link net.dv8tion.jda.api.entities.TextChannel}.
+     * <br>Equivalent to {@code getGuildChannel().getParentCategory()} if this was sent in a {@link GuildMessageChannel}.
      *
      * @throws UnsupportedOperationException
      *         If this is a Data Message (output of {@link MessageBuilder MessageBuilder})
@@ -604,14 +540,14 @@ public interface Message extends ISnowflake, Formattable
 
     /**
      * Returns the {@link net.dv8tion.jda.api.entities.Guild Guild} that this message was sent in.
-     * <br>This is just a shortcut to {@link #getTextChannel()}.{@link net.dv8tion.jda.api.entities.TextChannel#getGuild() getGuild()}.
-     * <br><b>This is only valid if the Message was actually sent in a TextChannel.</b>
+     * <br>This is just a shortcut to {@link #getGuildChannel()}{@link net.dv8tion.jda.api.entities.GuildChannel#getGuild() .getGuild()}.
+     * <br><b>This is only valid if the Message was actually sent in a GuildMessageChannel.</b>
      * <br>You can check the type of channel this message was sent from using {@link #isFromType(ChannelType)} or {@link #getChannelType()}.
      *
      * @throws UnsupportedOperationException
      *         If this is a Data Message (output of {@link MessageBuilder MessageBuilder})
      * @throws java.lang.IllegalStateException
-     *         If this was not sent in a {@link net.dv8tion.jda.api.entities.TextChannel}.
+     *         If this was not sent in a {@link net.dv8tion.jda.api.entities.GuildChannel}.
      *
      * @return The Guild this message was sent in
      *
@@ -773,7 +709,7 @@ public interface Message extends ISnowflake, Formattable
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The edit was attempted after the account lost {@link Permission#MESSAGE_SEND Permission.MESSAGE_SEND} in
-     *         the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}.</li>
+     *         the {@link net.dv8tion.jda.api.entities.GuildMessageChannel GuildMessageChannel}.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
      *     <br>If the message has already been deleted. This might also be triggered for ephemeral messages.</li>
@@ -1976,7 +1912,7 @@ public interface Message extends ISnowflake, Formattable
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The request was attempted after the account lost
-     *         {@link Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE} in the TextChannel.</li>
+     *         {@link Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE} in the GuildMessageChannel.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
      *     <br>If the message has already been deleted. This might also be triggered for ephemeral messages.</li>

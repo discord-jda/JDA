@@ -25,6 +25,7 @@ import net.dv8tion.jda.api.audio.hooks.ConnectionStatus;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.automod.AutoModerationRule;
 import net.dv8tion.jda.api.entities.automod.build.AutoModerationRuleData;
+import net.dv8tion.jda.api.entities.channel.unions.DefaultGuildChannelUnion;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import net.dv8tion.jda.api.entities.sticker.GuildSticker;
 import net.dv8tion.jda.api.entities.sticker.StandardSticker;
@@ -221,9 +222,12 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public RestAction<List<Command>> retrieveCommands()
+    public RestAction<List<Command>> retrieveCommands(boolean withLocalizations)
     {
-        Route.CompiledRoute route = Route.Interactions.GET_GUILD_COMMANDS.compile(getJDA().getSelfUser().getApplicationId(), getId());
+        Route.CompiledRoute route = Route.Interactions.GET_GUILD_COMMANDS
+                .compile(getJDA().getSelfUser().getApplicationId(), getId())
+                .withQueryParams("with_localizations", String.valueOf(withLocalizations));
+
         return new RestActionImpl<>(getJDA(), route,
                 (response, request) ->
                         response.getArray()
@@ -896,10 +900,10 @@ public class GuildImpl implements Guild
 
     @Nullable
     @Override
-    public BaseGuildMessageChannel getDefaultChannel()
+    public DefaultGuildChannelUnion getDefaultChannel()
     {
         final Role role = getPublicRole();
-        return Stream.concat(getTextChannelCache().stream(), getNewsChannelCache().stream())
+        return (DefaultGuildChannelUnion) Stream.concat(getTextChannelCache().stream(), getNewsChannelCache().stream())
                 .filter(c -> role.hasPermission(c, Permission.VIEW_CHANNEL))
                 .min(Comparator.naturalOrder())
                 .orElse(null);
@@ -1093,14 +1097,14 @@ public class GuildImpl implements Guild
     }
 
     // Helper function for deferred cache access
-    private Member getMember(long id, boolean update, JDAImpl jda)
+    private Member getMember(long id, JDAImpl jda)
     {
-        if (!update || jda.isIntent(GatewayIntent.GUILD_MEMBERS))
+        if (jda.isIntent(GatewayIntent.GUILD_MEMBERS))
         {
             // return member from cache if member tracking is enabled through intents
             Member member = getMemberById(id);
             // if the join time is inaccurate we also have to load it through REST to update this information
-            if (!update || (member != null && member.hasTimeJoined()))
+            if (member != null && member.hasTimeJoined())
                 return member;
         }
         return null;
@@ -1108,15 +1112,14 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public RestAction<Member> retrieveMemberById(long id, boolean update)
+    public CacheRestAction<Member> retrieveMemberById(long id)
     {
         JDAImpl jda = getJDA();
-        if (id == jda.getSelfUser().getIdLong())
-            return new CompletedRestAction<>(jda, getSelfMember());
-
         return new DeferredRestAction<>(jda, Member.class,
-                () -> getMember(id, update, jda),
+                () -> getMember(id, jda),
                 () -> { // otherwise we need to update the member with a REST request first to get the nickname/roles
+                    if (id == jda.getSelfUser().getIdLong())
+                        return new CompletedRestAction<>(jda, getSelfMember());
                     Route.CompiledRoute route = Route.Guilds.GET_MEMBER.compile(getId(), Long.toUnsignedString(id));
                     return new RestActionImpl<>(jda, route, (resp, req) -> {
                         MemberImpl member = jda.getEntityBuilder().createMember(this, resp.getObject());

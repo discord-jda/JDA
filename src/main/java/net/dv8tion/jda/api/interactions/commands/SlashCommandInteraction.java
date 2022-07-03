@@ -16,8 +16,8 @@
 
 package net.dv8tion.jda.api.interactions.commands;
 
-import net.dv8tion.jda.api.entities.GuildMessageChannel;
-import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.channel.unions.GuildMessageChannelUnion;
+import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 
 import javax.annotation.Nonnull;
 
@@ -28,12 +28,12 @@ public interface SlashCommandInteraction extends CommandInteraction
 {
     @Nonnull
     @Override
-    MessageChannel getChannel();
+    MessageChannelUnion getChannel();
 
     @Nonnull
     @Override
-    default GuildMessageChannel getGuildChannel()
+    default GuildMessageChannelUnion getGuildChannel()
     {
-        return (GuildMessageChannel) CommandInteraction.super.getGuildChannel();
+        return (GuildMessageChannelUnion) CommandInteraction.super.getGuildChannel();
     }
 }
