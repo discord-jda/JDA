@@ -62,7 +62,7 @@ import java.util.function.Consumer;
 import java.util.regex.Matcher;
 
 /**
- * The core of JDA. Acts as a registry system of JDA. All parts of the the API can be accessed starting from this class.
+ * The core of JDA. Acts as a registry system of JDA. All parts of the API can be accessed starting from this class.
  *
  * @see JDABuilder
  */
