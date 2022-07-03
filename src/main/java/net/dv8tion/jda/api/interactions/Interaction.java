@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.interactions.callbacks.*;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.components.Modal;
+import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -132,15 +133,6 @@ public interface Interaction extends ISnowflake
     Member getMember();
 
     /**
-     * The channel this interaction happened in.
-     * <br>This is currently never null, but might be nullable in the future.
-     *
-     * @return The channel or null if this interaction is not from a channel context
-     */
-    @Nullable
-    Channel getChannel();
-
-    /**
      * Whether this interaction has already been acknowledged.
      * <br><b>Each interaction can only be acknowledged once.</b>
      *
@@ -148,6 +140,14 @@ public interface Interaction extends ISnowflake
      */
     boolean isAcknowledged();
 
+    /**
+     * The channel this interaction happened in.
+     * <br>This is currently never null, but might be nullable in the future.
+     *
+     * @return The channel or null if this interaction is not from a channel context
+     */
+    @Nullable
+    Channel getChannel();
 
     /**
      * The {@link GuildChannel} this interaction happened in.
@@ -161,10 +161,7 @@ public interface Interaction extends ISnowflake
     @Nonnull
     default GuildChannel getGuildChannel()
     {
-        Channel channel = getChannel();
-        if (channel instanceof GuildChannel)
-            return (GuildChannel) channel;
-        throw new IllegalStateException("Cannot convert channel of type " + getChannelType() + " to GuildChannel");
+       return Helpers.safeChannelCast(getChannel(), GuildChannel.class);
     }
 
     /**
@@ -179,100 +176,7 @@ public interface Interaction extends ISnowflake
     @Nonnull
     default MessageChannel getMessageChannel()
     {
-        Channel channel = getChannel();
-        if (channel instanceof MessageChannel)
-            return (MessageChannel) channel;
-        throw new IllegalStateException("Cannot convert channel of type " + getChannelType() + " to MessageChannel");
-    }
-
-    /**
-     * The {@link TextChannel} this interaction happened in.
-     * <br>If {@link #getChannelType()} is not {@link ChannelType#TEXT}, this throws {@link IllegalStateException}!
-     *
-     * @throws IllegalStateException
-     *         If {@link #getChannel()} is not a text channel
-     *
-     * @return The {@link TextChannel}
-     */
-    @Nonnull
-    default TextChannel getTextChannel()
-    {
-        Channel channel = getChannel();
-        if (channel instanceof TextChannel)
-            return (TextChannel) channel;
-        throw new IllegalStateException("Cannot convert channel of type " + getChannelType() + " to TextChannel");
-    }
-
-    /**
-     * The {@link NewsChannel} this interaction happened in.
-     * <br>If {@link #getChannelType()} is not {@link ChannelType#NEWS}, this throws {@link IllegalStateException}!
-     *
-     * @throws IllegalStateException
-     *         If {@link #getChannel()} is not a news channel
-     *
-     * @return The {@link NewsChannel}
-     */
-    @Nonnull
-    default NewsChannel getNewsChannel()
-    {
-        Channel channel = getChannel();
-        if (channel instanceof NewsChannel)
-            return (NewsChannel) channel;
-        throw new IllegalStateException("Cannot convert channel of type " + getChannelType() + " to NewsChannel");
-    }
-
-    /**
-     * The {@link VoiceChannel} this interaction happened in.
-     * <br>If {@link #getChannelType()} is not {@link ChannelType#VOICE}, this throws {@link IllegalStateException}!
-     *
-     * @throws IllegalStateException
-     *         If {@link #getChannel()} is not a voice channel
-     *
-     * @return The {@link VoiceChannel}
-     */
-    @Nonnull
-    default VoiceChannel getVoiceChannel()
-    {
-        Channel channel = getChannel();
-        if (channel instanceof VoiceChannel)
-            return (VoiceChannel) channel;
-        throw new IllegalStateException("Cannot convert channel of type " + getChannelType() + " to VoiceChannel");
-    }
-
-    /**
-     * The {@link PrivateChannel} this interaction happened in.
-     * <br>If {@link #getChannelType()} is not {@link ChannelType#PRIVATE}, this throws {@link IllegalStateException}!
-     *
-     * @throws IllegalStateException
-     *         If {@link #getChannel()} is not a private channel
-     *
-     * @return The {@link PrivateChannel}
-     */
-    @Nonnull
-    default PrivateChannel getPrivateChannel()
-    {
-        Channel channel = getChannel();
-        if (channel instanceof PrivateChannel)
-            return (PrivateChannel) channel;
-        throw new IllegalStateException("Cannot convert channel of type " + getChannelType() + " to PrivateChannel");
-    }
-
-    /**
-     * The {@link ThreadChannel} this interaction happened in.
-     * <br>If {@link #getChannelType()} is not {@link ChannelType#isThread()}, this throws {@link IllegalStateException}!
-     *
-     * @throws IllegalStateException
-     *         If {@link #getChannel()} is not a thread channel
-     *
-     * @return The {@link ThreadChannel}
-     */
-    @Nonnull
-    default ThreadChannel getThreadChannel()
-    {
-        Channel channel = getChannel();
-        if (channel instanceof ThreadChannel)
-            return (ThreadChannel) channel;
-        throw new IllegalStateException("Cannot convert channel of type " + getChannelType() + " to ThreadChannel");
+        return Helpers.safeChannelCast(getChannel(), MessageChannel.class);
     }
 
     /**

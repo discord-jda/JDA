@@ -18,6 +18,8 @@ package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.channel.unions.GuildMessageChannelUnion;
+import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.exceptions.PermissionException;
@@ -159,39 +161,16 @@ public class MessageReaction
 
     /**
      * The {@link net.dv8tion.jda.api.entities.Guild Guild} this Reaction was used in.
-     * This will return null if the channel this Reaction was used in is not part of a Guild.
      *
-     * @return {@link net.dv8tion.jda.api.entities.Guild Guild} this Reaction was used in, or {@code null}
+     * @throws IllegalStateException
+     *         If {@link #getChannel()} is not a guild channel
+     *
+     * @return {@link net.dv8tion.jda.api.entities.Guild Guild} this Reaction was used in
      */
-    @Nullable
+    @Nonnull
     public Guild getGuild()
     {
-        GuildMessageChannel channel = getGuildChannel();
-        return channel != null ? channel.getGuild() : null;
-    }
-
-    /**
-     * The {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} this Reaction was used in
-     * or {@code null} if this is not from type {@link net.dv8tion.jda.api.entities.ChannelType#TEXT ChannelType.TEXT}!
-     *
-     * @return The {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} or {@code null}
-     */
-    @Nullable
-    public TextChannel getTextChannel()
-    {
-        return getChannel() instanceof TextChannel ? (TextChannel) getChannel() : null;
-    }
-
-    /**
-     * The {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel} this Reaction was used in
-     * or {@code null} if this is not from type {@link net.dv8tion.jda.api.entities.ChannelType#PRIVATE ChannelType.PRIVATE}!
-     *
-     * @return The {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel} or {@code null}
-     */
-    @Nullable
-    public PrivateChannel getPrivateChannel()
-    {
-        return getChannel() instanceof PrivateChannel ? (PrivateChannel) getChannel() : null;
+        return getGuildChannel().getGuild();
     }
 
     /**
@@ -201,21 +180,23 @@ public class MessageReaction
      * @return The channel this Reaction was used in
      */
     @Nonnull
-    public MessageChannel getChannel()
+    public MessageChannelUnion getChannel()
     {
-        return channel;
+        return (MessageChannelUnion) channel;
     }
 
     /**
-     * The {@link net.dv8tion.jda.api.entities.GuildMessageChannel GuildMessageChannel}
-     * this Reaction was used in.
+     * The {@link net.dv8tion.jda.api.entities.GuildMessageChannel channel} this Reaction was used in.
      *
-     * @return The channel this Reaction was used in or null if it wasn't used in a Guild
+     * @throws IllegalStateException
+     *          If {@link #getChannel()} is not a guild channel
+     *
+     * @return The guild channel this Reaction was used in
      */
-    @Nullable
-    public GuildMessageChannel getGuildChannel()
+    @Nonnull
+    public GuildMessageChannelUnion getGuildChannel()
     {
-        return getChannel() instanceof GuildMessageChannel ? (GuildMessageChannel) getChannel() : null;
+        return (GuildMessageChannelUnion) getChannel().asGuildMessageChannel();
     }
 
     /**

@@ -5,6 +5,7 @@ import gnu.trove.map.hash.TLongObjectHashMap;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.IThreadContainer;
 import net.dv8tion.jda.api.entities.ThreadChannel;
+import net.dv8tion.jda.api.entities.channel.unions.IThreadContainerUnion;
 import net.dv8tion.jda.api.exceptions.ParsingException;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
@@ -40,9 +41,9 @@ public class ThreadChannelPaginationActionImpl extends PaginationActionImpl<Thre
 
     @Nonnull
     @Override
-    public IThreadContainer getChannel()
+    public IThreadContainerUnion getChannel()
     {
-        return channel;
+        return (IThreadContainerUnion) channel;
     }
 
     @Nonnull

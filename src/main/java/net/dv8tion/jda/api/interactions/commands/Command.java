@@ -20,7 +20,9 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.ISnowflake;
+import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.localization.LocalizationMap;
 import net.dv8tion.jda.api.interactions.commands.privileges.IntegrationPrivilege;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.CommandEditAction;
@@ -30,6 +32,7 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.DataType;
 import net.dv8tion.jda.internal.interactions.command.CommandImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.localization.LocalizationUtils;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -118,12 +121,28 @@ public interface Command extends ISnowflake
     String getName();
 
     /**
+     * The localizations of this command's name for {@link DiscordLocale various languages}.
+     *
+     * @return The {@link LocalizationMap} containing the mapping from {@link DiscordLocale} to the localized name
+     */
+    @Nonnull
+    LocalizationMap getNameLocalizations();
+
+    /**
      * The description of this command.
      *
      * @return The description, empty for context menu commands
      */
     @Nonnull
     String getDescription();
+
+    /**
+     * The localizations of this command's description for {@link DiscordLocale various languages}.
+     *
+     * @return The {@link LocalizationMap} containing the mapping from {@link DiscordLocale} to the localized description
+     */
+    @Nonnull
+    LocalizationMap getDescriptionLocalizations();
 
     /**
      * The {@link Option Options} of this command.
@@ -263,7 +282,18 @@ public interface Command extends ISnowflake
      */
     class Choice
     {
-        private final String name;
+        /**
+         * The maximum length the name of a choice can be.
+         */
+        public static final int MAX_NAME_LENGTH = 100;
+
+        /**
+         * The maximum length the {@link OptionType#STRING STRING} value of a choice can be.
+         */
+        public static final int MAX_STRING_VALUE_LENGTH = 100;
+
+        private String name;
+        private final LocalizationMap nameLocalizations = new LocalizationMap(this::checkName);
         private long intValue = 0;
         private double doubleValue = Double.NaN;
         private String stringValue = null;
@@ -273,13 +303,17 @@ public interface Command extends ISnowflake
          * Create a Choice tuple
          *
          * @param name
-         *        The display name of this choice
+         *        The display name of this choice, must be less than 100 characters
          * @param value
          *        The integer value you receive in a command option
+         *
+         * @throws IllegalArgumentException
+         *         If the name is null, empty, or not between 1-{@value #MAX_NAME_LENGTH} characters long,
+         *         as defined by {@link #MAX_NAME_LENGTH}
          */
         public Choice(@Nonnull String name, long value)
         {
-            this.name = name;
+            setName(name);
             setIntValue(value);
         }
 
@@ -287,13 +321,17 @@ public interface Command extends ISnowflake
          * Create a Choice tuple
          *
          * @param name
-         *        The display name of this choice
+         *        The display name of this choice, must be less than 100 characters
          * @param value
          *        The double value you receive in a command option
+         *
+         * @throws IllegalArgumentException
+         *         If the name is null, empty, or not between 1-{@value #MAX_NAME_LENGTH} characters long,
+         *         as defined by {@link #MAX_NAME_LENGTH}
          */
         public Choice(@Nonnull String name, double value)
         {
-            this.name = name;
+            setName(name);
             setDoubleValue(value);
         }
 
@@ -301,13 +339,22 @@ public interface Command extends ISnowflake
          * Create a Choice tuple
          *
          * @param name
-         *        The display name of this choice
+         *        The display name of this choice, must be less than 100 characters
          * @param value
          *        The string value you receive in a command option
+         *
+         * @throws IllegalArgumentException
+         *         <ul>
+         *             <li>If the name is null, empty, or not between 1-{@value #MAX_NAME_LENGTH} characters long,
+         *                 as defined by {@link #MAX_NAME_LENGTH}</li>
+         *             <li>If the value is null or longer than {@value #MAX_STRING_VALUE_LENGTH} characters long,
+         *                 as defined by {@link #MAX_STRING_VALUE_LENGTH}</li>
+         *         </ul>
+         *
          */
         public Choice(@Nonnull String name, @Nonnull String value)
         {
-            this.name = name;
+            setName(name);
             setStringValue(value);
         }
 
@@ -338,6 +385,7 @@ public interface Command extends ISnowflake
             {
                 setStringValue(json.getString("value"));
             }
+            setNameLocalizations(LocalizationUtils.mapFromProperty(json, "name_localizations"));
         }
 
         /**
@@ -350,6 +398,85 @@ public interface Command extends ISnowflake
         public String getName()
         {
             return name;
+        }
+
+        /**
+         * Configure the choice name
+         *
+         * @param  name
+         *         The choice name, {@link #MAX_NAME_LENGTH 1-100 characters long}
+         *
+         * @throws IllegalArgumentException
+         *         If the name is null, empty, or not between 1-{@value #MAX_NAME_LENGTH} characters long,
+         *         as defined by {@link #MAX_NAME_LENGTH}
+         *
+         * @return The Choice instance, for chaining
+         */
+        public Choice setName(@Nonnull String name)
+        {
+            checkName(name);
+            this.name = name;
+            return this;
+        }
+
+        /**
+         * The localizations of this choice's name for {@link DiscordLocale various languages}.
+         *
+         * @return The {@link LocalizationMap} containing the mapping from {@link DiscordLocale} to the localized name
+         */
+        @Nonnull
+        public LocalizationMap getNameLocalizations()
+        {
+            return nameLocalizations;
+        }
+
+        /**
+         * Sets the name localizations of this choice.
+         *
+         * @param  locale
+         *         The locale to associate the translated name with
+         *
+         * @param  name
+         *         The translated name to put
+         *
+         * @throws IllegalArgumentException
+         *         <ul>
+         *             <li>If the locale is null</li>
+         *             <li>If the name is null</li>
+         *             <li>If the locale is {@link DiscordLocale#UNKNOWN}</li>
+         *             <li>If the name does not pass the corresponding {@link #setName(String) name check}</li>
+         *         </ul>
+         *
+         * @return This builder instance, for chaining
+         */
+        @Nonnull
+        public Choice setNameLocalization(@Nonnull DiscordLocale locale, @Nonnull String name)
+        {
+            nameLocalizations.setTranslation(locale, name);
+            return this;
+        }
+
+        /**
+         * Sets the name localizations of this choice.
+         *
+         * @param  map
+         *         The map from which to transfer the translated names
+         *
+         * @throws IllegalArgumentException
+         *         <ul>
+         *             <li>If the map is null</li>
+         *             <li>If the map contains an {@link DiscordLocale#UNKNOWN} key</li>
+         *             <li>If the map contains a name which does not pass the corresponding {@link #setName(String) name check}</li>
+         *         </ul>
+         *
+         * @return This builder instance, for chaining
+         */
+        @Nonnull
+        public Choice setNameLocalizations(@Nonnull Map<DiscordLocale, String> map)
+        {
+            //Checks are done in LocalizationMap
+            nameLocalizations.setTranslations(map);
+            return this;
         }
 
         /**
@@ -433,10 +560,36 @@ public interface Command extends ISnowflake
 
         private void setStringValue(@Nonnull String value)
         {
+            Checks.notLonger(value, MAX_STRING_VALUE_LENGTH, "Choice string value");
             this.doubleValue = Double.NaN;
             this.intValue = 0;
             this.stringValue = value;
             this.type = OptionType.STRING;
+        }
+
+        private void checkName(@Nonnull String name)
+        {
+            Checks.notEmpty(name, "Choice name");
+            Checks.notLonger(name, MAX_NAME_LENGTH, "Choice name");
+        }
+
+        @Nonnull
+        public DataObject toData(OptionType optionType)
+        {
+            final Object value;
+            if (optionType == OptionType.INTEGER)
+                value = getAsLong();
+            else if (optionType == OptionType.STRING)
+                value = getAsString();
+            else if (optionType == OptionType.NUMBER)
+                value = getAsDouble();
+            else
+                throw new IllegalArgumentException("Cannot transform choice into data for type " + optionType);
+
+            return DataObject.empty()
+                    .put("name", name)
+                    .put("value", value)
+                    .put("name_localizations", nameLocalizations);
         }
     }
 
@@ -446,6 +599,8 @@ public interface Command extends ISnowflake
     class Option
     {
         private final String name, description;
+        private final LocalizationMap nameLocalizations;
+        private final LocalizationMap descriptionLocalizations;
         private final int type;
         private final boolean required, autoComplete;
         private final Set<ChannelType> channelTypes;
@@ -457,7 +612,9 @@ public interface Command extends ISnowflake
         public Option(@Nonnull DataObject json)
         {
             this.name = json.getString("name");
+            this.nameLocalizations = LocalizationUtils.unmodifiableFromProperty(json, "name_localizations");
             this.description = json.getString("description");
+            this.descriptionLocalizations = LocalizationUtils.unmodifiableFromProperty(json, "description_localizations");
             this.type = json.getInt("type");
             this.required = json.getBoolean("required");
             this.autoComplete = json.getBoolean("autocomplete");
@@ -489,6 +646,17 @@ public interface Command extends ISnowflake
         }
 
         /**
+         * The localizations of this option's name for {@link DiscordLocale various languages}.
+         *
+         * @return The {@link LocalizationMap} containing the mapping from {@link DiscordLocale} to the localized name
+         */
+        @Nonnull
+        public LocalizationMap getNameLocalizations()
+        {
+            return nameLocalizations;
+        }
+
+        /**
          * The description of this option, subcommand, or subcommand group.
          *
          * @return The description
@@ -497,6 +665,17 @@ public interface Command extends ISnowflake
         public String getDescription()
         {
             return description;
+        }
+
+        /**
+         * The localizations of this option's description for {@link DiscordLocale various languages}.
+         *
+         * @return The {@link LocalizationMap} containing the mapping from {@link DiscordLocale} to the localized description
+         */
+        @Nonnull
+        public LocalizationMap getDescriptionLocalizations()
+        {
+            return descriptionLocalizations;
         }
 
         /**
@@ -654,12 +833,16 @@ public interface Command extends ISnowflake
     class Subcommand
     {
         private final String name, description;
+        private final LocalizationMap nameLocalizations;
+        private final LocalizationMap descriptionLocalizations;
         private final List<Option> options;
 
         public Subcommand(DataObject json)
         {
             this.name = json.getString("name");
+            this.nameLocalizations = LocalizationUtils.unmodifiableFromProperty(json, "name_localizations");
             this.description = json.getString("description");
+            this.descriptionLocalizations = LocalizationUtils.unmodifiableFromProperty(json, "description_localizations");
             this.options = CommandImpl.parseOptions(json, CommandImpl.OPTION_TEST, Option::new);
         }
 
@@ -675,6 +858,17 @@ public interface Command extends ISnowflake
         }
 
         /**
+         * The localizations of this subcommands's name for {@link DiscordLocale various languages}.
+         *
+         * @return The {@link LocalizationMap} containing the mapping from {@link DiscordLocale} to the localized name
+         */
+        @Nonnull
+        public LocalizationMap getNameLocalizations()
+        {
+            return nameLocalizations;
+        }
+
+        /**
          * The description of this subcommand.
          *
          * @return The description
@@ -683,6 +877,17 @@ public interface Command extends ISnowflake
         public String getDescription()
         {
             return description;
+        }
+
+        /**
+         * The localizations of this subcommand's description for {@link DiscordLocale various languages}.
+         *
+         * @return The {@link LocalizationMap} containing the mapping from {@link DiscordLocale} to the localized description
+         */
+        @Nonnull
+        public LocalizationMap getDescriptionLocalizations()
+        {
+            return descriptionLocalizations;
         }
 
         /**
@@ -726,12 +931,16 @@ public interface Command extends ISnowflake
     class SubcommandGroup
     {
         private final String name, description;
+        private final LocalizationMap nameLocalizations;
+        private final LocalizationMap descriptionLocalizations;
         private final List<Subcommand> subcommands;
 
         public SubcommandGroup(DataObject json)
         {
             this.name = json.getString("name");
+            this.nameLocalizations = LocalizationUtils.unmodifiableFromProperty(json, "name_localizations");
             this.description = json.getString("description");
+            this.descriptionLocalizations = LocalizationUtils.unmodifiableFromProperty(json, "description_localizations");
             this.subcommands = CommandImpl.parseOptions(json, CommandImpl.SUBCOMMAND_TEST, Subcommand::new);
         }
 
@@ -747,6 +956,17 @@ public interface Command extends ISnowflake
         }
 
         /**
+         * The localizations of this subcommand group's name for {@link DiscordLocale various languages}.
+         *
+         * @return The {@link LocalizationMap} containing the mapping from {@link DiscordLocale} to the localized name
+         */
+        @Nonnull
+        public LocalizationMap getNameLocalizations()
+        {
+            return nameLocalizations;
+        }
+
+        /**
          * The description of this subcommand group.
          *
          * @return The description
@@ -755,6 +975,17 @@ public interface Command extends ISnowflake
         public String getDescription()
         {
             return description;
+        }
+
+        /**
+         * The localizations of this subcommand group's description for {@link DiscordLocale various languages}.
+         *
+         * @return The {@link LocalizationMap} containing the mapping from {@link DiscordLocale} to the localized description
+         */
+        @Nonnull
+        public LocalizationMap getDescriptionLocalizations()
+        {
+            return descriptionLocalizations;
         }
 
         /**

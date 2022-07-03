@@ -146,7 +146,7 @@ public class InteractionHookImpl extends AbstractWebhookClient<Message> implemen
         Route.CompiledRoute route = Route.Interactions.CREATE_FOLLOWUP.compile(getJDA().getSelfUser().getApplicationId(), interaction.getToken());
         route = route.withQueryParams("wait", "true");
         Function<DataObject, Message> transform = (json) -> ((JDAImpl) api).getEntityBuilder().createMessageWithChannel(json, getInteraction().getMessageChannel(), false).withHook(this);
-        return onReady(new WebhookMessageActionImpl<>(getJDA(), interaction.getMessageChannel(), route, transform)).setEphemeral(ephemeral);
+        return onReady(new WebhookMessageActionImpl<>(getJDA(), route, transform)).setEphemeral(ephemeral);
     }
 
     @Nonnull

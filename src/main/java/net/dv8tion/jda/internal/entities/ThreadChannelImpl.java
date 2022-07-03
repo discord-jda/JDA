@@ -18,6 +18,7 @@ package net.dv8tion.jda.internal.entities;
 
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.channel.unions.IThreadContainerUnion;
 import net.dv8tion.jda.api.managers.channel.concrete.ThreadChannelManager;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.CacheRestAction;
@@ -115,9 +116,9 @@ public class ThreadChannelImpl extends AbstractGuildChannelImpl<ThreadChannelImp
     @Nonnull
     @Override
     @SuppressWarnings("ConstantConditions")
-    public IThreadContainer getParentChannel()
+    public IThreadContainerUnion getParentChannel()
     {
-        return (IThreadContainer) guild.getGuildChannelById(parentChannelId);
+        return (IThreadContainerUnion) guild.getGuildChannelById(parentChannelId);
     }
 
     @Nonnull

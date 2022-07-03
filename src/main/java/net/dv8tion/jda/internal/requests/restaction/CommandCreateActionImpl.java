@@ -17,10 +17,13 @@ package net.dv8tion.jda.internal.requests.restaction;
 
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
+import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
+import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFunction;
+import net.dv8tion.jda.api.interactions.commands.localization.LocalizationMap;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.restaction.CommandCreateAction;
@@ -30,11 +33,11 @@ import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 import net.dv8tion.jda.internal.interactions.command.CommandImpl;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
-import net.dv8tion.jda.internal.utils.Checks;
 import okhttp3.RequestBody;
 
 import javax.annotation.Nonnull;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 
@@ -96,9 +99,24 @@ public class CommandCreateActionImpl extends RestActionImpl<Command> implements 
 
     @Nonnull
     @Override
+    public CommandCreateAction setLocalizationFunction(@Nonnull LocalizationFunction localizationFunction)
+    {
+        data.setLocalizationFunction(localizationFunction);
+        return this;
+    }
+
+    @Nonnull
+    @Override
     public String getName()
     {
         return data.getName();
+    }
+
+    @Nonnull
+    @Override
+    public LocalizationMap getNameLocalizations()
+    {
+        return data.getNameLocalizations();
     }
 
     @Nonnull
@@ -132,10 +150,23 @@ public class CommandCreateActionImpl extends RestActionImpl<Command> implements 
     @Override
     public CommandCreateAction setName(@Nonnull String name)
     {
-        Checks.notEmpty(name, "Name");
-        Checks.notLonger(name, 32, "Name");
-        Checks.matches(name, Checks.ALPHANUMERIC_WITH_DASH, "Name");
         data.setName(name);
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    public CommandCreateAction setNameLocalization(@Nonnull DiscordLocale locale, @Nonnull String name)
+    {
+        data.setNameLocalization(locale, name);
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    public CommandCreateAction setNameLocalizations(@Nonnull Map<DiscordLocale, String> map)
+    {
+        data.setNameLocalizations(map);
         return this;
     }
 
@@ -143,9 +174,23 @@ public class CommandCreateActionImpl extends RestActionImpl<Command> implements 
     @Override
     public CommandCreateAction setDescription(@Nonnull String description)
     {
-        Checks.notEmpty(description, "Description");
-        Checks.notLonger(description, 100, "Description");
         data.setDescription(description);
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    public CommandCreateAction setDescriptionLocalization(@Nonnull DiscordLocale locale, @Nonnull String description)
+    {
+        data.setDescriptionLocalization(locale, description);
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    public CommandCreateAction setDescriptionLocalizations(@Nonnull Map<DiscordLocale, String> map)
+    {
+        data.setDescriptionLocalizations(map);
         return this;
     }
 
@@ -154,6 +199,13 @@ public class CommandCreateActionImpl extends RestActionImpl<Command> implements 
     public String getDescription()
     {
         return data.getDescription();
+    }
+
+    @Nonnull
+    @Override
+    public LocalizationMap getDescriptionLocalizations()
+    {
+        return data.getDescriptionLocalizations();
     }
 
     @Nonnull

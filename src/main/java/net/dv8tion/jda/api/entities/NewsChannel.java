@@ -14,7 +14,7 @@ import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 
 /**
- * Represents {@link BaseGuildMessageChannel} that are News Channels.
+ * Represents {@link StandardGuildMessageChannel} that are News Channels.
  *
  * The Discord client may refer to these as Announcement Channels.
  *
@@ -26,7 +26,7 @@ import javax.annotation.Nonnull;
  * @see Message#getFlags()
  * @see net.dv8tion.jda.api.entities.Message.MessageFlag#CROSSPOSTED
  */
-public interface NewsChannel extends BaseGuildMessageChannel
+public interface NewsChannel extends StandardGuildMessageChannel
 {
     /**
      * Subscribes to the crossposted messages in this channel.
