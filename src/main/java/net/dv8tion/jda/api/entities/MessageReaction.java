@@ -161,15 +161,16 @@ public class MessageReaction
 
     /**
      * The {@link net.dv8tion.jda.api.entities.Guild Guild} this Reaction was used in.
-     * This will return null if the channel this Reaction was used in is not part of a Guild.
      *
-     * @return {@link net.dv8tion.jda.api.entities.Guild Guild} this Reaction was used in, or {@code null}
+     * @throws IllegalStateException
+     *         If {@link #getChannel()} is not a guild channel
+     *
+     * @return {@link net.dv8tion.jda.api.entities.Guild Guild} this Reaction was used in
      */
-    @Nullable
+    @Nonnull
     public Guild getGuild()
     {
-        GuildMessageChannel channel = getGuildChannel();
-        return channel != null ? channel.getGuild() : null;
+        return getGuildChannel().getGuild();
     }
 
     /**
