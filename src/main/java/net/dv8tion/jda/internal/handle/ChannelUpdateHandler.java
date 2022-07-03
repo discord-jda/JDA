@@ -96,7 +96,7 @@ public class ChannelUpdateHandler extends SocketHandler
                 final String oldName = textChannel.getName();
                 final String oldTopic = textChannel.getTopic();
                 final int oldPosition = textChannel.getPositionRaw();
-                final boolean oldNsfw = textChannel.isAgeRestricted();
+                final boolean oldNsfw = textChannel.isNSFW();
                 final int oldSlowmode = textChannel.getSlowmode();
                 if (!Objects.equals(oldName, name))
                 {
@@ -162,7 +162,7 @@ public class ChannelUpdateHandler extends SocketHandler
                 final String oldName = newsChannel.getName();
                 final String oldTopic = newsChannel.getTopic();
                 final int oldPosition = newsChannel.getPositionRaw();
-                final boolean oldNsfw = newsChannel.isAgeRestricted();
+                final boolean oldNsfw = newsChannel.isNSFW();
                 if (!Objects.equals(oldName, name))
                 {
                     newsChannel.setName(name);
@@ -222,7 +222,7 @@ public class ChannelUpdateHandler extends SocketHandler
                 final int oldPosition = voiceChannel.getPositionRaw();
                 final int oldLimit = voiceChannel.getUserLimit();
                 final int oldBitrate = voiceChannel.getBitrate();
-                final boolean oldNsfw = voiceChannel.isAgeRestricted();
+                final boolean oldNsfw = voiceChannel.isNSFW();
                 if (!Objects.equals(oldName, name))
                 {
                     voiceChannel.setName(name);

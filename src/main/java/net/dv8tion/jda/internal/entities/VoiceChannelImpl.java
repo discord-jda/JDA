@@ -80,7 +80,7 @@ public class VoiceChannelImpl extends AbstractStandardGuildChannelImpl<VoiceChan
     }
 
     @Override
-    public boolean isAgeRestricted()
+    public boolean isNSFW()
     {
         return nsfw;
     }

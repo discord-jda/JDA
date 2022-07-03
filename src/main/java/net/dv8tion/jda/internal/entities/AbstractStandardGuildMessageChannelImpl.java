@@ -40,7 +40,7 @@ public abstract class AbstractStandardGuildMessageChannelImpl<T extends Abstract
     }
 
     @Override
-    public boolean isAgeRestricted()
+    public boolean isNSFW()
     {
         return nsfw;
     }

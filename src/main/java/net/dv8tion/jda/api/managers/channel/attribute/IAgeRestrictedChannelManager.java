@@ -26,14 +26,14 @@ public interface IAgeRestrictedChannelManager<T extends IAgeRestrictedChannel, M
         extends ChannelManager<T, M>
 {
     /**
-     * Sets the <b><u>age-restriction flag</u></b> (also known as NSFW) of the selected {@link IAgeRestrictedChannel channel}.
+     * Sets the <b><u>nsfw flag</u></b> (also known as Age Restriction) of the selected {@link IAgeRestrictedChannel channel}.
      *
-     * @param  ageRestricted
-     *         The new age-restriction flag for the selected {@link IAgeRestrictedChannel channel}.
+     * @param  nsfw
+     *         The new nsfw flag for the selected {@link IAgeRestrictedChannel channel}.
      *
      * @return ChannelManager for chaining convenience
      */
     @Nonnull
     @CheckReturnValue
-    M setAgeRestricted(boolean ageRestricted);
+    M setNSFW(boolean nsfw);
 }

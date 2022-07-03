@@ -18,12 +18,16 @@ package net.dv8tion.jda.api.entities.channel;
 
 import net.dv8tion.jda.api.entities.GuildChannel;
 
+/**
+ * Channels which can be set to age-restricted.
+ * <br>These channels only allow users with a verified mature age to participate.
+ */
 public interface IAgeRestrictedChannel extends GuildChannel
 {
     /**
-     * Whether or not this channel is considered as age-restricted, also known as NSFW (Not-Safe-For-Work)
+     * Whether this channel is considered as age-restricted, also known as NSFW (Not-Safe-For-Work)
      *
      * @return True, If this channel is age-restricted by the official Discord Client
      */
-    boolean isAgeRestricted();
+    boolean isNSFW();
 }

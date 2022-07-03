@@ -244,18 +244,11 @@ public enum AuditLogKey
     CHANNEL_USER_LIMIT("user_limit"),
 
     /**
-     * Change of the {@link net.dv8tion.jda.api.entities.channel.IAgeRestrictedChannel#isAgeRestricted() IAgeRestrictedChannel.isAgeRestricted()} value.
+     * Change of the {@link net.dv8tion.jda.api.entities.channel.IAgeRestrictedChannel#isNSFW() IAgeRestrictedChannel.isNSFW()} value.
      *
      * <p>Expected type: <b>Boolean</b>
      */
     CHANNEL_NSFW("nsfw"),
-
-    /**
-     * Change of the {@link net.dv8tion.jda.api.entities.channel.IAgeRestrictedChannel#isAgeRestricted() IAgeRestrictedChannel.isAgeRestricted()} value.
-     *
-     * <p>Expected type: <b>Boolean</b>
-     */
-    CHANNEL_AGE_RESTRICTED("nsfw"),
 
     /**
      * Change of the {@link net.dv8tion.jda.api.Region Region} value.

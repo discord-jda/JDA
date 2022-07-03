@@ -414,11 +414,11 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
 
     @Nonnull
     @CheckReturnValue
-    public M setAgeRestricted(boolean ageRestricted)
+    public M setNSFW(boolean nsfw)
     {
         if (type != ChannelType.TEXT && type != ChannelType.NEWS)
             throw new IllegalStateException("Can only set nsfw on text and news channels");
-        this.nsfw = ageRestricted;
+        this.nsfw = nsfw;
         set |= NSFW;
         return (M) this;
     }

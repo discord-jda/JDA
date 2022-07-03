@@ -87,7 +87,7 @@ public enum ChannelField
      *
      * Limited to {@link StandardGuildMessageChannel StandardGuildMessageChannels} (and implementations).
      *
-     * @see StandardGuildMessageChannel#isAgeRestricted()
+     * @see StandardGuildMessageChannel#isNSFW()
      */
     NSFW("nsfw", AuditLogKey.CHANNEL_NSFW),
 
