@@ -189,8 +189,6 @@ public class EntityBuilder
         }
     }
 
-    public TLongObjectMap<DataObject> convertToUserMap(ToLongFunction<DataObject> getId, DataArray array)
-
     private void createGuildStickerPass(GuildImpl guildObj, DataArray array)
 
     {
@@ -351,7 +349,6 @@ public class EntityBuilder
 
 
         createGuildScheduledEventPass(guildObj, scheduledEventsArray);
-        createGuildEmotePass(guildObj, emotesArray);
         createGuildEmojiPass(guildObj, emojisArray);
         createGuildStickerPass(guildObj, stickersArray);
         guildJson.optArray("stage_instances")
