@@ -18,6 +18,8 @@ package net.dv8tion.jda.internal.entities;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.channel.unions.GuildMessageChannelUnion;
+import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.entities.sticker.StickerItem;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
@@ -209,7 +211,7 @@ public abstract class AbstractMessage implements Message
 
     @Nonnull
     @Override
-    public MessageChannel getChannel()
+    public MessageChannelUnion getChannel()
     {
         unsupported();
         return null;
@@ -217,31 +219,7 @@ public abstract class AbstractMessage implements Message
 
     @Nonnull
     @Override
-    public GuildMessageChannel getGuildChannel()
-    {
-        unsupported();
-        return null;
-    }
-
-    @Nonnull
-    @Override
-    public PrivateChannel getPrivateChannel()
-    {
-        unsupported();
-        return null;
-    }
-
-    @Nonnull
-    @Override
-    public TextChannel getTextChannel()
-    {
-        unsupported();
-        return null;
-    }
-
-    @Nonnull
-    @Override
-    public NewsChannel getNewsChannel()
+    public GuildMessageChannelUnion getGuildChannel()
     {
         unsupported();
         return null;

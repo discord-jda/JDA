@@ -23,6 +23,7 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.Region;
 import net.dv8tion.jda.api.audio.hooks.ConnectionStatus;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.channel.unions.DefaultGuildChannelUnion;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import net.dv8tion.jda.api.entities.sticker.GuildSticker;
 import net.dv8tion.jda.api.entities.sticker.StandardSticker;
@@ -893,10 +894,10 @@ public class GuildImpl implements Guild
 
     @Nullable
     @Override
-    public BaseGuildMessageChannel getDefaultChannel()
+    public DefaultGuildChannelUnion getDefaultChannel()
     {
         final Role role = getPublicRole();
-        return Stream.concat(getTextChannelCache().stream(), getNewsChannelCache().stream())
+        return (DefaultGuildChannelUnion) Stream.concat(getTextChannelCache().stream(), getNewsChannelCache().stream())
                 .filter(c -> role.hasPermission(c, Permission.VIEW_CHANNEL))
                 .min(Comparator.naturalOrder())
                 .orElse(null);

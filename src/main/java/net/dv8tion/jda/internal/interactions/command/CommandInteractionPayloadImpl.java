@@ -20,7 +20,7 @@ import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import net.dv8tion.jda.api.entities.ISnowflake;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.CommandInteractionPayload;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
@@ -141,9 +141,9 @@ public class CommandInteractionPayloadImpl extends InteractionImpl implements Co
     @Nonnull
     @Override
     @SuppressWarnings("ConstantConditions")
-    public MessageChannel getChannel()
+    public MessageChannelUnion getChannel()
     {
-        return (MessageChannel) super.getChannel();
+        return (MessageChannelUnion) super.getChannel();
     }
 
     @Nonnull

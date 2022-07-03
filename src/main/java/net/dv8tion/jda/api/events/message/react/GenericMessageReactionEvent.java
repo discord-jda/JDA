@@ -90,7 +90,7 @@ public class GenericMessageReactionEvent extends GenericMessageEvent
     public User getUser()
     {
         return issuer == null && isFromType(ChannelType.PRIVATE)
-                ? getPrivateChannel().getUser() // this can't be the self user because then issuer would be nonnull
+                ? getChannel().asPrivateChannel().getUser() // this can't be the self user because then issuer would be nonnull
                 : issuer;
     }
 
@@ -101,7 +101,7 @@ public class GenericMessageReactionEvent extends GenericMessageEvent
      * Use {@link #retrieveMember()} to load the member.
      *
      * @throws java.lang.IllegalStateException
-     *         If this was not sent in a {@link net.dv8tion.jda.api.entities.TextChannel}.
+     *         If this was not sent in a {@link net.dv8tion.jda.api.entities.Guild}.
      *
      * @return Member of the reacting user or null if they are no longer member of this guild
      *
