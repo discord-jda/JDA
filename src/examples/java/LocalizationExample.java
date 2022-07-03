@@ -13,7 +13,6 @@ public class LocalizationExample
 {
     public static void main(String[] args) throws LoginException
     {
-        //The token is stored in "Config.txt" in the root folder of this project
         final String token = "BOT_TOKEN_HERE";
 
         //Pretty standard JDA instance creation
