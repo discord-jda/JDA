@@ -21,6 +21,7 @@ import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.handle.SocketHandler;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Top-level event type
@@ -77,19 +78,15 @@ public abstract class Event implements GenericEvent
         return responseNumber;
     }
 
-    @Nonnull
+    @Nullable
     @Override
     public DataObject getRawData()
     {
-        if (rawData == null)
-            throw new IllegalStateException("This event does not contain any raw data, or event passthrough is not enabled, see JDABuilder#setEventPassthrough(boolean)");
+        if (api instanceof JDAImpl) {
+            if (!((JDAImpl) api).isEventPassthrough())
+                throw new IllegalStateException("Event passthrough is not enabled, see JDABuilder#setEventPassthrough(boolean)");
+        }
 
         return rawData;
-    }
-
-    @Override
-    public boolean hasRawData()
-    {
-        return rawData != null;
     }
 }
