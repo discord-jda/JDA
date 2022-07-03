@@ -23,15 +23,23 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.Region;
 import net.dv8tion.jda.api.audio.hooks.ConnectionStatus;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.channel.unions.DefaultGuildChannelUnion;
+import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
+import net.dv8tion.jda.api.entities.sticker.GuildSticker;
+import net.dv8tion.jda.api.entities.sticker.StandardSticker;
+import net.dv8tion.jda.api.entities.sticker.StickerSnowflake;
 import net.dv8tion.jda.api.entities.templates.Template;
 import net.dv8tion.jda.api.exceptions.HierarchyException;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
+import net.dv8tion.jda.api.exceptions.ParsingException;
 import net.dv8tion.jda.api.exceptions.PermissionException;
 import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.commands.PrivilegeConfig;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
-import net.dv8tion.jda.api.interactions.commands.privileges.CommandPrivilege;
+import net.dv8tion.jda.api.interactions.commands.privileges.IntegrationPrivilege;
 import net.dv8tion.jda.api.managers.AudioManager;
 import net.dv8tion.jda.api.managers.GuildManager;
+import net.dv8tion.jda.api.managers.GuildStickerManager;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.*;
@@ -39,6 +47,7 @@ import net.dv8tion.jda.api.requests.restaction.order.CategoryOrderAction;
 import net.dv8tion.jda.api.requests.restaction.order.ChannelOrderAction;
 import net.dv8tion.jda.api.requests.restaction.order.RoleOrderAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.AuditLogPaginationAction;
+import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.cache.*;
 import net.dv8tion.jda.api.utils.concurrent.Task;
 import net.dv8tion.jda.api.utils.data.DataArray;
@@ -49,18 +58,22 @@ import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 import net.dv8tion.jda.internal.interactions.command.CommandImpl;
 import net.dv8tion.jda.internal.managers.AudioManagerImpl;
 import net.dv8tion.jda.internal.managers.GuildManagerImpl;
+import net.dv8tion.jda.internal.managers.GuildStickerManagerImpl;
 import net.dv8tion.jda.internal.requests.*;
 import net.dv8tion.jda.internal.requests.restaction.*;
 import net.dv8tion.jda.internal.requests.restaction.order.CategoryOrderActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.order.ChannelOrderActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.order.RoleOrderActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.pagination.AuditLogPaginationActionImpl;
+import net.dv8tion.jda.internal.requests.restaction.pagination.BanPaginationActionImpl;
 import net.dv8tion.jda.internal.utils.*;
 import net.dv8tion.jda.internal.utils.cache.AbstractCacheView;
 import net.dv8tion.jda.internal.utils.cache.MemberCacheViewImpl;
 import net.dv8tion.jda.internal.utils.cache.SnowflakeCacheViewImpl;
 import net.dv8tion.jda.internal.utils.cache.SortedSnowflakeCacheViewImpl;
 import net.dv8tion.jda.internal.utils.concurrent.task.GatewayTask;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import org.jetbrains.annotations.NotNull;
 
@@ -89,11 +102,11 @@ public class GuildImpl implements Guild
     private final SortedSnowflakeCacheViewImpl<StageChannel> stageChannelCache = new SortedSnowflakeCacheViewImpl<>(StageChannel.class, Channel::getName, Comparator.naturalOrder());
     private final SortedSnowflakeCacheViewImpl<ThreadChannel> threadChannelCache = new SortedSnowflakeCacheViewImpl<>(ThreadChannel.class, Channel::getName, Comparator.naturalOrder());
     private final SortedSnowflakeCacheViewImpl<Role> roleCache = new SortedSnowflakeCacheViewImpl<>(Role.class, Role::getName, Comparator.reverseOrder());
-    private final SnowflakeCacheViewImpl<Emote> emoteCache = new SnowflakeCacheViewImpl<>(Emote.class, Emote::getName);
+    private final SnowflakeCacheViewImpl<RichCustomEmoji> emojicache = new SnowflakeCacheViewImpl<>(RichCustomEmoji.class, RichCustomEmoji::getName);
+    private final SnowflakeCacheViewImpl<GuildSticker> stickerCache = new SnowflakeCacheViewImpl<>(GuildSticker.class, GuildSticker::getName);
     private final MemberCacheViewImpl memberCache = new MemberCacheViewImpl();
     private final CacheView.SimpleCacheView<MemberPresenceImpl> memberPresences;
 
-    private GuildManager manager;
     private CompletableFuture<Void> pendingRequestToSpeak;
 
     private Member owner;
@@ -208,9 +221,12 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public RestAction<List<Command>> retrieveCommands()
+    public RestAction<List<Command>> retrieveCommands(boolean withLocalizations)
     {
-        Route.CompiledRoute route = Route.Interactions.GET_GUILD_COMMANDS.compile(getJDA().getSelfUser().getApplicationId(), getId());
+        Route.CompiledRoute route = Route.Interactions.GET_GUILD_COMMANDS
+                .compile(getJDA().getSelfUser().getApplicationId(), getId())
+                .withQueryParams("with_localizations", String.valueOf(withLocalizations));
+
         return new RestActionImpl<>(getJDA(), route,
                 (response, request) ->
                         response.getArray()
@@ -263,73 +279,30 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public RestAction<List<CommandPrivilege>> retrieveCommandPrivilegesById(@Nonnull String commandId)
+    public RestAction<List<IntegrationPrivilege>> retrieveIntegrationPrivilegesById(@Nonnull String targetId)
     {
-        Checks.isSnowflake(commandId, "ID");
-        Route.CompiledRoute route = Route.Interactions.GET_COMMAND_PERMISSIONS.compile(getJDA().getSelfUser().getApplicationId(), getId(), commandId);
+        Checks.isSnowflake(targetId, "ID");
+        Route.CompiledRoute route = Route.Interactions.GET_COMMAND_PERMISSIONS.compile(getJDA().getSelfUser().getApplicationId(), getId(), targetId);
         return new RestActionImpl<>(getJDA(), route, (response, request) -> parsePrivilegesList(response.getObject()));
     }
 
     @Nonnull
     @Override
-    public RestAction<Map<String, List<CommandPrivilege>>> retrieveCommandPrivileges()
+    public RestAction<PrivilegeConfig> retrieveCommandPrivileges()
     {
         Route.CompiledRoute route = Route.Interactions.GET_ALL_COMMAND_PERMISSIONS.compile(getJDA().getSelfUser().getApplicationId(), getId());
         return new RestActionImpl<>(getJDA(), route, (response, request) -> {
-            Map<String, List<CommandPrivilege>> privileges = new HashMap<>();
+            Map<String, List<IntegrationPrivilege>> privileges = new HashMap<>();
             response.getArray().stream(DataArray::getObject).forEach(obj -> {
                 String id = obj.getString("id");
-                List<CommandPrivilege> list = parsePrivilegesList(obj);
+                List<IntegrationPrivilege> list = Collections.unmodifiableList(parsePrivilegesList(obj));
                 privileges.put(id, list);
             });
-            return privileges;
+            return new PrivilegeConfig(this, privileges);
         });
     }
 
-    @Nonnull
-    @Override
-    public RestAction<List<CommandPrivilege>> updateCommandPrivilegesById(@Nonnull String id, @Nonnull Collection<? extends CommandPrivilege> privileges)
-    {
-        Checks.isSnowflake(id, "ID");
-        Checks.noneNull(privileges, "Privileges");
-        Checks.check(privileges.size() <= 10, "Cannot have more than 10 privileges for a command!");
-        Route.CompiledRoute route = Route.Interactions.EDIT_COMMAND_PERMISSIONS.compile(getJDA().getSelfUser().getApplicationId(), getId(), id);
-        DataArray array = DataArray.fromCollection(privileges);
-        return new RestActionImpl<>(getJDA(), route, DataObject.empty().put("permissions", array),
-            (response, request) -> parsePrivilegesList(response.getObject()));
-    }
-
-    @Nonnull
-    @Override
-    public RestAction<Map<String, List<CommandPrivilege>>> updateCommandPrivileges(@Nonnull Map<String, ? extends Collection<CommandPrivilege>> privileges)
-    {
-        Checks.notNull(privileges, "Privileges");
-        privileges.forEach((key, value) -> {
-            Checks.isSnowflake(key, "Map Key");
-            Checks.noneNull(value, "Privilege List for Command");
-            Checks.check(value.size() <= 10, "Cannot have more than 10 privileges for a command!");
-        });
-        DataArray array = DataArray.empty();
-        privileges.forEach((commandId, list) -> {
-            DataObject entry = DataObject.empty();
-            entry.put("id", commandId);
-            entry.put("permissions", DataArray.fromCollection(list));
-            array.add(entry);
-        });
-
-        Route.CompiledRoute route = Route.Interactions.EDIT_ALL_COMMAND_PERMISSIONS.compile(getJDA().getSelfUser().getApplicationId(), getId());
-        return new RestActionImpl<>(getJDA(), route, RequestBody.create(Requester.MEDIA_TYPE_JSON, array.toJson()), (response, request) -> {
-            Map<String, List<CommandPrivilege>> map = new HashMap<>();
-            response.getArray().stream(DataArray::getObject).forEach(obj -> {
-                String id = obj.getString("id");
-                List<CommandPrivilege> list = parsePrivilegesList(obj);
-                map.put(id, list);
-            });
-            return map;
-        });
-    }
-
-    private List<CommandPrivilege> parsePrivilegesList(DataObject obj)
+    private List<IntegrationPrivilege> parsePrivilegesList(DataObject obj)
     {
         return obj.getArray("permissions")
                 .stream(DataArray::getObject)
@@ -337,11 +310,11 @@ public class GuildImpl implements Guild
                 .collect(Collectors.toList());
     }
 
-    private CommandPrivilege parsePrivilege(DataObject data)
+    private IntegrationPrivilege parsePrivilege(DataObject data)
     {
-        CommandPrivilege.Type type = CommandPrivilege.Type.fromKey(data.getInt("type", 1));
+        IntegrationPrivilege.Type type = IntegrationPrivilege.Type.fromKey(data.getInt("type", 1));
         boolean enabled = data.getBoolean("permission");
-        return new CommandPrivilege(type, enabled, data.getUnsignedLong("id"));
+        return new IntegrationPrivilege(this, type, enabled, data.getUnsignedLong("id"));
     }
 
     @Nonnull
@@ -369,14 +342,14 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public MemberAction addMember(@Nonnull String accessToken, @Nonnull String userId)
+    public MemberAction addMember(@Nonnull String accessToken, @Nonnull UserSnowflake user)
     {
         Checks.notBlank(accessToken, "Access-Token");
-        Checks.isSnowflake(userId, "User ID");
-        Checks.check(getMemberById(userId) == null, "User is already in this guild");
+        Checks.notNull(user, "User");
+        Checks.check(!isMember(user), "User is already in this guild");
         if (!getSelfMember().hasPermission(Permission.CREATE_INSTANT_INVITE))
             throw new InsufficientPermissionException(this, Permission.CREATE_INSTANT_INVITE);
-        return new MemberActionImpl(getJDA(), this, userId, accessToken);
+        return new MemberActionImpl(getJDA(), this, user.getId(), accessToken);
     }
 
     @Override
@@ -650,7 +623,7 @@ public class GuildImpl implements Guild
     }
 
     @Override
-    public boolean isMember(@Nonnull User user)
+    public boolean isMember(@Nonnull UserSnowflake user)
     {
         return memberCache.get(user.getIdLong()) != null;
     }
@@ -666,7 +639,7 @@ public class GuildImpl implements Guild
     }
 
     @Override
-    public Member getMember(@Nonnull User user)
+    public Member getMember(@Nonnull UserSnowflake user)
     {
         Checks.notNull(user, "User");
         return getMemberById(user.getIdLong());
@@ -737,9 +710,16 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public SnowflakeCacheView<Emote> getEmoteCache()
+    public SnowflakeCacheView<RichCustomEmoji> getEmojiCache()
     {
-        return emoteCache;
+        return emojicache;
+    }
+
+    @Nonnull
+    @Override
+    public SnowflakeCacheView<GuildSticker> getStickerCache()
+    {
+        return stickerCache;
     }
 
     @Nonnull
@@ -750,7 +730,7 @@ public class GuildImpl implements Guild
         Predicate<GuildChannel> filterHidden = it -> {
             //TODO-v5: Do we need to if-protected cast here? If the channel _isnt_ a IPermissionContainer, then would we even be using this filter on it?
             if (it instanceof IPermissionContainer) {
-                self.hasPermission((IPermissionContainer) it, Permission.VIEW_CHANNEL);
+                return self.hasPermission((IPermissionContainer) it, Permission.VIEW_CHANNEL);
             }
             return false;
         };
@@ -819,19 +799,18 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public RestAction<List<ListedEmote>> retrieveEmotes()
+    public RestAction<List<RichCustomEmoji>> retrieveEmojis()
     {
-        Route.CompiledRoute route = Route.Emotes.GET_EMOTES.compile(getId());
+        Route.CompiledRoute route = Route.Emojis.GET_EMOJIS.compile(getId());
         return new RestActionImpl<>(getJDA(), route, (response, request) ->
         {
-
             EntityBuilder builder = GuildImpl.this.getJDA().getEntityBuilder();
-            DataArray emotes = response.getArray();
-            List<ListedEmote> list = new ArrayList<>(emotes.length());
-            for (int i = 0; i < emotes.length(); i++)
+            DataArray emojis = response.getArray();
+            List<RichCustomEmoji> list = new ArrayList<>(emojis.length());
+            for (int i = 0; i < emojis.length(); i++)
             {
-                DataObject emote = emotes.getObject(i);
-                list.add(builder.createEmote(GuildImpl.this, emote));
+                DataObject emoji = emojis.getObject(i);
+                list.add(builder.createEmoji(GuildImpl.this, emoji));
             }
 
             return Collections.unmodifiableList(list);
@@ -840,72 +819,108 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public RestAction<ListedEmote> retrieveEmoteById(@Nonnull String id)
+    public RestAction<RichCustomEmoji> retrieveEmojiById(@Nonnull String id)
     {
-        Checks.isSnowflake(id, "Emote ID");
+        Checks.isSnowflake(id, "Emoji ID");
 
         JDAImpl jda = getJDA();
-        return new DeferredRestAction<>(jda, ListedEmote.class,
+        return new DeferredRestAction<>(jda, RichCustomEmoji.class,
         () -> {
-            Emote emote = getEmoteById(id);
-            if (emote != null)
+            RichCustomEmoji emoji = getEmojiById(id);
+            if (emoji != null)
             {
-                ListedEmote listedEmote = (ListedEmote) emote;
-                if (listedEmote.hasUser() || !getSelfMember().hasPermission(Permission.MANAGE_EMOTES_AND_STICKERS))
-                    return listedEmote;
+                if (emoji.getOwner() != null || !getSelfMember().hasPermission(Permission.MANAGE_EMOJIS_AND_STICKERS))
+                    return emoji;
             }
             return null;
         }, () -> {
-            Route.CompiledRoute route = Route.Emotes.GET_EMOTE.compile(getId(), id);
+            Route.CompiledRoute route = Route.Emojis.GET_EMOJI.compile(getId(), id);
             return new AuditableRestActionImpl<>(jda, route, (response, request) ->
             {
                 EntityBuilder builder = GuildImpl.this.getJDA().getEntityBuilder();
-                return builder.createEmote(GuildImpl.this, response.getObject());
+                return builder.createEmoji(GuildImpl.this, response.getObject());
             });
         });
     }
 
     @Nonnull
     @Override
-    public RestActionImpl<List<Ban>> retrieveBanList()
+    public RestAction<List<GuildSticker>> retrieveStickers()
     {
-        if (!getSelfMember().hasPermission(Permission.BAN_MEMBERS))
-            throw new InsufficientPermissionException(this, Permission.BAN_MEMBERS);
-
-        Route.CompiledRoute route = Route.Guilds.GET_BANS.compile(getId());
-        return new RestActionImpl<>(getJDA(), route, (response, request) ->
-        {
+        Route.CompiledRoute route = Route.Stickers.GET_GUILD_STICKERS.compile(getId());
+        return new RestActionImpl<>(getJDA(), route, (response, request) -> {
+            DataArray array = response.getArray();
+            List<GuildSticker> stickers = new ArrayList<>(array.length());
             EntityBuilder builder = api.getEntityBuilder();
-            List<Ban> bans = new LinkedList<>();
-            DataArray bannedArr = response.getArray();
-
-            for (int i = 0; i < bannedArr.length(); i++)
+            for (int i = 0; i < array.length(); i++)
             {
-                final DataObject object = bannedArr.getObject(i);
-                DataObject user = object.getObject("user");
-                bans.add(new Ban(builder.createUser(user), object.getString("reason", null)));
+                DataObject object = null;
+                try
+                {
+                    object = array.getObject(i);
+                    GuildSticker sticker = (GuildSticker) builder.createRichSticker(object);
+                    stickers.add(sticker);
+                }
+                catch (ParsingException | ClassCastException ex)
+                {
+                    EntityBuilder.LOG.error("Failed to parse sticker for JSON: {}", object, ex);
+                }
             }
-            return Collections.unmodifiableList(bans);
+
+            return Collections.unmodifiableList(stickers);
         });
     }
 
     @Nonnull
     @Override
-    public RestAction<Ban> retrieveBanById(@Nonnull String userId)
+    public RestAction<GuildSticker> retrieveSticker(@Nonnull StickerSnowflake sticker)
+    {
+        Checks.notNull(sticker, "Sticker");
+        Route.CompiledRoute route = Route.Stickers.GET_GUILD_STICKER.compile(getId(), sticker.getId());
+        return new RestActionImpl<>(getJDA(), route, (response, request) -> {
+            DataObject object = response.getObject();
+            EntityBuilder builder = api.getEntityBuilder();
+            return (GuildSticker) builder.createRichSticker(object);
+        });
+    }
+
+    @Nonnull
+    @Override
+    public GuildStickerManager editSticker(@Nonnull StickerSnowflake sticker)
+    {
+        Checks.notNull(sticker, "Sticker");
+        if (sticker instanceof GuildSticker)
+            Checks.check(((GuildSticker) sticker).getGuildIdLong() == id, "Cannot edit a sticker from another guild!");
+        Checks.check(!(sticker instanceof StandardSticker), "Cannot edit a standard sticker.");
+        return new GuildStickerManagerImpl(this, id, sticker);
+    }
+
+    @Nonnull
+    @Override
+    public BanPaginationActionImpl retrieveBanList()
     {
         if (!getSelfMember().hasPermission(Permission.BAN_MEMBERS))
             throw new InsufficientPermissionException(this, Permission.BAN_MEMBERS);
 
-        Checks.isSnowflake(userId, "User ID");
+        return new BanPaginationActionImpl(this);
+    }
 
-        Route.CompiledRoute route = Route.Guilds.GET_BAN.compile(getId(), userId);
+    @Nonnull
+    @Override
+    public RestAction<Ban> retrieveBan(@Nonnull UserSnowflake user)
+    {
+        if (!getSelfMember().hasPermission(Permission.BAN_MEMBERS))
+            throw new InsufficientPermissionException(this, Permission.BAN_MEMBERS);
+
+        Checks.notNull(user, "User");
+
+        Route.CompiledRoute route = Route.Guilds.GET_BAN.compile(getId(), user.getId());
         return new RestActionImpl<>(getJDA(), route, (response, request) ->
         {
-
             EntityBuilder builder = api.getEntityBuilder();
             DataObject bannedObj = response.getObject();
-            DataObject user = bannedObj.getObject("user");
-            return new Ban(builder.createUser(user), bannedObj.getString("reason", null));
+            DataObject userJson = bannedObj.getObject("user");
+            return new Ban(builder.createUser(userJson), bannedObj.getString("reason", null));
         });
     }
 
@@ -931,10 +946,10 @@ public class GuildImpl implements Guild
 
     @Nullable
     @Override
-    public BaseGuildMessageChannel getDefaultChannel()
+    public DefaultGuildChannelUnion getDefaultChannel()
     {
         final Role role = getPublicRole();
-        return Stream.concat(getTextChannelCache().stream(), getNewsChannelCache().stream())
+        return (DefaultGuildChannelUnion) Stream.concat(getTextChannelCache().stream(), getNewsChannelCache().stream())
                 .filter(c -> role.hasPermission(c, Permission.VIEW_CHANNEL))
                 .min(Comparator.naturalOrder())
                 .orElse(null);
@@ -944,9 +959,7 @@ public class GuildImpl implements Guild
     @Override
     public GuildManager getManager()
     {
-        if (manager == null)
-            return manager = new GuildManagerImpl(this);
-        return manager;
+        return new GuildManagerImpl(this);
     }
 
     @Override
@@ -1130,14 +1143,14 @@ public class GuildImpl implements Guild
     }
 
     // Helper function for deferred cache access
-    private Member getMember(long id, boolean update, JDAImpl jda)
+    private Member getMember(long id, JDAImpl jda)
     {
-        if (!update || jda.isIntent(GatewayIntent.GUILD_MEMBERS))
+        if (jda.isIntent(GatewayIntent.GUILD_MEMBERS))
         {
             // return member from cache if member tracking is enabled through intents
             Member member = getMemberById(id);
             // if the join time is inaccurate we also have to load it through REST to update this information
-            if (!update || (member != null && member.hasTimeJoined()))
+            if (member != null && member.hasTimeJoined())
                 return member;
         }
         return null;
@@ -1145,15 +1158,14 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public RestAction<Member> retrieveMemberById(long id, boolean update)
+    public CacheRestAction<Member> retrieveMemberById(long id)
     {
         JDAImpl jda = getJDA();
-        if (id == jda.getSelfUser().getIdLong())
-            return new CompletedRestAction<>(jda, getSelfMember());
-
         return new DeferredRestAction<>(jda, Member.class,
-                () -> getMember(id, update, jda),
+                () -> getMember(id, jda),
                 () -> { // otherwise we need to update the member with a REST request first to get the nickname/roles
+                    if (id == jda.getSelfUser().getIdLong())
+                        return new CompletedRestAction<>(jda, getSelfMember());
                     Route.CompiledRoute route = Route.Guilds.GET_MEMBER.compile(getId(), Long.toUnsignedString(id));
                     return new RestActionImpl<>(jda, route, (resp, req) -> {
                         MemberImpl member = jda.getEntityBuilder().createMember(this, resp.getObject());
@@ -1431,32 +1443,16 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public AuditableRestAction<Void> kick(@Nonnull Member member, String reason)
+    public AuditableRestAction<Void> kick(@Nonnull UserSnowflake user, String reason)
     {
-        Checks.notNull(member, "member");
-        checkGuild(member.getGuild(), "member");
+        Checks.notNull(user, "User");
         checkPermission(Permission.KICK_MEMBERS);
-        checkPosition(member);
-        return kick0(member.getUser().getId(), reason);
-    }
+        Checks.check(user.getIdLong() != ownerId, "Cannot kick the owner of a guild!");
+        Member member = resolveMember(user);
+        if (member != null) // If user is in guild. Check if we are able to ban.
+            checkPosition(member);
 
-    @Nonnull
-    @Override
-    public AuditableRestAction<Void> kick(@Nonnull String userId, @Nullable String reason)
-    {
-        Member member = getMemberById(userId);
-        if (member != null)
-            return kick(member, reason);
-        // Check permissions and whether the user is the owner, otherwise attempt a kick
-        Checks.check(!userId.equals(getOwnerId()), "Cannot kick the owner of a guild!");
-        checkPermission(Permission.KICK_MEMBERS);
-        return kick0(userId, reason);
-    }
-
-    @Nonnull
-    private AuditableRestAction<Void> kick0(@Nonnull String userId, @Nullable String reason)
-    {
-        Route.CompiledRoute route = Route.Guilds.KICK_MEMBER.compile(getId(), userId);
+        Route.CompiledRoute route = Route.Guilds.KICK_MEMBER.compile(getId(), user.getId());
         if (!Helpers.isBlank(reason))
         {
             Checks.check(reason.length() <= 512, "Reason cannot be longer than 512 characters.");
@@ -1467,44 +1463,27 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public AuditableRestAction<Void> ban(@Nonnull User user, int delDays, String reason)
+    public AuditableRestAction<Void> ban(@Nonnull UserSnowflake user, int delDays, String reason)
     {
         Checks.notNull(user, "User");
-        checkPermission(Permission.BAN_MEMBERS);
-
-        if (isMember(user)) // If user is in guild. Check if we are able to ban.
-            checkPosition(getMember(user));
-
-        return ban0(user.getId(), delDays, reason);
-    }
-
-    @Nonnull
-    @Override
-    public AuditableRestAction<Void> ban(@Nonnull String userId, int delDays, String reason)
-    {
-        Checks.notNull(userId, "User");
-        checkPermission(Permission.BAN_MEMBERS);
-
-        User user = getJDA().getUserById(userId);
-        if (user != null) // If we have the user cached then we should use the additional information available to use during the ban process.
-            return ban(user, delDays, reason);
-
-        return ban0(userId, delDays, reason);
-    }
-
-    @Nonnull
-    private AuditableRestAction<Void> ban0(@Nonnull String userId, int delDays, String reason)
-    {
         Checks.notNegative(delDays, "Deletion Days");
         Checks.check(delDays <= 7, "Deletion Days must not be bigger than 7.");
+        checkPermission(Permission.BAN_MEMBERS);
+        Checks.check(user.getIdLong() != ownerId, "Cannot ban the owner of a guild!");
 
-        Route.CompiledRoute route = Route.Guilds.BAN.compile(getId(), userId);
+        Member member = resolveMember(user);
+        if (member != null) // If user is in guild. Check if we are able to ban.
+            checkPosition(member);
+
+        Route.CompiledRoute route = Route.Guilds.BAN.compile(getId(), user.getId());
         DataObject params = DataObject.empty();
+
         if (!Helpers.isBlank(reason))
         {
             Checks.check(reason.length() <= 512, "Reason cannot be longer than 512 characters.");
             params.put("reason", reason);
         }
+
         if (delDays > 0)
             params.put("delete_message_days", delDays);
 
@@ -1513,35 +1492,36 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public AuditableRestAction<Void> unban(@Nonnull String userId)
+    public AuditableRestAction<Void> unban(@Nonnull UserSnowflake user)
     {
-        Checks.isSnowflake(userId, "User ID");
+        Checks.notNull(user, "User");
         checkPermission(Permission.BAN_MEMBERS);
 
-        Route.CompiledRoute route = Route.Guilds.UNBAN.compile(getId(), userId);
+        Route.CompiledRoute route = Route.Guilds.UNBAN.compile(getId(), user.getId());
         return new AuditableRestActionImpl<>(getJDA(), route);
     }
 
     @Nonnull
     @Override
-    public AuditableRestAction<Void> timeoutUntilById(@Nonnull String userId, @Nonnull TemporalAccessor temporal)
+    public AuditableRestAction<Void> timeoutUntil(@Nonnull UserSnowflake user, @Nonnull TemporalAccessor temporal)
     {
-        Checks.isSnowflake(userId, "User ID");
+        Checks.notNull(user, "User");
         Checks.notNull(temporal, "Temporal");
         OffsetDateTime date = Helpers.toOffsetDateTime(temporal);
         Checks.check(date.isAfter(OffsetDateTime.now()), "Cannot put a member in time out with date in the past. Provided: %s", date);
         Checks.check(date.isBefore(OffsetDateTime.now().plusDays(Member.MAX_TIME_OUT_LENGTH)), "Cannot put a member in time out for more than 28 days. Provided: %s", date);
         checkPermission(Permission.MODERATE_MEMBERS);
+        Checks.check(user.getIdLong() != ownerId, "Cannot put the owner of a guild in time out!");
 
-        return timeoutUntilById0(userId, date);
+        return timeoutUntilById0(user.getId(), date);
     }
 
     @Nonnull
     @Override
-    public AuditableRestAction<Void> removeTimeoutById(@Nonnull String userId)
+    public AuditableRestAction<Void> removeTimeout(@Nonnull UserSnowflake user)
     {
-        Checks.isSnowflake(userId, "User ID");
-        return timeoutUntilById0(userId, null);
+        Checks.notNull(user, "User");
+        return timeoutUntilById0(user.getId(), null);
     }
 
     @Nonnull
@@ -1554,75 +1534,79 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public AuditableRestAction<Void> deafen(@Nonnull Member member, boolean deafen)
+    public AuditableRestAction<Void> deafen(@Nonnull UserSnowflake user, boolean deafen)
     {
-        Checks.notNull(member, "Member");
-        checkGuild(member.getGuild(), "Member");
+        Checks.notNull(user, "User");
         checkPermission(Permission.VOICE_DEAF_OTHERS);
 
-        GuildVoiceState voiceState = member.getVoiceState();
-        if (voiceState != null)
+        Member member = resolveMember(user);
+        if (member != null)
         {
-            if (voiceState.getChannel() == null)
-                throw new IllegalStateException("Can only deafen members who are currently in a voice channel");
-            if (voiceState.isGuildDeafened() == deafen)
-                return new CompletedRestAction<>(getJDA(), null);
+            GuildVoiceState voiceState = member.getVoiceState();
+            if (voiceState != null)
+            {
+                if (voiceState.getChannel() == null)
+                    throw new IllegalStateException("Can only deafen members who are currently in a voice channel");
+                if (voiceState.isGuildDeafened() == deafen)
+                    return new CompletedRestAction<>(getJDA(), null);
+            }
         }
 
         DataObject body = DataObject.empty().put("deaf", deafen);
-        Route.CompiledRoute route = Route.Guilds.MODIFY_MEMBER.compile(getId(), member.getUser().getId());
+        Route.CompiledRoute route = Route.Guilds.MODIFY_MEMBER.compile(getId(), user.getId());
         return new AuditableRestActionImpl<>(getJDA(), route, body);
     }
 
     @Nonnull
     @Override
-    public AuditableRestAction<Void> mute(@Nonnull Member member, boolean mute)
+    public AuditableRestAction<Void> mute(@Nonnull UserSnowflake user, boolean mute)
     {
-        Checks.notNull(member, "Member");
-        checkGuild(member.getGuild(), "Member");
+        Checks.notNull(user, "User");
         checkPermission(Permission.VOICE_MUTE_OTHERS);
 
-        GuildVoiceState voiceState = member.getVoiceState();
-        if (voiceState != null)
+        Member member = resolveMember(user);
+        if (member != null)
         {
-            if (voiceState.getChannel() == null)
-                throw new IllegalStateException("Can only mute members who are currently in a voice channel");
-            if (voiceState.isGuildMuted() == mute && (mute || !voiceState.isSuppressed()))
-                return new CompletedRestAction<>(getJDA(), null);
+            GuildVoiceState voiceState = member.getVoiceState();
+            if (voiceState != null)
+            {
+                if (voiceState.getChannel() == null)
+                    throw new IllegalStateException("Can only mute members who are currently in a voice channel");
+                if (voiceState.isGuildMuted() == mute && (mute || !voiceState.isSuppressed()))
+                    return new CompletedRestAction<>(getJDA(), null);
+            }
         }
 
         DataObject body = DataObject.empty().put("mute", mute);
-        Route.CompiledRoute route = Route.Guilds.MODIFY_MEMBER.compile(getId(), member.getUser().getId());
+        Route.CompiledRoute route = Route.Guilds.MODIFY_MEMBER.compile(getId(), user.getId());
         return new AuditableRestActionImpl<>(getJDA(), route, body);
     }
 
     @Nonnull
     @Override
-    public AuditableRestAction<Void> addRoleToMember(@Nonnull Member member, @Nonnull Role role)
+    public AuditableRestAction<Void> addRoleToMember(@Nonnull UserSnowflake user, @Nonnull Role role)
     {
-        Checks.notNull(member, "Member");
+        Checks.notNull(user, "User");
         Checks.notNull(role, "Role");
-        checkGuild(member.getGuild(), "Member");
         checkGuild(role.getGuild(), "Role");
         checkPermission(Permission.MANAGE_ROLES);
         checkPosition(role);
 
-        Route.CompiledRoute route = Route.Guilds.ADD_MEMBER_ROLE.compile(getId(), member.getUser().getId(), role.getId());
+        Route.CompiledRoute route = Route.Guilds.ADD_MEMBER_ROLE.compile(getId(), user.getId(), role.getId());
         return new AuditableRestActionImpl<>(getJDA(), route);
     }
 
     @Nonnull
     @Override
-    public AuditableRestAction<Void> removeRoleFromMember(@Nonnull Member member, @Nonnull Role role)
+    public AuditableRestAction<Void> removeRoleFromMember(@Nonnull UserSnowflake user, @Nonnull Role role)
     {
-        Checks.notNull(member, "Member");
+        Checks.notNull(user, "User");
         Checks.notNull(role, "Role");
-        checkGuild(member.getGuild(), "Member");
         checkGuild(role.getGuild(), "Role");
         checkPermission(Permission.MANAGE_ROLES);
         checkPosition(role);
 
-        Route.CompiledRoute route = Route.Guilds.REMOVE_MEMBER_ROLE.compile(getId(), member.getUser().getId(), role.getId());
+        Route.CompiledRoute route = Route.Guilds.REMOVE_MEMBER_ROLE.compile(getId(), user.getId(), role.getId());
         return new AuditableRestActionImpl<>(getJDA(), route);
     }
 
@@ -1786,11 +1770,11 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public AuditableRestAction<Emote> createEmote(@Nonnull String name, @Nonnull Icon icon, @Nonnull Role... roles)
+    public AuditableRestAction<RichCustomEmoji> createEmoji(@Nonnull String name, @Nonnull Icon icon, @Nonnull Role... roles)
     {
-        checkPermission(Permission.MANAGE_EMOTES_AND_STICKERS);
-        Checks.inRange(name, 2, 32, "Emote name");
-        Checks.notNull(icon, "Emote icon");
+        checkPermission(Permission.MANAGE_EMOJIS_AND_STICKERS);
+        Checks.inRange(name, 2, 32, "Emoji name");
+        Checks.notNull(icon, "Emoji icon");
         Checks.notNull(roles, "Roles");
 
         DataObject body = DataObject.empty();
@@ -1800,12 +1784,74 @@ public class GuildImpl implements Guild
             body.put("roles", Stream.of(roles).filter(Objects::nonNull).map(ISnowflake::getId).collect(Collectors.toSet()));
 
         JDAImpl jda = getJDA();
-        Route.CompiledRoute route = Route.Emotes.CREATE_EMOTE.compile(getId());
+        Route.CompiledRoute route = Route.Emojis.CREATE_EMOJI.compile(getId());
         return new AuditableRestActionImpl<>(jda, route, body, (response, request) ->
         {
             DataObject obj = response.getObject();
-            return jda.getEntityBuilder().createEmote(this, obj);
+            return jda.getEntityBuilder().createEmoji(this, obj);
         });
+    }
+
+    @Nonnull
+    @Override
+    public AuditableRestAction<GuildSticker> createSticker(@Nonnull String name, @Nonnull String description, @Nonnull FileUpload file, @Nonnull Collection<String> tags)
+    {
+        checkPermission(Permission.MANAGE_EMOJIS_AND_STICKERS);
+        Checks.inRange(name, 2, 30, "Name");
+        Checks.notNull(file, "File");
+        Checks.notNull(description, "Description");
+        Checks.notEmpty(tags, "Tags");
+        if (!description.isEmpty())
+            Checks.inRange(description, 2, 100, "Description");
+        for (String t : tags)
+            Checks.notEmpty(t, "Tags");
+
+        String csv = String.join(",", tags);
+        Checks.notLonger(csv, 200, "Tags");
+
+        // Extract file extension and map to media type
+        int index = file.getName().lastIndexOf('.');
+        Checks.check(index > -1, "Filename for sticker is missing file extension. Provided: '" + file.getName() + "'. Must be PNG or JSON.");
+
+        // Convert file extension to media-type
+        String extension = file.getName().substring(index + 1).toLowerCase(Locale.ROOT);
+        MediaType mediaType;
+        switch (extension)
+        {
+            case "apng":
+            case "png":
+                mediaType = Requester.MEDIA_TYPE_PNG;
+                break;
+            case "json":
+                mediaType = Requester.MEDIA_TYPE_JSON;
+                break;
+            default:
+                throw new IllegalArgumentException("Unsupported file extension: '." + extension + "', must be PNG or JSON.");
+        }
+
+        // Add sticker metadata as form parts (because payload_json is broken)
+        MultipartBody.Builder builder = new MultipartBody.Builder().setType(MultipartBody.FORM);
+        builder.addFormDataPart("name", name);
+        builder.addFormDataPart("description", description);
+        builder.addFormDataPart("tags", csv);
+
+        // Attach file asset for sticker image/animation
+        builder.addFormDataPart("file", file.getName(), file.getRequestBody(mediaType));
+
+        MultipartBody body = builder.build();
+        Route.CompiledRoute route = Route.Stickers.CREATE_GUILD_STICKER.compile(getId());
+        return new AuditableRestActionImpl<>(api, route, body,
+            (response, request) -> (GuildSticker) api.getEntityBuilder().createRichSticker(response.getObject())
+        );
+    }
+
+    @Nonnull
+    @Override
+    public AuditableRestAction<Void> deleteSticker(@Nonnull StickerSnowflake id)
+    {
+        Checks.notNull(id, "Sticker");
+        Route.CompiledRoute route = Route.Stickers.DELETE_GUILD_STICKER.compile(getId(), id.getId());
+        return new AuditableRestActionImpl<>(api, route);
     }
 
     @Nonnull
@@ -1883,10 +1929,23 @@ public class GuildImpl implements Guild
         roles.forEach(role ->
         {
             Checks.notNull(role, "Role in roles to " + type);
-            checkGuild(role.getGuild(), "Role: " + role.toString());
+            checkGuild(role.getGuild(), "Role: " + role);
             checkPosition(role);
             Checks.check(!role.isManaged(), "Cannot %s a managed role %s a Member. Role: %s", type, preposition, role.toString());
         });
+    }
+
+    private Member resolveMember(UserSnowflake user)
+    {
+        Member member = getMemberById(user.getIdLong());
+        if (member == null && user instanceof Member)
+        {
+            member = (Member) user;
+            // Only resolve if member is in the same guild, otherwise role information is not accurate
+            if (!equals(member.getGuild()))
+                member = null;
+        }
+        return member;
     }
 
     private synchronized boolean isRequestToSpeakPending()
@@ -2125,9 +2184,14 @@ public class GuildImpl implements Guild
         return roleCache;
     }
 
-    public SnowflakeCacheViewImpl<Emote> getEmotesView()
+    public SnowflakeCacheViewImpl<RichCustomEmoji> getEmojisView()
     {
-        return emoteCache;
+        return emojicache;
+    }
+
+    public SnowflakeCacheViewImpl<GuildSticker> getStickersView()
+    {
+        return stickerCache;
     }
 
     public MemberCacheViewImpl getMembersView()

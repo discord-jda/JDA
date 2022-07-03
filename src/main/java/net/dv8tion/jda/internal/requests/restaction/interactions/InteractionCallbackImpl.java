@@ -16,11 +16,13 @@
 
 package net.dv8tion.jda.internal.requests.restaction.interactions;
 
+import net.dv8tion.jda.api.requests.Request;
+import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.interactions.InteractionCallbackAction;
+import net.dv8tion.jda.api.utils.AttachedFile;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.interactions.InteractionImpl;
-import net.dv8tion.jda.internal.requests.Requester;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.IOUtil;
@@ -28,15 +30,14 @@ import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 
 import javax.annotation.Nonnull;
-import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
 public abstract class InteractionCallbackImpl<T> extends RestActionImpl<T> implements InteractionCallbackAction<T>
 {
-    protected final Map<String, InputStream> files = new HashMap<>();
+    protected final List<AttachedFile> files = new ArrayList<>();
     protected final InteractionImpl interaction;
 
     public InteractionCallbackImpl(InteractionImpl interaction)
@@ -54,16 +55,30 @@ public abstract class InteractionCallbackImpl<T> extends RestActionImpl<T> imple
         if (files.isEmpty())
             return getRequestBody(json);
 
-        MultipartBody.Builder body = new MultipartBody.Builder().setType(MultipartBody.FORM);
-        int i = 0;
-        for (Map.Entry<String, InputStream> file : files.entrySet())
-        {
-            RequestBody stream = IOUtil.createRequestBody(Requester.MEDIA_TYPE_OCTET, file.getValue());
-            body.addFormDataPart("files[" + (i++) + "]", file.getKey(), stream);
-        }
+        // TODO: Handle file edits better
+        MultipartBody.Builder body = AttachedFile.createMultipartBody(files, null);
         body.addFormDataPart("payload_json", json.toString());
         files.clear();
         return body.build();
+    }
+
+    @Nonnull
+    @Override
+    public InteractionCallbackAction<T> closeResources()
+    {
+        files.forEach(IOUtil::silentClose);
+        files.clear();
+        return this;
+    }
+
+    @Override
+    @SuppressWarnings({"deprecation", "ResultOfMethodCallIgnored"})
+    protected void finalize()
+    {
+        if (files.isEmpty())
+            return;
+        LOG.warn("Found open resources in interaction callback. Did you forget to close them?");
+        closeResources();
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -71,10 +86,11 @@ public abstract class InteractionCallbackImpl<T> extends RestActionImpl<T> imple
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // This is an exception factory method that only returns an exception if we would have to throw it or fail in another way.
-    protected final IllegalStateException tryAck() // note that hook.ack() is already synchronized so this is actually thread-safe!
+    protected final IllegalStateException tryAck() // note that interaction.ack() is already synchronized so this is actually thread-safe!
     {
         // true => we already called this before => this will never succeed!
-        return interaction.ack() ? new IllegalStateException("This interaction has already been acknowledged or replied to. You can only reply or acknowledge an interaction once!")
+        return interaction.ack()
+                ? new IllegalStateException("This interaction has already been acknowledged or replied to. You can only reply or acknowledge an interaction once!")
                 : null; // null indicates we were successful, no exception means we can't fail :)
     }
 
@@ -107,5 +123,25 @@ public abstract class InteractionCallbackImpl<T> extends RestActionImpl<T> imple
         }
 
         return super.submit(shouldQueue);
+    }
+
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Here we handle the interaction hook, which awaits the signal that the interaction was acknowledged before sending any requests. //
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    @Override
+    protected void handleSuccess(Response response, Request<T> request)
+    {
+        interaction.releaseHook(true); // sends followup messages
+        super.handleSuccess(response, request);
+    }
+
+    @Override
+    public void handleResponse(Response response, Request<T> request)
+    {
+        if (!response.isOk())
+            interaction.releaseHook(false); // cancels followup messages with an exception
+        super.handleResponse(response, request);
     }
 }

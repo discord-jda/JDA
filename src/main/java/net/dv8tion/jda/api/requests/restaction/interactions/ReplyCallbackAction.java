@@ -52,6 +52,10 @@ public interface ReplyCallbackAction extends InteractionCallbackAction<Interacti
     @Override
     ReplyCallbackAction deadline(long timestamp);
 
+    @Nonnull
+    @Override
+    ReplyCallbackAction closeResources();
+
     /**
      * Add {@link MessageEmbed MessageEmbeds} for the message
      *
@@ -93,12 +97,16 @@ public interface ReplyCallbackAction extends InteractionCallbackAction<Interacti
      *         The components for this action row
      *
      * @throws IllegalArgumentException
-     *         If null is provided, an invalid number of components is provided,
-     *         or any custom {@link ActionComponent#getId() id} is duplicated
+     *         <ul>
+     *             <li>If null is provided, or more than 5 ItemComponents are provided</li>
+     *             <li>If any custom {@link ActionComponent#getId() id} is duplicated</li>
+     *             <li>If any of the provided ItemComponents are not compatible with messages</li>
+     *         </ul>
      *
      * @return The same reply action, for chaining convenience
      *
      * @see    ActionRow#of(ItemComponent...)
+     * @see    ItemComponent#isMessageCompatible()
      */
     @Nonnull
     @CheckReturnValue
@@ -114,12 +122,16 @@ public interface ReplyCallbackAction extends InteractionCallbackAction<Interacti
      *         The components for this action row
      *
      * @throws IllegalArgumentException
-     *         If null is provided, an invalid number of components is provided,
-     *         or any custom {@link ActionComponent#getId() id} is duplicated
+     *         <ul>
+     *             <li>If null is provided, or more than 5 ItemComponents are provided</li>
+     *             <li>If any custom {@link ActionComponent#getId() id} is duplicated</li>
+     *             <li>If any of the provided ItemComponents are not compatible with messages</li>
+     *         </ul>
      *
      * @return The same reply action, for chaining convenience
      *
      * @see    ActionRow#of(Collection)
+     * @see    ItemComponent#isMessageCompatible()
      */
     @Nonnull
     @CheckReturnValue
@@ -135,10 +147,15 @@ public interface ReplyCallbackAction extends InteractionCallbackAction<Interacti
      *         The action rows to add
      *
      * @throws IllegalArgumentException
-     *         If null is provided, more than 5 action rows are provided,
-     *         or any custom {@link ActionComponent#getId() id} is duplicated
+     *         <ul>
+     *             <li>If null is provided, or more than 5 action rows are provided</li>
+     *             <li>If any custom {@link ActionComponent#getId() id} is duplicated</li>
+     *             <li>If any of the provided action rows are not compatible with messages</li>
+     *         </ul>
      *
      * @return The same reply action, for chaining convenience
+     *
+     * @see    ActionRow#isMessageCompatible()
      */
     @Nonnull
     @CheckReturnValue
@@ -155,10 +172,15 @@ public interface ReplyCallbackAction extends InteractionCallbackAction<Interacti
      *         The action rows to add
      *
      * @throws IllegalArgumentException
-     *         If null is provided, more than 5 action rows are provided,
-     *         or any custom {@link ActionComponent#getId() id} is duplicated
+     *         <ul>
+     *             <li>If null is provided, or more than 5 action rows are provided</li>
+     *             <li>If any custom {@link ActionComponent#getId() id} is duplicated</li>
+     *             <li>If any of the provided action rows are not compatible with messages</li>
+     *         </ul>
      *
      * @return The same reply action, for chaining convenience
+     *
+     * @see    ActionRow#isMessageCompatible()
      */
     @Nonnull
     @CheckReturnValue

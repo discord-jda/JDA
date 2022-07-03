@@ -32,6 +32,8 @@ import javax.annotation.Nullable;
 import java.io.*;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.concurrent.TimeUnit;
+import java.util.function.BooleanSupplier;
 import java.util.stream.Collectors;
 
 /**
@@ -39,6 +41,22 @@ import java.util.stream.Collectors;
  */
 public interface MessageEditCallbackAction extends InteractionCallbackAction<InteractionHook>
 {
+    @Nonnull
+    @Override
+    MessageEditCallbackAction setCheck(@Nullable BooleanSupplier checks);
+
+    @Nonnull
+    @Override
+    MessageEditCallbackAction timeout(long timeout, @Nonnull TimeUnit unit);
+
+    @Nonnull
+    @Override
+    MessageEditCallbackAction deadline(long timestamp);
+
+    @Nonnull
+    @Override
+    MessageEditCallbackAction closeResources();
+
     /**
      * Set the new content for this message.
      *
@@ -60,7 +78,7 @@ public interface MessageEditCallbackAction extends InteractionCallbackAction<Int
      *         The message embeds
      *
      * @throws IllegalArgumentException
-     *         If null is provided, or one of the embeds is too big
+     *         If null is provided, or one of the embeds is too big, or more than {@value Message#MAX_EMBED_COUNT} embeds are provided
      *
      * @return The same update action, for chaining convenience
      */
@@ -79,7 +97,7 @@ public interface MessageEditCallbackAction extends InteractionCallbackAction<Int
      *         The message embeds
      *
      * @throws IllegalArgumentException
-     *         If null is provided, one of the embeds is too big, or more than 10 embeds are provided
+     *         If null is provided, one of the embeds is too big, or more than {@value Message#MAX_EMBED_COUNT} embeds are provided
      *
      * @return The same update action, for chaining convenience
      */
@@ -94,10 +112,15 @@ public interface MessageEditCallbackAction extends InteractionCallbackAction<Int
      *         The new action rows
      *
      * @throws IllegalArgumentException
-     *         If null is provided, more than 5 action rows are provided,
-     *         or any custom {@link ActionComponent#getId() id} is duplicated
+     *         <ul>
+     *             <li>If null is provided, or more than 5 ActionRows are provided</li>
+     *             <li>If any custom {@link ActionComponent#getId() id} is duplicated</li>
+     *             <li>If any of the provided ActionRows are not compatible with messages</li>
+     *         </ul>
      *
      * @return The same update action, for chaining convenience
+     *
+     * @see    ActionRow#isMessageCompatible()
      */
     @Nonnull
     @CheckReturnValue
@@ -114,10 +137,15 @@ public interface MessageEditCallbackAction extends InteractionCallbackAction<Int
      *         The new action rows
      *
      * @throws IllegalArgumentException
-     *         If null is provided, more than 5 action rows are provided,
-     *         or any custom {@link ActionComponent#getId() id} is duplicated
+     *         <ul>
+     *             <li>If null is provided, or more than 5 ActionRows are provided</li>
+     *             <li>If any custom {@link ActionComponent#getId() id} is duplicated</li>
+     *             <li>If any of the provided ActionRows are not compatible with messages</li>
+     *         </ul>
      *
      * @return The same update action, for chaining convenience
+     *
+     * @see    ActionRow#isMessageCompatible()
      */
     @Nonnull
     @CheckReturnValue
@@ -130,12 +158,16 @@ public interface MessageEditCallbackAction extends InteractionCallbackAction<Int
      *         The action row components, such as {@link Button Buttons}
      *
      * @throws IllegalArgumentException
-     *         If null is provided, an invalid number of components is provided,
-     *         or any custom {@link ActionComponent#getId() id} is duplicated
+     *         <ul>
+     *             <li>If null is provided, or more than 5 ItemComponents are provided</li>
+     *             <li>If any custom {@link ActionComponent#getId() id} is duplicated</li>
+     *             <li>If any of the provided ItemComponents are not compatible with messages</li>
+     *         </ul>
      *
      * @return The same update action, for chaining convenience
      *
      * @see    ActionRow#of(ItemComponent...)
+     * @see    ItemComponent#isMessageCompatible()
      */
     @Nonnull
     @CheckReturnValue
@@ -151,12 +183,16 @@ public interface MessageEditCallbackAction extends InteractionCallbackAction<Int
      *         The action row components, such as {@link Button Buttons}
      *
      * @throws IllegalArgumentException
-     *         If null is provided, an invalid number of components is provided,
-     *         or any custom {@link ActionComponent#getId() id} is duplicated
+     *         <ul>
+     *             <li>If null is provided, or more than 5 ItemComponents are provided</li>
+     *             <li>If any custom {@link ActionComponent#getId() id} is duplicated</li>
+     *             <li>If any of the provided ItemComponents are not compatible with messages</li>
+     *         </ul>
      *
      * @return The same update action, for chaining convenience
      *
      * @see    ActionRow#of(Collection)
+     * @see    ItemComponent#isMessageCompatible()
      */
     @Nonnull
     @CheckReturnValue

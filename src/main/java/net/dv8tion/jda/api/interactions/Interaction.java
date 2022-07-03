@@ -18,11 +18,10 @@ package net.dv8tion.jda.api.interactions;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
-import net.dv8tion.jda.api.interactions.callbacks.IAutoCompleteCallback;
-import net.dv8tion.jda.api.interactions.callbacks.IDeferrableCallback;
-import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback;
-import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback;
+import net.dv8tion.jda.api.interactions.callbacks.*;
 import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.components.Modal;
+import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -30,8 +29,8 @@ import java.util.Locale;
 
 /**
  * Abstract representation for any kind of Discord interaction.
- * <br>This includes things such as {@link net.dv8tion.jda.api.interactions.commands.SlashCommandInteraction Slash-Commands}
- * or {@link net.dv8tion.jda.api.interactions.components.buttons.ButtonInteraction Buttons}.
+ * <br>This includes things such as {@link net.dv8tion.jda.api.interactions.commands.SlashCommandInteraction Slash-Commands},
+ * {@link net.dv8tion.jda.api.interactions.components.buttons.ButtonInteraction Buttons} or {@link net.dv8tion.jda.api.interactions.ModalInteraction Modals}.
  *
  * <p>To properly handle an interaction you must acknowledge it.
  * Each interaction has different callbacks which acknowledge the interaction. These are added by the individual {@code I...Callback} interfaces:
@@ -42,6 +41,8 @@ import java.util.Locale;
  *     <br>Which supports direct message edits and deferred message edits (or no-operation) via {@link IMessageEditCallback#editMessage(String)} and {@link IMessageEditCallback#deferEdit()}</li>
  *     <li>{@link IAutoCompleteCallback}
  *     <br>Which supports choice suggestions for auto-complete interactions via {@link IAutoCompleteCallback#replyChoices(Command.Choice...)}</li>
+ *     <li>{@link IModalCallback}
+ *     <br>Which supports replying using a {@link Modal} via {@link IModalCallback#replyModal(Modal)}</li>
  * </ul>
  *
  * <p>Once the interaction is acknowledged, you can not reply with these methods again. If the interaction is a {@link IDeferrableCallback deferrable},
@@ -132,15 +133,6 @@ public interface Interaction extends ISnowflake
     Member getMember();
 
     /**
-     * The channel this interaction happened in.
-     * <br>This is currently never null, but might be nullable in the future.
-     *
-     * @return The channel or null if this interaction is not from a channel context
-     */
-    @Nullable
-    Channel getChannel();
-
-    /**
      * Whether this interaction has already been acknowledged.
      * <br><b>Each interaction can only be acknowledged once.</b>
      *
@@ -148,6 +140,14 @@ public interface Interaction extends ISnowflake
      */
     boolean isAcknowledged();
 
+    /**
+     * The channel this interaction happened in.
+     * <br>This is currently never null, but might be nullable in the future.
+     *
+     * @return The channel or null if this interaction is not from a channel context
+     */
+    @Nullable
+    Channel getChannel();
 
     /**
      * The {@link GuildChannel} this interaction happened in.
@@ -161,10 +161,7 @@ public interface Interaction extends ISnowflake
     @Nonnull
     default GuildChannel getGuildChannel()
     {
-        Channel channel = getChannel();
-        if (channel instanceof GuildChannel)
-            return (GuildChannel) channel;
-        throw new IllegalStateException("Cannot convert channel of type " + getChannelType() + " to GuildChannel");
+       return Helpers.safeChannelCast(getChannel(), GuildChannel.class);
     }
 
     /**
@@ -179,100 +176,7 @@ public interface Interaction extends ISnowflake
     @Nonnull
     default MessageChannel getMessageChannel()
     {
-        Channel channel = getChannel();
-        if (channel instanceof MessageChannel)
-            return (MessageChannel) channel;
-        throw new IllegalStateException("Cannot convert channel of type " + getChannelType() + " to MessageChannel");
-    }
-
-    /**
-     * The {@link TextChannel} this interaction happened in.
-     * <br>If {@link #getChannelType()} is not {@link ChannelType#TEXT}, this throws {@link IllegalStateException}!
-     *
-     * @throws IllegalStateException
-     *         If {@link #getChannel()} is not a text channel
-     *
-     * @return The {@link TextChannel}
-     */
-    @Nonnull
-    default TextChannel getTextChannel()
-    {
-        Channel channel = getChannel();
-        if (channel instanceof TextChannel)
-            return (TextChannel) channel;
-        throw new IllegalStateException("Cannot convert channel of type " + getChannelType() + " to TextChannel");
-    }
-
-    /**
-     * The {@link NewsChannel} this interaction happened in.
-     * <br>If {@link #getChannelType()} is not {@link ChannelType#NEWS}, this throws {@link IllegalStateException}!
-     *
-     * @throws IllegalStateException
-     *         If {@link #getChannel()} is not a news channel
-     *
-     * @return The {@link NewsChannel}
-     */
-    @Nonnull
-    default NewsChannel getNewsChannel()
-    {
-        Channel channel = getChannel();
-        if (channel instanceof NewsChannel)
-            return (NewsChannel) channel;
-        throw new IllegalStateException("Cannot convert channel of type " + getChannelType() + " to NewsChannel");
-    }
-
-    /**
-     * The {@link VoiceChannel} this interaction happened in.
-     * <br>If {@link #getChannelType()} is not {@link ChannelType#VOICE}, this throws {@link IllegalStateException}!
-     *
-     * @throws IllegalStateException
-     *         If {@link #getChannel()} is not a voice channel
-     *
-     * @return The {@link VoiceChannel}
-     */
-    @Nonnull
-    default VoiceChannel getVoiceChannel()
-    {
-        Channel channel = getChannel();
-        if (channel instanceof VoiceChannel)
-            return (VoiceChannel) channel;
-        throw new IllegalStateException("Cannot convert channel of type " + getChannelType() + " to VoiceChannel");
-    }
-
-    /**
-     * The {@link PrivateChannel} this interaction happened in.
-     * <br>If {@link #getChannelType()} is not {@link ChannelType#PRIVATE}, this throws {@link IllegalStateException}!
-     *
-     * @throws IllegalStateException
-     *         If {@link #getChannel()} is not a private channel
-     *
-     * @return The {@link PrivateChannel}
-     */
-    @Nonnull
-    default PrivateChannel getPrivateChannel()
-    {
-        Channel channel = getChannel();
-        if (channel instanceof PrivateChannel)
-            return (PrivateChannel) channel;
-        throw new IllegalStateException("Cannot convert channel of type " + getChannelType() + " to PrivateChannel");
-    }
-
-    /**
-     * The {@link ThreadChannel} this interaction happened in.
-     * <br>If {@link #getChannelType()} is not {@link ChannelType#isThread()}, this throws {@link IllegalStateException}!
-     *
-     * @throws IllegalStateException
-     *         If {@link #getChannel()} is not a thread channel
-     *
-     * @return The {@link ThreadChannel}
-     */
-    @Nonnull
-    default ThreadChannel getThreadChannel()
-    {
-        Channel channel = getChannel();
-        if (channel instanceof ThreadChannel)
-            return (ThreadChannel) channel;
-        throw new IllegalStateException("Cannot convert channel of type " + getChannelType() + " to ThreadChannel");
+        return Helpers.safeChannelCast(getChannel(), MessageChannel.class);
     }
 
     /**

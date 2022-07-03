@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.ICategorizableChannel;
 import net.dv8tion.jda.api.entities.ThreadChannel;
+import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 
 /**
  * Enum of possible/expected keys that can be provided
@@ -447,31 +448,31 @@ public enum AuditLogKey
     ROLE_MENTIONABLE("mentionable"),
 
 
-    // EMOTE
+    // EMOJI
     /**
-     * Change of the {@link net.dv8tion.jda.api.entities.Emote#getName() Emote.getName()} value.
+     * Change of the {@link RichCustomEmoji#getName() Emoji.getName()} value.
      *
      * <p>Expected type: <b>String</b>
      */
-    EMOTE_NAME("name"),
+    EMOJI_NAME("name"),
 
     /**
-     * Roles added to {@link net.dv8tion.jda.api.entities.Emote#getRoles() Emote.getRoles()} with this action
+     * Roles added to {@link RichCustomEmoji#getRoles() RichCustomEmoji.getRoles()} with this action
      * <br>Containing a list of {@link net.dv8tion.jda.api.entities.Role Role} IDs
      * <br>Use with {@link net.dv8tion.jda.api.entities.Guild#getRoleById(String) Guild.getRoleById(String)}
      *
      * <p>Expected type: <b>List{@literal <String>}</b>
      */
-    EMOTE_ROLES_ADD("$add"),
+    EMOJI_ROLES_ADD("$add"),
 
     /**
-     * Roles remove from {@link net.dv8tion.jda.api.entities.Emote#getRoles() Emote.getRoles()} with this action
+     * Roles remove from {@link RichCustomEmoji#getRoles() RichCustomEmoji.getRoles()} with this action
      * <br>Containing a list of {@link net.dv8tion.jda.api.entities.Role Role} IDs
      * <br>Use with {@link net.dv8tion.jda.api.entities.Guild#getRoleById(String) Guild.getRoleById(String)}
      *
      * <p>Expected type: <b>List{@literal <String>}</b>
      */
-    EMOTE_ROLES_REMOVE("$remove"),
+    EMOJI_ROLES_REMOVE("$remove"),
 
 
     // WEBHOOK

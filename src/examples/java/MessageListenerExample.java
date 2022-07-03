@@ -18,6 +18,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.exceptions.PermissionException;
 import net.dv8tion.jda.api.exceptions.RateLimitedException;
@@ -85,8 +86,8 @@ public class MessageListenerExample extends ListenerAdapter
         //Event specific information
         User author = event.getAuthor();                //The user that sent the message
         Message message = event.getMessage();           //The message that was received.
-        MessageChannel channel = event.getChannel();    //This is the MessageChannel that the message was sent to.
-                                                        //  This could be a TextChannel, PrivateChannel, or Group!
+        MessageChannelUnion channel = event.getChannel();    //This is the MessageChannel that the message was sent to.
+                                                        //  This could be a TextChannel, PrivateChannel, or more!
 
         String msg = message.getContentDisplay();              //This returns a human readable version of the Message. Similar to
                                                         // what you would see in the client.
@@ -101,7 +102,7 @@ public class MessageListenerExample extends ListenerAdapter
             // the message possibly not being from a Guild!
 
             Guild guild = event.getGuild();             //The Guild that this message was sent in. (note, in the API, Guilds are Servers)
-            TextChannel textChannel = event.getTextChannel(); //The TextChannel that this message was sent to.
+            TextChannel textChannel = channel.asTextChannel(); //The TextChannel that this message was sent to.
             Member member = event.getMember();          //This Member that sent the message. Contains Guild specific information about the User!
 
             String name;
@@ -120,7 +121,7 @@ public class MessageListenerExample extends ListenerAdapter
         {
             //The message was sent in a PrivateChannel.
             //In this example we don't directly use the privateChannel, however, be sure, there are uses for it!
-            PrivateChannel privateChannel = event.getPrivateChannel();
+            PrivateChannel privateChannel = channel.asPrivateChannel();
 
             System.out.printf("[PRIV]<%s>: %s\n", author.getName(), msg);
         }
@@ -169,7 +170,7 @@ public class MessageListenerExample extends ListenerAdapter
             if (message.isFromType(ChannelType.TEXT))
             {
                 //If no users are provided, we can't kick anyone!
-                if (message.getMentionedUsers().isEmpty())
+                if (message.getMentions().getUsers().isEmpty())
                 {
                     channel.sendMessage("You must mention 1 or more Users to be kicked!").queue();
                 }
@@ -187,7 +188,7 @@ public class MessageListenerExample extends ListenerAdapter
                     }
 
                     //Loop over all mentioned users, kicking them one at a time. Mwauahahah!
-                    List<User> mentionedUsers = message.getMentionedUsers();
+                    List<User> mentionedUsers = message.getMentions().getUsers();
                     for (User user : mentionedUsers)
                     {
                         Member member = guild.getMember(user);  //We get the member object for each mentioned user to kick them!

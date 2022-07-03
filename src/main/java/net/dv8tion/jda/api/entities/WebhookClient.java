@@ -126,10 +126,10 @@ public interface WebhookClient<T>
      * </ul>
      *
      * @param  embeds
-     *         {@link MessageEmbed MessageEmbeds} to use (up to 10 in total)
+     *         {@link MessageEmbed MessageEmbeds} to use (up to {@value Message#MAX_EMBED_COUNT} in total)
      *
      * @throws IllegalArgumentException
-     *         If any of the embeds are null, more than 10, or longer than {@link MessageEmbed#EMBED_MAX_LENGTH_BOT}.
+     *         If any of the embeds are null, more than {@value Message#MAX_EMBED_COUNT}, or longer than {@link MessageEmbed#EMBED_MAX_LENGTH_BOT}.
      *
      * @return {@link WebhookMessageAction}
      */
@@ -151,10 +151,10 @@ public interface WebhookClient<T>
      * @param  embed
      *         {@link MessageEmbed} to use
      * @param  embeds
-     *         Additional {@link MessageEmbed MessageEmbeds} to use (up to 10 in total)
+     *         Additional {@link MessageEmbed MessageEmbeds} to use (up to {@value Message#MAX_EMBED_COUNT} in total)
      *
      * @throws IllegalArgumentException
-     *         If any of the embeds are null, more than 10, or longer than {@link MessageEmbed#EMBED_MAX_LENGTH_BOT}.
+     *         If any of the embeds are null, more than {@value Message#MAX_EMBED_COUNT}, or longer than {@link MessageEmbed#EMBED_MAX_LENGTH_BOT}.
      *
      * @return {@link WebhookMessageAction}
      */
@@ -572,10 +572,10 @@ public interface WebhookClient<T>
      * @param  messageId
      *         The message id. For interactions this supports {@code "@original"} to edit the source message of the interaction.
      * @param  embeds
-     *         {@link MessageEmbed MessageEmbeds} to use (up to 10 in total)
+     *         {@link MessageEmbed MessageEmbeds} to use (up to {@value Message#MAX_EMBED_COUNT} in total)
      *
      * @throws IllegalArgumentException
-     *         If the provided embeds are null, or more than 10
+     *         If the provided embeds are null, or more than {@value Message#MAX_EMBED_COUNT}
      *
      * @return {@link WebhookMessageUpdateAction}
      */
@@ -599,10 +599,10 @@ public interface WebhookClient<T>
      * @param  messageId
      *         The message id. For interactions this supports {@code "@original"} to edit the source message of the interaction.
      * @param  embeds
-     *         {@link MessageEmbed MessageEmbeds} to use (up to 10 in total)
+     *         {@link MessageEmbed MessageEmbeds} to use (up to {@value Message#MAX_EMBED_COUNT} in total)
      *
      * @throws IllegalArgumentException
-     *         If the provided embeds are null, or more than 10
+     *         If the provided embeds are null, or more than {@value Message#MAX_EMBED_COUNT}
      *
      * @return {@link WebhookMessageUpdateAction}
      */

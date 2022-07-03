@@ -20,7 +20,7 @@ import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import net.dv8tion.jda.api.entities.ISnowflake;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.CommandInteractionPayload;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
@@ -45,6 +45,7 @@ public class CommandInteractionPayloadImpl extends InteractionImpl implements Co
     private final List<OptionMapping> options = new ArrayList<>();
     private final TLongObjectMap<Object> resolved = new TLongObjectHashMap<>();
     private final String name;
+    private final boolean isGuildCommand;
     private String subcommand;
     private String group;
     private final Command.Type type;
@@ -56,6 +57,7 @@ public class CommandInteractionPayloadImpl extends InteractionImpl implements Co
         this.commandId = commandData.getUnsignedLong("id");
         this.name = commandData.getString("name");
         this.type = Command.Type.fromId(commandData.getInt("type", 1));
+        this.isGuildCommand = !commandData.isNull("guild_id"); // guild_id is always either null or the owner guild (same as interaction guild_id)
 
         DataArray options = commandData.optArray("options").orElseGet(DataArray::empty);
         DataObject resolveJson = commandData.optObject("resolved").orElseGet(DataObject::empty);
@@ -83,7 +85,7 @@ public class CommandInteractionPayloadImpl extends InteractionImpl implements Co
     private void parseOptions(DataArray options)
     {
         options.stream(DataArray::getObject)
-                .map(json -> new OptionMapping(json, resolved))
+                .map(json -> new OptionMapping(json, resolved, getJDA(), getGuild()))
                 .forEach(this.options::add);
     }
 
@@ -139,9 +141,9 @@ public class CommandInteractionPayloadImpl extends InteractionImpl implements Co
     @Nonnull
     @Override
     @SuppressWarnings("ConstantConditions")
-    public MessageChannel getChannel()
+    public MessageChannelUnion getChannel()
     {
-        return (MessageChannel) super.getChannel();
+        return (MessageChannelUnion) super.getChannel();
     }
 
     @Nonnull
@@ -174,6 +176,12 @@ public class CommandInteractionPayloadImpl extends InteractionImpl implements Co
     public long getCommandIdLong()
     {
         return commandId;
+    }
+
+    @Override
+    public boolean isGuildCommand()
+    {
+        return isGuildCommand;
     }
 
     @Nonnull

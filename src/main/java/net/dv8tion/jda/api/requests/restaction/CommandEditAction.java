@@ -17,6 +17,7 @@
 package net.dv8tion.jda.api.requests.restaction;
 
 import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.*;
 import net.dv8tion.jda.api.requests.RestAction;
@@ -73,19 +74,6 @@ public interface CommandEditAction extends RestAction<Command>
     CommandEditAction apply(@Nonnull CommandData commandData);
 
     /**
-     * Whether this command is available to everyone by default.
-     * <br>If this is disabled, you need to explicitly whitelist users and roles per guild.
-     *
-     * @param  enabled
-     *         True, if this command is enabled by default for everyone. (Default: true)
-     *
-     * @return The CommandEditAction instance, for chaining
-     */
-    @Nonnull
-    @CheckReturnValue
-    CommandEditAction setDefaultEnabled(boolean enabled);
-
-    /**
      * Configure the name
      *
      * @param  name
@@ -99,6 +87,36 @@ public interface CommandEditAction extends RestAction<Command>
     @Nonnull
     @CheckReturnValue
     CommandEditAction setName(@Nullable String name);
+
+    /**
+     * Sets whether this command is only usable in a guild (Default: false).
+     * <br>This only has an effect if this command is registered globally.
+     *
+     * @param  guildOnly
+     *         Whether to restrict this command to guilds
+     *
+     * @return The CommandEditAction instance, for chaining
+     */
+    @Nonnull
+    @CheckReturnValue
+    CommandEditAction setGuildOnly(boolean guildOnly);
+
+    /**
+     * Sets the {@link net.dv8tion.jda.api.Permission Permissions} that a user must have in a specific channel to be able to use this command.
+     * <br>By default, everyone can use this command ({@link DefaultMemberPermissions#ENABLED}). Additionally, a command can be disabled for everyone but admins via {@link DefaultMemberPermissions#DISABLED}.
+     * <p>These configurations can be overwritten by moderators in each guild. See {@link Command#retrievePrivileges(net.dv8tion.jda.api.entities.Guild)} to get moderator defined overrides.
+     *
+     * @param  permission
+     *         {@link DefaultMemberPermissions} representing the default permissions of this command.
+     *
+     * @return The CommandEditAction instance, for chaining
+     *
+     * @see DefaultMemberPermissions#ENABLED
+     * @see DefaultMemberPermissions#DISABLED
+     */
+    @Nonnull
+    @CheckReturnValue
+    CommandEditAction setDefaultPermissions(@Nonnull DefaultMemberPermissions permission);
 
     /**
      * Configure the description

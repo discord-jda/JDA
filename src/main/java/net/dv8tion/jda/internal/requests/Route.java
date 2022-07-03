@@ -142,7 +142,7 @@ public class Route
         public static final Route GET_WEBHOOKS =       new Route(GET,    "guilds/{guild_id}/webhooks");
         public static final Route GET_GUILD_EMBED =    new Route(GET,    "guilds/{guild_id}/embed");
         public static final Route MODIFY_GUILD_EMBED = new Route(PATCH,  "guilds/{guild_id}/embed");
-        public static final Route GET_GUILD_EMOTES =   new Route(GET,    "guilds/{guild_id}/emojis");
+        public static final Route GET_GUILD_EMOJIS =   new Route(GET,    "guilds/{guild_id}/emojis");
         public static final Route GET_AUDIT_LOGS =     new Route(GET,    "guilds/{guild_id}/audit-logs");
         public static final Route GET_VOICE_REGIONS =  new Route(GET,    "guilds/{guild_id}/regions");
         public static final Route UPDATE_VOICE_STATE = new Route(PATCH,  "guilds/{guild_id}/voice-states/{user_id}");
@@ -173,15 +173,28 @@ public class Route
         public static final Route MODIFY_NOTIFICATION_SETTINGS = new Route(PATCH, "users/@me/guilds/{guild_id}/settings");
     }
 
-    public static class Emotes
+    public static class Emojis
     {
         // These are all client endpoints and thus don't need defined major parameters
-        public static final Route MODIFY_EMOTE = new Route(PATCH,  "guilds/{guild_id}/emojis/{emote_id}");
-        public static final Route DELETE_EMOTE = new Route(DELETE, "guilds/{guild_id}/emojis/{emote_id}");
-        public static final Route CREATE_EMOTE = new Route(POST,   "guilds/{guild_id}/emojis");
+        public static final Route MODIFY_EMOJI = new Route(PATCH,  "guilds/{guild_id}/emojis/{emoji_id}");
+        public static final Route DELETE_EMOJI = new Route(DELETE, "guilds/{guild_id}/emojis/{emoji_id}");
+        public static final Route CREATE_EMOJI = new Route(POST,   "guilds/{guild_id}/emojis");
 
-        public static final Route GET_EMOTES   = new Route(GET,    "guilds/{guild_id}/emojis");
-        public static final Route GET_EMOTE    = new Route(GET,    "guilds/{guild_id}/emojis/{emoji_id}");
+        public static final Route GET_EMOJIS = new Route(GET, "guilds/{guild_id}/emojis");
+        public static final Route GET_EMOJI = new Route(GET,    "guilds/{guild_id}/emojis/{emoji_id}");
+    }
+
+    public static class Stickers
+    {
+        public static final Route GET_GUILD_STICKERS = new Route(GET,    "guilds/{guild_id}/stickers");
+        public static final Route GET_GUILD_STICKER =  new Route(GET,    "guilds/{guild_id}/stickers/{sticker_id}");
+
+        public static final Route MODIFY_GUILD_STICKER = new Route(PATCH,  "guilds/{guild_id}/stickers/{sticker_id}");
+        public static final Route DELETE_GUILD_STICKER = new Route(DELETE, "guilds/{guild_id}/stickers/{sticker_id}");
+        public static final Route CREATE_GUILD_STICKER = new Route(POST,   "guilds/{guild_id}/stickers");
+
+        public static final Route GET_STICKER = new Route(GET, "stickers/{sticker_id}");
+        public static final Route LIST_PACKS  = new Route(GET, "sticker-packs");
     }
 
     public static class Webhooks
@@ -267,7 +280,7 @@ public class Route
         public static final Route REMOVE_REACTION =       new Route(DELETE, "channels/{channel_id}/messages/{message_id}/reactions/{reaction_code}/{user_id}");
         public static final Route REMOVE_ALL_REACTIONS =  new Route(DELETE, "channels/{channel_id}/messages/{message_id}/reactions");
         public static final Route GET_REACTION_USERS =    new Route(GET,    "channels/{channel_id}/messages/{message_id}/reactions/{reaction_code}");
-        public static final Route CLEAR_EMOTE_REACTIONS = new Route(DELETE, "channels/{channel_id}/messages/{message_id}/reactions/{reaction_code}");
+        public static final Route CLEAR_EMOJI_REACTIONS = new Route(DELETE, "channels/{channel_id}/messages/{message_id}/reactions/{reaction_code}");
 
         public static final Route DELETE_MESSAGE =      new Route(DELETE, "channels/{channel_id}/messages/{message_id}");
         public static final Route GET_MESSAGE_HISTORY = new Route(GET,    "channels/{channel_id}/messages");

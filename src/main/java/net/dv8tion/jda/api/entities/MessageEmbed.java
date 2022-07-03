@@ -16,6 +16,8 @@
 package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.utils.AttachmentProxy;
+import net.dv8tion.jda.api.utils.ImageProxy;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.SerializableData;
@@ -539,6 +541,20 @@ public class MessageEmbed implements SerializableData
         }
 
         /**
+         * Returns an {@link AttachmentProxy} for this embed thumbnail.
+         *
+         * @return Possibly-null {@link AttachmentProxy} of this embed thumbnail
+         *
+         * @see    #getProxyUrl()
+         */
+        @Nullable
+        public AttachmentProxy getProxy()
+        {
+            final String proxyUrl = getProxyUrl();
+            return proxyUrl == null ? null : new AttachmentProxy(proxyUrl);
+        }
+
+        /**
          * The width of the thumbnail image.
          *
          * @return Never-negative, Never-zero int containing the width of the image.
@@ -731,6 +747,20 @@ public class MessageEmbed implements SerializableData
         }
 
         /**
+         * Returns an {@link AttachmentProxy} for this embed image.
+         *
+         * @return Possibly-null {@link AttachmentProxy} of this embed image
+         *
+         * @see    #getProxyUrl()
+         */
+        @Nullable
+        public AttachmentProxy getProxy()
+        {
+            final String proxyUrl = getProxyUrl();
+            return proxyUrl == null ? null : new AttachmentProxy(proxyUrl);
+        }
+
+        /**
          * The width of the image.
          *
          * @return Non-negative, Non-zero int containing the width of the embedded image.
@@ -828,6 +858,19 @@ public class MessageEmbed implements SerializableData
             return proxyIconUrl;
         }
 
+        /**
+         * Returns an {@link ImageProxy} for this proxied author's icon.
+         *
+         * @return Possibly-null {@link ImageProxy} of this proxied author's icon
+         *
+         * @see    #getProxyIconUrl()
+         */
+        @Nullable
+        public ImageProxy getProxyIcon()
+        {
+            return proxyIconUrl == null ? null : new ImageProxy(proxyIconUrl);
+        }
+
         @Override
         public boolean equals(Object obj)
         {
@@ -889,6 +932,19 @@ public class MessageEmbed implements SerializableData
         public String getProxyIconUrl()
         {
             return proxyIconUrl;
+        }
+
+        /**
+         * Returns an {@link ImageProxy} for this proxied footer's icon.
+         *
+         * @return Possibly-null {@link ImageProxy} of this proxied footer's icon
+         *
+         * @see    #getProxyIconUrl()
+         */
+        @Nullable
+        public ImageProxy getProxyIcon()
+        {
+            return proxyIconUrl == null ? null : new ImageProxy(proxyIconUrl);
         }
 
         @Override

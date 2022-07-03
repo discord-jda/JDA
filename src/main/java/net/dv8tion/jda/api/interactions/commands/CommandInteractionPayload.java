@@ -16,11 +16,13 @@
 
 package net.dv8tion.jda.api.interactions.commands;
 
+import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.interactions.Interaction;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
@@ -150,7 +152,7 @@ public interface CommandInteractionPayload extends Interaction
             switch (o.getType())
             {
             case CHANNEL:
-                builder.append("#").append(o.getAsGuildChannel().getName());
+                builder.append("#").append(o.getAsChannel().getName());
                 break;
             case USER:
                 builder.append("@").append(o.getAsUser().getName());
@@ -198,6 +200,27 @@ public interface CommandInteractionPayload extends Interaction
     default String getCommandId()
     {
         return Long.toUnsignedString(getCommandIdLong());
+    }
+
+    /**
+     * Whether the used command is a guild command.
+     *
+     * <p>Guild commands can be created with {@link Guild#upsertCommand(CommandData)}.
+     *
+     * @return True, if the used command is a guild command
+     */
+    boolean isGuildCommand();
+
+    /**
+     * Whether the used command is a global command.
+     *
+     * <p>Global commands can be created with {@link JDA#upsertCommand(CommandData)}.
+     *
+     * @return True, if the used command is a global command
+     */
+    default boolean isGlobalCommand()
+    {
+        return !isGuildCommand();
     }
 
     /**

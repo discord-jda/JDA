@@ -15,14 +15,14 @@
  */
 package net.dv8tion.jda.internal.handle;
 
-import net.dv8tion.jda.api.entities.Emote;
-import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import net.dv8tion.jda.api.events.role.RoleDeleteEvent;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
-import net.dv8tion.jda.internal.entities.EmoteImpl;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.entities.MemberImpl;
+import net.dv8tion.jda.internal.entities.RoleImpl;
+import net.dv8tion.jda.internal.entities.emoji.RichCustomEmojiImpl;
 import net.dv8tion.jda.internal.requests.WebSocketClient;
 
 public class GuildRoleDeleteHandler extends SocketHandler
@@ -48,7 +48,7 @@ public class GuildRoleDeleteHandler extends SocketHandler
         }
 
         final long roleId = content.getLong("role_id");
-        Role removedRole = guild.getRolesView().remove(roleId);
+        RoleImpl removedRole = (RoleImpl) guild.getRolesView().get(roleId);
         if (removedRole == null)
         {
             //getJDA().getEventCache().cache(EventCache.Type.ROLE, roleId, () -> handle(responseNumber, allContent));
@@ -56,18 +56,21 @@ public class GuildRoleDeleteHandler extends SocketHandler
             return null;
         }
 
-        //Now that the role is removed from the Guild, remove it from all users and emotes.
+        //Allow for position to still be retrievable in event handling
+        removedRole.freezePosition();
+        guild.getRolesView().remove(roleId);
+
+        //Now that the role is removed from the Guild, remove it from all users and emojis.
         guild.getMembersView().forEach(m ->
         {
             MemberImpl member = (MemberImpl) m;
             member.getRoleSet().remove(removedRole);
         });
 
-        for (Emote emote : guild.getEmoteCache())
+        for (RichCustomEmoji emoji : guild.getEmojiCache())
         {
-            EmoteImpl impl = (EmoteImpl) emote;
-            if (impl.canProvideRoles())
-                impl.getRoleSet().remove(removedRole);
+            RichCustomEmojiImpl impl = (RichCustomEmojiImpl) emoji;
+            impl.getRoleSet().remove(removedRole);
         }
 
         getJDA().handleEvent(

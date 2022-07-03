@@ -22,7 +22,7 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.audit.ActionType;
 import net.dv8tion.jda.api.audit.AuditLogEntry;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.UserSnowflake;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.exceptions.ParsingException;
 import net.dv8tion.jda.api.requests.Request;
@@ -33,7 +33,6 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.requests.Route;
-import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -68,26 +67,10 @@ public class AuditLogPaginationActionImpl
 
     @Nonnull
     @Override
-    public AuditLogPaginationActionImpl user(User user)
+    public AuditLogPaginationActionImpl user(UserSnowflake user)
     {
-        return user(user == null ? null : user.getId());
-    }
-
-    @Nonnull
-    @Override
-    public AuditLogPaginationActionImpl user(String userId)
-    {
-        if (userId != null)
-            Checks.isSnowflake(userId, "User ID");
-        this.userId = userId;
+        this.userId = user == null ? null : user.getId();
         return this;
-    }
-
-    @Nonnull
-    @Override
-    public AuditLogPaginationActionImpl user(long userId)
-    {
-        return user(Long.toUnsignedString(userId));
     }
 
     @Nonnull

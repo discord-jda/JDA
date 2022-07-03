@@ -20,12 +20,12 @@ import net.dv8tion.jda.api.events.channel.ChannelCreateEvent;
 import net.dv8tion.jda.api.events.channel.ChannelDeleteEvent;
 import net.dv8tion.jda.api.events.channel.GenericChannelEvent;
 import net.dv8tion.jda.api.events.channel.update.*;
-import net.dv8tion.jda.api.events.emote.EmoteAddedEvent;
-import net.dv8tion.jda.api.events.emote.EmoteRemovedEvent;
-import net.dv8tion.jda.api.events.emote.GenericEmoteEvent;
-import net.dv8tion.jda.api.events.emote.update.EmoteUpdateNameEvent;
-import net.dv8tion.jda.api.events.emote.update.EmoteUpdateRolesEvent;
-import net.dv8tion.jda.api.events.emote.update.GenericEmoteUpdateEvent;
+import net.dv8tion.jda.api.events.emoji.EmojiAddedEvent;
+import net.dv8tion.jda.api.events.emoji.EmojiRemovedEvent;
+import net.dv8tion.jda.api.events.emoji.GenericEmojiEvent;
+import net.dv8tion.jda.api.events.emoji.update.EmojiUpdateNameEvent;
+import net.dv8tion.jda.api.events.emoji.update.EmojiUpdateRolesEvent;
+import net.dv8tion.jda.api.events.emoji.update.GenericEmojiUpdateEvent;
 import net.dv8tion.jda.api.events.guild.*;
 import net.dv8tion.jda.api.events.guild.invite.GenericGuildInviteEvent;
 import net.dv8tion.jda.api.events.guild.invite.GuildInviteCreateEvent;
@@ -46,6 +46,7 @@ import net.dv8tion.jda.api.events.guild.voice.*;
 import net.dv8tion.jda.api.events.http.HttpRequestEvent;
 import net.dv8tion.jda.api.events.interaction.GenericAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.GenericInteractionCreateEvent;
+import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.*;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
@@ -63,6 +64,10 @@ import net.dv8tion.jda.api.events.stage.StageInstanceDeleteEvent;
 import net.dv8tion.jda.api.events.stage.update.GenericStageInstanceUpdateEvent;
 import net.dv8tion.jda.api.events.stage.update.StageInstanceUpdatePrivacyLevelEvent;
 import net.dv8tion.jda.api.events.stage.update.StageInstanceUpdateTopicEvent;
+import net.dv8tion.jda.api.events.sticker.GenericGuildStickerEvent;
+import net.dv8tion.jda.api.events.sticker.GuildStickerAddedEvent;
+import net.dv8tion.jda.api.events.sticker.GuildStickerRemovedEvent;
+import net.dv8tion.jda.api.events.sticker.update.*;
 import net.dv8tion.jda.api.events.thread.GenericThreadEvent;
 import net.dv8tion.jda.api.events.thread.ThreadHiddenEvent;
 import net.dv8tion.jda.api.events.thread.ThreadRevealedEvent;
@@ -133,6 +138,7 @@ public abstract class ListenerAdapter implements EventListener
     public void onButtonInteraction(@Nonnull ButtonInteractionEvent event) {}
     public void onSelectMenuInteraction(@Nonnull SelectMenuInteractionEvent event) {}
     public void onCommandAutoCompleteInteraction(@Nonnull CommandAutoCompleteInteractionEvent event) {}
+    public void onModalInteraction(@Nonnull ModalInteractionEvent event) {}
 
     //User Events
     public void onUserUpdateName(@Nonnull UserUpdateNameEvent event) {}
@@ -161,7 +167,7 @@ public abstract class ListenerAdapter implements EventListener
     public void onMessageReactionAdd(@Nonnull MessageReactionAddEvent event) {}
     public void onMessageReactionRemove(@Nonnull MessageReactionRemoveEvent event) {}
     public void onMessageReactionRemoveAll(@Nonnull MessageReactionRemoveAllEvent event) {}
-    public void onMessageReactionRemoveEmote(@Nonnull MessageReactionRemoveEmoteEvent event) {}
+    public void onMessageReactionRemoveEmoji(@Nonnull MessageReactionRemoveEmojiEvent event) {}
 
     //PermissionOverride Events
     public void onPermissionOverrideDelete(@Nonnull PermissionOverrideDeleteEvent event) {}
@@ -300,13 +306,28 @@ public abstract class ListenerAdapter implements EventListener
     public void onRoleUpdatePermissions(@Nonnull RoleUpdatePermissionsEvent event) {}
     public void onRoleUpdatePosition(@Nonnull RoleUpdatePositionEvent event) {}
 
-    //Emote Events
-    public void onEmoteAdded(@Nonnull EmoteAddedEvent event) {}
-    public void onEmoteRemoved(@Nonnull EmoteRemovedEvent event) {}
+    //Emoji Events
+    public void onEmojiAdded(@Nonnull EmojiAddedEvent event) {}
+    public void onEmojiRemoved(@Nonnull EmojiRemovedEvent event) {}
 
-    //Emote Update Events
-    public void onEmoteUpdateName(@Nonnull EmoteUpdateNameEvent event) {}
-    public void onEmoteUpdateRoles(@Nonnull EmoteUpdateRolesEvent event) {}
+    //Emoji Update Events
+    public void onEmojiUpdateName(@Nonnull EmojiUpdateNameEvent event) {}
+    public void onEmojiUpdateRoles(@Nonnull EmojiUpdateRolesEvent event) {}
+
+    // Application command permission update events
+    public void onGenericPrivilegeUpdate(@Nonnull GenericPrivilegeUpdateEvent event) {}
+    public void onApplicationCommandUpdatePrivileges(@Nonnull ApplicationCommandUpdatePrivilegesEvent event) {}
+    public void onApplicationUpdatePrivileges(@Nonnull ApplicationUpdatePrivilegesEvent event) {}
+    
+    //Sticker Events
+    public void onGuildStickerAdded(@Nonnull GuildStickerAddedEvent event) {}
+    public void onGuildStickerRemoved(@Nonnull GuildStickerRemovedEvent event) {}
+
+    //Sticker Update Events
+    public void onGuildStickerUpdateName(@Nonnull GuildStickerUpdateNameEvent event) {}
+    public void onGuildStickerUpdateTags(@Nonnull GuildStickerUpdateTagsEvent event) {}
+    public void onGuildStickerUpdateDescription(@Nonnull GuildStickerUpdateDescriptionEvent event) {}
+    public void onGuildStickerUpdateAvailable(@Nonnull GuildStickerUpdateAvailableEvent event) {}
 
     // Debug Events
     public void onHttpRequest(@Nonnull HttpRequestEvent event) {}
@@ -336,8 +357,10 @@ public abstract class ListenerAdapter implements EventListener
     public void onGenericGuildVoice(@Nonnull GenericGuildVoiceEvent event) {}
     public void onGenericRole(@Nonnull GenericRoleEvent event) {}
     public void onGenericRoleUpdate(@Nonnull GenericRoleUpdateEvent event) {}
-    public void onGenericEmote(@Nonnull GenericEmoteEvent event) {}
-    public void onGenericEmoteUpdate(@Nonnull GenericEmoteUpdateEvent event) {}
+    public void onGenericEmoji(@Nonnull GenericEmojiEvent event) {}
+    public void onGenericEmojiUpdate(@Nonnull GenericEmojiUpdateEvent event) {}
+    public void onGenericGuildSticker(@Nonnull GenericGuildStickerEvent event) {}
+    public void onGenericGuildStickerUpdate(@Nonnull GenericGuildStickerUpdateEvent event) {}
     public void onGenericPermissionOverride(@Nonnull GenericPermissionOverrideEvent event) {}
     public void onGenericGuildScheduledEventUpdate(@Nonnull GenericGuildScheduledEventUpdateEvent event) {}
 

@@ -17,6 +17,7 @@ package net.dv8tion.jda.internal.utils;
 
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -108,85 +109,79 @@ public class PermissionUtil
 
         if(!issuer.getGuild().equals(target.getGuild()))
             throw new IllegalArgumentException("The 2 Roles are not from same Guild!");
-        return target.getPosition() < issuer.getPosition();
+        return target.compareTo(issuer) < 0;
     }
 
     /**
-     * Check whether the provided {@link net.dv8tion.jda.api.entities.Member Member} can use the specified {@link net.dv8tion.jda.api.entities.Emote Emote}.
+     * Check whether the provided {@link net.dv8tion.jda.api.entities.Member Member} can use the specified {@link RichCustomEmoji Emoji}.
      *
-     * <p>If the specified Member is not in the emote's guild or the emote provided is from a message this will return false.
-     * Otherwise it will check if the emote is restricted to any roles and if that is the case if the Member has one of these.
-     *
-     * <p>In the case of an {@link net.dv8tion.jda.api.entities.Emote#isAnimated() animated} Emote, this will
-     * check if the issuer is the currently logged in account, and then check if the account has
-     * {@link net.dv8tion.jda.api.entities.SelfUser#isNitro() nitro}, and return false if it doesn't.
-     * <br>For other accounts, this method will not take into account whether the emote is animated, as there is
-     * no real way to check if the Member can interact with them.
+     * <p>If the specified Member is not in the emoji's guild or the emoji provided is from a message this will return false.
+     * Otherwise, it will check if the emoji is restricted to any roles and if that is the case if the Member has one of these.
      *
      * <br><b>Note</b>: This is not checking if the issuer owns the Guild or not.
      *
      * @param  issuer
-     *         The member that tries to interact with the Emote
-     * @param  emote
-     *         The emote that is the target interaction
+     *         The member that tries to interact with the Emoji
+     * @param  emoji
+     *         The emoji that is the target interaction
      *
      * @throws IllegalArgumentException
      *         if any of the provided parameters is {@code null}
      *         or the provided entities are not from the same guild
      *
-     * @return True, if the issuer can interact with the emote
+     * @return True, if the issuer can interact with the emoji
      */
-    public static boolean canInteract(Member issuer, Emote emote)
+    public static boolean canInteract(Member issuer, RichCustomEmoji emoji)
     {
         Checks.notNull(issuer, "Issuer Member");
-        Checks.notNull(emote,  "Target Emote");
+        Checks.notNull(emoji,  "Target Emoji");
 
-        if (!issuer.getGuild().equals(emote.getGuild()))
+        if (!issuer.getGuild().equals(emoji.getGuild()))
             throw new IllegalArgumentException("The issuer and target are not in the same Guild");
 
-        return emote.canProvideRoles() && (emote.getRoles().isEmpty() // Emote restricted to roles -> check if the issuer has them
-            || CollectionUtils.containsAny(issuer.getRoles(), emote.getRoles()));
+        return emoji.getRoles().isEmpty() // emoji restricted to roles -> check if the issuer has them
+            || CollectionUtils.containsAny(issuer.getRoles(), emoji.getRoles());
     }
 
     /**
-     * Checks whether the specified {@link net.dv8tion.jda.api.entities.Emote Emote} can be used by the provided
+     * Checks whether the specified {@link RichCustomEmoji Emoji} can be used by the provided
      * {@link net.dv8tion.jda.api.entities.User User} in the {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel}.
      *
      * @param  issuer
-     *         The user that tries to interact with the Emote
-     * @param  emote
-     *         The emote that is the target interaction
+     *         The user that tries to interact with the emoji
+     * @param  emoji
+     *         The emoji that is the target interaction
      * @param  channel
-     *         The MessageChannel this emote should be interacted within
+     *         The MessageChannel this emoji should be interacted within
      * @param  botOverride
-     *         Whether bots can use non-managed emotes in other guilds
+     *         Whether bots can use non-managed emojis in other guilds
      *
      * @throws IllegalArgumentException
      *         if any of the provided parameters is {@code null}
      *         or the provided entities are not from the same guild
      *
-     * @return True, if the issuer can interact with the emote within the specified MessageChannel
+     * @return True, if the issuer can interact with the emoji within the specified MessageChannel
      */
-    public static boolean canInteract(User issuer, Emote emote, MessageChannel channel, boolean botOverride)
+    public static boolean canInteract(User issuer, RichCustomEmoji emoji, MessageChannel channel, boolean botOverride)
     {
         Checks.notNull(issuer,  "Issuer Member");
-        Checks.notNull(emote,   "Target Emote");
+        Checks.notNull(emoji,   "Target Emoji");
         Checks.notNull(channel, "Target Channel");
 
-        if (emote.getGuild() == null || !emote.getGuild().isMember(issuer))
-            return false; // cannot use an emote if you're not in its guild
-        Member member = emote.getGuild().getMemberById(issuer.getIdLong());
-        if (!canInteract(member, emote))
+        if (emoji.getGuild() == null || !emoji.getGuild().isMember(issuer))
+            return false; // cannot use an emoji if you're not in its guild
+        Member member = emoji.getGuild().getMemberById(issuer.getIdLong());
+        if (!canInteract(member, emoji))
             return false;
         // external means it is available outside of its own guild - works for bots or if its managed
         // currently we cannot check whether other users have nitro, we assume no here
-        final boolean external = emote.isManaged() || (issuer.isBot() && botOverride);
+        final boolean external = emoji.isManaged() || (issuer.isBot() && botOverride);
         switch (channel.getType())
         {
             case TEXT:
                 TextChannel text = (TextChannel) channel;
                 member = text.getGuild().getMemberById(issuer.getIdLong());
-                return emote.getGuild().equals(text.getGuild()) // within the same guild
+                return emoji.getGuild().equals(text.getGuild()) // within the same guild
                     || (external && member != null && member.hasPermission(text, Permission.MESSAGE_EXT_EMOJI)); // in different guild
             default:
                 return external; // In Group or Private it only needs to be external
@@ -194,25 +189,25 @@ public class PermissionUtil
     }
 
     /**
-     * Checks whether the specified {@link net.dv8tion.jda.api.entities.Emote Emote} can be used by the provided
+     * Checks whether the specified {@link RichCustomEmoji} can be used by the provided
      * {@link net.dv8tion.jda.api.entities.User User} in the {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel}.
      *
      * @param  issuer
-     *         The user that tries to interact with the Emote
-     * @param  emote
-     *         The emote that is the target interaction
+     *         The user that tries to interact with the emoji
+     * @param  emoji
+     *         The emoji that is the target interaction
      * @param  channel
-     *         The MessageChannel this emote should be interacted within
+     *         The MessageChannel this emoji should be interacted within
      *
      * @throws IllegalArgumentException
      *         if any of the provided parameters is {@code null}
      *         or the provided entities are not from the same guild
      *
-     * @return True, if the issuer can interact with the emote within the specified MessageChannel
+     * @return True, if the issuer can interact with the emoji within the specified MessageChannel
      */
-    public static boolean canInteract(User issuer, Emote emote, MessageChannel channel)
+    public static boolean canInteract(User issuer, RichCustomEmoji emoji, MessageChannel channel)
     {
-        return canInteract(issuer, emote, channel, true);
+        return canInteract(issuer, emoji, channel, true);
     }
 
     /**

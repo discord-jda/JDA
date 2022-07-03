@@ -20,6 +20,10 @@ import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
+import net.dv8tion.jda.api.entities.sticker.GuildSticker;
+import net.dv8tion.jda.api.entities.sticker.Sticker;
+import net.dv8tion.jda.api.entities.sticker.StickerSnowflake;
 import net.dv8tion.jda.api.interactions.components.ActionComponent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.ItemComponent;
@@ -200,7 +204,7 @@ public interface MessageAction extends RestAction<Message>, Appendable, AllowedM
      * @return The target channel
      */
     @Nonnull
-    MessageChannel getChannel();
+    MessageChannelUnion getChannel();
 
     /**
      * Whether this MessageAction has no values set.
@@ -422,7 +426,7 @@ public interface MessageAction extends RestAction<Message>, Appendable, AllowedM
     MessageAction content(@Nullable final String content);
 
     /**
-     * Sets up to 10 {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbeds}
+     * Sets up to {@value Message#MAX_EMBED_COUNT} {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbeds}
      * that should be used for this Message.
      * Refer to {@link net.dv8tion.jda.api.EmbedBuilder EmbedBuilder} for more information.
      *
@@ -442,7 +446,7 @@ public interface MessageAction extends RestAction<Message>, Appendable, AllowedM
     MessageAction setEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds);
 
     /**
-     * Sets up to 10 {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbeds}
+     * Sets up to {@value Message#MAX_EMBED_COUNT} {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbeds}
      * that should be used for this Message.
      * Refer to {@link net.dv8tion.jda.api.EmbedBuilder EmbedBuilder} for more information.
      *
@@ -803,10 +807,15 @@ public interface MessageAction extends RestAction<Message>, Appendable, AllowedM
      *         The new action rows
      *
      * @throws IllegalArgumentException
-     *         If null is provided, more than 5 action rows are provided,
-     *         or any custom {@link ActionComponent#getId() id} is duplicated
+     *         <ul>
+     *             <li>If null is provided, or more than 5 action rows are provided</li>
+     *             <li>If any custom {@link ActionComponent#getId() id} is duplicated</li>
+     *             <li>If any of the provided action rows are not compatible with messages</li>
+     *         </ul>
      *
      * @return Updated MessageAction for chaining convenience
+     *
+     * @see    ActionRow#isMessageCompatible()
      */
     @Nonnull
     @CheckReturnValue
@@ -823,10 +832,15 @@ public interface MessageAction extends RestAction<Message>, Appendable, AllowedM
      *         The new action rows
      *
      * @throws IllegalArgumentException
-     *         If null is provided, more than 5 action rows are provided,
-     *         or any custom {@link ActionComponent#getId() id} is duplicated
+     *         <ul>
+     *             <li>If null is provided, or more than 5 action rows are provided</li>
+     *             <li>If any custom {@link ActionComponent#getId() id} is duplicated</li>
+     *             <li>If any of the provided action rows are not compatible with messages</li>
+     *         </ul>
      *
      * @return Updated MessageAction for chaining convenience
+     *
+     * @see    ActionRow#isMessageCompatible()
      */
     @Nonnull
     @CheckReturnValue
@@ -840,12 +854,16 @@ public interface MessageAction extends RestAction<Message>, Appendable, AllowedM
      *         The components for this action row
      *
      * @throws IllegalArgumentException
-     *         If null is provided, an invalid number of components is provided,
-     *         or any custom {@link ActionComponent#getId() id} is duplicated
+     *         <ul>
+     *             <li>If null is provided, or more than 5 ItemComponents are provided</li>
+     *             <li>If any custom {@link ActionComponent#getId() id} is duplicated</li>
+     *             <li>If any of the provided ItemComponents are not compatible with messages</li>
+     *         </ul>
      *
      * @return Updated MessageAction for chaining convenience
      *
      * @see    ActionRow#of(Collection)
+     * @see    ItemComponent#isMessageCompatible()
      */
     @Nonnull
     @CheckReturnValue
@@ -862,18 +880,77 @@ public interface MessageAction extends RestAction<Message>, Appendable, AllowedM
      *         The components for this action row
      *
      * @throws IllegalArgumentException
-     *         If null is provided, an invalid number of components is provided,
-     *         or any custom {@link ActionComponent#getId() id} is duplicated
+     *         <ul>
+     *             <li>If null is provided, or more than 5 ItemComponents are provided</li>
+     *             <li>If any custom {@link ActionComponent#getId() id} is duplicated</li>
+     *             <li>If any of the provided ItemComponents are not compatible with messages</li>
+     *         </ul>
      *
      * @return Updated MessageAction for chaining convenience
      *
      * @see    ActionRow#of(ItemComponent...)
+     * @see    ItemComponent#isMessageCompatible()
      */
     @Nonnull
     @CheckReturnValue
     default MessageAction setActionRow(@Nonnull ItemComponent... components)
     {
         return setActionRows(ActionRow.of(components));
+    }
+
+    /**
+     * Set the stickers to send alongside this message.
+     * <br>This is not supported for message edits.
+     *
+     * @param  stickers
+     *         The stickers to send, or null to not send any stickers
+     *
+     * @throws IllegalStateException
+     *         If this request is a message edit request
+     * @throws IllegalArgumentException
+     *         <ul>
+     *           <li>If any of the provided stickers is a {@link GuildSticker},
+     *               which is either {@link GuildSticker#isAvailable() unavailable} or from a different guild.</li>
+     *           <li>If the collection has more than {@value Message#MAX_STICKER_COUNT} stickers</li>
+     *           <li>If a collection with null entries is provided</li>
+     *         </ul>
+     *
+     * @return Updated MessageAction for chaining convenience
+     *
+     * @see    Sticker#fromId(long)
+     */
+    @Nonnull
+    @CheckReturnValue
+    MessageAction setStickers(@Nullable Collection<? extends StickerSnowflake> stickers);
+
+    /**
+     * Set the stickers to send alongside this message.
+     * <br>This is not supported for message edits.
+     *
+     * @param  stickers
+     *         The stickers to send, or null to not send any stickers
+     *
+     * @throws IllegalStateException
+     *         If this request is a message edit request
+     * @throws IllegalArgumentException
+     *         <ul>
+     *           <li>If any of the provided stickers is a {@link GuildSticker},
+     *               which is either {@link GuildSticker#isAvailable() unavailable} or from a different guild.</li>
+     *           <li>If the collection has more than {@value Message#MAX_STICKER_COUNT} stickers</li>
+     *           <li>If a collection with null entries is provided</li>
+     *         </ul>
+     *
+     * @return Updated MessageAction for chaining convenience
+     *
+     * @see    Sticker#fromId(long)
+     */
+    @Nonnull
+    @CheckReturnValue
+    default MessageAction setStickers(@Nullable StickerSnowflake... stickers)
+    {
+        if (stickers != null)
+            Checks.noneNull(stickers, "Sticker");
+        return setStickers(stickers == null ? null : Arrays.asList(stickers));
     }
 
 

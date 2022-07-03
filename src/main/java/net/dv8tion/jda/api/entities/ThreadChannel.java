@@ -16,8 +16,11 @@
 
 package net.dv8tion.jda.api.entities;
 
+import net.dv8tion.jda.api.entities.channel.unions.GuildMessageChannelUnion;
+import net.dv8tion.jda.api.entities.channel.unions.IThreadContainerUnion;
 import net.dv8tion.jda.api.managers.channel.concrete.ThreadChannelManager;
 import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.api.requests.restaction.CacheRestAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.utils.Checks;
 
@@ -117,7 +120,7 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer
      * @return The parent channel of this thread.
      */
     @Nonnull
-    IThreadContainer getParentChannel();
+    IThreadContainerUnion getParentChannel();
 
     //todo-v5: document additional subclasses of GuildMessageChannel (VoiceChannels and ForumChannels, when needed)
     /**
@@ -131,14 +134,55 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer
      *         If the parent channel is not a {@link GuildMessageChannel}.
      */
     @Nonnull
-    default GuildMessageChannel getParentMessageChannel()
+    default GuildMessageChannelUnion getParentMessageChannel()
     {
         if (getParentChannel() instanceof GuildMessageChannel) {
-            return (GuildMessageChannel) getParentChannel();
+            return (GuildMessageChannelUnion) getParentChannel();
         }
 
         throw new UnsupportedOperationException("Parent of this thread is not a MessageChannel. Parent is type: " + getParentChannel().getType().getId());
     }
+
+    /**
+     * Attempts to get the {@link net.dv8tion.jda.api.entities.Message Message} from Discord's servers that started this thread.
+     *
+     * <p>The {@link Message#getMember() Message.getMember()} method will always return null for the resulting message.
+     * To retrieve the member you can use {@code getGuild().retrieveMember(message.getAuthor())}.
+     *
+     * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>The request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
+     *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
+     *         was revoked in the {@link net.dv8tion.jda.api.entities.GuildMessageChannel GuildMessageChannel}</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The request was attempted after the account lost {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}
+     *         in the {@link net.dv8tion.jda.api.entities.GuildMessageChannel GuildMessageChannel}.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>The message has already been deleted.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
+     *     <br>The request was attempted after the parent channel was deleted.</li>
+     * </ul>
+     *
+     * @throws net.dv8tion.jda.api.exceptions.AccountTypeException
+     *         If the currently logged in account is not from {@link net.dv8tion.jda.api.AccountType#BOT AccountType.BOT}
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If this is a {@link net.dv8tion.jda.api.entities.GuildMessageChannel GuildMessageChannel} and the logged in account does not have
+     *         <ul>
+     *             <li>{@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}</li>
+     *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
+     *         </ul>
+     * @throws UnsupportedOperationException
+     *         If the parent channel is not a {@link net.dv8tion.jda.api.entities.GuildMessageChannel GuildMessageChannel}.
+     *
+     * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: Message
+     *         <br>The Message that started this thread
+     */
+    @Nonnull
+    RestAction<Message> retrieveParentMessage();
 
     /**
      * Gets the self member, as a member of this thread.
@@ -283,11 +327,11 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer
      * @throws IllegalArgumentException
      *         If provided with null
      *
-     * @return {@link RestAction} - Type: {@link ThreadMember}
+     * @return {@link CacheRestAction} - Type: {@link ThreadMember}
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<ThreadMember> retrieveThreadMember(@Nonnull Member member)
+    default CacheRestAction<ThreadMember> retrieveThreadMember(@Nonnull Member member)
     {
         Checks.notNull(member, "Member");
         return retrieveThreadMemberById(member.getIdLong());
@@ -305,11 +349,11 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer
      * @throws IllegalArgumentException
      *         If provided with null
      *
-     * @return {@link RestAction} - Type: {@link ThreadMember}
+     * @return {@link CacheRestAction} - Type: {@link ThreadMember}
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<ThreadMember> retrieveThreadMember(@Nonnull User user)
+    default CacheRestAction<ThreadMember> retrieveThreadMember(@Nonnull User user)
     {
         Checks.notNull(user, "User");
         return retrieveThreadMemberById(user.getIdLong());
@@ -329,11 +373,11 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer
      * @throws NumberFormatException
      *         If the provided id is not a snowflake
      *
-     * @return {@link RestAction} - Type: {@link ThreadMember}
+     * @return {@link CacheRestAction} - Type: {@link ThreadMember}
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<ThreadMember> retrieveThreadMemberById(@Nonnull String id)
+    default CacheRestAction<ThreadMember> retrieveThreadMemberById(@Nonnull String id)
     {
         return retrieveThreadMemberById(MiscUtil.parseSnowflake(id));
     }
@@ -347,11 +391,11 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer
      * @param  id
      *         The user id to load the thread-member from
      *
-     * @return {@link RestAction} - Type: {@link ThreadMember}
+     * @return {@link CacheRestAction} - Type: {@link ThreadMember}
      */
     @Nonnull
     @CheckReturnValue
-    RestAction<ThreadMember> retrieveThreadMemberById(long id);
+    CacheRestAction<ThreadMember> retrieveThreadMemberById(long id);
 
     /**
      * Retrieves the {@link ThreadMember ThreadMembers} of this thread.

@@ -34,11 +34,9 @@ public class StageInstanceImpl implements StageInstance
 {
     private final long id;
     private StageChannel channel;
-    private StageInstanceManager manager;
 
     private String topic;
     private PrivacyLevel privacyLevel;
-    private boolean discoverable;
 
     public StageInstanceImpl(long id, StageChannel channel)
     {
@@ -83,12 +81,6 @@ public class StageInstanceImpl implements StageInstance
         return privacyLevel;
     }
 
-    @Override
-    public boolean isDiscoverable()
-    {
-        return discoverable;
-    }
-
     @Nonnull
     @Override
     public RestAction<Void> delete()
@@ -103,9 +95,7 @@ public class StageInstanceImpl implements StageInstance
     public StageInstanceManager getManager()
     {
         checkPermissions();
-        if (manager == null)
-            manager = new StageInstanceManagerImpl(this);
-        return manager;
+        return new StageInstanceManagerImpl(this);
     }
 
     public StageInstanceImpl setTopic(String topic)
@@ -117,12 +107,6 @@ public class StageInstanceImpl implements StageInstance
     public StageInstanceImpl setPrivacyLevel(PrivacyLevel privacyLevel)
     {
         this.privacyLevel = privacyLevel;
-        return this;
-    }
-
-    public StageInstanceImpl setDiscoverable(boolean discoverable)
-    {
-        this.discoverable = discoverable;
         return this;
     }
 

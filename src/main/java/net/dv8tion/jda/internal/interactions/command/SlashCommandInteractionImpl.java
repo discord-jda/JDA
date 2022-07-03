@@ -16,7 +16,7 @@
 
 package net.dv8tion.jda.internal.interactions.command;
 
-import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.interactions.commands.SlashCommandInteraction;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
@@ -33,8 +33,8 @@ public class SlashCommandInteractionImpl extends CommandInteractionImpl implemen
     @Nonnull
     @Override
     @SuppressWarnings("ConstantConditions")
-    public MessageChannel getChannel()
+    public MessageChannelUnion getChannel()
     {
-        return (MessageChannel) super.getChannel();
+        return (MessageChannelUnion) super.getChannel();
     }
 }

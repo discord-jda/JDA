@@ -696,18 +696,15 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         LOG.debug("Sending Identify-packet...");
         PresenceImpl presenceObj = (PresenceImpl) api.getPresence();
         DataObject connectionProperties = DataObject.empty()
-            .put("$os", System.getProperty("os.name"))
-            .put("$browser", "JDA")
-            .put("$device", "JDA")
-            .put("$referring_domain", "")
-            .put("$referrer", "");
+            .put("os", System.getProperty("os.name"))
+            .put("browser", "JDA")
+            .put("device", "JDA");
         DataObject payload = DataObject.empty()
             .put("presence", presenceObj.getFullPresence())
             .put("token", getToken())
             .put("properties", connectionProperties)
-            .put("v", JDAInfo.DISCORD_GATEWAY_VERSION)
-            .put("large_threshold", api.getLargeThreshold());
-        payload.put("intents", gatewayIntents);
+            .put("large_threshold", api.getLargeThreshold())
+            .put("intents", gatewayIntents);
 
         DataObject identify = DataObject.empty()
                 .put("op", WebSocketCode.IDENTIFY)
@@ -1322,55 +1319,57 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
     protected void setupHandlers()
     {
-        final SocketHandler.NOPHandler nopHandler =         new SocketHandler.NOPHandler(api);
-        handlers.put("CHANNEL_CREATE",                      new ChannelCreateHandler(api));
-        handlers.put("CHANNEL_DELETE",                      new ChannelDeleteHandler(api));
-        handlers.put("CHANNEL_UPDATE",                      new ChannelUpdateHandler(api));
-        handlers.put("GUILD_BAN_ADD",                       new GuildBanHandler(api, true));
-        handlers.put("GUILD_BAN_REMOVE",                    new GuildBanHandler(api, false));
-        handlers.put("GUILD_CREATE",                        new GuildCreateHandler(api));
-        handlers.put("GUILD_DELETE",                        new GuildDeleteHandler(api));
-        handlers.put("GUILD_EMOJIS_UPDATE",                 new GuildEmojisUpdateHandler(api));
-        handlers.put("GUILD_SCHEDULED_EVENT_CREATE",        new GuildScheduledEventCreateHandler(api));
-        handlers.put("GUILD_SCHEDULED_EVENT_UPDATE",        new GuildScheduledEventUpdateHandler(api));
-        handlers.put("GUILD_SCHEDULED_EVENT_DELETE",        new GuildScheduledEventDeleteHandler(api));
-        handlers.put("GUILD_SCHEDULED_EVENT_USER_ADD",      new GuildScheduledEventUserHandler(api, true));
-        handlers.put("GUILD_SCHEDULED_EVENT_USER_REMOVE",   new GuildScheduledEventUserHandler(api, false));
-        handlers.put("GUILD_MEMBER_ADD",                    new GuildMemberAddHandler(api));
-        handlers.put("GUILD_MEMBER_REMOVE",                 new GuildMemberRemoveHandler(api));
-        handlers.put("GUILD_MEMBER_UPDATE",                 new GuildMemberUpdateHandler(api));
-        handlers.put("GUILD_MEMBERS_CHUNK",                 new GuildMembersChunkHandler(api));
-        handlers.put("GUILD_ROLE_CREATE",                   new GuildRoleCreateHandler(api));
-        handlers.put("GUILD_ROLE_DELETE",                   new GuildRoleDeleteHandler(api));
-        handlers.put("GUILD_ROLE_UPDATE",                   new GuildRoleUpdateHandler(api));
-        handlers.put("GUILD_SYNC",                          new GuildSyncHandler(api));
-        handlers.put("GUILD_UPDATE",                        new GuildUpdateHandler(api));
-        handlers.put("INTERACTION_CREATE",                  new InteractionCreateHandler(api));
-        handlers.put("INVITE_CREATE",                       new InviteCreateHandler(api));
-        handlers.put("INVITE_DELETE",                       new InviteDeleteHandler(api));
-        handlers.put("MESSAGE_CREATE",                      new MessageCreateHandler(api));
-        handlers.put("MESSAGE_DELETE",                      new MessageDeleteHandler(api));
-        handlers.put("MESSAGE_DELETE_BULK",                 new MessageBulkDeleteHandler(api));
-        handlers.put("MESSAGE_REACTION_ADD",                new MessageReactionHandler(api, true));
-        handlers.put("MESSAGE_REACTION_REMOVE",             new MessageReactionHandler(api, false));
-        handlers.put("MESSAGE_REACTION_REMOVE_ALL",         new MessageReactionBulkRemoveHandler(api));
-        handlers.put("MESSAGE_REACTION_REMOVE_EMOJI",       new MessageReactionClearEmoteHandler(api));
-        handlers.put("MESSAGE_UPDATE",                      new MessageUpdateHandler(api));
-        handlers.put("READY",                               new ReadyHandler(api));
-        handlers.put("STAGE_INSTANCE_CREATE",               new StageInstanceCreateHandler(api));
-        handlers.put("STAGE_INSTANCE_DELETE",               new StageInstanceDeleteHandler(api));
-        handlers.put("STAGE_INSTANCE_UPDATE",               new StageInstanceUpdateHandler(api));
-        handlers.put("THREAD_CREATE",                       new ThreadCreateHandler(api));
-        handlers.put("THREAD_DELETE",                       new ThreadDeleteHandler(api));
-        handlers.put("THREAD_LIST_SYNC",                    new ThreadListSyncHandler(api));
-        handlers.put("THREAD_MEMBERS_UPDATE",               new ThreadMembersUpdateHandler(api));
-        handlers.put("THREAD_MEMBER_UPDATE",                new ThreadMemberUpdateHandler(api));
-        handlers.put("THREAD_UPDATE",                       new ThreadUpdateHandler(api));
-        handlers.put("USER_UPDATE",                         new UserUpdateHandler(api));
-        handlers.put("VOICE_SERVER_UPDATE",                 new VoiceServerUpdateHandler(api));
-        handlers.put("VOICE_STATE_UPDATE",                  new VoiceStateUpdateHandler(api));
-        handlers.put("PRESENCE_UPDATE",                     new PresenceUpdateHandler(api));
-        handlers.put("TYPING_START",                        new TypingStartHandler(api));
+        final SocketHandler.NOPHandler nopHandler =            new SocketHandler.NOPHandler(api);
+        handlers.put("APPLICATION_COMMAND_PERMISSIONS_UPDATE", new ApplicationCommandPermissionsUpdateHandler(api));
+        handlers.put("CHANNEL_CREATE",                         new ChannelCreateHandler(api));
+        handlers.put("CHANNEL_DELETE",                         new ChannelDeleteHandler(api));
+        handlers.put("CHANNEL_UPDATE",                         new ChannelUpdateHandler(api));
+        handlers.put("GUILD_BAN_ADD",                          new GuildBanHandler(api, true));
+        handlers.put("GUILD_BAN_REMOVE",                       new GuildBanHandler(api, false));
+        handlers.put("GUILD_CREATE",                           new GuildCreateHandler(api));
+        handlers.put("GUILD_DELETE",                           new GuildDeleteHandler(api));
+        handlers.put("GUILD_EMOJIS_UPDATE",                    new GuildEmojisUpdateHandler(api));
+        handlers.put("GUILD_SCHEDULED_EVENT_CREATE",          new GuildScheduledEventCreateHandler(api));
+        handlers.put("GUILD_SCHEDULED_EVENT_UPDATE",          new GuildScheduledEventUpdateHandler(api));
+        handlers.put("GUILD_SCHEDULED_EVENT_DELETE",          new GuildScheduledEventDeleteHandler(api));
+        handlers.put("GUILD_SCHEDULED_EVENT_USER_ADD",        new GuildScheduledEventUserHandler(api, true));
+        handlers.put("GUILD_SCHEDULED_EVENT_USER_REMOVE",     new GuildScheduledEventUserHandler(api, false));
+        handlers.put("GUILD_MEMBER_ADD",                       new GuildMemberAddHandler(api));
+        handlers.put("GUILD_MEMBER_REMOVE",                    new GuildMemberRemoveHandler(api));
+        handlers.put("GUILD_MEMBER_UPDATE",                    new GuildMemberUpdateHandler(api));
+        handlers.put("GUILD_MEMBERS_CHUNK",                    new GuildMembersChunkHandler(api));
+        handlers.put("GUILD_ROLE_CREATE",                      new GuildRoleCreateHandler(api));
+        handlers.put("GUILD_ROLE_DELETE",                      new GuildRoleDeleteHandler(api));
+        handlers.put("GUILD_ROLE_UPDATE",                      new GuildRoleUpdateHandler(api));
+        handlers.put("GUILD_SYNC",                             new GuildSyncHandler(api));
+        handlers.put("GUILD_STICKERS_UPDATE",                  new GuildStickersUpdateHandler(api));
+        handlers.put("GUILD_UPDATE",                           new GuildUpdateHandler(api));
+        handlers.put("INTERACTION_CREATE",                     new InteractionCreateHandler(api));
+        handlers.put("INVITE_CREATE",                          new InviteCreateHandler(api));
+        handlers.put("INVITE_DELETE",                          new InviteDeleteHandler(api));
+        handlers.put("MESSAGE_CREATE",                         new MessageCreateHandler(api));
+        handlers.put("MESSAGE_DELETE",                         new MessageDeleteHandler(api));
+        handlers.put("MESSAGE_DELETE_BULK",                    new MessageBulkDeleteHandler(api));
+        handlers.put("MESSAGE_REACTION_ADD",                   new MessageReactionHandler(api, true));
+        handlers.put("MESSAGE_REACTION_REMOVE",                new MessageReactionHandler(api, false));
+        handlers.put("MESSAGE_REACTION_REMOVE_ALL",            new MessageReactionBulkRemoveHandler(api));
+        handlers.put("MESSAGE_REACTION_REMOVE_EMOJI",          new MessageReactionClearEmojiHandler(api));
+        handlers.put("MESSAGE_UPDATE",                         new MessageUpdateHandler(api));
+        handlers.put("PRESENCE_UPDATE",                        new PresenceUpdateHandler(api));
+        handlers.put("READY",                                  new ReadyHandler(api));
+        handlers.put("STAGE_INSTANCE_CREATE",                  new StageInstanceCreateHandler(api));
+        handlers.put("STAGE_INSTANCE_DELETE",                  new StageInstanceDeleteHandler(api));
+        handlers.put("STAGE_INSTANCE_UPDATE",                  new StageInstanceUpdateHandler(api));
+        handlers.put("THREAD_CREATE",                          new ThreadCreateHandler(api));
+        handlers.put("THREAD_DELETE",                          new ThreadDeleteHandler(api));
+        handlers.put("THREAD_LIST_SYNC",                       new ThreadListSyncHandler(api));
+        handlers.put("THREAD_MEMBERS_UPDATE",                  new ThreadMembersUpdateHandler(api));
+        handlers.put("THREAD_MEMBER_UPDATE",                   new ThreadMemberUpdateHandler(api));
+        handlers.put("THREAD_UPDATE",                          new ThreadUpdateHandler(api));
+        handlers.put("TYPING_START",                           new TypingStartHandler(api));
+        handlers.put("USER_UPDATE",                            new UserUpdateHandler(api));
+        handlers.put("VOICE_SERVER_UPDATE",                    new VoiceServerUpdateHandler(api));
+        handlers.put("VOICE_STATE_UPDATE",                     new VoiceStateUpdateHandler(api));
 
         // Unused events
         handlers.put("CHANNEL_PINS_ACK",          nopHandler);

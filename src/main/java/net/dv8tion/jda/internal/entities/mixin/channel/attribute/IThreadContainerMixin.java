@@ -19,6 +19,7 @@ package net.dv8tion.jda.internal.entities.mixin.channel.attribute;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.IThreadContainer;
+import net.dv8tion.jda.api.entities.channel.unions.IThreadContainerUnion;
 import net.dv8tion.jda.api.requests.restaction.ThreadChannelAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.ThreadChannelPaginationAction;
 import net.dv8tion.jda.internal.entities.mixin.channel.middleman.GuildChannelMixin;
@@ -30,7 +31,10 @@ import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 
 //TODO-v5: add checks for valid ThreadChannel names (0-100 chars)
-public interface IThreadContainerMixin<T extends IThreadContainerMixin<T>> extends IThreadContainer, GuildChannelMixin<T>
+public interface IThreadContainerMixin<T extends IThreadContainerMixin<T>> extends
+        IThreadContainer,
+        IThreadContainerUnion,
+        GuildChannelMixin<T>
 {
     // ---- Default implementations of interface ----
     @Nonnull

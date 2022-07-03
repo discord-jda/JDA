@@ -17,12 +17,12 @@
 package net.dv8tion.jda.internal.handle;
 
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionRemoveEvent;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
-import net.dv8tion.jda.internal.entities.EmoteImpl;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.entities.MemberImpl;
 import net.dv8tion.jda.internal.entities.PrivateChannelImpl;
@@ -63,7 +63,6 @@ public class MessageReactionHandler extends SocketHandler
 
         final Long emojiId = emoji.isNull("id") ? null : emoji.getLong("id");
         String emojiName = emoji.getString("name", null);
-        final boolean emojiAnimated = emoji.getBoolean("animated");
 
         if (emojiId == null && emojiName == null)
         {
@@ -121,16 +120,19 @@ public class MessageReactionHandler extends SocketHandler
             }
         }
 
-        //TODO-v5-unified-channel-cache
-        MessageChannel channel = api.getTextChannelById(channelId);
-        if (channel == null)
-            channel = api.getNewsChannelById(channelId);
-        if (channel == null)
-            channel = api.getThreadChannelById(channelId);
-        if (channel == null)
-            channel = api.getPrivateChannelById(channelId);
+        MessageChannel channel = api.getChannelById(MessageChannel.class, channelId);
         if (channel == null)
         {
+            if (guild != null)
+            {
+                GuildChannel guildChannel = guild.getGuildChannelById(channelId);
+                if (guildChannel != null)
+                {
+                    WebSocketClient.LOG.debug("Discarding reaction event for unexpected channel type. Channel: {}", guildChannel);
+                    return null;
+                }
+            }
+
             if (guildId != 0)
             {
                 api.getEventCache().cache(EventCache.Type.CHANNEL, channelId, responseNumber, allContent, this::handle);
@@ -143,30 +145,13 @@ public class MessageReactionHandler extends SocketHandler
                             .put("id", channelId)
             );
         }
-        MessageReaction.ReactionEmote rEmote;
-        if (emojiId != null)
-        {
-            Emote emote = api.getEmoteById(emojiId);
-            if (emote == null)
-            {
-                if (emojiName != null)
-                {
-                    emote = new EmoteImpl(emojiId, api).setAnimated(emojiAnimated).setName(emojiName);
-                }
-                else
-                {
-                    WebSocketClient.LOG.debug("Received a reaction {} with a null name. json: {}",
-                        JDALogger.getLazyString(() -> add ? "add" : "remove"), content);
-                    return null;
-                }
-            }
-            rEmote = MessageReaction.ReactionEmote.fromCustom(emote);
-        }
-        else
-        {
-            rEmote = MessageReaction.ReactionEmote.fromUnicode(emojiName, api);
-        }
-        MessageReaction reaction = new MessageReaction(channel, rEmote, messageId, userId == api.getSelfUser().getIdLong(), -1);
+
+        // reaction remove has null name sometimes
+        if (emoji.isNull("name"))
+            emoji.put("name", "");
+        Emoji rEmoji = Emoji.fromData(emoji);
+
+        MessageReaction reaction = new MessageReaction(channel, rEmoji, messageId, userId == api.getSelfUser().getIdLong(), -1);
 
         if (channel.getType() == ChannelType.PRIVATE)
         {

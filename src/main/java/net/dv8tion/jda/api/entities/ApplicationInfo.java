@@ -18,12 +18,12 @@ package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.utils.ImageProxy;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Arrays;
-import java.util.Collection;
+import java.util.*;
 
 /**
  * Represents a Discord Application from its bot's point of view.
@@ -87,6 +87,20 @@ public interface ApplicationInfo extends ISnowflake
      */
     @Nullable
     String getIconUrl();
+
+    /**
+     * Returns an {@link ImageProxy} for this application info's icon.
+     *
+     * @return The {@link ImageProxy} of this application info's icon or null if no icon is defined
+     *
+     * @see    #getIconUrl()
+     */
+    @Nullable
+    default ImageProxy getIcon()
+    {
+        final String iconUrl = getIconUrl();
+        return iconUrl == null ? null : new ImageProxy(iconUrl);
+    }
 
     /**
      * The team information for this application.
@@ -287,4 +301,51 @@ public interface ApplicationInfo extends ISnowflake
      * @return Whether the bot is public
      */
     boolean isBotPublic();
+
+    /**
+     * A {@link java.util.List} containing the tags of this bot's application.
+     *
+     * <p>This List is empty if no tags are set in the <a href="https://discord.com/developers/applications" target="_blank">Developer Portal</a>.
+     *
+     * @return Immutable list containing the tags of this bot's application
+     */
+    @Nonnull
+    List<String> getTags();
+
+    /**
+     * The custom Authorization URL of this bot's application.
+     *
+     * <p>This returns {@code null} if no custom URL is set in the <a href="https://discord.com/developers/applications" target="_blank">Developer Portal</a> or if In-app Authorization is enabled.
+     *
+     * @return Custom Authorization URL, or null if it has not been set
+     */
+    @Nullable
+    String getCustomAuthorizationUrl();
+
+    /**
+     * A {@link java.util.List} of scopes the default authorization URL is set up with.
+     *
+     * <p>This List is empty if you set a custom URL in the <a href="https://discord.com/developers/applications" target="_blank">Developer Portal</a>.
+     *
+     * @return Immutable list of scopes the default authorization URL is set up with.
+     */
+    @Nonnull
+    List<String> getScopes();
+
+    /**
+     * An {@link java.util.EnumSet} of permissions the default authorization URL is set up with.
+     *
+     * <p>This is empty if you set a custom URL in the <a href="https://discord.com/developers/applications" target="_blank">Developer Portal</a>.
+     *
+     * @return Set of permissions the default authorization URL is set up with.
+     */
+    @Nonnull
+    EnumSet<Permission> getPermissions();
+
+    /**
+     * The {@code long} representation of the literal permissions the default authorization URL is set up with.
+     *
+     * @return Never-negative long containing offset permissions the default authorization URL is set up with.
+     */
+    long getPermissionsRaw();
 }

@@ -19,6 +19,7 @@ package net.dv8tion.jda.internal.entities;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.channel.unions.IPermissionContainerUnion;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.exceptions.MissingAccessException;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
@@ -38,8 +39,6 @@ public class PermissionOverrideImpl implements PermissionOverride
     private final boolean isRole;
     private final JDAImpl api;
     private IPermissionContainer channel;
-
-    protected PermissionOverrideAction manager;
 
     private long allow;
     private long deny;
@@ -118,12 +117,13 @@ public class PermissionOverrideImpl implements PermissionOverride
 
     @Nonnull
     @Override
-    public IPermissionContainer getChannel()
+    public IPermissionContainerUnion getChannel()
     {
         IPermissionContainer realChannel = (IPermissionContainer) api.getGuildChannelById(channel.getIdLong());
         if (realChannel != null)
             channel = realChannel;
-        return channel;
+
+        return (IPermissionContainerUnion) channel;
     }
 
     @Nonnull
@@ -150,10 +150,7 @@ public class PermissionOverrideImpl implements PermissionOverride
     public PermissionOverrideAction getManager()
     {
         checkPermissions();
-
-        if (manager == null)
-            return manager = new PermissionOverrideActionImpl(this).setOverride(false);
-        return manager;
+        return new PermissionOverrideActionImpl(this).setOverride(false);
     }
 
     @Nonnull

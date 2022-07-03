@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.audit.ActionType;
 import net.dv8tion.jda.api.audit.AuditLogEntry;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.UserSnowflake;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -89,43 +90,15 @@ public interface AuditLogPaginationAction extends PaginationAction<AuditLogEntry
     AuditLogPaginationAction type(@Nullable ActionType type);
 
     /**
-     * Filters retrieved entities by the specified {@link net.dv8tion.jda.api.entities.User User}.
+     * Filters retrieved entities by the specified {@link UserSnowflake}.
      * <br>This specified the action issuer and not the target of an action. (Targets need not be users)
      *
      * @param  user
-     *         {@link net.dv8tion.jda.api.entities.User User} used to filter,
-     *         or {@code null} to remove user filtering
+     *         The {@link UserSnowflake} used to filter or {@code null} to remove user filtering.
+     *         This can be a member or user instance or {@link User#fromId(long)}.
      *
      * @return The current AuditLogPaginationAction for chaining convenience
      */
     @Nonnull
-    AuditLogPaginationAction user(@Nullable User user);
-
-    /**
-     * Filters retrieved entities by the specified {@link net.dv8tion.jda.api.entities.User User} id.
-     * <br>This specified the action issuer and not the target of an action. (Targets need not be users)
-     *
-     * @param  userId
-     *         {@link net.dv8tion.jda.api.entities.User User} id used to filter,
-     *         or {@code null} to remove user filtering
-     *
-     * @throws IllegalArgumentException
-     *         If the provided userId is not valid
-     *
-     * @return The current AuditLogPaginationAction for chaining convenience
-     */
-    @Nonnull
-    AuditLogPaginationAction user(@Nullable String userId);
-
-    /**
-     * Filters retrieved entities by the specified {@link net.dv8tion.jda.api.entities.User User} id.
-     *
-     * @param  userId
-     *         {@link net.dv8tion.jda.api.entities.User User} id used to filter,
-     *         or {@code null} to remove user filtering
-     *
-     * @return The current AuditLogPaginationAction for chaining convenience
-     */
-    @Nonnull
-    AuditLogPaginationAction user(long userId);
+    AuditLogPaginationAction user(@Nullable UserSnowflake user);
 }

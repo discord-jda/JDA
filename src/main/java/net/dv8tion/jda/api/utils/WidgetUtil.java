@@ -646,6 +646,20 @@ public class WidgetUtil
             }
 
             /**
+             * Returns an {@link ImageProxy} for this user's avatar image.
+             *
+             * @return Possibly-null {@link ImageProxy} of this user's avatar image
+             *
+             * @see    #getAvatarUrl()
+             */
+            @Nullable
+            public ImageProxy getAvatar()
+            {
+                final String avatarUrl = getAvatarUrl();
+                return avatarUrl == null ? null : new ImageProxy(avatarUrl);
+            }
+
+            /**
              * Gets the asset id of the member's default avatar
              * 
              * @return never-null String containing the asset id of the member's
@@ -670,6 +684,19 @@ public class WidgetUtil
             }
 
             /**
+             * Returns an {@link ImageProxy} for this user's default avatar image.
+             *
+             * @return Never-null {@link ImageProxy} of this user's default avatar image
+             *
+             * @see    #getDefaultAvatarUrl()
+             */
+            @Nonnull
+            public ImageProxy getDefaultAvatar()
+            {
+                return new ImageProxy(getDefaultAvatarUrl());
+            }
+
+            /**
             * The URL for the user's avatar image
             * <br>If they do not have an avatar set, this will return the URL of their
             * default avatar
@@ -681,6 +708,19 @@ public class WidgetUtil
             {
                 String avatarUrl = getAvatarUrl();
                 return avatarUrl == null ? getDefaultAvatarUrl() : avatarUrl;
+            }
+
+            /**
+             * Returns an {@link ImageProxy} for this user's effective avatar image.
+             *
+             * @return Never-null {@link ImageProxy} of this user's effective avatar image
+             *
+             * @see    #getEffectiveAvatarUrl()
+             */
+            @Nonnull
+            public ImageProxy getEffectiveAvatar()
+            {
+                return new ImageProxy(getEffectiveAvatarUrl());
             }
             
             /**

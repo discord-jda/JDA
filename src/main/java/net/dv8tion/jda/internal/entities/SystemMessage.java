@@ -16,8 +16,8 @@
 
 package net.dv8tion.jda.internal.entities;
 
-import gnu.trove.set.TLongSet;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.sticker.StickerItem;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
@@ -31,14 +31,14 @@ import java.util.List;
 public class SystemMessage extends ReceivedMessage
 {
     public SystemMessage(
-        long id, MessageChannel channel, MessageType type, MessageReference messageReference,
-        boolean fromWebhook, boolean mentionsEveryone, TLongSet mentionedUsers, TLongSet mentionedRoles,
-        boolean tts, boolean pinned,
-        String content, String nonce, User author, Member member, MessageActivity activity, OffsetDateTime editTime,
-        List<MessageReaction> reactions, List<Attachment> attachments, List<MessageEmbed> embeds, List<MessageSticker> stickers, int flags)
+            long id, MessageChannel channel, MessageType type, MessageReference messageReference,
+            boolean fromWebhook, boolean  tts, boolean pinned,
+            String content, String nonce, User author, Member member, MessageActivity activity, OffsetDateTime editTime,
+            Mentions mentions, List<MessageReaction> reactions, List<Attachment> attachments, List<MessageEmbed> embeds,
+            List<StickerItem> stickers, int flags, ThreadChannel startedThread)
     {
-        super(id, channel, type, messageReference, fromWebhook, mentionsEveryone, mentionedUsers, mentionedRoles,
-            tts, pinned, content, nonce, author, member, activity, editTime, reactions, attachments, embeds, stickers, Collections.emptyList(), flags, null);
+        super(id, channel, type, messageReference, fromWebhook, tts, pinned, content, nonce, author, member,
+                activity, editTime, mentions, reactions, attachments, embeds, stickers, Collections.emptyList(), flags, null, startedThread);
     }
 
     @Nonnull
