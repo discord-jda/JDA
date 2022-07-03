@@ -253,12 +253,7 @@ public class WebhookImpl extends AbstractWebhookClient<Void> implements Webhook
     {
         checkToken();
         Route.CompiledRoute route = Route.Webhooks.EXECUTE_WEBHOOK.compile(getId(), token);
-
-        //TODO: This MessageChannel cast seems problematic, especially once ForumChannels come along.
-        // Note for Minn: Can we make this cast here because the WebhookClient is only used when responding to interactions
-        //                actually present in a MessageChannel?
-        //                Also might not actually be needed as it doesn't look like WebhookMessageActionImpl actually uses the channel variable?
-        WebhookMessageActionImpl<Void> action = new WebhookMessageActionImpl<>(api, (MessageChannel) channel, route, (json) -> null);
+        WebhookMessageActionImpl<Void> action = new WebhookMessageActionImpl<>(api, route, (json) -> null);
         action.run();
         return action;
     }
