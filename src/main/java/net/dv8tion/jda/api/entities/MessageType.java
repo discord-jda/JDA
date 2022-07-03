@@ -131,7 +131,7 @@ public enum MessageType
      * A new message sent as the first message in threads that are started from an existing message in the parent channel.
      * It only contains a message reference field that points to the message from which the thread was started.
      */
-    THREAD_STARTER_MESSAGE(21, false, true),
+    THREAD_STARTER_MESSAGE(21, false, false),
 
     /**
      * The "Invite your friends" messages that are sent to guild owners in new servers.
@@ -159,7 +159,8 @@ public enum MessageType
     private final boolean system;
     private final boolean deletable;
 
-    MessageType(int id, boolean system, boolean deletable) {
+    MessageType(int id, boolean system, boolean deletable)
+    {
         this.id = id;
         this.system = system;
         this.deletable = deletable;
@@ -189,7 +190,22 @@ public enum MessageType
 
     /**
      * Whether messages of this type can be deleted.
-     * <br>This includes most system messages.
+     * <br>These are messages which are required to stay such as thread starter messages.
+     *
+     * <p><b>Messages which cannot be deleted:</b><br>
+     * <ul>
+     *     <li>{@link #RECIPIENT_ADD}</li>
+     *     <li>{@link #RECIPIENT_REMOVE}</li>
+     *     <li>{@link #CALL}</li>
+     *     <li>{@link #CHANNEL_NAME_CHANGE}</li>
+     *     <li>{@link #CHANNEL_ICON_CHANGE}</li>
+     *     <li>{@link #GUILD_DISCOVERY_DISQUALIFIED}</li>
+     *     <li>{@link #GUILD_DISCOVERY_REQUALIFIED}</li>
+     *     <li>{@link #GUILD_DISCOVERY_GRACE_PERIOD_INITIAL_WARNING}</li>
+     *     <li>{@link #GUILD_DISCOVERY_GRACE_PERIOD_FINAL_WARNING}</li>
+     *     <li>{@link #GUILD_DISCOVERY_GRACE_PERIOD_FINAL_WARNING}</li>
+     *     <li>{@link #THREAD_STARTER_MESSAGE}</li>
+     * </ul>
      *
      * @return True, if delete is supported
      */
