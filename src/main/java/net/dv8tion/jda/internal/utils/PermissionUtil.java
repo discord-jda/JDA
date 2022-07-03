@@ -369,21 +369,13 @@ public class PermissionUtil
         // This means that we have no access to this channel at all
         // See https://github.com/discord/discord-api-docs/issues/1522
         final boolean hasConnect = !channel.getType().isAudio() || isApplied(permission, connectChannel);
-        final boolean hasView = isApplied(permission, viewChannel);
+        final boolean hasAccess = isApplied(permission, viewChannel) && hasConnect;
 
         // See https://discord.com/developers/docs/topics/permissions#permissions-for-timed-out-members
         if (member.isTimedOut())
             permission &= viewChannel | Permission.MESSAGE_HISTORY.getRawValue();
 
-        // connect disables non-text based permissions
-        if (!hasConnect)
-        {
-            permission &= ~Permission.ALL_VOICE_PERMISSIONS;
-            permission &= ~Permission.MANAGE_CHANNEL.getRawValue();
-            permission &= ~Permission.MANAGE_PERMISSIONS.getRawValue();
-        }
-
-        return hasView ? permission : 0;
+        return hasAccess ? permission : 0;
     }
 
     /**
