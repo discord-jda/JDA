@@ -21,12 +21,13 @@ import net.dv8tion.jda.api.entities.*;
 import javax.annotation.Nonnull;
 
 /**
- * A union representing all channel types that implement {@link GuildChannel}.
- * <br>This class extends {@link GuildChannel} and primarily acts as a discovery tool for
- * developers to discover some common interfaces that a {@link GuildChannel} could be cast to.
+ * A union representing all channel types that implement {@link Channel}.
+ * <br>This class extends {@link Channel} and primarily acts as a discovery tool for
+ * developers to discover some common interfaces that a {@link Channel} could be cast to.
  *
  * <br>This interface represents the follow concrete channel types:
  * <ul>
+ *     <li>{@link PrivateChannel}</li>
  *     <li>{@link TextChannel}</li>
  *     <li>{@link NewsChannel}</li>
  *     <li>{@link ThreadChannel}</li>
@@ -35,8 +36,31 @@ import javax.annotation.Nonnull;
  *     <li>{@link Category}</li>
  * </ul>
  */
-public interface GuildChannelUnion extends GuildChannel
+public interface ChannelUnion extends Channel
 {
+    /**
+     * Casts this union to a {@link PrivateChannel}.
+     * This method exists for developer discoverability.
+     *
+     * Note: This is effectively equivalent to using the cast operator:
+     * <pre><code>
+     * //These are the same!
+     * PrivateChannel channel = union.asPrivateChannel();
+     * PrivateChannel channel2 = (PrivateChannel) union;
+     * </code></pre>
+     *
+     * You can use {@link #getType()} to see if the channel is of type {@link ChannelType#PRIVATE} to validate
+     * whether you can call this method in addition to normal instanceof checks: <code>channel instanceof PrivateChannel</code>
+     *
+     * @throws IllegalStateException
+     *         If the channel represented by this union is not actually a {@link PrivateChannel}.
+     *
+     * @return The channel as a {@link PrivateChannel}
+     */
+    @Nonnull
+    PrivateChannel asPrivateChannel();
+
+
     /**
      * Casts this union to a {@link TextChannel}.
      * This method exists for developer discoverability.
@@ -168,6 +192,50 @@ public interface GuildChannelUnion extends GuildChannel
      */
     @Nonnull
     Category asCategory();
+
+    /**
+     * Casts this union to a {@link MessageChannel}.
+     * This method exists for developer discoverability.
+     *
+     * Note: This is effectively equivalent to using the cast operator:
+     * <pre><code>
+     * //These are the same!
+     * MessageChannel channel = union.asMessageChannel();
+     * MessageChannel channel2 = (MessageChannel) union;
+     * </code></pre>
+     *
+     * You can use {@link #getType()}{@link ChannelType#isMessage() .isMessage()} to validate whether you can call this
+     * method in addition to normal instanceof checks: <code>channel instanceof MessageChannel</code>
+     *
+     * @throws IllegalStateException
+     *         If the channel represented by this union is not actually a {@link MessageChannel}.
+     *
+     * @return The channel as a {@link MessageChannel}
+     */
+    @Nonnull
+    MessageChannel asMessageChannel();
+
+    /**
+     * Casts this union to a {@link GuildChannel}.
+     * This method exists for developer discoverability.
+     *
+     * Note: This is effectively equivalent to using the cast operator:
+     * <pre><code>
+     * //These are the same!
+     * GuildChannel channel = union.asGuildChannel();
+     * GuildChannel channel2 = (GuildChannel) union;
+     * </code></pre>
+     *
+     * You can use {@link #getType()}{@link ChannelType#isGuild() isGuild()} to validate whether you can call this
+     * method in addition to normal instanceof checks: <code>channel instanceof GuildChannel</code>
+     *
+     * @throws IllegalStateException
+     *         If the channel represented by this union is not actually a {@link GuildChannel}.
+     *
+     * @return The channel as a {@link GuildChannel}
+     */
+    @Nonnull
+    GuildChannel asGuildChannel();
 
     /**
      * Casts this union to a {@link GuildMessageChannel}.

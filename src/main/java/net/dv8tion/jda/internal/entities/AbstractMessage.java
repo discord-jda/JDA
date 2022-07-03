@@ -225,30 +225,6 @@ public abstract class AbstractMessage implements Message
         return null;
     }
 
-    @Nonnull
-    @Override
-    public PrivateChannel getPrivateChannel()
-    {
-        unsupported();
-        return null;
-    }
-
-    @Nonnull
-    @Override
-    public TextChannel getTextChannel()
-    {
-        unsupported();
-        return null;
-    }
-
-    @Nonnull
-    @Override
-    public NewsChannel getNewsChannel()
-    {
-        unsupported();
-        return null;
-    }
-
     @Override
     public Category getCategory()
     {

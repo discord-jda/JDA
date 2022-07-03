@@ -70,69 +70,84 @@ public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> impl
     @Nonnull
     public PrivateChannel asPrivateChannel()
     {
-        return transformChannel(PrivateChannel.class);
+        return Helpers.safeChannelCast(this, PrivateChannel.class);
     }
 
     @Nonnull
     public TextChannel asTextChannel()
     {
-        return transformChannel(TextChannel.class);
+        return Helpers.safeChannelCast(this, TextChannel.class);
     }
 
     @Nonnull
     public NewsChannel asNewsChannel()
     {
-        return transformChannel(NewsChannel.class);
+        return Helpers.safeChannelCast(this, NewsChannel.class);
     }
 
     @Nonnull
     public VoiceChannel asVoiceChannel()
     {
-        return transformChannel(VoiceChannel.class);
+        return Helpers.safeChannelCast(this, VoiceChannel.class);
     }
 
     @Nonnull
     public StageChannel asStageChannel()
     {
-        return transformChannel(StageChannel.class);
+        return Helpers.safeChannelCast(this, StageChannel.class);
     }
 
     @Nonnull
     public ThreadChannel asThreadChannel()
     {
-        return transformChannel(ThreadChannel.class);
+        return Helpers.safeChannelCast(this, ThreadChannel.class);
+    }
+
+    @Nonnull
+    public Category asCategory()
+    {
+        return Helpers.safeChannelCast(this, Category.class);
+    }
+
+    @Nonnull
+    public MessageChannel asMessageChannel()
+    {
+        return Helpers.safeChannelCast(this, MessageChannel.class);
+    }
+
+    @Nonnull
+    public AudioChannel asAudioChannel()
+    {
+        return Helpers.safeChannelCast(this, AudioChannel.class);
     }
 
     @Nonnull
     public IThreadContainer asThreadContainer()
     {
-        return transformChannel(IThreadContainer.class);
+        return Helpers.safeChannelCast(this, IThreadContainer.class);
+    }
+
+    @Nonnull
+    public GuildChannel asGuildChannel()
+    {
+        return Helpers.safeChannelCast(this, GuildChannel.class);
     }
 
     @Nonnull
     public GuildMessageChannel asGuildMessageChannel()
     {
-        return transformChannel(GuildMessageChannel.class);
+        return Helpers.safeChannelCast(this, GuildMessageChannel.class);
     }
 
     @Nonnull
     public StandardGuildChannel asStandardGuildChannel()
     {
-        return transformChannel(StandardGuildChannel.class);
+        return Helpers.safeChannelCast(this, StandardGuildChannel.class);
     }
 
     @Nonnull
     public StandardGuildMessageChannel asStandardGuildMessageChannel()
     {
-        return transformChannel(StandardGuildMessageChannel.class);
-    }
-
-    private <TOut extends Channel> TOut transformChannel(Class<TOut> toObjectClass)
-    {
-        if (toObjectClass.isInstance(this))
-            return toObjectClass.cast(this);
-
-        String cleanedClassName = this.getClass().getSimpleName().replace("Impl", "");
-        throw new IllegalStateException(Helpers.format("Cannot convert channel of type %s to %s!", cleanedClassName, toObjectClass.getSimpleName()));
+        return Helpers.safeChannelCast(this, StandardGuildMessageChannel.class);
     }
 }

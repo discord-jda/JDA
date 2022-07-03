@@ -416,37 +416,9 @@ public class ReceivedMessage extends AbstractMessage
         return (GuildMessageChannelUnion) channel;
     }
 
-    @Nonnull
-    @Override
-    public PrivateChannel getPrivateChannel()
-    {
-        if (!isFromType(ChannelType.PRIVATE))
-            throw new IllegalStateException("This message was not sent in a private channel");
-        return (PrivateChannel) channel;
-    }
-
-    @Nonnull
-    @Override
-    public TextChannel getTextChannel()
-    {
-        if (!isFromType(ChannelType.TEXT))
-            throw new IllegalStateException("This message was not sent in a text channel");
-        return (TextChannel) channel;
-    }
-
-    @Nonnull
-    @Override
-    public NewsChannel getNewsChannel()
-    {
-        if (!isFromType(ChannelType.NEWS))
-            throw new IllegalStateException("This message was not sent in a news channel");
-        return (NewsChannel) channel;
-    }
-
     @Override
     public Category getCategory()
     {
-        //TODO-v5: Should this actually throw an error here if the GuildMessageChannel doesn't implement ICategorizableChannel?
         GuildMessageChannel chan = getGuildChannel();
         return chan instanceof ICategorizableChannel
             ? ((ICategorizableChannel) chan).getParentCategory()
