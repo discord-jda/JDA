@@ -23,7 +23,6 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.Region;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
-import net.dv8tion.jda.api.exceptions.MissingAccessException;
 import net.dv8tion.jda.api.managers.channel.ChannelManager;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.entities.mixin.channel.attribute.IPermissionContainerMixin;
@@ -38,7 +37,6 @@ import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.EnumSet;
-import java.util.Set;
 
 @SuppressWarnings("unchecked") //We do a lot of (M) and (T) casting that we know is correct but the compiler warns about.
 public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager<T, M>> extends ManagerBase<M> implements ChannelManager<T, M>
@@ -575,10 +573,7 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
 
         if (getChannel() instanceof IPermissionContainer) {
             IPermissionContainer permChannel = (IPermissionContainer) getChannel();
-            if (!selfMember.hasPermission(permChannel, Permission.VIEW_CHANNEL))
-                throw new MissingAccessException(permChannel, Permission.VIEW_CHANNEL);
-            if (channel.getType().isAudio() && !selfMember.hasPermission(channel, Permission.VOICE_CONNECT))
-                throw new MissingAccessException(permChannel, Permission.VOICE_CONNECT);
+            Checks.checkAccess(selfMember, permChannel);
             if (!selfMember.hasPermission(permChannel, Permission.MANAGE_CHANNEL))
                 throw new InsufficientPermissionException(permChannel, Permission.MANAGE_CHANNEL);
         }
