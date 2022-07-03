@@ -19,7 +19,6 @@ package net.dv8tion.jda.internal.managers;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
-import net.dv8tion.jda.api.exceptions.MissingAccessException;
 import net.dv8tion.jda.api.managers.WebhookManager;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.requests.Route;
@@ -145,8 +144,7 @@ public class WebhookManagerImpl extends ManagerBase<WebhookManager> implements W
     {
         Member selfMember = getGuild().getSelfMember();
         IPermissionContainer permContainer = getChannel().getPermissionContainer();
-        if (!selfMember.hasAccess(permContainer))
-            throw new MissingAccessException(permContainer, Permission.VIEW_CHANNEL);
+        Checks.checkAccess(selfMember, permContainer);
         if (!selfMember.hasPermission(permContainer, Permission.MANAGE_WEBHOOKS))
             throw new InsufficientPermissionException(permContainer, Permission.MANAGE_WEBHOOKS);
         return super.checkPermissions();

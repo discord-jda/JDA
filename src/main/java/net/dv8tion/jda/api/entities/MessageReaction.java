@@ -33,7 +33,6 @@ import net.dv8tion.jda.internal.utils.EncodingUtil;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Objects;
 
 /**
@@ -172,31 +171,6 @@ public class MessageReaction
     {
         return getGuildChannel().getGuild();
     }
-
-    /**
-     * The {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel} this Reaction was used in
-     * or {@code null} if this is not from type {@link net.dv8tion.jda.api.entities.ChannelType#VOICE ChannelType.VOICE}!
-     *
-     * @return The {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel} or {@code null}
-     */
-    @Nullable
-    public VoiceChannel getVoiceChannel()
-    {
-        return getChannel() instanceof VoiceChannel ? (VoiceChannel) getChannel() : null;
-    }
-
-    /**
-     * The {@link net.dv8tion.jda.api.entities.NewsChannel NewsChannel} this Reaction was used in
-     * or {@code null} if this is not from type {@link net.dv8tion.jda.api.entities.ChannelType#NEWS ChannelType.NEWS}!
-     *
-     * @return The {@link net.dv8tion.jda.api.entities.NewsChannel NewsChannel} or {@code null}
-     */
-    @Nullable
-    public NewsChannel getNewsChannel()
-    {
-        return getChannel() instanceof NewsChannel ? (NewsChannel) getChannel() : null;
-    }
-
 
     /**
      * The {@link MessageChannel MessageChannel}

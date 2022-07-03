@@ -23,7 +23,6 @@ import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.entities.sticker.GuildSticker;
 import net.dv8tion.jda.api.entities.sticker.StickerSnowflake;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
-import net.dv8tion.jda.api.exceptions.MissingAccessException;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.requests.Request;
@@ -622,8 +621,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
             return;
 
         IPermissionContainer gc = (IPermissionContainer) channel;
-        if (!gc.getGuild().getSelfMember().hasAccess(gc))
-            throw new MissingAccessException(gc, Permission.VIEW_CHANNEL);
+        Checks.checkAccess(gc.getGuild().getSelfMember(), gc);
         if (!hasPermission(perm))
             throw new InsufficientPermissionException(gc, perm);
     }
