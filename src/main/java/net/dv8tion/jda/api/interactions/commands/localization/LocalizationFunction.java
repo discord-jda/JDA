@@ -27,7 +27,7 @@ import java.util.Map;
  *
  * <p>
  * <b>Implementation note:</b>
- * The localization key is composed of the command/option/choice tree being walked, each component are separated by a dot
+ * The localization key is composed of the command/option/choice tree being walked, where each command/option/choice's name is separated by a dot
  * <br>Note: the final key is lowercase and spaces replaced by underscores
  * <br>
  * <br>A few examples of localization keys:
