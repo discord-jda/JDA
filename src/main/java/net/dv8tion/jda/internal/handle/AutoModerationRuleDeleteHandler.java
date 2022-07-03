@@ -41,7 +41,7 @@ public class AutoModerationRuleDeleteHandler extends SocketHandler
         GuildImpl guild = (GuildImpl) getJDA().getGuildById(guildId);
 
         long ruleId = content.getLong("id");
-        AutoModerationRule rule = guild.getAutoModerationRulesView().remove(ruleId);
+        AutoModerationRule rule = guild.getAutoModerationRuleCache().getElementById(ruleId);
 
         if (rule == null || guild == null)
         {

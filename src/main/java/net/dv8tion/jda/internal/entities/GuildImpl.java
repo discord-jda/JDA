@@ -76,7 +76,6 @@ import net.dv8tion.jda.internal.utils.cache.SortedSnowflakeCacheViewImpl;
 import net.dv8tion.jda.internal.utils.concurrent.task.GatewayTask;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
-import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -1269,9 +1268,9 @@ public class GuildImpl implements Guild
         return new RuleCreateActionImpl(this, (AutoModerationRuleDataImpl) data);
     }
 
-    @NotNull
+    @Nonnull
     @Override
-    public RuleModifyAction modifyAutoModerationRule(@NotNull AutoModerationRule rule, @NotNull AutoModerationRuleData data)
+    public RuleModifyAction modifyAutoModerationRule(@Nonnull AutoModerationRule rule, @Nonnull AutoModerationRuleData data)
     {
         checkPermission(Permission.MANAGE_SERVER);
         Checks.notNull(rule, "AutoModerationRule");
@@ -1287,8 +1286,8 @@ public class GuildImpl implements Guild
         return new AuditableRestActionImpl<>(getJDA(), route);
     }
 
-    @Override
     @Nonnull
+    @Override
     public SnowflakeCacheView<AutoModerationRule> getAutoModerationRuleCache()
     {
         return autoModerationRuleCache;
@@ -2213,12 +2212,7 @@ public class GuildImpl implements Guild
     {
         return memberCache;
     }
-
-    public SortedSnowflakeCacheViewImpl<AutoModerationRule> getAutoModerationRulesView()
-    {
-        return autoModerationRuleCache;
-    }
-
+    
     @Nonnull
     @Override
     public NSFWLevel getNSFWLevel()
