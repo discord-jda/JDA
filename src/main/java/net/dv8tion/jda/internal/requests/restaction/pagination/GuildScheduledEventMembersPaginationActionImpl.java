@@ -24,12 +24,14 @@ import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.restaction.pagination.GuildScheduledEventMembersPaginationAction;
 import net.dv8tion.jda.api.utils.data.DataArray;
+import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.requests.Route;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class GuildScheduledEventMembersPaginationActionImpl extends PaginationActionImpl<Member, GuildScheduledEventMembersPaginationAction> implements GuildScheduledEventMembersPaginationAction
@@ -59,7 +61,9 @@ public class GuildScheduledEventMembersPaginationActionImpl extends PaginationAc
         {
             try
             {
-                Member member = builder.createMember((GuildImpl) guild, array.getObject(i).getObject("member").put("user", array.getObject(i).getObject("user")));
+                DataObject userObject = array.getObject(i).getObject("user");
+                DataObject memberObject = array.getObject(i).getObject("member");
+                Member member = builder.createMember((GuildImpl) guild, memberObject.put("user", userObject));
                 members.add(member);
             }
             catch (ParsingException | NullPointerException e)
@@ -67,8 +71,17 @@ public class GuildScheduledEventMembersPaginationActionImpl extends PaginationAc
                 LOG.warn("Encountered an exception in GuildScheduledEventPagination", e);
             }
         }
-        last = members.get(members.size() - 1);
-        lastKey = last.getIdLong();
+
+        if (order == PaginationOrder.BACKWARD)
+            Collections.reverse(members);
+        if (useCache)
+            cached.addAll(members);
+
+        if (!members.isEmpty())
+        {
+            last = members.get(members.size() - 1);
+            lastKey = last.getIdLong();
+        }
         request.onSuccess(members);
     }
 

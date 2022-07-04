@@ -18,17 +18,20 @@ package net.dv8tion.jda.internal.requests.restaction.pagination;
 
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.GuildScheduledEvent;
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.exceptions.ParsingException;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.restaction.pagination.GuildScheduledEventUsersPaginationAction;
 import net.dv8tion.jda.api.utils.data.DataArray;
+import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.requests.Route;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class GuildScheduledEventUsersPaginationActionImpl extends PaginationActionImpl<User, GuildScheduledEventUsersPaginationAction> implements GuildScheduledEventUsersPaginationAction
@@ -58,10 +61,9 @@ public class GuildScheduledEventUsersPaginationActionImpl extends PaginationActi
         {
             try
             {
-                User user = builder.createUser(array.getObject(i).getObject("user"));
+                DataObject userObject = array.getObject(i).getObject("user");
+                User user = builder.createUser(userObject);
                 users.add(user);
-                last = user;
-                lastKey = last.getIdLong();
             }
             catch (ParsingException | NullPointerException e)
             {
@@ -69,8 +71,20 @@ public class GuildScheduledEventUsersPaginationActionImpl extends PaginationActi
             }
         }
 
+        if (order == PaginationOrder.BACKWARD)
+            Collections.reverse(users);
+        if (useCache)
+            cached.addAll(users);
+
+        if (!users.isEmpty())
+        {
+            last = users.get(users.size() - 1);
+            lastKey = last.getIdLong();
+        }
+
         request.onSuccess(users);
     }
+
     @Override
     protected long getKey(User it)
     {
