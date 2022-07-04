@@ -17,6 +17,8 @@ package net.dv8tion.jda.internal.entities;
 
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.channel.unions.GuildChannelUnion;
+import net.dv8tion.jda.api.entities.channel.unions.GuildMessageChannelUnion;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.GuildScheduledEventManager;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
@@ -47,11 +49,7 @@ public class GuildScheduledEventImpl implements GuildScheduledEvent
     private User creator;
     private long creatorId;
     private int interestedUserCount;
-
-    // Only one of these should not be null at any given time, else the event's Type will be UNKNOWN
-    private String externalLocation;
-    private StageChannel stageChannel;
-    private VoiceChannel voiceChannel;
+    private String location;
 
     public GuildScheduledEventImpl(long id, Guild guild)
     {
@@ -123,38 +121,17 @@ public class GuildScheduledEventImpl implements GuildScheduledEvent
 
     @Nullable
     @Override
-    public GuildChannel getChannel()
+    public GuildChannelUnion getChannel()
     {
-        if (stageChannel != null)
-            return stageChannel;
-        if (voiceChannel != null)
-            return voiceChannel;
+        if (type.equals(Type.STAGE_INSTANCE) || type.equals(Type.VOICE))
+            return (GuildChannelUnion) guild.getGuildChannelById(location);
         return null;
-    }
-
-    @Nullable
-    @Override
-    public StageChannel getStageChannel()
-    {
-        return stageChannel;
-    }
-
-    @Nullable
-    @Override
-    public VoiceChannel getVoiceChannel()
-    {
-        return voiceChannel;
     }
 
     @Override
     public String getLocation()
     {
-        if (stageChannel != null)
-            return stageChannel.getId();
-        else if (voiceChannel != null)
-            return voiceChannel.getId();
-        else
-            return externalLocation;
+        return location;
     }
 
     @Override
@@ -230,6 +207,13 @@ public class GuildScheduledEventImpl implements GuildScheduledEvent
         return this;
     }
 
+    public GuildScheduledEventImpl setLocation(String location)
+    {
+        this.location = location;
+        return this;
+    }
+
+
     public GuildScheduledEventImpl setDescription(String description)
     {
         this.description = description;
@@ -269,24 +253,6 @@ public class GuildScheduledEventImpl implements GuildScheduledEvent
     public GuildScheduledEventImpl setEndTime(OffsetDateTime endTime)
     {
         this.endTime = endTime;
-        return this;
-    }
-
-    public GuildScheduledEventImpl setStageChannel(StageChannel stageChannel)
-    {
-        this.stageChannel = stageChannel;
-        return this;
-    }
-
-    public GuildScheduledEventImpl setVoiceChannel(VoiceChannel voiceChannel)
-    {
-        this.voiceChannel = voiceChannel;
-        return this;
-    }
-
-    public GuildScheduledEventImpl setExternalLocation(String externalLocation)
-    {
-        this.externalLocation = externalLocation;
         return this;
     }
 

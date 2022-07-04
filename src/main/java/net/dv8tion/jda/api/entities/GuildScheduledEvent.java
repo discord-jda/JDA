@@ -16,6 +16,7 @@
 package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.channel.unions.GuildChannelUnion;
 import net.dv8tion.jda.api.managers.GuildScheduledEventManager;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.GuildScheduledEventMembersPaginationAction;
@@ -160,60 +161,26 @@ public interface GuildScheduledEvent extends ISnowflake, Comparable<GuildSchedul
     OffsetDateTime getEndTime();
 
     /**
-     * The guild channel the event is set to take place at.
-     * <br>Note that this method is only applicable to events which are of {@link Type#EXTERNAL}.
+     * The guild channel the event is set to take place in.
+     * <br>Note that this method is only applicable to events which are not of {@link Type#STAGE_INSTANCE} or {@link Type#VOICE}.
      *
      * @return The guild channel, or {@code null} if the guild channel was deleted
      *         or if the event is of {@link Type#EXTERNAL}
      *
      * @see    #getType()
-     * @see    #getVoiceChannel()
-     * @see    #getStageChannel()
      * @see    #getLocation()
      */
     @Nullable
-    GuildChannel getChannel();
+    GuildChannelUnion getChannel();
 
     /**
-     * The stage channel the event is set to take place at.
-     * <br>Note that this method is only applicable to events which are of {@link Type#STAGE_INSTANCE}.
+     * The location the event is set to take place in.
      *
-     * @return The stage channel, or {@code null} if the stage channel was deleted
-     *         or if the event is not of {@link Type#STAGE_INSTANCE}
+     * @return The channel id if the event is of {@link Type#STAGE_INSTANCE} or {@link Type#VOICE},
+     *          the external location if the event is of {@link Type#EXTERNAL}
      *
      * @see    #getType()
      * @see    #getChannel()
-     * @see    #getVoiceChannel()
-     * @see    #getLocation()
-     */
-    @Nullable
-    StageChannel getStageChannel();
-
-    /**
-     * The voice channel the event is set to take place at.
-     * <br>Note that this method is only applicable to events which are of {@link Type#VOICE}.
-     *
-     * @return The voice channel, or {@code null} if the voice channel was deleted
-     *         or if the event is not of {@link Type#STAGE_INSTANCE}
-     *
-     * @see    #getType()
-     * @see    #getChannel()
-     * @see    #getStageChannel()
-     * @see    #getLocation()
-     */
-    @Nullable
-    VoiceChannel getVoiceChannel();
-
-    /**
-     * The external location the event is set to take place at.
-     * <br>Note that this method is only applicable to events which are of {@link Type#EXTERNAL}.
-     *
-     * @return The location, or {@code null} if the event is not of {@link Type#EXTERNAL}
-     *
-     * @see    #getType()
-     * @see    #getChannel()
-     * @see    #getStageChannel()
-     * @see    #getVoiceChannel()
      */
 
     String getLocation();

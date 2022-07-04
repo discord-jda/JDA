@@ -63,6 +63,7 @@ public class GuildScheduledEventUpdateHandler extends SocketHandler
         final String imageUrl = content.getString("image", null);
         String location = content.getString("channel_id", null);
         GuildChannel channel = null;
+        String oldLocation = event.getLocation();
         if (location == null)
             location = content.getObject("entity_metadata").getString("location");
         else
@@ -100,30 +101,21 @@ public class GuildScheduledEventUpdateHandler extends SocketHandler
             event.setStatus(status);
             getJDA().handleEvent(new GuildScheduledEventUpdateStatusEvent(getJDA(), responseNumber, event, oldStatus));
         }
-        if (channel == null && !Objects.equals(location, event.getLocation()))
+        if (channel == null && !location.equals(event.getLocation()))
         {
-            String oldLocation = event.getLocation();
-            event.setStageChannel(null);
-            event.setVoiceChannel(null);
-            event.setExternalLocation(location);
+            event.setLocation(location);
             event.setType(GuildScheduledEvent.Type.EXTERNAL);
             getJDA().handleEvent(new GuildScheduledEventUpdateLocationEvent(getJDA(), responseNumber, event, oldLocation));
         }
-        if (channel instanceof StageChannel && !Objects.equals(channel, event.getStageChannel()))
+        if (channel instanceof StageChannel && !location.equals(event.getLocation()))
         {
-            String oldLocation = event.getLocation();
-            event.setVoiceChannel(null);
-            event.setExternalLocation(null);
-            event.setStageChannel((StageChannel) channel);
+            event.setLocation(channel.getId());
             event.setType(GuildScheduledEvent.Type.STAGE_INSTANCE);
             getJDA().handleEvent(new GuildScheduledEventUpdateLocationEvent(getJDA(), responseNumber, event, oldLocation));
         }
-        if (channel instanceof VoiceChannel && !Objects.equals(channel, event.getVoiceChannel()))
+        if (channel instanceof VoiceChannel && !location.equals(event.getLocation()))
         {
-            String oldLocation = event.getLocation();
-            event.setStageChannel(null);
-            event.setExternalLocation(null);
-            event.setVoiceChannel((VoiceChannel) channel);
+            event.setLocation(channel.getId());
             event.setType(GuildScheduledEvent.Type.VOICE);
             getJDA().handleEvent(new GuildScheduledEventUpdateLocationEvent(getJDA(), responseNumber, event, oldLocation));
         }

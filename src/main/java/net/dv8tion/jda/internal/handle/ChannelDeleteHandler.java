@@ -107,7 +107,7 @@ public class ChannelDeleteHandler extends SocketHandler
                 // Deleting any guild scheduled events associated to the deleted channel as they are deleted when the channel gets deleted.
                 // There is no delete event for the deletion of guild scheduled events, so we do this to keep the cache in sync.
                 guild.getScheduledEventsView().stream()
-                        .filter(guildScheduledEvent -> guildScheduledEvent.getVoiceChannel() != null && guildScheduledEvent.getVoiceChannel().getIdLong() == channelId)
+                        .filter(guildScheduledEvent -> guildScheduledEvent.getType().equals(GuildScheduledEvent.Type.VOICE) && guildScheduledEvent.getLocation().equals(String.valueOf(channelId)))
                         .forEach(guildScheduledEvent -> guild.getScheduledEventsView().remove(guildScheduledEvent.getIdLong()));
                 break;
             }
@@ -129,7 +129,7 @@ public class ChannelDeleteHandler extends SocketHandler
                 // Deleting any guild scheduled events associated to the deleted channel as they are deleted when the channel gets deleted.
                 // There is no delete event for the deletion of guild scheduled events, so we do this to keep the cache in sync.
                 guild.getScheduledEventsView().stream()
-                        .filter(guildScheduledEvent -> guildScheduledEvent.getStageChannel() != null && guildScheduledEvent.getStageChannel().getIdLong() == channelId)
+                        .filter(guildScheduledEvent -> guildScheduledEvent.getType().equals(GuildScheduledEvent.Type.STAGE_INSTANCE) && guildScheduledEvent.getLocation().equals(String.valueOf(channelId)))
                         .forEach(guildScheduledEvent -> guild.getScheduledEventsView().remove(guildScheduledEvent.getIdLong()));
                 break;
             }

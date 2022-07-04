@@ -981,16 +981,12 @@ public class EntityBuilder
         switch (type)
         {
         case STAGE_INSTANCE:
-            StageChannel stageChannel = guild.getStageChannelById(json.getLong("channel_id"));
-            guildScheduledEvent.setStageChannel(stageChannel);
-            break;
         case VOICE:
-            VoiceChannel voiceChannel = guild.getVoiceChannelById(json.getLong("channel_id"));
-            guildScheduledEvent.setVoiceChannel(voiceChannel);
+            guildScheduledEvent.setLocation(json.get("channel_id").toString());
             break;
         case EXTERNAL:
             String externalLocation = json.getObject("entity_metadata").getString("location");
-            guildScheduledEvent.setExternalLocation(externalLocation);
+            guildScheduledEvent.setLocation(externalLocation);
         }
         return guildScheduledEvent;
     }
