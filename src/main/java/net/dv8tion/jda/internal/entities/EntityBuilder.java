@@ -72,7 +72,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAccessor;
 import java.util.*;
 import java.util.function.Function;
-import java.util.function.ToLongFunction;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -978,6 +977,7 @@ public class EntityBuilder
                 guildScheduledEvent.setCreator(getJDA().getUserById(creatorId));
         }
         final GuildScheduledEvent.Type type = GuildScheduledEvent.Type.fromKey(json.getInt("entity_type"));
+        guildScheduledEvent.setType(type);
         switch (type)
         {
         case STAGE_INSTANCE:

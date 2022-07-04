@@ -106,6 +106,7 @@ public class GuildScheduledEventUpdateHandler extends SocketHandler
             event.setStageChannel(null);
             event.setVoiceChannel(null);
             event.setExternalLocation(location);
+            event.setType(GuildScheduledEvent.Type.EXTERNAL);
             getJDA().handleEvent(new GuildScheduledEventUpdateLocationEvent(getJDA(), responseNumber, event, oldLocation));
         }
         if (channel instanceof StageChannel && !Objects.equals(channel, event.getStageChannel()))
@@ -114,6 +115,7 @@ public class GuildScheduledEventUpdateHandler extends SocketHandler
             event.setVoiceChannel(null);
             event.setExternalLocation(null);
             event.setStageChannel((StageChannel) channel);
+            event.setType(GuildScheduledEvent.Type.STAGE_INSTANCE);
             getJDA().handleEvent(new GuildScheduledEventUpdateLocationEvent(getJDA(), responseNumber, event, oldLocation));
         }
         if (channel instanceof VoiceChannel && !Objects.equals(channel, event.getVoiceChannel()))
@@ -122,6 +124,7 @@ public class GuildScheduledEventUpdateHandler extends SocketHandler
             event.setStageChannel(null);
             event.setExternalLocation(null);
             event.setVoiceChannel((VoiceChannel) channel);
+            event.setType(GuildScheduledEvent.Type.VOICE);
             getJDA().handleEvent(new GuildScheduledEventUpdateLocationEvent(getJDA(), responseNumber, event, oldLocation));
         }
         if (!Objects.equals(imageUrl, event.getImageUrl()))

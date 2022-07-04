@@ -43,6 +43,7 @@ public class GuildScheduledEventImpl implements GuildScheduledEvent
     private OffsetDateTime startTime, endTime;
     private String image;
     private Status status;
+    private Type type;
     private User creator;
     private long creatorId;
     private int interestedUserCount;
@@ -103,13 +104,7 @@ public class GuildScheduledEventImpl implements GuildScheduledEvent
     @Override
     public Type getType()
     {
-        if (stageChannel != null)
-            return Type.STAGE_INSTANCE;
-        if (voiceChannel != null)
-            return Type.VOICE;
-        if (externalLocation != null)
-            return Type.EXTERNAL;
-        return Type.UNKNOWN;
+        return type;
     }
 
     @Nonnull
@@ -226,6 +221,12 @@ public class GuildScheduledEventImpl implements GuildScheduledEvent
     public GuildScheduledEventImpl setName(String name)
     {
         this.name = name;
+        return this;
+    }
+
+    public GuildScheduledEventImpl setType(Type type)
+    {
+        this.type = type;
         return this;
     }
 

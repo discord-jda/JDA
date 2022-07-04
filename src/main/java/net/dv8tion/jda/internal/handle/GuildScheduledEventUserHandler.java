@@ -17,8 +17,6 @@
 package net.dv8tion.jda.internal.handle;
 
 import net.dv8tion.jda.api.entities.GuildScheduledEvent;
-import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.events.guild.scheduledevent.GuildScheduledEventCreateEvent;
 import net.dv8tion.jda.api.events.guild.scheduledevent.GuildScheduledEventUserAddEvent;
 import net.dv8tion.jda.api.events.guild.scheduledevent.GuildScheduledEventUserRemoveEvent;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
