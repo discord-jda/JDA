@@ -233,7 +233,6 @@ public class EntityBuilder
         final DataArray roleArray = guildJson.getArray("roles");
         final DataArray channelArray = guildJson.getArray("channels");
         final DataArray threadArray = guildJson.getArray("threads");
-        final DataArray emotesArray = guildJson.getArray("emojis");
         final DataArray scheduledEventsArray = guildJson.getArray("guild_scheduled_events");
         final DataArray emojisArray = guildJson.getArray("emojis");
         final DataArray stickersArray = guildJson.getArray("stickers");

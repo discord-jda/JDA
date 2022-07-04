@@ -657,7 +657,10 @@ public class DataObject implements SerializableData
      *
      * @throws net.dv8tion.jda.api.exceptions.ParsingException
      *         If the value is missing, null, or not a valid ISO8601 timestamp
+     *
+     * @return Possibly-null {@link OffsetDateTime} object representing the timestamp
      */
+    @Nullable
     public OffsetDateTime getOffsetDateTime(@Nonnull String key)
     {
         OffsetDateTime value = getOffsetDateTime(key, null);

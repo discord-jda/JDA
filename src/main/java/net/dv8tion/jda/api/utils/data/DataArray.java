@@ -35,6 +35,8 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.*;
 import java.nio.ByteBuffer;
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeParseException;
 import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -520,6 +522,56 @@ public class DataArray implements Iterable<Object>, SerializableArray
         if (value == null)
             throw valueError(index, "unsigned long");
         return value;
+    }
+
+    /**
+     * Resolves an {@link OffsetDateTime} to a key.
+     * <br><b>Note:</b> This method should be used on ISO8601 timestamps
+     *
+     * @param key
+     *        The key to check for a value
+     *
+     * @throws net.dv8tion.jda.api.exceptions.ParsingException
+     *         If the value is missing, null, or not a valid ISO8601 timestamp
+     *
+     * @return Possibly-null {@link OffsetDateTime} object representing the timestamp
+     */
+    @Nullable
+    public OffsetDateTime getOffsetDateTime(int index, @Nonnull String key)
+    {
+        OffsetDateTime value = getOffsetDateTime(index, key, null);
+        if(value == null)
+            throw valueError(index, "OffsetDateTime");
+        return value;
+    }
+    /**
+     * Resolves an {@link OffsetDateTime} to a key.
+     * <br><b>Note:</b> This method should only be used on ISO8601 timestamps
+     *
+     * @param  key
+     *         The key to check for a value
+     * @param  defaultValue
+     *         Alternative value to use when no value or null value is associated with the key
+     *
+     * @throws net.dv8tion.jda.api.exceptions.ParsingException
+     *         If the value is not a valid ISO8601 timestamp
+     *
+     * @return Possibly-null {@link OffsetDateTime} object representing the timestamp
+     */
+    @Nullable
+    public OffsetDateTime getOffsetDateTime(int index, @Nonnull String key, @Nullable OffsetDateTime defaultValue)
+    {
+        OffsetDateTime value;
+        try
+        {
+            value = get(OffsetDateTime.class, index, OffsetDateTime::parse, null);
+        }
+        catch (DateTimeParseException e)
+        {
+            String reason = "Cannot parse value for %s into an OffsetDateTime object. Try double checking that %s is a valid ISO8601 timestmap";
+            throw new ParsingException(String.format(reason, key, e.getParsedString()));
+        }
+        return value == null ? defaultValue : value;
     }
 
     /**
