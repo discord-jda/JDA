@@ -549,10 +549,7 @@ public class GuildImpl implements Guild
     @Nonnull
     public List<GuildScheduledEvent> getScheduledEvents()
     {
-        return Collections.unmodifiableList(
-                getScheduledEventsView().stream()
-                        .filter(Objects::nonNull)
-                        .collect(Collectors.toList()));
+        return getScheduledEventsView().asList();
     }
 
     @Nonnull
