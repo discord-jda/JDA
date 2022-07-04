@@ -48,11 +48,6 @@ public class GuildScheduledEventDeleteHandler extends SocketHandler
 
         final long eventId = content.getLong("id");
         GuildScheduledEvent removedEvent = guild.getScheduledEventsView().remove(eventId);
-        if (removedEvent == null)
-        {
-            WebSocketClient.LOG.debug("GUILD_SCHEDULED_EVENT_DELETE was received for a Role that is not yet cached: {}", content);
-            return null;
-        }
 
         getJDA().handleEvent(
             new GuildScheduledEventDeleteEvent(

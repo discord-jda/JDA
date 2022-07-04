@@ -131,7 +131,7 @@ public class GuildScheduledEventUpdateHandler extends SocketHandler
         {
             String oldImageUrl = event.getImageUrl();
             event.setImage(imageUrl);
-            getJDA().handleEvent(new GuildScheduledEventUpdateDescriptionEvent(getJDA(), responseNumber, event, oldImageUrl));
+            getJDA().handleEvent(new GuildScheduledEventUpdateImageEvent(getJDA(), responseNumber, event, oldImageUrl));
         }
         return null;
     }
