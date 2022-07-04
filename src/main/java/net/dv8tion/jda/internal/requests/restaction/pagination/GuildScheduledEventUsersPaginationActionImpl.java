@@ -60,14 +60,15 @@ public class GuildScheduledEventUsersPaginationActionImpl extends PaginationActi
             {
                 User user = builder.createUser(array.getObject(i).getObject("user"));
                 users.add(user);
+                last = user;
+                lastKey = last.getIdLong();
             }
             catch (ParsingException | NullPointerException e)
             {
                 LOG.warn("Encountered an exception in GuildScheduledEventPagination", e);
             }
         }
-        last = users.get(users.size() - 1);
-        lastKey = last.getIdLong();
+
         request.onSuccess(users);
     }
     @Override

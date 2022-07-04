@@ -169,7 +169,7 @@ public interface GuildScheduledEvent extends ISnowflake, Comparable<GuildSchedul
      * @see    #getType()
      * @see    #getVoiceChannel()
      * @see    #getStageChannel()
-     * @see    #getExternalLocation()
+     * @see    #getLocation()
      */
     @Nullable
     GuildChannel getChannel();
@@ -184,7 +184,7 @@ public interface GuildScheduledEvent extends ISnowflake, Comparable<GuildSchedul
      * @see    #getType()
      * @see    #getChannel()
      * @see    #getVoiceChannel()
-     * @see    #getExternalLocation()
+     * @see    #getLocation()
      */
     @Nullable
     StageChannel getStageChannel();
@@ -199,7 +199,7 @@ public interface GuildScheduledEvent extends ISnowflake, Comparable<GuildSchedul
      * @see    #getType()
      * @see    #getChannel()
      * @see    #getStageChannel()
-     * @see    #getExternalLocation()
+     * @see    #getLocation()
      */
     @Nullable
     VoiceChannel getVoiceChannel();
@@ -215,8 +215,8 @@ public interface GuildScheduledEvent extends ISnowflake, Comparable<GuildSchedul
      * @see    #getStageChannel()
      * @see    #getVoiceChannel()
      */
-    @Nullable
-    String getExternalLocation();
+
+    String getLocation();
 
     /**
      * Deletes this Guild Scheduled Event.

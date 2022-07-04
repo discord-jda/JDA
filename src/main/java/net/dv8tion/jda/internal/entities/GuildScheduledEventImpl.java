@@ -151,11 +151,15 @@ public class GuildScheduledEventImpl implements GuildScheduledEvent
         return voiceChannel;
     }
 
-    @Nullable
     @Override
-    public String getExternalLocation()
+    public String getLocation()
     {
-        return externalLocation;
+        if (stageChannel != null)
+            return stageChannel.getId();
+        else if (voiceChannel != null)
+            return voiceChannel.getId();
+        else
+            return externalLocation;
     }
 
     @Override
