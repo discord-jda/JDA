@@ -43,15 +43,12 @@ public class GuildScheduledEventCreateHandler extends SocketHandler
         if (guild == null)
         {
             EventCache.LOG.debug("Caching GUILD_SCHEDULED_EVENT_CREATE for uncached guild with id {}", guildId);
-            getJDA().getEventCache().cache(EventCache.Type.GUILD_SCHEDULED_EVENT, guildId, responseNumber, allContent, this::handle);
+            getJDA().getEventCache().cache(EventCache.Type.GUILD, guildId, responseNumber, allContent, this::handle);
             return null;
         }
 
         GuildScheduledEvent event = getJDA().getEntityBuilder().createGuildScheduledEvent(guild, content, guildId);
-        if (event != null)
-        {
-            getJDA().handleEvent(new GuildScheduledEventCreateEvent(getJDA(), responseNumber, event));
-        }
+        getJDA().handleEvent(new GuildScheduledEventCreateEvent(getJDA(), responseNumber, event));
         return null;
     }
 }
