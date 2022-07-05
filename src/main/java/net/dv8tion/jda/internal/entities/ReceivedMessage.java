@@ -34,6 +34,7 @@ import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
+import net.dv8tion.jda.api.requests.restaction.ThreadChannelAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationAction;
 import net.dv8tion.jda.api.utils.MarkdownSanitizer;
 import net.dv8tion.jda.api.utils.data.DataObject;
@@ -646,7 +647,7 @@ public class ReceivedMessage extends AbstractMessage
     }
 
     @Override
-    public RestAction<ThreadChannel> createThreadChannel(String name)
+    public ThreadChannelAction createThreadChannel(String name)
     {
         return ((IThreadContainer) getGuildChannel()).createThreadChannel(name, this.getIdLong());
     }
