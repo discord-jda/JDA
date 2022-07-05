@@ -18,6 +18,7 @@ package net.dv8tion.jda.internal.handle;
 
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
+import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionRemoveEvent;
 import net.dv8tion.jda.api.utils.data.DataArray;
@@ -149,7 +150,7 @@ public class MessageReactionHandler extends SocketHandler
         // reaction remove has null name sometimes
         if (emoji.isNull("name"))
             emoji.put("name", "");
-        Emoji rEmoji = Emoji.fromData(emoji);
+        EmojiUnion rEmoji = Emoji.fromData(emoji);
 
         MessageReaction reaction = new MessageReaction(channel, rEmoji, messageId, userId == api.getSelfUser().getIdLong(), -1);
 

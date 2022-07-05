@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.MessageReaction;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
+import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
 import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
 import javax.annotation.Nonnull;
@@ -65,7 +66,7 @@ public class MessageReactionRemoveEmojiEvent extends GenericMessageEvent
      * @return The Emoji for the reaction
      */
     @Nonnull
-    public Emoji getEmoji()
+    public EmojiUnion getEmoji()
     {
         return reaction.getEmoji();
     }
