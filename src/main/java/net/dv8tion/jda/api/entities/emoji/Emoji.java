@@ -174,7 +174,7 @@ public interface Emoji extends SerializableData, Formattable
         if (emoji.isNull("id"))
             return (EmojiUnion) fromUnicode(emoji.getString("name"));
         else
-            return (EmojiUnion) fromCustom(emoji.getString("name"), emoji.getUnsignedLong("id"), emoji.getBoolean("animated"));
+            return (EmojiUnion) fromCustom(emoji.getString("name", ""), emoji.getUnsignedLong("id"), emoji.getBoolean("animated"));
     }
 
     /**

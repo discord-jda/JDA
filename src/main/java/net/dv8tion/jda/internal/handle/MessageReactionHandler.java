@@ -147,11 +147,7 @@ public class MessageReactionHandler extends SocketHandler
             );
         }
 
-        // reaction remove has null name sometimes
-        if (emoji.isNull("name"))
-            emoji.put("name", "");
         EmojiUnion rEmoji = Emoji.fromData(emoji);
-
         MessageReaction reaction = new MessageReaction(channel, rEmoji, messageId, userId == api.getSelfUser().getIdLong(), -1);
 
         if (channel.getType() == ChannelType.PRIVATE)
