@@ -16,16 +16,26 @@
 
 package net.dv8tion.jda.api.interactions;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.*;
-import net.dv8tion.jda.api.interactions.callbacks.*;
+import net.dv8tion.jda.api.entities.Channel;
+import net.dv8tion.jda.api.entities.ChannelType;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.GuildChannel;
+import net.dv8tion.jda.api.entities.ISnowflake;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.interactions.callbacks.IAutoCompleteCallback;
+import net.dv8tion.jda.api.interactions.callbacks.IDeferrableCallback;
+import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback;
+import net.dv8tion.jda.api.interactions.callbacks.IModalCallback;
+import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.components.Modal;
 import net.dv8tion.jda.internal.utils.Helpers;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.Locale;
 
 /**
  * Abstract representation for any kind of Discord interaction.
@@ -185,7 +195,7 @@ public interface Interaction extends ISnowflake
      * @return The language of the invoking user
      */
     @Nonnull
-    Locale getUserLocale();
+    DiscordLocale getUserLocale();
 
     /**
      * Returns the preferred language of the Guild.
@@ -197,7 +207,7 @@ public interface Interaction extends ISnowflake
      * @return The preferred language of the Guild
      */
     @Nonnull
-    default Locale getGuildLocale()
+    default DiscordLocale getGuildLocale()
     {
         if (!isFromGuild())
             throw new IllegalStateException("This interaction did not happen in a guild");

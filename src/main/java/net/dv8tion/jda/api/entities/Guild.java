@@ -25,6 +25,7 @@ import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import net.dv8tion.jda.api.entities.sticker.*;
 import net.dv8tion.jda.api.entities.templates.Template;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
+import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.PrivilegeConfig;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
@@ -658,14 +659,14 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * The preferred locale for this guild.
      * <br>If the guild doesn't have the COMMUNITY feature, this returns the default.
      *
-     * <br>Default: {@link Locale#US}
+     * <br>Default: {@link DiscordLocale#ENGLISH_US}
      *
-     * @return The preferred {@link Locale} for this guild
+     * @return The preferred {@link DiscordLocale} for this guild
      *
      * @since  4.2.1
      */
     @Nonnull
-    Locale getLocale();
+    DiscordLocale getLocale();
 
     /**
      * The guild banner id.

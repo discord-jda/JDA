@@ -33,6 +33,7 @@ import net.dv8tion.jda.api.exceptions.HierarchyException;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.exceptions.ParsingException;
 import net.dv8tion.jda.api.exceptions.PermissionException;
+import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.PrivilegeConfig;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
@@ -128,7 +129,7 @@ public class GuildImpl implements Guild
     private NSFWLevel nsfwLevel = NSFWLevel.UNKNOWN;
     private Timeout afkTimeout;
     private BoostTier boostTier = BoostTier.NONE;
-    private Locale preferredLocale = Locale.US;
+    private DiscordLocale preferredLocale = DiscordLocale.ENGLISH_US;
     private int memberCount;
     private boolean boostProgressBarEnabled;
 
@@ -440,7 +441,7 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public Locale getLocale()
+    public DiscordLocale getLocale()
     {
         return preferredLocale;
     }
@@ -2053,7 +2054,7 @@ public class GuildImpl implements Guild
 
     public GuildImpl setLocale(String locale)
     {
-        this.preferredLocale = Locale.forLanguageTag(locale);
+        this.preferredLocale = DiscordLocale.from(locale);
         return this;
     }
 

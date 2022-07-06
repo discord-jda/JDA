@@ -16,17 +16,17 @@
 
 package net.dv8tion.jda.api.events.interaction;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Channel;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.Event;
+import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.interactions.Interaction;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.Locale;
 
 /**
  * Indicates that an {@link Interaction} was created.
@@ -89,14 +89,14 @@ public class GenericInteractionCreateEvent extends Event implements Interaction
 
     @Nonnull
     @Override
-    public Locale getUserLocale()
+    public DiscordLocale getUserLocale()
     {
         return interaction.getUserLocale();
     }
 
     @Nonnull
     @Override
-    public Locale getGuildLocale()
+    public DiscordLocale getGuildLocale()
     {
         return interaction.getGuildLocale();
     }

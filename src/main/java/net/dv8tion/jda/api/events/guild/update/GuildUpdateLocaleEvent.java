@@ -16,14 +16,14 @@
 
 package net.dv8tion.jda.api.events.guild.update;
 
+import javax.annotation.Nonnull;
+
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
-
-import javax.annotation.Nonnull;
-import java.util.Locale;
+import net.dv8tion.jda.api.interactions.DiscordLocale;
 
 /**
- * Indicates that the {@link Locale} of a {@link net.dv8tion.jda.api.entities.Guild Guild} changed.
+ * Indicates that the {@link DiscordLocale} of a {@link net.dv8tion.jda.api.entities.Guild Guild} changed.
  *
  * <p>Can be used to detect when a Locale changes and retrieve the old one
  *
@@ -32,25 +32,25 @@ import java.util.Locale;
  * @since  4.2.1
  */
 @SuppressWarnings("ConstantConditions")
-public class GuildUpdateLocaleEvent extends GenericGuildUpdateEvent<Locale>
+public class GuildUpdateLocaleEvent extends GenericGuildUpdateEvent<DiscordLocale>
 {
     public static final String IDENTIFIER = "locale";
 
-    public GuildUpdateLocaleEvent(@Nonnull JDA api, long responseNumber, @Nonnull Guild guild, @Nonnull Locale previous)
+    public GuildUpdateLocaleEvent(@Nonnull JDA api, long responseNumber, @Nonnull Guild guild, @Nonnull DiscordLocale previous)
     {
         super(api, responseNumber, guild, previous, guild.getLocale(), IDENTIFIER);
     }
 
     @Nonnull
     @Override
-    public Locale getOldValue()
+    public DiscordLocale getOldValue()
     {
         return super.getOldValue();
     }
 
     @Nonnull
     @Override
-    public Locale getNewValue()
+    public DiscordLocale getNewValue()
     {
         return super.getNewValue();
     }

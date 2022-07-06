@@ -15,23 +15,45 @@
  */
 package net.dv8tion.jda.internal.handle;
 
+import java.util.Collections;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
+
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.VoiceChannel;
-import net.dv8tion.jda.api.events.guild.update.*;
+import net.dv8tion.jda.api.events.guild.update.GuildUpdateAfkChannelEvent;
+import net.dv8tion.jda.api.events.guild.update.GuildUpdateAfkTimeoutEvent;
+import net.dv8tion.jda.api.events.guild.update.GuildUpdateBannerEvent;
+import net.dv8tion.jda.api.events.guild.update.GuildUpdateBoostCountEvent;
+import net.dv8tion.jda.api.events.guild.update.GuildUpdateBoostTierEvent;
+import net.dv8tion.jda.api.events.guild.update.GuildUpdateCommunityUpdatesChannelEvent;
+import net.dv8tion.jda.api.events.guild.update.GuildUpdateDescriptionEvent;
+import net.dv8tion.jda.api.events.guild.update.GuildUpdateExplicitContentLevelEvent;
+import net.dv8tion.jda.api.events.guild.update.GuildUpdateFeaturesEvent;
+import net.dv8tion.jda.api.events.guild.update.GuildUpdateIconEvent;
+import net.dv8tion.jda.api.events.guild.update.GuildUpdateLocaleEvent;
+import net.dv8tion.jda.api.events.guild.update.GuildUpdateMFALevelEvent;
+import net.dv8tion.jda.api.events.guild.update.GuildUpdateMaxMembersEvent;
+import net.dv8tion.jda.api.events.guild.update.GuildUpdateMaxPresencesEvent;
+import net.dv8tion.jda.api.events.guild.update.GuildUpdateNSFWLevelEvent;
+import net.dv8tion.jda.api.events.guild.update.GuildUpdateNameEvent;
+import net.dv8tion.jda.api.events.guild.update.GuildUpdateNotificationLevelEvent;
+import net.dv8tion.jda.api.events.guild.update.GuildUpdateOwnerEvent;
+import net.dv8tion.jda.api.events.guild.update.GuildUpdateRulesChannelEvent;
+import net.dv8tion.jda.api.events.guild.update.GuildUpdateSplashEvent;
+import net.dv8tion.jda.api.events.guild.update.GuildUpdateSystemChannelEvent;
+import net.dv8tion.jda.api.events.guild.update.GuildUpdateVanityCodeEvent;
+import net.dv8tion.jda.api.events.guild.update.GuildUpdateVerificationLevelEvent;
+import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.requests.WebSocketClient;
-
-import java.util.Collections;
-import java.util.Locale;
-import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 public class GuildUpdateHandler extends SocketHandler
 {
@@ -81,7 +103,7 @@ public class GuildUpdateHandler extends SocketHandler
         Guild.NSFWLevel nsfwLevel = Guild.NSFWLevel.fromKey(content.getInt("nsfw_level", -1));
         Guild.ExplicitContentLevel explicitContentLevel = Guild.ExplicitContentLevel.fromKey(content.getInt("explicit_content_filter"));
         Guild.Timeout afkTimeout = Guild.Timeout.fromKey(content.getInt("afk_timeout"));
-        Locale locale = Locale.forLanguageTag(content.getString("preferred_locale", "en-US"));
+        DiscordLocale locale = DiscordLocale.from(content.getString("preferred_locale", "en-US"));
         VoiceChannel afkChannel = content.isNull("afk_channel_id")
                 ? null : guild.getVoiceChannelsView().get(content.getLong("afk_channel_id"));
         TextChannel systemChannel = content.isNull("system_channel_id")
@@ -262,8 +284,8 @@ public class GuildUpdateHandler extends SocketHandler
         }
         if (!Objects.equals(locale, guild.getLocale()))
         {
-            Locale oldLocale = guild.getLocale();
-            guild.setLocale(locale.toLanguageTag());
+        	DiscordLocale oldLocale = guild.getLocale();
+            guild.setLocale(locale.getLocale());
             getJDA().handleEvent(
                 new GuildUpdateLocaleEvent(
                     getJDA(), responseNumber,
