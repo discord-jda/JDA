@@ -16,11 +16,11 @@
 
 package net.dv8tion.jda.api.events.guild.update;
 
-import javax.annotation.Nonnull;
-
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
+
+import javax.annotation.Nonnull;
 
 /**
  * Indicates that the {@link DiscordLocale} of a {@link net.dv8tion.jda.api.entities.Guild Guild} changed.

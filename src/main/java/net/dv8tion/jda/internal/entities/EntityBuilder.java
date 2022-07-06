@@ -16,25 +16,6 @@
 
 package net.dv8tion.jda.internal.entities;
 
-import java.time.Instant;
-import java.time.OffsetDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.TemporalAccessor;
-import java.util.*;
-import java.util.function.Function;
-import java.util.function.UnaryOperator;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.map.CaseInsensitiveMap;
-import org.slf4j.Logger;
-
-import gnu.trove.map.TLongObjectMap;
-import gnu.trove.map.hash.TLongObjectHashMap;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.audit.ActionType;
@@ -79,6 +60,26 @@ import net.dv8tion.jda.internal.utils.JDALogger;
 import net.dv8tion.jda.internal.utils.UnlockHook;
 import net.dv8tion.jda.internal.utils.cache.MemberCacheViewImpl;
 import net.dv8tion.jda.internal.utils.cache.SnowflakeCacheViewImpl;
+
+import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAccessor;
+import java.util.*;
+import java.util.function.Function;
+import java.util.function.UnaryOperator;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.map.CaseInsensitiveMap;
+import org.slf4j.Logger;
+
+import gnu.trove.map.TLongObjectMap;
+import gnu.trove.map.hash.TLongObjectHashMap;
 
 public class EntityBuilder
 {
@@ -249,7 +250,7 @@ public class EntityBuilder
                 .setDefaultNotificationLevel(Guild.NotificationLevel.fromKey(notificationLevel))
                 .setExplicitContentLevel(Guild.ExplicitContentLevel.fromKey(explicitContentLevel))
                 .setRequiredMFALevel(Guild.MFALevel.fromKey(mfaLevel))
-                .setLocale(locale)
+                .setLocale(DiscordLocale.from(locale))
                 .setBoostCount(boostCount)
                 .setBoostTier(boostTier)
                 .setMemberCount(memberCount)

@@ -16,15 +16,15 @@
 
 package net.dv8tion.jda.api.interactions;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.interactions.callbacks.*;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.components.Modal;
 import net.dv8tion.jda.internal.utils.Helpers;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Abstract representation for any kind of Discord interaction.

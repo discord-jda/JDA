@@ -15,12 +15,6 @@
  */
 package net.dv8tion.jda.internal.handle;
 
-import java.util.Collections;
-import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
-
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.TextChannel;
@@ -32,6 +26,12 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.requests.WebSocketClient;
+
+import java.util.Collections;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 public class GuildUpdateHandler extends SocketHandler
 {
@@ -263,7 +263,7 @@ public class GuildUpdateHandler extends SocketHandler
         if (!Objects.equals(locale, guild.getLocale()))
         {
         	DiscordLocale oldLocale = guild.getLocale();
-            guild.setLocale(locale.getLocale());
+            guild.setLocale(locale);
             getJDA().handleEvent(
                 new GuildUpdateLocaleEvent(
                     getJDA(), responseNumber,

@@ -16,12 +16,6 @@
 
 package net.dv8tion.jda.api.entities.templates;
 
-import java.util.Collections;
-import java.util.List;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Guild.ExplicitContentLevel;
 import net.dv8tion.jda.api.entities.Guild.NotificationLevel;
@@ -30,6 +24,12 @@ import net.dv8tion.jda.api.entities.Guild.VerificationLevel;
 import net.dv8tion.jda.api.entities.ISnowflake;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.utils.ImageProxy;
+
+import java.util.Collections;
+import java.util.List;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * POJO for the guild information provided by a template.
