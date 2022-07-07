@@ -40,6 +40,7 @@ import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
+import net.dv8tion.jda.api.requests.restaction.ThreadChannelAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationAction;
 import net.dv8tion.jda.api.utils.AttachmentOption;
 import net.dv8tion.jda.api.utils.AttachmentProxy;
@@ -2032,7 +2033,7 @@ public interface Message extends ISnowflake, Formattable
 
     //TODO-v5: Docs
     @CheckReturnValue
-    RestAction<ThreadChannel> createThreadChannel(String name);
+    ThreadChannelAction createThreadChannel(String name);
 
     /**
      * Mention constants, useful for use with {@link java.util.regex.Pattern Patterns}
