@@ -1159,6 +1159,6 @@ public interface ShardManager extends IGuildChannelContainer
      * @throws InvalidTokenException
      *         If the provided token is invalid.
      */
-    void login() ;
+    void login();
 
 }

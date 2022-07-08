@@ -268,17 +268,17 @@ public class JDAImpl implements JDA
         }
     }
 
-    public int login() 
+    public int login()
     {
         return login(null, null, Compression.ZLIB, true, GatewayIntent.ALL_INTENTS, GatewayEncoding.JSON);
     }
 
-    public int login(ShardInfo shardInfo, Compression compression, boolean validateToken, int intents, GatewayEncoding encoding) 
+    public int login(ShardInfo shardInfo, Compression compression, boolean validateToken, int intents, GatewayEncoding encoding)
     {
         return login(null, shardInfo, compression, validateToken, intents, encoding);
     }
 
-    public int login(String gatewayUrl, ShardInfo shardInfo, Compression compression, boolean validateToken, int intents, GatewayEncoding encoding) 
+    public int login(String gatewayUrl, ShardInfo shardInfo, Compression compression, boolean validateToken, int intents, GatewayEncoding encoding)
     {
         this.shardInfo = shardInfo;
         threadConfig.init(this::getIdentifierString);
@@ -363,7 +363,7 @@ public class JDAImpl implements JDA
         }
     }
 
-    public void verifyToken() 
+    public void verifyToken()
     {
         RestActionImpl<DataObject> login = new RestActionImpl<DataObject>(this, Route.Self.GET_SELF.compile())
         {

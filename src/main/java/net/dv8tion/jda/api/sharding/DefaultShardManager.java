@@ -257,7 +257,7 @@ public class DefaultShardManager implements ShardManager
     }
 
     @Override
-    public void login() 
+    public void login()
     {
         // building the first one in the current thread ensures that InvalidTokenException and IllegalArgumentException can be thrown on login
         JDAImpl jda = null;
@@ -472,7 +472,7 @@ public class DefaultShardManager implements ShardManager
         }
     }
 
-    protected JDAImpl buildInstance(final int shardId) 
+    protected JDAImpl buildInstance(final int shardId)
     {
         OkHttpClient httpClient = sessionConfig.getHttpClient();
         if (httpClient == null)

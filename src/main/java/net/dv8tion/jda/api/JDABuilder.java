@@ -1751,7 +1751,7 @@ public class JDABuilder
      * @see    net.dv8tion.jda.api.JDA#awaitReady()
      */
     @Nonnull
-    public JDA build() 
+    public JDA build()
     {
         checkIntents();
         OkHttpClient httpClient = this.httpClient;

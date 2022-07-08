@@ -203,7 +203,7 @@ public class MessageListener extends ListenerAdapter
 ```java
 public class Bot extends ListenerAdapter
 {
-    public static void main(String[] args) 
+    public static void main(String[] args)
     {
         if (args.length < 1) {
             System.out.println("You have to provide a token as first argument!");
@@ -240,7 +240,7 @@ public class Bot extends ListenerAdapter
 ```java
 public class Bot extends ListenerAdapter
 {
-    public static void main(String[] args) 
+    public static void main(String[] args)
     {
         if (args.length < 1) {
             System.out.println("You have to provide a token as first argument!");

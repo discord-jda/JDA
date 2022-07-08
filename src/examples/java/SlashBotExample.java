@@ -38,7 +38,7 @@ import static net.dv8tion.jda.api.interactions.commands.OptionType.*;
 
 public class SlashBotExample extends ListenerAdapter
 {
-    public static void main(String[] args) 
+    public static void main(String[] args)
     {
         JDA jda = JDABuilder.createLight("BOT_TOKEN_HERE", EnumSet.noneOf(GatewayIntent.class)) // slash commands don't need any intents
                 .addEventListeners(new SlashBotExample())
