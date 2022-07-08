@@ -71,9 +71,9 @@ public class MessageHistory
         Checks.notNull(channel, "Channel");
         this.channel = channel;
 
-        if (channel instanceof IPermissionContainer)
+        if (channel instanceof GuildChannel)
         {
-            IPermissionContainer guildChannel = (IPermissionContainer) channel;
+            IPermissionContainer guildChannel = ((GuildChannel) channel).getPermissionContainer();
             Member selfMember = guildChannel.getGuild().getSelfMember();
             Checks.checkAccess(selfMember, guildChannel);
             if (!selfMember.hasPermission(guildChannel, Permission.MESSAGE_HISTORY))
@@ -531,9 +531,9 @@ public class MessageHistory
     {
         Checks.isSnowflake(messageId, "Message ID");
         Checks.notNull(channel, "Channel");
-        if (channel instanceof IPermissionContainer)
+        if (channel instanceof GuildChannel)
         {
-            IPermissionContainer guildChannel = (IPermissionContainer) channel;
+            IPermissionContainer guildChannel = ((GuildChannel) channel).getPermissionContainer();
             Member selfMember = guildChannel.getGuild().getSelfMember();
             Checks.checkAccess(selfMember, guildChannel);
             if (!selfMember.hasPermission(guildChannel, Permission.MESSAGE_HISTORY))
