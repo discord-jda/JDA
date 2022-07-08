@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.entities.channel;
+package net.dv8tion.jda.api.entities.channel.attribute;
 
 import net.dv8tion.jda.api.entities.GuildChannel;
 

@@ -16,7 +16,7 @@
 
 package net.dv8tion.jda.api.managers.channel.attribute;
 
-import net.dv8tion.jda.api.entities.channel.IAgeRestrictedChannel;
+import net.dv8tion.jda.api.entities.channel.attribute.IAgeRestrictedChannel;
 import net.dv8tion.jda.api.managers.channel.ChannelManager;
 
 import javax.annotation.CheckReturnValue;
