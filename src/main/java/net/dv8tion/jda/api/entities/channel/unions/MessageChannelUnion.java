@@ -134,7 +134,8 @@ public interface MessageChannelUnion extends MessageChannel
      * VoiceChannel channel2 = (VoiceChannel) union;
      * </code></pre>
      *
-     * You can use <code>channel instanceof VoiceChannel</code> to validate whether you can call this method.
+     * You can use {@link #getType()} to see if the channel is of type {@link ChannelType#VOICE} to validate
+     * whether you can call this method in addition to normal instanceof checks: <code>channel instanceof VoiceChannel</code>
      *
      * @throws IllegalStateException
      *         If the channel represented by this union is not actually a {@link VoiceChannel}.
