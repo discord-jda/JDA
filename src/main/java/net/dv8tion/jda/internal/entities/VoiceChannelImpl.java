@@ -85,6 +85,19 @@ public class VoiceChannelImpl extends AbstractStandardGuildChannelImpl<VoiceChan
         return nsfw;
     }
 
+    @Override
+    public boolean canTalk(@Nonnull Member member)
+    {
+        Checks.notNull(member, "Member");
+        return member.hasPermission(this, Permission.MESSAGE_SEND);
+    }
+
+    @Override
+    public long getLatestMessageIdLong()
+    {
+        return latestMessageId;
+    }
+
     @Nonnull
     @Override
     public List<Member> getMembers()
@@ -154,31 +167,18 @@ public class VoiceChannelImpl extends AbstractStandardGuildChannelImpl<VoiceChan
         return this;
     }
 
+    @Override
+    public VoiceChannelImpl setLatestMessageIdLong(long latestMessageId)
+    {
+        this.latestMessageId = latestMessageId;
+        return this;
+    }
+
     // -- Abstract Hooks --
 
     @Override
     protected void onPositionChange()
     {
         getGuild().getVoiceChannelsView().clearCachedLists();
-    }
-
-    @Override
-    public boolean canTalk(@Nonnull Member member)
-    {
-        Checks.notNull(member, "Member");
-        return member.hasPermission(this, Permission.MESSAGE_SEND);
-    }
-
-    @Override
-    public long getLatestMessageIdLong()
-    {
-        return latestMessageId;
-    }
-
-    @Override
-    public VoiceChannelImpl setLatestMessageIdLong(long latestMessageId)
-    {
-        this.latestMessageId = latestMessageId;
-        return this;
     }
 }
