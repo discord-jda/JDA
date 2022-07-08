@@ -16,9 +16,9 @@
 
 package net.dv8tion.jda.api.interactions.commands.context;
 
-import net.dv8tion.jda.api.entities.GuildMessageChannel;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.channel.unions.GuildMessageChannelUnion;
+import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -37,12 +37,12 @@ public interface MessageContextInteraction extends ContextInteraction<Message>
 
     @Nullable
     @Override
-    MessageChannel getChannel();
+    MessageChannelUnion getChannel();
 
     @Nonnull
     @Override
-    default GuildMessageChannel getGuildChannel()
+    default GuildMessageChannelUnion getGuildChannel()
     {
-        return (GuildMessageChannel) ContextInteraction.super.getGuildChannel();
+        return (GuildMessageChannelUnion) ContextInteraction.super.getGuildChannel();
     }
 }

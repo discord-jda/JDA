@@ -19,6 +19,7 @@ package net.dv8tion.jda.api.entities;
 import net.dv8tion.jda.annotations.Incubating;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.OnlineStatus;
+import net.dv8tion.jda.api.entities.channel.unions.DefaultGuildChannelUnion;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.utils.ImageProxy;
@@ -423,18 +424,18 @@ public interface Member extends IMentionable, IPermissionHolder, UserSnowflake
     boolean isPending();
 
     /**
-     * The default {@link net.dv8tion.jda.api.entities.BaseGuildMessageChannel BaseGuildMessageChannel} for a {@link net.dv8tion.jda.api.entities.Member Member}.
+     * The {@link DefaultGuildChannelUnion default channel} for a {@link net.dv8tion.jda.api.entities.Member Member}.
      * <br>This is the channel that the Discord client will default to opening when a Guild is opened for the first time
      * after joining the guild.
      * <br>The default channel is the channel with the highest position in which the member has
      * {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} permissions. If this requirement doesn't apply for
      * any channel in the guild, this method returns {@code null}.
      *
-     * @return The {@link net.dv8tion.jda.api.entities.BaseGuildMessageChannel BaseGuildMessageChannel} representing the default channel for this member
+     * @return The {@link DefaultGuildChannelUnion channel} representing the default channel for this member
      *         or null if no such channel exists.
      */
     @Nullable
-    BaseGuildMessageChannel getDefaultChannel();
+    DefaultGuildChannelUnion getDefaultChannel();
 
     /**
      * Bans this Member and deletes messages sent by the user based on the amount of delDays.

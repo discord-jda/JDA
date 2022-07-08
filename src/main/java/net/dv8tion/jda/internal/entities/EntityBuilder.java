@@ -1856,12 +1856,9 @@ public class EntityBuilder
         final String token = object.getString("token", null);
         final WebhookType type = WebhookType.fromKey(object.getInt("type", -1));
 
-        //TODO-v5-unified-channel-cache
-        BaseGuildMessageChannel channel = getJDA().getTextChannelById(channelId);
-        if (channel == null)
-            channel = getJDA().getNewsChannelById(channelId);
+        IWebhookContainer channel = getJDA().getChannelById(IWebhookContainer.class, channelId);
         if (channel == null && !allowMissingChannel)
-            throw new NullPointerException(String.format("Tried to create Webhook for an un-cached Guild MessageChannel! WebhookId: %s ChannelId: %s GuildId: %s",
+            throw new NullPointerException(String.format("Tried to create Webhook for an un-cached IWebhookContainer channel! WebhookId: %s ChannelId: %s GuildId: %s",
                     id, channelId, guildId));
 
         Object name = !object.isNull("name") ? object.get("name") : null;

@@ -23,6 +23,7 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.Region;
 import net.dv8tion.jda.api.audio.hooks.ConnectionStatus;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.channel.unions.DefaultGuildChannelUnion;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import net.dv8tion.jda.api.entities.sticker.GuildSticker;
 import net.dv8tion.jda.api.entities.sticker.StandardSticker;
@@ -33,8 +34,9 @@ import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.exceptions.ParsingException;
 import net.dv8tion.jda.api.exceptions.PermissionException;
 import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.commands.PrivilegeConfig;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
-import net.dv8tion.jda.api.interactions.commands.privileges.CommandPrivilege;
+import net.dv8tion.jda.api.interactions.commands.privileges.IntegrationPrivilege;
 import net.dv8tion.jda.api.managers.AudioManager;
 import net.dv8tion.jda.api.managers.GuildManager;
 import net.dv8tion.jda.api.managers.GuildStickerManager;
@@ -275,74 +277,30 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public RestAction<List<CommandPrivilege>> retrieveCommandPrivilegesById(@Nonnull String commandId)
+    public RestAction<List<IntegrationPrivilege>> retrieveIntegrationPrivilegesById(@Nonnull String targetId)
     {
-        Checks.isSnowflake(commandId, "ID");
-        Route.CompiledRoute route = Route.Interactions.GET_COMMAND_PERMISSIONS.compile(getJDA().getSelfUser().getApplicationId(), getId(), commandId);
+        Checks.isSnowflake(targetId, "ID");
+        Route.CompiledRoute route = Route.Interactions.GET_COMMAND_PERMISSIONS.compile(getJDA().getSelfUser().getApplicationId(), getId(), targetId);
         return new RestActionImpl<>(getJDA(), route, (response, request) -> parsePrivilegesList(response.getObject()));
     }
 
     @Nonnull
     @Override
-    public RestAction<Map<String, List<CommandPrivilege>>> retrieveCommandPrivileges()
+    public RestAction<PrivilegeConfig> retrieveCommandPrivileges()
     {
         Route.CompiledRoute route = Route.Interactions.GET_ALL_COMMAND_PERMISSIONS.compile(getJDA().getSelfUser().getApplicationId(), getId());
         return new RestActionImpl<>(getJDA(), route, (response, request) -> {
-            Map<String, List<CommandPrivilege>> privileges = new HashMap<>();
+            Map<String, List<IntegrationPrivilege>> privileges = new HashMap<>();
             response.getArray().stream(DataArray::getObject).forEach(obj -> {
                 String id = obj.getString("id");
-                List<CommandPrivilege> list = parsePrivilegesList(obj);
+                List<IntegrationPrivilege> list = Collections.unmodifiableList(parsePrivilegesList(obj));
                 privileges.put(id, list);
             });
-            return privileges;
+            return new PrivilegeConfig(this, privileges);
         });
     }
 
-    @Nonnull
-    @Override
-    public RestAction<List<CommandPrivilege>> updateCommandPrivilegesById(@Nonnull String id, @Nonnull Collection<? extends CommandPrivilege> privileges)
-    {
-        Checks.isSnowflake(id, "ID");
-        Checks.noneNull(privileges, "Privileges");
-        Checks.check(privileges.size() <= 10, "Cannot have more than 10 privileges for a command!");
-        Route.CompiledRoute route = Route.Interactions.EDIT_COMMAND_PERMISSIONS.compile(getJDA().getSelfUser().getApplicationId(), getId(), id);
-        DataArray array = DataArray.fromCollection(privileges);
-        return new RestActionImpl<>(getJDA(), route, DataObject.empty().put("permissions", array),
-            (response, request) -> parsePrivilegesList(response.getObject()));
-    }
-
-    @Nonnull
-    @Override
-    @SuppressWarnings("deprecation")
-    public RestAction<Map<String, List<CommandPrivilege>>> updateCommandPrivileges(@Nonnull Map<String, ? extends Collection<CommandPrivilege>> privileges)
-    {
-        Checks.notNull(privileges, "Privileges");
-        privileges.forEach((key, value) -> {
-            Checks.isSnowflake(key, "Map Key");
-            Checks.noneNull(value, "Privilege List for Command");
-            Checks.check(value.size() <= 10, "Cannot have more than 10 privileges for a command!");
-        });
-        DataArray array = DataArray.empty();
-        privileges.forEach((commandId, list) -> {
-            DataObject entry = DataObject.empty();
-            entry.put("id", commandId);
-            entry.put("permissions", DataArray.fromCollection(list));
-            array.add(entry);
-        });
-
-        Route.CompiledRoute route = Route.Interactions.EDIT_ALL_COMMAND_PERMISSIONS.compile(getJDA().getSelfUser().getApplicationId(), getId());
-        return new RestActionImpl<>(getJDA(), route, RequestBody.create(Requester.MEDIA_TYPE_JSON, array.toJson()), (response, request) -> {
-            Map<String, List<CommandPrivilege>> map = new HashMap<>();
-            response.getArray().stream(DataArray::getObject).forEach(obj -> {
-                String id = obj.getString("id");
-                List<CommandPrivilege> list = parsePrivilegesList(obj);
-                map.put(id, list);
-            });
-            return map;
-        });
-    }
-
-    private List<CommandPrivilege> parsePrivilegesList(DataObject obj)
+    private List<IntegrationPrivilege> parsePrivilegesList(DataObject obj)
     {
         return obj.getArray("permissions")
                 .stream(DataArray::getObject)
@@ -350,11 +308,11 @@ public class GuildImpl implements Guild
                 .collect(Collectors.toList());
     }
 
-    private CommandPrivilege parsePrivilege(DataObject data)
+    private IntegrationPrivilege parsePrivilege(DataObject data)
     {
-        CommandPrivilege.Type type = CommandPrivilege.Type.fromKey(data.getInt("type", 1));
+        IntegrationPrivilege.Type type = IntegrationPrivilege.Type.fromKey(data.getInt("type", 1));
         boolean enabled = data.getBoolean("permission");
-        return new CommandPrivilege(type, enabled, data.getUnsignedLong("id"));
+        return new IntegrationPrivilege(this, type, enabled, data.getUnsignedLong("id"));
     }
 
     @Nonnull
@@ -939,10 +897,10 @@ public class GuildImpl implements Guild
 
     @Nullable
     @Override
-    public BaseGuildMessageChannel getDefaultChannel()
+    public DefaultGuildChannelUnion getDefaultChannel()
     {
         final Role role = getPublicRole();
-        return Stream.concat(getTextChannelCache().stream(), getNewsChannelCache().stream())
+        return (DefaultGuildChannelUnion) Stream.concat(getTextChannelCache().stream(), getNewsChannelCache().stream())
                 .filter(c -> role.hasPermission(c, Permission.VIEW_CHANNEL))
                 .min(Comparator.naturalOrder())
                 .orElse(null);
@@ -1136,14 +1094,14 @@ public class GuildImpl implements Guild
     }
 
     // Helper function for deferred cache access
-    private Member getMember(long id, boolean update, JDAImpl jda)
+    private Member getMember(long id, JDAImpl jda)
     {
-        if (!update || jda.isIntent(GatewayIntent.GUILD_MEMBERS))
+        if (jda.isIntent(GatewayIntent.GUILD_MEMBERS))
         {
             // return member from cache if member tracking is enabled through intents
             Member member = getMemberById(id);
             // if the join time is inaccurate we also have to load it through REST to update this information
-            if (!update || (member != null && member.hasTimeJoined()))
+            if (member != null && member.hasTimeJoined())
                 return member;
         }
         return null;
@@ -1151,15 +1109,14 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public RestAction<Member> retrieveMemberById(long id, boolean update)
+    public CacheRestAction<Member> retrieveMemberById(long id)
     {
         JDAImpl jda = getJDA();
-        if (id == jda.getSelfUser().getIdLong())
-            return new CompletedRestAction<>(jda, getSelfMember());
-
         return new DeferredRestAction<>(jda, Member.class,
-                () -> getMember(id, update, jda),
+                () -> getMember(id, jda),
                 () -> { // otherwise we need to update the member with a REST request first to get the nickname/roles
+                    if (id == jda.getSelfUser().getIdLong())
+                        return new CompletedRestAction<>(jda, getSelfMember());
                     Route.CompiledRoute route = Route.Guilds.GET_MEMBER.compile(getId(), Long.toUnsignedString(id));
                     return new RestActionImpl<>(jda, route, (resp, req) -> {
                         MemberImpl member = jda.getEntityBuilder().createMember(this, resp.getObject());

@@ -18,6 +18,7 @@ package net.dv8tion.jda.internal.requests.restaction.pagination;
 
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.exceptions.MissingAccessException;
 import net.dv8tion.jda.api.exceptions.ParsingException;
@@ -59,9 +60,9 @@ public class MessagePaginationActionImpl
 
     @Nonnull
     @Override
-    public MessageChannel getChannel()
+    public MessageChannelUnion getChannel()
     {
-        return channel;
+        return (MessageChannelUnion) channel;
     }
 
     @Override

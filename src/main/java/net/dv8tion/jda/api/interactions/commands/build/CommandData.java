@@ -16,9 +16,8 @@
 
 package net.dv8tion.jda.api.interactions.commands.build;
 
-import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.Command;
-import net.dv8tion.jda.api.interactions.commands.privileges.CommandPrivilege;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
@@ -26,7 +25,6 @@ import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
 import java.util.Collection;
-import java.util.Map;
 
 /**
  * Builder for Application Commands.
@@ -51,19 +49,32 @@ public interface CommandData extends SerializableData
     CommandData setName(@Nonnull String name);
 
     /**
-     * Whether this command is available to everyone by default.
-     * <br>If this is disabled, you need to explicitly whitelist users and roles per guild.
+     * Sets the {@link net.dv8tion.jda.api.Permission Permissions} that a user must have in a specific channel to be able to use this command.
+     * <br>By default, everyone can use this command ({@link DefaultMemberPermissions#ENABLED}). Additionally, a command can be disabled for everyone but admins via {@link DefaultMemberPermissions#DISABLED}.
+     * <p>These configurations can be overwritten by moderators in each guild. See {@link Command#retrievePrivileges(net.dv8tion.jda.api.entities.Guild)} to get moderator defined overrides.
      *
-     * <p>You can use {@link CommandPrivilege} to enable or disable this command per guild for roles and members of the guild.
-     * See {@link Command#updatePrivileges(Guild, CommandPrivilege...)} and {@link Guild#updateCommandPrivileges(Map)}.
+     * @param  permission
+     *         {@link DefaultMemberPermissions} representing the default permissions of this command.
      *
-     * @param  enabled
-     *         True, if this command is enabled by default for everyone. (Default: true)
+     * @return The builder instance, for chaining
+     *
+     * @see DefaultMemberPermissions#ENABLED
+     * @see DefaultMemberPermissions#DISABLED
+     */
+    @Nonnull
+    CommandData setDefaultPermissions(@Nonnull DefaultMemberPermissions permission);
+
+    /**
+     * Sets whether this command is only usable in a guild (Default: false).
+     * <br>This only has an effect if this command is registered globally.
+     *
+     * @param  guildOnly
+     *         Whether to restrict this command to guilds
      *
      * @return The builder instance, for chaining
      */
     @Nonnull
-    CommandData setDefaultEnabled(boolean enabled);
+    CommandData setGuildOnly(boolean guildOnly);
 
     /**
      * The current command name
@@ -74,22 +85,32 @@ public interface CommandData extends SerializableData
     String getName();
 
     /**
-     * Whether this command is available to everyone by default.
-     *
-     * @return True, if this command is enabled to everyone by default
-     *
-     * @see    #setDefaultEnabled(boolean)
-     * @see    CommandPrivilege
-     */
-    boolean isDefaultEnabled();
-
-    /**
      * The {@link Command.Type}
      *
      * @return The {@link Command.Type}
      */
     @Nonnull
     Command.Type getType();
+
+    /**
+     * Gets the {@link DefaultMemberPermissions} of this command.
+     * <br>If no permissions have been set, this returns {@link DefaultMemberPermissions#ENABLED}.
+     *
+     * @return DefaultMemberPermissions of this command.
+     *
+     * @see    DefaultMemberPermissions#ENABLED
+     * @see    DefaultMemberPermissions#DISABLED
+     */
+    @Nonnull
+    DefaultMemberPermissions getDefaultPermissions();
+
+    /**
+     * Whether the command can only be used inside a guild.
+     * <br>Always true for guild commands.
+     *
+     * @return True, if this command is restricted to guilds.
+     */
+    boolean isGuildOnly();
 
     /**
      * Converts the provided {@link Command} into a CommandData instance.
@@ -110,7 +131,8 @@ public interface CommandData extends SerializableData
         Checks.notNull(command, "Command");
         if (command.getType() != Command.Type.SLASH)
             return new CommandDataImpl(command.getType(), command.getName())
-                    .setDefaultEnabled(command.isDefaultEnabled());
+                    .setDefaultPermissions(command.getDefaultPermissions())
+                    .setGuildOnly(command.isGuildOnly());
 
         return SlashCommandData.fromCommand(command);
     }
@@ -139,7 +161,17 @@ public interface CommandData extends SerializableData
         String name = object.getString("name");
         Command.Type commandType = Command.Type.fromId(object.getInt("type", 1));
         if (commandType != Command.Type.SLASH)
-            return new CommandDataImpl(commandType, name);
+        {
+            CommandData data = new CommandDataImpl(commandType, name);
+            if (!object.isNull("default_member_permissions"))
+            {
+                long defaultPermissions = object.getLong("default_member_permissions");
+                data.setDefaultPermissions(defaultPermissions == 0 ? DefaultMemberPermissions.DISABLED : DefaultMemberPermissions.enabledFor(defaultPermissions));
+            }
+
+            data.setGuildOnly(!object.getBoolean("dm_permission", true));
+            return data;
+        }
 
         return SlashCommandData.fromData(object);
     }

@@ -19,6 +19,7 @@ package net.dv8tion.jda.internal.entities.mixin.channel.middleman;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.GuildMessageChannel;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.channel.unions.GuildMessageChannelUnion;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.entities.sticker.StickerSnowflake;
 import net.dv8tion.jda.api.requests.RestAction;
@@ -35,7 +36,11 @@ import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import java.util.Collection;
 
-public interface GuildMessageChannelMixin<T extends GuildMessageChannelMixin<T>> extends GuildMessageChannel, GuildChannelMixin<T>, MessageChannelMixin<T>
+public interface GuildMessageChannelMixin<T extends GuildMessageChannelMixin<T>> extends
+        GuildMessageChannel,
+        GuildMessageChannelUnion,
+        GuildChannelMixin<T>,
+        MessageChannelMixin<T>
 {
     // ---- Default implementations of interface ----
     @Nonnull
