@@ -78,10 +78,10 @@ public class MessageCreateHandler extends SocketHandler
                     // If discord adds message support for unexpected types in the future, drop the event instead of caching it
                     if (guild != null)
                     {
-                        GuildChannel channel = guild.getGuildChannelById(channelId);
-                        if (channel != null)
+                        GuildChannel actual = guild.getGuildChannelById(channelId);
+                        if (actual != null)
                         {
-                            WebSocketClient.LOG.debug("Dropping MESSAGE_CREATE for unexpected channel of type {}", channel.getType());
+                            WebSocketClient.LOG.debug("Dropping MESSAGE_CREATE for unexpected channel of type {}", actual.getType());
                             return null;
                         }
                     }
