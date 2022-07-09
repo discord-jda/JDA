@@ -73,7 +73,7 @@ public class MessageHistory
 
         if (channel instanceof GuildChannel)
         {
-            IPermissionContainer guildChannel = ((GuildChannel) channel).getPermissionContainer();
+            GuildChannel guildChannel = (GuildChannel) channel;
             Member selfMember = guildChannel.getGuild().getSelfMember();
             Checks.checkAccess(selfMember, guildChannel);
             if (!selfMember.hasPermission(guildChannel, Permission.MESSAGE_HISTORY))
@@ -533,7 +533,7 @@ public class MessageHistory
         Checks.notNull(channel, "Channel");
         if (channel instanceof GuildChannel)
         {
-            IPermissionContainer guildChannel = ((GuildChannel) channel).getPermissionContainer();
+            GuildChannel guildChannel = (GuildChannel) channel;
             Member selfMember = guildChannel.getGuild().getSelfMember();
             Checks.checkAccess(selfMember, guildChannel);
             if (!selfMember.hasPermission(guildChannel, Permission.MESSAGE_HISTORY))

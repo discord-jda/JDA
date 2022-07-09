@@ -328,9 +328,9 @@ public class MessageReaction
             if (!channel.getType().isGuild())
                 throw new PermissionException("Unable to remove Reaction of other user in non-guild channels!");
 
-            IPermissionContainer permChannel = getGuildChannel().getPermissionContainer();
-            if (!permChannel.getGuild().getSelfMember().hasPermission(permChannel, Permission.MESSAGE_MANAGE))
-                throw new InsufficientPermissionException(permChannel, Permission.MESSAGE_MANAGE);
+            GuildChannel guildChannel = (GuildChannel) channel;
+            if (!guildChannel.getGuild().getSelfMember().hasPermission(guildChannel, Permission.MESSAGE_MANAGE))
+                throw new InsufficientPermissionException(guildChannel, Permission.MESSAGE_MANAGE);
         }
 
         String code = EncodingUtil.encodeReaction(emoji.getAsReactionCode());

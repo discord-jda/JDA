@@ -334,7 +334,7 @@ public class PermissionUtil
      * @return The {@code long} representation of the effective permissions that this {@link net.dv8tion.jda.api.entities.Member Member}
      *         has in this {@link IPermissionContainer GuildChannel}.
      */
-    public static long getEffectivePermission(IPermissionContainer channel, Member member)
+    public static long getEffectivePermission(GuildChannel channel, Member member)
     {
         Checks.notNull(channel, "Channel");
         Checks.notNull(member, "Member");
@@ -397,7 +397,7 @@ public class PermissionUtil
      * @return The {@code long} representation of the effective permissions that this {@link net.dv8tion.jda.api.entities.Role Role}
      *         has in this {@link IPermissionContainer GuildChannel}
      */
-    public static long getEffectivePermission(IPermissionContainer channel, Role role)
+    public static long getEffectivePermission(GuildChannel channel, Role role)
     {
         Checks.notNull(channel, "Channel");
         Checks.notNull(role, "Role");
@@ -471,7 +471,7 @@ public class PermissionUtil
      *
      * @since  3.1
      */
-    public static long getExplicitPermission(IPermissionContainer channel, Member member)
+    public static long getExplicitPermission(GuildChannel channel, Member member)
     {
         return getExplicitPermission(channel, member, true);
     }
@@ -503,7 +503,7 @@ public class PermissionUtil
      *
      * @since  3.1
      */
-    public static long getExplicitPermission(IPermissionContainer channel, Member member, boolean includeRoles)
+    public static long getExplicitPermission(GuildChannel channel, Member member, boolean includeRoles)
     {
         Checks.notNull(channel, "Channel");
         Checks.notNull(member, "Member");
@@ -545,7 +545,7 @@ public class PermissionUtil
      *
      * @since  3.1
      */
-    public static long getExplicitPermission(IPermissionContainer channel, Role role)
+    public static long getExplicitPermission(GuildChannel channel, Role role)
     {
         return getExplicitPermission(channel, role, true);
     }
@@ -575,31 +575,33 @@ public class PermissionUtil
      *
      * @since  3.1
      */
-    public static long getExplicitPermission(IPermissionContainer channel, Role role, boolean includeRoles)
+    public static long getExplicitPermission(GuildChannel channel, Role role, boolean includeRoles)
     {
         Checks.notNull(channel, "Channel");
         Checks.notNull(role, "Role");
+        IPermissionContainer permsChannel = channel.getPermissionContainer();
 
         final Guild guild = role.getGuild();
         checkGuild(channel.getGuild(), guild, "Role");
 
         long permission = includeRoles ? role.getPermissionsRaw() | guild.getPublicRole().getPermissionsRaw() : 0;
-        PermissionOverride override = channel.getPermissionOverride(guild.getPublicRole());
+        PermissionOverride override = permsChannel.getPermissionOverride(guild.getPublicRole());
         if (override != null)
             permission = apply(permission, override.getAllowedRaw(), override.getDeniedRaw());
         if (role.isPublicRole())
             return permission;
 
-        override = channel.getPermissionOverride(role);
+        override = permsChannel.getPermissionOverride(role);
 
         return override == null
             ? permission
             : apply(permission, override.getAllowedRaw(), override.getDeniedRaw());
     }
 
-    private static void getExplicitOverrides(IPermissionContainer channel, Member member, AtomicLong allow, AtomicLong deny)
+    private static void getExplicitOverrides(GuildChannel channel, Member member, AtomicLong allow, AtomicLong deny)
     {
-        PermissionOverride override = channel.getPermissionOverride(member.getGuild().getPublicRole());
+        IPermissionContainer permsChannel = channel.getPermissionContainer();
+        PermissionOverride override = permsChannel.getPermissionOverride(member.getGuild().getPublicRole());
         long allowRaw = 0;
         long denyRaw = 0;
         if (override != null)
@@ -613,7 +615,7 @@ public class PermissionUtil
         // create temporary bit containers for role cascade
         for (Role role : member.getRoles())
         {
-            override = channel.getPermissionOverride(role);
+            override = permsChannel.getPermissionOverride(role);
             if (override != null)
             {
                 // important to update role cascade not others
@@ -625,7 +627,7 @@ public class PermissionUtil
         allowRaw = (allowRaw & ~denyRole) | allowRole;
         denyRaw = (denyRaw & ~allowRole) | denyRole;
 
-        override = channel.getPermissionOverride(member);
+        override = permsChannel.getPermissionOverride(member);
         if (override != null)
         {
             // finally override the role cascade with member overrides

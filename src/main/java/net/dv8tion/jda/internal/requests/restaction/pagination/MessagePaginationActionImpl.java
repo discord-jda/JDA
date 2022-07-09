@@ -17,7 +17,7 @@
 package net.dv8tion.jda.internal.requests.restaction.pagination;
 
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.IPermissionContainer;
+import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
@@ -47,9 +47,9 @@ public class MessagePaginationActionImpl
     {
         super(channel.getJDA(), Route.Messages.GET_MESSAGE_HISTORY.compile(channel.getId()), 1, 100, 100);
 
-        if (channel instanceof IPermissionContainer)
+        if (channel instanceof GuildChannel)
         {
-            IPermissionContainer guildChannel = (IPermissionContainer) channel;
+            GuildChannel guildChannel = (GuildChannel) channel;
             Member selfMember = guildChannel.getGuild().getSelfMember();
             Checks.checkAccess(selfMember, guildChannel);
             if (!selfMember.hasPermission(guildChannel, Permission.MESSAGE_HISTORY))

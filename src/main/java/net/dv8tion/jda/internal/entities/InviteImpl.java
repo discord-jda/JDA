@@ -120,7 +120,7 @@ public class InviteImpl implements Invite
 
         //TODO-v5: There are more than Text and Voice channels now. Revisit this.
         //TODO-v5: Null checks
-        final IPermissionContainer channel = guild.getChannelById(IPermissionContainer.class, this.channel.getIdLong());
+        final GuildChannel channel = guild.getChannelById(GuildChannel.class, this.channel.getIdLong());
 
         if (member.hasPermission(channel, Permission.MANAGE_CHANNEL))
         {
