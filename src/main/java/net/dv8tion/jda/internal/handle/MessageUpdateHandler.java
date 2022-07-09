@@ -56,7 +56,6 @@ public class MessageUpdateHandler extends SocketHandler
         if ((content.getInt("flags", 0) & 64) != 0)
             return null;
 
-        //TODO: Rewrite this entire handler
         if (content.hasKey("author"))
         {
             if (content.hasKey("type"))
@@ -138,7 +137,6 @@ public class MessageUpdateHandler extends SocketHandler
         final long channelId = content.getLong("channel_id");
         LinkedList<MessageEmbed> embeds = new LinkedList<>();
 
-        //TODO-v5: handle for threads.
         MessageChannel channel = getJDA().getChannelById(MessageChannel.class, channelId);
         if (channel == null)
         {
