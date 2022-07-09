@@ -120,7 +120,7 @@ public class InviteImpl implements Invite
 
         final GuildChannel channel = guild.getChannelById(GuildChannel.class, this.channel.getIdLong());
         if (channel == null)
-            throw new UnsupportedOperationException("Cannot expand invite without known channel. Channel ID: " + channel.getId());
+            throw new UnsupportedOperationException("Cannot expand invite without known channel. Channel ID: " + this.channel.getId());
 
         if (member.hasPermission(channel, Permission.MANAGE_CHANNEL))
         {
