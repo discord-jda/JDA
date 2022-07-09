@@ -16,8 +16,6 @@
 
 package net.dv8tion.jda.internal.entities;
 
-import gnu.trove.map.TLongObjectMap;
-import gnu.trove.map.hash.TLongObjectHashMap;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.audit.ActionType;
@@ -45,6 +43,7 @@ import net.dv8tion.jda.api.events.user.update.UserUpdateDiscriminatorEvent;
 import net.dv8tion.jda.api.events.user.update.UserUpdateFlagsEvent;
 import net.dv8tion.jda.api.events.user.update.UserUpdateNameEvent;
 import net.dv8tion.jda.api.exceptions.ParsingException;
+import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.api.utils.cache.CacheView;
@@ -61,12 +60,7 @@ import net.dv8tion.jda.internal.utils.JDALogger;
 import net.dv8tion.jda.internal.utils.UnlockHook;
 import net.dv8tion.jda.internal.utils.cache.MemberCacheViewImpl;
 import net.dv8tion.jda.internal.utils.cache.SnowflakeCacheViewImpl;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.map.CaseInsensitiveMap;
-import org.slf4j.Logger;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
@@ -76,6 +70,16 @@ import java.util.function.Function;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.map.CaseInsensitiveMap;
+import org.slf4j.Logger;
+
+import gnu.trove.map.TLongObjectMap;
+import gnu.trove.map.hash.TLongObjectHashMap;
 
 public class EntityBuilder
 {
@@ -246,7 +250,7 @@ public class EntityBuilder
                 .setDefaultNotificationLevel(Guild.NotificationLevel.fromKey(notificationLevel))
                 .setExplicitContentLevel(Guild.ExplicitContentLevel.fromKey(explicitContentLevel))
                 .setRequiredMFALevel(Guild.MFALevel.fromKey(mfaLevel))
-                .setLocale(locale)
+                .setLocale(DiscordLocale.from(locale))
                 .setBoostCount(boostCount)
                 .setBoostTier(boostTier)
                 .setMemberCount(memberCount)
@@ -2048,7 +2052,7 @@ public class EntityBuilder
         final VerificationLevel guildVerificationLevel = VerificationLevel.fromKey(guildObject.getInt("verification_level", -1));
         final NotificationLevel notificationLevel = NotificationLevel.fromKey(guildObject.getInt("default_message_notifications", 0));
         final ExplicitContentLevel explicitContentLevel = ExplicitContentLevel.fromKey(guildObject.getInt("explicit_content_filter", 0));
-        final Locale locale = Locale.forLanguageTag(guildObject.getString("preferred_locale", "en"));
+        final DiscordLocale locale = DiscordLocale.from(guildObject.getString("preferred_locale", "en-US"));
         final Timeout afkTimeout = Timeout.fromKey(guildObject.getInt("afk_timeout", 0));
         final DataArray roleArray = guildObject.getArray("roles");
         final DataArray channelsArray = guildObject.getArray("channels");

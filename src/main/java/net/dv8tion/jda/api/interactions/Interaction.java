@@ -25,7 +25,6 @@ import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Locale;
 
 /**
  * Abstract representation for any kind of Discord interaction.
@@ -185,7 +184,7 @@ public interface Interaction extends ISnowflake
      * @return The language of the invoking user
      */
     @Nonnull
-    Locale getUserLocale();
+    DiscordLocale getUserLocale();
 
     /**
      * Returns the preferred language of the Guild.
@@ -197,7 +196,7 @@ public interface Interaction extends ISnowflake
      * @return The preferred language of the Guild
      */
     @Nonnull
-    default Locale getGuildLocale()
+    default DiscordLocale getGuildLocale()
     {
         if (!isFromGuild())
             throw new IllegalStateException("This interaction did not happen in a guild");
