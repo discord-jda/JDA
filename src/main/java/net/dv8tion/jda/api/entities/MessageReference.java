@@ -286,15 +286,13 @@ public class MessageReference
 
     private void checkPermission(Permission permission)
     {
-        if (guild == null || !(channel instanceof IPermissionContainer)) return;
+        if (guild == null || !(channel instanceof GuildChannel)) return;
 
         Member selfMember = guild.getSelfMember();
+        GuildChannel guildChannel = (GuildChannel) channel;
 
-
-        IPermissionContainer permChannel = (IPermissionContainer) channel;
-
-        Checks.checkAccess(selfMember, permChannel);
-        if (!selfMember.hasPermission(permChannel, permission))
-            throw new InsufficientPermissionException(permChannel, permission);
+        Checks.checkAccess(selfMember, guildChannel);
+        if (!selfMember.hasPermission(guildChannel, permission))
+            throw new InsufficientPermissionException(guildChannel, permission);
     }
 }
