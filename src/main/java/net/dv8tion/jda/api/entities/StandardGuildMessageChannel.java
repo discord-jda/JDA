@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.entities;
 
+import net.dv8tion.jda.api.entities.channel.attribute.IAgeRestrictedChannel;
 import net.dv8tion.jda.api.managers.channel.middleman.StandardGuildMessageChannelManager;
 import net.dv8tion.jda.api.requests.restaction.ChannelAction;
 
@@ -35,27 +36,20 @@ import javax.annotation.Nullable;
  * @see NewsChannel
  * @see StandardGuildChannel
  */
-public interface StandardGuildMessageChannel extends StandardGuildChannel, GuildMessageChannel, IThreadContainer, IWebhookContainer
+public interface StandardGuildMessageChannel extends StandardGuildChannel, GuildMessageChannel, IThreadContainer, IWebhookContainer, IAgeRestrictedChannel
 {
     @Nonnull
     @Override
     StandardGuildMessageChannelManager<?, ?> getManager();
 
     /**
-     * The topic set for this TextChannel.
+     * The topic set for this channel.
      * <br>If no topic has been set, this returns null.
      *
-     * @return Possibly-null String containing the topic of this TextChannel.
+     * @return Possibly-null String containing the topic of this channel.
      */
     @Nullable
     String getTopic();
-
-    /**
-     * Whether or not this channel is considered as "NSFW" (Not-Safe-For-Work)
-     *
-     * @return True, If this TextChannel is considered NSFW by the official Discord Client
-     */
-    boolean isNSFW();
 
     @Override
     @Nonnull

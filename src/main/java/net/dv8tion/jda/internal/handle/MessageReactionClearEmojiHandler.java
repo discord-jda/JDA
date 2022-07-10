@@ -49,14 +49,14 @@ public class MessageReactionClearEmojiHandler extends SocketHandler
         }
 
         long channelId = content.getUnsignedLong("channel_id");
-
         GuildMessageChannel channel = guild.getChannelById(GuildMessageChannel.class, channelId);
         if (channel == null)
         {
-            GuildChannel guildChannel = guild.getGuildChannelById(channelId);
-            if (guildChannel != null)
+            // If discord adds message support for unexpected types in the future, drop the event instead of caching it
+            GuildChannel actual = guild.getGuildChannelById(channelId);
+            if (actual != null)
             {
-                WebSocketClient.LOG.debug("Discarding MESSAGE_REACTION_REMOVE_EMOJI event for unexpected channel type. Channel: {}", guildChannel);
+                WebSocketClient.LOG.debug("Dropping MESSAGE_REACTION_REMOVE_EMOJI for unexpected channel of type {}", actual.getType());
                 return null;
             }
 

@@ -1073,9 +1073,11 @@ public class EntityBuilder
 
         channel
             .setParentCategory(json.getLong("parent_id", 0))
+            .setLatestMessageIdLong(json.getLong("last_message_id", 0))
             .setName(json.getString("name"))
             .setPosition(json.getInt("position"))
             .setUserLimit(json.getInt("user_limit"))
+            .setNSFW(json.getBoolean("nsfw"))
             .setBitrate(json.getInt("bitrate"))
             .setRegion(json.getString("rtc_region", null));
 
@@ -1548,7 +1550,7 @@ public class EntityBuilder
             api, guild, content, mentionsEveryone,
             jsonObject.getArray("mentions"), jsonObject.getArray("mention_roles")
         );
-        
+
         ThreadChannel startedThread = null;
         if (guild != null && !jsonObject.isNull("thread"))
             startedThread = createThreadChannel(guild, jsonObject.getObject("thread"), guild.getIdLong());
