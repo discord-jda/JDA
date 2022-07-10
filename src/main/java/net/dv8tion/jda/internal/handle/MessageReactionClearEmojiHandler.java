@@ -20,11 +20,11 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.GuildMessageChannel;
 import net.dv8tion.jda.api.entities.MessageReaction;
-import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
 import net.dv8tion.jda.api.events.message.react.MessageReactionRemoveEmojiEvent;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
+import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.requests.WebSocketClient;
 
 public class MessageReactionClearEmojiHandler extends SocketHandler
@@ -67,9 +67,7 @@ public class MessageReactionClearEmojiHandler extends SocketHandler
 
         long messageId = content.getUnsignedLong("message_id");
         DataObject emoji = content.getObject("emoji");
-        if (emoji.isNull("name"))
-            emoji.put("name", "");
-        EmojiUnion reactionEmoji = Emoji.fromData(emoji);
+        EmojiUnion reactionEmoji = EntityBuilder.createEmoji(emoji);
 
         MessageReaction reaction = new MessageReaction(channel, reactionEmoji, messageId, false, 0);
 

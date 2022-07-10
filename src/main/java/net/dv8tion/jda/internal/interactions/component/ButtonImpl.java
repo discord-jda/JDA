@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
 import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.internal.entities.EntityBuilder;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -43,7 +44,7 @@ public class ButtonImpl implements Button
             ButtonStyle.fromKey(data.getInt("style")),
             data.getString("url", null),
             data.getBoolean("disabled"),
-            data.optObject("emoji").map(Emoji::fromData).orElse(null));
+            data.optObject("emoji").map(EntityBuilder::createEmoji).orElse(null));
     }
 
     public ButtonImpl(String id, String label, ButtonStyle style, boolean disabled, Emoji emoji)
