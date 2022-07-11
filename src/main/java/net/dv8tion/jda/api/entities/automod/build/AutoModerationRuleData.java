@@ -64,7 +64,7 @@ public interface AutoModerationRuleData extends SerializableData
     AutoModerationRuleData setName(@Nonnull String name);
 
     /**
-     * The event that will cause the auto moderation system to check for the specified trigger.
+     * Used to set the event that will cause the auto moderation system to check for the specified trigger.
      *
      * @param  eventType
      *         The event type.
@@ -75,7 +75,7 @@ public interface AutoModerationRuleData extends SerializableData
     AutoModerationRuleData setEventType(@Nonnull EventType eventType);
 
     /**
-     * The trigger that will cause the auto moderation system to be executed.
+     * Used to set the trigger that will cause the auto moderation system to be executed.
      *
      * @param  triggerType
      *         The trigger type.
@@ -97,7 +97,7 @@ public interface AutoModerationRuleData extends SerializableData
     AutoModerationRuleData setEnabled(boolean enabled);
 
     /**
-     * The actions that will be executed when the trigger is met.
+     * Used to set the actions that will be executed when the trigger is met.
      *
      * @param  actions
      *         The actions that will be carried out.
@@ -108,7 +108,7 @@ public interface AutoModerationRuleData extends SerializableData
     AutoModerationRuleData setActions(@Nonnull List<AutoModerationAction> actions);
 
     /**
-     * The roles that will not be affected by the rule.
+     * Used to set the roles that will not be affected by the rule.
      *
      * @param  exemptRoles
      *         The roles that will not be affected.
@@ -119,7 +119,8 @@ public interface AutoModerationRuleData extends SerializableData
     AutoModerationRuleData setExemptRoles(@Nonnull List<Role> exemptRoles);
 
     /**
-     * The channel that will not be affected by the rule.
+     * Used to set the channel that will not be affected by the rule.
+     *
      * @param  exemptChannels
      *         The channels that will not be affected.
      *
@@ -129,7 +130,7 @@ public interface AutoModerationRuleData extends SerializableData
     AutoModerationRuleData setExemptChannels(@Nonnull List<GuildChannel> exemptChannels);
 
     /**
-     * Additional data that can he used to determine whether a rule should be executed or not.
+     * Used to set additional data that can he used to determine whether a rule should be executed or not.
      *
      * @param  triggerMetaData
      *         Additional data.

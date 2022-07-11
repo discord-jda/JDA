@@ -31,8 +31,9 @@ import java.util.function.BooleanSupplier;
 
 /**
  * Specialized {@link RestAction} used to modify an existing auto moderation rule.
+ *
+ * @see net.dv8tion.jda.api.entities.Guild#modifyAutoModerationRule(AutoModerationRule, AutoModerationRuleData)
  */
-//TODO: JavaDoc for methods
 public interface RuleModifyAction extends RestAction<AutoModerationRule>
 {
     @Nonnull
@@ -55,34 +56,99 @@ public interface RuleModifyAction extends RestAction<AutoModerationRule>
     @CheckReturnValue
     RuleModifyAction apply(@Nonnull AutoModerationRuleData ruleData);
 
+    /**
+     * Used to modify the name of the rule.
+     *
+     * @param  name
+     *         The new name of the rule. Must be between 1 and 100 characters.
+     *
+     * @return The {@link RuleModifyAction}
+     */
     @Nonnull
     @CheckReturnValue
     RuleModifyAction setName(@Nullable String name);
 
+    /**
+     * Used to modify the event that will cause the auto moderation system to check for the specified trigger.
+     *
+     * @param  eventType
+     *         The event type.
+     *
+     * @return The {@link RuleModifyAction}.
+     */
     @Nonnull
     @CheckReturnValue
     RuleModifyAction setEventType(@Nullable EventType eventType);
 
+    /**
+     * Used to modify the trigger that will cause the auto moderation system to be executed.
+     *
+     * @param  triggerType
+     *         The trigger type.
+     *
+     * @return The {@link RuleModifyAction}.
+     */
     @Nonnull
     @CheckReturnValue
     RuleModifyAction setTriggerType(@Nullable TriggerType triggerType);
 
+    /**
+     * Used to modify the actions that will be executed when the trigger is met.
+     *
+     * @param  actions
+     *         The actions that will be carried out.
+     *
+     * @return The {@link RuleModifyAction}.
+     */
     @Nonnull
     @CheckReturnValue
     RuleModifyAction setActions(@Nonnull List<AutoModerationAction> actions);
 
+    /**
+     * Used to enable or disable the rule
+     *
+     * @param  enabled
+     *         Whether the rule is enabled or not.
+     *
+     * @return The {@link RuleModifyAction}.
+     */
     @Nonnull
     @CheckReturnValue
     RuleModifyAction setEnabled(@Nullable Boolean enabled);
 
+    /**
+     * Used to modify additional data that can he used to determine whether a rule should be executed or not.
+     *
+     * @param  triggerMetaData
+     *         Additional data.
+     *
+     * @return The {@link RuleModifyAction}.
+     */
     @Nonnull
     @CheckReturnValue
     RuleModifyAction setTriggerMetadata(@Nullable TriggerMetadata triggerMetaData);
 
+    /**
+     * Used to modify the roles that will not be affected by the rule.
+     *
+     * @param  exemptRoles
+     *         The roles that will not be affected.
+     *
+     * @return The {@link RuleModifyAction}.
+     */
     @Nonnull
     @CheckReturnValue
     RuleModifyAction setExemptRoles(@Nonnull List<Role> exemptRoles);
 
+
+    /**
+     * Used to modify the channel that will not be affected by the rule.
+     *
+     * @param  exemptChannels
+     *         The channels that will not be affected.
+     *
+     * @return The {@link RuleModifyAction}.
+     */
     @Nonnull
     @CheckReturnValue
     RuleModifyAction setExemptChannels(@Nonnull List<GuildChannel> exemptChannels);

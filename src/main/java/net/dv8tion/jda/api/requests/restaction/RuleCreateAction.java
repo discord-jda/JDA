@@ -34,7 +34,6 @@ import java.util.function.BooleanSupplier;
  * 
  * @see net.dv8tion.jda.api.entities.Guild#createAutoModerationRule(AutoModerationRuleData) 
  */
-//TODO: JavaDoc for methods
 public interface RuleCreateAction extends RestAction<AutoModerationRule>, AutoModerationRuleData
 {
     @Nonnull
@@ -53,41 +52,105 @@ public interface RuleCreateAction extends RestAction<AutoModerationRule>, AutoMo
     @Override
     RuleCreateAction deadline(long timestamp);
 
+    /**
+     * Used to set the name of the new rule.
+     *
+     * @param  name
+     *         The name of the rule. Must be between 1 and 100 characters.
+     *
+     * @return The {@link RuleCreateAction}.
+     */
     @Nonnull
     @Override
     @CheckReturnValue
     RuleCreateAction setName(@Nonnull String name);
 
+    /**
+     * Used to set the event that will cause the auto moderation system to check for the specified trigger.
+     *
+     * @param  eventType
+     *         The event type.
+     *
+     * @return The {@link RuleCreateAction}.
+     */
     @Nonnull
     @Override
     @CheckReturnValue
     RuleCreateAction setEventType(@Nonnull EventType eventType);
 
+    /**
+     * Used to set the trigger that will cause the auto moderation system to be executed.
+     *
+     * @param  triggerType
+     *         The trigger type.
+     *
+     * @return The {@link RuleCreateAction}.
+     */
     @Nonnull
     @Override
     @CheckReturnValue
     RuleCreateAction setTriggerType(@Nonnull TriggerType triggerType);
 
+    /**
+     * Used to set the actions that will be executed when the trigger is met.
+     *
+     * @param  actions
+     *         The actions that will be carried out.
+     *
+     * @return The {@link RuleCreateAction}.
+     */
     @Nonnull
     @Override
     @CheckReturnValue
     RuleCreateAction setActions(@Nonnull List<AutoModerationAction> actions);
 
+    /**
+     * Used to enable or disable the rule.
+     *
+     * @param  enabled
+     *         Whether the rule is enabled or not.
+     *
+     * @return The {@link RuleCreateAction}.
+     */
     @Nonnull
     @Override
     @CheckReturnValue
     RuleCreateAction setEnabled(boolean enabled);
 
+    /**
+     * Used to set additional data that can he used to determine whether a rule should be executed or not.
+     *
+     * @param  triggerMetaData
+     *         Additional data.
+     *
+     * @return The {@link RuleCreateAction}.
+     */
     @Nullable
     @Override
     @CheckReturnValue
     RuleCreateAction setTriggerMetadata(@Nonnull TriggerMetadata triggerMetaData);
 
+    /**
+     * Used to set the roles that will not be affected by the rule.
+     *
+     * @param  exemptRoles
+     *         The roles that will not be affected.
+     *
+     * @return The {@link RuleCreateAction}.
+     */
     @Nullable
     @Override
     @CheckReturnValue
     RuleCreateAction setExemptRoles(@Nonnull List<Role> exemptRoles);
 
+    /**
+     * Used to set the channel that will not be affected by the rule.
+     *
+     * @param  exemptChannels
+     *         The channels that will not be affected.
+     *
+     * @return The {@link RuleCreateAction}.
+     */
     @Nullable
     @Override
     @CheckReturnValue
