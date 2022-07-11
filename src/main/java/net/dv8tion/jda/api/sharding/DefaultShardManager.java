@@ -32,7 +32,7 @@ import net.dv8tion.jda.internal.managers.PresenceImpl;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
-import net.dv8tion.jda.internal.utils.InvalidTokenException;
+import net.dv8tion.jda.api.exceptions.InvalidTokenException;
 import net.dv8tion.jda.internal.utils.JDALogger;
 import net.dv8tion.jda.internal.utils.UnlockHook;
 import net.dv8tion.jda.internal.utils.cache.ShardCacheViewImpl;
@@ -543,33 +543,24 @@ public class DefaultShardManager implements ShardManager
 
         if (this.gatewayURL == null)
         {
-            try
-            {
-                SessionController.ShardedGateway gateway = jda.getShardedGateway();
-                this.sessionConfig.getSessionController().setConcurrency(gateway.getConcurrency());
-                this.gatewayURL = gateway.getUrl();
-                if (this.gatewayURL == null)
-                    LOG.error("Acquired null gateway url from SessionController");
-                else
-                    LOG.info("Login Successful!");
+            SessionController.ShardedGateway gateway = jda.getShardedGateway();
+            this.sessionConfig.getSessionController().setConcurrency(gateway.getConcurrency());
+            this.gatewayURL = gateway.getUrl();
+            if (this.gatewayURL == null)
+                LOG.error("Acquired null gateway url from SessionController");
+            else
+                LOG.info("Login Successful!");
 
-                if (getShardsTotal() == -1)
+            if (getShardsTotal() == -1)
+            {
+                shardingConfig.setShardsTotal(gateway.getShardTotal());
+                this.shards = new ShardCacheViewImpl(getShardsTotal());
+
+                synchronized (queue)
                 {
-                    shardingConfig.setShardsTotal(gateway.getShardTotal());
-                    this.shards = new ShardCacheViewImpl(getShardsTotal());
-
-                    synchronized (queue)
-                    {
-                        for (int i = 0; i < getShardsTotal(); i++)
-                            queue.add(i);
-                    }
+                    for (int i = 0; i < getShardsTotal(); i++)
+                        queue.add(i);
                 }
-            }
-            catch (CompletionException e)
-            {
-                if (e.getCause() instanceof InvalidTokenException)
-                    throw (InvalidTokenException) e.getCause(); // complete() can't throw this because its a checked-exception so we have to unwrap it first
-                throw e;
             }
         }
 

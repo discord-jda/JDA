@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.internal.utils;
+package net.dv8tion.jda.api.exceptions;
 
 /**
  * Indicates that an invalid token was given when trying to login the Discord API
  *
- * @since 5.0.0
  * */
 public class InvalidTokenException extends RuntimeException
 {

@@ -32,7 +32,7 @@ import net.dv8tion.jda.internal.requests.CompletedRestAction;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
-import net.dv8tion.jda.internal.utils.InvalidTokenException;
+import net.dv8tion.jda.api.exceptions.InvalidTokenException;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
