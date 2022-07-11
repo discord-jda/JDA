@@ -16,73 +16,32 @@
 
 package net.dv8tion.jda.internal.entities.automod.build.sent;
 
-import net.dv8tion.jda.api.entities.GuildChannel;
-import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.automod.AutoModerationRule;
-import net.dv8tion.jda.api.entities.automod.EventType;
 import net.dv8tion.jda.api.entities.automod.KeywordPresetType;
-import net.dv8tion.jda.api.entities.automod.TriggerType;
-import net.dv8tion.jda.api.entities.automod.build.sent.Keyword;
+import net.dv8tion.jda.api.entities.automod.TriggerMetadata;
 import net.dv8tion.jda.api.entities.automod.build.sent.KeywordPreset;
 import net.dv8tion.jda.internal.entities.automod.AutoModerationRuleImpl;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import net.dv8tion.jda.internal.entities.automod.TriggerMetadataImpl;
 
+import javax.annotation.Nonnull;
 import java.util.EnumSet;
-import java.util.List;
 
-public class KeywordPresetImpl implements KeywordPreset
+public class KeywordPresetImpl extends GenericKeyWordImpl implements KeywordPreset
 {
     private final AutoModerationRule autoModerationRule;
 
     public KeywordPresetImpl(String name)
     {
+        super(name);
         this.autoModerationRule = new AutoModerationRuleImpl(name);
     }
 
     @Override
-    public KeywordPreset setKeywordPresets(@NotNull EnumSet<KeywordPresetType> keyword)
+    public KeywordPreset setKeywordPresets(@Nonnull EnumSet<KeywordPresetType> keyword)
     {
-        return null;
-    }
-
-    @NotNull
-    @Override
-    public KeywordPreset setEventType(@NotNull EventType eventType)
-    {
-        autoModerationRule.setEventType(eventType);
-        return this;
-    }
-
-    @NotNull
-    @Override
-    public KeywordPreset setTriggerType(@NotNull TriggerType triggerType)
-    {
-        autoModerationRule.setTriggerType(triggerType);
-        return this;
-    }
-
-    @NotNull
-    @Override
-    public KeywordPreset setEnabled(boolean enabled)
-    {
-        autoModerationRule.setEnabled(enabled);
-        return this;
-    }
-
-    @Nullable
-    @Override
-    public KeywordPreset setExemptRoles(@NotNull List<Role> exemptRoles)
-    {
-        autoModerationRule.setExemptRoles(exemptRoles);
-        return this;
-    }
-
-    @Nullable
-    @Override
-    public KeywordPreset setExemptChannels(@NotNull List<GuildChannel> exemptChannels)
-    {
-        autoModerationRule.setExemptChannels(exemptChannels);
+        TriggerMetadata triggerMetadata = new TriggerMetadataImpl();
+        triggerMetadata.setKeywordPresets(keyword);
+        autoModerationRule.setTriggerMetadata(triggerMetadata);
         return this;
     }
 }

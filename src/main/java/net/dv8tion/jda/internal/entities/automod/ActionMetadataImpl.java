@@ -28,14 +28,6 @@ public class ActionMetadataImpl implements ActionMetadata
     private GuildChannel channel;
     private Duration duration;
 
-    public ActionMetadataImpl() {}
-
-    public ActionMetadataImpl(GuildChannel channel, Duration duration)
-    {
-        setChannel(channel);
-        setDuration(duration);
-    }
-
     @Override
     @Nonnull
     public GuildChannel getChannel()
@@ -43,7 +35,7 @@ public class ActionMetadataImpl implements ActionMetadata
         return channel;
     }
 
-    public ActionMetadataImpl setChannel(@Nonnull GuildChannel channel)
+    public @Nonnull ActionMetadataImpl setChannel(@Nonnull GuildChannel channel)
     {
         this.channel = channel;
         return this;
@@ -55,7 +47,7 @@ public class ActionMetadataImpl implements ActionMetadata
         return duration;
     }
 
-    public ActionMetadataImpl setDuration(@Nonnull Duration duration)
+    public @Nonnull ActionMetadataImpl setDuration(@Nonnull Duration duration)
     {
         this.duration = duration;
         return this;

@@ -16,8 +16,6 @@
 
 package net.dv8tion.jda.api.entities.automod;
 
-import net.dv8tion.jda.internal.entities.automod.AutoModerationActionImpl;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -35,6 +33,17 @@ public interface AutoModerationAction
     AutoModerationActionType getType();
 
     /**
+     * Used to set the type of action.
+     *
+     * @param  type
+     *         The type of action.
+     *
+     * @return {@link AutoModerationAction}
+     */
+    @Nonnull
+    AutoModerationAction setType(@Nonnull AutoModerationActionType type);
+
+    /**
      * Returns additional metadata used during the execution of this specific action type.
      *
      * @return {@link ActionMetadata}
@@ -43,14 +52,13 @@ public interface AutoModerationAction
     ActionMetadata getActionMetadata();
 
     /**
-     * Used to create a new {@link AutoModerationAction} instance.
+     * Used to set the metadata used during the execution of this specific action type.
      *
-     * @param type
-     *        The type of this action
+     * @param  metadata
+     *         The metadata used during the execution of this specific action type.
      *
      * @return {@link AutoModerationAction}
      */
-    static AutoModerationAction create(@Nonnull AutoModerationActionType type) {
-        return new AutoModerationActionImpl(type);
-    }
+    @Nullable
+    AutoModerationAction setActionMetadata(@Nullable ActionMetadata metadata);
 }

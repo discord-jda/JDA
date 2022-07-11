@@ -16,70 +16,31 @@
 
 package net.dv8tion.jda.internal.entities.automod.build.sent;
 
-import net.dv8tion.jda.api.entities.GuildChannel;
-import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.automod.AutoModerationRule;
-import net.dv8tion.jda.api.entities.automod.EventType;
-import net.dv8tion.jda.api.entities.automod.TriggerType;
+import net.dv8tion.jda.api.entities.automod.TriggerMetadata;
 import net.dv8tion.jda.api.entities.automod.build.sent.Keyword;
 import net.dv8tion.jda.internal.entities.automod.AutoModerationRuleImpl;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import net.dv8tion.jda.internal.entities.automod.TriggerMetadataImpl;
 
+import javax.annotation.Nonnull;
 import java.util.List;
 
-public class KeywordImpl implements Keyword
+public class KeywordImpl extends GenericKeyWordImpl implements Keyword
 {
     private final AutoModerationRule autoModerationRule;
 
     public KeywordImpl(String name)
     {
+        super(name);
         this.autoModerationRule = new AutoModerationRuleImpl(name);
     }
 
     @Override
-    public Keyword setKeyword(@NotNull String keyword)
+    public Keyword setKeyword(@Nonnull List<String> keyword)
     {
-        return null;
-    }
-
-    @NotNull
-    @Override
-    public Keyword setEventType(@NotNull EventType eventType)
-    {
-        autoModerationRule.setEventType(eventType);
-        return this;
-    }
-
-    @NotNull
-    @Override
-    public Keyword setTriggerType(@NotNull TriggerType triggerType)
-    {
-        autoModerationRule.setTriggerType(triggerType);
-        return this;
-    }
-
-    @NotNull
-    @Override
-    public Keyword setEnabled(boolean enabled)
-    {
-        autoModerationRule.setEnabled(enabled);
-        return this;
-    }
-
-    @Nullable
-    @Override
-    public Keyword setExemptRoles(@NotNull List<Role> exemptRoles)
-    {
-        autoModerationRule.setExemptRoles(exemptRoles);
-        return this;
-    }
-
-    @Nullable
-    @Override
-    public Keyword setExemptChannels(@NotNull List<GuildChannel> exemptChannels)
-    {
-        autoModerationRule.setExemptChannels(exemptChannels);
+        TriggerMetadata triggerMetadata = new TriggerMetadataImpl();
+        triggerMetadata.setKeywords(keyword);
+        autoModerationRule.setTriggerMetadata(triggerMetadata);
         return this;
     }
 }

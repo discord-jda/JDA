@@ -19,9 +19,7 @@ package net.dv8tion.jda.api.entities.automod;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.automod.build.AutoModerationMessageSend;
 import net.dv8tion.jda.api.utils.data.SerializableData;
-import net.dv8tion.jda.internal.entities.automod.AutoModerationRuleImpl;
 import net.dv8tion.jda.internal.entities.automod.build.AutoModerationMessageSendImpl;
-import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -36,6 +34,7 @@ import java.util.List;
 public interface AutoModerationRule extends ISnowflake, Comparable<AutoModerationRule>, SerializableData
 {
     AutoModerationMessageSend MessageSend = new AutoModerationMessageSendImpl();
+
     /**
      * Returns the Guild that the rule belongs to.
      *
@@ -51,6 +50,17 @@ public interface AutoModerationRule extends ISnowflake, Comparable<AutoModeratio
      */
     @Nonnull
     String getName();
+
+    /**
+     * Used to set the name of the new rule.
+     *
+     * @param  name
+     *         The name of the rule. Must be between 1 and 100 characters.
+     *
+     * @return The {@link AutoModerationRule}.
+     */
+    @Nonnull
+    AutoModerationRule setName(@Nonnull String name);
 
     /**
      * Returns the user who created the rule.
@@ -69,64 +79,6 @@ public interface AutoModerationRule extends ISnowflake, Comparable<AutoModeratio
     EventType getEventType();
 
     /**
-     * Returns the type of trigger that can cause this rule to be executed.
-     *
-     * @return {@link TriggerType}
-     */
-    @Nonnull
-    TriggerType getTriggerType();
-
-    /**
-     * Returns additional metadata for the trigger of this rule, used whenever this rule is executed.
-     *
-     * @return {@link TriggerMetadata}
-     */
-    @Nullable
-    TriggerMetadata getTriggerMetadata();
-
-    /**
-     * Returns the actions that will be performed when this rule is executed.
-     *
-     * @return A {@link List} of {@link AutoModerationAction actions}
-     */
-    @Nonnull
-    List<AutoModerationAction> getActions();
-
-    /**
-     * Returns whether this rule is enabled or not.
-     *
-     * @return True, if this is enabled
-     */
-    boolean isEnabled();
-
-    /**
-     * Returns the roles that are exempt from this rule.
-     *
-     * @return A {@link List} of {@link Role roles} which are exempt from this rule.
-     */
-    @Nullable
-    List<Role> getExemptRoles();
-
-    /**
-     * Returns the channels that are exempt from this rule.
-     *
-     * @return A {@link List} of {@link GuildChannel GuildChannels} which are exempt from this rule.
-     */
-    @Nullable
-    List<GuildChannel> getExemptChannels();
-
-    /**
-     * Used to set the name of the new rule.
-     *
-     * @param  name
-     *         The name of the rule. Must be between 1 and 100 characters.
-     *
-     * @return The {@link AutoModerationRule}.
-     */
-    @Nonnull
-    AutoModerationRule setName(@Nonnull String name);
-
-    /**
      * Used to set the event that will cause the auto moderation system to check for the specified trigger.
      *
      * @param  eventType
@@ -136,6 +88,14 @@ public interface AutoModerationRule extends ISnowflake, Comparable<AutoModeratio
      */
     @Nonnull
     AutoModerationRule setEventType(@Nonnull EventType eventType);
+
+    /**
+     * Returns the type of trigger that can cause this rule to be executed.
+     *
+     * @return {@link TriggerType}
+     */
+    @Nonnull
+    TriggerType getTriggerType();
 
     /**
      * Used to set the trigger that will cause the auto moderation system to be executed.
@@ -149,48 +109,12 @@ public interface AutoModerationRule extends ISnowflake, Comparable<AutoModeratio
     AutoModerationRule setTriggerType(@Nonnull TriggerType triggerType);
 
     /**
-     * Whether the rule is enabled or not.
+     * Returns additional metadata for the trigger of this rule, used whenever this rule is executed.
      *
-     * @param  enabled
-     *         Whether the rule is enabled or not.
-     *
-     * @return The {@link AutoModerationRule}.
-     */
-    @Nonnull
-    AutoModerationRule setEnabled(boolean enabled);
-
-    /**
-     * Used to set the actions that will be executed when the trigger is met.
-     *
-     * @param  actions
-     *         The actions that will be carried out.
-     *
-     * @return The {@link AutoModerationRule}.
-     */
-    @Nonnull
-    AutoModerationRule setActions(@Nonnull List<AutoModerationAction> actions);
-
-    /**
-     * Used to set the roles that will not be affected by the rule.
-     *
-     * @param  exemptRoles
-     *         The roles that will not be affected.
-     *
-     * @return The {@link AutoModerationRule}.
+     * @return {@link TriggerMetadata}
      */
     @Nullable
-    AutoModerationRule setExemptRoles(@Nonnull List<Role> exemptRoles);
-
-    /**
-     * Used to set the channel that will not be affected by the rule.
-     *
-     * @param  exemptChannels
-     *         The channels that will not be affected.
-     *
-     * @return The {@link AutoModerationRule}.
-     */
-    @Nullable
-    AutoModerationRule setExemptChannels(@Nonnull List<GuildChannel> exemptChannels);
+    TriggerMetadata getTriggerMetadata();
 
     /**
      * Used to set additional data that can he used to determine whether a rule should be executed or not.
@@ -204,42 +128,15 @@ public interface AutoModerationRule extends ISnowflake, Comparable<AutoModeratio
     AutoModerationRule setTriggerMetadata(@Nonnull TriggerMetadata triggerMetaData);
 
     /**
-     * Used to create a new {@link AutoModerationRule}.
+     * Returns the actions that will be performed when this rule is executed.
      *
-     * @param  name
-     *         The name of the rule. Must be between 1 and 100 characters.
-     *
-     * @param  eventType
-     *         The event type.
-     *
-     * @param  triggerType
-     *         The trigger type.
-     *
-     * @param  actions
-     *         The actions that will be carried out.
-     *
-     * @param  enabled
-     *         Whether the rule is enabled or not.
-     *
-     * @return The {@link AutoModerationRule}.
+     * @return A {@link List} of {@link AutoModerationAction actions}
      */
-    static AutoModerationRule createRule(@Nonnull String name, @Nonnull EventType eventType, @Nonnull TriggerType triggerType, @Nonnull List<AutoModerationAction> actions, boolean enabled) {
-        Checks.notEmpty(name, "name");
-        Checks.notEmpty(actions, "actions");
-        return new AutoModerationRuleImpl(name, eventType, triggerType, actions, enabled);
-    }
+    @Nonnull
+    List<AutoModerationAction> getActions();
 
     /**
-     * Used to create a new {@link AutoModerationRule}.
-     *
-     * @param  name
-     *         The name of the rule. Must be between 1 and 100 characters.
-     *
-     * @param  eventType
-     *         The event type.
-     *
-     * @param  triggerType
-     *         The trigger type.
+     * Used to set the actions that will be executed when the trigger is met.
      *
      * @param  actions
      *         The actions that will be carried out.
@@ -247,40 +144,17 @@ public interface AutoModerationRule extends ISnowflake, Comparable<AutoModeratio
      * @return The {@link AutoModerationRule}.
      */
     @Nonnull
-    static AutoModerationRule createRule(@Nonnull String name, @Nonnull EventType eventType, @Nonnull TriggerType triggerType, @Nonnull List<AutoModerationAction> actions) {
-        return createRule(name, eventType, triggerType, actions, true);
-    }
+    AutoModerationRule setActions(@Nonnull List<AutoModerationAction> actions);
 
     /**
-     * Used to create a new {@link AutoModerationRule}.
+     * Returns whether this rule is enabled or not.
      *
-     * @param  name
-     *         The name of the rule. Must be between 1 and 100 characters.
-     *
-     * @param  triggerType
-     *         The trigger type.
-     *
-     * @param  actions
-     *         The actions that will be carried out.
-     *
-     * @return The {@link AutoModerationRule}.
+     * @return True, if this is enabled
      */
-    @Nonnull
-    static AutoModerationRule createRule(@Nonnull String name, @Nonnull TriggerType triggerType, @Nonnull List<AutoModerationAction> actions) {
-        return createRule(name, EventType.MESSAGE_SEND, triggerType, actions, true);
-    }
+    boolean isEnabled();
 
     /**
-     * Used to create a new {@link AutoModerationRule}.
-     *
-     * @param  name
-     *         The name of the rule. Must be between 1 and 100 characters.
-     *
-     * @param  triggerType
-     *         The trigger type.
-     *
-     * @param  actions
-     *         The actions that will be carried out.
+     * Whether the rule is enabled or not.
      *
      * @param  enabled
      *         Whether the rule is enabled or not.
@@ -288,8 +162,43 @@ public interface AutoModerationRule extends ISnowflake, Comparable<AutoModeratio
      * @return The {@link AutoModerationRule}.
      */
     @Nonnull
-    static AutoModerationRule createRule(@Nonnull String name, @Nonnull TriggerType triggerType, @Nonnull List<AutoModerationAction> actions, boolean enabled)
-    {
-        return createRule(name, EventType.MESSAGE_SEND, triggerType, actions, enabled);
-    }
+    AutoModerationRule setEnabled(boolean enabled);
+
+    /**
+     * Returns the roles that are exempt from this rule.
+     *
+     * @return A {@link List} of {@link Role roles} which are exempt from this rule.
+     */
+    @Nullable
+    List<Role> getExemptRoles();
+
+    /**
+     * Used to set the roles that will not be affected by the rule.
+     *
+     * @param  exemptRoles
+     *         The roles that will not be affected.
+     *
+     * @return The {@link AutoModerationRule}.
+     */
+    @Nullable
+    AutoModerationRule setExemptRoles(@Nonnull List<Role> exemptRoles);
+
+    /**
+     * Returns the channels that are exempt from this rule.
+     *
+     * @return A {@link List} of {@link GuildChannel GuildChannels} which are exempt from this rule.
+     */
+    @Nullable
+    List<GuildChannel> getExemptChannels();
+
+    /**
+     * Used to set the channel that will not be affected by the rule.
+     *
+     * @param  exemptChannels
+     *         The channels that will not be affected.
+     *
+     * @return The {@link AutoModerationRule}.
+     */
+    @Nullable
+    AutoModerationRule setExemptChannels(@Nonnull List<GuildChannel> exemptChannels);
 }

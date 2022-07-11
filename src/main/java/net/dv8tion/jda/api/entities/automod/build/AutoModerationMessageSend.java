@@ -16,7 +16,6 @@
 
 package net.dv8tion.jda.api.entities.automod.build;
 
-import net.dv8tion.jda.api.entities.automod.AutoModerationRule;
 import net.dv8tion.jda.api.entities.automod.build.sent.Keyword;
 import net.dv8tion.jda.api.entities.automod.build.sent.KeywordPreset;
 import net.dv8tion.jda.internal.entities.automod.build.AutoModerationMessageSendImpl;
@@ -24,18 +23,19 @@ import net.dv8tion.jda.internal.entities.automod.build.sent.KeywordImpl;
 import net.dv8tion.jda.internal.entities.automod.build.sent.KeywordPresetImpl;
 
 import javax.annotation.Nonnull;
-import java.util.List;
 
 public interface AutoModerationMessageSend
 {
     @Nonnull
     static Keyword keyword(String name)
     {
-        return new KeywordImpl(name);
+        return AutoModerationMessageSendImpl.keyword(name);
     }
 
+    @Nonnull
     static KeywordPreset preset(String name)
     {
-        return new KeywordPresetImpl(name);
+        return AutoModerationMessageSendImpl.preset(name);
     }
+
 }

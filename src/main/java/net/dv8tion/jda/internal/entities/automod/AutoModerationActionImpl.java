@@ -19,9 +19,9 @@ package net.dv8tion.jda.internal.entities.automod;
 import net.dv8tion.jda.api.entities.automod.ActionMetadata;
 import net.dv8tion.jda.api.entities.automod.AutoModerationAction;
 import net.dv8tion.jda.api.entities.automod.AutoModerationActionType;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Objects;
 
 public class AutoModerationActionImpl implements AutoModerationAction
@@ -29,14 +29,7 @@ public class AutoModerationActionImpl implements AutoModerationAction
     private AutoModerationActionType type;
     private ActionMetadata metadata;
 
-    public AutoModerationActionImpl() {}
-
-    public AutoModerationActionImpl(AutoModerationActionType type)
-    {
-        setType(type);
-    }
-
-    @NotNull
+    @Nonnull
     @Override
     public AutoModerationActionType getType()
     {
@@ -50,14 +43,15 @@ public class AutoModerationActionImpl implements AutoModerationAction
         return metadata;
     }
 
-    public AutoModerationActionImpl setType(AutoModerationActionType type)
+    public @Nonnull AutoModerationActionImpl setType(@Nonnull AutoModerationActionType type)
     {
         this.type = type;
         return this;
     }
 
 
-    public AutoModerationActionImpl setMetadata(ActionMetadata metadata)
+    @Nullable
+    public AutoModerationActionImpl setActionMetadata(ActionMetadata metadata)
     {
         this.metadata = metadata;
         return this;

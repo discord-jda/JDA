@@ -17,9 +17,9 @@
 package net.dv8tion.jda.api.entities.automod;
 
 import net.dv8tion.jda.api.entities.GuildChannel;
-import net.dv8tion.jda.internal.entities.automod.ActionMetadataImpl;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.time.Duration;
 
 /**
@@ -37,21 +37,38 @@ public interface ActionMetadata
      *
      * @return {@link GuildChannel}
      */
-    @Nonnull
+    @Nullable
     GuildChannel getChannel();
+
+    /**
+     * Used to set the channel where an alert message will be sent when the rule is executed.
+     *
+     * @param channel
+     *        The channel where an alert message will be sent when the rule is executed.
+     *
+     * @return {@link ActionMetadata}
+     */
+    @Nullable
+    ActionMetadata setChannel(@Nonnull GuildChannel channel);
 
     /**
      * Returns the duration of the timeout.
      * <br>
      * The associated action type is {@link AutoModerationActionType#TIMEOUT}
-     * 
+     *
      * @return {@link Duration}
      */
-    @Nonnull
+    @Nullable
     Duration getDuration();
 
-    static ActionMetadata create(@Nonnull GuildChannel channel, @Nonnull Duration duration)
-    {
-        return new ActionMetadataImpl(channel, duration);
-    }
+    /**
+     * Used to set the duration of the timeout.
+     *
+     * @param duration
+     *        The duration of the timeout.
+     *
+     * @return {@link ActionMetadata}
+     */
+    @Nullable
+    ActionMetadata setDuration(@Nonnull Duration duration);
 }

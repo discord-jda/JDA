@@ -16,8 +16,6 @@
 
 package net.dv8tion.jda.api.entities.automod;
 
-import net.dv8tion.jda.internal.entities.automod.TriggerMetadataImpl;
-
 import javax.annotation.Nonnull;
 import java.util.EnumSet;
 import java.util.List;
@@ -42,6 +40,17 @@ public interface TriggerMetadata
     List<String> getKeywords();
 
     /**
+     * Used to set the substrings which will be searched for in content.
+     *
+     * @param  keywords
+     *         A {@link List} of {@link String}
+     *
+     * @return This {@link TriggerMetadata} instance, for chaining.
+     */
+    @Nonnull
+    TriggerMetadata setKeywords(@Nonnull List<String> keywords);
+
+    /**
      * Returns the internally pre-defined word sets which will be searched for in content.
      * <p>
      * Associated trigger type is {@link TriggerType#KEYWORD_PRESET}.
@@ -52,19 +61,13 @@ public interface TriggerMetadata
     EnumSet<KeywordPresetType> getKeywordPresetTypes();
 
     /**
-     * Used to create a new {@link TriggerMetadata} instance.
-     *
-     * @param  keywords
-     *         The keywords to be searched for in content.
+     * Used to set the internally pre-defined word sets which will be searched for in content.
      *
      * @param  keywordPresetTypes
-     *         The keyword presets to be searched for in content.
+     *         A {@link EnumSet} of {@link KeywordPresetType KeywordPresets}
      *
-     * @return {@link TriggerMetadata}
+     * @return This {@link TriggerMetadata} instance, for chaining.
      */
     @Nonnull
-    static TriggerMetadata create(@Nonnull List<String> keywords, @Nonnull EnumSet<KeywordPresetType> keywordPresetTypes)
-    {
-        return new TriggerMetadataImpl(keywords, keywordPresetTypes);
-    }
+    TriggerMetadata setKeywordPresets(@Nonnull EnumSet<KeywordPresetType> keywordPresetTypes);
 }

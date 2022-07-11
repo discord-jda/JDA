@@ -16,77 +16,13 @@
 
 package net.dv8tion.jda.api.entities.automod.build.sent;
 
-import net.dv8tion.jda.api.entities.GuildChannel;
-import net.dv8tion.jda.api.entities.Role;
-import net.dv8tion.jda.api.entities.automod.EventType;
+
 import net.dv8tion.jda.api.entities.automod.KeywordPresetType;
-import net.dv8tion.jda.api.entities.automod.TriggerType;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.EnumSet;
-import java.util.List;
 
-public interface KeywordPreset
+public interface KeywordPreset extends GenericKeyWord
 {
-
     KeywordPreset setKeywordPresets(@Nonnull EnumSet<KeywordPresetType> keyword);
-
-    /**
-     * Used to set the event that will cause the auto moderation system to check for the specified trigger.
-     *
-     * @param  eventType
-     *         The event type.
-     *
-     * @return The {@link KeywordPreset}.
-     */
-    @Nonnull
-    KeywordPreset setEventType(@Nonnull EventType eventType);
-
-    /**
-     * Used to set the trigger that will cause the auto moderation system to be executed.
-     *
-     * @param  triggerType
-     *         The trigger type.
-     *
-     * @return The {@link KeywordPreset}.
-     */
-    @Nonnull
-    KeywordPreset setTriggerType(@Nonnull TriggerType triggerType);
-
-
-    /**
-     * Whether the rule is enabled or not.
-     *
-     * @param  enabled
-     *         Whether the rule is enabled or not.
-     *
-     * @return The {@link KeywordPreset}.
-     */
-    @Nonnull
-    KeywordPreset setEnabled(boolean enabled);
-
-
-    /**
-     * Used to set the roles that will not be affected by the rule.
-     *
-     * @param  exemptRoles
-     *         The roles that will not be affected.
-     *
-     * @return The {@link KeywordPreset}.
-     */
-    @Nullable
-    KeywordPreset setExemptRoles(@Nonnull List<Role> exemptRoles);
-
-    /**
-     * Used to set the channel that will not be affected by the rule.
-     *
-     * @param  exemptChannels
-     *         The channels that will not be affected.
-     *
-     * @return The {@link KeywordPreset}.
-     */
-    @Nullable
-    KeywordPreset setExemptChannels(@Nonnull List<GuildChannel> exemptChannels);
-
 }

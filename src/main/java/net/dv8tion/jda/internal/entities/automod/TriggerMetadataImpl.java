@@ -30,14 +30,6 @@ public class TriggerMetadataImpl implements TriggerMetadata
     private List<String> keywords;
     private EnumSet<KeywordPresetType> keywordPresets;
 
-    public TriggerMetadataImpl() {}
-
-    public TriggerMetadataImpl(@Nonnull List<String> keywords, @Nonnull EnumSet<KeywordPresetType> keywordPresets)
-    {
-        setKeywords(keywords);
-        setKeywordPresets(keywordPresets);
-    }
-
     @Override
     @Nonnull
     public List<String> getKeywords()
@@ -45,6 +37,8 @@ public class TriggerMetadataImpl implements TriggerMetadata
         return Collections.unmodifiableList(keywords);
     }
 
+    @Nonnull
+    @Override
     public TriggerMetadataImpl setKeywords(@Nonnull List<String> keywords)
     {
         this.keywords = keywords;
@@ -58,6 +52,8 @@ public class TriggerMetadataImpl implements TriggerMetadata
         return EnumSet.copyOf(keywordPresets);
     }
 
+    @Override
+    @Nonnull
     public TriggerMetadataImpl setKeywordPresets(@Nonnull EnumSet<KeywordPresetType> keywordPresets)
     {
         this.keywordPresets = keywordPresets;
