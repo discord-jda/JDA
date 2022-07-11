@@ -25,31 +25,34 @@ public enum TriggerType
 {
     /**
      * Checks if the content sent by a member contains a specific word.
-     * <br>
+     * <p>
      * The max per guild is 3.
+     * </p>
      */
     KEYWORD(1, 3),
     /**
      * Checks for any harmful links.
      * <p>
-     * This is not released yet.
-     * <br>
      * The max per guild is 1.
+     * <p>
+     * Note: This is not released yet.
+     * </p>
      */
     HARMFUL_LINK(2, 1),
     /**
      * Checks for generic spam.
      * <p>
-     * This is not released yet.
-     * <br>
      * The max per guild is 1.
+     * <p>
+     * Note: This is not released yet.
+     * </p>
      */
     SPAM(3, 1),
     /**
      * Checks if the content contains words from internally pre-defined word sets.
-     *
-     * <br>
+     * <p>
      * The max per guild is 1.
+     * </p>
      */
     KEYWORD_PRESET(4, 1),
     /**

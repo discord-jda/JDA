@@ -172,6 +172,27 @@ public class RuleCreateActionImpl extends RestActionImpl<AutoModerationRule> imp
 
     @Nonnull
     @Override
+    public List<AutoModerationAction> getActions()
+    {
+        return data.getActions();
+    }
+
+    @Nullable
+    @Override
+    public List<Role> getExemptRoles()
+    {
+        return data.getExemptRoles();
+    }
+
+    @Nullable
+    @Override
+    public List<GuildChannel> getExemptChannels()
+    {
+        return data.getExemptChannels();
+    }
+
+    @Nonnull
+    @Override
     public DataObject toData()
     {
         return data.toData();

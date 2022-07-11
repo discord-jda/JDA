@@ -31,6 +31,8 @@ import java.util.function.BooleanSupplier;
 
 /**
  * Specialized {@link RestAction} used to create or update an auto moderation rule.
+ * 
+ * @see net.dv8tion.jda.api.entities.Guild#createAutoModerationRule(AutoModerationRuleData) 
  */
 //TODO: JavaDoc for methods
 public interface RuleCreateAction extends RestAction<AutoModerationRule>, AutoModerationRuleData

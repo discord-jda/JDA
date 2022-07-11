@@ -26,17 +26,17 @@ import net.dv8tion.jda.api.entities.automod.build.AutoModerationRuleData;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.utils.Checks;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.List;
 
 public class AutoModerationRuleDataImpl implements AutoModerationRuleData
 {
-    private final DataArray actions = DataArray.empty();
-    private final DataArray exemptRoles = DataArray.empty();
-    private final DataArray exemptChannels = DataArray.empty();
+    private final List<AutoModerationAction> actions = new ArrayList<>();
+    private final List<Role> exemptRoles = new ArrayList<>();
+    private final List<GuildChannel> exemptChannels = new ArrayList<>();
     private String name;
     private EventType eventType;
     private TriggerType triggerType;
@@ -52,32 +52,34 @@ public class AutoModerationRuleDataImpl implements AutoModerationRuleData
         setEnabled(enabled);
     }
 
-    @NotNull
+    @Nonnull
     @Override
-    public AutoModerationRuleData setName(@NotNull String name)
+    public AutoModerationRuleData setName(@Nonnull String name)
     {
         Checks.inRange(name, 1, 100, "Name");
         this.name = name;
         return this;
     }
 
-    @NotNull
+    @Nonnull
     @Override
-    public AutoModerationRuleData setEventType(@NotNull EventType eventType)
+    public AutoModerationRuleData setEventType(@Nonnull EventType eventType)
     {
+        Checks.notNull(eventType, "Event Type");
         this.eventType = eventType;
         return this;
     }
 
-    @NotNull
+    @Nonnull
     @Override
-    public AutoModerationRuleData setTriggerType(@NotNull TriggerType triggerType)
+    public AutoModerationRuleData setTriggerType(@Nonnull TriggerType triggerType)
     {
+        Checks.notNull(triggerType, "Trigger Type");
         this.triggerType = triggerType;
         return this;
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public AutoModerationRuleData setEnabled(boolean enabled)
     {
@@ -85,9 +87,20 @@ public class AutoModerationRuleDataImpl implements AutoModerationRuleData
         return this;
     }
 
+    @Nonnull
+    @Override
+    public AutoModerationRuleData setActions(@Nonnull List<AutoModerationAction> actions)
+    {
+        Checks.notEmpty(actions, "Actions");
+        Checks.notEmpty(actions, "Auto Moderation Action");
+        this.actions.addAll(actions);
+        return this;
+    }
+
+
     @Nullable
     @Override
-    public AutoModerationRuleData setTriggerMetadata(@NotNull TriggerMetadata triggerMetaData)
+    public AutoModerationRuleData setTriggerMetadata(@Nonnull TriggerMetadata triggerMetaData)
     {
         this.triggerMetadata = triggerMetaData;
         return this;
@@ -95,7 +108,7 @@ public class AutoModerationRuleDataImpl implements AutoModerationRuleData
 
     @Nullable
     @Override
-    public AutoModerationRuleData setExemptRoles(@NotNull List<Role> exemptRoles)
+    public AutoModerationRuleData setExemptRoles(@Nonnull List<Role> exemptRoles)
     {
         Checks.notEmpty(exemptRoles, "Exempt Roles");
         this.exemptRoles.addAll(exemptRoles);
@@ -104,19 +117,10 @@ public class AutoModerationRuleDataImpl implements AutoModerationRuleData
 
     @Nullable
     @Override
-    public AutoModerationRuleData setExemptChannels(@NotNull List<GuildChannel> exemptChannels)
+    public AutoModerationRuleData setExemptChannels(@Nonnull List<GuildChannel> exemptChannels)
     {
         Checks.notEmpty(exemptChannels, "Exempt Channels");
         this.exemptChannels.addAll(exemptChannels);
-        return this;
-    }
-
-    @NotNull
-    @Override
-    public AutoModerationRuleData setActions(@NotNull List<AutoModerationAction> actions)
-    {
-        Checks.notEmpty(actions, "Auto Moderation Action");
-        this.actions.addAll(actions);
         return this;
     }
 
@@ -128,28 +132,28 @@ public class AutoModerationRuleDataImpl implements AutoModerationRuleData
                 .put("name", name)
                 .put("event_type", eventType.name())
                 .put("trigger_type", triggerType.name())
-                .put("actions", actions)
+                .put("actions", DataArray.fromCollection(actions))
                 .put("enabled", enabled)
                 .put("trigger_metadata", triggerMetadata == null ? null : triggerMetadata)
-                .put("exempt_roles", exemptRoles)
-                .put("exempt_channels", exemptChannels);
+                .put("exempt_roles", DataArray.fromCollection(exemptRoles))
+                .put("exempt_channels", DataArray.fromCollection(exemptChannels));
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public String getName()
     {
         return name;
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public EventType getEventType()
     {
         return eventType;
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public TriggerType getTriggerType()
     {
@@ -167,5 +171,26 @@ public class AutoModerationRuleDataImpl implements AutoModerationRuleData
     public TriggerMetadata getTriggerMetadata()
     {
         return triggerMetadata;
+    }
+
+    @Nonnull
+    @Override
+    public List<AutoModerationAction> getActions()
+    {
+        return actions;
+    }
+
+    @Nullable
+    @Override
+    public List<Role> getExemptRoles()
+    {
+        return exemptRoles;
+    }
+
+    @Nullable
+    @Override
+    public List<GuildChannel> getExemptChannels()
+    {
+        return exemptChannels;
     }
 }

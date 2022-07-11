@@ -26,11 +26,13 @@ public interface TriggerMetadata
 {
     /**
      * Returns the substrings which will be searched for in content.
-     * <br>
-     * <br> These substrings can be a phrase which contains multiple words. Wildcard symbols ({@code *}) can also be used to customize how each keyword is matched.
-     * <br>
-     * <br> Associated trigger type is {@link TriggerType#KEYWORD}.
-     *
+     * <p>
+     * These substrings can be a phrase which contains multiple words.
+     * <p>
+     * Wildcard symbols ({@code *}) can also be used to customize how each keyword is matched.
+     * <p>
+     * Associated trigger type is {@link TriggerType#KEYWORD}.
+     * </p>
      * @return A {@link List} of {@link String}
      */
     @Nonnull
@@ -38,10 +40,9 @@ public interface TriggerMetadata
 
     /**
      * Returns the internally pre-defined word sets which will be searched for in content.
-     *
-     * <br>
+     * <p>
      * Associated trigger type is {@link TriggerType#KEYWORD_PRESET}.
-     *
+     * </p>
      * @return A {@link List} of {@link KeywordPresetType KeywordPresets}
      */
     @Nonnull

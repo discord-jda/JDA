@@ -2969,8 +2969,8 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     /**
      * Retrieves a list of the auto moderation rules which are configured for this guild.
      *
-     * @param id,
-     *         the id of the rule you want to retrieve.
+     * @param  id,
+     *         The id of the rule you want to retrieve.
      *
      * @return A list of auto moderation rule objects for the given guild.
      */
@@ -2980,7 +2980,9 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     /**
      * Retrieves a list of the auto moderation rules which are configured for this guild.
      *
-     * @param id, the id of the rule you want to retrieve.
+     * @param  id,
+     *         The id of the rule you want to retrieve.
+     *
      * @return A list of auto moderation rule objects for the given guild.
      */
     default RestAction<AutoModerationRule> retrieveAutoModerationRule(long id) {
@@ -2999,7 +3001,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * This can be used to create a {@link AutoModerationRule rule} for this guild.
      *
      * @param  data
-     *        The data of the new rule.
+     *         The data of the new rule.
      *
      * @return The new {@link AutoModerationRule rule} that was created.
      */
@@ -3009,10 +3011,10 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     /**
      * This can be used to modify an existing {@link AutoModerationRule rule}.
      *
-     * @param rule,
-     *          the rule which you want to modify.
-     * @param data,
-     *          the data containing the modified values.
+     * @param  rule,
+     *         The rule which you want to modify.
+     * @param  data,
+     *         The data containing the modified values.
      *
      * @return an auto moderation rule.
      */
@@ -3022,8 +3024,8 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     /**
      * Deletes an auto moderation rule from this guild.
      *
-     * @param rule,
-     *          the rule which you want to delete.
+     * @param  rule,
+     *         The rule which you want to delete.
      *
      * @return A {@link RestAction} that can be used to monitor the request.
      */
