@@ -30,8 +30,10 @@ import java.util.List;
 
 /**
  * Used to construct a new {@link net.dv8tion.jda.api.entities.automod.AutoModerationRule}.
+ *
  * <p>
  * The following methods are required to be called in order to create a new {@link net.dv8tion.jda.api.entities.automod.AutoModerationRule}.
+ * </p>
  *     <ul>
  *         <li>{@link #setName(String)}</li>
  *         <li>{@link #setEventType(EventType)}</li>
@@ -46,7 +48,6 @@ import java.util.List;
  *         <li>{@link #setTriggerMetadata(TriggerMetadata)}</li>
  *         <li>{@link #setTriggerMetadata(TriggerMetadata)}</li>
  *     </ul>
- * </p>
  */
 public interface AutoModerationRuleData extends SerializableData
 {
