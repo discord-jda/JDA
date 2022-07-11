@@ -17,8 +17,11 @@
 package net.dv8tion.jda.api.entities.automod;
 
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.automod.build.AutoModerationMessageSend;
 import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.internal.entities.automod.AutoModerationRuleImpl;
+import net.dv8tion.jda.internal.entities.automod.build.AutoModerationMessageSendImpl;
+import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -32,6 +35,7 @@ import java.util.List;
  */
 public interface AutoModerationRule extends ISnowflake, Comparable<AutoModerationRule>, SerializableData
 {
+    AutoModerationMessageSend MessageSend = new AutoModerationMessageSendImpl();
     /**
      * Returns the Guild that the rule belongs to.
      *
@@ -199,7 +203,6 @@ public interface AutoModerationRule extends ISnowflake, Comparable<AutoModeratio
     @Nullable
     AutoModerationRule setTriggerMetadata(@Nonnull TriggerMetadata triggerMetaData);
 
-
     /**
      * Used to create a new {@link AutoModerationRule}.
      *
@@ -221,6 +224,8 @@ public interface AutoModerationRule extends ISnowflake, Comparable<AutoModeratio
      * @return The {@link AutoModerationRule}.
      */
     static AutoModerationRule createRule(@Nonnull String name, @Nonnull EventType eventType, @Nonnull TriggerType triggerType, @Nonnull List<AutoModerationAction> actions, boolean enabled) {
+        Checks.notEmpty(name, "name");
+        Checks.notEmpty(actions, "actions");
         return new AutoModerationRuleImpl(name, eventType, triggerType, actions, enabled);
     }
 
@@ -243,7 +248,7 @@ public interface AutoModerationRule extends ISnowflake, Comparable<AutoModeratio
      */
     @Nonnull
     static AutoModerationRule createRule(@Nonnull String name, @Nonnull EventType eventType, @Nonnull TriggerType triggerType, @Nonnull List<AutoModerationAction> actions) {
-        return new AutoModerationRuleImpl(name, eventType, triggerType, actions, true);
+        return createRule(name, eventType, triggerType, actions, true);
     }
 
     /**
@@ -262,7 +267,7 @@ public interface AutoModerationRule extends ISnowflake, Comparable<AutoModeratio
      */
     @Nonnull
     static AutoModerationRule createRule(@Nonnull String name, @Nonnull TriggerType triggerType, @Nonnull List<AutoModerationAction> actions) {
-        return new AutoModerationRuleImpl(name, EventType.MESSAGE_SEND, triggerType, actions, true);
+        return createRule(name, EventType.MESSAGE_SEND, triggerType, actions, true);
     }
 
     /**
@@ -285,6 +290,6 @@ public interface AutoModerationRule extends ISnowflake, Comparable<AutoModeratio
     @Nonnull
     static AutoModerationRule createRule(@Nonnull String name, @Nonnull TriggerType triggerType, @Nonnull List<AutoModerationAction> actions, boolean enabled)
     {
-        return new AutoModerationRuleImpl(name, EventType.MESSAGE_SEND, triggerType, actions, enabled);
+        return createRule(name, EventType.MESSAGE_SEND, triggerType, actions, enabled);
     }
 }

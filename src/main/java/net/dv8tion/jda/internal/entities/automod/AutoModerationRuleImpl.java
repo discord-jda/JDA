@@ -59,6 +59,12 @@ public class AutoModerationRuleImpl implements AutoModerationRule
         setEnabled(enabled);
     }
 
+    public AutoModerationRuleImpl(@Nonnull String name)
+    {
+        id = null;
+        setName(name);
+    }
+
 
     @Nonnull
     @Override
