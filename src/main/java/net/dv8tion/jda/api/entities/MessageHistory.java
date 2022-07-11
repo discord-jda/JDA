@@ -20,7 +20,6 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
-import net.dv8tion.jda.api.exceptions.MissingAccessException;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.RestAction;
@@ -72,15 +71,13 @@ public class MessageHistory
         Checks.notNull(channel, "Channel");
         this.channel = channel;
 
-        //TODO-v5: Fix permissions here.
-        if (channel instanceof TextChannel)
+        if (channel instanceof GuildChannel)
         {
-            TextChannel tc = (TextChannel) channel;
-            Member selfMember = tc.getGuild().getSelfMember();
-            if (!selfMember.hasAccess(tc))
-                throw new MissingAccessException(tc, Permission.VIEW_CHANNEL);
-            if (!selfMember.hasPermission(tc, Permission.MESSAGE_HISTORY))
-                throw new InsufficientPermissionException(tc, Permission.MESSAGE_HISTORY);
+            GuildChannel guildChannel = (GuildChannel) channel;
+            Member selfMember = guildChannel.getGuild().getSelfMember();
+            Checks.checkAccess(selfMember, guildChannel);
+            if (!selfMember.hasPermission(guildChannel, Permission.MESSAGE_HISTORY))
+                throw new InsufficientPermissionException(guildChannel, Permission.MESSAGE_HISTORY);
         }
     }
 
@@ -534,14 +531,13 @@ public class MessageHistory
     {
         Checks.isSnowflake(messageId, "Message ID");
         Checks.notNull(channel, "Channel");
-        if (channel.getType() == ChannelType.TEXT)
+        if (channel instanceof GuildChannel)
         {
-            TextChannel t = (TextChannel) channel;
-            Member selfMember = t.getGuild().getSelfMember();
-            if (!selfMember.hasAccess(t))
-                throw new MissingAccessException(t, Permission.VIEW_CHANNEL);
-            if (!selfMember.hasPermission(t, Permission.MESSAGE_HISTORY))
-                throw new InsufficientPermissionException(t, Permission.MESSAGE_HISTORY);
+            GuildChannel guildChannel = (GuildChannel) channel;
+            Member selfMember = guildChannel.getGuild().getSelfMember();
+            Checks.checkAccess(selfMember, guildChannel);
+            if (!selfMember.hasPermission(guildChannel, Permission.MESSAGE_HISTORY))
+                throw new InsufficientPermissionException(guildChannel, Permission.MESSAGE_HISTORY);
         }
     }
 

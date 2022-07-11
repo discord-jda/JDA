@@ -40,6 +40,7 @@ import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
+import net.dv8tion.jda.api.requests.restaction.ThreadChannelAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationAction;
 import net.dv8tion.jda.api.utils.AttachmentOption;
 import net.dv8tion.jda.api.utils.AttachmentProxy;
@@ -1414,6 +1415,8 @@ public interface Message extends ISnowflake, Formattable
      *
      * @throws java.lang.UnsupportedOperationException
      *         If this is a Data Message (output of {@link MessageBuilder MessageBuilder})
+     * @throws MissingAccessException
+     *         If the currently logged in account does not have {@link Member#hasAccess(GuildChannel) access} in this channel.
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If this Message was not sent by the currently logged in account, the Message was sent in a
      *         {@link GuildChannel GuildChannel}, and the currently logged in account
@@ -1928,6 +1931,8 @@ public interface Message extends ISnowflake, Formattable
      *             <li>If the channel is not a {@link NewsChannel}.</li>
      *             <li>If the message is ephemeral.</li>
      *         </ul>
+     * @throws MissingAccessException
+     *         If the currently logged in account does not have {@link Member#hasAccess(GuildChannel) access} in this channel.
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have
      *         {@link Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} in this channel
@@ -2032,7 +2037,7 @@ public interface Message extends ISnowflake, Formattable
 
     //TODO-v5: Docs
     @CheckReturnValue
-    RestAction<ThreadChannel> createThreadChannel(String name);
+    ThreadChannelAction createThreadChannel(String name);
 
     /**
      * Mention constants, useful for use with {@link java.util.regex.Pattern Patterns}

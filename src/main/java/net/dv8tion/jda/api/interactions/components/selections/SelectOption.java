@@ -17,6 +17,7 @@
 package net.dv8tion.jda.api.interactions.components.selections;
 
 import net.dv8tion.jda.api.entities.emoji.Emoji;
+import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -48,7 +49,7 @@ public class SelectOption implements SerializableData
     private final String label, value;
     private final String description;
     private final boolean isDefault;
-    private final Emoji emoji;
+    private final EmojiUnion emoji;
 
     /**
      * Creates a new SelectOption instance
@@ -83,7 +84,7 @@ public class SelectOption implements SerializableData
      *         The {@link Emoji} shown next to this option, or null
      *
      * @throws IllegalArgumentException
-     *         If the an invalid null is provided, or any of the individual parameter requirements are violated.
+     *         If an unexpected null is provided, or any of the individual parameter requirements are violated.
      */
     protected SelectOption(@Nonnull String label, @Nonnull String value, @Nullable String description, boolean isDefault, @Nullable Emoji emoji)
     {
@@ -97,7 +98,7 @@ public class SelectOption implements SerializableData
         this.value = value;
         this.description = description;
         this.isDefault = isDefault;
-        this.emoji = emoji;
+        this.emoji = (EmojiUnion) emoji;
     }
 
     /**
@@ -111,7 +112,7 @@ public class SelectOption implements SerializableData
      *         up to {@value #VALUE_MAX_LENGTH} characters, as defined by {@link #VALUE_MAX_LENGTH}
      *
      * @throws IllegalArgumentException
-     *         If the null is provided, or any of the individual parameter requirements are violated.
+     *         If null is provided, or any of the individual parameter requirements are violated.
      *
      * @return The new select option instance
      */
@@ -260,7 +261,7 @@ public class SelectOption implements SerializableData
      * @return The attached emoji
      */
     @Nullable
-    public Emoji getEmoji()
+    public EmojiUnion getEmoji()
     {
         return emoji;
     }

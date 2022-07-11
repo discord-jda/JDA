@@ -175,6 +175,11 @@ public class JDAImpl implements JDA
         return sessionConfig.isRawEvents();
     }
 
+    public boolean isEventPassthrough()
+    {
+        return sessionConfig.isEventPassthrough();
+    }
+
     public boolean isRelativeRateLimit()
     {
         return sessionConfig.isRelativeRateLimit();

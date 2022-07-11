@@ -26,7 +26,6 @@ import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import net.dv8tion.jda.api.entities.sticker.StickerItem;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
-import net.dv8tion.jda.api.exceptions.MissingAccessException;
 import net.dv8tion.jda.api.exceptions.PermissionException;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
@@ -34,6 +33,7 @@ import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
+import net.dv8tion.jda.api.requests.restaction.ThreadChannelAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationAction;
 import net.dv8tion.jda.api.utils.MarkdownSanitizer;
 import net.dv8tion.jda.api.utils.data.DataObject;
@@ -553,9 +553,8 @@ public class ReceivedMessage extends AbstractMessage
 
             GuildMessageChannel gChan = getGuildChannel();
             Member sMember = getGuild().getSelfMember();
-            if (!sMember.hasAccess(gChan))
-                throw new MissingAccessException(gChan, Permission.VIEW_CHANNEL);
-            else if (!sMember.hasPermission(gChan, Permission.MESSAGE_MANAGE))
+            Checks.checkAccess(sMember, gChan);
+            if (!sMember.hasPermission(gChan, Permission.MESSAGE_MANAGE))
                 throw new InsufficientPermissionException(gChan, Permission.MESSAGE_MANAGE);
         }
         if (!type.canDelete())
@@ -600,14 +599,11 @@ public class ReceivedMessage extends AbstractMessage
         if (getFlags().contains(MessageFlag.CROSSPOSTED))
             return new CompletedRestAction<>(getJDA(), this);
 
-        //TODO-v5: Maybe we'll have a `getNewsChannel()` getter that will do this check there?
         if (!(getChannel() instanceof NewsChannel))
             throw new IllegalStateException("This message was not sent in a news channel");
 
-        //TODO-v5: Double check: Is this actually how we crosspost? This, to me, reads as "take the message we just received and crosspost it to the _same exact channel we just received it in_. Makes no sense.
         NewsChannel newsChannel = (NewsChannel) getChannel();
-        if (!getGuild().getSelfMember().hasAccess(newsChannel))
-            throw new MissingAccessException(newsChannel, Permission.VIEW_CHANNEL);
+        Checks.checkAccess(getGuild().getSelfMember(), newsChannel);
         if (!getAuthor().equals(getJDA().getSelfUser()) && !getGuild().getSelfMember().hasPermission(newsChannel, Permission.MESSAGE_MANAGE))
             throw new InsufficientPermissionException(newsChannel, Permission.MESSAGE_MANAGE);
         return newsChannel.crosspostMessageById(getId());
@@ -646,7 +642,7 @@ public class ReceivedMessage extends AbstractMessage
     }
 
     @Override
-    public RestAction<ThreadChannel> createThreadChannel(String name)
+    public ThreadChannelAction createThreadChannel(String name)
     {
         return ((IThreadContainer) getGuildChannel()).createThreadChannel(name, this.getIdLong());
     }
