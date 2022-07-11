@@ -61,7 +61,6 @@ public class AutoModerationRuleUpdateHandler extends SocketHandler
         }
 
         String name = content.getString("name");
-        final User user = api.getUserById(content.getString("user_id"));
         EventType eventType = EventType.fromValue(content.getInt("event_type"));
         TriggerType triggerType = TriggerType.fromValue(content.getInt("trigger_type"));
         TriggerMetadata triggerMetadata = api.getEntityBuilder().createTriggerMetadata(content.getObject("trigger_metadata"));
@@ -94,25 +93,11 @@ public class AutoModerationRuleUpdateHandler extends SocketHandler
         for (int i = 0; i < actionArray.length(); i++)
             actions.add(api.getEntityBuilder().createAutoModerationAction(guild, actionArray.getObject(i)));
 
-        if (!Objects.equals(rule.getGuild(), guild))
-        {
-            Guild oldGuild = rule.getGuild();
-            rule.setGuild(guild);
-            getJDA().handleEvent(new AutoModerationRuleUpdateGuildEvent(getJDA(), responseNumber, rule, AutoModerationField.GUILD, oldGuild, guild));
-        }
-
         if (!Objects.equals(name, rule.getName()))
         {
             String oldName = rule.getName();
             rule.setName(name);
             getJDA().handleEvent(new AutoModerationRuleUpdateNameEvent(getJDA(), responseNumber, rule, AutoModerationField.NAME, oldName, name));
-        }
-
-        if (!Objects.equals(user, rule.getUser()))
-        {
-            User oldUser = rule.getUser();
-            rule.setUser(user);
-            getJDA().handleEvent(new AutoModerationRuleUpdateUserEvent(getJDA(), responseNumber, rule, AutoModerationField.USER, oldUser, user));
         }
 
         if (!Objects.equals(eventType, rule.getEventType()))

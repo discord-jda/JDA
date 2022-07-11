@@ -26,9 +26,15 @@ import java.util.Objects;
 
 public class AutoModerationActionImpl implements AutoModerationAction
 {
-
     private AutoModerationActionType type;
     private ActionMetadata metadata;
+
+    public AutoModerationActionImpl() {}
+
+    public AutoModerationActionImpl(AutoModerationActionType type)
+    {
+        setType(type);
+    }
 
     @NotNull
     @Override

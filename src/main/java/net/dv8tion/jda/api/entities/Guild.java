@@ -19,7 +19,6 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.Region;
 import net.dv8tion.jda.api.entities.automod.AutoModerationRule;
-import net.dv8tion.jda.api.entities.automod.build.AutoModerationRuleData;
 import net.dv8tion.jda.api.entities.channel.IGuildChannelContainer;
 import net.dv8tion.jda.api.entities.channel.unions.DefaultGuildChannelUnion;
 import net.dv8tion.jda.api.entities.emoji.CustomEmoji;
@@ -3008,7 +3007,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * @return The new {@link AutoModerationRule rule} that was created.
      */
     @Nonnull
-    RuleCreateAction createAutoModerationRule(@Nonnull AutoModerationRuleData data);
+    RuleCreateAction createAutoModerationRule(@Nonnull AutoModerationRule data);
 
     /**
      * This can be used to modify an existing {@link AutoModerationRule rule}.
@@ -3021,7 +3020,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * @return an auto moderation rule.
      */
     @Nonnull
-    RuleModifyAction modifyAutoModerationRule(@Nonnull AutoModerationRule rule, @Nonnull AutoModerationRuleData data);
+    RuleModifyAction modifyAutoModerationRule(@Nonnull AutoModerationRule rule, @Nonnull AutoModerationRule data);
 
     /**
      * Deletes an auto moderation rule from this guild.

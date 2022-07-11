@@ -17,6 +17,7 @@
 package net.dv8tion.jda.api.entities.automod;
 
 import net.dv8tion.jda.api.entities.GuildChannel;
+import net.dv8tion.jda.internal.entities.automod.ActionMetadataImpl;
 
 import javax.annotation.Nonnull;
 import java.time.Duration;
@@ -48,4 +49,9 @@ public interface ActionMetadata
      */
     @Nonnull
     Duration getDuration();
+
+    static ActionMetadata create(@Nonnull GuildChannel channel, @Nonnull Duration duration)
+    {
+        return new ActionMetadataImpl(channel, duration);
+    }
 }

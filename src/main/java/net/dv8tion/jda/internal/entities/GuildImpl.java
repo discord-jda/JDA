@@ -21,7 +21,6 @@ import net.dv8tion.jda.api.Region;
 import net.dv8tion.jda.api.audio.hooks.ConnectionStatus;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.automod.AutoModerationRule;
-import net.dv8tion.jda.api.entities.automod.build.AutoModerationRuleData;
 import net.dv8tion.jda.api.entities.channel.unions.DefaultGuildChannelUnion;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import net.dv8tion.jda.api.entities.sticker.GuildSticker;
@@ -53,7 +52,7 @@ import net.dv8tion.jda.api.utils.concurrent.Task;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
-import net.dv8tion.jda.internal.entities.automod.build.AutoModerationRuleDataImpl;
+import net.dv8tion.jda.internal.entities.automod.AutoModerationRuleImpl;
 import net.dv8tion.jda.internal.handle.EventCache;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 import net.dv8tion.jda.internal.interactions.command.CommandImpl;
@@ -91,8 +90,6 @@ import javax.annotation.Nullable;
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import gnu.trove.set.TLongSet;
-import okhttp3.MediaType;
-import okhttp3.MultipartBody;
 
 public class GuildImpl implements Guild
 {
@@ -1268,16 +1265,16 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public RuleCreateAction createAutoModerationRule(@Nonnull AutoModerationRuleData data)
+    public RuleCreateAction createAutoModerationRule(@Nonnull AutoModerationRule data)
     {
         checkPermission(Permission.MANAGE_SERVER);
         Checks.notNull(data, "AutoModerationRuledData");
-        return new RuleCreateActionImpl(this, (AutoModerationRuleDataImpl) data);
+        return new RuleCreateActionImpl(this, (AutoModerationRuleImpl) data);
     }
 
     @Nonnull
     @Override
-    public RuleModifyAction modifyAutoModerationRule(@Nonnull AutoModerationRule rule, @Nonnull AutoModerationRuleData data)
+    public RuleModifyAction modifyAutoModerationRule(@Nonnull AutoModerationRule rule, @Nonnull AutoModerationRule data)
     {
         checkPermission(Permission.MANAGE_SERVER);
         Checks.notNull(rule, "AutoModerationRule");

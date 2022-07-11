@@ -19,13 +19,15 @@ package net.dv8tion.jda.internal.requests.restaction;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.automod.*;
 import net.dv8tion.jda.api.requests.restaction.RuleCreateAction;
 import net.dv8tion.jda.api.utils.data.DataObject;
-import net.dv8tion.jda.internal.entities.automod.build.AutoModerationRuleDataImpl;
+import net.dv8tion.jda.internal.entities.automod.AutoModerationRuleImpl;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -35,9 +37,9 @@ import java.util.function.BooleanSupplier;
 
 public class RuleCreateActionImpl extends RestActionImpl<AutoModerationRule> implements RuleCreateAction
 {
-    private AutoModerationRuleDataImpl data;
+    private AutoModerationRuleImpl data;
 
-    public RuleCreateActionImpl(@Nonnull Guild guild, @Nonnull AutoModerationRuleDataImpl data)
+    public RuleCreateActionImpl(@Nonnull Guild guild, @Nonnull AutoModerationRuleImpl data)
     {
         super(guild.getJDA(), Route.AutoModeration.CREATE_AUTO_MODERATION_RULE.compile(guild.getId()));
         this.data = data;
@@ -136,11 +138,25 @@ public class RuleCreateActionImpl extends RestActionImpl<AutoModerationRule> imp
         return this;
     }
 
+    @NotNull
+    @Override
+    public Guild getGuild()
+    {
+        return data.getGuild();
+    }
+
     @Nonnull
     @Override
     public String getName()
     {
         return data.getName();
+    }
+
+    @NotNull
+    @Override
+    public User getUser()
+    {
+        return data.getUser();
     }
 
     @Nonnull
@@ -196,5 +212,17 @@ public class RuleCreateActionImpl extends RestActionImpl<AutoModerationRule> imp
     public DataObject toData()
     {
         return data.toData();
+    }
+
+    @Override
+    public int compareTo(@NotNull AutoModerationRule o)
+    {
+        return Long.compare(getIdLong(), o.getIdLong());
+    }
+
+    @Override
+    public long getIdLong()
+    {
+        return data.getIdLong();
     }
 }

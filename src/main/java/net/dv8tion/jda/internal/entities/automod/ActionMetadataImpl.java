@@ -25,9 +25,16 @@ import java.util.Objects;
 
 public class ActionMetadataImpl implements ActionMetadata
 {
-
     private GuildChannel channel;
     private Duration duration;
+
+    public ActionMetadataImpl() {}
+
+    public ActionMetadataImpl(GuildChannel channel, Duration duration)
+    {
+        setChannel(channel);
+        setDuration(duration);
+    }
 
     @Override
     @Nonnull

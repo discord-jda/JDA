@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.api.entities.automod;
 
+import net.dv8tion.jda.internal.entities.automod.AutoModerationActionImpl;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -39,4 +41,16 @@ public interface AutoModerationAction
      */
     @Nullable
     ActionMetadata getActionMetadata();
+
+    /**
+     * Used to create a new {@link AutoModerationAction} instance.
+     *
+     * @param type
+     *        The type of this action
+     *
+     * @return {@link AutoModerationAction}
+     */
+    static AutoModerationAction create(@Nonnull AutoModerationActionType type) {
+        return new AutoModerationActionImpl(type);
+    }
 }

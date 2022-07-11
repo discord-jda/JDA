@@ -20,9 +20,8 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.automod.*;
-import net.dv8tion.jda.api.entities.automod.build.AutoModerationRuleData;
 import net.dv8tion.jda.api.requests.restaction.RuleModifyAction;
-import net.dv8tion.jda.internal.entities.automod.build.AutoModerationRuleDataImpl;
+import net.dv8tion.jda.internal.entities.automod.AutoModerationRuleImpl;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -52,7 +51,7 @@ public class RuleModifyActionImpl extends RestActionImpl<AutoModerationRule> imp
 
     private int mask = 0;
 
-    private AutoModerationRuleDataImpl data = new AutoModerationRuleDataImpl(UNDEFINED, UNDEFINED_EVENT_TYPE, UNDEFINED_TRIGGER_TYPE, UNDEFINED_ACTIONS, UNDEFINED_ENABLED);
+    private AutoModerationRuleImpl data = new AutoModerationRuleImpl(UNDEFINED, UNDEFINED_EVENT_TYPE, UNDEFINED_TRIGGER_TYPE, UNDEFINED_ACTIONS, UNDEFINED_ENABLED);
 
     public RuleModifyActionImpl(@Nonnull Guild guild, @Nonnull String ruleId)
     {
@@ -89,11 +88,11 @@ public class RuleModifyActionImpl extends RestActionImpl<AutoModerationRule> imp
 
     @NotNull
     @Override
-    public RuleModifyAction apply(@NotNull AutoModerationRuleData ruleData)
+    public RuleModifyAction apply(@NotNull AutoModerationRule ruleData)
     {
         Checks.notNull(ruleData, "ruleData");
         this.mask = NAME_SET | EVENT_TYPE_SET | TRIGGER_TYPE_SET | ACTIONS_SET | ENABLED_SET;
-        this.data = (AutoModerationRuleDataImpl) ruleData;
+        this.data = (AutoModerationRuleImpl) ruleData;
         return this;
     }
 

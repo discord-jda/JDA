@@ -2279,7 +2279,7 @@ public class EntityBuilder
         for (int i = 0; i < keywordFilterArray.length(); i++)
             keywordFilters.add(keywordFilterArray.getString(i));
 
-        List<KeywordPresetType> presets = new ArrayList<>();
+        EnumSet<KeywordPresetType> presets = EnumSet.noneOf(KeywordPresetType.class);
         for (int i = 0; i < presetsArray.length(); i++)
             presets.add(KeywordPresetType.fromValue(presetsArray.getInt(i)));
 

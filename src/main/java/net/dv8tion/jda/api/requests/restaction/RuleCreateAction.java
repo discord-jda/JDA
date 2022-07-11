@@ -19,7 +19,6 @@ package net.dv8tion.jda.api.requests.restaction;
 import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.automod.*;
-import net.dv8tion.jda.api.entities.automod.build.AutoModerationRuleData;
 import net.dv8tion.jda.api.requests.RestAction;
 
 import javax.annotation.CheckReturnValue;
@@ -32,9 +31,9 @@ import java.util.function.BooleanSupplier;
 /**
  * Specialized {@link RestAction} used to create or update an auto moderation rule.
  * 
- * @see net.dv8tion.jda.api.entities.Guild#createAutoModerationRule(AutoModerationRuleData) 
+ * @see net.dv8tion.jda.api.entities.Guild#createAutoModerationRule(AutoModerationRule) 
  */
-public interface RuleCreateAction extends RestAction<AutoModerationRule>, AutoModerationRuleData
+public interface RuleCreateAction extends RestAction<AutoModerationRule>, AutoModerationRule
 {
     @Nonnull
     @Override

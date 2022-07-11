@@ -184,9 +184,8 @@ public abstract class ListenerAdapter implements EventListener
     public void onAutoModerationRuleDelete(@Nonnull AutoModerationRuleDeleteEvent event) {}
     public void onAutoModerationActionExecution(@Nonnull AutoModerationActionExecutionEvent event) {}
 
-    public void onAutoModerationRuleUpdateGuild(@Nonnull AutoModerationRuleUpdateGuildEvent event) {}
+    // Auto moderation update events
     public void onAutoModerationRuleUpdateName(@Nonnull AutoModerationRuleUpdateNameEvent event) {}
-    public void onAutoModerationRuleUpdateUser(@Nonnull AutoModerationRuleUpdateUserEvent event) {}
     public void onAutoModerationRuleUpdateEventType(@Nonnull AutoModerationRuleUpdateEventTypeEvent event) {}
     public void onAutoModerationRuleUpdateTriggerType(@Nonnull AutoModerationRuleUpdateTriggerTypeEvent event) {}
     public void onAutoModerationRuleUpdateTriggerMetadata(@Nonnull AutoModerationRuleUpdateTriggerMetadataEvent event) {}
