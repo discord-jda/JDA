@@ -30,16 +30,21 @@ import java.util.List;
 
 /**
  * Used to construct a new {@link net.dv8tion.jda.api.entities.automod.AutoModerationRule}.
- *
  * <p>
- *     The following methods are required to be called in order to create a new {@link net.dv8tion.jda.api.entities.automod.AutoModerationRule}.
- *     If any of these methods are not called, an {@link IllegalStateException} will be thrown.
+ * The following methods are required to be called in order to create a new {@link net.dv8tion.jda.api.entities.automod.AutoModerationRule}.
  *     <ul>
  *         <li>{@link #setName(String)}</li>
  *         <li>{@link #setEventType(EventType)}</li>
  *         <li>{@link #setTriggerType(TriggerType)}</li>
  *         <li>{@link #setEnabled(boolean)}</li>
  *         <li>{@link #setActions(List)}</li>
+ *     </ul>
+ *     <b>Note:</b> The following methods are optional and can be called in any order.
+ *     <ul>
+ *         <li>{@link #setExemptRoles(List)}</li>
+ *         <li>{@link #setExemptChannels(List)}</li>
+ *         <li>{@link #setTriggerMetadata(TriggerMetadata)}</li>
+ *         <li>{@link #setTriggerMetadata(TriggerMetadata)}</li>
  *     </ul>
  * </p>
  */
