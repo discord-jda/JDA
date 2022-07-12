@@ -29,9 +29,9 @@ import java.util.EnumSet;
 
 public class KeywordPresetImpl extends GenericKeyWordImpl implements KeywordPreset
 {
-    public KeywordPresetImpl(String name, EventType eventType, TriggerType triggerType)
+    public KeywordPresetImpl(String name, EventType eventType)
     {
-        super(name, eventType, triggerType);
+        super(name, eventType, TriggerType.KEYWORD_PRESET);
     }
 
     @Override

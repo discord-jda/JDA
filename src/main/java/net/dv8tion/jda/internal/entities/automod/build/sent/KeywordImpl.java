@@ -27,9 +27,9 @@ import java.util.Arrays;
 
 public class KeywordImpl extends GenericKeyWordImpl implements Keyword
 {
-    public KeywordImpl(String name, EventType eventType, TriggerType triggerType)
+    public KeywordImpl(String name, EventType eventType)
     {
-        super(name, eventType, triggerType);
+        super(name, eventType, TriggerType.KEYWORD);
     }
 
     @Override

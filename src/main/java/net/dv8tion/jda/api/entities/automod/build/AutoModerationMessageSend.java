@@ -29,35 +29,11 @@ public interface AutoModerationMessageSend
 {
     @Nonnull
     @CheckReturnValue
-    Keyword keyword(String name, TriggerType triggerType);
+    Keyword keyword(String name);
 
     @Nonnull
     @CheckReturnValue
-    KeywordPreset preset(String name, TriggerType triggerType);
-
-    /**
-     * Returns the name of the rule.
-     *
-     * @return {@link String}
-     */
-    @Nonnull
-    String getName();
-
-    /**
-     * Returns the type of event that can potentially trigger this rule.
-     *
-     * @return {@link EventType}
-     */
-    @Nonnull
-    EventType getEventType();
-
-    /**
-     * Returns the type of trigger that can cause this rule to be executed.
-     *
-     * @return {@link TriggerType}
-     */
-    @Nonnull
-    TriggerType getTriggerType();
+    KeywordPreset preset(String name);
 
     /**
      * Returns the {@link Keyword} instances that can be used to create a new {@link net.dv8tion.jda.api.entities.automod.AutoModerationRule}.

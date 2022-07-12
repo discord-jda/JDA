@@ -37,7 +37,7 @@ public class GenericKeyWordImpl implements GenericKeyWord
     protected final EventType eventType;
     protected final TriggerType triggerType;
     protected boolean enabled = true;
-    protected List<AutoModerationAction> actions;
+    protected List<AutoModerationAction> actions = new ArrayList<>();
     protected List<Role> roles;
     protected List<GuildChannel> channels;
     protected TriggerMetadata triggerMetadata;
@@ -110,14 +110,8 @@ public class GenericKeyWordImpl implements GenericKeyWord
         AutoModerationRule rule = new AutoModerationRuleImpl(name, eventType, triggerType);
         rule.setEnabled(enabled);
 
-        if (actions != null)
-        {
+        if (!actions.isEmpty())
             rule.setActions(actions);
-        }
-        else
-        {
-            rule.setActions(new ArrayList<>());
-        }
 
         if (roles != null)
             rule.setExemptRoles(roles);
@@ -129,5 +123,60 @@ public class GenericKeyWordImpl implements GenericKeyWord
             rule.setTriggerMetadata(triggerMetadata);
 
         return rule;
+    }
+
+    @Nonnull
+    @Override
+    public String getName()
+    {
+        return name;
+    }
+
+    @Nonnull
+    @Override
+    public EventType getEventType()
+    {
+        return eventType;
+    }
+
+    @Nonnull
+    @Override
+    public TriggerType getTriggerType()
+    {
+        return triggerType;
+    }
+
+    @Override
+    public boolean isEnabled()
+    {
+        return enabled;
+    }
+
+    @Override
+    @Nonnull
+    public List<AutoModerationAction> getActions()
+    {
+        return actions;
+    }
+
+    @Override
+    @Nullable
+    public TriggerMetadata getTriggerMetadata()
+    {
+        return triggerMetadata;
+    }
+
+    @Override
+    @Nullable
+    public List<Role> getExemptRoles()
+    {
+        return roles;
+    }
+
+    @Override
+    @Nullable
+    public List<GuildChannel> getExemptChannels()
+    {
+        return channels;
     }
 }

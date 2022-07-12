@@ -18,8 +18,7 @@ package net.dv8tion.jda.api.entities.automod.build.sent;
 
 import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.Role;
-import net.dv8tion.jda.api.entities.automod.AutoModerationActionType;
-import net.dv8tion.jda.api.entities.automod.AutoModerationRule;
+import net.dv8tion.jda.api.entities.automod.*;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -110,4 +109,67 @@ public interface GenericKeyWord
     GenericKeyWord setExemptChannels(@Nonnull List<GuildChannel> exemptChannels);
 
     AutoModerationRule build();
+
+    /**
+     * Returns the name of the rule.
+     *
+     * @return {@link String}
+     */
+    @Nonnull
+    String getName();
+
+    /**
+     * Returns the type of event that can potentially trigger this rule.
+     *
+     * @return {@link EventType}
+     */
+    @Nonnull
+    EventType getEventType();
+
+    /**
+     * Returns the type of trigger that can cause this rule to be executed.
+     *
+     * @return {@link TriggerType}
+     */
+    @Nonnull
+    TriggerType getTriggerType();
+
+    /**
+     * Returns whether this rule is enabled or not.
+     *
+     * @return True, if this is enabled
+     */
+    boolean isEnabled();
+
+    /**
+     * Returns the actions that will be performed when this rule is executed.
+     *
+     * @return A {@link List} of {@link AutoModerationAction actions}
+     */
+    @Nonnull
+    List<AutoModerationAction> getActions();
+
+    /**
+     * Returns additional metadata for the trigger of this rule, used whenever this rule is executed.
+     *
+     * @return {@link TriggerMetadata}
+     */
+    @Nullable
+    TriggerMetadata getTriggerMetadata();
+
+    /**
+     * Returns the roles that are exempt from this rule.
+     *
+     * @return A {@link List} of {@link Role roles} which are exempt from this rule.
+     */
+    @Nullable
+    List<Role> getExemptRoles();
+
+    /**
+     * Returns the channels that are exempt from this rule.
+     *
+     * @return A {@link List} of {@link GuildChannel GuildChannels} which are exempt from this rule.
+     */
+    @Nullable
+    List<GuildChannel> getExemptChannels();
 }

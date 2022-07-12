@@ -32,50 +32,23 @@ public class AutoModerationMessageSendImpl implements AutoModerationMessageSend
     private final EventType eventType = EventType.MESSAGE_SEND;
     private Keyword keyword;
     private KeywordPreset preset;
-    private String name;
-    private TriggerType triggerType;
 
     @Nonnull
     @Override
     @CheckReturnValue
-    public Keyword keyword(String name, TriggerType triggerType)
+    public Keyword keyword(String name)
     {
-        this.name = name;
-        this.triggerType = triggerType;
-        keyword = new KeywordImpl(name, eventType, triggerType);
+        keyword = new KeywordImpl(name, eventType);
         return keyword;
     }
 
     @Nonnull
     @Override
     @CheckReturnValue
-    public KeywordPreset preset(String name, TriggerType triggerType)
+    public KeywordPreset preset(String name)
     {
-        this.name = name;
-        this.triggerType = triggerType;
-        preset = new KeywordPresetImpl(name, eventType, triggerType);
+        preset = new KeywordPresetImpl(name, eventType);
         return preset;
-    }
-
-    @Override
-    @Nonnull
-    public String getName()
-    {
-        return name;
-    }
-
-    @Override
-    @Nonnull
-    public EventType getEventType()
-    {
-        return eventType;
-    }
-
-    @Nonnull
-    @Override
-    public TriggerType getTriggerType()
-    {
-        return triggerType;
     }
 
     @Override
