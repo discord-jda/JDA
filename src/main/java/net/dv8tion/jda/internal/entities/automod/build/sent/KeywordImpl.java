@@ -16,31 +16,28 @@
 
 package net.dv8tion.jda.internal.entities.automod.build.sent;
 
-import net.dv8tion.jda.api.entities.automod.AutoModerationRule;
+import net.dv8tion.jda.api.entities.automod.EventType;
 import net.dv8tion.jda.api.entities.automod.TriggerMetadata;
+import net.dv8tion.jda.api.entities.automod.TriggerType;
 import net.dv8tion.jda.api.entities.automod.build.sent.Keyword;
-import net.dv8tion.jda.internal.entities.automod.AutoModerationRuleImpl;
 import net.dv8tion.jda.internal.entities.automod.TriggerMetadataImpl;
 
 import javax.annotation.Nonnull;
-import java.util.List;
+import java.util.Arrays;
 
 public class KeywordImpl extends GenericKeyWordImpl implements Keyword
 {
-    private final AutoModerationRule autoModerationRule;
-
-    public KeywordImpl(String name)
+    public KeywordImpl(String name, EventType eventType, TriggerType triggerType)
     {
-        super(name);
-        this.autoModerationRule = new AutoModerationRuleImpl(name);
+        super(name, eventType, triggerType);
     }
 
     @Override
-    public Keyword setKeyword(@Nonnull List<String> keyword)
+    public Keyword setKeyword(@Nonnull String... keyword)
     {
         TriggerMetadata triggerMetadata = new TriggerMetadataImpl();
-        triggerMetadata.setKeywords(keyword);
-        autoModerationRule.setTriggerMetadata(triggerMetadata);
+        triggerMetadata.setKeywords(Arrays.asList(keyword));
+        this.triggerMetadata = triggerMetadata;
         return this;
     }
 }

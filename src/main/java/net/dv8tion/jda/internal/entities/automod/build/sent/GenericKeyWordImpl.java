@@ -24,6 +24,7 @@ import net.dv8tion.jda.internal.entities.automod.ActionMetadataImpl;
 import net.dv8tion.jda.internal.entities.automod.AutoModerationActionImpl;
 import net.dv8tion.jda.internal.entities.automod.AutoModerationRuleImpl;
 
+import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.time.Duration;
@@ -32,39 +33,35 @@ import java.util.List;
 
 public class GenericKeyWordImpl implements GenericKeyWord
 {
-    private final AutoModerationRule autoModerationRule;
+    protected final String name;
+    protected final EventType eventType;
+    protected final TriggerType triggerType;
+    protected boolean enabled = true;
+    protected List<AutoModerationAction> actions;
+    protected List<Role> roles;
+    protected List<GuildChannel> channels;
+    protected TriggerMetadata triggerMetadata;
 
-    public GenericKeyWordImpl(String name)
+
+    public GenericKeyWordImpl(String name, EventType eventType, @Nonnull TriggerType triggerType)
     {
-        this.autoModerationRule = new AutoModerationRuleImpl(name);
+        this.name = name;
+        this.eventType = eventType;
+        this.triggerType = triggerType;
     }
 
     @Nonnull
     @Override
-    public GenericKeyWord setEventType(@Nonnull EventType eventType)
-    {
-        autoModerationRule.setEventType(eventType);
-        return this;
-    }
-
-    @Nonnull
-    @Override
-    public GenericKeyWord setTriggerType(@Nonnull TriggerType triggerType)
-    {
-        autoModerationRule.setTriggerType(triggerType);
-        return this;
-    }
-
-    @Nonnull
-    @Override
+    @CheckReturnValue
     public GenericKeyWord setEnabled(boolean enabled)
     {
-        autoModerationRule.setEnabled(enabled);
+        this.enabled = enabled;
         return this;
     }
 
     @Nonnull
     @Override
+    @CheckReturnValue
     public GenericKeyWord setAction(@Nonnull AutoModerationActionType type, @Nullable GuildChannel channel, @Nullable Duration duration)
     {
         List<AutoModerationAction> actions = new ArrayList<>();
@@ -74,7 +71,6 @@ public class GenericKeyWordImpl implements GenericKeyWord
         action.setType(type);
 
         ActionMetadata metadata = new ActionMetadataImpl();
-
 
         if (channel != null)
             metadata.setChannel(channel);
@@ -86,23 +82,52 @@ public class GenericKeyWordImpl implements GenericKeyWord
 
         actions.add(action);
 
-        autoModerationRule.setActions(actions);
+        this.actions = actions;
         return this;
     }
 
     @Nullable
     @Override
+    @CheckReturnValue
     public GenericKeyWord setExemptRoles(@Nonnull List<Role> exemptRoles)
     {
-        autoModerationRule.setExemptRoles(exemptRoles);
+        this.roles = exemptRoles;
         return this;
     }
 
     @Nullable
     @Override
+    @CheckReturnValue
     public GenericKeyWord setExemptChannels(@Nonnull List<GuildChannel> exemptChannels)
     {
-        autoModerationRule.setExemptChannels(exemptChannels);
+        this.channels = exemptChannels;
         return this;
+    }
+
+    @Override
+    public AutoModerationRule build()
+    {
+        AutoModerationRule rule = new AutoModerationRuleImpl(name, eventType, triggerType);
+        rule.setEnabled(enabled);
+
+        if (actions != null)
+        {
+            rule.setActions(actions);
+        }
+        else
+        {
+            rule.setActions(new ArrayList<>());
+        }
+
+        if (roles != null)
+            rule.setExemptRoles(roles);
+
+        if (channels != null)
+            rule.setExemptChannels(channels);
+
+        if (triggerMetadata != null)
+            rule.setTriggerMetadata(triggerMetadata);
+
+        return rule;
     }
 }

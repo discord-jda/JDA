@@ -52,22 +52,13 @@ public class AutoModerationRuleImpl implements AutoModerationRule
         this.id = id;
     }
 
-    public AutoModerationRuleImpl(@Nonnull String name, @Nonnull EventType eventType, @Nonnull TriggerType triggerType, @Nonnull List<AutoModerationAction> actions, boolean enabled)
+    public AutoModerationRuleImpl(@Nonnull String name, @Nonnull EventType eventType, @Nonnull TriggerType triggerType)
     {
         id = null;
         setName(name);
         setEventType(eventType);
         setTriggerType(triggerType);
-        setActions(actions);
-        setEnabled(enabled);
     }
-
-    public AutoModerationRuleImpl(@Nonnull String name)
-    {
-        id = null;
-        setName(name);
-    }
-
 
     @Nonnull
     @Override

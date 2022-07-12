@@ -16,25 +16,79 @@
 
 package net.dv8tion.jda.internal.entities.automod.build;
 
+import net.dv8tion.jda.api.entities.automod.EventType;
+import net.dv8tion.jda.api.entities.automod.TriggerType;
 import net.dv8tion.jda.api.entities.automod.build.AutoModerationMessageSend;
 import net.dv8tion.jda.api.entities.automod.build.sent.Keyword;
 import net.dv8tion.jda.api.entities.automod.build.sent.KeywordPreset;
 import net.dv8tion.jda.internal.entities.automod.build.sent.KeywordImpl;
 import net.dv8tion.jda.internal.entities.automod.build.sent.KeywordPresetImpl;
 
+import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 
 public class AutoModerationMessageSendImpl implements AutoModerationMessageSend
 {
+    private final EventType eventType = EventType.MESSAGE_SEND;
+    private Keyword keyword;
+    private KeywordPreset preset;
+    private String name;
+    private TriggerType triggerType;
+
     @Nonnull
-    public static Keyword keyword(String name)
+    @Override
+    @CheckReturnValue
+    public Keyword keyword(String name, TriggerType triggerType)
     {
-        return new KeywordImpl(name);
+        this.name = name;
+        this.triggerType = triggerType;
+        keyword = new KeywordImpl(name, eventType, triggerType);
+        return keyword;
     }
 
     @Nonnull
-    public static KeywordPreset preset(String name)
+    @Override
+    @CheckReturnValue
+    public KeywordPreset preset(String name, TriggerType triggerType)
     {
-        return new KeywordPresetImpl(name);
+        this.name = name;
+        this.triggerType = triggerType;
+        preset = new KeywordPresetImpl(name, eventType, triggerType);
+        return preset;
+    }
+
+    @Override
+    @Nonnull
+    public String getName()
+    {
+        return name;
+    }
+
+    @Override
+    @Nonnull
+    public EventType getEventType()
+    {
+        return eventType;
+    }
+
+    @Nonnull
+    @Override
+    public TriggerType getTriggerType()
+    {
+        return triggerType;
+    }
+
+    @Override
+    @Nonnull
+    public Keyword getKeyword()
+    {
+        return keyword;
+    }
+
+    @Override
+    @Nonnull
+    public KeywordPreset getPreset()
+    {
+        return preset;
     }
 }

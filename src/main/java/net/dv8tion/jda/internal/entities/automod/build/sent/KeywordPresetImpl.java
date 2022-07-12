@@ -16,32 +16,32 @@
 
 package net.dv8tion.jda.internal.entities.automod.build.sent;
 
-import net.dv8tion.jda.api.entities.automod.AutoModerationRule;
+import net.dv8tion.jda.api.entities.automod.EventType;
 import net.dv8tion.jda.api.entities.automod.KeywordPresetType;
 import net.dv8tion.jda.api.entities.automod.TriggerMetadata;
+import net.dv8tion.jda.api.entities.automod.TriggerType;
 import net.dv8tion.jda.api.entities.automod.build.sent.KeywordPreset;
-import net.dv8tion.jda.internal.entities.automod.AutoModerationRuleImpl;
 import net.dv8tion.jda.internal.entities.automod.TriggerMetadataImpl;
 
 import javax.annotation.Nonnull;
+import java.util.Arrays;
 import java.util.EnumSet;
 
 public class KeywordPresetImpl extends GenericKeyWordImpl implements KeywordPreset
 {
-    private final AutoModerationRule autoModerationRule;
-
-    public KeywordPresetImpl(String name)
+    public KeywordPresetImpl(String name, EventType eventType, TriggerType triggerType)
     {
-        super(name);
-        this.autoModerationRule = new AutoModerationRuleImpl(name);
+        super(name, eventType, triggerType);
     }
 
     @Override
-    public KeywordPreset setKeywordPresets(@Nonnull EnumSet<KeywordPresetType> keyword)
+    public KeywordPreset setKeywordPresets(@Nonnull KeywordPresetType... keyword)
     {
         TriggerMetadata triggerMetadata = new TriggerMetadataImpl();
-        triggerMetadata.setKeywordPresets(keyword);
-        autoModerationRule.setTriggerMetadata(triggerMetadata);
+        EnumSet<KeywordPresetType> set = EnumSet.noneOf(KeywordPresetType.class);
+        set.addAll(Arrays.asList(keyword));
+        triggerMetadata.setKeywordPresets(set);
+        this.triggerMetadata = triggerMetadata;
         return this;
     }
 }

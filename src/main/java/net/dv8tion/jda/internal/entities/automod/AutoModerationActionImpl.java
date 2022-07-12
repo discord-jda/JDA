@@ -36,19 +36,18 @@ public class AutoModerationActionImpl implements AutoModerationAction
         return type;
     }
 
-    @Nullable
-    @Override
-    public ActionMetadata getActionMetadata()
-    {
-        return metadata;
-    }
-
     public @Nonnull AutoModerationActionImpl setType(@Nonnull AutoModerationActionType type)
     {
         this.type = type;
         return this;
     }
 
+    @Nullable
+    @Override
+    public ActionMetadata getActionMetadata()
+    {
+        return metadata;
+    }
 
     @Nullable
     public AutoModerationActionImpl setActionMetadata(ActionMetadata metadata)

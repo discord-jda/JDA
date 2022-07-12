@@ -22,10 +22,9 @@ import net.dv8tion.jda.api.entities.automod.AutoModerationField;
 import net.dv8tion.jda.api.entities.automod.AutoModerationRule;
 import net.dv8tion.jda.api.events.UpdateEvent;
 import net.dv8tion.jda.api.events.automod.GenericAutoModerationEvent;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Indicates that a {@link AutoModerationRule rule} was updated.
@@ -48,14 +47,14 @@ public class GenericAutoModerationUpdateRuleEvent<T> extends GenericAutoModerati
         this.newValue = newValue;
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public String getPropertyIdentifier()
     {
         return field.getFieldName();
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public AutoModerationRule getEntity()
     {

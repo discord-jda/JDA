@@ -21,5 +21,13 @@ import java.util.List;
 
 public interface Keyword extends GenericKeyWord
 {
-    Keyword setKeyword(@Nonnull List<String> keyword);
+    /**
+     * Used to set the substrings which will be searched for in content.
+     *
+     * @param  keyword
+     *         A {@link List} of {@link String}
+     *
+     * @return The current {@link Keyword} instance.
+     */
+    Keyword setKeyword(@Nonnull String... keyword);
 }

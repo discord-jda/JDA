@@ -16,26 +16,62 @@
 
 package net.dv8tion.jda.api.entities.automod.build;
 
+import net.dv8tion.jda.api.entities.automod.EventType;
+import net.dv8tion.jda.api.entities.automod.TriggerType;
 import net.dv8tion.jda.api.entities.automod.build.sent.Keyword;
 import net.dv8tion.jda.api.entities.automod.build.sent.KeywordPreset;
-import net.dv8tion.jda.internal.entities.automod.build.AutoModerationMessageSendImpl;
-import net.dv8tion.jda.internal.entities.automod.build.sent.KeywordImpl;
-import net.dv8tion.jda.internal.entities.automod.build.sent.KeywordPresetImpl;
 
+import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 
+//TODO: JavaDoc
 public interface AutoModerationMessageSend
 {
     @Nonnull
-    static Keyword keyword(String name)
-    {
-        return AutoModerationMessageSendImpl.keyword(name);
-    }
+    @CheckReturnValue
+    Keyword keyword(String name, TriggerType triggerType);
 
     @Nonnull
-    static KeywordPreset preset(String name)
-    {
-        return AutoModerationMessageSendImpl.preset(name);
-    }
+    @CheckReturnValue
+    KeywordPreset preset(String name, TriggerType triggerType);
 
+    /**
+     * Returns the name of the rule.
+     *
+     * @return {@link String}
+     */
+    @Nonnull
+    String getName();
+
+    /**
+     * Returns the type of event that can potentially trigger this rule.
+     *
+     * @return {@link EventType}
+     */
+    @Nonnull
+    EventType getEventType();
+
+    /**
+     * Returns the type of trigger that can cause this rule to be executed.
+     *
+     * @return {@link TriggerType}
+     */
+    @Nonnull
+    TriggerType getTriggerType();
+
+    /**
+     * Returns the {@link Keyword} instances that can be used to create a new {@link net.dv8tion.jda.api.entities.automod.AutoModerationRule}.
+     *
+     * @return {@link Keyword}
+     */
+    @Nonnull
+    Keyword getKeyword();
+
+    /**
+     * Returns the {@link KeywordPreset} instances that can be used to create a new {@link net.dv8tion.jda.api.entities.automod.AutoModerationRule}.
+     *
+     * @return {@link KeywordPreset}
+     */
+    @Nonnull
+    KeywordPreset getPreset();
 }

@@ -24,5 +24,13 @@ import java.util.EnumSet;
 
 public interface KeywordPreset extends GenericKeyWord
 {
-    KeywordPreset setKeywordPresets(@Nonnull EnumSet<KeywordPresetType> keyword);
+    /**
+     * Used to set the internally pre-defined word sets which will be searched for in content.
+     *
+     * @param  keywordPresets
+     *         A {@link EnumSet} of {@link KeywordPresetType KeywordPresets}
+     *
+     * @return The current {@link KeywordPreset} instance.
+     */
+    KeywordPreset setKeywordPresets(@Nonnull KeywordPresetType... keywordPresets);
 }

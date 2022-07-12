@@ -25,7 +25,6 @@ import net.dv8tion.jda.internal.entities.automod.AutoModerationRuleImpl;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
-import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -40,8 +39,6 @@ public class RuleModifyActionImpl extends RestActionImpl<AutoModerationRule> imp
     private static final String UNDEFINED = "undefined";
     private static final EventType UNDEFINED_EVENT_TYPE = EventType.UNKNOWN;
     private static final TriggerType UNDEFINED_TRIGGER_TYPE = TriggerType.UNKNOWN;
-    private static final List<AutoModerationAction> UNDEFINED_ACTIONS = new ArrayList<>();
-    private static final boolean UNDEFINED_ENABLED = false;
 
     private static final int NAME_SET = 1 << 0;
     private static final int EVENT_TYPE_SET = 1 << 1;
@@ -51,7 +48,7 @@ public class RuleModifyActionImpl extends RestActionImpl<AutoModerationRule> imp
 
     private int mask = 0;
 
-    private AutoModerationRuleImpl data = new AutoModerationRuleImpl(UNDEFINED, UNDEFINED_EVENT_TYPE, UNDEFINED_TRIGGER_TYPE, UNDEFINED_ACTIONS, UNDEFINED_ENABLED);
+    private AutoModerationRuleImpl data = new AutoModerationRuleImpl(UNDEFINED, UNDEFINED_EVENT_TYPE, UNDEFINED_TRIGGER_TYPE);
 
     public RuleModifyActionImpl(@Nonnull Guild guild, @Nonnull String ruleId)
     {
@@ -65,9 +62,9 @@ public class RuleModifyActionImpl extends RestActionImpl<AutoModerationRule> imp
         return (RuleModifyAction) super.addCheck(checks);
     }
 
-    @NotNull
+    @Nonnull
     @Override
-    public RuleModifyAction addCheck(@NotNull BooleanSupplier checks)
+    public RuleModifyAction addCheck(@Nonnull BooleanSupplier checks)
     {
         return (RuleModifyAction) super.addCheck(checks);
     }
@@ -86,9 +83,9 @@ public class RuleModifyActionImpl extends RestActionImpl<AutoModerationRule> imp
         return (RuleModifyAction) super.deadline(timestamp);
     }
 
-    @NotNull
+    @Nonnull
     @Override
-    public RuleModifyAction apply(@NotNull AutoModerationRule ruleData)
+    public RuleModifyAction apply(@Nonnull AutoModerationRule ruleData)
     {
         Checks.notNull(ruleData, "ruleData");
         this.mask = NAME_SET | EVENT_TYPE_SET | TRIGGER_TYPE_SET | ACTIONS_SET | ENABLED_SET;

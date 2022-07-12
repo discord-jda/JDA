@@ -19,9 +19,9 @@ package net.dv8tion.jda.api.entities.automod.build.sent;
 import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.automod.AutoModerationActionType;
-import net.dv8tion.jda.api.entities.automod.EventType;
-import net.dv8tion.jda.api.entities.automod.TriggerType;
+import net.dv8tion.jda.api.entities.automod.AutoModerationRule;
 
+import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.time.Duration;
@@ -29,29 +29,6 @@ import java.util.List;
 
 public interface GenericKeyWord
 {
-    /**
-     * Used to set the event that will cause the auto moderation system to check for the specified trigger.
-     *
-     * @param  eventType
-     *         The event type.
-     *
-     * @return The {@link GenericKeyWord}.
-     */
-    @Nonnull
-    GenericKeyWord setEventType(@Nonnull EventType eventType);
-
-    /**
-     * Used to set the trigger that will cause the auto moderation system to be executed.
-     *
-     * @param  triggerType
-     *         The trigger type.
-     *
-     * @return The {@link GenericKeyWord}.
-     */
-    @Nonnull
-    GenericKeyWord setTriggerType(@Nonnull TriggerType triggerType);
-
-
     /**
      * Whether the rule is enabled or not.
      *
@@ -61,15 +38,48 @@ public interface GenericKeyWord
      * @return The {@link GenericKeyWord}.
      */
     @Nonnull
+    @CheckReturnValue
     GenericKeyWord setEnabled(boolean enabled);
 
+    /**
+     * Used to set the actions that will be executed when the trigger is met.
+     * @param  type
+     *         The type of action.
+     * @param  channel
+     *         The channel where an alert message will be sent when the rule is executed.
+     * @param  duration
+     *         The duration of the timeout.
+     *
+     * @return The {@link GenericKeyWord}.
+     */
+    @CheckReturnValue
     GenericKeyWord setAction(@Nonnull AutoModerationActionType type, @Nullable GuildChannel channel, @Nullable Duration duration);
 
+    /**
+     * Used to set the actions that will be executed when the trigger is met.
+     * @param  type
+     *         The type of action.
+     * @param  channel
+     *         The channel where an alert message will be sent when the rule is executed.
+     *
+     * @return The {@link GenericKeyWord}.
+     */
+    @CheckReturnValue
     default GenericKeyWord setAction(@Nonnull AutoModerationActionType type, @Nullable GuildChannel channel)
     {
         return setAction(type, channel, null);
     }
 
+    /**
+     * Used to set the actions that will be executed when the trigger is met.
+     * @param  type
+     *         The type of action.
+     * @param  duration
+     *         The duration of the timeout.
+     *
+     * @return The {@link GenericKeyWord}.
+     */
+    @CheckReturnValue
     default GenericKeyWord setAction(@Nonnull AutoModerationActionType type, @Nullable Duration duration)
     {
         return setAction(type, null, duration);
@@ -84,6 +94,7 @@ public interface GenericKeyWord
      * @return The {@link GenericKeyWord}.
      */
     @Nullable
+    @CheckReturnValue
     GenericKeyWord setExemptRoles(@Nonnull List<Role> exemptRoles);
 
     /**
@@ -95,5 +106,8 @@ public interface GenericKeyWord
      * @return The {@link Keyword}.
      */
     @Nullable
+    @CheckReturnValue
     GenericKeyWord setExemptChannels(@Nonnull List<GuildChannel> exemptChannels);
+
+    AutoModerationRule build();
 }

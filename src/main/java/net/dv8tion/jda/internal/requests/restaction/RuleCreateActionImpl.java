@@ -27,7 +27,6 @@ import net.dv8tion.jda.internal.entities.automod.AutoModerationRuleImpl;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
-import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -138,7 +137,7 @@ public class RuleCreateActionImpl extends RestActionImpl<AutoModerationRule> imp
         return this;
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public Guild getGuild()
     {
@@ -152,7 +151,7 @@ public class RuleCreateActionImpl extends RestActionImpl<AutoModerationRule> imp
         return data.getName();
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public User getUser()
     {
@@ -215,7 +214,7 @@ public class RuleCreateActionImpl extends RestActionImpl<AutoModerationRule> imp
     }
 
     @Override
-    public int compareTo(@NotNull AutoModerationRule o)
+    public int compareTo(@Nonnull AutoModerationRule o)
     {
         return Long.compare(getIdLong(), o.getIdLong());
     }
