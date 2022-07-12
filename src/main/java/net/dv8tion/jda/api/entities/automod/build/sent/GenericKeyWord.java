@@ -85,6 +85,19 @@ public interface GenericKeyWord
     }
 
     /**
+     * Used to set the actions that will be executed when the trigger is met.
+     * @param  type
+     *         The type of action.
+     *
+     * @return The {@link GenericKeyWord}.
+     */
+    @CheckReturnValue
+    default GenericKeyWord setAction(@Nonnull AutoModerationActionType type)
+    {
+        return setAction(type, null, null);
+    }
+
+    /**
      * Used to set the roles that will not be affected by the rule.
      *
      * @param  exemptRoles

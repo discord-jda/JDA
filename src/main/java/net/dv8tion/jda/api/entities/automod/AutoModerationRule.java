@@ -30,6 +30,31 @@ import java.util.List;
  * <br>
  * Auto Moderation is a feature which allows each guild to set up rules that trigger based on some criteria.
  * For example, a rule can trigger whenever a message contains a specific keyword.
+ *
+ * <h2>Example Usage</h2>
+ * <pre>{@code
+ * public class AutoModBot extends ListenerAdapter
+ * {
+ *     public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {
+ *         if (event.getName().equals("create_keyword_rule")) {
+ *             String name = event.getOption("name", OptionMapping::getAsString);
+ *             String keyword1 = event.getOption("keyword1", OptionMapping::getAsString);
+ *             String keyword2 = event.getOption("keyword2", OptionMapping::getAsString);
+ *
+ *             AutoModerationRule rule = AutoModerationRule.MessageSend.keyword(name).setKeyword(keyword1, keyword2).build();
+ *             event.getGuild().createAutoModerationRule(rule);
+ *         } else if (event.getName().equals("create_keyword_preset_rule")) {
+ *             String name = event.getOption("name", OptionMapping::getAsString);
+ *             int preset1 = event.getOption("preset1", OptionMapping::getAsInt);
+ *             int preset2 = event.getOption("preset2", OptionMapping::getAsInt);
+ *
+ *             AutoModerationRule rule = AutoModerationRule.MessageSend.preset(name)
+ *                     .setKeywordPresets(KeywordPresetType.fromValue(preset1), KeywordPresetType.fromValue(preset2)).build();
+ *             event.getGuild().createAutoModerationRule(rule);
+ *         }
+ *     }
+ * }
+ * }</pre>
  */
 public interface AutoModerationRule extends ISnowflake, Comparable<AutoModerationRule>, SerializableData
 {
