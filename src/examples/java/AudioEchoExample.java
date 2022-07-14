@@ -44,7 +44,7 @@ public class AudioEchoExample extends ListenerAdapter
         }
         String token = args[0];
 
-        // We only need 2 gateway intents enabled for this example:
+        // We only need 3 gateway intents enabled for this example:
         EnumSet<GatewayIntent> intents = EnumSet.of(
             // We need messages in guilds to accept commands from users
             GatewayIntent.GUILD_MESSAGES,
