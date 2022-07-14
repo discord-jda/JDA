@@ -527,13 +527,9 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
 
     protected RequestBody asMultipart()
     {
-        // TODO: Handle file edits differently
-        MultipartBody.Builder builder = AttachedFile.createMultipartBody(files, null);
-        if (messageReference != 0L || components != null || retainedAttachments != null || !isEmpty())
-            builder.addFormDataPart("payload_json", getJSON().toString());
-        // clear remaining resources, they will be closed after being sent
-        files.clear();
-        return builder.build();
+        MultipartBody.Builder body = AttachedFile.createMultipartBody(files, null);
+        body.addFormDataPart("payload_json", getJSON().toString());
+        return body.build();
     }
 
     @SuppressWarnings("deprecation")
@@ -552,6 +548,9 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
                     .map(id -> DataObject.empty().put("id", id))
                     .forEach(attachments::add);
         }
+
+        for (int i = 0; i < files.size(); i++)
+            attachments.add(files.get(i).toAttachmentData(i));
 
         if (override)
         {
@@ -585,7 +584,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
                 obj.put("components", DataArray.fromCollection(components));
             if (stickers != null)
                 obj.put("sticker_ids", DataArray.fromCollection(stickers));
-            if (retainedAttachments != null)
+            if (retainedAttachments != null || !attachments.isEmpty())
                 obj.put("attachments", attachments);
         }
 
