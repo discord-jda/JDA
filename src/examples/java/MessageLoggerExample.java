@@ -35,6 +35,7 @@ import java.util.EnumSet;
 
 public class MessageLoggerExample extends ListenerAdapter
 {
+    // See https://emojipedia.org/red-heart/ and find the codepoints
     public static final Emoji HEART = Emoji.fromUnicode("U+2764");
 
     public static void main(String[] args) throws IOException
