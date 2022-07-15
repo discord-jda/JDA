@@ -51,10 +51,12 @@ public class MessageLoggerExample extends ListenerAdapter
         // 2. Using environment variable:
         // String token = System.getenv("TOKEN");
 
-        // 3. Using system property (-Dtoken=...):
+        // 3. Using system property as -Dtoken=...
+        // This leaks the token in command line (task manager) and thread dumps to any other users on the same machine
         // String token = System.getProperty("token");
 
-        // 4. From the command line directly (least secure way):
+        // 4. From the command line directly
+        // This leaks the token in command line (task manager) to any other users on the same machine
         // String token = args[0];
 
 
