@@ -74,7 +74,11 @@ public class MessageLoggerExample extends ListenerAdapter
             // Enables the event for private channels (also known as direct messages)
             GatewayIntent.DIRECT_MESSAGES,
             // Enables access to message.getContentRaw()
-            GatewayIntent.MESSAGE_CONTENT
+            GatewayIntent.MESSAGE_CONTENT,
+            // Enables MessageReactionAddEvent for guild
+            GatewayIntent.GUILD_MESSAGE_REACTIONS,
+            // Enables MessageReactionAddEvent for private channels
+            GatewayIntent.DIRECT_MESSAGE_REACTIONS
         );
 
         try
