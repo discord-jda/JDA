@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
+import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
+import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
@@ -81,15 +83,51 @@ public class MessageLoggerExample extends ListenerAdapter
             GatewayIntent.DIRECT_MESSAGE_REACTIONS
         );
 
+        // To start the bot, you have to use the JDABuilder.
+
+        // You can choose one of the factory methods to build your bot:
+        // - createLight(...)
+        // - createDefault(...)
+        // - create(...)
+        // Each of these factory methods use different defaults, you can check the documentation for more details.
+
         try
         {
-            JDABuilder.createLight(token, intents)
+            // By using createLight(token, intents), we use a minimalistic cache profile (lower ram usage)
+            // and only enable the provided set of intents. All other intents are disabled, so you won't receive events for those.
+            JDA jda = JDABuilder.createLight(token, intents)
+                    // On this builder, you are adding all your event listeners and session configuration
                     .addEventListeners(new MessageLoggerExample())
+                    // You can do lots of configuration before starting, checkout all the setters on the JDABuilder class!
+                    .setActivity(Activity.watching("your messages"))
+                    // Once you're done configuring your jda instance, call build to start and login the bot.
                     .build();
+
+            // Here you can now start using the jda instance before its fully loaded,
+            // this can be useful for stuff like creating background services or similar.
+
+            // The queue(...) means that we are making a REST request to the discord API server!
+            // Usually, this is done asynchronously on another thread which handles scheduling and rate-limits.
+            // The (ping -> ...) is called a lambda expression, if you're unfamiliar with this syntax it is HIGHLY recommended to look it up!
+            jda.getRestPing().queue(ping ->
+                // shows ping in milliseconds
+                System.out.println("Logged in with ping: " + ping)
+            );
+
+            // If you want to access the cache, you can use awaitReady() to block the main thread until the jda instance is fully loaded
+            jda.awaitReady();
+
+            // Now we can access the fully loaded cache and show some statistics or do other cache dependent things
+            System.out.println("Guilds: " + jda.getGuildCache().size());
         }
         catch (LoginException e)
         {
             // This is thrown if the token is invalid or incorrectly formatted
+            e.printStackTrace();
+        }
+        catch (InterruptedException e)
+        {
+            // Thrown if the awaitReady() call is interrupted
             e.printStackTrace();
         }
     }
