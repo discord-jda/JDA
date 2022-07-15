@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.events.guild.update.*;
+import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
@@ -27,7 +28,6 @@ import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.requests.WebSocketClient;
 
 import java.util.Collections;
-import java.util.Locale;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -81,7 +81,7 @@ public class GuildUpdateHandler extends SocketHandler
         Guild.NSFWLevel nsfwLevel = Guild.NSFWLevel.fromKey(content.getInt("nsfw_level", -1));
         Guild.ExplicitContentLevel explicitContentLevel = Guild.ExplicitContentLevel.fromKey(content.getInt("explicit_content_filter"));
         Guild.Timeout afkTimeout = Guild.Timeout.fromKey(content.getInt("afk_timeout"));
-        Locale locale = Locale.forLanguageTag(content.getString("preferred_locale", "en-US"));
+        DiscordLocale locale = DiscordLocale.from(content.getString("preferred_locale", "en-US"));
         VoiceChannel afkChannel = content.isNull("afk_channel_id")
                 ? null : guild.getVoiceChannelsView().get(content.getLong("afk_channel_id"));
         TextChannel systemChannel = content.isNull("system_channel_id")
@@ -262,8 +262,8 @@ public class GuildUpdateHandler extends SocketHandler
         }
         if (!Objects.equals(locale, guild.getLocale()))
         {
-            Locale oldLocale = guild.getLocale();
-            guild.setLocale(locale.toLanguageTag());
+        	DiscordLocale oldLocale = guild.getLocale();
+            guild.setLocale(locale);
             getJDA().handleEvent(
                 new GuildUpdateLocaleEvent(
                     getJDA(), responseNumber,

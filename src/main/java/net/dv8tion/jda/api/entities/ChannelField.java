@@ -78,16 +78,16 @@ public enum ChannelField
      *
      * Limited to {@link NewsChannel NewsChannels} and {@link TextChannel TextChannels}.
      *
-     * @see BaseGuildMessageChannel#getTopic()
+     * @see StandardGuildMessageChannel#getTopic()
      */
     TOPIC("topic", AuditLogKey.CHANNEL_TOPIC),
 
     /**
      * The NSFW state of the channel.
      *
-     * Limited to {@link BaseGuildMessageChannel Base Guild Channels} (and implementations).
+     * Limited to {@link StandardGuildMessageChannel StandardGuildMessageChannels} (and implementations).
      *
-     * @see BaseGuildMessageChannel#isNSFW()
+     * @see StandardGuildMessageChannel#isNSFW()
      */
     NSFW("nsfw", AuditLogKey.CHANNEL_NSFW),
 

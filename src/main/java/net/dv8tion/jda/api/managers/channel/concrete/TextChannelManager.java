@@ -18,7 +18,7 @@ package net.dv8tion.jda.api.managers.channel.concrete;
 
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
-import net.dv8tion.jda.api.managers.channel.middleman.BaseGuildMessageChannelManager;
+import net.dv8tion.jda.api.managers.channel.middleman.StandardGuildMessageChannelManager;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -38,7 +38,7 @@ import javax.annotation.Nonnull;
  *
  * @see TextChannel#getManager()
  */
-public interface TextChannelManager extends BaseGuildMessageChannelManager<TextChannel, TextChannelManager>
+public interface TextChannelManager extends StandardGuildMessageChannelManager<TextChannel, TextChannelManager>
 {
     /**
      * Sets the <b><u>slowmode</u></b> of the selected {@link TextChannel TextChannel}.

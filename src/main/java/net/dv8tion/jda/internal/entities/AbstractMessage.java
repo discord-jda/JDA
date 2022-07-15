@@ -18,14 +18,19 @@ package net.dv8tion.jda.internal.entities;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.channel.unions.GuildMessageChannelUnion;
+import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.entities.sticker.StickerItem;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
+import net.dv8tion.jda.api.requests.restaction.ThreadChannelAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationAction;
 import net.dv8tion.jda.internal.utils.Helpers;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -207,7 +212,7 @@ public abstract class AbstractMessage implements Message
 
     @Nonnull
     @Override
-    public MessageChannel getChannel()
+    public MessageChannelUnion getChannel()
     {
         unsupported();
         return null;
@@ -215,31 +220,7 @@ public abstract class AbstractMessage implements Message
 
     @Nonnull
     @Override
-    public GuildMessageChannel getGuildChannel()
-    {
-        unsupported();
-        return null;
-    }
-
-    @Nonnull
-    @Override
-    public PrivateChannel getPrivateChannel()
-    {
-        unsupported();
-        return null;
-    }
-
-    @Nonnull
-    @Override
-    public TextChannel getTextChannel()
-    {
-        unsupported();
-        return null;
-    }
-
-    @Nonnull
-    @Override
-    public NewsChannel getNewsChannel()
+    public GuildMessageChannelUnion getGuildChannel()
     {
         unsupported();
         return null;
@@ -381,15 +362,7 @@ public abstract class AbstractMessage implements Message
 
     @Nonnull
     @Override
-    public RestAction<Void> addReaction(@Nonnull Emote emote)
-    {
-        unsupported();
-        return null;
-    }
-
-    @Nonnull
-    @Override
-    public RestAction<Void> addReaction(@Nonnull String unicode)
+    public RestAction<Void> addReaction(@Nonnull Emoji emoji)
     {
         unsupported();
         return null;
@@ -405,7 +378,7 @@ public abstract class AbstractMessage implements Message
 
     @Nonnull
     @Override
-    public RestAction<Void> clearReactions(@Nonnull String unicode)
+    public RestAction<Void> clearReactions(@Nonnull Emoji emoji)
     {
         unsupported();
         return null;
@@ -413,7 +386,7 @@ public abstract class AbstractMessage implements Message
 
     @Nonnull
     @Override
-    public RestAction<Void> clearReactions(@Nonnull Emote emote)
+    public RestAction<Void> removeReaction(@Nonnull Emoji emoji)
     {
         unsupported();
         return null;
@@ -421,7 +394,7 @@ public abstract class AbstractMessage implements Message
 
     @Nonnull
     @Override
-    public RestAction<Void> removeReaction(@Nonnull Emote emote)
+    public RestAction<Void> removeReaction(@Nonnull Emoji emoji, @Nonnull User user)
     {
         unsupported();
         return null;
@@ -429,53 +402,15 @@ public abstract class AbstractMessage implements Message
 
     @Nonnull
     @Override
-    public RestAction<Void> removeReaction(@Nonnull Emote emote, @Nonnull User user)
+    public ReactionPaginationAction retrieveReactionUsers(@Nonnull Emoji emoji)
     {
         unsupported();
         return null;
     }
 
-    @Nonnull
+    @Nullable
     @Override
-    public RestAction<Void> removeReaction(@Nonnull String unicode)
-    {
-        unsupported();
-        return null;
-    }
-
-    @Nonnull
-    @Override
-    public RestAction<Void> removeReaction(@Nonnull String unicode, @Nonnull User user)
-    {
-        unsupported();
-        return null;
-    }
-
-    @Nonnull
-    @Override
-    public ReactionPaginationAction retrieveReactionUsers(@Nonnull Emote emote)
-    {
-        unsupported();
-        return null;
-    }
-
-    @Nonnull
-    @Override
-    public ReactionPaginationAction retrieveReactionUsers(@Nonnull String unicode)
-    {
-        unsupported();
-        return null;
-    }
-
-    @Override
-    public MessageReaction getReactionByUnicode(@Nonnull String unicode)
-    {
-        unsupported();
-        return null;
-    }
-
-    @Override
-    public MessageReaction getReactionById(long id)
+    public MessageReaction getReaction(@NotNull Emoji emoji)
     {
         unsupported();
         return null;
@@ -551,7 +486,7 @@ public abstract class AbstractMessage implements Message
     }
 
     @Override
-    public RestAction<ThreadChannel> createThreadChannel(String name)
+    public ThreadChannelAction createThreadChannel(String name)
     {
         unsupported();
         return null;

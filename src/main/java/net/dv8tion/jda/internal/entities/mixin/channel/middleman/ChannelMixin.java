@@ -17,6 +17,7 @@
 package net.dv8tion.jda.internal.entities.mixin.channel.middleman;
 
 import net.dv8tion.jda.api.entities.Channel;
+import net.dv8tion.jda.api.entities.channel.unions.ChannelUnion;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
@@ -24,7 +25,9 @@ import net.dv8tion.jda.internal.requests.Route;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 
-public interface ChannelMixin<T extends ChannelMixin<T>> extends Channel
+public interface ChannelMixin<T extends ChannelMixin<T>> extends
+        Channel,
+        ChannelUnion
 {
     // ---- Default implementations of interface ----
     @Override

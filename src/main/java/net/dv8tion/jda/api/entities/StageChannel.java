@@ -35,7 +35,7 @@ import java.util.EnumSet;
  *
  * <p>This is a specialized AudioChannel that can be used to host events with speakers and listeners.
  */
-public interface StageChannel extends GuildChannel, AudioChannel, ICategorizableChannel, ICopyableChannel, IPositionableChannel, IPermissionContainer, IMemberContainer, IInviteContainer
+public interface StageChannel extends GuildChannel, AudioChannel, StandardGuildChannel
 {
     /**
      * {@link StageInstance} attached to this stage channel.

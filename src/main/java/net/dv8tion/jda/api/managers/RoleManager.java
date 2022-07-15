@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Icon;
 import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.emoji.UnicodeEmoji;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.CheckReturnValue;
@@ -303,6 +304,25 @@ public interface RoleManager extends Manager<RoleManager>
     @Nonnull
     @CheckReturnValue
     RoleManager setIcon(@Nullable String emoji);
+
+    /**
+     * Sets the Unicode Emoji of this {@link net.dv8tion.jda.api.entities.Role Role} instead of a custom image.
+     *
+     * @param  emoji
+     *         The new Unicode Emoji for this {@link net.dv8tion.jda.api.entities.Role Role}
+     *         or {@code null} to reset
+     *
+     * @return RoleManager for chaining convenience
+     *
+     * @see    net.dv8tion.jda.api.entities.emoji.Emoji#fromUnicode(String) Emoji.fromUnicode(String)
+     * @see    UnicodeEmoji
+     */
+    @Nonnull
+    @CheckReturnValue
+    default RoleManager setIcon(@Nullable UnicodeEmoji emoji)
+    {
+        return setIcon(emoji == null ? null : emoji.getFormatted());
+    }
 
     /**
      * Adds the specified {@link net.dv8tion.jda.api.Permission Permissions} to the selected {@link net.dv8tion.jda.api.entities.Role Role}.

@@ -17,7 +17,7 @@
 package net.dv8tion.jda.internal.interactions.component;
 
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.interactions.components.ComponentInteraction;
 import net.dv8tion.jda.api.interactions.components.Modal;
 import net.dv8tion.jda.api.requests.restaction.interactions.ModalCallbackAction;
@@ -54,9 +54,9 @@ public abstract class ComponentInteractionImpl extends DeferrableInteractionImpl
     @Nonnull
     @Override
     @SuppressWarnings("ConstantConditions")
-    public MessageChannel getChannel()
+    public MessageChannelUnion getChannel()
     {
-        return (MessageChannel) super.getChannel();
+        return (MessageChannelUnion) super.getChannel();
     }
 
     @Nonnull

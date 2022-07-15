@@ -17,14 +17,14 @@
 package net.dv8tion.jda.internal.entities;
 
 import gnu.trove.map.TLongObjectMap;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.managers.channel.concrete.VoiceChannelManager;
 import net.dv8tion.jda.api.requests.restaction.ChannelAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
-import net.dv8tion.jda.internal.entities.mixin.channel.attribute.ICategorizableChannelMixin;
-import net.dv8tion.jda.internal.entities.mixin.channel.attribute.IInviteContainerMixin;
-import net.dv8tion.jda.internal.entities.mixin.channel.attribute.IPositionableChannelMixin;
+import net.dv8tion.jda.internal.entities.mixin.channel.attribute.IWebhookContainerMixin;
 import net.dv8tion.jda.internal.entities.mixin.channel.middleman.AudioChannelMixin;
+import net.dv8tion.jda.internal.entities.mixin.channel.middleman.GuildMessageChannelMixin;
 import net.dv8tion.jda.internal.managers.channel.concrete.VoiceChannelManagerImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
@@ -34,21 +34,19 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class VoiceChannelImpl extends AbstractGuildChannelImpl<VoiceChannelImpl> implements
+public class VoiceChannelImpl extends AbstractStandardGuildChannelImpl<VoiceChannelImpl> implements
         VoiceChannel,
+        GuildMessageChannelMixin<VoiceChannelImpl>,
         AudioChannelMixin<VoiceChannelImpl>,
-        ICategorizableChannelMixin<VoiceChannelImpl>,
-        IPositionableChannelMixin<VoiceChannelImpl>,
-        IInviteContainerMixin<VoiceChannelImpl>
+        IWebhookContainerMixin<VoiceChannelImpl>
 {
     private final TLongObjectMap<Member> connectedMembers = MiscUtil.newLongMap();
-    private final TLongObjectMap<PermissionOverride> overrides = MiscUtil.newLongMap();
 
     private String region;
-    private long parentCategoryId;
+    private long latestMessageId;
     private int bitrate;
-    private int position;
     private int userLimit;
+    private boolean nsfw;
 
     public VoiceChannelImpl(long id, GuildImpl guild)
     {
@@ -76,21 +74,28 @@ public class VoiceChannelImpl extends AbstractGuildChannelImpl<VoiceChannelImpl>
     }
 
     @Override
-    public long getParentCategoryIdLong()
-    {
-        return parentCategoryId;
-    }
-
-    @Override
-    public int getPositionRaw()
-    {
-        return position;
-    }
-
-    @Override
     public int getUserLimit()
     {
         return userLimit;
+    }
+
+    @Override
+    public boolean isNSFW()
+    {
+        return nsfw;
+    }
+
+    @Override
+    public boolean canTalk(@Nonnull Member member)
+    {
+        Checks.notNull(member, "Member");
+        return member.hasPermission(this, Permission.MESSAGE_SEND);
+    }
+
+    @Override
+    public long getLatestMessageIdLong()
+    {
+        return latestMessageId;
     }
 
     @Nonnull
@@ -131,22 +136,9 @@ public class VoiceChannelImpl extends AbstractGuildChannelImpl<VoiceChannelImpl>
     }
 
     @Override
-    public TLongObjectMap<PermissionOverride> getPermissionOverrideMap()
-    {
-        return overrides;
-    }
-
-    @Override
     public TLongObjectMap<Member> getConnectedMembersMap()
     {
         return connectedMembers;
-    }
-
-    @Override
-    public VoiceChannelImpl setParentCategory(long parentCategoryId)
-    {
-        this.parentCategoryId = parentCategoryId;
-        return this;
     }
 
     @Override
@@ -163,17 +155,30 @@ public class VoiceChannelImpl extends AbstractGuildChannelImpl<VoiceChannelImpl>
         return this;
     }
 
-    @Override
-    public VoiceChannelImpl setPosition(int position)
-    {
-        getGuild().getVoiceChannelsView().clearCachedLists();
-        this.position = position;
-        return this;
-    }
-
     public VoiceChannelImpl setUserLimit(int userLimit)
     {
         this.userLimit = userLimit;
         return this;
+    }
+
+    public VoiceChannelImpl setNSFW(boolean nsfw)
+    {
+        this.nsfw = nsfw;
+        return this;
+    }
+
+    @Override
+    public VoiceChannelImpl setLatestMessageIdLong(long latestMessageId)
+    {
+        this.latestMessageId = latestMessageId;
+        return this;
+    }
+
+    // -- Abstract Hooks --
+
+    @Override
+    protected void onPositionChange()
+    {
+        getGuild().getVoiceChannelsView().clearCachedLists();
     }
 }

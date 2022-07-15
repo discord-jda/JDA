@@ -16,10 +16,10 @@
 
 package net.dv8tion.jda.api.requests.restaction;
 
-import net.dv8tion.jda.api.entities.BaseGuildMessageChannel;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Icon;
 import net.dv8tion.jda.api.entities.Webhook;
+import net.dv8tion.jda.api.entities.channel.unions.IWebhookContainerUnion;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -48,12 +48,12 @@ public interface WebhookAction extends AuditableRestAction<Webhook>
     WebhookAction deadline(long timestamp);
 
     /**
-     * The {@link net.dv8tion.jda.api.entities.BaseGuildMessageChannel BaseGuildMessageChannel} to create this webhook in.
+     * The {@link net.dv8tion.jda.api.entities.IWebhookContainer channel} to create this webhook in.
      *
      * @return The channel
      */
     @Nonnull
-    BaseGuildMessageChannel getChannel();
+    IWebhookContainerUnion getChannel();
 
     /**
      * The {@link net.dv8tion.jda.api.entities.Guild Guild} to create this webhook in

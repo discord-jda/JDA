@@ -20,9 +20,10 @@ import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.emoji.CustomEmoji;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.JDAImpl;
-import net.dv8tion.jda.internal.entities.EmoteImpl;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import org.apache.commons.collections4.Bag;
@@ -46,7 +47,7 @@ public abstract class AbstractMentions implements Mentions
     protected List<Member> mentionedMembers;
     protected List<Role> mentionedRoles;
     protected List<GuildChannel> mentionedChannels;
-    protected List<Emote> mentionedEmotes;
+    protected List<CustomEmoji> mentionedEmojis;
 
     public AbstractMentions(String content, JDAImpl jda, GuildImpl guild, boolean mentionsEveryone)
     {
@@ -147,18 +148,18 @@ public abstract class AbstractMentions implements Mentions
 
     @Nonnull
     @Override
-    public synchronized List<Emote> getEmotes()
+    public synchronized List<CustomEmoji> getCustomEmojis()
     {
-        if (mentionedEmotes != null)
-            return mentionedEmotes;
-        return mentionedEmotes = Collections.unmodifiableList(processMentions(Message.MentionType.EMOTE, new ArrayList<>(), true, this::matchEmote));
+        if (mentionedEmojis != null)
+            return mentionedEmojis;
+        return mentionedEmojis = Collections.unmodifiableList(processMentions(Message.MentionType.EMOJI, new ArrayList<>(), true, this::matchEmoji));
     }
 
     @Nonnull
     @Override
-    public Bag<Emote> getEmotesBag()
+    public Bag<CustomEmoji> getCustomEmojisBag()
     {
-        return processMentions(Message.MentionType.EMOTE, new HashBag<>(), false, this::matchEmote);
+        return processMentions(Message.MentionType.EMOJI, new HashBag<>(), false, this::matchEmoji);
     }
 
     @Nonnull
@@ -208,8 +209,8 @@ public abstract class AbstractMentions implements Mentions
             case ROLE:
                 mentions.addAll(getRoles());
                 break;
-            case EMOTE:
-                mentions.addAll(getEmotes());
+            case EMOJI:
+                mentions.addAll(getCustomEmojis());
                 break;
 //            case EVERYONE:
 //            case HERE:
@@ -252,8 +253,8 @@ public abstract class AbstractMentions implements Mentions
                 if (mentionable instanceof GuildChannel && getChannels().contains(mentionable))
                     return true;
                 break;
-            case EMOTE:
-                if (mentionable instanceof Emote && getEmotes().contains(mentionable))
+            case EMOJI:
+                if (mentionable instanceof Emoji && getCustomEmojis().contains(mentionable))
                     return true;
                 break;
 //           default: continue;
@@ -289,15 +290,15 @@ public abstract class AbstractMentions implements Mentions
 
     protected abstract Role matchRole(Matcher matcher);
 
-    protected Emote matchEmote(Matcher m)
+    protected CustomEmoji matchEmoji(Matcher m)
     {
-        long emoteId = MiscUtil.parseSnowflake(m.group(2));
+        long emojiId = MiscUtil.parseSnowflake(m.group(2));
         String name = m.group(1);
         boolean animated = m.group(0).startsWith("<a:");
-        Emote emote = getJDA().getEmoteById(emoteId);
-        if (emote == null)
-            emote = new EmoteImpl(emoteId, jda).setName(name).setAnimated(animated);
-        return emote;
+        CustomEmoji emoji = getJDA().getEmojiById(emojiId);
+        if (emoji == null)
+            emoji = Emoji.fromCustom(name, emojiId, animated);
+        return emoji;
     }
 
     protected abstract boolean isUserMentioned(IMentionable mentionable);

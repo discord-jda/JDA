@@ -42,11 +42,11 @@ public class MessageDeleteHandler extends SocketHandler
             if (getJDA().getGuildSetupController().isLocked(guildId))
                 return guildId;
 
-            guild = api.getGuildById(guildId);
+            guild = getJDA().getGuildById(guildId);
             if (guild == null)
             {
-                EventCache.LOG.debug("Caching MESSAGE_DELETE event for guild that is not currently cached. GuildID: {}", guildId);
-                api.getEventCache().cache(EventCache.Type.GUILD, guildId, responseNumber, allContent, this::handle);
+                getJDA().getEventCache().cache(EventCache.Type.GUILD, guildId, responseNumber, allContent, this::handle);
+                EventCache.LOG.debug("Got message delete for a guild that is not yet cached. GuildId: {}", guildId);
                 return null;
             }
         }
@@ -57,12 +57,13 @@ public class MessageDeleteHandler extends SocketHandler
         MessageChannel channel = getJDA().getChannelById(MessageChannel.class, channelId);
         if (channel == null)
         {
+            // If discord adds message support for unexpected types in the future, drop the event instead of caching it
             if (guild != null)
             {
-                GuildChannel guildChannel = guild.getGuildChannelById(channelId);
-                if (guildChannel != null)
+                GuildChannel actual = guild.getGuildChannelById(channelId);
+                if (actual != null)
                 {
-                    WebSocketClient.LOG.debug("Discarding MESSAGE_DELETE event for unexpected channel type. Channel: {}", guildChannel);
+                    WebSocketClient.LOG.debug("Dropping MESSAGE_DELETE for unexpected channel of type {}", actual.getType());
                     return null;
                 }
             }

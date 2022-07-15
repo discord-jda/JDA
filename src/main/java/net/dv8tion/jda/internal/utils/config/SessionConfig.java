@@ -108,6 +108,11 @@ public class SessionConfig
         return flags.contains(ConfigFlag.RAW_EVENTS);
     }
 
+    public boolean isEventPassthrough()
+    {
+        return flags.contains(ConfigFlag.EVENT_PASSTHROUGH);
+    }
+
     public boolean isRelativeRateLimit()
     {
         return flags.contains(ConfigFlag.USE_RELATIVE_RATELIMIT);

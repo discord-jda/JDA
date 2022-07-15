@@ -17,8 +17,10 @@
 package net.dv8tion.jda.api.events;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public interface GenericEvent
 {
@@ -37,4 +39,17 @@ public interface GenericEvent
      * @return The current sequence number for this event
      */
     long getResponseNumber();
+
+    /**
+     * The passthrough data that this event was serialized from. This data might be null in rare situations, for example, if the event came from a rest action.
+     * <br>This provides the full gateway message payload, including sequence, event name and dispatch type.
+     * For details, read the official <a href="https://discord.dev/topics/gateway" target="_blank">Discord Documentation</a>.
+     *
+     * @throws IllegalStateException
+     *         If event passthrough was not enabled, see {@link net.dv8tion.jda.api.JDABuilder#setEventPassthrough(boolean) JDABuilder#setEventPassthrough(boolean)}
+     *
+     * @return The corresponding {@link DataObject}
+     */
+    @Nullable
+    DataObject getRawData();
 }

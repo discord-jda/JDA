@@ -128,8 +128,8 @@ public class GuildStickerManagerImpl extends ManagerBase<GuildStickerManager> im
     @Override
     protected boolean checkPermissions()
     {
-        if (guild != null && !guild.getSelfMember().hasPermission(Permission.MANAGE_EMOTES_AND_STICKERS))
-            throw new InsufficientPermissionException(guild, Permission.MANAGE_EMOTES_AND_STICKERS);
+        if (guild != null && !guild.getSelfMember().hasPermission(Permission.MANAGE_EMOJIS_AND_STICKERS))
+            throw new InsufficientPermissionException(guild, Permission.MANAGE_EMOJIS_AND_STICKERS);
         return super.checkPermissions();
     }
 }

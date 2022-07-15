@@ -17,14 +17,12 @@
 package net.dv8tion.jda.api.managers.channel.concrete;
 
 import net.dv8tion.jda.api.entities.StageChannel;
-import net.dv8tion.jda.api.managers.channel.attribute.ICategorizableChannelManager;
-import net.dv8tion.jda.api.managers.channel.attribute.IPositionableChannelManager;
 import net.dv8tion.jda.api.managers.channel.middleman.AudioChannelManager;
+import net.dv8tion.jda.api.managers.channel.middleman.StandardGuildChannelManager;
 
 //TODO-v5: Docs
 public interface StageChannelManager extends
         AudioChannelManager<StageChannel, StageChannelManager>,
-        ICategorizableChannelManager<StageChannel, StageChannelManager>,
-        IPositionableChannelManager<StageChannel, StageChannelManager>
+        StandardGuildChannelManager<StageChannel, StageChannelManager>
 {
 }

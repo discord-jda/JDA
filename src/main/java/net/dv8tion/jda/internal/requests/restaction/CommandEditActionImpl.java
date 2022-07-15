@@ -19,6 +19,7 @@ package net.dv8tion.jda.internal.requests.restaction;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
@@ -87,14 +88,6 @@ public class CommandEditActionImpl extends RestActionImpl<Command> implements Co
 
     @Nonnull
     @Override
-    public CommandEditAction setDefaultEnabled(boolean enabled)
-    {
-        data.setDefaultEnabled(enabled);
-        return this;
-    }
-
-    @Nonnull
-    @Override
     public CommandEditAction addCheck(@Nonnull BooleanSupplier checks)
     {
         return (CommandEditAction) super.addCheck(checks);
@@ -118,6 +111,22 @@ public class CommandEditActionImpl extends RestActionImpl<Command> implements Co
         }
         data.setName(name);
         mask |= NAME_SET;
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    public CommandEditAction setGuildOnly(boolean guildOnly)
+    {
+        data.setGuildOnly(guildOnly);
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    public CommandEditAction setDefaultPermissions(@Nonnull DefaultMemberPermissions permission)
+    {
+        data.setDefaultPermissions(permission);
         return this;
     }
 

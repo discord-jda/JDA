@@ -19,9 +19,13 @@ package net.dv8tion.jda.internal.entities;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.channel.unions.GuildMessageChannelUnion;
+import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
+import net.dv8tion.jda.api.entities.emoji.CustomEmoji;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
+import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import net.dv8tion.jda.api.entities.sticker.StickerItem;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
-import net.dv8tion.jda.api.exceptions.MissingAccessException;
 import net.dv8tion.jda.api.exceptions.PermissionException;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
@@ -29,6 +33,7 @@ import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
+import net.dv8tion.jda.api.requests.restaction.ThreadChannelAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationAction;
 import net.dv8tion.jda.api.utils.MarkdownSanitizer;
 import net.dv8tion.jda.api.utils.data.DataObject;
@@ -159,34 +164,23 @@ public class ReceivedMessage extends AbstractMessage
 
     @Nonnull
     @Override
-    public RestAction<Void> addReaction(@Nonnull Emote emote)
+    public RestAction<Void> addReaction(@Nonnull Emoji emoji)
     {
         if (isEphemeral())
             throw new IllegalStateException("Cannot add reactions to ephemeral messages.");
         
-        Checks.notNull(emote, "Emote");
+        Checks.notNull(emoji, "Emoji");
 
         boolean missingReaction = reactions.stream()
-                   .map(MessageReaction::getReactionEmote)
-                   .filter(MessageReaction.ReactionEmote::isEmote)
-                   .noneMatch(r -> r.getIdLong() == emote.getIdLong());
+                   .map(MessageReaction::getEmoji)
+                   .noneMatch(r -> r.getAsReactionCode().equals(emoji.getAsReactionCode()));
 
-        if (missingReaction)
+        if (missingReaction && emoji instanceof RichCustomEmoji)
         {
-            Checks.check(emote.canInteract(getJDA().getSelfUser(), channel),
-                         "Cannot react with the provided emote because it is not available in the current channel.");
+            Checks.check(((RichCustomEmoji) emoji).canInteract(getJDA().getSelfUser(), channel),
+                         "Cannot react with the provided emoji because it is not available in the current channel.");
         }
-        return channel.addReactionById(getId(), emote);
-    }
-
-    @Nonnull
-    @Override
-    public RestAction<Void> addReaction(@Nonnull String unicode)
-    {
-        if (isEphemeral())
-            throw new IllegalStateException("Cannot add reactions to ephemeral messages.");
-        
-        return channel.addReactionById(getId(), unicode);
+        return channel.addReactionById(getId(), emoji);
     }
 
     @Nonnull
@@ -202,39 +196,28 @@ public class ReceivedMessage extends AbstractMessage
 
     @Nonnull
     @Override
-    public RestAction<Void> clearReactions(@Nonnull String unicode)
+    public RestAction<Void> clearReactions(@Nonnull Emoji emoji)
     {
         if (isEphemeral())
             throw new IllegalStateException("Cannot clear reactions from ephemeral messages.");
         if (!isFromGuild())
             throw new IllegalStateException("Cannot clear reactions from a message in a Group or PrivateChannel.");
-        return getGuildChannel().clearReactionsById(getId(), unicode);
+        return getGuildChannel().clearReactionsById(getId(), emoji);
     }
 
     @Nonnull
     @Override
-    public RestAction<Void> clearReactions(@Nonnull Emote emote)
-    {
-        if (isEphemeral())
-            throw new IllegalStateException("Cannot clear reactions from ephemeral messages.");
-        if (!isFromGuild())
-            throw new IllegalStateException("Cannot clear reactions from a message in a Group or PrivateChannel.");
-        return getGuildChannel().clearReactionsById(getId(), emote);
-    }
-
-    @Nonnull
-    @Override
-    public RestAction<Void> removeReaction(@Nonnull Emote emote)
+    public RestAction<Void> removeReaction(@Nonnull Emoji emoji)
     {
         if (isEphemeral())
             throw new IllegalStateException("Cannot remove reactions from ephemeral messages.");
         
-        return channel.removeReactionById(getId(), emote);
+        return channel.removeReactionById(getId(), emoji);
     }
 
     @Nonnull
     @Override
-    public RestAction<Void> removeReaction(@Nonnull Emote emote, @Nonnull User user)
+    public RestAction<Void> removeReaction(@Nonnull Emoji emoji, @Nonnull User user)
     {
         Checks.notNull(user, "User");  // to prevent NPEs
         if (isEphemeral())
@@ -242,75 +225,32 @@ public class ReceivedMessage extends AbstractMessage
         // check if the passed user is the SelfUser, then the ChannelType doesn't matter and
         // we can safely remove that
         if (user.equals(getJDA().getSelfUser()))
-            return channel.removeReactionById(getIdLong(), emote);
+            return channel.removeReactionById(getIdLong(), emoji);
 
         if (!isFromGuild())
             throw new IllegalStateException("Cannot remove reactions of others from a message in a Group or PrivateChannel.");
-        return getGuildChannel().removeReactionById(getIdLong(), emote, user);
+        return getGuildChannel().removeReactionById(getIdLong(), emoji, user);
     }
 
     @Nonnull
     @Override
-    public RestAction<Void> removeReaction(@Nonnull String unicode)
-    {
-        if (isEphemeral())
-            throw new IllegalStateException("Cannot remove reactions from ephemeral messages.");
-        
-        return channel.removeReactionById(getId(), unicode);
-    }
-
-    @Nonnull
-    @Override
-    public RestAction<Void> removeReaction(@Nonnull String unicode, @Nonnull User user)
-    {
-        Checks.notNull(user, "User");
-        if (user.equals(getJDA().getSelfUser()))
-            return channel.removeReactionById(getIdLong(), unicode);
-
-        if (isEphemeral())
-            throw new IllegalStateException("Cannot remove reactions from ephemeral messages.");
-        if (!isFromGuild())
-            throw new IllegalStateException("Cannot remove reactions of others from a message in a Group or PrivateChannel.");
-        return getGuildChannel().removeReactionById(getId(), unicode, user);
-    }
-
-    @Nonnull
-    @Override
-    public ReactionPaginationAction retrieveReactionUsers(@Nonnull Emote emote)
+    public ReactionPaginationAction retrieveReactionUsers(@Nonnull Emoji emoji)
     {
         if (isEphemeral())
             throw new IllegalStateException("Cannot retrieve reactions on ephemeral messages.");
         
-        return channel.retrieveReactionUsersById(id, emote);
+        return channel.retrieveReactionUsersById(id, emoji);
     }
 
-    @Nonnull
+    @Nullable
     @Override
-    public ReactionPaginationAction retrieveReactionUsers(@Nonnull String unicode)
+    public MessageReaction getReaction(@Nonnull Emoji emoji)
     {
-        if (isEphemeral())
-            throw new IllegalStateException("Cannot retrieve reactions on ephemeral messages.");
-        
-        return channel.retrieveReactionUsersById(id, unicode);
-    }
-
-    @Override
-    public MessageReaction getReactionByUnicode(@Nonnull String unicode)
-    {
-        Checks.notEmpty(unicode, "Emoji");
-        Checks.noWhitespace(unicode, "Emoji");
-
+        Checks.notNull(emoji, "Emoji");
+        String code = emoji.getAsReactionCode();
         return this.reactions.stream()
-            .filter(r -> r.getReactionEmote().isEmoji() && r.getReactionEmote().getEmoji().equals(unicode))
-            .findFirst().orElse(null);
-    }
-
-    @Override
-    public MessageReaction getReactionById(long id)
-    {
-        return this.reactions.stream()
-            .filter(r -> r.getReactionEmote().isEmote() && r.getReactionEmote().getIdLong() == id)
-            .findFirst().orElse(null);
+                .filter(r -> code.equals(r.getEmoji().getAsReactionCode()))
+                .findFirst().orElse(null);
     }
 
     @Nonnull
@@ -400,9 +340,9 @@ public class ReceivedMessage extends AbstractMessage
                     name = user.getName();
                 tmp = tmp.replaceAll("<@!?" + Pattern.quote(user.getId()) + '>', '@' + Matcher.quoteReplacement(name));
             }
-            for (Emote emote : mentions.getEmotes())
+            for (CustomEmoji emoji : mentions.getCustomEmojis())
             {
-                tmp = tmp.replace(emote.getAsMention(), ":" + emote.getName() + ":");
+                tmp = tmp.replace(emoji.getAsMention(), ":" + emoji.getName() + ":");
             }
             for (GuildChannel mentionedChannel : mentions.getChannels())
             {
@@ -462,51 +402,23 @@ public class ReceivedMessage extends AbstractMessage
 
     @Nonnull
     @Override
-    public MessageChannel getChannel()
+    public MessageChannelUnion getChannel()
     {
-        return channel;
+        return (MessageChannelUnion) channel;
     }
 
     @Nonnull
     @Override
-    public GuildMessageChannel getGuildChannel()
+    public GuildMessageChannelUnion getGuildChannel()
     {
         if (!isFromGuild())
             throw new IllegalStateException("This message was not sent in a guild.");
-        return (GuildMessageChannel) channel;
-    }
-
-    @Nonnull
-    @Override
-    public PrivateChannel getPrivateChannel()
-    {
-        if (!isFromType(ChannelType.PRIVATE))
-            throw new IllegalStateException("This message was not sent in a private channel");
-        return (PrivateChannel) channel;
-    }
-
-    @Nonnull
-    @Override
-    public TextChannel getTextChannel()
-    {
-        if (!isFromType(ChannelType.TEXT))
-            throw new IllegalStateException("This message was not sent in a text channel");
-        return (TextChannel) channel;
-    }
-
-    @Nonnull
-    @Override
-    public NewsChannel getNewsChannel()
-    {
-        if (!isFromType(ChannelType.NEWS))
-            throw new IllegalStateException("This message was not sent in a news channel");
-        return (NewsChannel) channel;
+        return (GuildMessageChannelUnion) channel;
     }
 
     @Override
     public Category getCategory()
     {
-        //TODO-v5: Should this actually throw an error here if the GuildMessageChannel doesn't implement ICategorizableChannel?
         GuildMessageChannel chan = getGuildChannel();
         return chan instanceof ICategorizableChannel
             ? ((ICategorizableChannel) chan).getParentCategory()
@@ -641,9 +553,8 @@ public class ReceivedMessage extends AbstractMessage
 
             GuildMessageChannel gChan = getGuildChannel();
             Member sMember = getGuild().getSelfMember();
-            if (!sMember.hasAccess(gChan))
-                throw new MissingAccessException(gChan, Permission.VIEW_CHANNEL);
-            else if (!sMember.hasPermission(gChan, Permission.MESSAGE_MANAGE))
+            Checks.checkAccess(sMember, gChan);
+            if (!sMember.hasPermission(gChan, Permission.MESSAGE_MANAGE))
                 throw new InsufficientPermissionException(gChan, Permission.MESSAGE_MANAGE);
         }
         if (!type.canDelete())
@@ -688,14 +599,11 @@ public class ReceivedMessage extends AbstractMessage
         if (getFlags().contains(MessageFlag.CROSSPOSTED))
             return new CompletedRestAction<>(getJDA(), this);
 
-        //TODO-v5: Maybe we'll have a `getNewsChannel()` getter that will do this check there?
         if (!(getChannel() instanceof NewsChannel))
             throw new IllegalStateException("This message was not sent in a news channel");
 
-        //TODO-v5: Double check: Is this actually how we crosspost? This, to me, reads as "take the message we just received and crosspost it to the _same exact channel we just received it in_. Makes no sense.
         NewsChannel newsChannel = (NewsChannel) getChannel();
-        if (!getGuild().getSelfMember().hasAccess(newsChannel))
-            throw new MissingAccessException(newsChannel, Permission.VIEW_CHANNEL);
+        Checks.checkAccess(getGuild().getSelfMember(), newsChannel);
         if (!getAuthor().equals(getJDA().getSelfUser()) && !getGuild().getSelfMember().hasPermission(newsChannel, Permission.MESSAGE_MANAGE))
             throw new InsufficientPermissionException(newsChannel, Permission.MESSAGE_MANAGE);
         return newsChannel.crosspostMessageById(getId());
@@ -734,7 +642,7 @@ public class ReceivedMessage extends AbstractMessage
     }
 
     @Override
-    public RestAction<ThreadChannel> createThreadChannel(String name)
+    public ThreadChannelAction createThreadChannel(String name)
     {
         return ((IThreadContainer) getGuildChannel()).createThreadChannel(name, this.getIdLong());
     }

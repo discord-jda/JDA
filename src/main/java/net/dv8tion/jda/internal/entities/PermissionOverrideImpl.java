@@ -19,14 +19,15 @@ package net.dv8tion.jda.internal.entities;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.channel.unions.IPermissionContainerUnion;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
-import net.dv8tion.jda.api.exceptions.MissingAccessException;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.PermissionOverrideAction;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.PermissionOverrideActionImpl;
+import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
 import java.util.EnumSet;
@@ -116,12 +117,13 @@ public class PermissionOverrideImpl implements PermissionOverride
 
     @Nonnull
     @Override
-    public IPermissionContainer getChannel()
+    public IPermissionContainerUnion getChannel()
     {
         IPermissionContainer realChannel = (IPermissionContainer) api.getGuildChannelById(channel.getIdLong());
         if (realChannel != null)
             channel = realChannel;
-        return channel;
+
+        return (IPermissionContainerUnion) channel;
     }
 
     @Nonnull
@@ -206,10 +208,7 @@ public class PermissionOverrideImpl implements PermissionOverride
     {
         Member selfMember = getGuild().getSelfMember();
         IPermissionContainer channel = getChannel();
-        if (!selfMember.hasPermission(channel, Permission.VIEW_CHANNEL))
-            throw new MissingAccessException(channel, Permission.VIEW_CHANNEL);
-        if (!selfMember.hasAccess(channel))
-            throw new MissingAccessException(channel, Permission.VOICE_CONNECT);
+        Checks.checkAccess(selfMember, channel);
         if (!selfMember.hasPermission(channel, Permission.MANAGE_PERMISSIONS))
             throw new InsufficientPermissionException(channel, Permission.MANAGE_PERMISSIONS);
     }

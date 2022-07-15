@@ -18,7 +18,7 @@ package net.dv8tion.jda.api.events.interaction.command;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback;
 import net.dv8tion.jda.api.interactions.commands.context.MessageContextInteraction;
 
@@ -51,8 +51,8 @@ public class MessageContextInteractionEvent extends GenericContextInteractionEve
 
     @Nullable
     @Override
-    public MessageChannel getChannel()
+    public MessageChannelUnion getChannel()
     {
-        return getInteraction().getChannel();
+        return (MessageChannelUnion) getInteraction().getChannel();
     }
 }

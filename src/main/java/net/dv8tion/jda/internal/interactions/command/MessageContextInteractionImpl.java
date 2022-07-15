@@ -18,7 +18,7 @@ package net.dv8tion.jda.internal.interactions.command;
 
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.interactions.commands.context.MessageContextInteraction;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
@@ -31,9 +31,9 @@ public class MessageContextInteractionImpl extends ContextInteractionImpl<Messag
     }
 
     @Override
-    public MessageChannel getChannel()
+    public MessageChannelUnion getChannel()
     {
-        return (MessageChannel) super.getChannel();
+        return (MessageChannelUnion) super.getChannel();
     }
 
     private static Message parse(JDAImpl api, DataObject interactionData, DataObject resolved)

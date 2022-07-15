@@ -20,6 +20,8 @@ import net.dv8tion.jda.internal.JDAImpl;
 
 public abstract class SocketHandler
 {
+    public static final ThreadLocal<DataObject> CURRENT_EVENT = new ThreadLocal<>();
+
     protected final JDAImpl api;
     protected long responseNumber;
     protected DataObject allContent;
@@ -33,10 +35,12 @@ public abstract class SocketHandler
     {
         this.allContent = o;
         this.responseNumber = responseTotal;
+        if (getJDA().isEventPassthrough()) CURRENT_EVENT.set(o);
         final Long guildId = handleInternally(o.getObject("d"));
         if (guildId != null)
             getJDA().getGuildSetupController().cacheEvent(guildId, o);
         this.allContent = null;
+        if (getJDA().isEventPassthrough()) CURRENT_EVENT.set(null);
     }
 
     protected JDAImpl getJDA()

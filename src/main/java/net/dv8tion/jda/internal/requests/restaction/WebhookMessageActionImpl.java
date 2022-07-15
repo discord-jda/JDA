@@ -52,16 +52,14 @@ public class WebhookMessageActionImpl<T>
     private final List<AttachedFile> files = new ArrayList<>();
     private final AllowedMentionsImpl allowedMentions = new AllowedMentionsImpl();
     private final List<ActionRow> components = new ArrayList<>();
-    private final MessageChannel channel;
     private final Function<DataObject, T> transformer;
 
     private boolean ephemeral, tts;
     private String username, avatarUrl;
 
-    public WebhookMessageActionImpl(JDA api, MessageChannel channel, Route.CompiledRoute route, Function<DataObject, T> transformer)
+    public WebhookMessageActionImpl(JDA api, Route.CompiledRoute route, Function<DataObject, T> transformer)
     {
         super(api, route);
-        this.channel = channel;
         this.transformer = transformer;
     }
 

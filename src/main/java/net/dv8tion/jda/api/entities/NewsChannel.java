@@ -14,7 +14,7 @@ import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 
 /**
- * Represents {@link BaseGuildMessageChannel} that are News Channels.
+ * Represents {@link StandardGuildMessageChannel} that are News Channels.
  *
  * The Discord client may refer to these as Announcement Channels.
  *
@@ -26,7 +26,7 @@ import javax.annotation.Nonnull;
  * @see Message#getFlags()
  * @see net.dv8tion.jda.api.entities.Message.MessageFlag#CROSSPOSTED
  */
-public interface NewsChannel extends BaseGuildMessageChannel
+public interface NewsChannel extends StandardGuildMessageChannel
 {
     /**
      * Subscribes to the crossposted messages in this channel.
@@ -107,6 +107,8 @@ public interface NewsChannel extends BaseGuildMessageChannel
      * @param  targetChannel
      *         The target channel
      *
+     * @throws MissingAccessException
+     *         If the currently logged in account does not have {@link Member#hasAccess(GuildChannel) access} in the <b>target channel</b>.
      * @throws InsufficientPermissionException
      *         If the currently logged in account does not have {@link Permission#MANAGE_WEBHOOKS} in the <b>target channel</b>.
      * @throws IllegalArgumentException
@@ -122,8 +124,7 @@ public interface NewsChannel extends BaseGuildMessageChannel
     {
         Checks.notNull(targetChannel, "Target Channel");
         Member selfMember = targetChannel.getGuild().getSelfMember();
-        if (!selfMember.hasAccess(targetChannel))
-            throw new MissingAccessException(targetChannel, Permission.VIEW_CHANNEL);
+        Checks.checkAccess(selfMember, targetChannel);
         if (!selfMember.hasPermission(targetChannel, Permission.MANAGE_WEBHOOKS))
             throw new InsufficientPermissionException(targetChannel, Permission.MANAGE_WEBHOOKS);
         return follow(targetChannel.getId());
@@ -160,6 +161,8 @@ public interface NewsChannel extends BaseGuildMessageChannel
      *
      * @throws java.lang.IllegalArgumentException
      *         If provided {@code messageId} is {@code null} or empty.
+     * @throws MissingAccessException
+     *         If the currently logged in account does not have {@link Member#hasAccess(GuildChannel) access} in this channel.
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have
      *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} in this channel.
@@ -173,8 +176,7 @@ public interface NewsChannel extends BaseGuildMessageChannel
     default RestAction<Message> crosspostMessageById(@Nonnull String messageId)
     {
         Checks.isSnowflake(messageId);
-        if (!getGuild().getSelfMember().hasAccess(this))
-            throw new MissingAccessException(this, Permission.VIEW_CHANNEL);
+        Checks.checkAccess(getGuild().getSelfMember(), this);
         Route.CompiledRoute route = Route.Messages.CROSSPOST_MESSAGE.compile(getId(), messageId);
         return new RestActionImpl<>(getJDA(), route,
                 (response, request) -> request.getJDA().getEntityBuilder().createMessageWithChannel(response.getObject(), this, false));
