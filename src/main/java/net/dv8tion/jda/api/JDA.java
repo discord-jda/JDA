@@ -62,7 +62,7 @@ import java.util.function.Consumer;
 import java.util.regex.Matcher;
 
 /**
- * The core of JDA. Acts as a registry system of JDA. All parts of the the API can be accessed starting from this class.
+ * The core of JDA. Acts as a registry system of JDA. All parts of the API can be accessed starting from this class.
  *
  * @see JDABuilder
  */
@@ -496,12 +496,28 @@ public interface JDA extends IGuildChannelContainer
     /**
      * Retrieves the list of global commands.
      * <br>This list does not include guild commands! Use {@link Guild#retrieveCommands()} for guild commands.
+     * <br>This list does not include localization data. Use {@link #retrieveCommands(boolean)} to get localization data
      *
      * @return {@link RestAction} - Type: {@link List} of {@link Command}
      */
     @Nonnull
     @CheckReturnValue
-    RestAction<List<Command>> retrieveCommands();
+    default RestAction<List<Command>> retrieveCommands() {
+        return retrieveCommands(false);
+    }
+
+    /**
+     * Retrieves the list of global commands.
+     * <br>This list does not include guild commands! Use {@link Guild#retrieveCommands()} for guild commands.
+     *
+     * @param  withLocalizations
+     *         {@code true} if the localization data (such as name and description) should be included
+     *
+     * @return {@link RestAction} - Type: {@link List} of {@link Command}
+     */
+    @Nonnull
+    @CheckReturnValue
+    RestAction<List<Command>> retrieveCommands(boolean withLocalizations);
 
     /**
      * Retrieves the existing {@link Command} instance by id.
@@ -549,9 +565,6 @@ public interface JDA extends IGuildChannelContainer
      *
      * <p>You need the OAuth2 scope {@code "applications.commands"} in order to add commands to a guild.
      *
-     * <p><b>Global commands can take up to <u>1 hour</u> to propagate to the clients.</b>
-     * For testing, it is recommended to use a test guild with guild commands.
-     *
      * @param  command
      *         The {@link CommandData} for the command
      *
@@ -579,9 +592,6 @@ public interface JDA extends IGuildChannelContainer
      * <p>To specify a complete list of all commands you can use {@link #updateCommands()} instead.
      *
      * <p>You need the OAuth2 scope {@code "applications.commands"} in order to add commands to a guild.
-     *
-     * <p><b>Global commands can take up to <u>1 hour</u> to propagate to the clients.</b>
-     * For testing, it is recommended to use a test guild with guild commands.
      *
      * @param  name
      *         The lowercase alphanumeric (with dash) name, 1-32 characters
@@ -611,18 +621,21 @@ public interface JDA extends IGuildChannelContainer
      *
      * <p>You need the OAuth2 scope {@code "applications.commands"} in order to add commands to a guild.
      *
-     * <p><b>Global commands can take up to <u>1 hour</u> to propagate to the clients.</b>
-     * For testing, it is recommended to use a test guild with guild commands.
+     * <p><b>Examples</b>
      *
-     * <h4>Examples</h4>
+     * <p>Set list to 2 commands:
      * <pre>{@code
-     * // Set list to 2 commands
      * jda.updateCommands()
      *   .addCommands(Commands.slash("ping", "Gives the current ping"))
      *   .addCommands(Commands.slash("ban", "Ban the target user")
+     *     .setGuildOnly(true)
+     *     .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.BAN_MEMBERS))
      *     .addOption(OptionType.USER, "user", "The user to ban", true))
      *   .queue();
-     * // Delete all commands
+     * }</pre>
+     *
+     * <p>Delete all commands:
+     * <pre>{@code
      * jda.updateCommands().queue();
      * }</pre>
      *
@@ -639,9 +652,6 @@ public interface JDA extends IGuildChannelContainer
      *
      * <p>If there is no command with the provided ID,
      * this RestAction fails with {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_COMMAND ErrorResponse.UNKNOWN_COMMAND}
-     *
-     * <p><b>Global commands can take up to <u>1 hour</u> to propagate to the clients.</b>
-     * For testing, it is recommended to use a test guild with guild commands.
      *
      * @param  id
      *         The id of the command to edit
@@ -661,9 +671,6 @@ public interface JDA extends IGuildChannelContainer
      * <p>If there is no command with the provided ID,
      * this RestAction fails with {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_COMMAND ErrorResponse.UNKNOWN_COMMAND}
      *
-     * <p><b>Global commands can take up to <u>1 hour</u> to propagate to the clients.</b>
-     * For testing, it is recommended to use a test guild with guild commands.
-     *
      * @param  id
      *         The id of the command to edit
      *
@@ -682,9 +689,6 @@ public interface JDA extends IGuildChannelContainer
      * <p>If there is no command with the provided ID,
      * this RestAction fails with {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_COMMAND ErrorResponse.UNKNOWN_COMMAND}
      *
-     * <p><b>Global commands can take up to <u>1 hour</u> to propagate to the clients.</b>
-     * For testing, it is recommended to use a test guild with guild commands.
-     *
      * @param  commandId
      *         The id of the command that should be deleted
      *
@@ -702,9 +706,6 @@ public interface JDA extends IGuildChannelContainer
      *
      * <p>If there is no command with the provided ID,
      * this RestAction fails with {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_COMMAND ErrorResponse.UNKNOWN_COMMAND}
-     *
-     * <p><b>Global commands can take up to <u>1 hour</u> to propagate to the clients.</b>
-     * For testing, it is recommended to use a test guild with guild commands.
      *
      * @param  commandId
      *         The id of the command that should be deleted
@@ -985,11 +986,11 @@ public interface JDA extends IGuildChannelContainer
 
     /**
      * Attempts to retrieve a {@link net.dv8tion.jda.api.entities.User User} object based on the provided id.
-     * <br>This first calls {@link #getUserById(long)}, and if that returns {@code null} or the cache is inconsistent due to disabled intents then a request
-     * is made to the Discord servers.
      *
-     * <p>When the both {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_PRESENCES GUILD_PRESENCES} and {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MEMBERS GUILD_MEMBERS} intents
-     * are disabled this will always make a request even if the user is cached. You can use {@link #retrieveUserById(String, boolean)} to disable this behavior.
+     * <p>If {@link #getUserById(long)} is cached, this will directly return the user in a completed {@link RestAction} without making a request.
+     * When both {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_PRESENCES GUILD_PRESENCES} and {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MEMBERS GUILD_MEMBERS} intents
+     * are disabled this will always make a request even if the user is cached.
+     * You can use {@link CacheRestAction#useCache(boolean) action.useCache(false)} to force an update.
      *
      * <p>The returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} can encounter the following Discord errors:
      * <ul>
@@ -1000,9 +1001,6 @@ public interface JDA extends IGuildChannelContainer
      *
      * @param  id
      *         The id of the requested {@link net.dv8tion.jda.api.entities.User User}.
-     *
-     * @throws net.dv8tion.jda.api.exceptions.AccountTypeException
-     *         This endpoint is {@link AccountType#BOT} only.
      *
      * @throws java.lang.NumberFormatException
      *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
@@ -1012,23 +1010,23 @@ public interface JDA extends IGuildChannelContainer
      *             <li>If the provided id String is empty.</li>
      *         </ul>
      *
-     * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.api.entities.User User}
+     * @return {@link CacheRestAction} - Type: {@link User}
      *         <br>On request, gets the User with id matching provided id from Discord.
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<User> retrieveUserById(@Nonnull String id)
+    default CacheRestAction<User> retrieveUserById(@Nonnull String id)
     {
-        return retrieveUserById(id, true);
+        return retrieveUserById(MiscUtil.parseSnowflake(id));
     }
 
     /**
      * Attempts to retrieve a {@link net.dv8tion.jda.api.entities.User User} object based on the provided id.
-     * <br>This first calls {@link #getUserById(long)}, and if that returns {@code null} or the cache is inconsistent due to disabled intents then a request
-     * is made to the Discord servers.
      *
-     * <p>When the both {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_PRESENCES GUILD_PRESENCES} and {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MEMBERS GUILD_MEMBERS} intents
-     * are disabled this will always make a request even if the user is cached. You can use {@link #retrieveUserById(String, boolean)} to disable this behavior.
+     * <p>If {@link #getUserById(long)} is cached, this will directly return the user in a completed {@link RestAction} without making a request.
+     * When both {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_PRESENCES GUILD_PRESENCES} and {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MEMBERS GUILD_MEMBERS} intents
+     * are disabled this will always make a request even if the user is cached.
+     * You can use {@link CacheRestAction#useCache(boolean) action.useCache(false)} to force an update.
      *
      * <p>The returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} can encounter the following Discord errors:
      * <ul>
@@ -1038,87 +1036,14 @@ public interface JDA extends IGuildChannelContainer
      * </ul>
      *
      * @param  id
-     *         The id of the requested {@link net.dv8tion.jda.api.entities.User User}.
+     *         The id of the requested {@link User}.
      *
-     * @throws net.dv8tion.jda.api.exceptions.AccountTypeException
-     *         This endpoint is {@link AccountType#BOT} only.
-     *
-     * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.api.entities.User User}
+     * @return {@link CacheRestAction} - Type: {@link User}
      *         <br>On request, gets the User with id matching provided id from Discord.
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<User> retrieveUserById(long id)
-    {
-        return retrieveUserById(id, true);
-    }
-
-    /**
-     * Attempts to retrieve a {@link net.dv8tion.jda.api.entities.User User} object based on the provided id.
-     * <br>If both {@link GatewayIntent#GUILD_MEMBERS GUILD_MEMBERS} and {@link GatewayIntent#GUILD_PRESENCES GUILD_PRESENCES} intents are disabled
-     * this method will update the cached user unless the {@code update} parameter is {@code false}.
-     * <br>If either of those intents is enabled, this will immediately provide the cached user if possible.
-     *
-     * <p>The returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} can encounter the following Discord errors:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_USER ErrorResponse.UNKNOWN_USER}
-     *     <br>Occurs when the provided id does not refer to a {@link net.dv8tion.jda.api.entities.User User}
-     *     known by Discord. Typically occurs when developers provide an incomplete id (cut short).</li>
-     * </ul>
-     *
-     * @param  id
-     *         The id of the requested {@link net.dv8tion.jda.api.entities.User User}.
-     * @param  update
-     *         Whether JDA should perform a request even if the member is already cached to update properties such as the name
-     *
-     * @throws net.dv8tion.jda.api.exceptions.AccountTypeException
-     *         This endpoint is {@link AccountType#BOT} only.
-     *
-     * @throws java.lang.NumberFormatException
-     *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
-     * @throws java.lang.IllegalArgumentException
-     *         <ul>
-     *             <li>If the provided id String is null.</li>
-     *             <li>If the provided id String is empty.</li>
-     *         </ul>
-     *
-     * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.api.entities.User User}
-     *         <br>On request, gets the User with id matching provided id from Discord.
-     */
-    @Nonnull
-    @CheckReturnValue
-    default RestAction<User> retrieveUserById(@Nonnull String id, boolean update)
-    {
-        return retrieveUserById(MiscUtil.parseSnowflake(id), update);
-    }
-
-    /**
-     * Attempts to retrieve a {@link net.dv8tion.jda.api.entities.User User} object based on the provided id.
-     * <br>If both {@link GatewayIntent#GUILD_MEMBERS GUILD_MEMBERS} and {@link GatewayIntent#GUILD_PRESENCES GUILD_PRESENCES} intents are disabled
-     * this method will update the cached user unless the {@code update} parameter is {@code false}.
-     * <br>If either of those intents is enabled, this will immediately provide the cached user if possible.
-     *
-     * <p>The returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} can encounter the following Discord errors:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_USER ErrorResponse.UNKNOWN_USER}
-     *     <br>Occurs when the provided id does not refer to a {@link net.dv8tion.jda.api.entities.User User}
-     *     known by Discord. Typically occurs when developers provide an incomplete id (cut short).</li>
-     * </ul>
-     *
-     * @param  id
-     *         The id of the requested {@link net.dv8tion.jda.api.entities.User User}.
-     * @param  update
-     *         Whether JDA should perform a request even if the member is already cached to update properties such as the name
-     *
-     * @throws net.dv8tion.jda.api.exceptions.AccountTypeException
-     *         This endpoint is {@link AccountType#BOT} only.
-     *
-     * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.api.entities.User User}
-     *         <br>On request, gets the User with id matching provided id from Discord.
-     */
-    @Nonnull
-    @CheckReturnValue
-    RestAction<User> retrieveUserById(long id, boolean update);
+    CacheRestAction<User> retrieveUserById(long id);
 
     /**
      * {@link net.dv8tion.jda.api.utils.cache.SnowflakeCacheView SnowflakeCacheView} of
@@ -1381,6 +1306,9 @@ public interface JDA extends IGuildChannelContainer
      * <br>This will fail with {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_USER UNKNOWN_USER}
      * if the user does not exist.
      *
+     * <p>If the channel is cached, this will directly return the channel in a completed {@link RestAction} without making a request.
+     * You can use {@link CacheRestAction#useCache(boolean) action.useCache(false)} to force an update.
+     *
      * <h4>Example</h4>
      * <pre>{@code
      * public void sendMessage(JDA jda, long userId, String content) {
@@ -1396,13 +1324,13 @@ public interface JDA extends IGuildChannelContainer
      * @throws UnsupportedOperationException
      *         If the target user is the currently logged in account
      *
-     * @return {@link RestAction} - Type: {@link PrivateChannel}
+     * @return {@link CacheRestAction} - Type: {@link PrivateChannel}
      *
      * @see    User#openPrivateChannel()
      */
     @Nonnull
     @CheckReturnValue
-    RestAction<PrivateChannel> openPrivateChannelById(long userId);
+    CacheRestAction<PrivateChannel> openPrivateChannelById(long userId);
 
     /**
      * Opens a {@link PrivateChannel} with the provided user by id.

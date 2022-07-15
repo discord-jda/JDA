@@ -19,6 +19,7 @@ package net.dv8tion.jda.internal.entities.mixin.channel.middleman;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.IPermissionContainer;
+import net.dv8tion.jda.api.entities.channel.unions.GuildChannelUnion;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.internal.requests.Route;
@@ -27,7 +28,10 @@ import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 
-public interface GuildChannelMixin<T extends GuildChannelMixin<T>> extends GuildChannel, ChannelMixin<T>
+public interface GuildChannelMixin<T extends GuildChannelMixin<T>> extends
+        GuildChannel,
+        GuildChannelUnion,
+        ChannelMixin<T>
 {
     // ---- Default implementations of interface ----
     @Override

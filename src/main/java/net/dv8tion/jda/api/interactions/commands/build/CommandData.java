@@ -16,13 +16,16 @@
 
 package net.dv8tion.jda.api.interactions.commands.build;
 
-import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.interactions.commands.Command;
-import net.dv8tion.jda.api.interactions.commands.privileges.CommandPrivilege;
+import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
+import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFunction;
+import net.dv8tion.jda.api.interactions.commands.localization.LocalizationMap;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.localization.LocalizationUtils;
 
 import javax.annotation.Nonnull;
 import java.util.Collection;
@@ -36,6 +39,31 @@ import java.util.Map;
  */
 public interface CommandData extends SerializableData
 {
+    /**
+     * The maximum length the name of a command can be.
+     */
+    int MAX_NAME_LENGTH = 32;
+
+    /**
+     * The maximum length the description of a command can be.
+     */
+    int MAX_DESCRIPTION_LENGTH = 100;
+
+    /**
+     * Sets the {@link LocalizationFunction} for this command
+     * <br>This enables you to have the entirety of this command to be localized.
+     *
+     * @param  localizationFunction
+     *         The localization function
+     *
+     * @throws IllegalArgumentException
+     *         If the localization function is null
+     *
+     * @return The builder instance, for chaining
+     */
+    @Nonnull
+    CommandData setLocalizationFunction(@Nonnull LocalizationFunction localizationFunction);
+
     /**
      * Configure the command name.
      *
@@ -51,19 +79,72 @@ public interface CommandData extends SerializableData
     CommandData setName(@Nonnull String name);
 
     /**
-     * Whether this command is available to everyone by default.
-     * <br>If this is disabled, you need to explicitly whitelist users and roles per guild.
+     * Sets a {@link DiscordLocale language-specific} localization of this command's name.
      *
-     * <p>You can use {@link CommandPrivilege} to enable or disable this command per guild for roles and members of the guild.
-     * See {@link Command#updatePrivileges(Guild, CommandPrivilege...)} and {@link Guild#updateCommandPrivileges(Map)}.
+     * @param  locale
+     *         The locale to associate the translated name with
      *
-     * @param  enabled
-     *         True, if this command is enabled by default for everyone. (Default: true)
+     * @param  name
+     *         The translated name to put
+     *
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If the locale is null</li>
+     *             <li>If the name is null</li>
+     *             <li>If the locale is {@link DiscordLocale#UNKNOWN}</li>
+     *             <li>If the name does not pass the corresponding {@link #setName(String) name check}</li>
+     *         </ul>
+     *
+     * @return This builder instance, for chaining
+     */
+    @Nonnull
+    CommandData setNameLocalization(@Nonnull DiscordLocale locale, @Nonnull String name);
+
+    /**
+     * Sets multiple {@link DiscordLocale language-specific} localizations of this command's name.
+     *
+     * @param  map
+     *         The map from which to transfer the translated names
+     *
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If the map is null</li>
+     *             <li>If the map contains an {@link DiscordLocale#UNKNOWN} key</li>
+     *             <li>If the map contains a name which does not pass the corresponding {@link #setName(String) name check}</li>
+     *         </ul>
+     *
+     * @return This builder instance, for chaining
+     */
+    @Nonnull
+    CommandData setNameLocalizations(@Nonnull Map<DiscordLocale, String> map);
+
+    /**
+     * Sets the {@link net.dv8tion.jda.api.Permission Permissions} that a user must have in a specific channel to be able to use this command.
+     * <br>By default, everyone can use this command ({@link DefaultMemberPermissions#ENABLED}). Additionally, a command can be disabled for everyone but admins via {@link DefaultMemberPermissions#DISABLED}.
+     * <p>These configurations can be overwritten by moderators in each guild. See {@link Command#retrievePrivileges(net.dv8tion.jda.api.entities.Guild)} to get moderator defined overrides.
+     *
+     * @param  permission
+     *         {@link DefaultMemberPermissions} representing the default permissions of this command.
+     *
+     * @return The builder instance, for chaining
+     *
+     * @see DefaultMemberPermissions#ENABLED
+     * @see DefaultMemberPermissions#DISABLED
+     */
+    @Nonnull
+    CommandData setDefaultPermissions(@Nonnull DefaultMemberPermissions permission);
+
+    /**
+     * Sets whether this command is only usable in a guild (Default: false).
+     * <br>This only has an effect if this command is registered globally.
+     *
+     * @param  guildOnly
+     *         Whether to restrict this command to guilds
      *
      * @return The builder instance, for chaining
      */
     @Nonnull
-    CommandData setDefaultEnabled(boolean enabled);
+    CommandData setGuildOnly(boolean guildOnly);
 
     /**
      * The current command name
@@ -74,14 +155,12 @@ public interface CommandData extends SerializableData
     String getName();
 
     /**
-     * Whether this command is available to everyone by default.
+     * The localizations of this command's name for {@link DiscordLocale various languages}.
      *
-     * @return True, if this command is enabled to everyone by default
-     *
-     * @see    #setDefaultEnabled(boolean)
-     * @see    CommandPrivilege
+     * @return The {@link LocalizationMap} containing the mapping from {@link DiscordLocale} to the localized name
      */
-    boolean isDefaultEnabled();
+    @Nonnull
+    LocalizationMap getNameLocalizations();
 
     /**
      * The {@link Command.Type}
@@ -90,6 +169,26 @@ public interface CommandData extends SerializableData
      */
     @Nonnull
     Command.Type getType();
+
+    /**
+     * Gets the {@link DefaultMemberPermissions} of this command.
+     * <br>If no permissions have been set, this returns {@link DefaultMemberPermissions#ENABLED}.
+     *
+     * @return DefaultMemberPermissions of this command.
+     *
+     * @see    DefaultMemberPermissions#ENABLED
+     * @see    DefaultMemberPermissions#DISABLED
+     */
+    @Nonnull
+    DefaultMemberPermissions getDefaultPermissions();
+
+    /**
+     * Whether the command can only be used inside a guild.
+     * <br>Always true for guild commands.
+     *
+     * @return True, if this command is restricted to guilds.
+     */
+    boolean isGuildOnly();
 
     /**
      * Converts the provided {@link Command} into a CommandData instance.
@@ -109,8 +208,13 @@ public interface CommandData extends SerializableData
     {
         Checks.notNull(command, "Command");
         if (command.getType() != Command.Type.SLASH)
-            return new CommandDataImpl(command.getType(), command.getName())
-                    .setDefaultEnabled(command.isDefaultEnabled());
+        {
+            final CommandDataImpl data = new CommandDataImpl(command.getType(), command.getName());
+            return data.setDefaultPermissions(command.getDefaultPermissions())
+                    .setGuildOnly(command.isGuildOnly())
+                    .setNameLocalizations(command.getNameLocalizations().toMap())
+                    .setDescriptionLocalizations(command.getDescriptionLocalizations().toMap());
+        }
 
         return SlashCommandData.fromCommand(command);
     }
@@ -139,7 +243,19 @@ public interface CommandData extends SerializableData
         String name = object.getString("name");
         Command.Type commandType = Command.Type.fromId(object.getInt("type", 1));
         if (commandType != Command.Type.SLASH)
-            return new CommandDataImpl(commandType, name);
+        {
+            CommandDataImpl data = new CommandDataImpl(commandType, name);
+            if (!object.isNull("default_member_permissions"))
+            {
+                long defaultPermissions = object.getLong("default_member_permissions");
+                data.setDefaultPermissions(defaultPermissions == 0 ? DefaultMemberPermissions.DISABLED : DefaultMemberPermissions.enabledFor(defaultPermissions));
+            }
+
+            data.setGuildOnly(!object.getBoolean("dm_permission", true));
+            data.setNameLocalizations(LocalizationUtils.mapFromProperty(object, "name_localizations"));
+            data.setDescriptionLocalizations(LocalizationUtils.mapFromProperty(object, "description_localizations"));
+            return data;
+        }
 
         return SlashCommandData.fromData(object);
     }

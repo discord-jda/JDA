@@ -17,6 +17,7 @@ package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.annotations.Incubating;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
+import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
@@ -105,7 +106,7 @@ public interface Activity
      * @return Possibly-null {@link Emoji} used for custom status
      */
     @Nullable
-    Emoji getEmoji();
+    EmojiUnion getEmoji();
 
     /**
      * Creates a new Activity instance with the specified name.

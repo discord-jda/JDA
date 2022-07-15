@@ -17,13 +17,15 @@
 package net.dv8tion.jda.internal.entities.emoji;
 
 import net.dv8tion.jda.api.entities.emoji.CustomEmoji;
+import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
+import net.dv8tion.jda.api.entities.emoji.UnicodeEmoji;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.Nonnull;
 import java.util.Objects;
 
-public class CustomEmojiImpl implements CustomEmoji
+public class CustomEmojiImpl implements CustomEmoji, EmojiUnion
 {
     private final String name;
     private final long id;
@@ -105,5 +107,19 @@ public class CustomEmojiImpl implements CustomEmoji
     public String toString()
     {
         return "CustomEmoji:" + name + "(" + id + ")";
+    }
+
+    @Nonnull
+    @Override
+    public UnicodeEmoji asUnicode()
+    {
+        throw new IllegalStateException("Cannot convert CustomEmoji into UnicodeEmoji!");
+    }
+
+    @Nonnull
+    @Override
+    public CustomEmoji asCustom()
+    {
+        return this;
     }
 }

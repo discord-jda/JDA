@@ -19,10 +19,10 @@ package net.dv8tion.jda.internal.requests.restaction;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.entities.sticker.GuildSticker;
 import net.dv8tion.jda.api.entities.sticker.StickerSnowflake;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
-import net.dv8tion.jda.api.exceptions.MissingAccessException;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.requests.Request;
@@ -147,9 +147,9 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
 
     @Nonnull
     @Override
-    public MessageChannel getChannel()
+    public MessageChannelUnion getChannel()
     {
-        return channel;
+        return (MessageChannelUnion) channel;
     }
 
     @Override
@@ -617,12 +617,11 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
         if (!channel.getType().isGuild())
             return;
 
-        if (!(channel instanceof IPermissionContainer))
+        if (!(channel instanceof GuildChannel))
             return;
 
-        IPermissionContainer gc = (IPermissionContainer) channel;
-        if (!gc.getGuild().getSelfMember().hasAccess(gc))
-            throw new MissingAccessException(gc, Permission.VIEW_CHANNEL);
+        GuildChannel gc = (GuildChannel) channel;
+        Checks.checkAccess(gc.getGuild().getSelfMember(), gc);
         if (!hasPermission(perm))
             throw new InsufficientPermissionException(gc, perm);
     }
