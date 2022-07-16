@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.internal.entities;
 
+import gnu.trove.map.TLongObjectMap;
+import gnu.trove.map.hash.TLongObjectHashMap;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.audit.ActionType;
@@ -27,7 +29,6 @@ import net.dv8tion.jda.api.entities.Guild.NotificationLevel;
 import net.dv8tion.jda.api.entities.Guild.Timeout;
 import net.dv8tion.jda.api.entities.Guild.VerificationLevel;
 import net.dv8tion.jda.api.entities.MessageEmbed.*;
-import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import net.dv8tion.jda.api.entities.sticker.*;
@@ -50,7 +51,9 @@ import net.dv8tion.jda.api.utils.cache.CacheView;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
+import net.dv8tion.jda.internal.entities.emoji.CustomEmojiImpl;
 import net.dv8tion.jda.internal.entities.emoji.RichCustomEmojiImpl;
+import net.dv8tion.jda.internal.entities.emoji.UnicodeEmojiImpl;
 import net.dv8tion.jda.internal.entities.mixin.channel.attribute.IPermissionContainerMixin;
 import net.dv8tion.jda.internal.entities.mixin.channel.middleman.AudioChannelMixin;
 import net.dv8tion.jda.internal.entities.sticker.*;
@@ -60,7 +63,12 @@ import net.dv8tion.jda.internal.utils.JDALogger;
 import net.dv8tion.jda.internal.utils.UnlockHook;
 import net.dv8tion.jda.internal.utils.cache.MemberCacheViewImpl;
 import net.dv8tion.jda.internal.utils.cache.SnowflakeCacheViewImpl;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.map.CaseInsensitiveMap;
+import org.slf4j.Logger;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
@@ -70,16 +78,6 @@ import java.util.function.Function;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.map.CaseInsensitiveMap;
-import org.slf4j.Logger;
-
-import gnu.trove.map.TLongObjectMap;
-import gnu.trove.map.hash.TLongObjectHashMap;
 
 public class EntityBuilder
 {
@@ -147,6 +145,15 @@ public class EntityBuilder
     public static Activity createActivity(String name, String url, Activity.ActivityType type)
     {
         return new ActivityImpl(name, url, type);
+    }
+
+    // Unlike Emoji.fromData this does not check for null or empty
+    public static EmojiUnion createEmoji(DataObject emoji)
+    {
+        if (emoji.isNull("id"))
+            return new UnicodeEmojiImpl(emoji.getString("name"));
+        else // name can be empty in some cases where discord fails to properly load the emoji
+            return new CustomEmojiImpl(emoji.getString("name", ""), emoji.getUnsignedLong("id"), emoji.getBoolean("animated"));
     }
 
     private void createGuildEmojiPass(GuildImpl guildObj, DataArray array)
@@ -837,7 +844,7 @@ public class EntityBuilder
 
         EmojiUnion emoji = null;
         if (!gameJson.isNull("emoji"))
-            emoji = Emoji.fromData(gameJson.getObject("emoji"));
+            emoji = createEmoji(gameJson.getObject("emoji"));
 
         if (type == Activity.ActivityType.CUSTOM_STATUS)
         {
@@ -1599,7 +1606,7 @@ public class EntityBuilder
         DataObject emoji = obj.getObject("emoji");
         final int count = obj.getInt("count", -1);
         final boolean me = obj.getBoolean("me");
-        EmojiUnion emojiObj = Emoji.fromData(emoji);
+        EmojiUnion emojiObj = createEmoji(emoji);
 
         return new MessageReaction(chan, emojiObj, id, me, count);
     }
