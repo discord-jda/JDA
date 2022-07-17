@@ -45,6 +45,7 @@ import net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationActi
 import net.dv8tion.jda.api.utils.AttachmentOption;
 import net.dv8tion.jda.api.utils.AttachmentProxy;
 import net.dv8tion.jda.internal.JDAImpl;
+import net.dv8tion.jda.internal.entities.ReceivedMessage;
 import net.dv8tion.jda.internal.requests.FunctionalCallback;
 import net.dv8tion.jda.internal.requests.Requester;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -247,6 +248,14 @@ public interface Message extends ISnowflake, Formattable
             Pattern.CASE_INSENSITIVE);
 
     /**
+     * Suppresses the warning for missing the {@link net.dv8tion.jda.api.requests.GatewayIntent#MESSAGE_CONTENT MESSAGE_CONTENT} intent and using one of the dependent getters.
+     */
+    static void suppressContentIntentWarning()
+    {
+        ReceivedMessage.didContentIntentWarning = true;
+    }
+
+    /**
      * Returns the {@link MessageReference} for this Message. This will be null if this Message has no reference.
      *
      * <p>You can access all the information about a reference through this object.
@@ -378,6 +387,8 @@ public interface Message extends ISnowflake, Formattable
      *
      * <p>If you want the actual Content (mentions as {@literal <@id>}), use {@link #getContentRaw()} instead
      *
+     * <p><b>Requires {@link net.dv8tion.jda.api.requests.GatewayIntent#MESSAGE_CONTENT GatewayIntent.MESSAGE_CONTENT}</b>
+     *
      * @throws UnsupportedOperationException
      *         If this is a Data Message (output of {@link MessageBuilder MessageBuilder})
      *
@@ -392,6 +403,8 @@ public interface Message extends ISnowflake, Formattable
      * received from Discord and can contain mentions specified by
      * <a href="https://discord.com/developers/docs/resources/channel#message-formatting" target="_blank">Discord's Message Formatting</a>.
      *
+     * <p><b>Requires {@link net.dv8tion.jda.api.requests.GatewayIntent#MESSAGE_CONTENT GatewayIntent.MESSAGE_CONTENT}</b>
+     *
      * @return The raw textual content of the message, containing unresolved Discord message formatting.
      */
     @Nonnull
@@ -401,6 +414,8 @@ public interface Message extends ISnowflake, Formattable
      * Gets the textual content of this message using {@link #getContentDisplay()} and then strips it of markdown characters
      * like {@literal *, **, __, ~~, ||} that provide text formatting. Any characters that match these but are not being used
      * for formatting are escaped to prevent possible formatting.
+     *
+     * <p><b>Requires {@link net.dv8tion.jda.api.requests.GatewayIntent#MESSAGE_CONTENT GatewayIntent.MESSAGE_CONTENT}</b>
      *
      * @throws UnsupportedOperationException
      *         If this is a Data Message (output of {@link MessageBuilder MessageBuilder})
@@ -563,6 +578,8 @@ public interface Message extends ISnowflake, Formattable
      * An immutable list of {@link net.dv8tion.jda.api.entities.Message.Attachment Attachments} that are attached to this message.
      * <br>Most likely this will only ever be 1 {@link net.dv8tion.jda.api.entities.Message.Attachment Attachment} at most.
      *
+     * <p><b>Requires {@link net.dv8tion.jda.api.requests.GatewayIntent#MESSAGE_CONTENT GatewayIntent.MESSAGE_CONTENT}</b>
+     *
      * @throws UnsupportedOperationException
      *         If this is a Data Message (output of {@link MessageBuilder MessageBuilder})
      *
@@ -572,8 +589,9 @@ public interface Message extends ISnowflake, Formattable
     List<Attachment> getAttachments();
 
     /**
-     * An immutable list of {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbeds} that are part of this
-     * Message.
+     * An immutable list of {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbeds} that are part of this Message.
+     *
+     * <p><b>Requires {@link net.dv8tion.jda.api.requests.GatewayIntent#MESSAGE_CONTENT GatewayIntent.MESSAGE_CONTENT}</b>
      *
      * @return Immutable list of all given MessageEmbeds.
      */
@@ -583,6 +601,8 @@ public interface Message extends ISnowflake, Formattable
     /**
      * Rows of interactive components such as {@link Button Buttons}.
      * <br>You can use {@link MessageAction#setActionRows(ActionRow...)} to update these.
+     *
+     * <p><b>Requires {@link net.dv8tion.jda.api.requests.GatewayIntent#MESSAGE_CONTENT GatewayIntent.MESSAGE_CONTENT}</b>
      *
      * @return Immutable {@link List} of {@link ActionRow}
      *
@@ -594,6 +614,8 @@ public interface Message extends ISnowflake, Formattable
 
     /**
      * All {@link Button Buttons} attached to this message.
+     *
+     * <p><b>Requires {@link net.dv8tion.jda.api.requests.GatewayIntent#MESSAGE_CONTENT GatewayIntent.MESSAGE_CONTENT}</b>
      *
      * @return Immutable {@link List} of {@link Button Buttons}
      */
@@ -608,6 +630,8 @@ public interface Message extends ISnowflake, Formattable
 
     /**
      * Gets the {@link Button} with the specified ID.
+     *
+     * <p><b>Requires {@link net.dv8tion.jda.api.requests.GatewayIntent#MESSAGE_CONTENT GatewayIntent.MESSAGE_CONTENT}</b>
      *
      * @param  id
      *         The id of the button
@@ -628,6 +652,8 @@ public interface Message extends ISnowflake, Formattable
 
     /**
      * All {@link Button Buttons} with the specified label attached to this message.
+     *
+     * <p><b>Requires {@link net.dv8tion.jda.api.requests.GatewayIntent#MESSAGE_CONTENT GatewayIntent.MESSAGE_CONTENT}</b>
      *
      * @param  label
      *         The button label
