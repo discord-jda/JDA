@@ -16,10 +16,10 @@
 
 package net.dv8tion.jda.api.events.user.update;
 
+import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.internal.JDAImpl;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -48,7 +48,7 @@ public class UserUpdateActivityOrderEvent extends GenericUserUpdateEvent<List<Ac
 
     private final Member member;
 
-    public UserUpdateActivityOrderEvent(@Nonnull JDAImpl api, long responseNumber, @Nonnull List<Activity> previous, @Nonnull Member member)
+    public UserUpdateActivityOrderEvent(@Nonnull JDA api, long responseNumber, @Nonnull List<Activity> previous, @Nonnull Member member)
     {
         super(api, responseNumber, member.getUser(), previous, member.getActivities(), IDENTIFIER);
         this.member = member;

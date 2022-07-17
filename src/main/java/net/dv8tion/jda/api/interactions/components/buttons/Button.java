@@ -17,6 +17,7 @@
 package net.dv8tion.jda.api.interactions.components.buttons;
 
 import net.dv8tion.jda.api.entities.emoji.Emoji;
+import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.interactions.components.ActionComponent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
@@ -121,7 +122,7 @@ public interface Button extends ActionComponent
      * @return {@link Emoji} for this button
      */
     @Nullable
-    Emoji getEmoji();
+    EmojiUnion getEmoji();
 
     @Nonnull
     @CheckReturnValue

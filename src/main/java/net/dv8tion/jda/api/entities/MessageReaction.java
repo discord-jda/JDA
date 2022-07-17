@@ -18,7 +18,10 @@ package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.channel.unions.GuildMessageChannelUnion;
+import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
+import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.exceptions.PermissionException;
 import net.dv8tion.jda.api.requests.RestAction;
@@ -31,7 +34,6 @@ import net.dv8tion.jda.internal.utils.EncodingUtil;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Objects;
 
 /**
@@ -45,7 +47,7 @@ import java.util.Objects;
 public class MessageReaction
 {
     private final MessageChannel channel;
-    private final Emoji emoji;
+    private final EmojiUnion emoji;
     private final long messageId;
     private final boolean self;
     private final int count;
@@ -64,7 +66,7 @@ public class MessageReaction
      * @param  count
      *         The amount of people that reacted with this Reaction
      */
-    public MessageReaction(@Nonnull MessageChannel channel, @Nonnull Emoji emoji, long messageId, boolean self, int count)
+    public MessageReaction(@Nonnull MessageChannel channel, @Nonnull EmojiUnion emoji, long messageId, boolean self, int count)
     {
         this.channel = channel;
         this.emoji = emoji;
@@ -159,39 +161,16 @@ public class MessageReaction
 
     /**
      * The {@link net.dv8tion.jda.api.entities.Guild Guild} this Reaction was used in.
-     * This will return null if the channel this Reaction was used in is not part of a Guild.
      *
-     * @return {@link net.dv8tion.jda.api.entities.Guild Guild} this Reaction was used in, or {@code null}
+     * @throws IllegalStateException
+     *         If {@link #getChannel()} is not a guild channel
+     *
+     * @return {@link net.dv8tion.jda.api.entities.Guild Guild} this Reaction was used in
      */
-    @Nullable
+    @Nonnull
     public Guild getGuild()
     {
-        GuildMessageChannel channel = getGuildChannel();
-        return channel != null ? channel.getGuild() : null;
-    }
-
-    /**
-     * The {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} this Reaction was used in
-     * or {@code null} if this is not from type {@link net.dv8tion.jda.api.entities.ChannelType#TEXT ChannelType.TEXT}!
-     *
-     * @return The {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} or {@code null}
-     */
-    @Nullable
-    public TextChannel getTextChannel()
-    {
-        return getChannel() instanceof TextChannel ? (TextChannel) getChannel() : null;
-    }
-
-    /**
-     * The {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel} this Reaction was used in
-     * or {@code null} if this is not from type {@link net.dv8tion.jda.api.entities.ChannelType#PRIVATE ChannelType.PRIVATE}!
-     *
-     * @return The {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel} or {@code null}
-     */
-    @Nullable
-    public PrivateChannel getPrivateChannel()
-    {
-        return getChannel() instanceof PrivateChannel ? (PrivateChannel) getChannel() : null;
+        return getGuildChannel().getGuild();
     }
 
     /**
@@ -201,21 +180,23 @@ public class MessageReaction
      * @return The channel this Reaction was used in
      */
     @Nonnull
-    public MessageChannel getChannel()
+    public MessageChannelUnion getChannel()
     {
-        return channel;
+        return (MessageChannelUnion) channel;
     }
 
     /**
-     * The {@link net.dv8tion.jda.api.entities.GuildMessageChannel GuildMessageChannel}
-     * this Reaction was used in.
+     * The {@link net.dv8tion.jda.api.entities.GuildMessageChannel channel} this Reaction was used in.
      *
-     * @return The channel this Reaction was used in or null if it wasn't used in a Guild
+     * @throws IllegalStateException
+     *          If {@link #getChannel()} is not a guild channel
+     *
+     * @return The guild channel this Reaction was used in
      */
-    @Nullable
-    public GuildMessageChannel getGuildChannel()
+    @Nonnull
+    public GuildMessageChannelUnion getGuildChannel()
     {
-        return getChannel() instanceof GuildMessageChannel ? (GuildMessageChannel) getChannel() : null;
+        return (GuildMessageChannelUnion) getChannel().asGuildMessageChannel();
     }
 
     /**
@@ -225,7 +206,7 @@ public class MessageReaction
      * @return The final instance of this Reaction's Emoji
      */
     @Nonnull
-    public Emoji getEmoji()
+    public EmojiUnion getEmoji()
     {
         return emoji;
     }
@@ -348,9 +329,9 @@ public class MessageReaction
             if (!channel.getType().isGuild())
                 throw new PermissionException("Unable to remove Reaction of other user in non-guild channels!");
 
-            IPermissionContainer permChannel = getGuildChannel().getPermissionContainer();
-            if (!permChannel.getGuild().getSelfMember().hasPermission(permChannel, Permission.MESSAGE_MANAGE))
-                throw new InsufficientPermissionException(permChannel, Permission.MESSAGE_MANAGE);
+            GuildChannel guildChannel = (GuildChannel) channel;
+            if (!guildChannel.getGuild().getSelfMember().hasPermission(guildChannel, Permission.MESSAGE_MANAGE))
+                throw new InsufficientPermissionException(guildChannel, Permission.MESSAGE_MANAGE);
         }
 
         String code = EncodingUtil.encodeReaction(emoji.getAsReactionCode());

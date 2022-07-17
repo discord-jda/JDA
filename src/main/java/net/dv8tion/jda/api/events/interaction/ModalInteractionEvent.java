@@ -17,6 +17,7 @@
 package net.dv8tion.jda.api.events.interaction;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.ModalInteraction;
 import net.dv8tion.jda.api.interactions.components.Modal;
@@ -86,5 +87,12 @@ public class ModalInteractionEvent extends GenericInteractionCreateEvent impleme
     public MessageEditCallbackAction deferEdit()
     {
         return interaction.deferEdit();
+    }
+
+    @Nonnull
+    @Override
+    public MessageChannelUnion getChannel()
+    {
+        return interaction.getChannel();
     }
 }

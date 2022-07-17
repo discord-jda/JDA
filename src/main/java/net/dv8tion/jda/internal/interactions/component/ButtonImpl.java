@@ -17,9 +17,11 @@
 package net.dv8tion.jda.internal.interactions.component;
 
 import net.dv8tion.jda.api.entities.emoji.Emoji;
+import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
 import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.internal.entities.EntityBuilder;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -32,7 +34,7 @@ public class ButtonImpl implements Button
     private final ButtonStyle style;
     private final String url;
     private final boolean disabled;
-    private final Emoji emoji;
+    private final EmojiUnion emoji;
 
     public ButtonImpl(DataObject data)
     {
@@ -42,7 +44,7 @@ public class ButtonImpl implements Button
             ButtonStyle.fromKey(data.getInt("style")),
             data.getString("url", null),
             data.getBoolean("disabled"),
-            data.optObject("emoji").map(Emoji::fromData).orElse(null));
+            data.optObject("emoji").map(EntityBuilder::createEmoji).orElse(null));
     }
 
     public ButtonImpl(String id, String label, ButtonStyle style, boolean disabled, Emoji emoji)
@@ -57,7 +59,7 @@ public class ButtonImpl implements Button
         this.style = style;
         this.url = url;  // max length 512
         this.disabled = disabled;
-        this.emoji = emoji;
+        this.emoji = (EmojiUnion) emoji;
     }
 
     @Nonnull
@@ -97,7 +99,7 @@ public class ButtonImpl implements Button
 
     @Nullable
     @Override
-    public Emoji getEmoji()
+    public EmojiUnion getEmoji()
     {
         return emoji;
     }

@@ -18,6 +18,7 @@ package net.dv8tion.jda.api.events.guild.override;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.channel.unions.IPermissionContainerUnion;
 import net.dv8tion.jda.api.events.guild.GenericGuildEvent;
 
 import javax.annotation.Nonnull;
@@ -31,10 +32,10 @@ import javax.annotation.Nullable;
  */
 public class GenericPermissionOverrideEvent extends GenericGuildEvent
 {
-    protected final GuildChannel channel;
+    protected final IPermissionContainer channel;
     protected final PermissionOverride override;
 
-    public GenericPermissionOverrideEvent(@Nonnull JDA api, long responseNumber, @Nonnull GuildChannel channel, @Nonnull PermissionOverride override)
+    public GenericPermissionOverrideEvent(@Nonnull JDA api, long responseNumber, @Nonnull IPermissionContainer channel, @Nonnull PermissionOverride override)
     {
         super(api, responseNumber, channel.getGuild());
         this.channel = channel;
@@ -53,92 +54,14 @@ public class GenericPermissionOverrideEvent extends GenericGuildEvent
     }
 
     /**
-     * The {@link GuildChannel} this override belongs to.
+     * The {@link IPermissionContainer guild channel} this override belongs to.
      *
-     * @return The {@link GuildChannel}
+     * @return The {@link IPermissionContainer channel}
      */
     @Nonnull
-    //TODO-v5: Make this IPermissionContainer?
-    public GuildChannel getChannel()
+    public IPermissionContainerUnion getChannel()
     {
-        return channel;
-    }
-
-    /**
-     * The {@link TextChannel} this override belongs to.
-     *
-     * @throws IllegalStateException
-     *         If the override does not belong to a TextChannel
-     *
-     * @return {@link TextChannel}
-     *
-     * @see    #getChannel()
-     * @see    #getChannelType()
-     */
-    @Nonnull
-    public TextChannel getTextChannel()
-    {
-        if (channel instanceof TextChannel)
-            return (TextChannel) channel;
-        throw new IllegalStateException("This override is for a channel of type " + getChannelType());
-    }
-
-    /**
-     * The {@link NewsChannel} this override belongs to.
-     *
-     * @throws IllegalStateException
-     *         If the override does not belong to a NewsChannel
-     *
-     * @return {@link NewsChannel}
-     *
-     * @see    #getChannel()
-     * @see    #getChannelType()
-     */
-    @Nonnull
-    public NewsChannel getNewsChannel()
-    {
-        if (channel instanceof NewsChannel)
-            return (NewsChannel) channel;
-        throw new IllegalStateException("This override is for a channel of type " + getChannelType());
-    }
-
-    /**
-     * The {@link VoiceChannel} this override belongs to.
-     *
-     * @throws IllegalStateException
-     *         If the override does not belong to a VoiceChannel
-     *
-     * @return {@link VoiceChannel}
-     *
-     * @see    #getChannel()
-     * @see    #getChannelType()
-     */
-    @Nonnull
-    public VoiceChannel getVoiceChannel()
-    {
-        if (channel instanceof VoiceChannel)
-            return (VoiceChannel) channel;
-        throw new IllegalStateException("This override is for a channel of type " + getChannelType());
-    }
-
-    /**
-     * The {@link Category} this override belongs to.
-     * <br>Note: This is not the same as {@code getChannel().getParentCategory()}!
-     *
-     * @throws IllegalStateException
-     *         If the override does not belong to a Category
-     *
-     * @return {@link Category}
-     *
-     * @see    #getChannel()
-     * @see    #getChannelType()
-     */
-    @Nonnull
-    public Category getCategory()
-    {
-        if (channel instanceof Category)
-            return (Category) channel;
-        throw new IllegalStateException("This override is for a channel of type " + getChannelType());
+        return (IPermissionContainerUnion) channel;
     }
 
     /**

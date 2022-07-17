@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.internal.entities.mixin.channel.middleman;
+package net.dv8tion.jda.internal.entities.mixin.channel.attribute;
 
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.BaseGuildMessageChannel;
-import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.IWebhookContainer;
 import net.dv8tion.jda.api.entities.Webhook;
+import net.dv8tion.jda.api.entities.channel.unions.IWebhookContainerUnion;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.WebhookAction;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
-import net.dv8tion.jda.internal.entities.mixin.channel.attribute.*;
+import net.dv8tion.jda.internal.entities.mixin.channel.middleman.GuildChannelMixin;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
@@ -39,25 +39,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public interface BaseGuildMessageChannelMixin<T extends BaseGuildMessageChannelMixin<T>> extends
-        BaseGuildMessageChannel,
-        GuildMessageChannelMixin<T>,
-        IThreadContainerMixin<T>,
-        ICategorizableChannelMixin<T>,
-        IPositionableChannelMixin<T>,
-        IPermissionContainerMixin<T>,
-        IInviteContainerMixin<T>
+public interface IWebhookContainerMixin<T extends IWebhookContainerMixin<T>> extends
+        IWebhookContainer,
+        IWebhookContainerUnion,
+        GuildChannelMixin<T>
 {
     // ---- Default implementations of interface ----
-    @Override
-    default boolean canTalk(@Nonnull Member member)
-    {
-        if (!getGuild().equals(member.getGuild()))
-            throw new IllegalArgumentException("Provided Member is not from the Guild that this NewsChannel is part of.");
-
-        return member.hasPermission(this, Permission.VIEW_CHANNEL, Permission.MESSAGE_SEND);
-    }
-
     @Nonnull
     @Override
     default RestAction<List<Webhook>> retrieveWebhooks()
@@ -113,9 +100,4 @@ public interface BaseGuildMessageChannelMixin<T extends BaseGuildMessageChannelM
         Route.CompiledRoute route = Route.Webhooks.DELETE_WEBHOOK.compile(id);
         return new AuditableRestActionImpl<>(getJDA(), route);
     }
-
-    // ---- State Accessors ----
-    T setTopic(String topic);
-
-    T setNSFW(boolean nsfw);
 }

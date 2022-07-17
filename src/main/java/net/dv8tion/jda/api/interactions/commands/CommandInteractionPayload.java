@@ -152,7 +152,7 @@ public interface CommandInteractionPayload extends Interaction
             switch (o.getType())
             {
             case CHANNEL:
-                builder.append("#").append(o.getAsGuildChannel().getName());
+                builder.append("#").append(o.getAsChannel().getName());
                 break;
             case USER:
                 builder.append("@").append(o.getAsUser().getName());

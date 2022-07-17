@@ -18,7 +18,7 @@ package net.dv8tion.jda.api.events.interaction.component;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.events.interaction.GenericInteractionCreateEvent;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.components.ActionComponent;
@@ -58,9 +58,9 @@ public class GenericComponentInteractionCreateEvent extends GenericInteractionCr
 
     @Nonnull
     @Override
-    public MessageChannel getChannel()
+    public MessageChannelUnion getChannel()
     {
-        return interaction.getChannel();
+        return (MessageChannelUnion) interaction.getChannel();
     }
 
     @Nonnull
