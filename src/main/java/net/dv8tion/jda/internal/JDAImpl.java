@@ -26,6 +26,8 @@ import net.dv8tion.jda.api.audio.factory.DefaultSendFactory;
 import net.dv8tion.jda.api.audio.factory.IAudioSendFactory;
 import net.dv8tion.jda.api.audio.hooks.ConnectionStatus;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.channel.Channel;
+import net.dv8tion.jda.api.entities.channel.concrete.*;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import net.dv8tion.jda.api.entities.sticker.StickerPack;
 import net.dv8tion.jda.api.entities.sticker.StickerSnowflake;

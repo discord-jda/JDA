@@ -16,8 +16,8 @@
 
 package net.dv8tion.jda.internal.entities;
 
-import net.dv8tion.jda.api.entities.GuildChannel;
-import net.dv8tion.jda.api.entities.IPositionableChannel;
+import net.dv8tion.jda.api.entities.channel.attribute.IPositionableChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.internal.entities.mixin.channel.middleman.GuildChannelMixin;
 import net.dv8tion.jda.internal.utils.Checks;
 

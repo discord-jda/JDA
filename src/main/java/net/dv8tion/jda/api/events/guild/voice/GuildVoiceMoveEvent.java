@@ -17,13 +17,13 @@
 package net.dv8tion.jda.api.events.guild.voice;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.AudioChannel;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
 
 import javax.annotation.Nonnull;
 
 /**
- * Indicates that a {@link net.dv8tion.jda.api.entities.Member Member} moves between {@link net.dv8tion.jda.api.entities.AudioChannel AudioChannels}.
+ * Indicates that a {@link net.dv8tion.jda.api.entities.Member Member} moves between {@link net.dv8tion.jda.api.entities.channel.middleman.AudioChannel AudioChannels}.
  *
  * <p><b>When the {@link net.dv8tion.jda.api.entities.Member Member} is leaving a {@link net.dv8tion.jda.api.events.guild.voice.GuildVoiceLeaveEvent GuildVoiceLeaveEvent} is fired instead</b>
  *

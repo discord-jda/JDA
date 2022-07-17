@@ -15,9 +15,9 @@
  */
 package net.dv8tion.jda.internal.handle;
 
-import net.dv8tion.jda.api.entities.AudioChannel;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceLeaveEvent;
 import net.dv8tion.jda.api.utils.cache.CacheView;

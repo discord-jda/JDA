@@ -16,7 +16,7 @@
 
 package net.dv8tion.jda.internal.entities.mixin.channel.attribute;
 
-import net.dv8tion.jda.api.entities.IPositionableChannel;
+import net.dv8tion.jda.api.entities.channel.attribute.IPositionableChannel;
 import net.dv8tion.jda.internal.entities.mixin.channel.middleman.GuildChannelMixin;
 
 public interface IPositionableChannelMixin<T extends IPositionableChannelMixin<T>> extends IPositionableChannel, GuildChannelMixin<T>

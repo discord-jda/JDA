@@ -18,8 +18,8 @@ package net.dv8tion.jda.api.requests.restaction;
 
 import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.entities.sticker.GuildSticker;
 import net.dv8tion.jda.api.entities.sticker.Sticker;
@@ -52,7 +52,7 @@ import java.util.stream.Collectors;
  * Extension of a default {@link net.dv8tion.jda.api.requests.RestAction RestAction}
  * that allows setting message information before sending!
  *
- * <p>This is available as return type of all sendMessage/sendFile methods in {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel}.
+ * <p>This is available as return type of all sendMessage/sendFile methods in {@link net.dv8tion.jda.api.entities.channel.middleman.MessageChannel MessageChannel}.
  *
  * <p>When updating a Message, unset fields will be ignored by default. To override existing fields with no value (remove content)
  * you can use {@link #override(boolean) override(true)}. Setting this to {@code true} will cause all fields to be considered
@@ -85,14 +85,14 @@ import java.util.stream.Collectors;
  * @see    Message#editMessage(CharSequence)
  * @see    Message#editMessageEmbeds(MessageEmbed...)
  * @see    Message#editMessageFormat(String, Object...)
- * @see    net.dv8tion.jda.api.entities.MessageChannel#sendMessage(Message)
- * @see    net.dv8tion.jda.api.entities.MessageChannel#sendMessage(CharSequence)
- * @see    net.dv8tion.jda.api.entities.MessageChannel#sendMessageEmbeds(MessageEmbed, MessageEmbed...)
- * @see    net.dv8tion.jda.api.entities.MessageChannel#sendMessageFormat(String, Object...)
- * @see    net.dv8tion.jda.api.entities.MessageChannel#sendFile(File, AttachmentOption...)
- * @see    net.dv8tion.jda.api.entities.MessageChannel#sendFile(File, String, AttachmentOption...)
- * @see    net.dv8tion.jda.api.entities.MessageChannel#sendFile(InputStream, String, AttachmentOption...)
- * @see    net.dv8tion.jda.api.entities.MessageChannel#sendFile(byte[], String, AttachmentOption...)
+ * @see    net.dv8tion.jda.api.entities.channel.middleman.MessageChannel#sendMessage(Message)
+ * @see    net.dv8tion.jda.api.entities.channel.middleman.MessageChannel#sendMessage(CharSequence)
+ * @see    net.dv8tion.jda.api.entities.channel.middleman.MessageChannel#sendMessageEmbeds(MessageEmbed, MessageEmbed...)
+ * @see    net.dv8tion.jda.api.entities.channel.middleman.MessageChannel#sendMessageFormat(String, Object...)
+ * @see    net.dv8tion.jda.api.entities.channel.middleman.MessageChannel#sendFile(File, AttachmentOption...)
+ * @see    net.dv8tion.jda.api.entities.channel.middleman.MessageChannel#sendFile(File, String, AttachmentOption...)
+ * @see    net.dv8tion.jda.api.entities.channel.middleman.MessageChannel#sendFile(InputStream, String, AttachmentOption...)
+ * @see    net.dv8tion.jda.api.entities.channel.middleman.MessageChannel#sendFile(byte[], String, AttachmentOption...)
  */
 public interface MessageAction extends RestAction<Message>, Appendable, AllowedMentions<MessageAction>
 {

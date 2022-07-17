@@ -16,12 +16,12 @@
 package net.dv8tion.jda.api.events.message;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 
 import javax.annotation.Nonnull;
 
 /**
- * Indicates that a Message was deleted in a {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel}.
+ * Indicates that a Message was deleted in a {@link net.dv8tion.jda.api.entities.channel.middleman.MessageChannel MessageChannel}.
  * 
  * <p>Can be used to detect when a Message is deleted. No matter if private or guild.
  *

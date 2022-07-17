@@ -16,8 +16,8 @@
 
 package net.dv8tion.jda.internal.managers;
 
-import net.dv8tion.jda.api.entities.AudioChannel;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
 import net.dv8tion.jda.api.managers.DirectAudioController;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.requests.WebSocketClient;

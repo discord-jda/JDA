@@ -17,7 +17,7 @@
 package net.dv8tion.jda.api.managers.channel;
 
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.GuildChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.managers.Manager;
 
 import javax.annotation.CheckReturnValue;

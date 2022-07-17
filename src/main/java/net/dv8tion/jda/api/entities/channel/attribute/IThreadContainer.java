@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.entities;
+package net.dv8tion.jda.api.entities.channel.attribute;
 
+import net.dv8tion.jda.api.entities.channel.ChannelType;
+import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.requests.restaction.ThreadChannelAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.ThreadChannelPaginationAction;
@@ -49,7 +52,7 @@ public interface IThreadContainer extends GuildChannel, IPermissionContainer
      * Creates a new, public {@link ThreadChannel} with the parent channel being this {@link IThreadContainer}.
      * This requires the bot to have the {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL} and {@link net.dv8tion.jda.api.Permission#CREATE_PUBLIC_THREADS} permissions.
      *
-     * The resulting {@link net.dv8tion.jda.api.entities.ThreadChannel ThreadChannel} may be either one of:
+     * The resulting {@link ThreadChannel ThreadChannel} may be either one of:
      * <ul>
      *     <li>{@link ChannelType#GUILD_PUBLIC_THREAD}</li>
      *     <li>{@link ChannelType#GUILD_NEWS_THREAD}</li>
@@ -85,7 +88,7 @@ public interface IThreadContainer extends GuildChannel, IPermissionContainer
      * Creates a new {@link ThreadChannel} with the parent channel being this {@link IThreadContainer}.
      * This requires the bot to have the {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL} and {@link net.dv8tion.jda.api.Permission#CREATE_PUBLIC_THREADS} permissions.
      *
-     * The resulting {@link net.dv8tion.jda.api.entities.ThreadChannel ThreadChannel} may be one of:
+     * The resulting {@link ThreadChannel ThreadChannel} may be one of:
      * <ul>
      *     <li>{@link ChannelType#GUILD_PUBLIC_THREAD}</li>
      *     <li>{@link ChannelType#GUILD_NEWS_THREAD}</li>
@@ -129,7 +132,7 @@ public interface IThreadContainer extends GuildChannel, IPermissionContainer
      * This ThreadChannel will be spawned from the given messageID, and will consequently share its ID with the message.
      * This requires the bot to have {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL} and {@link net.dv8tion.jda.api.Permission#CREATE_PUBLIC_THREADS} permissions.
      *
-     * The resulting {@link net.dv8tion.jda.api.entities.ThreadChannel ThreadChannel} may be one of:
+     * The resulting {@link ThreadChannel ThreadChannel} may be one of:
      * <ul>
      *     <li>{@link ChannelType#GUILD_PUBLIC_THREAD}</li>
      *     <li>{@link ChannelType#GUILD_NEWS_THREAD}</li>
@@ -169,7 +172,7 @@ public interface IThreadContainer extends GuildChannel, IPermissionContainer
      * This ThreadChannel will be spawned from the given messageID, and will consequently share its ID with the message.
      * This requires the bot to have {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL} and {@link net.dv8tion.jda.api.Permission#CREATE_PUBLIC_THREADS} permissions.
      *
-     * The resulting {@link net.dv8tion.jda.api.entities.ThreadChannel ThreadChannel} may be one of:
+     * The resulting {@link ThreadChannel ThreadChannel} may be one of:
      * <ul>
      *     <li>{@link ChannelType#GUILD_PUBLIC_THREAD}</li>
      *     <li>{@link ChannelType#GUILD_NEWS_THREAD}</li>

@@ -17,8 +17,8 @@
 package net.dv8tion.jda.internal.entities.mixin.channel.attribute;
 
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.IWebhookContainer;
 import net.dv8tion.jda.api.entities.Webhook;
+import net.dv8tion.jda.api.entities.channel.attribute.IWebhookContainer;
 import net.dv8tion.jda.api.entities.channel.unions.IWebhookContainerUnion;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;

@@ -100,7 +100,7 @@ public interface Role extends IMentionable, IPermissionHolder, Comparable<Role>
 
     /**
      * The {@code long} representation of the literal permissions that this {@link net.dv8tion.jda.api.entities.Role Role} has.
-     * <br><b>NOTE:</b> these do not necessarily represent the permissions this role will have in a {@link GuildChannel GuildChannel}.
+     * <br><b>NOTE:</b> these do not necessarily represent the permissions this role will have in a {@link net.dv8tion.jda.api.entities.channel.middleman.GuildChannel GuildChannel}.
      *
      * @return Never-negative long containing offset permissions of this role.
      */

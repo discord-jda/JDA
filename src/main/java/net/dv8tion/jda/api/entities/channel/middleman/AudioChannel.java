@@ -14,9 +14,13 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.entities;
+package net.dv8tion.jda.api.entities.channel.middleman;
 
 import net.dv8tion.jda.api.Region;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.channel.attribute.IMemberContainer;
+import net.dv8tion.jda.api.entities.channel.concrete.StageChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import net.dv8tion.jda.api.managers.channel.middleman.AudioChannelManager;
 
 import javax.annotation.Nonnull;

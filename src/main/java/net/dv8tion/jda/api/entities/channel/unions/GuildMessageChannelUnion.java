@@ -16,7 +16,15 @@
 
 package net.dv8tion.jda.api.entities.channel.unions;
 
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
+import net.dv8tion.jda.api.entities.channel.attribute.IThreadContainer;
+import net.dv8tion.jda.api.entities.channel.concrete.NewsChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.StandardGuildChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.StandardGuildMessageChannel;
 
 import javax.annotation.Nonnull;
 
@@ -123,7 +131,7 @@ public interface GuildMessageChannelUnion extends GuildMessageChannel
     VoiceChannel asVoiceChannel();
 
     /**
-     * Casts this union to a {@link IThreadContainer}.
+     * Casts this union to a {@link net.dv8tion.jda.api.entities.channel.attribute.IThreadContainer}.
      * This method exists for developer discoverability.
      *
      * Note: This is effectively equivalent to using the cast operator:
@@ -136,9 +144,9 @@ public interface GuildMessageChannelUnion extends GuildMessageChannel
      * You can use <code>channel instanceof IThreadContainer</code> to validate whether you can call this method.
      *
      * @throws IllegalStateException
-     *         If the channel represented by this union is not actually a {@link IThreadContainer}.
+     *         If the channel represented by this union is not actually a {@link net.dv8tion.jda.api.entities.channel.attribute.IThreadContainer}.
      *
-     * @return The channel as a {@link IThreadContainer}
+     * @return The channel as a {@link net.dv8tion.jda.api.entities.channel.attribute.IThreadContainer}
      */
     IThreadContainer asThreadContainer();
 

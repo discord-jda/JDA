@@ -14,8 +14,13 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.entities;
+package net.dv8tion.jda.api.entities.channel.concrete;
 
+import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.channel.ChannelField;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
+import net.dv8tion.jda.api.entities.channel.attribute.IMemberContainer;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import net.dv8tion.jda.api.entities.channel.unions.GuildMessageChannelUnion;
 import net.dv8tion.jda.api.entities.channel.unions.IThreadContainerUnion;
 import net.dv8tion.jda.api.managers.channel.concrete.ThreadChannelManager;
@@ -41,7 +46,7 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer
     /**
      * Whether this thread is public or not.
      *
-     * Public threads can be read and joined by anyone with read access to its {@link IThreadContainer parent channel}.
+     * Public threads can be read and joined by anyone with read access to its {@link net.dv8tion.jda.api.entities.channel.attribute.IThreadContainer parent channel}.
      *
      * @return true if this thread is public, false otherwise.
      */
@@ -54,7 +59,7 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer
     /**
      * Gets the current number of messages present in this thread.
      * <br>
-     * Threads started from seed messages in the {@link IThreadContainer parent channel} will not count that seed message.
+     * Threads started from seed messages in the {@link net.dv8tion.jda.api.entities.channel.attribute.IThreadContainer parent channel} will not count that seed message.
      * <br>
      * This will be capped at 50, regardless of actual count.
      *
@@ -113,9 +118,9 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer
     boolean isInvitable();
 
     /**
-     * Gets the {@link IThreadContainer parent channel} of this thread.
+     * Gets the {@link net.dv8tion.jda.api.entities.channel.attribute.IThreadContainer parent channel} of this thread.
      *
-     * @see IThreadContainer#getThreadChannels()
+     * @see net.dv8tion.jda.api.entities.channel.attribute.IThreadContainer#getThreadChannels()
      *
      * @return The parent channel of this thread.
      */
@@ -154,11 +159,11 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
      *     <br>The request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
      *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
-     *         was revoked in the {@link net.dv8tion.jda.api.entities.GuildMessageChannel GuildMessageChannel}</li>
+     *         was revoked in the {@link GuildMessageChannel GuildMessageChannel}</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The request was attempted after the account lost {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}
-     *         in the {@link net.dv8tion.jda.api.entities.GuildMessageChannel GuildMessageChannel}.</li>
+     *         in the {@link GuildMessageChannel GuildMessageChannel}.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
      *     <br>The message has already been deleted.</li>
@@ -170,13 +175,13 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer
      * @throws net.dv8tion.jda.api.exceptions.AccountTypeException
      *         If the currently logged in account is not from {@link net.dv8tion.jda.api.AccountType#BOT AccountType.BOT}
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If this is a {@link net.dv8tion.jda.api.entities.GuildMessageChannel GuildMessageChannel} and the logged in account does not have
+     *         If this is a {@link GuildMessageChannel GuildMessageChannel} and the logged in account does not have
      *         <ul>
      *             <li>{@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}</li>
      *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
      *         </ul>
      * @throws UnsupportedOperationException
-     *         If the parent channel is not a {@link net.dv8tion.jda.api.entities.GuildMessageChannel GuildMessageChannel}.
+     *         If the parent channel is not a {@link GuildMessageChannel GuildMessageChannel}.
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: Message
      *         <br>The Message that started this thread

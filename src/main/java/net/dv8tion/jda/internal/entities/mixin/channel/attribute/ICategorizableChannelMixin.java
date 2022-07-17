@@ -17,8 +17,8 @@
 package net.dv8tion.jda.internal.entities.mixin.channel.attribute;
 
 import gnu.trove.map.TLongObjectMap;
-import net.dv8tion.jda.api.entities.ICategorizableChannel;
 import net.dv8tion.jda.api.entities.PermissionOverride;
+import net.dv8tion.jda.api.entities.channel.attribute.ICategorizableChannel;
 import net.dv8tion.jda.internal.entities.mixin.channel.middleman.GuildChannelMixin;
 
 public interface ICategorizableChannelMixin<T extends ICategorizableChannelMixin<T>> extends ICategorizableChannel, GuildChannelMixin<T>, IPermissionContainerMixin<T>

@@ -17,7 +17,15 @@
 package net.dv8tion.jda.api.requests.restaction;
 
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.IPermissionHolder;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
+import net.dv8tion.jda.api.entities.channel.concrete.Category;
+import net.dv8tion.jda.api.entities.channel.concrete.NewsChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.utils.Checks;
 
@@ -41,8 +49,8 @@ import java.util.function.BooleanSupplier;
  * @see    net.dv8tion.jda.api.entities.Guild#createVoiceChannel(String)
  * @see    net.dv8tion.jda.api.entities.Guild#createStageChannel(String)
  * @see    net.dv8tion.jda.api.entities.Guild#createCategory(String)
- * @see    ICopyableChannel#createCopy()
- * @see    ICopyableChannel#createCopy(Guild)
+ * @see    net.dv8tion.jda.api.entities.channel.attribute.ICopyableChannel#createCopy()
+ * @see    net.dv8tion.jda.api.entities.channel.attribute.ICopyableChannel#createCopy(Guild)
  *
  * @param <T>
  *        The type of channel to create
@@ -137,7 +145,7 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
     ChannelAction<T> setType(@Nonnull ChannelType type);
 
     /**
-     * Sets the {@link net.dv8tion.jda.api.entities.Category Category} for the new GuildChannel.
+     * Sets the {@link Category Category} for the new GuildChannel.
      *
      * You can use {@link #syncPermissionOverrides()} to sync the channel with the category.
      *
@@ -228,7 +236,7 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
      * @throws UnsupportedOperationException
      *         If this ChannelAction is not for a TextChannel
      * @throws IllegalArgumentException
-     *         If the {@code slowmode} is greater than {@link net.dv8tion.jda.api.entities.TextChannel#MAX_SLOWMODE TextChannel.MAX_SLOWMODE}, or less than 0
+     *         If the {@code slowmode} is greater than {@link TextChannel#MAX_SLOWMODE TextChannel.MAX_SLOWMODE}, or less than 0
      *
      * @return The current ChannelAction, for chaining convenience
      */

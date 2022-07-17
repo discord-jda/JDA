@@ -17,9 +17,9 @@
 package net.dv8tion.jda.internal.entities;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.ChannelType;
-import net.dv8tion.jda.api.entities.PrivateChannel;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
+import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.mixin.channel.middleman.MessageChannelMixin;

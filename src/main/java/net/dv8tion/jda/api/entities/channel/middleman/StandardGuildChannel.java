@@ -14,8 +14,14 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.entities;
+package net.dv8tion.jda.api.entities.channel.middleman;
 
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.channel.attribute.*;
+import net.dv8tion.jda.api.entities.channel.concrete.NewsChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.StageChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import net.dv8tion.jda.api.managers.channel.middleman.StandardGuildChannelManager;
 import net.dv8tion.jda.api.requests.restaction.ChannelAction;
 
@@ -24,11 +30,11 @@ import javax.annotation.Nonnull;
 
 /**
  * Represents a standard {@link GuildChannel} which are the "<i>normal</i>" channels that are present in the channel sidebar.
- * They include functionality "expected" of normal Discord channels like {@link IPermissionContainer permissions},
- * {@link IInviteContainer invite support}, {@link IPositionableChannel positioning}, the ability
- * {@link ICategorizableChannel to be categorized}, and more.
+ * They include functionality "expected" of normal Discord channels like {@link net.dv8tion.jda.api.entities.channel.attribute.IPermissionContainer permissions},
+ * {@link net.dv8tion.jda.api.entities.channel.attribute.IInviteContainer invite support}, {@link IPositionableChannel positioning}, the ability
+ * {@link net.dv8tion.jda.api.entities.channel.attribute.ICategorizableChannel to be categorized}, and more.
  *
- * @see net.dv8tion.jda.api.entities.GuildMessageChannel
+ * @see GuildMessageChannel
  * @see TextChannel
  * @see NewsChannel
  * @see StageChannel

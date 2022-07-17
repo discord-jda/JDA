@@ -18,7 +18,11 @@ package net.dv8tion.jda.internal.entities;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.GuildVoiceState;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.channel.concrete.StageChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.data.DataObject;

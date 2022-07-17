@@ -17,7 +17,7 @@
 package net.dv8tion.jda.internal.handle;
 
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.GuildChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.events.guild.invite.GuildInviteDeleteEvent;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;

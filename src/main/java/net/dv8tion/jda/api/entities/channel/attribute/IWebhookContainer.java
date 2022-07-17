@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.entities;
+package net.dv8tion.jda.api.entities.channel.attribute;
 
+import net.dv8tion.jda.api.entities.Webhook;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.WebhookAction;

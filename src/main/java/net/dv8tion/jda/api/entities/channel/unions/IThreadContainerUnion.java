@@ -16,14 +16,20 @@
 
 package net.dv8tion.jda.api.entities.channel.unions;
 
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
+import net.dv8tion.jda.api.entities.channel.attribute.IThreadContainer;
+import net.dv8tion.jda.api.entities.channel.concrete.NewsChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.StandardGuildChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.StandardGuildMessageChannel;
 
 import javax.annotation.Nonnull;
 
 /**
- * A union representing all channel types that implement {@link IThreadContainer}.
- * <br>This class extends {@link IThreadContainer} and primarily acts as a discovery tool for
- * developers to discover some common interfaces that a {@link IThreadContainer} could be cast to.
+ * A union representing all channel types that implement {@link net.dv8tion.jda.api.entities.channel.attribute.IThreadContainer}.
+ * <br>This class extends {@link net.dv8tion.jda.api.entities.channel.attribute.IThreadContainer} and primarily acts as a discovery tool for
+ * developers to discover some common interfaces that a {@link net.dv8tion.jda.api.entities.channel.attribute.IThreadContainer} could be cast to.
  *
  * <br>This interface represents the follow concrete channel types:
  * <ul>

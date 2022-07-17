@@ -14,9 +14,13 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.entities;
+package net.dv8tion.jda.api.entities.channel;
 
 import net.dv8tion.jda.api.audit.AuditLogKey;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.channel.concrete.*;
+import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.StandardGuildMessageChannel;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -55,9 +59,9 @@ public enum ChannelField
     /**
      * The {@link Category parent} of the channel.
      *
-     * Limited to {@link ICategorizableChannel Categorizable Channels} (and implementations).
+     * Limited to {@link net.dv8tion.jda.api.entities.channel.attribute.ICategorizableChannel Categorizable Channels} (and implementations).
      *
-     * @see ICategorizableChannel#getParentCategory()
+     * @see net.dv8tion.jda.api.entities.channel.attribute.ICategorizableChannel#getParentCategory()
      */
     PARENT("parent", AuditLogKey.CHANNEL_PARENT),
 
@@ -65,7 +69,7 @@ public enum ChannelField
     /**
      * The position of this channel relative to other channels in the guild.
      *
-     * @see IPositionableChannel#getPosition()
+     * @see net.dv8tion.jda.api.entities.channel.attribute.IPositionableChannel#getPosition()
      *
      */
     POSITION("position", null), //Discord doesn't track Channel position changes in AuditLog.
@@ -148,7 +152,7 @@ public enum ChannelField
      * Limited to {@link ThreadChannel Thread Channels}.
      *
      * @see ThreadChannel#getAutoArchiveDuration()
-     * @see net.dv8tion.jda.api.entities.ThreadChannel.AutoArchiveDuration
+     * @see ThreadChannel.AutoArchiveDuration
      */
     AUTO_ARCHIVE_DURATION("autoArchiveDuration", AuditLogKey.THREAD_AUTO_ARCHIVE_DURATION),
 

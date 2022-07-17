@@ -17,7 +17,11 @@
 package net.dv8tion.jda.api.entities.emoji;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.managers.CustomEmojiManager;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
@@ -190,7 +194,7 @@ public interface RichCustomEmoji extends CustomEmoji
 
     /**
      * Whether the specified User can interact with this emoji within the provided MessageChannel
-     * <br>Same logic as {@link #canInteract(User, MessageChannel, boolean) canInteract(issuer, channel, true)}!
+     * <br>Same logic as {@link #canInteract(User, net.dv8tion.jda.api.entities.channel.middleman.MessageChannel, boolean) canInteract(issuer, channel, true)}!
      *
      * @param  issuer
      *         The User to test

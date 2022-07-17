@@ -16,10 +16,10 @@
 
 package net.dv8tion.jda.internal.requests.restaction;
 
-import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.GuildChannel;
-import net.dv8tion.jda.api.entities.ThreadChannel;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
+import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.restaction.ThreadChannelAction;
@@ -30,7 +30,6 @@ import okhttp3.RequestBody;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 

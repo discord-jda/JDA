@@ -17,9 +17,9 @@
 package net.dv8tion.jda.api.exceptions;
 
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Channel;
-import net.dv8tion.jda.api.entities.ChannelType;
-import net.dv8tion.jda.api.entities.GuildChannel;
+import net.dv8tion.jda.api.entities.channel.Channel;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 
 import javax.annotation.Nonnull;
 

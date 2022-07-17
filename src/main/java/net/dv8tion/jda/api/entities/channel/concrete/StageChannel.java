@@ -14,9 +14,16 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.entities;
+package net.dv8tion.jda.api.entities.channel.concrete;
 
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.GuildVoiceState;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.StageInstance;
+import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.StandardGuildChannel;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.channel.concrete.StageChannelManager;
 import net.dv8tion.jda.api.requests.RestAction;

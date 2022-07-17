@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.entities;
+package net.dv8tion.jda.api.entities.channel;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.IMentionable;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
 
@@ -39,7 +40,7 @@ public interface Channel extends IMentionable
     String getName();
 
     /**
-     * The {@link net.dv8tion.jda.api.entities.ChannelType ChannelType} for this channel
+     * The {@link ChannelType ChannelType} for this channel
      *
      * @return The channel type
      */

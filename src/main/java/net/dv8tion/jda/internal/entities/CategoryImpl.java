@@ -17,7 +17,15 @@
 package net.dv8tion.jda.internal.entities;
 
 import gnu.trove.map.TLongObjectMap;
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.PermissionOverride;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
+import net.dv8tion.jda.api.entities.channel.concrete.Category;
+import net.dv8tion.jda.api.entities.channel.concrete.StageChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.managers.channel.concrete.CategoryManager;
 import net.dv8tion.jda.api.requests.restaction.ChannelAction;
 import net.dv8tion.jda.api.requests.restaction.order.CategoryOrderAction;

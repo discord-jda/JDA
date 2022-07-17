@@ -16,7 +16,7 @@
 
 package net.dv8tion.jda.internal.entities.mixin.channel.middleman;
 
-import net.dv8tion.jda.api.entities.Channel;
+import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.unions.ChannelUnion;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.internal.requests.RestActionImpl;

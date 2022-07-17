@@ -16,16 +16,16 @@
 
 package net.dv8tion.jda.api.events.guild.voice;
 
-import net.dv8tion.jda.api.entities.AudioChannel;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
 import net.dv8tion.jda.api.events.UpdateEvent;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
- * Indicates that a {@link net.dv8tion.jda.api.entities.Member Member} joined or left an {@link net.dv8tion.jda.api.entities.AudioChannel AudioChannel}.
+ * Indicates that a {@link net.dv8tion.jda.api.entities.Member Member} joined or left an {@link net.dv8tion.jda.api.entities.channel.middleman.AudioChannel AudioChannel}.
  * <br>Generic event that combines
  * {@link net.dv8tion.jda.api.events.guild.voice.GuildVoiceLeaveEvent GuildVoiceLeaveEvent},
  * {@link net.dv8tion.jda.api.events.guild.voice.GuildVoiceJoinEvent GuildVoiceJoinEvent}, and
@@ -68,17 +68,17 @@ public interface GuildVoiceUpdateEvent extends UpdateEvent<Member, AudioChannel>
     Guild getGuild();
 
     /**
-     * The {@link net.dv8tion.jda.api.entities.AudioChannel AudioChannel} that the {@link net.dv8tion.jda.api.entities.Member Member} is moved from
+     * The {@link net.dv8tion.jda.api.entities.channel.middleman.AudioChannel AudioChannel} that the {@link net.dv8tion.jda.api.entities.Member Member} is moved from
      *
-     * @return The {@link net.dv8tion.jda.api.entities.AudioChannel}
+     * @return The {@link net.dv8tion.jda.api.entities.channel.middleman.AudioChannel}
      */
     @Nullable
     AudioChannel getChannelLeft();
 
     /**
-     * The {@link net.dv8tion.jda.api.entities.AudioChannel AudioChannel} that was joined
+     * The {@link net.dv8tion.jda.api.entities.channel.middleman.AudioChannel AudioChannel} that was joined
      *
-     * @return The {@link net.dv8tion.jda.api.entities.AudioChannel AudioChannel}
+     * @return The {@link net.dv8tion.jda.api.entities.channel.middleman.AudioChannel AudioChannel}
      */
     @Nullable
     AudioChannel getChannelJoined();

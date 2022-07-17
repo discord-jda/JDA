@@ -17,8 +17,8 @@
 package net.dv8tion.jda.internal.entities;
 
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.PrivateChannel;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel;
 import net.dv8tion.jda.api.requests.restaction.CacheRestAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.data.DataObject;

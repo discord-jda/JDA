@@ -17,8 +17,8 @@
 package net.dv8tion.jda.internal.entities.mixin.channel.attribute;
 
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.IInviteContainer;
 import net.dv8tion.jda.api.entities.Invite;
+import net.dv8tion.jda.api.entities.channel.attribute.IInviteContainer;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.InviteAction;
 import net.dv8tion.jda.api.utils.data.DataArray;

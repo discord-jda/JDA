@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.entities;
+package net.dv8tion.jda.api.entities.channel.attribute;
 
+import net.dv8tion.jda.api.entities.IPermissionHolder;
+import net.dv8tion.jda.api.entities.PermissionOverride;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.managers.channel.attribute.IPermissionContainerManager;
 import net.dv8tion.jda.api.requests.restaction.PermissionOverrideAction;
 
@@ -27,11 +30,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Represents a {@link GuildChannel} that uses {@link PermissionOverride Permission Overrides}.
+ * Represents a {@link GuildChannel} that uses {@link net.dv8tion.jda.api.entities.PermissionOverride Permission Overrides}.
  *
  * Channels that implement this interface can override permissions for specific users or roles.
  *
- * @see PermissionOverride
+ * @see net.dv8tion.jda.api.entities.PermissionOverride
  */
 public interface IPermissionContainer extends GuildChannel
 {
@@ -41,7 +44,7 @@ public interface IPermissionContainer extends GuildChannel
     IPermissionContainerManager<?, ?> getManager();
 
     /**
-     * The {@link PermissionOverride} relating to the specified {@link net.dv8tion.jda.api.entities.Member Member} or {@link net.dv8tion.jda.api.entities.Role Role}.
+     * The {@link net.dv8tion.jda.api.entities.PermissionOverride} relating to the specified {@link net.dv8tion.jda.api.entities.Member Member} or {@link net.dv8tion.jda.api.entities.Role Role}.
      * If there is no {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverride} for this {@link GuildChannel GuildChannel}
      * relating to the provided Member or Role, then this returns {@code null}.
      *

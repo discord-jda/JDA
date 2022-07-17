@@ -17,8 +17,8 @@
 package net.dv8tion.jda.internal.entities.mixin.channel.middleman;
 
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.GuildMessageChannel;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import net.dv8tion.jda.api.entities.channel.unions.GuildMessageChannelUnion;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.entities.sticker.StickerSnowflake;

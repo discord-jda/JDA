@@ -17,7 +17,11 @@
 package net.dv8tion.jda.internal.managers;
 
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.Icon;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Webhook;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.WebhookManager;
 import net.dv8tion.jda.api.utils.data.DataObject;

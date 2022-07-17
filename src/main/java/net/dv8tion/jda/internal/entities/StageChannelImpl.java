@@ -18,7 +18,13 @@ package net.dv8tion.jda.internal.entities;
 
 import gnu.trove.map.TLongObjectMap;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.PermissionOverride;
+import net.dv8tion.jda.api.entities.StageInstance;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
+import net.dv8tion.jda.api.entities.channel.concrete.Category;
+import net.dv8tion.jda.api.entities.channel.concrete.StageChannel;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.channel.concrete.StageChannelManager;
 import net.dv8tion.jda.api.requests.RestAction;
@@ -42,7 +48,7 @@ import java.util.EnumSet;
 import java.util.List;
 
 public class StageChannelImpl extends AbstractStandardGuildChannelImpl<StageChannelImpl> implements
-        StageChannel, 
+        StageChannel,
         AudioChannelMixin<StageChannelImpl>
 {
     private final TLongObjectMap<Member> connectedMembers = MiscUtil.newLongMap();

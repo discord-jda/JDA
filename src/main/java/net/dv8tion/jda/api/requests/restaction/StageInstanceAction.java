@@ -28,7 +28,7 @@ import java.util.function.BooleanSupplier;
 /**
  * Specialized {@link RestAction} used to create a {@link StageInstance}
  *
- * @see net.dv8tion.jda.api.entities.StageChannel#createStageInstance(String)
+ * @see net.dv8tion.jda.api.entities.channel.concrete.StageChannel#createStageInstance(String)
  */
 public interface StageInstanceAction extends RestAction<StageInstance>
 {

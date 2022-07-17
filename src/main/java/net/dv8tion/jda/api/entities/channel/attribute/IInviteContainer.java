@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.entities;
+package net.dv8tion.jda.api.entities.channel.attribute;
 
+import net.dv8tion.jda.api.entities.Invite;
+import net.dv8tion.jda.api.entities.channel.concrete.Category;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.InviteAction;
 
@@ -38,7 +41,7 @@ public interface IInviteContainer extends GuildChannel
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the account does not have {@link net.dv8tion.jda.api.Permission#CREATE_INSTANT_INVITE CREATE_INSTANT_INVITE} in this channel
      * @throws java.lang.IllegalArgumentException
-     *         If this is an instance of a {@link net.dv8tion.jda.api.entities.Category Category}
+     *         If this is an instance of a {@link Category Category}
      *
      * @return A new {@link InviteAction InviteAction}
      *

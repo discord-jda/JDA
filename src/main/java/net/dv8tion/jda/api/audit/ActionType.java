@@ -16,8 +16,8 @@
 
 package net.dv8tion.jda.api.audit;
 
-import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 
 /**
@@ -449,7 +449,7 @@ public enum ActionType
     INTEGRATION_DELETE(82, TargetType.INTEGRATION),
 
     /**
-     * A {@link net.dv8tion.jda.api.entities.StageInstance StageInstance} was started by a {@link net.dv8tion.jda.api.entities.StageChannel#isModerator(Member) Stage Moderator}.
+     * A {@link net.dv8tion.jda.api.entities.StageInstance StageInstance} was started by a {@link net.dv8tion.jda.api.entities.channel.concrete.StageChannel#isModerator(Member) Stage Moderator}.
      *
      * <p><b>Possible Options</b><br>
      * <ul>
@@ -465,7 +465,7 @@ public enum ActionType
     STAGE_INSTANCE_CREATE(83, TargetType.STAGE_INSTANCE),
 
     /**
-     * A {@link net.dv8tion.jda.api.entities.StageInstance StageInstance} was updated by a {@link net.dv8tion.jda.api.entities.StageChannel#isModerator(Member) Stage Moderator}.
+     * A {@link net.dv8tion.jda.api.entities.StageInstance StageInstance} was updated by a {@link net.dv8tion.jda.api.entities.channel.concrete.StageChannel#isModerator(Member) Stage Moderator}.
      *
      * <p><b>Possible Options</b><br>
      * <ul>
@@ -481,7 +481,7 @@ public enum ActionType
     STAGE_INSTANCE_UPDATE(84, TargetType.STAGE_INSTANCE),
 
     /**
-     * A {@link net.dv8tion.jda.api.entities.StageInstance StageInstance} was deleted by a {@link net.dv8tion.jda.api.entities.StageChannel#isModerator(Member) Stage Moderator}.
+     * A {@link net.dv8tion.jda.api.entities.StageInstance StageInstance} was deleted by a {@link net.dv8tion.jda.api.entities.channel.concrete.StageChannel#isModerator(Member) Stage Moderator}.
      *
      * <p><b>Possible Options</b><br>
      * <ul>
@@ -497,7 +497,7 @@ public enum ActionType
     STAGE_INSTANCE_DELETE(85, TargetType.STAGE_INSTANCE),
 
     /**
-     * A user created a {@link net.dv8tion.jda.api.entities.ThreadChannel ThreadChannel}
+     * A user created a {@link net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel ThreadChannel}
      *
      * <p><b>Possible Keys</b><br>
      * <ul>
@@ -513,7 +513,7 @@ public enum ActionType
     THREAD_CREATE(110, TargetType.THREAD),
 
     /**
-     * A user updated a {@link net.dv8tion.jda.api.entities.ThreadChannel ThreadChannel}
+     * A user updated a {@link net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel ThreadChannel}
      *
      * <p><b>Possible Keys</b><br>
      * <ul>
@@ -529,7 +529,7 @@ public enum ActionType
     THREAD_UPDATE(111, TargetType.THREAD),
 
     /**
-     * A user deleted a {@link net.dv8tion.jda.api.entities.ThreadChannel ThreadChannel}
+     * A user deleted a {@link net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel ThreadChannel}
      */
     THREAD_DELETE(112, TargetType.THREAD),
 

@@ -17,8 +17,8 @@
 package net.dv8tion.jda.internal.entities.mixin.channel.attribute;
 
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.ChannelType;
-import net.dv8tion.jda.api.entities.IThreadContainer;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
+import net.dv8tion.jda.api.entities.channel.attribute.IThreadContainer;
 import net.dv8tion.jda.api.entities.channel.unions.IThreadContainerUnion;
 import net.dv8tion.jda.api.requests.restaction.ThreadChannelAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.ThreadChannelPaginationAction;

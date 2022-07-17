@@ -17,8 +17,8 @@
 package net.dv8tion.jda.api.entities.templates;
 
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.ISnowflake;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -95,7 +95,7 @@ public class TemplateChannel implements ISnowflake
     }
 
     /**
-     * The {@link net.dv8tion.jda.api.entities.ChannelType ChannelType} for this TemplateChannel
+     * The {@link ChannelType ChannelType} for this TemplateChannel
      *
      * @return The channel type
      */
@@ -119,8 +119,8 @@ public class TemplateChannel implements ISnowflake
 
     /**
      * The topic set for this TemplateChannel.
-     * <br>If no topic has been set or the {@link net.dv8tion.jda.api.entities.ChannelType ChannelType}
-     * <b>is not {@link net.dv8tion.jda.api.entities.ChannelType#TEXT TEXT}</b>, this returns {@code null}.
+     * <br>If no topic has been set or the {@link ChannelType ChannelType}
+     * <b>is not {@link ChannelType#TEXT TEXT}</b>, this returns {@code null}.
      *
      * @return Possibly-null String containing the topic of this TemplateChannel.
      */
@@ -157,8 +157,8 @@ public class TemplateChannel implements ISnowflake
 
     /**
      * Whether or not this channel is considered as "NSFW" (Not-Safe-For-Work).
-     * <br>If the {@link net.dv8tion.jda.api.entities.ChannelType ChannelType}
-     * <b>is not {@link net.dv8tion.jda.api.entities.ChannelType#TEXT TEXT}</b>, this returns {@code false}.
+     * <br>If the {@link ChannelType ChannelType}
+     * <b>is not {@link ChannelType#TEXT TEXT}</b>, this returns {@code false}.
      *
      * @return Whether this TextChannel is considered NSFW or {@code false} if the channel is not a text channel
      */
@@ -169,7 +169,7 @@ public class TemplateChannel implements ISnowflake
 
     /**
      * The slowmode set for this TemplateChannel.
-     * <br>If slowmode is set this returns an {@code int} between 1 and {@link net.dv8tion.jda.api.entities.TextChannel#MAX_SLOWMODE TextChannel.MAX_SLOWMODE}.
+     * <br>If slowmode is set this returns an {@code int} between 1 and {@link net.dv8tion.jda.api.entities.channel.concrete.TextChannel#MAX_SLOWMODE TextChannel.MAX_SLOWMODE}.
      * <br>If not set this returns {@code 0}.
      *
      * <p>Note bots are unaffected by this.
@@ -177,7 +177,7 @@ public class TemplateChannel implements ISnowflake
      * {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} permission also
      * grants immunity to slowmode.
      *
-     * @return The slowmode for this TextChannel, between 1 and {@link net.dv8tion.jda.api.entities.TextChannel#MAX_SLOWMODE TextChannel.MAX_SLOWMODE}, {@code 0} if no slowmode is set.
+     * @return The slowmode for this TextChannel, between 1 and {@link net.dv8tion.jda.api.entities.channel.concrete.TextChannel#MAX_SLOWMODE TextChannel.MAX_SLOWMODE}, {@code 0} if no slowmode is set.
      */
     public int getSlowmode()
     {

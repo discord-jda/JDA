@@ -16,7 +16,7 @@
 
 package net.dv8tion.jda.internal.entities.mixin.channel.middleman;
 
-import net.dv8tion.jda.api.entities.StandardGuildChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.StandardGuildChannel;
 import net.dv8tion.jda.internal.entities.mixin.channel.attribute.ICategorizableChannelMixin;
 import net.dv8tion.jda.internal.entities.mixin.channel.attribute.IInviteContainerMixin;
 import net.dv8tion.jda.internal.entities.mixin.channel.attribute.IPermissionContainerMixin;

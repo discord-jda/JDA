@@ -13,8 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.dv8tion.jda.api.entities;
+package net.dv8tion.jda.api.entities.channel.concrete;
 
+import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.requests.RestAction;
 
 import javax.annotation.CheckReturnValue;
@@ -29,7 +31,7 @@ import javax.annotation.Nullable;
 public interface PrivateChannel extends MessageChannel
 {
     /**
-     * The {@link net.dv8tion.jda.api.entities.User User} that this {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel} communicates with.
+     * The {@link net.dv8tion.jda.api.entities.User User} that this {@link PrivateChannel PrivateChannel} communicates with.
      *
      * <p>This user is only null if this channel is currently uncached, and one the following occur:
      * <ul>
@@ -50,7 +52,7 @@ public interface PrivateChannel extends MessageChannel
     User getUser();
 
     /**
-     * Retrieves the {@link User User} that this {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel} communicates with.
+     * Retrieves the {@link User User} that this {@link PrivateChannel PrivateChannel} communicates with.
      *
      * <br>This method fetches the channel from the API and retrieves the User from that.
      *

@@ -16,7 +16,11 @@
 package net.dv8tion.jda.api.events.user;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 
 import javax.annotation.Nonnull;
@@ -75,7 +79,7 @@ public class UserTypingEvent extends GenericUserEvent
      * Whether the user started typing in a channel of the specified type.
      *
      * @param  type
-     *         {@link net.dv8tion.jda.api.entities.ChannelType ChannelType}
+     *         {@link ChannelType ChannelType}
      *
      * @return True, if the user started typing in a channel of the specified type
      */
@@ -85,9 +89,9 @@ public class UserTypingEvent extends GenericUserEvent
     }
 
     /**
-     * The {@link net.dv8tion.jda.api.entities.ChannelType ChannelType}
+     * The {@link ChannelType ChannelType}
      *
-     * @return The {@link net.dv8tion.jda.api.entities.ChannelType ChannelType}
+     * @return The {@link ChannelType ChannelType}
      */
     @Nonnull
     public ChannelType getType()

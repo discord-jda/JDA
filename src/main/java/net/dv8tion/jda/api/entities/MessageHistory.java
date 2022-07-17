@@ -18,6 +18,8 @@ package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.requests.Request;
@@ -43,15 +45,15 @@ import java.util.*;
 
 /**
  * Represents an access point to the {@link net.dv8tion.jda.api.entities.Message Message} history of a
- * {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel}.
+ * {@link net.dv8tion.jda.api.entities.channel.middleman.MessageChannel MessageChannel}.
  * <br><b>Note:</b> Message order is always in recent to past order. I.e: A message at index 0
  * of a list is more recent than a message at index 1.
  *
- * @see MessageChannel#getHistory()
- * @see MessageChannel#getHistoryAfter(String, int)
- * @see MessageChannel#getHistoryBefore(String, int)
- * @see MessageChannel#getHistoryAround(String, int)
- * @see MessageChannel#getHistoryFromBeginning(int)
+ * @see net.dv8tion.jda.api.entities.channel.middleman.MessageChannel#getHistory()
+ * @see net.dv8tion.jda.api.entities.channel.middleman.MessageChannel#getHistoryAfter(String, int)
+ * @see net.dv8tion.jda.api.entities.channel.middleman.MessageChannel#getHistoryBefore(String, int)
+ * @see net.dv8tion.jda.api.entities.channel.middleman.MessageChannel#getHistoryAround(String, int)
+ * @see net.dv8tion.jda.api.entities.channel.middleman.MessageChannel#getHistoryFromBeginning(int)
  */
 public class MessageHistory
 {
@@ -64,7 +66,7 @@ public class MessageHistory
      * Creates a new MessageHistory object.
      *
      * @param  channel
-     *         The {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel} to retrieval history from.
+     *         The {@link net.dv8tion.jda.api.entities.channel.middleman.MessageChannel MessageChannel} to retrieval history from.
      */
     public MessageHistory(@Nonnull MessageChannel channel)
     {
@@ -116,7 +118,7 @@ public class MessageHistory
     }
 
     /**
-     * Returns the {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel} that this MessageHistory
+     * Returns the {@link net.dv8tion.jda.api.entities.channel.middleman.MessageChannel MessageChannel} that this MessageHistory
      * is related to.
      *
      * @return The MessageChannel of this history.
@@ -300,7 +302,7 @@ public class MessageHistory
     /**
      * The List of Messages, sorted starting from newest to oldest, of all message that have already been retrieved
      * from Discord with this MessageHistory object using the {@link #retrievePast(int)}, {@link #retrieveFuture(int)}, and
-     * {@link net.dv8tion.jda.api.entities.MessageChannel#getHistoryAround(String, int)} methods.
+     * {@link net.dv8tion.jda.api.entities.channel.middleman.MessageChannel#getHistoryAround(String, int)} methods.
      *
      * <p>This will be empty if it was just created using {@link MessageChannel#getHistory()} or similar
      * methods. You first have to retrieve messages.
@@ -366,7 +368,7 @@ public class MessageHistory
      * of messages sent after the mentioned message ID (exclusive).
      * <br>The provided ID need not be valid!
      *
-     * <p>Alternatively you can use {@link net.dv8tion.jda.api.entities.MessageChannel#getHistoryAfter(String, int) MessageChannel.getHistoryAfter(...)}
+     * <p>Alternatively you can use {@link net.dv8tion.jda.api.entities.channel.middleman.MessageChannel#getHistoryAfter(String, int) MessageChannel.getHistoryAfter(...)}
      *
      * <p><b>Example</b>
      * <br>{@code MessageHistory history = MessageHistory.getHistoryAfter(channel, messageId).limit(60).complete()}
@@ -380,7 +382,7 @@ public class MessageHistory
      * </code></pre>
      *
      * @param  channel
-     *         The {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel}
+     *         The {@link net.dv8tion.jda.api.entities.channel.middleman.MessageChannel MessageChannel}
      * @param  messageId
      *         The pivot ID to use
      *
@@ -393,9 +395,9 @@ public class MessageHistory
      *
      * @return {@link net.dv8tion.jda.api.entities.MessageHistory.MessageRetrieveAction MessageRetrieveAction}
      *
-     * @see    net.dv8tion.jda.api.entities.MessageChannel#getHistoryAfter(String, int)  MessageChannel.getHistoryAfter(String, int)
-     * @see    net.dv8tion.jda.api.entities.MessageChannel#getHistoryAfter(long, int)    MessageChannel.getHistoryAfter(long, int)
-     * @see    net.dv8tion.jda.api.entities.MessageChannel#getHistoryAfter(Message, int) MessageChannel.getHistoryAfter(Message, int)
+     * @see    net.dv8tion.jda.api.entities.channel.middleman.MessageChannel#getHistoryAfter(String, int)  MessageChannel.getHistoryAfter(String, int)
+     * @see    net.dv8tion.jda.api.entities.channel.middleman.MessageChannel#getHistoryAfter(long, int)    MessageChannel.getHistoryAfter(long, int)
+     * @see    net.dv8tion.jda.api.entities.channel.middleman.MessageChannel#getHistoryAfter(Message, int) MessageChannel.getHistoryAfter(Message, int)
      */
     @Nonnull
     @CheckReturnValue
@@ -411,7 +413,7 @@ public class MessageHistory
      * of messages sent before the mentioned message ID (exclusive).
      * <br>The provided ID need not be valid!
      *
-     * <p>Alternatively you can use {@link net.dv8tion.jda.api.entities.MessageChannel#getHistoryBefore(String, int) MessageChannel.getHistoryBefore(...)}
+     * <p>Alternatively you can use {@link net.dv8tion.jda.api.entities.channel.middleman.MessageChannel#getHistoryBefore(String, int) MessageChannel.getHistoryBefore(...)}
      *
      * <p><b>Example</b>
      * <br>{@code MessageHistory history = MessageHistory.getHistoryBefore(channel, messageId).limit(60).complete()}
@@ -425,7 +427,7 @@ public class MessageHistory
      * </code></pre>
      *
      * @param  channel
-     *         The {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel}
+     *         The {@link net.dv8tion.jda.api.entities.channel.middleman.MessageChannel MessageChannel}
      * @param  messageId
      *         The pivot ID to use
      *
@@ -438,9 +440,9 @@ public class MessageHistory
      *
      * @return {@link net.dv8tion.jda.api.entities.MessageHistory.MessageRetrieveAction MessageRetrieveAction}
      *
-     * @see    net.dv8tion.jda.api.entities.MessageChannel#getHistoryBefore(String, int)  MessageChannel.getHistoryBefore(String, int)
-     * @see    net.dv8tion.jda.api.entities.MessageChannel#getHistoryBefore(long, int)    MessageChannel.getHistoryBefore(long, int)
-     * @see    net.dv8tion.jda.api.entities.MessageChannel#getHistoryBefore(Message, int) MessageChannel.getHistoryBefore(Message, int)
+     * @see    net.dv8tion.jda.api.entities.channel.middleman.MessageChannel#getHistoryBefore(String, int)  MessageChannel.getHistoryBefore(String, int)
+     * @see    net.dv8tion.jda.api.entities.channel.middleman.MessageChannel#getHistoryBefore(long, int)    MessageChannel.getHistoryBefore(long, int)
+     * @see    net.dv8tion.jda.api.entities.channel.middleman.MessageChannel#getHistoryBefore(Message, int) MessageChannel.getHistoryBefore(Message, int)
      */
     @Nonnull
     @CheckReturnValue
@@ -456,7 +458,7 @@ public class MessageHistory
      * of messages sent around the mentioned message ID (inclusive).
      * <br>The provided ID need not be valid!
      *
-     * <p>Alternatively you can use {@link net.dv8tion.jda.api.entities.MessageChannel#getHistoryAround(String, int) MessageChannel.getHistoryAround(...)}
+     * <p>Alternatively you can use {@link net.dv8tion.jda.api.entities.channel.middleman.MessageChannel#getHistoryAround(String, int) MessageChannel.getHistoryAround(...)}
      *
      * <p><b>Example</b>
      * <br>{@code MessageHistory history = MessageHistory.getHistoryAround(channel, messageId).limit(60).complete()}
@@ -470,7 +472,7 @@ public class MessageHistory
      * </code></pre>
      *
      * @param  channel
-     *         The {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel}
+     *         The {@link net.dv8tion.jda.api.entities.channel.middleman.MessageChannel MessageChannel}
      * @param  messageId
      *         The pivot ID to use
      *
@@ -483,9 +485,9 @@ public class MessageHistory
      *
      * @return {@link net.dv8tion.jda.api.entities.MessageHistory.MessageRetrieveAction MessageRetrieveAction}
      *
-     * @see    net.dv8tion.jda.api.entities.MessageChannel#getHistoryAround(String, int)  MessageChannel.getHistoryAround(String, int)
-     * @see    net.dv8tion.jda.api.entities.MessageChannel#getHistoryAround(long, int)    MessageChannel.getHistoryAround(long, int)
-     * @see    net.dv8tion.jda.api.entities.MessageChannel#getHistoryAround(Message, int) MessageChannel.getHistoryAround(Message, int)
+     * @see    net.dv8tion.jda.api.entities.channel.middleman.MessageChannel#getHistoryAround(String, int)  MessageChannel.getHistoryAround(String, int)
+     * @see    net.dv8tion.jda.api.entities.channel.middleman.MessageChannel#getHistoryAround(long, int)    MessageChannel.getHistoryAround(long, int)
+     * @see    net.dv8tion.jda.api.entities.channel.middleman.MessageChannel#getHistoryAround(Message, int) MessageChannel.getHistoryAround(Message, int)
      */
     @Nonnull
     @CheckReturnValue
@@ -500,15 +502,15 @@ public class MessageHistory
      * Constructs a {@link net.dv8tion.jda.api.entities.MessageHistory MessageHistory} with the initially retrieved history
      * of messages sent.
      *
-     * <p>Alternatively you can use {@link net.dv8tion.jda.api.entities.MessageChannel#getHistoryFromBeginning(int) MessageChannel.getHistoryFromBeginning(...)}
+     * <p>Alternatively you can use {@link net.dv8tion.jda.api.entities.channel.middleman.MessageChannel#getHistoryFromBeginning(int) MessageChannel.getHistoryFromBeginning(...)}
      *
      * <p><b>Example</b><br>
      * <br>{@code MessageHistory history = MessageHistory.getHistoryFromBeginning(channel).limit(60).complete()}
-     * <br>Will return a MessageHistory instance with the first 60 messages of the given {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel}.
+     * <br>Will return a MessageHistory instance with the first 60 messages of the given {@link net.dv8tion.jda.api.entities.channel.middleman.MessageChannel MessageChannel}.
 
      *
      * @param  channel
-     *         The {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel}
+     *         The {@link net.dv8tion.jda.api.entities.channel.middleman.MessageChannel MessageChannel}
      *
      * @throws java.lang.IllegalArgumentException
      *         If the provided MessageChannel is {@code null};
@@ -518,7 +520,7 @@ public class MessageHistory
      *
      * @return {@link net.dv8tion.jda.api.entities.MessageHistory.MessageRetrieveAction MessageRetrieveAction}
      *
-     * @see    net.dv8tion.jda.api.entities.MessageChannel#getHistoryFromBeginning(int)  MessageChannel.getHistoryFromBeginning(int)
+     * @see    net.dv8tion.jda.api.entities.channel.middleman.MessageChannel#getHistoryFromBeginning(int)  MessageChannel.getHistoryFromBeginning(int)
      */
     @Nonnull
     @CheckReturnValue

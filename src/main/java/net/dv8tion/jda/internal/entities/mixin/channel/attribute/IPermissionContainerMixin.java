@@ -18,9 +18,9 @@ package net.dv8tion.jda.internal.entities.mixin.channel.attribute;
 
 import gnu.trove.map.TLongObjectMap;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.IPermissionContainer;
 import net.dv8tion.jda.api.entities.IPermissionHolder;
 import net.dv8tion.jda.api.entities.PermissionOverride;
+import net.dv8tion.jda.api.entities.channel.attribute.IPermissionContainer;
 import net.dv8tion.jda.api.entities.channel.unions.IPermissionContainerUnion;
 import net.dv8tion.jda.api.requests.restaction.PermissionOverrideAction;
 import net.dv8tion.jda.internal.entities.mixin.channel.middleman.GuildChannelMixin;

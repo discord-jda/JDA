@@ -18,7 +18,7 @@ package net.dv8tion.jda.internal.entities.mixin.channel.middleman;
 
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.StandardGuildMessageChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.StandardGuildMessageChannel;
 import net.dv8tion.jda.internal.entities.mixin.channel.attribute.IThreadContainerMixin;
 import net.dv8tion.jda.internal.entities.mixin.channel.attribute.IWebhookContainerMixin;
 

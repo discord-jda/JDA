@@ -14,9 +14,17 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.entities;
+package net.dv8tion.jda.api.entities.channel.concrete;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.IPermissionHolder;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.channel.attribute.ICopyableChannel;
+import net.dv8tion.jda.api.entities.channel.attribute.IMemberContainer;
+import net.dv8tion.jda.api.entities.channel.attribute.IPermissionContainer;
+import net.dv8tion.jda.api.entities.channel.attribute.IPositionableChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.managers.channel.concrete.CategoryManager;
 import net.dv8tion.jda.api.requests.restaction.ChannelAction;
 import net.dv8tion.jda.api.requests.restaction.order.CategoryOrderAction;
@@ -51,8 +59,8 @@ public interface Category extends GuildChannel, ICopyableChannel, IPositionableC
     /**
      * All {@link GuildChannel Channels} listed
      * for this Category
-     * <br>This may contain {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels},
-     * and {@link net.dv8tion.jda.api.entities.TextChannel TextChannels}!
+     * <br>This may contain {@link VoiceChannel VoiceChannels},
+     * and {@link TextChannel TextChannels}!
      *
      * @return Immutable list of all child channels
      */
@@ -70,7 +78,7 @@ public interface Category extends GuildChannel, ICopyableChannel, IPositionableC
     }
 
     /**
-     * All {@link net.dv8tion.jda.api.entities.TextChannel TextChannels}
+     * All {@link TextChannel TextChannels}
      * listed for this Category
      *
      * @return Immutable list of all child TextChannels
@@ -84,7 +92,7 @@ public interface Category extends GuildChannel, ICopyableChannel, IPositionableC
     }
 
     /**
-     * All {@link net.dv8tion.jda.api.entities.NewsChannel NewsChannels}
+     * All {@link NewsChannel NewsChannels}
      * listed for this Category
      *
      * @return Immutable list of all child NewsChannels
@@ -98,7 +106,7 @@ public interface Category extends GuildChannel, ICopyableChannel, IPositionableC
     }
 
     /**
-     * All {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels}
+     * All {@link VoiceChannel VoiceChannels}
      * listed for this Category
      *
      * @return Immutable list of all child VoiceChannels
@@ -112,7 +120,7 @@ public interface Category extends GuildChannel, ICopyableChannel, IPositionableC
     }
 
     /**
-     * All {@link net.dv8tion.jda.api.entities.StageChannel StageChannel}
+     * All {@link StageChannel StageChannel}
      * listed for this Category
      *
      * @return Immutable list of all child StageChannel
@@ -126,7 +134,7 @@ public interface Category extends GuildChannel, ICopyableChannel, IPositionableC
     }
 
     /**
-     * Creates a new {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} with this Category as parent.
+     * Creates a new {@link TextChannel TextChannel} with this Category as parent.
      * For this to be successful, the logged in account has to have the
      * {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} Permission in this Category.
      *
@@ -163,7 +171,7 @@ public interface Category extends GuildChannel, ICopyableChannel, IPositionableC
     ChannelAction<TextChannel> createTextChannel(@Nonnull String name);
 
     /**
-     * Creates a new {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel} with this Category as parent.
+     * Creates a new {@link VoiceChannel VoiceChannel} with this Category as parent.
      * For this to be successful, the logged in account has to have the
      * {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} Permission in this Category.
      *
@@ -200,7 +208,7 @@ public interface Category extends GuildChannel, ICopyableChannel, IPositionableC
     ChannelAction<VoiceChannel> createVoiceChannel(@Nonnull String name);
 
     /**
-     * Creates a new {@link net.dv8tion.jda.api.entities.StageChannel StageChannel} with this Category as parent.
+     * Creates a new {@link StageChannel StageChannel} with this Category as parent.
      * For this to be successful, the logged in account has to have the
      * {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} Permission in this Category.
      *
@@ -239,8 +247,8 @@ public interface Category extends GuildChannel, ICopyableChannel, IPositionableC
     /**
      * Modifies the positional order of this Category's nested {@link #getTextChannels() TextChannels} and {@link #getNewsChannels() NewsChannels}.
      * <br>This uses an extension of {@link ChannelOrderAction ChannelOrderAction}
-     * specialized for ordering the nested {@link net.dv8tion.jda.api.entities.TextChannel TextChannels}
-     * and {@link net.dv8tion.jda.api.entities.NewsChannel NewsChannels} of this {@link net.dv8tion.jda.api.entities.Category Category}.
+     * specialized for ordering the nested {@link TextChannel TextChannels}
+     * and {@link NewsChannel NewsChannels} of this {@link Category Category}.
      * <br>Like {@link ChannelOrderAction}, the returned {@link CategoryOrderAction CategoryOrderAction}
      * can be used to move TextChannels/NewsChannels {@link OrderAction#moveUp(int) up},
      * {@link OrderAction#moveDown(int) down}, or
@@ -257,8 +265,8 @@ public interface Category extends GuildChannel, ICopyableChannel, IPositionableC
      * </ul>
      *
      * @return A {@link CategoryOrderAction CategoryOrderAction} for
-     *         ordering the Category's {@link net.dv8tion.jda.api.entities.TextChannel TextChannels}
-     *         and {@link net.dv8tion.jda.api.entities.NewsChannel NewsChannels}.
+     *         ordering the Category's {@link TextChannel TextChannels}
+     *         and {@link NewsChannel NewsChannels}.
      */
     @Nonnull
     @CheckReturnValue
@@ -267,8 +275,8 @@ public interface Category extends GuildChannel, ICopyableChannel, IPositionableC
     /**
      * Modifies the positional order of this Category's nested {@link #getVoiceChannels() VoiceChannels} and {@link #getStageChannels() StageChannels}.
      * <br>This uses an extension of {@link ChannelOrderAction ChannelOrderAction}
-     * specialized for ordering the nested {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels}
-     * and {@link net.dv8tion.jda.api.entities.StageChannel StageChannels} of this {@link net.dv8tion.jda.api.entities.Category Category}.
+     * specialized for ordering the nested {@link VoiceChannel VoiceChannels}
+     * and {@link StageChannel StageChannels} of this {@link Category Category}.
      * <br>Like {@link ChannelOrderAction}, the returned {@link CategoryOrderAction CategoryOrderAction}
      * can be used to move VoiceChannels/StageChannels {@link OrderAction#moveUp(int) up},
      * {@link OrderAction#moveDown(int) down}, or
@@ -285,8 +293,8 @@ public interface Category extends GuildChannel, ICopyableChannel, IPositionableC
      * </ul>
      *
      * @return A {@link CategoryOrderAction CategoryOrderAction} for
-     *         ordering the Category's {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels}
-     *         and {@link net.dv8tion.jda.api.entities.StageChannel StageChannels}.
+     *         ordering the Category's {@link VoiceChannel VoiceChannels}
+     *         and {@link StageChannel StageChannels}.
      */
     @Nonnull
     @CheckReturnValue

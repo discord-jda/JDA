@@ -13,7 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.dv8tion.jda.api.entities;
+package net.dv8tion.jda.api.entities.channel;
+
+import net.dv8tion.jda.api.entities.channel.concrete.*;
 
 import javax.annotation.Nonnull;
 import java.util.EnumSet;
@@ -24,15 +26,15 @@ import java.util.EnumSet;
 public enum ChannelType
 {
     /**
-     * A {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}, Guild-Only.
+     * A {@link TextChannel TextChannel}, Guild-Only.
      */
     TEXT(0, 0, true),
     /**
-     * A {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}.
+     * A {@link PrivateChannel PrivateChannel}.
      */
     PRIVATE(1, -1),
     /**
-     * A {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel}, Guild-Only.
+     * A {@link VoiceChannel VoiceChannel}, Guild-Only.
      */
     VOICE(2, 1, true),
     /**
@@ -40,11 +42,11 @@ public enum ChannelType
      */
     GROUP(3, -1),
     /**
-     * A {@link net.dv8tion.jda.api.entities.Category Category}, Guild-Only.
+     * A {@link Category Category}, Guild-Only.
      */
     CATEGORY(4, 2, true),
     /**
-     * A {@link net.dv8tion.jda.api.entities.NewsChannel NewsChannel}, Guild-Only.
+     * A {@link NewsChannel NewsChannel}, Guild-Only.
      */
     NEWS(5, 0, true),
     /**
@@ -99,7 +101,7 @@ public enum ChannelType
     }
 
     /**
-     * Whether this ChannelType is present for a {@link GuildChannel GuildChannel}
+     * Whether this ChannelType is present for a {@link net.dv8tion.jda.api.entities.channel.middleman.GuildChannel GuildChannel}
      *
      * @return Whether or not this a GuildChannel
      */

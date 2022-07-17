@@ -1,10 +1,9 @@
 package net.dv8tion.jda.internal.requests.restaction.pagination;
 
 import gnu.trove.map.TLongObjectMap;
-import gnu.trove.map.hash.TLongObjectHashMap;
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.IThreadContainer;
-import net.dv8tion.jda.api.entities.ThreadChannel;
+import net.dv8tion.jda.api.entities.channel.attribute.IThreadContainer;
+import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
 import net.dv8tion.jda.api.entities.channel.unions.IThreadContainerUnion;
 import net.dv8tion.jda.api.exceptions.ParsingException;
 import net.dv8tion.jda.api.requests.Request;
@@ -18,7 +17,6 @@ import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.Nonnull;
 import java.time.OffsetDateTime;
-import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.EnumSet;

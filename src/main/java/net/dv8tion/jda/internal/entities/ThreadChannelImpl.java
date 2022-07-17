@@ -17,7 +17,12 @@
 package net.dv8tion.jda.internal.entities;
 
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.ThreadMember;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
+import net.dv8tion.jda.api.entities.channel.attribute.IPermissionContainer;
+import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
 import net.dv8tion.jda.api.entities.channel.unions.IThreadContainerUnion;
 import net.dv8tion.jda.api.managers.channel.concrete.ThreadChannelManager;
 import net.dv8tion.jda.api.requests.RestAction;

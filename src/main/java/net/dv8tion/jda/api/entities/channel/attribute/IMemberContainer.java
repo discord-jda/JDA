@@ -14,7 +14,13 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.entities;
+package net.dv8tion.jda.api.entities.channel.attribute;
+
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.channel.concrete.Category;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -26,8 +32,8 @@ import java.util.List;
  *
  * For example,
  * <ul>
- *   <li>{@link TextChannel TextChannels} implement this as the {@link Member members} that have {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL}</li>
- *   <li>{@link VoiceChannel VoiceChannels} implement this as what {@link Member members} are currently connected to the channel.</li>
+ *   <li>{@link TextChannel TextChannels} implement this as the {@link net.dv8tion.jda.api.entities.Member members} that have {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL}</li>
+ *   <li>{@link VoiceChannel VoiceChannels} implement this as what {@link net.dv8tion.jda.api.entities.Member members} are currently connected to the channel.</li>
  * </ul>
  *
  *
@@ -37,11 +43,11 @@ public interface IMemberContainer extends GuildChannel
 {
     /**
      * A List of all {@link net.dv8tion.jda.api.entities.Member Members} that are in this GuildChannel
-     * <br>For {@link net.dv8tion.jda.api.entities.TextChannel TextChannels},
+     * <br>For {@link TextChannel TextChannels},
      * this returns all Members with the {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} Permission.
-     * <br>For {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels},
+     * <br>For {@link VoiceChannel VoiceChannels},
      * this returns all Members that joined that VoiceChannel.
-     * <br>For {@link net.dv8tion.jda.api.entities.Category Categories},
+     * <br>For {@link Category Categories},
      * this returns all Members who are in its child channels.
      *
      * @return An immutable List of {@link net.dv8tion.jda.api.entities.Member Members} that are in this GuildChannel.

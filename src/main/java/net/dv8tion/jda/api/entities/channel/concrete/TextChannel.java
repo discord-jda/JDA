@@ -13,9 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.dv8tion.jda.api.entities;
+package net.dv8tion.jda.api.entities.channel.concrete;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.channel.middleman.StandardGuildMessageChannel;
 import net.dv8tion.jda.api.managers.channel.concrete.TextChannelManager;
 import net.dv8tion.jda.api.requests.restaction.ChannelAction;
 
@@ -26,11 +28,11 @@ import javax.annotation.Nonnull;
  * <br>Adds additional functionality and information for text channels in Discord,
  * on top of the common functionality present in other guild message channels.
  *
- * <p>This is a {@link GuildChannel GuildChannel} capable of sending messages.
+ * <p>This is a {@link net.dv8tion.jda.api.entities.channel.middleman.GuildChannel GuildChannel} capable of sending messages.
  *
- * @see GuildChannel
- * @see MessageChannel
- * @see StandardGuildMessageChannel
+ * @see net.dv8tion.jda.api.entities.channel.middleman.GuildChannel
+ * @see net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
+ * @see net.dv8tion.jda.api.entities.channel.middleman.StandardGuildMessageChannel
  *
  * @see   Guild#getTextChannelCache()
  * @see   Guild#getTextChannels()
@@ -51,7 +53,7 @@ public interface TextChannel extends StandardGuildMessageChannel
 
     /**
      * The slowmode set for this TextChannel.
-     * <br>If slowmode is set this returns an {@code int} between 1 and {@link net.dv8tion.jda.api.entities.TextChannel#MAX_SLOWMODE TextChannel.MAX_SLOWMODE}.
+     * <br>If slowmode is set this returns an {@code int} between 1 and {@link TextChannel#MAX_SLOWMODE TextChannel.MAX_SLOWMODE}.
      * <br>If not set this returns {@code 0}.
      *
      * <p>Note bots are unaffected by this.
@@ -59,7 +61,7 @@ public interface TextChannel extends StandardGuildMessageChannel
      * {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} permission also
      * grants immunity to slowmode.
      *
-     * @return The slowmode for this TextChannel, between 1 and {@link net.dv8tion.jda.api.entities.TextChannel#MAX_SLOWMODE TextChannel.MAX_SLOWMODE}, or {@code 0} if no slowmode is set.
+     * @return The slowmode for this TextChannel, between 1 and {@link TextChannel#MAX_SLOWMODE TextChannel.MAX_SLOWMODE}, or {@code 0} if no slowmode is set.
      */
     int getSlowmode();
 

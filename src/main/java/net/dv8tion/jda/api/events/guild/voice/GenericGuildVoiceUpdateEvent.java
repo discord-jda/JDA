@@ -17,8 +17,8 @@
 package net.dv8tion.jda.api.events.guild.voice;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.AudioChannel;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;

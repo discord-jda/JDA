@@ -18,6 +18,7 @@ package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.annotations.DeprecatedSince;
 import net.dv8tion.jda.annotations.ForRemoval;
+import net.dv8tion.jda.api.entities.channel.concrete.StageChannel;
 import net.dv8tion.jda.api.managers.StageInstanceManager;
 import net.dv8tion.jda.api.requests.RestAction;
 
@@ -43,9 +44,9 @@ public interface StageInstance extends ISnowflake
     Guild getGuild();
 
     /**
-     * The {@link StageChannel} for this stage instance
+     * The {@link net.dv8tion.jda.api.entities.channel.concrete.StageChannel} for this stage instance
      *
-     * @return The {@link StageChannel}
+     * @return The {@link net.dv8tion.jda.api.entities.channel.concrete.StageChannel}
      */
     @Nonnull
     StageChannel getChannel();

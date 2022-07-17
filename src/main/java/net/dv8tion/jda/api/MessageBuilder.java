@@ -16,6 +16,7 @@
 package net.dv8tion.jda.api;
 
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.sticker.Sticker;
 import net.dv8tion.jda.api.entities.sticker.StickerSnowflake;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
@@ -377,7 +378,7 @@ public class MessageBuilder implements Appendable
     /**
      * Appends a mention to the Message.
      * <br>Typical usage would be providing an {@link net.dv8tion.jda.api.entities.IMentionable IMentionable} like
-     * {@link net.dv8tion.jda.api.entities.User User} or {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}.
+     * {@link net.dv8tion.jda.api.entities.User User} or {@link TextChannel TextChannel}.
      *
      * <p>This will not add a rule to mention a {@link User} or {@link Role}. You have to use {@link #mention(IMentionable...)}
      * in addition to this method.
@@ -444,8 +445,8 @@ public class MessageBuilder implements Appendable
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.entities.IMentionable IMentionable}
      *     <br>These will output their {@link net.dv8tion.jda.api.entities.IMentionable#getAsMention() getAsMention} by default,
-     *         some implementations have alternatives such as {@link net.dv8tion.jda.api.entities.User User} and {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}.</li>
-     *     <li>{@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel}
+     *         some implementations have alternatives such as {@link net.dv8tion.jda.api.entities.User User} and {@link TextChannel TextChannel}.</li>
+     *     <li>{@link net.dv8tion.jda.api.entities.channel.middleman.MessageChannel MessageChannel}
      *     <br>All message channels format to {@code "#" + getName()} by default, TextChannel has special handling
      *         and uses the getAsMention output by default and the MessageChannel output as alternative ({@code #} flag).</li>
      *     <li>{@link net.dv8tion.jda.api.entities.Message Message}

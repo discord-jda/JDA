@@ -1,6 +1,24 @@
-package net.dv8tion.jda.api.entities;
+/*
+ * Copyright 2015 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package net.dv8tion.jda.api.entities.channel.concrete;
 
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.channel.middleman.StandardGuildMessageChannel;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.exceptions.MissingAccessException;
 import net.dv8tion.jda.api.managers.channel.concrete.NewsChannelManager;
@@ -14,7 +32,7 @@ import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 
 /**
- * Represents {@link StandardGuildMessageChannel} that are News Channels.
+ * Represents {@link net.dv8tion.jda.api.entities.channel.middleman.StandardGuildMessageChannel} that are News Channels.
  *
  * The Discord client may refer to these as Announcement Channels.
  *
@@ -108,7 +126,7 @@ public interface NewsChannel extends StandardGuildMessageChannel
      *         The target channel
      *
      * @throws MissingAccessException
-     *         If the currently logged in account does not have {@link Member#hasAccess(GuildChannel) access} in the <b>target channel</b>.
+     *         If the currently logged in account does not have {@link Member#hasAccess(net.dv8tion.jda.api.entities.channel.middleman.GuildChannel) access} in the <b>target channel</b>.
      * @throws InsufficientPermissionException
      *         If the currently logged in account does not have {@link Permission#MANAGE_WEBHOOKS} in the <b>target channel</b>.
      * @throws IllegalArgumentException
@@ -142,7 +160,7 @@ public interface NewsChannel extends StandardGuildMessageChannel
      *     <br>The request was attempted after the account lost access to the
      *         {@link net.dv8tion.jda.api.entities.Guild Guild}
      *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
-     *         was revoked in the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}</li>
+     *         was revoked in the {@link TextChannel TextChannel}</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The request was attempted after the account lost
@@ -162,7 +180,7 @@ public interface NewsChannel extends StandardGuildMessageChannel
      * @throws java.lang.IllegalArgumentException
      *         If provided {@code messageId} is {@code null} or empty.
      * @throws MissingAccessException
-     *         If the currently logged in account does not have {@link Member#hasAccess(GuildChannel) access} in this channel.
+     *         If the currently logged in account does not have {@link Member#hasAccess(net.dv8tion.jda.api.entities.channel.middleman.GuildChannel) access} in this channel.
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have
      *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} in this channel.
@@ -194,7 +212,7 @@ public interface NewsChannel extends StandardGuildMessageChannel
      *     <br>The request was attempted after the account lost access to the
      *         {@link net.dv8tion.jda.api.entities.Guild Guild}
      *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
-     *         was revoked in the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}</li>
+     *         was revoked in the {@link TextChannel TextChannel}</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The request was attempted after the account lost

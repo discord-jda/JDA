@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.entities;
+package net.dv8tion.jda.api.entities.channel.attribute;
 
+import net.dv8tion.jda.api.entities.channel.concrete.Category;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.managers.channel.attribute.ICategorizableChannelManager;
 
 import javax.annotation.Nonnull;
@@ -27,7 +29,7 @@ import javax.annotation.Nullable;
  * Channels represented by this interface can have a parent {@link Category}.
  *
  * @see Category
- * @see Guild#getCategories()
+ * @see net.dv8tion.jda.api.entities.Guild#getCategories()
  */
 public interface ICategorizableChannel extends GuildChannel, IPermissionContainer
 {
@@ -46,7 +48,7 @@ public interface ICategorizableChannel extends GuildChannel, IPermissionContaine
     long getParentCategoryIdLong();
 
     /**
-     * Get the snowflake of the {@link net.dv8tion.jda.api.entities.Category Category} that contains this channel.
+     * Get the snowflake of the {@link Category Category} that contains this channel.
      *
      * This will return {@code null} if this channel doesn't have a parent category.
      *
@@ -62,12 +64,12 @@ public interface ICategorizableChannel extends GuildChannel, IPermissionContaine
     }
 
     /**
-     * Parent {@link net.dv8tion.jda.api.entities.Category Category} of this
+     * Parent {@link Category Category} of this
      * GuildChannel. Channels don't need to have a parent Category.
-     * <br>Note that a {@link net.dv8tion.jda.api.entities.Category Category} will
+     * <br>Note that a {@link Category Category} will
      * always return {@code null} for this method as nested categories are not supported.
      *
-     * @return Possibly-null {@link net.dv8tion.jda.api.entities.Category Category} for this GuildChannel
+     * @return Possibly-null {@link Category Category} for this GuildChannel
      */
     @Nullable
     default Category getParentCategory()

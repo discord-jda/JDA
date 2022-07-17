@@ -14,9 +14,15 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.entities;
+package net.dv8tion.jda.api.entities.channel.middleman;
 
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.attribute.IAgeRestrictedChannel;
+import net.dv8tion.jda.api.entities.channel.attribute.IThreadContainer;
+import net.dv8tion.jda.api.entities.channel.attribute.IWebhookContainer;
+import net.dv8tion.jda.api.entities.channel.concrete.NewsChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
 import net.dv8tion.jda.api.managers.channel.middleman.StandardGuildMessageChannelManager;
 import net.dv8tion.jda.api.requests.restaction.ChannelAction;
 
@@ -27,11 +33,11 @@ import javax.annotation.Nullable;
 /**
  * Represents a standard {@link GuildMessageChannel} which are the "<i>normal</i>" message channels that are present in the channel sidebar.
  * They include all the functionality of {@link StandardGuildChannel StandardGuildChannels} along with the extra functionality
- *  expected of normal guild message channels like {@link GuildMessageChannel messaging}, {@link IThreadContainer thread support}, and {@link IWebhookContainer webhooks}.
+ *  expected of normal guild message channels like {@link GuildMessageChannel messaging}, {@link net.dv8tion.jda.api.entities.channel.attribute.IThreadContainer thread support}, and {@link net.dv8tion.jda.api.entities.channel.attribute.IWebhookContainer webhooks}.
  *
  * <br>These are <b>not</b> {@link ThreadChannel ThreadChannels}.
  *
- * @see net.dv8tion.jda.api.entities.GuildMessageChannel
+ * @see GuildMessageChannel
  * @see TextChannel
  * @see NewsChannel
  * @see StandardGuildChannel
