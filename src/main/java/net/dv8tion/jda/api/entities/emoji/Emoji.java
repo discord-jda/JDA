@@ -124,7 +124,8 @@ public interface Emoji extends SerializableData, Formattable
 
     /**
      * Parses the provided markdown formatting, or unicode characters, to an Emoji instance.
-     * <h4>Example</h4>
+     *
+     * <p><b>Example</b><br>
      * <pre>{@code
      * // animated custom emoji
      * fromFormatted("<a:dance:123456789123456789>");

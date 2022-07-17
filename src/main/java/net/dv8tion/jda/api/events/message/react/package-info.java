@@ -20,7 +20,7 @@
  * cannot provide a Message instance due to missing cache but instead provide the Message ID as
  * long representation.
  *
- * <h2>Requirements</h2>
+ * <p><b>Requirements</b><br>
  *
  * <p>The events in this package require at least one of the following intents (Will not fire at all if neither is enabled):
  * <ul>

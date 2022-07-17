@@ -26,7 +26,7 @@ import javax.annotation.Nonnull;
  *
  * <p>Can be used to retrieve the user who was unbanned (if available) and the guild which they were unbanned from.
  *
- * <h2>Requirements</h2>
+ * <p><b>Requirements</b><br>
  *
  * <p>This event requires the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_BANS GUILD_BANS} intent to be enabled.
  */

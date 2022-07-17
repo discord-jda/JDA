@@ -28,7 +28,7 @@ import javax.annotation.Nullable;
  * Indicates that a user has updated their presence on discord.
  * <br>This includes name, avatar, and similar visible features of the user.
  *
- * <h2>Requirements</h2>
+ * <p><b>Requirements</b><br>
  *
  * <p>These events require the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MEMBERS GUILD_MEMBERS} intent to be enabled.
  * <br>{@link net.dv8tion.jda.api.JDABuilder#createDefault(String) createDefault(String)} and
