@@ -258,7 +258,7 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
     @CheckReturnValue
     public M removePermissionOverride(final long id)
     {
-        if (isPermissionChecksEnabled() && !getGuild().getSelfMember().hasPermission((IPermissionContainer) getChannel(), Permission.MANAGE_PERMISSIONS))
+        if (isPermissionChecksEnabled() && !getGuild().getSelfMember().hasPermission(getChannel(), Permission.MANAGE_PERMISSIONS))
             throw new InsufficientPermissionException(getChannel(), Permission.MANAGE_PERMISSIONS);
         withLock(lock, (lock) ->
         {

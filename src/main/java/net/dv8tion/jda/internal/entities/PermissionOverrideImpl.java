@@ -119,7 +119,7 @@ public class PermissionOverrideImpl implements PermissionOverride
     @Override
     public IPermissionContainerUnion getChannel()
     {
-        IPermissionContainer realChannel = (IPermissionContainer) api.getGuildChannelById(channel.getIdLong());
+        IPermissionContainer realChannel = api.getChannelById(IPermissionContainer.class, channel.getIdLong());
         if (realChannel != null)
             channel = realChannel;
 
