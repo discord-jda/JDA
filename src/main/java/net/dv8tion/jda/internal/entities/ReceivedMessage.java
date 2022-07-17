@@ -672,7 +672,7 @@ public class ReceivedMessage extends AbstractMessage
     @Override
     public ThreadChannelAction createThreadChannel(String name)
     {
-        return ((IThreadContainer) getGuildChannel()).createThreadChannel(name, this.getIdLong());
+        return getGuildChannel().asThreadContainer().createThreadChannel(name, this.getIdLong());
     }
 
     @Override
