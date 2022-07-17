@@ -57,7 +57,9 @@ import net.dv8tion.jda.internal.entities.automod.ActionMetadataImpl;
 import net.dv8tion.jda.internal.entities.automod.AutoModerationActionImpl;
 import net.dv8tion.jda.internal.entities.automod.AutoModerationRuleImpl;
 import net.dv8tion.jda.internal.entities.automod.TriggerMetadataImpl;
+import net.dv8tion.jda.internal.entities.emoji.CustomEmojiImpl;
 import net.dv8tion.jda.internal.entities.emoji.RichCustomEmojiImpl;
+import net.dv8tion.jda.internal.entities.emoji.UnicodeEmojiImpl;
 import net.dv8tion.jda.internal.entities.mixin.channel.attribute.IPermissionContainerMixin;
 import net.dv8tion.jda.internal.entities.mixin.channel.middleman.AudioChannelMixin;
 import net.dv8tion.jda.internal.entities.sticker.*;
@@ -150,6 +152,15 @@ public class EntityBuilder
     public static Activity createActivity(String name, String url, Activity.ActivityType type)
     {
         return new ActivityImpl(name, url, type);
+    }
+
+    // Unlike Emoji.fromData this does not check for null or empty
+    public static EmojiUnion createEmoji(DataObject emoji)
+    {
+        if (emoji.isNull("id"))
+            return new UnicodeEmojiImpl(emoji.getString("name"));
+        else // name can be empty in some cases where discord fails to properly load the emoji
+            return new CustomEmojiImpl(emoji.getString("name", ""), emoji.getUnsignedLong("id"), emoji.getBoolean("animated"));
     }
 
     private void createGuildEmojiPass(GuildImpl guildObj, DataArray array)
@@ -840,7 +851,7 @@ public class EntityBuilder
 
         EmojiUnion emoji = null;
         if (!gameJson.isNull("emoji"))
-            emoji = Emoji.fromData(gameJson.getObject("emoji"));
+            emoji = createEmoji(gameJson.getObject("emoji"));
 
         if (type == Activity.ActivityType.CUSTOM_STATUS)
         {
@@ -1602,7 +1613,7 @@ public class EntityBuilder
         DataObject emoji = obj.getObject("emoji");
         final int count = obj.getInt("count", -1);
         final boolean me = obj.getBoolean("me");
-        EmojiUnion emojiObj = Emoji.fromData(emoji);
+        EmojiUnion emojiObj = createEmoji(emoji);
 
         return new MessageReaction(chan, emojiObj, id, me, count);
     }

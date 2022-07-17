@@ -289,7 +289,7 @@ public interface SelectMenu extends ActionComponent
         public Builder setMaxValues(int maxValues)
         {
             Checks.positive(maxValues, "Max Values");
-            Checks.check(maxValues <= OPTIONS_MAX_AMOUNT, "Min Values may not be greater than %d! Provided: %d", OPTIONS_MAX_AMOUNT, maxValues);
+            Checks.check(maxValues <= OPTIONS_MAX_AMOUNT, "Max Values may not be greater than %d! Provided: %d", OPTIONS_MAX_AMOUNT, maxValues);
             this.maxValues = maxValues;
             return this;
         }
