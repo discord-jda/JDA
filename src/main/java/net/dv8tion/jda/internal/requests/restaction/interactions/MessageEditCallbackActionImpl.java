@@ -92,7 +92,8 @@ public class MessageEditCallbackActionImpl extends DeferrableCallbackActionImpl 
         if (embeds != null)
             data.put("embeds", DataArray.fromCollection(embeds));
         if (components != null)
-            json.put("data", data);
+            data.put("components", DataArray.fromCollection(components));
+        json.put("data", data);
         return json;
     }
 
