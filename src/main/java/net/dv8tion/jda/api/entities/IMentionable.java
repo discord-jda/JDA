@@ -26,7 +26,7 @@ import java.util.Formatter;
 /**
  * Marks a mentionable entity.
  *
- * <h2>Formattable</h2>
+ * <p><b>Formattable</b><br>
  * This interface extends {@link java.util.Formattable Formattable} and can be used with a {@link java.util.Formatter Formatter}
  * such as used by {@link String#format(String, Object...) String.format(String, Object...)}
  * or {@link java.io.PrintStream#printf(String, Object...) PrintStream.printf(String, Object...)}.

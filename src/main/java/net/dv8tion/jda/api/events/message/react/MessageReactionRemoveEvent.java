@@ -29,7 +29,7 @@ import javax.annotation.Nullable;
  * 
  * <p>Can be used to detect when a reaction is removed from a message
  *
- * <h2>Requirements</h2>
+ * <p><b>Requirements</b><br>
  *
  * <p>This event requires at least one of the following intents (Will not fire at all if neither is enabled):
  * <ul>

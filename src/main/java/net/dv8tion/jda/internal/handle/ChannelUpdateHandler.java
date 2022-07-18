@@ -222,6 +222,7 @@ public class ChannelUpdateHandler extends SocketHandler
                 final int oldPosition = voiceChannel.getPositionRaw();
                 final int oldLimit = voiceChannel.getUserLimit();
                 final int oldBitrate = voiceChannel.getBitrate();
+                final boolean oldNsfw = voiceChannel.isNSFW();
                 if (!Objects.equals(oldName, name))
                 {
                     voiceChannel.setName(name);
@@ -271,6 +272,14 @@ public class ChannelUpdateHandler extends SocketHandler
                             new ChannelUpdateBitrateEvent(
                                     getJDA(), responseNumber,
                                     voiceChannel, oldBitrate, bitrate));
+                }
+                if (oldNsfw != nsfw)
+                {
+                    voiceChannel.setNSFW(nsfw);
+                    getJDA().handleEvent(
+                            new ChannelUpdateNSFWEvent(
+                                    getJDA(), responseNumber,
+                                    voiceChannel, oldNsfw, nsfw));
                 }
 
                 break;
@@ -365,11 +374,9 @@ public class ChannelUpdateHandler extends SocketHandler
 
         applyPermissions((IPermissionContainerMixin<?>) channel, permOverwrites);
 
-        boolean hasAccessToChannel = channel.getGuild().getSelfMember().hasPermission((IPermissionContainer) channel, Permission.VIEW_CHANNEL);
-        if (channel.getType().isMessage() && !hasAccessToChannel)
-        {
+        boolean hasAccessToChannel = channel.getGuild().getSelfMember().hasPermission(channel, Permission.VIEW_CHANNEL);
+        if (channel instanceof IThreadContainer && !hasAccessToChannel)
             handleHideChildThreads((IThreadContainer) channel);
-        }
 
         return null;
     }

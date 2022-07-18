@@ -27,7 +27,7 @@ import java.util.Collection;
 /**
  * Represents the default permissions for a Discord Application-Command. These permissions define the type of users that can use this command if no explicit command-specific
  * privileges are set by moderators to control who can and can't use the command within a Guild.
- * <p>For example, given a command defined with {@link net.dv8tion.jda.api.interactions.commands.build.CommandData#setDefaultPermissions CommandData#setDefaultPermissions} as <code>command.setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permissions.BAN_MEMBERS))</code>
+ * <p>For example, given a command defined with {@link net.dv8tion.jda.api.interactions.commands.build.CommandData#setDefaultPermissions CommandData#setDefaultPermissions} as <code>command.setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.BAN_MEMBERS))</code>
  * any user with the {@link Permission#BAN_MEMBERS} permission would be able to use the command by default.
  */
 public class DefaultMemberPermissions

@@ -97,7 +97,30 @@ public interface IWebhookContainerUnion extends IWebhookContainer
      *
      * @return The channel as a {@link IThreadContainer}
      */
+    @Nonnull
     IThreadContainer asThreadContainer();
+
+    /**
+     * Casts this union to a {@link VoiceChannel}.
+     * This method exists for developer discoverability.
+     *
+     * Note: This is effectively equivalent to using the cast operator:
+     * <pre><code>
+     * //These are the same!
+     * VoiceChannel channel = union.asVoiceChannel();
+     * VoiceChannel channel2 = (VoiceChannel) union;
+     * </code></pre>
+     *
+     * You can use {@link #getType()} to see if the channel is of type {@link ChannelType#VOICE} to validate
+     * whether you can call this method in addition to normal instanceof checks: <code>channel instanceof VoiceChannel</code>
+     *
+     * @throws IllegalStateException
+     *         If the channel represented by this union is not actually a {@link VoiceChannel}.
+     *
+     * @return The channel as a {@link VoiceChannel}
+     */
+    @Nonnull
+    VoiceChannel asVoiceChannel();
 
     /**
      * Casts this union to a {@link GuildMessageChannel}.

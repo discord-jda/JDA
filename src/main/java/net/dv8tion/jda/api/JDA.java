@@ -257,7 +257,7 @@ public interface JDA extends IGuildChannelContainer
      * The time in milliseconds that discord took to respond to a REST request.
      * <br>This will request the current user from the API and calculate the time the response took.
      *
-     * <h4>Example</h4>
+     * <p><b>Example</b><br>
      * <pre><code>
      * jda.getRestPing().queue( (time) {@literal ->}
      *     channel.sendMessageFormat("Ping: %d ms", time).queue()
@@ -287,7 +287,7 @@ public interface JDA extends IGuildChannelContainer
     /**
      * This method will block until JDA has reached the specified connection status.
      *
-     * <h4>Login Cycle</h4>
+     * <p><b>Login Cycle</b><br>
      * <ol>
      *  <li>{@link net.dv8tion.jda.api.JDA.Status#INITIALIZING INITIALIZING}</li>
      *  <li>{@link net.dv8tion.jda.api.JDA.Status#INITIALIZED INITIALIZED}</li>
@@ -323,7 +323,7 @@ public interface JDA extends IGuildChannelContainer
     /**
      * This method will block until JDA has reached the specified connection status.
      *
-     * <h4>Login Cycle</h4>
+     * <p><b>Login Cycle</b><br>
      * <ol>
      *  <li>{@link net.dv8tion.jda.api.JDA.Status#INITIALIZING INITIALIZING}</li>
      *  <li>{@link net.dv8tion.jda.api.JDA.Status#INITIALIZED INITIALIZED}</li>
@@ -1390,7 +1390,7 @@ public interface JDA extends IGuildChannelContainer
      * <p>If the channel is cached, this will directly return the channel in a completed {@link RestAction} without making a request.
      * You can use {@link CacheRestAction#useCache(boolean) action.useCache(false)} to force an update.
      *
-     * <h4>Example</h4>
+     * <p><b>Example</b><br>
      * <pre>{@code
      * public void sendMessage(JDA jda, long userId, String content) {
      *     jda.openPrivateChannelById(userId)
@@ -1418,7 +1418,7 @@ public interface JDA extends IGuildChannelContainer
      * <br>This will fail with {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_USER UNKNOWN_USER}
      * if the user does not exist.
      *
-     * <h4>Example</h4>
+     * <p><b>Example</b><br>
      * <pre>{@code
      * public void sendMessage(JDA jda, String userId, String content) {
      *     jda.openPrivateChannelById(userId)

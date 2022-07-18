@@ -25,6 +25,7 @@ import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import net.dv8tion.jda.api.entities.sticker.*;
 import net.dv8tion.jda.api.entities.templates.Template;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
+import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.PrivilegeConfig;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
@@ -56,9 +57,6 @@ import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.concurrent.task.GatewayTask;
 
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.time.Duration;
 import java.time.temporal.TemporalAccessor;
 import java.util.*;
@@ -66,6 +64,10 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Represents a Discord {@link net.dv8tion.jda.api.entities.Guild Guild}.
@@ -427,7 +429,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     /**
      * Re-apply the {@link net.dv8tion.jda.api.utils.MemberCachePolicy MemberCachePolicy} of this session to all {@link Member Members} of this Guild.
      *
-     * <h4>Example</h4>
+     * <p><b>Example</b><br>
      * <pre>{@code
      * // Check if the members of this guild have at least 50% bots (bot collection/farm)
      * public void checkBots(Guild guild) {
@@ -658,14 +660,14 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * The preferred locale for this guild.
      * <br>If the guild doesn't have the COMMUNITY feature, this returns the default.
      *
-     * <br>Default: {@link Locale#US}
+     * <br>Default: {@link DiscordLocale#ENGLISH_US}
      *
-     * @return The preferred {@link Locale} for this guild
+     * @return The preferred {@link DiscordLocale} for this guild
      *
      * @since  4.2.1
      */
     @Nonnull
-    Locale getLocale();
+    DiscordLocale getLocale();
 
     /**
      * The guild banner id.
@@ -2111,7 +2113,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * this Guild.
      * <br>This iterates from the most recent action to the first logged one. (Limit 90 days into history by discord api)
      *
-     * <h4>Examples</h4>
+     * <p><b>Examples</b><br>
      * <pre>{@code
      * public void logBan(GuildBanEvent event) {
      *     Guild guild = event.getGuild();
@@ -3806,7 +3808,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * <br>None of the provided roles may be the <u>Public Role</u> of the current Guild.
      * <br>If a role is both in {@code rolesToAdd} and {@code rolesToRemove} it will be removed.
      *
-     * <h4>Example</h4>
+     * <p><b>Example</b><br>
      * <pre>{@code
      * public static void promote(Member member) {
      *     Guild guild = member.getGuild();
@@ -3817,7 +3819,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * }
      * }</pre>
      *
-     * <h4>Warning</h4>
+     * <p><b>Warning</b><br>
      * <b>This may <u>not</u> be used together with any other role add/remove/modify methods for the same Member
      * within one event listener cycle! The changes made by this require cache updates which are triggered by
      * lifecycle events which are received later. This may only be called again once the specific Member has been updated
@@ -3874,7 +3876,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * Modifies the complete {@link Role Role} set of the specified {@link net.dv8tion.jda.api.entities.Member Member}
      * <br>The provided roles will replace all current Roles of the specified Member.
      *
-     * <h4>Warning</h4>
+     * <p><b>Warning</b><br>
      * <b>This may <u>not</u> be used together with any other role add/remove/modify methods for the same Member
      * within one event listener cycle! The changes made by this require cache updates which are triggered by
      * lifecycle events which are received later. This may only be called again once the specific Member has been updated
@@ -3892,7 +3894,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      *     <br>The target Member was removed from the Guild before finishing the task</li>
      * </ul>
      *
-     * <h4>Example</h4>
+     * <p><b>Example</b><br>
      * <pre>{@code
      * public static void removeRoles(Member member) {
      *     Guild guild = member.getGuild();
@@ -3936,7 +3938,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      *
      * <p><u>The new roles <b>must not</b> contain the Public Role of the Guild</u>
      *
-     * <h4>Warning</h4>
+     * <p><b>Warning</b><br>
      * <b>This may <u>not</u> be used together with any other role add/remove/modify methods for the same Member
      * within one event listener cycle! The changes made by this require cache updates which are triggered by
      * lifecycle events which are received later. This may only be called again once the specific Member has been updated
@@ -3952,7 +3954,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      *     <br>The target Member was removed from the Guild before finishing the task</li>
      * </ul>
      *
-     * <h4>Example</h4>
+     * <p><b>Example</b><br>
      * <pre>{@code
      * public static void makeModerator(Member member) {
      *     Guild guild = member.getGuild();

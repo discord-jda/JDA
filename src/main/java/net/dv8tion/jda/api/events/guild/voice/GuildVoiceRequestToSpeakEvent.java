@@ -33,7 +33,7 @@ import java.time.OffsetDateTime;
  * <p>If {@link #getNewTime()} is non-null, this means the member has <em>raised their hand</em> and wants to speak.
  * You can use {@link #approveSpeaker()} or {@link #declineSpeaker()} to handle this request if you have {@link net.dv8tion.jda.api.Permission#VOICE_MUTE_OTHERS Permission.VOICE_MUTE_OTHERS}.
  *
- * <h2>Requirements</h2>
+ * <p><b>Requirements</b><br>
  *
  * <p>These events require the {@link net.dv8tion.jda.api.utils.cache.CacheFlag#VOICE_STATE VOICE_STATE} CacheFlag to be enabled, which requires
  * the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_VOICE_STATES GUILD_VOICE_STATES} intent.

@@ -23,7 +23,6 @@ import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.entities.sticker.GuildSticker;
 import net.dv8tion.jda.api.entities.sticker.StickerSnowflake;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
-import net.dv8tion.jda.api.exceptions.MissingAccessException;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.requests.Request;
@@ -527,13 +526,9 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
 
     protected RequestBody asMultipart()
     {
-        // TODO: Handle file edits differently
-        MultipartBody.Builder builder = AttachedFile.createMultipartBody(files, null);
-        if (messageReference != 0L || components != null || retainedAttachments != null || !isEmpty())
-            builder.addFormDataPart("payload_json", getJSON().toString());
-        // clear remaining resources, they will be closed after being sent
-        files.clear();
-        return builder.build();
+        MultipartBody.Builder body = AttachedFile.createMultipartBody(files, null);
+        body.addFormDataPart("payload_json", getJSON().toString());
+        return body.build();
     }
 
     @SuppressWarnings("deprecation")
@@ -545,6 +540,17 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
     protected DataObject getJSON()
     {
         final DataObject obj = DataObject.empty();
+        DataArray attachments = DataArray.empty();
+        if (retainedAttachments != null)
+        {
+            retainedAttachments.stream()
+                    .map(id -> DataObject.empty().put("id", id))
+                    .forEach(attachments::add);
+        }
+
+        for (int i = 0; i < files.size(); i++)
+            attachments.add(files.get(i).toAttachmentData(i));
+
         if (override)
         {
             if (embeds == null)
@@ -563,13 +569,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
                 obj.put("components", DataArray.empty());
             else
                 obj.put("components", DataArray.fromCollection(components));
-            if (retainedAttachments != null)
-                obj.put("attachments", DataArray.fromCollection(retainedAttachments.stream()
-                        .map(id -> DataObject.empty()
-                            .put("id", id))
-                        .collect(Collectors.toList())));
-            else
-                obj.put("attachments", DataArray.empty());
+            obj.put("attachments", attachments);
         }
         else
         {
@@ -583,12 +583,10 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
                 obj.put("components", DataArray.fromCollection(components));
             if (stickers != null)
                 obj.put("sticker_ids", DataArray.fromCollection(stickers));
-            if (retainedAttachments != null)
-                obj.put("attachments", DataArray.fromCollection(retainedAttachments.stream()
-                        .map(id -> DataObject.empty()
-                            .put("id", id))
-                        .collect(Collectors.toList())));
+            if (retainedAttachments != null || !attachments.isEmpty())
+                obj.put("attachments", attachments);
         }
+
         if (messageReference != 0)
         {
             obj.put("message_reference", DataObject.empty()
@@ -596,6 +594,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
                 .put("channel_id", channel.getId())
                 .put("fail_if_not_exists", failOnInvalidReply));
         }
+
         obj.put("tts", tts);
         obj.put("allowed_mentions", allowedMentions);
         return obj;
@@ -618,12 +617,11 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
         if (!channel.getType().isGuild())
             return;
 
-        if (!(channel instanceof IPermissionContainer))
+        if (!(channel instanceof GuildChannel))
             return;
 
-        IPermissionContainer gc = (IPermissionContainer) channel;
-        if (!gc.getGuild().getSelfMember().hasAccess(gc))
-            throw new MissingAccessException(gc, Permission.VIEW_CHANNEL);
+        GuildChannel gc = (GuildChannel) channel;
+        Checks.checkAccess(gc.getGuild().getSelfMember(), gc);
         if (!hasPermission(perm))
             throw new InsufficientPermissionException(gc, perm);
     }

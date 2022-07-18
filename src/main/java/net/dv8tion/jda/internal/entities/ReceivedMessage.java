@@ -26,11 +26,11 @@ import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import net.dv8tion.jda.api.entities.sticker.StickerItem;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
-import net.dv8tion.jda.api.exceptions.MissingAccessException;
 import net.dv8tion.jda.api.exceptions.PermissionException;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
+import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
@@ -55,6 +55,7 @@ import java.util.regex.Pattern;
 
 public class ReceivedMessage extends AbstractMessage
 {
+    public static boolean didContentIntentWarning = false;
     private final Object mutex = new Object();
 
     protected final JDAImpl api;
@@ -99,7 +100,7 @@ public class ReceivedMessage extends AbstractMessage
         this.channel = channel;
         this.messageReference = messageReference;
         this.type = type;
-        this.api = (channel != null) ? (JDAImpl) channel.getJDA() : null;
+        this.api = (JDAImpl) channel.getJDA();
         this.fromWebhook = fromWebhook;
         this.pinned = pinned;
         this.author = author;
@@ -121,6 +122,28 @@ public class ReceivedMessage extends AbstractMessage
     {
         this.interactionHook = hook;
         return this;
+    }
+
+    private void checkIntent()
+    {
+        // Checks whether access to content is limited and the message content intent is not enabled
+        if (!didContentIntentWarning && !api.isIntent(GatewayIntent.MESSAGE_CONTENT))
+        {
+            SelfUser selfUser = api.getSelfUser();
+            if (!Objects.equals(selfUser, author) && !mentions.getUsers().contains(selfUser) && isFromGuild() && content.isEmpty())
+            {
+                didContentIntentWarning = true;
+                JDAImpl.LOG.warn(
+                    "Attempting to access message content without GatewayIntent.MESSAGE_CONTENT.\n" +
+                    "Discord now requires to explicitly enable access to this using the MESSAGE_CONTENT intent.\n" +
+                    "Useful resources to learn more:\n" +
+                    "\t- https://support-dev.discord.com/hc/en-us/articles/4404772028055-Message-Content-Privileged-Intent-FAQ\n" +
+                    "\t- https://jda.wiki/using-jda/gateway-intents-and-member-cache-policy/\n" +
+                    "\t- https://jda.wiki/using-jda/troubleshooting/#im-getting-closecode4014-disallowed-intents\n" +
+                    "Or suppress this warning if this is intentional with Message.suppressContentIntentWarning()"
+                );
+            }
+        }
     }
 
     @Nonnull
@@ -331,7 +354,7 @@ public class ReceivedMessage extends AbstractMessage
         {
             if (altContent != null)
                 return altContent;
-            String tmp = content;
+            String tmp = getContentRaw();
             for (User user : mentions.getUsers())
             {
                 String name;
@@ -361,6 +384,7 @@ public class ReceivedMessage extends AbstractMessage
     @Override
     public String getContentRaw()
     {
+        checkIntent();
         return content;
     }
 
@@ -437,6 +461,7 @@ public class ReceivedMessage extends AbstractMessage
     @Override
     public List<Attachment> getAttachments()
     {
+        checkIntent();
         return attachments;
     }
 
@@ -444,6 +469,7 @@ public class ReceivedMessage extends AbstractMessage
     @Override
     public List<MessageEmbed> getEmbeds()
     {
+        checkIntent();
         return embeds;
     }
 
@@ -451,6 +477,7 @@ public class ReceivedMessage extends AbstractMessage
     @Override
     public List<ActionRow> getActionRows()
     {
+        checkIntent();
         return components;
     }
 
@@ -554,9 +581,8 @@ public class ReceivedMessage extends AbstractMessage
 
             GuildMessageChannel gChan = getGuildChannel();
             Member sMember = getGuild().getSelfMember();
-            if (!sMember.hasAccess(gChan))
-                throw new MissingAccessException(gChan, Permission.VIEW_CHANNEL);
-            else if (!sMember.hasPermission(gChan, Permission.MESSAGE_MANAGE))
+            Checks.checkAccess(sMember, gChan);
+            if (!sMember.hasPermission(gChan, Permission.MESSAGE_MANAGE))
                 throw new InsufficientPermissionException(gChan, Permission.MESSAGE_MANAGE);
         }
         if (!type.canDelete())
@@ -601,14 +627,11 @@ public class ReceivedMessage extends AbstractMessage
         if (getFlags().contains(MessageFlag.CROSSPOSTED))
             return new CompletedRestAction<>(getJDA(), this);
 
-        //TODO-v5: Maybe we'll have a `getNewsChannel()` getter that will do this check there?
         if (!(getChannel() instanceof NewsChannel))
             throw new IllegalStateException("This message was not sent in a news channel");
 
-        //TODO-v5: Double check: Is this actually how we crosspost? This, to me, reads as "take the message we just received and crosspost it to the _same exact channel we just received it in_. Makes no sense.
         NewsChannel newsChannel = (NewsChannel) getChannel();
-        if (!getGuild().getSelfMember().hasAccess(newsChannel))
-            throw new MissingAccessException(newsChannel, Permission.VIEW_CHANNEL);
+        Checks.checkAccess(getGuild().getSelfMember(), newsChannel);
         if (!getAuthor().equals(getJDA().getSelfUser()) && !getGuild().getSelfMember().hasPermission(newsChannel, Permission.MESSAGE_MANAGE))
             throw new InsufficientPermissionException(newsChannel, Permission.MESSAGE_MANAGE);
         return newsChannel.crosspostMessageById(getId());
@@ -649,7 +672,7 @@ public class ReceivedMessage extends AbstractMessage
     @Override
     public ThreadChannelAction createThreadChannel(String name)
     {
-        return ((IThreadContainer) getGuildChannel()).createThreadChannel(name, this.getIdLong());
+        return getGuildChannel().asThreadContainer().createThreadChannel(name, this.getIdLong());
     }
 
     @Override

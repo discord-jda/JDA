@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.api.interactions;
 
+import net.dv8tion.jda.api.entities.channel.unions.GuildMessageChannelUnion;
+import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback;
 import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback;
 import net.dv8tion.jda.api.interactions.components.Modal;
@@ -78,5 +80,16 @@ public interface ModalInteraction extends IReplyCallback, IMessageEditCallback
         return getValues().stream()
                 .filter(mapping -> mapping.getId().equals(id))
                 .findFirst().orElse(null);
+    }
+
+    @Nonnull
+    @Override
+    MessageChannelUnion getChannel();
+
+    @Nonnull
+    @Override
+    default GuildMessageChannelUnion getGuildChannel()
+    {
+        return (GuildMessageChannelUnion) IReplyCallback.super.getGuildChannel();
     }
 }

@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.SerializableData;
+import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.CheckReturnValue;
@@ -304,7 +305,7 @@ public class SelectOption implements SerializableData
             data.getString("value"),
             data.getString("description", null),
             data.getBoolean("default", false),
-            data.optObject("emoji").map(Emoji::fromData).orElse(null)
+            data.optObject("emoji").map(EntityBuilder::createEmoji).orElse(null)
         );
     }
 }

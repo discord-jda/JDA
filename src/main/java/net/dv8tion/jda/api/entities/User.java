@@ -36,7 +36,7 @@ import java.util.regex.Pattern;
  * Represents a Discord User.
  * Contains all publicly available information about a specific Discord User.
  *
- * <h2>Formattable</h2>
+ * <p><b>Formattable</b><br>
  * This interface extends {@link java.util.Formattable Formattable} and can be used with a {@link java.util.Formatter Formatter}
  * such as used by {@link String#format(String, Object...) String.format(String, Object...)}
  * or {@link java.io.PrintStream#printf(String, Object...) PrintStream.printf(String, Object...)}.
@@ -305,7 +305,7 @@ public interface User extends UserSnowflake
      * You can use {@link CacheRestAction#useCache(boolean) useCache(false)} to force the request for a new channel object,
      * which is rarely useful since the channel id never changes.
      *
-     * <h4>Examples</h4>
+     * <p><b>Examples</b><br>
      * <pre>{@code
      * // Send message without response handling
      * public void sendMessage(User user, String content) {
