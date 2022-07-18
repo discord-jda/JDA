@@ -294,6 +294,6 @@ public class GuildScheduledEventImpl implements GuildScheduledEvent
     @Override
     public String toString()
     {
-        return "GSchedEvent:" + getName() + '(' + id + ')';
+        return "GuildScheduledEvent:" + getName() + '(' + id + ')';
     }
 }
