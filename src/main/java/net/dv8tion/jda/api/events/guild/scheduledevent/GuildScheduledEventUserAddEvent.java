@@ -17,9 +17,14 @@ package net.dv8tion.jda.api.events.guild.scheduledevent;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.GuildScheduledEvent;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.internal.requests.CompletedRestAction;
 
+import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Indicates that a {@link net.dv8tion.jda.api.entities.User User} is interested/have subscribed to a {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvent}.
@@ -56,5 +61,68 @@ public class GuildScheduledEventUserAddEvent extends GenericGuildScheduledEventG
     public String getUserId()
     {
         return Long.toUnsignedString(userId);
+    }
+
+    /**
+     * The {@link net.dv8tion.jda.api.entities.User User} who was added to the {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvent}.
+     * <br>This might be missing if the user was not cached.
+     * Use {@link #retrieveUser()} to load the user.
+     *
+     * @return The added user or null if this information is missing
+     */
+    @Nullable
+    public User getUser()
+    {
+        return api.getUserById(userId);
+    }
+
+    /**
+     * The {@link net.dv8tion.jda.api.entities.Member Member} instance for the added user
+     * or {@code null} if the user is not in this guild.
+     * <br>This will also be {@code null} if the member is not available in the cache.
+     * Use {@link #retrieveMember()} to load the member.
+     *
+     * @return Member of the added user or null if they are no longer member of this guild
+     */
+    @Nullable
+    public Member getMember()
+    {
+        return guild.getMemberById(userId);
+    }
+
+    /**
+     * Retrieves the {@link User} who was added to the {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvent}.
+     * <br>If a user is known, this will return {@link #getUser()}.
+     *
+     * @return {@link RestAction} - Type: {@link User}
+     *
+     * @since  4.2.1
+     */
+    @Nonnull
+    @CheckReturnValue
+    public RestAction<User> retrieveUser()
+    {
+        User user = getUser();
+        if (user != null)
+            return new CompletedRestAction<>(getJDA(), user);
+        return getJDA().retrieveUserById(getUserIdLong());
+    }
+
+    /**
+     * Retrieves the {@link Member} who was added to the {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvent}.
+     * <br>If a member is known, this will return {@link #getMember()}.
+     *
+     * @return {@link RestAction} - Type: {@link Member}
+     *
+     * @since  4.2.1
+     */
+    @Nonnull
+    @CheckReturnValue
+    public RestAction<Member> retrieveMember()
+    {
+        Member member = getMember();
+        if (member != null)
+            return new CompletedRestAction<>(getJDA(), member);
+        return getGuild().retrieveMemberById(getUserIdLong());
     }
 }
