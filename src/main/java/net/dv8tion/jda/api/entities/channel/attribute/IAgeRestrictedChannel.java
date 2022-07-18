@@ -14,14 +14,20 @@
  * limitations under the License.
  */
 
+package net.dv8tion.jda.api.entities.channel.attribute;
+
+import net.dv8tion.jda.api.entities.GuildChannel;
+
 /**
- * Events that track updates for existing {@link net.dv8tion.jda.api.entities.emoji.RichCustomEmoji Custom Emojis}
- *
- * <p><b>Requirements</b><br>
- *
- * <p>These events require the {@link net.dv8tion.jda.api.utils.cache.CacheFlag#EMOJI EMOJI} CacheFlag to be enabled, which requires
- * the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_EMOJIS_AND_STICKERS GUILD_EMOJIS_AND_STICKERS} intent.
- *
- * <br>{@link net.dv8tion.jda.api.JDABuilder#createLight(String) createLight(String)} disables that CacheFlag by default!
+ * Channels which can be set to age-restricted.
+ * <br>These channels only allow users with a verified mature age to participate.
  */
-package net.dv8tion.jda.api.events.emoji.update;
+public interface IAgeRestrictedChannel extends GuildChannel
+{
+    /**
+     * Whether this channel is considered as age-restricted, also known as NSFW (Not-Safe-For-Work)
+     *
+     * @return True, If this channel is age-restricted by the official Discord Client
+     */
+    boolean isNSFW();
+}

@@ -21,6 +21,8 @@ import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.interactions.InteractionCallbackAction;
 import net.dv8tion.jda.api.utils.AttachedFile;
+import net.dv8tion.jda.api.utils.FileUpload;
+import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.interactions.InteractionImpl;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
@@ -55,9 +57,13 @@ public abstract class InteractionCallbackImpl<T> extends RestActionImpl<T> imple
         if (files.isEmpty())
             return getRequestBody(json);
 
-        // TODO: Handle file edits better
         MultipartBody.Builder body = AttachedFile.createMultipartBody(files, null);
-        body.addFormDataPart("payload_json", json.toString());
+        DataArray attachments = DataArray.empty();
+        for (int i = 0; i < files.size(); i++)
+            attachments.add(files.get(i).toAttachmentData(i));
+        if (json.isNull("data"))
+            json.put("data", DataObject.empty());
+        json.getObject("data").put("attachments", attachments);
         files.clear();
         return body.build();
     }
@@ -75,7 +81,7 @@ public abstract class InteractionCallbackImpl<T> extends RestActionImpl<T> imple
     @SuppressWarnings({"deprecation", "ResultOfMethodCallIgnored"})
     protected void finalize()
     {
-        if (files.isEmpty())
+        if (files.stream().noneMatch(FileUpload.class::isInstance))
             return;
         LOG.warn("Found open resources in interaction callback. Did you forget to close them?");
         closeResources();

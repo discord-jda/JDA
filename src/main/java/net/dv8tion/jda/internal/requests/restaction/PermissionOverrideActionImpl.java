@@ -20,7 +20,6 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
-import net.dv8tion.jda.api.exceptions.MissingAccessException;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.restaction.PermissionOverrideAction;
@@ -28,6 +27,7 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.entities.PermissionOverrideImpl;
 import net.dv8tion.jda.internal.entities.mixin.channel.attribute.IPermissionContainerMixin;
 import net.dv8tion.jda.internal.requests.Route;
+import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.PermissionUtil;
 import okhttp3.RequestBody;
 
@@ -83,10 +83,7 @@ public class PermissionOverrideActionImpl
         return () -> {
 
             Member selfMember = getGuild().getSelfMember();
-            if (!selfMember.hasPermission(channel, Permission.VIEW_CHANNEL))
-                throw new MissingAccessException(channel, Permission.VIEW_CHANNEL);
-            if (!selfMember.hasAccess(channel))
-                throw new MissingAccessException(channel, Permission.VOICE_CONNECT);
+            Checks.checkAccess(selfMember, channel);
             if (!selfMember.hasPermission(channel, Permission.MANAGE_PERMISSIONS))
                 throw new InsufficientPermissionException(channel, Permission.MANAGE_PERMISSIONS);
             return true;

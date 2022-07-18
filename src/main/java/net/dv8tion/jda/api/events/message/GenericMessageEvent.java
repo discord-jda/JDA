@@ -30,7 +30,7 @@ import javax.annotation.Nonnull;
  *
  * <p>Can be used to detect any MessageEvent.
  *
- * <h2>Requirements</h2>
+ * <p><b>Requirements</b><br>
  *
  * <p>These events require at least one of the following intents (Will not fire at all if neither is enabled):
  * <ul>

@@ -16,9 +16,6 @@
 
 package net.dv8tion.jda.internal.entities;
 
-import gnu.trove.map.TLongObjectMap;
-import gnu.trove.map.hash.TLongObjectHashMap;
-import gnu.trove.set.TLongSet;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.Region;
 import net.dv8tion.jda.api.audio.hooks.ConnectionStatus;
@@ -33,6 +30,7 @@ import net.dv8tion.jda.api.exceptions.HierarchyException;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.exceptions.ParsingException;
 import net.dv8tion.jda.api.exceptions.PermissionException;
+import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.PrivilegeConfig;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
@@ -66,7 +64,10 @@ import net.dv8tion.jda.internal.requests.restaction.order.ChannelOrderActionImpl
 import net.dv8tion.jda.internal.requests.restaction.order.RoleOrderActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.pagination.AuditLogPaginationActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.pagination.BanPaginationActionImpl;
-import net.dv8tion.jda.internal.utils.*;
+import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.Helpers;
+import net.dv8tion.jda.internal.utils.PermissionUtil;
+import net.dv8tion.jda.internal.utils.UnlockHook;
 import net.dv8tion.jda.internal.utils.cache.AbstractCacheView;
 import net.dv8tion.jda.internal.utils.cache.MemberCacheViewImpl;
 import net.dv8tion.jda.internal.utils.cache.SnowflakeCacheViewImpl;
@@ -75,9 +76,6 @@ import net.dv8tion.jda.internal.utils.concurrent.task.GatewayTask;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.time.OffsetDateTime;
 import java.time.temporal.TemporalAccessor;
 import java.util.*;
@@ -86,6 +84,16 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+import gnu.trove.map.TLongObjectMap;
+import gnu.trove.map.hash.TLongObjectHashMap;
+import gnu.trove.set.TLongSet;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
 
 public class GuildImpl implements Guild
 {
@@ -128,7 +136,7 @@ public class GuildImpl implements Guild
     private NSFWLevel nsfwLevel = NSFWLevel.UNKNOWN;
     private Timeout afkTimeout;
     private BoostTier boostTier = BoostTier.NONE;
-    private Locale preferredLocale = Locale.US;
+    private DiscordLocale preferredLocale = DiscordLocale.ENGLISH_US;
     private int memberCount;
     private boolean boostProgressBarEnabled;
 
@@ -440,7 +448,7 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public Locale getLocale()
+    public DiscordLocale getLocale()
     {
         return preferredLocale;
     }
@@ -1448,12 +1456,14 @@ public class GuildImpl implements Guild
             checkPosition(member);
 
         Route.CompiledRoute route = Route.Guilds.KICK_MEMBER.compile(getId(), user.getId());
+
+        AuditableRestAction<Void> action = new AuditableRestActionImpl<>(getJDA(), route);
         if (!Helpers.isBlank(reason))
         {
             Checks.check(reason.length() <= 512, "Reason cannot be longer than 512 characters.");
-            route = route.withQueryParams("reason", EncodingUtil.encodeUTF8(reason));
+            return action.reason(reason);
         }
-        return new AuditableRestActionImpl<>(getJDA(), route);
+        return action;
     }
 
     @Nonnull
@@ -1473,16 +1483,16 @@ public class GuildImpl implements Guild
         Route.CompiledRoute route = Route.Guilds.BAN.compile(getId(), user.getId());
         DataObject params = DataObject.empty();
 
-        if (!Helpers.isBlank(reason))
-        {
-            Checks.check(reason.length() <= 512, "Reason cannot be longer than 512 characters.");
-            params.put("reason", reason);
-        }
-
         if (delDays > 0)
             params.put("delete_message_days", delDays);
 
-        return new AuditableRestActionImpl<>(getJDA(), route, params);
+        AuditableRestAction<Void> action = new AuditableRestActionImpl<>(getJDA(), route, params);
+        if (!Helpers.isBlank(reason))
+        {
+            Checks.check(reason.length() <= 512, "Reason cannot be longer than 512 characters.");
+            return action.reason(reason);
+        }
+        return action;
     }
 
     @Nonnull
@@ -2095,9 +2105,9 @@ public class GuildImpl implements Guild
         return this;
     }
 
-    public GuildImpl setLocale(String locale)
+    public GuildImpl setLocale(DiscordLocale locale)
     {
-        this.preferredLocale = Locale.forLanguageTag(locale);
+        this.preferredLocale = locale;
         return this;
     }
 

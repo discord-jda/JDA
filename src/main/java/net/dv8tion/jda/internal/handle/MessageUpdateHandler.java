@@ -56,7 +56,6 @@ public class MessageUpdateHandler extends SocketHandler
         if ((content.getInt("flags", 0) & 64) != 0)
             return null;
 
-        //TODO: Rewrite this entire handler
         if (content.hasKey("author"))
         {
             if (content.hasKey("type"))
@@ -92,13 +91,15 @@ public class MessageUpdateHandler extends SocketHandler
             {
                 case EntityBuilder.MISSING_CHANNEL:
                 {
-                    final long channelId = content.getLong("channel_id");
+                    final long channelId = content.getUnsignedLong("channel_id");
+
+                    // If discord adds message support for unexpected types in the future, drop the event instead of caching it
                     if (guild != null)
                     {
-                        GuildChannel guildChannel = guild.getGuildChannelById(channelId);
-                        if (guildChannel != null)
+                        GuildChannel actual = guild.getGuildChannelById(channelId);
+                        if (actual != null)
                         {
-                            WebSocketClient.LOG.debug("Discarding MESSAGE_UPDATE event for unexpected channel type. Channel: {}", guildChannel);
+                            WebSocketClient.LOG.debug("Dropping MESSAGE_UPDATE for unexpected channel of type {}", actual.getType());
                             return null;
                         }
                     }

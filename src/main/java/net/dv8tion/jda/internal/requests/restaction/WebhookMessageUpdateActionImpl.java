@@ -23,13 +23,13 @@ import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.restaction.WebhookMessageUpdateAction;
+import net.dv8tion.jda.api.utils.AttachedFile;
 import net.dv8tion.jda.api.utils.AttachmentOption;
+import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
-import net.dv8tion.jda.internal.requests.Requester;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
-import net.dv8tion.jda.internal.utils.IOUtil;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 
@@ -38,7 +38,6 @@ import javax.annotation.Nullable;
 import java.io.InputStream;
 import java.util.*;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 public class WebhookMessageUpdateActionImpl<T>
     extends TriggerRestAction<T>
@@ -48,13 +47,11 @@ public class WebhookMessageUpdateActionImpl<T>
     private static final int EMBEDS = 1 << 1;
     private static final int FILES = 1 << 2;
     private static final int COMPONENTS = 1 << 3;
-    private static final int RETAINED_FILES = 1 << 4;
 
     private int set = 0;
     private final List<ActionRow> components = new ArrayList<>();
     private final List<MessageEmbed> embeds = new ArrayList<>();
-    private final List<String> retainedFiles = new ArrayList<>();
-    private final Map<String, InputStream> files = new HashMap<>();
+    private final List<AttachedFile> attachments = new ArrayList<>();
     private final Function<DataObject, T> transformer;
     private String content;
 
@@ -102,7 +99,7 @@ public class WebhookMessageUpdateActionImpl<T>
         Checks.noneNull(options, "AttachmentOptions");
         if (options.length > 0)
             name = "SPOILER_" + name;
-        this.files.put(name, data);
+        this.attachments.add(FileUpload.fromData(data, name));
         set |= FILES;
         return this;
     }
@@ -113,9 +110,13 @@ public class WebhookMessageUpdateActionImpl<T>
     {
         Checks.noneNull(ids, "IDs");
         ids.forEach(Checks::isSnowflake);
-        this.retainedFiles.clear();
-        this.retainedFiles.addAll(ids);
-        set |= RETAINED_FILES;
+        // Keep currently added files for upload, remove all attachments from the existing message
+        this.attachments.removeIf(file -> !(file instanceof FileUpload));
+        // Keep attachments with the given IDs
+        ids.stream()
+            .map(AttachedFile::fromAttachment)
+            .forEach(this.attachments::add);
+        set |= FILES;
         return this;
     }
 
@@ -158,27 +159,12 @@ public class WebhookMessageUpdateActionImpl<T>
             json.put("embeds", DataArray.fromCollection(embeds));
         if (isUpdate(COMPONENTS))
             json.put("components", DataArray.fromCollection(components));
-        if (isUpdate(RETAINED_FILES))
-        {
-            json.put("attachments", DataArray.fromCollection(
-                retainedFiles.stream()
-                    .map(id -> DataObject.empty().put("id", id))
-                    .collect(Collectors.toList()))
-            );
-        }
-
         if (!isUpdate(FILES))
             return getRequestBody(json);
-        MultipartBody.Builder body = new MultipartBody.Builder().setType(MultipartBody.FORM);
-        int i = 0;
-        for (Map.Entry<String, InputStream> file : files.entrySet())
-        {
-            RequestBody stream = IOUtil.createRequestBody(Requester.MEDIA_TYPE_OCTET, file.getValue());
-            body.addFormDataPart("file" + i++, file.getKey(), stream);
-        }
-        body.addFormDataPart("payload_json", json.toString());
-        files.clear();
-        return body.build();
+
+        MultipartBody body = AttachedFile.createMultipartBody(attachments, json).build();
+        attachments.clear();
+        return body;
     }
 
     @Override

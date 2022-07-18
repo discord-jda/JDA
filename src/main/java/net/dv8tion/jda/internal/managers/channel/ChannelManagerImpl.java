@@ -23,7 +23,6 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.Region;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
-import net.dv8tion.jda.api.exceptions.MissingAccessException;
 import net.dv8tion.jda.api.managers.channel.ChannelManager;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.entities.mixin.channel.attribute.IPermissionContainerMixin;
@@ -38,7 +37,6 @@ import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.EnumSet;
-import java.util.Set;
 
 @SuppressWarnings("unchecked") //We do a lot of (M) and (T) casting that we know is correct but the compiler warns about.
 public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager<T, M>> extends ManagerBase<M> implements ChannelManager<T, M>
@@ -213,21 +211,20 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
 
         if (isPermissionChecksEnabled() && !selfMember.hasPermission(Permission.ADMINISTRATOR))
         {
-            IPermissionContainer permChannel = (IPermissionContainer) channel;
-            if (!selfMember.hasPermission(permChannel, Permission.MANAGE_ROLES))
-                throw new InsufficientPermissionException(permChannel, Permission.MANAGE_PERMISSIONS); // We can't manage permissions at all!
+            if (!selfMember.hasPermission(channel, Permission.MANAGE_ROLES))
+                throw new InsufficientPermissionException(channel, Permission.MANAGE_PERMISSIONS); // We can't manage permissions at all!
 
             // Check on channel level to make sure we are actually able to set all the permissions!
-            long channelPermissions = PermissionUtil.getExplicitPermission(permChannel, selfMember, false);
+            long channelPermissions = PermissionUtil.getExplicitPermission(channel, selfMember, false);
             if ((channelPermissions & Permission.MANAGE_PERMISSIONS.getRawValue()) == 0) // This implies we can only set permissions the bot also has in the channel!
             {
                 //You can only set MANAGE_ROLES if you have ADMINISTRATOR or MANAGE_PERMISSIONS as an override on the channel
                 // That is why we explicitly exclude it here!
                 // This is by far the most complex and weird permission logic in the entire API...
-                long botPerms = PermissionUtil.getEffectivePermission(permChannel, selfMember) & ~Permission.MANAGE_ROLES.getRawValue();
+                long botPerms = PermissionUtil.getEffectivePermission(channel, selfMember) & ~Permission.MANAGE_ROLES.getRawValue();
                 EnumSet<Permission> missing = Permission.getPermissions((allow | deny) & ~botPerms);
                 if (!missing.isEmpty())
-                    throw new InsufficientPermissionException(permChannel, Permission.MANAGE_PERMISSIONS, "You must have Permission.MANAGE_PERMISSIONS on the channel explicitly in order to set permissions you don't already have!");
+                    throw new InsufficientPermissionException(channel, Permission.MANAGE_PERMISSIONS, "You must have Permission.MANAGE_PERMISSIONS on the channel explicitly in order to set permissions you don't already have!");
             }
         }
     }
@@ -573,15 +570,9 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
     {
         final Member selfMember = getGuild().getSelfMember();
 
-        if (getChannel() instanceof IPermissionContainer) {
-            IPermissionContainer permChannel = (IPermissionContainer) getChannel();
-            if (!selfMember.hasPermission(permChannel, Permission.VIEW_CHANNEL))
-                throw new MissingAccessException(permChannel, Permission.VIEW_CHANNEL);
-            if (!selfMember.hasAccess(permChannel))
-                throw new MissingAccessException(permChannel, Permission.VOICE_CONNECT);
-            if (!selfMember.hasPermission(permChannel, Permission.MANAGE_CHANNEL))
-                throw new InsufficientPermissionException(permChannel, Permission.MANAGE_CHANNEL);
-        }
+        Checks.checkAccess(selfMember, channel);
+        if (!selfMember.hasPermission(channel, Permission.MANAGE_CHANNEL))
+            throw new InsufficientPermissionException(channel, Permission.MANAGE_CHANNEL);
 
         return super.checkPermissions();
     }

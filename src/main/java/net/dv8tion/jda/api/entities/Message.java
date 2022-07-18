@@ -45,6 +45,7 @@ import net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationActi
 import net.dv8tion.jda.api.utils.AttachmentOption;
 import net.dv8tion.jda.api.utils.AttachmentProxy;
 import net.dv8tion.jda.internal.JDAImpl;
+import net.dv8tion.jda.internal.entities.ReceivedMessage;
 import net.dv8tion.jda.internal.requests.FunctionalCallback;
 import net.dv8tion.jda.internal.requests.Requester;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -70,7 +71,7 @@ import java.util.stream.Collectors;
  * <p><b>This type is not updated. JDA does not keep track of changes to messages, it is advised to do this via events such
  * as {@link net.dv8tion.jda.api.events.message.MessageUpdateEvent MessageUpdateEvent} and similar.</b>
  *
- * <h2>Message Differences</h2>
+ * <p><b>Message Differences</b><br>
  * There are 3 implementations of this interface in JDA.
  * <ol>
  *     <li><b>Received Message</b>
@@ -91,7 +92,7 @@ import java.util.stream.Collectors;
  * as per interface specifications.
  * <br>Specific operations may have specified information available in the {@code throws} javadoc.
  *
- * <h2>Formattable</h2>
+ * <p><b>Formattable</b><br>
  * This interface extends {@link java.util.Formattable Formattable} and can be used with a {@link java.util.Formatter Formatter}
  * such as used by {@link String#format(String, Object...) String.format(String, Object...)}
  * or {@link java.io.PrintStream#printf(String, Object...) PrintStream.printf(String, Object...)}.
@@ -204,7 +205,7 @@ public interface Message extends ISnowflake, Formattable
     /**
      * Pattern used to find {@link #getJumpUrl() Jump URLs} in strings.
      *
-     * <h4>Groups</h4>
+     * <p><b>Groups</b><br>
      * <table>
      *   <caption style="display: none">Javadoc is stupid, this is not a required tag</caption>
      *   <tr>
@@ -245,6 +246,14 @@ public interface Message extends ISnowflake, Formattable
             "/channels/(?<guild>\\d+)/(?<channel>\\d+)/(?<message>\\d+)" + // Path
             "(?:\\?\\S*)?(?:#\\S*)?",                                      // Useless query or URN appendix
             Pattern.CASE_INSENSITIVE);
+
+    /**
+     * Suppresses the warning for missing the {@link net.dv8tion.jda.api.requests.GatewayIntent#MESSAGE_CONTENT MESSAGE_CONTENT} intent and using one of the dependent getters.
+     */
+    static void suppressContentIntentWarning()
+    {
+        ReceivedMessage.didContentIntentWarning = true;
+    }
 
     /**
      * Returns the {@link MessageReference} for this Message. This will be null if this Message has no reference.
@@ -378,6 +387,8 @@ public interface Message extends ISnowflake, Formattable
      *
      * <p>If you want the actual Content (mentions as {@literal <@id>}), use {@link #getContentRaw()} instead
      *
+     * <p><b>Requires {@link net.dv8tion.jda.api.requests.GatewayIntent#MESSAGE_CONTENT GatewayIntent.MESSAGE_CONTENT}</b>
+     *
      * @throws UnsupportedOperationException
      *         If this is a Data Message (output of {@link MessageBuilder MessageBuilder})
      *
@@ -392,6 +403,8 @@ public interface Message extends ISnowflake, Formattable
      * received from Discord and can contain mentions specified by
      * <a href="https://discord.com/developers/docs/resources/channel#message-formatting" target="_blank">Discord's Message Formatting</a>.
      *
+     * <p><b>Requires {@link net.dv8tion.jda.api.requests.GatewayIntent#MESSAGE_CONTENT GatewayIntent.MESSAGE_CONTENT}</b>
+     *
      * @return The raw textual content of the message, containing unresolved Discord message formatting.
      */
     @Nonnull
@@ -401,6 +414,8 @@ public interface Message extends ISnowflake, Formattable
      * Gets the textual content of this message using {@link #getContentDisplay()} and then strips it of markdown characters
      * like {@literal *, **, __, ~~, ||} that provide text formatting. Any characters that match these but are not being used
      * for formatting are escaped to prevent possible formatting.
+     *
+     * <p><b>Requires {@link net.dv8tion.jda.api.requests.GatewayIntent#MESSAGE_CONTENT GatewayIntent.MESSAGE_CONTENT}</b>
      *
      * @throws UnsupportedOperationException
      *         If this is a Data Message (output of {@link MessageBuilder MessageBuilder})
@@ -563,6 +578,8 @@ public interface Message extends ISnowflake, Formattable
      * An immutable list of {@link net.dv8tion.jda.api.entities.Message.Attachment Attachments} that are attached to this message.
      * <br>Most likely this will only ever be 1 {@link net.dv8tion.jda.api.entities.Message.Attachment Attachment} at most.
      *
+     * <p><b>Requires {@link net.dv8tion.jda.api.requests.GatewayIntent#MESSAGE_CONTENT GatewayIntent.MESSAGE_CONTENT}</b>
+     *
      * @throws UnsupportedOperationException
      *         If this is a Data Message (output of {@link MessageBuilder MessageBuilder})
      *
@@ -572,8 +589,9 @@ public interface Message extends ISnowflake, Formattable
     List<Attachment> getAttachments();
 
     /**
-     * An immutable list of {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbeds} that are part of this
-     * Message.
+     * An immutable list of {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbeds} that are part of this Message.
+     *
+     * <p><b>Requires {@link net.dv8tion.jda.api.requests.GatewayIntent#MESSAGE_CONTENT GatewayIntent.MESSAGE_CONTENT}</b>
      *
      * @return Immutable list of all given MessageEmbeds.
      */
@@ -583,6 +601,8 @@ public interface Message extends ISnowflake, Formattable
     /**
      * Rows of interactive components such as {@link Button Buttons}.
      * <br>You can use {@link MessageAction#setActionRows(ActionRow...)} to update these.
+     *
+     * <p><b>Requires {@link net.dv8tion.jda.api.requests.GatewayIntent#MESSAGE_CONTENT GatewayIntent.MESSAGE_CONTENT}</b>
      *
      * @return Immutable {@link List} of {@link ActionRow}
      *
@@ -594,6 +614,8 @@ public interface Message extends ISnowflake, Formattable
 
     /**
      * All {@link Button Buttons} attached to this message.
+     *
+     * <p><b>Requires {@link net.dv8tion.jda.api.requests.GatewayIntent#MESSAGE_CONTENT GatewayIntent.MESSAGE_CONTENT}</b>
      *
      * @return Immutable {@link List} of {@link Button Buttons}
      */
@@ -608,6 +630,8 @@ public interface Message extends ISnowflake, Formattable
 
     /**
      * Gets the {@link Button} with the specified ID.
+     *
+     * <p><b>Requires {@link net.dv8tion.jda.api.requests.GatewayIntent#MESSAGE_CONTENT GatewayIntent.MESSAGE_CONTENT}</b>
      *
      * @param  id
      *         The id of the button
@@ -628,6 +652,8 @@ public interface Message extends ISnowflake, Formattable
 
     /**
      * All {@link Button Buttons} with the specified label attached to this message.
+     *
+     * <p><b>Requires {@link net.dv8tion.jda.api.requests.GatewayIntent#MESSAGE_CONTENT GatewayIntent.MESSAGE_CONTENT}</b>
      *
      * @param  label
      *         The button label
@@ -837,7 +863,7 @@ public interface Message extends ISnowflake, Formattable
      *     <br>The request was attempted after the channel was deleted.</li>
      * </ul>
      *
-     * <h4>Example</h4>
+     * <p><b>Example</b><br>
      * <pre>{@code
      * List<ActionRow> rows = Arrays.asList(
      *   ActionRow.of(Button.success("prompt:accept", "Accept"), Button.danger("prompt:reject", "Reject")), // 1st row below message
@@ -891,7 +917,7 @@ public interface Message extends ISnowflake, Formattable
      *     <br>The request was attempted after the channel was deleted.</li>
      * </ul>
      *
-     * <h4>Example</h4>
+     * <p><b>Example</b><br>
      * <pre>{@code
      * message.editMessageComponents(
      *   ActionRow.of(Button.success("prompt:accept", "Accept"), Button.danger("prompt:reject", "Reject")), // 1st row below message
@@ -1415,6 +1441,8 @@ public interface Message extends ISnowflake, Formattable
      *
      * @throws java.lang.UnsupportedOperationException
      *         If this is a Data Message (output of {@link MessageBuilder MessageBuilder})
+     * @throws MissingAccessException
+     *         If the currently logged in account does not have {@link Member#hasAccess(GuildChannel) access} in this channel.
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If this Message was not sent by the currently logged in account, the Message was sent in a
      *         {@link GuildChannel GuildChannel}, and the currently logged in account
@@ -1929,6 +1957,8 @@ public interface Message extends ISnowflake, Formattable
      *             <li>If the channel is not a {@link NewsChannel}.</li>
      *             <li>If the message is ephemeral.</li>
      *         </ul>
+     * @throws MissingAccessException
+     *         If the currently logged in account does not have {@link Member#hasAccess(GuildChannel) access} in this channel.
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have
      *         {@link Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} in this channel
@@ -2333,7 +2363,7 @@ public interface Message extends ISnowflake, Formattable
          * Enqueues a request to retrieve the contents of this Attachment.
          * <br><b>The receiver is expected to close the retrieved {@link java.io.InputStream}.</b>
          *
-         * <h4>Example</h4>
+         * <p><b>Example</b><br>
          * <pre>{@code
          * public void printContents(Message.Attachment attachment)
          * {
@@ -2390,7 +2420,7 @@ public interface Message extends ISnowflake, Formattable
          * <br>This will download the file using the {@link net.dv8tion.jda.api.JDA#getCallbackPool() callback pool}.
          * Alternatively you can use {@link #retrieveInputStream()} and use a continuation with a different executor.
          *
-         * <h4>Example</h4>
+         * <p><b>Example</b><br>
          * <pre>{@code
          * public void saveLocally(Message.Attachment attachment)
          * {
@@ -2422,7 +2452,7 @@ public interface Message extends ISnowflake, Formattable
          * <br>This will download the file using the {@link net.dv8tion.jda.api.JDA#getCallbackPool() callback pool}.
          * Alternatively you can use {@link #retrieveInputStream()} and use a continuation with a different executor.
          *
-         * <h4>Example</h4>
+         * <p><b>Example</b><br>
          * <pre>{@code
          * public void saveLocally(Message.Attachment attachment)
          * {
@@ -2461,7 +2491,7 @@ public interface Message extends ISnowflake, Formattable
          * <br>This will download the file using the {@link net.dv8tion.jda.api.JDA#getCallbackPool() callback pool}.
          * Alternatively you can use {@link #retrieveInputStream()} and use a continuation with a different executor.
          *
-         * <h4>Example</h4>
+         * <p><b>Example</b><br>
          * <pre>{@code
          * public void saveLocally(Message.Attachment attachment)
          * {
@@ -2532,7 +2562,7 @@ public interface Message extends ISnowflake, Formattable
          * <br>This will download the file using the {@link net.dv8tion.jda.api.JDA#getCallbackPool() callback pool}.
          * Alternatively you can use {@link #retrieveInputStream()} and use a continuation with a different executor.
          *
-         * <h4>Example</h4>
+         * <p><b>Example</b><br>
          * <pre>{@code
          * public void changeAvatar(Message.Attachment attachment)
          * {

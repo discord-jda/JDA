@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.internal.interactions;
 
+import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.interactions.ModalInteraction;
 import net.dv8tion.jda.api.interactions.modals.ModalMapping;
 import net.dv8tion.jda.api.requests.restaction.interactions.MessageEditCallbackAction;
@@ -76,5 +77,13 @@ public class ModalInteractionImpl extends DeferrableInteractionImpl implements M
     public MessageEditCallbackAction deferEdit()
     {
         return new MessageEditCallbackActionImpl(hook);
+    }
+
+    @Nonnull
+    @Override
+    @SuppressWarnings("ConstantConditions")
+    public MessageChannelUnion getChannel()
+    {
+        return (MessageChannelUnion) super.getChannel();
     }
 }

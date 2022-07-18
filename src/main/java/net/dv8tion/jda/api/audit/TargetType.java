@@ -24,7 +24,7 @@ package net.dv8tion.jda.api.audit;
  * or {@link net.dv8tion.jda.api.audit.AuditLogEntry#getTargetType() AuditLogEntry.getTargetType()}.
  * <br>This helps to decide what entity type the target id of an AuditLogEntry refers to.
  *
- * <h2>Example</h2>
+ * <p><b>Example</b><br>
  * If {@code entry.getTargetType()} is type {@link #GUILD}
  * <br>Then the target id returned by {@code entry.getTargetId()} and {@code entry.getTargetIdLong()}
  * can be used with {@link net.dv8tion.jda.api.JDA#getGuildById(long) JDA.getGuildById(id)}
