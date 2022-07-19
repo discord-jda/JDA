@@ -30,6 +30,7 @@ import javax.annotation.Nonnull;
  * <ul>
  *     <li>{@link TextChannel}</li>
  *     <li>{@link NewsChannel}</li>
+ *     <li>{@link ForumChannel}</li>
  * </ul>
  */
 public interface IWebhookContainerUnion extends IWebhookContainer

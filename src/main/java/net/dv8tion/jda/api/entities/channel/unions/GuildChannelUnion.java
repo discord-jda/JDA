@@ -33,6 +33,7 @@ import javax.annotation.Nonnull;
  *     <li>{@link ThreadChannel}</li>
  *     <li>{@link VoiceChannel}</li>
  *     <li>{@link StageChannel}</li>
+ *     <li>{@link ForumChannel}</li>
  *     <li>{@link Category}</li>
  * </ul>
  */
