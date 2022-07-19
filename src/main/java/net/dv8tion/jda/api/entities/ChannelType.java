@@ -56,6 +56,8 @@ public enum ChannelType
     GUILD_PUBLIC_THREAD(11, -1, true),
     GUILD_PRIVATE_THREAD(12, -1, true),
 
+    FORUM(15, 0, true),
+
     /**
      * Unknown Discord channel type. Should never happen and would only possibly happen if Discord implemented a new
      * channel type and JDA had yet to implement support for it.

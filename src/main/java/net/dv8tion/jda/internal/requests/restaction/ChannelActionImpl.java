@@ -385,6 +385,9 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
             case CATEGORY:
                 channel = builder.createCategory(response.getObject(), guild.getIdLong());
                 break;
+            case FORUM:
+                channel = builder.createForumChannel(response.getObject(), guild.getIdLong());
+                break;
             default:
                 request.onFailure(new IllegalStateException("Created channel of unknown type!"));
                 return;

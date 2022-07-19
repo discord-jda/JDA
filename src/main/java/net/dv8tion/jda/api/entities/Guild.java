@@ -19,6 +19,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.Region;
 import net.dv8tion.jda.api.entities.channel.IGuildChannelContainer;
+import net.dv8tion.jda.api.entities.channel.concrete.ForumChannel;
 import net.dv8tion.jda.api.entities.channel.unions.DefaultGuildChannelUnion;
 import net.dv8tion.jda.api.entities.emoji.CustomEmoji;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
@@ -57,6 +58,9 @@ import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.concurrent.task.GatewayTask;
 
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.time.Duration;
 import java.time.temporal.TemporalAccessor;
 import java.util.*;
@@ -64,10 +68,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
-
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 /**
  * Represents a Discord {@link net.dv8tion.jda.api.entities.Guild Guild}.
@@ -1274,6 +1274,10 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     @Nonnull
     @Override
     SortedSnowflakeCacheView<VoiceChannel> getVoiceChannelCache();
+
+    @Nonnull
+    @Override
+    SortedSnowflakeCacheView<ForumChannel> getForumChannelCache();
 
     /**
      * Populated list of {@link GuildChannel channels} for this guild.
@@ -4146,6 +4150,70 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     @Nonnull
     @CheckReturnValue
     ChannelAction<StageChannel> createStageChannel(@Nonnull String name, @Nullable Category parent);
+
+    /**
+     * Creates a new {@link net.dv8tion.jda.api.entities.StageChannel StageChannel} in this Guild.
+     * For this to be successful, the logged in account has to have the {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} Permission.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
+     * the returned {@link RestAction RestAction} include the following:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The channel could not be created due to a permission discrepancy</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MAX_CHANNELS MAX_CHANNELS}
+     *     <br>The maximum number of channels were exceeded</li>
+     * </ul>
+     *
+     * @param  name
+     *         The name of the StageChannel to create
+     *
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL} permission
+     * @throws IllegalArgumentException
+     *         If the provided name is {@code null} or empty or greater than 100 characters in length
+     *
+     * @return A specific {@link ChannelAction ChannelAction}
+     *         <br>This action allows to set fields for the new StageChannel before creating it
+     */
+    @Nonnull
+    @CheckReturnValue
+    default ChannelAction<ForumChannel> createForumChannel(@Nonnull String name)
+    {
+        return createForumChannel(name, null);
+    }
+
+    /**
+     * Creates a new {@link ForumChannel} in this Guild.
+     * For this to be successful, the logged in account has to have the {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} Permission.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
+     * the returned {@link RestAction RestAction} include the following:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The channel could not be created due to a permission discrepancy</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MAX_CHANNELS MAX_CHANNELS}
+     *     <br>The maximum number of channels were exceeded</li>
+     * </ul>
+     *
+     * @param  name
+     *         The name of the ForumChannel to create
+     * @param  parent
+     *         The optional parent category for this channel, or null
+     *
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL} permission
+     * @throws IllegalArgumentException
+     *         If the provided name is {@code null} or empty or greater than 100 characters in length;
+     *         or the provided parent is not in the same guild.
+     *
+     * @return A specific {@link ChannelAction ChannelAction}
+     *         <br>This action allows to set fields for the new ForumChannel before creating it
+     */
+    @Nonnull
+    @CheckReturnValue
+    ChannelAction<ForumChannel> createForumChannel(@Nonnull String name, @Nullable Category parent);
 
     /**
      * Creates a new {@link net.dv8tion.jda.api.entities.Category Category} in this Guild.

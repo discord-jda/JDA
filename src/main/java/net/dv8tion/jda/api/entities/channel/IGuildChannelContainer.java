@@ -18,6 +18,7 @@ package net.dv8tion.jda.api.entities.channel;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.channel.concrete.ForumChannel;
 import net.dv8tion.jda.api.sharding.ShardManager;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.cache.CacheView;
@@ -965,5 +966,119 @@ public interface IGuildChannelContainer
     default List<VoiceChannel> getVoiceChannels()
     {
         return getVoiceChannelCache().asList();
+    }
+
+
+    // ForumChannels
+
+
+    /**
+     * {@link net.dv8tion.jda.api.utils.cache.SnowflakeCacheView SnowflakeCacheView} of {@link ThreadChannel}.
+     *
+     * <p>This getter exists on any instance of {@link IGuildChannelContainer} and only checks the caches with the relevant scoping.
+     * For {@link Guild}, {@link JDA}, or {@link ShardManager},
+     * this returns the relevant channel with respect to the cache within each of those objects.
+     * For a guild, this would mean it only returns channels within the same guild.
+     * <br>If this is called on {@link JDA} or {@link ShardManager}, this may return null immediately after building, because the cache isn't initialized yet.
+     * To make sure the cache is initialized after building your {@link JDA} instance, you can use {@link JDA#awaitReady()}.
+     *
+     * @return {@link net.dv8tion.jda.api.utils.cache.SnowflakeCacheView SnowflakeCacheView}
+     */
+    @Nonnull
+    SnowflakeCacheView<ForumChannel> getForumChannelCache();
+
+    /**
+     * Gets a list of all {@link net.dv8tion.jda.api.entities.ThreadChannel ThreadChannels}
+     * in this Guild that have the same name as the one provided.
+     * <br>If there are no channels with the provided name, then this returns an empty list.
+     *
+     * <p>This getter exists on any instance of {@link IGuildChannelContainer} and only checks the caches with the relevant scoping.
+     * For {@link Guild}, {@link JDA}, or {@link ShardManager},
+     * this returns the relevant channel with respect to the cache within each of those objects.
+     * For a guild, this would mean it only returns channels within the same guild.
+     * <br>If this is called on {@link JDA} or {@link ShardManager}, this may return null immediately after building, because the cache isn't initialized yet.
+     * To make sure the cache is initialized after building your {@link JDA} instance, you can use {@link JDA#awaitReady()}.
+     *
+     * @param  name
+     *         The name used to filter the returned {@link ThreadChannel ThreadChannels}.
+     * @param  ignoreCase
+     *         Determines if the comparison ignores case when comparing. True - case insensitive.
+     *
+     * @return Possibly-empty immutable list of all ThreadChannel names that match the provided name.
+     */
+    @Nonnull
+    default List<ForumChannel> getForumChannelsByName(@Nonnull String name, boolean ignoreCase)
+    {
+        return getForumChannelCache().getElementsByName(name, ignoreCase);
+    }
+
+    /**
+     * Gets a {@link ThreadChannel ThreadChannel} that has the same id as the one provided.
+     * <br>If there is no channel with an id that matches the provided one, then this returns {@code null}.
+     *
+     * <p>This getter exists on any instance of {@link IGuildChannelContainer} and only checks the caches with the relevant scoping.
+     * For {@link Guild}, {@link JDA}, or {@link ShardManager},
+     * this returns the relevant channel with respect to the cache within each of those objects.
+     * For a guild, this would mean it only returns channels within the same guild.
+     * <br>If this is called on {@link JDA} or {@link ShardManager}, this may return null immediately after building, because the cache isn't initialized yet.
+     * To make sure the cache is initialized after building your {@link JDA} instance, you can use {@link JDA#awaitReady()}.
+     *
+     * @param  id
+     *         The id of the {@link ThreadChannel ThreadChannel}.
+     *
+     * @throws java.lang.NumberFormatException
+     *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
+     *
+     * @return Possibly-null {@link ThreadChannel ThreadChannel} with matching id.
+     */
+    @Nullable
+    default ForumChannel getForumChannelById(@Nonnull String id)
+    {
+        return getForumChannelCache().getElementById(id);
+    }
+
+    /**
+     * Gets a {@link net.dv8tion.jda.api.entities.ThreadChannel ThreadChannel} that has the same id as the one provided.
+     * <br>If there is no channel with an id that matches the provided one, then this returns {@code null}.
+     *
+     * <p>This getter exists on any instance of {@link IGuildChannelContainer} and only checks the caches with the relevant scoping.
+     * For {@link Guild}, {@link JDA}, or {@link ShardManager},
+     * this returns the relevant channel with respect to the cache within each of those objects.
+     * For a guild, this would mean it only returns channels within the same guild.
+     * <br>If this is called on {@link JDA} or {@link ShardManager}, this may return null immediately after building, because the cache isn't initialized yet.
+     * To make sure the cache is initialized after building your {@link JDA} instance, you can use {@link JDA#awaitReady()}.
+     *
+     * @param  id
+     *         The id of the {@link ThreadChannel ThreadChannel}.
+     *
+     * @return Possibly-null {@link ThreadChannel ThreadChannel} with matching id.
+     */
+    @Nullable
+    default ForumChannel getForumChannelById(long id)
+    {
+        return getForumChannelCache().getElementById(id);
+    }
+
+    /**
+     * Gets all {@link ThreadChannel ThreadChannel} in the cache.
+     *
+     * <p>This copies the backing store into a list. This means every call
+     * creates a new list with O(n) complexity. It is recommended to store this into
+     * a local variable or use {@link #getThreadChannelCache()} and use its more efficient
+     * versions of handling these values.
+     *
+     * <p>This getter exists on any instance of {@link IGuildChannelContainer} and only checks the caches with the relevant scoping.
+     * For {@link Guild}, {@link JDA}, or {@link ShardManager},
+     * this returns the relevant channel with respect to the cache within each of those objects.
+     * For a guild, this would mean it only returns channels within the same guild.
+     * <br>If this is called on {@link JDA} or {@link ShardManager}, this may return null immediately after building, because the cache isn't initialized yet.
+     * To make sure the cache is initialized after building your {@link JDA} instance, you can use {@link JDA#awaitReady()}.
+     *
+     * @return An immutable List of {@link ThreadChannel ThreadChannels}.
+     */
+    @Nonnull
+    default List<ForumChannel> getForumChannels()
+    {
+        return getForumChannelCache().asList();
     }
 }

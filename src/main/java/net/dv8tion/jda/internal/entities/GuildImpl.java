@@ -16,10 +16,14 @@
 
 package net.dv8tion.jda.internal.entities;
 
+import gnu.trove.map.TLongObjectMap;
+import gnu.trove.map.hash.TLongObjectHashMap;
+import gnu.trove.set.TLongSet;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.Region;
 import net.dv8tion.jda.api.audio.hooks.ConnectionStatus;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.channel.concrete.ForumChannel;
 import net.dv8tion.jda.api.entities.channel.unions.DefaultGuildChannelUnion;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import net.dv8tion.jda.api.entities.sticker.GuildSticker;
@@ -73,7 +77,12 @@ import net.dv8tion.jda.internal.utils.cache.MemberCacheViewImpl;
 import net.dv8tion.jda.internal.utils.cache.SnowflakeCacheViewImpl;
 import net.dv8tion.jda.internal.utils.cache.SortedSnowflakeCacheViewImpl;
 import net.dv8tion.jda.internal.utils.concurrent.task.GatewayTask;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
 
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.time.OffsetDateTime;
 import java.time.temporal.TemporalAccessor;
 import java.util.*;
@@ -82,16 +91,6 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
-import gnu.trove.map.TLongObjectMap;
-import gnu.trove.map.hash.TLongObjectHashMap;
-import gnu.trove.set.TLongSet;
-import okhttp3.MediaType;
-import okhttp3.MultipartBody;
 
 public class GuildImpl implements Guild
 {
@@ -104,6 +103,7 @@ public class GuildImpl implements Guild
     private final SortedSnowflakeCacheViewImpl<NewsChannel> newsChannelCache = new SortedSnowflakeCacheViewImpl<>(NewsChannel.class, Channel::getName, Comparator.naturalOrder());
     private final SortedSnowflakeCacheViewImpl<StageChannel> stageChannelCache = new SortedSnowflakeCacheViewImpl<>(StageChannel.class, Channel::getName, Comparator.naturalOrder());
     private final SortedSnowflakeCacheViewImpl<ThreadChannel> threadChannelCache = new SortedSnowflakeCacheViewImpl<>(ThreadChannel.class, Channel::getName, Comparator.naturalOrder());
+    private final SortedSnowflakeCacheViewImpl<ForumChannel> forumChannelCache = new SortedSnowflakeCacheViewImpl<>(ForumChannel.class, Channel::getName, Comparator.naturalOrder());
     private final SortedSnowflakeCacheViewImpl<Role> roleCache = new SortedSnowflakeCacheViewImpl<>(Role.class, Role::getName, Comparator.reverseOrder());
     private final SnowflakeCacheViewImpl<RichCustomEmoji> emojicache = new SnowflakeCacheViewImpl<>(RichCustomEmoji.class, RichCustomEmoji::getName);
     private final SnowflakeCacheViewImpl<GuildSticker> stickerCache = new SnowflakeCacheViewImpl<>(GuildSticker.class, GuildSticker::getName);
@@ -641,6 +641,13 @@ public class GuildImpl implements Guild
     public SortedSnowflakeCacheView<VoiceChannel> getVoiceChannelCache()
     {
         return voiceChannelCache;
+    }
+
+    @Nonnull
+    @Override
+    public SortedSnowflakeCacheView<ForumChannel> getForumChannelCache()
+    {
+        return null;
     }
 
     @Nonnull
@@ -1708,6 +1715,18 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
+    public ChannelAction<ForumChannel> createForumChannel(@Nonnull String name, Category parent)
+    {
+        checkCanCreateChannel(parent);
+
+        Checks.notBlank(name, "Name");
+        name = name.trim();
+        Checks.notLonger(name, 100, "Name");
+        return new ChannelActionImpl<>(ForumChannel.class, name, this, ChannelType.FORUM).setParent(parent);
+    }
+
+    @Nonnull
+    @Override
     public ChannelAction<Category> createCategory(@Nonnull String name)
     {
         checkPermission(Permission.MANAGE_CHANNEL);
@@ -2130,6 +2149,11 @@ public class GuildImpl implements Guild
     public SortedSnowflakeCacheViewImpl<ThreadChannel> getThreadChannelsView()
     {
         return threadChannelCache;
+    }
+
+    public SortedSnowflakeCacheViewImpl<ForumChannel> getForumChannelsView()
+    {
+        return forumChannelCache;
     }
 
     public SortedSnowflakeCacheViewImpl<Role> getRolesView()

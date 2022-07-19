@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.JDA.Status;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.IGuildChannelContainer;
+import net.dv8tion.jda.api.entities.channel.concrete.ForumChannel;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.requests.RestAction;
@@ -799,6 +800,13 @@ public interface ShardManager extends IGuildChannelContainer
     default SnowflakeCacheView<NewsChannel> getNewsChannelCache()
     {
         return CacheView.allSnowflakes(() -> this.getShardCache().stream().map(JDA::getNewsChannelCache));
+    }
+
+    @Nonnull
+    @Override
+    default SnowflakeCacheView<ForumChannel> getForumChannelCache()
+    {
+        return CacheView.allSnowflakes(() -> this.getShardCache().stream().map(JDA::getForumChannelCache));
     }
 
     /**

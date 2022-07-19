@@ -151,6 +151,72 @@ public class ChannelUpdateHandler extends SocketHandler
                 }
                 break;
             }
+            case FORUM:
+            {
+                final String topic = content.getString("topic", null);
+
+                ForumChannelImpl forumChannel = (ForumChannelImpl) channel;
+
+                //If any properties changed, update the values and fire the proper events.
+                final long oldParentId = forumChannel.getParentCategoryIdLong();
+                final String oldName = forumChannel.getName();
+                final String oldTopic = forumChannel.getTopic();
+                final int oldPosition = forumChannel.getPositionRaw();
+                final boolean oldNsfw = forumChannel.isNSFW();
+                final int oldSlowmode = forumChannel.getSlowmode();
+                if (!Objects.equals(oldName, name))
+                {
+                    forumChannel.setName(name);
+                    getJDA().handleEvent(
+                            new ChannelUpdateNameEvent(
+                                    getJDA(), responseNumber,
+                                    forumChannel, oldName, name));
+                }
+                if (oldParentId != parentId)
+                {
+                    final Category oldParent = forumChannel.getParentCategory();
+                    forumChannel.setParentCategory(parentId);
+                    getJDA().handleEvent(
+                            new ChannelUpdateParentEvent(
+                                    getJDA(), responseNumber,
+                                    forumChannel, oldParent, forumChannel.getParentCategory()));
+                }
+                if (!Objects.equals(oldTopic, topic))
+                {
+                    forumChannel.setTopic(topic);
+                    getJDA().handleEvent(
+                            new ChannelUpdateTopicEvent(
+                                    getJDA(), responseNumber,
+                                    forumChannel, oldTopic, topic));
+                }
+                if (oldPosition != position)
+                {
+                    forumChannel.setPosition(position);
+                    getJDA().handleEvent(
+                            new ChannelUpdatePositionEvent(
+                                    getJDA(), responseNumber,
+                                    forumChannel, oldPosition, position));
+                }
+
+                if (oldNsfw != nsfw)
+                {
+                    forumChannel.setNSFW(nsfw);
+                    getJDA().handleEvent(
+                            new ChannelUpdateNSFWEvent(
+                                    getJDA(), responseNumber,
+                                    forumChannel, oldNsfw, nsfw));
+                }
+
+                if (oldSlowmode != slowmode)
+                {
+                    forumChannel.setSlowmode(slowmode);
+                    getJDA().handleEvent(
+                            new ChannelUpdateSlowmodeEvent(
+                                    getJDA(), responseNumber,
+                                    forumChannel, oldSlowmode, slowmode));
+                }
+                break;
+            }
             case NEWS:
             {
                 final String topic = content.getString("topic", null);

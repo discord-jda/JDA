@@ -29,6 +29,7 @@ import net.dv8tion.jda.api.entities.Guild.NotificationLevel;
 import net.dv8tion.jda.api.entities.Guild.Timeout;
 import net.dv8tion.jda.api.entities.Guild.VerificationLevel;
 import net.dv8tion.jda.api.entities.MessageEmbed.*;
+import net.dv8tion.jda.api.entities.channel.concrete.ForumChannel;
 import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import net.dv8tion.jda.api.entities.sticker.*;
@@ -366,6 +367,9 @@ public class EntityBuilder
             break;
         case CATEGORY:
             createCategory(guildObj, channelData, guildObj.getIdLong());
+            break;
+        case FORUM:
+            createForumChannel(guildObj, channelData, guildObj.getIdLong());
             break;
         default:
             LOG.debug("Cannot create channel for type " + channelData.getInt("type"));
@@ -1214,6 +1218,47 @@ public class EntityBuilder
             .setFlags(json.getInt("flags"));
 
         return threadMember;
+    }
+
+    public ForumChannel createForumChannel(DataObject json, long guildId)
+    {
+        return createForumChannel(null, json, guildId);
+    }
+
+    public ForumChannel createForumChannel(GuildImpl guild, DataObject json, long guildId)
+    {
+        boolean playbackCache = false;
+        final long id = json.getLong("id");
+        ForumChannelImpl channel = (ForumChannelImpl) getJDA().getForumChannelsView().get(id);
+        if (channel == null)
+        {
+            if (guild == null)
+                guild = (GuildImpl) getJDA().getGuildsView().get(guildId);
+            SnowflakeCacheViewImpl<ForumChannel>
+                    guildView = guild.getForumChannelsView(),
+                    globalView = getJDA().getForumChannelsView();
+            try (
+                    UnlockHook vlock = guildView.writeLock();
+                    UnlockHook jlock = globalView.writeLock())
+            {
+                channel = new ForumChannelImpl(id, guild);
+                guildView.getMap().put(id, channel);
+                playbackCache = globalView.getMap().put(id, channel) == null;
+            }
+        }
+
+        channel
+                .setParentCategory(json.getLong("parent_id", 0))
+                .setName(json.getString("name"))
+                .setTopic(json.getString("topic", null))
+                .setPosition(json.getInt("position"))
+                .setSlowmode(json.getInt("rate_limit_per_user", 0))
+                .setNSFW(json.getBoolean("nsfw"));
+
+        createOverridesPass(channel, json.getArray("permission_overwrites"));
+        if (playbackCache)
+            getJDA().getEventCache().playbackCache(EventCache.Type.CHANNEL, id);
+        return channel;
     }
 
     public PrivateChannel createPrivateChannel(DataObject json)

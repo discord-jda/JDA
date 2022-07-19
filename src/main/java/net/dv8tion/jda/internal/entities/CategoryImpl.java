@@ -18,6 +18,7 @@ package net.dv8tion.jda.internal.entities;
 
 import gnu.trove.map.TLongObjectMap;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.channel.concrete.ForumChannel;
 import net.dv8tion.jda.api.managers.channel.concrete.CategoryManager;
 import net.dv8tion.jda.api.requests.restaction.ChannelAction;
 import net.dv8tion.jda.api.requests.restaction.order.CategoryOrderAction;
@@ -78,6 +79,14 @@ public class CategoryImpl extends AbstractGuildChannelImpl<CategoryImpl> impleme
     public ChannelAction<StageChannel> createStageChannel(@Nonnull String name)
     {
         ChannelAction<StageChannel> action = getGuild().createStageChannel(name, this);
+        return trySync(action);
+    }
+
+    @Nonnull
+    @Override
+    public ChannelAction<ForumChannel> createForumChannel(@Nonnull String name)
+    {
+        ChannelAction<ForumChannel> action = getGuild().createForumChannel(name, this);
         return trySync(action);
     }
 

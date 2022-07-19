@@ -18,6 +18,7 @@ package net.dv8tion.jda.internal.entities;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.channel.concrete.ForumChannel;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.mixin.channel.middleman.ChannelMixin;
 import net.dv8tion.jda.internal.utils.Helpers;
@@ -107,6 +108,13 @@ public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> impl
     public Category asCategory()
     {
         return Helpers.safeChannelCast(this, Category.class);
+    }
+
+    @Nonnull
+    @Override
+    public ForumChannel asForumChannel()
+    {
+        return Helpers.safeChannelCast(this, ForumChannel.class);
     }
 
     @Nonnull

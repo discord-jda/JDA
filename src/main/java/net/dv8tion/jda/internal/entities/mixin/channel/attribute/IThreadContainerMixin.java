@@ -43,6 +43,7 @@ public interface IThreadContainerMixin<T extends IThreadContainerMixin<T>> exten
     default ThreadChannelAction createThreadChannel(String name, boolean isPrivate)
     {
         checkPermission(Permission.VIEW_CHANNEL);
+        // TODO: Update these checks for forums!
         if (isPrivate)
         {
             if (!getGuild().getFeatures().contains("PRIVATE_THREADS"))
