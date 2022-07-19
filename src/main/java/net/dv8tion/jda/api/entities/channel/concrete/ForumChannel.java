@@ -16,16 +16,19 @@
 
 package net.dv8tion.jda.api.entities.channel.concrete;
 
-import net.dv8tion.jda.api.entities.ChannelType;
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.IThreadContainer;
-import net.dv8tion.jda.api.entities.StandardGuildChannel;
+import net.dv8tion.jda.annotations.Incubating;
+import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.attribute.IAgeRestrictedChannel;
 import net.dv8tion.jda.api.managers.channel.concrete.ForumChannelManager;
+import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.ChannelAction;
+import net.dv8tion.jda.api.utils.FileUpload;
 
+import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Collection;
+import java.util.Collections;
 
 public interface ForumChannel extends StandardGuildChannel, IThreadContainer, IAgeRestrictedChannel
 {
@@ -75,4 +78,24 @@ public interface ForumChannel extends StandardGuildChannel, IThreadContainer, IA
      */
     @Nullable
     String getTopic();
+
+// TODO-message-rework: Specializing by combining message send with thread create into a unified interface
+//
+// Note: This requires changes coming with the message-rework. Specifically, you need a nice way to create a complete message and pass it to the method.
+// In addition, we need a comprehensive abstraction for all the message specific setters, coming with the MessageSend interface in the message rework.
+//
+// There is a temporary implementation available, which will most definitely be replaced in a future release.
+
+    @Nonnull
+    @Incubating
+    @CheckReturnValue
+    default RestAction<ThreadChannel> createForumPost(@Nonnull String name, @Nonnull Message message, @Nonnull FileUpload... uploads)
+    {
+        return createForumPost(name, message, Collections.emptyList(), uploads);
+    }
+
+    @Nonnull
+    @Incubating
+    @CheckReturnValue
+    RestAction<ThreadChannel> createForumPost(@Nonnull String name, @Nonnull Message message, @Nonnull Collection<String> tags, @Nonnull FileUpload... uploads);
 }
