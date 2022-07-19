@@ -58,12 +58,24 @@ public abstract class InteractionCallbackImpl<T> extends RestActionImpl<T> imple
             return getRequestBody(json);
 
         MultipartBody.Builder body = AttachedFile.createMultipartBody(files, null);
-        DataArray attachments = DataArray.empty();
+
+        // Add the attachments array to the payload, as required since v10
+        DataObject data;
+        if (json.isNull("data"))
+            json.put("data", data = DataObject.empty());
+        else
+            data = json.getObject("data");
+
+        DataArray attachments;
+        if (data.isNull("attachments"))
+            data.put("attachments", attachments = DataArray.empty());
+        else
+            attachments = data.getArray("attachments");
+
         for (int i = 0; i < files.size(); i++)
             attachments.add(files.get(i).toAttachmentData(i));
-        if (json.isNull("data"))
-            json.put("data", DataObject.empty());
-        json.getObject("data").put("attachments", attachments);
+
+        body.addFormDataPart("payload_json", json.toString());
         files.clear();
         return body.build();
     }
