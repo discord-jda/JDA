@@ -528,6 +528,8 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
     {
         MultipartBody.Builder body = AttachedFile.createMultipartBody(files, null);
         body.addFormDataPart("payload_json", getJSON().toString());
+        // clear remaining resources, they will be closed after being sent
+        files.clear();
         return body.build();
     }
 
