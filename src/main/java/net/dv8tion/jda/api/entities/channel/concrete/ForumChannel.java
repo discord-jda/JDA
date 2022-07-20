@@ -27,8 +27,6 @@ import net.dv8tion.jda.api.utils.FileUpload;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Collection;
-import java.util.Collections;
 
 public interface ForumChannel extends StandardGuildChannel, IThreadContainer, IAgeRestrictedChannel
 {
@@ -54,6 +52,8 @@ public interface ForumChannel extends StandardGuildChannel, IThreadContainer, IA
         return createCopy(getGuild());
     }
 
+    // TODO: Should this be in StandardGuildMessageChannel?
+
     /**
      * The slowmode set for this ForumChannel.
      * <br>If slowmode is set this returns an {@code int} between 1 and {@link net.dv8tion.jda.api.entities.TextChannel#MAX_SLOWMODE TextChannel.MAX_SLOWMODE}.
@@ -71,7 +71,7 @@ public interface ForumChannel extends StandardGuildChannel, IThreadContainer, IA
     // TODO: Should this be in StandardGuildChannel?
 
     /**
-     * The topic set for this channel.
+     * The topic set for this channel, this is referred to as <em>Guidelines</em> in the official Discord client.
      * <br>If no topic has been set, this returns null.
      *
      * @return Possibly-null String containing the topic of this channel.
@@ -86,16 +86,59 @@ public interface ForumChannel extends StandardGuildChannel, IThreadContainer, IA
 //
 // There is a temporary implementation available, which will most definitely be replaced in a future release.
 
+    /**
+     * Creates a new forum post (thread) in this forum.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
+     *     <br>If the forum channel was deleted</li>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#REQUEST_ENTITY_TOO_LARGE REQUEST_ENTITY_TOO_LARGE}
+     *     <br>If the total sum of uploaded bytes exceeds the guild's {@link Guild#getMaxFileSize() upload limit}</li>
+     * </ul>
+     *
+     * @param  name
+     *         The name of the post
+     * @param  upload
+     *         A file attachment to upload as the post content
+     * @param  uploads
+     *         Additional files to attach to the post
+     *
+     * @return {@link RestAction} - Type: {@link ThreadChannel}
+     */
     @Nonnull
     @Incubating
     @CheckReturnValue
-    default RestAction<ThreadChannel> createForumPost(@Nonnull String name, @Nonnull Message message, @Nonnull FileUpload... uploads)
-    {
-        return createForumPost(name, message, Collections.emptyList(), uploads);
-    }
+    RestAction<ThreadChannel> createForumPost(@Nonnull String name, @Nonnull FileUpload upload, @Nonnull FileUpload... uploads);
 
+    /**
+     * Creates a new forum post (thread) in this forum.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
+     *     <br>If the forum channel was deleted</li>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#REQUEST_ENTITY_TOO_LARGE REQUEST_ENTITY_TOO_LARGE}
+     *     <br>If the total sum of uploaded bytes exceeds the guild's {@link Guild#getMaxFileSize() upload limit}</li>
+     * </ul>
+     *
+     * @param  name
+     *         The name of the post
+     * @param  message
+     *         The post message content
+     * @param  uploads
+     *         Additional files to attach to the post
+     *
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If null is provided</li>
+     *             <li>If the name is empty or longer than 100 characters</li>
+     *         </ul>
+     *
+     * @return {@link RestAction} - Type: {@link ThreadChannel}
+     */
     @Nonnull
     @Incubating
     @CheckReturnValue
-    RestAction<ThreadChannel> createForumPost(@Nonnull String name, @Nonnull Message message, @Nonnull Collection<String> tags, @Nonnull FileUpload... uploads);
+    RestAction<ThreadChannel> createForumPost(@Nonnull String name, @Nonnull Message message, @Nonnull FileUpload... uploads);
 }

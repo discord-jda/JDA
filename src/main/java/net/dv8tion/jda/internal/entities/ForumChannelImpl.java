@@ -44,10 +44,7 @@ import okhttp3.RequestBody;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class ForumChannelImpl extends AbstractGuildChannelImpl<ForumChannelImpl>
@@ -146,12 +143,29 @@ public class ForumChannelImpl extends AbstractGuildChannelImpl<ForumChannelImpl>
 
     @Nonnull
     @Override
-    public RestAction<ThreadChannel> createForumPost(@Nonnull String name, @Nonnull Message message, @Nonnull Collection<String> tags, @Nonnull FileUpload... uploads)
+    public RestAction<ThreadChannel> createForumPost(@Nonnull String name, @Nonnull FileUpload upload, @Nonnull FileUpload... uploads)
+    {
+        Checks.notNull(upload, "Uploads");
+        Checks.notNull(uploads, "Uploads");
+        List<FileUpload> files = new ArrayList<>(1 + uploads.length);
+        files.add(upload);
+        Collections.addAll(files, uploads);
+        return createForumPost(name, null, files);
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<ThreadChannel> createForumPost(@Nonnull String name, @Nonnull Message message, @Nonnull FileUpload... uploads)
+    {
+        Checks.notNull(message, "Message");
+        return createForumPost(name, message, Arrays.asList(uploads));
+    }
+
+    private RestAction<ThreadChannel> createForumPost(String name, Message message, Collection<? extends FileUpload> uploads)
     {
         Checks.notBlank(name, "Name");
-        Checks.notNull(message, "Message");
-        Checks.notNull(tags, "Tags");
         Checks.noneNull(uploads, "Uploads");
+        Checks.notLonger(name, ThreadChannel.NAME_MAX_LENGTH, "Name");
 
         Member selfMember = getGuild().getSelfMember();
         if (!selfMember.hasAccess(this))
@@ -162,24 +176,25 @@ public class ForumChannelImpl extends AbstractGuildChannelImpl<ForumChannelImpl>
         DataObject payload = DataObject.empty();
         payload.put("name", name);
 
-        if (!tags.isEmpty())
-            payload.put("applied_tags", DataArray.fromCollection(tags));
+        if (message != null)
+        {
+            DataObject messageJson;
+            payload.put("message", messageJson = DataObject.empty());
 
-        DataObject messageJson;
-        payload.put("message", messageJson = DataObject.empty());
-
-        messageJson.put("content", message.getContentRaw());
-        messageJson.put("embeds", DataArray.fromCollection(message.getEmbeds()));
+            messageJson.put("content", message.getContentRaw());
+            messageJson.put("embeds", DataArray.fromCollection(message.getEmbeds()));
+        }
 
         RequestBody body;
 
-        if (uploads.length > 0)
+        if (!uploads.isEmpty())
         {
-            MultipartBody.Builder form = AttachedFile.createMultipartBody(Arrays.asList(uploads), null);
+            List<? extends FileUpload> files = new ArrayList<>(uploads);
+            MultipartBody.Builder form = AttachedFile.createMultipartBody(files, null);
 
             DataArray attachments = DataArray.empty();
-            for (int i = 0; i < uploads.length; i++)
-                attachments.add(uploads[i].toAttachmentData(i));
+            for (int i = 0; i < files.size(); i++)
+                attachments.add(files.get(i).toAttachmentData(i));
 
             form.addFormDataPart("payload_json", payload.toString());
             body = form.build();
@@ -190,8 +205,6 @@ public class ForumChannelImpl extends AbstractGuildChannelImpl<ForumChannelImpl>
         }
 
         Route.CompiledRoute route = Route.Channels.CREATE_THREAD_WITHOUT_MESSAGE.compile(getId());
-        route = route.withQueryParams("use_nested_fields", "true");
-
         return new RestActionImpl<>(getJDA(), route, body, (response, request) -> {
             DataObject json = response.getObject();
             EntityBuilder builder = api.getEntityBuilder();

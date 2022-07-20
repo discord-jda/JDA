@@ -38,6 +38,8 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer
     // - rate_limit_per_user
     // - last_pin_timestamp (do we even use this for Text/News channels?)
 
+    int NAME_MAX_LENGTH = 100;
+
     /**
      * Whether this thread is public or not.
      *
