@@ -37,9 +37,14 @@ import javax.annotation.Nonnull;
 import java.util.EnumSet;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
+import java.util.stream.Collectors;
 
 public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActionImpl<T> implements ChannelAction<T>
 {
+    private static final EnumSet<ChannelType> SLOWMODE_SUPPORTED = EnumSet.of(ChannelType.TEXT, ChannelType.VOICE, ChannelType.FORUM);
+    private static final EnumSet<ChannelType> NSFW_SUPPORTED = EnumSet.of(ChannelType.TEXT, ChannelType.VOICE, ChannelType.FORUM, ChannelType.NEWS);
+    private static final EnumSet<ChannelType> TOPIC_SUPPORTED = EnumSet.of(ChannelType.TEXT, ChannelType.FORUM, ChannelType.NEWS);
+
     protected final TLongObjectMap<PermOverrideData> overrides = new TLongObjectHashMap<>();
     protected final Guild guild;
     protected final Class<T> clazz;
@@ -50,17 +55,17 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
     protected Integer position;
     protected ChannelType type;
 
-    // --text only--
+    // --text/forum/voice only--
     protected Integer slowmode = null;
 
-    // --text and news--
+    // --text/forum/voice/news--
     protected String topic = null;
     protected Boolean nsfw = null;
 
     // --voice only--
     protected Integer userlimit = null;
 
-    // --voice and stage--
+    // --audio only--
     protected Integer bitrate = null;
 
     public ChannelActionImpl(Class<T> clazz, String name, Guild guild, ChannelType type)
@@ -169,8 +174,7 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
     @CheckReturnValue
     public ChannelActionImpl<T> setTopic(String topic)
     {
-        if (type != ChannelType.TEXT && type != ChannelType.NEWS)
-            throw new UnsupportedOperationException("Can only set the topic for a TextChannel or NewsChannel!");
+        checkTypes(TOPIC_SUPPORTED, "Topic");
         if (topic != null && topic.length() > 1024)
             throw new IllegalArgumentException("Channel Topic must not be greater than 1024 in length!");
         this.topic = topic;
@@ -182,8 +186,7 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
     @CheckReturnValue
     public ChannelActionImpl<T> setNSFW(boolean nsfw)
     {
-        if (type != ChannelType.TEXT && type != ChannelType.NEWS)
-            throw new UnsupportedOperationException("Can only set nsfw for a TextChannel or NewsChannel!");
+        checkTypes(NSFW_SUPPORTED, "NSFW (age-restricted)");
         this.nsfw = nsfw;
         return this;
     }
@@ -193,8 +196,7 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
     @CheckReturnValue
     public ChannelActionImpl<T> setSlowmode(int slowmode)
     {
-        if (type != ChannelType.TEXT)
-            throw new UnsupportedOperationException("Can only set slowmode on text channels");
+        checkTypes(SLOWMODE_SUPPORTED, "Slowmode");
         Checks.check(slowmode <= TextChannel.MAX_SLOWMODE && slowmode >= 0, "Slowmode must be between 0 and %d (seconds)!", TextChannel.MAX_SLOWMODE);
         this.slowmode = slowmode;
         return this;
@@ -294,7 +296,6 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
         return this;
     }
 
-    // --voice only--
     @Nonnull
     @Override
     @CheckReturnValue
@@ -393,5 +394,12 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
                 return;
         }
         request.onSuccess(clazz.cast(channel));
+    }
+
+    protected void checkTypes(EnumSet<ChannelType> supported, String what)
+    {
+        if (!supported.contains(type))
+            throw new IllegalArgumentException("Can only configure " + what + " for channels of types " +
+                    supported.stream().map(ChannelType::name).collect(Collectors.joining(", ")));
     }
 }
