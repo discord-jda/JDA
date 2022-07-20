@@ -34,6 +34,7 @@ import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.entities.mixin.channel.attribute.IThreadContainerMixin;
 import net.dv8tion.jda.internal.entities.mixin.channel.middleman.StandardGuildChannelMixin;
+import net.dv8tion.jda.internal.managers.channel.concrete.ForumChannelManagerImpl;
 import net.dv8tion.jda.internal.requests.Requester;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
@@ -72,8 +73,7 @@ public class ForumChannelImpl extends AbstractGuildChannelImpl<ForumChannelImpl>
     @Override
     public ForumChannelManager getManager()
     {
-        //TODO
-        throw new UnsupportedOperationException();
+        return new ForumChannelManagerImpl(this);
     }
 
     @Nonnull
@@ -106,13 +106,6 @@ public class ForumChannelImpl extends AbstractGuildChannelImpl<ForumChannelImpl>
             }
         }
         return action;
-    }
-
-    @Nonnull
-    @Override
-    public IPermissionContainer getPermissionContainer()
-    {
-        return this;
     }
 
     @Override

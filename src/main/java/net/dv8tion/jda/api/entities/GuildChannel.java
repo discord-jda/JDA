@@ -43,7 +43,6 @@ public interface GuildChannel extends Channel, Comparable<GuildChannel>
     ChannelManager<?, ?> getManager();
 
     /**
-     * TODO-v5: this override might not be needed anymore if we remove AuditableRestAction and instead place auditable hooks onto RestAction itself.
      * Deletes this GuildChannel.
      *
      * <p>Possible ErrorResponses include:
@@ -71,5 +70,6 @@ public interface GuildChannel extends Channel, Comparable<GuildChannel>
     AuditableRestAction<Void> delete();
 
     //TODO-v5: Docs
+    @Nonnull
     IPermissionContainer getPermissionContainer();
 }

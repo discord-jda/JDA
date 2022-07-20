@@ -37,10 +37,15 @@ import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.EnumSet;
+import java.util.stream.Collectors;
 
 @SuppressWarnings("unchecked") //We do a lot of (M) and (T) casting that we know is correct but the compiler warns about.
 public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager<T, M>> extends ManagerBase<M> implements ChannelManager<T, M>
 {
+    private static final EnumSet<ChannelType> SLOWMODE_SUPPORTED = EnumSet.of(ChannelType.TEXT, ChannelType.VOICE, ChannelType.FORUM);
+    private static final EnumSet<ChannelType> NSFW_SUPPORTED = EnumSet.of(ChannelType.TEXT, ChannelType.VOICE, ChannelType.FORUM, ChannelType.NEWS);
+    private static final EnumSet<ChannelType> TOPIC_SUPPORTED = EnumSet.of(ChannelType.TEXT, ChannelType.FORUM, ChannelType.NEWS);
+
     protected T channel;
 
     protected ThreadChannel.AutoArchiveDuration autoArchiveDuration;
@@ -62,13 +67,6 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
     protected final TLongObjectHashMap<PermOverrideData> overridesAdd;
     protected final TLongSet overridesRem;
 
-    /**
-     * Creates a new ChannelManager instance
-     *
-     * @param channel
-     *        {@link GuildChannel GuildChannel} that should be modified
-     *        <br>Either {@link VoiceChannel Voice}- or {@link TextChannel TextChannel}
-     */
     public ChannelManagerImpl(T channel)
     {
         super(channel.getJDA(), Route.Channels.MODIFY_CHANNEL.compile(channel.getId()));
@@ -177,9 +175,7 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
     public M putPermissionOverride(@Nonnull IPermissionHolder permHolder, long allow, long deny)
     {
         if (!(channel instanceof IPermissionContainer))
-        {
             throw new IllegalStateException("Can only set permissions on Channels that implement IPermissionContainer");
-        }
 
         Checks.notNull(permHolder, "PermissionHolder");
         Checks.check(permHolder.getGuild().equals(getGuild()), "PermissionHolder is not from the same Guild!");
@@ -402,8 +398,8 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
     @CheckReturnValue
     public M setTopic(String topic)
     {
-        if (type != ChannelType.TEXT && type != ChannelType.NEWS)
-            throw new IllegalStateException("Can only set topic on text and news channels");
+        if (TOPIC_SUPPORTED.contains(type))
+            throw new IllegalStateException("Can only set topic on text, forum, and news channels");
         if (topic != null)
             Checks.notLonger(topic, 1024, "Topic");
         this.topic = topic;
@@ -415,8 +411,7 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
     @CheckReturnValue
     public M setNSFW(boolean nsfw)
     {
-        if (type != ChannelType.TEXT && type != ChannelType.NEWS)
-            throw new IllegalStateException("Can only set nsfw on text and news channels");
+        checkTypes(NSFW_SUPPORTED, "NSFW (age-restriction)");
         this.nsfw = nsfw;
         set |= NSFW;
         return (M) this;
@@ -426,8 +421,7 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
     @CheckReturnValue
     public M setSlowmode(int slowmode)
     {
-        if (type != ChannelType.TEXT && !type.isThread())
-            throw new IllegalStateException("Can only set slowmode on text channels and threads");
+        checkTypes(SLOWMODE_SUPPORTED, "slowmode");
         Checks.check(slowmode <= TextChannel.MAX_SLOWMODE && slowmode >= 0, "Slowmode per user must be between 0 and %d (seconds)!", TextChannel.MAX_SLOWMODE);
         this.slowmode = slowmode;
         set |= SLOWMODE;
@@ -599,5 +593,12 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
             return true;
         });
         return data.valueCollection();
+    }
+
+    protected void checkTypes(EnumSet<ChannelType> supported, String what)
+    {
+        if (!supported.contains(type))
+            throw new IllegalArgumentException("Can only configure " + what + " for channels of types " +
+                    supported.stream().map(ChannelType::name).collect(Collectors.joining(", ")));
     }
 }
