@@ -104,6 +104,8 @@ public interface ForumChannel extends StandardGuildChannel, IThreadContainer, IA
      * @param  uploads
      *         Additional files to attach to the post
      *
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the bot does not have {@link net.dv8tion.jda.api.Permission#MESSAGE_SEND Permission.MESSAGE_SEND} in the channel
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If null is provided</li>
@@ -135,6 +137,8 @@ public interface ForumChannel extends StandardGuildChannel, IThreadContainer, IA
      * @param  uploads
      *         Additional files to attach to the post
      *
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the bot does not have {@link net.dv8tion.jda.api.Permission#MESSAGE_SEND Permission.MESSAGE_SEND} in the channel
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If null is provided</li>
