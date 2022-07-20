@@ -104,6 +104,12 @@ public interface ForumChannel extends StandardGuildChannel, IThreadContainer, IA
      * @param  uploads
      *         Additional files to attach to the post
      *
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If null is provided</li>
+     *             <li>If the name is empty or longer than 100 characters</li>
+     *         </ul>
+     *
      * @return {@link RestAction} - Type: {@link ThreadChannel}
      */
     @Nonnull
