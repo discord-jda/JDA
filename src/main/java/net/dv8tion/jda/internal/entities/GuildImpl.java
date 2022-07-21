@@ -534,8 +534,7 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    @CheckReturnValue
-    public RestAction<GuildScheduledEvent> retrieveScheduledEventById(String id)
+    public RestAction<GuildScheduledEvent> retrieveScheduledEventById(@Nonnull String id)
     {
         Checks.isSnowflake(id);
         return new DeferredRestAction<>(getJDA(), GuildScheduledEvent.class,
@@ -549,7 +548,6 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    @CheckReturnValue
     public RestAction<GuildScheduledEvent> retrieveScheduledEventById(long id)
     {
         return retrieveScheduledEventById(String.valueOf(id));
