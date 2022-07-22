@@ -21,8 +21,8 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.utils.AttachedFile;
+import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.internal.utils.AllowedMentionsImpl;
-import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.Nonnull;
@@ -32,7 +32,7 @@ import java.util.Collection;
 import java.util.List;
 
 @SuppressWarnings("ResultOfMethodCallIgnored")
-public class MessageEditBuilder implements MessageEditRequest<MessageEditBuilder>
+public class MessageEditBuilder extends AbstractMessageBuilder<MessageEditData, MessageEditBuilder> implements MessageEditRequest<MessageEditBuilder>
 {
     protected static final int CONTENT       = 1;
     protected static final int EMBEDS        = 1 << 1;
@@ -45,11 +45,7 @@ public class MessageEditBuilder implements MessageEditRequest<MessageEditBuilder
     private boolean replace = false;
     private int set = 0;
 
-    private final List<MessageEmbed> embeds = new ArrayList<>(10);
     private final List<AttachedFile> attachments = new ArrayList<>(10);
-    private final List<LayoutComponent> components = new ArrayList<>(5);
-    private final StringBuilder content = new StringBuilder(Message.MAX_CONTENT_LENGTH);
-    private AllowedMentionsImpl allowedMentions = new AllowedMentionsImpl();
 
     public MessageEditBuilder() {}
 
@@ -86,7 +82,7 @@ public class MessageEditBuilder implements MessageEditRequest<MessageEditBuilder
     @Override
     public MessageEditBuilder mentionRepliedUser(boolean mention)
     {
-        allowedMentions.mentionRepliedUser(mention);
+        super.mentionRepliedUser(mention);
         set |= MENTIONS;
         return this;
     }
@@ -95,7 +91,7 @@ public class MessageEditBuilder implements MessageEditRequest<MessageEditBuilder
     @Override
     public MessageEditBuilder allowedMentions(@Nullable Collection<Message.MentionType> allowedMentions)
     {
-        this.allowedMentions.allowedMentions(allowedMentions);
+        super.allowedMentions(allowedMentions);
         set |= MENTIONS;
         return this;
     }
@@ -104,7 +100,7 @@ public class MessageEditBuilder implements MessageEditRequest<MessageEditBuilder
     @Override
     public MessageEditBuilder mention(@Nonnull IMentionable... mentions)
     {
-        allowedMentions.mention(mentions);
+        super.mention(mentions);
         set |= MENTIONS;
         return this;
     }
@@ -113,7 +109,7 @@ public class MessageEditBuilder implements MessageEditRequest<MessageEditBuilder
     @Override
     public MessageEditBuilder mentionUsers(@Nonnull String... userIds)
     {
-        allowedMentions.mentionUsers(userIds);
+        super.mentionUsers(userIds);
         set |= MENTIONS;
         return this;
     }
@@ -122,7 +118,7 @@ public class MessageEditBuilder implements MessageEditRequest<MessageEditBuilder
     @Override
     public MessageEditBuilder mentionRoles(@Nonnull String... roleIds)
     {
-        allowedMentions.mentionRoles(roleIds);
+        super.mentionRoles(roleIds);
         set |= MENTIONS;
         return this;
     }
@@ -140,6 +136,13 @@ public class MessageEditBuilder implements MessageEditRequest<MessageEditBuilder
 
     @Nonnull
     @Override
+    public MessageEditBuilder setFiles(@Nullable Collection<? extends FileUpload> files)
+    {
+        return setAttachments(files);
+    }
+
+    @Nonnull
+    @Override
     public MessageEditBuilder replace(boolean isReplace)
     {
         this.replace = isReplace;
@@ -150,10 +153,8 @@ public class MessageEditBuilder implements MessageEditRequest<MessageEditBuilder
     @Override
     public MessageEditBuilder setContent(@Nullable String content)
     {
-        this.content.setLength(0);
+        super.setContent(content);
         set |= CONTENT;
-        if (content != null)
-            this.content.append(content);
         return this;
     }
 
@@ -161,9 +162,7 @@ public class MessageEditBuilder implements MessageEditRequest<MessageEditBuilder
     @Override
     public MessageEditBuilder setEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
     {
-        Checks.noneNull(embeds, "Embeds");
-        this.embeds.clear();
-        this.embeds.addAll(embeds);
+        super.setEmbeds(embeds);
         set |= EMBEDS;
         return this;
     }
@@ -172,18 +171,18 @@ public class MessageEditBuilder implements MessageEditRequest<MessageEditBuilder
     @Override
     public MessageEditBuilder setComponents(@Nonnull Collection<? extends LayoutComponent> layouts)
     {
-        Checks.noneNull(layouts, "Component Layouts");
-        this.components.clear();
-        this.components.addAll(layouts);
+        super.setComponents(layouts);
         set |= COMPONENTS;
         return this;
     }
 
+    @Override
     public boolean isEmpty()
     {
         return replace || set != 0;
     }
 
+    @Override
     public boolean isValid()
     {
         if (isSet(EMBEDS) && embeds.size() > Message.MAX_EMBED_COUNT)
@@ -199,6 +198,7 @@ public class MessageEditBuilder implements MessageEditRequest<MessageEditBuilder
     }
 
     @Nonnull
+    @Override
     public MessageEditData build()
     {
         // Copy to prevent modifying data after building
@@ -219,5 +219,14 @@ public class MessageEditBuilder implements MessageEditRequest<MessageEditBuilder
             throw new IllegalStateException("Cannot build message with over " + Message.MAX_COMPONENT_COUNT + " component layouts, provided " + components.size());
 
         return new MessageEditData(replace ? ALL : set, content, embeds, attachments, components, allowedMentions);
+    }
+
+    @Nonnull
+    @Override
+    public MessageEditBuilder clear()
+    {
+        this.set = 0;
+        this.attachments.clear();
+        return super.clear();
     }
 }

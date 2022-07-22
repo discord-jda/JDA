@@ -16,7 +16,6 @@
 
 package net.dv8tion.jda.api.utils.messages;
 
-import net.dv8tion.jda.api.entities.IMentionable;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
@@ -33,13 +32,9 @@ import java.util.Collection;
 import java.util.List;
 
 @SuppressWarnings("ResultOfMethodCallIgnored")
-public class MessageCreateBuilder implements MessageCreateRequest<MessageCreateBuilder>
+public class MessageCreateBuilder extends AbstractMessageBuilder<MessageCreateData, MessageCreateBuilder> implements MessageCreateRequest<MessageCreateBuilder>
 {
-    private final List<MessageEmbed> embeds = new ArrayList<>(10);
     private final List<FileUpload> files = new ArrayList<>(10);
-    private final List<LayoutComponent> components = new ArrayList<>(5);
-    private final StringBuilder content = new StringBuilder(Message.MAX_CONTENT_LENGTH);
-    private AllowedMentionsImpl allowedMentions = new AllowedMentionsImpl();
     private boolean tts;
 
     public MessageCreateBuilder() {}
@@ -64,78 +59,6 @@ public class MessageCreateBuilder implements MessageCreateRequest<MessageCreateB
         return builder;
     }
     
-    @Nonnull
-    @Override
-    public MessageCreateBuilder setContent(@Nullable String content)
-    {
-        this.content.setLength(0);
-        if (content != null)
-            this.content.append(content.trim());
-        return this;
-    }
-
-    @Nonnull
-    @Override
-    public MessageCreateBuilder mentionRepliedUser(boolean mention)
-    {
-        allowedMentions.mentionRepliedUser(mention);
-        return this;
-    }
-
-    @Nonnull
-    @Override
-    public MessageCreateBuilder allowedMentions(@Nullable Collection<Message.MentionType> allowedMentions)
-    {
-        this.allowedMentions.allowedMentions(allowedMentions);
-        return this;
-    }
-
-    @Nonnull
-    @Override
-    public MessageCreateBuilder mention(@Nonnull IMentionable... mentions)
-    {
-        allowedMentions.mention(mentions);
-        return this;
-    }
-
-    @Nonnull
-    @Override
-    public MessageCreateBuilder mentionUsers(@Nonnull String... userIds)
-    {
-        allowedMentions.mentionUsers(userIds);
-        return this;
-    }
-
-    @Nonnull
-    @Override
-    public MessageCreateBuilder mentionRoles(@Nonnull String... roleIds)
-    {
-        allowedMentions.mentionRoles(roleIds);
-        return this;
-    }
-
-    @Nonnull
-    @Override
-    public MessageCreateBuilder setEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
-    {
-        Checks.noneNull(embeds, "Embeds");
-        this.embeds.clear();
-        this.embeds.addAll(embeds);
-        return this;
-    }
-
-    @Nonnull
-    @Override
-    public MessageCreateBuilder setComponents(@Nonnull Collection<? extends LayoutComponent> layouts)
-    {
-        Checks.noneNull(layouts, "ComponentLayouts");
-        for (LayoutComponent layout : layouts)
-            Checks.check(layout.isMessageCompatible(), "Provided component layout is invalid for messages!");
-        this.components.clear();
-        this.components.addAll(layouts);
-        return this;
-    }
-
     @Nonnull
     @Override
     public MessageCreateBuilder addContent(@Nonnull String content)
@@ -195,11 +118,13 @@ public class MessageCreateBuilder implements MessageCreateRequest<MessageCreateB
         return this;
     }
 
+    @Override
     public boolean isEmpty()
     {
         return content.length() == 0 && embeds.isEmpty() && files.isEmpty();
     }
 
+    @Override
     public boolean isValid()
     {
         return !isEmpty() && embeds.size() <= Message.MAX_EMBED_COUNT
@@ -235,13 +160,9 @@ public class MessageCreateBuilder implements MessageCreateRequest<MessageCreateB
     @Nonnull
     public MessageCreateBuilder clear()
     {
-        this.content.setLength(0);
+        super.clear();
         this.files.clear();
-        this.embeds.clear();
-        this.components.clear();
-        this.allowedMentions = new AllowedMentionsImpl();
         this.tts = false;
-
         return this;
     }
 }
