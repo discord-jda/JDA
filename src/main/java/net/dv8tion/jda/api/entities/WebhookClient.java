@@ -23,6 +23,8 @@ import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.WebhookMessageAction;
 import net.dv8tion.jda.api.requests.restaction.WebhookMessageEditAction;
 import net.dv8tion.jda.api.utils.AttachmentOption;
+import net.dv8tion.jda.api.utils.messages.MessageCreateData;
+import net.dv8tion.jda.api.utils.messages.MessageEditData;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.CheckReturnValue;
@@ -83,7 +85,7 @@ public interface WebhookClient<T>
      */
     @Nonnull
     @CheckReturnValue
-    WebhookMessageAction<T> sendMessage(@Nonnull Message message);
+    WebhookMessageAction<T> sendMessage(@Nonnull MessageCreateData message);
 
     /**
      * Send a message to this webhook.
@@ -459,7 +461,7 @@ public interface WebhookClient<T>
      */
     @Nonnull
     @CheckReturnValue
-    WebhookMessageEditAction<T> editMessageById(@Nonnull String messageId, @Nonnull Message message);
+    WebhookMessageEditAction<T> editMessageById(@Nonnull String messageId, @Nonnull MessageEditData message);
 
     /**
      * Edit an existing message sent by this webhook.
@@ -486,7 +488,7 @@ public interface WebhookClient<T>
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageEditAction<T> editMessageById(long messageId, Message message)
+    default WebhookMessageEditAction<T> editMessageById(long messageId, MessageEditData message)
     {
         return editMessageById(Long.toUnsignedString(messageId), message);
     }

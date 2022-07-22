@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.interactions.components.ItemComponent;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.utils.AllowedMentions;
 import net.dv8tion.jda.api.utils.FileUpload;
+import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -65,4 +66,11 @@ public interface MessageRequest<R extends MessageRequest<R>> extends AllowedMent
 
     @Nonnull
     R setFiles(@Nullable Collection<? extends FileUpload> files);
+
+    @Nonnull
+    default R setFiles(@Nonnull FileUpload... files)
+    {
+        Checks.noneNull(files, "Files");
+        return setFiles(Arrays.asList(files));
+    }
 }

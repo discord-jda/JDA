@@ -17,14 +17,17 @@
 package net.dv8tion.jda.internal.entities;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.WebhookClient;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.api.requests.restaction.WebhookMessageAction;
 import net.dv8tion.jda.api.requests.restaction.WebhookMessageEditAction;
 import net.dv8tion.jda.api.utils.AttachmentOption;
+import net.dv8tion.jda.api.utils.FileUpload;
+import net.dv8tion.jda.api.utils.messages.MessageCreateData;
+import net.dv8tion.jda.api.utils.messages.MessageEditData;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.WebhookMessageActionImpl;
@@ -55,30 +58,30 @@ public abstract class AbstractWebhookClient<T> implements WebhookClient<T>
 
     @Nonnull
     @Override
-    public WebhookMessageActionImpl<T> sendMessage(@Nonnull String content)
+    public WebhookMessageAction<T> sendMessage(@Nonnull String content)
     {
         return sendRequest().setContent(content);
     }
 
     @Nonnull
     @Override
-    public WebhookMessageActionImpl<T> sendMessageEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
+    public WebhookMessageAction<T> sendMessageEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
     {
         return sendRequest().addEmbeds(embeds);
     }
 
     @Nonnull
     @Override
-    public WebhookMessageActionImpl<T> sendMessage(@Nonnull Message message)
+    public WebhookMessageAction<T> sendMessage(@Nonnull MessageCreateData message)
     {
-        return sendRequest().applyMessage(message);
+        return sendRequest().applyData(message);
     }
 
     @Nonnull
     @Override
-    public WebhookMessageActionImpl<T> sendFile(@Nonnull InputStream data, @Nonnull String name, @Nonnull AttachmentOption... options)
+    public WebhookMessageAction<T> sendFile(@Nonnull InputStream data, @Nonnull String name, @Nonnull AttachmentOption... options)
     {
-        return sendRequest().addFile(data, name, options);
+        return sendRequest().addFiles(FileUpload.fromData(data, name));
     }
 
     @Nonnull
@@ -96,7 +99,7 @@ public abstract class AbstractWebhookClient<T> implements WebhookClient<T>
         if (components.stream().anyMatch(x -> !(x instanceof ActionRow)))
             throw new UnsupportedOperationException("The provided component layout is not supported");
         List<ActionRow> actionRows = components.stream().map(ActionRow.class::cast).collect(Collectors.toList());
-        return editRequest(messageId).setActionRows(actionRows);
+        return editRequest(messageId).setComponents(actionRows);
     }
 
     @Nonnull
@@ -108,16 +111,16 @@ public abstract class AbstractWebhookClient<T> implements WebhookClient<T>
 
     @Nonnull
     @Override
-    public WebhookMessageEditActionImpl<T> editMessageById(@Nonnull String messageId, @Nonnull Message message)
+    public WebhookMessageEditActionImpl<T> editMessageById(@Nonnull String messageId, @Nonnull MessageEditData message)
     {
-        return (WebhookMessageEditActionImpl<T>) editRequest(messageId).applyMessage(message);
+        return (WebhookMessageEditActionImpl<T>) editRequest(messageId).applyData(message);
     }
 
     @Nonnull
     @Override
     public WebhookMessageEditActionImpl<T> editMessageById(@Nonnull String messageId, @Nonnull InputStream data, @Nonnull String name, @Nonnull AttachmentOption... options)
     {
-        return (WebhookMessageEditActionImpl<T>) editRequest(messageId).addFile(data, name, options);
+        return (WebhookMessageEditActionImpl<T>) editRequest(messageId).setFiles(FileUpload.fromData(data, name));
     }
 
     @Nonnull
