@@ -29,7 +29,7 @@ import net.dv8tion.jda.internal.requests.Requester;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.WebhookMessageActionImpl;
-import net.dv8tion.jda.internal.requests.restaction.WebhookMessageUpdateActionImpl;
+import net.dv8tion.jda.internal.requests.restaction.WebhookMessageEditActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
@@ -259,12 +259,12 @@ public class WebhookImpl extends AbstractWebhookClient<Void> implements Webhook
     }
 
     @Override
-    public WebhookMessageUpdateActionImpl<Void> editRequest(String messageId)
+    public WebhookMessageEditActionImpl<Void> editRequest(String messageId)
     {
         checkToken();
         Checks.isSnowflake(messageId);
         Route.CompiledRoute route = Route.Webhooks.EXECUTE_WEBHOOK_EDIT.compile(getId(), token, messageId);
-        WebhookMessageUpdateActionImpl<Void> action = new WebhookMessageUpdateActionImpl<>(api, route, (json) -> null);
+        WebhookMessageEditActionImpl<Void> action = new WebhookMessageEditActionImpl<>(api, route, (json) -> null);
         action.run();
         return action;
     }

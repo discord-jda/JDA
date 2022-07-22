@@ -21,7 +21,7 @@ import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.WebhookMessageAction;
-import net.dv8tion.jda.api.requests.restaction.WebhookMessageUpdateAction;
+import net.dv8tion.jda.api.requests.restaction.WebhookMessageEditAction;
 import net.dv8tion.jda.api.utils.AttachmentOption;
 import net.dv8tion.jda.internal.utils.Checks;
 
@@ -398,11 +398,11 @@ public interface WebhookClient<T>
      * @throws IllegalArgumentException
      *         If the provided content is null, empty, or longer than {@link Message#MAX_CONTENT_LENGTH}
      *
-     * @return {@link WebhookMessageUpdateAction}
+     * @return {@link WebhookMessageEditAction}
      */
     @Nonnull
     @CheckReturnValue
-    WebhookMessageUpdateAction<T> editMessageById(@Nonnull String messageId, @Nonnull String content);
+    WebhookMessageEditAction<T> editMessageById(@Nonnull String messageId, @Nonnull String content);
 
     /**
      * Edit an existing message sent by this webhook.
@@ -425,11 +425,11 @@ public interface WebhookClient<T>
      * @throws IllegalArgumentException
      *         If the provided content is null, empty, or longer than {@link Message#MAX_CONTENT_LENGTH}
      *
-     * @return {@link WebhookMessageUpdateAction}
+     * @return {@link WebhookMessageEditAction}
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageUpdateAction<T> editMessageById(long messageId, @Nonnull String content)
+    default WebhookMessageEditAction<T> editMessageById(long messageId, @Nonnull String content)
     {
         return editMessageById(Long.toUnsignedString(messageId), content);
     }
@@ -455,11 +455,11 @@ public interface WebhookClient<T>
      * @throws IllegalArgumentException
      *         If the provided message is null
      *
-     * @return {@link WebhookMessageUpdateAction}
+     * @return {@link WebhookMessageEditAction}
      */
     @Nonnull
     @CheckReturnValue
-    WebhookMessageUpdateAction<T> editMessageById(@Nonnull String messageId, @Nonnull Message message);
+    WebhookMessageEditAction<T> editMessageById(@Nonnull String messageId, @Nonnull Message message);
 
     /**
      * Edit an existing message sent by this webhook.
@@ -482,11 +482,11 @@ public interface WebhookClient<T>
      * @throws IllegalArgumentException
      *         If the provided message is null
      *
-     * @return {@link WebhookMessageUpdateAction}
+     * @return {@link WebhookMessageEditAction}
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageUpdateAction<T> editMessageById(long messageId, Message message)
+    default WebhookMessageEditAction<T> editMessageById(long messageId, Message message)
     {
         return editMessageById(Long.toUnsignedString(messageId), message);
     }
@@ -514,11 +514,11 @@ public interface WebhookClient<T>
      * @throws IllegalArgumentException
      *         If the formatted string is null, empty, or longer than {@link Message#MAX_CONTENT_LENGTH}
      *
-     * @return {@link WebhookMessageUpdateAction}
+     * @return {@link WebhookMessageEditAction}
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageUpdateAction<T> editMessageFormatById(@Nonnull String messageId, @Nonnull String format, @Nonnull Object... args)
+    default WebhookMessageEditAction<T> editMessageFormatById(@Nonnull String messageId, @Nonnull String format, @Nonnull Object... args)
     {
         Checks.notNull(format, "Format String");
         return editMessageById(messageId, String.format(format, args));
@@ -547,11 +547,11 @@ public interface WebhookClient<T>
      * @throws IllegalArgumentException
      *         If the formatted string is null, empty, or longer than {@link Message#MAX_CONTENT_LENGTH}
      *
-     * @return {@link WebhookMessageUpdateAction}
+     * @return {@link WebhookMessageEditAction}
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageUpdateAction<T> editMessageFormatById(long messageId, @Nonnull String format, @Nonnull Object... args)
+    default WebhookMessageEditAction<T> editMessageFormatById(long messageId, @Nonnull String format, @Nonnull Object... args)
     {
         return editMessageFormatById(Long.toUnsignedString(messageId), format, args);
     }
@@ -577,11 +577,11 @@ public interface WebhookClient<T>
      * @throws IllegalArgumentException
      *         If the provided embeds are null, or more than {@value Message#MAX_EMBED_COUNT}
      *
-     * @return {@link WebhookMessageUpdateAction}
+     * @return {@link WebhookMessageEditAction}
      */
     @Nonnull
     @CheckReturnValue
-    WebhookMessageUpdateAction<T> editMessageEmbedsById(@Nonnull String messageId, @Nonnull Collection<? extends MessageEmbed> embeds);
+    WebhookMessageEditAction<T> editMessageEmbedsById(@Nonnull String messageId, @Nonnull Collection<? extends MessageEmbed> embeds);
 
     /**
      * Edit an existing message sent by this webhook.
@@ -604,11 +604,11 @@ public interface WebhookClient<T>
      * @throws IllegalArgumentException
      *         If the provided embeds are null, or more than {@value Message#MAX_EMBED_COUNT}
      *
-     * @return {@link WebhookMessageUpdateAction}
+     * @return {@link WebhookMessageEditAction}
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageUpdateAction<T> editMessageEmbedsById(long messageId, @Nonnull Collection<? extends MessageEmbed> embeds)
+    default WebhookMessageEditAction<T> editMessageEmbedsById(long messageId, @Nonnull Collection<? extends MessageEmbed> embeds)
     {
         return editMessageEmbedsById(Long.toUnsignedString(messageId), embeds);
     }
@@ -634,11 +634,11 @@ public interface WebhookClient<T>
      * @throws IllegalArgumentException
      *         If the provided embeds are null, or more than 10
      *
-     * @return {@link WebhookMessageUpdateAction}
+     * @return {@link WebhookMessageEditAction}
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageUpdateAction<T> editMessageEmbedsById(@Nonnull String messageId, @Nonnull MessageEmbed... embeds)
+    default WebhookMessageEditAction<T> editMessageEmbedsById(@Nonnull String messageId, @Nonnull MessageEmbed... embeds)
     {
         Checks.noneNull(embeds, "MessageEmbeds");
         return editMessageEmbedsById(messageId, Arrays.asList(embeds));
@@ -665,11 +665,11 @@ public interface WebhookClient<T>
      * @throws IllegalArgumentException
      *         If the provided embeds are null, or more than 10
      *
-     * @return {@link WebhookMessageUpdateAction}
+     * @return {@link WebhookMessageEditAction}
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageUpdateAction<T> editMessageEmbedsById(long messageId, @Nonnull MessageEmbed... embeds)
+    default WebhookMessageEditAction<T> editMessageEmbedsById(long messageId, @Nonnull MessageEmbed... embeds)
     {
         return editMessageEmbedsById(Long.toUnsignedString(messageId), embeds);
     }
@@ -695,11 +695,11 @@ public interface WebhookClient<T>
      * @throws IllegalArgumentException
      *         If the provided components are null, or more than 5 layouts are provided
      *
-     * @return {@link WebhookMessageUpdateAction}
+     * @return {@link WebhookMessageEditAction}
      */
     @Nonnull
     @CheckReturnValue
-    WebhookMessageUpdateAction<T> editMessageComponentsById(@Nonnull String messageId, @Nonnull Collection<? extends LayoutComponent> components); // We use LayoutComponent for forward compatibility here
+    WebhookMessageEditAction<T> editMessageComponentsById(@Nonnull String messageId, @Nonnull Collection<? extends LayoutComponent> components); // We use LayoutComponent for forward compatibility here
 
     /**
      * Edit an existing message sent by this webhook.
@@ -722,11 +722,11 @@ public interface WebhookClient<T>
      * @throws IllegalArgumentException
      *         If the provided components are null, or more than 5 layouts are provided
      *
-     * @return {@link WebhookMessageUpdateAction}
+     * @return {@link WebhookMessageEditAction}
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageUpdateAction<T> editMessageComponentsById(long messageId, @Nonnull Collection<? extends LayoutComponent> components)
+    default WebhookMessageEditAction<T> editMessageComponentsById(long messageId, @Nonnull Collection<? extends LayoutComponent> components)
     {
         return editMessageComponentsById(Long.toUnsignedString(messageId), components);
     }
@@ -752,11 +752,11 @@ public interface WebhookClient<T>
      * @throws IllegalArgumentException
      *         If the provided components are null, or more than 5 layouts are provided
      *
-     * @return {@link WebhookMessageUpdateAction}
+     * @return {@link WebhookMessageEditAction}
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageUpdateAction<T> editMessageComponentsById(@Nonnull String messageId, @Nonnull LayoutComponent... components)
+    default WebhookMessageEditAction<T> editMessageComponentsById(@Nonnull String messageId, @Nonnull LayoutComponent... components)
     {
         Checks.noneNull(components, "LayoutComponents");
         return editMessageComponentsById(messageId, Arrays.asList(components));
@@ -783,11 +783,11 @@ public interface WebhookClient<T>
      * @throws IllegalArgumentException
      *         If the provided components are null, or more than 5 layouts are provided
      *
-     * @return {@link WebhookMessageUpdateAction}
+     * @return {@link WebhookMessageEditAction}
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageUpdateAction<T> editMessageComponentsById(long messageId, @Nonnull LayoutComponent... components)
+    default WebhookMessageEditAction<T> editMessageComponentsById(long messageId, @Nonnull LayoutComponent... components)
     {
         return editMessageComponentsById(Long.toUnsignedString(messageId), components);
     }
@@ -833,11 +833,11 @@ public interface WebhookClient<T>
      * @throws java.lang.IllegalArgumentException
      *         If the provided message id, data, or filename is {@code null}.
      *
-     * @return {@link WebhookMessageUpdateAction}
+     * @return {@link WebhookMessageEditAction}
      */
     @Nonnull
     @CheckReturnValue
-    WebhookMessageUpdateAction<T> editMessageById(@Nonnull String messageId, @Nonnull InputStream data, @Nonnull String name, @Nonnull AttachmentOption... options);
+    WebhookMessageEditAction<T> editMessageById(@Nonnull String messageId, @Nonnull InputStream data, @Nonnull String name, @Nonnull AttachmentOption... options);
 
     /**
      * Edit an existing message sent by this webhook.
@@ -879,11 +879,11 @@ public interface WebhookClient<T>
      * @throws java.lang.IllegalArgumentException
      *         If the provided message id or file is {@code null}.
      *
-     * @return {@link WebhookMessageUpdateAction}
+     * @return {@link WebhookMessageEditAction}
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageUpdateAction<T> editMessageById(@Nonnull String messageId, @Nonnull File file, @Nonnull AttachmentOption... options)
+    default WebhookMessageEditAction<T> editMessageById(@Nonnull String messageId, @Nonnull File file, @Nonnull AttachmentOption... options)
     {
         Checks.notNull(file, "File");
         return editMessageById(messageId, file, file.getName(), options);
@@ -929,11 +929,11 @@ public interface WebhookClient<T>
      * @throws java.lang.IllegalArgumentException
      *         If the provided file, message id, or filename is {@code null}.
      *
-     * @return {@link WebhookMessageUpdateAction}
+     * @return {@link WebhookMessageEditAction}
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageUpdateAction<T> editMessageById(@Nonnull String messageId, @Nonnull File file, @Nonnull String name, @Nonnull AttachmentOption... options)
+    default WebhookMessageEditAction<T> editMessageById(@Nonnull String messageId, @Nonnull File file, @Nonnull String name, @Nonnull AttachmentOption... options)
     {
         Checks.notNull(file, "File");
         Checks.check(file.exists() && file.canRead(),
@@ -990,11 +990,11 @@ public interface WebhookClient<T>
      * @throws java.lang.IllegalArgumentException
      *         If the provided message id, data, or filename is {@code null}.
      *
-     * @return {@link WebhookMessageUpdateAction}
+     * @return {@link WebhookMessageEditAction}
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageUpdateAction<T> editMessageById(@Nonnull String messageId, @Nonnull byte[] data, @Nonnull String name, @Nonnull AttachmentOption... options)
+    default WebhookMessageEditAction<T> editMessageById(@Nonnull String messageId, @Nonnull byte[] data, @Nonnull String name, @Nonnull AttachmentOption... options)
     {
         Checks.notNull(data, "Data");
         Checks.notNull(name, "Name");
@@ -1042,11 +1042,11 @@ public interface WebhookClient<T>
      * @throws java.lang.IllegalArgumentException
      *         If the provided data or filename is {@code null}.
      *
-     * @return {@link WebhookMessageUpdateAction}
+     * @return {@link WebhookMessageEditAction}
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageUpdateAction<T> editMessageById(long messageId, @Nonnull InputStream data, @Nonnull String name, @Nonnull AttachmentOption... options)
+    default WebhookMessageEditAction<T> editMessageById(long messageId, @Nonnull InputStream data, @Nonnull String name, @Nonnull AttachmentOption... options)
     {
         return editMessageById(Long.toUnsignedString(messageId), data, name, options);
     }
@@ -1091,11 +1091,11 @@ public interface WebhookClient<T>
      * @throws java.lang.IllegalArgumentException
      *         If the provided file is {@code null}.
      *
-     * @return {@link WebhookMessageUpdateAction}
+     * @return {@link WebhookMessageEditAction}
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageUpdateAction<T> editMessageById(long messageId, @Nonnull File file, @Nonnull AttachmentOption... options)
+    default WebhookMessageEditAction<T> editMessageById(long messageId, @Nonnull File file, @Nonnull AttachmentOption... options)
     {
         return editMessageById(Long.toUnsignedString(messageId), file, options);
     }
@@ -1140,11 +1140,11 @@ public interface WebhookClient<T>
      * @throws java.lang.IllegalArgumentException
      *         If the provided file or filename is {@code null}.
      *
-     * @return {@link WebhookMessageUpdateAction}
+     * @return {@link WebhookMessageEditAction}
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageUpdateAction<T> editMessageById(long messageId, @Nonnull File file, @Nonnull String name, @Nonnull AttachmentOption... options)
+    default WebhookMessageEditAction<T> editMessageById(long messageId, @Nonnull File file, @Nonnull String name, @Nonnull AttachmentOption... options)
     {
         return editMessageById(Long.toUnsignedString(messageId), file, name, options);
     }
@@ -1189,11 +1189,11 @@ public interface WebhookClient<T>
      * @throws java.lang.IllegalArgumentException
      *         If the provided data or filename is {@code null}.
      *
-     * @return {@link WebhookMessageUpdateAction}
+     * @return {@link WebhookMessageEditAction}
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageUpdateAction<T> editMessageById(long messageId, @Nonnull byte[] data, @Nonnull String name, @Nonnull AttachmentOption... options)
+    default WebhookMessageEditAction<T> editMessageById(long messageId, @Nonnull byte[] data, @Nonnull String name, @Nonnull AttachmentOption... options)
     {
         return editMessageById(Long.toUnsignedString(messageId), data, name, options);
     }

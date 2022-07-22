@@ -19,67 +19,49 @@ package net.dv8tion.jda.internal.requests.restaction;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
-import net.dv8tion.jda.api.requests.restaction.WebhookMessageAction;
+import net.dv8tion.jda.api.requests.restaction.WebhookMessageEditAction;
 import net.dv8tion.jda.api.utils.AttachedFile;
 import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.data.DataObject;
-import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
-import net.dv8tion.jda.api.utils.messages.MessageCreateData;
+import net.dv8tion.jda.api.utils.messages.MessageEditBuilder;
+import net.dv8tion.jda.api.utils.messages.MessageEditData;
 import net.dv8tion.jda.internal.requests.Route;
-import net.dv8tion.jda.internal.utils.message.MessageCreateBuilderMixin;
-import okhttp3.MultipartBody;
+import net.dv8tion.jda.internal.utils.message.MessageEditBuilderMixin;
 import okhttp3.RequestBody;
 
-import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.function.Function;
 
-public class WebhookMessageActionImpl<T>
+public class WebhookMessageEditActionImpl<T>
     extends TriggerRestAction<T>
-    implements WebhookMessageAction<T>, MessageCreateBuilderMixin<WebhookMessageAction<T>>
+    implements WebhookMessageEditAction<T>, MessageEditBuilderMixin<WebhookMessageEditAction<T>>
 {
-    private final MessageCreateBuilder builder = new MessageCreateBuilder();
     private final Function<DataObject, T> transformer;
+    private final MessageEditBuilder builder = new MessageEditBuilder();
 
-    private boolean ephemeral;
-
-    public WebhookMessageActionImpl(JDA api, Route.CompiledRoute route, Function<DataObject, T> transformer)
+    public WebhookMessageEditActionImpl(JDA api, Route.CompiledRoute route, Function<DataObject, T> transformer)
     {
         super(api, route);
         this.transformer = transformer;
     }
 
     @Override
-    public MessageCreateBuilder getBuilder()
+    public MessageEditBuilder getBuilder()
     {
         return builder;
-    }
-
-    @Nonnull
-    @Override
-    public WebhookMessageActionImpl<T> setEphemeral(boolean ephemeral)
-    {
-        this.ephemeral = ephemeral;
-        return this;
     }
 
     @Override
     protected RequestBody finalizeData()
     {
-        MessageCreateData data = builder.build();
+        MessageEditData data = builder.build();
         try
         {
-            List<FileUpload> files = data.getFiles();
             DataObject json = data.toData();
-            if (ephemeral)
-                json.put("flags", 64);
+            List<FileUpload> files = data.getFiles();
             if (files.isEmpty())
                 return getRequestBody(json);
-
-            MultipartBody.Builder body = AttachedFile.createMultipartBody(files, null);
-            body.addFormDataPart("payload_json", json.toString());
-            files.clear();
-            return body.build();
+            return AttachedFile.createMultipartBody(files, json).build();
         }
         catch (Exception e)
         {

@@ -23,12 +23,12 @@ import net.dv8tion.jda.api.entities.WebhookClient;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.requests.RestAction;
-import net.dv8tion.jda.api.requests.restaction.WebhookMessageUpdateAction;
+import net.dv8tion.jda.api.requests.restaction.WebhookMessageEditAction;
 import net.dv8tion.jda.api.utils.AttachmentOption;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.WebhookMessageActionImpl;
-import net.dv8tion.jda.internal.requests.restaction.WebhookMessageUpdateActionImpl;
+import net.dv8tion.jda.internal.requests.restaction.WebhookMessageEditActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
@@ -51,7 +51,7 @@ public abstract class AbstractWebhookClient<T> implements WebhookClient<T>
     }
 
     public abstract WebhookMessageActionImpl<T> sendRequest();
-    public abstract WebhookMessageUpdateActionImpl<T> editRequest(String messageId);
+    public abstract WebhookMessageEditActionImpl<T> editRequest(String messageId);
 
     @Nonnull
     @Override
@@ -83,14 +83,14 @@ public abstract class AbstractWebhookClient<T> implements WebhookClient<T>
 
     @Nonnull
     @Override
-    public WebhookMessageUpdateActionImpl<T> editMessageById(@Nonnull String messageId, @Nonnull String content)
+    public WebhookMessageEditActionImpl<T> editMessageById(@Nonnull String messageId, @Nonnull String content)
     {
-        return (WebhookMessageUpdateActionImpl<T>) editRequest(messageId).setContent(content);
+        return (WebhookMessageEditActionImpl<T>) editRequest(messageId).setContent(content);
     }
 
     @Nonnull
     @Override
-    public WebhookMessageUpdateAction<T> editMessageComponentsById(@Nonnull String messageId, @Nonnull Collection<? extends LayoutComponent> components)
+    public WebhookMessageEditAction<T> editMessageComponentsById(@Nonnull String messageId, @Nonnull Collection<? extends LayoutComponent> components)
     {
         Checks.noneNull(components, "Components");
         if (components.stream().anyMatch(x -> !(x instanceof ActionRow)))
@@ -101,23 +101,23 @@ public abstract class AbstractWebhookClient<T> implements WebhookClient<T>
 
     @Nonnull
     @Override
-    public WebhookMessageUpdateActionImpl<T> editMessageEmbedsById(@Nonnull String messageId, @Nonnull Collection<? extends MessageEmbed> embeds)
+    public WebhookMessageEditActionImpl<T> editMessageEmbedsById(@Nonnull String messageId, @Nonnull Collection<? extends MessageEmbed> embeds)
     {
-        return (WebhookMessageUpdateActionImpl<T>) editRequest(messageId).setEmbeds(embeds);
+        return (WebhookMessageEditActionImpl<T>) editRequest(messageId).setEmbeds(embeds);
     }
 
     @Nonnull
     @Override
-    public WebhookMessageUpdateActionImpl<T> editMessageById(@Nonnull String messageId, @Nonnull Message message)
+    public WebhookMessageEditActionImpl<T> editMessageById(@Nonnull String messageId, @Nonnull Message message)
     {
-        return (WebhookMessageUpdateActionImpl<T>) editRequest(messageId).applyMessage(message);
+        return (WebhookMessageEditActionImpl<T>) editRequest(messageId).applyMessage(message);
     }
 
     @Nonnull
     @Override
-    public WebhookMessageUpdateActionImpl<T> editMessageById(@Nonnull String messageId, @Nonnull InputStream data, @Nonnull String name, @Nonnull AttachmentOption... options)
+    public WebhookMessageEditActionImpl<T> editMessageById(@Nonnull String messageId, @Nonnull InputStream data, @Nonnull String name, @Nonnull AttachmentOption... options)
     {
-        return (WebhookMessageUpdateActionImpl<T>) editRequest(messageId).addFile(data, name, options);
+        return (WebhookMessageEditActionImpl<T>) editRequest(messageId).addFile(data, name, options);
     }
 
     @Nonnull
