@@ -179,4 +179,34 @@ public class AllowedMentionsImpl implements SerializableData, AllowedMentions<Al
         Collections.addAll(roles, roleIds);
         return this;
     }
+
+    public EnumSet<Message.MentionType> getAllowedMentions()
+    {
+        return parse;
+    }
+
+    public Set<String> getUsers()
+    {
+        return users;
+    }
+
+    public Set<String> getRoles()
+    {
+        return roles;
+    }
+
+    public boolean isMentionRepliedUser()
+    {
+        return mentionRepliedUser;
+    }
+
+    public AllowedMentionsImpl copy()
+    {
+        AllowedMentionsImpl copy = new AllowedMentionsImpl();
+        copy.parse = parse;
+        copy.mentionRepliedUser = mentionRepliedUser;
+        copy.users.addAll(users);
+        copy.roles.addAll(roles);
+        return copy;
+    }
 }

@@ -25,6 +25,7 @@ import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 
+import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import java.io.*;
 import java.nio.file.Files;
@@ -232,6 +233,24 @@ public class FileUpload implements Closeable, AttachedFile
         Path fileName = path.getFileName();
         Checks.check(fileName != null, "Path does not have a file name. Path: %s", path);
         return fromData(path, fileName.toString(), options);
+    }
+
+    /**
+     * Returns a new instance of this file, with the name prefixed as {@code SPOILER_}.
+     * <br>This will cause the file to be rendered as a spoiler attachment in the client.
+     *
+     * <p>The underlying resource will be shared between this instance and the newly created instance.
+     * It is not necessary to close the old one.
+     *
+     * @return The new FileUpload instance
+     */
+    @Nonnull
+    @CheckReturnValue
+    public FileUpload spoiler()
+    {
+        if (name.startsWith("SPOILER_"))
+            return this;
+        return new FileUpload(resource, "SPOILER_" + name);
     }
 
     /**

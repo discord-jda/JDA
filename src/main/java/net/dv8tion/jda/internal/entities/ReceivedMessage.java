@@ -33,16 +33,16 @@ import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
-import net.dv8tion.jda.api.requests.restaction.MessageAction;
+import net.dv8tion.jda.api.requests.restaction.MessageEditAction;
 import net.dv8tion.jda.api.requests.restaction.ThreadChannelAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationAction;
 import net.dv8tion.jda.api.utils.MarkdownSanitizer;
 import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.api.utils.messages.MessageEditData;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.requests.CompletedRestAction;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
-import net.dv8tion.jda.internal.requests.restaction.MessageActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
 
@@ -523,42 +523,42 @@ public class ReceivedMessage extends AbstractMessage
 
     @Nonnull
     @Override
-    public MessageAction editMessage(@Nonnull CharSequence newContent)
+    public MessageEditAction editMessage(@Nonnull CharSequence newContent)
     {
         checkUser();
-        return ((MessageActionImpl) channel.editMessageById(getId(), newContent)).withHook(interactionHook);
+        return channel.editMessageById(getId(), newContent);
     }
 
     @Nonnull
     @Override
-    public MessageAction editMessageEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
+    public MessageEditAction editMessageEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
     {
         checkUser();
-        return ((MessageActionImpl) channel.editMessageEmbedsById(getId(), embeds)).withHook(interactionHook);
+        return channel.editMessageEmbedsById(getId(), embeds);
     }
 
     @Nonnull
     @Override
-    public MessageAction editMessageComponents(@Nonnull Collection<? extends LayoutComponent> components)
+    public MessageEditAction editMessageComponents(@Nonnull Collection<? extends LayoutComponent> components)
     {
         checkUser();
-        return ((MessageActionImpl) channel.editMessageComponentsById(getId(), components)).withHook(interactionHook);
+        return channel.editMessageComponentsById(getId(), components);
     }
 
     @Nonnull
     @Override
-    public MessageAction editMessageFormat(@Nonnull String format, @Nonnull Object... args)
+    public MessageEditAction editMessageFormat(@Nonnull String format, @Nonnull Object... args)
     {
         checkUser();
-        return ((MessageActionImpl) channel.editMessageFormatById(getId(), format, args)).withHook(interactionHook);
+        return channel.editMessageFormatById(getId(), format, args);
     }
 
     @Nonnull
     @Override
-    public MessageAction editMessage(@Nonnull Message newContent)
+    public MessageEditAction editMessage(@Nonnull MessageEditData newContent)
     {
         checkUser();
-        return ((MessageActionImpl) channel.editMessageById(getId(), newContent)).withHook(interactionHook);
+        return channel.editMessageById(getId(), newContent);
     }
 
     private void checkUser()

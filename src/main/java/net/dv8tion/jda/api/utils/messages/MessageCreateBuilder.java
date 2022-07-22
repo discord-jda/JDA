@@ -1,0 +1,247 @@
+/*
+ * Copyright 2015 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package net.dv8tion.jda.api.utils.messages;
+
+import net.dv8tion.jda.api.entities.IMentionable;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.interactions.components.LayoutComponent;
+import net.dv8tion.jda.api.utils.FileUpload;
+import net.dv8tion.jda.internal.utils.AllowedMentionsImpl;
+import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.Helpers;
+import net.dv8tion.jda.internal.utils.IOUtil;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+@SuppressWarnings("ResultOfMethodCallIgnored")
+public class MessageCreateBuilder implements MessageCreateRequest<MessageCreateBuilder>
+{
+    private final List<MessageEmbed> embeds = new ArrayList<>(10);
+    private final List<FileUpload> files = new ArrayList<>(10);
+    private final List<LayoutComponent> components = new ArrayList<>(5);
+    private final StringBuilder content = new StringBuilder(Message.MAX_CONTENT_LENGTH);
+    private AllowedMentionsImpl allowedMentions = new AllowedMentionsImpl();
+    private boolean tts;
+
+    public MessageCreateBuilder() {}
+
+    @Nonnull
+    public static MessageCreateBuilder from(@Nonnull MessageCreateData data)
+    {
+        MessageCreateBuilder builder = new MessageCreateBuilder();
+
+        builder.embeds.addAll(data.getEmbeds());
+        builder.files.addAll(data.getFiles());
+        builder.components.addAll(data.getComponents());
+        builder.content.append(data.getContent());
+        builder.tts = data.isTTS();
+
+        String[] empty = new String[0];
+        builder.allowedMentions.mentionUsers(data.getMentionedUsers().toArray(empty));
+        builder.allowedMentions.mentionRoles(data.getMentionedRoles().toArray(empty));
+        builder.allowedMentions.allowedMentions(data.getAllowedMentions());
+        builder.allowedMentions.mentionRepliedUser(data.isMentionRepliedUser());
+
+        return builder;
+    }
+    
+    @Nonnull
+    @Override
+    public MessageCreateBuilder setContent(@Nullable String content)
+    {
+        this.content.setLength(0);
+        if (content != null)
+            this.content.append(content.trim());
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    public MessageCreateBuilder mentionRepliedUser(boolean mention)
+    {
+        allowedMentions.mentionRepliedUser(mention);
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    public MessageCreateBuilder allowedMentions(@Nullable Collection<Message.MentionType> allowedMentions)
+    {
+        this.allowedMentions.allowedMentions(allowedMentions);
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    public MessageCreateBuilder mention(@Nonnull IMentionable... mentions)
+    {
+        allowedMentions.mention(mentions);
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    public MessageCreateBuilder mentionUsers(@Nonnull String... userIds)
+    {
+        allowedMentions.mentionUsers(userIds);
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    public MessageCreateBuilder mentionRoles(@Nonnull String... roleIds)
+    {
+        allowedMentions.mentionRoles(roleIds);
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    public MessageCreateBuilder setEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
+    {
+        Checks.noneNull(embeds, "Embeds");
+        this.embeds.clear();
+        this.embeds.addAll(embeds);
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    public MessageCreateBuilder setComponents(@Nonnull Collection<? extends LayoutComponent> layouts)
+    {
+        Checks.noneNull(layouts, "ComponentLayouts");
+        for (LayoutComponent layout : layouts)
+            Checks.check(layout.isMessageCompatible(), "Provided component layout is invalid for messages!");
+        this.components.clear();
+        this.components.addAll(layouts);
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    public MessageCreateBuilder addContent(@Nonnull String content)
+    {
+        Checks.notNull(content, "Content");
+        this.content.append(content.trim());
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    public MessageCreateBuilder addEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
+    {
+        Checks.noneNull(embeds, "Embeds");
+        this.embeds.addAll(embeds);
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    public MessageCreateBuilder addComponents(@Nonnull Collection<? extends LayoutComponent> layouts)
+    {
+        Checks.noneNull(layouts, "ComponentLayouts");
+        for (LayoutComponent layout : layouts)
+            Checks.check(layout.isMessageCompatible(), "Provided component layout is invalid for messages!");
+        this.components.addAll(layouts);
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    public MessageCreateBuilder setFiles(@Nullable Collection<? extends FileUpload> files)
+    {
+        if (files != null)
+            Checks.noneNull(files, "Files");
+        this.files.forEach(IOUtil::silentClose);
+        this.files.clear();
+        if (files != null)
+            this.files.addAll(files);
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    public MessageCreateBuilder addFiles(@Nonnull Collection<? extends FileUpload> files)
+    {
+        Checks.noneNull(files, "Files");
+        this.files.addAll(files);
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    public MessageCreateBuilder setTTS(boolean tts)
+    {
+        this.tts = tts;
+        return this;
+    }
+
+    public boolean isEmpty()
+    {
+        return content.length() == 0 && embeds.isEmpty() && files.isEmpty();
+    }
+
+    public boolean isValid()
+    {
+        return !isEmpty() && embeds.size() <= Message.MAX_EMBED_COUNT
+                          && components.size() <= Message.MAX_COMPONENT_COUNT
+                          && Helpers.codePointLength(content.toString()) <= Message.MAX_CONTENT_LENGTH;
+    }
+
+    @Nonnull
+    public MessageCreateData build()
+    {
+        // Copy to prevent modifying data after building
+        String content = this.content.toString();
+        List<MessageEmbed> embeds = new ArrayList<>(this.embeds);
+        List<FileUpload> files = new ArrayList<>(this.files);
+        List<LayoutComponent> components = new ArrayList<>(this.components);
+        AllowedMentionsImpl allowedMentions = this.allowedMentions.copy();
+
+        if (isEmpty())
+            throw new IllegalStateException("Cannot build an empty message. You need at least one of content, embeds, or files");
+
+        int length = Helpers.codePointLength(content);
+        if (length > Message.MAX_CONTENT_LENGTH)
+            throw new IllegalStateException("Message content is too long! Max length is " + Message.MAX_CONTENT_LENGTH + " characters, provided " + length);
+
+        if (embeds.size() > Message.MAX_EMBED_COUNT)
+            throw new IllegalStateException("Cannot build message with over " + Message.MAX_EMBED_COUNT + " embeds, provided " + embeds.size());
+
+        if (components.size() > Message.MAX_COMPONENT_COUNT)
+            throw new IllegalStateException("Cannot build message with over " + Message.MAX_COMPONENT_COUNT + " component layouts, provided " + components.size());
+        return new MessageCreateData(content, embeds, files, components, allowedMentions, tts);
+    }
+
+    @Nonnull
+    public MessageCreateBuilder clear()
+    {
+        this.content.setLength(0);
+        this.files.clear();
+        this.embeds.clear();
+        this.components.clear();
+        this.allowedMentions = new AllowedMentionsImpl();
+        this.tts = false;
+
+        return this;
+    }
+}

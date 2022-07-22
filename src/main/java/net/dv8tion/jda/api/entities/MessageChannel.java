@@ -25,18 +25,26 @@ import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
+import net.dv8tion.jda.api.requests.restaction.MessageCreateAction;
+import net.dv8tion.jda.api.requests.restaction.MessageEditAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.MessagePaginationAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.PaginationAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationAction;
 import net.dv8tion.jda.api.utils.AttachmentOption;
+import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.data.DataArray;
+import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
+import net.dv8tion.jda.api.utils.messages.MessageCreateData;
+import net.dv8tion.jda.api.utils.messages.MessageEditBuilder;
+import net.dv8tion.jda.api.utils.messages.MessageEditData;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
-import net.dv8tion.jda.internal.requests.restaction.MessageActionImpl;
+import net.dv8tion.jda.internal.requests.restaction.MessageCreateActionImpl;
+import net.dv8tion.jda.internal.requests.restaction.MessageEditActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.pagination.MessagePaginationActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.pagination.ReactionPaginationActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -286,7 +294,7 @@ public interface MessageChannel extends Channel, Formattable
      * {@link net.dv8tion.jda.api.entities.Member#hasPermission(GuildChannel, net.dv8tion.jda.api.Permission...)
      *  guild.getSelfMember().hasPermission(channel, Permission.MESSAGE_SEND)}.
      *
-     * <p>For {@link net.dv8tion.jda.api.requests.ErrorResponse} information, refer to {@link #sendMessage(Message)}.
+     * <p>For {@link net.dv8tion.jda.api.requests.ErrorResponse} information, refer to {@link #sendMessage(MessageCreateData)}.
      *
      * @param  text
      *         the text to send to the MessageChannel.
@@ -300,22 +308,16 @@ public interface MessageChannel extends Channel, Formattable
      *         If this is a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}
      *         and both the currently logged in account and the target user are bots.
      *
-     * @return {@link MessageAction MessageAction}
+     * @return {@link MessageCreateAction}
      *         <br>The newly created Message after it has been sent to Discord.
      *
      * @see net.dv8tion.jda.api.MessageBuilder
      */
     @Nonnull
     @CheckReturnValue
-    default MessageAction sendMessage(@Nonnull CharSequence text)
+    default MessageCreateAction sendMessage(@Nonnull CharSequence text)
     {
-        Checks.notEmpty(text, "Provided text for message");
-        Checks.check(text.length() <= Message.MAX_CONTENT_LENGTH, "Provided text for message must be less than %d characters in length", Message.MAX_CONTENT_LENGTH);
-
-        if (text instanceof StringBuilder)
-            return new MessageActionImpl(getJDA(), null, this, (StringBuilder) text);
-        else
-            return new MessageActionImpl(getJDA(), null, this).append(text);
+        return new MessageCreateActionImpl(this, new MessageCreateBuilder().setContent(text.toString()));
     }
 
     /**
@@ -326,7 +328,7 @@ public interface MessageChannel extends Channel, Formattable
      * {@link net.dv8tion.jda.api.entities.Member#hasPermission(GuildChannel, net.dv8tion.jda.api.Permission...)
      *  guild.getSelfMember().hasPermission(channel, Permission.MESSAGE_SEND)}.
      *
-     * <p>For {@link net.dv8tion.jda.api.requests.ErrorResponse} information, refer to {@link #sendMessage(Message)}.
+     * <p>For {@link net.dv8tion.jda.api.requests.ErrorResponse} information, refer to {@link #sendMessage(MessageCreateData)}.
      *
      * @param  format
      *         The string that should be formatted, if this is {@code null} or empty
@@ -354,12 +356,12 @@ public interface MessageChannel extends Channel, Formattable
      *         see the <a href="../util/Formatter.html#detail">Details</a>
      *         section of the formatter class specification.
      *
-     * @return {@link MessageAction MessageAction}
+     * @return {@link MessageCreateAction}
      *         <br>The newly created Message after it has been sent to Discord.
      */
     @Nonnull
     @CheckReturnValue
-    default MessageAction sendMessageFormat(@Nonnull String format, @Nonnull Object... args)
+    default MessageCreateAction sendMessageFormat(@Nonnull String format, @Nonnull Object... args)
     {
         Checks.notEmpty(format, "Format");
         return sendMessage(String.format(format, args));
@@ -374,7 +376,7 @@ public interface MessageChannel extends Channel, Formattable
      * {@link net.dv8tion.jda.api.entities.Member#hasPermission(GuildChannel, net.dv8tion.jda.api.Permission...)
      *  guild.getSelfMember().hasPermission(channel, Permission.MESSAGE_SEND)}.
      *
-     * <p>For {@link net.dv8tion.jda.api.requests.ErrorResponse} information, refer to {@link #sendMessage(Message)}.
+     * <p>For {@link net.dv8tion.jda.api.requests.ErrorResponse} information, refer to {@link #sendMessage(MessageCreateData)}.
      *
      * @param  embed
      *         The {@link MessageEmbed MessageEmbed} to send
@@ -396,7 +398,7 @@ public interface MessageChannel extends Channel, Formattable
      *         If this is a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}
      *         and both the currently logged in account and the target user are bots.
      *
-     * @return {@link MessageAction MessageAction}
+     * @return {@link MessageCreateAction}
      *         <br>The newly created Message after it has been sent to Discord.
      *
      * @see    net.dv8tion.jda.api.MessageBuilder
@@ -404,14 +406,14 @@ public interface MessageChannel extends Channel, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default MessageAction sendMessageEmbeds(@Nonnull MessageEmbed embed, @Nonnull MessageEmbed... other)
+    default MessageCreateAction sendMessageEmbeds(@Nonnull MessageEmbed embed, @Nonnull MessageEmbed... other)
     {
         Checks.notNull(embed, "MessageEmbeds");
         Checks.noneNull(other, "MessageEmbeds");
         List<MessageEmbed> embeds = new ArrayList<>(1 + other.length);
         embeds.add(embed);
         Collections.addAll(embeds, other);
-        return new MessageActionImpl(getJDA(), null, this).setEmbeds(embeds);
+        return new MessageCreateActionImpl(this, new MessageCreateBuilder().setEmbeds(embeds));
     }
 
     /**
@@ -423,7 +425,7 @@ public interface MessageChannel extends Channel, Formattable
      * {@link net.dv8tion.jda.api.entities.Member#hasPermission(GuildChannel, net.dv8tion.jda.api.Permission...)
      *  guild.getSelfMember().hasPermission(channel, Permission.MESSAGE_SEND)}.
      *
-     * <p>For {@link net.dv8tion.jda.api.requests.ErrorResponse} information, refer to {@link #sendMessage(Message)}.
+     * <p>For {@link net.dv8tion.jda.api.requests.ErrorResponse} information, refer to {@link #sendMessage(MessageCreateData)}.
      *
      * @param  embeds
      *         The {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbeds} to send
@@ -443,7 +445,7 @@ public interface MessageChannel extends Channel, Formattable
      *         If this is a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}
      *         and both the currently logged in account and the target user are bots.
      *
-     * @return {@link MessageAction MessageAction}
+     * @return {@link MessageCreateAction}
      *         <br>The newly created Message after it has been sent to Discord.
      *
      * @see    net.dv8tion.jda.api.MessageBuilder
@@ -451,9 +453,9 @@ public interface MessageChannel extends Channel, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default MessageAction sendMessageEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
+    default MessageCreateAction sendMessageEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
     {
-        return new MessageActionImpl(getJDA(), null, this).setEmbeds(embeds);
+        return new MessageCreateActionImpl(this, new MessageCreateBuilder().setEmbeds(embeds));
     }
 
     /**
@@ -502,24 +504,24 @@ public interface MessageChannel extends Channel, Formattable
      *         If this is a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}
      *         and both the currently logged in account and the target user are bots.
      *
-     * @return {@link MessageAction MessageAction}
+     * @return {@link MessageCreateAction}
      *         <br>The newly created Message after it has been sent to Discord.
      *
      * @see    net.dv8tion.jda.api.MessageBuilder
      */
     @Nonnull
     @CheckReturnValue
-    default MessageAction sendMessage(@Nonnull Message msg)
+    default MessageCreateAction sendMessage(@Nonnull MessageCreateData msg)
     {
         Checks.notNull(msg, "Message");
-        return new MessageActionImpl(getJDA(), null, this).apply(msg);
+        return new MessageCreateActionImpl(this, MessageCreateBuilder.from(msg));
     }
 
     /**
      * Uploads a file to the Discord servers and sends it to this {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel}.
      * Sends the provided {@link net.dv8tion.jda.api.entities.Message Message} with the uploaded file.
-     * <br>If you want to send a Message with the uploaded file, you can add the file to the {@link net.dv8tion.jda.api.requests.restaction.MessageAction}
-     * returned by {@link #sendMessage(Message)}.
+     * <br>If you want to send a Message with the uploaded file, you can add the file to the {@link net.dv8tion.jda.api.requests.restaction.MessageCreateAction}
+     * returned by {@link #sendMessage(MessageCreateData)}.
      *
      * <p>This is a shortcut to {@link #sendFile(java.io.File, String, AttachmentOption...)} by way of using {@link java.io.File#getName()}.
      * <pre>sendFile(file, file.getName())</pre>
@@ -562,12 +564,12 @@ public interface MessageChannel extends Channel, Formattable
      *         If this is a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}
      *         and both the currently logged in account and the target user are bots.
      *
-     * @return {@link MessageAction MessageAction}
+     * @return {@link MessageCreateAction}
      *         <br>Providing the {@link net.dv8tion.jda.api.entities.Message Message} created from this upload.
      */
     @Nonnull
     @CheckReturnValue
-    default MessageAction sendFile(@Nonnull File file, @Nonnull AttachmentOption... options)
+    default MessageCreateAction sendFile(@Nonnull File file, @Nonnull AttachmentOption... options)
     {
         Checks.notNull(file, "file");
         return sendFile(file, file.getName(), options);
@@ -576,8 +578,8 @@ public interface MessageChannel extends Channel, Formattable
     /**
      * Uploads a file to the Discord servers and sends it to this {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel}.
      * Sends the provided {@link net.dv8tion.jda.api.entities.Message Message} with the uploaded file.
-     * <br>If you want to send a Message with the uploaded file, you can add the file to the {@link net.dv8tion.jda.api.requests.restaction.MessageAction}
-     * returned by {@link #sendMessage(Message)}.
+     * <br>If you want to send a Message with the uploaded file, you can add the file to the {@link MessageCreateAction}
+     * returned by {@link #sendMessage(MessageCreateData)}.
      *
      * <p>The {@code fileName} parameter is used to inform Discord about what the file should be called. This is 2 fold:
      * <ol>
@@ -648,12 +650,12 @@ public interface MessageChannel extends Channel, Formattable
      *         If this is a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}
      *         and both the currently logged in account and the target user are bots.
      *
-     * @return {@link MessageAction MessageAction}
+     * @return {@link MessageAction}
      *         <br>Providing the {@link net.dv8tion.jda.api.entities.Message Message} created from this upload.
      */
     @Nonnull
     @CheckReturnValue
-    default MessageAction sendFile(@Nonnull File file, @Nonnull String fileName, @Nonnull AttachmentOption... options)
+    default MessageCreateAction sendFile(@Nonnull File file, @Nonnull String fileName, @Nonnull AttachmentOption... options)
     {
         Checks.notNull(file, "file");
         Checks.check(file.exists() && file.canRead(),
@@ -673,8 +675,8 @@ public interface MessageChannel extends Channel, Formattable
     /**
      * Uploads a file to the Discord servers and sends it to this {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel}.
      * Sends the provided {@link net.dv8tion.jda.api.entities.Message Message} with the uploaded file.
-     * <br>If you want to send a Message with the uploaded file, you can add the file to the {@link net.dv8tion.jda.api.requests.restaction.MessageAction}
-     * returned by {@link #sendMessage(Message)}.
+     * <br>If you want to send a Message with the uploaded file, you can add the file to the {@link net.dv8tion.jda.api.requests.restaction.MessageCreateAction}
+     * returned by {@link #sendMessage(MessageCreateData)}.
      * <br>This allows you to send an {@link java.io.InputStream InputStream} as substitute to a file.
      *
      * <p>For information about the {@code fileName} parameter, Refer to the documentation for {@link #sendFile(java.io.File, String, AttachmentOption...)}.
@@ -714,23 +716,26 @@ public interface MessageChannel extends Channel, Formattable
      *         If this is a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}
      *         and both the currently logged in account and the target user are bots.
      *
-     * @return {@link MessageAction MessageAction}
+     * @return {@link MessageCreateAction}
      *         <br>Provides the {@link net.dv8tion.jda.api.entities.Message Message} created from this upload.
      */
     @Nonnull
     @CheckReturnValue
-    default MessageAction sendFile(@Nonnull InputStream data, @Nonnull String fileName, @Nonnull AttachmentOption... options)
+    default MessageCreateAction sendFile(@Nonnull InputStream data, @Nonnull String fileName, @Nonnull AttachmentOption... options)
     {
         Checks.notNull(data, "data InputStream");
         Checks.notNull(fileName, "fileName");
-        return new MessageActionImpl(getJDA(), null, this).addFile(data, fileName, options);
+        if (options != null && options.length > 0 && options[0] == AttachmentOption.SPOILER)
+            fileName = "SPOILER_" + fileName;
+        FileUpload file = FileUpload.fromData(data, fileName);
+        return new MessageCreateActionImpl(this, new MessageCreateBuilder().setFiles(Collections.singletonList(file)));
     }
 
     /**
      * Uploads a file to the Discord servers and sends it to this {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel}.
      * Sends the provided {@link net.dv8tion.jda.api.entities.Message Message} with the uploaded file.
-     * <br>If you want to send a Message with the uploaded file, you can add the file to the {@link net.dv8tion.jda.api.requests.restaction.MessageAction}
-     * returned by {@link #sendMessage(Message)}.
+     * <br>If you want to send a Message with the uploaded file, you can add the file to the {@link MessageCreateAction}
+     * returned by {@link #sendMessage(MessageCreateData)}.
      * <br>This allows you to send an {@code byte[]} as substitute to a file.
      *
      * <p>For information about the {@code fileName} parameter, Refer to the documentation for {@link #sendFile(java.io.File, String, AttachmentOption...)}.
@@ -773,12 +778,12 @@ public interface MessageChannel extends Channel, Formattable
      *         If this is a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}
      *         and both the currently logged in account and the target user are bots.
      *
-     * @return {@link MessageAction MessageAction}
+     * @return {@link MessageAction MessageCreateAction}
      *         <br>Provides the {@link net.dv8tion.jda.api.entities.Message Message} created from this upload.
      */
     @Nonnull
     @CheckReturnValue
-    default MessageAction sendFile(@Nonnull byte[] data, @Nonnull String fileName, @Nonnull AttachmentOption... options)
+    default MessageCreateAction sendFile(@Nonnull byte[] data, @Nonnull String fileName, @Nonnull AttachmentOption... options)
     {
         Checks.notNull(data, "data");
         Checks.notNull(fileName, "fileName");
@@ -2264,15 +2269,12 @@ public interface MessageChannel extends Channel, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default MessageAction editMessageById(@Nonnull String messageId, @Nonnull CharSequence newContent)
+    default MessageEditAction editMessageById(@Nonnull String messageId, @Nonnull CharSequence newContent)
     {
         Checks.isSnowflake(messageId, "Message ID");
         Checks.notEmpty(newContent, "Provided message content");
         Checks.check(newContent.length() <= Message.MAX_CONTENT_LENGTH, "Provided newContent length must be %d or less characters.", Message.MAX_CONTENT_LENGTH);
-        if (newContent instanceof StringBuilder)
-            return new MessageActionImpl(getJDA(), messageId, this, (StringBuilder) newContent);
-        else
-            return new MessageActionImpl(getJDA(), messageId, this).append(newContent);
+        return new MessageEditActionImpl(this, messageId, new MessageEditBuilder().setContent(newContent.toString()));
     }
 
     /**
@@ -2318,7 +2320,7 @@ public interface MessageChannel extends Channel, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default MessageAction editMessageById(long messageId, @Nonnull CharSequence newContent)
+    default MessageEditAction editMessageById(long messageId, @Nonnull CharSequence newContent)
     {
         return editMessageById(Long.toUnsignedString(messageId), newContent);
     }
@@ -2347,7 +2349,7 @@ public interface MessageChannel extends Channel, Formattable
      *
      * @param  messageId
      *         The id referencing the Message that should be edited
-     * @param  newContent
+     * @param  data
      *         The new content for the edited message
      *
      * @throws IllegalArgumentException
@@ -2367,11 +2369,11 @@ public interface MessageChannel extends Channel, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default MessageAction editMessageById(@Nonnull String messageId, @Nonnull Message newContent)
+    default MessageEditAction editMessageById(@Nonnull String messageId, @Nonnull MessageEditData data)
     {
         Checks.isSnowflake(messageId, "Message ID");
-        Checks.notNull(newContent, "message");
-        return new MessageActionImpl(getJDA(), messageId, this).apply(newContent);
+        Checks.notNull(data, "message");
+        return new MessageEditActionImpl(this, messageId, MessageEditBuilder.from(data));
     }
 
     /**
@@ -2398,7 +2400,7 @@ public interface MessageChannel extends Channel, Formattable
      *
      * @param  messageId
      *         The id referencing the Message that should be edited
-     * @param  newContent
+     * @param  data
      *         The new content for the edited message
      *
      * @throws IllegalArgumentException
@@ -2413,14 +2415,14 @@ public interface MessageChannel extends Channel, Formattable
      *         If this is a {@link net.dv8tion.jda.api.entities.GuildMessageChannel GuildMessageChannel} and this account does not have
      *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
      *
-     * @return {@link MessageAction MessageAction}
+     * @return {@link MessageEditAction}
      *         <br>The modified Message after it has been sent to discord
      */
     @Nonnull
     @CheckReturnValue
-    default MessageAction editMessageById(long messageId, @Nonnull Message newContent)
+    default MessageEditAction editMessageById(long messageId, @Nonnull MessageEditData data)
     {
-        return editMessageById(Long.toUnsignedString(messageId), newContent);
+        return editMessageById(Long.toUnsignedString(messageId), data);
     }
 
     /**
@@ -2476,7 +2478,7 @@ public interface MessageChannel extends Channel, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default MessageAction editMessageFormatById(@Nonnull String messageId, @Nonnull String format, @Nonnull Object... args)
+    default MessageEditAction editMessageFormatById(@Nonnull String messageId, @Nonnull String format, @Nonnull Object... args)
     {
         Checks.notBlank(format, "Format String");
         return editMessageById(messageId, String.format(format, args));
@@ -2535,7 +2537,7 @@ public interface MessageChannel extends Channel, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default MessageAction editMessageFormatById(long messageId, @Nonnull String format, @Nonnull Object... args)
+    default MessageEditAction editMessageFormatById(long messageId, @Nonnull String format, @Nonnull Object... args)
     {
         Checks.notBlank(format, "Format String");
         return editMessageById(messageId, String.format(format, args));
@@ -2584,7 +2586,7 @@ public interface MessageChannel extends Channel, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default MessageAction editMessageEmbedsById(@Nonnull String messageId, @Nonnull MessageEmbed... newEmbeds)
+    default MessageEditAction editMessageEmbedsById(@Nonnull String messageId, @Nonnull MessageEmbed... newEmbeds)
     {
         Checks.noneNull(newEmbeds, "MessageEmbeds");
         return editMessageEmbedsById(messageId, Arrays.asList(newEmbeds));
@@ -2633,7 +2635,7 @@ public interface MessageChannel extends Channel, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default MessageAction editMessageEmbedsById(long messageId, @Nonnull MessageEmbed... newEmbeds)
+    default MessageEditAction editMessageEmbedsById(long messageId, @Nonnull MessageEmbed... newEmbeds)
     {
         return editMessageEmbedsById(Long.toUnsignedString(messageId), newEmbeds);
     }
@@ -2681,10 +2683,10 @@ public interface MessageChannel extends Channel, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default MessageAction editMessageEmbedsById(@Nonnull String messageId, @Nonnull Collection<? extends MessageEmbed> newEmbeds)
+    default MessageEditAction editMessageEmbedsById(@Nonnull String messageId, @Nonnull Collection<? extends MessageEmbed> newEmbeds)
     {
         Checks.isSnowflake(messageId, "Message ID");
-        return new MessageActionImpl(getJDA(), messageId, this).setEmbeds(newEmbeds);
+        return new MessageEditActionImpl(this, messageId, new MessageEditBuilder().setEmbeds(newEmbeds));
     }
 
     /**
@@ -2730,7 +2732,7 @@ public interface MessageChannel extends Channel, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default MessageAction editMessageEmbedsById(long messageId, @Nonnull Collection<? extends MessageEmbed> newEmbeds)
+    default MessageEditAction editMessageEmbedsById(long messageId, @Nonnull Collection<? extends MessageEmbed> newEmbeds)
     {
         return editMessageEmbedsById(Long.toUnsignedString(messageId), newEmbeds);
     }
@@ -2791,14 +2793,14 @@ public interface MessageChannel extends Channel, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default MessageAction editMessageComponentsById(@Nonnull String messageId, @Nonnull Collection<? extends LayoutComponent> components)
+    default MessageEditAction editMessageComponentsById(@Nonnull String messageId, @Nonnull Collection<? extends LayoutComponent> components)
     {
         Checks.isSnowflake(messageId, "Message ID");
         Checks.noneNull(components, "Components");
         if (components.stream().anyMatch(x -> !(x instanceof ActionRow)))
             throw new UnsupportedOperationException("The provided component layout is not supported");
         List<ActionRow> actionRows = components.stream().map(ActionRow.class::cast).collect(Collectors.toList());
-        return new MessageActionImpl(getJDA(), messageId, this).setActionRows(actionRows);
+        return new MessageEditActionImpl(this, messageId, new MessageEditBuilder().setComponents(actionRows));
     }
 
     /**
@@ -2854,7 +2856,7 @@ public interface MessageChannel extends Channel, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default MessageAction editMessageComponentsById(long messageId, @Nonnull Collection<? extends LayoutComponent> components)
+    default MessageEditAction editMessageComponentsById(long messageId, @Nonnull Collection<? extends LayoutComponent> components)
     {
         return editMessageComponentsById(Long.toUnsignedString(messageId), components);
     }
@@ -2914,7 +2916,7 @@ public interface MessageChannel extends Channel, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default MessageAction editMessageComponentsById(@Nonnull String messageId, @Nonnull LayoutComponent... components)
+    default MessageEditAction editMessageComponentsById(@Nonnull String messageId, @Nonnull LayoutComponent... components)
     {
         Checks.noneNull(components, "Components");
         return editMessageComponentsById(messageId, Arrays.asList(components));
@@ -2972,7 +2974,7 @@ public interface MessageChannel extends Channel, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default MessageAction editMessageComponentsById(long messageId, @Nonnull LayoutComponent... components)
+    default MessageEditAction editMessageComponentsById(long messageId, @Nonnull LayoutComponent... components)
     {
         Checks.noneNull(components, "Components");
         return editMessageComponentsById(messageId, Arrays.asList(components));

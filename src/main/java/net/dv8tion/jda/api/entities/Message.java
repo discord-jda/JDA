@@ -38,12 +38,12 @@ import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;
 import net.dv8tion.jda.api.requests.RestAction;
-import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
-import net.dv8tion.jda.api.requests.restaction.MessageAction;
-import net.dv8tion.jda.api.requests.restaction.ThreadChannelAction;
+import net.dv8tion.jda.api.requests.restaction.*;
 import net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationAction;
 import net.dv8tion.jda.api.utils.AttachmentOption;
 import net.dv8tion.jda.api.utils.AttachmentProxy;
+import net.dv8tion.jda.api.utils.messages.MessageCreateData;
+import net.dv8tion.jda.api.utils.messages.MessageEditData;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.ReceivedMessage;
 import net.dv8tion.jda.internal.requests.FunctionalCallback;
@@ -117,7 +117,6 @@ import java.util.stream.Collectors;
  * <p>More information on formatting syntax can be found in the {@link java.util.Formatter format syntax documentation}!
  *
  * @see MessageBuilder MessageBuilder
- * @see MessageChannel#sendMessage(Message)
  *
  * @see MessageChannel#getIterableHistory()
  * @see MessageChannel#getHistory()
@@ -186,6 +185,11 @@ public interface Message extends ISnowflake, Formattable
      * @see MessageAction#setStickers(StickerSnowflake...)
      */
     int MAX_STICKER_COUNT = 3;
+
+    /**
+     * The maximum amount of {@link LayoutComponent LayoutComponents} that can be added to a message ({@value})
+     */
+    int MAX_COMPONENT_COUNT = 5;
 
     /**
      * Pattern used to find instant invites in strings.
@@ -756,7 +760,7 @@ public interface Message extends ISnowflake, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    MessageAction editMessage(@Nonnull CharSequence newContent);
+    MessageEditAction editMessage(@Nonnull CharSequence newContent);
 
     /**
      * Edits this Message's content to the provided {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbeds}.
@@ -793,7 +797,7 @@ public interface Message extends ISnowflake, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    MessageAction editMessageEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds);
+    MessageEditAction editMessageEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds);
 
     /**
      * Edits this Message's content to the provided {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbeds}.
@@ -830,7 +834,7 @@ public interface Message extends ISnowflake, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default MessageAction editMessageEmbeds(@Nonnull MessageEmbed... embeds)
+    default MessageEditAction editMessageEmbeds(@Nonnull MessageEmbed... embeds)
     {
         Checks.noneNull(embeds, "MessageEmbeds");
         return editMessageEmbeds(Arrays.asList(embeds));
@@ -888,7 +892,7 @@ public interface Message extends ISnowflake, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    MessageAction editMessageComponents(@Nonnull Collection<? extends LayoutComponent> components);
+    MessageEditAction editMessageComponents(@Nonnull Collection<? extends LayoutComponent> components);
 
     /**
      * Edits this Message's content to the provided {@link LayoutComponent LayoutComponents}.
@@ -941,7 +945,7 @@ public interface Message extends ISnowflake, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default MessageAction editMessageComponents(@Nonnull LayoutComponent... components)
+    default MessageEditAction editMessageComponents(@Nonnull LayoutComponent... components)
     {
         Checks.noneNull(components, "Components");
         return editMessageComponents(Arrays.asList(components));
@@ -994,7 +998,7 @@ public interface Message extends ISnowflake, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    MessageAction editMessageFormat(@Nonnull String format, @Nonnull Object... args);
+    MessageEditAction editMessageFormat(@Nonnull String format, @Nonnull Object... args);
 
     /**
      * Edits this Message's content to the provided {@link net.dv8tion.jda.api.entities.Message Message}.
@@ -1033,7 +1037,7 @@ public interface Message extends ISnowflake, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    MessageAction editMessage(@Nonnull Message newContent);
+    MessageEditAction editMessage(@Nonnull MessageEditData newContent);
 
     /**
      * Replies and references this message.
@@ -1070,9 +1074,9 @@ public interface Message extends ISnowflake, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default MessageAction replyStickers(@Nonnull Collection<? extends StickerSnowflake> stickers)
+    default MessageCreateAction replyStickers(@Nonnull Collection<? extends StickerSnowflake> stickers)
     {
-        return getGuildChannel().sendStickers(stickers).reference(this);
+        return getGuildChannel().sendStickers(stickers).setMessageReference(this);
     }
 
     /**
@@ -1110,9 +1114,9 @@ public interface Message extends ISnowflake, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default MessageAction replyStickers(@Nonnull StickerSnowflake... stickers)
+    default MessageCreateAction replyStickers(@Nonnull StickerSnowflake... stickers)
     {
-        return getGuildChannel().sendStickers(stickers).reference(this);
+        return getGuildChannel().sendStickers(stickers).setMessageReference(this);
     }
 
     /**
@@ -1139,9 +1143,9 @@ public interface Message extends ISnowflake, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default MessageAction reply(@Nonnull CharSequence content)
+    default MessageCreateAction reply(@Nonnull CharSequence content)
     {
-        return getChannel().sendMessage(content).reference(this);
+        return getChannel().sendMessage(content).setMessageReference(this);
     }
 
     /**
@@ -1171,7 +1175,7 @@ public interface Message extends ISnowflake, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default MessageAction replyEmbeds(@Nonnull MessageEmbed embed, @Nonnull MessageEmbed... other)
+    default MessageCreateAction replyEmbeds(@Nonnull MessageEmbed embed, @Nonnull MessageEmbed... other)
     {
         Checks.notNull(embed, "MessageEmbeds");
         Checks.noneNull(other, "MessageEmbeds");
@@ -1206,9 +1210,9 @@ public interface Message extends ISnowflake, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default MessageAction replyEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
+    default MessageCreateAction replyEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
     {
-        return getChannel().sendMessageEmbeds(embeds).reference(this);
+        return getChannel().sendMessageEmbeds(embeds).setMessageReference(this);
     }
 
     /**
@@ -1218,9 +1222,9 @@ public interface Message extends ISnowflake, Formattable
      * <br>By default there won't be any error thrown if the referenced message does not exist.
      * This behavior can be changed with {@link MessageAction#failOnInvalidReply(boolean)}.
      *
-     * <p>For further info, see {@link MessageChannel#sendMessage(Message)} and {@link MessageAction#reference(Message)}.
+     * <p>For further info, see {@link MessageChannel#sendMessage(MessageCreateData)} and {@link MessageAction#reference(Message)}.
      *
-     * @param  content
+     * @param  msg
      *         The content of the reply message
      *
      * @throws UnsupportedOperationException
@@ -1232,14 +1236,12 @@ public interface Message extends ISnowflake, Formattable
      *         If null is provided
      *
      * @return {@link MessageAction} Providing the {@link Message} created from this upload.
-     *
-     * @since  4.2.1
      */
     @Nonnull
     @CheckReturnValue
-    default MessageAction reply(@Nonnull Message content)
+    default MessageCreateAction reply(@Nonnull MessageCreateData msg)
     {
-        return getChannel().sendMessage(content).reference(this);
+        return getChannel().sendMessage(msg).setMessageReference(this);
     }
 
     /**
@@ -1265,14 +1267,12 @@ public interface Message extends ISnowflake, Formattable
      *         If null is provided
      *
      * @return {@link MessageAction} Providing the {@link Message} created from this upload.
-     *
-     * @since  4.2.1
      */
     @Nonnull
     @CheckReturnValue
-    default MessageAction replyFormat(@Nonnull String format, @Nonnull Object... args)
+    default MessageCreateAction replyFormat(@Nonnull String format, @Nonnull Object... args)
     {
-        return getChannel().sendMessageFormat(format, args).reference(this);
+        return getChannel().sendMessageFormat(format, args).setMessageReference(this);
     }
 
     /**
@@ -1298,14 +1298,12 @@ public interface Message extends ISnowflake, Formattable
      *         If null is provided
      *
      * @return {@link MessageAction} Providing the {@link Message} created from this upload.
-     *
-     * @since  4.2.1
      */
     @Nonnull
     @CheckReturnValue
-    default MessageAction reply(@Nonnull File file, @Nonnull AttachmentOption... options)
+    default MessageCreateAction reply(@Nonnull File file, @Nonnull AttachmentOption... options)
     {
-        return getChannel().sendFile(file, options).reference(this);
+        return getChannel().sendFile(file, options).setMessageReference(this);
     }
 
     /**
@@ -1333,14 +1331,12 @@ public interface Message extends ISnowflake, Formattable
      *         If null is provided
      *
      * @return {@link MessageAction} Providing the {@link Message} created from this upload.
-     *
-     * @since  4.2.1
      */
     @Nonnull
     @CheckReturnValue
-    default MessageAction reply(@Nonnull File data, @Nonnull String name, @Nonnull AttachmentOption... options)
+    default MessageCreateAction reply(@Nonnull File data, @Nonnull String name, @Nonnull AttachmentOption... options)
     {
-        return getChannel().sendFile(data, name, options).reference(this);
+        return getChannel().sendFile(data, name, options).setMessageReference(this);
     }
 
     /**
@@ -1368,14 +1364,12 @@ public interface Message extends ISnowflake, Formattable
      *         If null is provided
      *
      * @return {@link MessageAction} Providing the {@link Message} created from this upload.
-     *
-     * @since  4.2.1
      */
     @Nonnull
     @CheckReturnValue
-    default MessageAction reply(@Nonnull InputStream data, @Nonnull String name, @Nonnull AttachmentOption... options)
+    default MessageCreateAction reply(@Nonnull InputStream data, @Nonnull String name, @Nonnull AttachmentOption... options)
     {
-        return getChannel().sendFile(data, name, options).reference(this);
+        return getChannel().sendFile(data, name, options).setMessageReference(this);
     }
 
     /**
@@ -1403,14 +1397,12 @@ public interface Message extends ISnowflake, Formattable
      *         If null is provided
      *
      * @return {@link MessageAction} Providing the {@link Message} created from this upload.
-     *
-     * @since  4.2.1
      */
     @Nonnull
     @CheckReturnValue
-    default MessageAction reply(@Nonnull byte[] data, @Nonnull String name, @Nonnull AttachmentOption... options)
+    default MessageCreateAction reply(@Nonnull byte[] data, @Nonnull String name, @Nonnull AttachmentOption... options)
     {
-        return getChannel().sendFile(data, name, options).reference(this);
+        return getChannel().sendFile(data, name, options).setMessageReference(this);
     }
 
     /**

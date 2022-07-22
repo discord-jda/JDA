@@ -26,9 +26,10 @@ import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
-import net.dv8tion.jda.api.requests.restaction.MessageAction;
+import net.dv8tion.jda.api.requests.restaction.MessageEditAction;
 import net.dv8tion.jda.api.requests.restaction.ThreadChannelAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationAction;
+import net.dv8tion.jda.api.utils.messages.MessageEditData;
 import net.dv8tion.jda.internal.utils.Helpers;
 import org.jetbrains.annotations.NotNull;
 
@@ -283,7 +284,7 @@ public abstract class AbstractMessage implements Message
 
     @Nonnull
     @Override
-    public MessageAction editMessage(@Nonnull CharSequence newContent)
+    public MessageEditAction editMessage(@Nonnull CharSequence newContent)
     {
         unsupported();
         return null;
@@ -291,7 +292,7 @@ public abstract class AbstractMessage implements Message
 
     @Nonnull
     @Override
-    public MessageAction editMessageEmbeds(@Nonnull Collection<? extends MessageEmbed> newContent)
+    public MessageEditAction editMessageEmbeds(@Nonnull Collection<? extends MessageEmbed> newContent)
     {
         unsupported();
         return null;
@@ -299,7 +300,7 @@ public abstract class AbstractMessage implements Message
 
     @Nonnull
     @Override
-    public MessageAction editMessageComponents(@Nonnull Collection<? extends LayoutComponent> components)
+    public MessageEditAction editMessageComponents(@Nonnull Collection<? extends LayoutComponent> components)
     {
         unsupported();
         return null;
@@ -307,7 +308,7 @@ public abstract class AbstractMessage implements Message
 
     @Nonnull
     @Override
-    public MessageAction editMessageFormat(@Nonnull String format, @Nonnull Object... args)
+    public MessageEditAction editMessageFormat(@Nonnull String format, @Nonnull Object... args)
     {
         unsupported();
         return null;
@@ -315,7 +316,7 @@ public abstract class AbstractMessage implements Message
 
     @Nonnull
     @Override
-    public MessageAction editMessage(@Nonnull Message newContent)
+    public MessageEditAction editMessage(@Nonnull MessageEditData newContent)
     {
         unsupported();
         return null;
