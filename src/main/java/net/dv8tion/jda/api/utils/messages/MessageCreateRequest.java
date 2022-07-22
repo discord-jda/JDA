@@ -63,5 +63,21 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
     R addFiles(@Nonnull Collection<? extends FileUpload> files);
 
     @Nonnull
+    default R addFiles(@Nonnull FileUpload... files)
+    {
+        return addFiles(Arrays.asList(files));
+    }
+
+    @Nonnull
     R setTTS(boolean tts);
+
+    @Nonnull
+    default R applyData(@Nonnull MessageCreateData data)
+    {
+        return setContent(data.getContent())
+                .setEmbeds(data.getEmbeds())
+                .setTTS(data.isTTS())
+                .setComponents(data.getComponents())
+                .setFiles(data.getFiles());
+    }
 }

@@ -129,4 +129,7 @@ public abstract class AbstractMessageBuilder<T, R extends AbstractMessageBuilder
         this.allowedMentions = new AllowedMentionsImpl();
         return (R) this;
     }
+
+    @Nonnull
+    public abstract R closeFiles();
 }

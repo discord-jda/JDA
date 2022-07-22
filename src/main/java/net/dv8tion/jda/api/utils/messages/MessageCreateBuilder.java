@@ -42,21 +42,7 @@ public class MessageCreateBuilder extends AbstractMessageBuilder<MessageCreateDa
     @Nonnull
     public static MessageCreateBuilder from(@Nonnull MessageCreateData data)
     {
-        MessageCreateBuilder builder = new MessageCreateBuilder();
-
-        builder.embeds.addAll(data.getEmbeds());
-        builder.files.addAll(data.getFiles());
-        builder.components.addAll(data.getComponents());
-        builder.content.append(data.getContent());
-        builder.tts = data.isTTS();
-
-        String[] empty = new String[0];
-        builder.allowedMentions.mentionUsers(data.getMentionedUsers().toArray(empty));
-        builder.allowedMentions.mentionRoles(data.getMentionedRoles().toArray(empty));
-        builder.allowedMentions.allowedMentions(data.getAllowedMentions());
-        builder.allowedMentions.mentionRepliedUser(data.isMentionRepliedUser());
-
-        return builder;
+        return new MessageCreateBuilder().applyData(data);
     }
     
     @Nonnull
@@ -163,6 +149,15 @@ public class MessageCreateBuilder extends AbstractMessageBuilder<MessageCreateDa
         super.clear();
         this.files.clear();
         this.tts = false;
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    public MessageCreateBuilder closeFiles()
+    {
+        files.forEach(IOUtil::silentClose);
+        files.clear();
         return this;
     }
 }

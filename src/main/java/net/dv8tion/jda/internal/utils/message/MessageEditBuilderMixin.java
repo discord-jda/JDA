@@ -19,6 +19,7 @@ package net.dv8tion.jda.internal.utils.message;
 import net.dv8tion.jda.api.utils.AttachedFile;
 import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.messages.MessageEditBuilder;
+import net.dv8tion.jda.api.utils.messages.MessageEditData;
 import net.dv8tion.jda.api.utils.messages.MessageEditRequest;
 
 import javax.annotation.Nonnull;
@@ -49,6 +50,14 @@ public interface MessageEditBuilderMixin<R extends MessageEditRequest<R>> extend
     default R setFiles(@Nullable Collection<? extends FileUpload> files)
     {
         getBuilder().setFiles(files);
+        return (R) this;
+    }
+
+    @Nonnull
+    @Override
+    default R applyData(@Nonnull MessageEditData data)
+    {
+        getBuilder().applyData(data);
         return (R) this;
     }
 }

@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.requests.restaction.interactions.InteractionCallbackA
 import net.dv8tion.jda.api.requests.restaction.interactions.ModalCallbackAction;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.interactions.InteractionImpl;
+import okhttp3.RequestBody;
 
 public class ModalCallbackActionImpl extends InteractionCallbackImpl<Void> implements ModalCallbackAction
 {
@@ -34,10 +35,10 @@ public class ModalCallbackActionImpl extends InteractionCallbackImpl<Void> imple
     }
 
     @Override
-    protected DataObject toData()
+    protected RequestBody finalizeData()
     {
-        return DataObject.empty()
+        return getRequestBody(DataObject.empty()
                 .put("type", InteractionCallbackAction.ResponseType.MODAL.getRaw())
-                .put("data", modal);
+                .put("data", modal));
     }
 }

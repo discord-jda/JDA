@@ -25,6 +25,7 @@ import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.interactions.InteractionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import okhttp3.RequestBody;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -96,14 +97,14 @@ public class AutoCompleteCallbackActionImpl extends InteractionCallbackImpl<Void
     }
 
     @Override
-    protected DataObject toData()
+    protected RequestBody finalizeData()
     {
         DataObject data = DataObject.empty();
         DataArray array = DataArray.empty();
         choices.forEach(choice -> array.add(choice.toData(type)));
         data.put("choices", array);
-        return DataObject.empty()
+        return getRequestBody(DataObject.empty()
                 .put("type", ResponseType.COMMAND_AUTOCOMPLETE_CHOICES.getRaw())
-                .put("data", data);
+                .put("data", data));
     }
 }

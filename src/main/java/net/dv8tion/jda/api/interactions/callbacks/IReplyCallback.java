@@ -21,6 +21,8 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction;
 import net.dv8tion.jda.api.utils.AttachmentOption;
+import net.dv8tion.jda.api.utils.FileUpload;
+import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 import net.dv8tion.jda.internal.requests.restaction.interactions.ReplyCallbackActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
@@ -118,11 +120,11 @@ public interface IReplyCallback extends IDeferrableCallback
      */
     @Nonnull
     @CheckReturnValue
-    default ReplyCallbackAction reply(@Nonnull Message message)
+    default ReplyCallbackAction reply(@Nonnull MessageCreateData message)
     {
         Checks.notNull(message, "Message");
         ReplyCallbackActionImpl action = (ReplyCallbackActionImpl) deferReply();
-        return action.applyMessage(message);
+        return action.applyData(message);
     }
 
     /**
@@ -293,6 +295,8 @@ public interface IReplyCallback extends IDeferrableCallback
         return reply(String.format(format, args));
     }
 
+    // TODO: Replace with replyFiles(FileUpload...)
+
     /**
      * Reply to this interaction and acknowledge it.
      * <br>This will send a reply message for this interaction.
@@ -326,7 +330,10 @@ public interface IReplyCallback extends IDeferrableCallback
     @CheckReturnValue
     default ReplyCallbackAction replyFile(@Nonnull InputStream data, @Nonnull String name, @Nonnull AttachmentOption... options)
     {
-        return deferReply().addFile(data, name, options);
+        FileUpload file = FileUpload.fromData(data, name);
+        if (options != null && options.length > 0 && options[0] == AttachmentOption.SPOILER)
+            file = file.spoiler();
+        return deferReply().addFiles(file);
     }
 
     /**
@@ -362,7 +369,10 @@ public interface IReplyCallback extends IDeferrableCallback
     @CheckReturnValue
     default ReplyCallbackAction replyFile(@Nonnull File file, @Nonnull AttachmentOption... options)
     {
-        return deferReply().addFile(file, options);
+        FileUpload upload = FileUpload.fromData(file);
+        if (options != null && options.length > 0 && options[0] == AttachmentOption.SPOILER)
+            upload = upload.spoiler();
+        return deferReply().addFiles(upload);
     }
 
     /**
@@ -409,7 +419,10 @@ public interface IReplyCallback extends IDeferrableCallback
     @CheckReturnValue
     default ReplyCallbackAction replyFile(@Nonnull File file, @Nonnull String name, @Nonnull AttachmentOption... options)
     {
-        return deferReply().addFile(file, name, options);
+        FileUpload upload = FileUpload.fromData(file, name);
+        if (options != null && options.length > 0 && options[0] == AttachmentOption.SPOILER)
+            upload = upload.spoiler();
+        return deferReply().addFiles(upload);
     }
 
     /**
@@ -445,6 +458,9 @@ public interface IReplyCallback extends IDeferrableCallback
     @CheckReturnValue
     default ReplyCallbackAction replyFile(@Nonnull byte[] data, @Nonnull String name, @Nonnull AttachmentOption... options)
     {
-        return deferReply().addFile(data, name, options);
+        FileUpload file = FileUpload.fromData(data, name);
+        if (options != null && options.length > 0 && options[0] == AttachmentOption.SPOILER)
+            file = file.spoiler();
+        return deferReply().addFiles(file);
     }
 }

@@ -23,7 +23,9 @@ import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.utils.AttachedFile;
 import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.internal.utils.AllowedMentionsImpl;
+import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
+import net.dv8tion.jda.internal.utils.IOUtil;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -52,30 +54,7 @@ public class MessageEditBuilder extends AbstractMessageBuilder<MessageEditData, 
     @Nonnull
     public static MessageEditBuilder from(@Nonnull MessageEditData data)
     {
-        MessageEditBuilder builder = new MessageEditBuilder();
-        builder.set = data.getFlags();
-        if ((builder.set & ALL) == ALL)
-            builder.replace = true;
-
-        if (builder.isSet(CONTENT))
-            builder.setContent(data.getContent());
-        if (builder.isSet(EMBEDS))
-            builder.setEmbeds(data.getEmbeds());
-        if (builder.isSet(COMPONENTS))
-            builder.setComponents(data.getComponents());
-        if (builder.isSet(ATTACHMENTS))
-            builder.setAttachments(data.getAttachments());
-
-        if (builder.isSet(MENTIONS))
-        {
-            String[] empty = new String[0];
-            builder.allowedMentions.mentionUsers(data.getMentionedUsers().toArray(empty));
-            builder.allowedMentions.mentionRoles(data.getMentionedRoles().toArray(empty));
-            builder.allowedMentions.allowedMentions(data.getAllowedMentions());
-            builder.allowedMentions.mentionRepliedUser(data.isMentionRepliedUser());
-        }
-
-        return builder;
+        return new MessageEditBuilder().applyData(data);
     }
 
     @Nonnull
@@ -176,10 +155,40 @@ public class MessageEditBuilder extends AbstractMessageBuilder<MessageEditData, 
         return this;
     }
 
+    @Nonnull
+    @Override
+    public MessageEditBuilder applyData(@Nonnull MessageEditData data)
+    {
+        Checks.notNull(data, "Data");
+        this.set = data.getFlags();
+        if ((this.set & ALL) == ALL)
+            this.replace = true;
+
+        if (this.isSet(CONTENT))
+            this.setContent(data.getContent());
+        if (this.isSet(EMBEDS))
+            this.setEmbeds(data.getEmbeds());
+        if (this.isSet(COMPONENTS))
+            this.setComponents(data.getComponents());
+        if (this.isSet(ATTACHMENTS))
+            this.setAttachments(data.getAttachments());
+
+        if (this.isSet(MENTIONS))
+        {
+            String[] empty = new String[0];
+            this.allowedMentions.mentionUsers(data.getMentionedUsers().toArray(empty));
+            this.allowedMentions.mentionRoles(data.getMentionedRoles().toArray(empty));
+            this.allowedMentions.allowedMentions(data.getAllowedMentions());
+            this.allowedMentions.mentionRepliedUser(data.isMentionRepliedUser());
+        }
+
+        return this;
+    }
+
     @Override
     public boolean isEmpty()
     {
-        return replace || set != 0;
+        return !replace && set == 0;
     }
 
     @Override
@@ -228,5 +237,14 @@ public class MessageEditBuilder extends AbstractMessageBuilder<MessageEditData, 
         this.set = 0;
         this.attachments.clear();
         return super.clear();
+    }
+
+    @Nonnull
+    @Override
+    public MessageEditBuilder closeFiles()
+    {
+        attachments.forEach(IOUtil::silentClose);
+        attachments.removeIf(FileUpload.class::isInstance);
+        return this;
     }
 }

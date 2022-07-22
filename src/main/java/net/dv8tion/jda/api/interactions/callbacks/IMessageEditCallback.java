@@ -16,12 +16,12 @@
 
 package net.dv8tion.jda.api.interactions.callbacks;
 
-import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.requests.restaction.interactions.MessageEditCallbackAction;
+import net.dv8tion.jda.api.utils.messages.MessageEditData;
 import net.dv8tion.jda.internal.requests.restaction.interactions.MessageEditCallbackActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
@@ -85,11 +85,11 @@ public interface IMessageEditCallback extends IDeferrableCallback
      */
     @Nonnull
     @CheckReturnValue
-    default MessageEditCallbackAction editMessage(@Nonnull Message message)
+    default MessageEditCallbackAction editMessage(@Nonnull MessageEditData message)
     {
         Checks.notNull(message, "Message");
         MessageEditCallbackActionImpl action = (MessageEditCallbackActionImpl) deferEdit();
-        return action.applyMessage(message);
+        return action.applyData(message);
     }
 
     /**
@@ -147,7 +147,7 @@ public interface IMessageEditCallback extends IDeferrableCallback
         if (components.stream().anyMatch(it -> !(it instanceof ActionRow)))
             throw new UnsupportedOperationException("The provided component layout is not supported");
         List<ActionRow> actionRows = components.stream().map(ActionRow.class::cast).collect(Collectors.toList());
-        return deferEdit().setActionRows(actionRows);
+        return deferEdit().setComponents(actionRows);
     }
 
     /**
