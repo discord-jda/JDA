@@ -39,7 +39,7 @@ public interface GuildChannelMixin<T extends GuildChannelMixin<T>> extends
     @CheckReturnValue
     default AuditableRestAction<Void> delete()
     {
-        checkPermission(Permission.MANAGE_CHANNEL);
+        checkPermission(this.getManagePermission());
 
         Route.CompiledRoute route = Route.Channels.DELETE_CHANNEL.compile(getId());
         return new AuditableRestActionImpl<>(getJDA(), route);

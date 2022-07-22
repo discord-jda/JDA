@@ -1,6 +1,7 @@
 package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.managers.channel.ChannelManager;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.internal.utils.Helpers;
@@ -39,12 +40,23 @@ public interface GuildChannel extends Channel, Comparable<GuildChannel>
      * This getter is not thread-safe and would require guards by the user.
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the currently logged in account does not have {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL Permission.MANAGE_CHANNEL}
+     *         If the currently logged in account does not have the required {@link #getManagePermission() permission}
      *
      * @return The ChannelManager of this GuildChannel
      */
     @Nonnull
     ChannelManager<?, ?> getManager();
+    
+    /**
+     * Returns the {@link Permission} needed in order to manage or delete this channel.
+     * This returns {@link Permission#MANAGE_CHANNEL} or {@link Permission#MANAGE_THREADS} for {@link ThreadChannel ThreadChannels}
+     * 
+     * @return The {@link Permission}
+     */
+    @Nonnull
+    default Permission getManagePermission() {
+    	return Permission.MANAGE_CHANNEL;
+    }
 
     /**
      * TODO-v5: this override might not be needed anymore if we remove AuditableRestAction and instead place auditable hooks onto RestAction itself.
