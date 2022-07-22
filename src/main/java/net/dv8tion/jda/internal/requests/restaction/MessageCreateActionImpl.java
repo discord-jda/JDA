@@ -16,15 +16,15 @@
 
 package net.dv8tion.jda.internal.requests.restaction;
 
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.GuildChannel;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.sticker.GuildSticker;
 import net.dv8tion.jda.api.entities.sticker.StickerSnowflake;
-import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.restaction.MessageCreateAction;
 import net.dv8tion.jda.api.utils.AttachedFile;
-import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 import net.dv8tion.jda.api.utils.messages.MessageCreateData;
@@ -32,6 +32,7 @@ import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.IOUtil;
+import net.dv8tion.jda.internal.utils.message.MessageCreateBuilderMixin;
 import okhttp3.RequestBody;
 
 import javax.annotation.Nonnull;
@@ -42,8 +43,7 @@ import java.util.List;
 import java.util.function.BooleanSupplier;
 import java.util.stream.Collectors;
 
-@SuppressWarnings("ResultOfMethodCallIgnored")
-public class MessageCreateActionImpl extends RestActionImpl<Message> implements MessageCreateAction
+public class MessageCreateActionImpl extends RestActionImpl<Message> implements MessageCreateAction, MessageCreateBuilderMixin<MessageCreateAction>
 {
     protected static boolean defaultFailOnInvalidReply = false;
 
@@ -64,6 +64,13 @@ public class MessageCreateActionImpl extends RestActionImpl<Message> implements 
         super(channel.getJDA(), Route.Messages.SEND_MESSAGE.compile(channel.getId()));
         this.channel = channel;
         this.builder = builder;
+    }
+
+
+    @Override
+    public MessageCreateBuilder getBuilder()
+    {
+        return builder;
     }
 
     @Override
@@ -105,94 +112,6 @@ public class MessageCreateActionImpl extends RestActionImpl<Message> implements 
     protected void handleSuccess(Response response, Request<Message> request)
     {
         api.getEntityBuilder().createMessageWithChannel(response.getObject(), channel, false);
-    }
-
-    @Nonnull
-    @Override
-    public MessageCreateAction mentionRepliedUser(boolean mention)
-    {
-        builder.mentionRepliedUser(mention);
-        return this;
-    }
-
-    @Nonnull
-    @Override
-    public MessageCreateAction allowedMentions(@Nullable Collection<Message.MentionType> allowedMentions)
-    {
-        builder.allowedMentions(allowedMentions);
-        return this;
-    }
-
-    @Nonnull
-    @Override
-    public MessageCreateAction mention(@Nonnull IMentionable... mentions)
-    {
-        builder.mention(mentions);
-        return this;
-    }
-
-    @Nonnull
-    @Override
-    public MessageCreateAction mentionUsers(@Nonnull String... userIds)
-    {
-        builder.mentionUsers(userIds);
-        return this;
-    }
-
-    @Nonnull
-    @Override
-    public MessageCreateAction mentionRoles(@Nonnull String... roleIds)
-    {
-        builder.mentionRoles(roleIds);
-        return this;
-    }
-
-    @Nonnull
-    @Override
-    public MessageCreateAction addContent(@Nonnull String content)
-    {
-        builder.addContent(content);
-        return this;
-    }
-
-    @Nonnull
-    @Override
-    public MessageCreateAction addEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
-    {
-        builder.addEmbeds(embeds);
-        return this;
-    }
-
-    @Nonnull
-    @Override
-    public MessageCreateAction addComponents(@Nonnull Collection<? extends LayoutComponent> layouts)
-    {
-        builder.addComponents(layouts);
-        return this;
-    }
-
-    @Nonnull
-    @Override
-    public MessageCreateAction setFiles(@Nullable Collection<? extends FileUpload> files)
-    {
-        builder.setFiles(files);
-        return this;
-    }
-
-    @Nonnull
-    @Override
-    public MessageCreateAction addFiles(@Nonnull Collection<? extends FileUpload> files)
-    {
-        builder.addFiles(files);
-        return this;
-    }
-
-    @Nonnull
-    @Override
-    public MessageCreateAction setTTS(boolean tts)
-    {
-        builder.setTTS(tts);
-        return this;
     }
 
     @Nonnull
@@ -252,30 +171,6 @@ public class MessageCreateActionImpl extends RestActionImpl<Message> implements 
         }
 
         this.stickers.addAll(stickers.stream().map(StickerSnowflake::getId).collect(Collectors.toList()));
-        return this;
-    }
-
-    @Nonnull
-    @Override
-    public MessageCreateAction setContent(@Nullable String content)
-    {
-        builder.setContent(content);
-        return this;
-    }
-
-    @Nonnull
-    @Override
-    public MessageCreateAction setEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
-    {
-        builder.setEmbeds(embeds);
-        return this;
-    }
-
-    @Nonnull
-    @Override
-    public MessageCreateAction setComponents(@Nonnull Collection<? extends LayoutComponent> layouts)
-    {
-        builder.setComponents(layouts);
         return this;
     }
 
