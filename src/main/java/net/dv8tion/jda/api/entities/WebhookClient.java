@@ -23,6 +23,7 @@ import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.WebhookMessageAction;
 import net.dv8tion.jda.api.requests.restaction.WebhookMessageEditAction;
 import net.dv8tion.jda.api.utils.AttachmentOption;
+import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 import net.dv8tion.jda.api.utils.messages.MessageEditData;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -213,7 +214,7 @@ public interface WebhookClient<T>
      */
     @Nonnull
     @CheckReturnValue
-    WebhookMessageAction<T> sendFile(@Nonnull InputStream data, @Nonnull String name, @Nonnull AttachmentOption... options);
+    WebhookMessageAction<T> sendFiles(@Nonnull Collection<? extends FileUpload> files);
 
     /**
      * Send a message to this webhook.
@@ -256,127 +257,11 @@ public interface WebhookClient<T>
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageAction<T> sendFile(@Nonnull File file, @Nonnull AttachmentOption... options)
+    default WebhookMessageAction<T> sendFile(@Nonnull FileUpload... files)
     {
-        Checks.notNull(file, "File");
-        return sendFile(file, file.getName(), options);
-    }
-
-    /**
-     * Send a message to this webhook.
-     *
-     * <p>If this is an {@link net.dv8tion.jda.api.interactions.InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
-     *
-     * <p>The {@code name} parameter is used to inform Discord about what the file should be called. This is 2 fold:
-     * <ol>
-     *     <li>The file name provided is the name that is found in {@link net.dv8tion.jda.api.entities.Message.Attachment#getFileName()}
-     *          after upload and it is the name that will show up in the client when the upload is displayed.
-     *     <br>Note: The fileName does not show up on the Desktop client for images. It does on mobile however.</li>
-     *     <li>The extension of the provided fileName also determines how Discord will treat the file. Discord currently only
-     *         has special handling for image file types, but the fileName's extension must indicate that it is an image file.
-     *         This means it has to end in something like .png, .jpg, .jpeg, .gif, etc. As a note, you can also not provide
-     *         a full name for the file and instead ONLY provide the extension like "png" or "gif" and Discord will generate
-     *         a name for the upload and append the fileName as the extension.</li>
-     * </ol>
-     *
-     * <p><b>Uploading images with Embeds</b>
-     * <br>When uploading an <u>image</u> you can reference said image using the specified filename as URI {@code attachment://filename.ext}.
-     *
-     * <p><u>Example</u>
-     * <pre><code>
-     * WebhookClient hook; // = reference of a WebhookClient such as interaction.getHook()
-     * EmbedBuilder embed = new EmbedBuilder();
-     * byte[] data = IOUtils.readAllBytes(new FileInputStream("image.png")); // the name in your file system can be different from the name used in discord
-     * embed.setImage("attachment://cat.png") // we specify this in sendFile as "cat.png"
-     *      .setDescription("This is a cute cat :3");
-     * hook.sendFile(file, "cat.png").addEmbeds(embed.build()).queue();
-     * </code></pre>
-     *
-     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_WEBHOOK UNKNOWN_WEBHOOK}
-     *     <br>The webhook is no longer available, either it was deleted or in case of interactions it expired.</li>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#REQUEST_ENTITY_TOO_LARGE REQUEST_ENTITY_TOO_LARGE}
-     *     <br>The file exceeds the maximum upload size of {@link Message#MAX_FILE_SIZE}</li>
-     * </ul>
-     *
-     * @param  file
-     *         The {@link File} data to upload to the webhook.
-     * @param  name
-     *         The file name that should be sent to discord
-     * @param  options
-     *         Possible options to apply to this attachment, such as marking it as spoiler image
-     *
-     * @throws java.lang.IllegalArgumentException
-     *         If the provided file or filename is {@code null} or {@code empty}.
-     *
-     * @return {@link WebhookMessageAction}
-     */
-    @Nonnull
-    @CheckReturnValue
-    default WebhookMessageAction<T> sendFile(@Nonnull File file, @Nonnull String name, @Nonnull AttachmentOption... options)
-    {
-        Checks.notNull(file, "File");
-        Checks.check(file.exists() && file.canRead(),
-                "Provided file doesn't exist or cannot be read!");
-        Checks.notNull(name, "Name");
-
-        try
-        {
-            return sendFile(new FileInputStream(file), name, options);
-        }
-        catch (FileNotFoundException ex)
-        {
-            throw new IllegalArgumentException(ex);
-        }
-    }
-
-    /**
-     * Send a message to this webhook.
-     *
-     * <p>If this is an {@link net.dv8tion.jda.api.interactions.InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
-     *
-     * <p><b>Uploading images with Embeds</b>
-     * <br>When uploading an <u>image</u> you can reference said image using the specified filename as URI {@code attachment://filename.ext}.
-     *
-     * <p><u>Example</u>
-     * <pre><code>
-     * WebhookClient hook; // = reference of a WebhookClient such as interaction.getHook()
-     * EmbedBuilder embed = new EmbedBuilder();
-     * byte[] data = IOUtils.readAllBytes(new FileInputStream("image.png")); // the name in your file system can be different from the name used in discord
-     * embed.setImage("attachment://cat.png") // we specify this in sendFile as "cat.png"
-     *      .setDescription("This is a cute cat :3");
-     * hook.sendFile(file, "cat.png").addEmbeds(embed.build()).queue();
-     * </code></pre>
-     *
-     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_WEBHOOK UNKNOWN_WEBHOOK}
-     *     <br>The webhook is no longer available, either it was deleted or in case of interactions it expired.</li>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#REQUEST_ENTITY_TOO_LARGE REQUEST_ENTITY_TOO_LARGE}
-     *     <br>The file exceeds the maximum upload size of {@link Message#MAX_FILE_SIZE}</li>
-     * </ul>
-     *
-     * @param  data
-     *         The {@code byte[]} data to upload to the webhook.
-     * @param  name
-     *         The file name that should be sent to discord
-     *         <br>Refer to the documentation for {@link #sendFile(java.io.File, String, AttachmentOption...)} for information about this parameter.
-     * @param  options
-     *         Possible options to apply to this attachment, such as marking it as spoiler image
-     *
-     * @throws java.lang.IllegalArgumentException
-     *         If the provided file or filename is {@code null} or {@code empty}.
-     *
-     * @return {@link WebhookMessageAction}
-     */
-    @Nonnull
-    @CheckReturnValue
-    default WebhookMessageAction<T> sendFile(@Nonnull byte[] data, @Nonnull String name, @Nonnull AttachmentOption... options)
-    {
-        Checks.notNull(data, "Data");
-        Checks.notNull(name, "Name");
-        return sendFile(new ByteArrayInputStream(data), name, options);
+        Checks.noneNull(files, "Files");
+        Checks.notEmpty(files, "Files");
+        return sendFiles(Arrays.asList(files));
     }
 
     /**

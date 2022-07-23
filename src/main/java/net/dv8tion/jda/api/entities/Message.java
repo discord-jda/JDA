@@ -40,8 +40,8 @@ import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.*;
 import net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationAction;
-import net.dv8tion.jda.api.utils.AttachmentOption;
 import net.dv8tion.jda.api.utils.AttachmentProxy;
+import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 import net.dv8tion.jda.api.utils.messages.MessageEditData;
 import net.dv8tion.jda.internal.JDAImpl;
@@ -1275,134 +1275,18 @@ public interface Message extends ISnowflake, Formattable
         return getChannel().sendMessageFormat(format, args).setMessageReference(this);
     }
 
-    /**
-     * Replies and references this message.
-     * <br>This is identical to {@code message.getChannel().sendFile(file, options).reference(message)}.
-     * You can use {@link MessageAction#mentionRepliedUser(boolean) mentionRepliedUser(false)} to not mention the author of the message.
-     * <br>By default there won't be any error thrown if the referenced message does not exist.
-     * This behavior can be changed with {@link MessageAction#failOnInvalidReply(boolean)}.
-     *
-     * <p>For further info, see {@link MessageChannel#sendFile(File, net.dv8tion.jda.api.utils.AttachmentOption...)} and {@link MessageAction#reference(Message)}.
-     *
-     * @param  file
-     *         The file to upload to the channel in the reply
-     * @param  options
-     *         Possible options to apply to this attachment, such as marking it as spoiler image
-     *
-     * @throws UnsupportedOperationException
-     *         If this is a Data Message (output of {@link MessageBuilder})
-     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If this is a {@link GuildChannel} and the logged in account does
-     *         not have {@link Permission#MESSAGE_SEND Permission.MESSAGE_SEND}
-     * @throws IllegalArgumentException
-     *         If null is provided
-     *
-     * @return {@link MessageAction} Providing the {@link Message} created from this upload.
-     */
     @Nonnull
     @CheckReturnValue
-    default MessageCreateAction reply(@Nonnull File file, @Nonnull AttachmentOption... options)
+    default MessageCreateAction replyFiles(@Nonnull FileUpload... files)
     {
-        return getChannel().sendFile(file, options).setMessageReference(this);
+        return getChannel().sendFiles(files).setMessageReference(this);
     }
 
-    /**
-     * Replies and references this message.
-     * <br>This is identical to {@code message.getChannel().sendFile(data, name, options).reference(message)}.
-     * You can use {@link MessageAction#mentionRepliedUser(boolean) mentionRepliedUser(false)} to not mention the author of the message.
-     * <br>By default there won't be any error thrown if the referenced message does not exist.
-     * This behavior can be changed with {@link MessageAction#failOnInvalidReply(boolean)}.
-     *
-     * <p>For further info, see {@link MessageChannel#sendFile(File, String, net.dv8tion.jda.api.utils.AttachmentOption...)} and {@link MessageAction#reference(Message)}.
-     *
-     * @param  data
-     *         The data to upload to the channel in the reply
-     * @param  name
-     *         The name that should be sent to discord
-     * @param  options
-     *         Possible options to apply to this attachment, such as marking it as spoiler image
-     *
-     * @throws UnsupportedOperationException
-     *         If this is a Data Message (output of {@link MessageBuilder})
-     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If this is a {@link GuildChannel} and the logged in account does
-     *         not have {@link Permission#MESSAGE_SEND Permission.MESSAGE_SEND}
-     * @throws IllegalArgumentException
-     *         If null is provided
-     *
-     * @return {@link MessageAction} Providing the {@link Message} created from this upload.
-     */
     @Nonnull
     @CheckReturnValue
-    default MessageCreateAction reply(@Nonnull File data, @Nonnull String name, @Nonnull AttachmentOption... options)
+    default MessageCreateAction replyFiles(@Nonnull Collection<? extends FileUpload> files)
     {
-        return getChannel().sendFile(data, name, options).setMessageReference(this);
-    }
-
-    /**
-     * Replies and references this message.
-     * <br>This is identical to {@code message.getChannel().sendFile(data, name, options).reference(message)}.
-     * You can use {@link MessageAction#mentionRepliedUser(boolean) mentionRepliedUser(false)} to not mention the author of the message.
-     * <br>By default there won't be any error thrown if the referenced message does not exist.
-     * This behavior can be changed with {@link MessageAction#failOnInvalidReply(boolean)}.
-     *
-     * <p>For further info, see {@link MessageChannel#sendFile(InputStream, String, net.dv8tion.jda.api.utils.AttachmentOption...)} and {@link MessageAction#reference(Message)}.
-     *
-     * @param  data
-     *         The data to upload to the channel in the reply
-     * @param  name
-     *         The name that should be sent to discord
-     * @param  options
-     *         Possible options to apply to this attachment, such as marking it as spoiler image
-     *
-     * @throws UnsupportedOperationException
-     *         If this is a Data Message (output of {@link MessageBuilder})
-     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If this is a {@link GuildChannel} and the logged in account does
-     *         not have {@link Permission#MESSAGE_SEND Permission.MESSAGE_SEND}
-     * @throws IllegalArgumentException
-     *         If null is provided
-     *
-     * @return {@link MessageAction} Providing the {@link Message} created from this upload.
-     */
-    @Nonnull
-    @CheckReturnValue
-    default MessageCreateAction reply(@Nonnull InputStream data, @Nonnull String name, @Nonnull AttachmentOption... options)
-    {
-        return getChannel().sendFile(data, name, options).setMessageReference(this);
-    }
-
-    /**
-     * Replies and references this message.
-     * <br>This is identical to {@code message.getChannel().sendFile(data, name, options).reference(message)}.
-     * You can use {@link MessageAction#mentionRepliedUser(boolean) mentionRepliedUser(false)} to not mention the author of the message.
-     * <br>By default there won't be any error thrown if the referenced message does not exist.
-     * This behavior can be changed with {@link MessageAction#failOnInvalidReply(boolean)}.
-     *
-     * <p>For further info, see {@link MessageChannel#sendFile(byte[], String, net.dv8tion.jda.api.utils.AttachmentOption...)} and {@link MessageAction#reference(Message)}.
-     *
-     * @param  data
-     *         The data to upload to the channel in the reply
-     * @param  name
-     *         The name that should be sent to discord
-     * @param  options
-     *         Possible options to apply to this attachment, such as marking it as spoiler image
-     *
-     * @throws UnsupportedOperationException
-     *         If this is a Data Message (output of {@link MessageBuilder})
-     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If this is a {@link GuildChannel} and the logged in account does
-     *         not have {@link Permission#MESSAGE_SEND Permission.MESSAGE_SEND}
-     * @throws IllegalArgumentException
-     *         If null is provided
-     *
-     * @return {@link MessageAction} Providing the {@link Message} created from this upload.
-     */
-    @Nonnull
-    @CheckReturnValue
-    default MessageCreateAction reply(@Nonnull byte[] data, @Nonnull String name, @Nonnull AttachmentOption... options)
-    {
-        return getChannel().sendFile(data, name, options).setMessageReference(this);
+        return getChannel().sendFiles(files).setMessageReference(this);
     }
 
     /**

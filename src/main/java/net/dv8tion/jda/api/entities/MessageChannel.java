@@ -50,7 +50,6 @@ import net.dv8tion.jda.internal.utils.EncodingUtil;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
-import java.io.*;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
@@ -567,29 +566,21 @@ public interface MessageChannel extends Channel, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default MessageCreateAction sendFile(@Nonnull File file, @Nonnull AttachmentOption... options)
+    default MessageCreateAction sendFiles(@Nonnull Collection<? extends FileUpload> files)
     {
-        Checks.notNull(file, "file");
-        return sendFile(file, file.getName(), options);
+        Checks.notEmpty(files, "Files");
+        Checks.noneNull(files, "Files");
+        return new MessageCreateActionImpl(this).addFiles(files);
     }
 
     /**
      * Uploads a file to the Discord servers and sends it to this {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel}.
      * Sends the provided {@link net.dv8tion.jda.api.entities.Message Message} with the uploaded file.
-     * <br>If you want to send a Message with the uploaded file, you can add the file to the {@link MessageCreateAction}
+     * <br>If you want to send a Message with the uploaded file, you can add the file to the {@link net.dv8tion.jda.api.requests.restaction.MessageCreateAction}
      * returned by {@link #sendMessage(MessageCreateData)}.
      *
-     * <p>The {@code fileName} parameter is used to inform Discord about what the file should be called. This is 2 fold:
-     * <ol>
-     *     <li>The file name provided is the name that is found in {@link net.dv8tion.jda.api.entities.Message.Attachment#getFileName()}
-     *          after upload and it is the name that will show up in the client when the upload is displayed.
-     *     <br>Note: The fileName does not show up on the Desktop client for images. It does on mobile however.</li>
-     *     <li>The extension of the provided fileName also determines how Discord will treat the file. Discord currently only
-     *         has special handling for image file types, but the fileName's extension must indicate that it is an image file.
-     *         This means it has to end in something like .png, .jpg, .jpeg, .gif, etc. As a note, you can also not provide
-     *         a full name for the file and instead ONLY provide the extension like "png" or "gif" and Discord will generate
-     *         a name for the upload and append the fileName as the extension.</li>
-     * </ol>
+     * <p>This is a shortcut to {@link #sendFile(java.io.File, String, AttachmentOption...)} by way of using {@link java.io.File#getName()}.
+     * <pre>sendFile(file, file.getName())</pre>
      *
      * <p><b>Uploading images with Embeds</b>
      * <br>When uploading an <u>image</u> you can reference said image using the specified filename as URI {@code attachment://filename.ext}.
@@ -598,35 +589,16 @@ public interface MessageChannel extends Channel, Formattable
      * <pre><code>
      * MessageChannel channel; // = reference of a MessageChannel
      * EmbedBuilder embed = new EmbedBuilder();
-     * File file = new File("cat_01.gif");
-     * embed.setImage("attachment://cat.gif") // we specify this in sendFile as "cat.gif"
+     * File file = new File("cat.gif");
+     * embed.setImage("attachment://cat.gif")
      *      .setDescription("This is a cute cat :3");
-     * channel.sendFile(file, "cat.gif").setEmbeds(embed.build()).queue();
+     * channel.sendFile(file).setEmbeds(embed.build()).queue();
      * </code></pre>
      *
-     * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>The send request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
-     *         typically due to being kicked or removed.</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
-     *     <br>The send request was attempted after the account lost {@link net.dv8tion.jda.api.Permission#MESSAGE_SEND Permission.MESSAGE_SEND} or
-     *         {@link net.dv8tion.jda.api.Permission#MESSAGE_ATTACH_FILES Permission.MESSAGE_ATTACH_FILES}
-     *         in the {@link net.dv8tion.jda.api.entities.GuildMessageChannel GuildMessageChannel}.</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#CANNOT_SEND_TO_USER CANNOT_SEND_TO_USER}
-     *     <br>If this is a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel} and the currently logged in account
-     *         does not share any Guilds with the recipient User</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
-     *     <br>The send request was attempted after the channel was deleted.</li>
-     * </ul>
+     * <p>For {@link net.dv8tion.jda.api.requests.ErrorResponse} information, refer to the documentation for {@link #sendFile(java.io.File, String, AttachmentOption...)}.
      *
      * @param  file
      *         The file to upload to the {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel}.
-     * @param  fileName
-     *         The name that should be sent to discord
      * @param  options
      *         Possible options to apply to this attachment, such as marking it as spoiler image
      *
@@ -648,145 +620,16 @@ public interface MessageChannel extends Channel, Formattable
      *         If this is a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}
      *         and both the currently logged in account and the target user are bots.
      *
-     * @return {@link MessageAction}
+     * @return {@link MessageCreateAction}
      *         <br>Providing the {@link net.dv8tion.jda.api.entities.Message Message} created from this upload.
      */
     @Nonnull
     @CheckReturnValue
-    default MessageCreateAction sendFile(@Nonnull File file, @Nonnull String fileName, @Nonnull AttachmentOption... options)
+    default MessageCreateAction sendFiles(@Nonnull FileUpload... files)
     {
-        Checks.notNull(file, "file");
-        Checks.check(file.exists() && file.canRead(),
-                    "Provided file doesn't exist or cannot be read!");
-        Checks.notNull(fileName, "fileName");
-
-        try
-        {
-            return sendFile(new FileInputStream(file), fileName, options);
-        }
-        catch (FileNotFoundException ex)
-        {
-            throw new IllegalArgumentException(ex);
-        }
-    }
-
-    /**
-     * Uploads a file to the Discord servers and sends it to this {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel}.
-     * Sends the provided {@link net.dv8tion.jda.api.entities.Message Message} with the uploaded file.
-     * <br>If you want to send a Message with the uploaded file, you can add the file to the {@link net.dv8tion.jda.api.requests.restaction.MessageCreateAction}
-     * returned by {@link #sendMessage(MessageCreateData)}.
-     * <br>This allows you to send an {@link java.io.InputStream InputStream} as substitute to a file.
-     *
-     * <p>For information about the {@code fileName} parameter, Refer to the documentation for {@link #sendFile(java.io.File, String, AttachmentOption...)}.
-     * <br>For {@link net.dv8tion.jda.api.requests.ErrorResponse} information, refer to the documentation for {@link #sendFile(java.io.File, String, AttachmentOption...)}.
-     *
-     * <p><b>Uploading images with Embeds</b>
-     * <br>When uploading an <u>image</u> you can reference said image using the specified filename as URI {@code attachment://filename.ext}.
-     *
-     * <p><u>Example</u>
-     * <pre><code>
-     * MessageChannel channel; // = reference of a MessageChannel
-     * EmbedBuilder embed = new EmbedBuilder();
-     * InputStream file = new URL("https://http.cat/500").openStream();
-     * embed.setImage("attachment://cat.png") // we specify this in sendFile as "cat.png"
-     *      .setDescription("This is a cute cat :3");
-     * channel.sendFile(file, "cat.png").setEmbeds(embed.build()).queue();
-     * </code></pre>
-     *
-     * @param  data
-     *         The InputStream data to upload to the {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel}.
-     * @param  fileName
-     *         The name that should be sent to discord
-     *         <br>Refer to the documentation for {@link #sendFile(java.io.File, String, AttachmentOption...)} for information about this parameter.
-     * @param  options
-     *         Possible options to apply to this attachment, such as marking it as spoiler image
-     *
-     * @throws java.lang.IllegalArgumentException
-     *         If the provided file or filename is {@code null} or {@code empty}.
-     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If this is a {@link net.dv8tion.jda.api.entities.GuildMessageChannel GuildMessageChannel} and the logged in account does not have
-     *         <ul>
-     *             <li>{@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}</li>
-     *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_SEND Permission.MESSAGE_SEND}</li>
-     *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_ATTACH_FILES Permission.MESSAGE_ATTACH_FILES}</li>
-     *         </ul>
-     * @throws java.lang.UnsupportedOperationException
-     *         If this is a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}
-     *         and both the currently logged in account and the target user are bots.
-     *
-     * @return {@link MessageCreateAction}
-     *         <br>Provides the {@link net.dv8tion.jda.api.entities.Message Message} created from this upload.
-     */
-    @Nonnull
-    @CheckReturnValue
-    default MessageCreateAction sendFile(@Nonnull InputStream data, @Nonnull String fileName, @Nonnull AttachmentOption... options)
-    {
-        Checks.notNull(data, "data InputStream");
-        Checks.notNull(fileName, "fileName");
-        if (options != null && options.length > 0 && options[0] == AttachmentOption.SPOILER)
-            fileName = "SPOILER_" + fileName;
-        FileUpload file = FileUpload.fromData(data, fileName);
-        return new MessageCreateActionImpl(this).setFiles(Collections.singletonList(file));
-    }
-
-    /**
-     * Uploads a file to the Discord servers and sends it to this {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel}.
-     * Sends the provided {@link net.dv8tion.jda.api.entities.Message Message} with the uploaded file.
-     * <br>If you want to send a Message with the uploaded file, you can add the file to the {@link MessageCreateAction}
-     * returned by {@link #sendMessage(MessageCreateData)}.
-     * <br>This allows you to send an {@code byte[]} as substitute to a file.
-     *
-     * <p>For information about the {@code fileName} parameter, Refer to the documentation for {@link #sendFile(java.io.File, String, AttachmentOption...)}.
-     * <br>For {@link net.dv8tion.jda.api.requests.ErrorResponse} information, refer to the documentation for {@link #sendFile(java.io.File, String, AttachmentOption...)}.
-     *
-     * <p><b>Uploading images with Embeds</b>
-     * <br>When uploading an <u>image</u> you can reference said image using the specified filename as URI {@code attachment://filename.ext}.
-     *
-     * <p><u>Example</u>
-     * <pre><code>
-     * MessageChannel channel; // = reference of a MessageChannel
-     * EmbedBuilder embed = new EmbedBuilder();
-     * byte[] file = IOUtil.readFully(new URL("https://http.cat/500").openStream());
-     * embed.setImage("attachment://cat.png") // we specify this in sendFile as "cat.png"
-     *      .setDescription("This is a cute cat :3");
-     * channel.sendFile(file, "cat.png").setEmbeds(embed.build()).queue();
-     * </code></pre>
-     *
-     * @param  data
-     *         The {@code byte[]} data to upload to the {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel}.
-     * @param  fileName
-     *         The name that should be sent to discord.
-     *         <br>Refer to the documentation for {@link #sendFile(java.io.File, String, AttachmentOption...)} for information about this parameter.
-     * @param  options
-     *         Possible options to apply to this attachment, such as marking it as spoiler image
-     *
-     * @throws java.lang.IllegalArgumentException
-     *         <ul>
-     *             <li>If the provided filename is {@code null} or {@code empty}</li>
-     *             <li>If the provided data is larger than 8 MiB on a normal or 50 MiB on a nitro account</li>
-     *         </ul>
-     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If this is a {@link net.dv8tion.jda.api.entities.GuildMessageChannel GuildMessageChannel} and the logged in account does not have
-     *         <ul>
-     *             <li>{@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}</li>
-     *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_SEND Permission.MESSAGE_SEND}</li>
-     *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_ATTACH_FILES Permission.MESSAGE_ATTACH_FILES}</li>
-     *         </ul>
-     * @throws java.lang.UnsupportedOperationException
-     *         If this is a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}
-     *         and both the currently logged in account and the target user are bots.
-     *
-     * @return {@link MessageAction MessageCreateAction}
-     *         <br>Provides the {@link net.dv8tion.jda.api.entities.Message Message} created from this upload.
-     */
-    @Nonnull
-    @CheckReturnValue
-    default MessageCreateAction sendFile(@Nonnull byte[] data, @Nonnull String fileName, @Nonnull AttachmentOption... options)
-    {
-        Checks.notNull(data, "data");
-        Checks.notNull(fileName, "fileName");
-
-        return sendFile(new ByteArrayInputStream(data), fileName, options);
+        Checks.notEmpty(files, "Files");
+        Checks.noneNull(files, "Files");
+        return sendFiles(Arrays.asList(files));
     }
 
     /**
