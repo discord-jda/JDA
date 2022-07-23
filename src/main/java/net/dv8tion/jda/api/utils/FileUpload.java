@@ -27,6 +27,7 @@ import okhttp3.RequestBody;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.OpenOption;
@@ -44,6 +45,7 @@ public class FileUpload implements Closeable, AttachedFile
     private final InputStream resource;
     private final String name;
     private BufferedRequestBody body;
+    private String description;
 
     protected FileUpload(InputStream resource, String name)
     {
@@ -254,6 +256,26 @@ public class FileUpload implements Closeable, AttachedFile
     }
 
     /**
+     * Set the file description used as ALT text for screenreaders.
+     *
+     * @param  description
+     *         The alt text describing this file attachment (up to 1024 characters)
+     *
+     * @throws IllegalArgumentException
+     *         If the description is longer than 1024 characters
+     *
+     * @return The same FileUpload instance with the new description
+     */
+    @Nonnull
+    public FileUpload withDescription(@Nullable String description)
+    {
+        if (description != null)
+            Checks.notLonger(description = description.trim(), 1024, "Description");
+        this.description = description;
+        return this;
+    }
+
+    /**
      * The filename for the file.
      *
      * @return The filename
@@ -311,6 +333,7 @@ public class FileUpload implements Closeable, AttachedFile
     {
         return DataObject.empty()
                 .put("id", index)
+                .put("description", description == null ? "" : description)
                 .put("filename", name);
     }
 
