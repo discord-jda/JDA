@@ -36,7 +36,6 @@ import net.dv8tion.jda.api.interactions.InteractionType;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
-import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.*;
 import net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationAction;
@@ -726,112 +725,14 @@ public interface Message extends ISnowflake, Formattable
     @Nullable
     MessageActivity getActivity();
 
-    /**
-     * Edits this Message's content to the provided String.
-     * <br><b>Messages can only be edited by the account that sent them!</b>.
-     *
-     * <p>This message instance will not be updated by this operation, please use the response message instead.
-     *
-     * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>The edit was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
-     *         typically due to being kicked or removed.</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
-     *     <br>The edit was attempted after the account lost {@link Permission#MESSAGE_SEND Permission.MESSAGE_SEND} in
-     *         the {@link net.dv8tion.jda.api.entities.GuildMessageChannel GuildMessageChannel}.</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
-     *     <br>If the message has already been deleted. This might also be triggered for ephemeral messages.</li>
-     * </ul>
-     *
-     * @param  newContent
-     *         the new content of the Message
-     *
-     * @throws java.lang.UnsupportedOperationException
-     *         If this is a system message, or data message (output of {@link MessageBuilder MessageBuilder})
-     * @throws java.lang.IllegalStateException
-     *         If the message attempting to be edited was not created by the currently logged in account, or if
-     *         {@code newContent}'s length is 0 or greater than 2000.
-     *
-     * @return {@link MessageAction MessageAction}
-     *         <br>The {@link net.dv8tion.jda.api.entities.Message Message} with the updated content
-     */
     @Nonnull
     @CheckReturnValue
     MessageEditAction editMessage(@Nonnull CharSequence newContent);
 
-    /**
-     * Edits this Message's content to the provided {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbeds}.
-     * <br><b>Messages can only be edited by the account that sent them!</b>.
-     *
-     * <p>This message instance will not be updated by this operation, please use the response message instead.
-     *
-     * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>The edit was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
-     *         typically due to being kicked or removed.</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
-     *     <br>The edit was attempted after the account lost {@link Permission#MESSAGE_SEND Permission.MESSAGE_SEND} in
-     *         the {@link GuildChannel}.</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
-     *     <br>If the message has already been deleted. This might also be triggered for ephemeral messages.</li>
-     * </ul>
-     *
-     * @param  embeds
-     *         the new embeds of the Message (up to 10)
-     *
-     * @throws java.lang.UnsupportedOperationException
-     *         If this is a system message, or data message (output of {@link MessageBuilder MessageBuilder})
-     * @throws java.lang.IllegalStateException
-     *         If the message attempting to be edited was not created by the currently logged in account
-     * @throws IllegalArgumentException
-     *         if any of the passed-in embeds is {@code null} or not {@link net.dv8tion.jda.api.entities.MessageEmbed#isSendable() sendable}.
-     *
-     * @return {@link MessageAction MessageAction}
-     *         <br>The {@link net.dv8tion.jda.api.entities.Message Message} with the updated content
-     */
     @Nonnull
     @CheckReturnValue
     MessageEditAction editMessageEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds);
 
-    /**
-     * Edits this Message's content to the provided {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbeds}.
-     * <br><b>Messages can only be edited by the account that sent them!</b>.
-     *
-     * <p>This message instance will not be updated by this operation, please use the response message instead.
-     *
-     * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>The edit was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
-     *         typically due to being kicked or removed.</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
-     *     <br>The edit was attempted after the account lost {@link Permission#MESSAGE_SEND Permission.MESSAGE_SEND} in
-     *         the {@link GuildChannel}.</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
-     *     <br>If the message has already been deleted. This might also be triggered for ephemeral messages.</li>
-     * </ul>
-     *
-     * @param  embeds
-     *         the new embeds of the Message (up to 10)
-     *
-     * @throws java.lang.UnsupportedOperationException
-     *         If this is a system message, or data message (output of {@link MessageBuilder MessageBuilder})
-     * @throws java.lang.IllegalStateException
-     *         If the message attempting to be edited was not created by the currently logged in account
-     * @throws IllegalArgumentException
-     *         if any of the passed-in embeds is {@code null} or not {@link net.dv8tion.jda.api.entities.MessageEmbed#isSendable() sendable}.
-     *
-     * @return {@link MessageAction MessageAction}
-     *         <br>The {@link net.dv8tion.jda.api.entities.Message Message} with the updated content
-     */
     @Nonnull
     @CheckReturnValue
     default MessageEditAction editMessageEmbeds(@Nonnull MessageEmbed... embeds)
@@ -840,109 +741,10 @@ public interface Message extends ISnowflake, Formattable
         return editMessageEmbeds(Arrays.asList(embeds));
     }
 
-    /**
-     * Edits this Message's content to the provided {@link LayoutComponent LayoutComponents}.
-     * <br><b>Messages can only be edited by the account that sent them!</b>.
-     * <br>This will replace all the current {@link net.dv8tion.jda.api.interactions.components.Component Components},
-     * such as {@link Button Buttons} or {@link SelectMenu SelectMenus} on this message.
-     * The provided parameters are {@link LayoutComponent LayoutComponent} such as {@link ActionRow} which contain a list of components to arrange in the respective layout.
-     *
-     * <p>This message instance will not be updated by this operation, please use the response message instead.
-     *
-     * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#INVALID_AUTHOR_EDIT INVALID_AUTHOR_EDIT}
-     *     <br>Attempted to edit a message that was not sent by the currently logged in account.
-     *         Discord does not allow editing of other users' Messages!</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>The request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
-     *         typically due to being kicked or removed, or after {@link Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
-     *         was revoked in the {@link GuildChannel}</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
-     *     <br>If the message has already been deleted. This might also be triggered for ephemeral messages.</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
-     *     <br>The request was attempted after the channel was deleted.</li>
-     * </ul>
-     *
-     * <p><b>Example</b><br>
-     * <pre>{@code
-     * List<ActionRow> rows = Arrays.asList(
-     *   ActionRow.of(Button.success("prompt:accept", "Accept"), Button.danger("prompt:reject", "Reject")), // 1st row below message
-     *   ActionRow.of(Button.link(url, "Help")) // 2nd row below message
-     * );
-     * message.editMessageComponents(rows).queue();
-     * }</pre>
-     *
-     * @param  components
-     *         Up to 5 new {@link LayoutComponent LayoutComponents} for the edited message, such as {@link ActionRow}
-     *
-     * @throws java.lang.UnsupportedOperationException
-     *         If this is a system message, or data message (output of {@link MessageBuilder MessageBuilder})
-     *         or any of the component layouts is a custom implementation that is not supported by this interface
-     * @throws IllegalArgumentException
-     *         If null is provided, or more than 5 layouts are added
-     * @throws java.lang.IllegalStateException
-     *         If the message attempting to be edited was not created by the currently logged in account
-     *
-     * @return {@link MessageAction MessageAction}
-     *         <br>The {@link net.dv8tion.jda.api.entities.Message Message} with the updated components
-     */
     @Nonnull
     @CheckReturnValue
     MessageEditAction editMessageComponents(@Nonnull Collection<? extends LayoutComponent> components);
 
-    /**
-     * Edits this Message's content to the provided {@link LayoutComponent LayoutComponents}.
-     * <br><b>Messages can only be edited by the account that sent them!</b>.
-     * <br>This will replace all the current {@link net.dv8tion.jda.api.interactions.components.Component Components},
-     * such as {@link Button Buttons} or {@link SelectMenu SelectMenus} on this message.
-     * The provided parameters are {@link LayoutComponent LayoutComponent} such as {@link ActionRow} which contain a list of components to arrange in the respective layout.
-     *
-     * <p>This message instance will not be updated by this operation, please use the response message instead.
-     *
-     * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#INVALID_AUTHOR_EDIT INVALID_AUTHOR_EDIT}
-     *     <br>Attempted to edit a message that was not sent by the currently logged in account.
-     *         Discord does not allow editing of other users' Messages!</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>The request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
-     *         typically due to being kicked or removed, or after {@link Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
-     *         was revoked in the {@link GuildChannel}</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
-     *     <br>If the message has already been deleted. This might also be triggered for ephemeral messages.</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
-     *     <br>The request was attempted after the channel was deleted.</li>
-     * </ul>
-     *
-     * <p><b>Example</b><br>
-     * <pre>{@code
-     * message.editMessageComponents(
-     *   ActionRow.of(Button.success("prompt:accept", "Accept"), Button.danger("prompt:reject", "Reject")), // 1st row below message
-     *   ActionRow.of(Button.link(url, "Help")) // 2nd row below message
-     * ).queue();
-     * }</pre>
-     *
-     * @param  components
-     *         Up to 5 new {@link LayoutComponent LayoutComponents} for the edited message, such as {@link ActionRow}
-     *
-     * @throws java.lang.UnsupportedOperationException
-     *         If this is a system message, or data message (output of {@link MessageBuilder MessageBuilder})
-     *         or any of the component layouts is a custom implementation that is not supported by this interface
-     * @throws IllegalArgumentException
-     *         If null is provided, or more than 5 layouts are added
-     * @throws java.lang.IllegalStateException
-     *         If the message attempting to be edited was not created by the currently logged in account
-     *
-     * @return {@link MessageAction MessageAction}
-     *         <br>The {@link net.dv8tion.jda.api.entities.Message Message} with the updated components
-     */
     @Nonnull
     @CheckReturnValue
     default MessageEditAction editMessageComponents(@Nonnull LayoutComponent... components)
@@ -951,90 +753,10 @@ public interface Message extends ISnowflake, Formattable
         return editMessageComponents(Arrays.asList(components));
     }
 
-    /**
-     * Edits this Message's content to the provided format.
-     * <br>Shortcut for {@link MessageBuilder#appendFormat(String, Object...)}.
-     * <br><b>Messages can only be edited by the account that sent them!</b>.
-     *
-     * <p>This message instance will not be updated by this operation, please use the response message instead.
-     *
-     * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>The edit was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
-     *         typically due to being kicked or removed.</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
-     *     <br>The edit was attempted after the account lost {@link Permission#MESSAGE_SEND Permission.MESSAGE_SEND} in
-     *         the {@link GuildChannel}.</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
-     *     <br>If the message has already been deleted. This might also be triggered for ephemeral messages.</li>
-     * </ul>
-     *
-     * @param  format
-     *         Format String used to generate the Message's content via
-     *         {@link MessageBuilder#appendFormat(String, Object...)} specification
-     * @param  args
-     *         The arguments to use in order to be converted in the format string
-     *
-     * @throws java.lang.UnsupportedOperationException
-     *         If this is a system message, or data message (output of {@link MessageBuilder MessageBuilder})
-     * @throws IllegalArgumentException
-     *         If the provided format String is {@code null} or blank, or if
-     *         the created message exceeds the 2000 character limit
-     * @throws java.util.IllegalFormatException
-     *         If a format string contains an illegal syntax,
-     *         a format specifier that is incompatible with the given arguments,
-     *         insufficient arguments given the format string, or other illegal conditions.
-     *         For specification of all possible formatting errors,
-     *         see the <a href="../util/Formatter.html#detail">Details</a>
-     *         section of the formatter class specification.
-     * @throws IllegalStateException
-     *         If the message attempting to be edited was not created by the currently logged in account
-     *
-     * @return {@link MessageAction MessageAction}
-     *         <br>The {@link net.dv8tion.jda.api.entities.Message Message} with the updated content
-     */
     @Nonnull
     @CheckReturnValue
     MessageEditAction editMessageFormat(@Nonnull String format, @Nonnull Object... args);
 
-    /**
-     * Edits this Message's content to the provided {@link net.dv8tion.jda.api.entities.Message Message}.
-     * <br><b>Messages can only be edited by the account that sent them!</b>.
-     *
-     * <p>This message instance will not be updated by this operation, please use the response message instead.
-     *
-     * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>The edit was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
-     *         typically due to being kicked or removed.</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
-     *     <br>The edit was attempted after the account lost {@link Permission#MESSAGE_SEND Permission.MESSAGE_SEND} in
-     *         the {@link GuildChannel}.</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
-     *     <br>If the message has already been deleted. This might also be triggered for ephemeral messages.</li>
-     * </ul>
-     *
-     * @param  newContent
-     *         the new content of the Message
-     *
-     * @throws java.lang.UnsupportedOperationException
-     *         If this is a system message, or data message (output of {@link MessageBuilder MessageBuilder})
-     * @throws java.lang.IllegalStateException
-     *         <ul>
-     *             <li>If the message attempting to be edited was not created by the currently logged in account</li>
-     *             <li>If the message contains a MessageEmbed that is not
-     *                 {@link net.dv8tion.jda.api.entities.MessageEmbed#isSendable() sendable}</li>
-     *         </ul>
-     *
-     * @return {@link MessageAction MessageAction}
-     *         <br>The {@link net.dv8tion.jda.api.entities.Message Message} with the updated content
-     */
     @Nonnull
     @CheckReturnValue
     MessageEditAction editMessage(@Nonnull MessageEditData newContent);
@@ -1042,11 +764,11 @@ public interface Message extends ISnowflake, Formattable
     /**
      * Replies and references this message.
      * <br>This is identical to {@code message.getGuildChannel().sendStickers(stickers).reference(message)}.
-     * You can use {@link MessageAction#mentionRepliedUser(boolean) mentionRepliedUser(false)} to not mention the author of the message.
+     * You can use {@link MessageCreateAction#mentionRepliedUser(boolean) mentionRepliedUser(false)} to not mention the author of the message.
      * <br>By default there won't be any error thrown if the referenced message does not exist.
-     * This behavior can be changed with {@link MessageAction#failOnInvalidReply(boolean)}.
+     * This behavior can be changed with {@link MessageCreateAction#failOnInvalidReply(boolean)}.
      *
-     * <p>For further info, see {@link GuildMessageChannel#sendStickers(Collection)} and {@link MessageAction#reference(Message)}.
+     * <p>For further info, see {@link GuildMessageChannel#sendStickers(Collection)} and {@link MessageCreateAction#setMessageReference(Message)}.
      *
      * @param  stickers
      *         The 1-3 stickers to send
@@ -1068,7 +790,7 @@ public interface Message extends ISnowflake, Formattable
      * @throws IllegalStateException
      *         If this message was not sent in a {@link Guild}
      *
-     * @return {@link MessageAction}
+     * @return {@link MessageCreateAction}
      *
      * @see    Sticker#fromId(long)
      */
@@ -1082,11 +804,11 @@ public interface Message extends ISnowflake, Formattable
     /**
      * Replies and references this message.
      * <br>This is identical to {@code message.getGuildChannel().sendStickers(stickers).reference(message)}.
-     * You can use {@link MessageAction#mentionRepliedUser(boolean) mentionRepliedUser(false)} to not mention the author of the message.
+     * You can use {@link MessageCreateAction#mentionRepliedUser(boolean) mentionRepliedUser(false)} to not mention the author of the message.
      * <br>By default there won't be any error thrown if the referenced message does not exist.
-     * This behavior can be changed with {@link MessageAction#failOnInvalidReply(boolean)}.
+     * This behavior can be changed with {@link MessageCreateAction#failOnInvalidReply(boolean)}.
      *
-     * <p>For further info, see {@link GuildMessageChannel#sendStickers(Collection)} and {@link MessageAction#reference(Message)}.
+     * <p>For further info, see {@link GuildMessageChannel#sendStickers(Collection)} and {@link MessageCreateAction#setMessageReference(Message)}.
      *
      * @param  stickers
      *         The 1-3 stickers to send
@@ -1108,7 +830,7 @@ public interface Message extends ISnowflake, Formattable
      * @throws IllegalStateException
      *         If this message was not sent in a {@link Guild}
      *
-     * @return {@link MessageAction}
+     * @return {@link MessageCreateAction}
      *
      * @see    Sticker#fromId(long)
      */
@@ -1119,28 +841,6 @@ public interface Message extends ISnowflake, Formattable
         return getGuildChannel().sendStickers(stickers).setMessageReference(this);
     }
 
-    /**
-     * Replies and references this message.
-     * <br>This is identical to {@code message.getChannel().sendMessage(content).reference(message)}.
-     * You can use {@link MessageAction#mentionRepliedUser(boolean) mentionRepliedUser(false)} to not mention the author of the message.
-     * <br>By default there won't be any error thrown if the referenced message does not exist.
-     * This behavior can be changed with {@link MessageAction#failOnInvalidReply(boolean)}.
-     *
-     * <p>For further info, see {@link MessageChannel#sendMessage(CharSequence)} and {@link MessageAction#reference(Message)}.
-     *
-     * @param  content
-     *         The content of the reply message
-     *
-     * @throws UnsupportedOperationException
-     *         If this is a Data Message (output of {@link MessageBuilder})
-     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If this is a {@link GuildChannel} and the logged in account does
-     *         not have {@link Permission#MESSAGE_SEND Permission.MESSAGE_SEND}
-     * @throws java.lang.IllegalArgumentException
-     *         if the provided text is null, empty or longer than 2000 characters
-     *
-     * @return {@link MessageAction} Providing the {@link Message} created from this upload.
-     */
     @Nonnull
     @CheckReturnValue
     default MessageCreateAction reply(@Nonnull CharSequence content)
@@ -1148,31 +848,6 @@ public interface Message extends ISnowflake, Formattable
         return getChannel().sendMessage(content).setMessageReference(this);
     }
 
-    /**
-     * Replies and references this message.
-     * <br>This is identical to {@code message.getChannel().sendMessageEmbeds(embeds).reference(message)}.
-     * You can use {@link MessageAction#mentionRepliedUser(boolean) mentionRepliedUser(false)} to not mention the author of the message.
-     * <br>By default there won't be any error thrown if the referenced message does not exist.
-     * This behavior can be changed with {@link MessageAction#failOnInvalidReply(boolean)}.
-     *
-     * <p>For further info, see {@link MessageChannel#sendMessageEmbeds(MessageEmbed, MessageEmbed...)} and {@link MessageAction#reference(Message)}.
-     *
-     * @param  embed
-     *         The embed to reply with
-     * @param  other
-     *         Additional embeds to reply with
-     *
-     * @throws UnsupportedOperationException
-     *         If this is a Data Message (output of {@link MessageBuilder})
-     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If this is a {@link GuildChannel} and the logged in account does
-     *         not have {@link Permission#MESSAGE_SEND Permission.MESSAGE_SEND}
-     * @throws IllegalArgumentException
-     *         If null is provided, any of the embeds are not {@link MessageEmbed#isSendable() sendable}, more than {@value Message#MAX_EMBED_COUNT} embeds are provided,
-     *         or the sum of {@link MessageEmbed#getLength()} is greater than {@link MessageEmbed#EMBED_MAX_LENGTH_BOT}
-     *
-     * @return {@link MessageAction} Providing the {@link Message} created from this upload.
-     */
     @Nonnull
     @CheckReturnValue
     default MessageCreateAction replyEmbeds(@Nonnull MessageEmbed embed, @Nonnull MessageEmbed... other)
@@ -1185,29 +860,6 @@ public interface Message extends ISnowflake, Formattable
         return replyEmbeds(embeds);
     }
 
-    /**
-     * Replies and references this message.
-     * <br>This is identical to {@code message.getChannel().sendMessageEmbeds(embeds).reference(message)}.
-     * You can use {@link MessageAction#mentionRepliedUser(boolean) mentionRepliedUser(false)} to not mention the author of the message.
-     * <br>By default there won't be any error thrown if the referenced message does not exist.
-     * This behavior can be changed with {@link MessageAction#failOnInvalidReply(boolean)}.
-     *
-     * <p>For further info, see {@link MessageChannel#sendMessageEmbeds(MessageEmbed, MessageEmbed...)} and {@link MessageAction#reference(Message)}.
-     *
-     * @param  embeds
-     *         The embeds to reply with
-     *
-     * @throws UnsupportedOperationException
-     *         If this is a Data Message (output of {@link MessageBuilder})
-     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If this is a {@link GuildChannel} and the logged in account does
-     *         not have {@link Permission#MESSAGE_SEND Permission.MESSAGE_SEND}
-     * @throws IllegalArgumentException
-     *         If null is provided, any of the embeds are not {@link MessageEmbed#isSendable() sendable}, more than {@value Message#MAX_EMBED_COUNT} embeds are provided,
-     *         or the sum of {@link MessageEmbed#getLength()} is greater than {@link MessageEmbed#EMBED_MAX_LENGTH_BOT}
-     *
-     * @return {@link MessageAction} Providing the {@link Message} created from this upload.
-     */
     @Nonnull
     @CheckReturnValue
     default MessageCreateAction replyEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
@@ -1215,28 +867,6 @@ public interface Message extends ISnowflake, Formattable
         return getChannel().sendMessageEmbeds(embeds).setMessageReference(this);
     }
 
-    /**
-     * Replies and references this message.
-     * <br>This is identical to {@code message.getChannel().sendMessage(content).reference(message)}.
-     * You can use {@link MessageAction#mentionRepliedUser(boolean) mentionRepliedUser(false)} to not mention the author of the message.
-     * <br>By default there won't be any error thrown if the referenced message does not exist.
-     * This behavior can be changed with {@link MessageAction#failOnInvalidReply(boolean)}.
-     *
-     * <p>For further info, see {@link MessageChannel#sendMessage(MessageCreateData)} and {@link MessageAction#reference(Message)}.
-     *
-     * @param  msg
-     *         The content of the reply message
-     *
-     * @throws UnsupportedOperationException
-     *         If this is a Data Message (output of {@link MessageBuilder})
-     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If this is a {@link GuildChannel} and the logged in account does
-     *         not have {@link Permission#MESSAGE_SEND Permission.MESSAGE_SEND}
-     * @throws IllegalArgumentException
-     *         If null is provided
-     *
-     * @return {@link MessageAction} Providing the {@link Message} created from this upload.
-     */
     @Nonnull
     @CheckReturnValue
     default MessageCreateAction reply(@Nonnull MessageCreateData msg)
@@ -1244,30 +874,6 @@ public interface Message extends ISnowflake, Formattable
         return getChannel().sendMessage(msg).setMessageReference(this);
     }
 
-    /**
-     * Replies and references this message.
-     * <br>This is identical to {@code message.getChannel().sendMessageFormat(content, args).reference(message)}.
-     * You can use {@link MessageAction#mentionRepliedUser(boolean) mentionRepliedUser(false)} to not mention the author of the message.
-     * <br>By default there won't be any error thrown if the referenced message does not exist.
-     * This behavior can be changed with {@link MessageAction#failOnInvalidReply(boolean)}.
-     *
-     * <p>For further info, see {@link MessageChannel#sendMessageFormat(String, Object...)} and {@link MessageAction#reference(Message)}.
-     *
-     * @param  format
-     *         The string that should be formatted, if this is null or empty the content of the Message would be empty and cause a builder exception.
-     * @param  args
-     *         The arguments for your format
-     *
-     * @throws UnsupportedOperationException
-     *         If this is a Data Message (output of {@link MessageBuilder})
-     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If this is a {@link GuildChannel} and the logged in account does
-     *         not have {@link Permission#MESSAGE_SEND Permission.MESSAGE_SEND}
-     * @throws IllegalArgumentException
-     *         If null is provided
-     *
-     * @return {@link MessageAction} Providing the {@link Message} created from this upload.
-     */
     @Nonnull
     @CheckReturnValue
     default MessageCreateAction replyFormat(@Nonnull String format, @Nonnull Object... args)

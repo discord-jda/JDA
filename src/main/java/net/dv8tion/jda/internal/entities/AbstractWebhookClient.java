@@ -24,7 +24,7 @@ import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.WebhookMessageAction;
 import net.dv8tion.jda.api.requests.restaction.WebhookMessageEditAction;
-import net.dv8tion.jda.api.utils.AttachmentOption;
+import net.dv8tion.jda.api.utils.AttachedFile;
 import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 import net.dv8tion.jda.api.utils.messages.MessageEditData;
@@ -35,7 +35,6 @@ import net.dv8tion.jda.internal.requests.restaction.WebhookMessageEditActionImpl
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
-import java.io.InputStream;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -118,9 +117,9 @@ public abstract class AbstractWebhookClient<T> implements WebhookClient<T>
 
     @Nonnull
     @Override
-    public WebhookMessageEditActionImpl<T> editMessageById(@Nonnull String messageId, @Nonnull InputStream data, @Nonnull String name, @Nonnull AttachmentOption... options)
+    public WebhookMessageEditActionImpl<T> editMessageAttachmentsById(@Nonnull String messageId, @Nonnull Collection<? extends AttachedFile> attachments)
     {
-        return (WebhookMessageEditActionImpl<T>) editRequest(messageId).setFiles(FileUpload.fromData(data, name));
+        return (WebhookMessageEditActionImpl<T>) editRequest(messageId).setAttachments(attachments);
     }
 
     @Nonnull

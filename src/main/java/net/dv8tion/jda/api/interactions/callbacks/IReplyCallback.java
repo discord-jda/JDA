@@ -295,8 +295,6 @@ public interface IReplyCallback extends IDeferrableCallback
         return reply(String.format(format, args));
     }
 
-    // TODO: Replace with replyFiles(FileUpload...)
-
     /**
      * Reply to this interaction and acknowledge it.
      * <br>This will send a reply message for this interaction.

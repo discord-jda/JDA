@@ -79,20 +79,6 @@ import java.util.stream.Collectors;
  *  }
  * </code></pre>
  *
- * @since  3.4.0
- *
- * @see    Message#editMessage(Message)
- * @see    Message#editMessage(CharSequence)
- * @see    Message#editMessageEmbeds(MessageEmbed...)
- * @see    Message#editMessageFormat(String, Object...)
- * @see    net.dv8tion.jda.api.entities.MessageChannel#sendMessage(Message)
- * @see    net.dv8tion.jda.api.entities.MessageChannel#sendMessage(CharSequence)
- * @see    net.dv8tion.jda.api.entities.MessageChannel#sendMessageEmbeds(MessageEmbed, MessageEmbed...)
- * @see    net.dv8tion.jda.api.entities.MessageChannel#sendMessageFormat(String, Object...)
- * @see    net.dv8tion.jda.api.entities.MessageChannel#sendFile(File, AttachmentOption...)
- * @see    net.dv8tion.jda.api.entities.MessageChannel#sendFile(File, String, AttachmentOption...)
- * @see    net.dv8tion.jda.api.entities.MessageChannel#sendFile(InputStream, String, AttachmentOption...)
- * @see    net.dv8tion.jda.api.entities.MessageChannel#sendFile(byte[], String, AttachmentOption...)
  */
 public interface MessageAction extends RestAction<Message>, Appendable, AllowedMentions<MessageAction>
 {

@@ -58,6 +58,12 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
     }
 
     @Nonnull
+    default R addActionRow(@Nonnull ItemComponent... components)
+    {
+        return setComponents(ActionRow.of(components));
+    }
+
+    @Nonnull
     R setFiles(@Nullable Collection<? extends FileUpload> files);
 
     @Nonnull

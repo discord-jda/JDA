@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.interactions.components.ActionComponent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.ItemComponent;
+import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction;
 import net.dv8tion.jda.internal.interactions.component.ButtonImpl;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -70,7 +71,7 @@ import javax.annotation.Nullable;
  * <img alt="ButtonExample" src="https://raw.githubusercontent.com/DV8FromTheWorld/JDA/52377f69d1f3bfba909c51a449ac6b258f606956/assets/wiki/interactions/ButtonExamples.png">
  *
  * @see ReplyCallbackAction#addActionRow(ItemComponent...)
- * @see ReplyCallbackAction#addActionRows(ActionRow...)
+ * @see ReplyCallbackAction#addComponents(LayoutComponent...)
  */
 public interface Button extends ActionComponent
 {

@@ -30,7 +30,6 @@ import net.dv8tion.jda.api.requests.restaction.MessageEditAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.MessagePaginationAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.PaginationAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationAction;
-import net.dv8tion.jda.api.utils.AttachmentOption;
 import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.data.DataArray;
@@ -283,33 +282,6 @@ public interface MessageChannel extends Channel, Formattable
         return list;
     }
 
-    /**
-     * Sends a plain text message to this channel.
-     * <br>This will fail if this channel is an instance of {@link net.dv8tion.jda.api.entities.GuildMessageChannel GuildMessageChannel} and
-     * the currently logged in account does not have permissions to send a message to this channel.
-     * <br>To determine if you are able to send a message in a {@link net.dv8tion.jda.api.entities.GuildMessageChannel GuildMessageChannel} use
-     * {@link net.dv8tion.jda.api.entities.Member#hasPermission(GuildChannel, net.dv8tion.jda.api.Permission...)
-     *  guild.getSelfMember().hasPermission(channel, Permission.MESSAGE_SEND)}.
-     *
-     * <p>For {@link net.dv8tion.jda.api.requests.ErrorResponse} information, refer to {@link #sendMessage(MessageCreateData)}.
-     *
-     * @param  text
-     *         the text to send to the MessageChannel.
-     *
-     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If this is a {@link net.dv8tion.jda.api.entities.GuildMessageChannel GuildMessageChannel} and the logged in account does
-     *         not have {@link net.dv8tion.jda.api.Permission#MESSAGE_SEND Permission.MESSAGE_SEND}
-     * @throws java.lang.IllegalArgumentException
-     *         if the provided text is null, empty or longer than 2000 characters
-     * @throws java.lang.UnsupportedOperationException
-     *         If this is a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}
-     *         and both the currently logged in account and the target user are bots.
-     *
-     * @return {@link MessageCreateAction}
-     *         <br>The newly created Message after it has been sent to Discord.
-     *
-     * @see net.dv8tion.jda.api.MessageBuilder
-     */
     @Nonnull
     @CheckReturnValue
     default MessageCreateAction sendMessage(@Nonnull CharSequence text)
@@ -317,45 +289,6 @@ public interface MessageChannel extends Channel, Formattable
         return new MessageCreateActionImpl(this).setContent(text.toString());
     }
 
-    /**
-     * Sends a formatted text message to this channel.
-     * <br>This will fail if this channel is an instance of {@link net.dv8tion.jda.api.entities.GuildMessageChannel GuildMessageChannel} and
-     * the currently logged in account does not have permissions to send a message to this channel.
-     * <br>To determine if you are able to send a message in a {@link net.dv8tion.jda.api.entities.GuildMessageChannel GuildMessageChannel} use
-     * {@link net.dv8tion.jda.api.entities.Member#hasPermission(GuildChannel, net.dv8tion.jda.api.Permission...)
-     *  guild.getSelfMember().hasPermission(channel, Permission.MESSAGE_SEND)}.
-     *
-     * <p>For {@link net.dv8tion.jda.api.requests.ErrorResponse} information, refer to {@link #sendMessage(MessageCreateData)}.
-     *
-     * @param  format
-     *         The string that should be formatted, if this is {@code null} or empty
-     *         the content of the Message would be empty and cause a builder exception.
-     * @param  args
-     *         The arguments for your format
-     *
-     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If this is a {@link net.dv8tion.jda.api.entities.GuildMessageChannel GuildMessageChannel} and the logged in account does
-     *         not have
-     *         <ul>
-     *             <li>{@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}</li>
-     *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_SEND Permission.MESSAGE_SEND}</li>
-     *         </ul>
-     * @throws java.lang.IllegalArgumentException
-     *         If the provided format text is {@code null}, empty or longer than 2000 characters
-     * @throws java.lang.UnsupportedOperationException
-     *         If this is a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}
-     *         and both the currently logged in account and the target user are bots.
-     * @throws java.util.IllegalFormatException
-     *         If a format string contains an illegal syntax,
-     *         a format specifier that is incompatible with the given arguments,
-     *         insufficient arguments given the format string, or other illegal conditions.
-     *         For specification of all possible formatting errors,
-     *         see the <a href="../util/Formatter.html#detail">Details</a>
-     *         section of the formatter class specification.
-     *
-     * @return {@link MessageCreateAction}
-     *         <br>The newly created Message after it has been sent to Discord.
-     */
     @Nonnull
     @CheckReturnValue
     default MessageCreateAction sendMessageFormat(@Nonnull String format, @Nonnull Object... args)
@@ -364,43 +297,6 @@ public interface MessageChannel extends Channel, Formattable
         return sendMessage(String.format(format, args));
     }
 
-    /**
-     * Sends up to {@value Message#MAX_EMBED_COUNT} specified {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbeds} as a {@link net.dv8tion.jda.api.entities.Message Message}
-     * to this channel.
-     * <br>This will fail if this channel is an instance of {@link net.dv8tion.jda.api.entities.GuildMessageChannel GuildMessageChannel} and
-     * the currently logged in account does not have permissions to send a message to this channel.
-     * <br>To determine if you are able to send a message in a {@link net.dv8tion.jda.api.entities.GuildMessageChannel GuildMessageChannel} use
-     * {@link net.dv8tion.jda.api.entities.Member#hasPermission(GuildChannel, net.dv8tion.jda.api.Permission...)
-     *  guild.getSelfMember().hasPermission(channel, Permission.MESSAGE_SEND)}.
-     *
-     * <p>For {@link net.dv8tion.jda.api.requests.ErrorResponse} information, refer to {@link #sendMessage(MessageCreateData)}.
-     *
-     * @param  embed
-     *         The {@link MessageEmbed MessageEmbed} to send
-     * @param  other
-     *         Additional {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbeds} to send
-     *
-     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If this is a {@link net.dv8tion.jda.api.entities.GuildMessageChannel GuildMessageChannel} and the logged in account does
-     *         not have
-     *         <ul>
-     *             <li>{@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}</li>
-     *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_SEND Permission.MESSAGE_SEND}</li>
-     *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_EMBED_LINKS Permission.MESSAGE_EMBED_LINKS}</li>
-     *         </ul>
-     * @throws java.lang.IllegalArgumentException
-     *         If null is provided, any of the embeds are not {@link MessageEmbed#isSendable() sendable}, more than {@value Message#MAX_EMBED_COUNT} embeds are provided,
-     *         or the sum of {@link MessageEmbed#getLength()} is greater than {@link MessageEmbed#EMBED_MAX_LENGTH_BOT}
-     * @throws java.lang.UnsupportedOperationException
-     *         If this is a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}
-     *         and both the currently logged in account and the target user are bots.
-     *
-     * @return {@link MessageCreateAction}
-     *         <br>The newly created Message after it has been sent to Discord.
-     *
-     * @see    net.dv8tion.jda.api.MessageBuilder
-     * @see    net.dv8tion.jda.api.EmbedBuilder
-     */
     @Nonnull
     @CheckReturnValue
     default MessageCreateAction sendMessageEmbeds(@Nonnull MessageEmbed embed, @Nonnull MessageEmbed... other)
@@ -413,41 +309,6 @@ public interface MessageChannel extends Channel, Formattable
         return new MessageCreateActionImpl(this).setEmbeds(embeds);
     }
 
-    /**
-     * Sends up to {@value Message#MAX_EMBED_COUNT} specified {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbeds} as a {@link net.dv8tion.jda.api.entities.Message Message}
-     * to this channel.
-     * <br>This will fail if this channel is an instance of {@link net.dv8tion.jda.api.entities.GuildMessageChannel GuildMessageChannel} and
-     * the currently logged in account does not have permissions to send a message to this channel.
-     * <br>To determine if you are able to send a message in a {@link net.dv8tion.jda.api.entities.GuildMessageChannel GuildMessageChannel} use
-     * {@link net.dv8tion.jda.api.entities.Member#hasPermission(GuildChannel, net.dv8tion.jda.api.Permission...)
-     *  guild.getSelfMember().hasPermission(channel, Permission.MESSAGE_SEND)}.
-     *
-     * <p>For {@link net.dv8tion.jda.api.requests.ErrorResponse} information, refer to {@link #sendMessage(MessageCreateData)}.
-     *
-     * @param  embeds
-     *         The {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbeds} to send
-     *
-     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If this is a {@link net.dv8tion.jda.api.entities.GuildMessageChannel GuildMessageChannel} and the logged in account does
-     *         not have
-     *         <ul>
-     *             <li>{@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}</li>
-     *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_SEND Permission.MESSAGE_SEND}</li>
-     *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_EMBED_LINKS Permission.MESSAGE_EMBED_LINKS}</li>
-     *         </ul>
-     * @throws java.lang.IllegalArgumentException
-     *         If any of the provided embeds is {@code null} or if the provided {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbed}
-     *         is not {@link net.dv8tion.jda.api.entities.MessageEmbed#isSendable() sendable}
-     * @throws java.lang.UnsupportedOperationException
-     *         If this is a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}
-     *         and both the currently logged in account and the target user are bots.
-     *
-     * @return {@link MessageCreateAction}
-     *         <br>The newly created Message after it has been sent to Discord.
-     *
-     * @see    net.dv8tion.jda.api.MessageBuilder
-     * @see    net.dv8tion.jda.api.EmbedBuilder
-     */
     @Nonnull
     @CheckReturnValue
     default MessageCreateAction sendMessageEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
@@ -455,57 +316,6 @@ public interface MessageChannel extends Channel, Formattable
         return new MessageCreateActionImpl(this).setEmbeds(embeds);
     }
 
-    /**
-     * Sends a specified {@link net.dv8tion.jda.api.entities.Message Message} to this channel.
-     * <br>This will fail if this channel is an instance of {@link net.dv8tion.jda.api.entities.GuildMessageChannel GuildMessageChannel} and
-     * the currently logged in account does not have permissions to send a message to this channel.
-     * <br>To determine if you are able to send a message in a {@link net.dv8tion.jda.api.entities.GuildMessageChannel GuildMessageChannel} use
-     * {@link net.dv8tion.jda.api.entities.Member#hasPermission(GuildChannel, net.dv8tion.jda.api.Permission...)
-     *  guild.getSelfMember().hasPermission(channel, Permission.MESSAGE_SEND)}.
-     *
-     * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>The request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
-     *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
-     *         was revoked in the {@link net.dv8tion.jda.api.entities.GuildMessageChannel GuildMessageChannel}</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
-     *     <br>The send request was attempted after the account lost {@link net.dv8tion.jda.api.Permission#MESSAGE_SEND Permission.MESSAGE_SEND} in
-     *         the {@link net.dv8tion.jda.api.entities.GuildMessageChannel GuildMessageChannel}.</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#CANNOT_SEND_TO_USER CANNOT_SEND_TO_USER}
-     *     <br>If this is a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel} and the currently logged in account
-     *         does not share any Guilds with the recipient User</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
-     *     <br>The send request was attempted after the channel was deleted.</li>
-     * </ul>
-     *
-     * @param  msg
-     *         the {@link net.dv8tion.jda.api.entities.Message Message} to send
-     *
-     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If this is a {@link net.dv8tion.jda.api.entities.GuildMessageChannel GuildMessageChannel} and the logged in account does
-     *         not have
-     *         <ul>
-     *             <li>{@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}</li>
-     *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_SEND Permission.MESSAGE_SEND}</li>
-     *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_EMBED_LINKS Permission.MESSAGE_EMBED_LINKS} (if this message is only an embed)</li>
-     *         </ul>
-     * @throws java.lang.IllegalArgumentException
-     *         If the provided message is {@code null} or the provided {@link net.dv8tion.jda.api.entities.Message Message}
-     *         contains a {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbed}
-     *         that is not {@link net.dv8tion.jda.api.entities.MessageEmbed#isSendable() sendable}
-     * @throws java.lang.UnsupportedOperationException
-     *         If this is a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}
-     *         and both the currently logged in account and the target user are bots.
-     *
-     * @return {@link MessageCreateAction}
-     *         <br>The newly created Message after it has been sent to Discord.
-     *
-     * @see    net.dv8tion.jda.api.MessageBuilder
-     */
     @Nonnull
     @CheckReturnValue
     default MessageCreateAction sendMessage(@Nonnull MessageCreateData msg)
@@ -514,56 +324,6 @@ public interface MessageChannel extends Channel, Formattable
         return new MessageCreateActionImpl(this).applyData(msg);
     }
 
-    /**
-     * Uploads a file to the Discord servers and sends it to this {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel}.
-     * Sends the provided {@link net.dv8tion.jda.api.entities.Message Message} with the uploaded file.
-     * <br>If you want to send a Message with the uploaded file, you can add the file to the {@link net.dv8tion.jda.api.requests.restaction.MessageCreateAction}
-     * returned by {@link #sendMessage(MessageCreateData)}.
-     *
-     * <p>This is a shortcut to {@link #sendFile(java.io.File, String, AttachmentOption...)} by way of using {@link java.io.File#getName()}.
-     * <pre>sendFile(file, file.getName())</pre>
-     *
-     * <p><b>Uploading images with Embeds</b>
-     * <br>When uploading an <u>image</u> you can reference said image using the specified filename as URI {@code attachment://filename.ext}.
-     *
-     * <p><u>Example</u>
-     * <pre><code>
-     * MessageChannel channel; // = reference of a MessageChannel
-     * EmbedBuilder embed = new EmbedBuilder();
-     * File file = new File("cat.gif");
-     * embed.setImage("attachment://cat.gif")
-     *      .setDescription("This is a cute cat :3");
-     * channel.sendFile(file).setEmbeds(embed.build()).queue();
-     * </code></pre>
-     *
-     * <p>For {@link net.dv8tion.jda.api.requests.ErrorResponse} information, refer to the documentation for {@link #sendFile(java.io.File, String, AttachmentOption...)}.
-     *
-     * @param  file
-     *         The file to upload to the {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel}.
-     * @param  options
-     *         Possible options to apply to this attachment, such as marking it as spoiler image
-     *
-     * @throws java.lang.IllegalArgumentException
-     *         <ul>
-     *             <li>Provided {@code file} is null.</li>
-     *             <li>Provided {@code file} does not exist.</li>
-     *             <li>Provided {@code file} is unreadable.</li>
-     *             <li>Provided {@code file} is greater than 8 MiB on a normal or 50 MiB on a nitro account.</li>
-     *         </ul>
-     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If this is a {@link net.dv8tion.jda.api.entities.GuildMessageChannel GuildMessageChannel} and the logged in account does not have
-     *         <ul>
-     *             <li>{@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}</li>
-     *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_SEND Permission.MESSAGE_SEND}</li>
-     *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_ATTACH_FILES Permission.MESSAGE_ATTACH_FILES}</li>
-     *         </ul>
-     * @throws java.lang.UnsupportedOperationException
-     *         If this is a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}
-     *         and both the currently logged in account and the target user are bots.
-     *
-     * @return {@link MessageCreateAction}
-     *         <br>Providing the {@link net.dv8tion.jda.api.entities.Message Message} created from this upload.
-     */
     @Nonnull
     @CheckReturnValue
     default MessageCreateAction sendFiles(@Nonnull Collection<? extends FileUpload> files)
@@ -573,56 +333,6 @@ public interface MessageChannel extends Channel, Formattable
         return new MessageCreateActionImpl(this).addFiles(files);
     }
 
-    /**
-     * Uploads a file to the Discord servers and sends it to this {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel}.
-     * Sends the provided {@link net.dv8tion.jda.api.entities.Message Message} with the uploaded file.
-     * <br>If you want to send a Message with the uploaded file, you can add the file to the {@link net.dv8tion.jda.api.requests.restaction.MessageCreateAction}
-     * returned by {@link #sendMessage(MessageCreateData)}.
-     *
-     * <p>This is a shortcut to {@link #sendFile(java.io.File, String, AttachmentOption...)} by way of using {@link java.io.File#getName()}.
-     * <pre>sendFile(file, file.getName())</pre>
-     *
-     * <p><b>Uploading images with Embeds</b>
-     * <br>When uploading an <u>image</u> you can reference said image using the specified filename as URI {@code attachment://filename.ext}.
-     *
-     * <p><u>Example</u>
-     * <pre><code>
-     * MessageChannel channel; // = reference of a MessageChannel
-     * EmbedBuilder embed = new EmbedBuilder();
-     * File file = new File("cat.gif");
-     * embed.setImage("attachment://cat.gif")
-     *      .setDescription("This is a cute cat :3");
-     * channel.sendFile(file).setEmbeds(embed.build()).queue();
-     * </code></pre>
-     *
-     * <p>For {@link net.dv8tion.jda.api.requests.ErrorResponse} information, refer to the documentation for {@link #sendFile(java.io.File, String, AttachmentOption...)}.
-     *
-     * @param  file
-     *         The file to upload to the {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel}.
-     * @param  options
-     *         Possible options to apply to this attachment, such as marking it as spoiler image
-     *
-     * @throws java.lang.IllegalArgumentException
-     *         <ul>
-     *             <li>Provided {@code file} is null.</li>
-     *             <li>Provided {@code file} does not exist.</li>
-     *             <li>Provided {@code file} is unreadable.</li>
-     *             <li>Provided {@code file} is greater than 8 MiB on a normal or 50 MiB on a nitro account.</li>
-     *         </ul>
-     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If this is a {@link net.dv8tion.jda.api.entities.GuildMessageChannel GuildMessageChannel} and the logged in account does not have
-     *         <ul>
-     *             <li>{@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}</li>
-     *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_SEND Permission.MESSAGE_SEND}</li>
-     *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_ATTACH_FILES Permission.MESSAGE_ATTACH_FILES}</li>
-     *         </ul>
-     * @throws java.lang.UnsupportedOperationException
-     *         If this is a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}
-     *         and both the currently logged in account and the target user are bots.
-     *
-     * @return {@link MessageCreateAction}
-     *         <br>Providing the {@link net.dv8tion.jda.api.entities.Message Message} created from this upload.
-     */
     @Nonnull
     @CheckReturnValue
     default MessageCreateAction sendFiles(@Nonnull FileUpload... files)

@@ -16,17 +16,21 @@
 
 package net.dv8tion.jda.api.interactions.callbacks;
 
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.requests.restaction.interactions.MessageEditCallbackAction;
+import net.dv8tion.jda.api.utils.AttachedFile;
+import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.messages.MessageEditData;
 import net.dv8tion.jda.internal.requests.restaction.interactions.MessageEditCallbackActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -255,5 +259,33 @@ public interface IMessageEditCallback extends IDeferrableCallback
     {
         Checks.notNull(format, "Format String");
         return editMessage(String.format(format, args));
+    }
+
+    /**
+     * Acknowledgement of this interaction with a message update.
+     * <br>You can use {@link #getHook()} to edit the message further.
+     *
+     * <p><b>You can only use deferEdit() or editMessage() once per interaction!</b> Use {@link #getHook()} for any additional updates.
+     *
+     * <p><b>You only have 3 seconds to acknowledge an interaction!</b>
+     * <br>When the acknowledgement is sent after the interaction expired, you will receive {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_INTERACTION ErrorResponse.UNKNOWN_INTERACTION}.
+     *
+     * @param  attachments
+     *         The new attachments of the message (Can be {@link FileUpload FileUploads} or {@link net.dv8tion.jda.api.utils.AttachmentUpdate AttachmentUpdates})
+     *
+     * @throws IllegalArgumentException
+     *         If any of the provided files is null
+     *
+     * @return {@link MessageEditCallbackAction} that can be used to further update the message
+     * 
+     * @see    AttachedFile#fromAttachment(Message.Attachment) 
+     * @see    FileUpload#fromData(InputStream, String)
+     */
+    @Nonnull
+    @CheckReturnValue
+    default MessageEditCallbackAction editMessageAttachments(@Nonnull Collection<? extends AttachedFile> attachments)
+    {
+        Checks.noneNull(attachments, "Attachments");
+        return deferEdit().setAttachments(attachments);
     }
 }
