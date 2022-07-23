@@ -26,7 +26,6 @@ import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageCreateAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.TimeUtil;
-import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.MessageCreateActionImpl;
@@ -117,7 +116,7 @@ public interface GuildMessageChannelMixin<T extends GuildMessageChannelMixin<T>>
         checkCanSendMessage();
         Checks.notEmpty(stickers, "Stickers");
         Checks.noneNull(stickers, "Stickers");
-        return new MessageCreateActionImpl(this, new MessageCreateBuilder()).setStickers(stickers);
+        return new MessageCreateActionImpl(this).setStickers(stickers);
     }
 
     // ---- Default implementation of parent mixins hooks ----

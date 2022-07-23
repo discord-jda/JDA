@@ -48,7 +48,7 @@ public class MessageCreateActionImpl extends RestActionImpl<Message> implements 
     protected static boolean defaultFailOnInvalidReply = false;
 
     private final MessageChannel channel;
-    private final MessageCreateBuilder builder;
+    private final MessageCreateBuilder builder = new MessageCreateBuilder();
     private final List<String> stickers = new ArrayList<>();
     private String nonce;
     private String messageReferenceId;
@@ -59,11 +59,10 @@ public class MessageCreateActionImpl extends RestActionImpl<Message> implements 
         defaultFailOnInvalidReply = fail;
     }
 
-    public MessageCreateActionImpl(MessageChannel channel, MessageCreateBuilder builder)
+    public MessageCreateActionImpl(MessageChannel channel)
     {
         super(channel.getJDA(), Route.Messages.SEND_MESSAGE.compile(channel.getId()));
         this.channel = channel;
-        this.builder = builder;
     }
 
 

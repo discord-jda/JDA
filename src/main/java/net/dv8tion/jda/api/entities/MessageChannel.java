@@ -34,9 +34,7 @@ import net.dv8tion.jda.api.utils.AttachmentOption;
 import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.data.DataArray;
-import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 import net.dv8tion.jda.api.utils.messages.MessageCreateData;
-import net.dv8tion.jda.api.utils.messages.MessageEditBuilder;
 import net.dv8tion.jda.api.utils.messages.MessageEditData;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
@@ -317,7 +315,7 @@ public interface MessageChannel extends Channel, Formattable
     @CheckReturnValue
     default MessageCreateAction sendMessage(@Nonnull CharSequence text)
     {
-        return new MessageCreateActionImpl(this, new MessageCreateBuilder().setContent(text.toString()));
+        return new MessageCreateActionImpl(this).setContent(text.toString());
     }
 
     /**
@@ -413,7 +411,7 @@ public interface MessageChannel extends Channel, Formattable
         List<MessageEmbed> embeds = new ArrayList<>(1 + other.length);
         embeds.add(embed);
         Collections.addAll(embeds, other);
-        return new MessageCreateActionImpl(this, new MessageCreateBuilder().setEmbeds(embeds));
+        return new MessageCreateActionImpl(this).setEmbeds(embeds);
     }
 
     /**
@@ -455,7 +453,7 @@ public interface MessageChannel extends Channel, Formattable
     @CheckReturnValue
     default MessageCreateAction sendMessageEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
     {
-        return new MessageCreateActionImpl(this, new MessageCreateBuilder().setEmbeds(embeds));
+        return new MessageCreateActionImpl(this).setEmbeds(embeds);
     }
 
     /**
@@ -514,7 +512,7 @@ public interface MessageChannel extends Channel, Formattable
     default MessageCreateAction sendMessage(@Nonnull MessageCreateData msg)
     {
         Checks.notNull(msg, "Message");
-        return new MessageCreateActionImpl(this, MessageCreateBuilder.from(msg));
+        return new MessageCreateActionImpl(this).applyData(msg);
     }
 
     /**
@@ -728,7 +726,7 @@ public interface MessageChannel extends Channel, Formattable
         if (options != null && options.length > 0 && options[0] == AttachmentOption.SPOILER)
             fileName = "SPOILER_" + fileName;
         FileUpload file = FileUpload.fromData(data, fileName);
-        return new MessageCreateActionImpl(this, new MessageCreateBuilder().setFiles(Collections.singletonList(file)));
+        return new MessageCreateActionImpl(this).setFiles(Collections.singletonList(file));
     }
 
     /**
@@ -2274,7 +2272,7 @@ public interface MessageChannel extends Channel, Formattable
         Checks.isSnowflake(messageId, "Message ID");
         Checks.notEmpty(newContent, "Provided message content");
         Checks.check(newContent.length() <= Message.MAX_CONTENT_LENGTH, "Provided newContent length must be %d or less characters.", Message.MAX_CONTENT_LENGTH);
-        return new MessageEditActionImpl(this, messageId, new MessageEditBuilder().setContent(newContent.toString()));
+        return new MessageEditActionImpl(this, messageId).setContent(newContent.toString());
     }
 
     /**
@@ -2373,7 +2371,7 @@ public interface MessageChannel extends Channel, Formattable
     {
         Checks.isSnowflake(messageId, "Message ID");
         Checks.notNull(data, "message");
-        return new MessageEditActionImpl(this, messageId, MessageEditBuilder.from(data));
+        return new MessageEditActionImpl(this, messageId).applyData(data);
     }
 
     /**
@@ -2686,7 +2684,7 @@ public interface MessageChannel extends Channel, Formattable
     default MessageEditAction editMessageEmbedsById(@Nonnull String messageId, @Nonnull Collection<? extends MessageEmbed> newEmbeds)
     {
         Checks.isSnowflake(messageId, "Message ID");
-        return new MessageEditActionImpl(this, messageId, new MessageEditBuilder().setEmbeds(newEmbeds));
+        return new MessageEditActionImpl(this, messageId).setEmbeds(newEmbeds);
     }
 
     /**
@@ -2800,7 +2798,7 @@ public interface MessageChannel extends Channel, Formattable
         if (components.stream().anyMatch(x -> !(x instanceof ActionRow)))
             throw new UnsupportedOperationException("The provided component layout is not supported");
         List<ActionRow> actionRows = components.stream().map(ActionRow.class::cast).collect(Collectors.toList());
-        return new MessageEditActionImpl(this, messageId, new MessageEditBuilder().setComponents(actionRows));
+        return new MessageEditActionImpl(this, messageId).setComponents(actionRows);
     }
 
     /**

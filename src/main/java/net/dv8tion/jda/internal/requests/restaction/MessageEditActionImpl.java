@@ -37,13 +37,12 @@ import java.util.List;
 public class MessageEditActionImpl extends RestActionImpl<Message> implements MessageEditAction, MessageEditBuilderMixin<MessageEditAction>
 {
     private final MessageChannel channel;
-    private final MessageEditBuilder builder;
+    private final MessageEditBuilder builder = new MessageEditBuilder();
 
-    public MessageEditActionImpl(MessageChannel channel, String messageId, MessageEditBuilder builder)
+    public MessageEditActionImpl(MessageChannel channel, String messageId)
     {
         super(channel.getJDA(), Route.Messages.EDIT_MESSAGE.compile(channel.getId(), messageId));
         this.channel = channel;
-        this.builder = builder;
     }
 
     @Override
