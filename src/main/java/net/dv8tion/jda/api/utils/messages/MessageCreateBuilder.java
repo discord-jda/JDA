@@ -31,7 +31,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-@SuppressWarnings("ResultOfMethodCallIgnored")
 public class MessageCreateBuilder extends AbstractMessageBuilder<MessageCreateData, MessageCreateBuilder> implements MessageCreateRequest<MessageCreateBuilder>
 {
     private final List<FileUpload> files = new ArrayList<>(10);
@@ -43,6 +42,18 @@ public class MessageCreateBuilder extends AbstractMessageBuilder<MessageCreateDa
     public static MessageCreateBuilder from(@Nonnull MessageCreateData data)
     {
         return new MessageCreateBuilder().applyData(data);
+    }
+
+    @Nonnull
+    public static MessageCreateBuilder fromEdit(@Nonnull MessageEditData data)
+    {
+        return new MessageCreateBuilder().applyEditData(data);
+    }
+
+    @Nonnull
+    public static MessageCreateBuilder fromMessage(@Nonnull Message message)
+    {
+        return new MessageCreateBuilder().applyMessage(message);
     }
     
     @Nonnull

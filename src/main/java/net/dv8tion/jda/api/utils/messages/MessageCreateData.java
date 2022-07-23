@@ -69,6 +69,18 @@ public class MessageCreateData implements SerializableData, AutoCloseable
         return new MessageCreateBuilder().setFiles(files).build();
     }
 
+    @Nonnull
+    public static MessageCreateData fromMessage(@Nonnull Message message)
+    {
+        return new MessageCreateBuilder().applyMessage(message).build();
+    }
+
+    @Nonnull
+    public static MessageCreateData fromEditData(@Nonnull MessageEditData data)
+    {
+        return new MessageCreateBuilder().applyEditData(data).build();
+    }
+
     public String getContent()
     {
         return content;

@@ -28,10 +28,7 @@ import net.dv8tion.jda.internal.utils.AllowedMentionsImpl;
 import net.dv8tion.jda.internal.utils.IOUtil;
 
 import javax.annotation.Nonnull;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static net.dv8tion.jda.api.utils.messages.MessageEditBuilder.*;
@@ -57,6 +54,36 @@ public class MessageEditData implements SerializableData, AutoCloseable
         this.components = Collections.unmodifiableList(components);
         this.allowedMentions = allowedMentions;
         this.flags = set;
+    }
+
+    @Nonnull
+    public static MessageEditData fromContent(@Nonnull String content)
+    {
+        return new MessageEditBuilder().setContent(content).build();
+    }
+
+    @Nonnull
+    public static MessageEditData fromEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
+    {
+        return new MessageEditBuilder().setEmbeds(embeds).build();
+    }
+
+    @Nonnull
+    public static MessageEditData fromFiles(@Nonnull Collection<? extends FileUpload> files)
+    {
+        return new MessageEditBuilder().setFiles(files).build();
+    }
+
+    @Nonnull
+    public static MessageEditData fromMessage(@Nonnull Message message)
+    {
+        return new MessageEditBuilder().applyMessage(message).build();
+    }
+
+    @Nonnull
+    public static MessageEditData fromCreateData(@Nonnull MessageCreateData data)
+    {
+        return new MessageEditBuilder().applyCreateData(data).build();
     }
 
     protected int getFlags()

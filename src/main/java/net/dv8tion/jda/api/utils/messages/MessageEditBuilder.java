@@ -58,6 +58,18 @@ public class MessageEditBuilder extends AbstractMessageBuilder<MessageEditData, 
     }
 
     @Nonnull
+    public static MessageEditBuilder fromCreateData(@Nonnull MessageCreateData data)
+    {
+        return new MessageEditBuilder().applyCreateData(data);
+    }
+
+    @Nonnull
+    public static MessageEditBuilder fromMessage(@Nonnull Message message)
+    {
+        return new MessageEditBuilder().applyMessage(message);
+    }
+
+    @Nonnull
     @Override
     public MessageEditBuilder mentionRepliedUser(boolean mention)
     {

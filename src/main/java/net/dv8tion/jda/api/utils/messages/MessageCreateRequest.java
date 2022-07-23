@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.utils.messages;
 
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.ItemComponent;
@@ -79,5 +80,41 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
                 .setTTS(data.isTTS())
                 .setComponents(data.getComponents())
                 .setFiles(data.getFiles());
+    }
+
+    // Explicitly explain that mentions are not filtered by allowed mentions this way
+
+    @Nonnull
+    default R applyMessage(@Nonnull Message message)
+    {
+        return setContent(message.getContentRaw())
+                .setEmbeds(message.getEmbeds())
+                .setTTS(message.isTTS())
+                .setComponents(message.getActionRows());
+    }
+
+    @Nonnull
+    @SuppressWarnings({"unchecked", "ResultOfMethodCallIgnored"})
+    default R applyEditData(@Nonnull MessageEditData data)
+    {
+        int flags = data.getFlags();
+        if ((flags & MessageEditBuilder.CONTENT) != 0)
+            setContent(data.getContent());
+        if ((flags & MessageEditBuilder.EMBEDS) != 0)
+            setEmbeds(data.getEmbeds());
+        if ((flags & MessageEditBuilder.COMPONENTS) != 0)
+            setComponents(data.getComponents());
+        if ((flags & MessageEditBuilder.ATTACHMENTS) != 0)
+            setFiles(data.getFiles());
+        if ((flags & MessageEditBuilder.MENTIONS) != 0)
+        {
+            String[] array = new String[0];
+            allowedMentions(data.getAllowedMentions());
+            mentionUsers(data.getMentionedUsers().toArray(array));
+            mentionRoles(data.getMentionedRoles().toArray(array));
+            mentionRepliedUser(data.isMentionRepliedUser());
+        }
+
+        return (R) this;
     }
 }

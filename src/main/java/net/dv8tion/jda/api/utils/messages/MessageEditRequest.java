@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.utils.messages;
 
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.utils.AttachedFile;
 import net.dv8tion.jda.api.utils.FileUpload;
 
@@ -63,4 +64,22 @@ public interface MessageEditRequest<R extends MessageEditRequest<R>> extends Mes
 
     @Nonnull
     R applyData(@Nonnull MessageEditData data);
+
+    // Mention that this changes the mode to replace and copies the whole thing
+
+    @Nonnull
+    default R applyCreateData(@Nonnull MessageCreateData data)
+    {
+        return replace(true)
+                .setContent(data.getContent())
+                .setEmbeds(data.getEmbeds())
+                .setComponents(data.getComponents())
+                .setFiles(data.getFiles());
+    }
+
+    @Nonnull
+    default R applyMessage(@Nonnull Message message)
+    {
+        return applyCreateData(MessageCreateData.fromMessage(message));
+    }
 }

@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.utils.messages;
 
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.ItemComponent;
@@ -73,4 +74,7 @@ public interface MessageRequest<R extends MessageRequest<R>> extends AllowedMent
         Checks.noneNull(files, "Files");
         return setFiles(Arrays.asList(files));
     }
+
+    @Nonnull
+    R applyMessage(@Nonnull Message message);
 }
