@@ -160,9 +160,9 @@ public class MessageEditBuilder extends AbstractMessageBuilder<MessageEditData, 
 
     @Nonnull
     @Override
-    public MessageEditBuilder setComponents(@Nonnull Collection<? extends LayoutComponent> layouts)
+    public MessageEditBuilder setComponents(@Nonnull Collection<? extends LayoutComponent> components)
     {
-        super.setComponents(layouts);
+        super.setComponents(components);
         set |= COMPONENTS;
         return this;
     }
@@ -210,7 +210,7 @@ public class MessageEditBuilder extends AbstractMessageBuilder<MessageEditData, 
             return false;
         if (isSet(COMPONENTS) && components.size() > Message.MAX_COMPONENT_COUNT)
             return false;
-        return !isSet(CONTENT) || Helpers.codePointLength(content.toString()) <= Message.MAX_CONTENT_LENGTH;
+        return !isSet(CONTENT) || Helpers.codePointLength(content) <= Message.MAX_CONTENT_LENGTH;
     }
 
     private boolean isSet(int flag)
@@ -223,7 +223,7 @@ public class MessageEditBuilder extends AbstractMessageBuilder<MessageEditData, 
     public MessageEditData build()
     {
         // Copy to prevent modifying data after building
-        String content = this.content.toString();
+        String content = this.content.toString().trim();
         List<MessageEmbed> embeds = new ArrayList<>(this.embeds);
         List<AttachedFile> attachments = new ArrayList<>(this.attachments);
         List<LayoutComponent> components = new ArrayList<>(this.components);

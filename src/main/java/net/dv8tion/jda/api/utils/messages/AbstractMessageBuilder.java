@@ -42,9 +42,17 @@ public abstract class AbstractMessageBuilder<T, R extends AbstractMessageBuilder
     @Override
     public R setContent(@Nullable String content)
     {
-        this.content.setLength(0);
         if (content != null)
-            this.content.append(content.trim());
+        {
+            content = content.trim();
+            Checks.notLonger(content, Message.MAX_CONTENT_LENGTH, "Content");
+            this.content.setLength(0);
+            this.content.append(content);
+        }
+        else
+        {
+            this.content.setLength(0);
+        }
         return (R) this;
     }
 
@@ -93,6 +101,7 @@ public abstract class AbstractMessageBuilder<T, R extends AbstractMessageBuilder
     public R setEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
     {
         Checks.noneNull(embeds, "Embeds");
+        Checks.check(embeds.size() <= Message.MAX_EMBED_COUNT, "Cannot send more than %d embeds in a message!", Message.MAX_EMBED_COUNT);
         this.embeds.clear();
         this.embeds.addAll(embeds);
         return (R) this;
@@ -100,13 +109,14 @@ public abstract class AbstractMessageBuilder<T, R extends AbstractMessageBuilder
 
     @Nonnull
     @Override
-    public R setComponents(@Nonnull Collection<? extends LayoutComponent> layouts)
+    public R setComponents(@Nonnull Collection<? extends LayoutComponent> components)
     {
-        Checks.noneNull(layouts, "ComponentLayouts");
-        for (LayoutComponent layout : layouts)
+        Checks.noneNull(components, "ComponentLayouts");
+        for (LayoutComponent layout : components)
             Checks.check(layout.isMessageCompatible(), "Provided component layout is invalid for messages!");
+        Checks.check(components.size() <= Message.MAX_COMPONENT_COUNT, "Cannot send more than %d component layouts in a message!", Message.MAX_COMPONENT_COUNT);
         this.components.clear();
-        this.components.addAll(layouts);
+        this.components.addAll(components);
         return (R) this;
     }
 

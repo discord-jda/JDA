@@ -285,6 +285,7 @@ public interface MessageChannel extends Channel, Formattable
     @CheckReturnValue
     default MessageCreateAction sendMessage(@Nonnull CharSequence text)
     {
+        Checks.notNull(text, "Content");
         return new MessageCreateActionImpl(this).setContent(text.toString());
     }
 
@@ -327,7 +328,7 @@ public interface MessageChannel extends Channel, Formattable
     @CheckReturnValue
     default MessageCreateAction sendFiles(@Nonnull Collection<? extends FileUpload> files)
     {
-        Checks.notEmpty(files, "Files");
+        Checks.notEmpty(files, "File Collection");
         Checks.noneNull(files, "Files");
         return new MessageCreateActionImpl(this).addFiles(files);
     }
@@ -336,7 +337,7 @@ public interface MessageChannel extends Channel, Formattable
     @CheckReturnValue
     default MessageCreateAction sendFiles(@Nonnull FileUpload... files)
     {
-        Checks.notEmpty(files, "Files");
+        Checks.notEmpty(files, "File Collection");
         Checks.noneNull(files, "Files");
         return sendFiles(Arrays.asList(files));
     }

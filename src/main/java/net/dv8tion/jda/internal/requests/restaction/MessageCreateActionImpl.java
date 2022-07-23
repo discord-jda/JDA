@@ -75,8 +75,12 @@ public class MessageCreateActionImpl extends RestActionImpl<Message> implements 
     @Override
     protected RequestBody finalizeData()
     {
-        if (builder.isEmpty() && !stickers.isEmpty())
-            return getRequestBody(DataObject.empty().put("sticker_ids", stickers));
+        if (builder.isEmpty())
+        {
+            if (!stickers.isEmpty())
+                return getRequestBody(DataObject.empty().put("sticker_ids", stickers));
+            throw new IllegalStateException("Cannot build empty messages! Must provide at least one of: content, embed, file, or stickers");
+        }
 
         MessageCreateData data = builder.build();
         try

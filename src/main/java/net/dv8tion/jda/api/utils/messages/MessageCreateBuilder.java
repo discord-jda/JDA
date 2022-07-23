@@ -61,7 +61,11 @@ public class MessageCreateBuilder extends AbstractMessageBuilder<MessageCreateDa
     public MessageCreateBuilder addContent(@Nonnull String content)
     {
         Checks.notNull(content, "Content");
-        this.content.append(content.trim());
+        Checks.check(
+            Helpers.codePointLength(this.content) + Helpers.codePointLength(content) <= Message.MAX_CONTENT_LENGTH,
+            "Cannot have content longer than %d characters", Message.MAX_CONTENT_LENGTH
+        );
+        this.content.append(content);
         return this;
     }
 
@@ -70,6 +74,10 @@ public class MessageCreateBuilder extends AbstractMessageBuilder<MessageCreateDa
     public MessageCreateBuilder addEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
     {
         Checks.noneNull(embeds, "Embeds");
+        Checks.check(
+            this.embeds.size() + embeds.size() <= Message.MAX_EMBED_COUNT,
+            "Cannot add more than %d embeds", Message.MAX_EMBED_COUNT
+        );
         this.embeds.addAll(embeds);
         return this;
     }
@@ -81,6 +89,10 @@ public class MessageCreateBuilder extends AbstractMessageBuilder<MessageCreateDa
         Checks.noneNull(layouts, "ComponentLayouts");
         for (LayoutComponent layout : layouts)
             Checks.check(layout.isMessageCompatible(), "Provided component layout is invalid for messages!");
+        Checks.check(
+            this.components.size() + layouts.size() <= Message.MAX_COMPONENT_COUNT,
+            "Cannot add more than %d component layouts", Message.MAX_COMPONENT_COUNT
+        );
         this.components.addAll(layouts);
         return this;
     }
@@ -91,7 +103,6 @@ public class MessageCreateBuilder extends AbstractMessageBuilder<MessageCreateDa
     {
         if (files != null)
             Checks.noneNull(files, "Files");
-        this.files.forEach(IOUtil::silentClose);
         this.files.clear();
         if (files != null)
             this.files.addAll(files);
@@ -118,7 +129,7 @@ public class MessageCreateBuilder extends AbstractMessageBuilder<MessageCreateDa
     @Override
     public boolean isEmpty()
     {
-        return content.length() == 0 && embeds.isEmpty() && files.isEmpty();
+        return Helpers.isBlank(content) && embeds.isEmpty() && files.isEmpty();
     }
 
     @Override
@@ -126,20 +137,20 @@ public class MessageCreateBuilder extends AbstractMessageBuilder<MessageCreateDa
     {
         return !isEmpty() && embeds.size() <= Message.MAX_EMBED_COUNT
                           && components.size() <= Message.MAX_COMPONENT_COUNT
-                          && Helpers.codePointLength(content.toString()) <= Message.MAX_CONTENT_LENGTH;
+                          && Helpers.codePointLength(content) <= Message.MAX_CONTENT_LENGTH;
     }
 
     @Nonnull
     public MessageCreateData build()
     {
         // Copy to prevent modifying data after building
-        String content = this.content.toString();
+        String content = this.content.toString().trim();
         List<MessageEmbed> embeds = new ArrayList<>(this.embeds);
         List<FileUpload> files = new ArrayList<>(this.files);
         List<LayoutComponent> components = new ArrayList<>(this.components);
         AllowedMentionsImpl allowedMentions = this.allowedMentions.copy();
 
-        if (isEmpty())
+        if (content.isEmpty() && embeds.isEmpty() && files.isEmpty())
             throw new IllegalStateException("Cannot build an empty message. You need at least one of content, embeds, or files");
 
         int length = Helpers.codePointLength(content);
