@@ -35,6 +35,11 @@ import java.util.List;
 public interface AttachedFile extends Closeable
 {
     /**
+     * The maximum length a {@link FileUpload#setDescription(String) description} can be ({@value}).
+     */
+    int MAX_DESCRIPTION_LENGTH = 1024;
+
+    /**
      * Create a new {@link FileUpload} for an input stream.
      * <br>This is used to upload data to discord for various purposes.
      *

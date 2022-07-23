@@ -259,10 +259,10 @@ public class FileUpload implements Closeable, AttachedFile
      * Set the file description used as ALT text for screenreaders.
      *
      * @param  description
-     *         The alt text describing this file attachment (up to 1024 characters)
+     *         The alt text describing this file attachment (up to {@value MAX_DESCRIPTION_LENGTH} characters)
      *
      * @throws IllegalArgumentException
-     *         If the description is longer than 1024 characters
+     *         If the description is longer than {@value MAX_DESCRIPTION_LENGTH} characters
      *
      * @return The same FileUpload instance with the new description
      */
@@ -270,7 +270,7 @@ public class FileUpload implements Closeable, AttachedFile
     public FileUpload setDescription(@Nullable String description)
     {
         if (description != null)
-            Checks.notLonger(description = description.trim(), 1024, "Description");
+            Checks.notLonger(description = description.trim(), MAX_DESCRIPTION_LENGTH, "Description");
         this.description = description;
         return this;
     }
