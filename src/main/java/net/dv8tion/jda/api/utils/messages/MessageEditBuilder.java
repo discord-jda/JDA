@@ -31,6 +31,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 @SuppressWarnings("ResultOfMethodCallIgnored")
@@ -134,10 +135,23 @@ public class MessageEditBuilder extends AbstractMessageBuilder<MessageEditData, 
 
     @Nonnull
     @Override
+    public List<? extends AttachedFile> getAttachments()
+    {
+        return Collections.unmodifiableList(attachments);
+    }
+
+    @Nonnull
+    @Override
     public MessageEditBuilder replace(boolean isReplace)
     {
         this.replace = isReplace;
         return this;
+    }
+
+    @Override
+    public boolean isReplace()
+    {
+        return replace;
     }
 
     @Nonnull

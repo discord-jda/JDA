@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.ItemComponent;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.utils.AllowedMentions;
+import net.dv8tion.jda.api.utils.AttachedFile;
 import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.internal.utils.Checks;
 
@@ -29,11 +30,15 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 public interface MessageRequest<R extends MessageRequest<R>> extends AllowedMentions<R>
 {
     @Nonnull
     R setContent(@Nullable String content);
+
+    @Nonnull
+    String getContent();
 
     @Nonnull
     R setEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds);
@@ -43,6 +48,9 @@ public interface MessageRequest<R extends MessageRequest<R>> extends AllowedMent
     {
         return setEmbeds(Arrays.asList(embeds));
     }
+
+    @Nonnull
+    List<? extends MessageEmbed> getEmbeds();
 
     @Nonnull
     R setComponents(@Nonnull Collection<? extends LayoutComponent> layouts);
@@ -66,6 +74,9 @@ public interface MessageRequest<R extends MessageRequest<R>> extends AllowedMent
     }
 
     @Nonnull
+    List<? extends LayoutComponent> getComponents();
+
+    @Nonnull
     R setFiles(@Nullable Collection<? extends FileUpload> files);
 
     @Nonnull
@@ -74,6 +85,11 @@ public interface MessageRequest<R extends MessageRequest<R>> extends AllowedMent
         Checks.noneNull(files, "Files");
         return setFiles(Arrays.asList(files));
     }
+
+    // Returns attachment interface for abstraction purposes, however you can only abstract the setter to allow FileUploads
+
+    @Nonnull
+    List<? extends AttachedFile> getAttachments();
 
     @Nonnull
     R applyMessage(@Nonnull Message message);

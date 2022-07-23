@@ -20,7 +20,6 @@ import net.dv8tion.jda.api.entities.IMentionable;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
-import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.internal.utils.AllowedMentionsImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
@@ -28,6 +27,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 @SuppressWarnings({"ResultOfMethodCallIgnored", "unchecked"})
@@ -54,6 +54,13 @@ public abstract class AbstractMessageBuilder<T, R extends AbstractMessageBuilder
             this.content.setLength(0);
         }
         return (R) this;
+    }
+
+    @Nonnull
+    @Override
+    public String getContent()
+    {
+        return content.toString();
     }
 
     @Nonnull
@@ -109,6 +116,13 @@ public abstract class AbstractMessageBuilder<T, R extends AbstractMessageBuilder
 
     @Nonnull
     @Override
+    public List<? extends MessageEmbed> getEmbeds()
+    {
+        return Collections.unmodifiableList(embeds);
+    }
+
+    @Nonnull
+    @Override
     public R setComponents(@Nonnull Collection<? extends LayoutComponent> components)
     {
         Checks.noneNull(components, "ComponentLayouts");
@@ -122,7 +136,10 @@ public abstract class AbstractMessageBuilder<T, R extends AbstractMessageBuilder
 
     @Nonnull
     @Override
-    public abstract R setFiles(@Nullable Collection<? extends FileUpload> files);
+    public List<? extends LayoutComponent> getComponents()
+    {
+        return Collections.unmodifiableList(components);
+    }
 
     public abstract boolean isEmpty();
     public abstract boolean isValid();

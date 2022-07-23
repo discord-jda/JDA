@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.entities.IMentionable;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
+import net.dv8tion.jda.api.utils.AttachedFile;
 import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.messages.AbstractMessageBuilder;
 import net.dv8tion.jda.api.utils.messages.MessageRequest;
@@ -27,6 +28,7 @@ import net.dv8tion.jda.api.utils.messages.MessageRequest;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Collection;
+import java.util.List;
 
 @SuppressWarnings({"unchecked", "ResultOfMethodCallIgnored"})
 public interface AbstractMessageBuilderMixin<R extends MessageRequest<R>, B extends AbstractMessageBuilder<?, B>> extends MessageRequest<R>
@@ -43,10 +45,24 @@ public interface AbstractMessageBuilderMixin<R extends MessageRequest<R>, B exte
 
     @Nonnull
     @Override
+    default String getContent()
+    {
+        return getBuilder().getContent();
+    }
+
+    @Nonnull
+    @Override
     default R setEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
     {
         getBuilder().setEmbeds(embeds);
         return (R) this;
+    }
+
+    @Nonnull
+    @Override
+    default List<? extends MessageEmbed> getEmbeds()
+    {
+        return getBuilder().getEmbeds();
     }
 
     @Nonnull
@@ -59,10 +75,24 @@ public interface AbstractMessageBuilderMixin<R extends MessageRequest<R>, B exte
 
     @Nonnull
     @Override
+    default List<? extends LayoutComponent> getComponents()
+    {
+        return getBuilder().getComponents();
+    }
+
+    @Nonnull
+    @Override
     default R setFiles(@Nullable Collection<? extends FileUpload> files)
     {
         getBuilder().setFiles(files);
         return (R) this;
+    }
+
+    @Nonnull
+    @Override
+    default List<? extends AttachedFile> getAttachments()
+    {
+        return getBuilder().getAttachments();
     }
 
     @Nonnull

@@ -62,6 +62,8 @@ public interface MessageEditRequest<R extends MessageEditRequest<R>> extends Mes
     @Nonnull
     R replace(boolean isReplace);
 
+    boolean isReplace();
+
     @Nonnull
     R applyData(@Nonnull MessageEditData data);
 

@@ -27,6 +27,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends MessageRequest<R>
 {
@@ -74,6 +75,10 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
     {
         return addFiles(Arrays.asList(files));
     }
+
+    @Nonnull
+    @Override
+    List<? extends FileUpload> getAttachments();
 
     @Nonnull
     R setTTS(boolean tts);

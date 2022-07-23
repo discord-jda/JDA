@@ -60,4 +60,10 @@ public interface MessageEditBuilderMixin<R extends MessageEditRequest<R>> extend
         getBuilder().applyData(data);
         return (R) this;
     }
+
+    @Override
+    default boolean isReplace()
+    {
+        return getBuilder().isReplace();
+    }
 }

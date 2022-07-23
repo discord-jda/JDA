@@ -29,6 +29,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 public class MessageCreateBuilder extends AbstractMessageBuilder<MessageCreateData, MessageCreateBuilder> implements MessageCreateRequest<MessageCreateBuilder>
@@ -107,6 +108,13 @@ public class MessageCreateBuilder extends AbstractMessageBuilder<MessageCreateDa
         if (files != null)
             this.files.addAll(files);
         return this;
+    }
+
+    @Nonnull
+    @Override
+    public List<? extends FileUpload> getAttachments()
+    {
+        return Collections.unmodifiableList(files);
     }
 
     @Nonnull

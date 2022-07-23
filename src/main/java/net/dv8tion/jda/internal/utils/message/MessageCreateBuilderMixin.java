@@ -25,6 +25,7 @@ import net.dv8tion.jda.api.utils.messages.MessageCreateRequest;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Collection;
+import java.util.List;
 
 @SuppressWarnings("unchecked")
 public interface MessageCreateBuilderMixin<R extends MessageCreateRequest<R>> extends AbstractMessageBuilderMixin<R, MessageCreateBuilder>, MessageCreateRequest<R>
@@ -75,5 +76,12 @@ public interface MessageCreateBuilderMixin<R extends MessageCreateRequest<R>> ex
     {
         getBuilder().setFiles(files);
         return (R) this;
+    }
+
+    @Nonnull
+    @Override
+    default List<? extends FileUpload> getAttachments()
+    {
+        return getBuilder().getAttachments();
     }
 }
