@@ -64,7 +64,19 @@ public class MessageCreateData implements SerializableData, AutoCloseable
     }
 
     @Nonnull
+    public static MessageCreateData fromEmbeds(@Nonnull MessageEmbed... embeds)
+    {
+        return new MessageCreateBuilder().setEmbeds(embeds).build();
+    }
+
+    @Nonnull
     public static MessageCreateData fromFiles(@Nonnull Collection<? extends FileUpload> files)
+    {
+        return new MessageCreateBuilder().setFiles(files).build();
+    }
+
+    @Nonnull
+    public static MessageCreateData fromFiles(@Nonnull FileUpload... files)
     {
         return new MessageCreateBuilder().setFiles(files).build();
     }

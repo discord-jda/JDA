@@ -69,7 +69,19 @@ public class MessageEditData implements SerializableData, AutoCloseable
     }
 
     @Nonnull
+    public static MessageEditData fromEmbeds(@Nonnull MessageEmbed... embeds)
+    {
+        return new MessageEditBuilder().setEmbeds(embeds).build();
+    }
+
+    @Nonnull
     public static MessageEditData fromFiles(@Nonnull Collection<? extends FileUpload> files)
+    {
+        return new MessageEditBuilder().setFiles(files).build();
+    }
+
+    @Nonnull
+    public static MessageEditData fromFiles(@Nonnull FileUpload... files)
     {
         return new MessageEditBuilder().setFiles(files).build();
     }
