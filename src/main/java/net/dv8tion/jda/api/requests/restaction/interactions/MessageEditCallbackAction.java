@@ -17,30 +17,16 @@
 package net.dv8tion.jda.api.requests.restaction.interactions;
 
 import net.dv8tion.jda.api.interactions.InteractionHook;
+import net.dv8tion.jda.api.requests.FluentRestAction;
 import net.dv8tion.jda.api.utils.messages.MessageEditRequest;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.concurrent.TimeUnit;
-import java.util.function.BooleanSupplier;
 
 /**
  * A {@link InteractionCallbackAction} which can be used to edit the message for an interaction.
  */
-public interface MessageEditCallbackAction extends InteractionCallbackAction<InteractionHook>, MessageEditRequest<MessageEditCallbackAction>
+public interface MessageEditCallbackAction extends InteractionCallbackAction<InteractionHook>, MessageEditRequest<MessageEditCallbackAction>, FluentRestAction<InteractionHook, MessageEditCallbackAction>
 {
-    @Nonnull
-    @Override
-    MessageEditCallbackAction setCheck(@Nullable BooleanSupplier checks);
-
-    @Nonnull
-    @Override
-    MessageEditCallbackAction timeout(long timeout, @Nonnull TimeUnit unit);
-
-    @Nonnull
-    @Override
-    MessageEditCallbackAction deadline(long timestamp);
-
     @Nonnull
     @Override
     MessageEditCallbackAction closeResources();

@@ -29,7 +29,9 @@ import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.message.MessageEditBuilderMixin;
 import okhttp3.RequestBody;
 
+import javax.annotation.Nonnull;
 import java.util.List;
+import java.util.function.BooleanSupplier;
 import java.util.function.Function;
 
 public class WebhookMessageEditActionImpl<T>
@@ -75,5 +77,19 @@ public class WebhookMessageEditActionImpl<T>
     {
         T message = transformer.apply(response.getObject());
         request.onSuccess(message);
+    }
+
+    @Nonnull
+    @Override
+    public WebhookMessageEditAction<T> setCheck(BooleanSupplier checks)
+    {
+        return (WebhookMessageEditAction<T>) super.setCheck(checks);
+    }
+
+    @Nonnull
+    @Override
+    public WebhookMessageEditAction<T> deadline(long timestamp)
+    {
+        return (WebhookMessageEditAction<T>) super.deadline(timestamp);
     }
 }

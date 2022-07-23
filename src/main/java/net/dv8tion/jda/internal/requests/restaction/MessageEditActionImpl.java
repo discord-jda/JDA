@@ -32,7 +32,9 @@ import net.dv8tion.jda.internal.utils.IOUtil;
 import net.dv8tion.jda.internal.utils.message.MessageEditBuilderMixin;
 import okhttp3.RequestBody;
 
+import javax.annotation.Nonnull;
 import java.util.List;
+import java.util.function.BooleanSupplier;
 
 public class MessageEditActionImpl extends RestActionImpl<Message> implements MessageEditAction, MessageEditBuilderMixin<MessageEditAction>
 {
@@ -76,5 +78,19 @@ public class MessageEditActionImpl extends RestActionImpl<Message> implements Me
     protected void handleSuccess(Response response, Request<Message> request)
     {
         api.getEntityBuilder().createMessageWithChannel(response.getObject(), channel, false);
+    }
+
+    @Nonnull
+    @Override
+    public MessageEditAction setCheck(BooleanSupplier checks)
+    {
+        return (MessageEditAction) super.setCheck(checks);
+    }
+
+    @Nonnull
+    @Override
+    public MessageEditAction deadline(long timestamp)
+    {
+        return (MessageEditAction) super.deadline(timestamp);
     }
 }

@@ -20,7 +20,7 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.sticker.GuildSticker;
 import net.dv8tion.jda.api.entities.sticker.Sticker;
 import net.dv8tion.jda.api.entities.sticker.StickerSnowflake;
-import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.api.requests.FluentRestAction;
 import net.dv8tion.jda.api.utils.messages.MessageCreateRequest;
 import net.dv8tion.jda.internal.requests.restaction.MessageCreateActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -30,10 +30,8 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.concurrent.TimeUnit;
-import java.util.function.BooleanSupplier;
 
-public interface MessageCreateAction extends MessageCreateRequest<MessageCreateAction>, RestAction<Message>
+public interface MessageCreateAction extends MessageCreateRequest<MessageCreateAction>, FluentRestAction<Message, MessageCreateAction>
 {
     /**
      * Sets the default value for {@link #failOnInvalidReply(boolean)}
@@ -46,31 +44,6 @@ public interface MessageCreateAction extends MessageCreateRequest<MessageCreateA
     static void setDefaultFailOnInvalidReply(boolean fail)
     {
         MessageCreateActionImpl.setDefaultFailOnInvalidReply(fail);
-    }
-
-    @Nonnull
-    @Override
-    MessageCreateAction setCheck(@Nullable BooleanSupplier checks);
-
-    @Nonnull
-    @Override
-    default MessageCreateAction addCheck(@Nonnull BooleanSupplier checks)
-    {
-        return (MessageCreateAction) RestAction.super.addCheck(checks);
-    }
-
-    @Nonnull
-    @Override
-    default MessageCreateAction timeout(long timeout, @Nonnull TimeUnit unit)
-    {
-        return (MessageCreateAction) RestAction.super.timeout(timeout, unit);
-    }
-
-    @Nonnull
-    @Override
-    default MessageCreateAction deadline(long timestamp)
-    {
-        return (MessageCreateAction) RestAction.super.deadline(timestamp);
     }
 
     @Nonnull

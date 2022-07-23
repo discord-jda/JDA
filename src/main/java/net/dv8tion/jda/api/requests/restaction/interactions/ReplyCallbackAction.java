@@ -17,6 +17,7 @@
 package net.dv8tion.jda.api.requests.restaction.interactions;
 
 import net.dv8tion.jda.api.interactions.InteractionHook;
+import net.dv8tion.jda.api.requests.FluentRestAction;
 import net.dv8tion.jda.api.utils.messages.MessageCreateRequest;
 
 import javax.annotation.CheckReturnValue;
@@ -29,7 +30,7 @@ import java.util.function.BooleanSupplier;
  * A {@link InteractionCallbackAction} which can be used to send a message reply for an interaction.
  * <br>You can use {@link #setEphemeral(boolean)} to hide this message from other users.
  */
-public interface ReplyCallbackAction extends InteractionCallbackAction<InteractionHook>, MessageCreateRequest<ReplyCallbackAction>
+public interface ReplyCallbackAction extends InteractionCallbackAction<InteractionHook>, MessageCreateRequest<ReplyCallbackAction>, FluentRestAction<InteractionHook, ReplyCallbackAction>
 {
     @Nonnull
     @Override

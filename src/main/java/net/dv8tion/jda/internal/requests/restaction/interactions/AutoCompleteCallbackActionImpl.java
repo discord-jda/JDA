@@ -31,6 +31,7 @@ import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.function.BooleanSupplier;
 
 public class AutoCompleteCallbackActionImpl extends InteractionCallbackImpl<Void> implements AutoCompleteCallbackAction
 {
@@ -106,5 +107,19 @@ public class AutoCompleteCallbackActionImpl extends InteractionCallbackImpl<Void
         return getRequestBody(DataObject.empty()
                 .put("type", ResponseType.COMMAND_AUTOCOMPLETE_CHOICES.getRaw())
                 .put("data", data));
+    }
+
+    @Nonnull
+    @Override
+    public AutoCompleteCallbackAction setCheck(BooleanSupplier checks)
+    {
+        return (AutoCompleteCallbackAction) super.setCheck(checks);
+    }
+
+    @Nonnull
+    @Override
+    public AutoCompleteCallbackAction deadline(long timestamp)
+    {
+        return (AutoCompleteCallbackAction) super.deadline(timestamp);
     }
 }

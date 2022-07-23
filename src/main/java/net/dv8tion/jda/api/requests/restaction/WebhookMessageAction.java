@@ -16,7 +16,7 @@
 
 package net.dv8tion.jda.api.requests.restaction;
 
-import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.api.requests.FluentRestAction;
 import net.dv8tion.jda.api.utils.messages.MessageCreateRequest;
 
 import javax.annotation.CheckReturnValue;
@@ -36,7 +36,7 @@ import javax.annotation.Nonnull;
  * @see    net.dv8tion.jda.api.entities.WebhookClient#sendMessage(String)
  */
 // TODO: WebhookMessage type (no channel/guild attached)
-public interface WebhookMessageAction<T> extends RestAction<T>, MessageCreateRequest<WebhookMessageAction<T>>
+public interface WebhookMessageAction<T> extends MessageCreateRequest<WebhookMessageAction<T>>, FluentRestAction<T, WebhookMessageAction<T>>
 {
 //    /**
 //     * Set the apparent username for the message author.

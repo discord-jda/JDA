@@ -29,9 +29,12 @@ import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.message.MessageCreateBuilderMixin;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.List;
+import java.util.function.BooleanSupplier;
 import java.util.function.Function;
 
 public class WebhookMessageActionImpl<T>
@@ -93,5 +96,19 @@ public class WebhookMessageActionImpl<T>
     {
         T message = transformer.apply(response.getObject());
         request.onSuccess(message);
+    }
+
+    @Nonnull
+    @Override
+    public WebhookMessageAction<T> setCheck(@Nullable BooleanSupplier checks)
+    {
+        return (WebhookMessageAction<T>) super.setCheck(checks);
+    }
+
+    @NotNull
+    @Override
+    public WebhookMessageAction<T> deadline(long timestamp)
+    {
+        return (WebhookMessageAction<T>) super.deadline(timestamp);
     }
 }
