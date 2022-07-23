@@ -77,4 +77,11 @@ public class BufferedRequestBody extends RequestBody
             }
         }
     }
+
+    @Override
+    @SuppressWarnings("deprecation")
+    protected void finalize()
+    {
+        IOUtil.silentClose(source);
+    }
 }
