@@ -24,7 +24,6 @@ import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
-import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import net.dv8tion.jda.api.requests.restaction.MessageCreateAction;
 import net.dv8tion.jda.api.requests.restaction.MessageEditAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.MessagePaginationAction;
@@ -1815,7 +1814,7 @@ public interface MessageChannel extends Channel, Formattable
      *         If this is a {@link net.dv8tion.jda.api.entities.GuildMessageChannel GuildMessageChannel} and this account does not have
      *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
      *
-     * @return {@link MessageAction MessageAction}
+     * @return {@link MessageEditAction MessageEditAction}
      *         <br>The modified Message after it has been sent to Discord.
      */
     @Nonnull
@@ -1866,7 +1865,7 @@ public interface MessageChannel extends Channel, Formattable
      *         If this is a {@link net.dv8tion.jda.api.entities.GuildMessageChannel GuildMessageChannel} and this account does not have
      *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
      *
-     * @return {@link MessageAction MessageAction}
+     * @return {@link MessageEditAction MessageEditAction}
      *         <br>The modified Message after it has been sent to Discord.
      */
     @Nonnull
@@ -1915,7 +1914,7 @@ public interface MessageChannel extends Channel, Formattable
      *         If this is a {@link net.dv8tion.jda.api.entities.GuildMessageChannel GuildMessageChannel} and this account does not have
      *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
      *
-     * @return {@link MessageAction MessageAction}
+     * @return {@link MessageEditAction MessageEditAction}
      *         <br>The modified Message after it has been sent to discord
      */
     @Nonnull
@@ -1978,7 +1977,6 @@ public interface MessageChannel extends Channel, Formattable
 
     /**
      * Attempts to edit a message by its id in this MessageChannel.
-     * <br>Shortcut for {@link net.dv8tion.jda.api.MessageBuilder#appendFormat(String, Object...)}.
      *
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
@@ -2024,7 +2022,7 @@ public interface MessageChannel extends Channel, Formattable
      *         see the <a href="../util/Formatter.html#detail">Details</a>
      *         section of the formatter class specification.
      *
-     * @return {@link MessageAction MessageAction}
+     * @return {@link MessageEditAction MessageEditAction}
      *         <br>The modified Message after it has been sent to discord
      */
     @Nonnull
@@ -2037,7 +2035,6 @@ public interface MessageChannel extends Channel, Formattable
 
     /**
      * Attempts to edit a message by its id in this MessageChannel.
-     * <br>Shortcut for {@link net.dv8tion.jda.api.MessageBuilder#appendFormat(String, Object...)}.
      *
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
@@ -2083,7 +2080,7 @@ public interface MessageChannel extends Channel, Formattable
      *         see the <a href="../util/Formatter.html#detail">Details</a>
      *         section of the formatter class specification.
      *
-     * @return {@link MessageAction MessageAction}
+     * @return {@link MessageEditAction MessageEditAction}
      *         <br>The modified Message after it has been sent to discord
      */
     @Nonnull
@@ -2132,7 +2129,7 @@ public interface MessageChannel extends Channel, Formattable
      *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
      *         or {@link net.dv8tion.jda.api.Permission#MESSAGE_SEND Permission.MESSAGE_SEND}
      *
-     * @return {@link MessageAction MessageAction}
+     * @return {@link MessageEditAction MessageEditAction}
      *         <br>The modified Message after it has been sent to discord
      */
     @Nonnull
@@ -2181,7 +2178,7 @@ public interface MessageChannel extends Channel, Formattable
      *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
      *         or {@link net.dv8tion.jda.api.Permission#MESSAGE_SEND Permission.MESSAGE_SEND}
      *
-     * @return {@link MessageAction MessageAction}
+     * @return {@link MessageEditAction MessageEditAction}
      *         <br>The modified Message after it has been sent to discord
      */
     @Nonnull
@@ -2229,7 +2226,7 @@ public interface MessageChannel extends Channel, Formattable
      *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
      *         or {@link net.dv8tion.jda.api.Permission#MESSAGE_SEND Permission.MESSAGE_SEND}
      *
-     * @return {@link MessageAction MessageAction}
+     * @return {@link MessageEditAction MessageEditAction}
      *         <br>The modified Message after it has been sent to discord
      */
     @Nonnull
@@ -2278,7 +2275,7 @@ public interface MessageChannel extends Channel, Formattable
      *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
      *         or {@link net.dv8tion.jda.api.Permission#MESSAGE_SEND Permission.MESSAGE_SEND}
      *
-     * @return {@link MessageAction MessageAction}
+     * @return {@link MessageEditAction MessageEditAction}
      *         <br>The modified Message after it has been sent to discord
      */
     @Nonnull
@@ -2339,7 +2336,7 @@ public interface MessageChannel extends Channel, Formattable
      *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
      *         or {@link net.dv8tion.jda.api.Permission#MESSAGE_SEND Permission.MESSAGE_SEND}
      *
-     * @return {@link MessageAction MessageAction}
+     * @return {@link MessageEditAction MessageEditAction}
      *         <br>The modified Message after it has been sent to discord
      */
     @Nonnull
@@ -2402,7 +2399,7 @@ public interface MessageChannel extends Channel, Formattable
      *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
      *         or {@link net.dv8tion.jda.api.Permission#MESSAGE_SEND Permission.MESSAGE_SEND}
      *
-     * @return {@link MessageAction MessageAction}
+     * @return {@link MessageEditAction MessageEditAction}
      *         <br>The modified Message after it has been sent to discord
      */
     @Nonnull
@@ -2462,7 +2459,7 @@ public interface MessageChannel extends Channel, Formattable
      *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
      *         or {@link net.dv8tion.jda.api.Permission#MESSAGE_SEND Permission.MESSAGE_SEND}
      *
-     * @return {@link MessageAction MessageAction}
+     * @return {@link MessageEditAction MessageEditAction}
      *         <br>The modified Message after it has been sent to discord
      */
     @Nonnull
@@ -2520,7 +2517,7 @@ public interface MessageChannel extends Channel, Formattable
      *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
      *         or {@link net.dv8tion.jda.api.Permission#MESSAGE_SEND Permission.MESSAGE_SEND}
      *
-     * @return {@link MessageAction MessageAction}
+     * @return {@link MessageEditAction MessageEditAction}
      *         <br>The modified Message after it has been sent to discord
      */
     @Nonnull

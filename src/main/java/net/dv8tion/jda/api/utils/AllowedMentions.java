@@ -100,7 +100,7 @@ public interface AllowedMentions<R>
 
     /**
      * Whether to mention the used, when replying to a message.
-     * <br>This only matters in combination with {@link net.dv8tion.jda.api.requests.restaction.MessageAction#reference(Message)} and {@link net.dv8tion.jda.api.requests.restaction.MessageAction#referenceById(long)}!
+     * <br>This only matters in combination with {@link net.dv8tion.jda.api.requests.restaction.MessageCreateAction#setMessageReference(Message) MessageCreateAction.setMessageReference(...)}!
      *
      * <p>This is true by default but can be configured using {@link #setDefaultMentionRepliedUser(boolean)}!
      *

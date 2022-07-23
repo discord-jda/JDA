@@ -352,17 +352,17 @@ public interface InteractionHook extends WebhookClient<Message>
 
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageEditAction<Message> editOriginalAttachmentsById(@Nonnull Collection<? extends AttachedFile> attachments)
+    default WebhookMessageEditAction<Message> editOriginalAttachments(@Nonnull Collection<? extends AttachedFile> attachments)
     {
         return editMessageAttachmentsById("@original", attachments);
     }
 
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageEditAction<Message> editOriginalAttachmentsById(@Nonnull AttachedFile... attachments)
+    default WebhookMessageEditAction<Message> editOriginalAttachments(@Nonnull AttachedFile... attachments)
     {
         Checks.noneNull(attachments, "Attachments");
-        return editOriginalAttachmentsById(Arrays.asList(attachments));
+        return editOriginalAttachments(Arrays.asList(attachments));
     }
 
 
