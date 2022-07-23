@@ -267,7 +267,7 @@ public class FileUpload implements Closeable, AttachedFile
      * @return The same FileUpload instance with the new description
      */
     @Nonnull
-    public FileUpload withDescription(@Nullable String description)
+    public FileUpload setDescription(@Nullable String description)
     {
         if (description != null)
             Checks.notLonger(description = description.trim(), 1024, "Description");
