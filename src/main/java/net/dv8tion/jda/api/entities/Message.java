@@ -432,8 +432,6 @@ public interface Message extends ISnowflake, Formattable
     /**
      * Used to determine if this Message was received from a {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel}
      * of the {@link net.dv8tion.jda.api.entities.ChannelType ChannelType} specified.
-     * <br>This will always be false for {@link net.dv8tion.jda.api.entities.ChannelType#VOICE} as Messages can't be sent to
-     * {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels}.
      *
      * <p>Useful for restricting functionality to a certain type of channels.
      *
@@ -458,8 +456,6 @@ public interface Message extends ISnowflake, Formattable
 
     /**
      * Gets the {@link net.dv8tion.jda.api.entities.ChannelType ChannelType} that this message was received from.
-     * <br>This will never be {@link net.dv8tion.jda.api.entities.ChannelType#VOICE} as Messages can't be sent to
-     * {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels}.
      *
      * @return The ChannelType which this message was received from.
      */
