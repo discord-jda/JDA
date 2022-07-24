@@ -106,7 +106,7 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
     @Nonnull
     default R addEmbeds(@Nonnull MessageEmbed... embeds)
     {
-        return setEmbeds(Arrays.asList(embeds));
+        return addEmbeds(Arrays.asList(embeds));
     }
 
     /**
@@ -167,7 +167,7 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
     @Nonnull
     default R addComponents(@Nonnull LayoutComponent... components)
     {
-        return setComponents(Arrays.asList(components));
+        return addComponents(Arrays.asList(components));
     }
 
     /**
@@ -200,7 +200,7 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
     @Nonnull
     default R addActionRow(@Nonnull Collection<? extends ItemComponent> components)
     {
-        return setComponents(ActionRow.of(components));
+        return addComponents(ActionRow.of(components));
     }
 
     /**
@@ -233,7 +233,7 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
     @Nonnull
     default R addActionRow(@Nonnull ItemComponent... components)
     {
-        return setComponents(ActionRow.of(components));
+        return addComponents(ActionRow.of(components));
     }
 
     /**
