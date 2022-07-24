@@ -60,8 +60,14 @@ public class ReplyCallbackActionImpl extends DeferrableCallbackActionImpl implem
     protected RequestBody finalizeData()
     {
         DataObject json = DataObject.empty();
-        if (isEmpty())
-            return getRequestBody(json.put("type", ResponseType.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE.getRaw()));
+        if (builder.isEmpty())
+        {
+            json.put("type", ResponseType.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE.getRaw());
+            if (flags != 0)
+                json.put("data", DataObject.empty().put("flags", flags));
+            return getRequestBody(json);
+        }
+
         json.put("type", ResponseType.CHANNEL_MESSAGE_WITH_SOURCE.getRaw());
         MessageCreateData data = builder.build();
         try
@@ -80,13 +86,6 @@ public class ReplyCallbackActionImpl extends DeferrableCallbackActionImpl implem
             data.close();
             throw e;
         }
-    }
-
-    private boolean isEmpty()
-    {
-        //Intentionally does not check components.isEmpty() here
-        // You cannot send a message with only components at this time.
-        return builder.isEmpty();
     }
 
     @Nonnull
