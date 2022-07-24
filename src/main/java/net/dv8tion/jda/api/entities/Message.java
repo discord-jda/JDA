@@ -41,8 +41,10 @@ import net.dv8tion.jda.api.requests.restaction.MessageCreateAction;
 import net.dv8tion.jda.api.requests.restaction.MessageEditAction;
 import net.dv8tion.jda.api.requests.restaction.ThreadChannelAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationAction;
+import net.dv8tion.jda.api.utils.AttachedFile;
 import net.dv8tion.jda.api.utils.AttachmentProxy;
 import net.dv8tion.jda.api.utils.FileUpload;
+import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 import net.dv8tion.jda.api.utils.messages.MessageEditData;
 import net.dv8tion.jda.api.utils.messages.MessageRequest;
@@ -52,6 +54,7 @@ import net.dv8tion.jda.internal.requests.FunctionalCallback;
 import net.dv8tion.jda.internal.requests.Requester;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.IOUtil;
+import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 
@@ -1589,7 +1592,7 @@ public interface Message extends ISnowflake, Formattable
     /**
      * Represents a {@link net.dv8tion.jda.api.entities.Message Message} file attachment.
      */
-    class Attachment implements ISnowflake
+    class Attachment implements ISnowflake, AttachedFile
     {
         private static final Set<String> IMAGE_EXTENSIONS = new HashSet<>(Arrays.asList("jpg",
                 "jpeg", "png", "gif", "webp", "tiff", "svg", "apng"));
@@ -2064,6 +2067,18 @@ public interface Message extends ISnowflake, Formattable
             return getFileName().startsWith("SPOILER_");
         }
 
+        @Override
+        public void close() {}
+
+        @Override
+        public void addPart(@Nonnull MultipartBody.Builder builder, int index) {}
+
+        @Nonnull
+        @Override
+        public DataObject toAttachmentData(int index)
+        {
+            return DataObject.empty().put("id", id);
+        }
     }
 
     /**

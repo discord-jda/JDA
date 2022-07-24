@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.ItemComponent;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.utils.FileUpload;
+import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -86,6 +87,7 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
     @Nonnull
     default R applyData(@Nonnull MessageCreateData data)
     {
+        Checks.notNull(data, "MessageCreateData");
         return setContent(data.getContent())
                 .setEmbeds(data.getEmbeds())
                 .setTTS(data.isTTS())
@@ -98,6 +100,8 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
     @Nonnull
     default R applyMessage(@Nonnull Message message)
     {
+        Checks.notNull(message, "Message");
+        Checks.check(!message.getType().isSystem(), "Cannot copy a system message");
         return setContent(message.getContentRaw())
                 .setEmbeds(message.getEmbeds())
                 .setTTS(message.isTTS())
@@ -108,6 +112,7 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
     @SuppressWarnings({"unchecked", "ResultOfMethodCallIgnored"})
     default R applyEditData(@Nonnull MessageEditData data)
     {
+        Checks.notNull(data, "MessageEditData");
         int flags = data.getFlags();
         if ((flags & MessageEditBuilder.CONTENT) != 0)
             setContent(data.getContent());

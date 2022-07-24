@@ -30,55 +30,312 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 public interface MessageRequest<R extends MessageRequest<R>> extends AllowedMentions<R>
 {
+    /**
+     * The message content, which shows above embeds and attachments.
+     *
+     * @param  content
+     *         The content (up to {@value Message#MAX_CONTENT_LENGTH} characters)
+     *
+     * @throws IllegalArgumentException
+     *         If the content is longer than {@value Message#MAX_CONTENT_LENGTH} characters
+     *
+     * @return The same instance for chaining
+     */
     @Nonnull
     R setContent(@Nullable String content);
 
+    /**
+     * The configured message content, this is the opposite for {@link #setContent(String)} and only returns what was set using that setter.
+     *
+     * <p>For message edit requests, this will not be the current content of the message.
+     *
+     * @return The currently configured content, or an empty string if none was set yet
+     *
+     * @see    #setContent(String)
+     */
     @Nonnull
     String getContent();
 
+    /**
+     * The {@link MessageEmbed MessageEmbeds} that should be attached to the message.
+     * <br>You can use {@link Collections#emptyList()} to remove all embeds from the message.
+     *
+     * <p>This requires {@link net.dv8tion.jda.api.Permission#MESSAGE_EMBED_LINKS Permission.MESSAGE_EMBED_LINKS} in the channel.
+     *
+     * @param  embeds
+     *         The embeds to attach to the message (up to {@value Message#MAX_EMBED_COUNT})
+     *
+     * @throws IllegalArgumentException
+     *         If null or more than {@value Message#MAX_EMBED_COUNT} embeds are provided
+     *
+     * @return The same instance for chaining
+     *
+     * @see    Collections#emptyList()
+     */
     @Nonnull
     R setEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds);
 
+    /**
+     * The {@link MessageEmbed MessageEmbeds} that should be attached to the message.
+     * <br>You can use {@code new MessageEmbed[0]} to remove all embeds from the message.
+     *
+     * <p>This requires {@link net.dv8tion.jda.api.Permission#MESSAGE_EMBED_LINKS Permission.MESSAGE_EMBED_LINKS} in the channel.
+     *
+     * @param  embeds
+     *         The embeds to attach to the message (up to {@value Message#MAX_EMBED_COUNT})
+     *
+     * @throws IllegalArgumentException
+     *         If null or more than {@value Message#MAX_EMBED_COUNT} embeds are provided
+     *
+     * @return The same instance for chaining
+     */
     @Nonnull
     default R setEmbeds(@Nonnull MessageEmbed... embeds)
     {
         return setEmbeds(Arrays.asList(embeds));
     }
 
+    /**
+     * The configured message embeds, this is the opposite of {@link #setEmbeds(Collection)} and only returns what was set using that setter.
+     *
+     * <p>For message edit requests, this will not be the current embeds of the message.
+     *
+     * @return The currently configured embeds, or an empty list if none were set yet
+     *
+     * @see    #setEmbeds(Collection)
+     */
     @Nonnull
     List<? extends MessageEmbed> getEmbeds();
 
+    /**
+     * The {@link LayoutComponent LayoutComponents} that should be attached to the message.
+     * <br>You can use {@link Collections#emptyList()} to remove all components from the message.
+     *
+     * <p>The most commonly used layout is {@link ActionRow}.
+     *
+     * <p><b>Example</b><br>
+     * <pre>{@code
+     * channel.sendMessage("Content is still required")
+     *   .setComponents(
+     *     ActionRow.of(selectMenu) // first row
+     *     ActionRow.of(button1, button2)) // second row (shows below the first)
+     *   .queue();
+     * }</pre>
+     *
+     * @param  components
+     *         The components for the message (up to {@value Message#MAX_COMPONENT_COUNT})
+     *
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If {@code null} is provided</li>
+     *             <li>If any component is not {@link LayoutComponent#isMessageCompatible() message compatible}</li>
+     *             <li>If more than {@value Message#MAX_COMPONENT_COUNT} components are provided</li>
+     *         </ul>
+     *
+     * @return The same instance for chaining
+     */
     @Nonnull
-    R setComponents(@Nonnull Collection<? extends LayoutComponent> layouts);
+    R setComponents(@Nonnull Collection<? extends LayoutComponent> components);
 
+    /**
+     * The {@link LayoutComponent LayoutComponents} that should be attached to the message.
+     * <br>You can use {@link Collections#emptyList()} to remove all components from the message.
+     *
+     * <p>The most commonly used layout is {@link ActionRow}.
+     *
+     * <p><b>Example</b><br>
+     * <pre>{@code
+     * channel.sendMessage("Content is still required")
+     *   .setComponents(
+     *     ActionRow.of(selectMenu) // first row
+     *     ActionRow.of(button1, button2)) // second row (shows below the first)
+     *   .queue();
+     * }</pre>
+     *
+     * @param  components
+     *         The components for the message (up to {@value Message#MAX_COMPONENT_COUNT})
+     *
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If {@code null} is provided</li>
+     *             <li>If any component is not {@link LayoutComponent#isMessageCompatible() message compatible}</li>
+     *             <li>If more than {@value Message#MAX_COMPONENT_COUNT} components are provided</li>
+     *         </ul>
+     *
+     * @return The same instance for chaining
+     */
     @Nonnull
     default R setComponents(@Nonnull LayoutComponent... components)
     {
         return setComponents(Arrays.asList(components));
     }
 
+    /**
+     * Convenience method to set the components of a message to a single {@link ActionRow} of components.
+     * <br>To remove components, you should use {@link #setComponents(LayoutComponent...)} instead.
+     *
+     * <p><b>Example</b><br>
+     *
+     * <pre>{@code
+     * channel.sendMessage("Content is still required")
+     *   .setActionRow(button1, button2)
+     *   .queue();
+     * }</pre>
+     *
+     * is equivalent to:
+     *
+     * <pre>{@code
+     * channel.sendMessage("Content is still required")
+     *   .setComponents(ActionRow.of(button1, button2))
+     *   .queue();
+     * }</pre><br>
+     *
+     * @param  components
+     *         The {@link ItemComponent ItemComponents} for the message (up to {@value Message#MAX_COMPONENT_COUNT})
+     *
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If {@code null} is provided</li>
+     *             <li>If any component is not {@link ItemComponent#isMessageCompatible() message compatible}</li>
+     *             <li>In all the same cases as {@link ActionRow#of(ItemComponent...)} throws an exception</li>
+     *         </ul>
+     *
+     * @return The same instance for chaining
+     */
     @Nonnull
     default R setActionRow(@Nonnull Collection<? extends ItemComponent> components)
     {
         return setComponents(ActionRow.of(components));
     }
 
+    /**
+     * Convenience method to set the components of a message to a single {@link ActionRow} of components.
+     * <br>To remove components, you should use {@link #setComponents(LayoutComponent...)} instead.
+     *
+     * <p><b>Example</b><br>
+     *
+     * <pre>{@code
+     * channel.sendMessage("Content is still required")
+     *   .setActionRow(button1, button2)
+     *   .queue();
+     * }</pre>
+     *
+     * is equivalent to:
+     *
+     * <pre>{@code
+     * channel.sendMessage("Content is still required")
+     *   .setComponents(ActionRow.of(button1, button2))
+     *   .queue();
+     * }</pre><br>
+     *
+     * @param  components
+     *         The {@link ItemComponent ItemComponents} for the message (up to {@value Message#MAX_COMPONENT_COUNT})
+     *
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If {@code null} is provided</li>
+     *             <li>If any component is not {@link ItemComponent#isMessageCompatible() message compatible}</li>
+     *             <li>In all the same cases as {@link ActionRow#of(ItemComponent...)} throws an exception</li>
+     *         </ul>
+     *
+     * @return The same instance for chaining
+     */
     @Nonnull
     default R setActionRow(@Nonnull ItemComponent... components)
     {
         return setComponents(ActionRow.of(components));
     }
 
+    /**
+     * The configured message components, this is the opposite of {@link #setComponents(Collection)} and only returns what was set using that setter.
+     *
+     * <p>For message edit requests, this will not be the current components of the message.
+     *
+     * @return The currently configured components, or an empty list if none were set yet
+     *
+     * @see    #setEmbeds(Collection)
+     */
     @Nonnull
     List<? extends LayoutComponent> getComponents();
 
+    /**
+     * The {@link FileUpload FileUploads} that should be attached to the message.
+     * <br>This will replace all the existing attachments on the message, if this is an edit request.
+     * You can use {@link MessageEditRequest#setAttachments(Collection)} to keep existing attachments, instead of this method.
+     *
+     * <p>Note that you are responsible to properly clean up your files, if the request is unsuccessful.
+     * The {@link FileUpload} class will try to close it when its collected as garbage, but that can take a long time to happen.
+     * You can always use {@link FileUpload#close()} and close it manually, however this should not be done until the request went through successfully.
+     * The library reads the underlying resource <em>just in time</em> for the request, and will keep it open until then.
+     *
+     * <p><b>Example</b><br>
+     * Create an embed with a custom image, uploaded alongside the message:
+     * <pre>{@code
+     * MessageEmbed embed = new EmbedBuilder()
+     *         .setDescription("Image of a cute cat")
+     *         .setImage("attachment://cat.png") // here "cat.png" is the name used in the FileUpload.fromData factory method
+     *         .build();
+     *
+     * // The name here will be "cat.png" to discord, what the file is called on your computer is irrelevant and only used to read the data of the image.
+     * FileUpload file = FileUpload.fromData(new File("mycat-final-copy.png"), "cat.png"); // Opens the file called "cat.png" and provides the data used for sending
+     *
+     * channel.sendMessageEmbeds(embed)
+     *        .setFiles(file)
+     *        .queue();
+     * }</pre>
+     *
+     * @param  files
+     *         The {@link FileUpload FileUploads} to attach to the message,
+     *         null or an empty list will set the attachments to an empty list and remove them from the message
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided inside the collection
+     *
+     * @return The same instance for chaining
+     */
     @Nonnull
     R setFiles(@Nullable Collection<? extends FileUpload> files);
 
+    /**
+     * The {@link FileUpload FileUploads} that should be attached to the message.
+     * <br>This will replace all the existing attachments on the message, if this is an edit request.
+     * You can use {@link MessageEditRequest#setAttachments(AttachedFile...)} to keep existing attachments, instead of this method.
+     *
+     * <p>Note that you are responsible to properly clean up your files, if the request is unsuccessful.
+     * The {@link FileUpload} class will try to close it when its collected as garbage, but that can take a long time to happen.
+     * You can always use {@link FileUpload#close()} and close it manually, however this should not be done until the request went through successfully.
+     * The library reads the underlying resource <em>just in time</em> for the request, and will keep it open until then.
+     *
+     * <p><b>Example</b><br>
+     * Create an embed with a custom image, uploaded alongside the message:
+     * <pre>{@code
+     * MessageEmbed embed = new EmbedBuilder()
+     *         .setDescription("Image of a cute cat")
+     *         .setImage("attachment://cat.png") // here "cat.png" is the name used in the FileUpload.fromData factory method
+     *         .build();
+     *
+     * // The name here will be "cat.png" to discord, what the file is called on your computer is irrelevant and only used to read the data of the image.
+     * FileUpload file = FileUpload.fromData(new File("mycat-final-copy.png"), "cat.png"); // Opens the file called "cat.png" and provides the data used for sending
+     *
+     * channel.sendMessageEmbeds(embed)
+     *        .setFiles(file)
+     *        .queue();
+     * }</pre>
+     *
+     * @param  files
+     *         The {@link FileUpload FileUploads} to attach to the message,
+     *         null or an empty list will set the attachments to an empty list and remove them from the message
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided
+     *
+     * @return The same instance for chaining
+     */
     @Nonnull
     default R setFiles(@Nonnull FileUpload... files)
     {
@@ -88,9 +345,32 @@ public interface MessageRequest<R extends MessageRequest<R>> extends AllowedMent
 
     // Returns attachment interface for abstraction purposes, however you can only abstract the setter to allow FileUploads
 
+    /**
+     * The configured message attachments as {@link AttachedFile}, this is the opposite of {@link #setFiles(Collection)} and only returns what was set using that setter.
+     *
+     * <p>For message edit requests, this will not be the current file attachments of the message.
+     *
+     * @return The currently configured attachments, or an empty list if none were set yet
+     *
+     * @see    #setFiles(Collection)
+     */
     @Nonnull
     List<? extends AttachedFile> getAttachments();
 
+    /**
+     * Applies all the data of the provided {@link Message} and attempts to copy it.
+     * <br>This cannot copy the file attachments of the message, they must be manually downloaded and provided to {@link #setFiles(FileUpload...)}.
+     *
+     * <p>For edit requests, this will set {@link MessageEditRequest#replace(boolean)} to {@code true}, and replace the existing message completely.
+     *
+     * @param  message
+     *         The message to copy the data from
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided or the message is a system message
+     *
+     * @return The same instance for chaining
+     */
     @Nonnull
     R applyMessage(@Nonnull Message message);
 }

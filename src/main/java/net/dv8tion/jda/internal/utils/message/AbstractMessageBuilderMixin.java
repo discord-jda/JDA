@@ -67,9 +67,9 @@ public interface AbstractMessageBuilderMixin<R extends MessageRequest<R>, B exte
 
     @Nonnull
     @Override
-    default R setComponents(@Nonnull Collection<? extends LayoutComponent> layouts)
+    default R setComponents(@Nonnull Collection<? extends LayoutComponent> components)
     {
-        getBuilder().setComponents(layouts);
+        getBuilder().setComponents(components);
         return (R) this;
     }
 

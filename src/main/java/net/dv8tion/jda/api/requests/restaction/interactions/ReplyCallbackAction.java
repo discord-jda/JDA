@@ -22,9 +22,6 @@ import net.dv8tion.jda.api.utils.messages.MessageCreateRequest;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.concurrent.TimeUnit;
-import java.util.function.BooleanSupplier;
 
 /**
  * A {@link InteractionCallbackAction} which can be used to send a message reply for an interaction.
@@ -32,18 +29,6 @@ import java.util.function.BooleanSupplier;
  */
 public interface ReplyCallbackAction extends InteractionCallbackAction<InteractionHook>, MessageCreateRequest<ReplyCallbackAction>, FluentRestAction<InteractionHook, ReplyCallbackAction>
 {
-    @Nonnull
-    @Override
-    ReplyCallbackAction setCheck(@Nullable BooleanSupplier checks);
-
-    @Nonnull
-    @Override
-    ReplyCallbackAction timeout(long timeout, @Nonnull TimeUnit unit);
-
-    @Nonnull
-    @Override
-    ReplyCallbackAction deadline(long timestamp);
-
     @Nonnull
     @Override
     ReplyCallbackAction closeResources();

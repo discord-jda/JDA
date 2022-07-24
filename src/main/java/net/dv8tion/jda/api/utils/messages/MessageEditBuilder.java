@@ -128,13 +128,6 @@ public class MessageEditBuilder extends AbstractMessageBuilder<MessageEditData, 
 
     @Nonnull
     @Override
-    public MessageEditBuilder setFiles(@Nullable Collection<? extends FileUpload> files)
-    {
-        return setAttachments(files);
-    }
-
-    @Nonnull
-    @Override
     public List<? extends AttachedFile> getAttachments()
     {
         return Collections.unmodifiableList(attachments);
