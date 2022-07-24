@@ -90,7 +90,7 @@ public class MessageCreateBuilder extends AbstractMessageBuilder<MessageCreateDa
     }
 
     /**
-     * Factory method to start a builder from an existing instance of {@link MessageCreateData}.
+     * Factory method to start a builder from an existing instance of {@link Message}.
      * <br>Equivalent to {@code new MessageCreateBuilder().applyMessage(data)}.
      *
      * <p>This cannot copy the file attachments of the message, they must be manually downloaded and provided to {@link #setFiles(FileUpload...)}.
