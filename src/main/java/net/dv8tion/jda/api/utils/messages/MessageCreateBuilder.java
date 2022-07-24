@@ -85,16 +85,16 @@ public class MessageCreateBuilder extends AbstractMessageBuilder<MessageCreateDa
 
     @Nonnull
     @Override
-    public MessageCreateBuilder addComponents(@Nonnull Collection<? extends LayoutComponent> layouts)
+    public MessageCreateBuilder addComponents(@Nonnull Collection<? extends LayoutComponent> components)
     {
-        Checks.noneNull(layouts, "ComponentLayouts");
-        for (LayoutComponent layout : layouts)
+        Checks.noneNull(components, "ComponentLayouts");
+        for (LayoutComponent layout : components)
             Checks.check(layout.isMessageCompatible(), "Provided component layout is invalid for messages!");
         Checks.check(
-            this.components.size() + layouts.size() <= Message.MAX_COMPONENT_COUNT,
+                this.components.size() + components.size() <= Message.MAX_COMPONENT_COUNT,
             "Cannot add more than %d component layouts", Message.MAX_COMPONENT_COUNT
         );
-        this.components.addAll(layouts);
+        this.components.addAll(components);
         return this;
     }
 

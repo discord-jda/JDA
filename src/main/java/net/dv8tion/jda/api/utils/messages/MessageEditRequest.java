@@ -23,6 +23,7 @@ import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -66,6 +67,8 @@ public interface MessageEditRequest<R extends MessageEditRequest<R>> extends Mes
      * @return The same instance for chaining
      *
      * @see    Collections#emptyList()
+     * @see    AttachedFile#fromAttachment(String)
+     * @see    AttachedFile#fromData(InputStream, String)
      */
     @Nonnull
     R setAttachments(@Nullable Collection<? extends AttachedFile> attachments);
@@ -105,6 +108,9 @@ public interface MessageEditRequest<R extends MessageEditRequest<R>> extends Mes
      *         If null is provided
      *
      * @return The same instance for chaining
+     *
+     * @see    AttachedFile#fromAttachment(String)
+     * @see    AttachedFile#fromData(InputStream, String)
      */
     @Nonnull
     default R setAttachments(@Nonnull AttachedFile... attachments)

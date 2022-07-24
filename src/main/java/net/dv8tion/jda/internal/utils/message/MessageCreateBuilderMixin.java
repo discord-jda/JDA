@@ -48,9 +48,9 @@ public interface MessageCreateBuilderMixin<R extends MessageCreateRequest<R>> ex
 
     @Nonnull
     @Override
-    default R addComponents(@Nonnull Collection<? extends LayoutComponent> layouts)
+    default R addComponents(@Nonnull Collection<? extends LayoutComponent> components)
     {
-        getBuilder().addComponents(layouts);
+        getBuilder().addComponents(components);
         return (R) this;
     }
 
