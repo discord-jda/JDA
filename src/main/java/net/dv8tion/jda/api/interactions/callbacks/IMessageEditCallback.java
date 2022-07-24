@@ -109,7 +109,7 @@ public interface IMessageEditCallback extends IDeferrableCallback
      *         The new message content to use
      *
      * @throws IllegalArgumentException
-     *         If the provided content is null
+     *         If the provided content is null or longer than {@value Message#MAX_CONTENT_LENGTH} characters
      *
      * @return {@link MessageEditCallbackAction} that can be used to further update the message
      */
@@ -137,6 +137,7 @@ public interface IMessageEditCallback extends IDeferrableCallback
      *         <ul>
      *             <li>If any of the provided LayoutComponents is null</li>
      *             <li>If any of the provided Components are not compatible with messages</li>
+     *             <li>If more than {@value Message#MAX_COMPONENT_COUNT} component layouts are provided</li>
      *         </ul>
      *
      * @return {@link MessageEditCallbackAction} that can be used to further update the message
@@ -170,6 +171,7 @@ public interface IMessageEditCallback extends IDeferrableCallback
      *         <ul>
      *             <li>If any of the provided LayoutComponents are null</li>
      *             <li>If any of the provided Components are not compatible with messages</li>
+     *             <li>If more than {@value Message#MAX_COMPONENT_COUNT} component layouts are provided</li>
      *         </ul>
      *
      * @return {@link MessageEditCallbackAction} that can be used to further update the message
@@ -197,7 +199,7 @@ public interface IMessageEditCallback extends IDeferrableCallback
      *         The new {@link MessageEmbed MessageEmbeds}
      *
      * @throws IllegalArgumentException
-     *         If any of the provided embeds is null
+     *         If null or more than {@value Message#MAX_EMBED_COUNT} embeds are provided
      *
      * @return {@link MessageEditCallbackAction} that can be used to further update the message
      */
@@ -222,7 +224,7 @@ public interface IMessageEditCallback extends IDeferrableCallback
      *         The new message embeds to include in the message
      *
      * @throws IllegalArgumentException
-     *         If any of the provided embeds is null
+     *         If null or more than {@value Message#MAX_EMBED_COUNT} embeds are provided
      *
      * @return {@link MessageEditCallbackAction} that can be used to further update the message
      */
@@ -270,20 +272,58 @@ public interface IMessageEditCallback extends IDeferrableCallback
      * <p><b>You only have 3 seconds to acknowledge an interaction!</b>
      * <br>When the acknowledgement is sent after the interaction expired, you will receive {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_INTERACTION ErrorResponse.UNKNOWN_INTERACTION}.
      *
+     * <p>Note that you are responsible to properly clean up your files, if the request is unsuccessful.
+     * The {@link FileUpload} class will try to close it when its collected as garbage, but that can take a long time to happen.
+     * You can always use {@link FileUpload#close()} and close it manually, however this should not be done until the request went through successfully.
+     * The library reads the underlying resource <em>just in time</em> for the request, and will keep it open until then.
+     *
      * @param  attachments
      *         The new attachments of the message (Can be {@link FileUpload FileUploads} or {@link net.dv8tion.jda.api.utils.AttachmentUpdate AttachmentUpdates})
      *
      * @throws IllegalArgumentException
-     *         If any of the provided files is null
+     *         If null is provided
      *
      * @return {@link MessageEditCallbackAction} that can be used to further update the message
-     * 
-     * @see    AttachedFile#fromAttachment(Message.Attachment) 
+     *
+     * @see    AttachedFile#fromAttachment(Message.Attachment)
      * @see    FileUpload#fromData(InputStream, String)
      */
     @Nonnull
     @CheckReturnValue
     default MessageEditCallbackAction editMessageAttachments(@Nonnull Collection<? extends AttachedFile> attachments)
+    {
+        Checks.noneNull(attachments, "Attachments");
+        return deferEdit().setAttachments(attachments);
+    }
+
+    /**
+     * Acknowledgement of this interaction with a message update.
+     * <br>You can use {@link #getHook()} to edit the message further.
+     *
+     * <p><b>You can only use deferEdit() or editMessage() once per interaction!</b> Use {@link #getHook()} for any additional updates.
+     *
+     * <p><b>You only have 3 seconds to acknowledge an interaction!</b>
+     * <br>When the acknowledgement is sent after the interaction expired, you will receive {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_INTERACTION ErrorResponse.UNKNOWN_INTERACTION}.
+     *
+     * <p>Note that you are responsible to properly clean up your files, if the request is unsuccessful.
+     * The {@link FileUpload} class will try to close it when its collected as garbage, but that can take a long time to happen.
+     * You can always use {@link FileUpload#close()} and close it manually, however this should not be done until the request went through successfully.
+     * The library reads the underlying resource <em>just in time</em> for the request, and will keep it open until then.
+     *
+     * @param  attachments
+     *         The new attachments of the message (Can be {@link FileUpload FileUploads} or {@link net.dv8tion.jda.api.utils.AttachmentUpdate AttachmentUpdates})
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided
+     *
+     * @return {@link MessageEditCallbackAction} that can be used to further update the message
+     *
+     * @see    AttachedFile#fromAttachment(Message.Attachment)
+     * @see    FileUpload#fromData(InputStream, String)
+     */
+    @Nonnull
+    @CheckReturnValue
+    default MessageEditCallbackAction editMessageAttachments(@Nonnull AttachedFile... attachments)
     {
         Checks.noneNull(attachments, "Attachments");
         return deferEdit().setAttachments(attachments);

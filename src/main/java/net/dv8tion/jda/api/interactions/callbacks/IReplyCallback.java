@@ -27,6 +27,7 @@ import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
+import java.io.InputStream;
 import java.util.Collection;
 
 /**
@@ -108,12 +109,14 @@ public interface IReplyCallback extends IDeferrableCallback
      * <p>If your handling can take longer than 3 seconds, due to various rate limits or other conditions, you should use {@link #deferReply()} instead.
      *
      * @param  message
-     *         The message to send
+     *         The {@link MessageCreateData} to send
      *
      * @throws IllegalArgumentException
      *         If null is provided
      *
      * @return {@link ReplyCallbackAction}
+     *
+     * @see    net.dv8tion.jda.api.utils.messages.MessageCreateBuilder MessageCreateBuilder
      */
     @Nonnull
     @CheckReturnValue
@@ -138,7 +141,7 @@ public interface IReplyCallback extends IDeferrableCallback
      *         The message content to send
      *
      * @throws IllegalArgumentException
-     *         If null is provided or the content is empty or longer than {@link Message#MAX_CONTENT_LENGTH}
+     *         If null is provided or the content is longer than {@link Message#MAX_CONTENT_LENGTH} characters
      *
      * @return {@link ReplyCallbackAction}
      */
@@ -280,7 +283,7 @@ public interface IReplyCallback extends IDeferrableCallback
      *         Format arguments for the content
      *
      * @throws IllegalArgumentException
-     *         If the format string is null or the resulting content is longer than {@link Message#MAX_CONTENT_LENGTH}
+     *         If the format string is null or the resulting content is longer than {@link Message#MAX_CONTENT_LENGTH} characters
      *
      * @return {@link ReplyCallbackAction}
      */
@@ -292,6 +295,31 @@ public interface IReplyCallback extends IDeferrableCallback
         return reply(String.format(format, args));
     }
 
+    /**
+     * Reply to this interaction and acknowledge it.
+     * <br>This will send a reply message for this interaction.
+     * You can use {@link ReplyCallbackAction#setEphemeral(boolean) setEphemeral(true)} to only let the target user see the message.
+     * Replies are non-ephemeral by default.
+     *
+     * <p><b>You only have 3 seconds to acknowledge an interaction!</b>
+     * <br>When the acknowledgement is sent after the interaction expired, you will receive {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_INTERACTION ErrorResponse.UNKNOWN_INTERACTION}.
+     * <p>If your handling can take longer than 3 seconds, due to various rate limits or other conditions, you should use {@link #deferReply()} instead.
+     *
+     * <p>Note that you are responsible to properly clean up your files, if the request is unsuccessful.
+     * The {@link FileUpload} class will try to close it when its collected as garbage, but that can take a long time to happen.
+     * You can always use {@link FileUpload#close()} and close it manually, however this should not be done until the request went through successfully.
+     * The library reads the underlying resource <em>just in time</em> for the request, and will keep it open until then.
+     *
+     * @param  files
+     *         The {@link FileUpload FileUploads} to attach to the message
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided
+     *
+     * @return {@link ReplyCallbackAction}
+     *
+     * @see    FileUpload#fromData(InputStream, String)
+     */
     @Nonnull
     @CheckReturnValue
     default ReplyCallbackAction replyFiles(@Nonnull Collection<? extends FileUpload> files)
@@ -300,6 +328,31 @@ public interface IReplyCallback extends IDeferrableCallback
         return deferReply().setFiles(files);
     }
 
+    /**
+     * Reply to this interaction and acknowledge it.
+     * <br>This will send a reply message for this interaction.
+     * You can use {@link ReplyCallbackAction#setEphemeral(boolean) setEphemeral(true)} to only let the target user see the message.
+     * Replies are non-ephemeral by default.
+     *
+     * <p><b>You only have 3 seconds to acknowledge an interaction!</b>
+     * <br>When the acknowledgement is sent after the interaction expired, you will receive {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_INTERACTION ErrorResponse.UNKNOWN_INTERACTION}.
+     * <p>If your handling can take longer than 3 seconds, due to various rate limits or other conditions, you should use {@link #deferReply()} instead.
+     *
+     * <p>Note that you are responsible to properly clean up your files, if the request is unsuccessful.
+     * The {@link FileUpload} class will try to close it when its collected as garbage, but that can take a long time to happen.
+     * You can always use {@link FileUpload#close()} and close it manually, however this should not be done until the request went through successfully.
+     * The library reads the underlying resource <em>just in time</em> for the request, and will keep it open until then.
+     *
+     * @param  files
+     *         The {@link FileUpload FileUploads} to attach to the message
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided
+     *
+     * @return {@link ReplyCallbackAction}
+     *
+     * @see    FileUpload#fromData(InputStream, String)
+     */
     @Nonnull
     @CheckReturnValue
     default ReplyCallbackAction replyFiles(@Nonnull FileUpload... files)

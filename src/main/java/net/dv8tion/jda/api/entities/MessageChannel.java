@@ -29,6 +29,7 @@ import net.dv8tion.jda.api.requests.restaction.MessageEditAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.MessagePaginationAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.PaginationAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationAction;
+import net.dv8tion.jda.api.utils.AttachedFile;
 import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.data.DataArray;
@@ -48,6 +49,7 @@ import net.dv8tion.jda.internal.utils.EncodingUtil;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
+import java.io.InputStream;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
@@ -281,6 +283,26 @@ public interface MessageChannel extends Channel, Formattable
         return list;
     }
 
+    /**
+     * Send a message to this channel.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
+     *     <br>if this channel was deleted</li>
+     * </ul>
+     *
+     * @param  text
+     *         The message content
+     *
+     * @throws IllegalArgumentException
+     *         If the content is null or longer than {@link Message#MAX_CONTENT_LENGTH} characters
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If this is a {@link net.dv8tion.jda.api.entities.GuildMessageChannel GuildMessageChannel} and this account does not have
+     *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} or {@link net.dv8tion.jda.api.Permission#MESSAGE_SEND Permission.MESSAGE_SEND}
+     *
+     * @return {@link MessageCreateAction}
+     */
     @Nonnull
     @CheckReturnValue
     default MessageCreateAction sendMessage(@Nonnull CharSequence text)
@@ -289,6 +311,58 @@ public interface MessageChannel extends Channel, Formattable
         return new MessageCreateActionImpl(this).setContent(text.toString());
     }
 
+    /**
+     * Send a message to this channel.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
+     *     <br>if this channel was deleted</li>
+     * </ul>
+     *
+     * @param  msg
+     *         The {@link MessageCreateData} to send
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If this is a {@link net.dv8tion.jda.api.entities.GuildMessageChannel GuildMessageChannel} and this account does not have
+     *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} or {@link net.dv8tion.jda.api.Permission#MESSAGE_SEND Permission.MESSAGE_SEND}
+     *
+     * @return {@link MessageCreateAction}
+     *
+     * @see    net.dv8tion.jda.api.utils.messages.MessageCreateBuilder MessageCreateBuilder
+     */
+    @Nonnull
+    @CheckReturnValue
+    default MessageCreateAction sendMessage(@Nonnull MessageCreateData msg)
+    {
+        Checks.notNull(msg, "Message");
+        return new MessageCreateActionImpl(this).applyData(msg);
+    }
+
+    /**
+     * Send a message to this channel.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
+     *     <br>if this channel was deleted</li>
+     * </ul>
+     *
+     * @param  format
+     *         Format string for the message content
+     * @param  args
+     *         Format arguments for the content
+     *
+     * @throws IllegalArgumentException
+     *         If the format string is null or the resulting content is longer than {@link Message#MAX_CONTENT_LENGTH} characters
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If this is a {@link net.dv8tion.jda.api.entities.GuildMessageChannel GuildMessageChannel} and this account does not have
+     *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} or {@link net.dv8tion.jda.api.Permission#MESSAGE_SEND Permission.MESSAGE_SEND}
+     *
+     * @return {@link MessageCreateAction}
+     */
     @Nonnull
     @CheckReturnValue
     default MessageCreateAction sendMessageFormat(@Nonnull String format, @Nonnull Object... args)
@@ -297,6 +371,28 @@ public interface MessageChannel extends Channel, Formattable
         return sendMessage(String.format(format, args));
     }
 
+    /**
+     * Send a message to this channel.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
+     *     <br>if this channel was deleted</li>
+     * </ul>
+     *
+     * @param  embed
+     *         {@link MessageEmbed} to send
+     * @param  other
+     *         Additional {@link MessageEmbed MessageEmbeds} to use (up to {@value Message#MAX_EMBED_COUNT})
+     *
+     * @throws IllegalArgumentException
+     *         If any of the embeds are null, more than {@value Message#MAX_EMBED_COUNT}, or longer than {@link MessageEmbed#EMBED_MAX_LENGTH_BOT}.
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If this is a {@link net.dv8tion.jda.api.entities.GuildMessageChannel GuildMessageChannel} and this account does not have
+     *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} or {@link net.dv8tion.jda.api.Permission#MESSAGE_SEND Permission.MESSAGE_SEND}
+     *
+     * @return {@link MessageCreateAction}
+     */
     @Nonnull
     @CheckReturnValue
     default MessageCreateAction sendMessageEmbeds(@Nonnull MessageEmbed embed, @Nonnull MessageEmbed... other)
@@ -309,6 +405,26 @@ public interface MessageChannel extends Channel, Formattable
         return new MessageCreateActionImpl(this).setEmbeds(embeds);
     }
 
+    /**
+     * Send a message to this channel.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
+     *     <br>if this channel was deleted</li>
+     * </ul>
+     *
+     * @param  embeds
+     *         {@link MessageEmbed MessageEmbeds} to use (up to {@value Message#MAX_EMBED_COUNT})
+     *
+     * @throws IllegalArgumentException
+     *         If any of the embeds are null, more than {@value Message#MAX_EMBED_COUNT}, or longer than {@link MessageEmbed#EMBED_MAX_LENGTH_BOT}.
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If this is a {@link net.dv8tion.jda.api.entities.GuildMessageChannel GuildMessageChannel} and this account does not have
+     *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} or {@link net.dv8tion.jda.api.Permission#MESSAGE_SEND Permission.MESSAGE_SEND}
+     *
+     * @return {@link MessageCreateAction}
+     */
     @Nonnull
     @CheckReturnValue
     default MessageCreateAction sendMessageEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
@@ -316,14 +432,33 @@ public interface MessageChannel extends Channel, Formattable
         return new MessageCreateActionImpl(this).setEmbeds(embeds);
     }
 
-    @Nonnull
-    @CheckReturnValue
-    default MessageCreateAction sendMessage(@Nonnull MessageCreateData msg)
-    {
-        Checks.notNull(msg, "Message");
-        return new MessageCreateActionImpl(this).applyData(msg);
-    }
-
+    /**
+     * Send a message to this channel.
+     *
+     * <p>Note that you are responsible to properly clean up your files, if the request is unsuccessful.
+     * The {@link FileUpload} class will try to close it when its collected as garbage, but that can take a long time to happen.
+     * You can always use {@link FileUpload#close()} and close it manually, however this should not be done until the request went through successfully.
+     * The library reads the underlying resource <em>just in time</em> for the request, and will keep it open until then.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
+     *     <br>if this channel was deleted</li>
+     * </ul>
+     *
+     * @param  files
+     *         The {@link FileUpload FileUploads} to attach to the message
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If this is a {@link net.dv8tion.jda.api.entities.GuildMessageChannel GuildMessageChannel} and this account does not have
+     *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} or {@link net.dv8tion.jda.api.Permission#MESSAGE_SEND Permission.MESSAGE_SEND}
+     *
+     * @return {@link MessageCreateAction}
+     *
+     * @see    FileUpload#fromData(InputStream, String)
+     */
     @Nonnull
     @CheckReturnValue
     default MessageCreateAction sendFiles(@Nonnull Collection<? extends FileUpload> files)
@@ -333,6 +468,33 @@ public interface MessageChannel extends Channel, Formattable
         return new MessageCreateActionImpl(this).addFiles(files);
     }
 
+    /**
+     * Send a message to this channel.
+     *
+     * <p>Note that you are responsible to properly clean up your files, if the request is unsuccessful.
+     * The {@link FileUpload} class will try to close it when its collected as garbage, but that can take a long time to happen.
+     * You can always use {@link FileUpload#close()} and close it manually, however this should not be done until the request went through successfully.
+     * The library reads the underlying resource <em>just in time</em> for the request, and will keep it open until then.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
+     *     <br>if this channel was deleted</li>
+     * </ul>
+     *
+     * @param  files
+     *         The {@link FileUpload FileUploads} to attach to the message
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If this is a {@link net.dv8tion.jda.api.entities.GuildMessageChannel GuildMessageChannel} and this account does not have
+     *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} or {@link net.dv8tion.jda.api.Permission#MESSAGE_SEND Permission.MESSAGE_SEND}
+     *
+     * @return {@link MessageCreateAction}
+     *
+     * @see    FileUpload#fromData(InputStream, String)
+     */
     @Nonnull
     @CheckReturnValue
     default MessageCreateAction sendFiles(@Nonnull FileUpload... files)
@@ -1778,8 +1940,7 @@ public interface MessageChannel extends Channel, Formattable
     }
 
     /**
-     * Attempts to edit a message by its id in this MessageChannel. The string provided as {@code newContent} must
-     * have a length that is greater than 0 and less-than or equal to 2000. This is a Discord message length limitation.
+     * Attempts to edit a message by its id in this channel.
      *
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
@@ -1809,14 +1970,13 @@ public interface MessageChannel extends Channel, Formattable
      *         <ul>
      *             <li>If provided {@code messageId} is {@code null} or empty.</li>
      *             <li>If provided {@code newContent} is {@code null} or empty.</li>
-     *             <li>If provided {@code newContent} length is greater than {@code 2000} characters.</li>
+     *             <li>If provided {@code newContent} length is greater than {@value Message#MAX_CONTENT_LENGTH} characters.</li>
      *         </ul>
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If this is a {@link net.dv8tion.jda.api.entities.GuildMessageChannel GuildMessageChannel} and this account does not have
      *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
      *
-     * @return {@link MessageEditAction MessageEditAction}
-     *         <br>The modified Message after it has been sent to Discord.
+     * @return {@link MessageEditAction}
      */
     @Nonnull
     @CheckReturnValue
@@ -1829,8 +1989,7 @@ public interface MessageChannel extends Channel, Formattable
     }
 
     /**
-     * Attempts to edit a message by its id in this MessageChannel. The string provided as {@code newContent} must
-     * have a length that is greater than 0 and less-than or equal to 2000. This is a Discord message length limitation.
+     * Attempts to edit a message by its id in this channel.
      *
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
@@ -1858,16 +2017,14 @@ public interface MessageChannel extends Channel, Formattable
      *
      * @throws IllegalArgumentException
      *         <ul>
-     *             <li>If provided {@code messageId} is {@code null} or empty.</li>
      *             <li>If provided {@code newContent} is {@code null} or empty.</li>
-     *             <li>If provided {@code newContent} length is greater than {@code 2000} characters.</li>
+     *             <li>If provided {@code newContent} length is greater than {@value Message#MAX_CONTENT_LENGTH} characters.</li>
      *         </ul>
-     * @throws net.dv8tion.jda.api.exceptions.PermissionException
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If this is a {@link net.dv8tion.jda.api.entities.GuildMessageChannel GuildMessageChannel} and this account does not have
      *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
      *
-     * @return {@link MessageEditAction MessageEditAction}
-     *         <br>The modified Message after it has been sent to Discord.
+     * @return {@link MessageEditAction}
      */
     @Nonnull
     @CheckReturnValue
@@ -1915,8 +2072,7 @@ public interface MessageChannel extends Channel, Formattable
      *         If this is a {@link net.dv8tion.jda.api.entities.GuildMessageChannel GuildMessageChannel} and this account does not have
      *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
      *
-     * @return {@link MessageEditAction MessageEditAction}
-     *         <br>The modified Message after it has been sent to discord
+     * @return {@link MessageEditAction}
      */
     @Nonnull
     @CheckReturnValue
@@ -1956,7 +2112,6 @@ public interface MessageChannel extends Channel, Formattable
      *
      * @throws IllegalArgumentException
      *         <ul>
-     *             <li>If provided {@code messageId} is not positive.</li>
      *             <li>If provided {@code newContent} is {@code null}.</li>
      *             <li>If provided {@link net.dv8tion.jda.api.entities.Message Message}
      *                 contains a {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbed} which
@@ -1967,7 +2122,6 @@ public interface MessageChannel extends Channel, Formattable
      *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
      *
      * @return {@link MessageEditAction}
-     *         <br>The modified Message after it has been sent to discord
      */
     @Nonnull
     @CheckReturnValue
@@ -2023,8 +2177,7 @@ public interface MessageChannel extends Channel, Formattable
      *         see the <a href="../util/Formatter.html#detail">Details</a>
      *         section of the formatter class specification.
      *
-     * @return {@link MessageEditAction MessageEditAction}
-     *         <br>The modified Message after it has been sent to discord
+     * @return {@link MessageEditAction}
      */
     @Nonnull
     @CheckReturnValue
@@ -2064,10 +2217,7 @@ public interface MessageChannel extends Channel, Formattable
      *         The arguments which should be used to format the given format String
      *
      * @throws IllegalArgumentException
-     *         <ul>
-     *             <li>If provided {@code messageId} is not positive.</li>
-     *             <li>If provided {@code format} is {@code null} or blank.</li>
-     *         </ul>
+     *         If provided {@code format} is {@code null} or blank.
      * @throws IllegalStateException
      *         If the resulting message is either empty or too long to be sent
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
@@ -2081,8 +2231,7 @@ public interface MessageChannel extends Channel, Formattable
      *         see the <a href="../util/Formatter.html#detail">Details</a>
      *         section of the formatter class specification.
      *
-     * @return {@link MessageEditAction MessageEditAction}
-     *         <br>The modified Message after it has been sent to discord
+     * @return {@link MessageEditAction}
      */
     @Nonnull
     @CheckReturnValue
@@ -2130,8 +2279,7 @@ public interface MessageChannel extends Channel, Formattable
      *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
      *         or {@link net.dv8tion.jda.api.Permission#MESSAGE_SEND Permission.MESSAGE_SEND}
      *
-     * @return {@link MessageEditAction MessageEditAction}
-     *         <br>The modified Message after it has been sent to discord
+     * @return {@link MessageEditAction}
      */
     @Nonnull
     @CheckReturnValue
@@ -2179,8 +2327,7 @@ public interface MessageChannel extends Channel, Formattable
      *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
      *         or {@link net.dv8tion.jda.api.Permission#MESSAGE_SEND Permission.MESSAGE_SEND}
      *
-     * @return {@link MessageEditAction MessageEditAction}
-     *         <br>The modified Message after it has been sent to discord
+     * @return {@link MessageEditAction}
      */
     @Nonnull
     @CheckReturnValue
@@ -2227,8 +2374,7 @@ public interface MessageChannel extends Channel, Formattable
      *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
      *         or {@link net.dv8tion.jda.api.Permission#MESSAGE_SEND Permission.MESSAGE_SEND}
      *
-     * @return {@link MessageEditAction MessageEditAction}
-     *         <br>The modified Message after it has been sent to discord
+     * @return {@link MessageEditAction}
      */
     @Nonnull
     @CheckReturnValue
@@ -2276,8 +2422,7 @@ public interface MessageChannel extends Channel, Formattable
      *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
      *         or {@link net.dv8tion.jda.api.Permission#MESSAGE_SEND Permission.MESSAGE_SEND}
      *
-     * @return {@link MessageEditAction MessageEditAction}
-     *         <br>The modified Message after it has been sent to discord
+     * @return {@link MessageEditAction}
      */
     @Nonnull
     @CheckReturnValue
@@ -2337,8 +2482,7 @@ public interface MessageChannel extends Channel, Formattable
      *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
      *         or {@link net.dv8tion.jda.api.Permission#MESSAGE_SEND Permission.MESSAGE_SEND}
      *
-     * @return {@link MessageEditAction MessageEditAction}
-     *         <br>The modified Message after it has been sent to discord
+     * @return {@link MessageEditAction}
      */
     @Nonnull
     @CheckReturnValue
@@ -2400,8 +2544,7 @@ public interface MessageChannel extends Channel, Formattable
      *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
      *         or {@link net.dv8tion.jda.api.Permission#MESSAGE_SEND Permission.MESSAGE_SEND}
      *
-     * @return {@link MessageEditAction MessageEditAction}
-     *         <br>The modified Message after it has been sent to discord
+     * @return {@link MessageEditAction}
      */
     @Nonnull
     @CheckReturnValue
@@ -2460,8 +2603,7 @@ public interface MessageChannel extends Channel, Formattable
      *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
      *         or {@link net.dv8tion.jda.api.Permission#MESSAGE_SEND Permission.MESSAGE_SEND}
      *
-     * @return {@link MessageEditAction MessageEditAction}
-     *         <br>The modified Message after it has been sent to discord
+     * @return {@link MessageEditAction}
      */
     @Nonnull
     @CheckReturnValue
@@ -2518,8 +2660,7 @@ public interface MessageChannel extends Channel, Formattable
      *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
      *         or {@link net.dv8tion.jda.api.Permission#MESSAGE_SEND Permission.MESSAGE_SEND}
      *
-     * @return {@link MessageEditAction MessageEditAction}
-     *         <br>The modified Message after it has been sent to discord
+     * @return {@link MessageEditAction}
      */
     @Nonnull
     @CheckReturnValue
@@ -2527,5 +2668,204 @@ public interface MessageChannel extends Channel, Formattable
     {
         Checks.noneNull(components, "Components");
         return editMessageComponentsById(messageId, Arrays.asList(components));
+    }
+
+
+    /**
+     * Attempts to edit a message by its id in this MessageChannel.
+     *
+     * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#REQUEST_ENTITY_TOO_LARGE REQUEST_ENTITY_TOO_LARGE}
+     *     <br>If any of the provided files is bigger than {@link Guild#getMaxFileSize()}</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#INVALID_AUTHOR_EDIT INVALID_AUTHOR_EDIT}
+     *     <br>Attempted to edit a message that was not sent by the currently logged in account.
+     *         Discord does not allow editing of other users' Messages!</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>The request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
+     *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
+     *         was revoked in the {@link net.dv8tion.jda.api.entities.GuildMessageChannel GuildMessageChannel}</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or
+     *         the message it referred to has already been deleted. This might also be triggered for ephemeral messages.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
+     *     <br>The request was attempted after the channel was deleted.</li>
+     * </ul>
+     *
+     * <p>Note that you are responsible to properly clean up your files, if the request is unsuccessful.
+     * The {@link FileUpload} class will try to close it when its collected as garbage, but that can take a long time to happen.
+     * You can always use {@link FileUpload#close()} and close it manually, however this should not be done until the request went through successfully.
+     * The library reads the underlying resource <em>just in time</em> for the request, and will keep it open until then.
+     *
+     * @param  messageId
+     *         The message id. For interactions this supports {@code "@original"} to edit the source message of the interaction.
+     * @param  attachments
+     *         The new attachments of the message (Can be {@link FileUpload FileUploads} or {@link net.dv8tion.jda.api.utils.AttachmentUpdate AttachmentUpdates})
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided
+     *
+     * @return {@link MessageEditAction} that can be used to further update the message
+     *
+     * @see    AttachedFile#fromAttachment(Message.Attachment)
+     * @see    FileUpload#fromData(InputStream, String)
+     */
+    @Nonnull
+    @CheckReturnValue
+    MessageEditAction editMessageAttachmentsById(@Nonnull String messageId, @Nonnull Collection<? extends AttachedFile> attachments);
+
+    /**
+     * Attempts to edit a message by its id in this MessageChannel.
+     *
+     * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#REQUEST_ENTITY_TOO_LARGE REQUEST_ENTITY_TOO_LARGE}
+     *     <br>If any of the provided files is bigger than {@link Guild#getMaxFileSize()}</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#INVALID_AUTHOR_EDIT INVALID_AUTHOR_EDIT}
+     *     <br>Attempted to edit a message that was not sent by the currently logged in account.
+     *         Discord does not allow editing of other users' Messages!</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>The request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
+     *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
+     *         was revoked in the {@link net.dv8tion.jda.api.entities.GuildMessageChannel GuildMessageChannel}</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or
+     *         the message it referred to has already been deleted. This might also be triggered for ephemeral messages.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
+     *     <br>The request was attempted after the channel was deleted.</li>
+     * </ul>
+     *
+     * <p>Note that you are responsible to properly clean up your files, if the request is unsuccessful.
+     * The {@link FileUpload} class will try to close it when its collected as garbage, but that can take a long time to happen.
+     * You can always use {@link FileUpload#close()} and close it manually, however this should not be done until the request went through successfully.
+     * The library reads the underlying resource <em>just in time</em> for the request, and will keep it open until then.
+     *
+     * @param  messageId
+     *         The message id. For interactions this supports {@code "@original"} to edit the source message of the interaction.
+     * @param  attachments
+     *         The new attachments of the message (Can be {@link FileUpload FileUploads} or {@link net.dv8tion.jda.api.utils.AttachmentUpdate AttachmentUpdates})
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided
+     *
+     * @return {@link MessageEditAction} that can be used to further update the message
+     *
+     * @see    AttachedFile#fromAttachment(Message.Attachment)
+     * @see    FileUpload#fromData(InputStream, String)
+     */
+    @Nonnull
+    @CheckReturnValue
+    default MessageEditAction editMessageAttachmentsById(@Nonnull String messageId, @Nonnull AttachedFile... attachments)
+    {
+        Checks.noneNull(attachments, "Attachments");
+        return editMessageAttachmentsById(messageId, Arrays.asList(attachments));
+    }
+
+    /**
+     * Attempts to edit a message by its id in this MessageChannel.
+     *
+     * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#REQUEST_ENTITY_TOO_LARGE REQUEST_ENTITY_TOO_LARGE}
+     *     <br>If any of the provided files is bigger than {@link Guild#getMaxFileSize()}</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#INVALID_AUTHOR_EDIT INVALID_AUTHOR_EDIT}
+     *     <br>Attempted to edit a message that was not sent by the currently logged in account.
+     *         Discord does not allow editing of other users' Messages!</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>The request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
+     *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
+     *         was revoked in the {@link net.dv8tion.jda.api.entities.GuildMessageChannel GuildMessageChannel}</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or
+     *         the message it referred to has already been deleted. This might also be triggered for ephemeral messages.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
+     *     <br>The request was attempted after the channel was deleted.</li>
+     * </ul>
+     *
+     * <p>Note that you are responsible to properly clean up your files, if the request is unsuccessful.
+     * The {@link FileUpload} class will try to close it when its collected as garbage, but that can take a long time to happen.
+     * You can always use {@link FileUpload#close()} and close it manually, however this should not be done until the request went through successfully.
+     * The library reads the underlying resource <em>just in time</em> for the request, and will keep it open until then.
+     *
+     * @param  messageId
+     *         The message id. For interactions this supports {@code "@original"} to edit the source message of the interaction.
+     * @param  attachments
+     *         The new attachments of the message (Can be {@link FileUpload FileUploads} or {@link net.dv8tion.jda.api.utils.AttachmentUpdate AttachmentUpdates})
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided
+     *
+     * @return {@link MessageEditAction} that can be used to further update the message
+     *
+     * @see    AttachedFile#fromAttachment(Message.Attachment)
+     * @see    FileUpload#fromData(InputStream, String)
+     */
+    @Nonnull
+    @CheckReturnValue
+    default MessageEditAction editMessageAttachmentsById(long messageId, @Nonnull Collection<? extends AttachedFile> attachments)
+    {
+        return editMessageAttachmentsById(Long.toUnsignedString(messageId), attachments);
+    }
+
+    /**
+     * Attempts to edit a message by its id in this MessageChannel.
+     *
+     * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#REQUEST_ENTITY_TOO_LARGE REQUEST_ENTITY_TOO_LARGE}
+     *     <br>If any of the provided files is bigger than {@link Guild#getMaxFileSize()}</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#INVALID_AUTHOR_EDIT INVALID_AUTHOR_EDIT}
+     *     <br>Attempted to edit a message that was not sent by the currently logged in account.
+     *         Discord does not allow editing of other users' Messages!</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>The request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
+     *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
+     *         was revoked in the {@link net.dv8tion.jda.api.entities.GuildMessageChannel GuildMessageChannel}</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or
+     *         the message it referred to has already been deleted. This might also be triggered for ephemeral messages.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
+     *     <br>The request was attempted after the channel was deleted.</li>
+     * </ul>
+     *
+     * <p>Note that you are responsible to properly clean up your files, if the request is unsuccessful.
+     * The {@link FileUpload} class will try to close it when its collected as garbage, but that can take a long time to happen.
+     * You can always use {@link FileUpload#close()} and close it manually, however this should not be done until the request went through successfully.
+     * The library reads the underlying resource <em>just in time</em> for the request, and will keep it open until then.
+     *
+     * @param  messageId
+     *         The message id. For interactions this supports {@code "@original"} to edit the source message of the interaction.
+     * @param  attachments
+     *         The new attachments of the message (Can be {@link FileUpload FileUploads} or {@link net.dv8tion.jda.api.utils.AttachmentUpdate AttachmentUpdates})
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided
+     *
+     * @return {@link MessageEditAction} that can be used to further update the message
+     *
+     * @see    AttachedFile#fromAttachment(Message.Attachment)
+     * @see    FileUpload#fromData(InputStream, String)
+     */
+    @Nonnull
+    @CheckReturnValue
+    default MessageEditAction editMessageAttachmentsById(long messageId, @Nonnull AttachedFile... attachments)
+    {
+        return editMessageAttachmentsById(Long.toUnsignedString(messageId), attachments);
     }
 }

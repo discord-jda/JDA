@@ -22,6 +22,8 @@ import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.WebhookMessageAction;
 import net.dv8tion.jda.api.requests.restaction.WebhookMessageEditAction;
+import net.dv8tion.jda.api.requests.restaction.interactions.MessageEditCallbackAction;
+import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction;
 import net.dv8tion.jda.api.utils.AttachedFile;
 import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.messages.MessageCreateData;
@@ -30,6 +32,7 @@ import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
+import java.io.InputStream;
 import java.util.*;
 
 /**
@@ -56,7 +59,7 @@ public interface WebhookClient<T>
      *         The message content
      *
      * @throws IllegalArgumentException
-     *         If the content is null, empty, or longer than {@link Message#MAX_CONTENT_LENGTH}
+     *         If the content is null or longer than {@link Message#MAX_CONTENT_LENGTH} characters
      *
      * @return {@link WebhookMessageAction}
      */
@@ -76,12 +79,14 @@ public interface WebhookClient<T>
      * </ul>
      *
      * @param  message
-     *         The message to send
+     *         The {@link MessageCreateData} to send
      *
      * @throws IllegalArgumentException
-     *         If the message is null
+     *         If null is provided
      *
      * @return {@link WebhookMessageAction}
+     *
+     * @see    net.dv8tion.jda.api.utils.messages.MessageCreateBuilder MessageCreateBuilder
      */
     @Nonnull
     @CheckReturnValue
@@ -104,7 +109,7 @@ public interface WebhookClient<T>
      *         Format arguments for the content
      *
      * @throws IllegalArgumentException
-     *         If the format string is null or the resulting content is longer than {@link Message#MAX_CONTENT_LENGTH}
+     *         If the format string is null or the resulting content is longer than {@link Message#MAX_CONTENT_LENGTH} characters
      *
      * @return {@link WebhookMessageAction}
      */
@@ -128,7 +133,7 @@ public interface WebhookClient<T>
      * </ul>
      *
      * @param  embeds
-     *         {@link MessageEmbed MessageEmbeds} to use (up to {@value Message#MAX_EMBED_COUNT} in total)
+     *         {@link MessageEmbed MessageEmbeds} to use (up to {@value Message#MAX_EMBED_COUNT})
      *
      * @throws IllegalArgumentException
      *         If any of the embeds are null, more than {@value Message#MAX_EMBED_COUNT}, or longer than {@link MessageEmbed#EMBED_MAX_LENGTH_BOT}.
@@ -172,10 +177,46 @@ public interface WebhookClient<T>
         return sendMessageEmbeds(embedList);
     }
 
+    /**
+     * Send a message to this webhook.
+     *
+     * <p>Note that you are responsible to properly clean up your files, if the request is unsuccessful.
+     * The {@link FileUpload} class will try to close it when its collected as garbage, but that can take a long time to happen.
+     * You can always use {@link FileUpload#close()} and close it manually, however this should not be done until the request went through successfully.
+     * The library reads the underlying resource <em>just in time</em> for the request, and will keep it open until then.
+     *
+     * @param  files
+     *         The {@link FileUpload FileUploads} to attach to the message
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided
+     *
+     * @return {@link ReplyCallbackAction}
+     *
+     * @see    FileUpload#fromData(InputStream, String)
+     */
     @Nonnull
     @CheckReturnValue
     WebhookMessageAction<T> sendFiles(@Nonnull Collection<? extends FileUpload> files);
 
+    /**
+     * Send a message to this webhook.
+     *
+     * <p>Note that you are responsible to properly clean up your files, if the request is unsuccessful.
+     * The {@link FileUpload} class will try to close it when its collected as garbage, but that can take a long time to happen.
+     * You can always use {@link FileUpload#close()} and close it manually, however this should not be done until the request went through successfully.
+     * The library reads the underlying resource <em>just in time</em> for the request, and will keep it open until then.
+     *
+     * @param  files
+     *         The {@link FileUpload FileUploads} to attach to the message
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided
+     *
+     * @return {@link ReplyCallbackAction}
+     *
+     * @see    FileUpload#fromData(InputStream, String)
+     */
     @Nonnull
     @CheckReturnValue
     default WebhookMessageAction<T> sendFile(@Nonnull FileUpload... files)
@@ -204,7 +245,7 @@ public interface WebhookClient<T>
      *         The new message content to use
      *
      * @throws IllegalArgumentException
-     *         If the provided content is null, empty, or longer than {@link Message#MAX_CONTENT_LENGTH}
+     *         If the provided content is null or longer than {@link Message#MAX_CONTENT_LENGTH} characters
      *
      * @return {@link WebhookMessageEditAction}
      */
@@ -231,7 +272,7 @@ public interface WebhookClient<T>
      *         The new message content to use
      *
      * @throws IllegalArgumentException
-     *         If the provided content is null, empty, or longer than {@link Message#MAX_CONTENT_LENGTH}
+     *         If the provided content is null or longer than {@link Message#MAX_CONTENT_LENGTH} characters
      *
      * @return {@link WebhookMessageEditAction}
      */
@@ -258,12 +299,14 @@ public interface WebhookClient<T>
      * @param  messageId
      *         The message id. For interactions this supports {@code "@original"} to edit the source message of the interaction.
      * @param  message
-     *         The new message to replace the existing message with
+     *         The {@link MessageEditData} containing the update information
      *
      * @throws IllegalArgumentException
      *         If the provided message is null
      *
      * @return {@link WebhookMessageEditAction}
+     *
+     * @see    net.dv8tion.jda.api.utils.messages.MessageEditBuilder MessageEditBuilder
      */
     @Nonnull
     @CheckReturnValue
@@ -285,12 +328,14 @@ public interface WebhookClient<T>
      * @param  messageId
      *         The message id. For interactions this supports {@code "@original"} to edit the source message of the interaction.
      * @param  message
-     *         The new message to replace the existing message with
+     *         The {@link MessageEditData} containing the update information
      *
      * @throws IllegalArgumentException
      *         If the provided message is null
      *
      * @return {@link WebhookMessageEditAction}
+     *
+     * @see    net.dv8tion.jda.api.utils.messages.MessageEditBuilder MessageEditBuilder
      */
     @Nonnull
     @CheckReturnValue
@@ -320,7 +365,7 @@ public interface WebhookClient<T>
      *         Format arguments for the content
      *
      * @throws IllegalArgumentException
-     *         If the formatted string is null, empty, or longer than {@link Message#MAX_CONTENT_LENGTH}
+     *         If the formatted string is null or longer than {@link Message#MAX_CONTENT_LENGTH} characters
      *
      * @return {@link WebhookMessageEditAction}
      */
@@ -353,7 +398,7 @@ public interface WebhookClient<T>
      *         Format arguments for the content
      *
      * @throws IllegalArgumentException
-     *         If the formatted string is null, empty, or longer than {@link Message#MAX_CONTENT_LENGTH}
+     *         If the formatted string is null or longer than {@link Message#MAX_CONTENT_LENGTH} characters
      *
      * @return {@link WebhookMessageEditAction}
      */
@@ -383,7 +428,7 @@ public interface WebhookClient<T>
      *         {@link MessageEmbed MessageEmbeds} to use (up to {@value Message#MAX_EMBED_COUNT} in total)
      *
      * @throws IllegalArgumentException
-     *         If the provided embeds are null, or more than {@value Message#MAX_EMBED_COUNT}
+     *         If null or more than {@value Message#MAX_EMBED_COUNT} embeds are provided
      *
      * @return {@link WebhookMessageEditAction}
      */
@@ -410,7 +455,7 @@ public interface WebhookClient<T>
      *         {@link MessageEmbed MessageEmbeds} to use (up to {@value Message#MAX_EMBED_COUNT} in total)
      *
      * @throws IllegalArgumentException
-     *         If the provided embeds are null, or more than {@value Message#MAX_EMBED_COUNT}
+     *         If null or more than {@value Message#MAX_EMBED_COUNT} embeds are provided
      *
      * @return {@link WebhookMessageEditAction}
      */
@@ -440,7 +485,7 @@ public interface WebhookClient<T>
      *         The new {@link MessageEmbed MessageEmbeds} to use
      *
      * @throws IllegalArgumentException
-     *         If the provided embeds are null, or more than 10
+     *         If null or more than {@value Message#MAX_EMBED_COUNT} embeds are provided
      *
      * @return {@link WebhookMessageEditAction}
      */
@@ -471,7 +516,7 @@ public interface WebhookClient<T>
      *         The new {@link MessageEmbed MessageEmbeds} to use
      *
      * @throws IllegalArgumentException
-     *         If the provided embeds are null, or more than 10
+     *         If null or more than {@value Message#MAX_EMBED_COUNT} embeds are provided
      *
      * @return {@link WebhookMessageEditAction}
      */
@@ -501,13 +546,17 @@ public interface WebhookClient<T>
      *         The new component layouts for this message, such as {@link ActionRow ActionRows}
      *
      * @throws IllegalArgumentException
-     *         If the provided components are null, or more than 5 layouts are provided
+     *         <ul>
+     *             <li>If {@code null} is provided</li>
+     *             <li>If any of the components is not {@link LayoutComponent#isMessageCompatible() message compatible}</li>
+     *             <li>If more than {@value Message#MAX_COMPONENT_COUNT} component layouts are provided</li>
+     *         </ul>
      *
      * @return {@link WebhookMessageEditAction}
      */
     @Nonnull
     @CheckReturnValue
-    WebhookMessageEditAction<T> editMessageComponentsById(@Nonnull String messageId, @Nonnull Collection<? extends LayoutComponent> components); // We use LayoutComponent for forward compatibility here
+    WebhookMessageEditAction<T> editMessageComponentsById(@Nonnull String messageId, @Nonnull Collection<? extends LayoutComponent> components);
 
     /**
      * Edit an existing message sent by this webhook.
@@ -528,7 +577,11 @@ public interface WebhookClient<T>
      *         The new component layouts for this message, such as {@link ActionRow ActionRows}
      *
      * @throws IllegalArgumentException
-     *         If the provided components are null, or more than 5 layouts are provided
+     *         <ul>
+     *             <li>If {@code null} is provided</li>
+     *             <li>If any of the components is not {@link LayoutComponent#isMessageCompatible() message compatible}</li>
+     *             <li>If more than {@value Message#MAX_COMPONENT_COUNT} component layouts are provided</li>
+     *         </ul>
      *
      * @return {@link WebhookMessageEditAction}
      */
@@ -558,7 +611,11 @@ public interface WebhookClient<T>
      *         The new component layouts for this message, such as {@link ActionRow ActionRows}
      *
      * @throws IllegalArgumentException
-     *         If the provided components are null, or more than 5 layouts are provided
+     *         <ul>
+     *             <li>If {@code null} is provided</li>
+     *             <li>If any of the components is not {@link LayoutComponent#isMessageCompatible() message compatible}</li>
+     *             <li>If more than {@value Message#MAX_COMPONENT_COUNT} component layouts are provided</li>
+     *         </ul>
      *
      * @return {@link WebhookMessageEditAction}
      */
@@ -589,7 +646,11 @@ public interface WebhookClient<T>
      *         The new component layouts for this message, such as {@link ActionRow ActionRows}
      *
      * @throws IllegalArgumentException
-     *         If the provided components are null, or more than 5 layouts are provided
+     *         <ul>
+     *             <li>If {@code null} is provided</li>
+     *             <li>If any of the components is not {@link LayoutComponent#isMessageCompatible() message compatible}</li>
+     *             <li>If more than {@value Message#MAX_COMPONENT_COUNT} component layouts are provided</li>
+     *         </ul>
      *
      * @return {@link WebhookMessageEditAction}
      */
@@ -601,10 +662,52 @@ public interface WebhookClient<T>
     }
 
 
+    /**
+     * Edit an existing message sent by this webhook.
+     *
+     * <p>Note that you are responsible to properly clean up your files, if the request is unsuccessful.
+     * The {@link FileUpload} class will try to close it when its collected as garbage, but that can take a long time to happen.
+     * You can always use {@link FileUpload#close()} and close it manually, however this should not be done until the request went through successfully.
+     * The library reads the underlying resource <em>just in time</em> for the request, and will keep it open until then.
+     *
+     * @param  messageId
+     *         The message id. For interactions this supports {@code "@original"} to edit the source message of the interaction.
+     * @param  attachments
+     *         The new attachments of the message (Can be {@link FileUpload FileUploads} or {@link net.dv8tion.jda.api.utils.AttachmentUpdate AttachmentUpdates})
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided
+     *
+     * @return {@link MessageEditCallbackAction} that can be used to further update the message
+     *
+     * @see    AttachedFile#fromAttachment(Message.Attachment)
+     * @see    FileUpload#fromData(InputStream, String)
+     */
     @Nonnull
     @CheckReturnValue
     WebhookMessageEditAction<T> editMessageAttachmentsById(@Nonnull String messageId, @Nonnull Collection<? extends AttachedFile> attachments);
 
+    /**
+     * Edit an existing message sent by this webhook.
+     *
+     * <p>Note that you are responsible to properly clean up your files, if the request is unsuccessful.
+     * The {@link FileUpload} class will try to close it when its collected as garbage, but that can take a long time to happen.
+     * You can always use {@link FileUpload#close()} and close it manually, however this should not be done until the request went through successfully.
+     * The library reads the underlying resource <em>just in time</em> for the request, and will keep it open until then.
+     *
+     * @param  messageId
+     *         The message id. For interactions this supports {@code "@original"} to edit the source message of the interaction.
+     * @param  attachments
+     *         The new attachments of the message (Can be {@link FileUpload FileUploads} or {@link net.dv8tion.jda.api.utils.AttachmentUpdate AttachmentUpdates})
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided
+     *
+     * @return {@link MessageEditCallbackAction} that can be used to further update the message
+     *
+     * @see    AttachedFile#fromAttachment(Message.Attachment)
+     * @see    FileUpload#fromData(InputStream, String)
+     */
     @Nonnull
     @CheckReturnValue
     default WebhookMessageEditAction<T> editMessageAttachmentsById(@Nonnull String messageId, @Nonnull AttachedFile... attachments)
@@ -613,6 +716,27 @@ public interface WebhookClient<T>
         return editMessageAttachmentsById(messageId, Arrays.asList(attachments));
     }
 
+    /**
+     * Edit an existing message sent by this webhook.
+     *
+     * <p>Note that you are responsible to properly clean up your files, if the request is unsuccessful.
+     * The {@link FileUpload} class will try to close it when its collected as garbage, but that can take a long time to happen.
+     * You can always use {@link FileUpload#close()} and close it manually, however this should not be done until the request went through successfully.
+     * The library reads the underlying resource <em>just in time</em> for the request, and will keep it open until then.
+     *
+     * @param  messageId
+     *         The message id. For interactions this supports {@code "@original"} to edit the source message of the interaction.
+     * @param  attachments
+     *         The new attachments of the message (Can be {@link FileUpload FileUploads} or {@link net.dv8tion.jda.api.utils.AttachmentUpdate AttachmentUpdates})
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided
+     *
+     * @return {@link MessageEditCallbackAction} that can be used to further update the message
+     *
+     * @see    AttachedFile#fromAttachment(Message.Attachment)
+     * @see    FileUpload#fromData(InputStream, String)
+     */
     @Nonnull
     @CheckReturnValue
     default WebhookMessageEditAction<T> editMessageAttachmentsById(long messageId, @Nonnull Collection<? extends AttachedFile> attachments)
@@ -620,6 +744,27 @@ public interface WebhookClient<T>
         return editMessageAttachmentsById(Long.toUnsignedString(messageId), attachments);
     }
 
+    /**
+     * Edit an existing message sent by this webhook.
+     *
+     * <p>Note that you are responsible to properly clean up your files, if the request is unsuccessful.
+     * The {@link FileUpload} class will try to close it when its collected as garbage, but that can take a long time to happen.
+     * You can always use {@link FileUpload#close()} and close it manually, however this should not be done until the request went through successfully.
+     * The library reads the underlying resource <em>just in time</em> for the request, and will keep it open until then.
+     *
+     * @param  messageId
+     *         The message id. For interactions this supports {@code "@original"} to edit the source message of the interaction.
+     * @param  attachments
+     *         The new attachments of the message (Can be {@link FileUpload FileUploads} or {@link net.dv8tion.jda.api.utils.AttachmentUpdate AttachmentUpdates})
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided
+     *
+     * @return {@link MessageEditCallbackAction} that can be used to further update the message
+     *
+     * @see    AttachedFile#fromAttachment(Message.Attachment)
+     * @see    FileUpload#fromData(InputStream, String)
+     */
     @Nonnull
     @CheckReturnValue
     default WebhookMessageEditAction<T> editMessageAttachmentsById(long messageId, @Nonnull AttachedFile... attachments)
