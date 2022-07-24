@@ -77,7 +77,7 @@ public class MessageEditActionImpl extends RestActionImpl<Message> implements Me
     @Override
     protected void handleSuccess(Response response, Request<Message> request)
     {
-        api.getEntityBuilder().createMessageWithChannel(response.getObject(), channel, false);
+        request.onSuccess(api.getEntityBuilder().createMessageWithChannel(response.getObject(), channel, false));
     }
 
     @Nonnull
