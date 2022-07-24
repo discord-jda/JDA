@@ -126,6 +126,7 @@ public class ReplyCallbackActionImpl extends DeferrableCallbackActionImpl implem
             name = "SPOILER_" + name;
 
         files.add(FileUpload.fromData(data, name));
+        isFileUpdate = true;
         return this;
     }
 

@@ -41,6 +41,7 @@ public abstract class InteractionCallbackImpl<T> extends RestActionImpl<T> imple
 {
     protected final List<AttachedFile> files = new ArrayList<>();
     protected final InteractionImpl interaction;
+    protected boolean isFileUpdate = false;
 
     public InteractionCallbackImpl(InteractionImpl interaction)
     {
@@ -54,18 +55,42 @@ public abstract class InteractionCallbackImpl<T> extends RestActionImpl<T> imple
     protected RequestBody finalizeData()
     {
         DataObject json = toData();
-        if (files.isEmpty())
-            return getRequestBody(json);
 
-        MultipartBody.Builder body = AttachedFile.createMultipartBody(files, null);
-        DataArray attachments = DataArray.empty();
-        for (int i = 0; i < files.size(); i++)
-            attachments.add(files.get(i).toAttachmentData(i));
-        if (json.isNull("data"))
-            json.put("data", DataObject.empty());
-        json.getObject("data").put("attachments", attachments);
+        if (isFileUpdate || !files.isEmpty())
+        {
+            // Add the attachments array to the payload, as required since v10
+            DataObject data;
+            if (json.isNull("data"))
+                json.put("data", data = DataObject.empty());
+            else
+                data = json.getObject("data");
+
+            DataArray attachments;
+            if (data.isNull("attachments"))
+                data.put("attachments", attachments = DataArray.empty());
+            else
+                attachments = data.getArray("attachments");
+
+            for (int i = 0; i < files.size(); i++)
+                attachments.add(files.get(i).toAttachmentData(i));
+        }
+
+        RequestBody body;
+        // Upload files using multipart request if applicable
+        if (files.stream().anyMatch(FileUpload.class::isInstance))
+        {
+            MultipartBody.Builder form = AttachedFile.createMultipartBody(files, null);
+            form.addFormDataPart("payload_json", json.toString());
+            body = form.build();
+        }
+        else
+        {
+            body = getRequestBody(json);
+        }
+
+        isFileUpdate = false;
         files.clear();
-        return body.build();
+        return body;
     }
 
     @Nonnull
