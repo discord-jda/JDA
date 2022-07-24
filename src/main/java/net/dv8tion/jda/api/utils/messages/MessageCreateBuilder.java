@@ -32,6 +32,11 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Builder specialized for building a {@link MessageCreateData}.
+ *
+ * @see MessageEditBuilder
+ */
 public class MessageCreateBuilder extends AbstractMessageBuilder<MessageCreateData, MessageCreateBuilder> implements MessageCreateRequest<MessageCreateBuilder>
 {
     private final List<FileUpload> files = new ArrayList<>(10);
@@ -39,18 +44,67 @@ public class MessageCreateBuilder extends AbstractMessageBuilder<MessageCreateDa
 
     public MessageCreateBuilder() {}
 
+    /**
+     * Factory method to start a builder from an existing instance of {@link MessageCreateData}.
+     * <br>Equivalent to {@code new MessageCreateBuilder().applyData(data)}.
+     *
+     * @param  data
+     *         The message create data to apply
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided
+     *
+     * @return A new MessageCreateBuilder instance with the applied data
+     *
+     * @see    #applyData(MessageCreateData)
+     */
     @Nonnull
     public static MessageCreateBuilder from(@Nonnull MessageCreateData data)
     {
         return new MessageCreateBuilder().applyData(data);
     }
 
+    /**
+     * Factory method to start a builder from an existing instance of {@link MessageEditData}.
+     * <br>Equivalent to {@code new MessageCreateBuilder().applyEditData(data)}.
+     * <br>This will only set fields which were explicitly set on the {@link MessageEditBuilder},
+     * unless it was configured to be {@link MessageEditRequest#replace(boolean) replacing}.
+     *
+     * <p>This will <b>not</b> copy the message's attachments, only any configured {@link FileUpload FileUploads}.
+     * To copy attachments, you must download them explicitly instead.
+     *
+     * @param  data
+     *         The message edit data to apply
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided
+     *
+     * @return A new MessageCreateBuilder instance with the applied data
+     *
+     * @see    #applyEditData(MessageEditData)
+     */
     @Nonnull
     public static MessageCreateBuilder fromEdit(@Nonnull MessageEditData data)
     {
         return new MessageCreateBuilder().applyEditData(data);
     }
 
+    /**
+     * Factory method to start a builder from an existing instance of {@link MessageCreateData}.
+     * <br>Equivalent to {@code new MessageCreateBuilder().applyMessage(data)}.
+     *
+     * <p>This cannot copy the file attachments of the message, they must be manually downloaded and provided to {@link #setFiles(FileUpload...)}.
+     *
+     * @param  message
+     *         The message data to apply
+     *
+     * @throws IllegalArgumentException
+     *         If the message is null or a system message
+     *
+     * @return A new MessageCreateBuilder instance with the applied data
+     *
+     * @see    #applyMessage(Message)
+     */
     @Nonnull
     public static MessageCreateBuilder fromMessage(@Nonnull Message message)
     {

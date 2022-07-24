@@ -28,6 +28,16 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
+/**
+ * Specialized abstraction of setters for editing existing messages throughout the API.
+ *
+ * @param <R>
+ *        The return type for method chaining convenience
+ *
+ * @see   MessageEditBuilder
+ * @see   MessageEditData
+ * @see   net.dv8tion.jda.api.requests.restaction.MessageEditAction MessageEditAction
+ */
 public interface MessageEditRequest<R extends MessageEditRequest<R>> extends MessageRequest<R>
 {
     /**

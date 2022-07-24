@@ -30,6 +30,19 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Abstract builder implementation of {@link MessageRequest}.
+ *
+ * <p>This builder cannot be instantiated directly. You should use {@link MessageCreateBuilder} or {@link MessageEditBuilder} instead.
+ *
+ * @param <T>
+ *        The result type used for {@link #build()}
+ * @param <R>
+ *        The return type used for method chaining
+ *
+ * @see   MessageCreateBuilder
+ * @see   MessageEditBuilder
+ */
 @SuppressWarnings({"ResultOfMethodCallIgnored", "unchecked"})
 public abstract class AbstractMessageBuilder<T, R extends AbstractMessageBuilder<T, R>> implements MessageRequest<R>
 {
@@ -37,6 +50,8 @@ public abstract class AbstractMessageBuilder<T, R extends AbstractMessageBuilder
     protected final List<LayoutComponent> components = new ArrayList<>(5);
     protected final StringBuilder content = new StringBuilder(Message.MAX_CONTENT_LENGTH);
     protected AllowedMentionsImpl allowedMentions = new AllowedMentionsImpl();
+
+    protected AbstractMessageBuilder() {}
 
     @Nonnull
     @Override
@@ -141,12 +156,52 @@ public abstract class AbstractMessageBuilder<T, R extends AbstractMessageBuilder
         return Collections.unmodifiableList(components);
     }
 
+    /**
+     * Whether this builder is considered empty, this checks for all <em>required</em> fields of the request type.
+     * <br>On a create request, this checks for {@link #setContent(String) content}, {@link #setEmbeds(Collection) embeds}, and {@link #setFiles(Collection) files}.
+     * <br>An edit request is only considered empty if no setters were called. And never empty, if the builder is a {@link MessageEditRequest#replace(boolean) replace request}.
+     *
+     * @return True, if the builder state is empty
+     */
     public abstract boolean isEmpty();
+
+    /**
+     * Whether this builder has a valid state to build.
+     * <br>If this is {@code false}, then {@link #build()} throws an {@link IllegalStateException}.
+     * You can check the exception docs on {@link #build()} for specifics.
+     *
+     * @return True, if the builder is in a valid state
+     */
     public abstract boolean isValid();
 
+    /**
+     * Builds a validated instance of this builder's state, which can then be used for requests.
+     *
+     * @throws IllegalStateException
+     *         For {@link MessageCreateBuilder}
+     *         <ul>
+     *             <li>If the builder is {@link #isEmpty() empty}</li>
+     *             <li>If the content set is longer than {@value Message#MAX_CONTENT_LENGTH}</li>
+     *             <li>If more than {@value Message#MAX_EMBED_COUNT} embeds are set</li>
+     *             <li>If more than {@value Message#MAX_COMPONENT_COUNT} component layouts are set</li>
+     *         </ul>
+     *         For {@link MessageEditBuilder}
+     *         <ul>
+     *             <li>If the content set is longer than {@value Message#MAX_CONTENT_LENGTH}</li>
+     *             <li>If more than {@value Message#MAX_EMBED_COUNT} embeds are set</li>
+     *             <li>If more than {@value Message#MAX_COMPONENT_COUNT} component layouts are set</li>
+     *         </ul>
+     *
+     * @return The validated data instance
+     */
     @Nonnull
     public abstract T build();
 
+    /**
+     * Clears this builder's state, resetting it to the initial state identical to creating a new instance.
+     *
+     * @return The same builder instance for chaining
+     */
     @Nonnull
     public R clear()
     {
@@ -157,6 +212,11 @@ public abstract class AbstractMessageBuilder<T, R extends AbstractMessageBuilder
         return (R) this;
     }
 
+    /**
+     * Closes and removes all {@link net.dv8tion.jda.api.utils.FileUpload FileUploads} added to this builder.
+     *
+     * @return The same builder instance for chaining
+     */
     @Nonnull
     public abstract R closeFiles();
 }

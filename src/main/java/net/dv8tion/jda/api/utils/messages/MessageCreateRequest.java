@@ -29,6 +29,16 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+/**
+ * Specialized abstraction of setters and accumulators for creating messages throughout the API.
+ *
+ * @param <R>
+ *        The return type for method chaining convenience
+ *
+ * @see   MessageCreateBuilder
+ * @see   MessageCreateData
+ * @see   net.dv8tion.jda.api.requests.restaction.MessageCreateAction MessageCreateAction
+ */
 public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends MessageRequest<R>
 {
     /**

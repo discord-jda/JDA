@@ -34,6 +34,13 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Builder specialized for building a {@link MessageEditData}.
+ *
+ * <p>These are used to edit messages and allow configuration that either {@link #replace(boolean) replaces} the message or only updates specific fields.
+ *
+ * @see MessageCreateBuilder
+ */
 @SuppressWarnings("ResultOfMethodCallIgnored")
 public class MessageEditBuilder extends AbstractMessageBuilder<MessageEditData, MessageEditBuilder> implements MessageEditRequest<MessageEditBuilder>
 {
@@ -52,18 +59,64 @@ public class MessageEditBuilder extends AbstractMessageBuilder<MessageEditData, 
 
     public MessageEditBuilder() {}
 
+    /**
+     * Factory method to start a builder from an existing instance of {@link MessageEditData}.
+     * <br>Equivalent to {@code new MessageEditBuilder().applyData(data)}.
+     * 
+     * @param  data
+     *         The message edit data to apply
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided
+     * 
+     * @return A new MessageEditBuilder instance with the applied data
+     * 
+     * @see    #applyData(MessageEditData)
+     */
     @Nonnull
     public static MessageEditBuilder from(@Nonnull MessageEditData data)
     {
         return new MessageEditBuilder().applyData(data);
     }
 
+    /**
+     * Factory method to start a builder from an existing instance of {@link MessageCreateData}.
+     * <br>Equivalent to {@code new MessageEditBuilder().applyCreateData(data)}.
+     *
+     * <p>This will set the request to be {@link #replace(boolean) replacing}.
+     *
+     * @param  data
+     *         The message create data to apply
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided
+     *
+     * @return A new MessageEditBuilder instance with the applied data
+     * 
+     * @see    #applyCreateData(MessageCreateData) 
+     */
     @Nonnull
     public static MessageEditBuilder fromCreateData(@Nonnull MessageCreateData data)
     {
         return new MessageEditBuilder().applyCreateData(data);
     }
 
+    /**
+     * Factory method to start a builder from an existing instance of {@link Message}.
+     * <br>Equivalent to {@code new MessageEditBuilder().applyMessage(data)}.
+     *
+     * <p>This will set the request to be {@link #replace(boolean) replacing}.
+     *
+     * @param  message
+     *         The message to apply
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided or the message is a system message
+     *
+     * @return A new MessageEditBuilder instance with the applied data
+     *
+     * @see    #applyMessage(Message)
+     */
     @Nonnull
     public static MessageEditBuilder fromMessage(@Nonnull Message message)
     {

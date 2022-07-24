@@ -33,6 +33,19 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Abstraction of the common setters used for messages in the API.
+ * <br>These setters can both be applied to {@link MessageEditRequest edit requests} and {@link MessageCreateRequest create requests} for messages in various parts of the API.
+ *
+ * @param <R>
+ *        Return type used for chaining method calls
+ *
+ * @see   MessageCreateRequest
+ * @see   MessageEditRequest
+ * @see   AbstractMessageBuilder
+ * @see   MessageCreateBuilder
+ * @see   MessageEditBuilder
+ */
 public interface MessageRequest<R extends MessageRequest<R>> extends AllowedMentions<R>
 {
     /**
