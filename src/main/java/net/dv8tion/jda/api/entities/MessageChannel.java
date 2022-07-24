@@ -2716,7 +2716,11 @@ public interface MessageChannel extends Channel, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    MessageEditAction editMessageAttachmentsById(@Nonnull String messageId, @Nonnull Collection<? extends AttachedFile> attachments);
+    default MessageEditAction editMessageAttachmentsById(@Nonnull String messageId, @Nonnull Collection<? extends AttachedFile> attachments)
+    {
+        Checks.isSnowflake(messageId, "Message ID");
+        return new MessageEditActionImpl(this, messageId).setAttachments(attachments);
+    }
 
     /**
      * Attempts to edit a message by its id in this MessageChannel.

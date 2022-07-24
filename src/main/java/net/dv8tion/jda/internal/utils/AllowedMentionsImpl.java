@@ -21,7 +21,6 @@ import net.dv8tion.jda.api.utils.AllowedMentions;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.SerializableData;
-import net.dv8tion.jda.internal.entities.DataMessage;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -88,45 +87,6 @@ public class AllowedMentionsImpl implements SerializableData, AllowedMentions<Al
         }
         allowedMentionsObj.put("replied_user", mentionRepliedUser);
         return allowedMentionsObj.put("parse", parsable);
-    }
-
-    @SuppressWarnings("ResultOfMethodCallIgnored")
-    public AllowedMentionsImpl applyMessage(Message message)
-    {
-        // Insert allowed mentions
-        if (message instanceof DataMessage)
-        {
-            DataMessage data = (DataMessage) message;
-            String[] mentionedRoles = data.getMentionedRolesWhitelist();
-            String[] mentionedUsers = data.getMentionedUsersWhitelist();
-            EnumSet<Message.MentionType> allowedMentions = data.getAllowedMentions();
-            if (allowedMentions != null)
-                allowedMentions(allowedMentions);
-            mentionRoles(mentionedRoles);
-            mentionUsers(mentionedUsers);
-        }
-        else
-        {
-            // Only ping everyone if the message also did
-            if (message.getMentions().mentionsEveryone())
-            {
-                String content = message.getContentRaw();
-                EnumSet<Message.MentionType> parse = EnumSet.noneOf(Message.MentionType.class);
-                if (content.contains("@everyone"))
-                    parse.add(Message.MentionType.EVERYONE);
-                if (content.contains("@here"))
-                    parse.add(Message.MentionType.HERE);
-                this.parse = parse;
-            }
-            else
-            {
-                this.parse = EnumSet.noneOf(Message.MentionType.class);
-            }
-
-            this.mention(message.getMentions().getUsers())
-                .mention(message.getMentions().getRoles());
-        }
-        return this;
     }
 
     @Nonnull

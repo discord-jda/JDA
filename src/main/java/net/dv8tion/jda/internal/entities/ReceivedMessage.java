@@ -36,6 +36,7 @@ import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageEditAction;
 import net.dv8tion.jda.api.requests.restaction.ThreadChannelAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationAction;
+import net.dv8tion.jda.api.utils.AttachedFile;
 import net.dv8tion.jda.api.utils.MarkdownSanitizer;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.messages.MessageEditData;
@@ -551,6 +552,14 @@ public class ReceivedMessage extends AbstractMessage
     {
         checkUser();
         return channel.editMessageFormatById(getId(), format, args);
+    }
+
+    @Nonnull
+    @Override
+    public MessageEditAction editMessageAttachments(@Nonnull Collection<? extends AttachedFile> attachments)
+    {
+        checkUser();
+        return channel.editMessageAttachmentsById(getId(), attachments);
     }
 
     @Nonnull

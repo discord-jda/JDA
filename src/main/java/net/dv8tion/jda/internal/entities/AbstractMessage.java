@@ -29,6 +29,7 @@ import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageEditAction;
 import net.dv8tion.jda.api.requests.restaction.ThreadChannelAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationAction;
+import net.dv8tion.jda.api.utils.AttachedFile;
 import net.dv8tion.jda.api.utils.messages.MessageEditData;
 import net.dv8tion.jda.internal.utils.Helpers;
 import org.jetbrains.annotations.NotNull;
@@ -309,6 +310,14 @@ public abstract class AbstractMessage implements Message
     @Nonnull
     @Override
     public MessageEditAction editMessageFormat(@Nonnull String format, @Nonnull Object... args)
+    {
+        unsupported();
+        return null;
+    }
+
+    @Nonnull
+    @Override
+    public MessageEditAction editMessageAttachments(@Nonnull Collection<? extends AttachedFile> attachments)
     {
         unsupported();
         return null;

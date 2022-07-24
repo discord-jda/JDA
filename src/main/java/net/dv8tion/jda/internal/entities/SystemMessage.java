@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.entities.sticker.StickerItem;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageEditAction;
+import net.dv8tion.jda.api.utils.AttachedFile;
 import net.dv8tion.jda.api.utils.messages.MessageEditData;
 
 import javax.annotation.Nonnull;
@@ -80,6 +81,13 @@ public class SystemMessage extends ReceivedMessage
     @Nonnull
     @Override
     public MessageEditAction editMessageFormat(@Nonnull String format, @Nonnull Object... args)
+    {
+        throw new UnsupportedOperationException("Cannot edit message of this Message Type. MessageType: " + getType());
+    }
+
+    @Nonnull
+    @Override
+    public MessageEditAction editMessageAttachments(@Nonnull Collection<? extends AttachedFile> attachments)
     {
         throw new UnsupportedOperationException("Cannot edit message of this Message Type. MessageType: " + getType());
     }

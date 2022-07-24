@@ -28,6 +28,7 @@ import net.dv8tion.jda.api.requests.restaction.MessageCreateAction;
 import net.dv8tion.jda.api.requests.restaction.MessageEditAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.MessagePaginationAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationAction;
+import net.dv8tion.jda.api.utils.AttachedFile;
 import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.TimeUtil;
 import net.dv8tion.jda.api.utils.data.DataObject;
@@ -337,6 +338,15 @@ public interface MessageChannelMixin<T extends MessageChannelMixin<T>> extends
         checkCanAccessChannel();
         checkCanSendMessage();
         return MessageChannelUnion.super.editMessageComponentsById(messageId, components);
+    }
+
+    @Nonnull
+    @Override
+    default MessageEditAction editMessageAttachmentsById(@Nonnull String messageId, @Nonnull Collection<? extends AttachedFile> attachments)
+    {
+        checkCanAccessChannel();
+        checkCanSendMessage();
+        return MessageChannelUnion.super.editMessageAttachmentsById(messageId, attachments);
     }
 
     // ---- State Accessors ----

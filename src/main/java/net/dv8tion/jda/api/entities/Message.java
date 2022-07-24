@@ -681,6 +681,8 @@ public interface Message extends ISnowflake, Formattable
      * @param  newContent
      *         The new content of the message, or empty string to remove content (assumes other fields exist like embeds)
      *
+     * @throws UnsupportedOperationException
+     *         If this is a system message
      * @throws IllegalStateException
      *         If the message is not authored by this bot
      * @throws IllegalArgumentException
@@ -716,6 +718,8 @@ public interface Message extends ISnowflake, Formattable
      * @param  data
      *         The {@link MessageEditData} used to update the message
      *
+     * @throws UnsupportedOperationException
+     *         If this is a system message
      * @throws IllegalStateException
      *         If the message is not authored by this bot
      * @throws IllegalArgumentException
@@ -752,6 +756,8 @@ public interface Message extends ISnowflake, Formattable
      * @param  embeds
      *         The new {@link MessageEmbed MessageEmbeds} of the message, empty list to remove embeds
      *
+     * @throws UnsupportedOperationException
+     *         If this is a system message
      * @throws IllegalStateException
      *         If the message is not authored by this bot
      * @throws IllegalArgumentException
@@ -791,6 +797,8 @@ public interface Message extends ISnowflake, Formattable
      * @param  embeds
      *         The new {@link MessageEmbed MessageEmbeds} of the message, empty list to remove embeds
      *
+     * @throws UnsupportedOperationException
+     *         If this is a system message
      * @throws IllegalStateException
      *         If the message is not authored by this bot
      * @throws IllegalArgumentException
@@ -833,6 +841,8 @@ public interface Message extends ISnowflake, Formattable
      * @param  components
      *         The new {@link LayoutComponent LayoutComponents} of the message, empty list to remove all components
      *
+     * @throws UnsupportedOperationException
+     *         If this is a system message
      * @throws IllegalStateException
      *         If the message is not authored by this bot
      * @throws IllegalArgumentException
@@ -871,6 +881,8 @@ public interface Message extends ISnowflake, Formattable
      * @param  components
      *         The new {@link LayoutComponent LayoutComponents} of the message, empty list to remove all components
      *
+     * @throws UnsupportedOperationException
+     *         If this is a system message
      * @throws IllegalStateException
      *         If the message is not authored by this bot
      * @throws IllegalArgumentException
@@ -917,6 +929,8 @@ public interface Message extends ISnowflake, Formattable
      *
      * @throws IllegalArgumentException
      *         If provided {@code format} is {@code null} or blank.
+     * @throws UnsupportedOperationException
+     *         If this is a system message
      * @throws IllegalStateException
      *         If the message is not authored by this bot
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
@@ -937,6 +951,100 @@ public interface Message extends ISnowflake, Formattable
     @Nonnull
     @CheckReturnValue
     MessageEditAction editMessageFormat(@Nonnull String format, @Nonnull Object... args);
+
+    /**
+     * Edits this message using the provided files.
+     *
+     * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#REQUEST_ENTITY_TOO_LARGE REQUEST_ENTITY_TOO_LARGE}
+     *     <br>If any of the provided files is bigger than {@link Guild#getMaxFileSize()}</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>The request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
+     *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
+     *         was revoked in the {@link net.dv8tion.jda.api.entities.GuildMessageChannel GuildMessageChannel}</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or
+     *         the message it referred to has already been deleted. This might also be triggered for ephemeral messages.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
+     *     <br>The request was attempted after the channel was deleted.</li>
+     * </ul>
+     *
+     * <p>Note that you are responsible to properly clean up your files, if the request is unsuccessful.
+     * The {@link FileUpload} class will try to close it when its collected as garbage, but that can take a long time to happen.
+     * You can always use {@link FileUpload#close()} and close it manually, however this should not be done until the request went through successfully.
+     * The library reads the underlying resource <em>just in time</em> for the request, and will keep it open until then.
+     *
+     * @param  attachments
+     *         The new attachments of the message (Can be {@link FileUpload FileUploads} or {@link net.dv8tion.jda.api.utils.AttachmentUpdate AttachmentUpdates})
+     *
+     * @throws UnsupportedOperationException
+     *         If this is a system message
+     * @throws IllegalStateException
+     *         If the message is not authored by this bot
+     * @throws IllegalArgumentException
+     *         If {@code null} is provided
+     *
+     * @return {@link MessageEditAction} that can be used to further update the message
+     *
+     * @see    AttachedFile#fromAttachment(Message.Attachment)
+     * @see    FileUpload#fromData(InputStream, String)
+     */
+    @Nonnull
+    @CheckReturnValue
+    MessageEditAction editMessageAttachments(@Nonnull Collection<? extends AttachedFile> attachments);
+
+    /**
+     * Edits this message using the provided files.
+     *
+     * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#REQUEST_ENTITY_TOO_LARGE REQUEST_ENTITY_TOO_LARGE}
+     *     <br>If any of the provided files is bigger than {@link Guild#getMaxFileSize()}</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>The request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
+     *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
+     *         was revoked in the {@link net.dv8tion.jda.api.entities.GuildMessageChannel GuildMessageChannel}</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or
+     *         the message it referred to has already been deleted. This might also be triggered for ephemeral messages.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
+     *     <br>The request was attempted after the channel was deleted.</li>
+     * </ul>
+     *
+     * <p>Note that you are responsible to properly clean up your files, if the request is unsuccessful.
+     * The {@link FileUpload} class will try to close it when its collected as garbage, but that can take a long time to happen.
+     * You can always use {@link FileUpload#close()} and close it manually, however this should not be done until the request went through successfully.
+     * The library reads the underlying resource <em>just in time</em> for the request, and will keep it open until then.
+     *
+     * @param  attachments
+     *         The new attachments of the message (Can be {@link FileUpload FileUploads} or {@link net.dv8tion.jda.api.utils.AttachmentUpdate AttachmentUpdates})
+     *
+     * @throws UnsupportedOperationException
+     *         If this is a system message
+     * @throws IllegalStateException
+     *         If the message is not authored by this bot
+     * @throws IllegalArgumentException
+     *         If {@code null} is provided
+     *
+     * @return {@link MessageEditAction} that can be used to further update the message
+     *
+     * @see    AttachedFile#fromAttachment(Message.Attachment)
+     * @see    FileUpload#fromData(InputStream, String)
+     */
+    @Nonnull
+    @CheckReturnValue
+    default MessageEditAction editMessageAttachments(@Nonnull AttachedFile... attachments)
+    {
+        Checks.noneNull(attachments, "Attachments");
+        return editMessageAttachments(Arrays.asList(attachments));
+    }
 
     /**
      * Replies and references this message.
