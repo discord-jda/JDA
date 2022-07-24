@@ -114,7 +114,7 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
      *
      * @throws IllegalArgumentException
      *         <ul>
-     *             <li>If {@code null} is provided</li>#
+     *             <li>If {@code null} is provided</li>
      *             <li>If any of the components is not {@link LayoutComponent#isMessageCompatible() message compatible}</li>
      *             <li>If the accumulated list of components is longer than {@value Message#MAX_COMPONENT_COUNT}</li>
      *         </ul>
@@ -143,7 +143,7 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
      *
      * @throws IllegalArgumentException
      *         <ul>
-     *             <li>If {@code null} is provided</li>#
+     *             <li>If {@code null} is provided</li>
      *             <li>If any of the components is not {@link LayoutComponent#isMessageCompatible() message compatible}</li>
      *             <li>If the accumulated list of components is longer than {@value Message#MAX_COMPONENT_COUNT}</li>
      *         </ul>
@@ -175,7 +175,7 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
      *
      * @throws IllegalArgumentException
      *         <ul>
-     *             <li>If {@code null} is provided</li>#
+     *             <li>If {@code null} is provided</li>
      *             <li>If any of the components is not {@link ItemComponent#isMessageCompatible() message compatible}</li>
      *             <li>If the accumulated list of components is longer than {@value Message#MAX_COMPONENT_COUNT}</li>
      *             <li>In all the same cases as {@link ActionRow#of(Collection)} throws an exception</li>
@@ -208,7 +208,7 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
      *
      * @throws IllegalArgumentException
      *         <ul>
-     *             <li>If {@code null} is provided</li>#
+     *             <li>If {@code null} is provided</li>
      *             <li>If any of the components is not {@link ItemComponent#isMessageCompatible() message compatible}</li>
      *             <li>If the accumulated list of components is longer than {@value Message#MAX_COMPONENT_COUNT}</li>
      *             <li>In all the same cases as {@link ActionRow#of(ItemComponent...)} throws an exception</li>
