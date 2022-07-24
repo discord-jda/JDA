@@ -170,7 +170,7 @@ public class SplitUtil
          * Strategy which splits at any character to satisfy the limit.
          * <br>This is the default strategy if none is provided, and should ideally only be the final one in your list.
          */
-        Strategy ANYWHERE = (string, offset, limit) -> Math.min(string.length(), offset + limit);
+        Strategy ANYWHERE = (string, offset, limit) -> offset + limit;
         /**
          * Splits on newline characters. Specifically on {@code '\n'}.
          */
@@ -213,13 +213,12 @@ public class SplitUtil
             Checks.notNull(predicate, "Predicate");
             return (string, offset, limit) ->
             {
-                int current = -1;
-                for (int i = offset; i < offset + limit; i++)
+                for (int i = offset + limit; i > offset; i--)
                 {
                     if (predicate.test(string.charAt(i)))
-                        current = i;
+                        return i;
                 }
-                return current;
+                return -1;
             };
         }
     }
