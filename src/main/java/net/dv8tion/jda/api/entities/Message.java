@@ -658,14 +658,152 @@ public interface Message extends ISnowflake, Formattable
     @Nullable
     MessageActivity getActivity();
 
+    /**
+     * Edits this message and updates the content.
+     * <br>Any other fields of the message will remain unchanged,
+     * you can use {@link net.dv8tion.jda.api.utils.messages.MessageEditRequest#replace(boolean) replace(true)} to remove everything else (embeds/attachments/components).
+     *
+     * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>The request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
+     *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
+     *         was revoked in the {@link net.dv8tion.jda.api.entities.GuildMessageChannel GuildMessageChannel}</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or
+     *         the message it referred to has already been deleted.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
+     *     <br>The request was attempted after the channel was deleted.</li>
+     * </ul>
+     *
+     * @param  newContent
+     *         The new content of the message, or empty string to remove content (assumes other fields exist like embeds)
+     *
+     * @throws IllegalStateException
+     *         If the message is not authored by this bot
+     * @throws IllegalArgumentException
+     *         If null is provided or the new content is longer than {@value #MAX_CONTENT_LENGTH} characters
+     *
+     * @return {@link MessageEditAction}
+     *
+     * @see    MessageChannel#editMessageById(long, CharSequence)
+     */
     @Nonnull
     @CheckReturnValue
     MessageEditAction editMessage(@Nonnull CharSequence newContent);
 
+    /**
+     * Edits this message using the provided {@link MessageEditData}.
+     * <br>You can use {@link net.dv8tion.jda.api.utils.messages.MessageEditBuilder MessageEditBuilder} to create a {@link MessageEditData} instance.
+     *
+     * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>The request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
+     *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
+     *         was revoked in the {@link net.dv8tion.jda.api.entities.GuildMessageChannel GuildMessageChannel}</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or
+     *         the message it referred to has already been deleted.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
+     *     <br>The request was attempted after the channel was deleted.</li>
+     * </ul>
+     *
+     * @param  data
+     *         The {@link MessageEditData} used to update the message
+     *
+     * @throws IllegalStateException
+     *         If the message is not authored by this bot
+     * @throws IllegalArgumentException
+     *         If null is provided
+     *
+     * @return {@link MessageEditAction}
+     *
+     * @see    net.dv8tion.jda.api.utils.messages.MessageEditBuilder MessageEditBuilder
+     * @see    MessageChannel#editMessageById(long, MessageEditData)
+     */
+    @Nonnull
+    @CheckReturnValue
+    MessageEditAction editMessage(@Nonnull MessageEditData data);
+
+    /**
+     * Edits this message using the provided {@link MessageEmbed MessageEmbeds}.
+     * <br>You can use {@link net.dv8tion.jda.api.EmbedBuilder EmbedBuilder} to create a {@link MessageEmbed} instance.
+     *
+     * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>The request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
+     *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
+     *         was revoked in the {@link net.dv8tion.jda.api.entities.GuildMessageChannel GuildMessageChannel}</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or
+     *         the message it referred to has already been deleted.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
+     *     <br>The request was attempted after the channel was deleted.</li>
+     * </ul>
+     *
+     * @param  embeds
+     *         The new {@link MessageEmbed MessageEmbeds} of the message, empty list to remove embeds
+     *
+     * @throws IllegalStateException
+     *         If the message is not authored by this bot
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If {@code null} is provided</li>
+     *             <li>If more than {@value Message#MAX_EMBED_COUNT} embeds are provided</li>
+     *         </ul>
+     *
+     * @return {@link MessageEditAction}
+     *
+     * @see    net.dv8tion.jda.api.EmbedBuilder EmbedBuilder
+     * @see    MessageChannel#editMessageEmbedsById(long, Collection)
+     */
     @Nonnull
     @CheckReturnValue
     MessageEditAction editMessageEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds);
 
+    /**
+     * Edits this message using the provided {@link MessageEmbed MessageEmbeds}.
+     * <br>You can use {@link net.dv8tion.jda.api.EmbedBuilder EmbedBuilder} to create a {@link MessageEmbed} instance.
+     *
+     * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>The request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
+     *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
+     *         was revoked in the {@link net.dv8tion.jda.api.entities.GuildMessageChannel GuildMessageChannel}</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or
+     *         the message it referred to has already been deleted.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
+     *     <br>The request was attempted after the channel was deleted.</li>
+     * </ul>
+     *
+     * @param  embeds
+     *         The new {@link MessageEmbed MessageEmbeds} of the message, empty list to remove embeds
+     *
+     * @throws IllegalStateException
+     *         If the message is not authored by this bot
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If {@code null} is provided</li>
+     *             <li>If more than {@value Message#MAX_EMBED_COUNT} embeds are provided</li>
+     *         </ul>
+     *
+     * @return {@link MessageEditAction}
+     *
+     * @see    net.dv8tion.jda.api.EmbedBuilder EmbedBuilder
+     * @see    MessageChannel#editMessageEmbedsById(long, Collection)
+     */
     @Nonnull
     @CheckReturnValue
     default MessageEditAction editMessageEmbeds(@Nonnull MessageEmbed... embeds)
@@ -674,10 +812,78 @@ public interface Message extends ISnowflake, Formattable
         return editMessageEmbeds(Arrays.asList(embeds));
     }
 
+    /**
+     * Edits this message using the provided {@link LayoutComponent LayoutComponents}.
+     *
+     * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>The request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
+     *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
+     *         was revoked in the {@link net.dv8tion.jda.api.entities.GuildMessageChannel GuildMessageChannel}</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or
+     *         the message it referred to has already been deleted.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
+     *     <br>The request was attempted after the channel was deleted.</li>
+     * </ul>
+     *
+     * @param  components
+     *         The new {@link LayoutComponent LayoutComponents} of the message, empty list to remove all components
+     *
+     * @throws IllegalStateException
+     *         If the message is not authored by this bot
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If {@code null} is provided</li>
+     *             <li>If any of the components is not {@link LayoutComponent#isMessageCompatible() message compatible}</li>
+     *             <li>If more than {@value Message#MAX_COMPONENT_COUNT} components are provided</li>
+     *         </ul>
+     *
+     * @return {@link MessageEditAction}
+     *
+     * @see    MessageChannel#editMessageComponentsById(long, Collection)
+     */
     @Nonnull
     @CheckReturnValue
     MessageEditAction editMessageComponents(@Nonnull Collection<? extends LayoutComponent> components);
 
+    /**
+     * Edits this message using the provided {@link LayoutComponent LayoutComponents}.
+     *
+     * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>The request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
+     *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
+     *         was revoked in the {@link net.dv8tion.jda.api.entities.GuildMessageChannel GuildMessageChannel}</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or
+     *         the message it referred to has already been deleted.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
+     *     <br>The request was attempted after the channel was deleted.</li>
+     * </ul>
+     *
+     * @param  components
+     *         The new {@link LayoutComponent LayoutComponents} of the message, empty list to remove all components
+     *
+     * @throws IllegalStateException
+     *         If the message is not authored by this bot
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If {@code null} is provided</li>
+     *             <li>If any of the components is not {@link LayoutComponent#isMessageCompatible() message compatible}</li>
+     *             <li>If more than {@value Message#MAX_COMPONENT_COUNT} components are provided</li>
+     *         </ul>
+     *
+     * @return {@link MessageEditAction}
+     *
+     * @see    MessageChannel#editMessageComponentsById(long, Collection)
+     */
     @Nonnull
     @CheckReturnValue
     default MessageEditAction editMessageComponents(@Nonnull LayoutComponent... components)
@@ -686,13 +892,51 @@ public interface Message extends ISnowflake, Formattable
         return editMessageComponents(Arrays.asList(components));
     }
 
+    /**
+     * Edits this message using the provided format arguments.
+     *
+     * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>The request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
+     *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
+     *         was revoked in the {@link net.dv8tion.jda.api.entities.GuildMessageChannel GuildMessageChannel}</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or
+     *         the message it referred to has already been deleted.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
+     *     <br>The request was attempted after the channel was deleted.</li>
+     * </ul>
+     *
+     * @param  format
+     *         Format String used to generate new Content
+     * @param  args
+     *         The arguments which should be used to format the given format String
+     *
+     * @throws IllegalArgumentException
+     *         If provided {@code format} is {@code null} or blank.
+     * @throws IllegalStateException
+     *         If the message is not authored by this bot
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If this is a {@link net.dv8tion.jda.api.entities.GuildMessageChannel GuildMessageChannel} and this account does not have
+     *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
+     * @throws java.util.IllegalFormatException
+     *         If a format string contains an illegal syntax,
+     *         a format specifier that is incompatible with the given arguments,
+     *         insufficient arguments given the format string, or other illegal conditions.
+     *         For specification of all possible formatting errors,
+     *         see the <a href="../util/Formatter.html#detail">Details</a>
+     *         section of the formatter class specification.
+     *
+     * @return {@link MessageEditAction}
+     *
+     * @see    MessageChannel#editMessageFormatById(long, String, Object...)
+     */
     @Nonnull
     @CheckReturnValue
     MessageEditAction editMessageFormat(@Nonnull String format, @Nonnull Object... args);
-
-    @Nonnull
-    @CheckReturnValue
-    MessageEditAction editMessage(@Nonnull MessageEditData newContent);
 
     /**
      * Replies and references this message.
@@ -774,6 +1018,19 @@ public interface Message extends ISnowflake, Formattable
         return getGuildChannel().sendStickers(stickers).setMessageReference(this);
     }
 
+    /**
+     * Shortcut for {@code getChannel().sendMessage(content).setMessageReference(this)}-
+     *
+     * @param  content
+     *         The reply content
+     *
+     * @throws InsufficientPermissionException
+     *         If {@link MessageChannel#sendMessage(CharSequence)} throws
+     * @throws IllegalArgumentException
+     *         If {@link MessageChannel#sendMessage(CharSequence)} throws
+     *
+     * @return {@link MessageCreateAction}
+     */
     @Nonnull
     @CheckReturnValue
     default MessageCreateAction reply(@Nonnull CharSequence content)
@@ -781,6 +1038,41 @@ public interface Message extends ISnowflake, Formattable
         return getChannel().sendMessage(content).setMessageReference(this);
     }
 
+    /**
+     * Shortcut for {@code getChannel().sendMessage(data).setMessageReference(this)}-
+     *
+     * @param  msg
+     *         The {@link MessageCreateData} to send
+     *
+     * @throws InsufficientPermissionException
+     *         If {@link MessageChannel#sendMessage(MessageCreateData)} throws
+     * @throws IllegalArgumentException
+     *         If {@link MessageChannel#sendMessage(MessageCreateData)} throws
+     *
+     * @return {@link MessageCreateAction}
+     */
+    @Nonnull
+    @CheckReturnValue
+    default MessageCreateAction reply(@Nonnull MessageCreateData msg)
+    {
+        return getChannel().sendMessage(msg).setMessageReference(this);
+    }
+
+    /**
+     * Shortcut for {@code getChannel().sendMessageEmbeds(embed, other).setMessageReference(this)}-
+     *
+     * @param  embed
+     *         The {@link MessageEmbed} to send
+     * @param  other
+     *         Any addition {@link MessageEmbed MessageEmbeds} to send
+     *
+     * @throws InsufficientPermissionException
+     *         If {@link MessageChannel#sendMessageEmbeds(MessageEmbed, MessageEmbed...)} throws
+     * @throws IllegalArgumentException
+     *         If {@link MessageChannel#sendMessageEmbeds(MessageEmbed, MessageEmbed...)} throws
+     *
+     * @return {@link MessageCreateAction}
+     */
     @Nonnull
     @CheckReturnValue
     default MessageCreateAction replyEmbeds(@Nonnull MessageEmbed embed, @Nonnull MessageEmbed... other)
@@ -793,6 +1085,19 @@ public interface Message extends ISnowflake, Formattable
         return replyEmbeds(embeds);
     }
 
+    /**
+     * Shortcut for {@code getChannel().sendMessageEmbeds(embeds).setMessageReference(this)}-
+     *
+     * @param  embeds
+     *         The {@link MessageEmbed MessageEmbeds} to send
+     *
+     * @throws InsufficientPermissionException
+     *         If {@link MessageChannel#sendMessageEmbeds(Collection)} throws
+     * @throws IllegalArgumentException
+     *         If {@link MessageChannel#sendMessageEmbeds(Collection)} throws
+     *
+     * @return {@link MessageCreateAction}
+     */
     @Nonnull
     @CheckReturnValue
     default MessageCreateAction replyEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
@@ -800,13 +1105,21 @@ public interface Message extends ISnowflake, Formattable
         return getChannel().sendMessageEmbeds(embeds).setMessageReference(this);
     }
 
-    @Nonnull
-    @CheckReturnValue
-    default MessageCreateAction reply(@Nonnull MessageCreateData msg)
-    {
-        return getChannel().sendMessage(msg).setMessageReference(this);
-    }
-
+    /**
+     * Shortcut for {@code getChannel().sendMessageFormat(format, args).setMessageReference(this)}-
+     *
+     * @param  format
+     *         The format string
+     * @param  args
+     *         The arguments to use in the format string
+     *
+     * @throws InsufficientPermissionException
+     *         If {@link MessageChannel#sendMessageFormat(String, Object...)} throws
+     * @throws IllegalArgumentException
+     *         If {@link MessageChannel#sendMessageFormat(String, Object...)} throws
+     *
+     * @return {@link MessageCreateAction}
+     */
     @Nonnull
     @CheckReturnValue
     default MessageCreateAction replyFormat(@Nonnull String format, @Nonnull Object... args)
@@ -814,6 +1127,19 @@ public interface Message extends ISnowflake, Formattable
         return getChannel().sendMessageFormat(format, args).setMessageReference(this);
     }
 
+    /**
+     * Shortcut for {@code getChannel().sendFiles(files).setMessageReference(this)}-
+     *
+     * @param  files
+     *         The {@link FileUpload FileUploads} to send
+     *
+     * @throws InsufficientPermissionException
+     *         If {@link MessageChannel#sendFiles(FileUpload...)} throws
+     * @throws IllegalArgumentException
+     *         If {@link MessageChannel#sendFiles(FileUpload...)} throws
+     *
+     * @return {@link MessageCreateAction}
+     */
     @Nonnull
     @CheckReturnValue
     default MessageCreateAction replyFiles(@Nonnull FileUpload... files)
@@ -821,6 +1147,19 @@ public interface Message extends ISnowflake, Formattable
         return getChannel().sendFiles(files).setMessageReference(this);
     }
 
+    /**
+     * Shortcut for {@code getChannel().sendFiles(files).setMessageReference(this)}-
+     *
+     * @param  files
+     *         The {@link FileUpload FileUploads} to send
+     *
+     * @throws InsufficientPermissionException
+     *         If {@link MessageChannel#sendFiles(Collection)} throws
+     * @throws IllegalArgumentException
+     *         If {@link MessageChannel#sendFiles(Collection)} throws
+     *
+     * @return {@link MessageCreateAction}
+     */
     @Nonnull
     @CheckReturnValue
     default MessageCreateAction replyFiles(@Nonnull Collection<? extends FileUpload> files)
