@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.utils.messages;
 
+import net.dv8tion.jda.api.entities.EmbedType;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
@@ -28,6 +29,7 @@ import javax.annotation.Nonnull;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Specialized abstraction of setters and accumulators for creating messages throughout the API.
@@ -335,8 +337,12 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
     {
         Checks.notNull(message, "Message");
         Checks.check(!message.getType().isSystem(), "Cannot copy a system message");
+        List<MessageEmbed> embeds = message.getEmbeds()
+                .stream()
+                .filter(e -> e.getType() == EmbedType.RICH)
+                .collect(Collectors.toList());
         return setContent(message.getContentRaw())
-                .setEmbeds(message.getEmbeds())
+                .setEmbeds(embeds)
                 .setTTS(message.isTTS())
                 .setComponents(message.getActionRows());
     }

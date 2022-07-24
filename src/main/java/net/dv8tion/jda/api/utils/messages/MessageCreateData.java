@@ -29,6 +29,14 @@ import net.dv8tion.jda.internal.utils.IOUtil;
 import javax.annotation.Nonnull;
 import java.util.*;
 
+/**
+ * Output of a {@link MessageCreateBuilder} and used for sending messages to channels/webhooks/interactions.
+ *
+ * @see MessageCreateBuilder
+ * @see net.dv8tion.jda.api.entities.MessageChannel#sendMessage(MessageCreateData) MessageChannel.sendMessage(MessageCreateData)
+ * @see net.dv8tion.jda.api.interactions.callbacks.IReplyCallback#reply(MessageCreateData) IReplyCallback.reply(MessageCreateData)
+ * @see net.dv8tion.jda.api.entities.WebhookClient#sendMessage(MessageCreateData) WebhookClient.sendMessage(MessageCreateData)
+ */
 public class MessageCreateData implements SerializableData, AutoCloseable
 {
     private final String content;
@@ -51,86 +59,220 @@ public class MessageCreateData implements SerializableData, AutoCloseable
         this.tts = tts;
     }
 
+    /**
+     * Shortcut for {@code new MessageCreateBuilder().setContent(content).build()}.
+     *
+     * @param  content
+     *         The message content (up to {@value Message#MAX_CONTENT_LENGTH})
+     *
+     * @throws IllegalArgumentException
+     *         If the content is null, empty, or longer than {@value Message#MAX_CONTENT_LENGTH}
+     *
+     * @return New valid instance of MessageCreateData
+     *
+     * @see    MessageCreateBuilder#setContent(String)
+     */
     @Nonnull
     public static MessageCreateData fromContent(@Nonnull String content)
     {
         return new MessageCreateBuilder().setContent(content).build();
     }
 
+    /**
+     * Shortcut for {@code new MessageCreateBuilder().setEmbeds(embeds).build()}.
+     *
+     * @param  embeds
+     *         The message embeds (up to {@value Message#MAX_EMBED_COUNT})
+     *
+     * @throws IllegalArgumentException
+     *         If the embed list is null, empty, or longer than {@value Message#MAX_EMBED_COUNT}
+     *
+     * @return New valid instance of MessageCreateData
+     *
+     * @see    MessageCreateBuilder#setEmbeds(Collection)
+     */
     @Nonnull
     public static MessageCreateData fromEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
     {
         return new MessageCreateBuilder().setEmbeds(embeds).build();
     }
 
+    /**
+     * Shortcut for {@code new MessageCreateBuilder().setEmbeds(embeds).build()}.
+     *
+     * @param  embeds
+     *         The message embeds (up to {@value Message#MAX_EMBED_COUNT})
+     *
+     * @throws IllegalArgumentException
+     *         If the embed list is null, empty, or longer than {@value Message#MAX_EMBED_COUNT}
+     *
+     * @return New valid instance of MessageCreateData
+     *
+     * @see    MessageCreateBuilder#setEmbeds(Collection)
+     */
     @Nonnull
     public static MessageCreateData fromEmbeds(@Nonnull MessageEmbed... embeds)
     {
         return new MessageCreateBuilder().setEmbeds(embeds).build();
     }
 
+    /**
+     * Shortcut for {@code new MessageCreateBuilder().setFiles(embeds).build()}.
+     *
+     * @param  files
+     *         The file uploads
+     *
+     * @throws IllegalArgumentException
+     *         If the null is provided or the list is empty
+     *
+     * @return New valid instance of MessageCreateData
+     *
+     * @see    MessageCreateBuilder#setFiles(Collection)
+     */
     @Nonnull
     public static MessageCreateData fromFiles(@Nonnull Collection<? extends FileUpload> files)
     {
         return new MessageCreateBuilder().setFiles(files).build();
     }
 
+    /**
+     * Shortcut for {@code new MessageCreateBuilder().setFiles(embeds).build()}.
+     *
+     * @param  files
+     *         The file uploads
+     *
+     * @throws IllegalArgumentException
+     *         If the null is provided or the list is empty
+     *
+     * @return New valid instance of MessageCreateData
+     *
+     * @see    MessageCreateBuilder#setFiles(Collection)
+     */
     @Nonnull
     public static MessageCreateData fromFiles(@Nonnull FileUpload... files)
     {
         return new MessageCreateBuilder().setFiles(files).build();
     }
 
+    /**
+     * Shortcut for {@code new MessageCreateBuilder().applyMessage(message).build()}.
+     *
+     * @param  message
+     *         The message to apply
+     *
+     * @throws IllegalArgumentException
+     *         If the message is null or a system message
+     *
+     * @return New valid instance of MessageCreateData
+     *
+     * @see    MessageCreateBuilder#applyMessage(Message)
+     */
     @Nonnull
     public static MessageCreateData fromMessage(@Nonnull Message message)
     {
         return new MessageCreateBuilder().applyMessage(message).build();
     }
 
+    /**
+     * Shortcut for {@code new MessageCreateBuilder().applyEditData(data).build()}.
+     *
+     * @param  data
+     *         The message edit data to apply
+     *
+     * @throws IllegalArgumentException
+     *         If the data is null or empty
+     *
+     * @return New valid instance of MessageCreateData
+     *
+     * @see    MessageCreateBuilder#applyEditData(MessageEditData)
+     */
     @Nonnull
     public static MessageCreateData fromEditData(@Nonnull MessageEditData data)
     {
         return new MessageCreateBuilder().applyEditData(data).build();
     }
 
+    /**
+     * The content of the message.
+     *
+     * @return The content or an empty string if none was provided
+     */
+    @Nonnull
     public String getContent()
     {
         return content;
     }
 
+    /**
+     * The embeds of the message.
+     *
+     * @return The embeds or an empty list if none were provided
+     */
+    @Nonnull
     public List<MessageEmbed> getEmbeds()
     {
         return embeds;
     }
 
+    /**
+     * The components of the message.
+     *
+     * @return The components or an empty list if none were provided
+     */
+    @Nonnull
     public List<LayoutComponent> getComponents()
     {
         return components;
     }
 
+    /**
+     * Whether this message uses <em>Text-to-Speech</em> (TTS).
+     *
+     * @return True, if text to speech will be used when this is sent
+     */
     public boolean isTTS()
     {
         return tts;
     }
 
+    /**
+     * The IDs for users which are allowed to be mentioned, or an empty list.
+     *
+     * @return The user IDs which are mention whitelisted
+     */
     @Nonnull
     public Set<String> getMentionedUsers()
     {
         return allowedMentions.getUsers();
     }
 
+    /**
+     * The IDs for roles which are allowed to be mentioned, or an empty list.
+     *
+     * @return The role IDs which are mention whitelisted
+     */
     @Nonnull
     public Set<String> getMentionedRoles()
     {
         return allowedMentions.getRoles();
     }
 
+    /**
+     * The mention types which are whitelisted.
+     *
+     * @return The mention types which can be mentioned by this message
+     */
     @Nonnull
     public EnumSet<Message.MentionType> getAllowedMentions()
     {
         return allowedMentions.getAllowedMentions();
     }
 
+    /**
+     * Whether this message would mention a user, if it is sent as a reply.
+     *
+     * @return True, if this would mention with the reply
+     */
     public boolean isMentionRepliedUser()
     {
         return allowedMentions.isMentionRepliedUser();
@@ -157,6 +299,11 @@ public class MessageCreateData implements SerializableData, AutoCloseable
         return json;
     }
 
+    /**
+     * The {@link FileUpload FileUploads} attached to this message.
+     *
+     * @return The list of file uploads
+     */
     @Nonnull
     public synchronized List<FileUpload> getFiles()
     {

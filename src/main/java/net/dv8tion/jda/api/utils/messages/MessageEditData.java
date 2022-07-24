@@ -33,6 +33,15 @@ import java.util.stream.Collectors;
 
 import static net.dv8tion.jda.api.utils.messages.MessageEditBuilder.*;
 
+/**
+ * Output of a {@link MessageEditRequest} and used for editing messages in channels/webhooks/interactions.
+ *
+ * @see MessageEditBuilder
+ * @see net.dv8tion.jda.api.entities.MessageChannel#editMessageById(String, MessageEditData) MessageChannel.editMessageById(String, MessageEditData)
+ * @see net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback#editMessage(MessageEditData) IMessageEditCallback.editMessage(MessageEditData)
+ * @see net.dv8tion.jda.api.entities.WebhookClient#editMessageById(String, MessageEditData) WebhookClient.editMessageById(String, MessageEditData)
+ * @see net.dv8tion.jda.api.interactions.InteractionHook#editOriginal(MessageEditData) InteractionHook.editOriginal(MessageEditData)
+ */
 public class MessageEditData implements SerializableData, AutoCloseable
 {
     private final String content;
@@ -56,42 +65,133 @@ public class MessageEditData implements SerializableData, AutoCloseable
         this.flags = set;
     }
 
+    /**
+     * Shortcut for {@code new MessageEditBuilder().setContent(content).build()}.
+     *
+     * @param  content
+     *         The message content (up to {@value Message#MAX_CONTENT_LENGTH})
+     *
+     * @throws IllegalArgumentException
+     *         If the content is null, empty, or longer than {@value Message#MAX_CONTENT_LENGTH}
+     *
+     * @return New valid instance of MessageEditData
+     *
+     * @see    MessageEditBuilder#setContent(String)
+     */
     @Nonnull
     public static MessageEditData fromContent(@Nonnull String content)
     {
         return new MessageEditBuilder().setContent(content).build();
     }
 
+    /**
+     * Shortcut for {@code new MessageEditBuilder().setEmbeds(embeds).build()}.
+     *
+     * @param  embeds
+     *         The message embeds (up to {@value Message#MAX_EMBED_COUNT})
+     *
+     * @throws IllegalArgumentException
+     *         If the embed list is null, empty, or longer than {@value Message#MAX_EMBED_COUNT}
+     *
+     * @return New valid instance of MessageEditData
+     *
+     * @see    MessageEditBuilder#setEmbeds(Collection)
+     */
     @Nonnull
     public static MessageEditData fromEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
     {
         return new MessageEditBuilder().setEmbeds(embeds).build();
     }
 
+    /**
+     * Shortcut for {@code new MessageEditBuilder().setEmbeds(embeds).build()}.
+     *
+     * @param  embeds
+     *         The message embeds (up to {@value Message#MAX_EMBED_COUNT})
+     *
+     * @throws IllegalArgumentException
+     *         If the embed list is null, empty, or longer than {@value Message#MAX_EMBED_COUNT}
+     *
+     * @return New valid instance of MessageEditData
+     *
+     * @see    MessageEditBuilder#setEmbeds(Collection)
+     */
     @Nonnull
     public static MessageEditData fromEmbeds(@Nonnull MessageEmbed... embeds)
     {
         return new MessageEditBuilder().setEmbeds(embeds).build();
     }
 
+    /**
+     * Shortcut for {@code new MessageEditBuilder().setFiles(embeds).build()}.
+     *
+     * @param  files
+     *         The file uploads
+     *
+     * @throws IllegalArgumentException
+     *         If the null is provided or the list is empty
+     *
+     * @return New valid instance of MessageEditData
+     *
+     * @see    MessageEditBuilder#setFiles(Collection)
+     */
     @Nonnull
     public static MessageEditData fromFiles(@Nonnull Collection<? extends FileUpload> files)
     {
         return new MessageEditBuilder().setFiles(files).build();
     }
 
+    /**
+     * Shortcut for {@code new MessageEditBuilder().setFiles(embeds).build()}.
+     *
+     * @param  files
+     *         The file uploads
+     *
+     * @throws IllegalArgumentException
+     *         If the null is provided or the list is empty
+     *
+     * @return New valid instance of MessageEditData
+     *
+     * @see    MessageEditBuilder#setFiles(Collection)
+     */
     @Nonnull
     public static MessageEditData fromFiles(@Nonnull FileUpload... files)
     {
         return new MessageEditBuilder().setFiles(files).build();
     }
 
+    /**
+     * Shortcut for {@code new MessageEditBuilder().applyMessage(message).build()}.
+     *
+     * @param  message
+     *         The message to apply
+     *
+     * @throws IllegalArgumentException
+     *         If the message is null or a system message
+     *
+     * @return New valid instance of MessageEditData
+     *
+     * @see    MessageEditBuilder#applyMessage(Message)
+     */
     @Nonnull
     public static MessageEditData fromMessage(@Nonnull Message message)
     {
         return new MessageEditBuilder().applyMessage(message).build();
     }
 
+    /**
+     * Shortcut for {@code new MessageCreateBuilder().applyCreateData(data).build()}.
+     *
+     * @param  data
+     *         The message create data to apply
+     *
+     * @throws IllegalArgumentException
+     *         If the data is null or empty
+     *
+     * @return New valid instance of MessageEditData
+     *
+     * @see    MessageEditBuilder#applyCreateData(MessageCreateData)
+     */
     @Nonnull
     public static MessageEditData fromCreateData(@Nonnull MessageCreateData data)
     {
@@ -103,44 +203,88 @@ public class MessageEditData implements SerializableData, AutoCloseable
         return flags;
     }
 
+    /**
+     * The content of the message.
+     *
+     * @return The content or an empty string if none was set
+     */
+    @Nonnull
     public String getContent()
     {
         return content;
     }
 
+    /**
+     * The embeds of the message.
+     *
+     * @return The embeds or an empty list if none were set
+     */
+    @Nonnull
     public List<MessageEmbed> getEmbeds()
     {
         return embeds;
     }
 
+    /**
+     * The components of the message.
+     *
+     * @return The components or an empty list if none were set
+     */
+    @Nonnull
     public List<LayoutComponent> getComponents()
     {
         return components;
     }
 
+    /**
+     * The {@link AttachedFile AttachedFiles} attached to this message.
+     *
+     * @return The list of attachments, or an empty list if none were set
+     */
+    @Nonnull
     public List<AttachedFile> getAttachments()
     {
         return files;
     }
 
+    /**
+     * The IDs for users which are allowed to be mentioned, or an empty list.
+     *
+     * @return The user IDs which are mention whitelisted
+     */
     @Nonnull
     public Set<String> getMentionedUsers()
     {
         return allowedMentions.getUsers();
     }
 
+    /**
+     * The IDs for roles which are allowed to be mentioned, or an empty list.
+     *
+     * @return The role IDs which are mention whitelisted
+     */
     @Nonnull
     public Set<String> getMentionedRoles()
     {
         return allowedMentions.getRoles();
     }
 
+    /**
+     * The mention types which are whitelisted.
+     *
+     * @return The mention types which can be mentioned by this message
+     */
     @Nonnull
     public EnumSet<Message.MentionType> getAllowedMentions()
     {
         return allowedMentions.getAllowedMentions();
     }
 
+    /**
+     * Whether this message would mention a user, if it is sent as a reply.
+     *
+     * @return True, if this would mention with the reply
+     */
     public boolean isMentionRepliedUser()
     {
         return allowedMentions.isMentionRepliedUser();
@@ -170,6 +314,11 @@ public class MessageEditData implements SerializableData, AutoCloseable
         return json;
     }
 
+    /**
+     * The {@link FileUpload FileUploads} attached to this message.
+     *
+     * @return The list of file uploads
+     */
     @Nonnull
     public synchronized List<FileUpload> getFiles()
     {
