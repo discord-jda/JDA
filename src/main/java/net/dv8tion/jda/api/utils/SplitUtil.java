@@ -193,18 +193,7 @@ public class SplitUtil
         @Nonnull
         static Strategy onChar(char c)
         {
-            return (string, offset, limit) ->
-            {
-                int result = -1;
-                do
-                {
-                    int index = string.indexOf(c, Math.max(result + 1, offset));
-                    if (index == -1)
-                        break;
-                    result = index;
-                } while (result < offset + limit);
-                return result;
-            };
+            return (string, offset, limit) -> string.lastIndexOf(c, offset + limit);
         }
 
         /**
