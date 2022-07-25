@@ -107,7 +107,7 @@ public interface AllowedMentions<R>
      * @param  mention
      *         True, to mention the author if the referenced message
      *
-     * @return Updated Action for chaining convenience
+     * @return Update instance for chaining convenience
      */
     @Nonnull
     @CheckReturnValue
@@ -117,16 +117,18 @@ public interface AllowedMentions<R>
      * Sets the {@link net.dv8tion.jda.api.entities.Message.MentionType MentionTypes} that should be parsed.
      * <br>If a message is sent with an empty Set of MentionTypes, then it will not ping any User, Role or {@code @everyone}/{@code @here},
      * while still showing up as mention tag.
-     * <p>
-     * If {@code null} is provided to this method, then all Types will be pingable
+     *
+     * <p>If {@code null} is provided to this method, then all Types will be mentionable
      * (unless whitelisting via one of the {@code mention*} methods is used).
-     * <p>
-     * Note: A default for this can be set using {@link #setDefaultMentions(Collection) AllowedMentions.setDefaultMentions(Collection)}.
+     *
+     * <p>Note: A default for this can be set using {@link #setDefaultMentions(Collection) AllowedMentions.setDefaultMentions(Collection)}.
      *
      * @param  allowedMentions
-     *         MentionTypes that are allowed to being parsed and pinged. {@code null} to disable and allow all mentions.
+     *         MentionTypes that are allowed to being parsed and mentioned.
+     *         All other mention types will not be mentioned by this message.
+     *         You can pass {@code null} or {@code EnumSet.allOf(MentionType.class)} to allow all mentions.
      *
-     * @return Updated Action for chaining convenience
+     * @return Update instance for chaining convenience
      */
     @Nonnull
     @CheckReturnValue
@@ -148,7 +150,7 @@ public interface AllowedMentions<R>
      * @throws IllegalArgumentException
      *         If null is provided
      *
-     * @return Updated Action for chaining convenience
+     * @return Update instance for chaining convenience
      *
      * @see    #allowedMentions(Collection)
      * @see    #setDefaultMentions(Collection)
@@ -173,7 +175,7 @@ public interface AllowedMentions<R>
      * @throws IllegalArgumentException
      *         If null is provided
      *
-     * @return Updated Action for chaining convenience
+     * @return Update instance for chaining convenience
      *
      * @see    #allowedMentions(Collection)
      * @see    #setDefaultMentions(Collection)
@@ -200,7 +202,7 @@ public interface AllowedMentions<R>
      * @throws IllegalArgumentException
      *         If null is provided
      *
-     * @return Updated Action for chaining convenience
+     * @return Update instance for chaining convenience
      *
      * @see    #allowedMentions(Collection)
      * @see    #setDefaultMentions(Collection)
@@ -223,7 +225,7 @@ public interface AllowedMentions<R>
      * @throws IllegalArgumentException
      *         If null is provided
      *
-     * @return Updated Action for chaining convenience
+     * @return Update instance for chaining convenience
      *
      * @see    #allowedMentions(Collection)
      * @see    #setDefaultMentions(Collection)
@@ -255,7 +257,7 @@ public interface AllowedMentions<R>
      * @throws IllegalArgumentException
      *         If null is provided
      *
-     * @return Updated Action for chaining convenience
+     * @return Update instance for chaining convenience
      *
      * @see    #allowedMentions(Collection)
      * @see    #setDefaultMentions(Collection)
@@ -278,7 +280,7 @@ public interface AllowedMentions<R>
      * @throws IllegalArgumentException
      *         If null is provided
      *
-     * @return Updated Action for chaining convenience
+     * @return Update instance for chaining convenience
      *
      * @see    #allowedMentions(Collection)
      * @see    #setDefaultMentions(Collection)
