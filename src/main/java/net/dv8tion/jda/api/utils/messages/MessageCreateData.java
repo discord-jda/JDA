@@ -45,11 +45,12 @@ public class MessageCreateData implements SerializableData, AutoCloseable
     private final List<LayoutComponent> components;
     private final AllowedMentionsImpl allowedMentions;
     private final boolean tts;
+    private final int flags;
 
     protected MessageCreateData(
             String content,
             List<MessageEmbed> embeds, List<FileUpload> files, List<LayoutComponent> components,
-            AllowedMentionsImpl allowedMentions, boolean tts)
+            AllowedMentionsImpl allowedMentions, boolean tts, int flags)
     {
         this.content = content;
         this.embeds = Collections.unmodifiableList(embeds);
@@ -57,6 +58,7 @@ public class MessageCreateData implements SerializableData, AutoCloseable
         this.components = Collections.unmodifiableList(components);
         this.allowedMentions = allowedMentions;
         this.tts = tts;
+        this.flags = flags;
     }
 
     /**
@@ -287,6 +289,7 @@ public class MessageCreateData implements SerializableData, AutoCloseable
         json.put("embeds", DataArray.fromCollection(embeds));
         json.put("components", DataArray.fromCollection(components));
         json.put("tts", tts);
+        json.put("flags", flags);
         json.put("allowed_mentions", allowedMentions);
         if (files != null && !files.isEmpty())
         {

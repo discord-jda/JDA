@@ -75,7 +75,7 @@ public class WebhookMessageActionImpl<T>
             List<FileUpload> files = data.getFiles();
             DataObject json = data.toData();
             if (ephemeral)
-                json.put("flags", 64);
+                json.put("flags", json.getInt("flags", 0) | 64);
             if (files.isEmpty())
                 return getRequestBody(json);
 

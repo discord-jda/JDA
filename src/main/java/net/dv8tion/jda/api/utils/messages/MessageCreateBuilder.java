@@ -41,6 +41,7 @@ public class MessageCreateBuilder extends AbstractMessageBuilder<MessageCreateDa
 {
     private final List<FileUpload> files = new ArrayList<>(10);
     private boolean tts;
+    private int flags = 0;
 
     public MessageCreateBuilder() {}
 
@@ -188,6 +189,23 @@ public class MessageCreateBuilder extends AbstractMessageBuilder<MessageCreateDa
         return this;
     }
 
+    @Nonnull
+    @Override
+    public MessageCreateBuilder setSuppressEmbeds(boolean suppress)
+    {
+        if (suppress)
+            this.flags |= 4;
+        else
+            this.flags &= ~4;
+        return this;
+    }
+
+    @Override
+    public boolean isSuppressEmbeds()
+    {
+        return (this.flags & 4) == 4;
+    }
+
     @Override
     public boolean isEmpty()
     {
@@ -224,7 +242,7 @@ public class MessageCreateBuilder extends AbstractMessageBuilder<MessageCreateDa
 
         if (components.size() > Message.MAX_COMPONENT_COUNT)
             throw new IllegalStateException("Cannot build message with over " + Message.MAX_COMPONENT_COUNT + " component layouts, provided " + components.size());
-        return new MessageCreateData(content, embeds, files, components, allowedMentions, tts);
+        return new MessageCreateData(content, embeds, files, components, allowedMentions, tts, flags);
     }
 
     @Nonnull

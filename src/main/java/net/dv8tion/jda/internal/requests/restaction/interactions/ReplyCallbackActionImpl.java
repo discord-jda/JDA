@@ -72,7 +72,9 @@ public class ReplyCallbackActionImpl extends DeferrableCallbackActionImpl implem
         MessageCreateData data = builder.build();
         try
         {
-            json.put("data", data.toData().put("flags", flags));
+            DataObject msg = data.toData();
+            msg.put("flags", msg.getInt("flags", 0) | flags);
+            json.put("data",msg);
             List<FileUpload> files = data.getFiles();
             if (files.isEmpty())
                 return getRequestBody(json);
