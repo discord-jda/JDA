@@ -16,9 +16,8 @@
 
 package net.dv8tion.jda.api.interactions;
 
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
-import net.dv8tion.jda.api.from.FromJDA;
+import net.dv8tion.jda.api.FromJDA;
 import net.dv8tion.jda.api.interactions.callbacks.*;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.components.Modal;

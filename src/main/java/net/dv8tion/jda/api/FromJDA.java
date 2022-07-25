@@ -13,8 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package net.dv8tion.jda.api;
+
+import javax.annotation.Nonnull;
 
 /**
- * Interfaces that describe wide-spread and shared behaviors
+ * An interface for objects that have a corresponding jda instance
  */
-package net.dv8tion.jda.api.from;
+public interface FromJDA
+{
+    /**
+     * The corresponding {@link net.dv8tion.jda.api.JDA jda} instance
+     *
+     * @return The jda instance
+     */
+    @Nonnull
+    JDA getJDA();
+
+}

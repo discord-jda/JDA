@@ -18,7 +18,7 @@ package net.dv8tion.jda.api.managers;
 
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
-import net.dv8tion.jda.api.from.FromJDA;
+import net.dv8tion.jda.api.FromJDA;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;

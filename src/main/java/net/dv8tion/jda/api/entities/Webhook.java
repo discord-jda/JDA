@@ -18,7 +18,7 @@ package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.channel.unions.IWebhookContainerUnion;
-import net.dv8tion.jda.api.from.FromJDA;
+import net.dv8tion.jda.api.FromJDA;
 import net.dv8tion.jda.api.managers.WebhookManager;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;

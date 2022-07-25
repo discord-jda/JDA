@@ -16,10 +16,9 @@
 
 package net.dv8tion.jda.api.managers;
 
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.AudioChannel;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.from.FromJDA;
+import net.dv8tion.jda.api.FromJDA;
 
 import javax.annotation.Nonnull;
 

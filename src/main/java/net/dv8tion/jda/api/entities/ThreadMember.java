@@ -16,7 +16,7 @@
 
 package net.dv8tion.jda.api.entities;
 
-import net.dv8tion.jda.api.from.FromJDA;
+import net.dv8tion.jda.api.FromJDA;
 
 import javax.annotation.Nonnull;
 import java.time.OffsetDateTime;
