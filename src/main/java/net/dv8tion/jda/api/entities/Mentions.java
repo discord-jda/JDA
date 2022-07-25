@@ -16,8 +16,8 @@
 
 package net.dv8tion.jda.api.entities;
 
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.emoji.CustomEmoji;
+import net.dv8tion.jda.api.from.FromJDA;
 import org.apache.commons.collections4.Bag;
 
 import javax.annotation.Nonnull;
@@ -26,15 +26,8 @@ import java.util.List;
 /**
  * Interface to access the mentions of various entities.
  */
-public interface Mentions
+public interface Mentions extends FromJDA
 {
-    /**
-     * The corresponding JDA instance
-     *
-     * @return The jda instance
-     */
-    @Nonnull
-    JDA getJDA();
 
     /**
      * Indicates if everyone is mentioned, by either using {@code @everyone} or {@code @here}.

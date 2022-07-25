@@ -18,6 +18,7 @@ package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.channel.unions.IWebhookContainerUnion;
+import net.dv8tion.jda.api.from.FromJDA;
 import net.dv8tion.jda.api.managers.WebhookManager;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
@@ -38,7 +39,7 @@ import java.util.regex.Pattern;
  * @see    Guild#retrieveWebhooks()
  * @see    JDA#retrieveWebhookById(String)
  */
-public interface Webhook extends ISnowflake
+public interface Webhook extends ISnowflake, FromJDA
 {
     /**
      * Pattern for a Webhook URL.
@@ -72,14 +73,6 @@ public interface Webhook extends ISnowflake
      * and the index with {@link java.util.regex.Matcher#group(int) Matcher.group(int)}.
      */
     Pattern WEBHOOK_URL = Pattern.compile("https?://(?:[^\\s.]+\\.)?discord(?:app)?\\.com/api(?:/v\\d+)?/webhooks/(?<id>\\d+)/(?<token>[^\\s/]+)", Pattern.CASE_INSENSITIVE);
-
-    /**
-     * The JDA instance of this Webhook.
-     *
-     * @return The current JDA instance of this Webhook
-     */
-    @Nonnull
-    JDA getJDA();
 
     /**
      * The {@link WebhookType} of this webhook.

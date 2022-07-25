@@ -17,6 +17,7 @@ package net.dv8tion.jda.api.entities;
 
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.from.FromJDA;
 import net.dv8tion.jda.api.requests.restaction.CacheRestAction;
 import net.dv8tion.jda.api.utils.ImageProxy;
 import net.dv8tion.jda.api.utils.MiscUtil;
@@ -72,7 +73,7 @@ import java.util.regex.Pattern;
  *
  * @see JDA#retrieveUserById(String)
  */
-public interface User extends UserSnowflake
+public interface User extends UserSnowflake, FromJDA
 {
     /**
      * Compiled pattern for a Discord Tag: {@code (.{2,32})#(\d{4})}
@@ -378,6 +379,7 @@ public interface User extends UserSnowflake
      * @return the corresponding JDA instance
      */
     @Nonnull
+    @Override
     JDA getJDA();
 
     /**

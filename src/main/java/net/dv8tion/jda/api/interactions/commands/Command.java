@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.ISnowflake;
+import net.dv8tion.jda.api.from.FromJDA;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.localization.LocalizationMap;
@@ -48,7 +49,7 @@ import java.util.stream.Collectors;
  * @see Guild#retrieveCommandById(String)
  * @see Guild#retrieveCommands()
  */
-public interface Command extends ISnowflake
+public interface Command extends ISnowflake, FromJDA
 {
     /**
      * Delete this command.
@@ -95,14 +96,6 @@ public interface Command extends ISnowflake
     @Nonnull
     @CheckReturnValue
     RestAction<List<IntegrationPrivilege>> retrievePrivileges(@Nonnull Guild guild);
-
-    /**
-     * Returns the {@link JDA JDA} instance of this Command
-     *
-     * @return the corresponding JDA instance
-     */
-    @Nonnull
-    JDA getJDA();
 
     /**
      * The {@link Type} of command

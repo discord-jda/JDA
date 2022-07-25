@@ -16,10 +16,10 @@
 
 package net.dv8tion.jda.api.interactions;
 
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.WebhookClient;
+import net.dv8tion.jda.api.from.FromJDA;
 import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback;
 import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
@@ -59,7 +59,7 @@ import java.util.Collection;
  * @see #deleteOriginal()
  * @see #sendMessage(String)
  */
-public interface InteractionHook extends WebhookClient<Message>
+public interface InteractionHook extends WebhookClient<Message>, FromJDA
 {
     /**
      * The interaction attached to this hook.
@@ -117,14 +117,6 @@ public interface InteractionHook extends WebhookClient<Message>
      */
     @Nonnull
     InteractionHook setEphemeral(boolean ephemeral);
-
-    /**
-     * The JDA instance for this interaction
-     *
-     * @return The JDA instance
-     */
-    @Nonnull
-    JDA getJDA();
 
     /**
      * Retrieves the original reply to this interaction.

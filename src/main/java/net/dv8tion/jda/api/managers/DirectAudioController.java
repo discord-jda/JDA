@@ -19,6 +19,7 @@ package net.dv8tion.jda.api.managers;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.AudioChannel;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.from.FromJDA;
 
 import javax.annotation.Nonnull;
 
@@ -28,16 +29,8 @@ import javax.annotation.Nonnull;
  *
  * <p>For normal operation use {@link Guild#getAudioManager()} instead.
  */
-public interface DirectAudioController
+public interface DirectAudioController extends FromJDA
 {
-    /**
-     * The associated JDA instance
-     *
-     * @return The JDA instance
-     */
-    @Nonnull
-    JDA getJDA();
-
     /**
      * Requests a voice server endpoint for connecting to the voice gateway.
      *

@@ -18,6 +18,7 @@ package net.dv8tion.jda.api.entities.emoji;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.from.FromJDA;
 import net.dv8tion.jda.api.managers.CustomEmojiManager;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
@@ -45,7 +46,7 @@ import java.util.List;
  * @see    JDA#getEmojisByName(String, boolean)
  * @see    JDA#getEmojis()
  */
-public interface RichCustomEmoji extends CustomEmoji
+public interface RichCustomEmoji extends CustomEmoji, FromJDA
 {
     /**
      * The {@link net.dv8tion.jda.api.entities.Guild Guild} this emoji is attached to.
@@ -88,14 +89,6 @@ public interface RichCustomEmoji extends CustomEmoji
      * @return True, if this emoji is available
      */
     boolean isAvailable();
-
-    /**
-     * The {@link net.dv8tion.jda.api.JDA JDA} instance of this emoji
-     *
-     * @return The JDA instance of this emoji
-     */
-    @Nonnull
-    JDA getJDA();
 
     /**
      * The user who created this emoji

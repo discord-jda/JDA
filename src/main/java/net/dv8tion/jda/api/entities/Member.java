@@ -17,10 +17,10 @@
 package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.annotations.Incubating;
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.channel.unions.DefaultGuildChannelUnion;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
+import net.dv8tion.jda.api.from.FromJDA;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.utils.ImageProxy;
 
@@ -54,7 +54,7 @@ import java.util.concurrent.TimeUnit;
  * @see   Guild#getMembersWithRoles(Role...)
  * @see   Guild#getMembers()
  */
-public interface Member extends IMentionable, IPermissionHolder, UserSnowflake
+public interface Member extends IMentionable, IPermissionHolder, UserSnowflake, FromJDA
 {
     /** Template for {@link #getAvatarUrl()}. */
     String AVATAR_URL = "https://cdn.discordapp.com/guilds/%s/users/%s/avatars/%s.%s";
@@ -76,14 +76,6 @@ public interface Member extends IMentionable, IPermissionHolder, UserSnowflake
      */
     @Nonnull
     Guild getGuild();
-
-    /**
-     * The JDA instance.
-     *
-     * @return The current JDA instance.
-     */
-    @Nonnull
-    JDA getJDA();
 
     /**
      * The {@link java.time.OffsetDateTime Time} this Member joined the Guild.

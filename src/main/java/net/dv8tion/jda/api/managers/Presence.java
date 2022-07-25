@@ -16,9 +16,9 @@
 
 package net.dv8tion.jda.api.managers;
 
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
+import net.dv8tion.jda.api.from.FromJDA;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -28,16 +28,8 @@ import javax.annotation.Nullable;
  *
  * @since  3.0
  */
-public interface Presence
+public interface Presence extends FromJDA
 {
-    /**
-     * The JDA instance of this Presence
-     *
-     * @return The current JDA instance
-     */
-    @Nonnull
-    JDA getJDA();
-
     /**
      * The current OnlineStatus for this session.
      * <br>This might not be what the Discord Client displays due to session clashing!

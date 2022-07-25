@@ -32,6 +32,7 @@ import net.dv8tion.jda.api.entities.sticker.StickerSnowflake;
 import net.dv8tion.jda.api.exceptions.HttpException;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.exceptions.MissingAccessException;
+import net.dv8tion.jda.api.from.FromJDA;
 import net.dv8tion.jda.api.interactions.InteractionType;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
@@ -130,7 +131,7 @@ import java.util.stream.Collectors;
  * @see MessageChannel#deleteMessageById(String)
  * @see MessageChannel#editMessageById(String, CharSequence)
  */
-public interface Message extends ISnowflake, Formattable
+public interface Message extends ISnowflake, Formattable, FromJDA
 {
     /** Template for {@link #getJumpUrl()}.*/
     String JUMP_URL = "https://discord.com/channels/%s/%s/%s";
@@ -1474,6 +1475,7 @@ public interface Message extends ISnowflake, Formattable
      * @return  the corresponding JDA instance
      */
     @Nonnull
+    @Override
     JDA getJDA();
 
     /**

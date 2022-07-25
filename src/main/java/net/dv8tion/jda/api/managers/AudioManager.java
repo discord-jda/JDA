@@ -25,6 +25,7 @@ import net.dv8tion.jda.api.audio.hooks.ConnectionListener;
 import net.dv8tion.jda.api.audio.hooks.ConnectionStatus;
 import net.dv8tion.jda.api.entities.AudioChannel;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.from.FromJDA;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.JDALogger;
 import org.slf4j.Logger;
@@ -42,7 +43,7 @@ import java.util.EnumSet;
  *
  * @see Guild#getAudioManager()
  */
-public interface AudioManager
+public interface AudioManager extends FromJDA
 {
     long DEFAULT_CONNECTION_TIMEOUT = 10000;
     Logger LOG = JDALogger.getLog(AudioManager.class);
@@ -157,14 +158,6 @@ public interface AudioManager
      * @since 4.0.0
      */
     void setSpeakingDelay(int millis);
-
-    /**
-     * Gets the {@link net.dv8tion.jda.api.JDA JDA} instance that this AudioManager is a part of.
-     *
-     * @return The corresponding JDA instance
-     */
-    @Nonnull
-    JDA getJDA();
 
     /**
      * Gets the {@link net.dv8tion.jda.api.entities.Guild Guild} instance that this AudioManager is used for.

@@ -18,6 +18,7 @@ package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild.VerificationLevel;
+import net.dv8tion.jda.api.from.FromJDA;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.utils.ImageProxy;
@@ -43,7 +44,7 @@ import java.util.Set;
  * @see    net.dv8tion.jda.api.entities.Guild#retrieveInvites() Guild.retrieveInvites()
  * @see    IInviteContainer#retrieveInvites()
  */
-public interface Invite
+public interface Invite extends FromJDA
 {
     /**
      * Retrieves a new {@link net.dv8tion.jda.api.entities.Invite Invite} instance for the given invite code.
@@ -223,14 +224,6 @@ public interface Invite
      */
     @Nullable
     User getInviter();
-
-    /**
-     * The {@link net.dv8tion.jda.api.JDA JDA} instance used to create this Invite
-     *
-     * @return the corresponding JDA instance
-     */
-    @Nonnull
-    JDA getJDA();
 
     /**
      * The max age of this invite in seconds.

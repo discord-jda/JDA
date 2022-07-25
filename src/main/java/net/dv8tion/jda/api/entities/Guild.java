@@ -25,6 +25,7 @@ import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import net.dv8tion.jda.api.entities.sticker.*;
 import net.dv8tion.jda.api.entities.templates.Template;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
+import net.dv8tion.jda.api.from.FromJDA;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.PrivilegeConfig;
@@ -78,7 +79,7 @@ import javax.annotation.Nullable;
  * @see JDA#getGuildsByName(String, boolean)
  * @see JDA#getGuilds()
  */
-public interface Guild extends IGuildChannelContainer, ISnowflake
+public interface Guild extends IGuildChannelContainer, ISnowflake, FromJDA
 {
     /** Template for {@link #getIconUrl()}. */
     String ICON_URL = "https://cdn.discordapp.com/icons/%s/%s.%s";
@@ -2159,14 +2160,6 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      */
     @Nonnull
     Task<Void> cancelRequestToSpeak();
-
-    /**
-     * Returns the {@link net.dv8tion.jda.api.JDA JDA} instance of this Guild
-     *
-     * @return the corresponding JDA instance
-     */
-    @Nonnull
-    JDA getJDA();
 
     /**
      * Retrieves all {@link net.dv8tion.jda.api.entities.Invite Invites} for this guild.

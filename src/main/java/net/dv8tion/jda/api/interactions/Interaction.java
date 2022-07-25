@@ -18,6 +18,7 @@ package net.dv8tion.jda.api.interactions;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.from.FromJDA;
 import net.dv8tion.jda.api.interactions.callbacks.*;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.components.Modal;
@@ -52,7 +53,7 @@ import javax.annotation.Nullable;
  * <p><b>You can only acknowledge an interaction once!</b> Any additional calls to reply/deferReply will result in exceptions.
  * You can use {@link #isAcknowledged()} to check whether the interaction has been acknowledged already.
  */
-public interface Interaction extends ISnowflake
+public interface Interaction extends ISnowflake, FromJDA
 {
     /**
      * The raw interaction type.
@@ -202,13 +203,5 @@ public interface Interaction extends ISnowflake
             throw new IllegalStateException("This interaction did not happen in a guild");
         return getGuild().getLocale();
     }
-
-    /**
-     * Returns the {@link net.dv8tion.jda.api.JDA JDA} instance of this interaction
-     *
-     * @return the corresponding JDA instance
-     */
-    @Nonnull
-    JDA getJDA();
 
 }

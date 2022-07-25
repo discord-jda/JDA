@@ -16,22 +16,13 @@
 
 package net.dv8tion.jda.api.events;
 
-import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.from.FromJDA;
 import net.dv8tion.jda.api.utils.data.DataObject;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public interface GenericEvent
+public interface GenericEvent extends FromJDA
 {
-    /**
-     * The current JDA instance corresponding to this Event
-     *
-     * @return The corresponding JDA instance
-     */
-    @Nonnull
-    JDA getJDA();
-
     /**
      * The current sequence for this event.
      * <br>This can be used to keep events in order when making sequencing system.

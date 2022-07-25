@@ -13,40 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package net.dv8tion.jda.api.from;
 
-package net.dv8tion.jda.api.entities;
-
-import net.dv8tion.jda.api.from.FromJDA;
+import net.dv8tion.jda.api.JDA;
 
 import javax.annotation.Nonnull;
-import java.time.OffsetDateTime;
 
-//TODO-v5: docs
-public interface ThreadMember extends IMentionable, FromJDA
+/**
+ * An interface for objects that have a corresponding jda instance
+ */
+public interface FromJDA
 {
-
+    /**
+     * The corresponding {@link net.dv8tion.jda.api.JDA jda} instance
+     *
+     * @return The jda instance
+     */
     @Nonnull
-    Guild getGuild();
+    JDA getJDA();
 
-    @Nonnull
-    ThreadChannel getThread();
-
-    //We might not actually be able to provide a user because we only get the `userId` in the ThreadMember object.
-    @Nonnull
-    User getUser();
-
-    @Nonnull
-    Member getMember();
-
-    @Nonnull
-    OffsetDateTime getTimeJoined();
-
-    //TODO | Set<ThreadMemberFlags> getFlags();
-
-    long getFlagsRaw();
-
-    default boolean isThreadOwner()
-    {
-        return getThread().getOwnerIdLong() == getIdLong();
-    }
 }

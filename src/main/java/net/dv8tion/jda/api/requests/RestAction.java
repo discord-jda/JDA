@@ -19,6 +19,7 @@ package net.dv8tion.jda.api.requests;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.exceptions.ContextException;
 import net.dv8tion.jda.api.exceptions.RateLimitedException;
+import net.dv8tion.jda.api.from.FromJDA;
 import net.dv8tion.jda.api.utils.Result;
 import net.dv8tion.jda.api.utils.concurrent.DelayedCompletableFuture;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
@@ -155,7 +156,7 @@ import java.util.stream.Collectors;
  * @see   net.dv8tion.jda.api.exceptions.ErrorHandler
  * @see   net.dv8tion.jda.api.exceptions.ErrorResponseException
  */
-public interface RestAction<T>
+public interface RestAction<T> extends FromJDA
 {
     /**
      * If enabled this will pass a {@link net.dv8tion.jda.api.exceptions.ContextException ContextException}
@@ -381,14 +382,6 @@ public interface RestAction<T>
 
         return result.map(output);
     }
-
-    /**
-     * The current JDA instance
-     *
-     * @return The corresponding JDA instance
-     */
-    @Nonnull
-    JDA getJDA();
 
     /**
      * Sets the last-second checks before finally executing the http request in the queue.

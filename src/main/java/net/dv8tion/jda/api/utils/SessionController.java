@@ -17,6 +17,7 @@
 package net.dv8tion.jda.api.utils;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.from.FromJDA;
 
 import javax.annotation.Nonnull;
 
@@ -235,7 +236,7 @@ public interface SessionController
      *
      * <p><b>Note: None of the provided session nodes can be resumed, the resume timeframe has already passed</b>
      */
-    interface SessionConnectNode
+    interface SessionConnectNode extends FromJDA
     {
         /**
          * Whether this node is reconnecting. Can be used to setup a priority based system.
@@ -243,14 +244,6 @@ public interface SessionController
          * @return True, if this session is reconnecting
          */
         boolean isReconnect();
-
-        /**
-         * The {@link net.dv8tion.jda.api.JDA JDA} instance for this request
-         *
-         * @return The JDA instance
-         */
-        @Nonnull
-        JDA getJDA();
 
         /**
          * The {@link net.dv8tion.jda.api.JDA.ShardInfo ShardInfo} for this request.

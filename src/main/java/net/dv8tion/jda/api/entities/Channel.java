@@ -16,7 +16,7 @@
 
 package net.dv8tion.jda.api.entities;
 
-import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.from.FromJDA;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
 
@@ -28,7 +28,7 @@ import java.util.Formatter;
 /**
  * Abstract Channel interface for all {@link ChannelType ChannelTypes}.
  */
-public interface Channel extends IMentionable
+public interface Channel extends IMentionable, FromJDA
 {
     /**
      * The human readable name of this channel.
@@ -45,14 +45,6 @@ public interface Channel extends IMentionable
      */
     @Nonnull
     ChannelType getType();
-
-    /**
-     * Returns the {@link net.dv8tion.jda.api.JDA JDA} instance of this channel
-     *
-     * @return the corresponding JDA instance
-     */
-    @Nonnull
-    JDA getJDA();
 
     /**
      * TODO-v5: Revisit these docs

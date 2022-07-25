@@ -15,9 +15,9 @@
  */
 package net.dv8tion.jda.api.entities;
 
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.channel.unions.IPermissionContainerUnion;
+import net.dv8tion.jda.api.from.FromJDA;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.PermissionOverrideAction;
 
@@ -37,7 +37,7 @@ import java.util.EnumSet;
  * @see IPermissionContainer#getMemberPermissionOverrides()
  * @see IPermissionContainer#getRolePermissionOverrides()
  */
-public interface PermissionOverride extends ISnowflake
+public interface PermissionOverride extends ISnowflake, FromJDA
 {
     /**
      * This is the raw binary representation (as a base 10 long) of the permissions <b>allowed</b> by this override.
@@ -89,14 +89,6 @@ public interface PermissionOverride extends ISnowflake
      */
     @Nonnull
     EnumSet<Permission> getDenied();
-
-    /**
-     * The {@link net.dv8tion.jda.api.JDA JDA} instance that this PermissionOverride is related to.
-     *
-     * @return Never-null {@link net.dv8tion.jda.api.JDA JDA} instance.
-     */
-    @Nonnull
-    JDA getJDA();
 
     /**
      * This method will return the {@link net.dv8tion.jda.api.entities.IPermissionHolder PermissionHolder} of this PermissionOverride.

@@ -16,7 +16,7 @@
 
 package net.dv8tion.jda.api.entities;
 
-import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.from.FromJDA;
 import net.dv8tion.jda.api.requests.RestAction;
 
 import javax.annotation.CheckReturnValue;
@@ -30,16 +30,8 @@ import java.time.OffsetDateTime;
  *
  * @see Member#getVoiceState()
  */
-public interface GuildVoiceState extends ISnowflake
+public interface GuildVoiceState extends ISnowflake, FromJDA
 {
-    /**
-     * Returns the {@link net.dv8tion.jda.api.JDA JDA} instance of this VoiceState
-     *
-     * @return The corresponding JDA instance
-     */
-    @Nonnull
-    JDA getJDA();
-
     /**
      * Returns whether the {@link net.dv8tion.jda.api.entities.Member Member} muted themselves.
      *

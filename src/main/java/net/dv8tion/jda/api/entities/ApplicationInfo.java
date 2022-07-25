@@ -16,14 +16,17 @@
 
 package net.dv8tion.jda.api.entities;
 
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.from.FromJDA;
 import net.dv8tion.jda.api.utils.ImageProxy;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.EnumSet;
+import java.util.List;
 
 /**
  * Represents a Discord Application from its bot's point of view.
@@ -33,7 +36,7 @@ import java.util.*;
  * 
  * @see    net.dv8tion.jda.api.JDA#retrieveApplicationInfo()
  */
-public interface ApplicationInfo extends ISnowflake
+public interface ApplicationInfo extends ISnowflake, FromJDA
 {
     /**
      * Whether the bot requires code grant to invite or not. 
@@ -267,15 +270,6 @@ public interface ApplicationInfo extends ISnowflake
     {
         return getInviteUrl(Long.toUnsignedString(guildId), permissions);
     }
-
-    /**
-     * The {@link net.dv8tion.jda.api.JDA JDA} instance of this ApplicationInfo
-     * (the one logged into this application's bot account).
-     * 
-     * @return The JDA instance of this ApplicationInfo
-     */
-    @Nonnull
-    JDA getJDA();
 
     /**
      * The name of the bot's application.

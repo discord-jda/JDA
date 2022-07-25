@@ -16,6 +16,7 @@
 package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.from.FromJDA;
 import net.dv8tion.jda.api.managers.RoleManager;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.RoleAction;
@@ -39,7 +40,7 @@ import java.awt.*;
  * @see JDA#getRolesByName(String, boolean)
  * @see JDA#getRoles()
  */
-public interface Role extends IMentionable, IPermissionHolder, Comparable<Role>
+public interface Role extends IMentionable, IPermissionHolder, Comparable<Role>, FromJDA
 {
     /** Used to keep consistency between color values used in the API */
     int DEFAULT_COLOR_RAW = 0x1FFFFFFF; // java.awt.Color fills the MSB with FF, we just use 1F to provide better consistency
@@ -269,14 +270,6 @@ public interface Role extends IMentionable, IPermissionHolder, Comparable<Role>
     @Nonnull
     @CheckReturnValue
     AuditableRestAction<Void> delete();
-
-    /**
-     * Returns the {@link net.dv8tion.jda.api.JDA JDA} instance of this Role
-     *
-     * @return the corresponding JDA instance
-     */
-    @Nonnull
-    JDA getJDA();
 
     /**
      * The tags of this role.
