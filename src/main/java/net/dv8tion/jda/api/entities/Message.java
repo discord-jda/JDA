@@ -544,6 +544,21 @@ public interface Message extends ISnowflake, Formattable
     List<MessageEmbed> getEmbeds();
 
     /**
+     * Layouts of interactive components, usually {@link ActionRow ActionRows}.
+     * <br>You can use {@link MessageRequest#setComponents(LayoutComponent...)} to update these.
+     *
+     * <p><b>Requires {@link net.dv8tion.jda.api.requests.GatewayIntent#MESSAGE_CONTENT GatewayIntent.MESSAGE_CONTENT}</b>
+     *
+     * @return Immutable {@link List} of {@link LayoutComponent}
+     *
+     * @see    #getActionRows()
+     * @see    #getButtons()
+     * @see    #getButtonById(String)
+     */
+    @Nonnull
+    List<LayoutComponent> getComponents();
+
+    /**
      * Rows of interactive components such as {@link Button Buttons}.
      * <br>You can use {@link MessageRequest#setComponents(LayoutComponent...)} to update these.
      *
@@ -555,7 +570,14 @@ public interface Message extends ISnowflake, Formattable
      * @see    #getButtonById(String)
      */
     @Nonnull
-    List<ActionRow> getActionRows();
+    default List<ActionRow> getActionRows()
+    {
+        return getComponents()
+                .stream()
+                .filter(ActionRow.class::isInstance)
+                .map(ActionRow.class::cast)
+                .collect(Collectors.toList());
+    }
 
     /**
      * All {@link Button Buttons} attached to this message.

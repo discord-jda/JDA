@@ -22,7 +22,6 @@ import net.dv8tion.jda.api.entities.channel.unions.GuildMessageChannelUnion;
 import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.entities.sticker.StickerItem;
-import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
@@ -261,7 +260,7 @@ public abstract class AbstractMessage implements Message
 
     @Nonnull
     @Override
-    public List<ActionRow> getActionRows()
+    public List<LayoutComponent> getComponents()
     {
         unsupported();
         return null;

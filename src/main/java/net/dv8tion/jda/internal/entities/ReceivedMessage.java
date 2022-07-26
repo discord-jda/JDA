@@ -74,7 +74,7 @@ public class ReceivedMessage extends AbstractMessage
     protected final List<Attachment> attachments;
     protected final List<MessageEmbed> embeds;
     protected final List<StickerItem> stickers;
-    protected final List<ActionRow> components;
+    protected final List<LayoutComponent> components;
     protected final int flags;
     protected final Message.Interaction interaction;
     protected final ThreadChannel startedThread;
@@ -467,7 +467,7 @@ public class ReceivedMessage extends AbstractMessage
 
     @Nonnull
     @Override
-    public List<ActionRow> getActionRows()
+    public List<LayoutComponent> getComponents()
     {
         checkIntent();
         return components;
