@@ -589,8 +589,8 @@ public interface Message extends ISnowflake, Formattable
     @Nonnull
     default List<Button> getButtons()
     {
-        return getActionRows().stream()
-                .map(ActionRow::getButtons)
+        return getComponents().stream()
+                .map(LayoutComponent::getButtons)
                 .flatMap(List::stream)
                 .collect(Collectors.toList());
     }
