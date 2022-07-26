@@ -350,13 +350,13 @@ public class ThreadChannelImpl extends AbstractGuildChannelImpl<ThreadChannelImp
 
     public ThreadChannelImpl setMessageCount(int messageCount)
     {
-        this.messageCount = Math.max(messageCount, this.messageCount); // If this is 0 we use the older count
+        this.messageCount = messageCount;
         return this;
     }
 
     public ThreadChannelImpl setTotalMessageCount(int messageCount)
     {
-        this.totalMessageCount = messageCount;
+        this.totalMessageCount = Math.max(messageCount, this.messageCount); // If this is 0 we use the older count
         return this;
     }
 
