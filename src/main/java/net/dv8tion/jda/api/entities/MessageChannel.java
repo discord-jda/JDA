@@ -136,7 +136,7 @@ public interface MessageChannel extends Channel, Formattable
      * @param  messageIds
      *         The message ids to delete
      *
-     * @return List of futures representing all deletion tasks
+     * @return A futures representing all deletion tasks
      *
      * @see    CompletableFuture#allOf(java.util.concurrent.CompletableFuture[])
      */
@@ -162,7 +162,7 @@ public interface MessageChannel extends Channel, Formattable
      * @param  messageIds
      *         The message ids to delete
      *
-     * @return List of futures representing all deletion tasks
+     * @return A futures representing all deletion tasks
      *
      * @see    CompletableFuture#allOf(java.util.concurrent.CompletableFuture[])
      */
@@ -220,7 +220,7 @@ public interface MessageChannel extends Channel, Formattable
      * @throws IllegalArgumentException
      *         If one of the provided messages is from another user and cannot be deleted because this is not in a guild
      *
-     * @return List of futures representing all deletion tasks
+     * @return A futures representing all deletion tasks
      *
      * @see    CompletableFuture#allOf(java.util.concurrent.CompletableFuture[])
      */
@@ -260,7 +260,7 @@ public interface MessageChannel extends Channel, Formattable
      * @param  messageIds
      *         The message ids to delete
      *
-     * @return List of futures representing all deletion tasks
+     * @return A future representing all deletion tasks
      *
      * @see    CompletableFuture#allOf(java.util.concurrent.CompletableFuture[])
      */
