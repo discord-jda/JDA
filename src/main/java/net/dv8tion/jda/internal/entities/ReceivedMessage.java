@@ -131,7 +131,7 @@ public class ReceivedMessage extends AbstractMessage
         if (!didContentIntentWarning && !api.isIntent(GatewayIntent.MESSAGE_CONTENT))
         {
             SelfUser selfUser = api.getSelfUser();
-            if (!Objects.equals(selfUser, author) && !mentions.getUsers().contains(selfUser) && isFromGuild() && content.isEmpty())
+            if (!Objects.equals(selfUser, author) && !mentions.getUsers().contains(selfUser) && isFromGuild())
             {
                 didContentIntentWarning = true;
                 JDAImpl.LOG.warn(
@@ -140,7 +140,7 @@ public class ReceivedMessage extends AbstractMessage
                     "Useful resources to learn more:\n" +
                     "\t- https://support-dev.discord.com/hc/en-us/articles/4404772028055-Message-Content-Privileged-Intent-FAQ\n" +
                     "\t- https://jda.wiki/using-jda/gateway-intents-and-member-cache-policy/\n" +
-                    "\t- https://jda.wiki/using-jda/troubleshooting/#im-getting-closecode4014-disallowed-intents\n" +
+                    "\t- https://jda.wiki/using-jda/troubleshooting/#cannot-get-message-content-attempting-to-access-message-content-without-gatewayintent\n" +
                     "Or suppress this warning if this is intentional with Message.suppressContentIntentWarning()"
                 );
             }
