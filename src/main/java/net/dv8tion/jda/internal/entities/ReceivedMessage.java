@@ -27,7 +27,6 @@ import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import net.dv8tion.jda.api.entities.sticker.StickerItem;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.exceptions.PermissionException;
-import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.requests.GatewayIntent;
@@ -80,8 +79,6 @@ public class ReceivedMessage extends AbstractMessage
     protected final Message.Interaction interaction;
     protected final ThreadChannel startedThread;
 
-    protected InteractionHook interactionHook = null; // late-init
-
     // LAZY EVALUATED
     protected String altContent = null;
     protected String strippedContent = null;
@@ -117,12 +114,6 @@ public class ReceivedMessage extends AbstractMessage
         this.flags = flags;
         this.interaction = interaction;
         this.startedThread = startedThread;
-    }
-
-    public ReceivedMessage withHook(InteractionHook hook)
-    {
-        this.interactionHook = hook;
-        return this;
     }
 
     private void checkIntent()
