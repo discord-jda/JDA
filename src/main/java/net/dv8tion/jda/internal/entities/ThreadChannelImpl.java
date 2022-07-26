@@ -59,6 +59,7 @@ public class ThreadChannelImpl extends AbstractGuildChannelImpl<ThreadChannelImp
     private long ownerId;
     private long latestMessageId;
     private int messageCount;
+    private int totalMessageCount;
     private int memberCount;
     private int slowmode;
 
@@ -85,6 +86,12 @@ public class ThreadChannelImpl extends AbstractGuildChannelImpl<ThreadChannelImp
     public int getMessageCount()
     {
         return messageCount;
+    }
+
+    @Override
+    public int getTotalMessageCount()
+    {
+        return totalMessageCount;
     }
 
     @Override
@@ -343,7 +350,13 @@ public class ThreadChannelImpl extends AbstractGuildChannelImpl<ThreadChannelImp
 
     public ThreadChannelImpl setMessageCount(int messageCount)
     {
-        this.messageCount = messageCount;
+        this.messageCount = Math.max(messageCount, this.messageCount); // If this is 0 we use the older count
+        return this;
+    }
+
+    public ThreadChannelImpl setTotalMessageCount(int messageCount)
+    {
+        this.totalMessageCount = messageCount;
         return this;
     }
 

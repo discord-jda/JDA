@@ -55,19 +55,24 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer
 
     /**
      * Gets the current number of messages present in this thread.
-     * <br>
-     * Threads started from seed messages in the {@link IThreadContainer parent channel} will not count that seed message.
-     * <br>
-     * This will be capped at 50, regardless of actual count.
+     * <br>Threads started from seed messages in the {@link IThreadContainer parent channel} will not count that seed message.
+     * <br>This will be capped at 50 for threads created before <b>July 1, 2022</b>.
      *
-     * @return The number of messages sent in this channel, capping at 50.
+     * @return The number of messages sent in this thread
      */
     int getMessageCount();
 
     /**
+     * The total number of messages sent in this thread, including all deleted messages.
+     * <br>This might be inaccurate for threads created before <b>July 1, 2022</b>.
+     *
+     * @return The total number of messages ever sent in this thread
+     */
+    int getTotalMessageCount();
+
+    /**
      * Gets the current number of members that have joined this thread.
-     * <br>
-     * This is capped at 50, meaning any additional members will not affect this count.
+     * <br>This is capped at 50, meaning any additional members will not affect this count.
      *
      * @return The number of members that have joined this thread, capping at 50.
      */

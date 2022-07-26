@@ -1176,6 +1176,7 @@ public class EntityBuilder
                 .setOwnerId(json.getLong("owner_id"))
                 .setMemberCount(json.getInt("member_count"))
                 .setMessageCount(json.getInt("message_count"))
+                .setTotalMessageCount(json.getInt("total_message_count", 0))
                 .setLatestMessageIdLong(json.getLong("last_message_id", 0))
                 .setSlowmode(json.getInt("rate_limit_per_user", 0))
                 .setLocked(threadMetadata.getBoolean("locked"))
