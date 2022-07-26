@@ -141,10 +141,10 @@ public interface MessageChannel extends Channel, Formattable
      * @see    CompletableFuture#allOf(java.util.concurrent.CompletableFuture[])
      */
     @Nonnull
-    default List<CompletableFuture<Void>> purgeMessagesById(@Nonnull List<String> messageIds)
+    default CompletableFuture<Void> purgeMessagesById(@Nonnull List<String> messageIds)
     {
         if (messageIds == null || messageIds.isEmpty())
-            return Collections.emptyList();
+            return new CompletableFuture<>();
         long[] ids = new long[messageIds.size()];
         for (int i = 0; i < ids.length; i++)
             ids[i] = MiscUtil.parseSnowflake(messageIds.get(i));
@@ -167,10 +167,10 @@ public interface MessageChannel extends Channel, Formattable
      * @see    CompletableFuture#allOf(java.util.concurrent.CompletableFuture[])
      */
     @Nonnull
-    default List<CompletableFuture<Void>> purgeMessagesById(@Nonnull String... messageIds)
+    default CompletableFuture<Void> purgeMessagesById(@Nonnull String... messageIds)
     {
         if (messageIds == null || messageIds.length == 0)
-            return Collections.emptyList();
+            return new CompletableFuture<>();
         return purgeMessagesById(Arrays.asList(messageIds));
     }
 
@@ -195,10 +195,10 @@ public interface MessageChannel extends Channel, Formattable
      * @see    CompletableFuture#allOf(java.util.concurrent.CompletableFuture[])
      */
     @Nonnull
-    default List<CompletableFuture<Void>> purgeMessages(@Nonnull Message... messages)
+    default CompletableFuture<Void> purgeMessages(@Nonnull Message... messages)
     {
         if (messages == null || messages.length == 0)
-            return Collections.emptyList();
+            return new CompletableFuture<>();
         return purgeMessages(Arrays.asList(messages));
     }
 
@@ -225,10 +225,10 @@ public interface MessageChannel extends Channel, Formattable
      * @see    CompletableFuture#allOf(java.util.concurrent.CompletableFuture[])
      */
     @Nonnull
-    default List<CompletableFuture<Void>> purgeMessages(@Nonnull List<? extends Message> messages)
+    default CompletableFuture<Void> purgeMessages(@Nonnull List<? extends Message> messages)
     {
         if (messages == null || messages.isEmpty())
-            return Collections.emptyList();
+            return new CompletableFuture<>();
         return purgeMessagesById(messages.stream()
                 .filter(m -> m.getType().canDelete())
                 .mapToLong(Message::getIdLong)
@@ -265,17 +265,17 @@ public interface MessageChannel extends Channel, Formattable
      * @see    CompletableFuture#allOf(java.util.concurrent.CompletableFuture[])
      */
     @Nonnull
-    default List<CompletableFuture<Void>> purgeMessagesById(@Nonnull long... messageIds)
+    default CompletableFuture<Void> purgeMessagesById(@Nonnull long... messageIds)
     {
         if (messageIds == null || messageIds.length == 0)
-            return Collections.emptyList();
-        List<CompletableFuture<Void>> list = new ArrayList<>(messageIds.length);
-        TreeSet<Long> sortedIds = new TreeSet<>(Comparator.reverseOrder());
-        for (long messageId : messageIds)
-            sortedIds.add(messageId);
-        for (long messageId : sortedIds)
-            list.add(deleteMessageById(messageId).submit());
-        return list;
+            return new CompletableFuture<>();
+        CompletableFuture<?>[] cfs = new CompletableFuture[messageIds.length];
+        long[] sorted = messageIds.clone();
+        Arrays.sort(sorted);
+        int i = messageIds.length;
+        for (long messageId : sorted)
+            cfs[--i] = (deleteMessageById(messageId).submit());
+        return CompletableFuture.allOf(cfs);
     }
 
     /**
@@ -657,7 +657,7 @@ public interface MessageChannel extends Channel, Formattable
     {
         Checks.notNull(file, "file");
         Checks.check(file.exists() && file.canRead(),
-                    "Provided file doesn't exist or cannot be read!");
+                "Provided file doesn't exist or cannot be read!");
         Checks.notNull(fileName, "fileName");
 
         try
@@ -839,7 +839,7 @@ public interface MessageChannel extends Channel, Formattable
         JDAImpl jda = (JDAImpl) getJDA();
         Route.CompiledRoute route = Route.Messages.GET_MESSAGE.compile(getId(), messageId);
         return new RestActionImpl<>(jda, route,
-            (response, request) -> jda.getEntityBuilder().createMessageWithChannel(response.getObject(), MessageChannel.this, false));
+                (response, request) -> jda.getEntityBuilder().createMessageWithChannel(response.getObject(), MessageChannel.this, false));
     }
 
     /**
@@ -1987,7 +1987,7 @@ public interface MessageChannel extends Channel, Formattable
      *
      * @return The {@link ReactionPaginationAction ReactionPaginationAction} of the emoji's users.
      *
-     * @since  4.2.0
+     * @since 4.2.0
      */
     @Nonnull
     @CheckReturnValue

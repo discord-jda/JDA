@@ -45,10 +45,10 @@ public interface MessageChannelMixin<T extends MessageChannelMixin<T>> extends
 {
     // ---- Default implementations of interface ----
     @Nonnull
-    default List<CompletableFuture<Void>> purgeMessages(@Nonnull List<? extends Message> messages)
+    default CompletableFuture<Void> purgeMessages(@Nonnull List<? extends Message> messages)
     {
         if (messages == null || messages.isEmpty())
-            return Collections.emptyList();
+            return new CompletableFuture<>();
 
         if (!canDeleteOtherUsersMessages())
         {
@@ -68,10 +68,10 @@ public interface MessageChannelMixin<T extends MessageChannelMixin<T>> extends
     }
 
     @Nonnull
-    default List<CompletableFuture<Void>> purgeMessagesById(@Nonnull long... messageIds)
+    default CompletableFuture<Void> purgeMessagesById(@Nonnull long... messageIds)
     {
         if (messageIds == null || messageIds.length == 0)
-            return Collections.emptyList();
+            return new CompletableFuture<>();
 
         //If we can't use the bulk delete system, then use the standard purge defined in MessageChannel
         if (!canDeleteOtherUsersMessages())
@@ -115,7 +115,7 @@ public interface MessageChannelMixin<T extends MessageChannelMixin<T>> extends
             for (long message : norm)
                 list.add(deleteMessageById(message).submit());
         }
-        return list;
+        return CompletableFuture.allOf(list.toArray(new CompletableFuture[0]));
     }
 
     @Nonnull
