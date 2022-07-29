@@ -226,7 +226,6 @@ public enum ActionType
      */
     BOT_ADD(28, TargetType.MEMBER),
 
-
     /**
      * An Administrator has created a {@link net.dv8tion.jda.api.entities.Role Role}.
      *
