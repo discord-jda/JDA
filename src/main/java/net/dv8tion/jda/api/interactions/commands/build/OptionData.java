@@ -789,8 +789,7 @@ public class OptionData implements SerializableData
      *         If any of the following checks fail
      *         <ul>
      *             <li>{@link OptionType type of this option} is {@link OptionType#STRING STRING}</li>
-     *             <li>{@code maxLength} is greater than or equal to {@value MAX_STRING_OPTION_LENGTH_MINIMUM} and
-     *             lower than or equal to {@value MAX_STRING_OPTION_LENGTH}</li>
+     *             <li>{@code maxLength} is positive and lower than or equal to {@value MAX_STRING_OPTION_LENGTH}</li>
      *         </ul>
      *
      * @return The OptionData instance, for chaining
@@ -817,9 +816,9 @@ public class OptionData implements SerializableData
      *         If any of the following checks fail
      *         <ul>
      *             <li>{@link OptionType type of this option} is {@link OptionType#STRING STRING}</li>
-     *             <li>{@code minLength} is greater than or equal to {@code 0}</li>
-     *             <li>{@code maxLength} is greater than or equal to {@value MAX_STRING_OPTION_LENGTH_MINIMUM} and
-     *             lower than or equal to {@value MAX_STRING_OPTION_LENGTH}</li>
+     *             <li>{@code minLength} is not negative</li>
+     *             <li>{@code maxLength} is lower than or equal to {@value MAX_STRING_OPTION_LENGTH}</li>
+     *             <li>{@code minLength} is lower than or equal to {@code maxLength}</li>
      *         </ul>
      *
      * @return The OptionData instance, for chaining
