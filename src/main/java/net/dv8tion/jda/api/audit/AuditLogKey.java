@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.ICategorizableChannel;
 import net.dv8tion.jda.api.entities.ThreadChannel;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
+import net.dv8tion.jda.api.entities.sticker.Sticker;
 
 /**
  * Enum of possible/expected keys that can be provided
@@ -473,6 +474,22 @@ public enum AuditLogKey
      */
     EMOJI_ROLES_REMOVE("$remove"),
 
+
+    // STICKER
+
+    /**
+     * Change of the {@link net.dv8tion.jda.api.entities.sticker.Sticker#getName() Sticker.getName()} value.
+     *
+     * <p>Expected type: <b>String</b>
+     */
+    STICKER_NAME("name"),
+
+    /**
+     * Change of the {@link Sticker#getFormatType() Sticker.getFormatType()} value.
+     *
+     * <p>Expected type: <b>String</b>
+     */
+    STICKER_FORMAT("format_type"),
 
     // WEBHOOK
     /**

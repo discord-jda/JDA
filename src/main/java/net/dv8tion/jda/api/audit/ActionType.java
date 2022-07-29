@@ -380,7 +380,6 @@ public enum ActionType
      */
     EMOJI_DELETE(62, TargetType.EMOJI),
 
-
     /**
      * A message was created.
      */
@@ -495,6 +494,38 @@ public enum ActionType
      * </ul>
      */
     STAGE_INSTANCE_DELETE(85, TargetType.STAGE_INSTANCE),
+
+    /**
+     * An Administrator created an {@link net.dv8tion.jda.api.entities.sticker.Sticker Custom Sticker}.
+     *
+     * <p><b>Possible Keys</b><br>
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#STICKER_NAME STICKE_NAME}</li>
+     *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#STICKER_FORMAT STICKE_FORMAT}</li>
+     * </ul>
+     */
+    STICKER_CREATE(90, TargetType.STICKER),
+
+    /**
+     * An Administrator updated an {@link net.dv8tion.jda.api.entities.sticker.Sticker Custom Sticker}.
+     *
+     * <p><b>Possible Keys</b><br>
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#STICKER_NAME STICKE_NAME}</li>
+     *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#STICKER_FORMAT STICKE_FORMAT}</li>
+     * </ul>
+     */
+    STICKER_UPDATE(91, TargetType.STICKER),
+
+    /**
+     * An Administrator created an {@link net.dv8tion.jda.api.entities.sticker.Sticker Custom Sticker}.
+     *
+     * <p><b>Possible Keys</b><br>
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#STICKER_NAME STICKE_NAME}</li>
+     * </ul>
+     */
+    STICKER_DELETE(92, TargetType.STICKER),
 
     /**
      * A user created a {@link net.dv8tion.jda.api.entities.ThreadChannel ThreadChannel}
