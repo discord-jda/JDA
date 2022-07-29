@@ -33,11 +33,11 @@ import javax.annotation.Nullable;
  * <p><b>Must provide not-null {@link net.dv8tion.jda.api.entities.Guild Guild} to compile a valid guild audit logs
  * pagination route</b>
  *
- * <h2>Limits</h2>
+ * <p><b>Limits</b><br>
  * Minimum - 1
  * <br>Maximum - 100
  *
- * <h2>Example</h2>
+ * <p><b>Example</b><br>
  * <pre><code>
  * public class Listener extends ListenerAdapter
  * {

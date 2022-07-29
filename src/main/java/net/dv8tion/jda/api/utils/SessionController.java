@@ -28,7 +28,7 @@ import javax.annotation.Nonnull;
  * <p>The {@link net.dv8tion.jda.api.utils.SessionControllerAdapter SessionControllerAdapter} provides
  * a default implementation that can be extended and overridden.
  *
- * <h2>States {@literal &} Behaviour</h2>
+ * <p><b>States {@literal &} Behaviour</b><br>
  * <b>Identify Ratelimit Handling</b>
  * <br>This will enable handling of (re-)connecting gateway sessions.
  *
@@ -41,7 +41,7 @@ import javax.annotation.Nonnull;
  * <br>This provider can be used to change the gateway retrieval (using cache, http, or static) and
  * allows to set a custom gateway endpoint. <b>Use carefully.</b>
  *
- * <h2>Examples</h2>
+ * <p><b>Examples</b><br>
  *
  * <b>Using {@link net.dv8tion.jda.api.JDABuilder JDABuilder}</b>
  * <br>

@@ -27,7 +27,7 @@ import javax.annotation.Nonnull;
  *
  * <p>This fires when a user clicks one of the custom buttons attached to a bot or webhook message.
  *
- * <h2>Requirements</h2>
+ * <p><b>Requirements</b><br>
  * To receive these events, you must unset the <b>Interactions Endpoint URL</b> in your application dashboard.
  * You can simply remove the URL for this endpoint in your settings at the <a href="https://discord.com/developers/applications" target="_blank">Discord Developers Portal</a>.
  */

@@ -17,6 +17,7 @@
 package net.dv8tion.jda.api.requests;
 
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.GenericEvent;
 import net.dv8tion.jda.api.events.emoji.GenericEmojiEvent;
 import net.dv8tion.jda.api.events.guild.GuildBanEvent;
@@ -141,6 +142,23 @@ public enum GatewayIntent
      */
     DIRECT_MESSAGE_TYPING(14),
     /**
+     * <b>PRIVILEGED INTENT</b> Access to message content.
+     *
+     * <p>This specifically affects messages received through the message history of a channel, or through {@link GenericMessageEvent Message Events}.
+     * The content restriction does not apply if the message <b>mentions the bot directly</b> (using @username), sent by the bot itself,
+     * or if the message is a direct message from a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}.
+     * Affected are all user-generated content fields of a message, such as:
+     * <ul>
+     *     <li>{@link Message#getContentRaw()}, {@link Message#getContentDisplay()}, {@link Message#getContentStripped()}</li>
+     *     <li>{@link Message#getEmbeds()}</li>
+     *     <li>{@link Message#getAttachments()}</li>
+     *     <li>{@link Message#getActionRows()}, {@link Message#getButtons()}</li>
+     * </ul>
+     *
+     * @see <a href="https://support-dev.discord.com/hc/en-us/articles/4404772028055-Message-Content-Privileged-Intent-FAQ" target="_blank">Message Content Privileged Intent FAQ</a>
+     */
+    MESSAGE_CONTENT(15),
+    /**
      * Auto moderation configuration changes.
      */
     AUTO_MODERATION_CONFIGURATION(20),
@@ -148,6 +166,7 @@ public enum GatewayIntent
      * Auto moderation rule execution.
      */
     AUTO_MODERATION_EXECUTION(21),
+    
     ;
 
     /**
@@ -165,6 +184,7 @@ public enum GatewayIntent
      * <ul>
      *     <li>GUILD_MEMBERS (because its privileged)</li>
      *     <li>GUILD_PRESENCES (because its privileged)</li>
+     *     <li>MESSAGE_CONTENT (because its privileged)</li>
      *     <li>GUILD_WEBHOOKS because its not useful for most bots</li>
      *     <li>GUILD_MESSAGE_TYPING because its not useful for most bots</li>
      *     <li>DIRECT_MESSAGE_TYPING because its not useful for most bots</li>
@@ -175,8 +195,8 @@ public enum GatewayIntent
      * You can further configure intents by using {@link net.dv8tion.jda.api.JDABuilder#enableIntents(GatewayIntent, GatewayIntent...) enableIntents(intents)}
      * and {@link net.dv8tion.jda.api.JDABuilder#disableIntents(GatewayIntent, GatewayIntent...) disableIntents(intents)}.
      */
-    public static final int DEFAULT = ALL_INTENTS & ~getRaw(GUILD_MEMBERS, GUILD_PRESENCES, GUILD_WEBHOOKS, GUILD_MESSAGE_TYPING, DIRECT_MESSAGE_TYPING, AUTO_MODERATION_CONFIGURATION, AUTO_MODERATION_EXECUTION);
-
+    public static final int DEFAULT = ALL_INTENTS & ~getRaw(GUILD_MEMBERS, GUILD_PRESENCES, MESSAGE_CONTENT, GUILD_WEBHOOKS, GUILD_MESSAGE_TYPING, DIRECT_MESSAGE_TYPING);
+    
     private final int rawValue;
     private final int offset;
 
@@ -262,7 +282,7 @@ public enum GatewayIntent
     public static int getRaw(@Nonnull GatewayIntent intent, @Nonnull GatewayIntent... set)
     {
         Checks.notNull(intent, "Intent");
-        Checks.notNull(set,    "Intent");
+        Checks.notNull(set, "Intent");
         return getRaw(EnumSet.of(intent, set));
     }
 

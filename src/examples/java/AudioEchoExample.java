@@ -44,12 +44,14 @@ public class AudioEchoExample extends ListenerAdapter
         }
         String token = args[0];
 
-        // We only need 2 gateway intents enabled for this example:
+        // We only need 3 gateway intents enabled for this example:
         EnumSet<GatewayIntent> intents = EnumSet.of(
             // We need messages in guilds to accept commands from users
             GatewayIntent.GUILD_MESSAGES,
             // We need voice states to connect to the voice channel
-            GatewayIntent.GUILD_VOICE_STATES
+            GatewayIntent.GUILD_VOICE_STATES,
+            // Enable access to message.getContentRaw()
+            GatewayIntent.MESSAGE_CONTENT
         );
 
         // Start the JDA session with default mode (voice member cache)
@@ -74,7 +76,8 @@ public class AudioEchoExample extends ListenerAdapter
             return;
 
         // We only want to handle message in Guilds
-        if (!event.isFromGuild()) {
+        if (!event.isFromGuild())
+        {
             return;
         }
 

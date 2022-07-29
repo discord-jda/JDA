@@ -34,7 +34,7 @@ import javax.annotation.Nullable;
  *
  * <p>Can be used to detect both remove and add events.
  *
- * <h2>Requirements</h2>
+ * <p><b>Requirements</b><br>
  *
  * <p>These events require at least one of the following intents (Will not fire at all if neither is enabled):
  * <ul>
