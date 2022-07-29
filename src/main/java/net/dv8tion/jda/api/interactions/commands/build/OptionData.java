@@ -780,7 +780,7 @@ public class OptionData implements SerializableData
     {
         if (type != OptionType.STRING)
             throw new IllegalArgumentException("Can only set min length for options of type STRING");
-        Checks.check(minLength >= 0, "Min length must be greater than or equal to 0");
+        Checks.notNegative(minLength, "Min length");
         this.minLength = minLength;
         return this;
     }
@@ -805,8 +805,8 @@ public class OptionData implements SerializableData
     {
         if (type != OptionType.STRING)
             throw new IllegalArgumentException("Can only set max length for options of type STRING");
-        Checks.check(maxLength >= MAX_STRING_OPTION_LENGTH_MINIMUM && maxLength <= MAX_STRING_OPTION_LENGTH,
-                "Max length must be greater than or equal to %d and lower than or equal to %d", MAX_STRING_OPTION_LENGTH_MINIMUM, MAX_STRING_OPTION_LENGTH);
+        Checks.positive(maxLength, "Max length");
+        Checks.check(maxLength <= MAX_STRING_OPTION_LENGTH, "Max length must not be greater than %d. Provided: %d", MAX_STRING_OPTION_LENGTH, maxLength);
         this.maxLength = maxLength;
         return this;
     }
@@ -834,9 +834,10 @@ public class OptionData implements SerializableData
     {
         if (type != OptionType.STRING)
             throw new IllegalArgumentException("Can only set min and max length for options of type STRING");
-        Checks.check(minLength >= 0, "Min length must be greater than or equal to 0");
-        Checks.check(maxLength >= MAX_STRING_OPTION_LENGTH_MINIMUM && maxLength <= MAX_STRING_OPTION_LENGTH,
-                "Max length must be greater than or equal to %d and lower than or equal to %d", MAX_STRING_OPTION_LENGTH_MINIMUM, MAX_STRING_OPTION_LENGTH);
+        Checks.notNegative(minLength, "Min length");
+        Checks.check(maxLength <= MAX_STRING_OPTION_LENGTH,
+                "Max length must not be greater than %d. Provided: %d", MAX_STRING_OPTION_LENGTH, maxLength);
+        Checks.check(minLength <= maxLength, "Min length must not be greater than max length. Provided: %d > %d", minLength, maxLength);
         this.minLength = minLength;
         this.maxLength = maxLength;
         return this;
