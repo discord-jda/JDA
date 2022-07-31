@@ -495,33 +495,35 @@ public enum ActionType
     STAGE_INSTANCE_DELETE(85, TargetType.STAGE_INSTANCE),
 
     /**
-     * An Administrator created an {@link net.dv8tion.jda.api.entities.sticker.Sticker Custom Sticker}.
+     * An Administrator created an {@link net.dv8tion.jda.api.entities.sticker.GuildSticker Guild Sticker}.
      *
      * <p><b>Possible Keys</b><br>
      * <ul>
-     *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#STICKER_NAME STICKE_NAME}</li>
-     *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#STICKER_FORMAT STICKE_FORMAT}</li>
+     *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#STICKER_NAME STICKER_NAME}</li>
+     *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#STICKER_FORMAT STICKER_FORMAT}</li>
+     *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#STICKER_DESCRIPTION STICKER_DESCRIPTION}</li>
+     *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#STICKER_TAGS STICKER_TAGS}</li>
      * </ul>
      */
     STICKER_CREATE(90, TargetType.STICKER),
 
     /**
-     * An Administrator updated an {@link net.dv8tion.jda.api.entities.sticker.Sticker Custom Sticker}.
+     * An Administrator updated an {@link net.dv8tion.jda.api.entities.sticker.GuildSticker Guild Sticker}.
      *
      * <p><b>Possible Keys</b><br>
      * <ul>
-     *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#STICKER_NAME STICKE_NAME}</li>
-     *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#STICKER_FORMAT STICKE_FORMAT}</li>
+     *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#STICKER_DESCRIPTION STICKER_DESCRIPTION}</li>
+     *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#STICKER_TAGS STICKER_TAGS}</li>
      * </ul>
      */
     STICKER_UPDATE(91, TargetType.STICKER),
 
     /**
-     * An Administrator created an {@link net.dv8tion.jda.api.entities.sticker.Sticker Custom Sticker}.
+     * An Administrator deleted an {@link net.dv8tion.jda.api.entities.sticker.GuildSticker Guild Sticker}.
      *
      * <p><b>Possible Keys</b><br>
      * <ul>
-     *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#STICKER_NAME STICKE_NAME}</li>
+     *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#STICKER_NAME STICKER_NAME}</li>
      * </ul>
      */
     STICKER_DELETE(92, TargetType.STICKER),
