@@ -25,7 +25,6 @@ import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 
-import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.*;
@@ -43,7 +42,7 @@ import java.nio.file.Path;
 public class FileUpload implements Closeable, AttachedFile
 {
     private final InputStream resource;
-    private final String name;
+    private String name;
     private BufferedRequestBody body;
     private String description;
 
@@ -238,21 +237,36 @@ public class FileUpload implements Closeable, AttachedFile
     }
 
     /**
-     * Returns a new instance of this file, with the name prefixed as {@code SPOILER_}.
+     * Changes the name of this file, to be prefixed as {@code SPOILER_}.
      * <br>This will cause the file to be rendered as a spoiler attachment in the client.
      *
-     * <p>The underlying resource will be shared between this instance and the newly created instance.
-     * It is not necessary to close the old one.
-     *
-     * @return The new FileUpload instance
+     * @return The updated FileUpload instance
      */
     @Nonnull
-    @CheckReturnValue
     public FileUpload asSpoiler()
     {
         if (name.startsWith("SPOILER_"))
             return this;
-        return new FileUpload(resource, "SPOILER_" + name).setDescription(description);
+        return setName("SPOILER_" + name);
+    }
+
+    /**
+     * Changes the name of this file.
+     *
+     * @param  name
+     *         The new filename
+     *
+     * @throws IllegalArgumentException
+     *         If the name is null, blank, or empty
+     *
+     * @return The updated FileUpload instance
+     */
+    @Nonnull
+    public FileUpload setName(@Nonnull String name)
+    {
+        Checks.notBlank(name, "Name");
+        this.name = name;
+        return this;
     }
 
     /**
