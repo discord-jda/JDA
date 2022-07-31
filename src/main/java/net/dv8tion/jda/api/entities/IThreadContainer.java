@@ -28,6 +28,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Abstraction of all channel types, which can contain or manage {@link ThreadChannel ThreadChannels}.
+ *
+ * @see ThreadChannel#getParentChannel()
+ * @see net.dv8tion.jda.api.entities.channel.unions.IThreadContainerUnion IThreadContainerUnion
+ */
 public interface IThreadContainer extends GuildChannel, IPermissionContainer
 {
     /**
@@ -233,17 +239,53 @@ public interface IThreadContainer extends GuildChannel, IPermissionContainer
         return createThreadChannel(name, MiscUtil.parseSnowflake(messageId));
     }
 
-    //TODO-v5: Docs
+    /**
+     * Retrieves the archived public {@link net.dv8tion.jda.api.entities.ThreadChannel ThreadChannels} for this channel.
+     * <br>This will iterate over all previously opened public threads, that have been archived.
+     *
+     * <p>You can use {@link #retrieveArchivedPrivateThreadChannels()}, to get all <em>private</em> archived threads.
+     *
+     * @throws InsufficientPermissionException
+     *         If the bot does not have {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY} in this channel
+     *
+     * @return {@link ThreadChannelPaginationAction} to iterate over all public archived ThreadChannels
+     */
     @Nonnull
     @CheckReturnValue
     ThreadChannelPaginationAction retrieveArchivedPublicThreadChannels();
 
-    //TODO-v5: Docs
+    /**
+     * Retrieves the archived private {@link net.dv8tion.jda.api.entities.ThreadChannel ThreadChannels} for this channel.
+     * <br>This will iterate over all previously opened private threads, that have been archived.
+     * This is a moderator restricted method, since private threads are only visible to members with {@link net.dv8tion.jda.api.Permission#MANAGE_THREADS Permission.MANAGE_THREADS}.
+     *
+     * <p>You can use {@link #retrieveArchivedPublicThreadChannels()}, to get all <em>public</em> archived threads.
+     *
+     * <p>Note that {@link net.dv8tion.jda.api.entities.channel.concrete.ForumChannel ForumChannels} cannot have private threads.
+     *
+     * @throws InsufficientPermissionException
+     *         If the bot does not have {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}
+     *         or {@link net.dv8tion.jda.api.Permission#MANAGE_THREADS Permission.MANAGE_THREADS} in this channel
+     *
+     * @return {@link ThreadChannelPaginationAction} to iterate over all private archived ThreadChannels
+     */
     @Nonnull
     @CheckReturnValue
     ThreadChannelPaginationAction retrieveArchivedPrivateThreadChannels();
 
-    //TODO-v5: Docs
+    /**
+     * Retrieves the archived private {@link net.dv8tion.jda.api.entities.ThreadChannel ThreadChannels} for this channel, that the bot has previously joined or been added to.
+     * <br>Unlike {@link #retrieveArchivedPrivateThreadChannels()}, this only checks for threads which the bot has joined, and thus does not require permissions to manage threads.
+     *
+     * <p>You can use {@link #retrieveArchivedPrivateThreadChannels()}, to get all <em>private</em> archived threads.
+     *
+     * <p>Note that {@link net.dv8tion.jda.api.entities.channel.concrete.ForumChannel ForumChannels} cannot have private threads.
+     *
+     * @throws InsufficientPermissionException
+     *         If the bot does not have {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY} in this channel
+     *
+     * @return {@link ThreadChannelPaginationAction} to iterate over all joined private archived ThreadChannels
+     */
     @Nonnull
     @CheckReturnValue
     ThreadChannelPaginationAction retrieveArchivedPrivateJoinedThreadChannels();
