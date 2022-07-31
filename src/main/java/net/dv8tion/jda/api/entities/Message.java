@@ -2540,6 +2540,9 @@ public interface Message extends ISnowflake, Formattable
         public void close() {}
 
         @Override
+        public void forceClose() {}
+
+        @Override
         public void addPart(@Nonnull MultipartBody.Builder builder, int index) {}
 
         @Nonnull

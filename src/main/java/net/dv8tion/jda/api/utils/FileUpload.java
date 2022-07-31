@@ -340,6 +340,13 @@ public class FileUpload implements Closeable, AttachedFile
     @Override
     public void close() throws IOException
     {
+        if (body != null)
+            forceClose();
+    }
+
+    @Override
+    public void forceClose() throws IOException
+    {
         if (resource != null)
             resource.close();
     }

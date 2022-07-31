@@ -295,4 +295,12 @@ public interface AttachedFile extends Closeable
         builder.addFormDataPart("payload_json", payloadJson.toString());
         return builder;
     }
+
+    /**
+     * Forces the underlying resource to be closed, even if the file is already handled by a request.
+     *
+     * @throws IOException
+     *         If an IOException is thrown while closing the resource
+     */
+    void forceClose() throws IOException;
 }
