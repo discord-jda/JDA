@@ -35,7 +35,26 @@ import java.util.List;
 
 /**
  * Builder specialized for building a {@link MessageCreateData}.
+ * <br>This can be used to build a request and send it to various API endpoints.
  *
+ * <p><b>Example</b>
+ * <pre>{@code
+ * try (FileUpload file = FileUpload.fromData(new File("wave.gif"))) {
+ *     MessageCreateData data = new MessageCreateBuilder()
+ *       .setContent("Hello guys!")
+ *       .setTTS(true)
+ *       .setFiles(file)
+ *       .build();
+ *
+ *     for (MessageChannel channel : channels) {
+ *         channel.sendMessage(data).queue();
+ *     }
+ * } // closes wave.gif if an error occurred
+ * }</pre>
+ *
+ * @see net.dv8tion.jda.api.entities.MessageChannel#sendMessage(MessageCreateData) MessageChannel.sendMessage(data)
+ * @see net.dv8tion.jda.api.interactions.callbacks.IReplyCallback#reply(MessageCreateData) IReplyCallback.reply(data)
+ * @see net.dv8tion.jda.api.interactions.InteractionHook#sendMessage(MessageCreateData) InteractionHook.sendMessage(data)
  * @see MessageEditBuilder
  */
 public class MessageCreateBuilder extends AbstractMessageBuilder<MessageCreateData, MessageCreateBuilder> implements MessageCreateRequest<MessageCreateBuilder>
