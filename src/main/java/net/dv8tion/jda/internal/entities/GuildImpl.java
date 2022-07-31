@@ -1681,72 +1681,52 @@ public class GuildImpl implements Guild
     @Override
     public ChannelAction<TextChannel> createTextChannel(@Nonnull String name, Category parent)
     {
-        checkCanCreateChannel(parent);
-
-        Checks.notBlank(name, "Name");
-        name = name.trim();
-        Checks.notLonger(name, 100, "Name");
-        return new ChannelActionImpl<>(TextChannel.class, name, this, ChannelType.TEXT).setParent(parent);
+        return createChannel(ChannelType.TEXT, TextChannel.class, name, parent);
     }
 
     @Nonnull
     @Override
     public ChannelAction<NewsChannel> createNewsChannel(@Nonnull String name, Category parent)
     {
-        checkCanCreateChannel(parent);
-
-        Checks.notBlank(name, "Name");
-        name = name.trim();
-        Checks.notLonger(name, 100, "Name");
-        return new ChannelActionImpl<>(NewsChannel.class, name, this, ChannelType.NEWS).setParent(parent);
+        return createChannel(ChannelType.NEWS, NewsChannel.class, name, parent);
     }
 
     @Nonnull
     @Override
     public ChannelAction<VoiceChannel> createVoiceChannel(@Nonnull String name, Category parent)
     {
-        checkCanCreateChannel(parent);
-
-        Checks.notBlank(name, "Name");
-        name = name.trim();
-        Checks.notLonger(name, 100, "Name");
-        return new ChannelActionImpl<>(VoiceChannel.class, name, this, ChannelType.VOICE).setParent(parent);
+        return createChannel(ChannelType.VOICE, VoiceChannel.class, name, parent);
     }
 
     @Nonnull
     @Override
     public ChannelAction<StageChannel> createStageChannel(@Nonnull String name, Category parent)
     {
-        checkCanCreateChannel(parent);
-
-        Checks.notBlank(name, "Name");
-        name = name.trim();
-        Checks.notLonger(name, 100, "Name");
-        return new ChannelActionImpl<>(StageChannel.class, name, this, ChannelType.STAGE).setParent(parent);
+        return createChannel(ChannelType.STAGE, StageChannel.class, name, parent);
     }
 
     @Nonnull
     @Override
     public ChannelAction<ForumChannel> createForumChannel(@Nonnull String name, Category parent)
     {
-        checkCanCreateChannel(parent);
-
-        Checks.notBlank(name, "Name");
-        name = name.trim();
-        Checks.notLonger(name, 100, "Name");
-        return new ChannelActionImpl<>(ForumChannel.class, name, this, ChannelType.FORUM).setParent(parent);
+        return createChannel(ChannelType.FORUM, ForumChannel.class, name, parent);
     }
 
     @Nonnull
     @Override
     public ChannelAction<Category> createCategory(@Nonnull String name)
     {
-        checkPermission(Permission.MANAGE_CHANNEL);
+        return createChannel(ChannelType.CATEGORY, Category.class, name, null);
+    }
+
+    private <T extends GuildChannel> ChannelAction<T> createChannel(ChannelType type, Class<T> clazz, String name, Category parent)
+    {
+        checkCanCreateChannel(parent);
         Checks.notBlank(name, "Name");
         name = name.trim();
         Checks.notEmpty(name, "Name");
         Checks.notLonger(name, 100, "Name");
-        return new ChannelActionImpl<>(Category.class, name, this, ChannelType.CATEGORY);
+        return new ChannelActionImpl<>(clazz, name, this, type).setParent(parent);
     }
 
     @Nonnull
