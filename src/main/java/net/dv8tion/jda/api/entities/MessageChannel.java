@@ -290,13 +290,19 @@ public interface MessageChannel extends Channel, Formattable
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
      *     <br>if this channel was deleted</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#CANNOT_SEND_TO_USER CANNOT_SEND_TO_USER}
+     *     <br>If this is a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel} and the currently logged in account
+     *         does not share any Guilds with the recipient User</li>
      * </ul>
      *
      * @param  text
      *         The message content
      *
+     * @throws UnsupportedOperationException
+     *         If this is a {@link PrivateChannel} and the recipient is a bot
      * @throws IllegalArgumentException
-     *         If the content is null or longer than {@link Message#MAX_CONTENT_LENGTH} characters
+     *         If the content is null or longer than {@value Message#MAX_CONTENT_LENGTH} characters
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If this is a {@link net.dv8tion.jda.api.entities.GuildMessageChannel GuildMessageChannel} and this account does not have
      *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} or {@link net.dv8tion.jda.api.Permission#MESSAGE_SEND Permission.MESSAGE_SEND}
@@ -318,11 +324,17 @@ public interface MessageChannel extends Channel, Formattable
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
      *     <br>if this channel was deleted</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#CANNOT_SEND_TO_USER CANNOT_SEND_TO_USER}
+     *     <br>If this is a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel} and the currently logged in account
+     *         does not share any Guilds with the recipient User</li>
      * </ul>
      *
      * @param  msg
      *         The {@link MessageCreateData} to send
      *
+     * @throws UnsupportedOperationException
+     *         If this is a {@link PrivateChannel} and the recipient is a bot
      * @throws IllegalArgumentException
      *         If null is provided
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
@@ -348,6 +360,10 @@ public interface MessageChannel extends Channel, Formattable
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
      *     <br>if this channel was deleted</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#CANNOT_SEND_TO_USER CANNOT_SEND_TO_USER}
+     *     <br>If this is a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel} and the currently logged in account
+     *         does not share any Guilds with the recipient User</li>
      * </ul>
      *
      * @param  format
@@ -355,11 +371,20 @@ public interface MessageChannel extends Channel, Formattable
      * @param  args
      *         Format arguments for the content
      *
+     * @throws UnsupportedOperationException
+     *         If this is a {@link PrivateChannel} and the recipient is a bot
      * @throws IllegalArgumentException
-     *         If the format string is null or the resulting content is longer than {@link Message#MAX_CONTENT_LENGTH} characters
+     *         If the format string is null or the resulting content is longer than {@value Message#MAX_CONTENT_LENGTH} characters
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If this is a {@link net.dv8tion.jda.api.entities.GuildMessageChannel GuildMessageChannel} and this account does not have
      *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} or {@link net.dv8tion.jda.api.Permission#MESSAGE_SEND Permission.MESSAGE_SEND}
+     * @throws java.util.IllegalFormatException
+     *         If a format string contains an illegal syntax, a format
+     *         specifier that is incompatible with the given arguments,
+     *         insufficient arguments given the format string, or other
+     *         illegal conditions.  For specification of all possible
+     *         formatting errors, see the <a href="../util/Formatter.html#detail">Details</a> section of the
+     *         formatter class specification.
      *
      * @return {@link MessageCreateAction}
      */
@@ -378,6 +403,10 @@ public interface MessageChannel extends Channel, Formattable
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
      *     <br>if this channel was deleted</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#CANNOT_SEND_TO_USER CANNOT_SEND_TO_USER}
+     *     <br>If this is a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel} and the currently logged in account
+     *         does not share any Guilds with the recipient User</li>
      * </ul>
      *
      * @param  embed
@@ -385,6 +414,8 @@ public interface MessageChannel extends Channel, Formattable
      * @param  other
      *         Additional {@link MessageEmbed MessageEmbeds} to use (up to {@value Message#MAX_EMBED_COUNT})
      *
+     * @throws UnsupportedOperationException
+     *         If this is a {@link PrivateChannel} and the recipient is a bot
      * @throws IllegalArgumentException
      *         If any of the embeds are null, more than {@value Message#MAX_EMBED_COUNT}, or longer than {@link MessageEmbed#EMBED_MAX_LENGTH_BOT}.
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
@@ -412,11 +443,17 @@ public interface MessageChannel extends Channel, Formattable
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
      *     <br>if this channel was deleted</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#CANNOT_SEND_TO_USER CANNOT_SEND_TO_USER}
+     *     <br>If this is a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel} and the currently logged in account
+     *         does not share any Guilds with the recipient User</li>
      * </ul>
      *
      * @param  embeds
      *         {@link MessageEmbed MessageEmbeds} to use (up to {@value Message#MAX_EMBED_COUNT})
      *
+     * @throws UnsupportedOperationException
+     *         If this is a {@link PrivateChannel} and the recipient is a bot
      * @throws IllegalArgumentException
      *         If any of the embeds are null, more than {@value Message#MAX_EMBED_COUNT}, or longer than {@link MessageEmbed#EMBED_MAX_LENGTH_BOT}.
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
@@ -444,11 +481,17 @@ public interface MessageChannel extends Channel, Formattable
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
      *     <br>if this channel was deleted</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#CANNOT_SEND_TO_USER CANNOT_SEND_TO_USER}
+     *     <br>If this is a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel} and the currently logged in account
+     *         does not share any Guilds with the recipient User</li>
      * </ul>
      *
      * @param  files
      *         The {@link FileUpload FileUploads} to attach to the message
      *
+     * @throws UnsupportedOperationException
+     *         If this is a {@link PrivateChannel} and the recipient is a bot
      * @throws IllegalArgumentException
      *         If null is provided
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
@@ -480,11 +523,17 @@ public interface MessageChannel extends Channel, Formattable
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
      *     <br>if this channel was deleted</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#CANNOT_SEND_TO_USER CANNOT_SEND_TO_USER}
+     *     <br>If this is a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel} and the currently logged in account
+     *         does not share any Guilds with the recipient User</li>
      * </ul>
      *
      * @param  files
      *         The {@link FileUpload FileUploads} to attach to the message
      *
+     * @throws UnsupportedOperationException
+     *         If this is a {@link PrivateChannel} and the recipient is a bot
      * @throws IllegalArgumentException
      *         If null is provided
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
