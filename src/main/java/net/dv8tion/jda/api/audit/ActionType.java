@@ -495,7 +495,7 @@ public enum ActionType
     STAGE_INSTANCE_DELETE(85, TargetType.STAGE_INSTANCE),
 
     /**
-     * An Administrator created an {@link net.dv8tion.jda.api.entities.sticker.GuildSticker Guild Sticker}.
+     * An Administrator created a {@link net.dv8tion.jda.api.entities.sticker.GuildSticker GuildSticker}.
      *
      * <p><b>Possible Keys</b><br>
      * <ul>
@@ -508,7 +508,7 @@ public enum ActionType
     STICKER_CREATE(90, TargetType.STICKER),
 
     /**
-     * An Administrator updated an {@link net.dv8tion.jda.api.entities.sticker.GuildSticker Guild Sticker}.
+     * An Administrator updated a {@link net.dv8tion.jda.api.entities.sticker.GuildSticker GuildSticker}.
      *
      * <p><b>Possible Keys</b><br>
      * <ul>
@@ -519,7 +519,7 @@ public enum ActionType
     STICKER_UPDATE(91, TargetType.STICKER),
 
     /**
-     * An Administrator deleted an {@link net.dv8tion.jda.api.entities.sticker.GuildSticker Guild Sticker}.
+     * An Administrator deleted a {@link net.dv8tion.jda.api.entities.sticker.GuildSticker GuildSticker}.
      *
      * <p><b>Possible Keys</b><br>
      * <ul>
