@@ -50,10 +50,8 @@ import java.util.stream.Collectors;
 public interface Category extends GuildChannel, ICopyableChannel, IPositionableChannel, IPermissionContainer, IMemberContainer
 {
     /**
-     * All {@link GuildChannel Channels} listed
-     * for this Category
-     * <br>This may contain {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels},
-     * and {@link net.dv8tion.jda.api.entities.TextChannel TextChannels}!
+     * All {@link GuildChannel Channels} listed for this Category.
+     * <br>Includes all types of channels, except for threads.
      *
      * @return Immutable list of all child channels
      */
@@ -65,6 +63,7 @@ public interface Category extends GuildChannel, ICopyableChannel, IPositionableC
         channels.addAll(getVoiceChannels());
         channels.addAll(getStageChannels());
         channels.addAll(getNewsChannels());
+        channels.addAll(getForumChannels());
         Collections.sort(channels);
 
         return Collections.unmodifiableList(channels);
@@ -79,9 +78,11 @@ public interface Category extends GuildChannel, ICopyableChannel, IPositionableC
     @Nonnull
     default List<TextChannel> getTextChannels()
     {
-        return Collections.unmodifiableList(getGuild().getTextChannelCache().stream()
-            .filter(channel -> equals(channel.getParentCategory()))
-            .sorted().collect(Collectors.toList()));
+        return Collections.unmodifiableList(getGuild().getTextChannelCache().applyStream(stream ->
+            stream.filter(channel -> equals(channel.getParentCategory()))
+                  .sorted()
+                  .collect(Collectors.toList())
+        ));
     }
 
     /**
@@ -93,9 +94,26 @@ public interface Category extends GuildChannel, ICopyableChannel, IPositionableC
     @Nonnull
     default List<NewsChannel> getNewsChannels()
     {
-        return Collections.unmodifiableList(getGuild().getNewsChannelCache().stream()
-            .filter(channel -> equals(channel.getParentCategory()))
-            .sorted().collect(Collectors.toList()));
+        return Collections.unmodifiableList(getGuild().getNewsChannelCache().applyStream(stream ->
+            stream.filter(channel -> equals(channel.getParentCategory()))
+                  .sorted()
+                  .collect(Collectors.toList())
+        ));
+    }
+
+    /**
+     * All {@link net.dv8tion.jda.api.entities.channel.concrete.ForumChannel ForumChannels} listed for this Category
+     *
+     * @return Immutable list of all child ForumChannels
+     */
+    @Nonnull
+    default List<ForumChannel> getForumChannels()
+    {
+        return Collections.unmodifiableList(getGuild().getForumChannelCache().applyStream(stream ->
+            stream.filter(channel -> equals(channel.getParentCategory()))
+                  .sorted()
+                  .collect(Collectors.toList())
+        ));
     }
 
     /**
@@ -107,9 +125,11 @@ public interface Category extends GuildChannel, ICopyableChannel, IPositionableC
     @Nonnull
     default List<VoiceChannel> getVoiceChannels()
     {
-        return Collections.unmodifiableList(getGuild().getVoiceChannelCache().stream()
-            .filter(channel -> equals(channel.getParentCategory()))
-            .sorted().collect(Collectors.toList()));
+        return Collections.unmodifiableList(getGuild().getVoiceChannelCache().applyStream(stream ->
+            stream.filter(channel -> equals(channel.getParentCategory()))
+                  .sorted()
+                  .collect(Collectors.toList())
+        ));
     }
 
     /**
@@ -121,9 +141,11 @@ public interface Category extends GuildChannel, ICopyableChannel, IPositionableC
     @Nonnull
     default List<StageChannel> getStageChannels()
     {
-        return Collections.unmodifiableList(getGuild().getStageChannelCache().stream()
-            .filter(channel -> equals(channel.getParentCategory()))
-            .sorted().collect(Collectors.toList()));
+        return Collections.unmodifiableList(getGuild().getStageChannelCache().applyStream(stream ->
+            stream.filter(channel -> equals(channel.getParentCategory()))
+                  .sorted()
+                  .collect(Collectors.toList())
+        ));
     }
 
     /**
