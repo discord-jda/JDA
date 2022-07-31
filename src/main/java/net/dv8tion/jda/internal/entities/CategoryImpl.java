@@ -68,6 +68,14 @@ public class CategoryImpl extends AbstractGuildChannelImpl<CategoryImpl> impleme
 
     @Nonnull
     @Override
+    public ChannelAction<NewsChannel> createNewsChannel(@Nonnull String name)
+    {
+        ChannelAction<NewsChannel> action = getGuild().createNewsChannel(name, this);
+        return trySync(action);
+    }
+
+    @Nonnull
+    @Override
     public ChannelAction<VoiceChannel> createVoiceChannel(@Nonnull String name)
     {
         ChannelAction<VoiceChannel> action = getGuild().createVoiceChannel(name, this);
