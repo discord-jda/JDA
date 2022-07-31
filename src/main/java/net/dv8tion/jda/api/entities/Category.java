@@ -171,12 +171,12 @@ public interface Category extends GuildChannel, ICopyableChannel, IPositionableC
      * </ul>
      *
      * @param  name
-     *         The name of the TextChannel to create
+     *         The name of the TextChannel to create (up to {@value Channel#MAX_NAME_LENGTH} characters)
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL} permission
      * @throws IllegalArgumentException
-     *         If the provided name is {@code null} or empty or greater than 100 characters in length
+     *         If the provided name is {@code null}, empty, or longer than {@value Channel#MAX_NAME_LENGTH} characters
      *
      * @return A specific {@link ChannelAction ChannelAction}
      *         <br>This action allows to set fields for the new TextChannel before creating it
@@ -208,12 +208,12 @@ public interface Category extends GuildChannel, ICopyableChannel, IPositionableC
      * </ul>
      *
      * @param  name
-     *         The name of the VoiceChannel to create
+     *         The name of the VoiceChannel to create (up to {@value Channel#MAX_NAME_LENGTH} characters)
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL} permission
      * @throws IllegalArgumentException
-     *         If the provided name is {@code null} or empty or greater than 100 characters in length
+     *         If the provided name is {@code null}, empty, or longer than {@value Channel#MAX_NAME_LENGTH} characters
      *
      * @return A specific {@link ChannelAction ChannelAction}
      *         <br>This action allows to set fields for the new VoiceChannel before creating it
@@ -245,12 +245,12 @@ public interface Category extends GuildChannel, ICopyableChannel, IPositionableC
      * </ul>
      *
      * @param  name
-     *         The name of the StageChannel to create
+     *         The name of the StageChannel to create (up to {@value Channel#MAX_NAME_LENGTH} characters)
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL} permission
      * @throws IllegalArgumentException
-     *         If the provided name is {@code null} or empty or greater than 100 characters in length
+     *         If the provided name is {@code null}, empty, or longer than {@value Channel#MAX_NAME_LENGTH} characters
      *
      * @return A specific {@link ChannelAction ChannelAction}
      *         <br>This action allows to set fields for the new StageChannel before creating it
@@ -282,12 +282,12 @@ public interface Category extends GuildChannel, ICopyableChannel, IPositionableC
      * </ul>
      *
      * @param  name
-     *         The name of the ForumChannel to create
+     *         The name of the ForumChannel to create (up to {@value Channel#MAX_NAME_LENGTH} characters)
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL} permission
      * @throws IllegalArgumentException
-     *         If the provided name is {@code null} or empty or greater than 100 characters in length
+     *         If the provided name is {@code null}, empty, or longer than {@value Channel#MAX_NAME_LENGTH} characters
      *
      * @return A specific {@link ChannelAction ChannelAction}
      *         <br>This action allows to set fields for the new ForumChannel before creating it

@@ -30,6 +30,8 @@ import java.util.Formatter;
  */
 public interface Channel extends IMentionable
 {
+    int MAX_NAME_LENGTH = 100;
+
     /**
      * The human readable name of this channel.
      *

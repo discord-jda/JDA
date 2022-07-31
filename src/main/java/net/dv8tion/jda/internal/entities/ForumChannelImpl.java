@@ -41,7 +41,6 @@ import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
-import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import java.util.*;
@@ -212,16 +211,16 @@ public class ForumChannelImpl extends AbstractGuildChannelImpl<ForumChannelImpl>
         });
     }
 
-    @NotNull
+    @Nonnull
     @Override
-    public ThreadChannelAction createThreadChannel(String name)
+    public ThreadChannelAction createThreadChannel(@Nonnull String name)
     {
         throw new UnsupportedOperationException("You cannot create threads without a message payload in forum channels! Use createForumPost(...) instead.");
     }
 
-    @NotNull
+    @Nonnull
     @Override
-    public ThreadChannelAction createThreadChannel(String name, String messageId)
+    public ThreadChannelAction createThreadChannel(@Nonnull String name, @Nonnull String messageId)
     {
         throw new UnsupportedOperationException("You cannot create threads without a message payload in forum channels! Use createForumPost(...) instead.");
     }
