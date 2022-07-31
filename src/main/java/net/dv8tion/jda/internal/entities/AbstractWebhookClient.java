@@ -22,7 +22,7 @@ import net.dv8tion.jda.api.entities.WebhookClient;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.requests.RestAction;
-import net.dv8tion.jda.api.requests.restaction.WebhookMessageAction;
+import net.dv8tion.jda.api.requests.restaction.WebhookMessageCreateAction;
 import net.dv8tion.jda.api.requests.restaction.WebhookMessageEditAction;
 import net.dv8tion.jda.api.utils.AttachedFile;
 import net.dv8tion.jda.api.utils.FileUpload;
@@ -30,7 +30,7 @@ import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 import net.dv8tion.jda.api.utils.messages.MessageEditData;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
-import net.dv8tion.jda.internal.requests.restaction.WebhookMessageActionImpl;
+import net.dv8tion.jda.internal.requests.restaction.WebhookMessageCreateActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.WebhookMessageEditActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
@@ -52,33 +52,33 @@ public abstract class AbstractWebhookClient<T> implements WebhookClient<T>
         this.api = api;
     }
 
-    public abstract WebhookMessageActionImpl<T> sendRequest();
+    public abstract WebhookMessageCreateActionImpl<T> sendRequest();
     public abstract WebhookMessageEditActionImpl<T> editRequest(String messageId);
 
     @Nonnull
     @Override
-    public WebhookMessageAction<T> sendMessage(@Nonnull String content)
+    public WebhookMessageCreateAction<T> sendMessage(@Nonnull String content)
     {
         return sendRequest().setContent(content);
     }
 
     @Nonnull
     @Override
-    public WebhookMessageAction<T> sendMessageEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
+    public WebhookMessageCreateAction<T> sendMessageEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
     {
         return sendRequest().addEmbeds(embeds);
     }
 
     @Nonnull
     @Override
-    public WebhookMessageAction<T> sendMessage(@Nonnull MessageCreateData message)
+    public WebhookMessageCreateAction<T> sendMessage(@Nonnull MessageCreateData message)
     {
         return sendRequest().applyData(message);
     }
 
     @Nonnull
     @Override
-    public WebhookMessageAction<T> sendFiles(@Nonnull Collection<? extends FileUpload> files)
+    public WebhookMessageCreateAction<T> sendFiles(@Nonnull Collection<? extends FileUpload> files)
     {
         return sendRequest().addFiles(files);
     }

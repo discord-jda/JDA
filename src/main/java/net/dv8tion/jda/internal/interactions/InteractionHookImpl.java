@@ -26,7 +26,7 @@ import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.AbstractWebhookClient;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.TriggerRestAction;
-import net.dv8tion.jda.internal.requests.restaction.WebhookMessageActionImpl;
+import net.dv8tion.jda.internal.requests.restaction.WebhookMessageCreateActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.WebhookMessageEditActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.JDALogger;
@@ -141,12 +141,12 @@ public class InteractionHookImpl extends AbstractWebhookClient<Message> implemen
 
     @Nonnull
     @Override
-    public WebhookMessageActionImpl<Message> sendRequest()
+    public WebhookMessageCreateActionImpl<Message> sendRequest()
     {
         Route.CompiledRoute route = Route.Interactions.CREATE_FOLLOWUP.compile(getJDA().getSelfUser().getApplicationId(), interaction.getToken());
         route = route.withQueryParams("wait", "true");
         Function<DataObject, Message> transform = (json) -> ((JDAImpl) api).getEntityBuilder().createMessageWithChannel(json, getInteraction().getMessageChannel(), false);
-        return onReady(new WebhookMessageActionImpl<>(getJDA(), route, transform)).setEphemeral(ephemeral);
+        return onReady(new WebhookMessageCreateActionImpl<>(getJDA(), route, transform)).setEphemeral(ephemeral);
     }
 
     @Nonnull

@@ -19,7 +19,7 @@ package net.dv8tion.jda.internal.requests.restaction;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
-import net.dv8tion.jda.api.requests.restaction.WebhookMessageAction;
+import net.dv8tion.jda.api.requests.restaction.WebhookMessageCreateAction;
 import net.dv8tion.jda.api.utils.AttachedFile;
 import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.data.DataObject;
@@ -37,16 +37,16 @@ import java.util.List;
 import java.util.function.BooleanSupplier;
 import java.util.function.Function;
 
-public class WebhookMessageActionImpl<T>
+public class WebhookMessageCreateActionImpl<T>
     extends TriggerRestAction<T>
-    implements WebhookMessageAction<T>, MessageCreateBuilderMixin<WebhookMessageAction<T>>
+    implements WebhookMessageCreateAction<T>, MessageCreateBuilderMixin<WebhookMessageCreateAction<T>>
 {
     private final MessageCreateBuilder builder = new MessageCreateBuilder();
     private final Function<DataObject, T> transformer;
 
     private boolean ephemeral;
 
-    public WebhookMessageActionImpl(JDA api, Route.CompiledRoute route, Function<DataObject, T> transformer)
+    public WebhookMessageCreateActionImpl(JDA api, Route.CompiledRoute route, Function<DataObject, T> transformer)
     {
         super(api, route);
         this.transformer = transformer;
@@ -60,7 +60,7 @@ public class WebhookMessageActionImpl<T>
 
     @Nonnull
     @Override
-    public WebhookMessageActionImpl<T> setEphemeral(boolean ephemeral)
+    public WebhookMessageCreateActionImpl<T> setEphemeral(boolean ephemeral)
     {
         this.ephemeral = ephemeral;
         return this;
@@ -93,15 +93,15 @@ public class WebhookMessageActionImpl<T>
 
     @Nonnull
     @Override
-    public WebhookMessageAction<T> setCheck(@Nullable BooleanSupplier checks)
+    public WebhookMessageCreateAction<T> setCheck(@Nullable BooleanSupplier checks)
     {
-        return (WebhookMessageAction<T>) super.setCheck(checks);
+        return (WebhookMessageCreateAction<T>) super.setCheck(checks);
     }
 
     @NotNull
     @Override
-    public WebhookMessageAction<T> deadline(long timestamp)
+    public WebhookMessageCreateAction<T> deadline(long timestamp)
     {
-        return (WebhookMessageAction<T>) super.deadline(timestamp);
+        return (WebhookMessageCreateAction<T>) super.deadline(timestamp);
     }
 }

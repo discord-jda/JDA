@@ -20,7 +20,7 @@ import net.dv8tion.jda.api.interactions.callbacks.IDeferrableCallback;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.requests.RestAction;
-import net.dv8tion.jda.api.requests.restaction.WebhookMessageAction;
+import net.dv8tion.jda.api.requests.restaction.WebhookMessageCreateAction;
 import net.dv8tion.jda.api.requests.restaction.WebhookMessageEditAction;
 import net.dv8tion.jda.api.requests.restaction.interactions.MessageEditCallbackAction;
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction;
@@ -61,11 +61,11 @@ public interface WebhookClient<T>
      * @throws IllegalArgumentException
      *         If the content is null or longer than {@link Message#MAX_CONTENT_LENGTH} characters
      *
-     * @return {@link WebhookMessageAction}
+     * @return {@link net.dv8tion.jda.api.requests.restaction.WebhookMessageCreateAction}
      */
     @Nonnull
     @CheckReturnValue
-    WebhookMessageAction<T> sendMessage(@Nonnull String content);
+    WebhookMessageCreateAction<T> sendMessage(@Nonnull String content);
 
     /**
      * Send a message to this webhook.
@@ -84,13 +84,13 @@ public interface WebhookClient<T>
      * @throws IllegalArgumentException
      *         If null is provided
      *
-     * @return {@link WebhookMessageAction}
+     * @return {@link net.dv8tion.jda.api.requests.restaction.WebhookMessageCreateAction}
      *
      * @see    net.dv8tion.jda.api.utils.messages.MessageCreateBuilder MessageCreateBuilder
      */
     @Nonnull
     @CheckReturnValue
-    WebhookMessageAction<T> sendMessage(@Nonnull MessageCreateData message);
+    WebhookMessageCreateAction<T> sendMessage(@Nonnull MessageCreateData message);
 
     /**
      * Send a message to this webhook.
@@ -111,11 +111,11 @@ public interface WebhookClient<T>
      * @throws IllegalArgumentException
      *         If the format string is null or the resulting content is longer than {@link Message#MAX_CONTENT_LENGTH} characters
      *
-     * @return {@link WebhookMessageAction}
+     * @return {@link net.dv8tion.jda.api.requests.restaction.WebhookMessageCreateAction}
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageAction<T> sendMessageFormat(@Nonnull String format, @Nonnull Object... args)
+    default WebhookMessageCreateAction<T> sendMessageFormat(@Nonnull String format, @Nonnull Object... args)
     {
         Checks.notNull(format, "Format String");
         return sendMessage(String.format(format, args));
@@ -138,11 +138,11 @@ public interface WebhookClient<T>
      * @throws IllegalArgumentException
      *         If any of the embeds are null, more than {@value Message#MAX_EMBED_COUNT}, or longer than {@link MessageEmbed#EMBED_MAX_LENGTH_BOT}.
      *
-     * @return {@link WebhookMessageAction}
+     * @return {@link net.dv8tion.jda.api.requests.restaction.WebhookMessageCreateAction}
      */
     @Nonnull
     @CheckReturnValue
-    WebhookMessageAction<T> sendMessageEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds);
+    WebhookMessageCreateAction<T> sendMessageEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds);
 
     /**
      * Send a message to this webhook.
@@ -163,11 +163,11 @@ public interface WebhookClient<T>
      * @throws IllegalArgumentException
      *         If any of the embeds are null, more than {@value Message#MAX_EMBED_COUNT}, or longer than {@link MessageEmbed#EMBED_MAX_LENGTH_BOT}.
      *
-     * @return {@link WebhookMessageAction}
+     * @return {@link net.dv8tion.jda.api.requests.restaction.WebhookMessageCreateAction}
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageAction<T> sendMessageEmbeds(@Nonnull MessageEmbed embed, @Nonnull MessageEmbed... embeds)
+    default WebhookMessageCreateAction<T> sendMessageEmbeds(@Nonnull MessageEmbed embed, @Nonnull MessageEmbed... embeds)
     {
         Checks.notNull(embed, "MessageEmbeds");
         Checks.noneNull(embeds, "MessageEmbeds");
@@ -197,7 +197,7 @@ public interface WebhookClient<T>
      */
     @Nonnull
     @CheckReturnValue
-    WebhookMessageAction<T> sendFiles(@Nonnull Collection<? extends FileUpload> files);
+    WebhookMessageCreateAction<T> sendFiles(@Nonnull Collection<? extends FileUpload> files);
 
     /**
      * Send a message to this webhook.
@@ -219,7 +219,7 @@ public interface WebhookClient<T>
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageAction<T> sendFiles(@Nonnull FileUpload... files)
+    default WebhookMessageCreateAction<T> sendFiles(@Nonnull FileUpload... files)
     {
         Checks.noneNull(files, "Files");
         Checks.notEmpty(files, "Files");

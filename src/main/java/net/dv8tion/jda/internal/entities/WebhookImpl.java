@@ -28,7 +28,7 @@ import net.dv8tion.jda.internal.managers.WebhookManagerImpl;
 import net.dv8tion.jda.internal.requests.Requester;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
-import net.dv8tion.jda.internal.requests.restaction.WebhookMessageActionImpl;
+import net.dv8tion.jda.internal.requests.restaction.WebhookMessageCreateActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.WebhookMessageEditActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
@@ -249,11 +249,11 @@ public class WebhookImpl extends AbstractWebhookClient<Void> implements Webhook
     // TODO: Implement WebhookMessage
 
     @Override
-    public WebhookMessageActionImpl<Void> sendRequest()
+    public WebhookMessageCreateActionImpl<Void> sendRequest()
     {
         checkToken();
         Route.CompiledRoute route = Route.Webhooks.EXECUTE_WEBHOOK.compile(getId(), token);
-        WebhookMessageActionImpl<Void> action = new WebhookMessageActionImpl<>(api, route, (json) -> null);
+        WebhookMessageCreateActionImpl<Void> action = new WebhookMessageCreateActionImpl<>(api, route, (json) -> null);
         action.run();
         return action;
     }

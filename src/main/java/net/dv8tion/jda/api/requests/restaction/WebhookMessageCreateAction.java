@@ -36,7 +36,7 @@ import javax.annotation.Nonnull;
  * @see    net.dv8tion.jda.api.entities.WebhookClient#sendMessage(String)
  */
 // TODO: WebhookMessage type (no channel/guild attached)
-public interface WebhookMessageAction<T> extends MessageCreateRequest<WebhookMessageAction<T>>, FluentRestAction<T, WebhookMessageAction<T>>
+public interface WebhookMessageCreateAction<T> extends MessageCreateRequest<WebhookMessageCreateAction<T>>, FluentRestAction<T, WebhookMessageCreateAction<T>>
 {
 //    /**
 //     * Set the apparent username for the message author.
@@ -90,5 +90,5 @@ public interface WebhookMessageAction<T> extends MessageCreateRequest<WebhookMes
      */
     @Nonnull
     @CheckReturnValue
-    WebhookMessageAction<T> setEphemeral(boolean ephemeral);
+    WebhookMessageCreateAction<T> setEphemeral(boolean ephemeral);
 }
