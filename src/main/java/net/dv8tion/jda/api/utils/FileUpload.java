@@ -248,11 +248,11 @@ public class FileUpload implements Closeable, AttachedFile
      */
     @Nonnull
     @CheckReturnValue
-    public FileUpload spoiler()
+    public FileUpload asSpoiler()
     {
         if (name.startsWith("SPOILER_"))
             return this;
-        return new FileUpload(resource, "SPOILER_" + name);
+        return new FileUpload(resource, "SPOILER_" + name).setDescription(description);
     }
 
     /**
