@@ -46,8 +46,8 @@ import java.util.List;
 @SuppressWarnings({"ResultOfMethodCallIgnored", "unchecked"})
 public abstract class AbstractMessageBuilder<T, R extends AbstractMessageBuilder<T, R>> implements MessageRequest<R>
 {
-    protected final List<MessageEmbed> embeds = new ArrayList<>(10);
-    protected final List<LayoutComponent> components = new ArrayList<>(5);
+    protected final List<MessageEmbed> embeds = new ArrayList<>(Message.MAX_EMBED_COUNT);
+    protected final List<LayoutComponent> components = new ArrayList<>(Message.MAX_COMPONENT_COUNT);
     protected final StringBuilder content = new StringBuilder(Message.MAX_CONTENT_LENGTH);
     protected AllowedMentionsImpl allowedMentions = new AllowedMentionsImpl();
 
