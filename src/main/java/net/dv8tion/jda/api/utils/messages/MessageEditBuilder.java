@@ -236,16 +236,16 @@ public class MessageEditBuilder extends AbstractMessageBuilder<MessageEditData, 
         if ((this.set & ALL) == ALL)
             this.replace = true;
 
-        if (this.isSet(CONTENT))
+        if (data.isSet(CONTENT))
             this.setContent(data.getContent());
-        if (this.isSet(EMBEDS))
+        if (data.isSet(EMBEDS))
             this.setEmbeds(data.getEmbeds());
-        if (this.isSet(COMPONENTS))
+        if (data.isSet(COMPONENTS))
             this.setComponents(data.getComponents());
-        if (this.isSet(ATTACHMENTS))
+        if (data.isSet(ATTACHMENTS))
             this.setAttachments(data.getAttachments());
 
-        if (this.isSet(MENTIONS))
+        if (data.isSet(MENTIONS))
         {
             String[] empty = new String[0];
             this.allowedMentions.mentionUsers(data.getMentionedUsers().toArray(empty));

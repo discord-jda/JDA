@@ -389,16 +389,15 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
     default R applyEditData(@Nonnull MessageEditData data)
     {
         Checks.notNull(data, "MessageEditData");
-        int flags = data.getFlags();
-        if ((flags & MessageEditBuilder.CONTENT) != 0)
+        if (data.isSet(MessageEditBuilder.CONTENT))
             setContent(data.getContent());
-        if ((flags & MessageEditBuilder.EMBEDS) != 0)
+        if (data.isSet(MessageEditBuilder.EMBEDS))
             setEmbeds(data.getEmbeds());
-        if ((flags & MessageEditBuilder.COMPONENTS) != 0)
+        if (data.isSet(MessageEditBuilder.COMPONENTS))
             setComponents(data.getComponents());
-        if ((flags & MessageEditBuilder.ATTACHMENTS) != 0)
+        if (data.isSet(MessageEditBuilder.ATTACHMENTS))
             setFiles(data.getFiles());
-        if ((flags & MessageEditBuilder.MENTIONS) != 0)
+        if (data.isSet(MessageEditBuilder.MENTIONS))
         {
             String[] array = new String[0];
             allowedMentions(data.getAllowedMentions());

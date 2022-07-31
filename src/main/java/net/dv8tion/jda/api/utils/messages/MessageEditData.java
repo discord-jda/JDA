@@ -336,7 +336,7 @@ public class MessageEditData implements SerializableData, AutoCloseable
         files.forEach(IOUtil::silentClose);
     }
 
-    private boolean isSet(int flag)
+    protected boolean isSet(int flag)
     {
         return (flags & flag) != 0;
     }
