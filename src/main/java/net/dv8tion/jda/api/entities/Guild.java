@@ -1281,19 +1281,18 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
 
     /**
      * Populated list of {@link GuildChannel channels} for this guild.
-     * This includes all types of channels, such as category/voice/text.
-     * <br>This includes hidden channels by default.
+     * <br>This includes all types of channels, except for threads.
+     * <br>This includes hidden channels by default,
+     * you can use {@link #getChannels(boolean) getChannels(false)} to exclude hidden channels.
      *
      * <p>The returned list is ordered in the same fashion as it would be by the official discord client.
      * <ol>
-     *     <li>TextChannel and NewsChannel without parent</li>
-     *     <li>VoiceChannel without parent</li>
-     *     <li>StageChannel without parent</li>
+     *     <li>TextChannel, ForumChannel, and NewsChannel without parent</li>
+     *     <li>VoiceChannel and StageChannel without parent</li>
      *     <li>Categories
      *         <ol>
-     *             <li>TextChannel and NewsChannel with category as parent</li>
-     *             <li>VoiceChannel with category as parent</li>
-     *             <li>StageChannel with category as parent</li>
+     *             <li>TextChannel, ForumChannel, and NewsChannel with category as parent</li>
+     *             <li>VoiceChannel and StageChannel with category as parent</li>
      *         </ol>
      *     </li>
      * </ol>
@@ -1310,22 +1309,19 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
 
     /**
      * Populated list of {@link GuildChannel channels} for this guild.
-     * This includes all types of channels, such as category/voice/text.
+     * <br>This includes all types of channels, except for threads.
      *
      * <p>The returned list is ordered in the same fashion as it would be by the official discord client.
      * <ol>
-     *     <li>TextChannel and NewsChannel without parent</li>
-     *     <li>VoiceChannel without parent</li>
-     *     <li>StageChannel without parent</li>
+     *     <li>TextChannel, ForumChannel, and NewsChannel without parent</li>
+     *     <li>VoiceChannel and StageChannel without parent</li>
      *     <li>Categories
      *         <ol>
-     *             <li>TextChannel and NewsChannel with category as parent</li>
-     *             <li>VoiceChannel with category as parent</li>
-     *             <li>StageChannel with category as parent</li>
+     *             <li>TextChannel, ForumChannel, and NewsChannel with category as parent</li>
+     *             <li>VoiceChannel and StageChannel with category as parent</li>
      *         </ol>
      *     </li>
      * </ol>
-     *
      *
      * @param  includeHidden
      *         Whether to include channels with denied {@link Permission#VIEW_CHANNEL View Channel Permission}

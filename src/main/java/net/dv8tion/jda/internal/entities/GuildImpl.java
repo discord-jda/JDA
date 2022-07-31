@@ -704,16 +704,19 @@ public class GuildImpl implements Guild
         SnowflakeCacheViewImpl<StageChannel> stageView = getStageChannelsView();
         SnowflakeCacheViewImpl<TextChannel> textView = getTextChannelsView();
         SnowflakeCacheViewImpl<NewsChannel> newsView = getNewsChannelView();
+        SnowflakeCacheViewImpl<ForumChannel> forumView = getForumChannelsView();
         List<TextChannel> textChannels;
         List<NewsChannel> newsChannels;
         List<VoiceChannel> voiceChannels;
         List<StageChannel> stageChannels;
+        List<ForumChannel> forumChannels;
         List<Category> categories;
         try (UnlockHook categoryHook = categoryView.readLock();
              UnlockHook voiceHook = voiceView.readLock();
              UnlockHook textHook = textView.readLock();
              UnlockHook newsHook = newsView.readLock();
-             UnlockHook stageHook = stageView.readLock())
+             UnlockHook stageHook = stageView.readLock();
+             UnlockHook forumHook = forumView.readLock())
         {
             if (includeHidden)
             {
@@ -721,6 +724,7 @@ public class GuildImpl implements Guild
                 newsChannels = newsView.asList();
                 voiceChannels = voiceView.asList();
                 stageChannels = stageView.asList();
+                forumChannels = forumView.asList();
             }
             else
             {
@@ -728,6 +732,7 @@ public class GuildImpl implements Guild
                 newsChannels = newsView.stream().filter(filterHidden).collect(Collectors.toList());
                 voiceChannels = voiceView.stream().filter(filterHidden).collect(Collectors.toList());
                 stageChannels = stageView.stream().filter(filterHidden).collect(Collectors.toList());
+                forumChannels = forumView.stream().filter(filterHidden).collect(Collectors.toList());
             }
             categories = categoryView.asList(); // we filter categories out when they are empty (no visible channels inside)
             channels = new ArrayList<>((int) categoryView.size() + voiceChannels.size() + textChannels.size() + newsChannels.size() + stageChannels.size());
@@ -737,6 +742,7 @@ public class GuildImpl implements Guild
         newsChannels.stream().filter(it -> it.getParentCategory() == null).forEach(channels::add);
         voiceChannels.stream().filter(it -> it.getParentCategory() == null).forEach(channels::add);
         stageChannels.stream().filter(it -> it.getParentCategory() == null).forEach(channels::add);
+        forumChannels.stream().filter(it -> it.getParentCategory() == null).forEach(channels::add);
         Collections.sort(channels);
 
         for (Category category : categories)
