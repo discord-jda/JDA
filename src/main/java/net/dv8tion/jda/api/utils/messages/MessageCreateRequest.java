@@ -351,8 +351,6 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
                 .setFiles(data.getFiles());
     }
 
-    // Explicitly explain that mentions are not filtered by allowed mentions this way
-
     @Nonnull
     default R applyMessage(@Nonnull Message message)
     {

@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Message.MessageFlag;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
+import net.dv8tion.jda.api.utils.AllowedMentions;
 import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.internal.utils.AllowedMentionsImpl;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -113,6 +114,7 @@ public class MessageCreateBuilder extends AbstractMessageBuilder<MessageCreateDa
     /**
      * Factory method to start a builder from an existing instance of {@link Message}.
      * <br>Equivalent to {@code new MessageCreateBuilder().applyMessage(data)}.
+     * <br>The {@link AllowedMentions} are not updated to reflect the provided message, and might mention users that the message did not.
      *
      * <p>This cannot copy the file attachments of the message, they must be manually downloaded and provided to {@link #setFiles(FileUpload...)}.
      *
