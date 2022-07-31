@@ -40,7 +40,7 @@ public class ExTermEncoder
     /**
      * Encodes the provided object into an ETF buffer.
      *
-     * <h4>The mapping is as follows:</h4>
+     * <p><b>The mapping is as follows:</b><br>
      * <ul>
      *     <li>{@code String -> Binary}</li>
      *     <li>{@code Map -> Map}</li>

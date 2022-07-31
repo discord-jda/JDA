@@ -22,17 +22,17 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.Event;
+import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.interactions.Interaction;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Locale;
 
 /**
  * Indicates that an {@link Interaction} was created.
  * <br>Every interaction event is derived from this event.
  *
- * <h2>Requirements</h2>
+ * <p><b>Requirements</b><br>
  * To receive these events, you must unset the <b>Interactions Endpoint URL</b> in your application dashboard.
  * You can simply remove the URL for this endpoint in your settings at the <a href="https://discord.com/developers/applications" target="_blank">Discord Developers Portal</a>.
  *
@@ -89,14 +89,14 @@ public class GenericInteractionCreateEvent extends Event implements Interaction
 
     @Nonnull
     @Override
-    public Locale getUserLocale()
+    public DiscordLocale getUserLocale()
     {
         return interaction.getUserLocale();
     }
 
     @Nonnull
     @Override
-    public Locale getGuildLocale()
+    public DiscordLocale getGuildLocale()
     {
         return interaction.getGuildLocale();
     }

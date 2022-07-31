@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.entities.Channel;
 import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.GuildChannel;
+import net.dv8tion.jda.api.entities.channel.unions.ChannelUnion;
 import net.dv8tion.jda.api.events.Event;
 
 import javax.annotation.Nonnull;
@@ -60,9 +61,9 @@ public class GenericChannelEvent extends Event
     }
 
     @Nonnull
-    public Channel getChannel()
+    public ChannelUnion getChannel()
     {
-        return this.channel;
+        return (ChannelUnion) this.channel;
     }
 
     /**

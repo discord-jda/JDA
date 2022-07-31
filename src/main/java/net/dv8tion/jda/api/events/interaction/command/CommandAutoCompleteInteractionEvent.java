@@ -17,6 +17,7 @@
 package net.dv8tion.jda.api.events.interaction.command;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.events.interaction.GenericAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.interactions.AutoCompleteQuery;
 import net.dv8tion.jda.api.interactions.callbacks.IAutoCompleteCallback;
@@ -34,7 +35,7 @@ import java.util.List;
  * Indicates that a user is typing in an {@link net.dv8tion.jda.api.interactions.commands.build.OptionData option} which
  * supports {@link net.dv8tion.jda.api.interactions.commands.build.OptionData#setAutoComplete(boolean) auto-complete}.
  *
- * <h2>Requirements</h2>
+ * <p><b>Requirements</b><br>
  * To receive these events, you must unset the <b>Interactions Endpoint URL</b> in your application dashboard.
  * You can simply remove the URL for this endpoint in your settings at the <a href="https://discord.com/developers/applications" target="_blank">Discord Developers Portal</a>.
  *
@@ -117,5 +118,12 @@ public class CommandAutoCompleteInteractionEvent extends GenericAutoCompleteInte
     public AutoCompleteCallbackAction replyChoices(@Nonnull Collection<Command.Choice> choices)
     {
         return interaction.replyChoices(choices);
+    }
+
+    @Nullable
+    @Override
+    public MessageChannelUnion getChannel()
+    {
+        return interaction.getChannel();
     }
 }

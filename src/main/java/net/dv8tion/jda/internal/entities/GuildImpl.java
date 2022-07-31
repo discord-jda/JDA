@@ -16,13 +16,12 @@
 
 package net.dv8tion.jda.internal.entities;
 
-import gnu.trove.map.TLongObjectMap;
-import gnu.trove.map.hash.TLongObjectHashMap;
-import gnu.trove.set.TLongSet;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.Region;
 import net.dv8tion.jda.api.audio.hooks.ConnectionStatus;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.channel.unions.DefaultGuildChannelUnion;
+import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import net.dv8tion.jda.api.entities.sticker.GuildSticker;
 import net.dv8tion.jda.api.entities.sticker.StandardSticker;
 import net.dv8tion.jda.api.entities.sticker.StickerSnowflake;
@@ -31,9 +30,11 @@ import net.dv8tion.jda.api.exceptions.HierarchyException;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.exceptions.ParsingException;
 import net.dv8tion.jda.api.exceptions.PermissionException;
+import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.commands.PrivilegeConfig;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
-import net.dv8tion.jda.api.interactions.commands.privileges.CommandPrivilege;
+import net.dv8tion.jda.api.interactions.commands.privileges.IntegrationPrivilege;
 import net.dv8tion.jda.api.managers.AudioManager;
 import net.dv8tion.jda.api.managers.GuildManager;
 import net.dv8tion.jda.api.managers.GuildStickerManager;
@@ -63,19 +64,16 @@ import net.dv8tion.jda.internal.requests.restaction.order.ChannelOrderActionImpl
 import net.dv8tion.jda.internal.requests.restaction.order.RoleOrderActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.pagination.AuditLogPaginationActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.pagination.BanPaginationActionImpl;
-import net.dv8tion.jda.internal.utils.*;
+import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.Helpers;
+import net.dv8tion.jda.internal.utils.PermissionUtil;
+import net.dv8tion.jda.internal.utils.UnlockHook;
 import net.dv8tion.jda.internal.utils.cache.AbstractCacheView;
 import net.dv8tion.jda.internal.utils.cache.MemberCacheViewImpl;
 import net.dv8tion.jda.internal.utils.cache.SnowflakeCacheViewImpl;
 import net.dv8tion.jda.internal.utils.cache.SortedSnowflakeCacheViewImpl;
 import net.dv8tion.jda.internal.utils.concurrent.task.GatewayTask;
-import okhttp3.MediaType;
-import okhttp3.MultipartBody;
-import okhttp3.RequestBody;
 
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.time.OffsetDateTime;
 import java.time.temporal.TemporalAccessor;
 import java.util.*;
@@ -84,6 +82,16 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+import gnu.trove.map.TLongObjectMap;
+import gnu.trove.map.hash.TLongObjectHashMap;
+import gnu.trove.set.TLongSet;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
 
 public class GuildImpl implements Guild
 {
@@ -97,7 +105,7 @@ public class GuildImpl implements Guild
     private final SortedSnowflakeCacheViewImpl<StageChannel> stageChannelCache = new SortedSnowflakeCacheViewImpl<>(StageChannel.class, Channel::getName, Comparator.naturalOrder());
     private final SortedSnowflakeCacheViewImpl<ThreadChannel> threadChannelCache = new SortedSnowflakeCacheViewImpl<>(ThreadChannel.class, Channel::getName, Comparator.naturalOrder());
     private final SortedSnowflakeCacheViewImpl<Role> roleCache = new SortedSnowflakeCacheViewImpl<>(Role.class, Role::getName, Comparator.reverseOrder());
-    private final SnowflakeCacheViewImpl<Emote> emoteCache = new SnowflakeCacheViewImpl<>(Emote.class, Emote::getName);
+    private final SnowflakeCacheViewImpl<RichCustomEmoji> emojicache = new SnowflakeCacheViewImpl<>(RichCustomEmoji.class, RichCustomEmoji::getName);
     private final SnowflakeCacheViewImpl<GuildSticker> stickerCache = new SnowflakeCacheViewImpl<>(GuildSticker.class, GuildSticker::getName);
     private final MemberCacheViewImpl memberCache = new MemberCacheViewImpl();
     private final CacheView.SimpleCacheView<MemberPresenceImpl> memberPresences;
@@ -125,7 +133,7 @@ public class GuildImpl implements Guild
     private NSFWLevel nsfwLevel = NSFWLevel.UNKNOWN;
     private Timeout afkTimeout;
     private BoostTier boostTier = BoostTier.NONE;
-    private Locale preferredLocale = Locale.US;
+    private DiscordLocale preferredLocale = DiscordLocale.ENGLISH_US;
     private int memberCount;
     private boolean boostProgressBarEnabled;
 
@@ -216,9 +224,12 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public RestAction<List<Command>> retrieveCommands()
+    public RestAction<List<Command>> retrieveCommands(boolean withLocalizations)
     {
-        Route.CompiledRoute route = Route.Interactions.GET_GUILD_COMMANDS.compile(getJDA().getSelfUser().getApplicationId(), getId());
+        Route.CompiledRoute route = Route.Interactions.GET_GUILD_COMMANDS
+                .compile(getJDA().getSelfUser().getApplicationId(), getId())
+                .withQueryParams("with_localizations", String.valueOf(withLocalizations));
+
         return new RestActionImpl<>(getJDA(), route,
                 (response, request) ->
                         response.getArray()
@@ -271,74 +282,30 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public RestAction<List<CommandPrivilege>> retrieveCommandPrivilegesById(@Nonnull String commandId)
+    public RestAction<List<IntegrationPrivilege>> retrieveIntegrationPrivilegesById(@Nonnull String targetId)
     {
-        Checks.isSnowflake(commandId, "ID");
-        Route.CompiledRoute route = Route.Interactions.GET_COMMAND_PERMISSIONS.compile(getJDA().getSelfUser().getApplicationId(), getId(), commandId);
+        Checks.isSnowflake(targetId, "ID");
+        Route.CompiledRoute route = Route.Interactions.GET_COMMAND_PERMISSIONS.compile(getJDA().getSelfUser().getApplicationId(), getId(), targetId);
         return new RestActionImpl<>(getJDA(), route, (response, request) -> parsePrivilegesList(response.getObject()));
     }
 
     @Nonnull
     @Override
-    public RestAction<Map<String, List<CommandPrivilege>>> retrieveCommandPrivileges()
+    public RestAction<PrivilegeConfig> retrieveCommandPrivileges()
     {
         Route.CompiledRoute route = Route.Interactions.GET_ALL_COMMAND_PERMISSIONS.compile(getJDA().getSelfUser().getApplicationId(), getId());
         return new RestActionImpl<>(getJDA(), route, (response, request) -> {
-            Map<String, List<CommandPrivilege>> privileges = new HashMap<>();
+            Map<String, List<IntegrationPrivilege>> privileges = new HashMap<>();
             response.getArray().stream(DataArray::getObject).forEach(obj -> {
                 String id = obj.getString("id");
-                List<CommandPrivilege> list = parsePrivilegesList(obj);
+                List<IntegrationPrivilege> list = Collections.unmodifiableList(parsePrivilegesList(obj));
                 privileges.put(id, list);
             });
-            return privileges;
+            return new PrivilegeConfig(this, privileges);
         });
     }
 
-    @Nonnull
-    @Override
-    public RestAction<List<CommandPrivilege>> updateCommandPrivilegesById(@Nonnull String id, @Nonnull Collection<? extends CommandPrivilege> privileges)
-    {
-        Checks.isSnowflake(id, "ID");
-        Checks.noneNull(privileges, "Privileges");
-        Checks.check(privileges.size() <= 10, "Cannot have more than 10 privileges for a command!");
-        Route.CompiledRoute route = Route.Interactions.EDIT_COMMAND_PERMISSIONS.compile(getJDA().getSelfUser().getApplicationId(), getId(), id);
-        DataArray array = DataArray.fromCollection(privileges);
-        return new RestActionImpl<>(getJDA(), route, DataObject.empty().put("permissions", array),
-            (response, request) -> parsePrivilegesList(response.getObject()));
-    }
-
-    @Nonnull
-    @Override
-    @SuppressWarnings("deprecation")
-    public RestAction<Map<String, List<CommandPrivilege>>> updateCommandPrivileges(@Nonnull Map<String, ? extends Collection<CommandPrivilege>> privileges)
-    {
-        Checks.notNull(privileges, "Privileges");
-        privileges.forEach((key, value) -> {
-            Checks.isSnowflake(key, "Map Key");
-            Checks.noneNull(value, "Privilege List for Command");
-            Checks.check(value.size() <= 10, "Cannot have more than 10 privileges for a command!");
-        });
-        DataArray array = DataArray.empty();
-        privileges.forEach((commandId, list) -> {
-            DataObject entry = DataObject.empty();
-            entry.put("id", commandId);
-            entry.put("permissions", DataArray.fromCollection(list));
-            array.add(entry);
-        });
-
-        Route.CompiledRoute route = Route.Interactions.EDIT_ALL_COMMAND_PERMISSIONS.compile(getJDA().getSelfUser().getApplicationId(), getId());
-        return new RestActionImpl<>(getJDA(), route, RequestBody.create(Requester.MEDIA_TYPE_JSON, array.toJson()), (response, request) -> {
-            Map<String, List<CommandPrivilege>> map = new HashMap<>();
-            response.getArray().stream(DataArray::getObject).forEach(obj -> {
-                String id = obj.getString("id");
-                List<CommandPrivilege> list = parsePrivilegesList(obj);
-                map.put(id, list);
-            });
-            return map;
-        });
-    }
-
-    private List<CommandPrivilege> parsePrivilegesList(DataObject obj)
+    private List<IntegrationPrivilege> parsePrivilegesList(DataObject obj)
     {
         return obj.getArray("permissions")
                 .stream(DataArray::getObject)
@@ -346,11 +313,11 @@ public class GuildImpl implements Guild
                 .collect(Collectors.toList());
     }
 
-    private CommandPrivilege parsePrivilege(DataObject data)
+    private IntegrationPrivilege parsePrivilege(DataObject data)
     {
-        CommandPrivilege.Type type = CommandPrivilege.Type.fromKey(data.getInt("type", 1));
+        IntegrationPrivilege.Type type = IntegrationPrivilege.Type.fromKey(data.getInt("type", 1));
         boolean enabled = data.getBoolean("permission");
-        return new CommandPrivilege(type, enabled, data.getUnsignedLong("id"));
+        return new IntegrationPrivilege(this, type, enabled, data.getUnsignedLong("id"));
     }
 
     @Nonnull
@@ -478,7 +445,7 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public Locale getLocale()
+    public DiscordLocale getLocale()
     {
         return preferredLocale;
     }
@@ -699,9 +666,9 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public SnowflakeCacheView<Emote> getEmoteCache()
+    public SnowflakeCacheView<RichCustomEmoji> getEmojiCache()
     {
-        return emoteCache;
+        return emojicache;
     }
 
     @Nonnull
@@ -719,7 +686,7 @@ public class GuildImpl implements Guild
         Predicate<GuildChannel> filterHidden = it -> {
             //TODO-v5: Do we need to if-protected cast here? If the channel _isnt_ a IPermissionContainer, then would we even be using this filter on it?
             if (it instanceof IPermissionContainer) {
-                self.hasPermission((IPermissionContainer) it, Permission.VIEW_CHANNEL);
+                return self.hasPermission((IPermissionContainer) it, Permission.VIEW_CHANNEL);
             }
             return false;
         };
@@ -788,19 +755,18 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public RestAction<List<ListedEmote>> retrieveEmotes()
+    public RestAction<List<RichCustomEmoji>> retrieveEmojis()
     {
-        Route.CompiledRoute route = Route.Emotes.GET_EMOTES.compile(getId());
+        Route.CompiledRoute route = Route.Emojis.GET_EMOJIS.compile(getId());
         return new RestActionImpl<>(getJDA(), route, (response, request) ->
         {
-
             EntityBuilder builder = GuildImpl.this.getJDA().getEntityBuilder();
-            DataArray emotes = response.getArray();
-            List<ListedEmote> list = new ArrayList<>(emotes.length());
-            for (int i = 0; i < emotes.length(); i++)
+            DataArray emojis = response.getArray();
+            List<RichCustomEmoji> list = new ArrayList<>(emojis.length());
+            for (int i = 0; i < emojis.length(); i++)
             {
-                DataObject emote = emotes.getObject(i);
-                list.add(builder.createEmote(GuildImpl.this, emote));
+                DataObject emoji = emojis.getObject(i);
+                list.add(builder.createEmoji(GuildImpl.this, emoji));
             }
 
             return Collections.unmodifiableList(list);
@@ -809,27 +775,26 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public RestAction<ListedEmote> retrieveEmoteById(@Nonnull String id)
+    public RestAction<RichCustomEmoji> retrieveEmojiById(@Nonnull String id)
     {
-        Checks.isSnowflake(id, "Emote ID");
+        Checks.isSnowflake(id, "Emoji ID");
 
         JDAImpl jda = getJDA();
-        return new DeferredRestAction<>(jda, ListedEmote.class,
+        return new DeferredRestAction<>(jda, RichCustomEmoji.class,
         () -> {
-            Emote emote = getEmoteById(id);
-            if (emote != null)
+            RichCustomEmoji emoji = getEmojiById(id);
+            if (emoji != null)
             {
-                ListedEmote listedEmote = (ListedEmote) emote;
-                if (listedEmote.hasUser() || !getSelfMember().hasPermission(Permission.MANAGE_EMOTES_AND_STICKERS))
-                    return listedEmote;
+                if (emoji.getOwner() != null || !getSelfMember().hasPermission(Permission.MANAGE_EMOJIS_AND_STICKERS))
+                    return emoji;
             }
             return null;
         }, () -> {
-            Route.CompiledRoute route = Route.Emotes.GET_EMOTE.compile(getId(), id);
+            Route.CompiledRoute route = Route.Emojis.GET_EMOJI.compile(getId(), id);
             return new AuditableRestActionImpl<>(jda, route, (response, request) ->
             {
                 EntityBuilder builder = GuildImpl.this.getJDA().getEntityBuilder();
-                return builder.createEmote(GuildImpl.this, response.getObject());
+                return builder.createEmoji(GuildImpl.this, response.getObject());
             });
         });
     }
@@ -937,10 +902,10 @@ public class GuildImpl implements Guild
 
     @Nullable
     @Override
-    public BaseGuildMessageChannel getDefaultChannel()
+    public DefaultGuildChannelUnion getDefaultChannel()
     {
         final Role role = getPublicRole();
-        return Stream.concat(getTextChannelCache().stream(), getNewsChannelCache().stream())
+        return (DefaultGuildChannelUnion) Stream.concat(getTextChannelCache().stream(), getNewsChannelCache().stream())
                 .filter(c -> role.hasPermission(c, Permission.VIEW_CHANNEL))
                 .min(Comparator.naturalOrder())
                 .orElse(null);
@@ -1134,14 +1099,14 @@ public class GuildImpl implements Guild
     }
 
     // Helper function for deferred cache access
-    private Member getMember(long id, boolean update, JDAImpl jda)
+    private Member getMember(long id, JDAImpl jda)
     {
-        if (!update || jda.isIntent(GatewayIntent.GUILD_MEMBERS))
+        if (jda.isIntent(GatewayIntent.GUILD_MEMBERS))
         {
             // return member from cache if member tracking is enabled through intents
             Member member = getMemberById(id);
             // if the join time is inaccurate we also have to load it through REST to update this information
-            if (!update || (member != null && member.hasTimeJoined()))
+            if (member != null && member.hasTimeJoined())
                 return member;
         }
         return null;
@@ -1149,15 +1114,14 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public RestAction<Member> retrieveMemberById(long id, boolean update)
+    public CacheRestAction<Member> retrieveMemberById(long id)
     {
         JDAImpl jda = getJDA();
-        if (id == jda.getSelfUser().getIdLong())
-            return new CompletedRestAction<>(jda, getSelfMember());
-
         return new DeferredRestAction<>(jda, Member.class,
-                () -> getMember(id, update, jda),
+                () -> getMember(id, jda),
                 () -> { // otherwise we need to update the member with a REST request first to get the nickname/roles
+                    if (id == jda.getSelfUser().getIdLong())
+                        return new CompletedRestAction<>(jda, getSelfMember());
                     Route.CompiledRoute route = Route.Guilds.GET_MEMBER.compile(getId(), Long.toUnsignedString(id));
                     return new RestActionImpl<>(jda, route, (resp, req) -> {
                         MemberImpl member = jda.getEntityBuilder().createMember(this, resp.getObject());
@@ -1445,12 +1409,14 @@ public class GuildImpl implements Guild
             checkPosition(member);
 
         Route.CompiledRoute route = Route.Guilds.KICK_MEMBER.compile(getId(), user.getId());
+
+        AuditableRestAction<Void> action = new AuditableRestActionImpl<>(getJDA(), route);
         if (!Helpers.isBlank(reason))
         {
             Checks.check(reason.length() <= 512, "Reason cannot be longer than 512 characters.");
-            route = route.withQueryParams("reason", EncodingUtil.encodeUTF8(reason));
+            return action.reason(reason);
         }
-        return new AuditableRestActionImpl<>(getJDA(), route);
+        return action;
     }
 
     @Nonnull
@@ -1470,16 +1436,16 @@ public class GuildImpl implements Guild
         Route.CompiledRoute route = Route.Guilds.BAN.compile(getId(), user.getId());
         DataObject params = DataObject.empty();
 
-        if (!Helpers.isBlank(reason))
-        {
-            Checks.check(reason.length() <= 512, "Reason cannot be longer than 512 characters.");
-            params.put("reason", reason);
-        }
-
         if (delDays > 0)
             params.put("delete_message_days", delDays);
 
-        return new AuditableRestActionImpl<>(getJDA(), route, params);
+        AuditableRestAction<Void> action = new AuditableRestActionImpl<>(getJDA(), route, params);
+        if (!Helpers.isBlank(reason))
+        {
+            Checks.check(reason.length() <= 512, "Reason cannot be longer than 512 characters.");
+            return action.reason(reason);
+        }
+        return action;
     }
 
     @Nonnull
@@ -1762,11 +1728,11 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public AuditableRestAction<Emote> createEmote(@Nonnull String name, @Nonnull Icon icon, @Nonnull Role... roles)
+    public AuditableRestAction<RichCustomEmoji> createEmoji(@Nonnull String name, @Nonnull Icon icon, @Nonnull Role... roles)
     {
-        checkPermission(Permission.MANAGE_EMOTES_AND_STICKERS);
-        Checks.inRange(name, 2, 32, "Emote name");
-        Checks.notNull(icon, "Emote icon");
+        checkPermission(Permission.MANAGE_EMOJIS_AND_STICKERS);
+        Checks.inRange(name, 2, 32, "Emoji name");
+        Checks.notNull(icon, "Emoji icon");
         Checks.notNull(roles, "Roles");
 
         DataObject body = DataObject.empty();
@@ -1776,11 +1742,11 @@ public class GuildImpl implements Guild
             body.put("roles", Stream.of(roles).filter(Objects::nonNull).map(ISnowflake::getId).collect(Collectors.toSet()));
 
         JDAImpl jda = getJDA();
-        Route.CompiledRoute route = Route.Emotes.CREATE_EMOTE.compile(getId());
+        Route.CompiledRoute route = Route.Emojis.CREATE_EMOJI.compile(getId());
         return new AuditableRestActionImpl<>(jda, route, body, (response, request) ->
         {
             DataObject obj = response.getObject();
-            return jda.getEntityBuilder().createEmote(this, obj);
+            return jda.getEntityBuilder().createEmoji(this, obj);
         });
     }
 
@@ -1788,7 +1754,7 @@ public class GuildImpl implements Guild
     @Override
     public AuditableRestAction<GuildSticker> createSticker(@Nonnull String name, @Nonnull String description, @Nonnull FileUpload file, @Nonnull Collection<String> tags)
     {
-        checkPermission(Permission.MANAGE_EMOTES_AND_STICKERS);
+        checkPermission(Permission.MANAGE_EMOJIS_AND_STICKERS);
         Checks.inRange(name, 2, 30, "Name");
         Checks.notNull(file, "File");
         Checks.notNull(description, "Description");
@@ -1842,7 +1808,7 @@ public class GuildImpl implements Guild
     public AuditableRestAction<Void> deleteSticker(@Nonnull StickerSnowflake id)
     {
         Checks.notNull(id, "Sticker");
-        Route.CompiledRoute route = Route.Stickers.DELETE_GUILD_STICKER.compile(id.getId());
+        Route.CompiledRoute route = Route.Stickers.DELETE_GUILD_STICKER.compile(getId(), id.getId());
         return new AuditableRestActionImpl<>(api, route);
     }
 
@@ -2092,9 +2058,9 @@ public class GuildImpl implements Guild
         return this;
     }
 
-    public GuildImpl setLocale(String locale)
+    public GuildImpl setLocale(DiscordLocale locale)
     {
-        this.preferredLocale = Locale.forLanguageTag(locale);
+        this.preferredLocale = locale;
         return this;
     }
 
@@ -2171,9 +2137,9 @@ public class GuildImpl implements Guild
         return roleCache;
     }
 
-    public SnowflakeCacheViewImpl<Emote> getEmotesView()
+    public SnowflakeCacheViewImpl<RichCustomEmoji> getEmojisView()
     {
-        return emoteCache;
+        return emojicache;
     }
 
     public SnowflakeCacheViewImpl<GuildSticker> getStickersView()

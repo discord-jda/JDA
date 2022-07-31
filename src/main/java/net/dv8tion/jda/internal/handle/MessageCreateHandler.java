@@ -74,10 +74,16 @@ public class MessageCreateHandler extends SocketHandler
                 case EntityBuilder.MISSING_CHANNEL:
                 {
                     final long channelId = content.getLong("channel_id");
-                    if (guild != null && guild.getGuildChannelById(channelId) != null)
+
+                    // If discord adds message support for unexpected types in the future, drop the event instead of caching it
+                    if (guild != null)
                     {
-                        WebSocketClient.LOG.debug("Discarding MESSAGE_CREATE event for unexpected channel type. Channel: {}", guild.getGuildChannelById(channelId));
-                        return null;
+                        GuildChannel actual = guild.getGuildChannelById(channelId);
+                        if (actual != null)
+                        {
+                            WebSocketClient.LOG.debug("Dropping MESSAGE_CREATE for unexpected channel of type {}", actual.getType());
+                            return null;
+                        }
                     }
 
                     jda.getEventCache().cache(EventCache.Type.CHANNEL, channelId, responseNumber, allContent, this::handle);

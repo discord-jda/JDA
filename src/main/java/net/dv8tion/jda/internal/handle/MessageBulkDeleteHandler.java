@@ -70,7 +70,6 @@ public class MessageBulkDeleteHandler extends SocketHandler
         else
         {
             GuildMessageChannel channel = getJDA().getChannelById(GuildMessageChannel.class, channelId);
-
             if (channel == null)
             {
                 if (guild != null)

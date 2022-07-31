@@ -306,7 +306,8 @@ public class FileUpload implements Closeable, AttachedFile
     @SuppressWarnings("deprecation")
     protected void finalize()
     {
-        IOUtil.silentClose(resource);
+        if (body == null) // Only close if the resource was never used
+            IOUtil.silentClose(resource);
     }
 
     @Override

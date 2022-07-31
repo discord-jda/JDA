@@ -17,7 +17,8 @@
 package net.dv8tion.jda.api.interactions.components;
 
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.channel.unions.GuildMessageChannelUnion;
+import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback;
 import net.dv8tion.jda.api.interactions.callbacks.IModalCallback;
 import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback;
@@ -88,11 +89,18 @@ public interface ComponentInteraction extends IReplyCallback, IMessageEditCallba
     Component.Type getComponentType();
 
     /**
-     * The respective {@link MessageChannel} for this interaction.
+     * The respective {@link MessageChannelUnion} for this interaction.
      *
-     * @return The {@link MessageChannel}
+     * @return The {@link MessageChannelUnion}
      */
     @Nonnull
     @Override
-    MessageChannel getChannel();
+    MessageChannelUnion getChannel();
+
+    @Nonnull
+    @Override
+    default GuildMessageChannelUnion getGuildChannel()
+    {
+        return (GuildMessageChannelUnion) IReplyCallback.super.getGuildChannel();
+    }
 }

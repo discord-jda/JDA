@@ -18,8 +18,10 @@ package net.dv8tion.jda.internal.entities;
 
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.channel.unions.IThreadContainerUnion;
 import net.dv8tion.jda.api.managers.channel.concrete.ThreadChannelManager;
 import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.api.requests.restaction.CacheRestAction;
 import net.dv8tion.jda.api.utils.TimeUtil;
 import net.dv8tion.jda.api.utils.cache.CacheView;
 import net.dv8tion.jda.api.utils.data.DataArray;
@@ -114,9 +116,9 @@ public class ThreadChannelImpl extends AbstractGuildChannelImpl<ThreadChannelImp
     @Nonnull
     @Override
     @SuppressWarnings("ConstantConditions")
-    public IThreadContainer getParentChannel()
+    public IThreadContainerUnion getParentChannel()
     {
-        return (IThreadContainer) guild.getGuildChannelById(parentChannelId);
+        return (IThreadContainerUnion) guild.getGuildChannelById(parentChannelId);
     }
 
     @Nonnull
@@ -148,16 +150,15 @@ public class ThreadChannelImpl extends AbstractGuildChannelImpl<ThreadChannelImp
 
     @Nonnull
     @Override
-    public RestAction<ThreadMember> retrieveThreadMemberById(long id)
+    public CacheRestAction<ThreadMember> retrieveThreadMemberById(long id)
     {
         JDAImpl jda = (JDAImpl) getJDA();
         return new DeferredRestAction<>(jda, ThreadMember.class,
                 () -> getThreadMemberById(id),
                 () -> {
                     Route.CompiledRoute route = Route.Channels.GET_THREAD_MEMBER.compile(getId(), Long.toUnsignedString(id));
-                    return new RestActionImpl<>(jda, route, (resp, req) -> {
-                        return jda.getEntityBuilder().createThreadMember(getGuild(), this, resp.getObject());
-                    });
+                    return new RestActionImpl<>(jda, route, (resp, req) ->
+                        jda.getEntityBuilder().createThreadMember(getGuild(), this, resp.getObject()));
                 });
     }
 

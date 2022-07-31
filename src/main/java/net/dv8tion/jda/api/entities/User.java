@@ -17,7 +17,7 @@ package net.dv8tion.jda.api.entities;
 
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.api.requests.restaction.CacheRestAction;
 import net.dv8tion.jda.api.utils.ImageProxy;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.entities.UserSnowflakeImpl;
@@ -36,7 +36,7 @@ import java.util.regex.Pattern;
  * Represents a Discord User.
  * Contains all publicly available information about a specific Discord User.
  *
- * <h2>Formattable</h2>
+ * <p><b>Formattable</b><br>
  * This interface extends {@link java.util.Formattable Formattable} and can be used with a {@link java.util.Formatter Formatter}
  * such as used by {@link String#format(String, Object...) String.format(String, Object...)}
  * or {@link java.io.PrintStream#printf(String, Object...) PrintStream.printf(String, Object...)}.
@@ -264,17 +264,16 @@ public interface User extends UserSnowflake
     /**
      * Loads the user's {@link User.Profile} data.
      * Returns a completed RestAction if this User has been retrieved using {@link JDA#retrieveUserById(long)}.
+     * You can use {@link CacheRestAction#useCache(boolean) useCache(false)} to force the request for a new profile with up-to-date information.
      *
      * @throws UnsupportedOperationException
      *         If this User was created with {@link #fromId(long)}
      *
-     * @return {@link RestAction} - Type: {@link User.Profile}
-     *
-     * @since 4.3.0
+     * @return {@link CacheRestAction} - Type: {@link User.Profile}
      */
     @Nonnull
     @CheckReturnValue
-    RestAction<Profile> retrieveProfile();
+    CacheRestAction<Profile> retrieveProfile();
 
     /**
      * The "tag" for this user
@@ -300,11 +299,13 @@ public interface User extends UserSnowflake
     boolean hasPrivateChannel();
 
     /**
-     * Opens a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel} with this User.
+     * Opens a {@link PrivateChannel} with this User.
      * <br>If a channel has already been opened with this user, it is immediately returned in the RestAction's
      * success consumer without contacting the Discord API.
+     * You can use {@link CacheRestAction#useCache(boolean) useCache(false)} to force the request for a new channel object,
+     * which is rarely useful since the channel id never changes.
      *
-     * <h4>Examples</h4>
+     * <p><b>Examples</b><br>
      * <pre>{@code
      * // Send message without response handling
      * public void sendMessage(User user, String content) {
@@ -326,14 +327,14 @@ public interface User extends UserSnowflake
      *         If the recipient User is the currently logged in account (represented by {@link net.dv8tion.jda.api.entities.SelfUser SelfUser})
      *         or if the user was created with {@link #fromId(long)}
      *
-     * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}
+     * @return {@link CacheRestAction} - Type: {@link PrivateChannel}
      *         <br>Retrieves the PrivateChannel to use to directly message this User.
      *
      * @see    JDA#openPrivateChannelById(long)
      */
     @Nonnull
     @CheckReturnValue
-    RestAction<PrivateChannel> openPrivateChannel();
+    CacheRestAction<PrivateChannel> openPrivateChannel();
 
     /**
      * Finds and collects all {@link net.dv8tion.jda.api.entities.Guild Guild} instances that contain this {@link net.dv8tion.jda.api.entities.User User} within the current {@link net.dv8tion.jda.api.JDA JDA} instance.<br>

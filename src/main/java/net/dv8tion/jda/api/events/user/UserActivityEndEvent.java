@@ -41,7 +41,7 @@ import javax.annotation.Nonnull;
  * Iterate the list of activities and check if an activity of the same {@link Activity#getType() type}
  * exists, if that is the case it was replaced and not finished.
  *
- * <h2>Requirements</h2>
+ * <p><b>Requirements</b><br>
  *
  * <p>This event requires the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_PRESENCES GUILD_PRESENCES} intent to be enabled.
  * <br>{@link net.dv8tion.jda.api.JDABuilder#createDefault(String) createDefault(String)} and

@@ -20,12 +20,12 @@ import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.NewsChannel;
 import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.managers.channel.middleman.BaseGuildMessageChannelManager;
+import net.dv8tion.jda.api.managers.channel.middleman.StandardGuildMessageChannelManager;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 
-public interface NewsChannelManager extends BaseGuildMessageChannelManager<NewsChannel, NewsChannelManager>
+public interface NewsChannelManager extends StandardGuildMessageChannelManager<NewsChannel, NewsChannelManager>
 {
     /**
      * Converts the selected channel to a different {@link ChannelType}.

@@ -172,7 +172,9 @@ public class MessageListener extends ListenerAdapter
     public static void main(String[] args)
             throws LoginException
     {
-        JDA jda = JDABuilder.createDefault("token").build();
+        JDA jda = JDABuilder.createDefault("token")
+                .enableIntents(GatewayIntent.MESSAGE_CONTENT) // enables explicit access to message.getContentDisplay()
+                .build();
         //You can also add event listeners to the already built JDA instance
         // Note that some events may not be received if the listener is added after calling build()
         // This includes events such as the ReadyEvent
@@ -209,9 +211,9 @@ public class Bot extends ListenerAdapter
             System.exit(1);
         }
         // args[0] should be the token
-        // We only need 2 intents in this bot. We only respond to messages in guilds and private channels.
+        // We only need 3 intents in this bot. We only respond to messages in guilds and private channels.
         // All other events will be disabled.
-        JDABuilder.createLight(args[0], GatewayIntent.GUILD_MESSAGES, GatewayIntent.DIRECT_MESSAGES)
+        JDABuilder.createLight(args[0], GatewayIntent.GUILD_MESSAGES, GatewayIntent.DIRECT_MESSAGES, GatewayIntent.MESSAGE_CONTENT)
             .addEventListeners(new Bot())
             .setActivity(Activity.playing("Type !ping"))
             .build();
