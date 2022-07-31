@@ -219,7 +219,7 @@ public interface WebhookClient<T>
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageAction<T> sendFile(@Nonnull FileUpload... files)
+    default WebhookMessageAction<T> sendFiles(@Nonnull FileUpload... files)
     {
         Checks.noneNull(files, "Files");
         Checks.notEmpty(files, "Files");

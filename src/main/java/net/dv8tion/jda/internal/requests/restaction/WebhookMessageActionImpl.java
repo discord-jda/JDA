@@ -81,7 +81,6 @@ public class WebhookMessageActionImpl<T>
 
             MultipartBody.Builder body = AttachedFile.createMultipartBody(files, null);
             body.addFormDataPart("payload_json", json.toString());
-            files.clear();
             return body.build();
         }
         catch (Exception e)
