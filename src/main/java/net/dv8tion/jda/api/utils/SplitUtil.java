@@ -26,6 +26,49 @@ import java.util.function.Predicate;
 
 /**
  * Utility to strategically split strings.
+ *
+ * <p><b>Example</b>
+ *
+ * <pre>{@code
+ * // Given some arbitrary input string
+ * String input = "Hello World";
+ *
+ * // Try to best-effort split based on the strategy,
+ * // in this case by spaces even if the partial string is not close to the limit
+ *
+ * // ["Hello", "World"]
+ * SplitUtil.split(input, 8, true, Strategy.SPACE);
+ *
+ * // Cases where the string can fit within the limit, will result in no splitting
+ *
+ * // ["Hello World"]
+ * SplitUtil.split(input, 50, true, Strategy.SPACE);
+ * }</pre>
+ *
+ * <p>In a more applied use-case, you can also define a smaller limit so it can fit into codeblocks of a message:
+ *
+ * <pre>{@code
+ * public List<String> getRoleNames(Guild guild)
+ * {
+ *    // Create a newline separated list of role names from the guild
+ *    String roleNames = guild.getRoleCache().applyStream(stream ->
+ *        stream.map(Role::getName)
+ *              .collect(Collectors.joining("\n"))
+ *    );
+ *
+ *    // Split the role names into a list of strings each small enough to fit into a message codeblock
+ *    // A message can be 2000 characters long, do the math (2000 - 7 = 1993 characters) but to be safe go a little lower
+ *    List<String> blocks = SplitUtil.split(roleNames, 1990, true, Strategy.NEWLINE, Strategy.ANYWHERE);
+ *
+ *    // Then wrap each of these blocks into a codeblock for sending
+ *    return blocks.stream()
+ *                 .map(block -> "```\n" + block + "```")
+ *                 .collect(Collectors.toList());
+ * }
+ * }</pre>
+ *
+ * @see #split(String, int, Strategy...)
+ * @see #split(String, int, boolean, Strategy...)
  */
 public class SplitUtil
 {
