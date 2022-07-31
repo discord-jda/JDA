@@ -17,6 +17,7 @@
 package net.dv8tion.jda.api.utils.messages;
 
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.Message.MessageFlag;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.utils.FileUpload;
@@ -193,17 +194,18 @@ public class MessageCreateBuilder extends AbstractMessageBuilder<MessageCreateDa
     @Override
     public MessageCreateBuilder setSuppressEmbeds(boolean suppress)
     {
+        int flag = MessageFlag.EMBEDS_SUPPRESSED.getValue();
         if (suppress)
-            this.flags |= 4;
+            this.flags |= flag;
         else
-            this.flags &= ~4;
+            this.flags &= ~flag;
         return this;
     }
 
     @Override
     public boolean isSuppressEmbeds()
     {
-        return (this.flags & 4) == 4;
+        return (this.flags & MessageFlag.EMBEDS_SUPPRESSED.getValue()) != 0;
     }
 
     @Override

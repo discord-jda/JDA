@@ -32,6 +32,8 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 
+import static net.dv8tion.jda.api.entities.Message.MessageFlag.EPHEMERAL;
+
 public class ReplyCallbackActionImpl extends DeferrableCallbackActionImpl implements ReplyCallbackAction, MessageCreateBuilderMixin<ReplyCallbackAction>
 {
     private final MessageCreateBuilder builder = new MessageCreateBuilder();
@@ -88,10 +90,11 @@ public class ReplyCallbackActionImpl extends DeferrableCallbackActionImpl implem
     @Override
     public ReplyCallbackActionImpl setEphemeral(boolean ephemeral)
     {
+        int flag = EPHEMERAL.getValue();
         if (ephemeral)
-            this.flags |= 64;
+            this.flags |= flag;
         else
-            this.flags &= ~64;
+            this.flags &= ~flag;
         return this;
     }
 

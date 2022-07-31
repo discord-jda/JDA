@@ -2014,6 +2014,7 @@ public interface Message extends ISnowflake, Formattable
 
         /**
          * Returns the value of the MessageFlag as represented in the bitfield. It is always a power of 2 (single bit)
+         *
          * @return Non-Zero bit value of the field
          */
         public int getValue()

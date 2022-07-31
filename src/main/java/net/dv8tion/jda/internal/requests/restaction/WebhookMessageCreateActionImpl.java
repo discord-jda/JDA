@@ -17,6 +17,7 @@
 package net.dv8tion.jda.internal.requests.restaction;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.Message.MessageFlag;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.restaction.WebhookMessageCreateAction;
@@ -74,7 +75,7 @@ public class WebhookMessageCreateActionImpl<T>
             List<FileUpload> files = data.getFiles();
             DataObject json = data.toData();
             if (ephemeral)
-                json.put("flags", json.getInt("flags", 0) | 64);
+                json.put("flags", json.getInt("flags", 0) | MessageFlag.EPHEMERAL.getValue());
             if (files.isEmpty())
                 return getRequestBody(json);
 
