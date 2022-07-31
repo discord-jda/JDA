@@ -57,6 +57,9 @@ import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.concurrent.task.GatewayTask;
 
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.time.Duration;
 import java.time.temporal.TemporalAccessor;
 import java.util.*;
@@ -64,10 +67,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
-
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 /**
  * Represents a Discord {@link net.dv8tion.jda.api.entities.Guild Guild}.
@@ -4559,12 +4558,16 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * {@link net.dv8tion.jda.api.requests.restaction.order.OrderAction#moveUp(int) up}/{@link net.dv8tion.jda.api.requests.restaction.order.OrderAction#moveDown(int) down}
      * or {@link net.dv8tion.jda.api.requests.restaction.order.OrderAction#moveTo(int) to} a specific position.
      *
-     * <p>This uses <b>ascending</b> ordering which means the lowest role is first!
-     * <br>This means the highest role appears at index {@code n - 1} and the lower role at index {@code 0}.
+     * <p>You can also move roles to a position relative to another role, by using {@link net.dv8tion.jda.api.requests.restaction.order.OrderAction#moveBelow(Object) moveBelow(...)}
+     * and {@link net.dv8tion.jda.api.requests.restaction.order.OrderAction#moveAbove(Object) moveAbove(...)}.
+     *
+     * <p>This uses <b>descending</b> ordering which means the highest role is first!
+     * <br>This means the lowest role appears at index {@code n - 1} and the highest role at index {@code 0}.
      * <br>Providing {@code true} to {@link #modifyRolePositions(boolean)} will result in the ordering being
-     * in ascending order, with the lower role at index {@code n - 1} and the highest at index {@code 0}.
+     * in ascending order, with the highest role at index {@code n - 1} and the lowest at index {@code 0}.
+     *
      * <br>As a note: {@link net.dv8tion.jda.api.entities.Member#getRoles() Member.getRoles()}
-     * and {@link net.dv8tion.jda.api.entities.Guild#getRoles() Guild.getRoles()} are both in descending order.
+     * and {@link net.dv8tion.jda.api.entities.Guild#getRoles() Guild.getRoles()} are both in descending order, just like this method.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
      * <ul>
@@ -4575,13 +4578,13 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      *     <br>The currently logged in account was removed from the Guild</li>
      * </ul>
      *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.order.RoleOrderAction RoleOrderAction}
+     * @return {@link RoleOrderAction}
      */
     @Nonnull
     @CheckReturnValue
     default RoleOrderAction modifyRolePositions()
     {
-        return modifyRolePositions(true);
+        return modifyRolePositions(false);
     }
 
     /**
@@ -4607,7 +4610,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      *         <br>As a note: {@link net.dv8tion.jda.api.entities.Member#getRoles() Member.getRoles()}
      *         and {@link net.dv8tion.jda.api.entities.Guild#getRoles() Guild.getRoles()} are both in descending order.
      *
-     * @return {@link RoleOrderAction RoleOrderAction}
+     * @return {@link RoleOrderAction}
      */
     @Nonnull
     @CheckReturnValue
