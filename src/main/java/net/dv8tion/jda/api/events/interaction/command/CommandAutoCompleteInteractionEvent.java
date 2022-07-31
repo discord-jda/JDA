@@ -17,6 +17,7 @@
 package net.dv8tion.jda.api.events.interaction.command;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.events.interaction.GenericAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.interactions.AutoCompleteQuery;
 import net.dv8tion.jda.api.interactions.callbacks.IAutoCompleteCallback;
@@ -117,5 +118,12 @@ public class CommandAutoCompleteInteractionEvent extends GenericAutoCompleteInte
     public AutoCompleteCallbackAction replyChoices(@Nonnull Collection<Command.Choice> choices)
     {
         return interaction.replyChoices(choices);
+    }
+
+    @Nullable
+    @Override
+    public MessageChannelUnion getChannel()
+    {
+        return interaction.getChannel();
     }
 }
