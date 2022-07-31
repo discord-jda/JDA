@@ -28,7 +28,6 @@ import net.dv8tion.jda.api.utils.messages.MessageEditBuilder;
 import net.dv8tion.jda.api.utils.messages.MessageEditData;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
-import net.dv8tion.jda.internal.utils.IOUtil;
 import net.dv8tion.jda.internal.utils.message.MessageEditBuilderMixin;
 import okhttp3.RequestBody;
 
@@ -56,8 +55,7 @@ public class MessageEditActionImpl extends RestActionImpl<Message> implements Me
     @Override
     protected RequestBody finalizeData()
     {
-        MessageEditData data = builder.build();
-        try
+        try (MessageEditData data = builder.build())
         {
             DataObject json = data.toData();
 
@@ -66,11 +64,6 @@ public class MessageEditActionImpl extends RestActionImpl<Message> implements Me
                 return getRequestBody(json);
 
             return AttachedFile.createMultipartBody(files, json).build();
-        }
-        catch (Throwable e)
-        {
-            IOUtil.silentClose(data);
-            throw e;
         }
     }
 

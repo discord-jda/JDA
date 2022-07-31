@@ -69,8 +69,7 @@ public class WebhookMessageActionImpl<T>
     @Override
     protected RequestBody finalizeData()
     {
-        MessageCreateData data = builder.build();
-        try
+        try (MessageCreateData data = builder.build())
         {
             List<FileUpload> files = data.getFiles();
             DataObject json = data.toData();
@@ -82,11 +81,6 @@ public class WebhookMessageActionImpl<T>
             MultipartBody.Builder body = AttachedFile.createMultipartBody(files, null);
             body.addFormDataPart("payload_json", json.toString());
             return body.build();
-        }
-        catch (Exception e)
-        {
-            data.close();
-            throw e;
         }
     }
 

@@ -88,8 +88,7 @@ public class MessageEditCallbackActionImpl extends DeferrableCallbackActionImpl 
         if (isEmpty())
             return getRequestBody(json.put("type", ResponseType.DEFERRED_MESSAGE_UPDATE.getRaw()));
         json.put("type", ResponseType.MESSAGE_UPDATE.getRaw());
-        MessageEditData data = builder.build();
-        try
+        try (MessageEditData data = builder.build())
         {
             json.put("data", data);
             List<FileUpload> files = data.getFiles();
@@ -99,11 +98,6 @@ public class MessageEditCallbackActionImpl extends DeferrableCallbackActionImpl 
             MultipartBody.Builder body = AttachedFile.createMultipartBody(files, null);
             body.addFormDataPart("payload_json", json.toString());
             return body.build();
-        }
-        catch (Exception e)
-        {
-            data.close();
-            throw e;
         }
     }
 }

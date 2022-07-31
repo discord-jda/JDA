@@ -69,8 +69,7 @@ public class ReplyCallbackActionImpl extends DeferrableCallbackActionImpl implem
         }
 
         json.put("type", ResponseType.CHANNEL_MESSAGE_WITH_SOURCE.getRaw());
-        MessageCreateData data = builder.build();
-        try
+        try (MessageCreateData data = builder.build())
         {
             DataObject msg = data.toData();
             msg.put("flags", msg.getInt("flags", 0) | flags);
@@ -82,11 +81,6 @@ public class ReplyCallbackActionImpl extends DeferrableCallbackActionImpl implem
             MultipartBody.Builder body = AttachedFile.createMultipartBody(files, null);
             body.addFormDataPart("payload_json", json.toString());
             return body.build();
-        }
-        catch (Exception e)
-        {
-            data.close();
-            throw e;
         }
     }
 

@@ -56,19 +56,13 @@ public class WebhookMessageEditActionImpl<T>
     @Override
     protected RequestBody finalizeData()
     {
-        MessageEditData data = builder.build();
-        try
+        try (MessageEditData data = builder.build())
         {
             DataObject json = data.toData();
             List<FileUpload> files = data.getFiles();
             if (files.isEmpty())
                 return getRequestBody(json);
             return AttachedFile.createMultipartBody(files, json).build();
-        }
-        catch (Exception e)
-        {
-            data.close();
-            throw e;
         }
     }
 

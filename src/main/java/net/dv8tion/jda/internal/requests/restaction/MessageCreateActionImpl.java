@@ -31,7 +31,6 @@ import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
-import net.dv8tion.jda.internal.utils.IOUtil;
 import net.dv8tion.jda.internal.utils.message.MessageCreateBuilderMixin;
 import okhttp3.RequestBody;
 
@@ -82,8 +81,7 @@ public class MessageCreateActionImpl extends RestActionImpl<Message> implements 
             throw new IllegalStateException("Cannot build empty messages! Must provide at least one of: content, embed, file, or stickers");
         }
 
-        MessageCreateData data = builder.build();
-        try
+        try (MessageCreateData data = builder.build())
         {
             DataObject json = data.toData();
             if (nonce != null)
@@ -103,11 +101,6 @@ public class MessageCreateActionImpl extends RestActionImpl<Message> implements 
                 return getRequestBody(json);
 
             return AttachedFile.createMultipartBody(data.getFiles(), json).build();
-        }
-        catch (Throwable e)
-        {
-            IOUtil.silentClose(data);
-            throw e;
         }
     }
 
