@@ -861,7 +861,7 @@ public interface Message extends ISnowflake, Formattable
      * </ul>
      *
      * @param  components
-     *         The new {@link LayoutComponent LayoutComponents} of the message, empty list to remove all components
+     *         The new {@link LayoutComponent LayoutComponents} of the message, or an empty list to remove all components
      *
      * @throws UnsupportedOperationException
      *         If this is a system message
