@@ -340,7 +340,7 @@ public class FileUpload implements Closeable, AttachedFile
     @Override
     public void close() throws IOException
     {
-        if (body != null)
+        if (body == null)
             forceClose();
     }
 
