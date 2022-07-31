@@ -817,7 +817,7 @@ public interface Message extends ISnowflake, Formattable
      * </ul>
      *
      * @param  embeds
-     *         The new {@link MessageEmbed MessageEmbeds} of the message, empty list to remove embeds
+     *         The new {@link MessageEmbed MessageEmbeds} of the message, or an empty list to remove all embeds
      *
      * @throws UnsupportedOperationException
      *         If this is a system message
