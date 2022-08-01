@@ -16,10 +16,13 @@
 
 package net.dv8tion.jda.api.requests.restaction;
 
-import net.dv8tion.jda.api.requests.FluentRestAction;
+import net.dv8tion.jda.api.requests.RestAction;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.concurrent.TimeUnit;
+import java.util.function.BooleanSupplier;
 
 /**
  * Requests which can use cached values instead of making a request to Discord.
@@ -27,8 +30,33 @@ import javax.annotation.Nonnull;
  * @param <T>
  *        The entity type
  */
-public interface CacheRestAction<T> extends FluentRestAction<T, CacheRestAction<T>>
+public interface CacheRestAction<T> extends RestAction<T>
 {
+    @Nonnull
+    @Override
+    CacheRestAction<T> setCheck(@Nullable BooleanSupplier checks);
+
+    @Nonnull
+    @Override
+    default CacheRestAction<T> addCheck(@Nonnull BooleanSupplier checks)
+    {
+        return (CacheRestAction<T>) RestAction.super.addCheck(checks);
+    }
+
+    @Nonnull
+    @Override
+    default CacheRestAction<T> timeout(long timeout, @Nonnull TimeUnit unit)
+    {
+        return (CacheRestAction<T>) RestAction.super.timeout(timeout, unit);
+    }
+
+    @Nonnull
+    @Override
+    default CacheRestAction<T> deadline(long timestamp)
+    {
+        return (CacheRestAction<T>) RestAction.super.deadline(timestamp);
+    }
+
     /**
      * Sets whether this request should rely on cached entities, or always retrieve a new one.
      *
