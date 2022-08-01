@@ -19,6 +19,7 @@ package net.dv8tion.jda.internal.handle;
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import net.dv8tion.jda.api.entities.ChannelType;
+import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
@@ -49,6 +50,20 @@ public class ReadyHandler extends SocketHandler
             if (previous != null)
                 WebSocketClient.LOG.warn("Found duplicate guild for id {} in ready payload", id);
         }
+
+        if (api.isIntent(GatewayIntent.MESSAGE_CONTENT))
+        {
+            long flags = content.optObject("application").map(o -> o.getLong("flags", 0)).orElse(0L);
+            if ((flags & (1 << 18 | 1 << 19)) == 0)
+            {
+                JDAImpl.LOG.warn(
+                    "Your bot is not eligible to use the MESSAGE_CONTENT intent. " +
+                    "You must explicitly enable it in your application dashboard. " +
+                    "Read more at: https://jda.wiki/using-jda/troubleshooting/#cannot-get-message-content-attempting-to-access-message-content-without-gatewayintent"
+                );
+            }
+        }
+
 
         DataObject selfJson = content.getObject("user");
         selfJson.put("application_id", // Used to update SelfUser#getApplicationId
