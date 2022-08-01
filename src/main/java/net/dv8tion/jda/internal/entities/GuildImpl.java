@@ -1112,7 +1112,7 @@ public class GuildImpl implements Guild
                         jda.getEntityBuilder().updateMemberCache(member);
                         return member;
                     });
-                });
+                }).useCache(jda.isIntent(GatewayIntent.GUILD_MEMBERS));
     }
 
     @Nonnull
