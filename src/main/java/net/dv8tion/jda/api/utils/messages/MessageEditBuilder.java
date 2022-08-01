@@ -232,7 +232,7 @@ public class MessageEditBuilder extends AbstractMessageBuilder<MessageEditData, 
     public MessageEditBuilder applyData(@Nonnull MessageEditData data)
     {
         Checks.notNull(data, "Data");
-        this.set = data.getFlags();
+        this.set |= data.getFlags();
         if ((this.set & ALL) == ALL)
             this.replace = true;
 
