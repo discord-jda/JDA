@@ -2136,7 +2136,8 @@ public class EntityBuilder
         final String privacyPolicyUrl = object.getString("privacy_policy_url", null);
         final boolean doesBotRequireCodeGrant = object.getBoolean("bot_require_code_grant");
         final String iconId = object.getString("icon", null);
-        final long id = object.getLong("id");
+        final long id = object.getUnsignedLong("id");
+        final long flags = object.getUnsignedLong("flags", 0);
         final String name = object.getString("name");
         final boolean isBotPublic = object.getBoolean("bot_public");
         final User owner = createUser(object.getObject("owner"));
@@ -2156,7 +2157,7 @@ public class EntityBuilder
                             .collect(Collectors.toList()))
                     .orElse(Collections.emptyList());
 
-        return new ApplicationInfoImpl(getJDA(), description, doesBotRequireCodeGrant, iconId, id, isBotPublic, name,
+        return new ApplicationInfoImpl(getJDA(), description, doesBotRequireCodeGrant, iconId, id, flags, isBotPublic, name,
                 termsOfServiceUrl, privacyPolicyUrl, owner, team, tags, customAuthUrl, defaultAuthUrlPerms, defaultAuthUrlScopes);
     }
 
