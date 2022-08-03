@@ -16,6 +16,9 @@
 
 package net.dv8tion.jda.internal.entities;
 
+import gnu.trove.map.TLongObjectMap;
+import gnu.trove.map.hash.TLongObjectHashMap;
+import gnu.trove.set.TLongSet;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.Region;
 import net.dv8tion.jda.api.audio.hooks.ConnectionStatus;
@@ -73,7 +76,12 @@ import net.dv8tion.jda.internal.utils.cache.MemberCacheViewImpl;
 import net.dv8tion.jda.internal.utils.cache.SnowflakeCacheViewImpl;
 import net.dv8tion.jda.internal.utils.cache.SortedSnowflakeCacheViewImpl;
 import net.dv8tion.jda.internal.utils.concurrent.task.GatewayTask;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
 
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.time.OffsetDateTime;
 import java.time.temporal.TemporalAccessor;
 import java.util.*;
@@ -82,16 +90,6 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
-import gnu.trove.map.TLongObjectMap;
-import gnu.trove.map.hash.TLongObjectHashMap;
-import gnu.trove.set.TLongSet;
-import okhttp3.MediaType;
-import okhttp3.MultipartBody;
 
 public class GuildImpl implements Guild
 {
@@ -1098,28 +1096,14 @@ public class GuildImpl implements Guild
         return new GatewayTask<>(handler, () -> handler.cancel(false));
     }
 
-    // Helper function for deferred cache access
-    private Member getMember(long id, JDAImpl jda)
-    {
-        if (jda.isIntent(GatewayIntent.GUILD_MEMBERS))
-        {
-            // return member from cache if member tracking is enabled through intents
-            Member member = getMemberById(id);
-            // if the join time is inaccurate we also have to load it through REST to update this information
-            if (member != null && member.hasTimeJoined())
-                return member;
-        }
-        return null;
-    }
-
     @Nonnull
     @Override
     public CacheRestAction<Member> retrieveMemberById(long id)
     {
         JDAImpl jda = getJDA();
         return new DeferredRestAction<>(jda, Member.class,
-                () -> getMember(id, jda),
-                () -> { // otherwise we need to update the member with a REST request first to get the nickname/roles
+                () -> getMemberById(id),
+                () -> {
                     if (id == jda.getSelfUser().getIdLong())
                         return new CompletedRestAction<>(jda, getSelfMember());
                     Route.CompiledRoute route = Route.Guilds.GET_MEMBER.compile(getId(), Long.toUnsignedString(id));
@@ -1128,7 +1112,7 @@ public class GuildImpl implements Guild
                         jda.getEntityBuilder().updateMemberCache(member);
                         return member;
                     });
-                });
+                }).useCache(jda.isIntent(GatewayIntent.GUILD_MEMBERS));
     }
 
     @Nonnull
