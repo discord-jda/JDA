@@ -226,7 +226,6 @@ public enum ActionType
      */
     BOT_ADD(28, TargetType.MEMBER),
 
-
     /**
      * An Administrator has created a {@link net.dv8tion.jda.api.entities.Role Role}.
      *
@@ -380,7 +379,6 @@ public enum ActionType
      */
     EMOJI_DELETE(62, TargetType.EMOJI),
 
-
     /**
      * A message was created.
      */
@@ -510,6 +508,39 @@ public enum ActionType
      * A user deleted a {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvent}
      */
     GUILD_SCHEDULED_EVENT_DELETE(102, TargetType.GUILD_SCHEDULED_EVENT),
+
+     * An Administrator created a {@link net.dv8tion.jda.api.entities.sticker.GuildSticker GuildSticker}.
+     *
+     * <p><b>Possible Keys</b><br>
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#STICKER_NAME STICKER_NAME}</li>
+     *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#STICKER_FORMAT STICKER_FORMAT}</li>
+     *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#STICKER_DESCRIPTION STICKER_DESCRIPTION}</li>
+     *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#STICKER_TAGS STICKER_TAGS}</li>
+     * </ul>
+     */
+    STICKER_CREATE(90, TargetType.STICKER),
+
+    /**
+     * An Administrator updated a {@link net.dv8tion.jda.api.entities.sticker.GuildSticker GuildSticker}.
+     *
+     * <p><b>Possible Keys</b><br>
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#STICKER_DESCRIPTION STICKER_DESCRIPTION}</li>
+     *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#STICKER_TAGS STICKER_TAGS}</li>
+     * </ul>
+     */
+    STICKER_UPDATE(91, TargetType.STICKER),
+
+    /**
+     * An Administrator deleted a {@link net.dv8tion.jda.api.entities.sticker.GuildSticker GuildSticker}.
+     *
+     * <p><b>Possible Keys</b><br>
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#STICKER_NAME STICKER_NAME}</li>
+     * </ul>
+     */
+    STICKER_DELETE(92, TargetType.STICKER),
 
     /**
      * A user created a {@link net.dv8tion.jda.api.entities.ThreadChannel ThreadChannel}

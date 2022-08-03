@@ -17,6 +17,7 @@
 package net.dv8tion.jda.api.events.interaction;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.ModalInteraction;
@@ -26,6 +27,7 @@ import net.dv8tion.jda.api.requests.restaction.interactions.MessageEditCallbackA
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.List;
 
 /**
@@ -66,6 +68,13 @@ public class ModalInteractionEvent extends GenericInteractionCreateEvent impleme
     public List<ModalMapping> getValues()
     {
         return interaction.getValues();
+    }
+
+    @Nullable
+    @Override
+    public Message getMessage()
+    {
+        return interaction.getMessage();
     }
 
     @Nonnull

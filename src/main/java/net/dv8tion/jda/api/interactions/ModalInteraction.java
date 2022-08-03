@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.interactions;
 
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.unions.GuildMessageChannelUnion;
 import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback;
@@ -81,6 +82,14 @@ public interface ModalInteraction extends IReplyCallback, IMessageEditCallback
                 .filter(mapping -> mapping.getId().equals(id))
                 .findFirst().orElse(null);
     }
+
+    /**
+     * Message this modal came from, if it was a reply to a {@link net.dv8tion.jda.api.interactions.components.ComponentInteraction ComponentInteraction}.
+     *
+     * @return The message the component is attached to, or {@code null}
+     */
+    @Nullable
+    Message getMessage();
 
     @Nonnull
     @Override
