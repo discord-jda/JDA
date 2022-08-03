@@ -4563,7 +4563,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     /**
      * Creates a new {@link GuildScheduledEvent}.
      *
-     * <h2>Requirements</h2>
+     * <p><b>Requirements</b><br>
      *
      * Events that are created are required to have a name, a location, and a start time. Depending on the
      * type of location provided, an event will be of one of three different {@link GuildScheduledEvent.Type Types}:
@@ -4600,7 +4600,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * @throws java.lang.IllegalArgumentException
      *         If a required parameter is not set.
      *
-     * <h2>Example</h2>
+     * <p><b>Example</b><br>
      * <pre>{@code
      * guild.createScheduledEvent()
      *     .setName("Cactus Beauty Contest")

@@ -30,7 +30,7 @@ import java.util.function.BooleanSupplier;
  * This extension allows setting properties such as the name or description of an event before it is
  * created.
  *
- * <h2>Requirements</h2>
+ * <p><b>Requirements</b><br>
  * Events that are created are required to have a name, a location, and a start time. Depending on the
  * type of location provided, an event will be of one of three different {@link GuildScheduledEvent.Type Types}:
  * <ol>
@@ -63,7 +63,7 @@ import java.util.function.BooleanSupplier;
  *     </li>
  * </ol>
  *
- * <h2>Example</h2>
+ * <p><b>Example</b><br>
  * <pre>{@code
  * guildScheduledEventAction.setName("Cactus Beauty Contest")
  *    .setDescription("Come and have your cacti judged! _Must be spikey to enter_")

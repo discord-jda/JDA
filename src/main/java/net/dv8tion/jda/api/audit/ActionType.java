@@ -509,6 +509,7 @@ public enum ActionType
      */
     GUILD_SCHEDULED_EVENT_DELETE(102, TargetType.GUILD_SCHEDULED_EVENT),
 
+    /**
      * An Administrator created a {@link net.dv8tion.jda.api.entities.sticker.GuildSticker GuildSticker}.
      *
      * <p><b>Possible Keys</b><br>

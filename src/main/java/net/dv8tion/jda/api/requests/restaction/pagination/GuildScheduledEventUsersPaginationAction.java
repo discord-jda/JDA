@@ -26,11 +26,11 @@ import javax.annotation.Nonnull;
  * <br>Note that this implementation is not considered thread-safe as modifications to the cache are not done
  * with a lock. Calling methods on this class from multiple threads is not recommended.
  *
- * <h2>Limits:</h2>
+ * <p><b>Limits:</b><br>
  * Minimum - 1
  * <br>Maximum - 100
  *
- * <h2>Example</h2>
+ * <p><b>Example</b><br>
  * <pre>{@code
  * // Get every user interested in this event print the users names
  * public static void getInterestedUsers(GuildScheduledEvent event) {
