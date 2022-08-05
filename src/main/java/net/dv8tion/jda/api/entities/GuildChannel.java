@@ -83,6 +83,7 @@ public interface GuildChannel extends Channel, Comparable<GuildChannel>
      *
      * @return A String representing the jump-to URL for the channel.
      */
+    @Nonnull
     default String getJumpUrl()
     {
         return Helpers.format(JUMP_URL, getGuild().getId(), getId());
