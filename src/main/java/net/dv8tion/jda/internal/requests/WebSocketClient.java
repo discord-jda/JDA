@@ -379,6 +379,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         }
         catch (IOException | WebSocketException e)
         {
+            resumeUrl = null;
             api.resetGatewayUrl();
             //Completely fail here. We couldn't make the connection.
             throw new IllegalStateException(e);
