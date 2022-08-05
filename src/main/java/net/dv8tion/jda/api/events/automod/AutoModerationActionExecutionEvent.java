@@ -27,7 +27,7 @@ public class AutoModerationActionExecutionEvent extends GenericAutoModerationEve
     private final String matchedKeyword;
     private final String matchedContent;
 
-    public AutoModerationActionExecutionEvent(@Nonnull JDA api, long responseNumber, @Nonnull AutoModerationRule rule, @Nonnull AutoModerationAction executedAction, @Nonnull User triggerer, @Nonnull TriggerType ruleTriggerer, @Nullable GuildChannel channel, @Nullable long messageId, @Nullable long alertSystemMessageId, @Nonnull String content, @Nullable String matchedKeyword, @Nullable String matchedContent)
+    public AutoModerationActionExecutionEvent(@Nonnull JDA api, long responseNumber, @Nonnull AutoModerationRule rule, @Nonnull AutoModerationAction executedAction, @Nonnull User triggerer, @Nonnull TriggerType ruleTriggerer, @Nullable GuildChannel channel, long messageId, long alertSystemMessageId, @Nullable String content, @Nullable String matchedKeyword, @Nullable String matchedContent)
     {
         super(api, responseNumber, rule);
         this.rule = rule;
@@ -120,7 +120,9 @@ public class AutoModerationActionExecutionEvent extends GenericAutoModerationEve
 
     /**
      * Returns the content of the message that triggered the rule.
-     *
+     * <p>
+     * Will return null if the gateway intent {@link net.dv8tion.jda.api.requests.GatewayIntent#MESSAGE_CONTENT} is not enabled.
+     * </p>
      * @return The content.
      */
     @Nonnull
@@ -142,7 +144,9 @@ public class AutoModerationActionExecutionEvent extends GenericAutoModerationEve
 
     /**
      * Returns the substring in the content that triggered the rule.
-     *
+     * <p>
+     * Will return null if the gateway intent {@link net.dv8tion.jda.api.requests.GatewayIntent#MESSAGE_CONTENT} is not enabled.
+     * </p>
      * @return the matched content.
      */
     @Nullable

@@ -17,12 +17,14 @@
 package net.dv8tion.jda.internal.entities.automod.build;
 
 import net.dv8tion.jda.api.entities.automod.EventType;
-import net.dv8tion.jda.api.entities.automod.TriggerType;
 import net.dv8tion.jda.api.entities.automod.build.AutoModerationMessageSend;
+import net.dv8tion.jda.api.entities.automod.build.sent.ExemptSubstrings;
 import net.dv8tion.jda.api.entities.automod.build.sent.Keyword;
 import net.dv8tion.jda.api.entities.automod.build.sent.KeywordPreset;
+import net.dv8tion.jda.internal.entities.automod.build.sent.ExemptSubstringsImpl;
 import net.dv8tion.jda.internal.entities.automod.build.sent.KeywordImpl;
 import net.dv8tion.jda.internal.entities.automod.build.sent.KeywordPresetImpl;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -32,6 +34,7 @@ public class AutoModerationMessageSendImpl implements AutoModerationMessageSend
     private final EventType eventType = EventType.MESSAGE_SEND;
     private Keyword keyword;
     private KeywordPreset preset;
+    private ExemptSubstrings exemptSubstrings;
 
     @Nonnull
     @Override
@@ -51,6 +54,14 @@ public class AutoModerationMessageSendImpl implements AutoModerationMessageSend
         return preset;
     }
 
+    @NotNull
+    @Override
+    public ExemptSubstrings exemptSubstrings(String name)
+    {
+        exemptSubstrings = new ExemptSubstringsImpl(name, eventType);
+        return exemptSubstrings;
+    }
+
     @Override
     @Nonnull
     public Keyword getKeyword()
@@ -63,5 +74,12 @@ public class AutoModerationMessageSendImpl implements AutoModerationMessageSend
     public KeywordPreset getPreset()
     {
         return preset;
+    }
+
+    @NotNull
+    @Override
+    public ExemptSubstrings getExemptSubstrings()
+    {
+        return exemptSubstrings;
     }
 }

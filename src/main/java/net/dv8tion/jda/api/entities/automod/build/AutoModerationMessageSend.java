@@ -16,15 +16,16 @@
 
 package net.dv8tion.jda.api.entities.automod.build;
 
-import net.dv8tion.jda.api.entities.automod.EventType;
-import net.dv8tion.jda.api.entities.automod.TriggerType;
+import net.dv8tion.jda.api.entities.automod.build.sent.ExemptSubstrings;
 import net.dv8tion.jda.api.entities.automod.build.sent.Keyword;
 import net.dv8tion.jda.api.entities.automod.build.sent.KeywordPreset;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 
-//TODO: JavaDoc
+/**
+ * Used to create a new {@link net.dv8tion.jda.api.entities.automod.AutoModerationRule},
+ */
 public interface AutoModerationMessageSend
 {
     @Nonnull
@@ -34,6 +35,10 @@ public interface AutoModerationMessageSend
     @Nonnull
     @CheckReturnValue
     KeywordPreset preset(String name);
+
+    @Nonnull
+    @CheckReturnValue
+    ExemptSubstrings exemptSubstrings(String name);
 
     /**
      * Returns the {@link Keyword} instances that can be used to create a new {@link net.dv8tion.jda.api.entities.automod.AutoModerationRule}.
@@ -50,4 +55,12 @@ public interface AutoModerationMessageSend
      */
     @Nonnull
     KeywordPreset getPreset();
+
+    /**
+     * Returns the {@link ExemptSubstrings} instances that can be used to create a new {@link net.dv8tion.jda.api.entities.automod.AutoModerationRule}.
+     *
+     * @return {@link ExemptSubstrings}
+     */
+    @Nonnull
+    ExemptSubstrings getExemptSubstrings();
 }

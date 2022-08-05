@@ -2255,7 +2255,6 @@ public class EntityBuilder
             final GuildChannel channel = guild.getGuildChannelById(channelId);
             if (channel == null)
                 continue;
-
             exemptChannels.add(channel);
         }
 
@@ -2280,6 +2279,7 @@ public class EntityBuilder
     {
         final DataArray keywordFilterArray = object.getArray("keyword_filter");
         final DataArray presetsArray = object.getArray("presets");
+        final DataArray allowList = object.getArray("allow_list");
 
         List<String> keywordFilters = new ArrayList<>();
         for (int i = 0; i < keywordFilterArray.length(); i++)
@@ -2289,9 +2289,15 @@ public class EntityBuilder
         for (int i = 0; i < presetsArray.length(); i++)
             presets.add(KeywordPresetType.fromValue(presetsArray.getInt(i)));
 
+        List<String> exemptSubstrings = new ArrayList<>();
+        for (int i = 0; i < allowList.length(); i++)
+            exemptSubstrings.add(allowList.getString(i));
+
+
         return new TriggerMetadataImpl()
                 .setKeywords(keywordFilters)
-                .setKeywordPresets(presets);
+                .setKeywordPresets(presets)
+                .setExemptSubstrings(exemptSubstrings);
     }
 
     public AutoModerationAction createAutoModerationAction(GuildImpl guild, DataObject object)

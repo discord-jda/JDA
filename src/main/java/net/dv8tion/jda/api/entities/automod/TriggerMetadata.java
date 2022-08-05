@@ -50,6 +50,7 @@ public interface TriggerMetadata
     @Nonnull
     TriggerMetadata setKeywords(@Nonnull List<String> keywords);
 
+
     /**
      * Returns the internally pre-defined word sets which will be searched for in content.
      * <p>
@@ -70,4 +71,27 @@ public interface TriggerMetadata
      */
     @Nonnull
     TriggerMetadata setKeywordPresets(@Nonnull EnumSet<KeywordPresetType> keywordPresetTypes);
+
+    /**
+     * Returns substrings which will be exempt from triggering the preset trigger type
+     * <p>
+     * Associated trigger type is {@link TriggerType#KEYWORD_PRESET}.
+     * </p>
+     * @return A {@link List} of {@link String}
+     */
+    @Nonnull
+    List<String> getExemptSubstrings();
+
+    /**
+     * Used to set substrings which will be exempt from triggering the preset trigger type
+     * <p>
+     * Associated trigger type is {@link TriggerType#KEYWORD_PRESET}.
+     * </p>
+     * @param  exemptSubstrings
+     *         A {@link List} of {@link String}
+     *
+     * @return This {@link TriggerMetadata} instance, for chaining.
+     */
+    @Nonnull
+    TriggerMetadata setExemptSubstrings(@Nonnull List<String> exemptSubstrings);
 }

@@ -18,6 +18,7 @@ package net.dv8tion.jda.internal.entities.automod;
 
 import net.dv8tion.jda.api.entities.automod.KeywordPresetType;
 import net.dv8tion.jda.api.entities.automod.TriggerMetadata;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import java.util.Collections;
@@ -29,6 +30,7 @@ public class TriggerMetadataImpl implements TriggerMetadata
 {
     private List<String> keywords;
     private EnumSet<KeywordPresetType> keywordPresets;
+    private List<String> exemptSubstrings;
 
     @Override
     @Nonnull
@@ -60,19 +62,34 @@ public class TriggerMetadataImpl implements TriggerMetadata
         return this;
     }
 
+    @NotNull
+    @Override
+    public List<String> getExemptSubstrings()
+    {
+        return Collections.unmodifiableList(exemptSubstrings);
+    }
+
+    @NotNull
+    @Override
+    public TriggerMetadata setExemptSubstrings(@NotNull List<String> exemptSubstrings)
+    {
+        this.exemptSubstrings = exemptSubstrings;
+        return this;
+    }
+
     @Override
     public boolean equals(Object o)
     {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         TriggerMetadataImpl that = (TriggerMetadataImpl) o;
-        return Objects.equals(keywords, that.keywords) && Objects.equals(keywordPresets, that.keywordPresets);
+        return Objects.equals(keywords, that.keywords) && Objects.equals(keywordPresets, that.keywordPresets) && Objects.equals(exemptSubstrings, that.exemptSubstrings);
     }
 
     @Override
     public int hashCode()
     {
-        return Objects.hash(keywords, keywordPresets);
+        return Objects.hash(keywords, keywordPresets, exemptSubstrings);
     }
 
     @Override
@@ -81,6 +98,7 @@ public class TriggerMetadataImpl implements TriggerMetadata
         return "TriggerMetadataImpl(" +
                 "keywords=" + keywords +
                 ", keywordPresets=" + keywordPresets +
+                ", exemptSubstrings=" + exemptSubstrings +
                 ')';
     }
 }
