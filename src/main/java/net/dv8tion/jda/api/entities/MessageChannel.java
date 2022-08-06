@@ -49,6 +49,7 @@ import net.dv8tion.jda.internal.utils.EncodingUtil;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
+import java.io.File;
 import java.io.InputStream;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -472,10 +473,10 @@ public interface MessageChannel extends Channel, Formattable
     /**
      * Send a message to this channel.
      *
-     * <p>Note that you are responsible to properly clean up your files, if the request is unsuccessful.
-     * The {@link FileUpload} class will try to close it when its collected as garbage, but that can take a long time to happen.
-     * You can always use {@link FileUpload#close()} and close it manually, however this should not be done until the request went through successfully.
-     * The library reads the underlying resource <em>just in time</em> for the request, and will keep it open until then.
+     * <p><b>Resource Handling Note:</b> Once the request is handed off to the requester, for example when you call {@link RestAction#queue()},
+     * the requester will automatically clean up all opened files by itself. You are only responsible to close them yourself if it is never handed off properly.
+     * For instance, if an exception occurs after using {@link FileUpload#fromData(File)}, before calling {@link RestAction#queue()}.
+     * You can safely use a try-with-resources to handle this, since {@link FileUpload#close()} becomes ineffective once the request is handed off.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
      * <ul>
@@ -514,10 +515,10 @@ public interface MessageChannel extends Channel, Formattable
     /**
      * Send a message to this channel.
      *
-     * <p>Note that you are responsible to properly clean up your files, if the request is unsuccessful.
-     * The {@link FileUpload} class will try to close it when its collected as garbage, but that can take a long time to happen.
-     * You can always use {@link FileUpload#close()} and close it manually, however this should not be done until the request went through successfully.
-     * The library reads the underlying resource <em>just in time</em> for the request, and will keep it open until then.
+     * <p><b>Resource Handling Note:</b> Once the request is handed off to the requester, for example when you call {@link RestAction#queue()},
+     * the requester will automatically clean up all opened files by itself. You are only responsible to close them yourself if it is never handed off properly.
+     * For instance, if an exception occurs after using {@link FileUpload#fromData(File)}, before calling {@link RestAction#queue()}.
+     * You can safely use a try-with-resources to handle this, since {@link FileUpload#close()} becomes ineffective once the request is handed off.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
      * <ul>
@@ -2745,10 +2746,10 @@ public interface MessageChannel extends Channel, Formattable
      *     <br>The request was attempted after the channel was deleted.</li>
      * </ul>
      *
-     * <p>Note that you are responsible to properly clean up your files, if the request is unsuccessful.
-     * The {@link FileUpload} class will try to close it when its collected as garbage, but that can take a long time to happen.
-     * You can always use {@link FileUpload#close()} and close it manually, however this should not be done until the request went through successfully.
-     * The library reads the underlying resource <em>just in time</em> for the request, and will keep it open until then.
+     * <p><b>Resource Handling Note:</b> Once the request is handed off to the requester, for example when you call {@link RestAction#queue()},
+     * the requester will automatically clean up all opened files by itself. You are only responsible to close them yourself if it is never handed off properly.
+     * For instance, if an exception occurs after using {@link FileUpload#fromData(File)}, before calling {@link RestAction#queue()}.
+     * You can safely use a try-with-resources to handle this, since {@link FileUpload#close()} becomes ineffective once the request is handed off.
      *
      * @param  messageId
      *         The message id. For interactions this supports {@code "@original"} to edit the source message of the interaction.
@@ -2796,10 +2797,10 @@ public interface MessageChannel extends Channel, Formattable
      *     <br>The request was attempted after the channel was deleted.</li>
      * </ul>
      *
-     * <p>Note that you are responsible to properly clean up your files, if the request is unsuccessful.
-     * The {@link FileUpload} class will try to close it when its collected as garbage, but that can take a long time to happen.
-     * You can always use {@link FileUpload#close()} and close it manually, however this should not be done until the request went through successfully.
-     * The library reads the underlying resource <em>just in time</em> for the request, and will keep it open until then.
+     * <p><b>Resource Handling Note:</b> Once the request is handed off to the requester, for example when you call {@link RestAction#queue()},
+     * the requester will automatically clean up all opened files by itself. You are only responsible to close them yourself if it is never handed off properly.
+     * For instance, if an exception occurs after using {@link FileUpload#fromData(File)}, before calling {@link RestAction#queue()}.
+     * You can safely use a try-with-resources to handle this, since {@link FileUpload#close()} becomes ineffective once the request is handed off.
      *
      * @param  messageId
      *         The message id. For interactions this supports {@code "@original"} to edit the source message of the interaction.
@@ -2847,10 +2848,10 @@ public interface MessageChannel extends Channel, Formattable
      *     <br>The request was attempted after the channel was deleted.</li>
      * </ul>
      *
-     * <p>Note that you are responsible to properly clean up your files, if the request is unsuccessful.
-     * The {@link FileUpload} class will try to close it when its collected as garbage, but that can take a long time to happen.
-     * You can always use {@link FileUpload#close()} and close it manually, however this should not be done until the request went through successfully.
-     * The library reads the underlying resource <em>just in time</em> for the request, and will keep it open until then.
+     * <p><b>Resource Handling Note:</b> Once the request is handed off to the requester, for example when you call {@link RestAction#queue()},
+     * the requester will automatically clean up all opened files by itself. You are only responsible to close them yourself if it is never handed off properly.
+     * For instance, if an exception occurs after using {@link FileUpload#fromData(File)}, before calling {@link RestAction#queue()}.
+     * You can safely use a try-with-resources to handle this, since {@link FileUpload#close()} becomes ineffective once the request is handed off.
      *
      * @param  messageId
      *         The message id. For interactions this supports {@code "@original"} to edit the source message of the interaction.
@@ -2897,10 +2898,10 @@ public interface MessageChannel extends Channel, Formattable
      *     <br>The request was attempted after the channel was deleted.</li>
      * </ul>
      *
-     * <p>Note that you are responsible to properly clean up your files, if the request is unsuccessful.
-     * The {@link FileUpload} class will try to close it when its collected as garbage, but that can take a long time to happen.
-     * You can always use {@link FileUpload#close()} and close it manually, however this should not be done until the request went through successfully.
-     * The library reads the underlying resource <em>just in time</em> for the request, and will keep it open until then.
+     * <p><b>Resource Handling Note:</b> Once the request is handed off to the requester, for example when you call {@link RestAction#queue()},
+     * the requester will automatically clean up all opened files by itself. You are only responsible to close them yourself if it is never handed off properly.
+     * For instance, if an exception occurs after using {@link FileUpload#fromData(File)}, before calling {@link RestAction#queue()}.
+     * You can safely use a try-with-resources to handle this, since {@link FileUpload#close()} becomes ineffective once the request is handed off.
      *
      * @param  messageId
      *         The message id. For interactions this supports {@code "@original"} to edit the source message of the interaction.

@@ -19,6 +19,7 @@ package net.dv8tion.jda.api.interactions.callbacks;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.interactions.InteractionHook;
+import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction;
 import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.messages.MessageCreateData;
@@ -27,6 +28,7 @@ import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
+import java.io.File;
 import java.io.InputStream;
 import java.util.Collection;
 
@@ -305,10 +307,10 @@ public interface IReplyCallback extends IDeferrableCallback
      * <br>When the acknowledgement is sent after the interaction expired, you will receive {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_INTERACTION ErrorResponse.UNKNOWN_INTERACTION}.
      * <p>If your handling can take longer than 3 seconds, due to various rate limits or other conditions, you should use {@link #deferReply()} instead.
      *
-     * <p>Note that you are responsible to properly clean up your files, if the request is unsuccessful.
-     * The {@link FileUpload} class will try to close it when its collected as garbage, but that can take a long time to happen.
-     * You can always use {@link FileUpload#close()} and close it manually, however this should not be done until the request went through successfully.
-     * The library reads the underlying resource <em>just in time</em> for the request, and will keep it open until then.
+     * <p><b>Resource Handling Note:</b> Once the request is handed off to the requester, for example when you call {@link RestAction#queue()},
+     * the requester will automatically clean up all opened files by itself. You are only responsible to close them yourself if it is never handed off properly.
+     * For instance, if an exception occurs after using {@link FileUpload#fromData(File)}, before calling {@link RestAction#queue()}.
+     * You can safely use a try-with-resources to handle this, since {@link FileUpload#close()} becomes ineffective once the request is handed off.
      *
      * @param  files
      *         The {@link FileUpload FileUploads} to attach to the message
@@ -338,10 +340,10 @@ public interface IReplyCallback extends IDeferrableCallback
      * <br>When the acknowledgement is sent after the interaction expired, you will receive {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_INTERACTION ErrorResponse.UNKNOWN_INTERACTION}.
      * <p>If your handling can take longer than 3 seconds, due to various rate limits or other conditions, you should use {@link #deferReply()} instead.
      *
-     * <p>Note that you are responsible to properly clean up your files, if the request is unsuccessful.
-     * The {@link FileUpload} class will try to close it when its collected as garbage, but that can take a long time to happen.
-     * You can always use {@link FileUpload#close()} and close it manually, however this should not be done until the request went through successfully.
-     * The library reads the underlying resource <em>just in time</em> for the request, and will keep it open until then.
+     * <p><b>Resource Handling Note:</b> Once the request is handed off to the requester, for example when you call {@link RestAction#queue()},
+     * the requester will automatically clean up all opened files by itself. You are only responsible to close them yourself if it is never handed off properly.
+     * For instance, if an exception occurs after using {@link FileUpload#fromData(File)}, before calling {@link RestAction#queue()}.
+     * You can safely use a try-with-resources to handle this, since {@link FileUpload#close()} becomes ineffective once the request is handed off.
      *
      * @param  files
      *         The {@link FileUpload FileUploads} to attach to the message
