@@ -63,7 +63,7 @@ public interface MessageCreateAction extends MessageCreateRequest<MessageCreateA
      *         The nonce string to use
      *
      * @throws IllegalArgumentException
-     *         If the provided nonce is longer than 25 characters
+     *         If the provided nonce is longer than {@value Message#MAX_NONCE_LENGTH} characters
      *
      * @return The same instance for chaining
      *

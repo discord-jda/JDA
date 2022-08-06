@@ -191,6 +191,11 @@ public interface Message extends ISnowflake, Formattable
     int MAX_COMPONENT_COUNT = 5;
 
     /**
+     * The maximum character length for a {@link #getNonce() nonce} ({@value})
+     */
+    int MAX_NONCE_LENGTH = 25;
+
+    /**
      * Pattern used to find instant invites in strings.
      *
      * <p>The only named group is at index 1 with the name {@code "code"}.

@@ -115,7 +115,7 @@ public class MessageCreateActionImpl extends RestActionImpl<Message> implements 
     public MessageCreateAction setNonce(@Nullable String nonce)
     {
         if (nonce != null)
-            Checks.notLonger(nonce, 25, "Nonce");
+            Checks.notLonger(nonce, Message.MAX_NONCE_LENGTH, "Nonce");
         this.nonce = nonce;
         return this;
     }
