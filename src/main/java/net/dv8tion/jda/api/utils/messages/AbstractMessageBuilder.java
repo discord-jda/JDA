@@ -20,15 +20,11 @@ import net.dv8tion.jda.api.entities.IMentionable;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
-import net.dv8tion.jda.internal.utils.AllowedMentionsImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
  * Abstract builder implementation of {@link MessageRequest}.
@@ -43,13 +39,13 @@ import java.util.List;
  * @see   MessageCreateBuilder
  * @see   MessageEditBuilder
  */
-@SuppressWarnings({"ResultOfMethodCallIgnored", "unchecked"})
+@SuppressWarnings("unchecked")
 public abstract class AbstractMessageBuilder<T, R extends AbstractMessageBuilder<T, R>> implements MessageRequest<R>
 {
     protected final List<MessageEmbed> embeds = new ArrayList<>(Message.MAX_EMBED_COUNT);
     protected final List<LayoutComponent> components = new ArrayList<>(Message.MAX_COMPONENT_COUNT);
     protected final StringBuilder content = new StringBuilder(Message.MAX_CONTENT_LENGTH);
-    protected AllowedMentionsImpl allowedMentions = new AllowedMentionsImpl();
+    protected AllowedMentionsData mentions = new AllowedMentionsData();
     protected int flags;
 
     protected AbstractMessageBuilder() {}
@@ -83,23 +79,23 @@ public abstract class AbstractMessageBuilder<T, R extends AbstractMessageBuilder
     @Override
     public R mentionRepliedUser(boolean mention)
     {
-        allowedMentions.mentionRepliedUser(mention);
+        mentions.mentionRepliedUser(mention);
         return (R) this;
     }
 
     @Nonnull
     @Override
-    public R allowedMentions(@Nullable Collection<Message.MentionType> allowedMentions)
+    public R setAllowedMentions(@Nullable Collection<Message.MentionType> allowedMentions)
     {
-        this.allowedMentions.allowedMentions(allowedMentions);
+        mentions.setAllowedMentions(allowedMentions);
         return (R) this;
     }
 
     @Nonnull
     @Override
-    public R mention(@Nonnull IMentionable... mentions)
+    public R mention(@Nonnull Collection<? extends IMentionable> mentions)
     {
-        allowedMentions.mention(mentions);
+        this.mentions.mention(mentions);
         return (R) this;
     }
 
@@ -107,7 +103,7 @@ public abstract class AbstractMessageBuilder<T, R extends AbstractMessageBuilder
     @Override
     public R mentionUsers(@Nonnull String... userIds)
     {
-        allowedMentions.mentionUsers(userIds);
+        this.mentions.mentionUsers(userIds);
         return (R) this;
     }
 
@@ -115,8 +111,35 @@ public abstract class AbstractMessageBuilder<T, R extends AbstractMessageBuilder
     @Override
     public R mentionRoles(@Nonnull String... roleIds)
     {
-        allowedMentions.mentionRoles(roleIds);
+        this.mentions.mentionRoles(roleIds);
         return (R) this;
+    }
+
+    @Nonnull
+    @Override
+    public Set<? extends String> getMentionedUsers()
+    {
+        return mentions.getMentionedUsers();
+    }
+
+    @Nonnull
+    @Override
+    public Set<? extends String> getMentionedRoles()
+    {
+        return mentions.getMentionedRoles();
+    }
+
+    @Nonnull
+    @Override
+    public EnumSet<Message.MentionType> getAllowedMentions()
+    {
+        return mentions.getAllowedMentions();
+    }
+
+    @Override
+    public boolean isMentionRepliedUser()
+    {
+        return mentions.isMentionRepliedUser();
     }
 
     @Nonnull
@@ -227,7 +250,7 @@ public abstract class AbstractMessageBuilder<T, R extends AbstractMessageBuilder
         this.embeds.clear();
         this.components.clear();
         this.content.setLength(0);
-        this.allowedMentions = new AllowedMentionsImpl();
+        this.mentions.clear();
         return (R) this;
     }
 

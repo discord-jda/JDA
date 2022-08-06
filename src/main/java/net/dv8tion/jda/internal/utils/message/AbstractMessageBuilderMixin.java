@@ -28,7 +28,9 @@ import net.dv8tion.jda.api.utils.messages.MessageRequest;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Collection;
+import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
 
 @SuppressWarnings({"unchecked", "ResultOfMethodCallIgnored"})
 public interface AbstractMessageBuilderMixin<R extends MessageRequest<R>, B extends AbstractMessageBuilder<?, B>> extends MessageRequest<R>
@@ -119,15 +121,15 @@ public interface AbstractMessageBuilderMixin<R extends MessageRequest<R>, B exte
 
     @Nonnull
     @Override
-    default R allowedMentions(@Nullable Collection<Message.MentionType> allowedMentions)
+    default R setAllowedMentions(@Nullable Collection<Message.MentionType> allowedMentions)
     {
-        getBuilder().allowedMentions(allowedMentions);
+        getBuilder().setAllowedMentions(allowedMentions);
         return (R) this;
     }
 
     @Nonnull
     @Override
-    default R mention(@Nonnull IMentionable... mentions)
+    default R mention(@Nonnull Collection<? extends IMentionable> mentions)
     {
         getBuilder().mention(mentions);
         return (R) this;
@@ -147,5 +149,32 @@ public interface AbstractMessageBuilderMixin<R extends MessageRequest<R>, B exte
     {
         getBuilder().mentionRoles(roleIds);
         return (R) this;
+    }
+
+    @Nonnull
+    @Override
+    default Set<? extends String> getMentionedUsers()
+    {
+        return getBuilder().getMentionedUsers();
+    }
+
+    @Nonnull
+    @Override
+    default Set<? extends String> getMentionedRoles()
+    {
+        return getBuilder().getMentionedRoles();
+    }
+
+    @Nonnull
+    @Override
+    default EnumSet<Message.MentionType> getAllowedMentions()
+    {
+        return getBuilder().getAllowedMentions();
+    }
+
+    @Override
+    default boolean isMentionRepliedUser()
+    {
+        return getBuilder().isMentionRepliedUser();
     }
 }

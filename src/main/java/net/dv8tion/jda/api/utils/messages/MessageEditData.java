@@ -21,10 +21,10 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.utils.AttachedFile;
 import net.dv8tion.jda.api.utils.FileUpload;
+import net.dv8tion.jda.api.utils.MessageData;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.SerializableData;
-import net.dv8tion.jda.internal.utils.AllowedMentionsImpl;
 import net.dv8tion.jda.internal.utils.IOUtil;
 
 import javax.annotation.Nonnull;
@@ -42,27 +42,29 @@ import static net.dv8tion.jda.api.utils.messages.MessageEditBuilder.*;
  * @see net.dv8tion.jda.api.entities.WebhookClient#editMessageById(String, MessageEditData) WebhookClient.editMessageById(String, MessageEditData)
  * @see net.dv8tion.jda.api.interactions.InteractionHook#editOriginal(MessageEditData) InteractionHook.editOriginal(MessageEditData)
  */
-public class MessageEditData implements SerializableData, AutoCloseable
+public class MessageEditData implements MessageData, AutoCloseable, SerializableData
 {
+    protected final AllowedMentionsData mentions;
     private final String content;
     private final List<MessageEmbed> embeds;
     private final List<AttachedFile> files;
     private final List<LayoutComponent> components;
-    private final AllowedMentionsImpl allowedMentions;
-
     private final int flags;
 
+    private final int set;
+
     protected MessageEditData(
-            int set, String content,
+            int set, int flags, String content,
             List<MessageEmbed> embeds, List<AttachedFile> files, List<LayoutComponent> components,
-            AllowedMentionsImpl allowedMentions)
+            AllowedMentionsData mentions)
     {
         this.content = content;
         this.embeds = Collections.unmodifiableList(embeds);
         this.files = Collections.unmodifiableList(files);
         this.components = Collections.unmodifiableList(components);
-        this.allowedMentions = allowedMentions;
-        this.flags = set;
+        this.mentions = mentions;
+        this.flags = flags;
+        this.set = set;
     }
 
     /**
@@ -198,6 +200,11 @@ public class MessageEditData implements SerializableData, AutoCloseable
         return new MessageEditBuilder().applyCreateData(data).build();
     }
 
+    protected int getSet()
+    {
+        return set;
+    }
+
     protected int getFlags()
     {
         return flags;
@@ -247,15 +254,21 @@ public class MessageEditData implements SerializableData, AutoCloseable
         return files;
     }
 
+    @Override
+    public boolean isSuppressEmbeds()
+    {
+        return isSet(Message.MessageFlag.EMBEDS_SUPPRESSED.getValue());
+    }
+
     /**
      * The IDs for users which are allowed to be mentioned, or an empty list.
      *
      * @return The user IDs which are mention whitelisted
      */
     @Nonnull
-    public Set<String> getMentionedUsers()
+    public Set<? extends String> getMentionedUsers()
     {
-        return allowedMentions.getUsers();
+        return mentions.getMentionedUsers();
     }
 
     /**
@@ -264,9 +277,9 @@ public class MessageEditData implements SerializableData, AutoCloseable
      * @return The role IDs which are mention whitelisted
      */
     @Nonnull
-    public Set<String> getMentionedRoles()
+    public Set<? extends String> getMentionedRoles()
     {
-        return allowedMentions.getRoles();
+        return mentions.getMentionedRoles();
     }
 
     /**
@@ -277,7 +290,7 @@ public class MessageEditData implements SerializableData, AutoCloseable
     @Nonnull
     public EnumSet<Message.MentionType> getAllowedMentions()
     {
-        return allowedMentions.getAllowedMentions();
+        return mentions.getAllowedMentions();
     }
 
     /**
@@ -287,7 +300,7 @@ public class MessageEditData implements SerializableData, AutoCloseable
      */
     public boolean isMentionRepliedUser()
     {
-        return allowedMentions.isMentionRepliedUser();
+        return mentions.isMentionRepliedUser();
     }
 
     @Nonnull
@@ -302,7 +315,9 @@ public class MessageEditData implements SerializableData, AutoCloseable
         if (isSet(COMPONENTS))
             json.put("components", DataArray.fromCollection(components));
         if (isSet(MENTIONS))
-            json.put("allowed_mentions", allowedMentions);
+            json.put("allowed_mentions", mentions);
+        if (isSet(FLAGS))
+            json.put("flags", flags);
         if (isSet(ATTACHMENTS))
         {
             DataArray attachments = DataArray.empty();
@@ -338,6 +353,6 @@ public class MessageEditData implements SerializableData, AutoCloseable
 
     protected boolean isSet(int flag)
     {
-        return (flags & flag) != 0;
+        return (set & flag) != 0;
     }
 }

@@ -379,7 +379,7 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
         if (data.isSet(MessageEditBuilder.MENTIONS))
         {
             String[] array = new String[0];
-            allowedMentions(data.getAllowedMentions());
+            setAllowedMentions(data.getAllowedMentions());
             mentionUsers(data.getMentionedUsers().toArray(array));
             mentionRoles(data.getMentionedRoles().toArray(array));
             mentionRepliedUser(data.isMentionRepliedUser());

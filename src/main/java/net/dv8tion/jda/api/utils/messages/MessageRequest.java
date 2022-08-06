@@ -16,24 +16,26 @@
 
 package net.dv8tion.jda.api.utils.messages;
 
+import net.dv8tion.jda.api.entities.IMentionable;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.ItemComponent;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.requests.RestAction;
-import net.dv8tion.jda.api.utils.AllowedMentions;
 import net.dv8tion.jda.api.utils.AttachedFile;
 import net.dv8tion.jda.api.utils.FileUpload;
+import net.dv8tion.jda.api.utils.MessageData;
 import net.dv8tion.jda.internal.utils.Checks;
 
+import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.File;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
+import java.util.EnumSet;
 
 /**
  * Abstraction of the common setters used for messages in the API.
@@ -48,8 +50,71 @@ import java.util.List;
  * @see   MessageCreateBuilder
  * @see   MessageEditBuilder
  */
-public interface MessageRequest<R extends MessageRequest<R>> extends AllowedMentions<R>
+public interface MessageRequest<R extends MessageRequest<R>> extends MessageData
 {
+    /**
+     * Sets the {@link net.dv8tion.jda.api.entities.Message.MentionType MentionTypes} that should be parsed by default.
+     * This just sets the default for all RestActions and can be overridden on a per-action basis using {@link #setAllowedMentions(Collection)}.
+     * <br>If a message is sent with an empty Set of MentionTypes, then it will not ping any User, Role or {@code @everyone}/{@code @here},
+     * while still showing up as mention tag.
+     *
+     * <p>If {@code null} is provided to this method, then all Types will be pingable
+     * (unless whitelisting via one of the {@code mention*} methods is used).
+     *
+     * <p><b>Example</b><br>
+     * <pre>{@code
+     * // Disable EVERYONE and HERE mentions by default (to avoid mass ping)
+     * EnumSet<Message.MentionType> deny = EnumSet.of(Message.MentionType.EVERYONE, Message.MentionType.HERE);
+     * MessageRequest.setDefaultMentions(EnumSet.complementOf(deny));
+     * }</pre>
+     *
+     * @param  allowedMentions
+     *         MentionTypes that are allowed to being parsed and pinged. {@code null} to disable and allow all mentions.
+     */
+    static void setDefaultMentions(@Nullable Collection<Message.MentionType> allowedMentions)
+    {
+        AllowedMentionsData.setDefaultMentions(allowedMentions);
+    }
+
+    /**
+     * Returns the default {@link net.dv8tion.jda.api.entities.Message.MentionType MentionTypes} previously set by
+     * {@link #setDefaultMentions(Collection) AllowedMentions.setDefaultMentions(Collection)}.
+     *
+     * @return Default mentions set by AllowedMentions.setDefaultMentions(Collection)
+     */
+    @Nonnull
+    static EnumSet<Message.MentionType> getDefaultMentions()
+    {
+        return AllowedMentionsData.getDefaultMentions();
+    }
+
+    /**
+     * Sets the default value for {@link #mentionRepliedUser(boolean)}
+     *
+     * <p>Default: <b>true</b>
+     *
+     * @param mention
+     *        True, if replies should mention by default
+     */
+    static void setDefaultMentionRepliedUser(boolean mention)
+    {
+        AllowedMentionsData.setDefaultMentionRepliedUser(mention);
+    }
+
+    /**
+     * Returns the default mention behavior for replies.
+     * <br>If this is {@code true} then all replies will mention the author of the target message by default.
+     * You can specify this individually with {@link #mentionRepliedUser(boolean)} for each message.
+     *
+     * <p>Default: <b>true</b>
+     *
+     * @return True, if replies mention by default
+     */
+    static boolean isDefaultMentionRepliedUser()
+    {
+        return AllowedMentionsData.isDefaultMentionRepliedUser();
+    }
+
     /**
      * The message content, which shows above embeds and attachments.
      *
@@ -63,18 +128,6 @@ public interface MessageRequest<R extends MessageRequest<R>> extends AllowedMent
      */
     @Nonnull
     R setContent(@Nullable String content);
-
-    /**
-     * The configured message content, this is the opposite for {@link #setContent(String)} and only returns what was set using that setter.
-     *
-     * <p>For message edit requests, this will not be the current content of the message.
-     *
-     * @return The currently configured content, or an empty string if none was set yet
-     *
-     * @see    #setContent(String)
-     */
-    @Nonnull
-    String getContent();
 
     /**
      * The {@link MessageEmbed MessageEmbeds} that should be attached to the message.
@@ -114,18 +167,6 @@ public interface MessageRequest<R extends MessageRequest<R>> extends AllowedMent
     {
         return setEmbeds(Arrays.asList(embeds));
     }
-
-    /**
-     * The configured message embeds, this is the opposite of {@link #setEmbeds(Collection)} and only returns what was set using that setter.
-     *
-     * <p>For message edit requests, this will not be the current embeds of the message.
-     *
-     * @return The currently configured embeds, or an empty list if none were set yet
-     *
-     * @see    #setEmbeds(Collection)
-     */
-    @Nonnull
-    List<? extends MessageEmbed> getEmbeds();
 
     /**
      * The {@link LayoutComponent LayoutComponents} that should be attached to the message.
@@ -267,18 +308,6 @@ public interface MessageRequest<R extends MessageRequest<R>> extends AllowedMent
     }
 
     /**
-     * The configured message components, this is the opposite of {@link #setComponents(Collection)} and only returns what was set using that setter.
-     *
-     * <p>For message edit requests, this will not be the current components of the message.
-     *
-     * @return The currently configured components, or an empty list if none were set yet
-     *
-     * @see    #setEmbeds(Collection)
-     */
-    @Nonnull
-    List<? extends LayoutComponent> getComponents();
-
-    /**
      * Set whether embeds should be suppressed on this message.
      * <br>This also includes rich embeds added via {@link #setEmbeds(MessageEmbed...)}.
      *
@@ -291,13 +320,6 @@ public interface MessageRequest<R extends MessageRequest<R>> extends AllowedMent
      */
     @Nonnull
     R setSuppressEmbeds(boolean suppress);
-
-    /**
-     * Whether embeds will be suppressed on this message.
-     *
-     * @return True, if embeds are suppressed
-     */
-    boolean isSuppressEmbeds();
 
     /**
      * The {@link FileUpload FileUploads} that should be attached to the message.
@@ -379,24 +401,208 @@ public interface MessageRequest<R extends MessageRequest<R>> extends AllowedMent
         return setFiles(Arrays.asList(files));
     }
 
-    // Returns attachment interface for abstraction purposes, however you can only abstract the setter to allow FileUploads
+    // Allowed Mentions Methods
 
     /**
-     * The configured message attachments as {@link AttachedFile}, this is the opposite of {@link #setFiles(Collection)} and only returns what was set using that setter.
+     * Whether to mention the used, when replying to a message.
+     * <br>This only matters in combination with {@link net.dv8tion.jda.api.requests.restaction.MessageCreateAction#setMessageReference(Message) MessageCreateAction.setMessageReference(...)}!
      *
-     * <p>For message edit requests, this will not be the current file attachments of the message.
+     * <p>This is true by default but can be configured using {@link #setDefaultMentionRepliedUser(boolean)}!
      *
-     * @return The currently configured attachments, or an empty list if none were set yet
+     * @param  mention
+     *         True, to mention the author if the referenced message
      *
-     * @see    #setFiles(Collection)
+     * @return The same instance for chaining
      */
     @Nonnull
-    List<? extends AttachedFile> getAttachments();
+    @CheckReturnValue
+    R mentionRepliedUser(boolean mention);
+
+    /**
+     * Sets the {@link net.dv8tion.jda.api.entities.Message.MentionType MentionTypes} that should be parsed.
+     * <br>If a message is sent with an empty Set of MentionTypes, then it will not ping any User, Role or {@code @everyone}/{@code @here},
+     * while still showing up as mention tag.
+     *
+     * <p>If {@code null} is provided to this method, then all Types will be mentionable
+     * (unless whitelisting via one of the {@code mention*} methods is used).
+     *
+     * <p>Note: A default for this can be set using {@link #setDefaultMentions(Collection) AllowedMentions.setDefaultMentions(Collection)}.
+     *
+     * @param  allowedMentions
+     *         MentionTypes that are allowed to being parsed and mentioned.
+     *         All other mention types will not be mentioned by this message.
+     *         You can pass {@code null} or {@code EnumSet.allOf(MentionType.class)} to allow all mentions.
+     *
+     * @return The same instance for chaining
+     */
+    @Nonnull
+    @CheckReturnValue
+    R setAllowedMentions(@Nullable Collection<Message.MentionType> allowedMentions);
+
+    /**
+     * Used to provide a whitelist for {@link net.dv8tion.jda.api.entities.User Users}, {@link net.dv8tion.jda.api.entities.Member Members}
+     * and {@link net.dv8tion.jda.api.entities.Role Roles} that should be pinged,
+     * even when they would not be pinged otherwise according to the Set of allowed mention types.
+     * <br>On other types of {@link net.dv8tion.jda.api.entities.IMentionable IMentionable}, this does nothing.
+     *
+     * <p><b>Note:</b> When a User/Member is whitelisted this way, then parsing of User mentions is automatically disabled (same applies to Roles).
+     * <br>Also note that whitelisting users or roles implicitly disables parsing of other mentions, if not otherwise set via
+     * {@link #setDefaultMentions(Collection)} or {@link #setAllowedMentions(Collection)}.
+     *
+     * @param  mentions
+     *         Users, Members and Roles that should be explicitly whitelisted to be pingable.
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided
+     *
+     * @return The same instance for chaining
+     *
+     * @see    #setAllowedMentions(Collection)
+     * @see    #setDefaultMentions(Collection)
+     */
+    @Nonnull
+    @CheckReturnValue
+    R mention(@Nonnull Collection<? extends IMentionable> mentions);
+
+    /**
+     * Used to provide a whitelist for {@link net.dv8tion.jda.api.entities.User Users}, {@link net.dv8tion.jda.api.entities.Member Members}
+     * and {@link net.dv8tion.jda.api.entities.Role Roles} that should be pinged,
+     * even when they would not be pinged otherwise according to the Set of allowed mention types.
+     * <br>On other types of {@link net.dv8tion.jda.api.entities.IMentionable IMentionable}, this does nothing.
+     *
+     * <p><b>Note:</b> When a User/Member is whitelisted this way, then parsing of User mentions is automatically disabled (same applies to Roles).
+     * <br>Also note that whitelisting users or roles implicitly disables parsing of other mentions, if not otherwise set via
+     * {@link #setDefaultMentions(Collection)} or {@link #setAllowedMentions(Collection)}.
+     *
+     * @param  mentions
+     *         Users, Members and Roles that should be explicitly whitelisted to be pingable.
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided
+     *
+     * @return The same instance for chaining
+     *
+     * @see    #setAllowedMentions(Collection)
+     * @see    #setDefaultMentions(Collection)
+     */
+    @Nonnull
+    @CheckReturnValue
+    default R mention(@Nonnull IMentionable... mentions)
+    {
+        Checks.notNull(mentions, "Mentions");
+        return mention(Arrays.asList(mentions));
+    }
+
+    /**
+     * Used to provide a whitelist of {@link net.dv8tion.jda.api.entities.User Users} that should be pinged,
+     * even when they would not be pinged otherwise according to the Set of allowed mention types.
+     *
+     * <p><b>Note:</b> When a User is whitelisted this way, then parsing of User mentions is automatically disabled.
+     * <br>Also note that whitelisting users or roles implicitly disables parsing of other mentions, if not otherwise set via
+     * {@link #setDefaultMentions(Collection)} or {@link #setAllowedMentions(Collection)}.
+     *
+     * @param  userIds
+     *         Ids of Users that should be explicitly whitelisted to be pingable.
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided
+     *
+     * @return The same instance for chaining
+     *
+     * @see    #setAllowedMentions(Collection)
+     * @see    #setDefaultMentions(Collection)
+     */
+    @Nonnull
+    @CheckReturnValue
+    R mentionUsers(@Nonnull String... userIds);
+
+    /**
+     * Used to provide a whitelist of {@link net.dv8tion.jda.api.entities.User Users} that should be pinged,
+     * even when they would not be pinged otherwise according to the Set of allowed mention types.
+     *
+     * <p><b>Note:</b> When a User is whitelisted this way, then parsing of User mentions is automatically disabled.
+     * <br>Also note that whitelisting users or roles implicitly disables parsing of other mentions, if not otherwise set via
+     * {@link #setDefaultMentions(Collection)} or {@link #setAllowedMentions(Collection)}.
+     *
+     * @param  userIds
+     *         Ids of Users that should be explicitly whitelisted to be pingable.
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided
+     *
+     * @return The same instance for chaining
+     *
+     * @see    #setAllowedMentions(Collection)
+     * @see    #setDefaultMentions(Collection)
+     */
+    @Nonnull
+    @CheckReturnValue
+    default R mentionUsers(@Nonnull long... userIds)
+    {
+        Checks.notNull(userIds, "UserId array");
+        String[] stringIds = new String[userIds.length];
+        for (int i = 0; i < userIds.length; i++)
+            stringIds[i] = Long.toUnsignedString(userIds[i]);
+        return mentionUsers(stringIds);
+    }
+
+    /**
+     * Used to provide a whitelist of {@link net.dv8tion.jda.api.entities.Role Roles} that should be pinged,
+     * even when they would not be pinged otherwise according to the Set of allowed mention types.
+     *
+     * <p><b>Note:</b> When a Role is whitelisted this way, then parsing of Role mentions is automatically disabled.
+     * <br>Also note that whitelisting users or roles implicitly disables parsing of other mentions, if not otherwise set via
+     * {@link #setDefaultMentions(Collection)} or {@link #setAllowedMentions(Collection)}.
+     *
+     * @param  roleIds
+     *         Ids of Roles that should be explicitly whitelisted to be pingable.
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided
+     *
+     * @return The same instance for chaining
+     *
+     * @see    #setAllowedMentions(Collection)
+     * @see    #setDefaultMentions(Collection)
+     */
+    @Nonnull
+    @CheckReturnValue
+    R mentionRoles(@Nonnull String... roleIds);
+
+    /**
+     * Used to provide a whitelist of {@link net.dv8tion.jda.api.entities.Role Roles} that should be pinged,
+     * even when they would not be pinged otherwise according to the Set of allowed mention types.
+     *
+     * <p><b>Note:</b> When a Role is whitelisted this way, then parsing of Role mentions is automatically disabled.
+     * <br>Also note that whitelisting users or roles implicitly disables parsing of other mentions, if not otherwise set via
+     * {@link #setDefaultMentions(Collection)} or {@link #setAllowedMentions(Collection)}.
+     *
+     * @param  roleIds
+     *         Ids of Roles that should be explicitly whitelisted to be pingable.
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided
+     *
+     * @return The same instance for chaining
+     *
+     * @see    #setAllowedMentions(Collection)
+     * @see    #setDefaultMentions(Collection)
+     */
+    @Nonnull
+    @CheckReturnValue
+    default R mentionRoles(@Nonnull long... roleIds)
+    {
+        Checks.notNull(roleIds, "RoleId array");
+        String[] stringIds = new String[roleIds.length];
+        for (int i = 0; i < roleIds.length; i++)
+            stringIds[i] = Long.toUnsignedString(roleIds[i]);
+        return mentionRoles(stringIds);
+    }
 
     /**
      * Applies all the data of the provided {@link Message} and attempts to copy it.
      * <br>This cannot copy the file attachments of the message, they must be manually downloaded and provided to {@link #setFiles(FileUpload...)}.
-     * <br>The {@link AllowedMentions} are not updated to reflect the provided message, and might mention users that the message did not.
+     * <br>The {@link MessageData} are not updated to reflect the provided message, and might mention users that the message did not.
      *
      * <p>For edit requests, this will set {@link MessageEditRequest#setReplace(boolean)} to {@code true}, and replace the existing message completely.
      *

@@ -154,7 +154,7 @@ public interface MessageEditRequest<R extends MessageEditRequest<R>> extends Mes
      * <p><b>Example Replace</b><br>
      * A request such as this will replace the entire message, and remove any existing embeds, attachments, components, etc.
      * <pre>{@code
-     * message.editMessage("hello").replace(true).queue();
+     * message.editMessage("hello").setReplace(true).queue();
      * }</pre>
      *
      * @param  isReplace

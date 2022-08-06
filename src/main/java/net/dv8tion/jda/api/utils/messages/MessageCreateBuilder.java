@@ -19,9 +19,7 @@ package net.dv8tion.jda.api.utils.messages;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
-import net.dv8tion.jda.api.utils.AllowedMentions;
 import net.dv8tion.jda.api.utils.FileUpload;
-import net.dv8tion.jda.internal.utils.AllowedMentionsImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.IOUtil;
@@ -113,7 +111,7 @@ public class MessageCreateBuilder extends AbstractMessageBuilder<MessageCreateDa
     /**
      * Factory method to start a builder from an existing instance of {@link Message}.
      * <br>Equivalent to {@code new MessageCreateBuilder().applyMessage(data)}.
-     * <br>The {@link AllowedMentions} are not updated to reflect the provided message, and might mention users that the message did not.
+     * <br>The {@link net.dv8tion.jda.api.utils.MessageData} are not updated to reflect the provided message, and might mention users that the message did not.
      *
      * <p>This cannot copy the file attachments of the message, they must be manually downloaded and provided to {@link #setFiles(FileUpload...)}.
      *
@@ -232,7 +230,7 @@ public class MessageCreateBuilder extends AbstractMessageBuilder<MessageCreateDa
         List<MessageEmbed> embeds = new ArrayList<>(this.embeds);
         List<FileUpload> files = new ArrayList<>(this.files);
         List<LayoutComponent> components = new ArrayList<>(this.components);
-        AllowedMentionsImpl allowedMentions = this.allowedMentions.copy();
+        AllowedMentionsData mentions = this.mentions.copy();
 
         if (content.isEmpty() && embeds.isEmpty() && files.isEmpty())
             throw new IllegalStateException("Cannot build an empty message. You need at least one of content, embeds, or files");
@@ -246,7 +244,7 @@ public class MessageCreateBuilder extends AbstractMessageBuilder<MessageCreateDa
 
         if (components.size() > Message.MAX_COMPONENT_COUNT)
             throw new IllegalStateException("Cannot build message with over " + Message.MAX_COMPONENT_COUNT + " component layouts, provided " + components.size());
-        return new MessageCreateData(content, embeds, files, components, allowedMentions, tts, flags);
+        return new MessageCreateData(content, embeds, files, components, mentions, tts, flags);
     }
 
     @Nonnull

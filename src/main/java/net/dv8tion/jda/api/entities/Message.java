@@ -1958,7 +1958,7 @@ public interface Message extends ISnowflake, Formattable
 
         /**
          * The Key returned by this method is used to determine the group or parsable mention group they are part of.
-         * <br>It is used internally in methods like {@link net.dv8tion.jda.api.utils.AllowedMentions#allowedMentions(Collection) AllowedMentions#allowedMentions(Collection)}.
+         * <br>It is used internally in methods like {@link MessageRequest#setAllowedMentions(Collection)}.
          * <p>
          * Returns {@code null}, when they don't belong to any mention group.
          *

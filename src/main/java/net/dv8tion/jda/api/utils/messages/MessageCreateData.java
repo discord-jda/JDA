@@ -20,10 +20,10 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.utils.FileUpload;
+import net.dv8tion.jda.api.utils.MessageData;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.SerializableData;
-import net.dv8tion.jda.internal.utils.AllowedMentionsImpl;
 import net.dv8tion.jda.internal.utils.IOUtil;
 
 import javax.annotation.Nonnull;
@@ -37,26 +37,26 @@ import java.util.*;
  * @see net.dv8tion.jda.api.interactions.callbacks.IReplyCallback#reply(MessageCreateData) IReplyCallback.reply(MessageCreateData)
  * @see net.dv8tion.jda.api.entities.WebhookClient#sendMessage(MessageCreateData) WebhookClient.sendMessage(MessageCreateData)
  */
-public class MessageCreateData implements SerializableData, AutoCloseable
+public class MessageCreateData implements MessageData, AutoCloseable, SerializableData
 {
     private final String content;
     private final List<MessageEmbed> embeds;
     private final List<FileUpload> files;
     private final List<LayoutComponent> components;
-    private final AllowedMentionsImpl allowedMentions;
+    private final AllowedMentionsData mentions;
     private final boolean tts;
     private final int flags;
 
     protected MessageCreateData(
             String content,
             List<MessageEmbed> embeds, List<FileUpload> files, List<LayoutComponent> components,
-            AllowedMentionsImpl allowedMentions, boolean tts, int flags)
+            AllowedMentionsData mentions, boolean tts, int flags)
     {
         this.content = content;
         this.embeds = Collections.unmodifiableList(embeds);
         this.files = Collections.unmodifiableList(files);
         this.components = Collections.unmodifiableList(components);
-        this.allowedMentions = allowedMentions;
+        this.mentions = mentions;
         this.tts = tts;
         this.flags = flags;
     }
@@ -200,6 +200,7 @@ public class MessageCreateData implements SerializableData, AutoCloseable
      * @return The content or an empty string if none was provided
      */
     @Nonnull
+    @Override
     public String getContent()
     {
         return content;
@@ -211,6 +212,7 @@ public class MessageCreateData implements SerializableData, AutoCloseable
      * @return The embeds or an empty list if none were provided
      */
     @Nonnull
+    @Override
     public List<MessageEmbed> getEmbeds()
     {
         return embeds;
@@ -222,9 +224,23 @@ public class MessageCreateData implements SerializableData, AutoCloseable
      * @return The components or an empty list if none were provided
      */
     @Nonnull
+    @Override
     public List<LayoutComponent> getComponents()
     {
         return components;
+    }
+
+    @Nonnull
+    @Override
+    public List<? extends FileUpload> getAttachments()
+    {
+        return getFiles();
+    }
+
+    @Override
+    public boolean isSuppressEmbeds()
+    {
+        return (flags & Message.MessageFlag.EMBEDS_SUPPRESSED.getValue()) != 0;
     }
 
     /**
@@ -243,9 +259,10 @@ public class MessageCreateData implements SerializableData, AutoCloseable
      * @return The user IDs which are mention whitelisted
      */
     @Nonnull
-    public Set<String> getMentionedUsers()
+    @Override
+    public Set<? extends String> getMentionedUsers()
     {
-        return allowedMentions.getUsers();
+        return mentions.getMentionedUsers();
     }
 
     /**
@@ -254,9 +271,10 @@ public class MessageCreateData implements SerializableData, AutoCloseable
      * @return The role IDs which are mention whitelisted
      */
     @Nonnull
-    public Set<String> getMentionedRoles()
+    @Override
+    public Set<? extends String> getMentionedRoles()
     {
-        return allowedMentions.getRoles();
+        return mentions.getMentionedRoles();
     }
 
     /**
@@ -265,9 +283,10 @@ public class MessageCreateData implements SerializableData, AutoCloseable
      * @return The mention types which can be mentioned by this message
      */
     @Nonnull
+    @Override
     public EnumSet<Message.MentionType> getAllowedMentions()
     {
-        return allowedMentions.getAllowedMentions();
+        return mentions.getAllowedMentions();
     }
 
     /**
@@ -275,14 +294,15 @@ public class MessageCreateData implements SerializableData, AutoCloseable
      *
      * @return True, if this would mention with the reply
      */
+    @Override
     public boolean isMentionRepliedUser()
     {
-        return allowedMentions.isMentionRepliedUser();
+        return mentions.isMentionRepliedUser();
     }
 
     @Nonnull
     @Override
-    public synchronized DataObject toData()
+    public DataObject toData()
     {
         DataObject json = DataObject.empty();
         json.put("content", content);
@@ -290,7 +310,7 @@ public class MessageCreateData implements SerializableData, AutoCloseable
         json.put("components", DataArray.fromCollection(components));
         json.put("tts", tts);
         json.put("flags", flags);
-        json.put("allowed_mentions", allowedMentions);
+        json.put("allowed_mentions", mentions);
         if (files != null && !files.isEmpty())
         {
             DataArray attachments = DataArray.empty();
@@ -308,13 +328,13 @@ public class MessageCreateData implements SerializableData, AutoCloseable
      * @return The list of file uploads
      */
     @Nonnull
-    public synchronized List<FileUpload> getFiles()
+    public List<FileUpload> getFiles()
     {
         return files;
     }
 
     @Override
-    public synchronized void close()
+    public void close()
     {
         files.forEach(IOUtil::silentClose);
     }

@@ -22,7 +22,6 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.utils.AttachedFile;
 import net.dv8tion.jda.api.utils.FileUpload;
-import net.dv8tion.jda.internal.utils.AllowedMentionsImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.IOUtil;
@@ -49,8 +48,9 @@ public class MessageEditBuilder extends AbstractMessageBuilder<MessageEditData, 
     protected static final int COMPONENTS    = 1 << 2;
     protected static final int ATTACHMENTS   = 1 << 3;
     protected static final int MENTIONS      = 1 << 4;
+    protected static final int FLAGS         = 1 << 5;
 
-    protected static final int ALL = CONTENT | EMBEDS | COMPONENTS | ATTACHMENTS | MENTIONS;
+    protected static final int ALL = CONTENT | EMBEDS | COMPONENTS | ATTACHMENTS | MENTIONS | FLAGS;
 
     private boolean replace = false;
     private int set = 0;
@@ -134,16 +134,16 @@ public class MessageEditBuilder extends AbstractMessageBuilder<MessageEditData, 
 
     @Nonnull
     @Override
-    public MessageEditBuilder allowedMentions(@Nullable Collection<Message.MentionType> allowedMentions)
+    public MessageEditBuilder setAllowedMentions(@Nullable Collection<Message.MentionType> allowedMentions)
     {
-        super.allowedMentions(allowedMentions);
+        super.setAllowedMentions(allowedMentions);
         set |= MENTIONS;
         return this;
     }
 
     @Nonnull
     @Override
-    public MessageEditBuilder mention(@Nonnull IMentionable... mentions)
+    public MessageEditBuilder mention(@Nonnull Collection<? extends IMentionable> mentions)
     {
         super.mention(mentions);
         set |= MENTIONS;
@@ -229,10 +229,19 @@ public class MessageEditBuilder extends AbstractMessageBuilder<MessageEditData, 
 
     @Nonnull
     @Override
+    public MessageEditBuilder setSuppressEmbeds(boolean suppress)
+    {
+        super.setSuppressEmbeds(suppress);
+        set |= FLAGS;
+        return this;
+    }
+
+    @Nonnull
+    @Override
     public MessageEditBuilder applyData(@Nonnull MessageEditData data)
     {
         Checks.notNull(data, "Data");
-        this.set |= data.getFlags();
+        this.set |= data.getSet();
         if ((this.set & ALL) == ALL)
             this.replace = true;
 
@@ -244,14 +253,15 @@ public class MessageEditBuilder extends AbstractMessageBuilder<MessageEditData, 
             this.setComponents(data.getComponents());
         if (data.isSet(ATTACHMENTS))
             this.setAttachments(data.getAttachments());
-
         if (data.isSet(MENTIONS))
         {
-            String[] empty = new String[0];
-            this.allowedMentions.mentionUsers(data.getMentionedUsers().toArray(empty));
-            this.allowedMentions.mentionRoles(data.getMentionedRoles().toArray(empty));
-            this.allowedMentions.allowedMentions(data.getAllowedMentions());
-            this.allowedMentions.mentionRepliedUser(data.isMentionRepliedUser());
+            this.mentions = data.mentions;
+            this.set |= MENTIONS;
+        }
+        if (data.isSet(FLAGS))
+        {
+            this.flags = data.getFlags();
+            this.set |= FLAGS;
         }
 
         return this;
@@ -287,7 +297,7 @@ public class MessageEditBuilder extends AbstractMessageBuilder<MessageEditData, 
         List<MessageEmbed> embeds = new ArrayList<>(this.embeds);
         List<AttachedFile> attachments = new ArrayList<>(this.attachments);
         List<LayoutComponent> components = new ArrayList<>(this.components);
-        AllowedMentionsImpl allowedMentions = this.allowedMentions.copy();
+        AllowedMentionsData mentions = this.mentions.copy();
 
         int length = isSet(CONTENT) ? Helpers.codePointLength(content) : 0;
         if (length > Message.MAX_CONTENT_LENGTH)
@@ -299,7 +309,7 @@ public class MessageEditBuilder extends AbstractMessageBuilder<MessageEditData, 
         if (isSet(COMPONENTS) && components.size() > Message.MAX_COMPONENT_COUNT)
             throw new IllegalStateException("Cannot build message with over " + Message.MAX_COMPONENT_COUNT + " component layouts, provided " + components.size());
 
-        return new MessageEditData(replace ? ALL : set, content, embeds, attachments, components, allowedMentions);
+        return new MessageEditData(replace ? ALL : set, flags, content, embeds, attachments, components, mentions);
     }
 
     @Nonnull
