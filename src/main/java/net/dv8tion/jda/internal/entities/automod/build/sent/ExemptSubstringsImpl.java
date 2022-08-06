@@ -23,9 +23,7 @@ import net.dv8tion.jda.api.entities.automod.build.sent.ExemptSubstrings;
 import net.dv8tion.jda.internal.entities.automod.TriggerMetadataImpl;
 
 import javax.annotation.Nonnull;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 public class ExemptSubstringsImpl extends GenericKeyWordImpl implements ExemptSubstrings
 {
@@ -35,7 +33,7 @@ public class ExemptSubstringsImpl extends GenericKeyWordImpl implements ExemptSu
     }
 
     @Override
-    public ExemptSubstrings setKeyword(@Nonnull String... exemptSubstrings)
+    public ExemptSubstrings setExemptSubstrings(@Nonnull String... exemptSubstrings)
     {
         TriggerMetadata triggerMetadata = new TriggerMetadataImpl();
         triggerMetadata.setExemptSubstrings(Arrays.asList(exemptSubstrings));

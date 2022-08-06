@@ -29,5 +29,5 @@ public interface ExemptSubstrings extends GenericKeyWord
      *
      * @return The current {@link ExemptSubstrings} instance.
      */
-    ExemptSubstrings setKeyword(@Nonnull String... exemptSubstrings);
+    ExemptSubstrings setExemptSubstrings(@Nonnull String... exemptSubstrings);
 }
