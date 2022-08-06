@@ -279,6 +279,27 @@ public interface MessageRequest<R extends MessageRequest<R>> extends AllowedMent
     List<? extends LayoutComponent> getComponents();
 
     /**
+     * Set whether embeds should be suppressed on this message.
+     * <br>This also includes rich embeds added via {@link #setEmbeds(MessageEmbed...)}.
+     *
+     * <p>Default: false
+     *
+     * @param  suppress
+     *         True, if all embeds should be suppressed
+     *
+     * @return The same instance for chaining
+     */
+    @Nonnull
+    R setSuppressEmbeds(boolean suppress);
+
+    /**
+     * Whether embeds will be suppressed on this message.
+     *
+     * @return True, if embeds are suppressed
+     */
+    boolean isSuppressEmbeds();
+
+    /**
      * The {@link FileUpload FileUploads} that should be attached to the message.
      * <br>This will replace all the existing attachments on the message, if this is an edit request.
      * You can use {@link MessageEditRequest#setAttachments(Collection)} to keep existing attachments, instead of this method.

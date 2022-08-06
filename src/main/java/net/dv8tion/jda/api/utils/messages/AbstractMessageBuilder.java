@@ -50,6 +50,7 @@ public abstract class AbstractMessageBuilder<T, R extends AbstractMessageBuilder
     protected final List<LayoutComponent> components = new ArrayList<>(Message.MAX_COMPONENT_COUNT);
     protected final StringBuilder content = new StringBuilder(Message.MAX_CONTENT_LENGTH);
     protected AllowedMentionsImpl allowedMentions = new AllowedMentionsImpl();
+    protected int flags;
 
     protected AbstractMessageBuilder() {}
 
@@ -154,6 +155,24 @@ public abstract class AbstractMessageBuilder<T, R extends AbstractMessageBuilder
     public List<? extends LayoutComponent> getComponents()
     {
         return Collections.unmodifiableList(components);
+    }
+
+    @Nonnull
+    @Override
+    public R setSuppressEmbeds(boolean suppress)
+    {
+        int flag = Message.MessageFlag.EMBEDS_SUPPRESSED.getValue();
+        if (suppress)
+            this.flags |= flag;
+        else
+            this.flags &= ~flag;
+        return (R) this;
+    }
+
+    @Override
+    public boolean isSuppressEmbeds()
+    {
+        return (this.flags & Message.MessageFlag.EMBEDS_SUPPRESSED.getValue()) != 0;
     }
 
     /**

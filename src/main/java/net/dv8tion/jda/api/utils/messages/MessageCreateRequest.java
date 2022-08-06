@@ -311,27 +311,6 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
     R setTTS(boolean tts);
 
     /**
-     * Set whether embeds should be suppressed on this message.
-     * <br>This also includes rich embeds added via {@link #setEmbeds(MessageEmbed...)}.
-     *
-     * <p>Default: false
-     *
-     * @param  suppress
-     *         True, if all embeds should be suppressed
-     *
-     * @return The same instance for chaining
-     */
-    @Nonnull
-    R setSuppressEmbeds(boolean suppress);
-
-    /**
-     * Whether embeds will be suppressed on this message.
-     *
-     * @return True, if embeds are suppressed
-     */
-    boolean isSuppressEmbeds();
-
-    /**
      * Applies the provided {@link MessageCreateData} to this request.
      *
      * @param  data

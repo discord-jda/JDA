@@ -82,6 +82,20 @@ public interface AbstractMessageBuilderMixin<R extends MessageRequest<R>, B exte
 
     @Nonnull
     @Override
+    default R setSuppressEmbeds(boolean suppress)
+    {
+        getBuilder().setSuppressEmbeds(suppress);
+        return (R) this;
+    }
+
+    @Override
+    default boolean isSuppressEmbeds()
+    {
+        return getBuilder().isSuppressEmbeds();
+    }
+
+    @Nonnull
+    @Override
     default R setFiles(@Nullable Collection<? extends FileUpload> files)
     {
         getBuilder().setFiles(files);
