@@ -371,7 +371,7 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
     /**
      * Applies the provided {@link MessageEditData} to this request.
      * <br>This will only set fields which were explicitly set on the {@link MessageEditBuilder},
-     * unless it was configured to be {@link MessageEditRequest#replace(boolean) replacing}.
+     * unless it was configured to be {@link MessageEditRequest#setReplace(boolean) replacing}.
      *
      * <p>This will <b>not</b> copy the message's attachments, only any configured {@link FileUpload FileUploads}.
      * To copy attachments, you must download them explicitly instead.

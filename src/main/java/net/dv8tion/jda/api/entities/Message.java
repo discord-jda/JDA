@@ -683,7 +683,7 @@ public interface Message extends ISnowflake, Formattable
     /**
      * Edits this message and updates the content.
      * <br>Any other fields of the message will remain unchanged,
-     * you can use {@link net.dv8tion.jda.api.utils.messages.MessageEditRequest#replace(boolean) replace(true)} to remove everything else (embeds/attachments/components).
+     * you can use {@link net.dv8tion.jda.api.utils.messages.MessageEditRequest#setReplace(boolean) replace(true)} to remove everything else (embeds/attachments/components).
      *
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>

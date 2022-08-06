@@ -37,7 +37,7 @@ import java.util.List;
 /**
  * Builder specialized for building a {@link MessageEditData}.
  *
- * <p>These are used to edit messages and allow configuration that either {@link #replace(boolean) replaces} the message or only updates specific fields.
+ * <p>These are used to edit messages and allow configuration that either {@link #setReplace(boolean) replaces} the message or only updates specific fields.
  *
  * @see MessageCreateBuilder
  */
@@ -83,7 +83,7 @@ public class MessageEditBuilder extends AbstractMessageBuilder<MessageEditData, 
      * Factory method to start a builder from an existing instance of {@link MessageCreateData}.
      * <br>Equivalent to {@code new MessageEditBuilder().applyCreateData(data)}.
      *
-     * <p>This will set the request to be {@link #replace(boolean) replacing}.
+     * <p>This will set the request to be {@link #setReplace(boolean) replacing}.
      *
      * @param  data
      *         The message create data to apply
@@ -105,7 +105,7 @@ public class MessageEditBuilder extends AbstractMessageBuilder<MessageEditData, 
      * Factory method to start a builder from an existing instance of {@link Message}.
      * <br>Equivalent to {@code new MessageEditBuilder().applyMessage(data)}.
      *
-     * <p>This will set the request to be {@link #replace(boolean) replacing}.
+     * <p>This will set the request to be {@link #setReplace(boolean) replacing}.
      *
      * @param  message
      *         The message to apply
@@ -188,7 +188,7 @@ public class MessageEditBuilder extends AbstractMessageBuilder<MessageEditData, 
 
     @Nonnull
     @Override
-    public MessageEditBuilder replace(boolean isReplace)
+    public MessageEditBuilder setReplace(boolean isReplace)
     {
         this.replace = isReplace;
         return this;

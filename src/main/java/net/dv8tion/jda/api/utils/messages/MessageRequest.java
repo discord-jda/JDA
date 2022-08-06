@@ -377,7 +377,7 @@ public interface MessageRequest<R extends MessageRequest<R>> extends AllowedMent
      * <br>This cannot copy the file attachments of the message, they must be manually downloaded and provided to {@link #setFiles(FileUpload...)}.
      * <br>The {@link AllowedMentions} are not updated to reflect the provided message, and might mention users that the message did not.
      *
-     * <p>For edit requests, this will set {@link MessageEditRequest#replace(boolean)} to {@code true}, and replace the existing message completely.
+     * <p>For edit requests, this will set {@link MessageEditRequest#setReplace(boolean)} to {@code true}, and replace the existing message completely.
      *
      * @param  message
      *         The message to copy the data from

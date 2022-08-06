@@ -162,7 +162,7 @@ public interface MessageEditRequest<R extends MessageEditRequest<R>> extends Mes
      * @return The same message edit request builder
      */
     @Nonnull
-    R replace(boolean isReplace);
+    R setReplace(boolean isReplace);
 
     /**
      * Whether this request will replace the message and remove everything that is not currently set.
@@ -171,16 +171,16 @@ public interface MessageEditRequest<R extends MessageEditRequest<R>> extends Mes
      *
      * @return True, if this is a replacing request
      *
-     * @see    #replace(boolean)
+     * @see    #setReplace(boolean)
      */
     boolean isReplace();
 
     /**
      * Applies the provided {@link MessageEditData} to this request.
-     * <br>If the data has all fields configured, it will also make this request a {@link #replace(boolean)} replace request.
+     * <br>If the data has all fields configured, it will also make this request a {@link #setReplace(boolean)} replace request.
      *
      * <p>Note that this method will only call the setters which were also configured when building the message edit data instance,
-     * unless it was set to {@link #replace(boolean)}.
+     * unless it was set to {@link #setReplace(boolean)}.
      *
      * @param  data
      *         The message edit data to apply
@@ -195,7 +195,7 @@ public interface MessageEditRequest<R extends MessageEditRequest<R>> extends Mes
 
     /**
      * Replaces all the fields configured on this request with the data provided by {@link MessageCreateData}.
-     * <br>This will make this request a {@link #replace(boolean) replace request}.
+     * <br>This will make this request a {@link #setReplace(boolean) replace request}.
      *
      * @param  data
      *         The message create data to apply
@@ -208,7 +208,7 @@ public interface MessageEditRequest<R extends MessageEditRequest<R>> extends Mes
     @Nonnull
     default R applyCreateData(@Nonnull MessageCreateData data)
     {
-        return replace(true)
+        return setReplace(true)
                 .setContent(data.getContent())
                 .setEmbeds(data.getEmbeds())
                 .setComponents(data.getComponents())

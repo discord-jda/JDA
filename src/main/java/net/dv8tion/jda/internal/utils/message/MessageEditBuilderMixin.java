@@ -39,9 +39,9 @@ public interface MessageEditBuilderMixin<R extends MessageEditRequest<R>> extend
 
     @Nonnull
     @Override
-    default R replace(boolean isReplace)
+    default R setReplace(boolean isReplace)
     {
-        getBuilder().replace(isReplace);
+        getBuilder().setReplace(isReplace);
         return (R) this;
     }
 
