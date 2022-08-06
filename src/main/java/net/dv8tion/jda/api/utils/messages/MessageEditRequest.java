@@ -98,8 +98,8 @@ public interface MessageEditRequest<R extends MessageEditRequest<R>> extends Mes
      * <pre>{@code
      * // Here "message" is an instance of the Message interface
      *
-     * // Creates a list of the currently attached files of the message, important to get the generic parameter of the list right
-     * List<AttachedFile> attachments = new ArrayList<>(message.getAttachments());
+     * // Take the first attachment of the message, all others will be removed
+     * AttachedFile attachment = message.getAttachments().get(0);
      *
      * // The name here will be "cat.png" to discord, what the file is called on your computer is irrelevant and only used to read the data of the image.
      * FileUpload file = FileUpload.fromData(new File("mycat-final-copy.png"), "cat.png"); // Opens the file called "cat.png" and provides the data used for sending
@@ -107,8 +107,9 @@ public interface MessageEditRequest<R extends MessageEditRequest<R>> extends Mes
      * // Adds another file to upload in addition the current attachments of the message
      * attachments.add(file);
      *
+     * // Edit request to keep the first attachment, and add one more file to the message
      * message.editMessage("New content")
-     *        .setAttachments(attachments)
+     *        .setAttachments(attachment, file)
      *        .queue();
      * }</pre>
      *
