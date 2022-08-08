@@ -93,12 +93,12 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer
     /**
      * Whether this thread is locked or not.
      *
-     * Locked threads cannot have new messages posted to them, or members join or leave them.
+     * <p>Locked threads cannot have new messages posted to them, or members join or leave them.
      * Threads can only be locked and unlocked by moderators.
      *
      * @return true if this thread is locked, false otherwise.
      *
-     * @see ChannelField#LOCKED
+     * @see    ChannelField#LOCKED
      */
     boolean isLocked();
 
@@ -115,37 +115,34 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer
      *
      * @return true if this thread is invitable, false otherwise.
      *
-     * @see ChannelField#INVITABLE
+     * @see    ChannelField#INVITABLE
      */
     boolean isInvitable();
 
     /**
      * Gets the {@link IThreadContainer parent channel} of this thread.
      *
-     * @see IThreadContainer#getThreadChannels()
-     *
      * @return The parent channel of this thread.
+     *
+     * @see    IThreadContainer#getThreadChannels()
      */
     @Nonnull
     IThreadContainerUnion getParentChannel();
 
-    //todo-v5: document additional subclasses of GuildMessageChannel (VoiceChannels and ForumChannels, when needed)
     /**
-     * Gets the {@link GuildMessageChannel parent channel} of this thread, if it is a {@link TextChannel} or {@link NewsChannel}.
-     * <br>
-     * This is a convenience method that will perform the cast if possible, throwing otherwise.
-     *
-     * @return The parent channel of this thread, as a {@link GuildMessageChannel}.
+     * Gets the {@link GuildMessageChannelUnion parent channel} of this thread, if it is a {@link TextChannel}, {@link NewsChannel}, or {@link VoiceChannel}.
+     * <br>This is a convenience method that will perform the cast if possible, throwing otherwise.
      *
      * @throws UnsupportedOperationException
      *         If the parent channel is not a {@link GuildMessageChannel}.
+     *
+     * @return The parent channel of this thread, as a {@link GuildMessageChannelUnion}.
      */
     @Nonnull
     default GuildMessageChannelUnion getParentMessageChannel()
     {
-        if (getParentChannel() instanceof GuildMessageChannel) {
+        if (getParentChannel() instanceof GuildMessageChannel)
             return (GuildMessageChannelUnion) getParentChannel();
-        }
 
         throw new UnsupportedOperationException("Parent of this thread is not a MessageChannel. Parent is type: " + getParentChannel().getType().getId());
     }
