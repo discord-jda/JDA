@@ -653,7 +653,7 @@ public class GuildImpl implements Guild
     @Override
     public SortedSnowflakeCacheView<ForumChannel> getForumChannelCache()
     {
-        return null;
+        return forumChannelCache;
     }
 
     @Nonnull
