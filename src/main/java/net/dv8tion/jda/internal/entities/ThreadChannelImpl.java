@@ -387,8 +387,7 @@ public class ThreadChannelImpl extends AbstractGuildChannelImpl<ThreadChannelImp
 
     private void checkUnarchived()
     {
-        if (archived) {
+        if (archived)
             throw new IllegalStateException("Cannot modify a ThreadChannel while it is archived!");
-        }
     }
 }

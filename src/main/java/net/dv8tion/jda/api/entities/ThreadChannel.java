@@ -32,13 +32,29 @@ import java.util.FormattableFlags;
 import java.util.Formatter;
 import java.util.List;
 
+/**
+ * Represents Discord Message Threads of all kinds.
+ * <p>This includes all thread channel types, namely:
+ * <ul>
+ *     <li>{@link ChannelType#GUILD_PUBLIC_THREAD}</li>
+ *     <li>{@link ChannelType#GUILD_PRIVATE_THREAD}</li>
+ *     <li>{@link ChannelType#GUILD_NEWS_THREAD}</li>
+ * </ul>
+ *
+ * <p>When a thread channel is {@link #isArchived() archived}, no new members can be added.
+ * You can use the {@link #getManager() manager} to {@link ThreadChannelManager#setArchived(boolean) unarchive} the thread.
+ *
+ * @see Guild#getThreadChannels()
+ * @see Guild#getThreadChannelById(long)
+ * @see Guild#getThreadChannelCache()
+ */
 public interface ThreadChannel extends GuildMessageChannel, IMemberContainer
 {
     //TODO fields that need to be researched:
     // - rate_limit_per_user
     // - last_pin_timestamp (do we even use this for Text/News channels?)
 
-    int NAME_MAX_LENGTH = 100;
+    int NAME_MAX_LENGTH = 100; // TODO: Remove this in favor of Channel.MAX_NAME_LENGTH
 
     /**
      * Whether this thread is public or not.
@@ -191,11 +207,11 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer
     /**
      * Gets the self member, as a member of this thread.
      *
-     * <br>If the current account is not a member of this thread, this will return null.
+     * <p>If the current account is not a member of this thread, this will return null.
      *
      * @return The self member of this thread, null if the current account is not a member of this thread.
      *
-     * @see #isJoined()
+     * @see    #isJoined()
      */
     @Nullable
     default ThreadMember getSelfThreadMember()
@@ -206,8 +222,8 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer
 
     /**
      * Gets a List of all cached {@link ThreadMember members} of this thread.
-     * <br>
-     * <br>The thread owner is not included in this list, unless the current account is the owner.
+     *
+     * <p>The thread owner is not included in this list, unless the current account is the owner.
      * Any updates to this cache are lost when JDA is shutdown, and this list is not sent to JDA on startup.
      * For this reason, {@link #retrieveThreadMembers()} should be used instead in most cases.
      *
@@ -220,9 +236,9 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer
      *     <li>the bot must have be online to receive the update</li>
      * </ul>
      *
-     * @return a List of all {@link ThreadMember members} of this thread. This list may be empty, but not null.
+     * @return List of all {@link ThreadMember members} of this thread. This list may be empty, but not null.
      *
-     * @see #retrieveThreadMembers()
+     * @see    #retrieveThreadMembers()
      */
     @Nonnull
     List<ThreadMember> getThreadMembers();
@@ -230,20 +246,20 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer
     /**
      * Gets a {@link ThreadMember} of this thread by their {@link Member}.
      *
-     * Note that this operation relies on the {@link #getThreadMembers() ThreadMember cache} for this ThreadChannel.
+     * <p>Note that this operation relies on the {@link #getThreadMembers() ThreadMember cache} for this ThreadChannel.
      * As the cache is likely to be unpopulated, this method is likely to return null.
      *
-     * Use of {@link #retrieveThreadMember(Member)} is preferred instead, once it is released.
+     * <p>Use of {@link #retrieveThreadMember(Member)} is preferred instead, once it is released.
      *
-     * @param member
-     *        The member to get the {@link ThreadMember} for.
-     *
-     * @return The {@link ThreadMember} of this thread for the given member.
+     * @param  member
+     *         The member to get the {@link ThreadMember} for.
      *
      * @throws IllegalArgumentException
      *         If the given member is null.
      *
-     * @see #retrieveThreadMember(Member)
+     * @return The {@link ThreadMember} of this thread for the given member.
+     *
+     * @see    #retrieveThreadMember(Member)
      */
     @Nullable
     default ThreadMember getThreadMember(Member member)
@@ -255,20 +271,20 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer
     /**
      * Gets a {@link ThreadMember} of this thread by their {@link Member}.
      *
-     * Note that this operation relies on the {@link #getThreadMembers() ThreadMember cache} for this ThreadChannel.
+     * <p>Note that this operation relies on the {@link #getThreadMembers() ThreadMember cache} for this ThreadChannel.
      * As the cache is likely to be unpopulated, this method is likely to return null.
      *
-     * Use of {@link #retrieveThreadMember(Member)} is preferred instead, once it is released.
+     * <p>Use of {@link #retrieveThreadMember(Member)} is preferred instead, once it is released.
      *
-     * @param user
-     *        The user to get the {@link ThreadMember} for.
-     *
-     * @return The {@link ThreadMember} of this thread for the given member.
+     * @param   user
+     *         The user to get the {@link ThreadMember} for.
      *
      * @throws IllegalArgumentException
      *         If the given user is null.
      *
-     * @see #retrieveThreadMember(Member)
+     * @return The {@link ThreadMember} of this thread for the given member.
+     *
+     * @see    #retrieveThreadMember(Member)
      */
     @Nullable
     default ThreadMember getThreadMember(User user)
@@ -280,20 +296,20 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer
     /**
      * Gets a {@link ThreadMember} of this thread by their {@link Member}.
      *
-     * Note that this operation relies on the {@link #getThreadMembers() ThreadMember cache} for this ThreadChannel.
+     * <p>Note that this operation relies on the {@link #getThreadMembers() ThreadMember cache} for this ThreadChannel.
      * As the cache is likely to be unpopulated, this method is likely to return null.
      *
-     * Use of {@link #retrieveThreadMember(Member)} is preferred instead, once it is released.
+     * <p>Use of {@link #retrieveThreadMember(Member)} is preferred instead, once it is released.
      *
      * @param id
      *        The ID of the member to get the {@link ThreadMember} for.
      *
-     * @return The {@link ThreadMember} of this thread for the given member.
-     *
      * @throws IllegalArgumentException
      *         If the given id is null or empty.
      *
-     * @see #retrieveThreadMember(Member)
+     * @return The {@link ThreadMember} of this thread for the given member.
+     *
+     * @see    #retrieveThreadMember(Member)
      */
     @Nullable
     default ThreadMember getThreadMemberById(String id)
@@ -304,17 +320,17 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer
     /**
      * Gets a {@link ThreadMember} of this thread by their {@link Member}.
      *
-     * Note that this operation relies on the {@link #getThreadMembers() ThreadMember cache} for this ThreadChannel.
+     * <p>Note that this operation relies on the {@link #getThreadMembers() ThreadMember cache} for this ThreadChannel.
      * As the cache is likely to be unpopulated, this method is likely to return null.
      *
-     * Use of {@link #retrieveThreadMember(Member)} is preferred instead, once it is released.
+     * <p>Use of {@link #retrieveThreadMember(Member)} is preferred instead, once it is released.
      *
      * @param id
      *        The member to get the {@link ThreadMember} for.
      *
      * @return The {@link ThreadMember} of this thread for the given member.
      *
-     * @see #retrieveThreadMember(Member)
+     * @see    #retrieveThreadMember(Member)
      */
     @Nullable
     ThreadMember getThreadMemberById(long id);
@@ -404,7 +420,7 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer
     /**
      * Retrieves the {@link ThreadMember ThreadMembers} of this thread.
      *
-     * This requires the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MEMBERS} intent to be enabled.
+     * <p>This requires the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MEMBERS} intent to be enabled.
      *
      * @return a RestAction that resolves into a List of {@link ThreadMember ThreadMembers} of this thread.
      */
@@ -442,13 +458,14 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer
 
     /**
      * Gets the {@link Member} that created and owns this thread.
-     * <br>
-     * This will be null if the member is not cached, and so it is recommended to {@link Guild#retrieveMemberById(long) retrieve this member from the guild} using {@link #getOwnerIdLong() the owner'd ID}.
+     * <br>This will be null if the member is not cached,
+     * and so it is recommended to {@link Guild#retrieveMemberById(long) retrieve this member from the guild}
+     * using {@link #getOwnerIdLong() the owner'd ID}.
      *
      * @return The {@link Member} of the member who created this thread.
      *
-     * @see #getThreadMemberById(long)
-     * @see Guild#retrieveMemberById(long)
+     * @see    #getThreadMemberById(long)
+     * @see    Guild#retrieveMemberById(long)
      */
     @Nullable
     default Member getOwner()
@@ -458,14 +475,15 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer
 
     /**
      * Gets the owner of this thread as a {@link ThreadMember}.
-     * <br>
-     * This will be null if the member is not cached, and so it is recommended to retrieve the owner instead.
+     * <br>This will be null if the member is not cached, and so it is recommended to retrieve the owner instead.
      *
-     * <br>This method relies on the {@link #getThreadMembers()} cache, and so it is recommended to {@link #retrieveThreadMemberById(long) retrieve the ThreadMember} by {@link #getOwnerIdLong() their ID} instead.
+     * <p>This method relies on the {@link #getThreadMembers()} cache,
+     * and so it is recommended to {@link #retrieveThreadMemberById(long) retrieve the ThreadMember}
+     * by {@link #getOwnerIdLong() their ID} instead.
      *
      * @return The owner of this thread as a {@link ThreadMember}.
      *
-     * @see #getThreadMemberById(long)
+     * @see    #getThreadMemberById(long)
      */
     @Nullable
     default ThreadMember getOwnerThreadMember()
@@ -476,7 +494,7 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer
     /**
      * Whether this thread has been archived.
      *
-     * This method will consider locked channels to also be archived.
+     * <p>This method will consider locked channels to also be archived.
      *
      * <p>Archived threads are not deleted threads, but are considered inactive.
      * They are not shown to clients in the channels list, but can still be navigated to and read.
@@ -484,10 +502,10 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer
      *
      * @return true if this thread has been archived, false otherwise.
      *
-     * @see #isLocked()
-     * @see ThreadChannelManager#setArchived(boolean)
-     * @see #getAutoArchiveDuration()
-     * @see ChannelField#ARCHIVED
+     * @see    #isLocked()
+     * @see    ThreadChannelManager#setArchived(boolean)
+     * @see    #getAutoArchiveDuration()
+     * @see    ChannelField#ARCHIVED
      */
     boolean isArchived();
 
@@ -503,20 +521,20 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer
      *
      * @return the time of the last archive info update.
      *
-     * @see ChannelField#ARCHIVED_TIMESTAMP
+     * @see    ChannelField#ARCHIVED_TIMESTAMP
      */
     OffsetDateTime getTimeArchiveInfoLastModified();
 
     /**
      * The inactivity timeout of this thread.
      *
-     * If a message is not sent within this amount of time, the thread will be automatically archived.
+     * <p>If a message is not sent within this amount of time, the thread will be automatically archived.
      *
-     * A thread archived this way can be unarchived by any member.
+     * <p>A thread archived this way can be unarchived by any member.
      *
      * @return the time before which a thread will automatically be archived.
      *
-     * @see ChannelField#AUTO_ARCHIVE_DURATION
+     * @see    ChannelField#AUTO_ARCHIVE_DURATION
      */
     @Nonnull
     AutoArchiveDuration getAutoArchiveDuration();
@@ -536,14 +554,14 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer
      *
      * @return The amount of time in seconds a ThreadMember must wait between sending messages.
      *
-     * @see net.dv8tion.jda.api.managers.channel.concrete.ThreadChannelManager#setSlowmode(int)
+     * @see    net.dv8tion.jda.api.managers.channel.concrete.ThreadChannelManager#setSlowmode(int)
      */
     int getSlowmode();
 
     /**
      * Joins this thread, adding the current account to the member list of this thread.
      *
-     * Note that joining threads is not a requirement of getting events about the thread.
+     * <p>Note that joining threads is not a requirement of getting events about the thread.
      *
      * <br>This will have no effect if the current account is already a member of this thread.
      *
@@ -568,7 +586,6 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer
 
     /**
      * Leaves this thread, removing the current account from the member list of this thread.
-     *
      * <br>This will have no effect if the current account is not a member of this thread.
      *
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
@@ -593,7 +610,6 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer
     //this is probably also affected by private threads that are not invitable
     /**
      * Adds a member to this thread.
-     *
      * <br>This will have no effect if the member is already a member of this thread.
      *
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
@@ -655,16 +671,14 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#INVALID_FORM_BODY INVALID_FORM_BODY}
      *     <br>The provided User ID is not a valid snowflake.</li>
-     *
      * </ul>
      *
      * @param  id
      *         The id of the member to add.
      *
      * @throws IllegalStateException
-     *         If this thread is locked or archived.
-     *
-     * @throws NumberFormatException
+     *         If this thread is locked or archived
+     * @throws IllegalArgumentException
      *         If the provided id is not a valid snowflake.
      *
      * @return {@link RestAction}
@@ -677,7 +691,6 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer
 
     /**
      * Adds a member to this thread.
-     *
      * <br>This will have no effect if the member is already a member of this thread.
      *
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
@@ -694,7 +707,6 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
      *     <br>The request was attempted after the channel was deleted.</li>
-     *
      * </ul>
      *
      * @param  user
@@ -702,9 +714,8 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer
      *
      * @throws IllegalStateException
      *         If this thread is locked or archived.
-     *
      * @throws IllegalArgumentException
-     *         If the provided user was null.
+     *         If the provided user is null.
      *
      * @return {@link RestAction}
      */
@@ -717,7 +728,6 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer
 
     /**
      * Adds a member to this thread.
-     *
      * <br>This will have no effect if the member is already a member of this thread.
      *
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
@@ -734,7 +744,6 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
      *     <br>The request was attempted after the channel was deleted.</li>
-     *
      * </ul>
      *
      * @param  member
@@ -742,9 +751,8 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer
      *
      * @throws IllegalStateException
      *         If this thread is locked or archived.
-     *
      * @throws IllegalArgumentException
-     *         If the provided member was null.
+     *         If the provided member is null.
      *
      * @return {@link RestAction}
      */
@@ -778,11 +786,12 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer
      *
      * </ul>
      *
-     * @param id
-     *        The id of the member to remove from this thread.
+     * @param  id
+     *         The id of the member to remove from this thread.
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_THREADS} permission, and this isn't a private thread channel this account owns.
+     *         If the account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_THREADS} permission,
+     *         and this is not a private thread channel this account owns.
      *
      * @return {@link RestAction}
      */
@@ -812,13 +821,13 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer
      *
      * </ul>
      *
-     * @param id
-     *        The id of the member to remove from this thread.
+     * @param  id
+     *         The id of the member to remove from this thread.
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_THREADS} permission, and this isn't a private thread channel this account owns.
-     *
-     * @throws NumberFormatException
+     *         If the account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_THREADS} permission,
+     *         and this is not a private thread channel this account owns.
+     * @throws IllegalArgumentException
      *         If the provided id is not a valid snowflake.
      *
      * @return {@link RestAction}
@@ -846,14 +855,14 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer
      *
      * </ul>
      *
-     * @param user
-     *        The user to remove from this thread.
+     * @param  user
+     *         The user to remove from this thread.
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_THREADS} permission, and this isn't a private thread channel this account owns.
-     *
+     *         If the account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_THREADS} permission,
+     *         and this is not a private thread channel this account owns.
      * @throws IllegalArgumentException
-     *         If the provided user was null.
+     *         If the provided user is null.
      *
      * @return {@link RestAction}
      */
@@ -887,9 +896,8 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_THREADS} permission, and this isn't a private thread channel this account owns.
-     *
      * @throws IllegalArgumentException
-     *         If the provided member was null.
+     *         If the provided member is null.
      *
      * @return {@link RestAction}
      */
@@ -925,9 +933,9 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer
     /**
      * The values permitted for the auto archive duration of a {@link ThreadChannel}.
      *
-     * This is the time before an idle thread will be automatically archived.
+     * <p>This is the time before an idle thread will be automatically archived.
      *
-     * Sending a message to the thread will reset the timer.
+     * <p>Sending a message to the thread will reset the timer.
      *
      * @see ChannelField#AUTO_ARCHIVE_DURATION
      */
