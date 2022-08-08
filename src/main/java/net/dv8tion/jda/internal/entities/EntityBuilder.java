@@ -331,7 +331,17 @@ public class EntityBuilder
         for (int i = 0; i < threadArray.length(); i++)
         {
             DataObject threadJson = threadArray.getObject(i);
-            createThreadChannel(guildObj, threadJson, guildObj.getIdLong());
+            try
+            {
+                createThreadChannel(guildObj, threadJson, guildObj.getIdLong());
+            }
+            catch (Exception ex)
+            {
+                if (MISSING_CHANNEL.equals(ex.getMessage()))
+                    LOG.debug("Discarding thread without cached parent channel. JSON: {}", threadJson);
+                else
+                    LOG.warn("Failed to create thread channel for guild with id {}.\nJSON: {}", guildId, threadJson, ex);
+            }
         }
 
         createGuildEmojiPass(guildObj, emojisArray);
@@ -1146,11 +1156,16 @@ public class EntityBuilder
     public ThreadChannel createThreadChannel(GuildImpl guild, DataObject json, long guildId)
     {
         boolean playbackCache = false;
-        final long id = json.getLong("id");
+        final long id = json.getUnsignedLong("id");
+        final long parentId = json.getUnsignedLong("parent_id");
         final ChannelType type = ChannelType.fromId(json.getInt("type"));
 
         if (guild == null)
             guild = (GuildImpl) getJDA().getGuildsView().get(guildId);
+
+        IThreadContainer parent = guild.getChannelById(IThreadContainer.class, parentId);
+        if (parent == null)
+            throw new IllegalArgumentException(MISSING_CHANNEL);
 
         ThreadChannelImpl channel = ((ThreadChannelImpl) getJDA().getThreadChannelsView().get(id));
         if (channel == null)
@@ -1172,7 +1187,7 @@ public class EntityBuilder
 
         channel
                 .setName(json.getString("name"))
-                .setParentChannelId(json.getLong("parent_id"))
+                .setParentChannel(parent)
                 .setOwnerId(json.getLong("owner_id"))
                 .setMemberCount(json.getInt("member_count"))
                 .setMessageCount(json.getInt("message_count"))

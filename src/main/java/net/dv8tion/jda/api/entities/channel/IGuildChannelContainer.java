@@ -150,6 +150,7 @@ public interface IGuildChannelContainer
      *     <li>{@link #getStageChannelById(long)}</li>
      *     <li>{@link #getVoiceChannelById(long)}</li>
      *     <li>{@link #getCategoryById(long)}</li>
+     *     <li>{@link #getForumChannelById(long)}</li>
      * </ul>
      *
      * @param  id
@@ -172,6 +173,8 @@ public interface IGuildChannelContainer
             channel = getCategoryById(id);
         if (channel == null)
             channel = getThreadChannelById(id);
+        if (channel == null)
+            channel = getForumChannelById(id);
 
         return channel;
     }
@@ -197,6 +200,7 @@ public interface IGuildChannelContainer
      *     <li>{@link #getStageChannelById(String)}</li>
      *     <li>{@link #getVoiceChannelById(String)}</li>
      *     <li>{@link #getCategoryById(String)}</li>
+     *     <li>{@link #getForumChannelById(String)}</li>
      * </ul>
      *
      * @param  type
@@ -238,6 +242,7 @@ public interface IGuildChannelContainer
      *     <li>{@link #getStageChannelById(long)}</li>
      *     <li>{@link #getVoiceChannelById(long)}</li>
      *     <li>{@link #getCategoryById(long)}</li>
+     *     <li>{@link #getForumChannelById(long)}</li>
      * </ul>
      *
      * @param  type
@@ -263,6 +268,8 @@ public interface IGuildChannelContainer
             return getStageChannelById(id);
         case CATEGORY:
             return getCategoryById(id);
+        case FORUM:
+            return getForumChannelById(id);
         }
 
         if (type.isThread())

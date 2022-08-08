@@ -50,10 +50,10 @@ public class ThreadChannelImpl extends AbstractGuildChannelImpl<ThreadChannelImp
     private final CacheView.SimpleCacheView<ThreadMember> threadMembers = new CacheView.SimpleCacheView<>(ThreadMember.class, null);
 
     private AutoArchiveDuration autoArchiveDuration;
+    private IThreadContainerUnion parentChannel;
     private boolean locked;
     private boolean archived;
     private boolean invitable;
-    private long parentChannelId;
     private long archiveTimestamp;
     private long creationTimestamp;
     private long ownerId;
@@ -117,15 +117,14 @@ public class ThreadChannelImpl extends AbstractGuildChannelImpl<ThreadChannelImp
     @Override
     public List<Member> getMembers()
     {
-        return null;
+        return Collections.emptyList();
     }
 
     @Nonnull
     @Override
-    @SuppressWarnings("ConstantConditions")
     public IThreadContainerUnion getParentChannel()
     {
-        return (IThreadContainerUnion) guild.getGuildChannelById(parentChannelId);
+        return parentChannel;
     }
 
     @Nonnull
@@ -306,9 +305,9 @@ public class ThreadChannelImpl extends AbstractGuildChannelImpl<ThreadChannelImp
         return this;
     }
 
-    public ThreadChannelImpl setParentChannelId(long parentChannelId)
+    public ThreadChannelImpl setParentChannel(IThreadContainer channel)
     {
-        this.parentChannelId = parentChannelId;
+        this.parentChannel = (IThreadContainerUnion) channel;
         return this;
     }
 

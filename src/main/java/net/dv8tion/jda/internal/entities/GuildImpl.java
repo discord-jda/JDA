@@ -1241,8 +1241,18 @@ public class GuildImpl implements Guild
                     threadObj.put("member", selfThreadMemberObj);
                 }
 
-                ThreadChannel thread = builder.createThreadChannel(threadObj, this.getIdLong());
-                list.add(thread);
+                try
+                {
+                    ThreadChannel thread = builder.createThreadChannel(threadObj, this.getIdLong());
+                    list.add(thread);
+                }
+                catch (Exception e)
+                {
+                    if (EntityBuilder.MISSING_CHANNEL.equals(e.getMessage()))
+                        EntityBuilder.LOG.debug("Discarding thread without cached parent channel. JSON: {}", threadObj);
+                    else
+                        EntityBuilder.LOG.warn("Failed to create thread channel. JSON: {}", threadObj, e);
+                }
             }
 
             return Collections.unmodifiableList(list);
