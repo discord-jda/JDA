@@ -111,8 +111,14 @@ public class StageChannelImpl extends AbstractStandardGuildChannelImpl<StageChan
     public ChannelAction<StageChannel> createCopy(@Nonnull Guild guild)
     {
         Checks.notNull(guild, "Guild");
-        //TODO-v5: .setRegion here?
+
         ChannelAction<StageChannel> action = guild.createStageChannel(name).setBitrate(bitrate);
+
+        if (region != null)
+        {
+            action.setRegion(Region.fromKey(region));
+        }
+
         if (guild.equals(getGuild()))
         {
             Category parent = getParentCategory();
