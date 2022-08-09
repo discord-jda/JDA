@@ -116,7 +116,8 @@ public class VoiceChannelImpl extends AbstractStandardGuildChannelImpl<VoiceChan
                 .setBitrate(bitrate)
                 .setUserlimit(userLimit);
 
-        if(region != null) {
+        if (region != null)
+        {
             action.setRegion(Region.fromKey(region));
         }
 
