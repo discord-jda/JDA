@@ -346,7 +346,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             throw new RejectedExecutionException("JDA is shutdown!");
         initiating = true;
 
-        String url = resumeUrl != null ? resumeUrl : api.getGatewayUrl()
+        String url = (resumeUrl != null ? resumeUrl : api.getGatewayUrl())
                 + "?encoding=" + encoding.name().toLowerCase()
                 + "&v=" + JDAInfo.DISCORD_GATEWAY_VERSION;
         if (compression != Compression.NONE)
