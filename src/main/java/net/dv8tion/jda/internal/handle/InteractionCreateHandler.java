@@ -30,6 +30,7 @@ import net.dv8tion.jda.api.interactions.InteractionType;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.components.Component;
 import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.api.utils.data.DataPath;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.interactions.InteractionImpl;
 import net.dv8tion.jda.internal.interactions.ModalInteractionImpl;
@@ -52,9 +53,10 @@ public class InteractionCreateHandler extends SocketHandler
     protected Long handleInternally(DataObject content)
     {
         int type = content.getInt("type");
-        if (content.getInt("version", 1) != 1)
+        int version = content.getInt("version", 1);
+        if (version != 1)
         {
-            WebSocketClient.LOG.debug("Received interaction with version {}. This version is currently unsupported by this version of JDA. Consider updating!", content.getInt("version", 1));
+            WebSocketClient.LOG.debug("Received interaction with version {}. This version is currently unsupported by this version of JDA. Consider updating!", version);
             return null;
         }
 
@@ -103,7 +105,7 @@ public class InteractionCreateHandler extends SocketHandler
 
     private void handleCommand(DataObject content)
     {
-        switch (Command.Type.fromId(content.getObject("data").getInt("type")))
+        switch (Command.Type.fromId(DataPath.getInt(content, "data.type")))
         {
         case SLASH:
             api.handleEvent(
@@ -125,7 +127,7 @@ public class InteractionCreateHandler extends SocketHandler
 
     private void handleAction(DataObject content)
     {
-        switch (Component.Type.fromKey(content.getObject("data").getInt("component_type")))
+        switch (Component.Type.fromKey(DataPath.getInt(content, "data.component_type")))
         {
         case BUTTON:
             api.handleEvent(
