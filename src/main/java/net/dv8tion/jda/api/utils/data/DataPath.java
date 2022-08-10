@@ -51,7 +51,7 @@ public class DataPath
         {
             int arrayIndex = current.indexOf('[');
             String key = current.substring(0, arrayIndex);
-            path = current.substring(arrayIndex);
+            path = path.substring(arrayIndex);
 
             // isOptional
             if (key.endsWith("?"))
@@ -105,20 +105,21 @@ public class DataPath
             offset = Math.min(chars.length, end + 1);
             boolean optional = offset != chars.length && chars[offset] == '?';
 
+            boolean isMissing = root.length() <= index || root.isNull(index);
             if (optional)
             {
                 offset++;
-                if (root.isNull(index))
+                if (isMissing)
                     return null;
             }
 
             if (offset == chars.length)
-                return optional && root.isNull(index) ? null : fromArray.apply(root, index);
+                return fromArray.apply(root, index);
 
             if (chars[offset] == '[')
                 root = root.getArray(index);
             else
-                return getUnchecked(root.getObject(index), path.substring(offset), fromObject, fromArray);
+                return getUnchecked(root.getObject(index), path.substring(offset + 1), fromObject, fromArray);
         }
 
         throw new ParsingException("Array path nesting seems to be way too deep, we went " + chars.length + " arrays deep. Path: " + path);
@@ -145,6 +146,18 @@ public class DataPath
         return bool != null ? bool : fallback;
     }
 
+    public static boolean getBoolean(@Nonnull DataArray root, @Nonnull String path)
+    {
+        Boolean bool = get(root, path, DataObject::getBoolean, DataArray::getBoolean);
+        return bool != null && bool;
+    }
+
+    public static boolean getBoolean(@Nonnull DataArray root, @Nonnull String path, boolean fallback)
+    {
+        Boolean bool = get(root, path, (obj, key) -> obj.getBoolean(key, fallback), (arr, index) -> arr.getBoolean(index, fallback));
+        return bool != null ? bool : fallback;
+    }
+
     public static int getInt(@Nonnull DataObject root, @Nonnull String path)
     {
         Integer integer = get(root, path, DataObject::getInt, DataArray::getInt);
@@ -154,6 +167,20 @@ public class DataPath
     }
 
     public static int getInt(@Nonnull DataObject root, @Nonnull String path, int fallback)
+    {
+        Integer integer = get(root, path, (obj, key) -> obj.getInt(key, fallback), (arr, index) -> arr.getInt(index, fallback));
+        return integer == null ? fallback : integer;
+    }
+
+    public static int getInt(@Nonnull DataArray root, @Nonnull String path)
+    {
+        Integer integer = get(root, path, DataObject::getInt, DataArray::getInt);
+        if (integer == null)
+            pathError(path, "int");
+        return integer;
+    }
+
+    public static int getInt(@Nonnull DataArray root, @Nonnull String path, int fallback)
     {
         Integer integer = get(root, path, (obj, key) -> obj.getInt(key, fallback), (arr, index) -> arr.getInt(index, fallback));
         return integer == null ? fallback : integer;
@@ -173,6 +200,20 @@ public class DataPath
         return integer == null ? fallback : integer;
     }
 
+    public static int getUnsignedInt(@Nonnull DataArray root, @Nonnull String path)
+    {
+        Integer integer = get(root, path, DataObject::getUnsignedInt, DataArray::getUnsignedInt);
+        if (integer == null)
+            pathError(path, "unsigned int");
+        return integer;
+    }
+
+    public static int getUnsignedInt(@Nonnull DataArray root, @Nonnull String path, int fallback)
+    {
+        Integer integer = get(root, path, (obj, key) -> obj.getUnsignedInt(key, fallback), (arr, index) -> arr.getUnsignedInt(index, fallback));
+        return integer == null ? fallback : integer;
+    }
+
     public static long getLong(@Nonnull DataObject root, @Nonnull String path)
     {
         Long longValue = get(root, path, DataObject::getLong, DataArray::getLong);
@@ -182,6 +223,20 @@ public class DataPath
     }
 
     public static long getLong(@Nonnull DataObject root, @Nonnull String path, long fallback)
+    {
+        Long longValue = get(root, path, (obj, key) -> obj.getLong(key, fallback), (arr, index) -> arr.getLong(index, fallback));
+        return longValue == null ? fallback : longValue;
+    }
+
+    public static long getLong(@Nonnull DataArray root, @Nonnull String path)
+    {
+        Long longValue = get(root, path, DataObject::getLong, DataArray::getLong);
+        if (longValue == null)
+            pathError(path, "long");
+        return longValue;
+    }
+
+    public static long getLong(@Nonnull DataArray root, @Nonnull String path, long fallback)
     {
         Long longValue = get(root, path, (obj, key) -> obj.getLong(key, fallback), (arr, index) -> arr.getLong(index, fallback));
         return longValue == null ? fallback : longValue;
@@ -201,6 +256,20 @@ public class DataPath
         return longValue == null ? fallback : longValue;
     }
 
+    public static long getUnsignedLong(@Nonnull DataArray root, @Nonnull String path)
+    {
+        Long longValue = get(root, path, DataObject::getUnsignedLong, DataArray::getUnsignedLong);
+        if (longValue == null)
+            throw pathError(path, "unsigned long");
+        return longValue;
+    }
+
+    public static long getUnsignedLong(@Nonnull DataArray root, @Nonnull String path, long fallback)
+    {
+        Long longValue = get(root, path, (obj, key) -> obj.getUnsignedLong(key, fallback), (arr, index) -> arr.getUnsignedLong(index, fallback));
+        return longValue == null ? fallback : longValue;
+    }
+
     public static double getDouble(@Nonnull DataObject root, @Nonnull String path)
     {
         Double doubleValue = get(root, path, DataObject::getDouble, DataArray::getDouble);
@@ -210,6 +279,20 @@ public class DataPath
     }
 
     public static double getDouble(@Nonnull DataObject root, @Nonnull String path, double fallback)
+    {
+        Double doubleValue = get(root, path, (obj, key) -> obj.getDouble(key, fallback), (arr, index) -> arr.getDouble(index, fallback));
+        return doubleValue == null ? fallback : doubleValue;
+    }
+
+    public static double getDouble(@Nonnull DataArray root, @Nonnull String path)
+    {
+        Double doubleValue = get(root, path, DataObject::getDouble, DataArray::getDouble);
+        if (doubleValue == null)
+            pathError(path, "double");
+        return doubleValue;
+    }
+
+    public static double getDouble(@Nonnull DataArray root, @Nonnull String path, double fallback)
     {
         Double doubleValue = get(root, path, (obj, key) -> obj.getDouble(key, fallback), (arr, index) -> arr.getDouble(index, fallback));
         return doubleValue == null ? fallback : doubleValue;
@@ -226,6 +309,22 @@ public class DataPath
 
     @Contract("_, _, !null -> !null")
     public static String getString(@Nonnull DataObject root, @Nonnull String path, @Nullable String fallback)
+    {
+        String string = get(root, path, (obj, key) -> obj.getString(key, fallback), (arr, index) -> arr.getString(index, fallback));
+        return string == null ? fallback : string;
+    }
+
+    @Nonnull
+    public static String getString(@Nonnull DataArray root, @Nonnull String path)
+    {
+        String string = get(root, path, DataObject::getString, DataArray::getString);
+        if (string == null)
+            pathError(path, "String");
+        return string;
+    }
+
+    @Contract("_, _, !null -> !null")
+    public static String getString(@Nonnull DataArray root, @Nonnull String path, @Nullable String fallback)
     {
         String string = get(root, path, (obj, key) -> obj.getString(key, fallback), (arr, index) -> arr.getString(index, fallback));
         return string == null ? fallback : string;
@@ -249,6 +348,23 @@ public class DataPath
     }
 
     @Nonnull
+    public static DataObject getObject(@Nonnull DataArray root, @Nonnull String path)
+    {
+        DataObject obj = optObject(root, path);
+        if (obj == null)
+            pathError(path, "Object");
+        return obj;
+    }
+
+    @Nullable
+    public static DataObject optObject(@Nonnull DataArray root, @Nonnull String path)
+    {
+        if (!path.endsWith("?"))
+            path += "?";
+        return get(root, path, DataObject::getObject, DataArray::getObject);
+    }
+
+    @Nonnull
     public static DataArray getArray(@Nonnull DataObject root, @Nonnull String path)
     {
         DataArray array = optArray(root, path);
@@ -259,6 +375,23 @@ public class DataPath
 
     @Nullable
     public static DataArray optArray(@Nonnull DataObject root, @Nonnull String path)
+    {
+        if (!path.endsWith("?"))
+            path += "?";
+        return get(root, path, DataObject::getArray, DataArray::getArray);
+    }
+
+    @Nonnull
+    public static DataArray getArray(@Nonnull DataArray root, @Nonnull String path)
+    {
+        DataArray array = optArray(root, path);
+        if (array == null)
+            pathError(path, "Array");
+        return array;
+    }
+
+    @Nullable
+    public static DataArray optArray(@Nonnull DataArray root, @Nonnull String path)
     {
         if (!path.endsWith("?"))
             path += "?";
