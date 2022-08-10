@@ -26,7 +26,42 @@ import java.nio.charset.StandardCharsets;
 import java.util.function.BiFunction;
 import java.util.regex.Pattern;
 
-// TODO: Documentation and Unit Tests
+// TODO: Documentation
+
+/**
+ * This utility class can be used to access nested values within {@link DataObject DataObjects} and {@link DataArray DataArrays}.
+ *
+ * <p><b>Path Expression Grammar</b><br>
+ *
+ * The syntax for paths is given by this grammar:
+ *
+ * <pre>{@code
+ * <name-syntax>  ::= /[^.\[\]]+/;
+ * <index-syntax> ::= "[" <number> "]";
+ * <name>         ::= <name-syntax> | <name-syntax> "?";
+ * <index>        ::= <index-syntax> | <index-syntax> "?";
+ * <element>      ::= <name> ( <index> )*;
+ * <path-start>   ::= <element> | <index> ( <index> )*;
+ * <path>         ::= <path-start> ( "." <element> )*;
+ * }</pre>
+ *
+ * <p><b>Examples</b><br>
+ * Given a JSON object such as:
+ * <pre>{@code
+ * {
+ *     "array": [{
+ *         "foo": "bar",
+ *     }]
+ * }
+ * }</pre>
+ *
+ * The content of {@code "foo"} can be accessed using the code:
+ * <pre>{@code String foo = DataPath.getString(root, "array[0].foo")}</pre>
+ *
+ * <p>With the safe-access operator {@code "?"}, you can also allow missing values within your path:
+ * <pre>{@code String foo = DataPath.getString(root, "array[1]?.foo", "default")}</pre>
+ * This will result in {@code foo == "default"}, since the array element 1 is marked as optional, and missing in the actual object.
+ */
 public class DataPath
 {
     private static final Pattern INDEX_EXPRESSION = Pattern.compile("^\\[\\d+].*");
