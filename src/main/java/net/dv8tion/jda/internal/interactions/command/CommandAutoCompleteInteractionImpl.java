@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.internal.interactions.command;
 
+import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.interactions.AutoCompleteQuery;
 import net.dv8tion.jda.api.interactions.commands.*;
 import net.dv8tion.jda.api.requests.restaction.interactions.AutoCompleteCallbackAction;
@@ -72,6 +73,14 @@ public class CommandAutoCompleteInteractionImpl extends InteractionImpl implemen
     public AutoCompleteQuery getFocusedOption()
     {
         return focused;
+    }
+
+    @Nonnull
+    @Override
+    @SuppressWarnings("ConstantConditions")
+    public MessageChannelUnion getChannel()
+    {
+        return (MessageChannelUnion) super.getChannel();
     }
 
     @Override

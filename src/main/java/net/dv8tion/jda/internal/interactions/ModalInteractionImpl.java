@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.internal.interactions;
 
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.interactions.ModalInteraction;
 import net.dv8tion.jda.api.interactions.modals.ModalMapping;
@@ -36,6 +37,7 @@ public class ModalInteractionImpl extends DeferrableInteractionImpl implements M
 {
     private final String modalId;
     private final List<ModalMapping> mappings;
+    private final Message message;
 
     public ModalInteractionImpl(JDAImpl api, DataObject object)
     {
@@ -49,6 +51,9 @@ public class ModalInteractionImpl extends DeferrableInteractionImpl implements M
                 .flatMap(dataArray -> dataArray.stream(DataArray::getObject))
                 .map(ModalMapping::new)
                 .collect(Collectors.toList());
+        this.message = object.optObject("message")
+                .map(o -> api.getEntityBuilder().createMessageWithChannel(o, getMessageChannel(), false))
+                .orElse(null);
     }
 
     @Nonnull
@@ -63,6 +68,12 @@ public class ModalInteractionImpl extends DeferrableInteractionImpl implements M
     public List<ModalMapping> getValues()
     {
         return Collections.unmodifiableList(mappings);
+    }
+
+    @Override
+    public Message getMessage()
+    {
+        return message;
     }
 
     @Nonnull
