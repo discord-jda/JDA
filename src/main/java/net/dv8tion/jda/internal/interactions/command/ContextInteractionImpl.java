@@ -19,6 +19,7 @@ package net.dv8tion.jda.internal.interactions.command;
 import net.dv8tion.jda.api.interactions.commands.CommandInteractionPayload;
 import net.dv8tion.jda.api.interactions.commands.context.ContextInteraction;
 import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.api.utils.data.DataPath;
 import net.dv8tion.jda.internal.JDAImpl;
 
 import javax.annotation.Nonnull;
@@ -33,7 +34,7 @@ public abstract class ContextInteractionImpl<T> extends CommandInteractionImpl i
     {
         super(jda, data);
         this.payload = new CommandInteractionPayloadImpl(jda, data);
-        this.target = entityParser.apply(data.getObject("data").getObject("resolved"));
+        this.target = entityParser.apply(DataPath.getObject(data, "data.resolved"));
     }
 
     @Override

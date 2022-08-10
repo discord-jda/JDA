@@ -58,7 +58,6 @@ public class CommandInteractionImpl extends DeferrableInteractionImpl implements
     public ModalCallbackAction replyModal(@Nonnull Modal modal)
     {
         Checks.notNull(modal, "Modal");
-
         return new ModalCallbackActionImpl(this, modal);
     }
 }

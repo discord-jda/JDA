@@ -21,6 +21,7 @@ import gnu.trove.map.hash.TLongObjectHashMap;
 import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.api.utils.data.DataPath;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.requests.WebSocketClient;
@@ -51,13 +52,11 @@ public class ReadyHandler extends SocketHandler
         }
 
         DataObject selfJson = content.getObject("user");
-        selfJson.put("application_id", // Used to update SelfUser#getApplicationId
-            content.optObject("application")
-                .map(obj -> obj.getUnsignedLong("id"))
-                .orElse(selfJson.getUnsignedLong("id"))
-        );
-
+        // Inject the application id which isn't added to the self user by default
+        selfJson.put("application_id", DataPath.getUnsignedLong(content, "application?.id?", selfJson.getUnsignedLong("id")));
+        // SelfUser is already created in login(...) but this just updates it to the current state from the api, and injects the application id
         builder.createSelfUser(selfJson);
+
         if (getJDA().getGuildSetupController().setIncompleteCount(distinctGuilds.size()))
         {
             distinctGuilds.forEachEntry((id, guild) ->
