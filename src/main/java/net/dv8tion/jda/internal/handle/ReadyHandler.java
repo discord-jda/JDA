@@ -18,6 +18,7 @@ package net.dv8tion.jda.internal.handle;
 
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
+import net.dv8tion.jda.api.entities.ApplicationInfo;
 import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.data.DataArray;
@@ -25,6 +26,8 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.requests.WebSocketClient;
+
+import java.util.EnumSet;
 
 public class ReadyHandler extends SocketHandler
 {
@@ -53,8 +56,11 @@ public class ReadyHandler extends SocketHandler
 
         if (api.isIntent(GatewayIntent.MESSAGE_CONTENT))
         {
-            long flags = content.optObject("application").map(o -> o.getLong("flags", 0)).orElse(0L);
-            if ((flags & (1 << 18 | 1 << 19)) == 0)
+            EnumSet<ApplicationInfo.Flag> flags = content.optObject("application").map(
+                o -> ApplicationInfo.Flag.fromRaw(o.getLong("flags", 0))
+            ).orElse(EnumSet.noneOf(ApplicationInfo.Flag.class));
+
+            if (!flags.contains(ApplicationInfo.Flag.GATEWAY_MESSAGE_CONTENT) && !flags.contains(ApplicationInfo.Flag.GATEWAY_MESSAGE_CONTENT_LIMITED))
             {
                 JDAImpl.LOG.warn(
                     "Your bot is not eligible to use the MESSAGE_CONTENT intent. " +
