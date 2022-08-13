@@ -28,7 +28,6 @@ import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.message.MessageCreateBuilderMixin;
-import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import org.jetbrains.annotations.NotNull;
 
@@ -79,9 +78,7 @@ public class WebhookMessageCreateActionImpl<T>
             if (files.isEmpty())
                 return getRequestBody(json);
 
-            MultipartBody.Builder body = AttachedFile.createMultipartBody(files, null);
-            body.addFormDataPart("payload_json", json.toString());
-            return body.build();
+            return AttachedFile.createMultipartBody(files, json).build();
         }
     }
 
