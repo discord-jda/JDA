@@ -16,7 +16,10 @@
 
 package net.dv8tion.jda.api.utils.messages;
 
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.IMentionable;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.UserSnowflake;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.SerializableData;
@@ -95,7 +98,7 @@ class AllowedMentionsData implements SerializableData
         Checks.noneNull(mentions, "Mentionables");
         for (IMentionable mentionable : mentions)
         {
-            if (mentionable instanceof User || mentionable instanceof Member)
+            if (mentionable instanceof UserSnowflake)
                 mentionUsers.add(mentionable.getId());
             else if (mentionable instanceof Role)
                 mentionRoles.add(mentionable.getId());
