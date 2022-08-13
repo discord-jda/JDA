@@ -410,6 +410,24 @@ public interface MessageChannel extends Channel, Formattable
      *         does not share any Guilds with the recipient User</li>
      * </ul>
      *
+     * <p><b>Example: Attachment Images</b>
+     * <pre>{@code
+     * // Make a file upload instance which refers to a local file called "myFile.png"
+     * // The second parameter "image.png" is the filename we tell discord to use for the attachment
+     * FileUpload file = FileUpload.fromData(new File("myFile.png"), "image.png");
+     *
+     * // Build a message embed which refers to this attachment by the given name.
+     * // Note that this must be the same name as configured for the attachment, not your local filename.
+     * MessageEmbed embed = new EmbedBuilder()
+     *   .setDescription("This is my cute cat :)")
+     *   .setImage("attachment://image.png") // refer to the file by using the "attachment://" schema with the filename we gave it above
+     *   .build();
+     *
+     * channel.sendMessageEmbeds(embed) // send the embed
+     *        .addFiles(file) // add the file as attachment
+     *        .queue();
+     * }</pre>
+     *
      * @param  embed
      *         {@link MessageEmbed} to send
      * @param  other
@@ -450,6 +468,24 @@ public interface MessageChannel extends Channel, Formattable
      *         does not share any Guilds with the recipient User</li>
      * </ul>
      *
+     * <p><b>Example: Attachment Images</b>
+     * <pre>{@code
+     * // Make a file upload instance which refers to a local file called "myFile.png"
+     * // The second parameter "image.png" is the filename we tell discord to use for the attachment
+     * FileUpload file = FileUpload.fromData(new File("myFile.png"), "image.png");
+     *
+     * // Build a message embed which refers to this attachment by the given name.
+     * // Note that this must be the same name as configured for the attachment, not your local filename.
+     * MessageEmbed embed = new EmbedBuilder()
+     *   .setDescription("This is my cute cat :)")
+     *   .setImage("attachment://image.png") // refer to the file by using the "attachment://" schema with the filename we gave it above
+     *   .build();
+     *
+     * channel.sendMessageEmbeds(Collections.singleton(embed)) // send the embeds
+     *        .addFiles(file) // add the file as attachment
+     *        .queue();
+     * }</pre>
+     *
      * @param  embeds
      *         {@link MessageEmbed MessageEmbeds} to use (up to {@value Message#MAX_EMBED_COUNT})
      *
@@ -487,6 +523,24 @@ public interface MessageChannel extends Channel, Formattable
      *     <br>If this is a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel} and the currently logged in account
      *         does not share any Guilds with the recipient User</li>
      * </ul>
+     *
+     * <p><b>Example: Attachment Images</b>
+     * <pre>{@code
+     * // Make a file upload instance which refers to a local file called "myFile.png"
+     * // The second parameter "image.png" is the filename we tell discord to use for the attachment
+     * FileUpload file = FileUpload.fromData(new File("myFile.png"), "image.png");
+     *
+     * // Build a message embed which refers to this attachment by the given name.
+     * // Note that this must be the same name as configured for the attachment, not your local filename.
+     * MessageEmbed embed = new EmbedBuilder()
+     *   .setDescription("This is my cute cat :)")
+     *   .setImage("attachment://image.png") // refer to the file by using the "attachment://" schema with the filename we gave it above
+     *   .build();
+     *
+     * channel.sendFiles(Collections.singleton(file)) // send the file upload
+     *        .addEmbeds(embed) // add the embed you want to reference the file with
+     *        .queue();
+     * }</pre>
      *
      * @param  files
      *         The {@link FileUpload FileUploads} to attach to the message
@@ -529,6 +583,24 @@ public interface MessageChannel extends Channel, Formattable
      *     <br>If this is a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel} and the currently logged in account
      *         does not share any Guilds with the recipient User</li>
      * </ul>
+     *
+     * <p><b>Example: Attachment Images</b>
+     * <pre>{@code
+     * // Make a file upload instance which refers to a local file called "myFile.png"
+     * // The second parameter "image.png" is the filename we tell discord to use for the attachment
+     * FileUpload file = FileUpload.fromData(new File("myFile.png"), "image.png");
+     *
+     * // Build a message embed which refers to this attachment by the given name.
+     * // Note that this must be the same name as configured for the attachment, not your local filename.
+     * MessageEmbed embed = new EmbedBuilder()
+     *   .setDescription("This is my cute cat :)")
+     *   .setImage("attachment://image.png") // refer to the file by using the "attachment://" schema with the filename we gave it above
+     *   .build();
+     *
+     * channel.sendFiles(file) // send the file upload
+     *        .addEmbeds(embed) // add the embed you want to reference the file with
+     *        .queue();
+     * }</pre>
      *
      * @param  files
      *         The {@link FileUpload FileUploads} to attach to the message

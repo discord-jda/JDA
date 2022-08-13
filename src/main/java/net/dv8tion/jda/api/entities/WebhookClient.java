@@ -133,6 +133,24 @@ public interface WebhookClient<T>
      *     <br>The webhook is no longer available, either it was deleted or in case of interactions it expired.</li>
      * </ul>
      *
+     * <p><b>Example: Attachment Images</b>
+     * <pre>{@code
+     * // Make a file upload instance which refers to a local file called "myFile.png"
+     * // The second parameter "image.png" is the filename we tell discord to use for the attachment
+     * FileUpload file = FileUpload.fromData(new File("myFile.png"), "image.png");
+     *
+     * // Build a message embed which refers to this attachment by the given name.
+     * // Note that this must be the same name as configured for the attachment, not your local filename.
+     * MessageEmbed embed = new EmbedBuilder()
+     *   .setDescription("This is my cute cat :)")
+     *   .setImage("attachment://image.png") // refer to the file by using the "attachment://" schema with the filename we gave it above
+     *   .build();
+     *
+     * webhook.sendMessageEmbeds(Collections.singleton(embed)) // send the embeds
+     *        .addFiles(file) // add the file as attachment
+     *        .queue();
+     * }</pre>
+     *
      * @param  embeds
      *         {@link MessageEmbed MessageEmbeds} to use (up to {@value Message#MAX_EMBED_COUNT})
      *
@@ -155,6 +173,24 @@ public interface WebhookClient<T>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_WEBHOOK UNKNOWN_WEBHOOK}
      *     <br>The webhook is no longer available, either it was deleted or in case of interactions it expired.</li>
      * </ul>
+     *
+     * <p><b>Example: Attachment Images</b>
+     * <pre>{@code
+     * // Make a file upload instance which refers to a local file called "myFile.png"
+     * // The second parameter "image.png" is the filename we tell discord to use for the attachment
+     * FileUpload file = FileUpload.fromData(new File("myFile.png"), "image.png");
+     *
+     * // Build a message embed which refers to this attachment by the given name.
+     * // Note that this must be the same name as configured for the attachment, not your local filename.
+     * MessageEmbed embed = new EmbedBuilder()
+     *   .setDescription("This is my cute cat :)")
+     *   .setImage("attachment://image.png") // refer to the file by using the "attachment://" schema with the filename we gave it above
+     *   .build();
+     *
+     * webhook.sendMessageEmbeds(embed) // send the embed
+     *        .addFiles(file) // add the file as attachment
+     *        .queue();
+     * }</pre>
      *
      * @param  embed
      *         {@link MessageEmbed} to use
@@ -181,10 +217,30 @@ public interface WebhookClient<T>
     /**
      * Send a message to this webhook.
      *
+     * <p>If this is an {@link net.dv8tion.jda.api.interactions.InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
+     *
      * <p><b>Resource Handling Note:</b> Once the request is handed off to the requester, for example when you call {@link RestAction#queue()},
      * the requester will automatically clean up all opened files by itself. You are only responsible to close them yourself if it is never handed off properly.
      * For instance, if an exception occurs after using {@link FileUpload#fromData(File)}, before calling {@link RestAction#queue()}.
      * You can safely use a try-with-resources to handle this, since {@link FileUpload#close()} becomes ineffective once the request is handed off.
+     *
+     * <p><b>Example: Attachment Images</b>
+     * <pre>{@code
+     * // Make a file upload instance which refers to a local file called "myFile.png"
+     * // The second parameter "image.png" is the filename we tell discord to use for the attachment
+     * FileUpload file = FileUpload.fromData(new File("myFile.png"), "image.png");
+     *
+     * // Build a message embed which refers to this attachment by the given name.
+     * // Note that this must be the same name as configured for the attachment, not your local filename.
+     * MessageEmbed embed = new EmbedBuilder()
+     *   .setDescription("This is my cute cat :)")
+     *   .setImage("attachment://image.png") // refer to the file by using the "attachment://" schema with the filename we gave it above
+     *   .build();
+     *
+     * webhook.sendFiles(Collections.singleton(file)) // send the file upload
+     *        .addEmbeds(embed) // add the embed you want to reference the file with
+     *        .queue();
+     * }</pre>
      *
      * @param  files
      *         The {@link FileUpload FileUploads} to attach to the message
@@ -203,10 +259,30 @@ public interface WebhookClient<T>
     /**
      * Send a message to this webhook.
      *
+     * <p>If this is an {@link net.dv8tion.jda.api.interactions.InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
+     *
      * <p><b>Resource Handling Note:</b> Once the request is handed off to the requester, for example when you call {@link RestAction#queue()},
      * the requester will automatically clean up all opened files by itself. You are only responsible to close them yourself if it is never handed off properly.
      * For instance, if an exception occurs after using {@link FileUpload#fromData(File)}, before calling {@link RestAction#queue()}.
      * You can safely use a try-with-resources to handle this, since {@link FileUpload#close()} becomes ineffective once the request is handed off.
+     *
+     * <p><b>Example: Attachment Images</b>
+     * <pre>{@code
+     * // Make a file upload instance which refers to a local file called "myFile.png"
+     * // The second parameter "image.png" is the filename we tell discord to use for the attachment
+     * FileUpload file = FileUpload.fromData(new File("myFile.png"), "image.png");
+     *
+     * // Build a message embed which refers to this attachment by the given name.
+     * // Note that this must be the same name as configured for the attachment, not your local filename.
+     * MessageEmbed embed = new EmbedBuilder()
+     *   .setDescription("This is my cute cat :)")
+     *   .setImage("attachment://image.png") // refer to the file by using the "attachment://" schema with the filename we gave it above
+     *   .build();
+     *
+     * webhook.sendFiles(file) // send the file upload
+     *        .addEmbeds(embed) // add the embed you want to reference the file with
+     *        .queue();
+     * }</pre>
      *
      * @param  files
      *         The {@link FileUpload FileUploads} to attach to the message
@@ -666,6 +742,8 @@ public interface WebhookClient<T>
     /**
      * Edit an existing message sent by this webhook.
      *
+     * <p>If this is an {@link net.dv8tion.jda.api.interactions.InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
+     *
      * <p><b>Resource Handling Note:</b> Once the request is handed off to the requester, for example when you call {@link RestAction#queue()},
      * the requester will automatically clean up all opened files by itself. You are only responsible to close them yourself if it is never handed off properly.
      * For instance, if an exception occurs after using {@link FileUpload#fromData(File)}, before calling {@link RestAction#queue()}.
@@ -690,6 +768,8 @@ public interface WebhookClient<T>
 
     /**
      * Edit an existing message sent by this webhook.
+     *
+     * <p>If this is an {@link net.dv8tion.jda.api.interactions.InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
      *
      * <p><b>Resource Handling Note:</b> Once the request is handed off to the requester, for example when you call {@link RestAction#queue()},
      * the requester will automatically clean up all opened files by itself. You are only responsible to close them yourself if it is never handed off properly.
@@ -720,6 +800,8 @@ public interface WebhookClient<T>
     /**
      * Edit an existing message sent by this webhook.
      *
+     * <p>If this is an {@link net.dv8tion.jda.api.interactions.InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
+     *
      * <p><b>Resource Handling Note:</b> Once the request is handed off to the requester, for example when you call {@link RestAction#queue()},
      * the requester will automatically clean up all opened files by itself. You are only responsible to close them yourself if it is never handed off properly.
      * For instance, if an exception occurs after using {@link FileUpload#fromData(File)}, before calling {@link RestAction#queue()}.
@@ -747,6 +829,8 @@ public interface WebhookClient<T>
 
     /**
      * Edit an existing message sent by this webhook.
+     *
+     * <p>If this is an {@link net.dv8tion.jda.api.interactions.InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
      *
      * <p><b>Resource Handling Note:</b> Once the request is handed off to the requester, for example when you call {@link RestAction#queue()},
      * the requester will automatically clean up all opened files by itself. You are only responsible to close them yourself if it is never handed off properly.
