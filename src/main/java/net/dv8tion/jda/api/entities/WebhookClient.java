@@ -23,7 +23,6 @@ import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.WebhookMessageCreateAction;
 import net.dv8tion.jda.api.requests.restaction.WebhookMessageEditAction;
 import net.dv8tion.jda.api.requests.restaction.interactions.MessageEditCallbackAction;
-import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction;
 import net.dv8tion.jda.api.utils.AttachedFile;
 import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.messages.MessageCreateData;
@@ -248,7 +247,7 @@ public interface WebhookClient<T>
      * @throws IllegalArgumentException
      *         If null is provided
      *
-     * @return {@link ReplyCallbackAction}
+     * @return {@link WebhookMessageCreateAction}
      *
      * @see    FileUpload#fromData(InputStream, String)
      */
@@ -290,7 +289,7 @@ public interface WebhookClient<T>
      * @throws IllegalArgumentException
      *         If null is provided
      *
-     * @return {@link ReplyCallbackAction}
+     * @return {@link WebhookMessageCreateAction}
      *
      * @see    FileUpload#fromData(InputStream, String)
      */
