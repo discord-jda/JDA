@@ -104,9 +104,6 @@ public interface MessageEditRequest<R extends MessageEditRequest<R>> extends Mes
      * // The name here will be "cat.png" to discord, what the file is called on your computer is irrelevant and only used to read the data of the image.
      * FileUpload file = FileUpload.fromData(new File("mycat-final-copy.png"), "cat.png"); // Opens the file called "cat.png" and provides the data used for sending
      *
-     * // Adds another file to upload in addition the current attachments of the message
-     * attachments.add(file);
-     *
      * // Edit request to keep the first attachment, and add one more file to the message
      * message.editMessage("New content")
      *        .setAttachments(attachment, file)
