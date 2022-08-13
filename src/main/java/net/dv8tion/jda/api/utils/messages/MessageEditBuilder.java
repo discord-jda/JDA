@@ -152,7 +152,7 @@ public class MessageEditBuilder extends AbstractMessageBuilder<MessageEditData, 
 
     @Nonnull
     @Override
-    public MessageEditBuilder mentionUsers(@Nonnull String... userIds)
+    public MessageEditBuilder mentionUsers(@Nonnull Collection<String> userIds)
     {
         super.mentionUsers(userIds);
         set |= MENTIONS;
@@ -161,7 +161,7 @@ public class MessageEditBuilder extends AbstractMessageBuilder<MessageEditData, 
 
     @Nonnull
     @Override
-    public MessageEditBuilder mentionRoles(@Nonnull String... roleIds)
+    public MessageEditBuilder mentionRoles(@Nonnull Collection<String> roleIds)
     {
         super.mentionRoles(roleIds);
         set |= MENTIONS;

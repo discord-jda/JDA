@@ -514,7 +514,34 @@ public interface MessageRequest<R extends MessageRequest<R>> extends MessageData
      */
     @Nonnull
     @CheckReturnValue
-    R mentionUsers(@Nonnull String... userIds);
+    R mentionUsers(@Nonnull Collection<String> userIds);
+
+    /**
+     * Used to provide a whitelist of {@link net.dv8tion.jda.api.entities.User Users} that should be pinged,
+     * even when they would not be pinged otherwise according to the Set of allowed mention types.
+     *
+     * <p><b>Note:</b> When a User is whitelisted this way, then parsing of User mentions is automatically disabled.
+     * <br>Also note that whitelisting users or roles implicitly disables parsing of other mentions, if not otherwise set via
+     * {@link #setDefaultMentions(Collection)} or {@link #setAllowedMentions(Collection)}.
+     *
+     * @param  userIds
+     *         Ids of Users that should be explicitly whitelisted to be pingable.
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided
+     *
+     * @return The same instance for chaining
+     *
+     * @see    #setAllowedMentions(Collection)
+     * @see    #setDefaultMentions(Collection)
+     */
+    @Nonnull
+    @CheckReturnValue
+    default R mentionUsers(@Nonnull String... userIds)
+    {
+        Checks.notNull(userIds, "User IDs");
+        return mentionUsers(Arrays.asList(userIds));
+    }
 
     /**
      * Used to provide a whitelist of {@link net.dv8tion.jda.api.entities.User Users} that should be pinged,
@@ -567,7 +594,34 @@ public interface MessageRequest<R extends MessageRequest<R>> extends MessageData
      */
     @Nonnull
     @CheckReturnValue
-    R mentionRoles(@Nonnull String... roleIds);
+    R mentionRoles(@Nonnull Collection<String> roleIds);
+
+    /**
+     * Used to provide a whitelist of {@link net.dv8tion.jda.api.entities.Role Roles} that should be pinged,
+     * even when they would not be pinged otherwise according to the Set of allowed mention types.
+     *
+     * <p><b>Note:</b> When a Role is whitelisted this way, then parsing of Role mentions is automatically disabled.
+     * <br>Also note that whitelisting users or roles implicitly disables parsing of other mentions, if not otherwise set via
+     * {@link #setDefaultMentions(Collection)} or {@link #setAllowedMentions(Collection)}.
+     *
+     * @param  roleIds
+     *         Ids of Roles that should be explicitly whitelisted to be pingable.
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided
+     *
+     * @return The same instance for chaining
+     *
+     * @see    #setAllowedMentions(Collection)
+     * @see    #setDefaultMentions(Collection)
+     */
+    @Nonnull
+    @CheckReturnValue
+    default R mentionRoles(@Nonnull String... roleIds)
+    {
+        Checks.notNull(roleIds, "Role IDs");
+        return mentionRoles(Arrays.asList(roleIds));
+    }
 
     /**
      * Used to provide a whitelist of {@link net.dv8tion.jda.api.entities.Role Roles} that should be pinged,

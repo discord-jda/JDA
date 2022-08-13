@@ -102,16 +102,16 @@ class AllowedMentionsData implements SerializableData
         }
     }
 
-    public void mentionUsers(@Nonnull String... userIds)
+    public void mentionUsers(@Nonnull Collection<String> userIds)
     {
         Checks.noneNull(userIds, "User Id");
-        Collections.addAll(mentionUsers, userIds);
+        mentionUsers.addAll(userIds);
     }
 
-    public void mentionRoles(@Nonnull String... roleIds)
+    public void mentionRoles(@Nonnull Collection<String> roleIds)
     {
         Checks.noneNull(roleIds, "Role Id");
-        Collections.addAll(mentionRoles, roleIds);
+        mentionRoles.addAll(roleIds);
     }
 
     @Nonnull

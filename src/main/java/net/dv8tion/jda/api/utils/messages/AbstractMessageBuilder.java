@@ -101,7 +101,7 @@ public abstract class AbstractMessageBuilder<T, R extends AbstractMessageBuilder
 
     @Nonnull
     @Override
-    public R mentionUsers(@Nonnull String... userIds)
+    public R mentionUsers(@Nonnull Collection<String> userIds)
     {
         this.mentions.mentionUsers(userIds);
         return (R) this;
@@ -109,7 +109,7 @@ public abstract class AbstractMessageBuilder<T, R extends AbstractMessageBuilder
 
     @Nonnull
     @Override
-    public R mentionRoles(@Nonnull String... roleIds)
+    public R mentionRoles(@Nonnull Collection<String> roleIds)
     {
         this.mentions.mentionRoles(roleIds);
         return (R) this;

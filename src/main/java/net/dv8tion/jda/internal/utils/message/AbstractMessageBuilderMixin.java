@@ -137,7 +137,7 @@ public interface AbstractMessageBuilderMixin<R extends MessageRequest<R>, B exte
 
     @Nonnull
     @Override
-    default R mentionUsers(@Nonnull String... userIds)
+    default R mentionUsers(@Nonnull Collection<String> userIds)
     {
         getBuilder().mentionUsers(userIds);
         return (R) this;
@@ -145,7 +145,7 @@ public interface AbstractMessageBuilderMixin<R extends MessageRequest<R>, B exte
 
     @Nonnull
     @Override
-    default R mentionRoles(@Nonnull String... roleIds)
+    default R mentionRoles(@Nonnull Collection<String> roleIds)
     {
         getBuilder().mentionRoles(roleIds);
         return (R) this;
