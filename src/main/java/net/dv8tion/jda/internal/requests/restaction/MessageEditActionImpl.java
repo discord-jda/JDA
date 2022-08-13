@@ -21,9 +21,6 @@ import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.restaction.MessageEditAction;
-import net.dv8tion.jda.api.utils.AttachedFile;
-import net.dv8tion.jda.api.utils.FileUpload;
-import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.messages.MessageEditBuilder;
 import net.dv8tion.jda.api.utils.messages.MessageEditData;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
@@ -32,7 +29,6 @@ import net.dv8tion.jda.internal.utils.message.MessageEditBuilderMixin;
 import okhttp3.RequestBody;
 
 import javax.annotation.Nonnull;
-import java.util.List;
 import java.util.function.BooleanSupplier;
 
 public class MessageEditActionImpl extends RestActionImpl<Message> implements MessageEditAction, MessageEditBuilderMixin<MessageEditAction>
@@ -57,13 +53,7 @@ public class MessageEditActionImpl extends RestActionImpl<Message> implements Me
     {
         try (MessageEditData data = builder.build())
         {
-            DataObject json = data.toData();
-
-            List<FileUpload> files = data.getFiles();
-            if (files.isEmpty())
-                return getRequestBody(json);
-
-            return AttachedFile.createMultipartBody(files, json).build();
+            return getMultipartBody(data.getFiles(), data.toData());
         }
     }
 

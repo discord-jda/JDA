@@ -17,18 +17,14 @@
 package net.dv8tion.jda.internal.requests.restaction.interactions;
 
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction;
-import net.dv8tion.jda.api.utils.AttachedFile;
-import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 import net.dv8tion.jda.internal.interactions.InteractionHookImpl;
 import net.dv8tion.jda.internal.utils.message.MessageCreateBuilderMixin;
-import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 
 import javax.annotation.Nonnull;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 
@@ -76,13 +72,7 @@ public class ReplyCallbackActionImpl extends DeferrableCallbackActionImpl implem
             DataObject msg = data.toData();
             msg.put("flags", msg.getInt("flags", 0) | flags);
             json.put("data",msg);
-            List<FileUpload> files = data.getFiles();
-            if (files.isEmpty())
-                return getRequestBody(json);
-
-            MultipartBody.Builder body = AttachedFile.createMultipartBody(files, null);
-            body.addFormDataPart("payload_json", json.toString());
-            return body.build();
+            return getMultipartBody(data.getFiles(), json);
         }
     }
 

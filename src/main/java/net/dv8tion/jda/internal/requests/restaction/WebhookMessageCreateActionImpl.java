@@ -21,7 +21,6 @@ import net.dv8tion.jda.api.entities.Message.MessageFlag;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.restaction.WebhookMessageCreateAction;
-import net.dv8tion.jda.api.utils.AttachedFile;
 import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
@@ -75,10 +74,8 @@ public class WebhookMessageCreateActionImpl<T>
             DataObject json = data.toData();
             if (ephemeral)
                 json.put("flags", json.getInt("flags", 0) | MessageFlag.EPHEMERAL.getValue());
-            if (files.isEmpty())
-                return getRequestBody(json);
 
-            return AttachedFile.createMultipartBody(files, json).build();
+            return getMultipartBody(files, json);
         }
     }
 

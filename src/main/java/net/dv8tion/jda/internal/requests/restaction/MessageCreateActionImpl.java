@@ -24,7 +24,6 @@ import net.dv8tion.jda.api.entities.sticker.StickerSnowflake;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.restaction.MessageCreateAction;
-import net.dv8tion.jda.api.utils.AttachedFile;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 import net.dv8tion.jda.api.utils.messages.MessageCreateData;
@@ -97,10 +96,7 @@ public class MessageCreateActionImpl extends RestActionImpl<Message> implements 
                 );
             }
 
-            if (data.getFiles().isEmpty())
-                return getRequestBody(json);
-
-            return AttachedFile.createMultipartBody(data.getFiles(), json).build();
+            return getMultipartBody(data.getFiles(), json);
         }
     }
 
