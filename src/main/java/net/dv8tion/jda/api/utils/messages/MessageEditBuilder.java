@@ -50,10 +50,8 @@ public class MessageEditBuilder extends AbstractMessageBuilder<MessageEditData, 
     protected static final int MENTIONS      = 1 << 4;
     protected static final int FLAGS         = 1 << 5;
 
-    protected static final int ALL = CONTENT | EMBEDS | COMPONENTS | ATTACHMENTS | MENTIONS | FLAGS;
-
     private boolean replace = false;
-    private int set = 0;
+    private int configuredFields = 0;
 
     private final List<AttachedFile> attachments = new ArrayList<>(10);
 
@@ -128,7 +126,7 @@ public class MessageEditBuilder extends AbstractMessageBuilder<MessageEditData, 
     public MessageEditBuilder mentionRepliedUser(boolean mention)
     {
         super.mentionRepliedUser(mention);
-        set |= MENTIONS;
+        configuredFields |= MENTIONS;
         return this;
     }
 
@@ -137,7 +135,7 @@ public class MessageEditBuilder extends AbstractMessageBuilder<MessageEditData, 
     public MessageEditBuilder setAllowedMentions(@Nullable Collection<Message.MentionType> allowedMentions)
     {
         super.setAllowedMentions(allowedMentions);
-        set |= MENTIONS;
+        configuredFields |= MENTIONS;
         return this;
     }
 
@@ -146,7 +144,7 @@ public class MessageEditBuilder extends AbstractMessageBuilder<MessageEditData, 
     public MessageEditBuilder mention(@Nonnull Collection<? extends IMentionable> mentions)
     {
         super.mention(mentions);
-        set |= MENTIONS;
+        configuredFields |= MENTIONS;
         return this;
     }
 
@@ -155,7 +153,7 @@ public class MessageEditBuilder extends AbstractMessageBuilder<MessageEditData, 
     public MessageEditBuilder mentionUsers(@Nonnull Collection<String> userIds)
     {
         super.mentionUsers(userIds);
-        set |= MENTIONS;
+        configuredFields |= MENTIONS;
         return this;
     }
 
@@ -164,7 +162,7 @@ public class MessageEditBuilder extends AbstractMessageBuilder<MessageEditData, 
     public MessageEditBuilder mentionRoles(@Nonnull Collection<String> roleIds)
     {
         super.mentionRoles(roleIds);
-        set |= MENTIONS;
+        configuredFields |= MENTIONS;
         return this;
     }
 
@@ -173,7 +171,7 @@ public class MessageEditBuilder extends AbstractMessageBuilder<MessageEditData, 
     public MessageEditBuilder setAttachments(@Nullable Collection<? extends AttachedFile> attachments)
     {
         this.attachments.clear();
-        set |= ATTACHMENTS;
+        configuredFields |= ATTACHMENTS;
         if (attachments != null)
             this.attachments.addAll(attachments);
         return this;
@@ -205,7 +203,7 @@ public class MessageEditBuilder extends AbstractMessageBuilder<MessageEditData, 
     public MessageEditBuilder setContent(@Nullable String content)
     {
         super.setContent(content);
-        set |= CONTENT;
+        configuredFields |= CONTENT;
         return this;
     }
 
@@ -214,7 +212,7 @@ public class MessageEditBuilder extends AbstractMessageBuilder<MessageEditData, 
     public MessageEditBuilder setEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
     {
         super.setEmbeds(embeds);
-        set |= EMBEDS;
+        configuredFields |= EMBEDS;
         return this;
     }
 
@@ -223,7 +221,7 @@ public class MessageEditBuilder extends AbstractMessageBuilder<MessageEditData, 
     public MessageEditBuilder setComponents(@Nonnull Collection<? extends LayoutComponent> components)
     {
         super.setComponents(components);
-        set |= COMPONENTS;
+        configuredFields |= COMPONENTS;
         return this;
     }
 
@@ -232,7 +230,7 @@ public class MessageEditBuilder extends AbstractMessageBuilder<MessageEditData, 
     public MessageEditBuilder setSuppressEmbeds(boolean suppress)
     {
         super.setSuppressEmbeds(suppress);
-        set |= FLAGS;
+        configuredFields |= FLAGS;
         return this;
     }
 
@@ -241,7 +239,7 @@ public class MessageEditBuilder extends AbstractMessageBuilder<MessageEditData, 
     public MessageEditBuilder applyData(@Nonnull MessageEditData data)
     {
         Checks.notNull(data, "Data");
-        this.set |= data.getSet();
+        this.configuredFields |= data.getConfiguredFields();
         this.replace |= data.isReplace();
 
         if (data.isSet(CONTENT))
@@ -255,7 +253,7 @@ public class MessageEditBuilder extends AbstractMessageBuilder<MessageEditData, 
         if (data.isSet(MENTIONS))
             this.mentions = data.mentions.copy();
         if (data.isSet(FLAGS))
-            this.flags = data.getFlags();
+            this.messageFlags = data.getFlags();
 
         return this;
     }
@@ -263,7 +261,7 @@ public class MessageEditBuilder extends AbstractMessageBuilder<MessageEditData, 
     @Override
     public boolean isEmpty()
     {
-        return !replace && set == 0;
+        return !replace && configuredFields == 0;
     }
 
     @Override
@@ -278,7 +276,7 @@ public class MessageEditBuilder extends AbstractMessageBuilder<MessageEditData, 
 
     private boolean isSet(int flag)
     {
-        return replace || (set & flag) != 0;
+        return replace || (configuredFields & flag) != 0;
     }
 
     @Nonnull
@@ -302,14 +300,14 @@ public class MessageEditBuilder extends AbstractMessageBuilder<MessageEditData, 
         if (isSet(COMPONENTS) && components.size() > Message.MAX_COMPONENT_COUNT)
             throw new IllegalStateException("Cannot build message with over " + Message.MAX_COMPONENT_COUNT + " component layouts, provided " + components.size());
 
-        return new MessageEditData(set, flags, replace, content, embeds, attachments, components, mentions);
+        return new MessageEditData(configuredFields, messageFlags, replace, content, embeds, attachments, components, mentions);
     }
 
     @Nonnull
     @Override
     public MessageEditBuilder clear()
     {
-        this.set = 0;
+        this.configuredFields = 0;
         this.attachments.clear();
         return super.clear();
     }

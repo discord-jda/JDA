@@ -48,13 +48,13 @@ public class MessageEditData implements MessageData, AutoCloseable, Serializable
     private final List<MessageEmbed> embeds;
     private final List<AttachedFile> files;
     private final List<LayoutComponent> components;
-    private final int flags;
+    private final int messageFlags;
 
     private final boolean isReplace;
-    private final int set;
+    private final int configuredFields;
 
     protected MessageEditData(
-            int set, int flags, boolean isReplace, String content,
+            int configuredFields, int messageFlags, boolean isReplace, String content,
             List<MessageEmbed> embeds, List<AttachedFile> files, List<LayoutComponent> components,
             AllowedMentionsData mentions)
     {
@@ -63,9 +63,9 @@ public class MessageEditData implements MessageData, AutoCloseable, Serializable
         this.files = Collections.unmodifiableList(files);
         this.components = Collections.unmodifiableList(components);
         this.mentions = mentions;
-        this.flags = flags;
+        this.messageFlags = messageFlags;
         this.isReplace = isReplace;
-        this.set = set;
+        this.configuredFields = configuredFields;
     }
 
     /**
@@ -206,14 +206,14 @@ public class MessageEditData implements MessageData, AutoCloseable, Serializable
         return isReplace;
     }
 
-    protected int getSet()
+    protected int getConfiguredFields()
     {
-        return set;
+        return configuredFields;
     }
 
     protected int getFlags()
     {
-        return flags;
+        return messageFlags;
     }
 
     /**
@@ -323,7 +323,7 @@ public class MessageEditData implements MessageData, AutoCloseable, Serializable
         if (isSet(MENTIONS))
             json.put("allowed_mentions", mentions);
         if (isSet(FLAGS))
-            json.put("flags", flags);
+            json.put("flags", messageFlags);
         if (isSet(ATTACHMENTS))
         {
             DataArray attachments = DataArray.empty();
@@ -359,6 +359,6 @@ public class MessageEditData implements MessageData, AutoCloseable, Serializable
 
     protected boolean isSet(int flag)
     {
-        return isReplace || (set & flag) != 0;
+        return isReplace || (configuredFields & flag) != 0;
     }
 }

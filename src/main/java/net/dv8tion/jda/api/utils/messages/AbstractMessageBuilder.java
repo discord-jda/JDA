@@ -47,7 +47,7 @@ public abstract class AbstractMessageBuilder<T, R extends AbstractMessageBuilder
     protected final List<LayoutComponent> components = new ArrayList<>(Message.MAX_COMPONENT_COUNT);
     protected final StringBuilder content = new StringBuilder(Message.MAX_CONTENT_LENGTH);
     protected AllowedMentionsData mentions = new AllowedMentionsData();
-    protected int flags;
+    protected int messageFlags;
 
     protected AbstractMessageBuilder() {}
 
@@ -187,16 +187,16 @@ public abstract class AbstractMessageBuilder<T, R extends AbstractMessageBuilder
     {
         int flag = Message.MessageFlag.EMBEDS_SUPPRESSED.getValue();
         if (suppress)
-            this.flags |= flag;
+            this.messageFlags |= flag;
         else
-            this.flags &= ~flag;
+            this.messageFlags &= ~flag;
         return (R) this;
     }
 
     @Override
     public boolean isSuppressEmbeds()
     {
-        return (this.flags & Message.MessageFlag.EMBEDS_SUPPRESSED.getValue()) != 0;
+        return (this.messageFlags & Message.MessageFlag.EMBEDS_SUPPRESSED.getValue()) != 0;
     }
 
     /**
