@@ -295,7 +295,7 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
 
     @Nonnull
     @Override
-    List<? extends FileUpload> getAttachments();
+    List<FileUpload> getAttachments();
 
     /**
      * Whether the message should use <em>Text-to-Speech</em> (TTS).
@@ -378,10 +378,9 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
             setFiles(data.getFiles());
         if (data.isSet(MessageEditBuilder.MENTIONS))
         {
-            String[] array = new String[0];
             setAllowedMentions(data.getAllowedMentions());
-            mentionUsers(data.getMentionedUsers().toArray(array));
-            mentionRoles(data.getMentionedRoles().toArray(array));
+            mentionUsers(data.getMentionedUsers());
+            mentionRoles(data.getMentionedRoles());
             mentionRepliedUser(data.isMentionRepliedUser());
         }
 

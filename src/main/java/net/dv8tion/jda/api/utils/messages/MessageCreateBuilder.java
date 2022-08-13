@@ -111,7 +111,7 @@ public class MessageCreateBuilder extends AbstractMessageBuilder<MessageCreateDa
     /**
      * Factory method to start a builder from an existing instance of {@link Message}.
      * <br>Equivalent to {@code new MessageCreateBuilder().applyMessage(data)}.
-     * <br>The {@link net.dv8tion.jda.api.utils.MessageData} are not updated to reflect the provided message, and might mention users that the message did not.
+     * <br>The {@link MessageData} are not updated to reflect the provided message, and might mention users that the message did not.
      *
      * <p>This cannot copy the file attachments of the message, they must be manually downloaded and provided to {@link #setFiles(FileUpload...)}.
      *
@@ -186,7 +186,7 @@ public class MessageCreateBuilder extends AbstractMessageBuilder<MessageCreateDa
 
     @Nonnull
     @Override
-    public List<? extends FileUpload> getAttachments()
+    public List<FileUpload> getAttachments()
     {
         return Collections.unmodifiableList(files);
     }

@@ -115,13 +115,13 @@ class AllowedMentionsData implements SerializableData
     }
 
     @Nonnull
-    public Set<? extends String> getMentionedUsers()
+    public Set<String> getMentionedUsers()
     {
         return Collections.unmodifiableSet(new HashSet<>(mentionUsers));
     }
 
     @Nonnull
-    public Set<? extends String> getMentionedRoles()
+    public Set<String> getMentionedRoles()
     {
         return Collections.unmodifiableSet(new HashSet<>(mentionRoles));
     }

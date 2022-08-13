@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.utils;
+package net.dv8tion.jda.api.utils.messages;
 
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
-import net.dv8tion.jda.api.utils.messages.MessageRequest;
+import net.dv8tion.jda.api.utils.AttachedFile;
 
 import javax.annotation.Nonnull;
 import java.util.Collection;
@@ -54,7 +54,7 @@ public interface MessageData
      * @see    MessageRequest#setEmbeds(Collection)
      */
     @Nonnull
-    List<? extends MessageEmbed> getEmbeds();
+    List<MessageEmbed> getEmbeds();
 
     /**
      * The configured message components, this is the opposite of {@link MessageRequest#setComponents(Collection)} and only returns what was set using that setter.
@@ -66,7 +66,7 @@ public interface MessageData
      * @see    MessageRequest#setEmbeds(Collection)
      */
     @Nonnull
-    List<? extends LayoutComponent> getComponents();
+    List<LayoutComponent> getComponents();
 
     // Returns attachment interface for abstraction purposes, however you can only abstract the setter to allow FileUploads
 
@@ -95,7 +95,7 @@ public interface MessageData
      * @return The user IDs which are mention whitelisted
      */
     @Nonnull
-    Set<? extends String> getMentionedUsers();
+    Set<String> getMentionedUsers();
 
     /**
      * The IDs for roles which are allowed to be mentioned, or an empty list.
@@ -103,7 +103,7 @@ public interface MessageData
      * @return The role IDs which are mention whitelisted
      */
     @Nonnull
-    Set<? extends String> getMentionedRoles();
+    Set<String> getMentionedRoles();
 
     /**
      * The mention types which are whitelisted.

@@ -242,8 +242,7 @@ public class MessageEditBuilder extends AbstractMessageBuilder<MessageEditData, 
     {
         Checks.notNull(data, "Data");
         this.set |= data.getSet();
-        if ((this.set & ALL) == ALL)
-            this.replace = true;
+        this.replace |= data.isReplace();
 
         if (data.isSet(CONTENT))
             this.setContent(data.getContent());
@@ -254,15 +253,9 @@ public class MessageEditBuilder extends AbstractMessageBuilder<MessageEditData, 
         if (data.isSet(ATTACHMENTS))
             this.setAttachments(data.getAttachments());
         if (data.isSet(MENTIONS))
-        {
-            this.mentions = data.mentions;
-            this.set |= MENTIONS;
-        }
+            this.mentions = data.mentions.copy();
         if (data.isSet(FLAGS))
-        {
             this.flags = data.getFlags();
-            this.set |= FLAGS;
-        }
 
         return this;
     }
@@ -309,7 +302,7 @@ public class MessageEditBuilder extends AbstractMessageBuilder<MessageEditData, 
         if (isSet(COMPONENTS) && components.size() > Message.MAX_COMPONENT_COUNT)
             throw new IllegalStateException("Cannot build message with over " + Message.MAX_COMPONENT_COUNT + " component layouts, provided " + components.size());
 
-        return new MessageEditData(replace ? ALL : set, flags, content, embeds, attachments, components, mentions);
+        return new MessageEditData(set, flags, replace, content, embeds, attachments, components, mentions);
     }
 
     @Nonnull

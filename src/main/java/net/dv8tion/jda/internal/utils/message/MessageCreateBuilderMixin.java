@@ -80,7 +80,7 @@ public interface MessageCreateBuilderMixin<R extends MessageCreateRequest<R>> ex
 
     @Nonnull
     @Override
-    default List<? extends FileUpload> getAttachments()
+    default List<FileUpload> getAttachments()
     {
         return getBuilder().getAttachments();
     }

@@ -62,7 +62,7 @@ public interface AbstractMessageBuilderMixin<R extends MessageRequest<R>, B exte
 
     @Nonnull
     @Override
-    default List<? extends MessageEmbed> getEmbeds()
+    default List<MessageEmbed> getEmbeds()
     {
         return getBuilder().getEmbeds();
     }
@@ -77,7 +77,7 @@ public interface AbstractMessageBuilderMixin<R extends MessageRequest<R>, B exte
 
     @Nonnull
     @Override
-    default List<? extends LayoutComponent> getComponents()
+    default List<LayoutComponent> getComponents()
     {
         return getBuilder().getComponents();
     }
@@ -153,14 +153,14 @@ public interface AbstractMessageBuilderMixin<R extends MessageRequest<R>, B exte
 
     @Nonnull
     @Override
-    default Set<? extends String> getMentionedUsers()
+    default Set<String> getMentionedUsers()
     {
         return getBuilder().getMentionedUsers();
     }
 
     @Nonnull
     @Override
-    default Set<? extends String> getMentionedRoles()
+    default Set<String> getMentionedRoles()
     {
         return getBuilder().getMentionedRoles();
     }

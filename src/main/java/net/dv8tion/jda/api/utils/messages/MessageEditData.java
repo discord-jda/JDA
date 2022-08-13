@@ -21,7 +21,6 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.utils.AttachedFile;
 import net.dv8tion.jda.api.utils.FileUpload;
-import net.dv8tion.jda.api.utils.MessageData;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.SerializableData;
@@ -51,10 +50,11 @@ public class MessageEditData implements MessageData, AutoCloseable, Serializable
     private final List<LayoutComponent> components;
     private final int flags;
 
+    private final boolean isReplace;
     private final int set;
 
     protected MessageEditData(
-            int set, int flags, String content,
+            int set, int flags, boolean isReplace, String content,
             List<MessageEmbed> embeds, List<AttachedFile> files, List<LayoutComponent> components,
             AllowedMentionsData mentions)
     {
@@ -64,6 +64,7 @@ public class MessageEditData implements MessageData, AutoCloseable, Serializable
         this.components = Collections.unmodifiableList(components);
         this.mentions = mentions;
         this.flags = flags;
+        this.isReplace = isReplace;
         this.set = set;
     }
 
@@ -200,6 +201,11 @@ public class MessageEditData implements MessageData, AutoCloseable, Serializable
         return new MessageEditBuilder().applyCreateData(data).build();
     }
 
+    protected boolean isReplace()
+    {
+        return isReplace;
+    }
+
     protected int getSet()
     {
         return set;
@@ -266,7 +272,7 @@ public class MessageEditData implements MessageData, AutoCloseable, Serializable
      * @return The user IDs which are mention whitelisted
      */
     @Nonnull
-    public Set<? extends String> getMentionedUsers()
+    public Set<String> getMentionedUsers()
     {
         return mentions.getMentionedUsers();
     }
@@ -277,7 +283,7 @@ public class MessageEditData implements MessageData, AutoCloseable, Serializable
      * @return The role IDs which are mention whitelisted
      */
     @Nonnull
-    public Set<? extends String> getMentionedRoles()
+    public Set<String> getMentionedRoles()
     {
         return mentions.getMentionedRoles();
     }
@@ -353,6 +359,6 @@ public class MessageEditData implements MessageData, AutoCloseable, Serializable
 
     protected boolean isSet(int flag)
     {
-        return (set & flag) != 0;
+        return isReplace || (set & flag) != 0;
     }
 }

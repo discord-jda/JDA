@@ -117,14 +117,14 @@ public abstract class AbstractMessageBuilder<T, R extends AbstractMessageBuilder
 
     @Nonnull
     @Override
-    public Set<? extends String> getMentionedUsers()
+    public Set<String> getMentionedUsers()
     {
         return mentions.getMentionedUsers();
     }
 
     @Nonnull
     @Override
-    public Set<? extends String> getMentionedRoles()
+    public Set<String> getMentionedRoles()
     {
         return mentions.getMentionedRoles();
     }
@@ -155,7 +155,7 @@ public abstract class AbstractMessageBuilder<T, R extends AbstractMessageBuilder
 
     @Nonnull
     @Override
-    public List<? extends MessageEmbed> getEmbeds()
+    public List<MessageEmbed> getEmbeds()
     {
         return Collections.unmodifiableList(embeds);
     }
@@ -175,7 +175,7 @@ public abstract class AbstractMessageBuilder<T, R extends AbstractMessageBuilder
 
     @Nonnull
     @Override
-    public List<? extends LayoutComponent> getComponents()
+    public List<LayoutComponent> getComponents()
     {
         return Collections.unmodifiableList(components);
     }

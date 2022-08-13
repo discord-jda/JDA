@@ -178,10 +178,9 @@ public interface MessageEditRequest<R extends MessageEditRequest<R>> extends Mes
 
     /**
      * Applies the provided {@link MessageEditData} to this request.
-     * <br>If the data has all fields configured, it will also make this request a {@link #setReplace(boolean)} replace request.
      *
      * <p>Note that this method will only call the setters which were also configured when building the message edit data instance,
-     * unless it was set to {@link #setReplace(boolean)}.
+     * unless it was set to {@link #setReplace(boolean) replace}.
      *
      * @param  data
      *         The message edit data to apply

@@ -20,7 +20,6 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.utils.FileUpload;
-import net.dv8tion.jda.api.utils.MessageData;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.SerializableData;
@@ -260,7 +259,7 @@ public class MessageCreateData implements MessageData, AutoCloseable, Serializab
      */
     @Nonnull
     @Override
-    public Set<? extends String> getMentionedUsers()
+    public Set<String> getMentionedUsers()
     {
         return mentions.getMentionedUsers();
     }
@@ -272,7 +271,7 @@ public class MessageCreateData implements MessageData, AutoCloseable, Serializab
      */
     @Nonnull
     @Override
-    public Set<? extends String> getMentionedRoles()
+    public Set<String> getMentionedRoles()
     {
         return mentions.getMentionedRoles();
     }
