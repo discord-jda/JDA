@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.entities.IMentionable;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
+import net.dv8tion.jda.api.utils.AttachedFile;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
@@ -242,6 +243,9 @@ public abstract class AbstractMessageBuilder<T, R extends AbstractMessageBuilder
     /**
      * Clears this builder's state, resetting it to the initial state identical to creating a new instance.
      *
+     * <p><b>WARNING:</b> This will remove all the files added to the builder, but will not close them.
+     * You can use {@link #closeFiles()} <em>before</em> calling {@code clear()} to close the files explicitly.
+     *
      * @return The same builder instance for chaining
      */
     @Nonnull
@@ -256,6 +260,9 @@ public abstract class AbstractMessageBuilder<T, R extends AbstractMessageBuilder
 
     /**
      * Closes and removes all {@link net.dv8tion.jda.api.utils.FileUpload FileUploads} added to this builder.
+     *
+     * <p>This will keep any {@link net.dv8tion.jda.api.utils.AttachmentUpdate AttachmentUpdates} added to this builder, as those do not require closing.
+     * You can use {@link MessageEditRequest#setAttachments(AttachedFile...)} to remove them as well.
      *
      * @return The same builder instance for chaining
      */
