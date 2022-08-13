@@ -17,7 +17,6 @@
 package net.dv8tion.jda.api.utils;
 
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.requests.Requester;
 import okhttp3.MultipartBody;
@@ -319,12 +318,10 @@ public interface AttachedFile extends Closeable
     static MultipartBody.Builder createMultipartBody(@Nonnull List<? extends AttachedFile> files, @Nullable RequestBody payloadJson)
     {
         MultipartBody.Builder builder = new MultipartBody.Builder().setType(MultipartBody.FORM);
-        DataArray descriptors = DataArray.empty();
         for (int i = 0; i < files.size(); i++)
         {
             AttachedFile file = files.get(i);
             file.addPart(builder, i);
-            descriptors.add(file.toAttachmentData(i));
         }
 
         if (payloadJson != null)
