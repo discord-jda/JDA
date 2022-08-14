@@ -597,8 +597,8 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
     /**
      * Sets the voice region for the new AudioChannel
      *
-     * @param   region
-     *          The region for the new AudioChannel, or {@code null} to set to {@link Region#AUTOMATIC}
+     * @param  region
+     *         The region for the new AudioChannel, or {@code null} to set to {@link Region#AUTOMATIC}
      *
      * @throws UnsupportedOperationException
      *         If this ChannelAction is not for an AudioChannel
