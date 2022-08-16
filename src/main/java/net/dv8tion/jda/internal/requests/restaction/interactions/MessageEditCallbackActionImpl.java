@@ -16,34 +16,31 @@
 
 package net.dv8tion.jda.internal.requests.restaction.interactions;
 
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.requests.restaction.interactions.MessageEditCallbackAction;
-import net.dv8tion.jda.api.utils.AttachedFile;
-import net.dv8tion.jda.api.utils.AttachmentOption;
-import net.dv8tion.jda.api.utils.FileUpload;
-import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.api.utils.messages.MessageEditBuilder;
+import net.dv8tion.jda.api.utils.messages.MessageEditData;
 import net.dv8tion.jda.internal.interactions.InteractionHookImpl;
-import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.message.MessageEditBuilderMixin;
+import okhttp3.RequestBody;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.io.InputStream;
-import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 
-public class MessageEditCallbackActionImpl extends DeferrableCallbackActionImpl implements MessageEditCallbackAction
+public class MessageEditCallbackActionImpl extends DeferrableCallbackActionImpl implements MessageEditCallbackAction, MessageEditBuilderMixin<MessageEditCallbackAction>
 {
-    private List<MessageEmbed> embeds = null;
-    private List<ActionRow> components = null;
-    private String content = null;
+    private final MessageEditBuilder builder = new MessageEditBuilder();
 
     public MessageEditCallbackActionImpl(InteractionHookImpl hook)
     {
         super(hook);
+    }
+
+    @Override
+    public MessageEditBuilder getBuilder()
+    {
+        return builder;
     }
 
     @Nonnull
@@ -71,114 +68,26 @@ public class MessageEditCallbackActionImpl extends DeferrableCallbackActionImpl 
     @Override
     public MessageEditCallbackActionImpl closeResources()
     {
-        return (MessageEditCallbackActionImpl) super.closeResources();
+        builder.closeFiles();
+        return this;
     }
 
     private boolean isEmpty()
     {
-        return content == null && embeds == null && components == null && !isFileUpdate && files.isEmpty();
+        return builder.isEmpty();
     }
 
     @Override
-    protected DataObject toData()
+    protected RequestBody finalizeData()
     {
         DataObject json = DataObject.empty();
         if (isEmpty())
-            return json.put("type", ResponseType.DEFERRED_MESSAGE_UPDATE.getRaw());
+            return getRequestBody(json.put("type", ResponseType.DEFERRED_MESSAGE_UPDATE.getRaw()));
         json.put("type", ResponseType.MESSAGE_UPDATE.getRaw());
-        DataObject data = DataObject.empty();
-        if (content != null)
-            data.put("content", content);
-        if (embeds != null)
-            data.put("embeds", DataArray.fromCollection(embeds));
-        if (components != null)
-            data.put("components", DataArray.fromCollection(components));
-        json.put("data", data);
-        return json;
-    }
-
-    public MessageEditCallbackAction applyMessage(Message message)
-    {
-        this.content = message.getContentRaw();
-        this.embeds = new ArrayList<>(message.getEmbeds());
-        this.components = new ArrayList<>(message.getActionRows());
-        return this;
-    }
-
-    @Nonnull
-    @Override
-    public MessageEditCallbackAction setEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
-    {
-        Checks.noneNull(embeds, "MessageEmbed");
-        Checks.check(embeds.size() <= Message.MAX_EMBED_COUNT, "Cannot have more than %d embeds per message!", Message.MAX_EMBED_COUNT);
-        for (MessageEmbed embed : embeds)
+        try (MessageEditData data = builder.build())
         {
-            Checks.check(embed.isSendable(),
-                    "Provided Message contains an empty embed or an embed with a length greater than %d characters, which is the max for bot accounts!",
-                    MessageEmbed.EMBED_MAX_LENGTH_BOT);
+            json.put("data", data);
+            return getMultipartBody(data.getFiles(), json);
         }
-        if (this.embeds == null)
-            this.embeds = new ArrayList<>();
-        this.embeds.clear();
-        this.embeds.addAll(embeds);
-        return this;
-    }
-
-    @Nonnull
-    @Override
-    public MessageEditCallbackAction setActionRows(@Nonnull ActionRow... rows)
-    {
-        Checks.noneNull(rows, "ActionRows");
-
-        Checks.checkComponents("Some components are incompatible with Messages",
-            rows,
-            component -> component.getType().isMessageCompatible());
-
-        Checks.check(rows.length <= 5, "Can only have 5 action rows per message!");
-        Checks.checkDuplicateIds(Arrays.stream(rows));
-        this.components = new ArrayList<>();
-        Collections.addAll(components, rows);
-        return this;
-    }
-
-    @Nonnull
-    @Override
-    public MessageEditCallbackAction addFile(@Nonnull InputStream data, @Nonnull String name, @Nonnull AttachmentOption... options)
-    {
-        Checks.notNull(data, "Data");
-        Checks.notEmpty(name, "Name");
-        Checks.noneNull(options, "Options");
-        if (options.length > 0)
-            name = "SPOILER_" + name;
-
-        files.add(FileUpload.fromData(data, name));
-        isFileUpdate = true;
-        return this;
-    }
-
-    @Nonnull
-    @Override
-    public MessageEditCallbackAction retainFilesById(@Nonnull Collection<String> ids)
-    {
-        Checks.noneNull(ids, "IDs");
-        ids.forEach(Checks::isSnowflake);
-        // Keep uploads and remove all existing attachments
-        this.files.removeIf(file -> !(file instanceof FileUpload));
-        // Keep attachment for specified ids
-        ids.stream()
-           .map(AttachedFile::fromAttachment)
-           .forEach(this.files::add);
-        isFileUpdate = true;
-        return this;
-    }
-
-    @Nonnull
-    @Override
-    public MessageEditCallbackAction setContent(@Nullable String content)
-    {
-        if (content != null)
-            Checks.notLonger(content, Message.MAX_CONTENT_LENGTH, "Content");
-        this.content = content == null ? "" : content;
-        return this;
     }
 }

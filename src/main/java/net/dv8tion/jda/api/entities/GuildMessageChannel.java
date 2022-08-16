@@ -8,7 +8,7 @@ import net.dv8tion.jda.api.entities.sticker.StickerSnowflake;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.exceptions.MissingAccessException;
 import net.dv8tion.jda.api.requests.RestAction;
-import net.dv8tion.jda.api.requests.restaction.MessageAction;
+import net.dv8tion.jda.api.requests.restaction.MessageCreateAction;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.CheckReturnValue;
@@ -423,13 +423,13 @@ public interface GuildMessageChannel extends GuildChannel, MessageChannel
      *           <li>If null is provided</li>
      *         </ul>
      *
-     * @return {@link MessageAction}
+     * @return {@link MessageCreateAction}
      *
      * @see    Sticker#fromId(long)
      */
     @Nonnull
     @CheckReturnValue
-    MessageAction sendStickers(@Nonnull Collection<? extends StickerSnowflake> stickers);
+    MessageCreateAction sendStickers(@Nonnull Collection<? extends StickerSnowflake> stickers);
 
     /**
      * Send up to 3 stickers in this channel.
@@ -454,13 +454,13 @@ public interface GuildMessageChannel extends GuildChannel, MessageChannel
      *           <li>If null is provided</li>
      *         </ul>
      *
-     * @return {@link MessageAction}
+     * @return {@link MessageCreateAction}
      *
      * @see    Sticker#fromId(long)
      */
     @Nonnull
     @CheckReturnValue
-    default MessageAction sendStickers(@Nonnull StickerSnowflake... stickers)
+    default MessageCreateAction sendStickers(@Nonnull StickerSnowflake... stickers)
     {
         Checks.notEmpty(stickers, "Stickers");
         return sendStickers(Arrays.asList(stickers));

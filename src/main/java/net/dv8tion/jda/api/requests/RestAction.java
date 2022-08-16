@@ -530,7 +530,6 @@ public interface RestAction<T>
      *         If the requester has been shutdown by {@link JDA#shutdown()} or {@link JDA#shutdownNow()}
      *
      * @see net.dv8tion.jda.api.entities.MessageChannel#sendMessage(java.lang.CharSequence) MessageChannel.sendMessage(CharSequence)
-     * @see net.dv8tion.jda.api.requests.restaction.MessageAction MessageAction
      * @see #queue(java.util.function.Consumer) queue(Consumer)
      * @see #queue(java.util.function.Consumer, java.util.function.Consumer) queue(Consumer, Consumer)
      */

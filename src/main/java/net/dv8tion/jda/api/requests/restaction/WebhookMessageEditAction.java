@@ -14,20 +14,22 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.requests.restaction.interactions;
+package net.dv8tion.jda.api.requests.restaction;
 
-import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.requests.FluentRestAction;
+import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.messages.MessageEditRequest;
 
-import javax.annotation.Nonnull;
-
 /**
- * A {@link InteractionCallbackAction} which can be used to edit the message for an interaction.
+ * Specialized {@link RestAction} used to update an existing message sent by a {@link net.dv8tion.jda.api.entities.Webhook Webhook} or {@link net.dv8tion.jda.api.interactions.InteractionHook InteractionHook}.
+ *
+ * @param <T>
+ *        The type of message that will be returned
+ *
+ * @see   net.dv8tion.jda.api.interactions.InteractionHook#editOriginal(String)
+ * @see   net.dv8tion.jda.api.entities.WebhookClient#editMessageById(long, String)
  */
-public interface MessageEditCallbackAction extends InteractionCallbackAction<InteractionHook>, MessageEditRequest<MessageEditCallbackAction>, FluentRestAction<InteractionHook, MessageEditCallbackAction>
+// TODO: WebhookMessage type (no channel/guild attached)
+public interface WebhookMessageEditAction<T> extends MessageEditRequest<WebhookMessageEditAction<T>>, FluentRestAction<T, WebhookMessageEditAction<T>>
 {
-    @Nonnull
-    @Override
-    MessageEditCallbackAction closeResources();
 }

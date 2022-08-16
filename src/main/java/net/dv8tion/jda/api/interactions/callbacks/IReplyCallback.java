@@ -19,8 +19,10 @@ package net.dv8tion.jda.api.interactions.callbacks;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.interactions.InteractionHook;
+import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction;
-import net.dv8tion.jda.api.utils.AttachmentOption;
+import net.dv8tion.jda.api.utils.FileUpload;
+import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 import net.dv8tion.jda.internal.requests.restaction.interactions.ReplyCallbackActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
@@ -109,20 +111,22 @@ public interface IReplyCallback extends IDeferrableCallback
      * <p>If your handling can take longer than 3 seconds, due to various rate limits or other conditions, you should use {@link #deferReply()} instead.
      *
      * @param  message
-     *         The message to send
+     *         The {@link MessageCreateData} to send
      *
      * @throws IllegalArgumentException
      *         If null is provided
      *
      * @return {@link ReplyCallbackAction}
+     *
+     * @see    net.dv8tion.jda.api.utils.messages.MessageCreateBuilder MessageCreateBuilder
      */
     @Nonnull
     @CheckReturnValue
-    default ReplyCallbackAction reply(@Nonnull Message message)
+    default ReplyCallbackAction reply(@Nonnull MessageCreateData message)
     {
         Checks.notNull(message, "Message");
         ReplyCallbackActionImpl action = (ReplyCallbackActionImpl) deferReply();
-        return action.applyMessage(message);
+        return action.applyData(message);
     }
 
     /**
@@ -139,7 +143,7 @@ public interface IReplyCallback extends IDeferrableCallback
      *         The message content to send
      *
      * @throws IllegalArgumentException
-     *         If null is provided or the content is empty or longer than {@link Message#MAX_CONTENT_LENGTH}
+     *         If null is provided or the content is longer than {@link Message#MAX_CONTENT_LENGTH} characters
      *
      * @return {@link ReplyCallbackAction}
      */
@@ -281,7 +285,7 @@ public interface IReplyCallback extends IDeferrableCallback
      *         Format arguments for the content
      *
      * @throws IllegalArgumentException
-     *         If the format string is null or the resulting content is longer than {@link Message#MAX_CONTENT_LENGTH}
+     *         If the format string is null or the resulting content is longer than {@link Message#MAX_CONTENT_LENGTH} characters
      *
      * @return {@link ReplyCallbackAction}
      */
@@ -303,30 +307,27 @@ public interface IReplyCallback extends IDeferrableCallback
      * <br>When the acknowledgement is sent after the interaction expired, you will receive {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_INTERACTION ErrorResponse.UNKNOWN_INTERACTION}.
      * <p>If your handling can take longer than 3 seconds, due to various rate limits or other conditions, you should use {@link #deferReply()} instead.
      *
-     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#REQUEST_ENTITY_TOO_LARGE REQUEST_ENTITY_TOO_LARGE}
-     *     <br>The file exceeds the maximum upload size of {@link Message#MAX_FILE_SIZE}</li>
-     * </ul>
+     * <p><b>Resource Handling Note:</b> Once the request is handed off to the requester, for example when you call {@link RestAction#queue()},
+     * the requester will automatically clean up all opened files by itself. You are only responsible to close them yourself if it is never handed off properly.
+     * For instance, if an exception occurs after using {@link FileUpload#fromData(File)}, before calling {@link RestAction#queue()}.
+     * You can safely use a try-with-resources to handle this, since {@link FileUpload#close()} becomes ineffective once the request is handed off.
      *
-     * @param  data
-     *         The InputStream data to upload
-     * @param  name
-     *         The file name that should be sent to discord
-     *         <br>Refer to the documentation for {@link #replyFile(java.io.File, String, AttachmentOption...)} for information about this parameter.
-     * @param  options
-     *         Possible options to apply to this attachment, such as marking it as spoiler image
+     * @param  files
+     *         The {@link FileUpload FileUploads} to attach to the message
      *
-     * @throws java.lang.IllegalArgumentException
-     *         If the provided file or filename is {@code null} or {@code empty}.
+     * @throws IllegalArgumentException
+     *         If null is provided
      *
      * @return {@link ReplyCallbackAction}
+     *
+     * @see    FileUpload#fromData(InputStream, String)
      */
     @Nonnull
     @CheckReturnValue
-    default ReplyCallbackAction replyFile(@Nonnull InputStream data, @Nonnull String name, @Nonnull AttachmentOption... options)
+    default ReplyCallbackAction replyFiles(@Nonnull Collection<? extends FileUpload> files)
     {
-        return deferReply().addFile(data, name, options);
+        Checks.notEmpty(files, "File Collection");
+        return deferReply().setFiles(files);
     }
 
     /**
@@ -339,112 +340,27 @@ public interface IReplyCallback extends IDeferrableCallback
      * <br>When the acknowledgement is sent after the interaction expired, you will receive {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_INTERACTION ErrorResponse.UNKNOWN_INTERACTION}.
      * <p>If your handling can take longer than 3 seconds, due to various rate limits or other conditions, you should use {@link #deferReply()} instead.
      *
-     * <p>This is a shortcut to {@link #replyFile(java.io.File, String, AttachmentOption...)} by way of using {@link java.io.File#getName()}.
-     * <pre>sendFile(file, file.getName())</pre>
+     * <p><b>Resource Handling Note:</b> Once the request is handed off to the requester, for example when you call {@link RestAction#queue()},
+     * the requester will automatically clean up all opened files by itself. You are only responsible to close them yourself if it is never handed off properly.
+     * For instance, if an exception occurs after using {@link FileUpload#fromData(File)}, before calling {@link RestAction#queue()}.
+     * You can safely use a try-with-resources to handle this, since {@link FileUpload#close()} becomes ineffective once the request is handed off.
      *
-     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#REQUEST_ENTITY_TOO_LARGE REQUEST_ENTITY_TOO_LARGE}
-     *     <br>The file exceeds the maximum upload size of {@link Message#MAX_FILE_SIZE}</li>
-     * </ul>
+     * @param  files
+     *         The {@link FileUpload FileUploads} to attach to the message
      *
-     * @param  file
-     *         The {@link File} data to upload
-     * @param  options
-     *         Possible options to apply to this attachment, such as marking it as spoiler image
-     *
-     * @throws java.lang.IllegalArgumentException
-     *         If the provided file is {@code null}.
+     * @throws IllegalArgumentException
+     *         If null is provided
      *
      * @return {@link ReplyCallbackAction}
+     *
+     * @see    FileUpload#fromData(InputStream, String)
      */
     @Nonnull
     @CheckReturnValue
-    default ReplyCallbackAction replyFile(@Nonnull File file, @Nonnull AttachmentOption... options)
+    default ReplyCallbackAction replyFiles(@Nonnull FileUpload... files)
     {
-        return deferReply().addFile(file, options);
-    }
-
-    /**
-     * Reply to this interaction and acknowledge it.
-     * <br>This will send a reply message for this interaction.
-     * You can use {@link ReplyCallbackAction#setEphemeral(boolean) setEphemeral(true)} to only let the target user see the message.
-     * Replies are non-ephemeral by default.
-     *
-     * <p><b>You only have 3 seconds to acknowledge an interaction!</b>
-     * <br>When the acknowledgement is sent after the interaction expired, you will receive {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_INTERACTION ErrorResponse.UNKNOWN_INTERACTION}.
-     * <p>If your handling can take longer than 3 seconds, due to various rate limits or other conditions, you should use {@link #deferReply()} instead.
-     *
-     * <p>The {@code name} parameter is used to inform Discord about what the file should be called. This is 2 fold:
-     * <ol>
-     *     <li>The file name provided is the name that is found in {@link net.dv8tion.jda.api.entities.Message.Attachment#getFileName()}
-     *          after upload and it is the name that will show up in the client when the upload is displayed.
-     *     <br>Note: The fileName does not show up on the Desktop client for images. It does on mobile however.</li>
-     *     <li>The extension of the provided fileName also determines how Discord will treat the file. Discord currently only
-     *         has special handling for image file types, but the fileName's extension must indicate that it is an image file.
-     *         This means it has to end in something like .png, .jpg, .jpeg, .gif, etc. As a note, you can also not provide
-     *         a full name for the file and instead ONLY provide the extension like "png" or "gif" and Discord will generate
-     *         a name for the upload and append the fileName as the extension.</li>
-     * </ol>
-     *
-     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#REQUEST_ENTITY_TOO_LARGE REQUEST_ENTITY_TOO_LARGE}
-     *     <br>The file exceeds the maximum upload size of {@link Message#MAX_FILE_SIZE}</li>
-     * </ul>
-     *
-     * @param  file
-     *         The {@link File} data to upload
-     * @param  name
-     *         The file name that should be sent to discord
-     * @param  options
-     *         Possible options to apply to this attachment, such as marking it as spoiler image
-     *
-     * @throws java.lang.IllegalArgumentException
-     *         If the provided file or filename is {@code null} or {@code empty}.
-     *
-     * @return {@link ReplyCallbackAction}
-     */
-    @Nonnull
-    @CheckReturnValue
-    default ReplyCallbackAction replyFile(@Nonnull File file, @Nonnull String name, @Nonnull AttachmentOption... options)
-    {
-        return deferReply().addFile(file, name, options);
-    }
-
-    /**
-     * Reply to this interaction and acknowledge it.
-     * <br>This will send a reply message for this interaction.
-     * You can use {@link ReplyCallbackAction#setEphemeral(boolean) setEphemeral(true)} to only let the target user see the message.
-     * Replies are non-ephemeral by default.
-     *
-     * <p><b>You only have 3 seconds to acknowledge an interaction!</b>
-     * <br>When the acknowledgement is sent after the interaction expired, you will receive {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_INTERACTION ErrorResponse.UNKNOWN_INTERACTION}.
-     * <p>If your handling can take longer than 3 seconds, due to various rate limits or other conditions, you should use {@link #deferReply()} instead.
-     *
-     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#REQUEST_ENTITY_TOO_LARGE REQUEST_ENTITY_TOO_LARGE}
-     *     <br>The file exceeds the maximum upload size of {@link Message#MAX_FILE_SIZE}</li>
-     * </ul>
-     *
-     * @param  data
-     *         The {@code byte[]} data to upload
-     * @param  name
-     *         The file name that should be sent to discord
-     *         <br>Refer to the documentation for {@link #replyFile(java.io.File, String, AttachmentOption...)} for information about this parameter.
-     * @param  options
-     *         Possible options to apply to this attachment, such as marking it as spoiler image
-     *
-     * @throws java.lang.IllegalArgumentException
-     *         If the provided file or filename is {@code null} or {@code empty}.
-     *
-     * @return {@link ReplyCallbackAction}
-     */
-    @Nonnull
-    @CheckReturnValue
-    default ReplyCallbackAction replyFile(@Nonnull byte[] data, @Nonnull String name, @Nonnull AttachmentOption... options)
-    {
-        return deferReply().addFile(data, name, options);
+        Checks.notEmpty(files, "File Collection");
+        Checks.noneNull(files, "FileUpload");
+        return deferReply().setFiles(files);
     }
 }

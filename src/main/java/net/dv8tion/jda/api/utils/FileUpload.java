@@ -26,6 +26,7 @@ import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.OpenOption;
@@ -41,8 +42,9 @@ import java.nio.file.Path;
 public class FileUpload implements Closeable, AttachedFile
 {
     private final InputStream resource;
-    private final String name;
+    private String name;
     private BufferedRequestBody body;
+    private String description;
 
     protected FileUpload(InputStream resource, String name)
     {
@@ -235,6 +237,59 @@ public class FileUpload implements Closeable, AttachedFile
     }
 
     /**
+     * Changes the name of this file, to be prefixed as {@code SPOILER_}.
+     * <br>This will cause the file to be rendered as a spoiler attachment in the client.
+     *
+     * @return The updated FileUpload instance
+     */
+    @Nonnull
+    public FileUpload asSpoiler()
+    {
+        if (name.startsWith("SPOILER_"))
+            return this;
+        return setName("SPOILER_" + name);
+    }
+
+    /**
+     * Changes the name of this file.
+     *
+     * @param  name
+     *         The new filename
+     *
+     * @throws IllegalArgumentException
+     *         If the name is null, blank, or empty
+     *
+     * @return The updated FileUpload instance
+     */
+    @Nonnull
+    public FileUpload setName(@Nonnull String name)
+    {
+        Checks.notBlank(name, "Name");
+        this.name = name;
+        return this;
+    }
+
+    /**
+     * Set the file description used as ALT text for screenreaders.
+     *
+     * @param  description
+     *         The alt text describing this file attachment (up to {@value MAX_DESCRIPTION_LENGTH} characters)
+     *
+     * @throws IllegalArgumentException
+     *         If the description is longer than {@value MAX_DESCRIPTION_LENGTH} characters
+     *
+     * @return The same FileUpload instance with the new description
+     */
+    @Nonnull
+    public FileUpload setDescription(@Nullable String description)
+    {
+        if (description != null)
+            Checks.notLonger(description = description.trim(), MAX_DESCRIPTION_LENGTH, "Description");
+        this.description = description;
+        return this;
+    }
+
+    /**
      * The filename for the file.
      *
      * @return The filename
@@ -292,11 +347,19 @@ public class FileUpload implements Closeable, AttachedFile
     {
         return DataObject.empty()
                 .put("id", index)
+                .put("description", description == null ? "" : description)
                 .put("filename", name);
     }
 
     @Override
-    public void close() throws IOException
+    public synchronized void close() throws IOException
+    {
+        if (body == null)
+            forceClose();
+    }
+
+    @Override
+    public void forceClose() throws IOException
     {
         if (resource != null)
             resource.close();

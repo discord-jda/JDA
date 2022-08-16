@@ -14,16 +14,18 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.requests.restaction.interactions;
+package net.dv8tion.jda.api.requests.restaction;
 
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.requests.FluentRestAction;
+import net.dv8tion.jda.api.utils.messages.MessageEditData;
+import net.dv8tion.jda.api.utils.messages.MessageEditRequest;
 
 /**
- * An {@link InteractionCallbackAction} that can be used to send Modals.
+ * Specialized {@link net.dv8tion.jda.api.requests.RestAction RestAction} used for editing existing messages in {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannels}.
  *
- * @see    net.dv8tion.jda.api.interactions.callbacks.IModalCallback
- * @see    net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
+ * @see net.dv8tion.jda.api.entities.MessageChannel#editMessageById(long, MessageEditData) MessageChannel.editMessageById(...)
  */
-public interface ModalCallbackAction extends InteractionCallbackAction<Void>, FluentRestAction<Void, ModalCallbackAction>
+public interface MessageEditAction extends MessageEditRequest<MessageEditAction>, FluentRestAction<Message, MessageEditAction>
 {
 }

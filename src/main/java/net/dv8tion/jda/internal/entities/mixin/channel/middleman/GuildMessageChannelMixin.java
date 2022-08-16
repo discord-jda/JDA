@@ -23,12 +23,12 @@ import net.dv8tion.jda.api.entities.channel.unions.GuildMessageChannelUnion;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.entities.sticker.StickerSnowflake;
 import net.dv8tion.jda.api.requests.RestAction;
-import net.dv8tion.jda.api.requests.restaction.MessageAction;
+import net.dv8tion.jda.api.requests.restaction.MessageCreateAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.TimeUtil;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
-import net.dv8tion.jda.internal.requests.restaction.MessageActionImpl;
+import net.dv8tion.jda.internal.requests.restaction.MessageCreateActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.EncodingUtil;
 
@@ -110,11 +110,13 @@ public interface GuildMessageChannelMixin<T extends GuildMessageChannelMixin<T>>
 
     @Nonnull
     @Override
-    default MessageAction sendStickers(@Nonnull Collection<? extends StickerSnowflake> stickers)
+    default MessageCreateAction sendStickers(@Nonnull Collection<? extends StickerSnowflake> stickers)
     {
         checkCanAccessChannel();
         checkCanSendMessage();
-        return new MessageActionImpl(getJDA(), null, this).setStickers(stickers);
+        Checks.notEmpty(stickers, "Stickers");
+        Checks.noneNull(stickers, "Stickers");
+        return new MessageCreateActionImpl(this).setStickers(stickers);
     }
 
     // ---- Default implementation of parent mixins hooks ----
