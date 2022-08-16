@@ -54,12 +54,10 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer
     // - rate_limit_per_user
     // - last_pin_timestamp (do we even use this for Text/News channels?)
 
-    int NAME_MAX_LENGTH = 100; // TODO: Remove this in favor of Channel.MAX_NAME_LENGTH
-
     /**
      * Whether this thread is public or not.
      *
-     * Public threads can be read and joined by anyone with read access to its {@link IThreadContainer parent channel}.
+     * <p>Public threads can be read and joined by anyone with read access to its {@link IThreadContainer parent channel}.
      *
      * @return true if this thread is public, false otherwise.
      */

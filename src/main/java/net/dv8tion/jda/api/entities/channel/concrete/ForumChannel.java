@@ -28,6 +28,16 @@ import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+/**
+ * A Forum Channel which contains {@link #createForumPost(String, MessageCreateData) Forum Posts}.
+ * <br>Forum posts are simply {@link ThreadChannel ThreadChannels} of type {@link ChannelType#GUILD_PUBLIC_THREAD}.
+ *
+ * <p>The {@code CREATE POSTS} permission that is shown in the official Discord Client, is an alias for {@link net.dv8tion.jda.api.Permission#MESSAGE_SEND Permission.MESSAGE_SEND}.
+ * {@link net.dv8tion.jda.api.Permission#CREATE_PUBLIC_THREADS Permission.CREATE_PUBLIC_THREADS} is ignored for creating forum posts.
+ *
+ * @see Guild#createForumChannel(String, Category)
+ * @see #createForumPost(String, MessageCreateData)
+ */
 public interface ForumChannel extends StandardGuildChannel, IThreadContainer, IAgeRestrictedChannel
 {
     @Nonnull

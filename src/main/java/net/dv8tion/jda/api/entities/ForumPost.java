@@ -16,8 +16,18 @@
 
 package net.dv8tion.jda.api.entities;
 
+import net.dv8tion.jda.api.entities.channel.concrete.ForumChannel;
+import net.dv8tion.jda.api.utils.messages.MessageCreateData;
+
 import javax.annotation.Nonnull;
 
+/**
+ * Result of creating a post in a {@link ForumChannel}.
+ *
+ * @see ForumChannel#createForumPost(String, MessageCreateData)
+ * @see #getThreadChannel()
+ * @see #getMessage()
+ */
 public class ForumPost
 {
     private final Message message;
@@ -29,14 +39,26 @@ public class ForumPost
         this.thread = thread;
     }
 
+    /**
+     * The starter message of the post.
+     * <br>This is created from the {@link MessageCreateData} passed to {@link ForumChannel#createForumPost(String, MessageCreateData)}.
+     *
+     * @return {@link Message}
+     */
     @Nonnull
     public Message getMessage()
     {
         return message;
     }
 
+    /**
+     * The {@link ThreadChannel} of the post.
+     * <br>This will use the name provided to {@link ForumChannel#createForumPost(String, MessageCreateData)}.
+     *
+     * @return The forum post thread channel
+     */
     @Nonnull
-    public ThreadChannel getThread()
+    public ThreadChannel getThreadChannel()
     {
         return thread;
     }

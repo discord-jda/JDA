@@ -55,7 +55,7 @@ public enum ChannelField
     /**
      * The {@link Category parent} of the channel.
      *
-     * Limited to {@link ICategorizableChannel Categorizable Channels} (and implementations).
+     * <p>Limited to {@link ICategorizableChannel Categorizable Channels} (and implementations).
      *
      * @see ICategorizableChannel#getParentCategory()
      */
@@ -76,7 +76,7 @@ public enum ChannelField
     /**
      * The topic of the channel.
      *
-     * Limited to {@link NewsChannel NewsChannels} and {@link TextChannel TextChannels}.
+     * <p>Limited to {@link NewsChannel NewsChannels} and {@link TextChannel TextChannels}.
      *
      * @see StandardGuildMessageChannel#getTopic()
      */
@@ -85,7 +85,7 @@ public enum ChannelField
     /**
      * The NSFW state of the channel.
      *
-     * Limited to {@link StandardGuildMessageChannel StandardGuildMessageChannels} (and implementations).
+     * <p>Limited to {@link StandardGuildMessageChannel StandardGuildMessageChannels} (and implementations).
      *
      * @see StandardGuildMessageChannel#isNSFW()
      */
@@ -94,7 +94,7 @@ public enum ChannelField
     /**
      * The state of slow mode in the channel.  This defines the minimum time between message sends.
      *
-     * Limited to {@link TextChannel Text Channels}.
+     * <p>Limited to {@link TextChannel Text Channels}.
      *
      * @see TextChannel#getSlowmode()
      */
@@ -106,13 +106,13 @@ public enum ChannelField
     /**
      * The bitrate (in bits per second) of the audio in this channel.
      *
-     * For standard channels this is between 8000 and 96000.
+     * <p>For standard channels this is between 8000 and 96000.
      *
-     * VIP servers extend this limit to 128000.
+     * <p>VIP servers extend this limit to 128000.
      * <br>
      * The bitrates of boost tiers may be found in {@link Guild.BoostTier the boost tiers}.
      *
-     * Limited to {@link AudioChannel Audio Channels}.
+     * <p>Limited to {@link AudioChannel Audio Channels}.
      *
      * @see AudioChannel#getBitrate()
      */
@@ -121,7 +121,7 @@ public enum ChannelField
     /**
      * The region of the channel.
      *
-     * Limited to {@link AudioChannel Audio Channels}.
+     * <p>Limited to {@link AudioChannel Audio Channels}.
      *
      * @see AudioChannel#getRegion()
      * @see net.dv8tion.jda.api.Region
@@ -131,7 +131,7 @@ public enum ChannelField
     /**
      * The maximum user count of this channel.
      *
-     * Limited to {@link VoiceChannel Voice Channels}.
+     * <p>Limited to {@link VoiceChannel Voice Channels}.
      *
      * @see VoiceChannel#getUserLimit()
      */
@@ -143,9 +143,9 @@ public enum ChannelField
     /**
      * The auto archive duration of this channel.
      *
-     * If the thread is inactive for this long, it becomes auto-archived.
+     * <p>If the thread is inactive for this long, it becomes auto-archived.
      *
-     * Limited to {@link ThreadChannel Thread Channels}.
+     * <p>Limited to {@link ThreadChannel Thread Channels}.
      *
      * @see ThreadChannel#getAutoArchiveDuration()
      * @see net.dv8tion.jda.api.entities.ThreadChannel.AutoArchiveDuration
@@ -155,9 +155,9 @@ public enum ChannelField
     /**
      * The archive state of this channel.
      *
-     * If the channel is archived, this is true.
+     * <p>If the channel is archived, this is true.
      *
-     * Limited to {@link ThreadChannel Thread Channels}.
+     * <p>Limited to {@link ThreadChannel Thread Channels}.
      *
      * @see ThreadChannel#isArchived()
      */
@@ -166,7 +166,7 @@ public enum ChannelField
     /**
      * The time this channel's archival information was last updated.
      *
-     * This timestamp will be updated when any of the following happen:
+     * <p>This timestamp will be updated when any of the following happen:
      * <ul>
      *     <li>The channel is archived</li>
      *     <li>The channel is unarchived</li>
@@ -175,7 +175,6 @@ public enum ChannelField
      *
      * Limited to {@link ThreadChannel Thread Channels}.
      *
-     *
      * @see ThreadChannel#getTimeArchiveInfoLastModified()
      */
     ARCHIVED_TIMESTAMP("archiveTimestamp", null),
@@ -183,9 +182,9 @@ public enum ChannelField
     /**
      * The locked state of this channel.
      *
-     * If the channel is locked, this is true.
+     * <p>If the channel is locked, this is true.
      *
-     * Limited to {@link ThreadChannel Thread Channels}.
+     * <p>Limited to {@link ThreadChannel Thread Channels}.
      *
      * @see ThreadChannel#isLocked()
      */
@@ -194,9 +193,9 @@ public enum ChannelField
     /**
      * The invite state of this channel.
      *
-     * If the channel is invitable, this is true.
+     * <p>If the channel is invitable, this is true.
      *
-     * Limited to {@link ThreadChannel Thread Channels}.
+     * <p>Limited to {@link ThreadChannel Thread Channels}.
      *
      * @see ThreadChannel#isInvitable()
      */
@@ -224,6 +223,8 @@ public enum ChannelField
         return auditLogKey;
     }
 
+    @Nonnull
+    @Override
     public String toString()
     {
         return "ChannelField." + name() + '(' + fieldName + ')';
