@@ -16,152 +16,75 @@
 
 package net.dv8tion.jda.internal.requests.restaction.interactions;
 
-import net.dv8tion.jda.api.entities.IMentionable;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction;
-import net.dv8tion.jda.api.utils.AttachmentOption;
-import net.dv8tion.jda.api.utils.FileUpload;
-import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
+import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 import net.dv8tion.jda.internal.interactions.InteractionHookImpl;
-import net.dv8tion.jda.internal.utils.AllowedMentionsImpl;
-import net.dv8tion.jda.internal.utils.Checks;
-import net.dv8tion.jda.internal.utils.Helpers;
+import net.dv8tion.jda.internal.utils.message.MessageCreateBuilderMixin;
+import okhttp3.RequestBody;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.io.InputStream;
-import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
-import java.util.stream.Stream;
 
-public class ReplyCallbackActionImpl extends DeferrableCallbackActionImpl implements ReplyCallbackAction
+import static net.dv8tion.jda.api.entities.Message.MessageFlag.EPHEMERAL;
+
+public class ReplyCallbackActionImpl extends DeferrableCallbackActionImpl implements ReplyCallbackAction, MessageCreateBuilderMixin<ReplyCallbackAction>
 {
-    private final List<MessageEmbed> embeds = new ArrayList<>();
-    private final AllowedMentionsImpl allowedMentions = new AllowedMentionsImpl();
-    private final List<ActionRow> components = new ArrayList<>();
-    private String content = "";
-
+    private final MessageCreateBuilder builder = new MessageCreateBuilder();
     private int flags;
-    private boolean tts;
 
     public ReplyCallbackActionImpl(InteractionHookImpl hook)
     {
         super(hook);
     }
 
+    @Override
+    public MessageCreateBuilder getBuilder()
+    {
+        return builder;
+    }
+
     @Nonnull
     @Override
     public ReplyCallbackActionImpl closeResources()
     {
-        return (ReplyCallbackActionImpl) super.closeResources();
-    }
-
-    public ReplyCallbackActionImpl applyMessage(Message message)
-    {
-        this.content = message.getContentRaw();
-        this.tts = message.isTTS();
-        this.embeds.addAll(message.getEmbeds());
-        this.components.addAll(message.getActionRows());
-        this.allowedMentions.applyMessage(message);
+        builder.closeFiles();
         return this;
     }
 
-    protected DataObject toData()
+    @Nonnull
+    protected RequestBody finalizeData()
     {
         DataObject json = DataObject.empty();
-        if (isEmpty())
+        if (builder.isEmpty())
         {
             json.put("type", ResponseType.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE.getRaw());
             if (flags != 0)
                 json.put("data", DataObject.empty().put("flags", flags));
+            return getRequestBody(json);
         }
-        else
+
+        json.put("type", ResponseType.CHANNEL_MESSAGE_WITH_SOURCE.getRaw());
+        try (MessageCreateData data = builder.build())
         {
-            DataObject payload = DataObject.empty();
-            payload.put("allowed_mentions", allowedMentions);
-            payload.put("content", content);
-            payload.put("tts", tts);
-            payload.put("flags", flags);
-            if (!embeds.isEmpty())
-                payload.put("embeds", DataArray.fromCollection(embeds));
-            if (!components.isEmpty())
-                payload.put("components", DataArray.fromCollection(components));
-            json.put("data", payload);
-
-            json.put("type", ResponseType.CHANNEL_MESSAGE_WITH_SOURCE.getRaw()); // This type seemingly makes no difference right now, idk why it exists
+            DataObject msg = data.toData();
+            msg.put("flags", msg.getInt("flags", 0) | flags);
+            json.put("data",msg);
+            return getMultipartBody(data.getFiles(), json);
         }
-        return json;
-    }
-
-    private boolean isEmpty()
-    {
-        //Intentionally does not check components.isEmpty() here
-        // You cannot send a message with only components at this time.
-        return Helpers.isEmpty(content) && embeds.isEmpty() && files.isEmpty();
     }
 
     @Nonnull
     @Override
     public ReplyCallbackActionImpl setEphemeral(boolean ephemeral)
     {
+        int flag = EPHEMERAL.getValue();
         if (ephemeral)
-            this.flags |= 64;
+            this.flags |= flag;
         else
-            this.flags &= ~64;
-        return this;
-    }
-
-    @Nonnull
-    @Override
-    public ReplyCallbackAction addFile(@Nonnull InputStream data, @Nonnull String name, @Nonnull AttachmentOption... options)
-    {
-        Checks.notNull(data, "Data");
-        Checks.notEmpty(name, "Name");
-        Checks.noneNull(options, "Options");
-        if (options.length > 0)
-            name = "SPOILER_" + name;
-
-        files.add(FileUpload.fromData(data, name));
-        isFileUpdate = true;
-        return this;
-    }
-
-    @Nonnull
-    @Override
-    public ReplyCallbackAction addEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
-    {
-        Checks.noneNull(embeds, "MessageEmbed");
-        for (MessageEmbed embed : embeds)
-        {
-            Checks.check(embed.isSendable(),
-                "Provided Message contains an empty embed or an embed with a length greater than %d characters, which is the max for bot accounts!",
-                MessageEmbed.EMBED_MAX_LENGTH_BOT);
-        }
-
-        if (embeds.size() + this.embeds.size() > Message.MAX_EMBED_COUNT)
-            throw new IllegalStateException(String.format("Cannot have more than %d embeds per message!", Message.MAX_EMBED_COUNT));
-        this.embeds.addAll(embeds);
-        return this;
-    }
-
-    @Nonnull
-    @Override
-    public ReplyCallbackAction addActionRows(@Nonnull ActionRow... rows)
-    {
-        Checks.noneNull(rows, "ActionRows");
-
-        Checks.checkComponents("Some components are incompatible with Messages",
-            rows,
-            component -> component.getType().isMessageCompatible());
-
-        Checks.check(components.size() + rows.length <= 5, "Can only have 5 action rows per message!");
-        Checks.checkDuplicateIds(Stream.concat(this.components.stream(), Arrays.stream(rows)));
-
-        Collections.addAll(components, rows);
+            this.flags &= ~flag;
         return this;
     }
 
@@ -184,68 +107,5 @@ public class ReplyCallbackActionImpl extends DeferrableCallbackActionImpl implem
     public ReplyCallbackAction deadline(long timestamp)
     {
         return (ReplyCallbackAction) super.deadline(timestamp);
-    }
-
-    @Nonnull
-    @Override
-    public ReplyCallbackActionImpl setTTS(boolean isTTS)
-    {
-        this.tts = isTTS;
-        return this;
-    }
-
-    @Nonnull
-    @Override
-    public ReplyCallbackActionImpl setContent(String content)
-    {
-        if (content != null)
-            Checks.notLonger(content, Message.MAX_CONTENT_LENGTH, "Content");
-        this.content = content == null ? "" : content;
-        return this;
-    }
-
-    @Nonnull
-    @Override
-    @SuppressWarnings("ResultOfMethodCallIgnored")
-    public ReplyCallbackAction mentionRepliedUser(boolean mention)
-    {
-        allowedMentions.mentionRepliedUser(mention);
-        return this;
-    }
-
-    @Nonnull
-    @Override
-    @SuppressWarnings("ResultOfMethodCallIgnored")
-    public ReplyCallbackAction allowedMentions(@Nullable Collection<Message.MentionType> allowedMentions)
-    {
-        this.allowedMentions.allowedMentions(allowedMentions);
-        return this;
-    }
-
-    @Nonnull
-    @Override
-    @SuppressWarnings("ResultOfMethodCallIgnored")
-    public ReplyCallbackAction mention(@Nonnull IMentionable... mentions)
-    {
-        allowedMentions.mention(mentions);
-        return this;
-    }
-
-    @Nonnull
-    @Override
-    @SuppressWarnings("ResultOfMethodCallIgnored")
-    public ReplyCallbackAction mentionUsers(@Nonnull String... userIds)
-    {
-        allowedMentions.mentionUsers(userIds);
-        return this;
-    }
-
-    @Nonnull
-    @Override
-    @SuppressWarnings("ResultOfMethodCallIgnored")
-    public ReplyCallbackAction mentionRoles(@Nonnull String... roleIds)
-    {
-        allowedMentions.mentionRoles(roleIds);
-        return this;
     }
 }

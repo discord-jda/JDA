@@ -25,15 +25,15 @@ import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.requests.RestAction;
-import net.dv8tion.jda.api.requests.restaction.WebhookMessageUpdateAction;
-import net.dv8tion.jda.api.utils.AttachmentOption;
+import net.dv8tion.jda.api.requests.restaction.WebhookMessageEditAction;
+import net.dv8tion.jda.api.utils.AttachedFile;
+import net.dv8tion.jda.api.utils.messages.MessageEditData;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
-import java.io.File;
-import java.io.InputStream;
 import java.time.temporal.ChronoUnit;
+import java.util.Arrays;
 import java.util.Collection;
 
 /**
@@ -157,11 +157,11 @@ public interface InteractionHook extends WebhookClient<Message>
      * @throws IllegalArgumentException
      *         If the provided content is null, empty, or longer than {@link Message#MAX_CONTENT_LENGTH}
      *
-     * @return {@link WebhookMessageUpdateAction}
+     * @return {@link WebhookMessageEditAction}
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageUpdateAction<Message> editOriginal(@Nonnull String content)
+    default WebhookMessageEditAction<Message> editOriginal(@Nonnull String content)
     {
         return editMessageById("@original", content);
     }
@@ -187,11 +187,11 @@ public interface InteractionHook extends WebhookClient<Message>
      * @throws IllegalArgumentException
      *         If the provided components are null, or more than 5 layouts are provided
      *
-     * @return {@link WebhookMessageUpdateAction}
+     * @return {@link WebhookMessageEditAction}
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageUpdateAction<Message> editOriginalComponents(@Nonnull Collection<? extends LayoutComponent> components)
+    default WebhookMessageEditAction<Message> editOriginalComponents(@Nonnull Collection<? extends LayoutComponent> components)
     {
         return editMessageComponentsById("@original", components);
     }
@@ -217,11 +217,11 @@ public interface InteractionHook extends WebhookClient<Message>
      * @throws IllegalArgumentException
      *         If the provided components are null, or more than 5 layouts are provided
      *
-     * @return {@link WebhookMessageUpdateAction}
+     * @return {@link WebhookMessageEditAction}
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageUpdateAction<Message> editOriginalComponents(@Nonnull LayoutComponent... components)
+    default WebhookMessageEditAction<Message> editOriginalComponents(@Nonnull LayoutComponent... components)
     {
         return editMessageComponentsById("@original", components);
     }
@@ -247,11 +247,11 @@ public interface InteractionHook extends WebhookClient<Message>
      * @throws IllegalArgumentException
      *         If the provided embeds are null, or more than {@value Message#MAX_EMBED_COUNT}
      *
-     * @return {@link WebhookMessageUpdateAction}
+     * @return {@link WebhookMessageEditAction}
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageUpdateAction<Message> editOriginalEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
+    default WebhookMessageEditAction<Message> editOriginalEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
     {
         return editMessageEmbedsById("@original", embeds);
     }
@@ -277,11 +277,11 @@ public interface InteractionHook extends WebhookClient<Message>
      * @throws IllegalArgumentException
      *         If the provided embeds are null, or more than 10
      *
-     * @return {@link WebhookMessageUpdateAction}
+     * @return {@link WebhookMessageEditAction}
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageUpdateAction<Message> editOriginalEmbeds(@Nonnull MessageEmbed... embeds)
+    default WebhookMessageEditAction<Message> editOriginalEmbeds(@Nonnull MessageEmbed... embeds)
     {
         return editMessageEmbedsById("@original", embeds);
     }
@@ -307,11 +307,11 @@ public interface InteractionHook extends WebhookClient<Message>
      * @throws IllegalArgumentException
      *         If the provided message is null
      *
-     * @return {@link WebhookMessageUpdateAction}
+     * @return {@link WebhookMessageEditAction}
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageUpdateAction<Message> editOriginal(@Nonnull Message message)
+    default WebhookMessageEditAction<Message> editOriginal(@Nonnull MessageEditData message)
     {
         return editMessageById("@original", message);
     }
@@ -339,212 +339,32 @@ public interface InteractionHook extends WebhookClient<Message>
      * @throws IllegalArgumentException
      *         If the formatted string is null, empty, or longer than {@link Message#MAX_CONTENT_LENGTH}
      *
-     * @return {@link WebhookMessageUpdateAction}
+     * @return {@link WebhookMessageEditAction}
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageUpdateAction<Message> editOriginalFormat(@Nonnull String format, @Nonnull Object... args)
+    default WebhookMessageEditAction<Message> editOriginalFormat(@Nonnull String format, @Nonnull Object... args)
     {
         Checks.notNull(format, "Format String");
         return editOriginal(String.format(format, args));
     }
 
 
-    /**
-     * Edit the source message sent by this interaction.
-     * <br>For {@link IMessageEditCallback#editComponents(Collection)} and {@link IMessageEditCallback#deferEdit()} this will be the message the components are attached to.
-     * For {@link IReplyCallback#deferReply()} and {@link IReplyCallback#reply(String)} this will be the reply message instead.
-     * <br>The provided file will be appended to the message. You cannot delete or edit existing files on a message.
-     *
-     * <p>This method will be delayed until the interaction is acknowledged.
-     *
-     * <p><b>Uploading images with Embeds</b>
-     * <br>When uploading an <u>image</u> you can reference said image using the specified filename as URI {@code attachment://filename.ext}.
-     *
-     * <p><u>Example</u>
-     * <pre><code>
-     * WebhookClient hook; // = reference of a WebhookClient such as interaction.getHook()
-     * EmbedBuilder embed = new EmbedBuilder();
-     * InputStream file = new FileInputStream("image.png"); // the name in your file system can be different from the name used in discord
-     * embed.setImage("attachment://cat.png") // we specify this in sendFile as "cat.png"
-     *      .setDescription("This is a cute cat :3");
-     * hook.editOriginal(file, "cat.png").setEmbeds(embed.build()).queue();
-     * </code></pre>
-     *
-     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_WEBHOOK UNKNOWN_WEBHOOK}
-     *     <br>The webhook is no longer available, either it was deleted or in case of interactions it expired.</li>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
-     *     <br>The message for that id does not exist</li>
-     * </ul>
-     *
-     * @param  data
-     *         The InputStream data to upload to the webhook.
-     * @param  name
-     *         The file name that should be sent to discord
-     *         <br>Refer to the documentation for {@link #sendFile(java.io.File, String, AttachmentOption...)} for information about this parameter.
-     * @param  options
-     *         Possible options to apply to this attachment, such as marking it as spoiler image
-     *
-     * @throws java.lang.IllegalArgumentException
-     *         If the provided data, or filename is {@code null}.
-     *
-     * @return {@link WebhookMessageUpdateAction}
-     */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageUpdateAction<Message> editOriginal(@Nonnull InputStream data, @Nonnull String name, @Nonnull AttachmentOption... options)
+    default WebhookMessageEditAction<Message> editOriginalAttachments(@Nonnull Collection<? extends AttachedFile> attachments)
     {
-        return editMessageById("@original", data, name, options);
+        return editMessageAttachmentsById("@original", attachments);
     }
 
-    /**
-     * Edit the source message sent by this interaction.
-     * <br>For {@link IMessageEditCallback#editComponents(Collection)} and {@link IMessageEditCallback#deferEdit()} this will be the message the components are attached to.
-     * For {@link IReplyCallback#deferReply()} and {@link IReplyCallback#reply(String)} this will be the reply message instead.
-     * <br>The provided file will be appended to the message. You cannot delete or edit existing files on a message.
-     *
-     * <p>This method will be delayed until the interaction is acknowledged.
-     *
-     * <p>This is a shortcut to {@link #editOriginal(java.io.File, String, AttachmentOption...)} by way of using {@link java.io.File#getName()}.
-     * <pre>editOriginal(file, file.getName())</pre>
-     *
-     * <p><b>Uploading images with Embeds</b>
-     * <br>When uploading an <u>image</u> you can reference said image using the specified filename as URI {@code attachment://filename.ext}.
-     *
-     * <p><u>Example</u>
-     * <pre><code>
-     * WebhookClient hook; // = reference of a WebhookClient such as interaction.getHook()
-     * EmbedBuilder embed = new EmbedBuilder();
-     * File file = new File("image.png"); // the name in your file system can be different from the name used in discord
-     * embed.setImage("attachment://cat.png") // we specify this in sendFile as "cat.png"
-     *      .setDescription("This is a cute cat :3");
-     * hook.editOriginal(file, "cat.png").setEmbeds(embed.build()).queue();
-     * </code></pre>
-     *
-     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_WEBHOOK UNKNOWN_WEBHOOK}
-     *     <br>The webhook is no longer available, either it was deleted or in case of interactions it expired.</li>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
-     *     <br>The message for that id does not exist</li>
-     * </ul>
-     *
-     * @param  file
-     *         The {@link File} data to upload to the webhook.
-     * @param  options
-     *         Possible options to apply to this attachment, such as marking it as spoiler image
-     *
-     * @throws java.lang.IllegalArgumentException
-     *         If the provided file is {@code null}.
-     *
-     * @return {@link WebhookMessageUpdateAction}
-     */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageUpdateAction<Message> editOriginal(@Nonnull File file, @Nonnull AttachmentOption... options)
+    default WebhookMessageEditAction<Message> editOriginalAttachments(@Nonnull AttachedFile... attachments)
     {
-        return editMessageById("@original", file, options);
+        Checks.noneNull(attachments, "Attachments");
+        return editOriginalAttachments(Arrays.asList(attachments));
     }
 
-    /**
-     * Edit the source message sent by this interaction.
-     * <br>For {@link IMessageEditCallback#editComponents(Collection)} and {@link IMessageEditCallback#deferEdit()} this will be the message the components are attached to.
-     * For {@link IReplyCallback#deferReply()} and {@link IReplyCallback#reply(String)} this will be the reply message instead.
-     * <br>The provided file will be appended to the message. You cannot delete or edit existing files on a message.
-     *
-     * <p>This method will be delayed until the interaction is acknowledged.
-     *
-     * <p><b>Uploading images with Embeds</b>
-     * <br>When uploading an <u>image</u> you can reference said image using the specified filename as URI {@code attachment://filename.ext}.
-     *
-     * <p><u>Example</u>
-     * <pre><code>
-     * WebhookClient hook; // = reference of a WebhookClient such as interaction.getHook()
-     * EmbedBuilder embed = new EmbedBuilder();
-     * File file = new File("image.png"); // the name in your file system can be different from the name used in discord
-     * embed.setImage("attachment://cat.png") // we specify this in sendFile as "cat.png"
-     *      .setDescription("This is a cute cat :3");
-     * hook.editOriginal(file, "cat.png").setEmbeds(embed.build()).queue();
-     * </code></pre>
-     *
-     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_WEBHOOK UNKNOWN_WEBHOOK}
-     *     <br>The webhook is no longer available, either it was deleted or in case of interactions it expired.</li>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
-     *     <br>The message for that id does not exist</li>
-     * </ul>
-     *
-     * @param  file
-     *         The {@link File} data to upload to the webhook.
-     * @param  name
-     *         The file name that should be sent to discord
-     *         <br>Refer to the documentation for {@link #sendFile(java.io.File, String, AttachmentOption...)} for information about this parameter.
-     * @param  options
-     *         Possible options to apply to this attachment, such as marking it as spoiler image
-     *
-     * @throws java.lang.IllegalArgumentException
-     *         If the provided file or filename is {@code null}.
-     *
-     * @return {@link WebhookMessageUpdateAction}
-     */
-    @Nonnull
-    @CheckReturnValue
-    default WebhookMessageUpdateAction<Message> editOriginal(@Nonnull File file, @Nonnull String name, @Nonnull AttachmentOption... options)
-    {
-        return editMessageById("@original", file, name, options);
-    }
-
-    /**
-     * Edit the source message sent by this interaction.
-     * <br>For {@link IMessageEditCallback#editComponents(Collection)} and {@link IMessageEditCallback#deferEdit()} this will be the message the components are attached to.
-     * For {@link IReplyCallback#deferReply()} and {@link IReplyCallback#reply(String)} this will be the reply message instead.
-     * <br>The provided file will be appended to the message. You cannot delete or edit existing files on a message.
-     *
-     * <p>This method will be delayed until the interaction is acknowledged.
-     *
-     * <p><b>Uploading images with Embeds</b>
-     * <br>When uploading an <u>image</u> you can reference said image using the specified filename as URI {@code attachment://filename.ext}.
-     *
-     * <p><u>Example</u>
-     * <pre><code>
-     * WebhookClient hook; // = reference of a WebhookClient such as interaction.getHook()
-     * EmbedBuilder embed = new EmbedBuilder();
-     * InputStream file = new FileInputStream("image.png"); // the name in your file system can be different from the name used in discord
-     * embed.setImage("attachment://cat.png") // we specify this in sendFile as "cat.png"
-     *      .setDescription("This is a cute cat :3");
-     * hook.editOriginal(file, "cat.png").setEmbeds(embed.build()).queue();
-     * </code></pre>
-     *
-     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_WEBHOOK UNKNOWN_WEBHOOK}
-     *     <br>The webhook is no longer available, either it was deleted or in case of interactions it expired.</li>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
-     *     <br>The message for that id does not exist</li>
-     * </ul>
-     *
-     * @param  data
-     *         The InputStream data to upload to the webhook.
-     * @param  name
-     *         The file name that should be sent to discord
-     *         <br>Refer to the documentation for {@link #sendFile(java.io.File, String, AttachmentOption...)} for information about this parameter.
-     * @param  options
-     *         Possible options to apply to this attachment, such as marking it as spoiler image
-     *
-     * @throws java.lang.IllegalArgumentException
-     *         If the provided data or filename is {@code null}.
-     *
-     * @return {@link WebhookMessageUpdateAction}
-     */
-    @Nonnull
-    @CheckReturnValue
-    default WebhookMessageUpdateAction<Message> editOriginal(@Nonnull byte[] data, @Nonnull String name, @Nonnull AttachmentOption... options)
-    {
-        return editMessageById("@original", data, name, options);
-    }
 
     /**
      * Delete the original reply.
