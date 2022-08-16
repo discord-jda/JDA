@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.IPermissionContainer;
 import net.dv8tion.jda.api.entities.PermissionOverride;
+import net.dv8tion.jda.api.entities.channel.unions.IPermissionContainerUnion;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.CheckReturnValue;
@@ -115,7 +116,7 @@ public interface PermOverrideManager extends Manager<PermOverrideManager>
      * @return The parent {@link GuildChannel GuildChannel}
      */
     @Nonnull
-    default IPermissionContainer getChannel()
+    default IPermissionContainerUnion getChannel()
     {
         return getPermissionOverride().getChannel();
     }

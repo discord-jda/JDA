@@ -28,6 +28,7 @@ public enum EmbedType
     VIDEO("video"),
     LINK("link"),
     RICH("rich"),
+    AUTO_MODERATION("auto_moderation_message"),
     UNKNOWN("");
 
     private final String key;

@@ -19,6 +19,7 @@ package net.dv8tion.jda.api.requests.restaction.pagination;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.IThreadContainer;
 import net.dv8tion.jda.api.entities.ThreadChannel;
+import net.dv8tion.jda.api.entities.channel.unions.IThreadContainerUnion;
 
 import javax.annotation.Nonnull;
 
@@ -30,11 +31,11 @@ import javax.annotation.Nonnull;
  * <p><b>Must provide not-null {@link IThreadContainer IThreadContainer} to compile a valid
  * pagination route.</b>
  *
- * <h2>Limits:</h2>
+ * <p><b>Limits:</b><br>
  * Minimum - 1
  * <br>Maximum - 100
  *
- * <h2>Example</h2>
+ * <p><b>Example</b><br>
  * <pre>{@code
  * // Clean up all private threads older than 2 weeks
  * public static void cleanupPrivateThreads(TextChannel channel) {
@@ -60,7 +61,7 @@ public interface ThreadChannelPaginationAction extends PaginationAction<ThreadCh
 {
     //TODO-v5: Docs
     @Nonnull
-    IThreadContainer getChannel();
+    IThreadContainerUnion getChannel();
 
     /**
      * The current target {@link net.dv8tion.jda.api.entities.Guild Guild} for this ThreadChannelPaginationAction.

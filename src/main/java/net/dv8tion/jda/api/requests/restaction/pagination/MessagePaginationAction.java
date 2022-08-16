@@ -19,6 +19,7 @@ package net.dv8tion.jda.api.requests.restaction.pagination;
 import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 
 import javax.annotation.Nonnull;
 
@@ -30,11 +31,11 @@ import javax.annotation.Nonnull;
  * <p><b>Must provide not-null {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel} to compile a valid
  * pagination route.</b>
  *
- * <h2>Limits:</h2>
+ * <p><b>Limits:</b><br>
  * Minimum - 1
  * <br>Maximum - 100
  *
- * <h2>Example</h2>
+ * <p><b>Example</b><br>
  * <pre><code>
  * /**
  *  * Iterates messages in an async stream and stops once the limit has been reached.
@@ -78,5 +79,5 @@ public interface MessagePaginationAction extends PaginationAction<Message, Messa
      * @return The MessageChannel instance
      */
     @Nonnull
-    MessageChannel getChannel();
+    MessageChannelUnion getChannel();
 }

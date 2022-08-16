@@ -22,12 +22,14 @@ import net.dv8tion.jda.api.entities.Guild.NotificationLevel;
 import net.dv8tion.jda.api.entities.Guild.Timeout;
 import net.dv8tion.jda.api.entities.Guild.VerificationLevel;
 import net.dv8tion.jda.api.entities.ISnowflake;
+import net.dv8tion.jda.api.interactions.DiscordLocale;
+import net.dv8tion.jda.api.utils.ImageProxy;
+
+import java.util.Collections;
+import java.util.List;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Collections;
-import java.util.List;
-import java.util.Locale;
 
 /**
  * POJO for the guild information provided by a template.
@@ -41,7 +43,7 @@ public class TemplateGuild implements ISnowflake
     private final VerificationLevel verificationLevel;
     private final NotificationLevel notificationLevel;
     private final ExplicitContentLevel explicitContentLevel;
-    private final Locale locale;
+    private final DiscordLocale locale;
     private final Timeout afkTimeout;
     private final TemplateChannel afkChannel;
     private final TemplateChannel systemChannel;
@@ -49,7 +51,7 @@ public class TemplateGuild implements ISnowflake
     private final List<TemplateChannel> channels;
 
     public TemplateGuild(final long id, final String name, final String description, final String iconId, final VerificationLevel verificationLevel,
-                         final NotificationLevel notificationLevel, final ExplicitContentLevel explicitContentLevel, final Locale locale, final Timeout afkTimeout,
+                         final NotificationLevel notificationLevel, final ExplicitContentLevel explicitContentLevel, final DiscordLocale locale, final Timeout afkTimeout,
                          final TemplateChannel afkChannel, final TemplateChannel systemChannel, final List<TemplateRole> roles, final List<TemplateChannel> channels)
     {
         this.id = id;
@@ -124,6 +126,20 @@ public class TemplateGuild implements ISnowflake
     }
 
     /**
+     * Returns an {@link ImageProxy} for this template guild's icon.
+     *
+     * @return Possibly-null {@link ImageProxy} of this template guild's icon
+     *
+     * @see    #getIconUrl()
+     */
+    @Nullable
+    public ImageProxy getIcon()
+    {
+        final String iconUrl = getIconUrl();
+        return iconUrl == null ? null : new ImageProxy(iconUrl);
+    }
+
+    /**
      * Returns the {@link net.dv8tion.jda.api.entities.Guild.VerificationLevel VerificationLevel} of this guild.
      *
      * @return the verification level of the guild
@@ -159,10 +175,10 @@ public class TemplateGuild implements ISnowflake
     /**
      * The preferred locale for this guild.
      *
-     * @return The preferred {@link Locale} for this guild
+     * @return The preferred {@link DiscordLocale} for this guild
      */
     @Nonnull
-    public Locale getLocale()
+    public DiscordLocale getLocale()
     {
         return this.locale;
     }

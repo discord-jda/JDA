@@ -19,11 +19,16 @@ package net.dv8tion.jda.internal.entities.mixin.channel.middleman;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.GuildMessageChannel;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.channel.unions.GuildMessageChannelUnion;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
+import net.dv8tion.jda.api.entities.sticker.StickerSnowflake;
 import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.TimeUtil;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
+import net.dv8tion.jda.internal.requests.restaction.MessageActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.EncodingUtil;
 
@@ -31,7 +36,11 @@ import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import java.util.Collection;
 
-public interface GuildMessageChannelMixin<T extends GuildMessageChannelMixin<T>> extends GuildMessageChannel, GuildChannelMixin<T>, MessageChannelMixin<T>
+public interface GuildMessageChannelMixin<T extends GuildMessageChannelMixin<T>> extends
+        GuildMessageChannel,
+        GuildMessageChannelUnion,
+        GuildChannelMixin<T>,
+        MessageChannelMixin<T>
 {
     // ---- Default implementations of interface ----
     @Nonnull
@@ -51,19 +60,17 @@ public interface GuildMessageChannelMixin<T extends GuildMessageChannelMixin<T>>
     }
 
     @Nonnull
-    @CheckReturnValue
-    default RestAction<Void> removeReactionById(@Nonnull String messageId, @Nonnull String unicode, @Nonnull User user)
+    @Override
+    default RestAction<Void> removeReactionById(@Nonnull String messageId, @Nonnull Emoji emoji, @Nonnull User user)
     {
         Checks.isSnowflake(messageId, "Message ID");
-        Checks.notNull(unicode, "Provided Unicode");
-        unicode = unicode.trim();
-        Checks.notEmpty(unicode, "Provided Unicode");
+        Checks.notNull(emoji, "Emoji");
         Checks.notNull(user, "User");
 
         if (!getJDA().getSelfUser().equals(user))
             checkPermission(Permission.MESSAGE_MANAGE);
 
-        final String encoded = EncodingUtil.encodeReaction(unicode);
+        final String encoded = EncodingUtil.encodeReaction(emoji.getAsReactionCode());
 
         String targetUser;
         if (user.equals(getJDA().getSelfUser()))
@@ -89,18 +96,27 @@ public interface GuildMessageChannelMixin<T extends GuildMessageChannelMixin<T>>
 
     @Nonnull
     @Override
-    default RestAction<Void> clearReactionsById(@Nonnull String messageId, @Nonnull String unicode)
+    default RestAction<Void> clearReactionsById(@Nonnull String messageId, @Nonnull Emoji emoji)
     {
         Checks.notNull(messageId, "Message ID");
-        Checks.notNull(unicode, "Emote Name");
+        Checks.notNull(emoji, "Emoji");
 
         checkPermission(Permission.MESSAGE_MANAGE);
 
-        String code = EncodingUtil.encodeReaction(unicode);
-        Route.CompiledRoute route = Route.Messages.CLEAR_EMOTE_REACTIONS.compile(getId(), messageId, code);
+        String code = EncodingUtil.encodeReaction(emoji.getAsReactionCode());
+        Route.CompiledRoute route = Route.Messages.CLEAR_EMOJI_REACTIONS.compile(getId(), messageId, code);
         return new RestActionImpl<>(getJDA(), route);
     }
-    
+
+    @Nonnull
+    @Override
+    default MessageAction sendStickers(@Nonnull Collection<? extends StickerSnowflake> stickers)
+    {
+        checkCanAccessChannel();
+        checkCanSendMessage();
+        return new MessageActionImpl(getJDA(), null, this).setStickers(stickers);
+    }
+
     // ---- Default implementation of parent mixins hooks ----
     default void checkCanAccessChannel()
     {

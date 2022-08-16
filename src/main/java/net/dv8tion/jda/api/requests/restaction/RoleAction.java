@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Icon;
 import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.emoji.UnicodeEmoji;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.CheckReturnValue;
@@ -218,7 +219,7 @@ public interface RoleAction extends AuditableRestAction<Role>
      *         The new icon for this {@link net.dv8tion.jda.api.entities.Role Role}
      *         or {@code null} to reset
      *
-     * @return RoleManager for chaining convenience
+     * @return The current RoleAction, for chaining convenience
      */
     @Nonnull
     @CheckReturnValue
@@ -232,9 +233,29 @@ public interface RoleAction extends AuditableRestAction<Role>
      *         The new Unicode emoji for this {@link net.dv8tion.jda.api.entities.Role Role}
      *         or {@code null} to reset
      *
-     * @return RoleManager for chaining convenience
+     * @return The current RoleAction, for chaining convenience
      */
     @Nonnull
     @CheckReturnValue
     RoleAction setIcon(@Nullable String emoji);
+
+    /**
+     * Sets the Unicode Emoji of this {@link net.dv8tion.jda.api.entities.Role Role} instead of a custom image.
+     * This emoji will be displayed next to the role's name in the members tab and in chat.
+     *
+     * @param  emoji
+     *         The new Unicode emoji for this {@link net.dv8tion.jda.api.entities.Role Role}
+     *         or {@code null} to reset
+     *
+     * @return The current RoleAction, for chaining convenience
+     *
+     * @see    net.dv8tion.jda.api.entities.emoji.Emoji#fromUnicode(String) Emoji.fromUnicode(String)
+     * @see    UnicodeEmoji
+     */
+    @Nonnull
+    @CheckReturnValue
+    default RoleAction setIcon(@Nullable UnicodeEmoji emoji)
+    {
+        return setIcon(emoji == null ? null : emoji.getFormatted());
+    }
 }

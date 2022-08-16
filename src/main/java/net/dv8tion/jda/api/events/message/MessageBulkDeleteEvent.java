@@ -18,6 +18,7 @@ package net.dv8tion.jda.api.events.message;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.GuildMessageChannel;
+import net.dv8tion.jda.api.entities.channel.unions.GuildMessageChannelUnion;
 import net.dv8tion.jda.api.events.Event;
 
 import javax.annotation.Nonnull;
@@ -30,7 +31,7 @@ import java.util.List;
  * 
  * <p>Can be used to detect that a large chunk of Messages is deleted in a GuildMessageChannel. Providing a list of Message IDs and the specific GuildMessageChannel.
  *
- * <h2>Requirements</h2>
+ * <p><b>Requirements</b><br>
  *
  * <p>This event requires at least one of the following intents (Will not fire at all if neither is enabled):
  * <ul>
@@ -56,9 +57,9 @@ public class MessageBulkDeleteEvent extends Event
      * @return The TextChannel
      */
     @Nonnull
-    public GuildMessageChannel getChannel()
+    public GuildMessageChannelUnion getChannel()
     {
-        return channel;
+        return (GuildMessageChannelUnion) channel;
     }
 
     /**

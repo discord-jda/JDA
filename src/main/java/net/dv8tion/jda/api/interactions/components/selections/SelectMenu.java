@@ -16,7 +16,7 @@
 
 package net.dv8tion.jda.api.interactions.components.selections;
 
-import net.dv8tion.jda.api.entities.Emoji;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.interactions.components.ActionComponent;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.interactions.component.SelectMenuImpl;
@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
  * <p>The selections a user makes are only visible within their current client session.
  * Other users cannot see the choices selected, and they will disappear when the client restarts or the message is reloaded.
  *
- * <h2>Examples</h2>
+ * <p><b>Examples</b><br>
  * <pre>{@code
  * public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {
  *   if (!event.getName().equals("class")) return;
@@ -289,7 +289,7 @@ public interface SelectMenu extends ActionComponent
         public Builder setMaxValues(int maxValues)
         {
             Checks.positive(maxValues, "Max Values");
-            Checks.check(maxValues <= OPTIONS_MAX_AMOUNT, "Min Values may not be greater than %d! Provided: %d", OPTIONS_MAX_AMOUNT, maxValues);
+            Checks.check(maxValues <= OPTIONS_MAX_AMOUNT, "Max Values may not be greater than %d! Provided: %d", OPTIONS_MAX_AMOUNT, maxValues);
             this.maxValues = maxValues;
             return this;
         }

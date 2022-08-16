@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild.VerificationLevel;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
+import net.dv8tion.jda.api.utils.ImageProxy;
 import net.dv8tion.jda.internal.entities.InviteImpl;
 
 import javax.annotation.CheckReturnValue;
@@ -375,6 +376,20 @@ public interface Invite
         String getIconUrl();
 
         /**
+         * Returns an {@link ImageProxy} for this guild's icon
+         *
+         * @return Possibly-null {@link ImageProxy} of this guild's icon
+         *
+         * @see    #getIconUrl()
+         */
+        @Nullable
+        default ImageProxy getIcon()
+        {
+            final String iconUrl = getIconUrl();
+            return iconUrl == null ? null : new ImageProxy(iconUrl);
+        }
+
+        /**
          * The name of this guild.
          *
          * @return The guild's name
@@ -401,6 +416,20 @@ public interface Invite
          */
         @Nullable
         String getSplashUrl();
+
+        /**
+         * Returns an {@link ImageProxy} for this invite guild's splash image.
+         *
+         * @return Possibly-null {@link ImageProxy} of this invite guild's splash image
+         *
+         * @see    #getSplashUrl()
+         */
+        @Nullable
+        default ImageProxy getSplash()
+        {
+            final String splashUrl = getSplashUrl();
+            return splashUrl == null ? null : new ImageProxy(splashUrl);
+        }
         
         /**
          * Returns the {@link net.dv8tion.jda.api.entities.Guild.VerificationLevel VerificationLevel} of this guild.
@@ -474,6 +503,20 @@ public interface Invite
          */
         @Nullable
         String getIconUrl();
+
+        /**
+         * Returns an {@link ImageProxy} for this group invite's icon.
+         *
+         * @return Possibly-null {@link ImageProxy} of this group invite's icon
+         *
+         * @see    #getIconUrl()
+         */
+        @Nullable
+        default ImageProxy getIcon()
+        {
+            final String iconUrl = getIconUrl();
+            return iconUrl == null ? null : new ImageProxy(iconUrl);
+        }
 
         /**
          * The name of this group or {@code null} if the group has no name.
@@ -603,6 +646,20 @@ public interface Invite
          */
         @Nullable
         String getIconUrl();
+
+        /**
+         * Returns an {@link ImageProxy} for this application invite's icon.
+         *
+         * @return Possibly-null {@link ImageProxy} of this application invite's icon
+         *
+         * @see    #getIconUrl()
+         */
+        @Nullable
+        default ImageProxy getIcon()
+        {
+            final String iconUrl = getIconUrl();
+            return iconUrl == null ? null : new ImageProxy(iconUrl);
+        }
 
         /**
          * The max participant count of this application or {@code -1} if no max participant count is set

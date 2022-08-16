@@ -37,7 +37,7 @@ import java.util.stream.Collectors;
  *
  * <p>Editing a message using these methods will automatically acknowledge the interaction.
  *
- * <h2>Deferred Edits</h2>
+ * <p><b>Deferred Edits</b><br>
  *
  * Similar to {@link IReplyCallback}, message edits can be deferred and performed later with {@link #deferEdit()}.
  * A deferred edit tells Discord, that you intend to edit the message this interaction was performed on, but will do so later.

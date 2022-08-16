@@ -186,7 +186,8 @@ public interface GuildVoiceState extends ISnowflake
     RestAction<Void> approveSpeaker();
 
     /**
-     * Reject this members {@link #getRequestToSpeakTimestamp() request to speak}.
+     * Reject this members {@link #getRequestToSpeakTimestamp() request to speak}
+     * or moves a {@link StageInstance#getSpeakers() speaker} back to the {@link StageInstance#getAudience() audience}.
      * <p>This requires a non-null {@link #getRequestToSpeakTimestamp()}.
      * The member will have to request to speak again.
      *

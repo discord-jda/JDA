@@ -118,10 +118,9 @@ public class InviteImpl implements Invite
 
         Route.CompiledRoute route;
 
-        //TODO-v5: There are more than Text and Voice channels now. Revisit this.
-        final IPermissionContainer channel = this.channel.getType() == ChannelType.TEXT
-                ? guild.getTextChannelById(this.channel.getIdLong())
-                : guild.getVoiceChannelById(this.channel.getIdLong());
+        final GuildChannel channel = guild.getChannelById(GuildChannel.class, this.channel.getIdLong());
+        if (channel == null)
+            throw new UnsupportedOperationException("Cannot expand invite without known channel. Channel ID: " + this.channel.getId());
 
         if (member.hasPermission(channel, Permission.MANAGE_CHANNEL))
         {
@@ -328,7 +327,7 @@ public class InviteImpl implements Invite
         private final VerificationLevel verificationLevel;
         private final Set<String> features;
 
-        public GuildImpl(final long id, final String iconId, final String name, final String splashId, 
+        public GuildImpl(final long id, final String iconId, final String name, final String splashId,
                          final VerificationLevel verificationLevel, final int presenceCount, final int memberCount, final Set<String> features)
         {
             this.id = id;

@@ -17,6 +17,7 @@ package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.channel.unions.IPermissionContainerUnion;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.PermissionOverrideAction;
 
@@ -30,8 +31,6 @@ import java.util.EnumSet;
  * permission overrides that can be set for channels.
  *
  * @see IPermissionContainer#upsertPermissionOverride(IPermissionHolder)
- * @see IPermissionContainer#createPermissionOverride(IPermissionHolder)
- * @see IPermissionContainer#putPermissionOverride(IPermissionHolder)
  *
  * @see IPermissionContainer#getPermissionOverrides()
  * @see IPermissionContainer#getPermissionOverride(IPermissionHolder)
@@ -143,7 +142,7 @@ public interface PermissionOverride extends ISnowflake
      * @return Never-null related {@link IPermissionContainer GuildChannel} that this override is part of.
      */
     @Nonnull
-    IPermissionContainer getChannel();
+    IPermissionContainerUnion getChannel();
 
     /**
      * The {@link net.dv8tion.jda.api.entities.Guild Guild} that the {@link GuildChannel GuildChannel}

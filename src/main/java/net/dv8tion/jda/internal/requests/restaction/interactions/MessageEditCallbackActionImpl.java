@@ -20,7 +20,9 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.requests.restaction.interactions.MessageEditCallbackAction;
+import net.dv8tion.jda.api.utils.AttachedFile;
 import net.dv8tion.jda.api.utils.AttachmentOption;
+import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.interactions.InteractionHookImpl;
@@ -30,11 +32,11 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.InputStream;
 import java.util.*;
-import java.util.stream.Collectors;
+import java.util.concurrent.TimeUnit;
+import java.util.function.BooleanSupplier;
 
 public class MessageEditCallbackActionImpl extends DeferrableCallbackActionImpl implements MessageEditCallbackAction
 {
-    private List<String> retainedFiles = null;
     private List<MessageEmbed> embeds = null;
     private List<ActionRow> components = null;
     private String content = null;
@@ -44,9 +46,37 @@ public class MessageEditCallbackActionImpl extends DeferrableCallbackActionImpl 
         super(hook);
     }
 
+    @Nonnull
+    @Override
+    public MessageEditCallbackActionImpl setCheck(BooleanSupplier checks)
+    {
+        return (MessageEditCallbackActionImpl) super.setCheck(checks);
+    }
+
+    @Nonnull
+    @Override
+    public MessageEditCallbackActionImpl timeout(long timeout, @Nonnull TimeUnit unit)
+    {
+        return (MessageEditCallbackActionImpl) super.timeout(timeout, unit);
+    }
+
+    @Nonnull
+    @Override
+    public MessageEditCallbackActionImpl deadline(long timestamp)
+    {
+        return (MessageEditCallbackActionImpl) super.deadline(timestamp);
+    }
+
+    @Nonnull
+    @Override
+    public MessageEditCallbackActionImpl closeResources()
+    {
+        return (MessageEditCallbackActionImpl) super.closeResources();
+    }
+
     private boolean isEmpty()
     {
-        return content == null && embeds == null && components == null && files.isEmpty() && retainedFiles == null;
+        return content == null && embeds == null && components == null && !isFileUpdate && files.isEmpty();
     }
 
     @Override
@@ -63,14 +93,6 @@ public class MessageEditCallbackActionImpl extends DeferrableCallbackActionImpl 
             data.put("embeds", DataArray.fromCollection(embeds));
         if (components != null)
             data.put("components", DataArray.fromCollection(components));
-        if (retainedFiles != null)
-        {
-            data.put("attachments", DataArray.fromCollection(
-                retainedFiles.stream()
-                    .map(id -> DataObject.empty().put("id", id))
-                    .collect(Collectors.toList()))
-            );
-        }
         json.put("data", data);
         return json;
     }
@@ -129,7 +151,8 @@ public class MessageEditCallbackActionImpl extends DeferrableCallbackActionImpl 
         if (options.length > 0)
             name = "SPOILER_" + name;
 
-        files.put(name, data);
+        files.add(FileUpload.fromData(data, name));
+        isFileUpdate = true;
         return this;
     }
 
@@ -139,8 +162,13 @@ public class MessageEditCallbackActionImpl extends DeferrableCallbackActionImpl 
     {
         Checks.noneNull(ids, "IDs");
         ids.forEach(Checks::isSnowflake);
-        this.retainedFiles = new ArrayList<>();
-        this.retainedFiles.addAll(ids);
+        // Keep uploads and remove all existing attachments
+        this.files.removeIf(file -> !(file instanceof FileUpload));
+        // Keep attachment for specified ids
+        ids.stream()
+           .map(AttachedFile::fromAttachment)
+           .forEach(this.files::add);
+        isFileUpdate = true;
         return this;
     }
 

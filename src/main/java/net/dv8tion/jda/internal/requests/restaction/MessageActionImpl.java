@@ -19,16 +19,21 @@ package net.dv8tion.jda.internal.requests.restaction;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
+import net.dv8tion.jda.api.entities.sticker.GuildSticker;
+import net.dv8tion.jda.api.entities.sticker.StickerSnowflake;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
-import net.dv8tion.jda.api.exceptions.MissingAccessException;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
+import net.dv8tion.jda.api.utils.AttachedFile;
 import net.dv8tion.jda.api.utils.AttachmentOption;
+import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.internal.entities.DataMessage;
 import net.dv8tion.jda.internal.requests.Requester;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
@@ -54,14 +59,14 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
 {
     private static final String CONTENT_TOO_BIG = Helpers.format("A message may not exceed %d characters. Please limit your input!", Message.MAX_CONTENT_LENGTH);
     protected static boolean defaultFailOnInvalidReply = false;
-    protected final Map<String, InputStream> files = new HashMap<>();
-    protected final Set<InputStream> ownedResources = new HashSet<>();
+    protected final List<AttachedFile> files = new ArrayList<>();
     protected final StringBuilder content;
     protected final MessageChannel channel;
     protected final AllowedMentionsImpl allowedMentions = new AllowedMentionsImpl();
     protected List<ActionRow> components;
     protected List<String> retainedAttachments;
     protected List<MessageEmbed> embeds = null;
+    protected List<String> stickers = null;
     protected String nonce = null;
     protected boolean tts = false, override = false;
     protected boolean failOnInvalidReply = defaultFailOnInvalidReply;
@@ -142,9 +147,9 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
 
     @Nonnull
     @Override
-    public MessageChannel getChannel()
+    public MessageChannelUnion getChannel()
     {
-        return channel;
+        return (MessageChannelUnion) channel;
     }
 
     @Override
@@ -152,7 +157,8 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
     {
         return !isEdit() // PATCH can be technically empty since you can update stuff like components or remove embeds etc
             && Helpers.isBlank(content)
-            && (embeds == null || embeds.isEmpty() || !hasPermission(Permission.MESSAGE_EMBED_LINKS));
+            && (embeds == null || embeds.isEmpty() || !hasPermission(Permission.MESSAGE_EMBED_LINKS))
+            && stickers == null;
     }
 
     @Override
@@ -173,6 +179,14 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
         if (embeds != null && !embeds.isEmpty())
             setEmbeds(embeds.stream().filter(e -> e != null && e.getType() == EmbedType.RICH).collect(Collectors.toList()));
         files.clear();
+
+        if (!isEdit())
+        {
+            if (message instanceof DataMessage)
+                setStickers(((DataMessage) message).getStickerSnowflakes());
+            else
+                setStickers(message.getStickers());
+        }
 
         components = new ArrayList<>();
         components.addAll(message.getActionRows());
@@ -289,7 +303,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
         checkFileAmount();
         checkPermission(Permission.MESSAGE_ATTACH_FILES);
         name = applyOptions(name, options);
-        files.put(name, data);
+        files.add(FileUpload.fromData(data, name));
         return this;
     }
 
@@ -306,7 +320,6 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
         try
         {
             FileInputStream data = new FileInputStream(file);
-            ownedResources.add(data);
             name = applyOptions(name, options);
             return addFile(data, name);
         }
@@ -331,8 +344,8 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
     @CheckReturnValue
     public MessageActionImpl clearFiles()
     {
+        files.forEach(IOUtil::silentClose);
         files.clear();
-        clearResources();
         return this;
     }
 
@@ -342,14 +355,15 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
     public MessageActionImpl clearFiles(@Nonnull BiConsumer<String, InputStream> finalizer)
     {
         Checks.notNull(finalizer, "Finalizer");
-        for (Iterator<Map.Entry<String, InputStream>> it = files.entrySet().iterator(); it.hasNext();)
+        for (AttachedFile file : files)
         {
-            Map.Entry<String, InputStream> entry = it.next();
-            finalizer.accept(entry.getKey(), entry.getValue());
-            it.remove();
+            if (file instanceof FileUpload)
+            {
+                FileUpload upload = (FileUpload) file;
+                finalizer.accept(upload.getName(), upload.getData());
+            }
         }
-        clearResources();
-        return this;
+        return clearFiles();
     }
 
     @Nonnull
@@ -358,13 +372,15 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
     public MessageActionImpl clearFiles(@Nonnull Consumer<InputStream> finalizer)
     {
         Checks.notNull(finalizer, "Finalizer");
-        for (Iterator<InputStream> it = files.values().iterator(); it.hasNext(); )
+        for (AttachedFile file : files)
         {
-            finalizer.accept(it.next());
-            it.remove();
+            if (file instanceof FileUpload)
+            {
+                FileUpload upload = (FileUpload) file;
+                finalizer.accept(upload.getData());
+            }
         }
-        clearResources();
-        return this;
+        return clearFiles();
     }
 
     @Nonnull
@@ -395,6 +411,42 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
         Checks.checkDuplicateIds(Arrays.stream(rows));
         this.components.clear();
         Collections.addAll(this.components, rows);
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    public MessageAction setStickers(@Nullable Collection<? extends StickerSnowflake> stickers)
+    {
+        if (isEdit())
+            throw new IllegalStateException("Cannot edit stickers on messages!");
+        if (stickers == null || stickers.isEmpty())
+        {
+            this.stickers = new ArrayList<>();
+            return this;
+        }
+
+        if (!(channel instanceof GuildChannel))
+            throw new IllegalStateException("Cannot send stickers in direct messages!");
+        GuildChannel guildChannel = (GuildChannel) channel;
+
+        Checks.noneNull(stickers, "Stickers");
+        Checks.check(stickers.size() <= Message.MAX_STICKER_COUNT,
+                     "Cannot send more than %d stickers in a message!", Message.MAX_STICKER_COUNT);
+        for (StickerSnowflake sticker : stickers)
+        {
+            if (sticker instanceof GuildSticker)
+            {
+                GuildSticker guildSticker = (GuildSticker) sticker;
+                Checks.check(guildSticker.isAvailable(),
+                    "Cannot use unavailable sticker. The guild may have lost the boost level required to use this sticker!");
+                Checks.check(guildSticker.getGuildIdLong() == guildChannel.getGuild().getIdLong(),
+                    "Sticker must be from the same guild. Cross-guild sticker posting is not supported!");
+            }
+        }
+
+        this.stickers = stickers.stream().map(StickerSnowflake::getId).collect(Collectors.toList());
+
         return this;
     }
 
@@ -465,23 +517,6 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
         return name;
     }
 
-    private void clearResources()
-    {
-        for (InputStream ownedResource : ownedResources)
-        {
-            try
-            {
-                ownedResource.close();
-            }
-            catch (IOException ex)
-            {
-                if (!ex.getMessage().toLowerCase().contains("closed"))
-                    LOG.error("Encountered IOException trying to close owned resource", ex);
-            }
-        }
-        ownedResources.clear();
-    }
-
     private long getMaxFileSize()
     {
         if (channel.getType().isGuild())
@@ -491,19 +526,11 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
 
     protected RequestBody asMultipart()
     {
-        final MultipartBody.Builder builder = new MultipartBody.Builder().setType(MultipartBody.FORM);
-        int index = 0;
-        for (Map.Entry<String, InputStream> entry : files.entrySet())
-        {
-            final RequestBody body = IOUtil.createRequestBody(Requester.MEDIA_TYPE_OCTET, entry.getValue());
-            builder.addFormDataPart("files[" + (index++) + "]", entry.getKey(), body);
-        }
-        if (messageReference != 0L || components != null || retainedAttachments != null || !isEmpty())
-            builder.addFormDataPart("payload_json", getJSON().toString());
+        MultipartBody.Builder body = AttachedFile.createMultipartBody(files, null);
+        body.addFormDataPart("payload_json", getJSON().toString());
         // clear remaining resources, they will be closed after being sent
         files.clear();
-        ownedResources.clear();
-        return builder.build();
+        return body.build();
     }
 
     @SuppressWarnings("deprecation")
@@ -515,6 +542,17 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
     protected DataObject getJSON()
     {
         final DataObject obj = DataObject.empty();
+        DataArray attachments = DataArray.empty();
+        if (retainedAttachments != null)
+        {
+            retainedAttachments.stream()
+                    .map(id -> DataObject.empty().put("id", id))
+                    .forEach(attachments::add);
+        }
+
+        for (int i = 0; i < files.size(); i++)
+            attachments.add(files.get(i).toAttachmentData(i));
+
         if (override)
         {
             if (embeds == null)
@@ -533,13 +571,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
                 obj.put("components", DataArray.empty());
             else
                 obj.put("components", DataArray.fromCollection(components));
-            if (retainedAttachments != null)
-                obj.put("attachments", DataArray.fromCollection(retainedAttachments.stream()
-                        .map(id -> DataObject.empty()
-                            .put("id", id))
-                        .collect(Collectors.toList())));
-            else
-                obj.put("attachments", DataArray.empty());
+            obj.put("attachments", attachments);
         }
         else
         {
@@ -551,12 +583,12 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
                 obj.put("nonce", nonce);
             if (components != null)
                 obj.put("components", DataArray.fromCollection(components));
-            if (retainedAttachments != null)
-                obj.put("attachments", DataArray.fromCollection(retainedAttachments.stream()
-                        .map(id -> DataObject.empty()
-                            .put("id", id))
-                        .collect(Collectors.toList())));
+            if (stickers != null)
+                obj.put("sticker_ids", DataArray.fromCollection(stickers));
+            if (retainedAttachments != null || !attachments.isEmpty())
+                obj.put("attachments", attachments);
         }
+
         if (messageReference != 0)
         {
             obj.put("message_reference", DataObject.empty()
@@ -564,6 +596,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
                 .put("channel_id", channel.getId())
                 .put("fail_if_not_exists", failOnInvalidReply));
         }
+
         obj.put("tts", tts);
         obj.put("allowed_mentions", allowedMentions);
         return obj;
@@ -586,12 +619,11 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
         if (!channel.getType().isGuild())
             return;
 
-        if (!(channel instanceof IPermissionContainer))
+        if (!(channel instanceof GuildChannel))
             return;
 
-        IPermissionContainer gc = (IPermissionContainer) channel;
-        if (!gc.getGuild().getSelfMember().hasAccess(gc))
-            throw new MissingAccessException(gc, Permission.VIEW_CHANNEL);
+        GuildChannel gc = (GuildChannel) channel;
+        Checks.checkAccess(gc.getGuild().getSelfMember(), gc);
         if (!hasPermission(perm))
             throw new InsufficientPermissionException(gc, perm);
     }
@@ -624,12 +656,12 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
     }
 
     @Override
-    @SuppressWarnings("deprecation") /* If this was in JDK9 we would be using java.lang.ref.Cleaner instead! */
+    @SuppressWarnings({"deprecation", "ResultOfMethodCallIgnored"}) /* If this was in JDK9 we would be using java.lang.ref.Cleaner instead! */
     protected void finalize()
     {
-        if (ownedResources.isEmpty())
+        if (files.isEmpty())
             return;
         LOG.warn("Found unclosed resources in MessageAction instance, closing on finalization step!");
-        clearResources();
+        clearFiles();
     }
 }

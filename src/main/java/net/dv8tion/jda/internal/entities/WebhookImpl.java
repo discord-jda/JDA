@@ -19,6 +19,7 @@ package net.dv8tion.jda.internal.entities;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.channel.unions.IWebhookContainerUnion;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.WebhookManager;
 import net.dv8tion.jda.api.requests.RestAction;
@@ -40,21 +41,20 @@ import javax.annotation.Nonnull;
  */
 public class WebhookImpl extends AbstractWebhookClient<Void> implements Webhook
 {
-    private final BaseGuildMessageChannel channel;
+    private final IWebhookContainer channel;
     private final WebhookType type;
-    private WebhookManager manager;
 
     private Member owner;
     private User user, ownerUser;
     private ChannelReference sourceChannel;
     private GuildReference sourceGuild;
 
-    public WebhookImpl(BaseGuildMessageChannel channel, long id, WebhookType type)
+    public WebhookImpl(IWebhookContainer channel, long id, WebhookType type)
     {
         this(channel, channel.getJDA(), id, type);
     }
 
-    public WebhookImpl(BaseGuildMessageChannel channel, JDA api, long id, WebhookType type)
+    public WebhookImpl(IWebhookContainer channel, JDA api, long id, WebhookType type)
     {
         super(id, null, api);
         this.channel = channel;
@@ -92,11 +92,11 @@ public class WebhookImpl extends AbstractWebhookClient<Void> implements Webhook
 
     @Nonnull
     @Override
-    public BaseGuildMessageChannel getChannel()
+    public IWebhookContainerUnion getChannel()
     {
         if (channel == null)
             throw new IllegalStateException("Cannot provide channel for this Webhook instance because it does not belong to this shard");
-        return channel;
+        return (IWebhookContainerUnion) channel;
     }
 
     @Override
@@ -179,9 +179,7 @@ public class WebhookImpl extends AbstractWebhookClient<Void> implements Webhook
     @Override
     public WebhookManager getManager()
     {
-        if (manager == null)
-            return manager = new WebhookManagerImpl(this);
-        return manager;
+        return new WebhookManagerImpl(this);
     }
 
     @Override
@@ -255,7 +253,7 @@ public class WebhookImpl extends AbstractWebhookClient<Void> implements Webhook
     {
         checkToken();
         Route.CompiledRoute route = Route.Webhooks.EXECUTE_WEBHOOK.compile(getId(), token);
-        WebhookMessageActionImpl<Void> action = new WebhookMessageActionImpl<>(api, channel, route, (json) -> null);
+        WebhookMessageActionImpl<Void> action = new WebhookMessageActionImpl<>(api, route, (json) -> null);
         action.run();
         return action;
     }

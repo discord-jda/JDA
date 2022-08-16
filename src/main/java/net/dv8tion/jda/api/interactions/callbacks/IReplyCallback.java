@@ -35,7 +35,7 @@ import java.util.Collection;
  *
  * <p>These replies automatically acknowledge the interaction and support deferring.
  *
- * <h2>Deferred Replies</h2>
+ * <p><b>Deferred Replies</b><br>
  *
  * If an interaction reply is deferred using {@link #deferReply()} or {@link #deferReply(boolean)},
  * the {@link #getHook() interaction hook} can be used to send a delayed/deferred reply with {@link InteractionHook#sendMessage(String)}.

@@ -26,10 +26,15 @@ import net.dv8tion.jda.api.audio.factory.DefaultSendFactory;
 import net.dv8tion.jda.api.audio.factory.IAudioSendFactory;
 import net.dv8tion.jda.api.audio.hooks.ConnectionStatus;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
+import net.dv8tion.jda.api.entities.sticker.StickerPack;
+import net.dv8tion.jda.api.entities.sticker.StickerSnowflake;
+import net.dv8tion.jda.api.entities.sticker.StickerUnion;
 import net.dv8tion.jda.api.events.GatewayPingEvent;
 import net.dv8tion.jda.api.events.GenericEvent;
 import net.dv8tion.jda.api.events.StatusChangeEvent;
 import net.dv8tion.jda.api.exceptions.AccountTypeException;
+import net.dv8tion.jda.api.exceptions.ParsingException;
 import net.dv8tion.jda.api.exceptions.RateLimitedException;
 import net.dv8tion.jda.api.hooks.IEventManager;
 import net.dv8tion.jda.api.hooks.InterfacedEventManager;
@@ -42,6 +47,7 @@ import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.api.requests.restaction.CacheRestAction;
 import net.dv8tion.jda.api.requests.restaction.CommandCreateAction;
 import net.dv8tion.jda.api.requests.restaction.CommandEditAction;
 import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
@@ -169,6 +175,11 @@ public class JDAImpl implements JDA
         return sessionConfig.isRawEvents();
     }
 
+    public boolean isEventPassthrough()
+    {
+        return sessionConfig.isEventPassthrough();
+    }
+
     public boolean isRelativeRateLimit()
     {
         return sessionConfig.isRelativeRateLimit();
@@ -218,8 +229,7 @@ public class JDAImpl implements JDA
         try
         {
             return member.getUser().equals(getSelfUser()) // always cache self
-                    || chunkGuild(member.getGuild().getIdLong())  // always cache if chunking
-                    || memberCachePolicy.cacheMember(member); // ask policy, should we cache?
+                || memberCachePolicy.cacheMember(member); // ask policy, should we cache?
         }
         catch (Exception e)
         {
@@ -554,22 +564,13 @@ public class JDAImpl implements JDA
 
     @Nonnull
     @Override
-    public RestAction<User> retrieveUserById(@Nonnull String id)
+    public CacheRestAction<User> retrieveUserById(long id)
     {
-        return retrieveUserById(MiscUtil.parseSnowflake(id));
-    }
-
-    @Nonnull
-    @Override
-    public RestAction<User> retrieveUserById(long id, boolean update)
-    {
-        if (id == getSelfUser().getIdLong())
-            return new CompletedRestAction<>(this, getSelfUser());
-
-        AccountTypeException.check(getAccountType(), AccountType.BOT);
         return new DeferredRestAction<>(this, User.class,
-                () -> !update || isIntent(GatewayIntent.GUILD_MEMBERS) || isIntent(GatewayIntent.GUILD_PRESENCES) ? getUserById(id) : null,
+                () -> isIntent(GatewayIntent.GUILD_MEMBERS) || isIntent(GatewayIntent.GUILD_PRESENCES) ? getUserById(id) : null,
                 () -> {
+                    if (id == getSelfUser().getIdLong())
+                        return new CompletedRestAction<>(this, getSelfUser());
                     Route.CompiledRoute route = Route.Users.GET_USER.compile(Long.toUnsignedString(id));
                     return new RestActionImpl<>(this, route,
                             (response, request) -> getEntityBuilder().createUser(response.getObject()));
@@ -615,9 +616,47 @@ public class JDAImpl implements JDA
 
     @Nonnull
     @Override
-    public SnowflakeCacheView<Emote> getEmoteCache()
+    public SnowflakeCacheView<RichCustomEmoji> getEmojiCache()
     {
-        return CacheView.allSnowflakes(() -> guildCache.stream().map(Guild::getEmoteCache));
+        return CacheView.allSnowflakes(() -> guildCache.stream().map(Guild::getEmojiCache));
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<StickerUnion> retrieveSticker(@Nonnull StickerSnowflake sticker)
+    {
+        Checks.notNull(sticker, "Sticker");
+        Route.CompiledRoute route = Route.Stickers.GET_STICKER.compile(sticker.getId());
+        return new RestActionImpl<>(this, route,
+            (response, request) -> entityBuilder.createRichSticker(response.getObject())
+        );
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<List<StickerPack>> retrieveNitroStickerPacks()
+    {
+        Route.CompiledRoute route = Route.Stickers.LIST_PACKS.compile();
+        return new RestActionImpl<>(this, route, (response, request) ->
+        {
+            DataArray array = response.getObject().getArray("sticker_packs");
+            List<StickerPack> packs = new ArrayList<>(array.length());
+            for (int i = 0; i < array.length(); i++)
+            {
+                DataObject object = null;
+                try
+                {
+                    object = array.getObject(i);
+                    StickerPack pack = entityBuilder.createStickerPack(object);
+                    packs.add(pack);
+                }
+                catch (ParsingException ex)
+                {
+                    EntityBuilder.LOG.error("Failed to parse sticker pack. JSON: {}", object);
+                }
+            }
+            return Collections.unmodifiableList(packs);
+        });
     }
 
     @Nonnull
@@ -686,7 +725,7 @@ public class JDAImpl implements JDA
 
     @Nonnull
     @Override
-    public RestAction<PrivateChannel> openPrivateChannelById(long userId)
+    public CacheRestAction<PrivateChannel> openPrivateChannelById(long userId)
     {
         if (selfUser != null && userId == selfUser.getIdLong())
             throw new UnsupportedOperationException("Cannot open private channel with yourself!");
@@ -774,7 +813,7 @@ public class JDAImpl implements JDA
         setStatus(Status.SHUTDOWN);
     }
 
-    public synchronized void shutdownRequester()
+    public void shutdownRequester()
     {
         // Stop all request processing
         requester.shutdown();
@@ -862,9 +901,12 @@ public class JDAImpl implements JDA
 
     @Nonnull
     @Override
-    public RestAction<List<Command>> retrieveCommands()
+    public RestAction<List<Command>> retrieveCommands(boolean withLocalizations)
     {
-        Route.CompiledRoute route = Route.Interactions.GET_COMMANDS.compile(getSelfUser().getApplicationId());
+        Route.CompiledRoute route = Route.Interactions.GET_COMMANDS
+                .compile(getSelfUser().getApplicationId())
+                .withQueryParams("with_localizations", String.valueOf(withLocalizations));
+
         return new RestActionImpl<>(this, route,
             (response, request) ->
                 response.getArray()
