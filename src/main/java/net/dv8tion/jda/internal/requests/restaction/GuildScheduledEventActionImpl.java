@@ -156,7 +156,6 @@ public class GuildScheduledEventActionImpl extends AuditableRestActionImpl<Guild
 
         if (endTime != null)
             Checks.check((endTime).isAfter(startTime), "Cannot schedule event to end before starting!");
-            Checks.check(entityType == 3, "Invalid parameter: End Time (Only valid for external location)");
     }
 
 

@@ -203,7 +203,7 @@ public class GuildScheduledEventManagerImpl extends ManagerBase<GuildScheduledEv
 
         if (shouldUpdate(END_TIME))
             Checks.check((startTime == null ? getGuildScheduledEvent().getStartTime() : startTime).isBefore(endTime), "Cannot schedule event to end before starting!");
-
+            Checks.check(entityType == 3, "Invalid parameter: End Time (Only valid for external location)");
         if (shouldUpdate(STATUS))
         {
             Checks.check(status != GuildScheduledEvent.Status.UNKNOWN, "Cannot set the event status to an unknown status!");
