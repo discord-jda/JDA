@@ -28,7 +28,6 @@ import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.message.MessageCreateBuilderMixin;
 import okhttp3.RequestBody;
-import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -93,7 +92,7 @@ public class WebhookMessageCreateActionImpl<T>
         return (WebhookMessageCreateAction<T>) super.setCheck(checks);
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public WebhookMessageCreateAction<T> deadline(long timestamp)
     {

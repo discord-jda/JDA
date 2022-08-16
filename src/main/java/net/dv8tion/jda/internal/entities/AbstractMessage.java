@@ -31,7 +31,6 @@ import net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationActi
 import net.dv8tion.jda.api.utils.AttachedFile;
 import net.dv8tion.jda.api.utils.messages.MessageEditData;
 import net.dv8tion.jda.internal.utils.Helpers;
-import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -419,7 +418,7 @@ public abstract class AbstractMessage implements Message
 
     @Nullable
     @Override
-    public MessageReaction getReaction(@NotNull Emoji emoji)
+    public MessageReaction getReaction(@Nonnull Emoji emoji)
     {
         unsupported();
         return null;
