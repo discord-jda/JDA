@@ -77,10 +77,9 @@ public class CommandAutoCompleteInteractionImpl extends InteractionImpl implemen
 
     @Nonnull
     @Override
-    @SuppressWarnings("ConstantConditions")
     public MessageChannelUnion getChannel()
     {
-        return (MessageChannelUnion) super.getChannel();
+        return (MessageChannelUnion) super.getMessageChannel();
     }
 
     @Override

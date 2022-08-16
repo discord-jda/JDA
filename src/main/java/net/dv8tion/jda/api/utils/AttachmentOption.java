@@ -14,15 +14,13 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.requests.restaction.interactions;
+package net.dv8tion.jda.api.utils;
 
 /**
- * An {@link InteractionCallbackAction} that can be used to send Modals.
- *
- * @see    net.dv8tion.jda.api.interactions.callbacks.IModalCallback
- * @see    net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
+ * Options that can be applied to attachments in {@link net.dv8tion.jda.api.requests.restaction.MessageAction}.
  */
-public interface ModalCallbackAction extends InteractionCallbackAction<Void>
+public enum AttachmentOption
 {
-
+    /** Marks an image attachment as a spoiler by prefixing the name with {@code SPOILER_} */
+    SPOILER
 }

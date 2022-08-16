@@ -27,22 +27,22 @@ import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import net.dv8tion.jda.api.entities.sticker.StickerItem;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.exceptions.PermissionException;
+import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
-import net.dv8tion.jda.api.requests.restaction.MessageEditAction;
+import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import net.dv8tion.jda.api.requests.restaction.ThreadChannelAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationAction;
-import net.dv8tion.jda.api.utils.AttachedFile;
 import net.dv8tion.jda.api.utils.MarkdownSanitizer;
 import net.dv8tion.jda.api.utils.data.DataObject;
-import net.dv8tion.jda.api.utils.messages.MessageEditData;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.requests.CompletedRestAction;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
+import net.dv8tion.jda.internal.requests.restaction.MessageActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
 
@@ -74,10 +74,12 @@ public class ReceivedMessage extends AbstractMessage
     protected final List<Attachment> attachments;
     protected final List<MessageEmbed> embeds;
     protected final List<StickerItem> stickers;
-    protected final List<LayoutComponent> components;
+    protected final List<ActionRow> components;
     protected final int flags;
     protected final Message.Interaction interaction;
     protected final ThreadChannel startedThread;
+
+    protected InteractionHook interactionHook = null; // late-init
 
     // LAZY EVALUATED
     protected String altContent = null;
@@ -116,13 +118,19 @@ public class ReceivedMessage extends AbstractMessage
         this.startedThread = startedThread;
     }
 
+    public ReceivedMessage withHook(InteractionHook hook)
+    {
+        this.interactionHook = hook;
+        return this;
+    }
+
     private void checkIntent()
     {
         // Checks whether access to content is limited and the message content intent is not enabled
         if (!didContentIntentWarning && !api.isIntent(GatewayIntent.MESSAGE_CONTENT))
         {
             SelfUser selfUser = api.getSelfUser();
-            if (!Objects.equals(selfUser, author) && !mentions.getUsers().contains(selfUser) && isFromGuild())
+            if (!Objects.equals(selfUser, author) && !mentions.getUsers().contains(selfUser) && isFromGuild() && content.isEmpty())
             {
                 didContentIntentWarning = true;
                 JDAImpl.LOG.warn(
@@ -131,7 +139,7 @@ public class ReceivedMessage extends AbstractMessage
                     "Useful resources to learn more:\n" +
                     "\t- https://support-dev.discord.com/hc/en-us/articles/4404772028055-Message-Content-Privileged-Intent-FAQ\n" +
                     "\t- https://jda.wiki/using-jda/gateway-intents-and-member-cache-policy/\n" +
-                    "\t- https://jda.wiki/using-jda/troubleshooting/#cannot-get-message-content-attempting-to-access-message-content-without-gatewayintent\n" +
+                    "\t- https://jda.wiki/using-jda/troubleshooting/#im-getting-closecode4014-disallowed-intents\n" +
                     "Or suppress this warning if this is intentional with Message.suppressContentIntentWarning()"
                 );
             }
@@ -467,7 +475,7 @@ public class ReceivedMessage extends AbstractMessage
 
     @Nonnull
     @Override
-    public List<LayoutComponent> getComponents()
+    public List<ActionRow> getActionRows()
     {
         checkIntent();
         return components;
@@ -515,50 +523,42 @@ public class ReceivedMessage extends AbstractMessage
 
     @Nonnull
     @Override
-    public MessageEditAction editMessage(@Nonnull CharSequence newContent)
+    public MessageAction editMessage(@Nonnull CharSequence newContent)
     {
         checkUser();
-        return channel.editMessageById(getId(), newContent);
+        return ((MessageActionImpl) channel.editMessageById(getId(), newContent)).withHook(interactionHook);
     }
 
     @Nonnull
     @Override
-    public MessageEditAction editMessageEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
+    public MessageAction editMessageEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
     {
         checkUser();
-        return channel.editMessageEmbedsById(getId(), embeds);
+        return ((MessageActionImpl) channel.editMessageEmbedsById(getId(), embeds)).withHook(interactionHook);
     }
 
     @Nonnull
     @Override
-    public MessageEditAction editMessageComponents(@Nonnull Collection<? extends LayoutComponent> components)
+    public MessageAction editMessageComponents(@Nonnull Collection<? extends LayoutComponent> components)
     {
         checkUser();
-        return channel.editMessageComponentsById(getId(), components);
+        return ((MessageActionImpl) channel.editMessageComponentsById(getId(), components)).withHook(interactionHook);
     }
 
     @Nonnull
     @Override
-    public MessageEditAction editMessageFormat(@Nonnull String format, @Nonnull Object... args)
+    public MessageAction editMessageFormat(@Nonnull String format, @Nonnull Object... args)
     {
         checkUser();
-        return channel.editMessageFormatById(getId(), format, args);
+        return ((MessageActionImpl) channel.editMessageFormatById(getId(), format, args)).withHook(interactionHook);
     }
 
     @Nonnull
     @Override
-    public MessageEditAction editMessageAttachments(@Nonnull Collection<? extends AttachedFile> attachments)
+    public MessageAction editMessage(@Nonnull Message newContent)
     {
         checkUser();
-        return channel.editMessageAttachmentsById(getId(), attachments);
-    }
-
-    @Nonnull
-    @Override
-    public MessageEditAction editMessage(@Nonnull MessageEditData newContent)
-    {
-        checkUser();
-        return channel.editMessageById(getId(), newContent);
+        return ((MessageActionImpl) channel.editMessageById(getId(), newContent)).withHook(interactionHook);
     }
 
     private void checkUser()

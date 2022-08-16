@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.requests.restaction.interactions;
+package net.dv8tion.jda.api.requests.restaction;
 
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.components.ActionComponent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.ItemComponent;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
+import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.AttachmentOption;
 import net.dv8tion.jda.internal.utils.Checks;
 
@@ -32,31 +32,20 @@ import javax.annotation.Nullable;
 import java.io.*;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.concurrent.TimeUnit;
-import java.util.function.BooleanSupplier;
 import java.util.stream.Collectors;
 
 /**
- * A {@link InteractionCallbackAction} which can be used to edit the message for an interaction.
+ * Specialized {@link RestAction} used to update an existing message sent by a {@link net.dv8tion.jda.api.entities.Webhook Webhook} or {@link net.dv8tion.jda.api.interactions.InteractionHook InteractionHook}.
+ *
+ * @param <T>
+ *        The type of message that will be returned
+ *
+ * @see   net.dv8tion.jda.api.interactions.InteractionHook#editOriginal(String)
+ * @see   net.dv8tion.jda.api.entities.WebhookClient#editMessageById(long, String)
  */
-public interface MessageEditCallbackAction extends InteractionCallbackAction<InteractionHook>
+// TODO: WebhookMessage type (no channel/guild attached)
+public interface WebhookMessageUpdateAction<T> extends RestAction<T>
 {
-    @Nonnull
-    @Override
-    MessageEditCallbackAction setCheck(@Nullable BooleanSupplier checks);
-
-    @Nonnull
-    @Override
-    MessageEditCallbackAction timeout(long timeout, @Nonnull TimeUnit unit);
-
-    @Nonnull
-    @Override
-    MessageEditCallbackAction deadline(long timestamp);
-
-    @Nonnull
-    @Override
-    MessageEditCallbackAction closeResources();
-
     /**
      * Set the new content for this message.
      *
@@ -69,7 +58,8 @@ public interface MessageEditCallbackAction extends InteractionCallbackAction<Int
      * @return The same update action, for chaining convenience
      */
     @Nonnull
-    MessageEditCallbackAction setContent(@Nullable final String content);
+    @CheckReturnValue
+    WebhookMessageUpdateAction<T> setContent(@Nullable String content);
 
     /**
      * Set the {@link MessageEmbed MessageEmbeds} for the message
@@ -78,32 +68,70 @@ public interface MessageEditCallbackAction extends InteractionCallbackAction<Int
      *         The message embeds
      *
      * @throws IllegalArgumentException
-     *         If null is provided, or one of the embeds is too big, or more than {@value Message#MAX_EMBED_COUNT} embeds are provided
+     *         If null is provided, or one of the embeds is too big
      *
      * @return The same update action, for chaining convenience
      */
     @Nonnull
     @CheckReturnValue
-    default MessageEditCallbackAction setEmbeds(@Nonnull MessageEmbed... embeds)
+    WebhookMessageUpdateAction<T> setEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds); // Doesn't work on ephemeral messages!
+
+    /**
+     * Set the {@link MessageEmbed MessageEmbeds} for the message
+     *
+     * @param  embeds
+     *         The message embeds
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided, or one of the embeds is too big
+     *
+     * @return The same update action, for chaining convenience
+     */
+    @Nonnull
+    @CheckReturnValue
+    default WebhookMessageUpdateAction<T> setEmbeds(@Nonnull MessageEmbed... embeds)
     {
-        Checks.noneNull(embeds, "MessageEmbed");
+        Checks.noneNull(embeds, "MessageEmbeds");
         return setEmbeds(Arrays.asList(embeds));
     }
 
     /**
-     * Set the {@link MessageEmbed MessageEmbeds} for the message
+     * Set only one action row for convenience.
      *
-     * @param  embeds
-     *         The message embeds
+     * @param  components
+     *         The action row components, such as {@link Button Buttons}
      *
      * @throws IllegalArgumentException
-     *         If null is provided, one of the embeds is too big, or more than {@value Message#MAX_EMBED_COUNT} embeds are provided
+     *         If null is provided, an invalid number of components is provided,
+     *         or any custom {@link ActionComponent#getId() id} is duplicated
      *
      * @return The same update action, for chaining convenience
      */
     @Nonnull
     @CheckReturnValue
-    MessageEditCallbackAction setEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds);
+    default WebhookMessageUpdateAction<T> setActionRow(@Nonnull ItemComponent... components)
+    {
+        return setActionRows(ActionRow.of(components));
+    }
+
+    /**
+     * Set only one action row for convenience.
+     *
+     * @param  components
+     *         The action row components, such as {@link Button Buttons}
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided, an invalid number of components is provided,
+     *         or any custom {@link ActionComponent#getId() id} is duplicated
+     *
+     * @return The same update action, for chaining convenience
+     */
+    @Nonnull
+    @CheckReturnValue
+    default WebhookMessageUpdateAction<T> setActionRow(@Nonnull Collection<? extends ItemComponent> components)
+    {
+        return setActionRows(ActionRow.of(components));
+    }
 
     /**
      * Set the action rows for the message.
@@ -112,19 +140,14 @@ public interface MessageEditCallbackAction extends InteractionCallbackAction<Int
      *         The new action rows
      *
      * @throws IllegalArgumentException
-     *         <ul>
-     *             <li>If null is provided, or more than 5 ActionRows are provided</li>
-     *             <li>If any custom {@link ActionComponent#getId() id} is duplicated</li>
-     *             <li>If any of the provided ActionRows are not compatible with messages</li>
-     *         </ul>
+     *         If null is provided, more than 5 action rows are provided,
+     *         or any custom {@link ActionComponent#getId() id} is duplicated
      *
      * @return The same update action, for chaining convenience
-     *
-     * @see    ActionRow#isMessageCompatible()
      */
     @Nonnull
     @CheckReturnValue
-    default MessageEditCallbackAction setActionRows(@Nonnull Collection<? extends ActionRow> rows)
+    default WebhookMessageUpdateAction<T> setActionRows(@Nonnull Collection<? extends ActionRow> rows)
     {
         Checks.noneNull(rows, "ActionRows");
         return setActionRows(rows.toArray(new ActionRow[0]));
@@ -137,97 +160,83 @@ public interface MessageEditCallbackAction extends InteractionCallbackAction<Int
      *         The new action rows
      *
      * @throws IllegalArgumentException
-     *         <ul>
-     *             <li>If null is provided, or more than 5 ActionRows are provided</li>
-     *             <li>If any custom {@link ActionComponent#getId() id} is duplicated</li>
-     *             <li>If any of the provided ActionRows are not compatible with messages</li>
-     *         </ul>
+     *         If null is provided, more than 5 action rows are provided,
+     *         or any custom {@link ActionComponent#getId() id} is duplicated
      *
      * @return The same update action, for chaining convenience
-     *
-     * @see    ActionRow#isMessageCompatible()
      */
     @Nonnull
     @CheckReturnValue
-    MessageEditCallbackAction setActionRows(@Nonnull ActionRow... rows);
+    WebhookMessageUpdateAction<T> setActionRows(@Nonnull ActionRow... rows);
 
     /**
-     * Set only one action row for convenience.
+     * Applies the {@link Message} to overwrite the existing message.
      *
-     * @param  components
-     *         The action row components, such as {@link Button Buttons}
+     * @param  message
+     *         The message to use for updating
      *
      * @throws IllegalArgumentException
-     *         <ul>
-     *             <li>If null is provided, or more than 5 ItemComponents are provided</li>
-     *             <li>If any custom {@link ActionComponent#getId() id} is duplicated</li>
-     *             <li>If any of the provided ItemComponents are not compatible with messages</li>
-     *         </ul>
+     *         If null is provided
      *
      * @return The same update action, for chaining convenience
-     *
-     * @see    ActionRow#of(ItemComponent...)
-     * @see    ItemComponent#isMessageCompatible()
      */
     @Nonnull
     @CheckReturnValue
-    default MessageEditCallbackAction setActionRow(@Nonnull ItemComponent... components)
-    {
-        return setActionRows(ActionRow.of(components));
-    }
+    WebhookMessageUpdateAction<T> applyMessage(@Nonnull Message message);
 
     /**
-     * Set only one action row for convenience.
-     *
-     * @param  components
-     *         The action row components, such as {@link Button Buttons}
-     *
-     * @throws IllegalArgumentException
-     *         <ul>
-     *             <li>If null is provided, or more than 5 ItemComponents are provided</li>
-     *             <li>If any custom {@link ActionComponent#getId() id} is duplicated</li>
-     *             <li>If any of the provided ItemComponents are not compatible with messages</li>
-     *         </ul>
-     *
-     * @return The same update action, for chaining convenience
-     *
-     * @see    ActionRow#of(Collection)
-     * @see    ItemComponent#isMessageCompatible()
-     */
-    @Nonnull
-    @CheckReturnValue
-    default MessageEditCallbackAction setActionRow(@Nonnull Collection<? extends ItemComponent> components)
-    {
-        return setActionRows(ActionRow.of(components));
-    }
-
-    /**
-     * Adds the provided {@link File}.
+     * Adds the provided {@link java.io.InputStream InputStream} as file data.
      * <br><u>The stream will be closed upon execution!</u>
-     * <br>The provided file will be appended to the message.
+     * <br>The provided file will be appended to the message. You can use {@link #retainFiles(Collection)} to delete files from the message.
      *
-     * @param  file
-     *         The {@link File} data to upload in response to the interaction.
+     * @param  data
+     *         The InputStream data to upload to the webhook.
+     * @param  name
+     *         The file name that should be sent to discord
+     *         <br>Refer to the documentation for {@link #addFile(java.io.File, String, AttachmentOption...)} for information about this parameter.
      * @param  options
      *         Possible options to apply to this attachment, such as marking it as spoiler image
      *
      * @throws java.lang.IllegalArgumentException
-     *         If the provided file is {@code null}.
+     *         If the provided data or filename is {@code null}.
      *
      * @return The same update action, for chaining convenience
      */
     @Nonnull
     @CheckReturnValue
-    default MessageEditCallbackAction addFile(@Nonnull File file, @Nonnull AttachmentOption... options)
+    WebhookMessageUpdateAction<T> addFile(@Nonnull InputStream data, @Nonnull String name, @Nonnull AttachmentOption... options);
+
+    /**
+     * Adds the provided {@code byte[]} as file data.
+     * <br><u>The stream will be closed upon execution!</u>
+     * <br>The provided file will be appended to the message. You can use {@link #retainFiles(Collection)} to delete files from the message.
+     *
+     * @param  data
+     *         The {@code byte[]} data to upload to the webhook.
+     * @param  name
+     *         The file name that should be sent to discord
+     *         <br>Refer to the documentation for {@link #addFile(java.io.File, String, AttachmentOption...)} for information about this parameter.
+     * @param  options
+     *         Possible options to apply to this attachment, such as marking it as spoiler image
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided data or filename is {@code null}.
+     *
+     * @return The same update action, for chaining convenience
+     */
+    @Nonnull
+    @CheckReturnValue
+    default WebhookMessageUpdateAction<T> addFile(@Nonnull byte[] data, @Nonnull String name, @Nonnull AttachmentOption... options)
     {
-        Checks.notNull(file, "File");
-        return addFile(file, file.getName(), options);
+        Checks.notNull(name, "Name");
+        Checks.notNull(data, "Data");
+        return addFile(new ByteArrayInputStream(data), name, options);
     }
 
     /**
      * Adds the provided {@link File}.
      * <br><u>The stream will be closed upon execution!</u>
-     * <br>The provided file will be appended to the message.
+     * <br>The provided file will be appended to the message. You can use {@link #retainFiles(Collection)} to delete files from the message.
      *
      * <p>The {@code name} parameter is used to inform Discord about what the file should be called. This is 2 fold:
      * <ol>
@@ -242,7 +251,7 @@ public interface MessageEditCallbackAction extends InteractionCallbackAction<Int
      * </ol>
      *
      * @param  file
-     *         The {@link File} data to upload in response to the interaction.
+     *         The {@link File} data to upload to the webhook.
      * @param  name
      *         The file name that should be sent to discord
      * @param  options
@@ -255,12 +264,12 @@ public interface MessageEditCallbackAction extends InteractionCallbackAction<Int
      */
     @Nonnull
     @CheckReturnValue
-    default MessageEditCallbackAction addFile(@Nonnull File file, @Nonnull String name, @Nonnull AttachmentOption... options)
+    default WebhookMessageUpdateAction<T> addFile(@Nonnull File file, @Nonnull String name, @Nonnull AttachmentOption... options)
     {
+        Checks.notEmpty(name, "Name");
+        Checks.notNull(file, "File");
         try
         {
-            Checks.notNull(file, "File");
-            Checks.check(file.exists() && file.canRead(), "Provided file either does not exist or cannot be read from!");
             return addFile(new FileInputStream(file), name, options);
         }
         catch (FileNotFoundException e)
@@ -270,52 +279,45 @@ public interface MessageEditCallbackAction extends InteractionCallbackAction<Int
     }
 
     /**
-     * Adds the provided {@code byte[]} as file data.
+     * Adds the provided {@link File}.
      * <br><u>The stream will be closed upon execution!</u>
-     * <br>The provided file will be appended to the message.
+     * <br>The provided file will be appended to the message. You can use {@link #retainFiles(Collection)} to delete files from the message.
      *
-     * @param  data
-     *         The {@code byte[]} data to upload in response to the interaction.
-     * @param  name
-     *         The file name that should be sent to discord
-     *         <br>Refer to the documentation for {@link #addFile(java.io.File, String, AttachmentOption...)} for information about this parameter.
+     * @param  file
+     *         The {@link File} data to upload to the webhook.
      * @param  options
      *         Possible options to apply to this attachment, such as marking it as spoiler image
      *
      * @throws java.lang.IllegalArgumentException
-     *         If the provided data or filename is {@code null}.
+     *         If the provided file is {@code null}.
      *
      * @return The same update action, for chaining convenience
      */
     @Nonnull
     @CheckReturnValue
-    default MessageEditCallbackAction addFile(@Nonnull byte[] data, @Nonnull String name, @Nonnull AttachmentOption... options)
+    default WebhookMessageUpdateAction<T> addFile(@Nonnull File file, @Nonnull AttachmentOption... options)
     {
-        Checks.notNull(data, "Data");
-        return addFile(new ByteArrayInputStream(data), name, options);
+        Checks.notNull(file, "File");
+        return addFile(file, file.getName(), options);
     }
 
     /**
-     * Adds the provided {@link java.io.InputStream InputStream} as file data.
-     * <br><u>The stream will be closed upon execution!</u>
-     * <br>The provided file will be appended to the message.
+     * Removes all attachments that are currently attached to the existing message except for the ones provided.
+     * <br>For example {@code retainFilesById(Arrays.asList("123"))} would remove all attachments except for the one with the id 123.
      *
-     * @param  data
-     *         The InputStream data to upload in response to the interaction.
-     * @param  name
-     *         The file name that should be sent to discord
-     *         <br>Refer to the documentation for {@link #addFile(java.io.File, String, AttachmentOption...)} for information about this parameter.
-     * @param  options
-     *         Possible options to apply to this attachment, such as marking it as spoiler image
+     * <p>To remove all attachments from the message you can pass an empty list.
      *
-     * @throws java.lang.IllegalArgumentException
-     *         If the provided data or filename is {@code null}.
+     * @param  ids
+     *         The ids for the attachments which should be retained on the message
+     *
+     * @throws IllegalArgumentException
+     *         If any of the ids is null or not a valid snowflake
      *
      * @return The same update action, for chaining convenience
      */
     @Nonnull
     @CheckReturnValue
-    MessageEditCallbackAction addFile(@Nonnull InputStream data, @Nonnull String name, @Nonnull AttachmentOption... options);
+    WebhookMessageUpdateAction<T> retainFilesById(@Nonnull Collection<String> ids);
 
     /**
      * Removes all attachments that are currently attached to the existing message except for the ones provided.
@@ -333,25 +335,7 @@ public interface MessageEditCallbackAction extends InteractionCallbackAction<Int
      */
     @Nonnull
     @CheckReturnValue
-    MessageEditCallbackAction retainFilesById(@Nonnull Collection<String> ids);
-
-    /**
-     * Removes all attachments that are currently attached to the existing message except for the ones provided.
-     * <br>For example {@code retainFilesById(Arrays.asList("123"))} would remove all attachments except for the one with the id 123.
-     *
-     * <p>To remove all attachments from the message you can pass an empty list.
-     *
-     * @param  ids
-     *         The ids for the attachments which should be retained on the message
-     *
-     * @throws IllegalArgumentException
-     *         If any of the ids is null or not a valid snowflake
-     *
-     * @return The same update action, for chaining convenience
-     */
-    @Nonnull
-    @CheckReturnValue
-    default MessageEditCallbackAction retainFilesById(@Nonnull String... ids)
+    default WebhookMessageUpdateAction<T> retainFilesById(@Nonnull String... ids)
     {
         Checks.notNull(ids, "IDs");
         return retainFilesById(Arrays.asList(ids));
@@ -373,7 +357,7 @@ public interface MessageEditCallbackAction extends InteractionCallbackAction<Int
      */
     @Nonnull
     @CheckReturnValue
-    default MessageEditCallbackAction retainFilesById(long... ids)
+    default WebhookMessageUpdateAction<T> retainFilesById(long... ids)
     {
         Checks.notNull(ids, "IDs");
         return retainFilesById(Arrays
@@ -399,7 +383,7 @@ public interface MessageEditCallbackAction extends InteractionCallbackAction<Int
      */
     @Nonnull
     @CheckReturnValue
-    default MessageEditCallbackAction retainFiles(@Nonnull Collection<? extends Message.Attachment> attachments)
+    default WebhookMessageUpdateAction<T> retainFiles(@Nonnull Collection<? extends Message.Attachment> attachments)
     {
         Checks.noneNull(attachments, "Attachments");
         return retainFilesById(attachments
@@ -407,27 +391,5 @@ public interface MessageEditCallbackAction extends InteractionCallbackAction<Int
                 .map(Message.Attachment::getId)
                 .collect(Collectors.toList())
         );
-    }
-
-    /**
-     * Removes all attachments that are currently attached to the existing message except for the ones provided.
-     * <br>For example {@code retainFiles(message.getAttachments().subList(1, message.getAttachments().size()))} would only remove the first attachment from the message.
-     *
-     * <p>To remove all attachments from the message you can pass an empty list.
-     *
-     * @param  attachments
-     *         The attachments which should be retained on the message
-     *
-     * @throws IllegalArgumentException
-     *         If any of the ids is null or not a valid snowflake
-     *
-     * @return The same update action, for chaining convenience
-     */
-    @Nonnull
-    @CheckReturnValue
-    default MessageEditCallbackAction retainFiles(@Nonnull Message.Attachment... attachments)
-    {
-        Checks.noneNull(attachments, "Attachments");
-        return retainFiles(Arrays.asList(attachments));
     }
 }

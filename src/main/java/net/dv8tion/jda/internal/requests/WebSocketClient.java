@@ -90,7 +90,6 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     protected volatile String sessionId = null;
     protected final Object readLock = new Object();
     protected Decompressor decompressor;
-    protected String resumeUrl = null;
 
     protected final ReentrantLock queueLock = new ReentrantLock();
     protected final ScheduledExecutorService executor;
@@ -346,7 +345,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             throw new RejectedExecutionException("JDA is shutdown!");
         initiating = true;
 
-        String url = (resumeUrl != null ? resumeUrl : api.getGatewayUrl())
+        String url = api.getGatewayUrl()
                 + "?encoding=" + encoding.name().toLowerCase()
                 + "&v=" + JDAInfo.DISCORD_GATEWAY_VERSION;
         if (compression != Compression.NONE)
@@ -379,7 +378,6 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         }
         catch (IOException | WebSocketException e)
         {
-            resumeUrl = null;
             api.resetGatewayUrl();
             //Completely fail here. We couldn't make the connection.
             throw new IllegalStateException(e);
@@ -740,7 +738,6 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
     protected void invalidate()
     {
-        resumeUrl = null;
         sessionId = null;
         sentAuthInfo = false;
 
@@ -929,7 +926,6 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                     // otherwise the audio connection requests that are currently pending might be removed in the process
                     handlers.get("READY").handle(responseTotal, raw);
                     sessionId = content.getString("session_id");
-                    resumeUrl = content.getString("resume_gateway_url", null);
                     break;
                 case "RESUMED":
                     reconnectTimeoutS = 2;

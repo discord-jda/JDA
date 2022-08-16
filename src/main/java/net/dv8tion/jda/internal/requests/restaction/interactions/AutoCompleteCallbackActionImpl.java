@@ -25,13 +25,11 @@ import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.interactions.InteractionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
-import okhttp3.RequestBody;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.function.BooleanSupplier;
 
 public class AutoCompleteCallbackActionImpl extends InteractionCallbackImpl<Void> implements AutoCompleteCallbackAction
 {
@@ -98,28 +96,14 @@ public class AutoCompleteCallbackActionImpl extends InteractionCallbackImpl<Void
     }
 
     @Override
-    protected RequestBody finalizeData()
+    protected DataObject toData()
     {
         DataObject data = DataObject.empty();
         DataArray array = DataArray.empty();
         choices.forEach(choice -> array.add(choice.toData(type)));
         data.put("choices", array);
-        return getRequestBody(DataObject.empty()
+        return DataObject.empty()
                 .put("type", ResponseType.COMMAND_AUTOCOMPLETE_CHOICES.getRaw())
-                .put("data", data));
-    }
-
-    @Nonnull
-    @Override
-    public AutoCompleteCallbackAction setCheck(BooleanSupplier checks)
-    {
-        return (AutoCompleteCallbackAction) super.setCheck(checks);
-    }
-
-    @Nonnull
-    @Override
-    public AutoCompleteCallbackAction deadline(long timestamp)
-    {
-        return (AutoCompleteCallbackAction) super.deadline(timestamp);
+                .put("data", data);
     }
 }

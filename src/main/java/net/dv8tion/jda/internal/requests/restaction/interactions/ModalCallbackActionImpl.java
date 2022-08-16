@@ -22,10 +22,6 @@ import net.dv8tion.jda.api.requests.restaction.interactions.InteractionCallbackA
 import net.dv8tion.jda.api.requests.restaction.interactions.ModalCallbackAction;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.interactions.InteractionImpl;
-import okhttp3.RequestBody;
-
-import javax.annotation.Nonnull;
-import java.util.function.BooleanSupplier;
 
 public class ModalCallbackActionImpl extends InteractionCallbackImpl<Void> implements ModalCallbackAction
 {
@@ -38,24 +34,10 @@ public class ModalCallbackActionImpl extends InteractionCallbackImpl<Void> imple
     }
 
     @Override
-    protected RequestBody finalizeData()
+    protected DataObject toData()
     {
-        return getRequestBody(DataObject.empty()
+        return DataObject.empty()
                 .put("type", InteractionCallbackAction.ResponseType.MODAL.getRaw())
-                .put("data", modal));
-    }
-
-    @Nonnull
-    @Override
-    public ModalCallbackAction setCheck(BooleanSupplier checks)
-    {
-        return (ModalCallbackAction) super.setCheck(checks);
-    }
-
-    @Nonnull
-    @Override
-    public ModalCallbackAction deadline(long timestamp)
-    {
-        return (ModalCallbackAction) super.deadline(timestamp);
+                .put("data", modal);
     }
 }

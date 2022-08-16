@@ -3,7 +3,6 @@ package net.dv8tion.jda.api.entities;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.managers.channel.ChannelManager;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
-import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -19,9 +18,6 @@ import javax.annotation.Nonnull;
  */
 public interface GuildChannel extends Channel, Comparable<GuildChannel>
 {
-    /** Template for {@link #getJumpUrl()}.*/
-    String JUMP_URL = "https://discord.com/channels/%s/%s";
-
     /**
      * Returns the {@link net.dv8tion.jda.api.entities.Guild Guild} that this GuildChannel is part of.
      *
@@ -76,16 +72,4 @@ public interface GuildChannel extends Channel, Comparable<GuildChannel>
 
     //TODO-v5: Docs
     IPermissionContainer getPermissionContainer();
-
-    /**
-     * Returns the jump-to URL for this channel. Clicking this URL in the Discord client will cause the client to
-     * jump to the specified channel.
-     *
-     * @return A String representing the jump-to URL for the channel.
-     */
-    @Nonnull
-    default String getJumpUrl()
-    {
-        return Helpers.format(JUMP_URL, getGuild().getId(), getId());
-    }
 }
