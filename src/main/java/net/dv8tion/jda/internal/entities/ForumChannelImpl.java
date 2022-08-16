@@ -18,32 +18,28 @@ package net.dv8tion.jda.internal.entities;
 
 import gnu.trove.map.TLongObjectMap;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.Category;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.PermissionOverride;
 import net.dv8tion.jda.api.entities.channel.concrete.ForumChannel;
 import net.dv8tion.jda.api.entities.channel.unions.GuildChannelUnion;
-import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
-import net.dv8tion.jda.api.exceptions.MissingAccessException;
 import net.dv8tion.jda.api.managers.channel.concrete.ForumChannelManager;
-import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.ChannelAction;
+import net.dv8tion.jda.api.requests.restaction.ForumPostAction;
 import net.dv8tion.jda.api.requests.restaction.ThreadChannelAction;
-import net.dv8tion.jda.api.utils.AttachedFile;
-import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.MiscUtil;
-import net.dv8tion.jda.api.utils.data.DataArray;
-import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
+import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 import net.dv8tion.jda.internal.entities.mixin.channel.attribute.IThreadContainerMixin;
 import net.dv8tion.jda.internal.entities.mixin.channel.middleman.StandardGuildChannelMixin;
 import net.dv8tion.jda.internal.managers.channel.concrete.ForumChannelManagerImpl;
-import net.dv8tion.jda.internal.requests.Requester;
-import net.dv8tion.jda.internal.requests.RestActionImpl;
-import net.dv8tion.jda.internal.requests.Route;
+import net.dv8tion.jda.internal.requests.restaction.ForumPostActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
-import okhttp3.MultipartBody;
-import okhttp3.RequestBody;
 
 import javax.annotation.Nonnull;
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class ForumChannelImpl extends AbstractGuildChannelImpl<ForumChannelImpl>
@@ -142,73 +138,10 @@ public class ForumChannelImpl extends AbstractGuildChannelImpl<ForumChannelImpl>
 
     @Nonnull
     @Override
-    public RestAction<ThreadChannel> createForumPost(@Nonnull String name, @Nonnull FileUpload upload, @Nonnull FileUpload... uploads)
+    public ForumPostAction createForumPost(@Nonnull String name, @Nonnull MessageCreateData message)
     {
-        Checks.notNull(upload, "Uploads");
-        Checks.notNull(uploads, "Uploads");
-        List<FileUpload> files = new ArrayList<>(1 + uploads.length);
-        files.add(upload);
-        Collections.addAll(files, uploads);
-        return createForumPost(name, null, files);
-    }
-
-    @Nonnull
-    @Override
-    public RestAction<ThreadChannel> createForumPost(@Nonnull String name, @Nonnull Message message, @Nonnull FileUpload... uploads)
-    {
-        Checks.notNull(message, "Message");
-        return createForumPost(name, message, Arrays.asList(uploads));
-    }
-
-    private RestAction<ThreadChannel> createForumPost(String name, Message message, Collection<? extends FileUpload> uploads)
-    {
-        Checks.notBlank(name, "Name");
-        Checks.noneNull(uploads, "Uploads");
-        Checks.notLonger(name, ThreadChannel.NAME_MAX_LENGTH, "Name");
-
-        Member selfMember = getGuild().getSelfMember();
-        if (!selfMember.hasAccess(this))
-            throw new MissingAccessException(this, Permission.VIEW_CHANNEL);
-        if (!selfMember.hasPermission(this, Permission.MESSAGE_SEND))
-            throw new InsufficientPermissionException(this, Permission.MESSAGE_SEND);
-
-        DataObject payload = DataObject.empty();
-        payload.put("name", name);
-
-        if (message != null)
-        {
-            DataObject messageJson;
-            payload.put("message", messageJson = DataObject.empty());
-
-            messageJson.put("content", message.getContentRaw());
-            messageJson.put("embeds", DataArray.fromCollection(message.getEmbeds()));
-        }
-
-        RequestBody body;
-
-        if (!uploads.isEmpty())
-        {
-            List<? extends FileUpload> files = new ArrayList<>(uploads);
-            MultipartBody.Builder form = AttachedFile.createMultipartBody(files, null);
-
-            DataArray attachments = DataArray.empty();
-            for (int i = 0; i < files.size(); i++)
-                attachments.add(files.get(i).toAttachmentData(i));
-
-            form.addFormDataPart("payload_json", payload.toString());
-            body = form.build();
-        }
-        else
-        {
-            body = RequestBody.create(payload.toString(), Requester.MEDIA_TYPE_JSON);
-        }
-
-        Route.CompiledRoute route = Route.Channels.CREATE_THREAD_WITHOUT_MESSAGE.compile(getId());
-        return new RestActionImpl<>(getJDA(), route, body, (response, request) -> {
-            DataObject json = response.getObject();
-            EntityBuilder builder = api.getEntityBuilder();
-            return builder.createThreadChannel(getGuild(), json, guild.getIdLong());
-        });
+        checkPermission(Permission.MESSAGE_SEND);
+        return new ForumPostActionImpl(this, name, new MessageCreateBuilder().applyData(message));
     }
 
     @Nonnull

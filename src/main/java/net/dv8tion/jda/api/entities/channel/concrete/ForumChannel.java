@@ -20,9 +20,9 @@ import net.dv8tion.jda.annotations.Incubating;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.attribute.IAgeRestrictedChannel;
 import net.dv8tion.jda.api.managers.channel.concrete.ForumChannelManager;
-import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.ChannelAction;
-import net.dv8tion.jda.api.utils.FileUpload;
+import net.dv8tion.jda.api.requests.restaction.ForumPostAction;
+import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -79,13 +79,6 @@ public interface ForumChannel extends StandardGuildChannel, IThreadContainer, IA
     @Nullable
     String getTopic();
 
-// TODO-message-rework: Specializing by combining message send with thread create into a unified interface
-//
-// Note: This requires changes coming with the message-rework. Specifically, you need a nice way to create a complete message and pass it to the method.
-// In addition, we need a comprehensive abstraction for all the message specific setters, coming with the MessageSend interface in the message rework.
-//
-// There is a temporary implementation available, which will most definitely be replaced in a future release.
-
     /**
      * Creates a new forum post (thread) in this forum.
      *
@@ -98,57 +91,22 @@ public interface ForumChannel extends StandardGuildChannel, IThreadContainer, IA
      * </ul>
      *
      * @param  name
-     *         The name of the post
-     * @param  upload
-     *         A file attachment to upload as the post content
-     * @param  uploads
-     *         Additional files to attach to the post
-     *
-     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the bot does not have {@link net.dv8tion.jda.api.Permission#MESSAGE_SEND Permission.MESSAGE_SEND} in the channel
-     * @throws IllegalArgumentException
-     *         <ul>
-     *             <li>If null is provided</li>
-     *             <li>If the name is empty or longer than 100 characters</li>
-     *         </ul>
-     *
-     * @return {@link RestAction} - Type: {@link ThreadChannel}
-     */
-    @Nonnull
-    @Incubating
-    @CheckReturnValue
-    RestAction<ThreadChannel> createForumPost(@Nonnull String name, @Nonnull FileUpload upload, @Nonnull FileUpload... uploads);
-
-    /**
-     * Creates a new forum post (thread) in this forum.
-     *
-     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
-     *     <br>If the forum channel was deleted</li>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#REQUEST_ENTITY_TOO_LARGE REQUEST_ENTITY_TOO_LARGE}
-     *     <br>If the total sum of uploaded bytes exceeds the guild's {@link Guild#getMaxFileSize() upload limit}</li>
-     * </ul>
-     *
-     * @param  name
-     *         The name of the post
+     *         The name of the post (up to {@value Channel#MAX_NAME_LENGTH} characters)
      * @param  message
-     *         The post message content
-     * @param  uploads
-     *         Additional files to attach to the post
+     *         The starting message of the post (see {@link net.dv8tion.jda.api.utils.messages.MessageCreateBuilder MessageCreateBuilder})
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the bot does not have {@link net.dv8tion.jda.api.Permission#MESSAGE_SEND Permission.MESSAGE_SEND} in the channel
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If null is provided</li>
-     *             <li>If the name is empty or longer than 100 characters</li>
+     *             <li>If the name is empty or longer than {@value Channel#MAX_NAME_LENGTH} characters</li>
      *         </ul>
      *
-     * @return {@link RestAction} - Type: {@link ThreadChannel}
+     * @return {@link ForumPostAction}
      */
     @Nonnull
     @Incubating
     @CheckReturnValue
-    RestAction<ThreadChannel> createForumPost(@Nonnull String name, @Nonnull Message message, @Nonnull FileUpload... uploads);
+    ForumPostAction createForumPost(@Nonnull String name, @Nonnull MessageCreateData message);
 }
