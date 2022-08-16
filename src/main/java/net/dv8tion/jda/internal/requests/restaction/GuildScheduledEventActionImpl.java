@@ -69,6 +69,8 @@ public class GuildScheduledEventActionImpl extends AuditableRestActionImpl<Guild
         } else if (channel instanceof VoiceChannel) {
             this.channelId = channel.getIdLong();
             this.entityType = 2;
+        } else {
+            throw new IllegalArgumentException("Invalid parameter: Can only set location to Voice and Stage Channels!");
         }
     }
 
@@ -153,7 +155,7 @@ public class GuildScheduledEventActionImpl extends AuditableRestActionImpl<Guild
         Checks.check(name != null, "Missing required parameter: Name");
         Checks.check(startTime != null, "Missing required parameter: Start Time");
         Checks.check(entityType != 3 || endTime != null, "Missing required parameter: End Time");
-        Checks.check(location != null, "Missing required parameter: Location");
+        Checks.check(entityType != 3 || (location != null && location.length() != 0), "Missing required parameter: Location");
         Checks.check(startTime.isAfter(OffsetDateTime.now()), "Cannot schedule event in the past!");
 
         if (endTime != null)
