@@ -49,7 +49,7 @@ public interface IAutoCompleteCallback extends Interaction
      *         <ul>
      *             <li>If {@code null} is provided</li>
      *             <li>If more than {@value OptionData#MAX_CHOICES} choices are added</li>
-     *             <li>If any of the choice names is empty or longer than {@value OptionData#MAX_CHOICE_NAME_LENGTH}</li>
+     *             <li>If any of the choice names are empty or longer than {@value OptionData#MAX_CHOICE_NAME_LENGTH}</li>
      *             <li>If the option type is incompatible with the choice type</li>
      *             <li>If the numeric value of any of the choices is not between {@value OptionData#MIN_NEGATIVE_NUMBER} and {@value OptionData#MAX_POSITIVE_NUMBER}</li>
      *             <li>If the string value of any of the choices is empty or longer than {@value OptionData#MAX_CHOICE_VALUE_LENGTH}</li>
@@ -72,7 +72,7 @@ public interface IAutoCompleteCallback extends Interaction
      *         <ul>
      *             <li>If {@code null} is provided</li>
      *             <li>If more than {@value OptionData#MAX_CHOICES} choices are added</li>
-     *             <li>If any of the choice names is empty or longer than {@value OptionData#MAX_CHOICE_NAME_LENGTH}</li>
+     *             <li>If any of the choice names are empty or longer than {@value OptionData#MAX_CHOICE_NAME_LENGTH}</li>
      *             <li>If the option type is incompatible with the choice type</li>
      *             <li>If the numeric value of any of the choices is not between {@value OptionData#MIN_NEGATIVE_NUMBER} and {@value OptionData#MAX_POSITIVE_NUMBER}</li>
      *             <li>If the string value of any of the choices is empty or longer than {@value OptionData#MAX_CHOICE_VALUE_LENGTH}</li>
@@ -182,7 +182,7 @@ public interface IAutoCompleteCallback extends Interaction
      *         <ul>
      *             <li>If {@code null} is provided</li>
      *             <li>If more than {@value OptionData#MAX_CHOICES} choices are added</li>
-     *             <li>If any of the choice names is empty or longer than {@value OptionData#MAX_CHOICE_NAME_LENGTH}</li>
+     *             <li>If any of the choice names are empty or longer than {@value OptionData#MAX_CHOICE_NAME_LENGTH}</li>
      *             <li>If the string value of any of the choices is empty or longer than {@value OptionData#MAX_CHOICE_VALUE_LENGTH}</li>
      *         </ul>
      *
@@ -210,7 +210,7 @@ public interface IAutoCompleteCallback extends Interaction
      *         <ul>
      *             <li>If {@code null} is provided</li>
      *             <li>If more than {@value OptionData#MAX_CHOICES} choices are added</li>
-     *             <li>If any of the choice names is empty or longer than {@value OptionData#MAX_CHOICE_NAME_LENGTH}</li>
+     *             <li>If any of the choice names are empty or longer than {@value OptionData#MAX_CHOICE_NAME_LENGTH}</li>
      *             <li>If the string value of any of the choices is empty or longer than {@value OptionData#MAX_CHOICE_VALUE_LENGTH}</li>
      *         </ul>
      *

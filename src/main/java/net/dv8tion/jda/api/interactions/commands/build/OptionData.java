@@ -319,7 +319,7 @@ public class OptionData implements SerializableData
      *         The description, 1-{@value #MAX_DESCRIPTION_LENGTH} characters, as defined by {@link #MAX_DESCRIPTION_LENGTH}
      *
      * @throws IllegalArgumentException
-     *         If the name is null or larger than {@link #MAX_DESCRIPTION_LENGTH}
+     *         If the name is null, empty, or longer than {@value #MAX_DESCRIPTION_LENGTH}, as defined by {@link #MAX_DESCRIPTION_LENGTH}
      *
      * @return The OptionData instance, for chaining
      */
@@ -445,7 +445,7 @@ public class OptionData implements SerializableData
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If {@link OptionType type of this option} is not {@link OptionType#INTEGER INTEGER} or {@link OptionType#NUMBER NUMBER}</li>
-     *             <li>If {@code value} is lower than or not equal to {@link OptionData#MIN_NEGATIVE_NUMBER MIN_NEGATIVE_NUMBER}</li>
+     *             <li>If {@code value} is less than {@link OptionData#MIN_NEGATIVE_NUMBER MIN_NEGATIVE_NUMBER}</li>
      *         </ul>
      *
      * @return The OptionData instance, for chaining
@@ -455,7 +455,7 @@ public class OptionData implements SerializableData
     {
         if (type != OptionType.INTEGER && type != OptionType.NUMBER)
             throw new IllegalArgumentException("Can only set min and max long value for options of type INTEGER or NUMBER");
-        Checks.check(value >= MIN_NEGATIVE_NUMBER, "Long value may not be lower than %f", MIN_NEGATIVE_NUMBER);
+        Checks.check(value >= MIN_NEGATIVE_NUMBER, "Long value may not be less than %f", MIN_NEGATIVE_NUMBER);
         this.minValue = value;
         return this;
     }
@@ -468,7 +468,7 @@ public class OptionData implements SerializableData
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If {@link OptionType type of this option} is not {@link OptionType#NUMBER NUMBER}</li>
-     *             <li>If {@code value} is lower than or not equal to {@link OptionData#MIN_NEGATIVE_NUMBER MIN_NEGATIVE_NUMBER}</li>
+     *             <li>If {@code value} is less than {@link OptionData#MIN_NEGATIVE_NUMBER MIN_NEGATIVE_NUMBER}</li>
      *         </ul>
      *
      * @return The OptionData instance, for chaining
@@ -478,7 +478,7 @@ public class OptionData implements SerializableData
     {
         if (type != OptionType.NUMBER)
             throw new IllegalArgumentException("Can only set min double value for options of type NUMBER");
-        Checks.check(value >= MIN_NEGATIVE_NUMBER, "Double value may not be lower than %f", MIN_NEGATIVE_NUMBER);
+        Checks.check(value >= MIN_NEGATIVE_NUMBER, "Double value may not be less than %f", MIN_NEGATIVE_NUMBER);
         this.minValue = value;
         return this;
     }
@@ -491,7 +491,7 @@ public class OptionData implements SerializableData
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If {@link OptionType type of this option} is not {@link OptionType#INTEGER INTEGER} or {@link OptionType#NUMBER NUMBER}</li>
-     *             <li>If {@code value} is larger than {@link OptionData#MAX_POSITIVE_NUMBER MAX_POSITIVE_NUMBER}</li>
+     *             <li>If {@code value} is greater than {@link OptionData#MAX_POSITIVE_NUMBER MAX_POSITIVE_NUMBER}</li>
      *         </ul>
      *
      * @return The OptionData instance, for chaining
@@ -501,7 +501,7 @@ public class OptionData implements SerializableData
     {
         if (type != OptionType.INTEGER && type != OptionType.NUMBER)
             throw new IllegalArgumentException("Can only set min and max long value for options of type INTEGER or NUMBER");
-        Checks.check(value <= MAX_POSITIVE_NUMBER, "Long value may not be larger than %f", MAX_POSITIVE_NUMBER);
+        Checks.check(value <= MAX_POSITIVE_NUMBER, "Long value may not be greater than %f", MAX_POSITIVE_NUMBER);
         this.maxValue = value;
         return this;
     }
@@ -514,7 +514,7 @@ public class OptionData implements SerializableData
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If {@link OptionType type of this option} is not {@link OptionType#NUMBER NUMBER}</li>
-     *             <li>If {@code value} is larger than {@link OptionData#MAX_POSITIVE_NUMBER MAX_POSITIVE_NUMBER}</li>
+     *             <li>If {@code value} is greater than {@link OptionData#MAX_POSITIVE_NUMBER MAX_POSITIVE_NUMBER}</li>
      *         </ul>
      *
      * @return The OptionData instance, for chaining
@@ -524,7 +524,7 @@ public class OptionData implements SerializableData
     {
         if (type != OptionType.NUMBER)
             throw new IllegalArgumentException("Can only set max double value for options of type NUMBER");
-        Checks.check(value <= MAX_POSITIVE_NUMBER, "Double value may not be larger than %f", MAX_POSITIVE_NUMBER);
+        Checks.check(value <= MAX_POSITIVE_NUMBER, "Double value may not be greater than %f", MAX_POSITIVE_NUMBER);
         this.maxValue = value;
         return this;
     }
@@ -539,8 +539,8 @@ public class OptionData implements SerializableData
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If {@link OptionType type of this option} is not {@link OptionType#INTEGER INTEGER} or {@link OptionType#NUMBER NUMBER}</li>
-     *             <li>If {@code minValue} is lower than or not equal to {@link OptionData#MIN_NEGATIVE_NUMBER MIN_NEGATIVE_NUMBER}</li>
-     *             <li>If {@code maxValue} is larger than {@link OptionData#MAX_POSITIVE_NUMBER MAX_POSITIVE_NUMBER}</li>
+     *             <li>If {@code minValue} is less than or not equal to {@link OptionData#MIN_NEGATIVE_NUMBER MIN_NEGATIVE_NUMBER}</li>
+     *             <li>If {@code maxValue} is greater than {@link OptionData#MAX_POSITIVE_NUMBER MAX_POSITIVE_NUMBER}</li>
      *         </ul>
      *
      * @return The OptionData instance, for chaining
@@ -550,8 +550,8 @@ public class OptionData implements SerializableData
     {
         if (type != OptionType.INTEGER && type != OptionType.NUMBER)
             throw new IllegalArgumentException("Can only set min and max long value for options of type INTEGER or NUMBER");
-        Checks.check(minValue >= MIN_NEGATIVE_NUMBER, "Long value may not be lower than %f", MIN_NEGATIVE_NUMBER);
-        Checks.check(maxValue <= MAX_POSITIVE_NUMBER, "Long value may not be larger than %f", MAX_POSITIVE_NUMBER);
+        Checks.check(minValue >= MIN_NEGATIVE_NUMBER, "Long value may not be less than %f", MIN_NEGATIVE_NUMBER);
+        Checks.check(maxValue <= MAX_POSITIVE_NUMBER, "Long value may not be greater than %f", MAX_POSITIVE_NUMBER);
         this.minValue = minValue;
         this.maxValue = maxValue;
         return this;
@@ -567,8 +567,8 @@ public class OptionData implements SerializableData
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If {@link OptionType type of this option} is not {@link OptionType#NUMBER NUMBER}</li>
-     *             <li>If {@code minValue} is lower than or not equal to {@link OptionData#MIN_NEGATIVE_NUMBER MIN_NEGATIVE_NUMBER}</li>
-     *             <li>If {@code maxValue} is larger than {@link OptionData#MAX_POSITIVE_NUMBER MAX_POSITIVE_NUMBER}</li>
+     *             <li>If {@code minValue} is less than or not equal to {@link OptionData#MIN_NEGATIVE_NUMBER MIN_NEGATIVE_NUMBER}</li>
+     *             <li>If {@code maxValue} is greater than {@link OptionData#MAX_POSITIVE_NUMBER MAX_POSITIVE_NUMBER}</li>
      *         </ul>
      *
      * @return The OptionData instance, for chaining
@@ -578,8 +578,8 @@ public class OptionData implements SerializableData
     {
         if (type != OptionType.NUMBER)
             throw new IllegalArgumentException("Can only set min and max double value for options of type NUMBER");
-        Checks.check(minValue >= MIN_NEGATIVE_NUMBER, "Double value may not be lower than %f", MIN_NEGATIVE_NUMBER);
-        Checks.check(maxValue <= MAX_POSITIVE_NUMBER, "Double value may not be larger than %f", MAX_POSITIVE_NUMBER);
+        Checks.check(minValue >= MIN_NEGATIVE_NUMBER, "Double value may not be less than %f", MIN_NEGATIVE_NUMBER);
+        Checks.check(maxValue <= MAX_POSITIVE_NUMBER, "Double value may not be greater than %f", MAX_POSITIVE_NUMBER);
         this.minValue = minValue;
         this.maxValue = maxValue;
         return this;
@@ -597,9 +597,9 @@ public class OptionData implements SerializableData
      *
      * @throws IllegalArgumentException
      *         <ul>
-     *             <li>If {@code name} is null, empty or larger than or not equal to {@value #MAX_CHOICE_NAME_LENGTH} characters long</li>
-     *             <li>If {@code value} is less than {@link #MIN_NEGATIVE_NUMBER} or larger than {@link #MAX_POSITIVE_NUMBER}</li>
-     *             <li>If the amount of already set choices is less than {@link #MAX_CHOICES}</li>
+     *             <li>If {@code name} is null, empty, or greater than {@value #MAX_CHOICE_NAME_LENGTH} characters long</li>
+     *             <li>If {@code value} is less than {@link #MIN_NEGATIVE_NUMBER} or greater than {@link #MAX_POSITIVE_NUMBER}</li>
+     *             <li>If adding this choice would exceed {@value #MAX_CHOICES} choices, as defined by {@link #MAX_CHOICES}</li>
      *             <li>If the {@link OptionType} is not {@link OptionType#NUMBER}</li>
      *             <li>If the option is auto-complete enabled</li>
      *         </ul>
@@ -611,8 +611,8 @@ public class OptionData implements SerializableData
     {
         Checks.notEmpty(name, "Name");
         Checks.notLonger(name, MAX_CHOICE_NAME_LENGTH, "Name");
-        Checks.check(value >= MIN_NEGATIVE_NUMBER, "Double value may not be lower than %f", MIN_NEGATIVE_NUMBER);
-        Checks.check(value <= MAX_POSITIVE_NUMBER, "Double value may not be larger than %f", MAX_POSITIVE_NUMBER);
+        Checks.check(value >= MIN_NEGATIVE_NUMBER, "Double value may not be less than %f", MIN_NEGATIVE_NUMBER);
+        Checks.check(value <= MAX_POSITIVE_NUMBER, "Double value may not be greater than %f", MAX_POSITIVE_NUMBER);
         Checks.check(choices.size() < MAX_CHOICES, "Cannot have more than 25 choices for an option!");
         if (isAutoComplete)
             throw new IllegalStateException("Cannot add choices to auto-complete options");
@@ -633,9 +633,9 @@ public class OptionData implements SerializableData
      *
      * @throws IllegalArgumentException
      *         <ul>
-     *             <li>If {@code name} is null, empty or larger than or not equal to {@value #MAX_CHOICE_NAME_LENGTH} characters long</li>
-     *             <li>If {@code value} is less than {@link #MIN_NEGATIVE_NUMBER} or larger than {@link #MAX_POSITIVE_NUMBER}</li>
-     *             <li>If the amount of already set choices is less than {@link #MAX_CHOICES}</li>
+     *             <li>If {@code name} is null, empty, or greater than {@value #MAX_CHOICE_NAME_LENGTH} characters long</li>
+     *             <li>If {@code value} is less than {@link #MIN_NEGATIVE_NUMBER} or greater than {@link #MAX_POSITIVE_NUMBER}</li>
+     *             <li>If adding this choice would exceed {@value #MAX_CHOICES} choices, as defined by {@link #MAX_CHOICES}</li>
      *             <li>If the {@link OptionType} is not {@link OptionType#INTEGER}</li>
      *             <li>If the option is auto-complete enabled</li>
      *         </ul>
@@ -647,8 +647,8 @@ public class OptionData implements SerializableData
     {
         Checks.notEmpty(name, "Name");
         Checks.notLonger(name, MAX_CHOICE_NAME_LENGTH, "Name");
-        Checks.check(value >= MIN_NEGATIVE_NUMBER, "Long value may not be lower than %f", MIN_NEGATIVE_NUMBER);
-        Checks.check(value <= MAX_POSITIVE_NUMBER, "Long value may not be larger than %f", MAX_POSITIVE_NUMBER);
+        Checks.check(value >= MIN_NEGATIVE_NUMBER, "Long value may not be less than %f", MIN_NEGATIVE_NUMBER);
+        Checks.check(value <= MAX_POSITIVE_NUMBER, "Long value may not be greater than %f", MAX_POSITIVE_NUMBER);
         Checks.check(choices.size() < MAX_CHOICES, "Cannot have more than 25 choices for an option!");
         if (isAutoComplete)
             throw new IllegalStateException("Cannot add choices to auto-complete options");
@@ -669,9 +669,9 @@ public class OptionData implements SerializableData
      *
      * @throws IllegalArgumentException
      *         <ul>
-     *             <li>If {@code name} is null, empty or larger than or not equal to {@value #MAX_CHOICE_NAME_LENGTH} characters long</li>
-     *             <li>If {@code value} is less than {@link #MIN_NEGATIVE_NUMBER} or larger than {@link #MAX_POSITIVE_NUMBER}</li>
-     *             <li>If the amount of already set choices is less than {@link #MAX_CHOICES}</li>
+     *             <li>If {@code name} is null, empty, or greater than {@value #MAX_CHOICE_NAME_LENGTH} characters long</li>
+     *             <li>If {@code value} is less than {@link #MIN_NEGATIVE_NUMBER} or greater than {@link #MAX_POSITIVE_NUMBER}</li>
+     *             <li>If adding this choice would exceed {@value #MAX_CHOICES} choices, as defined by {@link #MAX_CHOICES}</li>
      *             <li>If the {@link OptionType} is not {@link OptionType#STRING}</li>
      *             <li>If the option is auto-complete enabled</li>
      *         </ul>
@@ -705,7 +705,7 @@ public class OptionData implements SerializableData
      *         <ul>
      *             <li>If the {@link OptionType} does not {@link OptionType#canSupportChoices() support choices}</li>
      *             <li>If the provided {@code choices} are null</li>
-     *             <li>If the amount of {@code choices} provided is larger than or not equal to {@link #MAX_CHOICES} when combined with already set choices</li>
+     *             <li>If the amount of {@code choices} provided, when combined with the already set choices, would be greater than {@value #MAX_CHOICES}, as defined by {@link #MAX_CHOICES}</li>
      *             <li>If the {@link OptionType} of the choices is not either {@link OptionType#INTEGER}, {@link OptionType#STRING} or {@link OptionType#NUMBER}</li>
      *             <li>If the option is auto-complete enabled</li>
      *         </ul>
@@ -748,7 +748,7 @@ public class OptionData implements SerializableData
      *         <ul>
      *             <li>If the {@link OptionType} does not {@link OptionType#canSupportChoices() support choices}</li>
      *             <li>If the provided {@code choices} are null</li>
-     *             <li>If the amount of {@code choices} provided is larger than or not equal to {@link #MAX_CHOICES} when combined with already set choices</li>
+     *             <li>If the amount of {@code choices} provided, when combined with the already set choices, would be greater than {@value #MAX_CHOICES}, as defined by {@link #MAX_CHOICES}</li>
      *             <li>If the {@link OptionType} of the choices is not either {@link OptionType#INTEGER}, {@link OptionType#STRING} or {@link OptionType#NUMBER}</li>
      *             <li>If the option is auto-complete enabled</li>
      *         </ul>
