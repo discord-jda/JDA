@@ -751,10 +751,9 @@ public class OptionData implements SerializableData
      * @param  minLength
      *         The minimum length for strings which can be provided for this option.
      * @throws IllegalArgumentException
-     *         If any of the following checks fail
      *         <ul>
-     *             <li>{@link OptionType type of this option} is {@link OptionType#STRING STRING}</li>
-     *             <li>{@code minLength} is greater than or equal to {@code 0}</li>
+     *             <li>If {@link OptionType type of this option} is not {@link OptionType#STRING STRING}</li>
+     *             <li>If {@code minLength} is not positive</li>
      *         </ul>
      *
      * @return The OptionData instance, for chaining
@@ -764,7 +763,7 @@ public class OptionData implements SerializableData
     {
         if (type != OptionType.STRING)
             throw new IllegalArgumentException("Can only set min length for options of type STRING");
-        Checks.notNegative(minLength, "Min length");
+        Checks.positive(minLength, "Min length");
         this.minLength = minLength;
         return this;
     }
@@ -775,10 +774,9 @@ public class OptionData implements SerializableData
      * @param  maxLength
      *         The maximum length for strings which can be provided for this option.
      * @throws IllegalArgumentException
-     *         If any of the following checks fail
      *         <ul>
-     *             <li>{@link OptionType type of this option} is {@link OptionType#STRING STRING}</li>
-     *             <li>{@code maxLength} is positive and lower than or equal to {@value MAX_STRING_OPTION_LENGTH}</li>
+     *             <li>If {@link OptionType type of this option} is not {@link OptionType#STRING STRING}</li>
+     *             <li>If {@code maxLength} is not positive or greater than {@value MAX_STRING_OPTION_LENGTH}</li>
      *         </ul>
      *
      * @return The OptionData instance, for chaining
@@ -802,12 +800,9 @@ public class OptionData implements SerializableData
      * @param  maxLength
      *         The maximum length for strings which can be provided for this option.
      * @throws IllegalArgumentException
-     *         If any of the following checks fail
      *         <ul>
-     *             <li>{@link OptionType type of this option} is {@link OptionType#STRING STRING}</li>
-     *             <li>{@code minLength} is not negative</li>
-     *             <li>{@code maxLength} is lower than or equal to {@value MAX_STRING_OPTION_LENGTH}</li>
-     *             <li>{@code minLength} is lower than or equal to {@code maxLength}</li>
+     *             <li>If {@link OptionType type of this option} is not {@link OptionType#STRING STRING}</li>
+     *             <li>If {@code minLength} is greater than {@code maxLength}</li>
      *         </ul>
      *
      * @return The OptionData instance, for chaining
@@ -817,12 +812,9 @@ public class OptionData implements SerializableData
     {
         if (type != OptionType.STRING)
             throw new IllegalArgumentException("Can only set min and max length for options of type STRING");
-        Checks.notNegative(minLength, "Min length");
-        Checks.check(maxLength <= MAX_STRING_OPTION_LENGTH,
-                "Max length must not be greater than %d. Provided: %d", MAX_STRING_OPTION_LENGTH, maxLength);
         Checks.check(minLength <= maxLength, "Min length must not be greater than max length. Provided: %d > %d", minLength, maxLength);
-        this.minLength = minLength;
-        this.maxLength = maxLength;
+        this.setMinLength(minLength);
+        this.setMaxLength(maxLength);
         return this;
     }
 
