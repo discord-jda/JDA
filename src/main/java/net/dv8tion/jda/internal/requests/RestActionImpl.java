@@ -23,6 +23,7 @@ import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.RestFuture;
+import net.dv8tion.jda.api.utils.AttachedFile;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
@@ -34,6 +35,7 @@ import org.slf4j.Logger;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.List;
 import java.util.concurrent.*;
 import java.util.function.BiFunction;
 import java.util.function.BooleanSupplier;
@@ -256,6 +258,15 @@ public class RestActionImpl<T> implements RestAction<T>
         this.rawData = array;
 
         return array == null ? null : RequestBody.create(Requester.MEDIA_TYPE_JSON, array.toJson());
+    }
+
+    @Nonnull
+    protected RequestBody getMultipartBody(@Nonnull List<? extends AttachedFile> files, @Nonnull DataObject json)
+    {
+        RequestBody payloadJson = getRequestBody(json);
+        if (files.isEmpty())
+            return payloadJson;
+        return AttachedFile.createMultipartBody(files, payloadJson).build();
     }
 
     private CheckWrapper getFinisher()

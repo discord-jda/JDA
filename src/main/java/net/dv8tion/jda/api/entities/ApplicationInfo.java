@@ -23,7 +23,10 @@ import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.EnumSet;
+import java.util.List;
 
 /**
  * Represents a Discord Application from its bot's point of view.
@@ -348,4 +351,76 @@ public interface ApplicationInfo extends ISnowflake
      * @return Never-negative long containing offset permissions the default authorization URL is set up with.
      */
     long getPermissionsRaw();
+
+    /**
+     * The {@link Flag Flags} set for the application.
+     * <br>Modifying the returned EnumSet will have not actually change the flags of the application.
+     *
+     * @return {@link EnumSet} of {@link Flag}
+     */
+    @Nonnull
+    default EnumSet<Flag> getFlags()
+    {
+        return Flag.fromRaw(getFlagsRaw());
+    }
+
+    /**
+     * The raw bitset representing this application's flags.
+     *
+     * @return The bitset
+     */
+    long getFlagsRaw();
+
+    /**
+     * Flag constants corresponding to the <a href="https://discord.com/developers/docs/resources/application#application-object-application-flags" target="_blank">Discord Enum</a>
+     *
+     * @see #getFlags()
+     */
+    enum Flag
+    {
+        /** Bot can use {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_PRESENCES GatewayIntent.GUILD_PRESENCES} in 100 or more guilds */
+        GATEWAY_PRESENCE(1 << 12),
+        /** Bot can use {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_PRESENCES GatewayIntent.GUILD_PRESENCES} in under 100 guilds */
+        GATEWAY_PRESENCE_LIMITED(1 << 13),
+        /** Bot can use {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MEMBERS GatewayIntent.GUILD_MEMBERS} in 100 or more guilds */
+        GATEWAY_GUILD_MEMBERS(1 << 14),
+        /** Bot can use {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MEMBERS GatewayIntent.GUILD_MEMBERS} in under 100 guilds */
+        GATEWAY_GUILD_MEMBERS_LIMITED(1 << 15),
+        /** Indicates unusual growth of an app that prevents verification */
+        VERIFICATION_PENDING_GUILD_LIMIT(1 << 16),
+        /** Indicates if an app is embedded within the Discord client (currently unavailable publicly) */
+        EMBEDDED(1 << 17),
+        /** Bot can use {@link net.dv8tion.jda.api.requests.GatewayIntent#MESSAGE_CONTENT GatewayIntent.MESSAGE_CONTENT} in 100 or more guilds */
+        GATEWAY_MESSAGE_CONTENT(1 << 18),
+        /** Bot can use {@link net.dv8tion.jda.api.requests.GatewayIntent#MESSAGE_CONTENT GatewayIntent.MESSAGE_CONTENT} in under 100 guilds */
+        GATEWAY_MESSAGE_CONTENT_LIMITED(1 << 19),
+        ;
+
+        private final long value;
+
+        Flag(long value)
+        {
+            this.value = value;
+        }
+
+        /**
+         * Converts the provided bitset to the corresponding enum constants.
+         *
+         * @param  raw
+         *         The bitset of flags
+         *
+         * @return {@link EnumSet} of {@link Flag}
+         */
+        @Nonnull
+        public static EnumSet<Flag> fromRaw(long raw)
+        {
+            EnumSet<Flag> set = EnumSet.noneOf(Flag.class);
+            for (Flag flag : values())
+            {
+                if ((raw & flag.value) != 0)
+                    set.add(flag);
+            }
+            return set;
+        }
+    }
 }

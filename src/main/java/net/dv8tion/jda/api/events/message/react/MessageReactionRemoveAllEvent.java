@@ -27,7 +27,7 @@ import javax.annotation.Nonnull;
  *
  * <p>Can be used to detect when the reactions of a message are removed by a moderator
  *
- * <h2>Requirements</h2>
+ * <p><b>Requirements</b><br>
  *
  * <p>This event requires at least one of the following intents (Will not fire at all if neither is enabled):
  * <ul>

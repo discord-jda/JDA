@@ -14,13 +14,20 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.utils;
+package net.dv8tion.jda.api.entities.channel.attribute;
+
+import net.dv8tion.jda.api.entities.GuildChannel;
 
 /**
- * Options that can be applied to attachments in {@link net.dv8tion.jda.api.requests.restaction.MessageAction}.
+ * Channels which can be set to age-restricted.
+ * <br>These channels only allow users with a verified mature age to participate.
  */
-public enum AttachmentOption
+public interface IAgeRestrictedChannel extends GuildChannel
 {
-    /** Marks an image attachment as a spoiler by prefixing the name with {@code SPOILER_} */
-    SPOILER
+    /**
+     * Whether this channel is considered as age-restricted, also known as NSFW (Not-Safe-For-Work)
+     *
+     * @return True, If this channel is age-restricted by the official Discord Client
+     */
+    boolean isNSFW();
 }

@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.ICategorizableChannel;
 import net.dv8tion.jda.api.entities.ThreadChannel;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
+import net.dv8tion.jda.api.entities.sticker.GuildSticker;
 
 /**
  * Enum of possible/expected keys that can be provided
@@ -244,8 +245,7 @@ public enum AuditLogKey
     CHANNEL_USER_LIMIT("user_limit"),
 
     /**
-     * Change of the {@link net.dv8tion.jda.api.entities.TextChannel#isNSFW() TextChannel.isNSFW()} value.
-     * <br>Only for {@link net.dv8tion.jda.api.entities.ChannelType#TEXT ChannelType.TEXT}
+     * Change of the {@link net.dv8tion.jda.api.entities.channel.attribute.IAgeRestrictedChannel#isNSFW() IAgeRestrictedChannel.isNSFW()} value.
      *
      * <p>Expected type: <b>Boolean</b>
      */
@@ -474,6 +474,36 @@ public enum AuditLogKey
      */
     EMOJI_ROLES_REMOVE("$remove"),
 
+
+    // STICKER
+
+    /**
+     * Change of the {@link GuildSticker#getName() Sticker.getName()} value.
+     *
+     * <p>Expected type: <b>String</b>
+     */
+    STICKER_NAME("name"),
+
+    /**
+     * Change of the {@link GuildSticker#getFormatType() Sticker.getFormatType()} value.
+     *
+     * <p>Expected type: <b>String</b>
+     */
+    STICKER_FORMAT("format_type"),
+
+    /**
+     * Change of the {@link GuildSticker#getDescription() Sticker.getDescription()} value.
+     *
+     * <p>Expected type: <b>String</b>
+     */
+    STICKER_DESCRIPTION("description"),
+
+    /**
+     * Change of the {@link GuildSticker#getTags() Sticker.getTags()} value.
+     *
+     * <p>Expected type: <b>String</b>
+     */
+    STICKER_TAGS("tags"),
 
     // WEBHOOK
     /**

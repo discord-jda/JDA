@@ -17,22 +17,24 @@
 package net.dv8tion.jda.internal.entities;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.WebhookClient;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.requests.RestAction;
-import net.dv8tion.jda.api.requests.restaction.WebhookMessageUpdateAction;
-import net.dv8tion.jda.api.utils.AttachmentOption;
+import net.dv8tion.jda.api.requests.restaction.WebhookMessageCreateAction;
+import net.dv8tion.jda.api.requests.restaction.WebhookMessageEditAction;
+import net.dv8tion.jda.api.utils.AttachedFile;
+import net.dv8tion.jda.api.utils.FileUpload;
+import net.dv8tion.jda.api.utils.messages.MessageCreateData;
+import net.dv8tion.jda.api.utils.messages.MessageEditData;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
-import net.dv8tion.jda.internal.requests.restaction.WebhookMessageActionImpl;
-import net.dv8tion.jda.internal.requests.restaction.WebhookMessageUpdateActionImpl;
+import net.dv8tion.jda.internal.requests.restaction.WebhookMessageCreateActionImpl;
+import net.dv8tion.jda.internal.requests.restaction.WebhookMessageEditActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
-import java.io.InputStream;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -50,74 +52,74 @@ public abstract class AbstractWebhookClient<T> implements WebhookClient<T>
         this.api = api;
     }
 
-    public abstract WebhookMessageActionImpl<T> sendRequest();
-    public abstract WebhookMessageUpdateActionImpl<T> editRequest(String messageId);
+    public abstract WebhookMessageCreateActionImpl<T> sendRequest();
+    public abstract WebhookMessageEditActionImpl<T> editRequest(String messageId);
 
     @Nonnull
     @Override
-    public WebhookMessageActionImpl<T> sendMessage(@Nonnull String content)
+    public WebhookMessageCreateAction<T> sendMessage(@Nonnull String content)
     {
         return sendRequest().setContent(content);
     }
 
     @Nonnull
     @Override
-    public WebhookMessageActionImpl<T> sendMessageEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
+    public WebhookMessageCreateAction<T> sendMessageEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
     {
         return sendRequest().addEmbeds(embeds);
     }
 
     @Nonnull
     @Override
-    public WebhookMessageActionImpl<T> sendMessage(@Nonnull Message message)
+    public WebhookMessageCreateAction<T> sendMessage(@Nonnull MessageCreateData message)
     {
-        return sendRequest().applyMessage(message);
+        return sendRequest().applyData(message);
     }
 
     @Nonnull
     @Override
-    public WebhookMessageActionImpl<T> sendFile(@Nonnull InputStream data, @Nonnull String name, @Nonnull AttachmentOption... options)
+    public WebhookMessageCreateAction<T> sendFiles(@Nonnull Collection<? extends FileUpload> files)
     {
-        return sendRequest().addFile(data, name, options);
+        return sendRequest().addFiles(files);
     }
 
     @Nonnull
     @Override
-    public WebhookMessageUpdateActionImpl<T> editMessageById(@Nonnull String messageId, @Nonnull String content)
+    public WebhookMessageEditActionImpl<T> editMessageById(@Nonnull String messageId, @Nonnull String content)
     {
-        return (WebhookMessageUpdateActionImpl<T>) editRequest(messageId).setContent(content);
+        return (WebhookMessageEditActionImpl<T>) editRequest(messageId).setContent(content);
     }
 
     @Nonnull
     @Override
-    public WebhookMessageUpdateAction<T> editMessageComponentsById(@Nonnull String messageId, @Nonnull Collection<? extends LayoutComponent> components)
+    public WebhookMessageEditAction<T> editMessageComponentsById(@Nonnull String messageId, @Nonnull Collection<? extends LayoutComponent> components)
     {
         Checks.noneNull(components, "Components");
         if (components.stream().anyMatch(x -> !(x instanceof ActionRow)))
             throw new UnsupportedOperationException("The provided component layout is not supported");
         List<ActionRow> actionRows = components.stream().map(ActionRow.class::cast).collect(Collectors.toList());
-        return editRequest(messageId).setActionRows(actionRows);
+        return editRequest(messageId).setComponents(actionRows);
     }
 
     @Nonnull
     @Override
-    public WebhookMessageUpdateActionImpl<T> editMessageEmbedsById(@Nonnull String messageId, @Nonnull Collection<? extends MessageEmbed> embeds)
+    public WebhookMessageEditActionImpl<T> editMessageEmbedsById(@Nonnull String messageId, @Nonnull Collection<? extends MessageEmbed> embeds)
     {
-        return (WebhookMessageUpdateActionImpl<T>) editRequest(messageId).setEmbeds(embeds);
+        return (WebhookMessageEditActionImpl<T>) editRequest(messageId).setEmbeds(embeds);
     }
 
     @Nonnull
     @Override
-    public WebhookMessageUpdateActionImpl<T> editMessageById(@Nonnull String messageId, @Nonnull Message message)
+    public WebhookMessageEditActionImpl<T> editMessageById(@Nonnull String messageId, @Nonnull MessageEditData message)
     {
-        return (WebhookMessageUpdateActionImpl<T>) editRequest(messageId).applyMessage(message);
+        return (WebhookMessageEditActionImpl<T>) editRequest(messageId).applyData(message);
     }
 
     @Nonnull
     @Override
-    public WebhookMessageUpdateActionImpl<T> editMessageById(@Nonnull String messageId, @Nonnull InputStream data, @Nonnull String name, @Nonnull AttachmentOption... options)
+    public WebhookMessageEditActionImpl<T> editMessageAttachmentsById(@Nonnull String messageId, @Nonnull Collection<? extends AttachedFile> attachments)
     {
-        return (WebhookMessageUpdateActionImpl<T>) editRequest(messageId).addFile(data, name, options);
+        return (WebhookMessageEditActionImpl<T>) editRequest(messageId).setAttachments(attachments);
     }
 
     @Nonnull

@@ -24,8 +24,10 @@ import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * Represents a Discord Modal
@@ -33,7 +35,7 @@ import java.util.stream.Collectors;
  * <p>Replying to an interaction with a modal will open an interactive popout on the User's Discord client.
  * This is similar to the ban modal where you can input a ban reason.
   *
-  * <h2>Example</h2>
+  * <p><b>Example</b><br>
  * <pre>{@code
  * public void onSlashCommandInteraction(@Nonnull SlashCommandInteractionEvent event)
  * {

@@ -22,7 +22,6 @@ import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.CacheRestAction;
 import net.dv8tion.jda.internal.utils.Checks;
-import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -106,7 +105,7 @@ public class DeferredRestAction<T, R extends RestAction<T>> implements Auditable
         return this;
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public CacheRestAction<T> useCache(boolean useCache)
     {

@@ -20,24 +20,16 @@ import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.interactions.InteractionCallbackAction;
-import net.dv8tion.jda.api.utils.AttachedFile;
-import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.interactions.InteractionImpl;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
-import net.dv8tion.jda.internal.utils.IOUtil;
-import okhttp3.MultipartBody;
-import okhttp3.RequestBody;
 
 import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
 public abstract class InteractionCallbackImpl<T> extends RestActionImpl<T> implements InteractionCallbackAction<T>
 {
-    protected final List<AttachedFile> files = new ArrayList<>();
     protected final InteractionImpl interaction;
 
     public InteractionCallbackImpl(InteractionImpl interaction)
@@ -46,39 +38,11 @@ public abstract class InteractionCallbackImpl<T> extends RestActionImpl<T> imple
         this.interaction = interaction;
     }
 
-    protected abstract DataObject toData();
-
-    @Override
-    protected RequestBody finalizeData()
-    {
-        DataObject json = toData();
-        if (files.isEmpty())
-            return getRequestBody(json);
-
-        // TODO: Handle file edits better
-        MultipartBody.Builder body = AttachedFile.createMultipartBody(files, null);
-        body.addFormDataPart("payload_json", json.toString());
-        files.clear();
-        return body.build();
-    }
-
     @Nonnull
     @Override
     public InteractionCallbackAction<T> closeResources()
     {
-        files.forEach(IOUtil::silentClose);
-        files.clear();
         return this;
-    }
-
-    @Override
-    @SuppressWarnings({"deprecation", "ResultOfMethodCallIgnored"})
-    protected void finalize()
-    {
-        if (files.isEmpty())
-            return;
-        LOG.warn("Found open resources in interaction callback. Did you forget to close them?");
-        closeResources();
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
