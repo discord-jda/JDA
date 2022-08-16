@@ -179,10 +179,6 @@ public interface GuildScheduledEventManager extends Manager<GuildScheduledEventM
      *         The {@link GuildChannel} that the selected {@link GuildScheduledEvent} is set to take place in.
      *
      * @throws java.lang.IllegalArgumentException
-     *         If the provided {@link GuildChannel} is {@code null}, or is not from the same guild
-     *         that the selected {@link GuildScheduledEvent} takes place in.
-     *
-     * @throws java.lang.IllegalArgumentException
      *         <ul>
      *             <li>If the provided {@link GuildChannel} is {@code null}</li>
      *             <li>If the provided {@link GuildChannel} is not from the same guild</li>
@@ -195,7 +191,7 @@ public interface GuildScheduledEventManager extends Manager<GuildScheduledEventM
      *         {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL Permission.MANAGE_CHANNEL},
      *         {@link net.dv8tion.jda.api.Permission#VOICE_MUTE_OTHERS Permission.VOICE_MUTE_OTHERS},
      *         or {@link net.dv8tion.jda.api.Permission#VOICE_MOVE_OTHERS Permission.VOICE_MOVE_OTHERS}, in the provided
-     *         stage channel.
+     *         channel.
      *
      * @return GuildScheduledEventManager for chaining convenience
      */
@@ -204,7 +200,7 @@ public interface GuildScheduledEventManager extends Manager<GuildScheduledEventM
     GuildScheduledEventManager setLocation(@Nonnull GuildChannel channel);
 
     /**
-     * Sets the location of the selected {@link GuildScheduledEvent} to take place "externally",
+     * Sets the location of the selected {@link GuildScheduledEvent} to take place externally,
      * or not in a specific {@link GuildChannel}. <u>Please note that an event is required to have an end time set if
      * the location is external.</u>
      * <p>This will change the event's type to {@link GuildScheduledEvent.Type#EXTERNAL}
@@ -213,7 +209,8 @@ public interface GuildScheduledEventManager extends Manager<GuildScheduledEventM
      *         The location that the selected {@link GuildScheduledEvent} is set to take place at.
      *
      * @throws java.lang.IllegalArgumentException
-     *         If the provided location is {@code null}
+     *         If the provided location is blank, empty, {@code null}, or contains more than
+     *         {@value GuildScheduledEvent#MAX_LOCATION_LENGTH} characters
      * @throws java.lang.IllegalStateException
      *         If the selected {@link GuildScheduledEvent} does not have an end time
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
@@ -232,17 +229,20 @@ public interface GuildScheduledEventManager extends Manager<GuildScheduledEventM
     /**
      * Sets the time that the selected {@link GuildScheduledEvent} should start at.
      * Events of {@link GuildScheduledEvent.Type#EXTERNAL Type.EXTERNAL} will automatically
-     * start at this time, but events of {@link GuildScheduledEvent.Type#STAGE_INSTANCE Type.STAGE_INSTANCE}
-     * and {@link GuildScheduledEvent.Type#VOICE Type.VOICE} will need to manually be started,
-     * and will automatically be cancelled a few hours after the start time if not.
+     * start at this time. Events of {@link GuildScheduledEvent.Type#STAGE_INSTANCE Type.STAGE_INSTANCE}
+     * and {@link GuildScheduledEvent.Type#VOICE Type.VOICE} need to be manually started.
+     * If the {@link GuildScheduledEvent} has not begun after its scheduled start time, it will be automatically cancelled after a few hours.
      *
      * @param  startTime
      *         The time that the selected {@link GuildScheduledEvent} is set to start at.
      *
      * @throws java.lang.IllegalArgumentException
-     *         If the provided start time is {@code null}, or takes place after the end time.
-     *
-     * @return GuildScheduledEventManager for chaining convenience
+     *         <ul>
+     *             <li>If the provided start time is {@code null}</li>
+     *             <li>If the provided start time is before the end time</li>
+     *             <li>If the provided start time is before the current time</li>
+     *         </ul>
+     * @return GuildScheduledEventManager for chaining convenience of the optional parameters
      *
      * @see    #setEndTime(TemporalAccessor)
      */
@@ -258,15 +258,15 @@ public interface GuildScheduledEventManager extends Manager<GuildScheduledEventM
      * person has left the channel.
      *
      * @param  endTime
-     *         The time that the selected {@link GuildScheduledEvent} is set to end at,
-     *         or {@code null} for no end time to be set.
+     *         The time that the selected {@link GuildScheduledEvent} is set to end at.
      *
      * @throws java.lang.IllegalArgumentException
-     *         If the provided end time is before the start time
+     *         <ul>
+     *             <li>If the provided end time is before the start time</li>
+     *             <li>If the provided end time is {@code null}</li>
+     *         </ul>
      * @throws java.lang.IllegalStateException
-     *         If the provided end time is {@code null} when the event is set to take place at an external location
-     * @throws java.lang.IllegalStateException
-     *         If an end time is provided when the event is not set to take place at an external location
+     *         If an end time is provided and the event is not set to take place at an external location
      *
      * @return GuildScheduledEventManager for chaining convenience
      *

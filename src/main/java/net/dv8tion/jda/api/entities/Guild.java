@@ -4600,11 +4600,12 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      *
      * @throws java.lang.IllegalArgumentException
      *         <ul>
-     *             <li>If a required parameter is null or empty.</li>
-     *             <li>If the end time is before the start time.</li>
-     *             <li>If the name is longer than 100 characters.</li>
-     *             <li>If the description is longer than 1000 characters.</li>
-     *             <li>If the location is longer than 100 characters.</li>
+     *             <li>If a required parameter is {@code null} or empty</li>
+     *             <li>If the start time is in the past</li>
+     *             <li>If the end time is before the start time</li>
+     *             <li>If the name is longer than 100 characters</li>
+     *             <li>If the description is longer than 1000 characters</li>
+     *             <li>If the location is longer than 100 characters</li>
      *         </ul>
      *
      * <p><b>Example</b><br>
@@ -4659,9 +4660,12 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      *
      * @throws java.lang.IllegalArgumentException
      *         <ul>
-     *             <li>If a required parameter is null or empty.</li>
-     *             <li>If the name is longer than 100 characters.</li>
-     *             <li>If the description is longer than 1000 characters.</li>
+     *             <li>If a required parameter is {@code null} or empty</li>
+     *             <li>If the start time is in the past</li>
+     *             <li>If the name is longer than 100 characters</li>
+     *             <li>If the description is longer than 1000 characters</li>
+     *             <li>If the channel is not a Stage or Voice channel</li>
+     *             <li>If the channel is not from the same guild as the scheduled event</li>
      *         </ul>
      *
      * <p><b>Example</b><br>

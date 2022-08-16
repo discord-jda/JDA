@@ -65,7 +65,7 @@ public class GuildScheduledEventActionImpl extends AuditableRestActionImpl<Guild
         this.startTime = Helpers.toOffsetDateTime(startTime);
         Checks.notNull(channel, "Channel");
         if (!channel.getGuild().equals(guild)) {
-            throw new IllegalArgumentException("Invalid parameter: Channel needs to be from the same guild as the scheduled event!");
+            throw new IllegalArgumentException("Invalid parameter: Channel has to be from the same guild as the scheduled event!");
         } else if (channel instanceof StageChannel) {
             this.channelId = channel.getIdLong();
             this.entityType = 1;
@@ -158,7 +158,7 @@ public class GuildScheduledEventActionImpl extends AuditableRestActionImpl<Guild
         Checks.check(startTime.isAfter(OffsetDateTime.now()), "Cannot schedule event in the past!");
 
         if (entityType == 3) {
-            Checks.notNull(endTime, "Location");
+            Checks.notNull(location, "Location");
             Checks.notBlank(location, "Location");
             Checks.notEmpty(location, "Location");
             Checks.notLonger(location, GuildScheduledEvent.MAX_LOCATION_LENGTH, "Location");
