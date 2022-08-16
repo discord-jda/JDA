@@ -46,6 +46,11 @@ public interface GuildScheduledEvent extends ISnowflake, Comparable<GuildSchedul
      */
     int MAX_DESCRIPTION_LENGTH = 1000;
 
+    /**
+     * The maximum allowed length for an event's location.
+     */
+    int MAX_LOCATION_LENGTH = 1000;
+
     /** Template for {@link #getImageUrl()} */
     String IMAGE_URL = "https://cdn.discordapp.com/guild-events/%s/%s.%s";
 

@@ -49,17 +49,12 @@ public class GuildScheduledEventActionImpl extends AuditableRestActionImpl<Guild
     public GuildScheduledEventActionImpl(String name, String location, TemporalAccessor startTime, TemporalAccessor endTime, Guild guild)
     {
         super(guild.getJDA(), Route.Guilds.CREATE_SCHEDULED_EVENT.compile(guild.getId()));
-        Checks.notBlank(name, "Name");
-        Checks.notEmpty(name, "Name");
-        Checks.notLonger(name, GuildScheduledEvent.MAX_NAME_LENGTH, "Name");
+        this.guild = guild;
         this.name = name;
-        Checks.notNull(startTime, "Temporal");
-        Checks.notNull(endTime, "Temporal");
         this.startTime = Helpers.toOffsetDateTime(startTime);
         this.endTime = Helpers.toOffsetDateTime(endTime);
         this.location = location;
         this.entityType = 3;
-        this.guild = guild;
     }
 
     public GuildScheduledEventActionImpl(String name, GuildChannel channel, TemporalAccessor startTime, Guild guild)
@@ -67,8 +62,7 @@ public class GuildScheduledEventActionImpl extends AuditableRestActionImpl<Guild
         super(guild.getJDA(), Route.Guilds.CREATE_SCHEDULED_EVENT.compile(guild.getId()));
         this.guild = guild;
         this.name = name;
-        Checks.notNull(startTime, "Temporal");
-        this.startTime = Helpers.toOffsetDateTime(startTime);;
+        this.startTime = Helpers.toOffsetDateTime(startTime);
         if (channel instanceof StageChannel) {
             this.channelId = channel.getIdLong();
             this.entityType = 1;
@@ -151,14 +145,22 @@ public class GuildScheduledEventActionImpl extends AuditableRestActionImpl<Guild
 
     private void preChecks()
     {
+        Checks.notBlank(name, "Name");
+        Checks.notEmpty(name, "Name");
+        Checks.notLonger(name, GuildScheduledEvent.MAX_NAME_LENGTH, "Name");
+        Checks.notLonger(location, GuildScheduledEvent.MAX_LOCATION_LENGTH, "Location");
+        Checks.notNull(startTime, "Temporal");
         Checks.check(name != null, "Missing required parameter: Name");
         Checks.check(startTime != null, "Missing required parameter: Start Time");
-        Checks.check(entityType != 3 || (location != null && location.length() > 0 && endTime != null), "Missing required parameter: End Time");
-        Checks.check(entityType == 1 || entityType == 2 || (entityType == 3 && location != null && location.length() > 0), "Missing required parameter: Location");
+        Checks.check(entityType != 3 || endTime != null, "Missing required parameter: End Time");
+        Checks.check(location != null, "Missing required parameter: Location");
         Checks.check(startTime.isAfter(OffsetDateTime.now()), "Cannot schedule event in the past!");
 
         if (endTime != null)
+        {
+            Checks.notNull(endTime, "Temporal");
             Checks.check((endTime).isAfter(startTime), "Cannot schedule event to end before starting!");
+        }
     }
 
 

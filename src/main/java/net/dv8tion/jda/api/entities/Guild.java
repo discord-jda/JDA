@@ -4599,22 +4599,18 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * </ol>
      *
      * @throws java.lang.IllegalArgumentException
-     *         If a required parameter is null.
-     *
-     * @throws java.lang.IllegalArgumentException
      *         <ul>
-     *             <li>If a provided parameter is null.</li>
+     *             <li>If a required parameter is null or empty.</li>
      *             <li>If the end time is before the start time.</li>
+     *             <li>If the name is longer than 100 characters.</li>
+     *             <li>If the description is longer than 1000 characters.</li>
+     *             <li>If the location is longer than 100 characters.</li>
      *         </ul>
      *
      * <p><b>Example</b><br>
      * <pre>{@code
-     * guild.createScheduledEvent()
-     *     .setName("Cactus Beauty Contest")
+     * guild.createScheduledEvent("Cactus Beauty Contest", "Mike's Backyard", OffsetDateTime.now().plusHours(1), OffsetDateTime.now().plusHours(3))
      *     .setDescription("Come and have your cacti judged! _Must be spikey to enter_")
-     *     .setStartTime(OffsetDateTime.of(LocalDate.of(2025, 12, 31), LocalTime.of(12, 45), ZoneOffset.ofHours(7)))
-     *     .setEndTime(OffsetDateTime.of(LocalDate.of(2025, 12, 31), LocalTime.of(15, 45), ZoneOffset.ofHours(7)))
-     *     .setLocation("Mike's Backyard")
      *     .queue();
      * }</pre>
      *
@@ -4624,6 +4620,59 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     @CheckReturnValue
     GuildScheduledEventAction createScheduledEvent(String name, String location, OffsetDateTime startTime, OffsetDateTime endTime);
 
+    /**
+     * Creates a new {@link GuildScheduledEvent}.
+     *
+     * <p><b>Requirements</b><br>
+     *
+     * Events that are created are required to have a name, a location, and a start time. Depending on the
+     * type of location provided, an event will be of one of three different {@link GuildScheduledEvent.Type Types}:
+     * <ol>
+     *     <li>
+     *         {@link GuildScheduledEvent.Type#STAGE_INSTANCE Type.STAGE_INSTANCE}
+     *         <br>These events are set to take place inside of a {@link StageChannel}. The
+     *         following permissions are required in the specified stage channel in order to create an event there:
+     *          <ul>
+     *              <li>{@link Permission#MANAGE_EVENTS}</li>
+     *              <li>{@link Permission#MANAGE_CHANNEL}</li>
+     *              <li>{@link Permission#VOICE_MUTE_OTHERS}</li>
+     *              <li>{@link Permission#VOICE_MOVE_OTHERS}}</li>
+     *         </ul>
+     *     </li>
+     *     <li>
+     *         {@link GuildScheduledEvent.Type#VOICE Type.VOICE}
+     *         <br>These events are set to take place inside of a {@link VoiceChannel}. The
+     *         following permissions are required in the specified voice channel in order to create an event there:
+     *         <ul>
+     *             <li>{@link Permission#MANAGE_EVENTS}</li>
+     *             <li>{@link Permission#VIEW_CHANNEL}</li>
+     *             <li>{@link Permission#VOICE_CONNECT}</li>
+     *         </ul>
+     *     </li>
+     *     <li>
+     *         {@link GuildScheduledEvent.Type#EXTERNAL Type.EXTERNAL}
+     *         <br>These events are set to take place at an external location. {@link Permission#MANAGE_EVENTS}
+     *         is required on the guild level in order to create this type of event. Additionally, an end time <em>must</em>
+     *         also be specified.
+     *     </li>
+     * </ol>
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         <ul>
+     *             <li>If a required parameter is null or empty.</li>
+     *             <li>If the name is longer than 100 characters.</li>
+     *             <li>If the description is longer than 1000 characters.</li>
+     *         </ul>
+     *
+     * <p><b>Example</b><br>
+     * <pre>{@code
+     * guild.createScheduledEvent("Cactus Beauty Contest", guild.getGuildChannelById(channelId), OffsetDateTime.now().plusHours(1))
+     *     .setDescription("Come and have your cacti judged! _Must be spikey to enter_")
+     *     .queue();
+     * }</pre>
+     *
+     * @return {@link GuildScheduledEventAction}
+     */
     @Nonnull
     @CheckReturnValue
     GuildScheduledEventAction createScheduledEvent(String name, GuildChannel channel, OffsetDateTime startTime);
