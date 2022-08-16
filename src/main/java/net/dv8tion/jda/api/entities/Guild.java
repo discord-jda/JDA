@@ -4148,7 +4148,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     ChannelAction<StageChannel> createStageChannel(@Nonnull String name, @Nullable Category parent);
 
     /**
-     * Creates a new {@link net.dv8tion.jda.api.entities.StageChannel StageChannel} in this Guild.
+     * Creates a new {@link ForumChannel} in this Guild.
      * For this to be successful, the logged in account has to have the {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} Permission.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
@@ -4162,7 +4162,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * </ul>
      *
      * @param  name
-     *         The name of the StageChannel to create (up to {@value Channel#MAX_NAME_LENGTH} characters)
+     *         The name of the ForumChannel to create (up to {@value Channel#MAX_NAME_LENGTH} characters)
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL} permission
@@ -4170,7 +4170,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      *         If the provided name is {@code null}, blank, or longer than {@value Channel#MAX_NAME_LENGTH} characters
      *
      * @return A specific {@link ChannelAction ChannelAction}
-     *         <br>This action allows to set fields for the new StageChannel before creating it
+     *         <br>This action allows to set fields for the new ForumChannel before creating it
      */
     @Nonnull
     @CheckReturnValue
