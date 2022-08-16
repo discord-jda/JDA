@@ -150,13 +150,13 @@ public class GuildScheduledEventActionImpl extends AuditableRestActionImpl<Guild
     {
         Checks.check(name != null, "Missing required parameter: Name");
         Checks.check(startTime != null, "Missing required parameter: Start Time");
-        Checks.check(endTime == null && entityType != 3, "Invalid parameter: End Time (Only valid for external location)");
         Checks.check(entityType != 3 || (location != null && location.length() > 0 && endTime != null), "Missing required parameter: End Time");
         Checks.check(entityType == 1 || entityType == 2 || (entityType == 3 && location != null && location.length() > 0), "Missing required parameter: Location");
         Checks.check(startTime.isAfter(OffsetDateTime.now()), "Cannot schedule event in the past!");
 
         if (endTime != null)
             Checks.check((endTime).isAfter(startTime), "Cannot schedule event to end before starting!");
+            Checks.check(entityType == 3, "Invalid parameter: End Time (Only valid for external location)");
     }
 
 
