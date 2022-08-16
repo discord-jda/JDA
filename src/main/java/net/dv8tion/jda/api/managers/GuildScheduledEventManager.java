@@ -24,18 +24,15 @@ import java.time.temporal.TemporalAccessor;
 
 
 /**
- * Manager providing functionality to update one or more fields for a {@link GuildScheduledEvent}.
- * <br>The manager may also be used to start, cancel, or end events.
+ * The Manager is providing functionality to update one or more fields of a {@link GuildScheduledEvent}.
+ * <br>The manager may also be used to start, cancel or end events.
  *
  * <p><b>Example</b>
  * <pre>{@code
- * manager.setName("Pizza Party!")
- *     .setDescription("Come and eat some pizza and watch a movie in vc! _Make sure to bring popcorn_")
- *     .setVoiceChannel(voiceChannel);
- *     .queue();
- * manager.setStartTime(OffsetDateTime.of(LocalDate.of(2025, 12, 31), LocalTime.of(15, 45), ZoneOffset.ofHours(7)))
+ * manager.setLocation("at the beach")
+ *     .setStartTime(OffsetDateTime.now().plusHours(1))
+ *     .setEndTime(OffsetDateTime.now().plusHours(3))
  *     .setName("Discussing Turtle Shells")
- *     .setDescription("")
  *     .queue();
  * }</pre>
  *
@@ -115,7 +112,7 @@ public interface GuildScheduledEventManager extends Manager<GuildScheduledEventM
     GuildScheduledEvent getGuildScheduledEvent();
 
     /**
-     * The {@link net.dv8tion.jda.api.entities.Guild Guild} this Manager's
+     * The {@link net.dv8tion.jda.api.entities.Guild Guild} this
      * {@link GuildScheduledEvent GuildScheduledEvent} is in.
      * <br>This is logically the same as calling {@code getGuildScheduledEvent().getGuild()}
      *
@@ -174,16 +171,24 @@ public interface GuildScheduledEventManager extends Manager<GuildScheduledEventM
     GuildScheduledEventManager setImage(@Nullable Icon icon);
 
     /**
-     * Sets the location of the selected {@link GuildScheduledEvent} to take place in a specified stage channel.
-     * <p>This will also change the event's type to {@link GuildScheduledEvent.Type#STAGE_INSTANCE}, and any previously set external location or
-     * voice channel info will be lost!
+     * Sets the location of the selected {@link GuildScheduledEvent} to take place in the specified {@link GuildChannel}.
+     * <p>This will change the event's type to {@link GuildScheduledEvent.Type#STAGE_INSTANCE} or {@link GuildScheduledEvent.Type#VOICE},
+     * which are the only supported channel types for the location of scheduled events currently.
      *
-     * @param  stageChannel
-     *         The Stage Channel that the selected {@link GuildScheduledEvent} is set to take place in.
+     * @param  channel
+     *         The {@link GuildChannel} that the selected {@link GuildScheduledEvent} is set to take place in.
      *
      * @throws java.lang.IllegalArgumentException
-     *         If the provided Stage Channel is {@code null}, or is not from the same guild
+     *         If the provided {@link GuildChannel} is {@code null}, or is not from the same guild
      *         that the selected {@link GuildScheduledEvent} takes place in.
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         <ul>
+     *             <li>If the provided {@link GuildChannel} is {@code null}</li>
+     *             <li>If the provided {@link GuildChannel} is not from the same guild</li>
+     *             <li>If the provided {@link GuildChannel} is not a {@link StageChannel} or {@link VoiceChannel}</li>
+     *         </ul>
+     *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have
      *         {@link net.dv8tion.jda.api.Permission#MANAGE_EVENTS Permission.ManageEvents},
@@ -196,46 +201,21 @@ public interface GuildScheduledEventManager extends Manager<GuildScheduledEventM
      */
     @Nonnull
     @CheckReturnValue
-    GuildScheduledEventManager setLocation(@Nonnull StageChannel stageChannel);
-
-    /**
-     * Sets the location of the selected {@link GuildScheduledEvent GuildScheduledEvent} to take place in a specified voice channel.
-     * <p>This will also change the event's type to {@link GuildScheduledEvent.Type#VOICE Type.VOICE}, and any previously
-     * set external location or stage channel info will be lost!
-     *
-     * @param  voiceChannel
-     *         The Voice Channel that the selected {@link GuildScheduledEvent} is set to take place at.
-     *
-     * @throws java.lang.IllegalArgumentException
-     *         If the provided Voice Channel is {@code null}, or is not from the same guild
-     *         that the selected {@link GuildScheduledEvent} takes place in.
-     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the currently logged in account does not have
-     *         {@link net.dv8tion.jda.api.Permission#MANAGE_EVENTS Permission.ManageEvents},
-     *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}, or
-     *         {@link net.dv8tion.jda.api.Permission#VOICE_CONNECT Permission.VOICE_CONNECT} in the provided
-     *         Voice Channel.
-     *
-     * @return GuildScheduledEventManager for chaining convenience
-     */
-    @Nonnull
-    @CheckReturnValue
-    GuildScheduledEventManager setLocation(@Nonnull VoiceChannel voiceChannel);
+    GuildScheduledEventManager setLocation(@Nonnull GuildChannel channel);
 
     /**
      * Sets the location of the selected {@link GuildScheduledEvent} to take place "externally",
-     * or not in a specific Voice or Stage Channel. <u>Please note that an event is required to have an end time set before
-     * this method is called.</u>
-     * <p>This will also change the event's type to {@link GuildScheduledEvent.Type#EXTERNAL}, and any previously set voice or
-     * stage channel info will be lost!
+     * or not in a specific {@link GuildChannel}. <u>Please note that an event is required to have an end time set if
+     * the location is external.</u>
+     * <p>This will change the event's type to {@link GuildScheduledEvent.Type#EXTERNAL}
      *
-     * @param  externalLocation
+     * @param  location
      *         The location that the selected {@link GuildScheduledEvent} is set to take place at.
      *
      * @throws java.lang.IllegalArgumentException
      *         If the provided location is {@code null}
      * @throws java.lang.IllegalStateException
-     *         If the selected {@link GuildScheduledEvent} does not have an end time associated with it
+     *         If the selected {@link GuildScheduledEvent} does not have an end time
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have
      *         {@link net.dv8tion.jda.api.Permission#MANAGE_EVENTS Permission.MANAGE_EVENTS}
@@ -243,12 +223,11 @@ public interface GuildScheduledEventManager extends Manager<GuildScheduledEventM
      * @return GuildScheduledEventManager for chaining convenience
      *
      * @see    #setEndTime(TemporalAccessor)
-     * @see    #setLocation(StageChannel)
-     * @see    #setLocation(VoiceChannel)
+     * @see    #setLocation(GuildChannel)
      */
     @Nonnull
     @CheckReturnValue
-    GuildScheduledEventManager setLocation(@Nonnull String externalLocation);
+    GuildScheduledEventManager setLocation(@Nonnull String location);
 
     /**
      * Sets the time that the selected {@link GuildScheduledEvent} should start at.
@@ -286,6 +265,8 @@ public interface GuildScheduledEventManager extends Manager<GuildScheduledEventM
      *         If the provided end time is before the start time
      * @throws java.lang.IllegalStateException
      *         If the provided end time is {@code null} when the event is set to take place at an external location
+     * @throws java.lang.IllegalStateException
+     *         If an end time is provided when the event is not set to take place at an external location
      *
      * @return GuildScheduledEventManager for chaining convenience
      *
@@ -293,7 +274,7 @@ public interface GuildScheduledEventManager extends Manager<GuildScheduledEventM
      */
     @Nonnull
     @CheckReturnValue
-    GuildScheduledEventManager setEndTime(@Nullable TemporalAccessor endTime);
+    GuildScheduledEventManager setEndTime(@Nonnull TemporalAccessor endTime);
 
     /**
      * Sets the status of the event. This method may be used to start, end or cancel an event but can only be used to

@@ -4592,14 +4592,20 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      *     </li>
      *     <li>
      *         {@link GuildScheduledEvent.Type#EXTERNAL Type.EXTERNAL}
-     *         <br>These events are set to take place at a custom location. {@link Permission#MANAGE_EVENTS}
+     *         <br>These events are set to take place at an external location. {@link Permission#MANAGE_EVENTS}
      *         is required on the guild level in order to create this type of event. Additionally, an end time <em>must</em>
      *         also be specified.
      *     </li>
      * </ol>
      *
      * @throws java.lang.IllegalArgumentException
-     *         If a required parameter is not set.
+     *         If a required parameter is null.
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         <ul>
+     *             <li>If a provided parameter is null.</li>
+     *             <li>If the end time is before the start time.</li>
+     *         </ul>
      *
      * <p><b>Example</b><br>
      * <pre>{@code

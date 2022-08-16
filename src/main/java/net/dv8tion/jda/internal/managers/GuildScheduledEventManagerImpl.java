@@ -96,29 +96,27 @@ public class GuildScheduledEventManagerImpl extends ManagerBase<GuildScheduledEv
 
     @Nonnull
     @Override
-    public GuildScheduledEventManager setLocation(@Nonnull StageChannel stageChannel)
+    public GuildScheduledEventManager setLocation(@Nonnull GuildChannel channel)
     {
-        this.channelId = stageChannel.getIdLong();
-        this.entityType = 1;
+        if (channel instanceof StageChannel) {
+            this.channelId = channel.getIdLong();
+            this.entityType = 1;
+        } else if (channel instanceof VoiceChannel) {
+            this.channelId = channel.getIdLong();
+            this.entityType = 2;
+        } else {
+            throw new IllegalArgumentException("Invalid parameter: Can only set location to Voice and Stage Channels!");
+        }
+
         set |= LOCATION;
         return this;
     }
 
     @Nonnull
     @Override
-    public GuildScheduledEventManager setLocation(@Nonnull VoiceChannel voiceChannel)
+    public GuildScheduledEventManager setLocation(@Nonnull String location)
     {
-        this.channelId = voiceChannel.getIdLong();
-        this.entityType = 2;
-        set |= LOCATION;
-        return this;
-    }
-
-    @Nonnull
-    @Override
-    public GuildScheduledEventManager setLocation(@Nonnull String externalLocation)
-    {
-        this.location = externalLocation;
+        this.location = location;
         this.entityType = 3;
         set |= LOCATION;
         return this;
@@ -136,7 +134,7 @@ public class GuildScheduledEventManagerImpl extends ManagerBase<GuildScheduledEv
 
     @Nonnull
     @Override
-    public GuildScheduledEventManager setEndTime(@Nullable TemporalAccessor endTime)
+    public GuildScheduledEventManager setEndTime(@Nonnull TemporalAccessor endTime)
     {
         Checks.notNull(endTime, "Temporal");
         this.endTime = Helpers.toOffsetDateTime(endTime);
@@ -191,7 +189,8 @@ public class GuildScheduledEventManagerImpl extends ManagerBase<GuildScheduledEv
         {
             Checks.check(getGuildScheduledEvent().getStatus() == GuildScheduledEvent.Status.SCHEDULED, "Cannot update location of non-scheduled event.");
             Checks.check(entityType != 3 || (location != null && location.length() != 0), "Missing required parameter: Location");
-            Checks.check(entityType != 3 || endTime != null || getGuildScheduledEvent().getEndTime() != null, "Missing required parameter: End Time");
+            if (entityType == 3 && endTime == null && getGuildScheduledEvent().getEndTime() == null)
+                throw new IllegalStateException("Missing required parameter: End Time");
         }
 
         if (shouldUpdate(START_TIME))
@@ -202,8 +201,12 @@ public class GuildScheduledEventManagerImpl extends ManagerBase<GuildScheduledEv
         }
 
         if (shouldUpdate(END_TIME))
+        {
             Checks.check((startTime == null ? getGuildScheduledEvent().getStartTime() : startTime).isBefore(endTime), "Cannot schedule event to end before starting!");
-            Checks.check(entityType == 3, "Invalid parameter: End Time (Only valid for external location)");
+            if (entityType != 3)
+                throw new IllegalStateException("Invalid parameter: End Time (Only valid for external location)");
+        }
+
         if (shouldUpdate(STATUS))
         {
             Checks.check(status != GuildScheduledEvent.Status.UNKNOWN, "Cannot set the event status to an unknown status!");

@@ -49,7 +49,9 @@ public class GuildScheduledEventActionImpl extends AuditableRestActionImpl<Guild
     public GuildScheduledEventActionImpl(String name, String location, TemporalAccessor startTime, TemporalAccessor endTime, Guild guild)
     {
         super(guild.getJDA(), Route.Guilds.CREATE_SCHEDULED_EVENT.compile(guild.getId()));
-        this.guild = guild;
+        Checks.notBlank(name, "Name");
+        Checks.notEmpty(name, "Name");
+        Checks.notLonger(name, GuildScheduledEvent.MAX_NAME_LENGTH, "Name");
         this.name = name;
         Checks.notNull(startTime, "Temporal");
         Checks.notNull(endTime, "Temporal");
@@ -57,6 +59,7 @@ public class GuildScheduledEventActionImpl extends AuditableRestActionImpl<Guild
         this.endTime = Helpers.toOffsetDateTime(endTime);
         this.location = location;
         this.entityType = 3;
+        this.guild = guild;
     }
 
     public GuildScheduledEventActionImpl(String name, GuildChannel channel, TemporalAccessor startTime, Guild guild)

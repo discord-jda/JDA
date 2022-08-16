@@ -58,21 +58,11 @@ import java.util.function.BooleanSupplier;
  *     </li>
  *     <li>
  *         {@link GuildScheduledEvent.Type#EXTERNAL Type.EXTERNAL}
- *         <br>These events are set to take place at a custom location. {@link net.dv8tion.jda.api.Permission#MANAGE_EVENTS Permission.MANAGE_EVENTS}
+ *         <br>These events are set to take place at an external location. {@link net.dv8tion.jda.api.Permission#MANAGE_EVENTS Permission.MANAGE_EVENTS}
  *         is required on the guild level in order to create this type of event. Additionally, an end time <i>must</i>
  *         also be specified.
  *     </li>
  * </ol>
- *
- * <p><b>Example</b><br>
- * <pre>{@code
- * guildScheduledEventAction.setName("Cactus Beauty Contest")
- *    .setDescription("Come and have your cacti judged! _Must be spikey to enter_")
- *    .setStartTime(OffsetDateTime.of(LocalDate.of(2022, 12, 31), LocalTime.of(11, 30), ZoneOffset.ofHours(7)))
- *    .setEndTime(OffsetDateTime.of(LocalDate.of(2025, 12, 31), LocalTime.of(15, 30), ZoneOffset.ofHours(7)))
- *    .setLocation("Mike's Backyard")
- *    .queue();
- * }</pre>
  *
  * @see    net.dv8tion.jda.api.entities.Guild
  * @see    Guild#createScheduledEvent(String, String, OffsetDateTime, OffsetDateTime) 
