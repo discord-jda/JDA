@@ -63,7 +63,10 @@ public class GuildScheduledEventActionImpl extends AuditableRestActionImpl<Guild
         this.guild = guild;
         this.name = name;
         this.startTime = Helpers.toOffsetDateTime(startTime);
-        if (channel instanceof StageChannel) {
+        Checks.notNull(channel, "Channel");
+        if (!channel.getGuild().equals(guild)) {
+            throw new IllegalArgumentException("Invalid parameter: Channel needs to be from the same guild as the scheduled event!");
+        } else if (channel instanceof StageChannel) {
             this.channelId = channel.getIdLong();
             this.entityType = 1;
         } else if (channel instanceof VoiceChannel) {
@@ -147,22 +150,23 @@ public class GuildScheduledEventActionImpl extends AuditableRestActionImpl<Guild
 
     private void preChecks()
     {
+        Checks.notNull(name, "Name");
         Checks.notBlank(name, "Name");
         Checks.notEmpty(name, "Name");
         Checks.notLonger(name, GuildScheduledEvent.MAX_NAME_LENGTH, "Name");
-        Checks.notLonger(location, GuildScheduledEvent.MAX_LOCATION_LENGTH, "Location");
-        Checks.notNull(startTime, "Temporal");
-        Checks.check(name != null, "Missing required parameter: Name");
-        Checks.check(startTime != null, "Missing required parameter: Start Time");
-        Checks.check(entityType != 3 || endTime != null, "Missing required parameter: End Time");
-        Checks.check(entityType != 3 || (location != null && location.length() != 0), "Missing required parameter: Location");
+        Checks.notNull(startTime, "Start Time");
         Checks.check(startTime.isAfter(OffsetDateTime.now()), "Cannot schedule event in the past!");
 
-        if (endTime != null)
-        {
-            Checks.notNull(endTime, "Temporal");
+        if (entityType == 3) {
+            Checks.notNull(endTime, "Location");
+            Checks.notBlank(location, "Location");
+            Checks.notEmpty(location, "Location");
+            Checks.notLonger(location, GuildScheduledEvent.MAX_LOCATION_LENGTH, "Location");
+            Checks.notNull(endTime, "End Time");
             Checks.check((endTime).isAfter(startTime), "Cannot schedule event to end before starting!");
+
         }
+
     }
 
 
