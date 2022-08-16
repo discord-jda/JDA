@@ -46,10 +46,33 @@ public class GuildScheduledEventActionImpl extends AuditableRestActionImpl<Guild
     protected OffsetDateTime startTime, endTime;
     protected int entityType;
 
-    public GuildScheduledEventActionImpl(Guild guild)
+    public GuildScheduledEventActionImpl(String name, String location, TemporalAccessor startTime, TemporalAccessor endTime, Guild guild)
     {
         super(guild.getJDA(), Route.Guilds.CREATE_SCHEDULED_EVENT.compile(guild.getId()));
         this.guild = guild;
+        this.name = name;
+        Checks.notNull(startTime, "Temporal");
+        Checks.notNull(endTime, "Temporal");
+        this.startTime = Helpers.toOffsetDateTime(startTime);
+        this.endTime = Helpers.toOffsetDateTime(endTime);
+        this.location = location;
+        this.entityType = 3;
+    }
+
+    public GuildScheduledEventActionImpl(String name, GuildChannel channel, TemporalAccessor startTime, Guild guild)
+    {
+        super(guild.getJDA(), Route.Guilds.CREATE_SCHEDULED_EVENT.compile(guild.getId()));
+        this.guild = guild;
+        this.name = name;
+        Checks.notNull(startTime, "Temporal");
+        this.startTime = Helpers.toOffsetDateTime(startTime);;
+        if (channel instanceof StageChannel) {
+            this.channelId = channel.getIdLong();
+            this.entityType = 1;
+        } else if (channel instanceof VoiceChannel) {
+            this.channelId = channel.getIdLong();
+            this.entityType = 2;
+        }
     }
 
     @Nonnull
@@ -80,18 +103,6 @@ public class GuildScheduledEventActionImpl extends AuditableRestActionImpl<Guild
         return guild;
     }
 
-    @Nonnull
-    @Override
-    @CheckReturnValue
-    public GuildScheduledEventActionImpl setName(@Nonnull String name)
-    {
-        Checks.notBlank(name, "Name");
-        name = name.trim();
-        Checks.notEmpty(name, "Name");
-        Checks.notLonger(name, GuildScheduledEvent.MAX_NAME_LENGTH, "Name");
-        this.name = name;
-        return this;
-    }
 
     @Nonnull
     @Override
@@ -109,51 +120,6 @@ public class GuildScheduledEventActionImpl extends AuditableRestActionImpl<Guild
     public GuildScheduledEventAction setImage(@Nullable Icon icon)
     {
         this.image = icon;
-        return this;
-    }
-
-    @Nonnull
-    @Override
-    public GuildScheduledEventAction setLocation(@Nonnull StageChannel stageChannel)
-    {
-        this.channelId = stageChannel.getIdLong();
-        this.entityType = 1;
-        return this;
-    }
-
-    @Nonnull
-    @Override
-    public GuildScheduledEventAction setLocation(@Nonnull VoiceChannel voiceChannel)
-    {
-        this.channelId = voiceChannel.getIdLong();
-        this.entityType = 2;
-        return this;
-    }
-
-    @Nonnull
-    @Override
-    public GuildScheduledEventAction setLocation(@Nonnull String externalLocation)
-    {
-        this.location = externalLocation;
-        this.entityType = 3;
-        return this;
-    }
-
-    @Nonnull
-    @Override
-    public GuildScheduledEventAction setStartTime(@Nonnull TemporalAccessor startTime)
-    {
-        Checks.notNull(startTime, "Temporal");
-        this.startTime = Helpers.toOffsetDateTime(startTime);
-        return this;
-    }
-
-    @Nonnull
-    @Override
-    public GuildScheduledEventAction setEndTime(@Nullable TemporalAccessor endTime)
-    {
-        Checks.notNull(endTime, "Temporal");
-        this.endTime = Helpers.toOffsetDateTime(endTime);
         return this;
     }
 

@@ -58,6 +58,7 @@ import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.concurrent.task.GatewayTask;
 
 import java.time.Duration;
+import java.time.OffsetDateTime;
 import java.time.temporal.TemporalAccessor;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -4615,7 +4616,11 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    GuildScheduledEventAction createScheduledEvent();
+    GuildScheduledEventAction createScheduledEvent(String name, String location, OffsetDateTime startTime, OffsetDateTime endTime);
+
+    @Nonnull
+    @CheckReturnValue
+    GuildScheduledEventAction createScheduledEvent(String name, GuildChannel channel, OffsetDateTime startTime);
 
     /**
      * Modifies the positional order of {@link net.dv8tion.jda.api.entities.Guild#getCategories() Guild.getCategories()}
