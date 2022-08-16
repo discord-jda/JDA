@@ -19,8 +19,8 @@ package net.dv8tion.jda.api.entities;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.requests.restaction.ThreadChannelAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.ThreadChannelPaginationAction;
-import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.MiscUtil;
+import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -79,7 +79,7 @@ public interface IThreadContainer extends GuildChannel, IPermissionContainer
      *         If the provided name is null, blank, empty, or longer than {@value Channel#MAX_NAME_LENGTH} characters
      * @throws UnsupportedOperationException
      *         If this is a forum channel.
-     *         You must use {@link net.dv8tion.jda.api.entities.channel.concrete.ForumChannel#createForumPost(String, Message, FileUpload...) createForumPost(...)} instead.
+     *         You must use {@link net.dv8tion.jda.api.entities.channel.concrete.ForumChannel#createForumPost(String, MessageCreateData) createForumPost(...)} instead.
      * @throws InsufficientPermissionException
      *         <ul>
      *             <li>If the bot does not have {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}</li>
@@ -130,7 +130,7 @@ public interface IThreadContainer extends GuildChannel, IPermissionContainer
      *         If the provided name is null, blank, empty, or longer than {@value Channel#MAX_NAME_LENGTH} characters
      * @throws UnsupportedOperationException
      *         If this is a forum channel.
-     *         You must use {@link net.dv8tion.jda.api.entities.channel.concrete.ForumChannel#createForumPost(String, Message, FileUpload...) createForumPost(...)} instead.
+     *         You must use {@link net.dv8tion.jda.api.entities.channel.concrete.ForumChannel#createForumPost(String, MessageCreateData) createForumPost(...)} instead.
      * @throws InsufficientPermissionException
      *         <ul>
      *             <li>If the bot does not have {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}</li>
@@ -179,7 +179,7 @@ public interface IThreadContainer extends GuildChannel, IPermissionContainer
      *         If the provided name is null, blank, empty, or longer than {@value Channel#MAX_NAME_LENGTH} characters
      * @throws UnsupportedOperationException
      *         If this is a forum channel.
-     *         You must use {@link net.dv8tion.jda.api.entities.channel.concrete.ForumChannel#createForumPost(String, Message, FileUpload...) createForumPost(...)} instead.
+     *         You must use {@link net.dv8tion.jda.api.entities.channel.concrete.ForumChannel#createForumPost(String, MessageCreateData) createForumPost(...)} instead.
      * @throws InsufficientPermissionException
      *         If the bot does not have {@link net.dv8tion.jda.api.Permission#CREATE_PUBLIC_THREADS Permission.CREATE_PUBLIC_THREADS} in this channel
      *
@@ -226,7 +226,7 @@ public interface IThreadContainer extends GuildChannel, IPermissionContainer
      *         Or the message id is not a valid snowflake.
      * @throws UnsupportedOperationException
      *         If this is a forum channel.
-     *         You must use {@link net.dv8tion.jda.api.entities.channel.concrete.ForumChannel#createForumPost(String, Message, FileUpload...) createForumPost(...)} instead.
+     *         You must use {@link net.dv8tion.jda.api.entities.channel.concrete.ForumChannel#createForumPost(String, MessageCreateData) createForumPost(...)} instead.
      * @throws InsufficientPermissionException
      *         If the bot does not have {@link net.dv8tion.jda.api.Permission#CREATE_PUBLIC_THREADS Permission.CREATE_PUBLIC_THREADS} in this channel
      *
