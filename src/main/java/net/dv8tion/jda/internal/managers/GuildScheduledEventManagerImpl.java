@@ -182,6 +182,7 @@ public class GuildScheduledEventManagerImpl extends ManagerBase<GuildScheduledEv
     {
         if (shouldUpdate(NAME))
         {
+            Checks.notNull(name, "Name");
             Checks.notBlank(name, "Name");
             Checks.notEmpty(name, "Name");
             Checks.notLonger(name, GuildScheduledEvent.MAX_NAME_LENGTH, "Name");
