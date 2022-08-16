@@ -40,6 +40,7 @@ public enum TargetType
     EMOJI,
     INTEGRATION,
     STAGE_INSTANCE,
+    STICKER,
     THREAD,
     UNKNOWN
 }

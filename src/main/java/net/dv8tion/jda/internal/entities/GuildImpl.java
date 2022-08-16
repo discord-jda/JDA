@@ -1117,28 +1117,14 @@ public class GuildImpl implements Guild
         return new GatewayTask<>(handler, () -> handler.cancel(false));
     }
 
-    // Helper function for deferred cache access
-    private Member getMember(long id, JDAImpl jda)
-    {
-        if (jda.isIntent(GatewayIntent.GUILD_MEMBERS))
-        {
-            // return member from cache if member tracking is enabled through intents
-            Member member = getMemberById(id);
-            // if the join time is inaccurate we also have to load it through REST to update this information
-            if (member != null && member.hasTimeJoined())
-                return member;
-        }
-        return null;
-    }
-
     @Nonnull
     @Override
     public CacheRestAction<Member> retrieveMemberById(long id)
     {
         JDAImpl jda = getJDA();
         return new DeferredRestAction<>(jda, Member.class,
-                () -> getMember(id, jda),
-                () -> { // otherwise we need to update the member with a REST request first to get the nickname/roles
+                () -> getMemberById(id),
+                () -> {
                     if (id == jda.getSelfUser().getIdLong())
                         return new CompletedRestAction<>(jda, getSelfMember());
                     Route.CompiledRoute route = Route.Guilds.GET_MEMBER.compile(getId(), Long.toUnsignedString(id));
@@ -1147,7 +1133,7 @@ public class GuildImpl implements Guild
                         jda.getEntityBuilder().updateMemberCache(member);
                         return member;
                     });
-                });
+                }).useCache(jda.isIntent(GatewayIntent.GUILD_MEMBERS));
     }
 
     @Nonnull

@@ -206,9 +206,9 @@ public final class Helpers
         return true;
     }
 
-    public static int codePointLength(final String string)
+    public static int codePointLength(final CharSequence string)
     {
-        return string.codePointCount(0, string.length());
+        return (int) string.codePoints().count();
     }
 
     // ## CollectionUtils ##
