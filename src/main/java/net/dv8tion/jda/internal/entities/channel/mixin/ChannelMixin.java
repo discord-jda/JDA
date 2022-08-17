@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.internal.entities.channel.mixin.middleman;
+package net.dv8tion.jda.internal.entities.channel.mixin;
 
 import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.unions.ChannelUnion;
