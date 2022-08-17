@@ -173,7 +173,7 @@ public interface MessageRequest<R extends MessageRequest<R>> extends MessageData
      *
      * <p>The most commonly used layout is {@link ActionRow}.
      *
-     * <p><b>Example</b><br>
+     * <p><b>Example: Set action rows</b><br>
      * <pre>{@code
      * final List<LayoutComponent> list = new ArrayList<>();
      * list.add(ActionRow.of(selectMenu); // first row
@@ -182,6 +182,13 @@ public interface MessageRequest<R extends MessageRequest<R>> extends MessageData
      * channel.sendMessage("Content is still required")
      *   .setComponents(list)
      *   .queue();
+     * }</pre>
+     *
+     * <p><b>Example: Remove action rows</b><br>
+     * <pre>{@code
+     * channel.sendMessage("Content is still required")
+     *    .setComponents(Collections.emptyList())
+     *    .queue();
      * }</pre>
      *
      * @param  components
