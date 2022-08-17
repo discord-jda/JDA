@@ -1278,7 +1278,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * @return Possibly-empty immutable list of all GuildScheduledEvent names that match the provided name.
      */
     @Nonnull
-    default List<GuildScheduledEvent> getScheduledEventsbyName(@Nonnull String name, boolean ignoreCase)
+    default List<GuildScheduledEvent> getScheduledEventsByName(@Nonnull String name, boolean ignoreCase)
     {
         return getScheduledEventCache().getElementsByName(name, ignoreCase);
     }
