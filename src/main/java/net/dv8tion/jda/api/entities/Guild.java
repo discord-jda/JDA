@@ -1251,8 +1251,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      */
     @Nonnull
     MemberCacheView getMemberCache();
-
-
+    
     /**
      * Sorted {@link SnowflakeCacheView} of
      * all cached {@link GuildScheduledEvent GuildScheduledEvents} of this Guild.
@@ -1274,6 +1273,9 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      *         The name used to filter the returned {@link GuildScheduledEvent} objects.
      * @param  ignoreCase
      *         Determines if the comparison ignores case when comparing. True - case insensitive.
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the name is blank, empty or {@code null}
      *
      * @return Possibly-empty immutable list of all GuildScheduledEvent names that match the provided name.
      */
