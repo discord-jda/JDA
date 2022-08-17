@@ -18,6 +18,7 @@ package net.dv8tion.jda.internal.entities;
 
 import gnu.trove.map.TLongObjectMap;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.Region;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.channel.concrete.StageChannelManager;
@@ -110,8 +111,14 @@ public class StageChannelImpl extends AbstractStandardGuildChannelImpl<StageChan
     public ChannelAction<StageChannel> createCopy(@Nonnull Guild guild)
     {
         Checks.notNull(guild, "Guild");
-        //TODO-v5: .setRegion here?
+
         ChannelAction<StageChannel> action = guild.createStageChannel(name).setBitrate(bitrate);
+
+        if (region != null)
+        {
+            action.setRegion(Region.fromKey(region));
+        }
+
         if (guild.equals(getGuild()))
         {
             Category parent = getParentCategory();

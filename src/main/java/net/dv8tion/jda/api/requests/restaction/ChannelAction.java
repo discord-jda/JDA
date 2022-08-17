@@ -17,6 +17,7 @@
 package net.dv8tion.jda.api.requests.restaction;
 
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.Region;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -592,4 +593,19 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
     @Nonnull
     @CheckReturnValue
     ChannelAction<T> setUserlimit(@Nullable Integer userlimit);
+
+    /**
+     * Sets the voice region for the new AudioChannel
+     *
+     * @param  region
+     *         The region for the new AudioChannel, or {@code null} to set to {@link Region#AUTOMATIC}
+     *
+     * @throws UnsupportedOperationException
+     *         If this ChannelAction is not for an AudioChannel
+     *
+     * @return The current ChannelAction, for chaining convenience
+     */
+    @Nonnull
+    @CheckReturnValue
+    ChannelAction<T> setRegion(@Nullable Region region);
 }
