@@ -171,7 +171,7 @@ public class GuildScheduledEventManagerImpl extends ManagerBase<GuildScheduledEv
         if (shouldUpdate(END_TIME))
             object.put("scheduled_end_time", endTime.format(DateTimeFormatter.ISO_DATE_TIME));
         if (shouldUpdate(IMAGE))
-            object.put("image", image.getEncoding());
+            object.put("image", image != null ? image.getEncoding() : null);
         if (shouldUpdate(STATUS))
             object.put("status", status.getKey());
 
