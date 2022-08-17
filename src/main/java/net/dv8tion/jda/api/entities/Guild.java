@@ -1251,7 +1251,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      */
     @Nonnull
     MemberCacheView getMemberCache();
-    
+
     /**
      * Sorted {@link SnowflakeCacheView} of
      * all cached {@link GuildScheduledEvent GuildScheduledEvents} of this Guild.
@@ -4621,7 +4621,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    GuildScheduledEventAction createScheduledEvent(String name, String location, OffsetDateTime startTime, OffsetDateTime endTime);
+    GuildScheduledEventAction createScheduledEvent(@Nonnull String name, @Nonnull String location, @Nonnull OffsetDateTime startTime, @Nonnull OffsetDateTime endTime);
 
     /**
      * Creates a new {@link GuildScheduledEvent}.
@@ -4681,7 +4681,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    GuildScheduledEventAction createScheduledEvent(String name, GuildChannel channel, OffsetDateTime startTime);
+    GuildScheduledEventAction createScheduledEvent(@Nonnull String name, @Nonnull GuildChannel channel, @Nonnull OffsetDateTime startTime);
 
     /**
      * Modifies the positional order of {@link net.dv8tion.jda.api.entities.Guild#getCategories() Guild.getCategories()}
