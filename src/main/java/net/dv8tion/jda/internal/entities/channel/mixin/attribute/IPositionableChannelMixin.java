@@ -14,18 +14,13 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.internal.entities.mixin.channel.middleman;
+package net.dv8tion.jda.internal.entities.channel.mixin.attribute;
 
-import gnu.trove.map.TLongObjectMap;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
+import net.dv8tion.jda.api.entities.channel.attribute.IPositionableChannel;
+import net.dv8tion.jda.internal.entities.channel.mixin.middleman.GuildChannelMixin;
 
-public interface AudioChannelMixin<T extends AudioChannelMixin<T>> extends AudioChannel, GuildChannelMixin<T>
+public interface IPositionableChannelMixin<T extends IPositionableChannelMixin<T>> extends IPositionableChannel, GuildChannelMixin<T>
 {
     // ---- State Accessors ----
-    TLongObjectMap<Member> getConnectedMembersMap();
-
-    T setBitrate(int bitrate);
-
-    T setRegion(String region);
+    T setPosition(int position);
 }

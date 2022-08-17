@@ -20,7 +20,7 @@ import net.dv8tion.jda.api.entities.ThreadMember;
 import net.dv8tion.jda.api.utils.cache.CacheView;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
-import net.dv8tion.jda.internal.entities.ThreadChannelImpl;
+import net.dv8tion.jda.internal.entities.channel.concrete.ThreadChannelImpl;
 import net.dv8tion.jda.internal.utils.UnlockHook;
 
 public class ThreadMemberUpdateHandler extends SocketHandler

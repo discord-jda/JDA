@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.internal.entities.mixin.channel.middleman;
+package net.dv8tion.jda.internal.entities.channel.mixin.middleman;
 
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.channel.middleman.StandardGuildMessageChannel;
-import net.dv8tion.jda.internal.entities.mixin.channel.attribute.IThreadContainerMixin;
-import net.dv8tion.jda.internal.entities.mixin.channel.attribute.IWebhookContainerMixin;
+import net.dv8tion.jda.internal.entities.channel.mixin.attribute.IThreadContainerMixin;
+import net.dv8tion.jda.internal.entities.channel.mixin.attribute.IWebhookContainerMixin;
 
 import javax.annotation.Nonnull;
 
