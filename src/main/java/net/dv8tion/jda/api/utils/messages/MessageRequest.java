@@ -175,10 +175,12 @@ public interface MessageRequest<R extends MessageRequest<R>> extends MessageData
      *
      * <p><b>Example</b><br>
      * <pre>{@code
+     * final List<LayoutComponent> list = new ArrayList<>();
+     * list.add(ActionRow.of(selectMenu); // first row
+     * list.add(ActionRow.of(button1, button2)); // second row (shows below the first)
+     *
      * channel.sendMessage("Content is still required")
-     *   .setComponents(
-     *     ActionRow.of(selectMenu) // first row
-     *     ActionRow.of(button1, button2)) // second row (shows below the first)
+     *   .setComponents(list)
      *   .queue();
      * }</pre>
      *
@@ -244,16 +246,23 @@ public interface MessageRequest<R extends MessageRequest<R>> extends MessageData
      * <p><b>Example</b><br>
      *
      * <pre>{@code
+     * final List<ItemComponent> list = new ArrayList<>();
+     * list.add(button1);
+     * list.add(button2);
+     *
      * channel.sendMessage("Content is still required")
-     *   .setActionRow(button1, button2)
+     *   .setActionRow(list)
      *   .queue();
      * }</pre>
      *
      * is equivalent to:
      *
      * <pre>{@code
+     * final List<LayoutComponent> list = new ArrayList<>();
+     * list.add(ActionRow.of(button1, button2));
+     *
      * channel.sendMessage("Content is still required")
-     *   .setComponents(ActionRow.of(button1, button2))
+     *   .setComponents(list)
      *   .queue();
      * }</pre><br>
      *
