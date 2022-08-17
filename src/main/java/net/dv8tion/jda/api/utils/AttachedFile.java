@@ -17,9 +17,10 @@
 package net.dv8tion.jda.api.utils;
 
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.internal.requests.Requester;
 import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -34,6 +35,11 @@ import java.util.List;
  */
 public interface AttachedFile extends Closeable
 {
+    /**
+     * The maximum length a {@link FileUpload#setDescription(String) description} can be ({@value}).
+     */
+    int MAX_DESCRIPTION_LENGTH = 1024;
+
     /**
      * Create a new {@link FileUpload} for an input stream.
      * <br>This is used to upload data to discord for various purposes.
@@ -260,12 +266,28 @@ public interface AttachedFile extends Closeable
 
     /**
      * Build a complete request using the provided files and payload data.
-     * <br>If the provided {@code payloadJson} is null, the multipart request will not set {@code attachments}.
+     *
+     * @param  files
+     *         The files to upload/edit
+     *
+     * @throws IllegalArgumentException
+     *         If the file list is null
+     *
+     * @return {@link MultipartBody.Builder}
+     */
+    @Nonnull
+    static MultipartBody.Builder createMultipartBody(@Nonnull List<? extends AttachedFile> files)
+    {
+        return createMultipartBody(files, (RequestBody) null);
+    }
+
+    /**
+     * Build a complete request using the provided files and payload data.
      *
      * @param  files
      *         The files to upload/edit
      * @param  payloadJson
-     *         The payload data to send, excluding {@code attachments} field
+     *         The payload data to send, null to not add a payload_json part
      *
      * @throws IllegalArgumentException
      *         If the file list is null
@@ -275,19 +297,43 @@ public interface AttachedFile extends Closeable
     @Nonnull
     static MultipartBody.Builder createMultipartBody(@Nonnull List<? extends AttachedFile> files, @Nullable DataObject payloadJson)
     {
+        RequestBody body = payloadJson != null ? RequestBody.create(payloadJson.toJson(), Requester.MEDIA_TYPE_JSON) : null;
+        return createMultipartBody(files, body);
+    }
+
+    /**
+     * Build a complete request using the provided files and payload data.
+     *
+     * @param  files
+     *         The files to upload/edit
+     * @param  payloadJson
+     *         The payload data to send, null to not add a payload_json part
+     *
+     * @throws IllegalArgumentException
+     *         If the file list is null
+     *
+     * @return {@link MultipartBody.Builder}
+     */
+    @Nonnull
+    static MultipartBody.Builder createMultipartBody(@Nonnull List<? extends AttachedFile> files, @Nullable RequestBody payloadJson)
+    {
         MultipartBody.Builder builder = new MultipartBody.Builder().setType(MultipartBody.FORM);
-        DataArray descriptors = DataArray.empty();
         for (int i = 0; i < files.size(); i++)
         {
             AttachedFile file = files.get(i);
             file.addPart(builder, i);
-            descriptors.add(file.toAttachmentData(i));
         }
 
-        if (payloadJson == null)
-            return builder;
-        payloadJson.put("attachments", descriptors);
-        builder.addFormDataPart("payload_json", payloadJson.toString());
+        if (payloadJson != null)
+            builder.addFormDataPart("payload_json", null, payloadJson);
         return builder;
     }
+
+    /**
+     * Forces the underlying resource to be closed, even if the file is already handled by a request.
+     *
+     * @throws IOException
+     *         If an IOException is thrown while closing the resource
+     */
+    void forceClose() throws IOException;
 }

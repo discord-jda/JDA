@@ -19,6 +19,7 @@ package net.dv8tion.jda.internal.requests.restaction;
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.Region;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
@@ -39,6 +40,7 @@ import okhttp3.RequestBody;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.EnumSet;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
@@ -67,6 +69,7 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
 
     // --voice and stage--
     protected Integer bitrate = null;
+    protected Region region = null;
 
     public ChannelActionImpl(Class<T> clazz, String name, Guild guild, ChannelType type)
     {
@@ -333,6 +336,17 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
         return this;
     }
 
+    @Nonnull
+    @Override
+    @CheckReturnValue
+    public ChannelActionImpl<T> setRegion(@Nullable Region region)
+    {
+        if (!type.isAudio())
+            throw new UnsupportedOperationException("Can only set the region for AudioChannels!");
+        this.region = region;
+        return this;
+    }
+
     @Override
     protected RequestBody finalizeData()
     {
@@ -364,6 +378,8 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
         //Voice and Stage
         if (bitrate != null)
             object.put("bitrate", bitrate);
+        if (region != null)
+            object.put("rtc_region", region.getKey());
 
         return getRequestBody(object);
     }

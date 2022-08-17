@@ -26,6 +26,8 @@ import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.requests.CallbackContext;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
+import net.dv8tion.jda.internal.utils.IOUtil;
+import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import org.apache.commons.collections4.map.CaseInsensitiveMap;
 
@@ -82,11 +84,31 @@ public class Request<T>
         this.localReason = ThreadLocalReason.getCurrent();
     }
 
+    private void cleanup()
+    {
+        // Try closing any open request bodies that were never read from
+        if (body instanceof MultipartBody)
+        {
+            MultipartBody multi = (MultipartBody) body;
+            multi.parts()
+                 .stream()
+                 .map(MultipartBody.Part::body)
+                 .filter(AutoCloseable.class::isInstance)
+                 .map(AutoCloseable.class::cast)
+                 .forEach(IOUtil::silentClose);
+        }
+        else if (body instanceof AutoCloseable)
+        {
+            IOUtil.silentClose((AutoCloseable) body);
+        }
+    }
+
     public void onSuccess(T successObj)
     {
         if (done)
             return;
         done = true;
+        cleanup();
         api.getCallbackPool().execute(() ->
         {
             try (ThreadLocalReason.Closable __ = ThreadLocalReason.closable(localReason);
@@ -124,6 +146,7 @@ public class Request<T>
         if (done)
             return;
         done = true;
+        cleanup();
         api.getCallbackPool().execute(() ->
         {
             try (ThreadLocalReason.Closable __ = ThreadLocalReason.closable(localReason);

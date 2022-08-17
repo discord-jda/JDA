@@ -46,14 +46,13 @@ public interface IAutoCompleteCallback extends Interaction
      *         The choice suggestions to present to the user, 0-{@value OptionData#MAX_CHOICES} choices
      *
      * @throws IllegalArgumentException
-     *         If any of the following is true:
      *         <ul>
-     *             <li>{@code null} is provided</li>
-     *             <li>More than {@value OptionData#MAX_CHOICES} are added</li>
-     *             <li>Any of the choice names is empty or longer than {@value OptionData#MAX_CHOICE_NAME_LENGTH}</li>
-     *             <li>The option type is incompatible with the choice type</li>
-     *             <li>The numeric value of any of the choices is not between {@value  OptionData#MIN_NEGATIVE_NUMBER} and {@value OptionData#MAX_POSITIVE_NUMBER}</li>
-     *             <li>The string value of any of the choices is empty or longer than {@value OptionData#MAX_CHOICE_VALUE_LENGTH}</li>
+     *             <li>If {@code null} is provided</li>
+     *             <li>If more than {@value OptionData#MAX_CHOICES} choices are added</li>
+     *             <li>If any of the choice names are empty or longer than {@value OptionData#MAX_CHOICE_NAME_LENGTH}</li>
+     *             <li>If the option type is incompatible with the choice type</li>
+     *             <li>If the numeric value of any of the choices is not between {@value OptionData#MIN_NEGATIVE_NUMBER} and {@value OptionData#MAX_POSITIVE_NUMBER}</li>
+     *             <li>If the string value of any of the choices is empty or longer than {@value OptionData#MAX_CHOICE_VALUE_LENGTH}</li>
      *         </ul>
      *
      * @return {@link AutoCompleteCallbackAction}
@@ -70,14 +69,13 @@ public interface IAutoCompleteCallback extends Interaction
      *         The choice suggestions to present to the user, 0-{@value OptionData#MAX_CHOICES} choices
      *
      * @throws IllegalArgumentException
-     *         If any of the following is true:
      *         <ul>
-     *             <li>{@code null} is provided</li>
-     *             <li>More than {@value OptionData#MAX_CHOICES} are added</li>
-     *             <li>Any of the choice names is empty or longer than {@value OptionData#MAX_CHOICE_NAME_LENGTH}</li>
-     *             <li>The option type is incompatible with the choice type</li>
-     *             <li>The numeric value of any of the choices is not between {@value  OptionData#MIN_NEGATIVE_NUMBER} and {@value OptionData#MAX_POSITIVE_NUMBER}</li>
-     *             <li>The string value of any of the choices is empty or longer than {@value OptionData#MAX_CHOICE_VALUE_LENGTH}</li>
+     *             <li>If {@code null} is provided</li>
+     *             <li>If more than {@value OptionData#MAX_CHOICES} choices are added</li>
+     *             <li>If any of the choice names are empty or longer than {@value OptionData#MAX_CHOICE_NAME_LENGTH}</li>
+     *             <li>If the option type is incompatible with the choice type</li>
+     *             <li>If the numeric value of any of the choices is not between {@value OptionData#MIN_NEGATIVE_NUMBER} and {@value OptionData#MAX_POSITIVE_NUMBER}</li>
+     *             <li>If the string value of any of the choices is empty or longer than {@value OptionData#MAX_CHOICE_VALUE_LENGTH}</li>
      *         </ul>
      *
      * @return {@link AutoCompleteCallbackAction}
@@ -100,13 +98,12 @@ public interface IAutoCompleteCallback extends Interaction
      *         The choice value, 1-{@value OptionData#MAX_CHOICE_VALUE_LENGTH} characters
      *
      * @throws IllegalArgumentException
-     *         If any of the following is true:
      *         <ul>
-     *             <li>{@code null} is provided</li>
-     *             <li>More than {@value OptionData#MAX_CHOICES} are added</li>
-     *             <li>The choice name is empty or longer than {@value OptionData#MAX_CHOICE_NAME_LENGTH}</li>
-     *             <li>The option type is not {@link OptionType#STRING}</li>
-     *             <li>The string value of any of the choices is empty or longer than {@value OptionData#MAX_CHOICE_VALUE_LENGTH}</li>
+     *             <li>If {@code null} is provided</li>
+     *             <li>If more than {@value OptionData#MAX_CHOICES} choices are added</li>
+     *             <li>If the choice name is empty or longer than {@value OptionData#MAX_CHOICE_NAME_LENGTH}</li>
+     *             <li>If the option type is not {@link OptionType#STRING}</li>
+     *             <li>If the string value of any of the choices is empty or longer than {@value OptionData#MAX_CHOICE_VALUE_LENGTH}</li>
      *         </ul>
      *
      * @return {@link AutoCompleteCallbackAction}
@@ -125,16 +122,15 @@ public interface IAutoCompleteCallback extends Interaction
      * @param  name
      *         The choice name to show to the user, 1-{@value OptionData#MAX_CHOICE_NAME_LENGTH} characters
      * @param  value
-     *         The choice value, must be between {@value  OptionData#MIN_NEGATIVE_NUMBER} and {@value OptionData#MAX_POSITIVE_NUMBER}
+     *         The choice value, must be between {@value OptionData#MIN_NEGATIVE_NUMBER} and {@value OptionData#MAX_POSITIVE_NUMBER}
      *
      * @throws IllegalArgumentException
-     *         If any of the following is true:
      *         <ul>
-     *             <li>{@code null} is provided</li>
-     *             <li>More than {@value OptionData#MAX_CHOICES} are added</li>
-     *             <li>The choice name is empty or longer than {@value OptionData#MAX_CHOICE_NAME_LENGTH}</li>
-     *             <li>The option type is incompatible with the choice type</li>
-     *             <li>The value of is not between {@value  OptionData#MIN_NEGATIVE_NUMBER} and {@value OptionData#MAX_POSITIVE_NUMBER}</li>
+     *             <li>If {@code null} is provided</li>
+     *             <li>If more than {@value OptionData#MAX_CHOICES} choices are added</li>
+     *             <li>If the choice name is empty or longer than {@value OptionData#MAX_CHOICE_NAME_LENGTH}</li>
+     *             <li>If the option type is incompatible with the choice type</li>
+     *             <li>If the value of is not between {@value OptionData#MIN_NEGATIVE_NUMBER} and {@value OptionData#MAX_POSITIVE_NUMBER}</li>
      *         </ul>
      *
      * @return {@link AutoCompleteCallbackAction}
@@ -153,16 +149,15 @@ public interface IAutoCompleteCallback extends Interaction
      * @param  name
      *         The choice name to show to the user, 1-{@value OptionData#MAX_CHOICE_NAME_LENGTH} characters
      * @param  value
-     *         The choice value, must be between {@value  OptionData#MIN_NEGATIVE_NUMBER} and {@value OptionData#MAX_POSITIVE_NUMBER}
+     *         The choice value, must be between {@value OptionData#MIN_NEGATIVE_NUMBER} and {@value OptionData#MAX_POSITIVE_NUMBER}
      *
      * @throws IllegalArgumentException
-     *         If any of the following is true:
      *         <ul>
-     *             <li>{@code null} is provided</li>
-     *             <li>More than {@value OptionData#MAX_CHOICES} are added</li>
-     *             <li>The choice name is empty or longer than {@value OptionData#MAX_CHOICE_NAME_LENGTH}</li>
-     *             <li>The option type is incompatible with the choice type</li>
-     *             <li>The value of is not between {@value  OptionData#MIN_NEGATIVE_NUMBER} and {@value OptionData#MAX_POSITIVE_NUMBER}</li>
+     *             <li>If {@code null} is provided</li>
+     *             <li>If more than {@value OptionData#MAX_CHOICES} choices are added</li>
+     *             <li>If the choice name is empty or longer than {@value OptionData#MAX_CHOICE_NAME_LENGTH}</li>
+     *             <li>If the option type is incompatible with the choice type</li>
+     *             <li>If the value of is not between {@value OptionData#MIN_NEGATIVE_NUMBER} and {@value OptionData#MAX_POSITIVE_NUMBER}</li>
      *         </ul>
      *
      * @return {@link AutoCompleteCallbackAction}
@@ -184,12 +179,11 @@ public interface IAutoCompleteCallback extends Interaction
      *         The choice suggestions to present to the user, each limited to {@value OptionData#MAX_CHOICE_NAME_LENGTH} characters
      *
      * @throws IllegalArgumentException
-     *         If any of the following is true:
      *         <ul>
-     *             <li>{@code null} is provided</li>
-     *             <li>More than {@value OptionData#MAX_CHOICES} are added</li>
-     *             <li>Any of the choice names is empty or longer than {@value OptionData#MAX_CHOICE_NAME_LENGTH}</li>
-     *             <li>The string value of any of the choices is empty or longer than {@value OptionData#MAX_CHOICE_VALUE_LENGTH}</li>
+     *             <li>If {@code null} is provided</li>
+     *             <li>If more than {@value OptionData#MAX_CHOICES} choices are added</li>
+     *             <li>If any of the choice names are empty or longer than {@value OptionData#MAX_CHOICE_NAME_LENGTH}</li>
+     *             <li>If the string value of any of the choices is empty or longer than {@value OptionData#MAX_CHOICE_VALUE_LENGTH}</li>
      *         </ul>
      *
      * @return {@link AutoCompleteCallbackAction}
@@ -213,12 +207,11 @@ public interface IAutoCompleteCallback extends Interaction
      *         The choice suggestions to present to the user, each limited to {@value OptionData#MAX_CHOICE_NAME_LENGTH} characters
      *
      * @throws IllegalArgumentException
-     *         If any of the following is true:
      *         <ul>
-     *             <li>{@code null} is provided</li>
-     *             <li>More than {@value OptionData#MAX_CHOICES} are added</li>
-     *             <li>Any of the choice names is empty or longer than {@value OptionData#MAX_CHOICE_NAME_LENGTH}</li>
-     *             <li>The string value of any of the choices is empty or longer than {@value OptionData#MAX_CHOICE_VALUE_LENGTH}</li>
+     *             <li>If {@code null} is provided</li>
+     *             <li>If more than {@value OptionData#MAX_CHOICES} choices are added</li>
+     *             <li>If any of the choice names are empty or longer than {@value OptionData#MAX_CHOICE_NAME_LENGTH}</li>
+     *             <li>If the string value of any of the choices is empty or longer than {@value OptionData#MAX_CHOICE_VALUE_LENGTH}</li>
      *         </ul>
      *
      * @return {@link AutoCompleteCallbackAction}
@@ -242,12 +235,11 @@ public interface IAutoCompleteCallback extends Interaction
      *         The choice suggestions to present to the user
      *
      * @throws IllegalArgumentException
-     *         If any of the following is true:
      *         <ul>
-     *             <li>{@code null} is provided</li>
-     *             <li>More than {@value OptionData#MAX_CHOICES} are added</li>
-     *             <li>The option type is incompatible with the choice type</li>
-     *             <li>The numeric value of any of the choices is not between {@value  OptionData#MIN_NEGATIVE_NUMBER} and {@value OptionData#MAX_POSITIVE_NUMBER}</li>
+     *             <li>If {@code null} is provided</li>
+     *             <li>If more than {@value OptionData#MAX_CHOICES} choices are added</li>
+     *             <li>If the option type is incompatible with the choice type</li>
+     *             <li>If the numeric value of any of the choices is not between {@value OptionData#MIN_NEGATIVE_NUMBER} and {@value OptionData#MAX_POSITIVE_NUMBER}</li>
      *         </ul>
      *
      * @return {@link AutoCompleteCallbackAction}
@@ -271,12 +263,11 @@ public interface IAutoCompleteCallback extends Interaction
      *         The choice suggestions to present to the user
      *
      * @throws IllegalArgumentException
-     *         If any of the following is true:
      *         <ul>
-     *             <li>{@code null} is provided</li>
-     *             <li>More than {@value OptionData#MAX_CHOICES} are added</li>
-     *             <li>The option type is incompatible with the choice type</li>
-     *             <li>The numeric value of any of the choices is not between {@value  OptionData#MIN_NEGATIVE_NUMBER} and {@value OptionData#MAX_POSITIVE_NUMBER}</li>
+     *             <li>If {@code null} is provided</li>
+     *             <li>If more than {@value OptionData#MAX_CHOICES} choices are added</li>
+     *             <li>If the option type is incompatible with the choice type</li>
+     *             <li>If the numeric value of any of the choices is not between {@value OptionData#MIN_NEGATIVE_NUMBER} and {@value OptionData#MAX_POSITIVE_NUMBER}</li>
      *         </ul>
      *
      * @return {@link AutoCompleteCallbackAction}
@@ -300,12 +291,11 @@ public interface IAutoCompleteCallback extends Interaction
      *         The choice suggestions to present to the user
      *
      * @throws IllegalArgumentException
-     *         If any of the following is true:
      *         <ul>
-     *             <li>{@code null} is provided</li>
-     *             <li>More than {@value OptionData#MAX_CHOICES} are added</li>
-     *             <li>The option type is incompatible with the choice type</li>
-     *             <li>The numeric value of any of the choices is not between {@value  OptionData#MIN_NEGATIVE_NUMBER} and {@value OptionData#MAX_POSITIVE_NUMBER}</li>
+     *             <li>If {@code null} is provided</li>
+     *             <li>If more than {@value OptionData#MAX_CHOICES} choices are added</li>
+     *             <li>If the option type is incompatible with the choice type</li>
+     *             <li>If the numeric value of any of the choices is not between {@value OptionData#MIN_NEGATIVE_NUMBER} and {@value OptionData#MAX_POSITIVE_NUMBER}</li>
      *         </ul>
      *
      * @return {@link AutoCompleteCallbackAction}
@@ -329,12 +319,11 @@ public interface IAutoCompleteCallback extends Interaction
      *         The choice suggestions to present to the user
      *
      * @throws IllegalArgumentException
-     *         If any of the following is true:
      *         <ul>
-     *             <li>{@code null} is provided</li>
-     *             <li>More than {@value OptionData#MAX_CHOICES} are added</li>
-     *             <li>The option type is incompatible with the choice type</li>
-     *             <li>The numeric value of any of the choices is not between {@value  OptionData#MIN_NEGATIVE_NUMBER} and {@value OptionData#MAX_POSITIVE_NUMBER}</li>
+     *             <li>If {@code null} is provided</li>
+     *             <li>If more than {@value OptionData#MAX_CHOICES} choices are added</li>
+     *             <li>If the option type is incompatible with the choice type</li>
+     *             <li>If the numeric value of any of the choices is not between {@value OptionData#MIN_NEGATIVE_NUMBER} and {@value OptionData#MAX_POSITIVE_NUMBER}</li>
      *         </ul>
      *
      * @return {@link AutoCompleteCallbackAction}

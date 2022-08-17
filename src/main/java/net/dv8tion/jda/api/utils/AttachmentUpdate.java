@@ -123,6 +123,9 @@ public class AttachmentUpdate implements AttachedFile, ISnowflake
     public void close() {}
 
     @Override
+    public void forceClose() {}
+
+    @Override
     public String toString()
     {
         return "AttachedFile[Attachment]" + (name == null ? "" : ":" + name) + '(' + id + ')';
