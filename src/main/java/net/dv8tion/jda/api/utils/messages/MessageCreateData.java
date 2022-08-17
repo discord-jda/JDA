@@ -18,6 +18,7 @@ package net.dv8tion.jda.api.utils.messages;
 
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.data.DataArray;
@@ -32,7 +33,7 @@ import java.util.*;
  * Output of a {@link MessageCreateBuilder} and used for sending messages to channels/webhooks/interactions.
  *
  * @see MessageCreateBuilder
- * @see net.dv8tion.jda.api.entities.MessageChannel#sendMessage(MessageCreateData) MessageChannel.sendMessage(MessageCreateData)
+ * @see MessageChannel#sendMessage(MessageCreateData)
  * @see net.dv8tion.jda.api.interactions.callbacks.IReplyCallback#reply(MessageCreateData) IReplyCallback.reply(MessageCreateData)
  * @see net.dv8tion.jda.api.entities.WebhookClient#sendMessage(MessageCreateData) WebhookClient.sendMessage(MessageCreateData)
  */

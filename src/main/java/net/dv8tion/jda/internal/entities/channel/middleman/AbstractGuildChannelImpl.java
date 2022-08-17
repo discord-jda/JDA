@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.internal.entities.channel;
+package net.dv8tion.jda.internal.entities.channel.middleman;
 
 import net.dv8tion.jda.api.entities.channel.attribute.IPositionableChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.internal.entities.GuildImpl;
+import net.dv8tion.jda.internal.entities.channel.AbstractChannelImpl;
 import net.dv8tion.jda.internal.entities.channel.mixin.middleman.GuildChannelMixin;
 import net.dv8tion.jda.internal.utils.Checks;
 

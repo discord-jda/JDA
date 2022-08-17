@@ -31,7 +31,7 @@ import net.dv8tion.jda.api.requests.restaction.ChannelAction;
 import net.dv8tion.jda.api.requests.restaction.order.CategoryOrderAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.entities.GuildImpl;
-import net.dv8tion.jda.internal.entities.channel.AbstractGuildChannelImpl;
+import net.dv8tion.jda.internal.entities.channel.middleman.AbstractGuildChannelImpl;
 import net.dv8tion.jda.internal.entities.channel.mixin.attribute.IPermissionContainerMixin;
 import net.dv8tion.jda.internal.entities.channel.mixin.attribute.IPositionableChannelMixin;
 import net.dv8tion.jda.internal.managers.channel.concrete.CategoryManagerImpl;

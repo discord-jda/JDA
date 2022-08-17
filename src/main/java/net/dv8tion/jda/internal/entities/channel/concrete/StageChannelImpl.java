@@ -34,7 +34,7 @@ import net.dv8tion.jda.api.requests.restaction.StageInstanceAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.entities.GuildImpl;
-import net.dv8tion.jda.internal.entities.channel.AbstractStandardGuildChannelImpl;
+import net.dv8tion.jda.internal.entities.channel.middleman.AbstractStandardGuildChannelImpl;
 import net.dv8tion.jda.internal.entities.channel.mixin.middleman.AudioChannelMixin;
 import net.dv8tion.jda.internal.managers.channel.concrete.StageChannelManagerImpl;
 import net.dv8tion.jda.internal.requests.RestActionImpl;

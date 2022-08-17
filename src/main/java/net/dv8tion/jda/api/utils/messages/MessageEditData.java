@@ -18,6 +18,7 @@ package net.dv8tion.jda.api.utils.messages;
 
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.utils.AttachedFile;
 import net.dv8tion.jda.api.utils.FileUpload;
@@ -36,7 +37,7 @@ import static net.dv8tion.jda.api.utils.messages.MessageEditBuilder.*;
  * Output of a {@link MessageEditRequest} and used for editing messages in channels/webhooks/interactions.
  *
  * @see MessageEditBuilder
- * @see net.dv8tion.jda.api.entities.MessageChannel#editMessageById(String, MessageEditData) MessageChannel.editMessageById(String, MessageEditData)
+ * @see MessageChannel#editMessageById(String, MessageEditData)
  * @see net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback#editMessage(MessageEditData) IMessageEditCallback.editMessage(MessageEditData)
  * @see net.dv8tion.jda.api.entities.WebhookClient#editMessageById(String, MessageEditData) WebhookClient.editMessageById(String, MessageEditData)
  * @see net.dv8tion.jda.api.interactions.InteractionHook#editOriginal(MessageEditData) InteractionHook.editOriginal(MessageEditData)

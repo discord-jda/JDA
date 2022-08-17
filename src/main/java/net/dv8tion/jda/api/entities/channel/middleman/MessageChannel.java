@@ -16,6 +16,7 @@
 package net.dv8tion.jda.api.entities.channel.middleman;
 
 import net.dv8tion.jda.api.AccountType;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.MessageHistory;
@@ -300,7 +301,7 @@ public interface MessageChannel extends Channel, Formattable
      *     <br>if this channel was deleted</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#CANNOT_SEND_TO_USER CANNOT_SEND_TO_USER}
-     *     <br>If this is a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel} and the currently logged in account
+     *     <br>If this is a {@link net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel PrivateChannel} and the currently logged in account
      *         does not share any Guilds with the recipient User</li>
      * </ul>
      *
@@ -312,7 +313,7 @@ public interface MessageChannel extends Channel, Formattable
      * @throws IllegalArgumentException
      *         If the content is null or longer than {@value Message#MAX_CONTENT_LENGTH} characters
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If this is a {@link net.dv8tion.jda.api.entities.GuildMessageChannel GuildMessageChannel} and this account does not have
+     *         If this is a {@link GuildMessageChannel} and this account does not have
      *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} or {@link net.dv8tion.jda.api.Permission#MESSAGE_SEND Permission.MESSAGE_SEND}
      *
      * @return {@link MessageCreateAction}
@@ -334,7 +335,7 @@ public interface MessageChannel extends Channel, Formattable
      *     <br>if this channel was deleted</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#CANNOT_SEND_TO_USER CANNOT_SEND_TO_USER}
-     *     <br>If this is a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel} and the currently logged in account
+     *     <br>If this is a {@link net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel PrivateChannel} and the currently logged in account
      *         does not share any Guilds with the recipient User</li>
      * </ul>
      *
@@ -346,7 +347,7 @@ public interface MessageChannel extends Channel, Formattable
      * @throws IllegalArgumentException
      *         If null is provided
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If this is a {@link net.dv8tion.jda.api.entities.GuildMessageChannel GuildMessageChannel} and this account does not have
+     *         If this is a {@link GuildMessageChannel} and this account does not have
      *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} or {@link net.dv8tion.jda.api.Permission#MESSAGE_SEND Permission.MESSAGE_SEND}
      *
      * @return {@link MessageCreateAction}
@@ -370,7 +371,7 @@ public interface MessageChannel extends Channel, Formattable
      *     <br>if this channel was deleted</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#CANNOT_SEND_TO_USER CANNOT_SEND_TO_USER}
-     *     <br>If this is a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel} and the currently logged in account
+     *     <br>If this is a {@link net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel PrivateChannel} and the currently logged in account
      *         does not share any Guilds with the recipient User</li>
      * </ul>
      *
@@ -384,7 +385,7 @@ public interface MessageChannel extends Channel, Formattable
      * @throws IllegalArgumentException
      *         If the format string is null or the resulting content is longer than {@value Message#MAX_CONTENT_LENGTH} characters
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If this is a {@link net.dv8tion.jda.api.entities.GuildMessageChannel GuildMessageChannel} and this account does not have
+     *         If this is a {@link GuildMessageChannel} and this account does not have
      *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} or {@link net.dv8tion.jda.api.Permission#MESSAGE_SEND Permission.MESSAGE_SEND}
      * @throws java.util.IllegalFormatException
      *         If a format string contains an illegal syntax, a format
@@ -413,7 +414,7 @@ public interface MessageChannel extends Channel, Formattable
      *     <br>if this channel was deleted</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#CANNOT_SEND_TO_USER CANNOT_SEND_TO_USER}
-     *     <br>If this is a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel} and the currently logged in account
+     *     <br>If this is a {@link net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel PrivateChannel} and the currently logged in account
      *         does not share any Guilds with the recipient User</li>
      * </ul>
      *
@@ -445,7 +446,7 @@ public interface MessageChannel extends Channel, Formattable
      * @throws IllegalArgumentException
      *         If any of the embeds are null, more than {@value Message#MAX_EMBED_COUNT}, or longer than {@link MessageEmbed#EMBED_MAX_LENGTH_BOT}.
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If this is a {@link net.dv8tion.jda.api.entities.GuildMessageChannel GuildMessageChannel} and this account does not have
+     *         If this is a {@link GuildMessageChannel} and this account does not have
      *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} or {@link net.dv8tion.jda.api.Permission#MESSAGE_SEND Permission.MESSAGE_SEND}
      *
      * @return {@link MessageCreateAction}
@@ -501,7 +502,7 @@ public interface MessageChannel extends Channel, Formattable
      * @throws IllegalArgumentException
      *         If any of the embeds are null, more than {@value Message#MAX_EMBED_COUNT}, or longer than {@link MessageEmbed#EMBED_MAX_LENGTH_BOT}.
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If this is a {@link net.dv8tion.jda.api.entities.GuildMessageChannel GuildMessageChannel} and this account does not have
+     *         If this is a {@link GuildMessageChannel} and this account does not have
      *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} or {@link net.dv8tion.jda.api.Permission#MESSAGE_SEND Permission.MESSAGE_SEND}
      *
      * @return {@link MessageCreateAction}
@@ -527,7 +528,7 @@ public interface MessageChannel extends Channel, Formattable
      *     <br>if this channel was deleted</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#CANNOT_SEND_TO_USER CANNOT_SEND_TO_USER}
-     *     <br>If this is a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel} and the currently logged in account
+     *     <br>If this is a {@link net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel PrivateChannel} and the currently logged in account
      *         does not share any Guilds with the recipient User</li>
      * </ul>
      *
@@ -557,7 +558,7 @@ public interface MessageChannel extends Channel, Formattable
      * @throws IllegalArgumentException
      *         If null is provided
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If this is a {@link net.dv8tion.jda.api.entities.GuildMessageChannel GuildMessageChannel} and this account does not have
+     *         If this is a {@link GuildMessageChannel} and this account does not have
      *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} or {@link net.dv8tion.jda.api.Permission#MESSAGE_SEND Permission.MESSAGE_SEND}
      *
      * @return {@link MessageCreateAction}
@@ -617,7 +618,7 @@ public interface MessageChannel extends Channel, Formattable
      * @throws IllegalArgumentException
      *         If null is provided
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If this is a {@link net.dv8tion.jda.api.entities.GuildMessageChannel GuildMessageChannel} and this account does not have
+     *         If this is a {@link GuildMessageChannel} and this account does not have
      *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} or {@link net.dv8tion.jda.api.Permission#MESSAGE_SEND Permission.MESSAGE_SEND}
      *
      * @return {@link MessageCreateAction}
@@ -2150,7 +2151,7 @@ public interface MessageChannel extends Channel, Formattable
      *             <li>If provided {@code newContent} length is greater than {@value Message#MAX_CONTENT_LENGTH} characters.</li>
      *         </ul>
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If this is a {@link net.dv8tion.jda.api.entities.GuildMessageChannel GuildMessageChannel} and this account does not have
+     *         If this is a {@link GuildMessageChannel} and this account does not have
      *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
      *
      * @return {@link MessageEditAction}
@@ -2815,7 +2816,7 @@ public interface MessageChannel extends Channel, Formattable
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
      *     <br>The request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
      *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
-     *         was revoked in the {@link net.dv8tion.jda.api.entities.GuildMessageChannel GuildMessageChannel}</li>
+     *         was revoked in the {@link GuildMessageChannel}</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
      *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or
@@ -2866,7 +2867,7 @@ public interface MessageChannel extends Channel, Formattable
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
      *     <br>The request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
      *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
-     *         was revoked in the {@link net.dv8tion.jda.api.entities.GuildMessageChannel GuildMessageChannel}</li>
+     *         was revoked in the {@link GuildMessageChannel}</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
      *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or
@@ -2917,7 +2918,7 @@ public interface MessageChannel extends Channel, Formattable
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
      *     <br>The request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
      *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
-     *         was revoked in the {@link net.dv8tion.jda.api.entities.GuildMessageChannel GuildMessageChannel}</li>
+     *         was revoked in the {@link GuildMessageChannel}</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
      *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or
@@ -2967,7 +2968,7 @@ public interface MessageChannel extends Channel, Formattable
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
      *     <br>The request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
      *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
-     *         was revoked in the {@link net.dv8tion.jda.api.entities.GuildMessageChannel GuildMessageChannel}</li>
+     *         was revoked in the {@link GuildMessageChannel}</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
      *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or

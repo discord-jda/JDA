@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.internal.entities.channel;
+package net.dv8tion.jda.internal.entities.channel.middleman;
 
 import gnu.trove.map.TLongObjectMap;
 import net.dv8tion.jda.api.entities.PermissionOverride;
@@ -70,5 +70,5 @@ public abstract class AbstractStandardGuildChannelImpl<T extends AbstractStandar
         return (T) this;
     }
 
-    abstract void onPositionChange();
+    protected abstract void onPositionChange();
 }

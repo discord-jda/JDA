@@ -21,8 +21,8 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.concrete.*;
-import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.channel.unions.GuildMessageChannelUnion;
 import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.entities.emoji.CustomEmoji;
@@ -442,7 +442,7 @@ public interface Message extends ISnowflake, Formattable
     String getNonce();
 
     /**
-     * Used to determine if this Message was received from a {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel}
+     * Used to determine if this Message was received from a {@link MessageChannel}
      * of the {@link net.dv8tion.jda.api.entities.channel.ChannelType ChannelType} specified.
      *
      * <p>Useful for restricting functionality to a certain type of channels.
@@ -736,7 +736,7 @@ public interface Message extends ISnowflake, Formattable
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
      *     <br>The request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
      *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
-     *         was revoked in the {@link net.dv8tion.jda.api.entities.GuildMessageChannel GuildMessageChannel}</li>
+     *         was revoked in the {@link GuildMessageChannel}</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
      *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or
@@ -774,7 +774,7 @@ public interface Message extends ISnowflake, Formattable
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
      *     <br>The request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
      *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
-     *         was revoked in the {@link net.dv8tion.jda.api.entities.GuildMessageChannel GuildMessageChannel}</li>
+     *         was revoked in the {@link GuildMessageChannel}</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
      *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or
@@ -965,7 +965,7 @@ public interface Message extends ISnowflake, Formattable
      * @throws IllegalStateException
      *         If the message is not authored by this bot
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If this is a {@link net.dv8tion.jda.api.entities.GuildMessageChannel GuildMessageChannel} and this account does not have
+     *         If this is a {@link GuildMessageChannel} and this account does not have
      *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
      * @throws java.util.IllegalFormatException
      *         If a format string contains an illegal syntax,
@@ -1039,7 +1039,7 @@ public interface Message extends ISnowflake, Formattable
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
      *     <br>The request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
      *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
-     *         was revoked in the {@link net.dv8tion.jda.api.entities.GuildMessageChannel GuildMessageChannel}</li>
+     *         was revoked in the {@link GuildMessageChannel}</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
      *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or
