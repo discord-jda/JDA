@@ -3023,7 +3023,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * Retrieves a {@link GuildScheduledEvent} by its ID.
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
      * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_GUILD_SCHEDULED_EVENT ErrorResponse.UNKOWN_GUILD_SCHEDULED_EVENT}
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_GUILD_SCHEDULED_EVENT ErrorResponse.UNKNOWN_GUILD_SCHEDULED_EVENT}
      *     <br>A scheduled event with the specified ID does not exist in the guild, or the currently logged in user does not
      *     have access to it.</li>
      * </ul>
@@ -3037,13 +3037,13 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    RestAction<GuildScheduledEvent> retrieveScheduledEventById(long id);
+    CacheRestAction<GuildScheduledEvent> retrieveScheduledEventById(long id);
 
     /**
      * Retrieves a {@link GuildScheduledEvent} by its ID.
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
      * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_GUILD_SCHEDULED_EVENT ErrorResponse.UNKOWN_GUILD_SCHEDULED_EVENT}
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_GUILD_SCHEDULED_EVENT ErrorResponse.UNKNOWN_GUILD_SCHEDULED_EVENT}
      *     <br>A scheduled event with the specified ID does not exist in this guild, or the currently logged in user does not
      *     have access to it.</li>
      * </ul>
@@ -3062,7 +3062,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    RestAction<GuildScheduledEvent> retrieveScheduledEventById(@Nonnull String id);
+    CacheRestAction<GuildScheduledEvent> retrieveScheduledEventById(@Nonnull String id);
 
     /* From GuildController */
 
