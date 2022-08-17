@@ -505,7 +505,7 @@ public enum ActionType
     GUILD_SCHEDULED_EVENT_UPDATE(101, TargetType.GUILD_SCHEDULED_EVENT),
 
     /**
-     * A user deleted a {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvent}
+     * A user deleted/cancelled a {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvent}
      */
     GUILD_SCHEDULED_EVENT_DELETE(102, TargetType.GUILD_SCHEDULED_EVENT),
 
