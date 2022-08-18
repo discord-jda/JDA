@@ -54,9 +54,7 @@ public interface GuildChannel extends Channel, Comparable<GuildChannel>
      * @return The {@link Permission}
      */
     @Nonnull
-    default Permission getManagePermission() {
-    	return Permission.MANAGE_CHANNEL;
-    }
+    Permission getManagePermission();
 
     /**
      * TODO-v5: this override might not be needed anymore if we remove AuditableRestAction and instead place auditable hooks onto RestAction itself.
