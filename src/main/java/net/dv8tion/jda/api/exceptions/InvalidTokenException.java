@@ -25,17 +25,18 @@ public class InvalidTokenException extends RuntimeException
 
     /**
      * Constructs an <code>InvalidTokenException</code> with no detail message.
-     * */
+     */
     public InvalidTokenException()
     {
         super();
     }
+
     /**
      * Constructs an <code>InvalidTokenException</code> with the
      * specified detail message.
      *
      * @param  message   
-               The detail message.
+     *         The detail message.
      */
     public InvalidTokenException(String message)
     {
