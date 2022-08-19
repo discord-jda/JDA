@@ -32,13 +32,13 @@ import javax.annotation.Nonnull;
  *
  * <p><b>Example</b><br>
  * <pre>{@code
- * // Get every user interested in this event print the users names
+ * // Get every user interested in this event and add the users names to a list
  * public static void getInterestedUsers(GuildScheduledEvent event) {
- *     // get paginator
- *     GuildScheduledEventUsersPagination users = event.retrieveInterestedUsers();
- *     // print the name of every interested user
- *     users.forEachAsync(user -> System.out.println(user.getName()));
- *     );
+ *      // get paginator
+ *      GuildScheduledEventUsersPaginationAction users = event.retrieveInterestedUsers();
+ *      // add the name of every interested user to a list
+ *      ArrayList<String> userNames = new ArrayList();
+ *      users.forEachAsync(user -> userNames.add(user.getName()));
  * }
  * }</pre>
  */
