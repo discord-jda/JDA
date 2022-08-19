@@ -558,7 +558,7 @@ public class DataArray implements Iterable<Object>, SerializableArray
      *
      * @return Possibly-null {@link OffsetDateTime} object representing the timestamp
      */
-    @Nullable
+    @Contract("_, !null -> !null")
     public OffsetDateTime getOffsetDateTime(int index, @Nullable OffsetDateTime defaultValue)
     {
         OffsetDateTime value;

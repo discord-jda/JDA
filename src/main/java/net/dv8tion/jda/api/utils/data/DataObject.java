@@ -660,7 +660,7 @@ public class DataObject implements SerializableData
      *
      * @return Possibly-null {@link OffsetDateTime} object representing the timestamp
      */
-    @Nullable
+    @Nonnull
     public OffsetDateTime getOffsetDateTime(@Nonnull String key)
     {
         OffsetDateTime value = getOffsetDateTime(key, null);
@@ -682,7 +682,7 @@ public class DataObject implements SerializableData
      *
      * @return Possibly-null {@link OffsetDateTime} object representing the timestamp
      */
-    @Nullable
+    @Contract("_, !null -> !null")
     public OffsetDateTime getOffsetDateTime(@Nonnull String key, @Nullable OffsetDateTime defaultValue)
     {
         OffsetDateTime value;
