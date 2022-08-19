@@ -550,7 +550,7 @@ public class GuildImpl implements Guild
     @Override
     public CacheRestAction<GuildScheduledEvent> retrieveScheduledEventById(long id)
     {
-        return retrieveScheduledEventById(String.valueOf(id));
+        return retrieveScheduledEventById(Long.toUnsignedString(id));
     }
 
     @Override

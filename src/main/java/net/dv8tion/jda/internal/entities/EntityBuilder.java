@@ -356,7 +356,6 @@ public class EntityBuilder
             createThreadChannel(guildObj, threadJson, guildObj.getIdLong());
         }
 
-
         createGuildScheduledEventPass(guildObj, scheduledEventsArray);
         createGuildEmojiPass(guildObj, emojisArray);
         createGuildStickerPass(guildObj, stickersArray);

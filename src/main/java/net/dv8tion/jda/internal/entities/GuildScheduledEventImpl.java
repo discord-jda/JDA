@@ -213,7 +213,6 @@ public class GuildScheduledEventImpl implements GuildScheduledEvent
         return this;
     }
 
-
     public GuildScheduledEventImpl setDescription(String description)
     {
         this.description = description;
