@@ -173,6 +173,6 @@ public class GuildScheduledEventActionImpl extends AuditableRestActionImpl<Guild
     @Override
     protected void handleSuccess(Response response, Request<GuildScheduledEvent> request)
     {
-        request.onSuccess(api.getEntityBuilder().createGuildScheduledEvent((GuildImpl) guild, response.getObject(), guild.getIdLong()));
+        request.onSuccess(api.getEntityBuilder().createGuildScheduledEvent((GuildImpl) guild, response.getObject()));
     }
 }

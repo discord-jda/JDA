@@ -92,8 +92,6 @@ import javax.annotation.Nullable;
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import gnu.trove.set.TLongSet;
-import okhttp3.MediaType;
-import okhttp3.MultipartBody;
 
 public class GuildImpl implements Guild
 {
@@ -542,7 +540,7 @@ public class GuildImpl implements Guild
                 () ->
                 {
                     Route.CompiledRoute route = Route.Guilds.GET_SCHEDULED_EVENT.compile(getId(), id);
-                    return new RestActionImpl<>(getJDA(), route, (response, request) -> api.getEntityBuilder().createGuildScheduledEvent(this, response.getObject(), getIdLong()));
+                    return new RestActionImpl<>(getJDA(), route, (response, request) -> api.getEntityBuilder().createGuildScheduledEvent(this, response.getObject()));
                 });
     }
 

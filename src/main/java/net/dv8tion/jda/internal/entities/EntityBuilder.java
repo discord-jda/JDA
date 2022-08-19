@@ -195,7 +195,7 @@ public class EntityBuilder
                     continue;
                 }
                 final long eventId = object.getLong("id");
-                eventMap.put(eventId, createGuildScheduledEvent(guildObj, object, guildObj.getIdLong()));
+                eventMap.put(eventId, createGuildScheduledEvent(guildObj, object));
             }
         }
     }
@@ -953,11 +953,9 @@ public class EntityBuilder
                 .setAvailable(json.getBoolean("available", true));
     }
 
-    public GuildScheduledEvent createGuildScheduledEvent(GuildImpl guild, DataObject json, long guildId)
+    public GuildScheduledEvent createGuildScheduledEvent(GuildImpl guild, DataObject json)
     {
         final long id = json.getLong("id");
-        if (guild == null)
-            guild = (GuildImpl) getJDA().getGuildsView().get(guildId);
         GuildScheduledEventImpl guildScheduledEvent = (GuildScheduledEventImpl) guild.getScheduledEventsView().get(id);
         if (guildScheduledEvent == null)
         {

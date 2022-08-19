@@ -18,7 +18,6 @@ package net.dv8tion.jda.internal.entities;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.unions.GuildChannelUnion;
-import net.dv8tion.jda.api.entities.channel.unions.GuildMessageChannelUnion;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.GuildScheduledEventManager;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
