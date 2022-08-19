@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.entities.GuildScheduledEvent;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.api.requests.restaction.CacheRestAction;
 import net.dv8tion.jda.internal.requests.CompletedRestAction;
 
 import javax.annotation.CheckReturnValue;
@@ -28,6 +29,12 @@ import javax.annotation.Nullable;
 
 /**
  * Indicates that a {@link net.dv8tion.jda.api.entities.User User} is interested/have subscribed to a {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvent}.
+ *
+ * <p><b>Requirements</b><br>
+ *
+ * <p>This event requires the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_SCHEDULED_EVENTS GUILD_SCHEDULED_EVENTS} intent to be enabled.
+ * <br>{@link net.dv8tion.jda.api.JDABuilder#createDefault(String) createDefault(String)} and
+ * {@link net.dv8tion.jda.api.JDABuilder#createLight(String) createLight(String)} disable this by default!
  *
  * Can be used to detect when someone has indicated that they are interested in an event and also retrieve their
  * {@link net.dv8tion.jda.api.entities.User User} object as well as the {@link GuildScheduledEvent}.
@@ -95,16 +102,11 @@ public class GuildScheduledEventUserAddEvent extends GenericGuildScheduledEventG
      * <br>If a user is known, this will return {@link #getUser()}.
      *
      * @return {@link RestAction} - Type: {@link User}
-     *
-     * @since  4.2.1
      */
     @Nonnull
     @CheckReturnValue
-    public RestAction<User> retrieveUser()
+    public CacheRestAction<User> retrieveUser()
     {
-        User user = getUser();
-        if (user != null)
-            return new CompletedRestAction<>(getJDA(), user);
         return getJDA().retrieveUserById(getUserIdLong());
     }
 
@@ -113,16 +115,11 @@ public class GuildScheduledEventUserAddEvent extends GenericGuildScheduledEventG
      * <br>If a member is known, this will return {@link #getMember()}.
      *
      * @return {@link RestAction} - Type: {@link Member}
-     *
-     * @since  4.2.1
      */
     @Nonnull
     @CheckReturnValue
-    public RestAction<Member> retrieveMember()
+    public CacheRestAction<Member> retrieveMember()
     {
-        Member member = getMember();
-        if (member != null)
-            return new CompletedRestAction<>(getJDA(), member);
         return getGuild().retrieveMemberById(getUserIdLong());
     }
 }

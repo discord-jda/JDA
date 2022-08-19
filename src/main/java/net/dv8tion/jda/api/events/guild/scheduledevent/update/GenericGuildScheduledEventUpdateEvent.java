@@ -18,8 +18,15 @@ import javax.annotation.Nullable;
  * {@link net.dv8tion.jda.api.entities.User User} or {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} objects
  * representing a <a href="https://support.discord.com/hc/en-us/articles/4409494125719-Scheduled-Events">guild's scheduled events</a>.
  *
- * @param  <T>
- *         The type of the field being updated
+ * <p><b>Requirements</b><br>
+ *
+ * <p>These events require the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_SCHEDULED_EVENTS GUILD_SCHEDULED_EVENTS} intent to be enabled.
+ * <br>{@link net.dv8tion.jda.api.JDABuilder#createDefault(String) createDefault(String)} and
+ * {@link net.dv8tion.jda.api.JDABuilder#createLight(String) createLight(String)} disable this by default!
+ *
+ * Discord does not specifically tell us about the updates, but merely tells us the
+ * {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvent} was updated and gives us the updated {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvent} object.
+ * In order to fire a specific event like this we need to have the old {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvent} cached to compare against.
  */
 public abstract class GenericGuildScheduledEventUpdateEvent<T> extends GenericGuildScheduledEventGatewayEvent implements UpdateEvent<GuildScheduledEvent, T>
 {

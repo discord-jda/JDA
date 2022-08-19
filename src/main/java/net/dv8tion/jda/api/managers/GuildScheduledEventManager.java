@@ -131,7 +131,7 @@ public interface GuildScheduledEventManager extends Manager<GuildScheduledEventM
      *         The new name for the selected {@link GuildScheduledEvent GuildScheduledEvent}
      *
      * @throws java.lang.IllegalArgumentException
-     *         If the new name is blank, empty, {@code null}, or is longer than {@value GuildScheduledEvent#MAX_NAME_LENGTH}
+     *         If the new name is blank, empty, {@code null}, or longer than {@value GuildScheduledEvent#MAX_NAME_LENGTH}
      *         characters
      *
      * @return GuildScheduledEventManager for chaining convenience
@@ -164,7 +164,7 @@ public interface GuildScheduledEventManager extends Manager<GuildScheduledEventM
      *         The cover image for the new {@link GuildScheduledEvent GuildScheduledEvent},
      *         or {@code null} for no cover image.
      *
-     * @return The current GuildScheduledEventAction, for chaining convenience
+     * @return GuildScheduledEventManager for chaining convenience
      */
     @Nonnull
     @CheckReturnValue
@@ -209,8 +209,8 @@ public interface GuildScheduledEventManager extends Manager<GuildScheduledEventM
      *         The location that the selected {@link GuildScheduledEvent} is set to take place at.
      *
      * @throws java.lang.IllegalArgumentException
-     *         If the provided location is blank, empty, {@code null}, or contains more than
-     *         {@value GuildScheduledEvent#MAX_LOCATION_LENGTH} characters
+     *         If the provided location is blank, empty, {@code null}, or longer than
+     *         {@value GuildScheduledEvent#MAX_LOCATION_LENGTH}
      * @throws java.lang.IllegalStateException
      *         If the selected {@link GuildScheduledEvent} does not have an end time
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
@@ -242,7 +242,7 @@ public interface GuildScheduledEventManager extends Manager<GuildScheduledEventM
      *             <li>If the provided start time is before the end time</li>
      *             <li>If the provided start time is before the current time</li>
      *         </ul>
-     * @return GuildScheduledEventManager for chaining convenience of the optional parameters
+     * @return GuildScheduledEventManager for chaining convenience
      *
      * @see    #setEndTime(TemporalAccessor)
      */

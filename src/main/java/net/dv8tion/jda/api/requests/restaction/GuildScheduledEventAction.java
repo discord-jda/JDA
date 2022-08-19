@@ -99,8 +99,7 @@ public interface GuildScheduledEventAction extends AuditableRestAction<GuildSche
      *         or {@code null} for no description.
      *
      * @throws java.lang.IllegalArgumentException
-     *         If the new description contains more than {@value GuildScheduledEvent#MAX_DESCRIPTION_LENGTH}
-     *         characters.
+     *         If the new description is longer than {@value GuildScheduledEvent#MAX_DESCRIPTION_LENGTH} characters.
      *
      * @return The current GuildScheduledEventAction, for chaining convenience
      */

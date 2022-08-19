@@ -4600,6 +4600,13 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      *     </li>
      * </ol>
      *
+     * <p><b>Example</b><br>
+     * <pre>{@code
+     * guild.createScheduledEvent("Cactus Beauty Contest", "Mike's Backyard", OffsetDateTime.now().plusHours(1), OffsetDateTime.now().plusHours(3))
+     *     .setDescription("Come and have your cacti judged! _Must be spikey to enter_")
+     *     .queue();
+     * }</pre>
+     *
      * @throws java.lang.IllegalArgumentException
      *         <ul>
      *             <li>If a required parameter is {@code null} or empty</li>
@@ -4609,13 +4616,6 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      *             <li>If the description is longer than 1000 characters</li>
      *             <li>If the location is longer than 100 characters</li>
      *         </ul>
-     *
-     * <p><b>Example</b><br>
-     * <pre>{@code
-     * guild.createScheduledEvent("Cactus Beauty Contest", "Mike's Backyard", OffsetDateTime.now().plusHours(1), OffsetDateTime.now().plusHours(3))
-     *     .setDescription("Come and have your cacti judged! _Must be spikey to enter_")
-     *     .queue();
-     * }</pre>
      *
      * @return {@link GuildScheduledEventAction}
      */
@@ -4660,6 +4660,13 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      *     </li>
      * </ol>
      *
+     * <p><b>Example</b><br>
+     * <pre>{@code
+     * guild.createScheduledEvent("Cactus Beauty Contest", guild.getGuildChannelById(channelId), OffsetDateTime.now().plusHours(1))
+     *     .setDescription("Come and have your cacti judged! _Must be spikey to enter_")
+     *     .queue();
+     * }</pre>
+     *
      * @throws java.lang.IllegalArgumentException
      *         <ul>
      *             <li>If a required parameter is {@code null} or empty</li>
@@ -4669,13 +4676,6 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      *             <li>If the channel is not a Stage or Voice channel</li>
      *             <li>If the channel is not from the same guild as the scheduled event</li>
      *         </ul>
-     *
-     * <p><b>Example</b><br>
-     * <pre>{@code
-     * guild.createScheduledEvent("Cactus Beauty Contest", guild.getGuildChannelById(channelId), OffsetDateTime.now().plusHours(1))
-     *     .setDescription("Come and have your cacti judged! _Must be spikey to enter_")
-     *     .queue();
-     * }</pre>
      *
      * @return {@link GuildScheduledEventAction}
      */

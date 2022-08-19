@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.GuildScheduledEventMembersPaginationAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.GuildScheduledEventUsersPaginationAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.PaginationAction;
+import net.dv8tion.jda.api.utils.ImageProxy;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -29,7 +30,7 @@ import javax.annotation.Nullable;
 import java.time.OffsetDateTime;
 
 /**
- * A class representing a guild scheduled event (The events that show up under the events tab in the Official Discord Client).
+ * A class representing a {@link GuildScheduledEvent} (The events that show up under the events tab in the Official Discord Client).
  * These events should not be confused with {@link net.dv8tion.jda.api.events Gateway Events},
  * which are fired by Discord whenever something interesting happens
  * (ie., a {@link net.dv8tion.jda.api.events.message.MessageDeleteEvent MessageDeleteEvent} gets fired whenever a message gets deleted).
@@ -51,7 +52,9 @@ public interface GuildScheduledEvent extends ISnowflake, Comparable<GuildSchedul
      */
     int MAX_LOCATION_LENGTH = 100;
 
-    /** Template for {@link #getImageUrl()} */
+    /**
+     * Template for {@link #getImageUrl()}
+     */
     String IMAGE_URL = "https://cdn.discordapp.com/guild-events/%s/%s.%s";
 
     /**
@@ -78,6 +81,20 @@ public interface GuildScheduledEvent extends ISnowflake, Comparable<GuildSchedul
      */
     @Nullable
     String getImageUrl();
+
+    /**
+     * Returns an {@link ImageProxy} for this events cover image.
+     *
+     * @return The {@link ImageProxy} for this events cover image or null if no image is defined
+     *
+     * @see    #getImageUrl()
+     */
+    @Nullable
+    default ImageProxy getImage()
+    {
+        final String imageUrl = getImageUrl();
+        return imageUrl == null ? null : new ImageProxy(imageUrl);
+    }
 
     /**
      * The user who originally created the event.
@@ -133,8 +150,6 @@ public interface GuildScheduledEvent extends ISnowflake, Comparable<GuildSchedul
 
     /**
      * Returns the type of the event. Possible types include
-     * {@link Type#STAGE_INSTANCE}, {@link Type#VOICE} and {@link Type#EXTERNAL}
-     * (the latter indicates that the events location is manually set to a custom location).
      *
      * @return The type, or {@link Type#UNKNOWN} if the event type is unknown to JDA.
      */
@@ -180,14 +195,14 @@ public interface GuildScheduledEvent extends ISnowflake, Comparable<GuildSchedul
 
     /**
      * The location the event is set to take place in.
+     * This will return the channel id for {@link Type#STAGE_INSTANCE} and {@link Type#VOICE}.
      *
-     * @return The channel id if the event is of {@link Type#STAGE_INSTANCE} or {@link Type#VOICE},
-     *          the external location if the event is of {@link Type#EXTERNAL}
+     * @return The channel id or the external location of the event
      *
      * @see    #getType()
      * @see    #getChannel()
      */
-
+    @Nonnull
     String getLocation();
 
     /**

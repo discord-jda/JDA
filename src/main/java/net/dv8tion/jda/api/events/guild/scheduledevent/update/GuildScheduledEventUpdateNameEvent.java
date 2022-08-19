@@ -26,6 +26,16 @@ import javax.annotation.Nonnull;
  * <p>Can be used to detect when the {@link GuildScheduledEvent} name has changed.
  *
  * <p>Identifier: {@code name}
+ *
+ * <p><b>Requirements</b><br>
+ *
+ * <p>This event requires the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_SCHEDULED_EVENTS GUILD_SCHEDULED_EVENTS} intent to be enabled.
+ * <br>{@link net.dv8tion.jda.api.JDABuilder#createDefault(String) createDefault(String)} and
+ * {@link net.dv8tion.jda.api.JDABuilder#createLight(String) createLight(String)} disable this by default!
+ *
+ * Discord does not specifically tell us about the updates, but merely tells us the
+ * {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvent} was updated and gives us the updated {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvent} object.
+ * In order to fire a specific event like this we need to have the old {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvent} cached to compare against.
  */
 public class GuildScheduledEventUpdateNameEvent extends GenericGuildScheduledEventUpdateEvent<String>
 {

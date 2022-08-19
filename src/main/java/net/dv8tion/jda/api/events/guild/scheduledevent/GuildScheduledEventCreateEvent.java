@@ -23,6 +23,12 @@ import javax.annotation.Nonnull;
 /**
  * Indicates that a {@link GuildScheduledEvent} object has been created.
  *
+ * <p><b>Requirements</b><br>
+ *
+ * <p>This event requires the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_SCHEDULED_EVENTS GUILD_SCHEDULED_EVENTS} intent to be enabled.
+ * <br>{@link net.dv8tion.jda.api.JDABuilder#createDefault(String) createDefault(String)} and
+ * {@link net.dv8tion.jda.api.JDABuilder#createLight(String) createLight(String)} disable this by default!
+ *
  * Can be used to detect when a {@link GuildScheduledEvent} was created and retrieve the created scheduled event.
  */
 public class GuildScheduledEventCreateEvent extends GenericGuildScheduledEventGatewayEvent
