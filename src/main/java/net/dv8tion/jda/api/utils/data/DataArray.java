@@ -525,31 +525,31 @@ public class DataArray implements Iterable<Object>, SerializableArray
     }
 
     /**
-     * Resolves an {@link OffsetDateTime} to a key.
+     * Resolves the value at the specified index to an {@link OffsetDateTime}.
      * <br><b>Note:</b> This method should be used on ISO8601 timestamps
      *
-     * @param key
-     *        The key to check for a value
+     * @param  index
+     *         The index to resolve
      *
      * @throws net.dv8tion.jda.api.exceptions.ParsingException
      *         If the value is missing, null, or not a valid ISO8601 timestamp
      *
      * @return Possibly-null {@link OffsetDateTime} object representing the timestamp
      */
-    @Nullable
-    public OffsetDateTime getOffsetDateTime(int index, @Nonnull String key)
+    @Nonnull
+    public OffsetDateTime getOffsetDateTime(int index)
     {
-        OffsetDateTime value = getOffsetDateTime(index, key, null);
+        OffsetDateTime value = getOffsetDateTime(index, null);
         if(value == null)
             throw valueError(index, "OffsetDateTime");
         return value;
     }
     /**
-     * Resolves an {@link OffsetDateTime} to a key.
+     * Resolves the value at the specified index to an {@link OffsetDateTime}.
      * <br><b>Note:</b> This method should only be used on ISO8601 timestamps
      *
-     * @param  key
-     *         The key to check for a value
+     * @param  index
+     *         The index to resolve
      * @param  defaultValue
      *         Alternative value to use when no value or null value is associated with the key
      *
@@ -559,7 +559,7 @@ public class DataArray implements Iterable<Object>, SerializableArray
      * @return Possibly-null {@link OffsetDateTime} object representing the timestamp
      */
     @Nullable
-    public OffsetDateTime getOffsetDateTime(int index, @Nonnull String key, @Nullable OffsetDateTime defaultValue)
+    public OffsetDateTime getOffsetDateTime(int index, @Nullable OffsetDateTime defaultValue)
     {
         OffsetDateTime value;
         try
@@ -568,8 +568,8 @@ public class DataArray implements Iterable<Object>, SerializableArray
         }
         catch (DateTimeParseException e)
         {
-            String reason = "Cannot parse value for %s into an OffsetDateTime object. Try double checking that %s is a valid ISO8601 timestmap";
-            throw new ParsingException(String.format(reason, key, e.getParsedString()));
+            String reason = "Cannot parse value for %s into an OffsetDateTime object. Try double checking that %s is a valid ISO8601 timestamp";
+            throw new ParsingException(String.format(reason, e.getParsedString()));
         }
         return value == null ? defaultValue : value;
     }
