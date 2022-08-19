@@ -38,7 +38,7 @@ public class GuildScheduledEventUserRemoveEvent extends GenericGuildScheduledEve
 {
     private final long userId;
 
-    public GuildScheduledEventUserRemoveEvent(@Nonnull JDA api, long responseNumber, @Nonnull GuildScheduledEvent guildScheduledEvent, @Nonnull long userId)
+    public GuildScheduledEventUserRemoveEvent(@Nonnull JDA api, long responseNumber, @Nonnull GuildScheduledEvent guildScheduledEvent, long userId)
     {
         super(api, responseNumber, guildScheduledEvent);
         this.userId = userId;

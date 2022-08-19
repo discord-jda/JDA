@@ -131,7 +131,7 @@ public interface GuildScheduledEventManager extends Manager<GuildScheduledEventM
      *         The new name for the selected {@link GuildScheduledEvent GuildScheduledEvent}
      *
      * @throws java.lang.IllegalArgumentException
-     *         If the new name is blank, empty, {@code null}, or contains more than {@value GuildScheduledEvent#MAX_NAME_LENGTH}
+     *         If the new name is blank, empty, {@code null}, or is longer than {@value GuildScheduledEvent#MAX_NAME_LENGTH}
      *         characters
      *
      * @return GuildScheduledEventManager for chaining convenience
@@ -149,7 +149,7 @@ public interface GuildScheduledEventManager extends Manager<GuildScheduledEventM
      *         or {@code null} to reset the description
      *
      * @throws java.lang.IllegalArgumentException
-     *         If the new description contains more than {@value GuildScheduledEvent#MAX_DESCRIPTION_LENGTH}
+     *         If the new description is longer than {@value GuildScheduledEvent#MAX_DESCRIPTION_LENGTH} characters
      *
      * @return GuildScheduledEventManager for chaining convenience
      */
@@ -280,7 +280,7 @@ public interface GuildScheduledEventManager extends Manager<GuildScheduledEventM
      * Sets the status of the event. This method may be used to start, end or cancel an event but can only be used to
      * complete one of the following transitions:
      * <ol>
-     *     <li>{@link GuildScheduledEvent.Status#SCHEDULED Status.SCHEDULED} to {@link GuildScheduledEvent.Status#SCHEDULED Status.ACTIVE}</li>
+     *     <li>{@link GuildScheduledEvent.Status#SCHEDULED Status.SCHEDULED} to {@link GuildScheduledEvent.Status#ACTIVE Status.ACTIVE}</li>
      *     <li>{@link GuildScheduledEvent.Status#SCHEDULED Status.SCHEDULED} to {@link GuildScheduledEvent.Status#CANCELED Status.CANCELED}</li>
      *     <li>{@link GuildScheduledEvent.Status#ACTIVE Status.ACTIVE} to {@link GuildScheduledEvent.Status#COMPLETED Status.COMPLETED}</li>
      * </ol>

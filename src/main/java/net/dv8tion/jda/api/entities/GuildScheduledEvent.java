@@ -105,7 +105,7 @@ public interface GuildScheduledEvent extends ISnowflake, Comparable<GuildSchedul
 
     /**
      * The ID of the user who originally created this event.
-     * <br> This method may return {@code null} if the event was created before Discord started keeping track of event creators on October 21st, 2021.
+     * <br>This method may return {@code null} if the event was created before Discord started keeping track of event creators on October 21st, 2021.
      *
      * @return The Id of the user who created this event, or {@code null} if no user is associated with creating this event.
      *
@@ -122,7 +122,7 @@ public interface GuildScheduledEvent extends ISnowflake, Comparable<GuildSchedul
      * Determines if this event has a creator associated with it.
      * <br>This will return {@code false} for events created prior to October 21st, 2021 when Discord first started keep track of who created an event.
      *
-     * @return {@code true} if this event has a creator associated with it, {@code false} if not
+     * @return {@code true} if this event has a creator associated with it, {@code false} otherwise
      *
      * @see    #getCreatorIdLong()
      * @see    #getCreatorId()

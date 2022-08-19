@@ -43,7 +43,7 @@ import java.util.function.BooleanSupplier;
  *              <li>{@link net.dv8tion.jda.api.Permission#MANAGE_EVENTS Permission.MANAGE_EVENTS}</li>
  *              <li>{@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL Permission.MANAGE_CHANNEL}</li>
  *              <li>{@link net.dv8tion.jda.api.Permission#VOICE_MUTE_OTHERS Permission.VOICE_MUTE_OTHERS}</li>
- *              <li>{@link net.dv8tion.jda.api.Permission#VOICE_MOVE_OTHERS Permission.VOICE_MOVE_OTHERS}}</li>
+ *              <li>{@link net.dv8tion.jda.api.Permission#VOICE_MOVE_OTHERS Permission.VOICE_MOVE_OTHERS}</li>
  *         </ul>
  *     </li>
  *     <li>
@@ -59,7 +59,7 @@ import java.util.function.BooleanSupplier;
  *     <li>
  *         {@link GuildScheduledEvent.Type#EXTERNAL Type.EXTERNAL}
  *         <br>These events are set to take place at an external location. {@link net.dv8tion.jda.api.Permission#MANAGE_EVENTS Permission.MANAGE_EVENTS}
- *         is required on the guild level in order to create this type of event. Additionally, an end time <i>must</i>
+ *         is required on the guild level in order to create this type of event. Additionally, an end time <em>must</em>
  *         also be specified.
  *     </li>
  * </ol>
