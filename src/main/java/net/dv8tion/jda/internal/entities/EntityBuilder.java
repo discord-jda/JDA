@@ -201,7 +201,6 @@ public class EntityBuilder
     }
 
     private void createGuildStickerPass(GuildImpl guildObj, DataArray array)
-
     {
         if (!getJDA().isCacheFlagSet(CacheFlag.STICKER))
             return;
