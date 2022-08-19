@@ -105,9 +105,10 @@ public class ChannelDeleteHandler extends SocketHandler
                                 channel));
 
                 // Deleting any guild scheduled events associated to the deleted channel as they are deleted when the channel gets deleted.
-                // There is no delete event for the deletion of guild scheduled events, so we do this to keep the cache in sync.
+                // There is no delete event for the deletion of guild scheduled events in this case, so we do this to keep the cache in sync.
+                String channelId1 = Long.toUnsignedString(channelId);
                 guild.getScheduledEventsView().stream()
-                        .filter(guildScheduledEvent -> guildScheduledEvent.getType().equals(GuildScheduledEvent.Type.VOICE) && guildScheduledEvent.getLocation().equals(String.valueOf(channelId)))
+                        .filter(guildScheduledEvent -> guildScheduledEvent.getType().equals(GuildScheduledEvent.Type.VOICE) && guildScheduledEvent.getLocation().equals(String.valueOf(channelId1)))
                         .forEach(guildScheduledEvent -> guild.getScheduledEventsView().remove(guildScheduledEvent.getIdLong()));
                 break;
             }
@@ -127,9 +128,10 @@ public class ChannelDeleteHandler extends SocketHandler
                                 channel));
 
                 // Deleting any guild scheduled events associated to the deleted channel as they are deleted when the channel gets deleted.
-                // There is no delete event for the deletion of guild scheduled events, so we do this to keep the cache in sync.
+                // There is no delete event for the deletion of guild scheduled events in this case, so we do this to keep the cache in sync.
+                String channelId1 = Long.toUnsignedString(channelId);
                 guild.getScheduledEventsView().stream()
-                        .filter(guildScheduledEvent -> guildScheduledEvent.getType().equals(GuildScheduledEvent.Type.STAGE_INSTANCE) && guildScheduledEvent.getLocation().equals(String.valueOf(channelId)))
+                        .filter(guildScheduledEvent -> guildScheduledEvent.getType().equals(GuildScheduledEvent.Type.STAGE_INSTANCE) && guildScheduledEvent.getLocation().equals(channelId1))
                         .forEach(guildScheduledEvent -> guild.getScheduledEventsView().remove(guildScheduledEvent.getIdLong()));
                 break;
             }

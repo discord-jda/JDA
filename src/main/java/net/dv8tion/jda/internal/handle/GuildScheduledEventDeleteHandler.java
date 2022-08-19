@@ -48,11 +48,13 @@ public class GuildScheduledEventDeleteHandler extends SocketHandler
 
         final long eventId = content.getLong("id");
         GuildScheduledEvent removedEvent = guild.getScheduledEventsView().remove(eventId);
-
-        getJDA().handleEvent(
-            new GuildScheduledEventDeleteEvent(
-                getJDA(), responseNumber,
-                removedEvent));
+        if (removedEvent != null)
+        {
+            getJDA().handleEvent(
+                    new GuildScheduledEventDeleteEvent(
+                            getJDA(), responseNumber,
+                            removedEvent));
+        }
         return null;
     }
 }

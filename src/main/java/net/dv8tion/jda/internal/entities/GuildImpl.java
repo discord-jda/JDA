@@ -551,13 +551,6 @@ public class GuildImpl implements Guild
         return retrieveScheduledEventById(Long.toUnsignedString(id));
     }
 
-    @Override
-    @Nonnull
-    public List<GuildScheduledEvent> getScheduledEvents()
-    {
-        return getScheduledEventsView().asList();
-    }
-
     @Nonnull
     @Override
     public GuildScheduledEventAction createScheduledEvent(@Nonnull String name, @Nonnull String location, @Nonnull OffsetDateTime startTime, @Nonnull OffsetDateTime endTime)

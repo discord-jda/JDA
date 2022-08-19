@@ -154,13 +154,6 @@ public class GuildScheduledEventImpl implements GuildScheduledEvent
 
     @Nonnull
     @Override
-    public String getId()
-    {
-        return String.valueOf(id);
-    }
-
-    @Nonnull
-    @Override
     public GuildScheduledEventManager getManager()
     {
         return new GuildScheduledEventManagerImpl(this);
