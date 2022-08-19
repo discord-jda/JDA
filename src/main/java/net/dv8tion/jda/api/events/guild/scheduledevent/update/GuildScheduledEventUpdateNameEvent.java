@@ -21,9 +21,9 @@ import net.dv8tion.jda.api.entities.GuildScheduledEvent;
 import javax.annotation.Nonnull;
 
 /**
- * Indicates the {@link GuildScheduledEvent#getName() name} of a {@link GuildScheduledEvent} has changed.
+ * Indicates that the {@link GuildScheduledEvent#getName() name} of a {@link GuildScheduledEvent} has changed.
  *
- * <p>Can be used to detect when the {@link GuildScheduledEvent} name had changed.
+ * <p>Can be used to detect when the {@link GuildScheduledEvent} name has changed.
  *
  * <p>Identifier: {@code name}
  */

@@ -21,8 +21,8 @@ import net.dv8tion.jda.api.entities.GuildScheduledEvent;
 import javax.annotation.Nonnull;
 
 /**
- * Indicates the {@link GuildScheduledEvent#getStatus() status} of a {@link GuildScheduledEvent} has changed. The status
- * of a {@link GuildScheduledEvent} represents if it is currently happening, canceled, or has been completed.
+ * Indicates that the {@link GuildScheduledEvent#getStatus() status} of a {@link GuildScheduledEvent} has changed. The status
+ * of a {@link GuildScheduledEvent} represents if it is currently active, canceled, or completed.
  *
  * <p>Can be used to detect when the {@link GuildScheduledEvent} status has changed.
  *

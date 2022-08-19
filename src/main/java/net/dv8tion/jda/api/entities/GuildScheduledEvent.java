@@ -292,8 +292,8 @@ public interface GuildScheduledEvent extends ISnowflake, Comparable<GuildSchedul
 
     /**
      * The {@link GuildScheduledEventManager} for this event.
-     * <br>In the GuildScheduledEventManager, you can modify all its values, and can also start, end, or cancel events.
-     * <br>You modify multiple fields in one request by chaining setters before calling {@link net.dv8tion.jda.api.requests.RestAction#queue() RestAction.queue()}.
+     * <br>In the GuildScheduledEventManager, you can modify all values and also start, end, or cancel events.
+     * <br>You can modify multiple fields in one request by chaining setters before calling {@link net.dv8tion.jda.api.requests.RestAction#queue() RestAction.queue()}.
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have {@link net.dv8tion.jda.api.Permission#MANAGE_EVENTS Permission.MANAGE_EVENTS}
