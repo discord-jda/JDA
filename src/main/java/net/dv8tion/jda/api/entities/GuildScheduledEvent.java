@@ -398,9 +398,22 @@ public interface GuildScheduledEvent extends ISnowflake, Comparable<GuildSchedul
      */
     enum Type
     {
+        /**
+         * Unknown future types that may be added by Discord which aren't represented in JDA yet.
+         */
         UNKNOWN(-1),
+        /**
+         *
+         * An event with it's own {@link net.dv8tion.jda.api.entities.StageInstance StageInstance}
+         */
         STAGE_INSTANCE(1),
+        /**
+         * An event inside a {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel}
+         */
         VOICE(2),
+        /**
+         * An event held externally.
+         */
         EXTERNAL(3);
 
         private final int key;
@@ -411,9 +424,9 @@ public interface GuildScheduledEvent extends ISnowflake, Comparable<GuildSchedul
         }
 
         /**
-         * The Discord id key for this Type.
+         * The Discord id key used to represent the scheduled event type.
          *
-         * @return The id key for this Type
+         * @return The id key used by discord for this scheduled event type.
          */
         public int getKey()
         {
