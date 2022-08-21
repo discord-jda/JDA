@@ -21,11 +21,11 @@ import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.localization.LocalizationMap;
-import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.localization.LocalizationUtils;
 
 import javax.annotation.Nonnull;
@@ -392,7 +392,7 @@ public class SubcommandData implements SerializableData
         return options.stream(DataArray::getObject)
                 .map(OptionData::fromData)
                 .filter(it -> it.getType().getKey() > OptionType.SUB_COMMAND_GROUP.getKey())
-                .collect(MiscUtil.toUnmodifiableList());
+                .collect(Helpers.toUnmodifiableList());
     }
 
     /**
