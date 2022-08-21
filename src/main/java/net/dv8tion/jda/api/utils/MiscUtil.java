@@ -214,7 +214,8 @@ public class MiscUtil
         }
     }
 
-    public static <T> Collector<T, ?, List<T>> toUnmodifiableList() {
+    public static <T> Collector<T, ?, List<T>> toUnmodifiableList()
+    {
         return Collectors.collectingAndThen(Collectors.toList(), Collections::unmodifiableList);
     }
 }
