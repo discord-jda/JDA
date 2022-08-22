@@ -94,53 +94,9 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
     ChannelAction<T> setName(@Nonnull String name);
 
     /**
-     * Converts the channel to a different {@link ChannelType}.
-     *
-     * <br><br>
-     * This can only be done in the follow situations:
-     * <table>
-     *     <caption style="display: none">Javadoc is stupid, this is not a required tag</caption>
-     *     <thead>
-     *         <tr>
-     *             <th>Current Channel Type</th>
-     *             <th></th>
-     *             <th>New Channel Type</th>
-     *         </tr>
-     *     </thead>
-     *     <tbody>
-     *         <tr>
-     *             <td>{@link ChannelType#NEWS}</td>
-     *             <td> -&gt; </td>
-     *             <td>{@link ChannelType#TEXT}</td>
-     *         </tr>
-     *         <tr>
-     *             <td>{@link ChannelType#TEXT}</td>
-     *             <td> -&gt; </td>
-     *             <td>{@link ChannelType#NEWS}</td>
-     *         </tr>
-     *     </tbody>
-     * </table>
-     *
-     * @param  type
-     *         The not-null {@link ChannelType} of the new channel
-     *
-     * @throws IllegalArgumentException
-     *         If {@code channelType} is not {@link ChannelType#TEXT} or {@link ChannelType#NEWS}
-     * @throws UnsupportedOperationException
-     *         If this ChannelAction is not for a {@link TextChannel} or {@link NewsChannel}
-     * @throws java.lang.IllegalStateException
-     *         If {@code channelType} is {@link ChannelType#NEWS} and the guild doesn't have the {@code NEWS} feature in {@link Guild#getFeatures()}.
-     *
-     * @return The current ChannelAction, for chaining convenience
-     */
-    @Nonnull
-    @CheckReturnValue
-    ChannelAction<T> setType(@Nonnull ChannelType type);
-
-    /**
      * Sets the {@link net.dv8tion.jda.api.entities.Category Category} for the new GuildChannel.
      *
-     * You can use {@link #syncPermissionOverrides()} to sync the channel with the category.
+     * <p>You can use {@link #syncPermissionOverrides()} to sync the channel with the category.
      *
      * @param  category
      *         The parent for the new GuildChannel
