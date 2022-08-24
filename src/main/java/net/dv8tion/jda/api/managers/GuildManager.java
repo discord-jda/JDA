@@ -24,6 +24,7 @@ import net.dv8tion.jda.api.entities.VoiceChannel;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Collection;
 
 /**
  * Manager providing functionality to update one or more fields for a {@link net.dv8tion.jda.api.entities.Guild Guild}.
@@ -73,6 +74,8 @@ public interface GuildManager extends Manager<GuildManager>
     long COMMUNITY_UPDATES_CHANNEL  = 1 << 13;
     /** Used to reset the premium progress bar enabled field */
     long BOOST_PROGRESS_BAR_ENABLED = 1 << 14;
+    /** Used to add or remove modifiable features (such as {@code "INVITES_DISABLED"}) */
+    long FEATURES = 1 << 15;
 
     /**
      * Resets the fields specified by the provided bit-flag pattern.
@@ -94,6 +97,7 @@ public interface GuildManager extends Manager<GuildManager>
      *     <li>{@link #EXPLICIT_CONTENT_LEVEL}</li>
      *     <li>{@link #VERIFICATION_LEVEL}</li>
      *     <li>{@link #BOOST_PROGRESS_BAR_ENABLED}</li>
+     *     <li>{@link #FEATURES}</li>
      * </ul>
      *
      * @param  fields
@@ -125,6 +129,7 @@ public interface GuildManager extends Manager<GuildManager>
      *     <li>{@link #EXPLICIT_CONTENT_LEVEL}</li>
      *     <li>{@link #VERIFICATION_LEVEL}</li>
      *     <li>{@link #BOOST_PROGRESS_BAR_ENABLED}</li>
+     *     <li>{@link #FEATURES}</li>
      * </ul>
      *
      * @param  fields
@@ -372,4 +377,8 @@ public interface GuildManager extends Manager<GuildManager>
     @Nonnull
     @CheckReturnValue
     GuildManager setBoostProgressBarEnabled(boolean boostProgressBarEnabled);
+
+    @Nonnull
+    @CheckReturnValue
+    GuildManager setFeatures(@Nonnull Collection<String> features);
 }
