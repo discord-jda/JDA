@@ -52,7 +52,7 @@ public interface ActionMetadata
     ActionMetadata setChannel(@Nonnull GuildChannel channel);
 
     /**
-     * Returns the duration of the timeout.
+     * Returns the duration of the timeout and the maximum is 2419200 seconds (4 weeks)
      * <br>
      * The associated action type is {@link AutoModerationActionType#TIMEOUT}
      *

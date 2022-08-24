@@ -16,7 +16,6 @@
 
 package net.dv8tion.jda.api.entities.automod.build;
 
-import net.dv8tion.jda.api.entities.automod.build.sent.ExemptSubstrings;
 import net.dv8tion.jda.api.entities.automod.build.sent.Keyword;
 import net.dv8tion.jda.api.entities.automod.build.sent.KeywordPreset;
 
@@ -36,10 +35,6 @@ public interface AutoModerationMessageSend
     @CheckReturnValue
     KeywordPreset preset(String name);
 
-    @Nonnull
-    @CheckReturnValue
-    ExemptSubstrings exemptSubstrings(String name);
-
     /**
      * Returns the {@link Keyword} instances that can be used to create a new {@link net.dv8tion.jda.api.entities.automod.AutoModerationRule}.
      *
@@ -55,12 +50,4 @@ public interface AutoModerationMessageSend
      */
     @Nonnull
     KeywordPreset getPreset();
-
-    /**
-     * Returns the {@link ExemptSubstrings} instances that can be used to create a new {@link net.dv8tion.jda.api.entities.automod.AutoModerationRule}.
-     *
-     * @return {@link ExemptSubstrings}
-     */
-    @Nonnull
-    ExemptSubstrings getExemptSubstrings();
 }

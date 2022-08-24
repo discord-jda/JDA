@@ -31,15 +31,6 @@ public enum TriggerType
      */
     KEYWORD(1, 3),
     /**
-     * Checks for any harmful links.
-     * <p>
-     * The max per guild is 1.
-     * <p>
-     * Note: This is not released yet.
-     * </p>
-     */
-    HARMFUL_LINK(2, 1),
-    /**
      * Checks for generic spam.
      * <p>
      * The max per guild is 1.
@@ -55,6 +46,16 @@ public enum TriggerType
      * </p>
      */
     KEYWORD_PRESET(4, 1),
+    /**
+     * checks if the content contains more mentions than allowed
+     * <p>
+     * The max per guild is 1.
+     * </p>
+     * <p>
+     * Note: This is not released yet.
+     * </p>
+     */
+    MENTION_SPAM(5, 1),
     /**
      * An unknown trigger type.
      */

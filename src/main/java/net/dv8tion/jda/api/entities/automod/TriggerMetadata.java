@@ -94,4 +94,26 @@ public interface TriggerMetadata
      */
     @Nonnull
     TriggerMetadata setExemptSubstrings(@Nonnull List<String> exemptSubstrings);
+
+    /**
+     * Gets the total number of mentions (role & user) allowed per message (Maximum of 50).
+     * <p>
+     * Associated trigger type is {@link TriggerType#MENTION_SPAM}.
+     * </p>
+     * @return The total number of mentions allowed per message.
+     */
+    int getMentionTotalLimit();
+
+    /**
+     * Sets the total number of mentions (role & user) allowed per message (Maximum of 50).
+     * <p>
+     * Associated trigger type is {@link TriggerType#MENTION_SPAM}.
+     * </p>
+     * @param  mentionTotalLimit
+     *         The total number of mentions allowed per message.
+     *
+     * @return This {@link TriggerMetadata} instance, for chaining.
+     */
+    @Nonnull
+    TriggerMetadata setMentionTotalLimit(int mentionTotalLimit);
 }

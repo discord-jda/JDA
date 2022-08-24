@@ -31,6 +31,7 @@ public class TriggerMetadataImpl implements TriggerMetadata
     private List<String> keywords;
     private EnumSet<KeywordPresetType> keywordPresets;
     private List<String> exemptSubstrings;
+    private int mentionTotalLimit;
 
     @Override
     @Nonnull
@@ -78,18 +79,35 @@ public class TriggerMetadataImpl implements TriggerMetadata
     }
 
     @Override
+    public int getMentionTotalLimit()
+    {
+        return mentionTotalLimit;
+    }
+
+    @NotNull
+    @Override
+    public TriggerMetadata setMentionTotalLimit(int mentionTotalLimit)
+    {
+        this.mentionTotalLimit = mentionTotalLimit;
+        return this;
+    }
+
+    @Override
     public boolean equals(Object o)
     {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         TriggerMetadataImpl that = (TriggerMetadataImpl) o;
-        return Objects.equals(keywords, that.keywords) && Objects.equals(keywordPresets, that.keywordPresets) && Objects.equals(exemptSubstrings, that.exemptSubstrings);
+        return Objects.equals(keywords, that.keywords)
+                && Objects.equals(keywordPresets, that.keywordPresets)
+                && Objects.equals(exemptSubstrings, that.exemptSubstrings)
+                && mentionTotalLimit == that.mentionTotalLimit;
     }
 
     @Override
     public int hashCode()
     {
-        return Objects.hash(keywords, keywordPresets, exemptSubstrings);
+        return Objects.hash(keywords, keywordPresets, exemptSubstrings, mentionTotalLimit);
     }
 
     @Override
@@ -99,6 +117,7 @@ public class TriggerMetadataImpl implements TriggerMetadata
                 "keywords=" + keywords +
                 ", keywordPresets=" + keywordPresets +
                 ", exemptSubstrings=" + exemptSubstrings +
+                ", mentionTotalLimit=" + mentionTotalLimit +
                 ')';
     }
 }
