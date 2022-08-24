@@ -19,15 +19,18 @@ package net.dv8tion.jda.api.entities.automod.build.sent;
 import javax.annotation.Nonnull;
 import java.util.List;
 
-public interface Keyword extends GenericKeyWord
+/**
+ * Used to build an {@link net.dv8tion.jda.api.entities.automod.AutoModerationRule} with a {@link List} of {@link String keywords}
+ */
+public interface Keyword extends GenericMetadata
 {
     /**
      * Used to set the substrings which will be searched for in content.
      *
-     * @param  keyword
+     * @param  keywords
      *         A {@link List} of {@link String}
      *
      * @return The current {@link Keyword} instance.
      */
-    Keyword setKeyword(@Nonnull String... keyword);
+    Keyword setKeyword(@Nonnull String... keywords);
 }

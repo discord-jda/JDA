@@ -27,7 +27,7 @@ import javax.annotation.Nonnull;
 import java.util.Arrays;
 import java.util.EnumSet;
 
-public class KeywordPresetImpl extends GenericKeyWordImpl implements KeywordPreset
+public class KeywordPresetImpl extends GenericMetadataImpl implements KeywordPreset
 {
     public KeywordPresetImpl(String name, EventType eventType)
     {

@@ -16,24 +16,21 @@
 
 package net.dv8tion.jda.api.entities.automod.build.sent;
 
-
-import net.dv8tion.jda.api.entities.automod.KeywordPresetType;
-
 import javax.annotation.Nonnull;
-import java.util.EnumSet;
+import java.util.List;
 
 /**
- * Used to build an {@link net.dv8tion.jda.api.entities.automod.AutoModerationRule} with a {@link net.dv8tion.jda.api.entities.automod.TriggerType#KEYWORD_PRESET} trigger type.
+ * Used to build an {@link net.dv8tion.jda.api.entities.automod.AutoModerationRule} with a {@link List} of {@link String exemptSubstrings}
  */
-public interface KeywordPreset extends GenericMetadata
+public interface ExemptSubstrings
 {
     /**
-     * Used to set the internally pre-defined word sets which will be searched for in content.
+     * Used to set the substrings that will be exempt from triggering the preset trigger type.
      *
-     * @param  keywordPresets
-     *         A {@link EnumSet} of {@link KeywordPresetType KeywordPresets}
+     * @param  exemptSubstrings
+     *         A {@link List} of {@link String}
      *
-     * @return The current {@link KeywordPreset} instance.
+     * @return The current {@link ExemptSubstrings} instance.
      */
-    KeywordPreset setKeywordPresets(@Nonnull KeywordPresetType... keywordPresets);
+    ExemptSubstrings setExemptSubstrings(@Nonnull String... exemptSubstrings);
 }

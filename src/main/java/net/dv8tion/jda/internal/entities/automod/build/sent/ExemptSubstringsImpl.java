@@ -19,24 +19,23 @@ package net.dv8tion.jda.internal.entities.automod.build.sent;
 import net.dv8tion.jda.api.entities.automod.EventType;
 import net.dv8tion.jda.api.entities.automod.TriggerMetadata;
 import net.dv8tion.jda.api.entities.automod.TriggerType;
-import net.dv8tion.jda.api.entities.automod.build.sent.Keyword;
+import net.dv8tion.jda.api.entities.automod.build.sent.ExemptSubstrings;
 import net.dv8tion.jda.internal.entities.automod.TriggerMetadataImpl;
 
 import javax.annotation.Nonnull;
 import java.util.Arrays;
 
-public class KeywordImpl extends GenericMetadataImpl implements Keyword
+public class ExemptSubstringsImpl extends GenericMetadataImpl implements ExemptSubstrings
 {
-    public KeywordImpl(String name, EventType eventType)
+    public ExemptSubstringsImpl(String name, EventType eventType)
     {
-        super(name, eventType, TriggerType.KEYWORD);
+        super(name, eventType, TriggerType.KEYWORD_PRESET);
     }
-
     @Override
-    public Keyword setKeyword(@Nonnull String... keywords)
+    public ExemptSubstrings setExemptSubstrings(@Nonnull String... exemptSubstrings)
     {
         TriggerMetadata triggerMetadata = new TriggerMetadataImpl();
-        triggerMetadata.setKeywords(Arrays.asList(keywords));
+        triggerMetadata.setExemptSubstrings(Arrays.asList(exemptSubstrings));
         this.triggerMetadata = triggerMetadata;
         return this;
     }

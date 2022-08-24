@@ -19,7 +19,7 @@ package net.dv8tion.jda.internal.entities.automod.build.sent;
 import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.automod.*;
-import net.dv8tion.jda.api.entities.automod.build.sent.GenericKeyWord;
+import net.dv8tion.jda.api.entities.automod.build.sent.GenericMetadata;
 import net.dv8tion.jda.internal.entities.automod.ActionMetadataImpl;
 import net.dv8tion.jda.internal.entities.automod.AutoModerationActionImpl;
 import net.dv8tion.jda.internal.entities.automod.AutoModerationRuleImpl;
@@ -31,7 +31,7 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GenericKeyWordImpl implements GenericKeyWord
+public class GenericMetadataImpl implements GenericMetadata
 {
     protected final String name;
     protected final EventType eventType;
@@ -43,7 +43,7 @@ public class GenericKeyWordImpl implements GenericKeyWord
     protected TriggerMetadata triggerMetadata;
 
 
-    public GenericKeyWordImpl(String name, EventType eventType, @Nonnull TriggerType triggerType)
+    public GenericMetadataImpl(String name, EventType eventType, @Nonnull TriggerType triggerType)
     {
         this.name = name;
         this.eventType = eventType;
@@ -53,7 +53,7 @@ public class GenericKeyWordImpl implements GenericKeyWord
     @Nonnull
     @Override
     @CheckReturnValue
-    public GenericKeyWord setEnabled(boolean enabled)
+    public GenericMetadata setEnabled(boolean enabled)
     {
         this.enabled = enabled;
         return this;
@@ -62,7 +62,7 @@ public class GenericKeyWordImpl implements GenericKeyWord
     @Nonnull
     @Override
     @CheckReturnValue
-    public GenericKeyWord setAction(@Nonnull AutoModerationActionType type, @Nullable GuildChannel channel, @Nullable Duration duration)
+    public GenericMetadata setAction(@Nonnull AutoModerationActionType type, @Nullable GuildChannel channel, @Nullable Duration duration)
     {
         List<AutoModerationAction> actions = new ArrayList<>();
 
@@ -89,7 +89,7 @@ public class GenericKeyWordImpl implements GenericKeyWord
     @Nullable
     @Override
     @CheckReturnValue
-    public GenericKeyWord setExemptRoles(@Nonnull List<Role> exemptRoles)
+    public GenericMetadata setExemptRoles(@Nonnull List<Role> exemptRoles)
     {
         this.roles = exemptRoles;
         return this;
@@ -98,7 +98,7 @@ public class GenericKeyWordImpl implements GenericKeyWord
     @Nullable
     @Override
     @CheckReturnValue
-    public GenericKeyWord setExemptChannels(@Nonnull List<GuildChannel> exemptChannels)
+    public GenericMetadata setExemptChannels(@Nonnull List<GuildChannel> exemptChannels)
     {
         this.channels = exemptChannels;
         return this;

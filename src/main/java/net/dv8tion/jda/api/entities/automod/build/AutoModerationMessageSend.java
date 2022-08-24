@@ -16,24 +16,54 @@
 
 package net.dv8tion.jda.api.entities.automod.build;
 
+import net.dv8tion.jda.api.entities.automod.build.sent.ExemptSubstrings;
 import net.dv8tion.jda.api.entities.automod.build.sent.Keyword;
 import net.dv8tion.jda.api.entities.automod.build.sent.KeywordPreset;
+import net.dv8tion.jda.api.entities.automod.build.sent.MentionTotalLimit;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 
 /**
- * Used to create a new {@link net.dv8tion.jda.api.entities.automod.AutoModerationRule},
+ * Used to create a new {@link net.dv8tion.jda.api.entities.automod.AutoModerationRule}
  */
 public interface AutoModerationMessageSend
 {
+    /**
+     * Creates a new {@link Keyword} which can be used to create a new {@link net.dv8tion.jda.api.entities.automod.AutoModerationRule}.
+     * @param name The name of the keyword.
+     * @return The created {@link Keyword}.
+     */
     @Nonnull
     @CheckReturnValue
     Keyword keyword(String name);
 
+    /**
+     * Creates a new {@link KeywordPreset} which can be used to create a new {@link net.dv8tion.jda.api.entities.automod.AutoModerationRule}.
+     * @param name The name of the auto moderation rule.
+     * @return The created {@link KeywordPreset}.
+     */
     @Nonnull
     @CheckReturnValue
     KeywordPreset preset(String name);
+
+    /**
+     * Creates a new {@link ExemptSubstrings} which can be used to create a new {@link net.dv8tion.jda.api.entities.automod.AutoModerationRule}.
+     * @param name The name of the auto moderation rule.
+     * @return The created {@link ExemptSubstrings}.
+     */
+    @Nonnull
+    @CheckReturnValue
+    ExemptSubstrings exemptSubstrings(String name);
+
+    /**
+     * Creates a new {@link MentionTotalLimit} which can be used to create a new {@link net.dv8tion.jda.api.entities.automod.AutoModerationRule}.
+     * @param name The name of the auto moderation rule.
+     * @return The created {@link MentionTotalLimit}.
+     */
+    @Nonnull
+    @CheckReturnValue
+    MentionTotalLimit mentionTotalLimit(String name);
 
     /**
      * Returns the {@link Keyword} instances that can be used to create a new {@link net.dv8tion.jda.api.entities.automod.AutoModerationRule}.
@@ -50,4 +80,20 @@ public interface AutoModerationMessageSend
      */
     @Nonnull
     KeywordPreset getPreset();
+
+    /**
+     * Returns the {@link ExemptSubstrings} instances that can be used to create a new {@link net.dv8tion.jda.api.entities.automod.AutoModerationRule}.
+     *
+     * @return {@link ExemptSubstrings}
+     */
+    @Nonnull
+    ExemptSubstrings getExemptSubstrings();
+
+    /**
+     * Returns the {@link MentionTotalLimit} instances that can be used to create a new {@link net.dv8tion.jda.api.entities.automod.AutoModerationRule}.
+     *
+     * @return {@link MentionTotalLimit}
+     */
+    @Nonnull
+    MentionTotalLimit getMentionTotalLimit();
 }

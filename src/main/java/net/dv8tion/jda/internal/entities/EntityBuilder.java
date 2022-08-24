@@ -2281,6 +2281,7 @@ public class EntityBuilder
         final DataArray keywordFilterArray = object.getArray("keyword_filter");
         final DataArray presetsArray = object.getArray("presets");
         final DataArray allowList = object.getArray("allow_list");
+        final int mentionTotalLimit = object.getInt("mention_total_limit");
 
         List<String> keywordFilters = new ArrayList<>();
         for (int i = 0; i < keywordFilterArray.length(); i++)
@@ -2298,7 +2299,8 @@ public class EntityBuilder
         return new TriggerMetadataImpl()
                 .setKeywords(keywordFilters)
                 .setKeywordPresets(presets)
-                .setExemptSubstrings(exemptSubstrings);
+                .setExemptSubstrings(exemptSubstrings)
+                .setMentionTotalLimit(mentionTotalLimit);
     }
 
     public AutoModerationAction createAutoModerationAction(GuildImpl guild, DataObject object)

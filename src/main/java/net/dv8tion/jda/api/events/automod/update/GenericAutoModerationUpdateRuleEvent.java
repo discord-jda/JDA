@@ -27,7 +27,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
- * Indicates that a {@link AutoModerationRule rule} was updated.
+ * Indicates that an {@link AutoModerationRule rule} was updated.
  * <br>Every AutoModerationUpdateEvent is derived from this event and can be casted.
  *
  * <p>Can be used to detect any AutoModerationUpdateEvent.
