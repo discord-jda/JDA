@@ -24,18 +24,21 @@ import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
-import net.dv8tion.jda.api.requests.restaction.MessageAction;
+import net.dv8tion.jda.api.requests.restaction.MessageCreateAction;
+import net.dv8tion.jda.api.requests.restaction.MessageEditAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.MessagePaginationAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationAction;
-import net.dv8tion.jda.api.utils.AttachmentOption;
+import net.dv8tion.jda.api.utils.AttachedFile;
+import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.TimeUtil;
 import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.api.utils.messages.MessageCreateData;
+import net.dv8tion.jda.api.utils.messages.MessageEditData;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
-import java.io.InputStream;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
@@ -120,7 +123,7 @@ public interface MessageChannelMixin<T extends MessageChannelMixin<T>> extends
 
     @Nonnull
     @CheckReturnValue
-    default MessageAction sendMessage(@Nonnull CharSequence text)
+    default MessageCreateAction sendMessage(@Nonnull CharSequence text)
     {
         checkCanAccessChannel();
         checkCanSendMessage();
@@ -129,7 +132,7 @@ public interface MessageChannelMixin<T extends MessageChannelMixin<T>> extends
 
     @Nonnull
     @CheckReturnValue
-    default MessageAction sendMessageEmbeds(@Nonnull MessageEmbed embed, @Nonnull MessageEmbed... other)
+    default MessageCreateAction sendMessageEmbeds(@Nonnull MessageEmbed embed, @Nonnull MessageEmbed... other)
     {
         checkCanAccessChannel();
         checkCanSendMessage();
@@ -139,7 +142,7 @@ public interface MessageChannelMixin<T extends MessageChannelMixin<T>> extends
 
     @Nonnull
     @CheckReturnValue
-    default MessageAction sendMessageEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
+    default MessageCreateAction sendMessageEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
     {
         checkCanAccessChannel();
         checkCanSendMessage();
@@ -149,7 +152,7 @@ public interface MessageChannelMixin<T extends MessageChannelMixin<T>> extends
 
     @Nonnull
     @CheckReturnValue
-    default MessageAction sendMessage(@Nonnull Message msg)
+    default MessageCreateAction sendMessage(@Nonnull MessageCreateData msg)
     {
         checkCanAccessChannel();
         checkCanSendMessage();
@@ -158,12 +161,12 @@ public interface MessageChannelMixin<T extends MessageChannelMixin<T>> extends
 
     @Nonnull
     @CheckReturnValue
-    default MessageAction sendFile(@Nonnull InputStream data, @Nonnull String fileName, @Nonnull AttachmentOption... options)
+    default MessageCreateAction sendFiles(@Nonnull Collection<? extends FileUpload> files)
     {
         checkCanAccessChannel();
         checkCanSendMessage();
         checkCanSendFiles();
-        return MessageChannelUnion.super.sendFile(data, fileName, options);
+        return MessageChannelUnion.super.sendFiles(files);
     }
 
     @Nonnull
@@ -301,7 +304,7 @@ public interface MessageChannelMixin<T extends MessageChannelMixin<T>> extends
 
     @Nonnull
     @CheckReturnValue
-    default MessageAction editMessageById(@Nonnull String messageId, @Nonnull CharSequence newContent)
+    default MessageEditAction editMessageById(@Nonnull String messageId, @Nonnull CharSequence newContent)
     {
         checkCanAccessChannel();
         checkCanSendMessage();
@@ -310,17 +313,17 @@ public interface MessageChannelMixin<T extends MessageChannelMixin<T>> extends
 
     @Nonnull
     @CheckReturnValue
-    default MessageAction editMessageById(@Nonnull String messageId, @Nonnull Message newContent)
+    default MessageEditAction editMessageById(@Nonnull String messageId, @Nonnull MessageEditData data)
     {
        checkCanAccessChannel();
        checkCanSendMessage();
-       return MessageChannelUnion.super.editMessageById(messageId, newContent);
+       return MessageChannelUnion.super.editMessageById(messageId, data);
     }
 
 
     @Nonnull
     @CheckReturnValue
-    default MessageAction editMessageEmbedsById(@Nonnull String messageId, @Nonnull Collection<? extends MessageEmbed> newEmbeds)
+    default MessageEditAction editMessageEmbedsById(@Nonnull String messageId, @Nonnull Collection<? extends MessageEmbed> newEmbeds)
     {
         checkCanAccessChannel();
         checkCanSendMessage();
@@ -330,11 +333,20 @@ public interface MessageChannelMixin<T extends MessageChannelMixin<T>> extends
 
     @Nonnull
     @CheckReturnValue
-    default MessageAction editMessageComponentsById(@Nonnull String messageId, @Nonnull Collection<? extends LayoutComponent> components)
+    default MessageEditAction editMessageComponentsById(@Nonnull String messageId, @Nonnull Collection<? extends LayoutComponent> components)
     {
         checkCanAccessChannel();
         checkCanSendMessage();
         return MessageChannelUnion.super.editMessageComponentsById(messageId, components);
+    }
+
+    @Nonnull
+    @Override
+    default MessageEditAction editMessageAttachmentsById(@Nonnull String messageId, @Nonnull Collection<? extends AttachedFile> attachments)
+    {
+        checkCanAccessChannel();
+        checkCanSendMessage();
+        return MessageChannelUnion.super.editMessageAttachmentsById(messageId, attachments);
     }
 
     // ---- State Accessors ----

@@ -26,8 +26,8 @@ import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.AbstractWebhookClient;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.TriggerRestAction;
-import net.dv8tion.jda.internal.requests.restaction.WebhookMessageActionImpl;
-import net.dv8tion.jda.internal.requests.restaction.WebhookMessageUpdateActionImpl;
+import net.dv8tion.jda.internal.requests.restaction.WebhookMessageCreateActionImpl;
+import net.dv8tion.jda.internal.requests.restaction.WebhookMessageEditActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.JDALogger;
 
@@ -141,24 +141,24 @@ public class InteractionHookImpl extends AbstractWebhookClient<Message> implemen
 
     @Nonnull
     @Override
-    public WebhookMessageActionImpl<Message> sendRequest()
+    public WebhookMessageCreateActionImpl<Message> sendRequest()
     {
         Route.CompiledRoute route = Route.Interactions.CREATE_FOLLOWUP.compile(getJDA().getSelfUser().getApplicationId(), interaction.getToken());
         route = route.withQueryParams("wait", "true");
-        Function<DataObject, Message> transform = (json) -> ((JDAImpl) api).getEntityBuilder().createMessageWithChannel(json, getInteraction().getMessageChannel(), false).withHook(this);
-        return onReady(new WebhookMessageActionImpl<>(getJDA(), route, transform)).setEphemeral(ephemeral);
+        Function<DataObject, Message> transform = (json) -> ((JDAImpl) api).getEntityBuilder().createMessageWithChannel(json, getInteraction().getMessageChannel(), false);
+        return onReady(new WebhookMessageCreateActionImpl<>(getJDA(), route, transform)).setEphemeral(ephemeral);
     }
 
     @Nonnull
     @Override
-    public WebhookMessageUpdateActionImpl<Message> editRequest(String messageId)
+    public WebhookMessageEditActionImpl<Message> editRequest(String messageId)
     {
         if (!"@original".equals(messageId))
             Checks.isSnowflake(messageId);
         Route.CompiledRoute route = Route.Interactions.EDIT_FOLLOWUP.compile(getJDA().getSelfUser().getApplicationId(), interaction.getToken(), messageId);
         route = route.withQueryParams("wait", "true");
-        Function<DataObject, Message> transform = (json) -> ((JDAImpl) api).getEntityBuilder().createMessageWithChannel(json, getInteraction().getMessageChannel(), false).withHook(this);
-        return onReady(new WebhookMessageUpdateActionImpl<>(getJDA(), route, transform));
+        Function<DataObject, Message> transform = (json) -> ((JDAImpl) api).getEntityBuilder().createMessageWithChannel(json, getInteraction().getMessageChannel(), false);
+        return onReady(new WebhookMessageEditActionImpl<>(getJDA(), route, transform));
     }
 
     @Nonnull
