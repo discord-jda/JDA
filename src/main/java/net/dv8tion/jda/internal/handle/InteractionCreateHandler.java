@@ -30,7 +30,6 @@ import net.dv8tion.jda.api.interactions.InteractionType;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.components.Component;
 import net.dv8tion.jda.api.utils.data.DataObject;
-import net.dv8tion.jda.api.utils.data.DataPath;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.interactions.InteractionImpl;
 import net.dv8tion.jda.internal.interactions.ModalInteractionImpl;
@@ -105,7 +104,7 @@ public class InteractionCreateHandler extends SocketHandler
 
     private void handleCommand(DataObject content)
     {
-        switch (Command.Type.fromId(DataPath.getInt(content, "data.type")))
+        switch (Command.Type.fromId(content.getObject("data").getInt("type")))
         {
         case SLASH:
             api.handleEvent(
@@ -127,7 +126,7 @@ public class InteractionCreateHandler extends SocketHandler
 
     private void handleAction(DataObject content)
     {
-        switch (Component.Type.fromKey(DataPath.getInt(content, "data.component_type")))
+        switch (Component.Type.fromKey(content.getObject("data").getInt("component_type")))
         {
         case BUTTON:
             api.handleEvent(

@@ -20,7 +20,6 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.interactions.commands.context.UserContextInteraction;
 import net.dv8tion.jda.api.utils.data.DataObject;
-import net.dv8tion.jda.api.utils.data.DataPath;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.entities.MemberImpl;
@@ -32,7 +31,7 @@ public class UserContextInteractionImpl extends ContextInteractionImpl<User> imp
     public UserContextInteractionImpl(JDAImpl jda, DataObject data)
     {
         super(jda, data, (resolved) -> parse(jda, resolved));
-        DataObject members = DataPath.optObject(data, "data.resolved.members?");
+        DataObject members = data.getObject("data").getObject("resolved").optObject("members").orElse(null);
         if (members != null && !members.keys().isEmpty())
         {
             DataObject member = members.getObject(members.keys().iterator().next());
