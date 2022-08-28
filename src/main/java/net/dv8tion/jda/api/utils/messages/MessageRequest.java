@@ -173,13 +173,22 @@ public interface MessageRequest<R extends MessageRequest<R>> extends MessageData
      *
      * <p>The most commonly used layout is {@link ActionRow}.
      *
-     * <p><b>Example</b><br>
+     * <p><b>Example: Set action rows</b><br>
+     * <pre>{@code
+     * final List<LayoutComponent> list = new ArrayList<>();
+     * list.add(ActionRow.of(selectMenu); // first row
+     * list.add(ActionRow.of(button1, button2)); // second row (shows below the first)
+     *
+     * channel.sendMessage("Content is still required")
+     *   .setComponents(list)
+     *   .queue();
+     * }</pre>
+     *
+     * <p><b>Example: Remove action rows</b><br>
      * <pre>{@code
      * channel.sendMessage("Content is still required")
-     *   .setComponents(
-     *     ActionRow.of(selectMenu) // first row
-     *     ActionRow.of(button1, button2)) // second row (shows below the first)
-     *   .queue();
+     *    .setComponents(Collections.emptyList())
+     *    .queue();
      * }</pre>
      *
      * @param  components
@@ -199,16 +208,23 @@ public interface MessageRequest<R extends MessageRequest<R>> extends MessageData
 
     /**
      * The {@link LayoutComponent LayoutComponents} that should be attached to the message.
-     * <br>You can use {@link Collections#emptyList()} to remove all components from the message.
+     * <br>You can call this method without anything to remove all components from the message.
      *
      * <p>The most commonly used layout is {@link ActionRow}.
      *
-     * <p><b>Example</b><br>
+     * <p><b>Example: Set action rows</b><br>
      * <pre>{@code
      * channel.sendMessage("Content is still required")
      *   .setComponents(
      *     ActionRow.of(selectMenu) // first row
      *     ActionRow.of(button1, button2)) // second row (shows below the first)
+     *   .queue();
+     * }</pre>
+     *
+     * <p><b>Example: Remove action rows</b><br>
+     * <pre>{@code
+     * channel.sendMessage("Content is still required")
+     *   .setComponents()
      *   .queue();
      * }</pre>
      *
@@ -237,16 +253,23 @@ public interface MessageRequest<R extends MessageRequest<R>> extends MessageData
      * <p><b>Example</b><br>
      *
      * <pre>{@code
+     * final List<ItemComponent> list = new ArrayList<>();
+     * list.add(button1);
+     * list.add(button2);
+     *
      * channel.sendMessage("Content is still required")
-     *   .setActionRow(button1, button2)
+     *   .setActionRow(list)
      *   .queue();
      * }</pre>
      *
      * is equivalent to:
      *
      * <pre>{@code
+     * final List<LayoutComponent> list = new ArrayList<>();
+     * list.add(ActionRow.of(button1, button2));
+     *
      * channel.sendMessage("Content is still required")
-     *   .setComponents(ActionRow.of(button1, button2))
+     *   .setComponents(list)
      *   .queue();
      * }</pre><br>
      *
