@@ -769,39 +769,6 @@ public interface RestAction<T>
      *
      * <p>This does not modify this instance but returns a new RestAction, which will consume
      * the actions result using the given consumer on successful execution.
-     *
-     * <p><b>Example</b><br>
-     * <pre>{@code
-     * public RestAction<Void> printMemberNickname(Guild guild, String userId) {
-     *     return guild.retrieveMemberById(userId)
-     *                 .map(Member::getNickname)
-     *                 .accept(System.out::println);
-     * }
-     * }</pre>
-     *
-     * Prefer using {@link #queue(Consumer)} instead, if continuation of the action
-     * chain is not desired.
-     *
-     * @param  consumer
-     *         The consuming function to apply to the action result
-     *
-     * @return RestAction that consumes the action result
-     */
-    @Nonnull
-    @CheckReturnValue
-    default RestAction<Void> accept(@Nonnull Consumer<? super T> consumer)
-    {
-        return map(result -> {
-            consumer.accept(result);
-            return null;
-        });
-    }
-
-    /**
-     * An intermediate operator that returns a modified RestAction.
-     *
-     * <p>This does not modify this instance but returns a new RestAction, which will consume
-     * the actions result using the given consumer on successful execution.
      * The resulting action continues with the previous result.
      *
      * <p><b>Example</b><br>
@@ -809,7 +776,7 @@ public interface RestAction<T>
      * public RestAction<String> retrieveMemberNickname(Guild guild, String userId) {
      *     return guild.retrieveMemberById(userId)
      *                 .map(Member::getNickname)
-     *                 .also(this::logMemberRetrieval);
+     *                 .onSuccess(System.out::println);
      * }
      * }</pre>
      *
@@ -817,13 +784,14 @@ public interface RestAction<T>
      * chain is not desired.
      *
      * @param  consumer
-     *         The consuming function to apply to the action result
+     *         The consuming function to apply to the action result, failures are propagated
+     *         into the resulting action
      *
      * @return RestAction that consumes the action result
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<T> also(@Nonnull Consumer<? super T> consumer)
+    default RestAction<T> onSuccess(@Nonnull Consumer<? super T> consumer)
     {
         return map(result -> {
             consumer.accept(result);
