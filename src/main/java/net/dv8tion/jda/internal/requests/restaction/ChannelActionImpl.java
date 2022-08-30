@@ -20,6 +20,7 @@ import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.channel.concrete.ForumChannel;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
@@ -175,8 +176,13 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
     public ChannelActionImpl<T> setTopic(String topic)
     {
         checkTypes(TOPIC_SUPPORTED, "Topic");
-        if (topic != null && topic.length() > 1024)
-            throw new IllegalArgumentException("Channel Topic must not be greater than 1024 in length!");
+        if (topic != null)
+        {
+            if (type == ChannelType.FORUM)
+                Checks.notLonger(topic, ForumChannel.MAX_FORUM_TOPIC_LENGTH, "Topic");
+            else
+                Checks.notLonger(topic, 1024, "Topic");
+        }
         this.topic = topic;
         return this;
     }

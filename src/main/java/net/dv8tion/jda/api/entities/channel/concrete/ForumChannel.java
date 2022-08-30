@@ -40,6 +40,11 @@ import javax.annotation.Nullable;
  */
 public interface ForumChannel extends StandardGuildChannel, IThreadContainer, IAgeRestrictedChannel
 {
+    /**
+     * The maximum length of a forum topic ({@value #MAX_FORUM_TOPIC_LENGTH})
+     */
+    int MAX_FORUM_TOPIC_LENGTH = 4096;
+
     @Nonnull
     @Override
     default ChannelType getType()

@@ -22,6 +22,7 @@ import gnu.trove.set.hash.TLongHashSet;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.Region;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.channel.concrete.ForumChannel;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.channel.ChannelManager;
 import net.dv8tion.jda.api.utils.data.DataObject;
@@ -401,7 +402,12 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
         if (TOPIC_SUPPORTED.contains(type))
             throw new IllegalStateException("Can only set topic on text, forum, and news channels");
         if (topic != null)
-            Checks.notLonger(topic, 1024, "Topic");
+        {
+            if (type == ChannelType.FORUM)
+                Checks.notLonger(topic, ForumChannel.MAX_FORUM_TOPIC_LENGTH, "Topic");
+            else
+                Checks.notLonger(topic, 1024, "Topic");
+        }
         this.topic = topic;
         set |= TOPIC;
         return (M) this;
