@@ -540,7 +540,6 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * <p>
      * <a target="_blank" href="https://discord.com/developers/docs/resources/guild#guild-object-guild-features"><b>List of Features</b></a>
      *
-     *
      * @return Never-null, unmodifiable Set containing all of the Guild's features.
      */
     @Nonnull
@@ -3231,10 +3230,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    default AuditableRestAction<Void> kick(@Nonnull UserSnowflake user)
-    {
-        return kick(user, null);
-    }
+    AuditableRestAction<Void> kick(@Nonnull UserSnowflake user);
 
     /**
      * Bans the user specified by the provided {@link UserSnowflake} and deletes messages sent by the user based on the {@code deletionTimeframe}.
