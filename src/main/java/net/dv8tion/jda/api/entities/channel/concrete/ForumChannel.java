@@ -22,11 +22,13 @@ import net.dv8tion.jda.api.entities.channel.attribute.IAgeRestrictedChannel;
 import net.dv8tion.jda.api.managers.channel.concrete.ForumChannelManager;
 import net.dv8tion.jda.api.requests.restaction.ChannelAction;
 import net.dv8tion.jda.api.requests.restaction.ForumPostAction;
+import net.dv8tion.jda.api.utils.cache.SortedSnowflakeCacheView;
 import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.List;
 
 /**
  * A Forum Channel which contains {@link #createForumPost(String, MessageCreateData) Forum Posts}.
@@ -65,6 +67,15 @@ public interface ForumChannel extends StandardGuildChannel, IThreadContainer, IA
     default ChannelAction<ForumChannel> createCopy()
     {
         return createCopy(getGuild());
+    }
+
+    @Nonnull
+    SortedSnowflakeCacheView<ForumTag> getAvailableTagCache();
+
+    @Nonnull
+    default List<ForumTag> getAvailableTags()
+    {
+        return getAvailableTagCache().asList();
     }
 
     // TODO: Should this be in StandardGuildMessageChannel?

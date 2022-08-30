@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.internal.requests.restaction;
 
+import gnu.trove.set.TLongSet;
+import gnu.trove.set.hash.TLongHashSet;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.concrete.ForumChannel;
 import net.dv8tion.jda.api.requests.Request;
@@ -32,11 +34,13 @@ import net.dv8tion.jda.internal.utils.message.MessageCreateBuilderMixin;
 import okhttp3.RequestBody;
 
 import javax.annotation.Nonnull;
+import java.util.Collection;
 
 public class ForumPostActionImpl extends RestActionImpl<ForumPost> implements ForumPostAction, MessageCreateBuilderMixin<ForumPostAction>
 {
     private final MessageCreateBuilder builder;
     private final ForumChannel channel;
+    private final TLongSet appliedTags = new TLongHashSet();
     private String name;
     private ThreadChannel.AutoArchiveDuration autoArchiveDuration;
 
@@ -60,6 +64,16 @@ public class ForumPostActionImpl extends RestActionImpl<ForumPost> implements Fo
     public ForumChannel getChannel()
     {
         return channel;
+    }
+
+    @Nonnull
+    @Override
+    public ForumPostAction setTags(@Nonnull Collection<? extends ForumTagSnowflake> tags)
+    {
+        Checks.noneNull(tags, "Tags");
+        this.appliedTags.clear();
+        tags.forEach(t -> this.appliedTags.add(t.getIdLong()));
+        return this;
     }
 
     @Nonnull
@@ -104,6 +118,8 @@ public class ForumPostActionImpl extends RestActionImpl<ForumPost> implements Fo
             json.put("name", name);
             if (autoArchiveDuration != null)
                 json.put("auto_archive_duration", autoArchiveDuration.getMinutes());
+            if (!appliedTags.isEmpty())
+                json.put("applied_tags", appliedTags.toArray());
             return getMultipartBody(message.getFiles(), json);
         }
     }

@@ -18,10 +18,7 @@ package net.dv8tion.jda.internal.entities;
 
 import gnu.trove.map.TLongObjectMap;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Category;
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.PermissionOverride;
+import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.concrete.ForumChannel;
 import net.dv8tion.jda.api.entities.channel.unions.GuildChannelUnion;
 import net.dv8tion.jda.api.managers.channel.concrete.ForumChannelManager;
@@ -36,9 +33,11 @@ import net.dv8tion.jda.internal.entities.mixin.channel.middleman.StandardGuildCh
 import net.dv8tion.jda.internal.managers.channel.concrete.ForumChannelManagerImpl;
 import net.dv8tion.jda.internal.requests.restaction.ForumPostActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.cache.SortedSnowflakeCacheViewImpl;
 
 import javax.annotation.Nonnull;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -49,6 +48,7 @@ public class ForumChannelImpl extends AbstractGuildChannelImpl<ForumChannelImpl>
                    IThreadContainerMixin<ForumChannelImpl>
 {
     private final TLongObjectMap<PermissionOverride> overrides = MiscUtil.newLongMap();
+    private final SortedSnowflakeCacheViewImpl<ForumTag> tagCache = new SortedSnowflakeCacheViewImpl<>(ForumTag.class, ForumTag::getName, Comparator.naturalOrder());
 
     private String topic;
     private long parentCategoryId;
@@ -98,6 +98,13 @@ public class ForumChannelImpl extends AbstractGuildChannelImpl<ForumChannelImpl>
             }
         }
         return action;
+    }
+
+    @Nonnull
+    @Override
+    public SortedSnowflakeCacheViewImpl<ForumTag> getAvailableTagCache()
+    {
+        return tagCache;
     }
 
     @Override

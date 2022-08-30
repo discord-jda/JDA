@@ -64,6 +64,7 @@ import net.dv8tion.jda.internal.utils.JDALogger;
 import net.dv8tion.jda.internal.utils.UnlockHook;
 import net.dv8tion.jda.internal.utils.cache.MemberCacheViewImpl;
 import net.dv8tion.jda.internal.utils.cache.SnowflakeCacheViewImpl;
+import net.dv8tion.jda.internal.utils.cache.SortedSnowflakeCacheViewImpl;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.map.CaseInsensitiveMap;
 import org.slf4j.Logger;
@@ -1263,6 +1264,11 @@ public class EntityBuilder
             }
         }
 
+        ForumChannelImpl tmp = channel;
+        json.getArray("available_tags")
+            .stream(DataArray::getObject)
+            .forEach(obj -> createForumTag(tmp, obj));
+
         channel
                 .setParentCategory(json.getLong("parent_id", 0))
                 .setName(json.getString("name"))
@@ -1275,6 +1281,26 @@ public class EntityBuilder
         if (playbackCache)
             getJDA().getEventCache().playbackCache(EventCache.Type.CHANNEL, id);
         return channel;
+    }
+
+    public ForumTagImpl createForumTag(ForumChannelImpl channel, DataObject json)
+    {
+        final long id = json.getUnsignedLong("id");
+        SortedSnowflakeCacheViewImpl<ForumTag> cache = channel.getAvailableTagCache();
+        ForumTagImpl tag = (ForumTagImpl) cache.get(id);
+
+        if (tag == null)
+        {
+            try (UnlockHook lock = cache.writeLock())
+            {
+                tag = new ForumTagImpl(id);
+                cache.getMap().put(id, tag);
+            }
+        }
+
+        tag.setName(json.getString("name"))
+           .setModerated(json.getBoolean("moderated"));
+        return tag;
     }
 
     public PrivateChannel createPrivateChannel(DataObject json)

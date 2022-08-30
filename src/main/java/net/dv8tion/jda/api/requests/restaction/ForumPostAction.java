@@ -17,11 +17,14 @@
 package net.dv8tion.jda.api.requests.restaction;
 
 import net.dv8tion.jda.api.entities.ForumPost;
+import net.dv8tion.jda.api.entities.ForumTagSnowflake;
 import net.dv8tion.jda.api.entities.channel.concrete.ForumChannel;
 import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 import net.dv8tion.jda.api.utils.messages.MessageCreateRequest;
 
 import javax.annotation.Nonnull;
+import java.util.Arrays;
+import java.util.Collection;
 
 /**
  * Extension of {@link net.dv8tion.jda.api.requests.RestAction RestAction} specifically
@@ -41,4 +44,41 @@ public interface ForumPostAction extends AbstractThreadCreateAction<ForumPost, F
      */
     @Nonnull
     ForumChannel getChannel();
+
+    /**
+     * Configures that tags which should be applied to the new post.
+     * <br>Some forums require setting at least one tag.
+     *
+     * @param  tags
+     *         The tags to apply
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided
+     *
+     * @return The current ForumPostAction for chaining convenience
+     *
+     * @see    ForumTagSnowflake#fromId(long)
+     */
+    @Nonnull
+    ForumPostAction setTags(@Nonnull Collection<? extends ForumTagSnowflake> tags);
+
+    /**
+     * Configures that tags which should be applied to the new post.
+     * <br>Some forums require setting at least one tag.
+     *
+     * @param  tags
+     *         The tags to apply
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided
+     *
+     * @return The current ForumPostAction for chaining convenience
+     *
+     * @see    ForumTagSnowflake#fromId(long)
+     */
+    @Nonnull
+    default ForumPostAction setTags(@Nonnull ForumTagSnowflake... tags)
+    {
+        return setTags(Arrays.asList(tags));
+    }
 }
