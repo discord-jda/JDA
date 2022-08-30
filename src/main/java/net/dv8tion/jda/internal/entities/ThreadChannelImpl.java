@@ -16,8 +16,11 @@
 
 package net.dv8tion.jda.internal.entities;
 
+import gnu.trove.set.TLongSet;
+import gnu.trove.set.hash.TLongHashSet;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.channel.concrete.ForumChannel;
 import net.dv8tion.jda.api.entities.channel.unions.IThreadContainerUnion;
 import net.dv8tion.jda.api.managers.channel.concrete.ThreadChannelManager;
 import net.dv8tion.jda.api.requests.RestAction;
@@ -41,6 +44,7 @@ import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.LongStream;
 
 public class ThreadChannelImpl extends AbstractGuildChannelImpl<ThreadChannelImpl> implements
         ThreadChannel,
@@ -48,6 +52,7 @@ public class ThreadChannelImpl extends AbstractGuildChannelImpl<ThreadChannelImp
 {
     private final ChannelType type;
     private final CacheView.SimpleCacheView<ThreadMember> threadMembers = new CacheView.SimpleCacheView<>(ThreadMember.class, null);
+    private final TLongSet appliedTags = new TLongHashSet(ForumChannel.MAX_POST_TAGS);
 
     private AutoArchiveDuration autoArchiveDuration;
     private IThreadContainerUnion parentChannel;
@@ -125,6 +130,20 @@ public class ThreadChannelImpl extends AbstractGuildChannelImpl<ThreadChannelImp
     public IThreadContainerUnion getParentChannel()
     {
         return parentChannel;
+    }
+
+    @Nonnull
+    @Override
+    public List<ForumTag> getAppliedTags()
+    {
+        IThreadContainerUnion parent = getParentChannel();
+        if (parent.getType() != ChannelType.FORUM)
+            return Collections.emptyList();
+        return parent.asForumChannel()
+                .getAvailableTagCache()
+                .streamUnordered()
+                .filter(tag -> this.appliedTags.contains(tag.getIdLong()))
+                .collect(Helpers.toUnmodifiableList());
     }
 
     @Nonnull
@@ -368,6 +387,13 @@ public class ThreadChannelImpl extends AbstractGuildChannelImpl<ThreadChannelImp
     public ThreadChannelImpl setSlowmode(int slowmode)
     {
         this.slowmode = slowmode;
+        return this;
+    }
+
+    public ThreadChannelImpl setAppliedTags(LongStream tags)
+    {
+        this.appliedTags.clear();
+        tags.forEach(this.appliedTags::add);
         return this;
     }
 

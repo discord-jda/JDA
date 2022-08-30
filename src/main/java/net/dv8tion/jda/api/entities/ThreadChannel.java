@@ -162,6 +162,15 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer
     }
 
     /**
+     * The {@link ForumTag forum tags} applied to this thread.
+     * <br>This will be an empty list if the thread was not created in a {@link net.dv8tion.jda.api.entities.channel.concrete.ForumChannel ForumChannel}.
+     *
+     * @return Immutable {@link List} of {@link ForumTag ForumTags} applied to this post
+     */
+    @Nonnull
+    List<ForumTag> getAppliedTags();
+
+    /**
      * Attempts to get the {@link net.dv8tion.jda.api.entities.Message Message} from Discord's servers that started this thread.
      *
      * <p>The {@link Message#getMember() Message.getMember()} method will always return null for the resulting message.

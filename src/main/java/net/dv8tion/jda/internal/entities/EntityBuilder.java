@@ -79,6 +79,7 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.StreamSupport;
 
 public class EntityBuilder
@@ -1185,6 +1186,12 @@ public class EntityBuilder
         }
 
         DataObject threadMetadata = json.getObject("thread_metadata");
+
+        if (!json.isNull("applied_tags"))
+        {
+            DataArray array = json.getArray("applied_tags");
+            channel.setAppliedTags(IntStream.range(0, array.length()).mapToLong(array::getUnsignedLong));
+        }
 
         channel
                 .setName(json.getString("name"))
