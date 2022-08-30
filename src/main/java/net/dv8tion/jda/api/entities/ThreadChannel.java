@@ -526,11 +526,11 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer
     /**
      * The inactivity timeout of this thread.
      *
-     * <p>If a message is not sent within this amount of time, the thread will be automatically archived.
+     * <p>If a message is not sent within this amount of time, the thread will be automatically hidden.
      *
      * <p>A thread archived this way can be unarchived by any member.
      *
-     * @return the time before which a thread will automatically be archived.
+     * @return The inactivity timeframe until a thread is automatically hidden.
      *
      * @see    ChannelField#AUTO_ARCHIVE_DURATION
      */
@@ -926,18 +926,17 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer
         MiscUtil.appendTo(formatter, width, precision, leftJustified, out);
     }
 
-    //////////////////////////
-
     /**
      * The values permitted for the auto archive duration of a {@link ThreadChannel}.
      *
-     * <p>This is the time before an idle thread will be automatically archived.
+     * <p>This is the time before an idle thread will be automatically hidden.
      *
      * <p>Sending a message to the thread will reset the timer.
      *
      * @see ChannelField#AUTO_ARCHIVE_DURATION
      */
-    enum AutoArchiveDuration {
+    enum AutoArchiveDuration
+    {
         //TODO: I dislike this naming scheme. Need to come up with something better.
         TIME_1_HOUR(60),
         TIME_24_HOURS(1440),
@@ -951,11 +950,27 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer
             this.minutes = minutes;
         }
 
+        /**
+         * The number of minutes before an idle thread will be automatically hidden.
+         *
+         * @return The number of minutes
+         */
         public int getMinutes()
         {
             return minutes;
         }
 
+        /**
+         * Provides the corresponding enum constant for the provided number of minutes.
+         *
+         * @param  minutes
+         *         The number of minutes. (must be one of the valid values)
+         *
+         * @throws IllegalArgumentException
+         *         If the provided minutes is not a valid value.
+         *
+         * @return The corresponding enum constant.
+         */
         @Nonnull
         public static AutoArchiveDuration fromKey(int minutes)
         {

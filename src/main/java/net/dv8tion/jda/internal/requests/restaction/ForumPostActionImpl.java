@@ -57,6 +57,13 @@ public class ForumPostActionImpl extends RestActionImpl<ForumPost> implements Fo
 
     @Nonnull
     @Override
+    public ForumChannel getChannel()
+    {
+        return channel;
+    }
+
+    @Nonnull
+    @Override
     public ChannelType getType()
     {
         return ChannelType.GUILD_PUBLIC_THREAD;

@@ -17,8 +17,28 @@
 package net.dv8tion.jda.api.requests.restaction;
 
 import net.dv8tion.jda.api.entities.ForumPost;
+import net.dv8tion.jda.api.entities.channel.concrete.ForumChannel;
+import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 import net.dv8tion.jda.api.utils.messages.MessageCreateRequest;
 
+import javax.annotation.Nonnull;
+
+/**
+ * Extension of {@link net.dv8tion.jda.api.requests.RestAction RestAction} specifically
+ * designed to create new Forum Post Threads.
+ *
+ * <p>On success, this provides a {@link ForumPost} object with the {@link ForumPost#getMessage() starter message}
+ * and the {@link ForumPost#getThreadChannel() thread channel} of the post.
+ *
+ * @see net.dv8tion.jda.api.entities.channel.concrete.ForumChannel#createForumPost(String, MessageCreateData)
+ */
 public interface ForumPostAction extends AbstractThreadCreateAction<ForumPost, ForumPostAction>, MessageCreateRequest<ForumPostAction>
 {
+    /**
+     * The {@link ForumChannel} to create the post in
+     *
+     * @return The {@link ForumChannel}
+     */
+    @Nonnull
+    ForumChannel getChannel();
 }
