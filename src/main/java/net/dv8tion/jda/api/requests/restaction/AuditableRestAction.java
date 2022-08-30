@@ -41,8 +41,14 @@ import java.util.function.BooleanSupplier;
 public interface AuditableRestAction<T> extends RestAction<T>
 {
     /**
+     * The maximum length of an audit-log reason
+     */
+    int MAX_REASON_LENGTH = 512;
+
+    /**
      * Applies the specified reason as audit-log reason field.
      * <br>When the provided reason is empty or {@code null} it will be treated as not set.
+     * If the provided reason is longer than {@value #MAX_REASON_LENGTH} characters, it will be truncated to fit the limit.
      *
      * <p>Reasons for any AuditableRestAction may be retrieved
      * via {@link net.dv8tion.jda.api.audit.AuditLogEntry#getReason() AuditLogEntry.getReason()}
@@ -53,7 +59,7 @@ public interface AuditableRestAction<T> extends RestAction<T>
      * <p>This will specify the reason via the {@code X-Audit-Log-Reason} Request Header.
      *
      * @param  reason
-     *         The reason for this action which should be logged in the Guild's AuditLogs
+     *         The reason for this action which should be logged in the Guild's AuditLogs (up to {@value #MAX_REASON_LENGTH} characters)
      *
      * @return The current AuditableRestAction instance for chaining convenience
      *
