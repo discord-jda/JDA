@@ -32,11 +32,12 @@ import net.dv8tion.jda.internal.requests.CompletedRestAction;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.api.exceptions.InvalidTokenException;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.security.auth.login.LoginException;
+
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.IntFunction;
@@ -1155,9 +1156,9 @@ public interface ShardManager extends IGuildChannelContainer
     /**
      * Initializes and starts all shards. This should only be called once.
      *
-     * @throws LoginException
+     * @throws InvalidTokenException
      *         If the provided token is invalid.
      */
-    void login() throws LoginException;
+    void login();
 
 }

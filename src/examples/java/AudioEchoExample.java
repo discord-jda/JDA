@@ -26,7 +26,6 @@ import net.dv8tion.jda.api.managers.AudioManager;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 
-import javax.security.auth.login.LoginException;
 import java.nio.ByteBuffer;
 import java.util.EnumSet;
 import java.util.List;
@@ -35,7 +34,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class AudioEchoExample extends ListenerAdapter
 {
-    public static void main(String[] args) throws LoginException
+    public static void main(String[] args)
     {
         if (args.length == 0)
         {

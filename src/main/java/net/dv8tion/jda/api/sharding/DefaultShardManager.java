@@ -32,6 +32,7 @@ import net.dv8tion.jda.internal.managers.PresenceImpl;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.api.exceptions.InvalidTokenException;
 import net.dv8tion.jda.internal.utils.JDALogger;
 import net.dv8tion.jda.internal.utils.UnlockHook;
 import net.dv8tion.jda.internal.utils.cache.ShardCacheViewImpl;
@@ -45,7 +46,6 @@ import org.slf4j.Logger;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.security.auth.login.LoginException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumSet;
@@ -257,9 +257,9 @@ public class DefaultShardManager implements ShardManager
     }
 
     @Override
-    public void login() throws LoginException
+    public void login()
     {
-        // building the first one in the current thread ensures that LoginException and IllegalArgumentException can be thrown on login
+        // building the first one in the current thread ensures that InvalidTokenException and IllegalArgumentException can be thrown on login
         JDAImpl jda = null;
         try
         {
@@ -448,7 +448,7 @@ public class DefaultShardManager implements ShardManager
                 LOG.error("Caught an exception in queue processing thread", e);
             return;
         }
-        catch (LoginException e)
+        catch (InvalidTokenException e)
         {
             // this can only happen if the token has been changed
             // in this case the ShardManager will just shutdown itself as there currently is no way of hot-swapping the token on a running JDA instance.
@@ -472,7 +472,7 @@ public class DefaultShardManager implements ShardManager
         }
     }
 
-    protected JDAImpl buildInstance(final int shardId) throws LoginException
+    protected JDAImpl buildInstance(final int shardId)
     {
         OkHttpClient httpClient = sessionConfig.getHttpClient();
         if (httpClient == null)
@@ -543,33 +543,24 @@ public class DefaultShardManager implements ShardManager
 
         if (this.gatewayURL == null)
         {
-            try
-            {
-                SessionController.ShardedGateway gateway = jda.getShardedGateway();
-                this.sessionConfig.getSessionController().setConcurrency(gateway.getConcurrency());
-                this.gatewayURL = gateway.getUrl();
-                if (this.gatewayURL == null)
-                    LOG.error("Acquired null gateway url from SessionController");
-                else
-                    LOG.info("Login Successful!");
+            SessionController.ShardedGateway gateway = jda.getShardedGateway();
+            this.sessionConfig.getSessionController().setConcurrency(gateway.getConcurrency());
+            this.gatewayURL = gateway.getUrl();
+            if (this.gatewayURL == null)
+                LOG.error("Acquired null gateway url from SessionController");
+            else
+                LOG.info("Login Successful!");
 
-                if (getShardsTotal() == -1)
+            if (getShardsTotal() == -1)
+            {
+                shardingConfig.setShardsTotal(gateway.getShardTotal());
+                this.shards = new ShardCacheViewImpl(getShardsTotal());
+
+                synchronized (queue)
                 {
-                    shardingConfig.setShardsTotal(gateway.getShardTotal());
-                    this.shards = new ShardCacheViewImpl(getShardsTotal());
-
-                    synchronized (queue)
-                    {
-                        for (int i = 0; i < getShardsTotal(); i++)
-                            queue.add(i);
-                    }
+                    for (int i = 0; i < getShardsTotal(); i++)
+                        queue.add(i);
                 }
-            }
-            catch (CompletionException e)
-            {
-                if (e.getCause() instanceof LoginException)
-                    throw (LoginException) e.getCause(); // complete() can't throw this because its a checked-exception so we have to unwrap it first
-                throw e;
             }
         }
 
