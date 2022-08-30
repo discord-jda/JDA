@@ -3309,7 +3309,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      *     <br>The target Member cannot be unbanned due to a permission discrepancy</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_USER UNKNOWN_USER}
-     *     <br>The specified User is invalid</li>
+     *     <br>The specified User does not exist</li>
      * </ul>
      *
      * @param  user
