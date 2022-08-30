@@ -1897,7 +1897,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
 
     /**
      * Retrieves an immutable list of the currently banned {@link net.dv8tion.jda.api.entities.User Users}.
-     * <br>If you wish to ban or unban a user, use either {@link #ban(UserSnowflake, int)} or
+     * <br>If you wish to ban or unban a user, use either {@link #ban(UserSnowflake, int, TimeUnit)} or
      * {@link #unban(UserSnowflake)}.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
@@ -1919,7 +1919,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
 
     /**
      * Retrieves a {@link net.dv8tion.jda.api.entities.Guild.Ban Ban} of the provided {@link UserSnowflake}.
-     * <br>If you wish to ban or unban a user, use either {@link #ban(UserSnowflake, int)} or {@link #unban(UserSnowflake)}.
+     * <br>If you wish to ban or unban a user, use either {@link #ban(UserSnowflake, int, TimeUnit)} or {@link #unban(UserSnowflake)}.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
      * the returned {@link RestAction RestAction} include the following:
