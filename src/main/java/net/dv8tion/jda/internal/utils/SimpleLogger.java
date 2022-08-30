@@ -36,7 +36,7 @@ import java.util.Properties;
 class SimpleLogger extends MarkerIgnoringBase {
 
     private static final long serialVersionUID = -632788891211436180L;
-    private static final String CONFIGURATION_FILE = "Loggerger.properties";
+    private static final String CONFIGURATION_FILE = "Logger.properties";
 
     private static long START_TIME = System.currentTimeMillis();
     private static final Properties SIMPLE_LOGGER_PROPS = new Properties();
@@ -61,7 +61,7 @@ class SimpleLogger extends MarkerIgnoringBase {
     private static boolean LEVEL_IN_BRACKETS = false;
     private static String WARN_LEVEL_STRING = "WARN";
 
-    public static final String SYSTEM_PREFIX = "org.slf4j.Loggerger.";
+    public static final String SYSTEM_PREFIX = "org.slf4j.Logger.";
 
     public static final String DEFAULT_LOG_LEVEL_KEY = SYSTEM_PREFIX + "defaultLogLevel";
     public static final String SHOW_DATE_TIME_KEY = SYSTEM_PREFIX + "showDateTime";
@@ -141,7 +141,7 @@ class SimpleLogger extends MarkerIgnoringBase {
     }
 
     private static void loadProperties() {
-        // Add props from the resource Loggerger.properties
+        // Add props from the resource Logger.properties
         InputStream in = AccessController.doPrivileged(new PrivilegedAction<InputStream>() {
             public InputStream run() {
                 ClassLoader threadCL = Thread.currentThread().getContextClassLoader();

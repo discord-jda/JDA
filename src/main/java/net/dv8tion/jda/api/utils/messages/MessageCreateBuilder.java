@@ -103,7 +103,7 @@ public class MessageCreateBuilder extends AbstractMessageBuilder<MessageCreateDa
      * @see    #applyEditData(MessageEditData)
      */
     @Nonnull
-    public static MessageCreateBuilder fromEdit(@Nonnull MessageEditData data)
+    public static MessageCreateBuilder fromEditData(@Nonnull MessageEditData data)
     {
         return new MessageCreateBuilder().applyEditData(data);
     }
