@@ -25,7 +25,21 @@ import net.dv8tion.jda.api.managers.channel.middleman.StandardGuildChannelManage
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 
-// TODO implementation
+/**
+ * Manager providing functionality to modify a {@link ForumChannel ForumChannel}.
+ *
+ * <p><b>Example</b>
+ * <pre>{@code
+ * manager.setName("gamer-forum")
+ *  .setSlowmode(10)
+ *  .setTopic("Welcome to the gamer forum!")
+ *  .queue();
+ * manager.reset(ChannelManager.NSFW | ChannelManager.NAME)
+ *  .setName("gamer-forum-nsfw")
+ *  .setNSFW(true)
+ *  .queue();
+ * }</pre>
+ */
 public interface ForumChannelManager extends
         StandardGuildChannelManager<ForumChannel, ForumChannelManager>,
         IAgeRestrictedChannelManager<ForumChannel, ForumChannelManager>
