@@ -17,6 +17,7 @@
 package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.audit.AuditLogKey;
+import net.dv8tion.jda.api.entities.channel.concrete.ForumChannel;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -99,6 +100,13 @@ public enum ChannelField
      * @see TextChannel#getSlowmode()
      */
     SLOWMODE("slowmode", AuditLogKey.CHANNEL_SLOWMODE),
+
+    /**
+     * The applied tags of a {@link ForumChannel}.
+     *
+     * @see ForumChannel#getAvailableTags()
+     */
+    AVAILABLE_TAGS("available_tags", AuditLogKey.CHANNEL_AVAILABLE_TAGS),
 
 
     //Voice Specific
@@ -199,7 +207,17 @@ public enum ChannelField
      *
      * @see ThreadChannel#isInvitable()
      */
-    INVITABLE("invitable", AuditLogKey.THREAD_INVITABLE)
+    INVITABLE("invitable", AuditLogKey.THREAD_INVITABLE),
+
+    /**
+     * The tags applied to a forum post thread.
+     *
+     * <p>Limited to {@link ThreadChannel ThreadChannels} inside {@link ForumChannel ForumChannels}
+     *
+     * @see ThreadChannel#getAppliedTags()
+     */
+    APPLIED_TAGS("applied_tags", AuditLogKey.THREAD_APPLIED_TAGS),
+
     ;
 
     private final String fieldName;

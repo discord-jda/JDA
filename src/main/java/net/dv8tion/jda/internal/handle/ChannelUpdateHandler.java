@@ -18,6 +18,7 @@ package net.dv8tion.jda.internal.handle;
 
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
+import gnu.trove.set.TLongSet;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.Region;
 import net.dv8tion.jda.api.entities.*;
@@ -35,6 +36,7 @@ import net.dv8tion.jda.internal.entities.mixin.channel.attribute.IPermissionCont
 import net.dv8tion.jda.internal.requests.WebSocketClient;
 import net.dv8tion.jda.internal.utils.UnlockHook;
 import net.dv8tion.jda.internal.utils.cache.SnowflakeCacheViewImpl;
+import net.dv8tion.jda.internal.utils.cache.SortedSnowflakeCacheViewImpl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -156,6 +158,7 @@ public class ChannelUpdateHandler extends SocketHandler
                 final String topic = content.getString("topic", null);
 
                 ForumChannelImpl forumChannel = (ForumChannelImpl) channel;
+                content.optArray("available_tags").ifPresent(array -> handleTagsUpdate(forumChannel, array));
 
                 //If any properties changed, update the values and fire the proper events.
                 final long oldParentId = forumChannel.getParentCategoryIdLong();
@@ -164,6 +167,7 @@ public class ChannelUpdateHandler extends SocketHandler
                 final int oldPosition = forumChannel.getPositionRaw();
                 final boolean oldNsfw = forumChannel.isNSFW();
                 final int oldSlowmode = forumChannel.getSlowmode();
+
                 if (!Objects.equals(oldName, name))
                 {
                     forumChannel.setName(name);
@@ -625,6 +629,57 @@ public class ChannelUpdateHandler extends SocketHandler
         for (ThreadChannel thread : threads)
         {
             api.handleEvent(new ThreadHiddenEvent(api, responseNumber, thread));
+        }
+    }
+
+    private void handleTagsUpdate(ForumChannelImpl channel, DataArray tags)
+    {
+        EntityBuilder builder = api.getEntityBuilder();
+
+        SortedSnowflakeCacheViewImpl<ForumTag> view = channel.getAvailableTagCache();
+
+        try (UnlockHook hook = view.writeLock())
+        {
+            TLongObjectMap<ForumTag> cache = view.getMap();
+            TLongSet removedTags = cache.keySet();
+
+            for (int i = 0; i < tags.length(); i++)
+            {
+                DataObject tagJson = tags.getObject(i);
+                long id = tagJson.getUnsignedLong("id");
+                if (removedTags.remove(id))
+                {
+                    ForumTagImpl impl = (ForumTagImpl) cache.get(id);
+                    if (impl == null)
+                        continue;
+
+                    String name = tagJson.getString("name");
+                    boolean moderated = tagJson.getBoolean("moderated");
+                    // TODO: Emoji
+
+                    // TODO: Events?
+                    String oldName = impl.getName();
+                    if (!name.equals(oldName))
+                    {
+                        impl.setName(name);
+                    }
+                    if (moderated != impl.isModerated())
+                    {
+                        impl.setModerated(moderated);
+                    }
+                }
+                else
+                {
+                    ForumTag tag = builder.createForumTag(channel, tagJson);
+                    cache.put(id, tag);
+                }
+            }
+
+            // TODO: Events?
+            removedTags.forEach(id -> {
+                ForumTag tag = cache.remove(id);
+                return true;
+            });
         }
     }
 }

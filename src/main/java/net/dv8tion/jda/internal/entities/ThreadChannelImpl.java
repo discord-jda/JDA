@@ -402,6 +402,11 @@ public class ThreadChannelImpl extends AbstractGuildChannelImpl<ThreadChannelImp
         return archiveTimestamp;
     }
 
+    public TLongSet getAppliedTagsSet()
+    {
+        return appliedTags;
+    }
+
 
     // -- Object overrides --
 

@@ -274,6 +274,13 @@ public enum AuditLogKey
      */
     CHANNEL_OVERRIDES("permission_overwrites"),
 
+    /**
+     * The available tags of this {@link net.dv8tion.jda.api.entities.channel.concrete.ForumChannel ForumChannel}.
+     *
+     * <p>Expected type: <b>List{@literal <Map<String, Object>>}</b>
+     */
+    CHANNEL_AVAILABLE_TAGS("available_tags"),
+
     // THREADS
 
     /**
@@ -318,6 +325,13 @@ public enum AuditLogKey
      * <p>Expected type: <b>Boolean</b>
      */
     THREAD_INVITABLE("invitable"),
+
+    /**
+     * The applied tags of this {@link ThreadChannel}, given that it is a forum post.
+     *
+     * <p>Expected type: <b>List{@literal <String>}</b>
+     */
+    THREAD_APPLIED_TAGS("applied_tags"),
 
     // STAGE_INSTANCE
 
