@@ -120,6 +120,7 @@ public class ChannelDeleteHandler extends SocketHandler
                     new ChannelDeleteEvent(
                         getJDA(), responseNumber,
                         channel));
+                break;
             }
 
             case CATEGORY:
