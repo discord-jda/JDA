@@ -393,7 +393,7 @@ public interface GuildManager extends Manager<GuildManager>
      *         The new features to use
      *
      * @throws IllegalArgumentException
-     *         If the provided list is null or empty
+     *         If the provided list is null
      *
      * @return GuildManager for chaining convenience
      */
