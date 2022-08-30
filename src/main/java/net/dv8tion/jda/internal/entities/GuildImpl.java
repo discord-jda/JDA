@@ -1384,7 +1384,7 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public AuditableRestAction<Void> kick(@Nonnull UserSnowflake user, String reason)
+    public AuditableRestAction<Void> kick(@Nonnull UserSnowflake user)
     {
         Checks.notNull(user, "User");
         checkPermission(Permission.KICK_MEMBERS);
@@ -1394,14 +1394,7 @@ public class GuildImpl implements Guild
             checkPosition(member);
 
         Route.CompiledRoute route = Route.Guilds.KICK_MEMBER.compile(getId(), user.getId());
-
-        AuditableRestAction<Void> action = new AuditableRestActionImpl<>(getJDA(), route);
-        if (!Helpers.isBlank(reason))
-        {
-            Checks.check(reason.length() <= 512, "Reason cannot be longer than 512 characters.");
-            return action.reason(reason);
-        }
-        return action;
+        return new AuditableRestActionImpl<>(getJDA(), route);
     }
 
     @Nonnull

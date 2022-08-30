@@ -3194,7 +3194,10 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     @ForRemoval
     @ReplaceWith("kick(user).reason(reason)")
     @DeprecatedSince("5.0.0")
-    AuditableRestAction<Void> kick(@Nonnull UserSnowflake user, @Nullable String reason);
+    default AuditableRestAction<Void> kick(@Nonnull UserSnowflake user, @Nullable String reason)
+    {
+        return kick(user).reason(reason);
+    }
 
     /**
      * Kicks a {@link net.dv8tion.jda.api.entities.Member Member} from the {@link net.dv8tion.jda.api.entities.Guild Guild}.
