@@ -71,6 +71,7 @@ public class ForumPostActionImpl extends RestActionImpl<ForumPost> implements Fo
     public ForumPostAction setTags(@Nonnull Collection<? extends ForumTagSnowflake> tags)
     {
         Checks.noneNull(tags, "Tags");
+        Checks.check(tags.size() <= ForumChannel.MAX_POST_TAGS, "Provided more than %d tags.", ForumChannel.MAX_POST_TAGS);
         this.appliedTags.clear();
         tags.forEach(t -> this.appliedTags.add(t.getIdLong()));
         return this;

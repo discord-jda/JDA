@@ -50,10 +50,10 @@ public interface ForumPostAction extends AbstractThreadCreateAction<ForumPost, F
      * <br>Some forums require setting at least one tag.
      *
      * @param  tags
-     *         The tags to apply
+     *         Up to {@value ForumChannel#MAX_POST_TAGS} tags to apply
      *
      * @throws IllegalArgumentException
-     *         If null is provided
+     *         If null is provided or more than {@value ForumChannel#MAX_POST_TAGS} tags are provided
      *
      * @return The current ForumPostAction for chaining convenience
      *
@@ -67,10 +67,10 @@ public interface ForumPostAction extends AbstractThreadCreateAction<ForumPost, F
      * <br>Some forums require setting at least one tag.
      *
      * @param  tags
-     *         The tags to apply
+     *         Up to {@value ForumChannel#MAX_POST_TAGS} tags to apply
      *
      * @throws IllegalArgumentException
-     *         If null is provided
+     *         If null is provided or more than {@value ForumChannel#MAX_POST_TAGS} tags are provided
      *
      * @return The current ForumPostAction for chaining convenience
      *

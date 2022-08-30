@@ -28,6 +28,7 @@ import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -46,6 +47,10 @@ public interface ForumChannel extends StandardGuildChannel, IThreadContainer, IA
      * The maximum length of a forum topic ({@value #MAX_FORUM_TOPIC_LENGTH})
      */
     int MAX_FORUM_TOPIC_LENGTH = 4096;
+    /**
+     * The maximum number of {@link ForumPostAction#setTags(Collection) tags} that can be applied to a forum post. ({@value #MAX_POST_TAGS})
+     */
+    int MAX_POST_TAGS = 5;
 
     @Nonnull
     @Override
