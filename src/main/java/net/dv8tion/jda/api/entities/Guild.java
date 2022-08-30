@@ -57,6 +57,9 @@ import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.concurrent.task.GatewayTask;
 
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.time.Duration;
 import java.time.temporal.TemporalAccessor;
 import java.util.*;
@@ -64,10 +67,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
-
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 /**
  * Represents a Discord {@link net.dv8tion.jda.api.entities.Guild Guild}.
@@ -535,11 +534,12 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
 
     /**
      * The Features of the {@link net.dv8tion.jda.api.entities.Guild Guild}.
-     * <p>
-     * <a target="_blank" href="https://discord.com/developers/docs/resources/guild#guild-object-guild-features"><b>List of Features</b></a>
      *
+     * <p>Features can be udpated using {@link GuildManager#setFeatures(Collection)}.
      *
      * @return Never-null, unmodifiable Set containing all of the Guild's features.
+     *
+     * @see <a target="_blank" href="https://discord.com/developers/docs/resources/guild#guild-object-guild-features">List of Features</a>
      */
     @Nonnull
     Set<String> getFeatures();

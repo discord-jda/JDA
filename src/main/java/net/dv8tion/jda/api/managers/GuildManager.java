@@ -378,6 +378,25 @@ public interface GuildManager extends Manager<GuildManager>
     @CheckReturnValue
     GuildManager setBoostProgressBarEnabled(boolean boostProgressBarEnabled);
 
+    /**
+     * Configures the new {@link Guild#getFeatures() features} of the {@link Guild}.
+     * <br>You can only remove or add a limited subset of features as described in the <a href="https://discord.com/developers/docs/resources/guild#guild-object-guild-features" target="_blank">Guild Features Docs</a>.
+     *
+     * <p><b>Example</b>
+     * <pre>{@code
+     * List<String> features = new ArrayList<>(guild.getFeatures());
+     * features.add("INVITES_DISABLED");
+     * guild.getManager().setFeatures(features).queue();
+     * }</pre>
+     *
+     * @param  features
+     *         The new features to use
+     *
+     * @throws IllegalArgumentException
+     *         If the provided list is null or empty
+     *
+     * @return GuildManager for chaining convenience
+     */
     @Nonnull
     @CheckReturnValue
     GuildManager setFeatures(@Nonnull Collection<String> features);
