@@ -86,6 +86,7 @@ import java.time.OffsetDateTime;
 import java.time.temporal.TemporalAccessor;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -1383,7 +1384,7 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public AuditableRestAction<Void> kick(@Nonnull UserSnowflake user, String reason)
+    public AuditableRestAction<Void> kick(@Nonnull UserSnowflake user)
     {
         Checks.notNull(user, "User");
         checkPermission(Permission.KICK_MEMBERS);
@@ -1393,23 +1394,17 @@ public class GuildImpl implements Guild
             checkPosition(member);
 
         Route.CompiledRoute route = Route.Guilds.KICK_MEMBER.compile(getId(), user.getId());
-
-        AuditableRestAction<Void> action = new AuditableRestActionImpl<>(getJDA(), route);
-        if (!Helpers.isBlank(reason))
-        {
-            Checks.check(reason.length() <= 512, "Reason cannot be longer than 512 characters.");
-            return action.reason(reason);
-        }
-        return action;
+        return new AuditableRestActionImpl<>(getJDA(), route);
     }
 
     @Nonnull
     @Override
-    public AuditableRestAction<Void> ban(@Nonnull UserSnowflake user, int delDays, String reason)
+    public AuditableRestAction<Void> ban(@Nonnull UserSnowflake user, int duration, @Nonnull TimeUnit unit)
     {
         Checks.notNull(user, "User");
-        Checks.notNegative(delDays, "Deletion Days");
-        Checks.check(delDays <= 7, "Deletion Days must not be bigger than 7.");
+        Checks.notNull(unit, "TimeUnit");
+        Checks.notNegative(duration, "Deletion Timeframe");
+        Checks.check(unit.toDays(duration) <= 7, "Deletion timeframe must not be larger than 7 days");
         checkPermission(Permission.BAN_MEMBERS);
         Checks.check(user.getIdLong() != ownerId, "Cannot ban the owner of a guild!");
 
@@ -1420,16 +1415,10 @@ public class GuildImpl implements Guild
         Route.CompiledRoute route = Route.Guilds.BAN.compile(getId(), user.getId());
         DataObject params = DataObject.empty();
 
-        if (delDays > 0)
-            params.put("delete_message_days", delDays);
+        if (duration > 0)
+            params.put("delete_message_seconds", unit.toSeconds(duration));
 
-        AuditableRestAction<Void> action = new AuditableRestActionImpl<>(getJDA(), route, params);
-        if (!Helpers.isBlank(reason))
-        {
-            Checks.check(reason.length() <= 512, "Reason cannot be longer than 512 characters.");
-            return action.reason(reason);
-        }
-        return action;
+        return new AuditableRestActionImpl<>(getJDA(), route, params);
     }
 
     @Nonnull

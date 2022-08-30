@@ -33,6 +33,7 @@ import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
 
 import java.util.EnumSet;
+import java.util.concurrent.TimeUnit;
 
 import static net.dv8tion.jda.api.interactions.commands.OptionType.*;
 
@@ -170,10 +171,10 @@ public class SlashBotExample extends ListenerAdapter
                 OptionMapping::getAsString); // used if getOption("reason") is not null (provided)
 
         // Ban the user and send a success response
-        event.getGuild().ban(user, delDays, reason)
-            .reason(reason) // audit-log reason
-            .flatMap(v -> hook.sendMessage("Banned user " + user.getAsTag()))
-            .queue();
+        event.getGuild().ban(user, delDays, TimeUnit.DAYS)
+            .reason(reason) // audit-log ban reason (sets X-AuditLog-Reason header)
+            .flatMap(v -> hook.sendMessage("Banned user " + user.getAsTag())) // chain a followup message after the ban is executed
+            .queue(); // execute the entire call chain
     }
 
     public void say(SlashCommandInteractionEvent event, String content)
