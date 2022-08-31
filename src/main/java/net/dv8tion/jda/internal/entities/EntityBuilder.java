@@ -1187,7 +1187,7 @@ public class EntityBuilder
 
         DataObject threadMetadata = json.getObject("thread_metadata");
 
-        if (!json.isNull("applied_tags"))
+        if (!json.isNull("applied_tags") && api.isCacheFlagSet(CacheFlag.FORUM_TAGS))
         {
             DataArray array = json.getArray("applied_tags");
             channel.setAppliedTags(IntStream.range(0, array.length()).mapToLong(array::getUnsignedLong));
@@ -1271,10 +1271,13 @@ public class EntityBuilder
             }
         }
 
-        ForumChannelImpl tmp = channel;
-        json.getArray("available_tags")
-            .stream(DataArray::getObject)
-            .forEach(obj -> createForumTag(tmp, obj));
+        if (api.isCacheFlagSet(CacheFlag.FORUM_TAGS))
+        {
+            ForumChannelImpl tmp = channel;
+            json.getArray("available_tags")
+                    .stream(DataArray::getObject)
+                    .forEach(obj -> createForumTag(tmp, obj));
+        }
 
         channel
                 .setParentCategory(json.getLong("parent_id", 0))

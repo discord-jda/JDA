@@ -21,6 +21,7 @@ import gnu.trove.set.hash.TLongHashSet;
 import net.dv8tion.jda.api.entities.ForumTag;
 import net.dv8tion.jda.api.entities.ThreadChannel;
 import net.dv8tion.jda.api.events.channel.update.*;
+import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.ThreadChannelImpl;
@@ -73,11 +74,6 @@ public class ThreadUpdateHandler extends SocketHandler
         final boolean invitable = threadMetadata.getBoolean("invitable");
         final long archiveTimestamp = Helpers.toTimestamp(threadMetadata.getString("archive_timestamp"));
         final int slowmode = content.getInt("rate_limit_per_user", 0);
-        final TLongSet tags = content.optArray("applied_tags").map(array ->
-            new TLongHashSet(IntStream.range(0, array.length())
-                    .mapToLong(array::getUnsignedLong)
-                    .toArray())
-        ).orElseGet(TLongHashSet::new);
 
         final String oldName = thread.getName();
         final ThreadChannel.AutoArchiveDuration oldAutoArchiveDuration = thread.getAutoArchiveDuration();
@@ -86,7 +82,7 @@ public class ThreadUpdateHandler extends SocketHandler
         final boolean oldInvitable = !thread.isPublic() && thread.isInvitable();
         final long oldArchiveTimestamp = thread.getArchiveTimestamp();
         final int oldSlowmode = thread.getSlowmode();
-        final TLongSet oldTags = thread.getAppliedTagsSet();
+
 
         //TODO should these be Thread specific events?
         if (!Objects.equals(oldName, name))
@@ -145,13 +141,24 @@ public class ThreadUpdateHandler extends SocketHandler
                     api, responseNumber,
                     thread, oldInvitable, invitable));
         }
-        if (!oldTags.equals(tags))
+
+        if (api.isCacheFlagSet(CacheFlag.FORUM_TAGS))
         {
-            List<ForumTag> oldTagList = thread.getAppliedTags();
-            api.handleEvent(
-                new ChannelUpdateAppliedTagsEvent(
-                    api, responseNumber,
-                    thread, oldTagList));
+            final TLongSet oldTags = thread.getAppliedTagsSet();
+            final TLongSet tags = content.optArray("applied_tags").map(array ->
+                new TLongHashSet(IntStream.range(0, array.length())
+                    .mapToLong(array::getUnsignedLong)
+                    .toArray())
+            ).orElseGet(TLongHashSet::new);
+
+            if (!oldTags.equals(tags))
+            {
+                List<ForumTag> oldTagList = thread.getAppliedTags();
+                api.handleEvent(
+                    new ChannelUpdateAppliedTagsEvent(
+                        api, responseNumber,
+                        thread, oldTagList));
+            }
         }
 
         return null;

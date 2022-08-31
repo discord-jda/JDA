@@ -634,6 +634,8 @@ public class ChannelUpdateHandler extends SocketHandler
 
     private void handleTagsUpdate(ForumChannelImpl channel, DataArray tags)
     {
+        if (!api.isCacheFlagSet(CacheFlag.FORUM_TAGS))
+            return;
         EntityBuilder builder = api.getEntityBuilder();
 
         SortedSnowflakeCacheViewImpl<ForumTag> view = channel.getAvailableTagCache();
