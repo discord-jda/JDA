@@ -31,7 +31,6 @@ import java.util.Collections;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 public class GuildUpdateHandler extends SocketHandler
 {
@@ -94,7 +93,7 @@ public class GuildUpdateHandler extends SocketHandler
         if (!content.isNull("features"))
         {
             DataArray featureArr = content.getArray("features");
-            features = StreamSupport.stream(featureArr.spliterator(), false).map(String::valueOf).collect(Collectors.toSet());
+            features = featureArr.stream(DataArray::getString).map(String::intern).collect(Collectors.toSet());
         }
         else
         {
