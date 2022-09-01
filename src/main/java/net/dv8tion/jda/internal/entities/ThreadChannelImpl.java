@@ -20,6 +20,7 @@ import gnu.trove.set.TLongSet;
 import gnu.trove.set.hash.TLongHashSet;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.channel.ChannelFlag;
 import net.dv8tion.jda.api.entities.channel.concrete.ForumChannel;
 import net.dv8tion.jda.api.entities.channel.unions.IThreadContainerUnion;
 import net.dv8tion.jda.api.managers.channel.concrete.ThreadChannelManager;
@@ -42,6 +43,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.time.OffsetDateTime;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.LongStream;
@@ -67,11 +69,19 @@ public class ThreadChannelImpl extends AbstractGuildChannelImpl<ThreadChannelImp
     private int totalMessageCount;
     private int memberCount;
     private int slowmode;
+    private int flags;
 
     public ThreadChannelImpl(long id, GuildImpl guild, ChannelType type)
     {
         super(id, guild);
         this.type = type;
+    }
+
+    @Nonnull
+    @Override
+    public EnumSet<ChannelFlag> getFlags()
+    {
+        return ChannelFlag.fromRaw(flags);
     }
 
     @Nonnull
@@ -397,6 +407,12 @@ public class ThreadChannelImpl extends AbstractGuildChannelImpl<ThreadChannelImp
         return this;
     }
 
+    public ThreadChannelImpl setFlags(int flags)
+    {
+        this.flags = flags;
+        return this;
+    }
+
     public long getArchiveTimestamp()
     {
         return archiveTimestamp;
@@ -407,6 +423,11 @@ public class ThreadChannelImpl extends AbstractGuildChannelImpl<ThreadChannelImp
         return appliedTags;
     }
 
+
+    public int getRawFlags()
+    {
+        return flags;
+    }
 
     // -- Object overrides --
 

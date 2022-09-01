@@ -20,6 +20,7 @@ import gnu.trove.set.TLongSet;
 import gnu.trove.set.hash.TLongHashSet;
 import net.dv8tion.jda.api.entities.ForumTag;
 import net.dv8tion.jda.api.entities.ThreadChannel;
+import net.dv8tion.jda.api.entities.channel.ChannelFlag;
 import net.dv8tion.jda.api.events.channel.update.*;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.api.utils.data.DataObject;
@@ -68,6 +69,7 @@ public class ThreadUpdateHandler extends SocketHandler
 
         final DataObject threadMetadata = content.getObject("thread_metadata");
         final String name = content.getString("name");
+        final int flags = content.getInt("flags", 0);
         final ThreadChannel.AutoArchiveDuration autoArchiveDuration = ThreadChannel.AutoArchiveDuration.fromKey(threadMetadata.getInt("auto_archive_duration"));
         final boolean locked = threadMetadata.getBoolean("locked");
         final boolean archived = threadMetadata.getBoolean("archived");
@@ -82,6 +84,7 @@ public class ThreadUpdateHandler extends SocketHandler
         final boolean oldInvitable = !thread.isPublic() && thread.isInvitable();
         final long oldArchiveTimestamp = thread.getArchiveTimestamp();
         final int oldSlowmode = thread.getSlowmode();
+        final int oldFlags = thread.getRawFlags();
 
 
         //TODO should these be Thread specific events?
@@ -92,6 +95,14 @@ public class ThreadUpdateHandler extends SocketHandler
                 new ChannelUpdateNameEvent(
                     getJDA(), responseNumber,
                     thread, oldName, name));
+        }
+        if (oldFlags != flags)
+        {
+            thread.setFlags(flags);
+            api.handleEvent(
+                new ChannelUpdateFlagsEvent(
+                    getJDA(), responseNumber,
+                    thread, ChannelFlag.fromRaw(oldFlags), ChannelFlag.fromRaw(flags)));
         }
         if (oldSlowmode != slowmode)
         {

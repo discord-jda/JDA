@@ -1196,6 +1196,7 @@ public class EntityBuilder
 
         channel
                 .setName(json.getString("name"))
+                .setFlags(json.getInt("flags", 0))
                 .setParentChannel(parent)
                 .setOwnerId(json.getLong("owner_id"))
                 .setMemberCount(json.getInt("member_count"))
