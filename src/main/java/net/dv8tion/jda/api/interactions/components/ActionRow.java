@@ -264,6 +264,13 @@ public class ActionRow implements LayoutComponent
 
     @Nonnull
     @Override
+    public LayoutComponent createCopy()
+    {
+        return ActionRow.of(components);
+    }
+
+    @Nonnull
+    @Override
     public Component.Type getType()
     {
         return Component.Type.ACTION_ROW;

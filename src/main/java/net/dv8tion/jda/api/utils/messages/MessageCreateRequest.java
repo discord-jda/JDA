@@ -325,11 +325,18 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
     default R applyData(@Nonnull MessageCreateData data)
     {
         Checks.notNull(data, "MessageCreateData");
+
+        final List<LayoutComponent> layoutComponents = data.getComponents().stream()
+                .map(LayoutComponent::createCopy)
+                .collect(Collectors.toList());
+        final List<FileUpload> files = data.getFiles().stream()
+                .map(f -> FileUpload.fromData(f.getData(), f.getName()).setDescription(f.getDescription()))
+                .collect(Collectors.toList());
         return setContent(data.getContent())
                 .setEmbeds(data.getEmbeds())
                 .setTTS(data.isTTS())
-                .setComponents(data.getComponents())
-                .setFiles(data.getFiles());
+                .setComponents(layoutComponents)
+                .setFiles(files);
     }
 
     @Nonnull
