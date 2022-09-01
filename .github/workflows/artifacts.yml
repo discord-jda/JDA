@@ -4,7 +4,7 @@ on:
   push:
     branches: [ master ]
     paths:
-      - 'src/main'
+      - 'src/main/**'
       - 'build.gradle.kts'
       - '.github/workflows/artifacts.yml'
 
