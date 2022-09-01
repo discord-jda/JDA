@@ -19,6 +19,7 @@ package net.dv8tion.jda.internal.entities;
 import gnu.trove.map.TLongObjectMap;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.channel.ChannelFlag;
 import net.dv8tion.jda.api.entities.channel.concrete.ForumChannel;
 import net.dv8tion.jda.api.entities.channel.unions.GuildChannelUnion;
 import net.dv8tion.jda.api.managers.channel.concrete.ForumChannelManager;
@@ -38,6 +39,7 @@ import net.dv8tion.jda.internal.utils.cache.SortedSnowflakeCacheViewImpl;
 import javax.annotation.Nonnull;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -54,6 +56,7 @@ public class ForumChannelImpl extends AbstractGuildChannelImpl<ForumChannelImpl>
     private long parentCategoryId;
     private boolean nsfw = false;
     private int position;
+    private int flags;
     private int slowmode;
     protected int defaultThreadSlowmode;
 
@@ -99,6 +102,13 @@ public class ForumChannelImpl extends AbstractGuildChannelImpl<ForumChannelImpl>
             }
         }
         return action;
+    }
+
+    @Nonnull
+    @Override
+    public EnumSet<ChannelFlag> getFlags()
+    {
+        return ChannelFlag.fromRaw(flags);
     }
 
     @Nonnull
@@ -172,6 +182,11 @@ public class ForumChannelImpl extends AbstractGuildChannelImpl<ForumChannelImpl>
         throw new UnsupportedOperationException("You cannot create threads without a message payload in forum channels! Use createForumPost(...) instead.");
     }
 
+    public int getRawFlags()
+    {
+        return flags;
+    }
+
     // Setters
 
     @Override
@@ -210,6 +225,12 @@ public class ForumChannelImpl extends AbstractGuildChannelImpl<ForumChannelImpl>
     public ForumChannelImpl setTopic(String topic)
     {
         this.topic = topic;
+        return this;
+    }
+
+    public ForumChannelImpl setFlags(int flags)
+    {
+        this.flags = flags;
         return this;
     }
 }

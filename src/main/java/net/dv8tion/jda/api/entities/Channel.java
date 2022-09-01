@@ -17,11 +17,13 @@
 package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.channel.ChannelFlag;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
+import java.util.EnumSet;
 import java.util.FormattableFlags;
 import java.util.Formatter;
 
@@ -34,6 +36,18 @@ public interface Channel extends IMentionable
      * The maximum length a channel name can be. ({@value #MAX_NAME_LENGTH})
      */
     int MAX_NAME_LENGTH = 100;
+
+    /**
+     * The flags configured for this channel.
+     * <br>This feature is currently primarily used for {@link net.dv8tion.jda.api.entities.channel.concrete.ForumChannel ForumChannels}.
+     *
+     * @return {@link EnumSet} of the configured {@link ChannelFlag ChannelFlags}, changes to this enum set are not reflected in the API.
+     */
+    @Nonnull
+    default EnumSet<ChannelFlag> getFlags()
+    {
+        return EnumSet.noneOf(ChannelFlag.class);
+    }
 
     /**
      * The human readable name of this channel.

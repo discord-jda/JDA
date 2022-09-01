@@ -202,6 +202,13 @@ public enum AuditLogKey
     CHANNEL_NAME("name"),
 
     /**
+     * Change of the {@link Channel#getFlags() flags} value.
+     *
+     * <p>Expected type: <b>Integer</b>
+     */
+    CHANNEL_FLAGS("flags"),
+
+    /**
      * Change of the {@link ICategorizableChannel#getParentCategory()} ICategorizable.getParentCategory()} value.
      * <br>Use with {@link net.dv8tion.jda.api.entities.Guild#getCategoryById(String) Guild.getCategoryById(String)}
      *

@@ -182,6 +182,7 @@ public abstract class ListenerAdapter implements EventListener
     //Channel Update Events
     public void onChannelUpdateBitrate(@Nonnull ChannelUpdateBitrateEvent event) {}
     public void onChannelUpdateName(@Nonnull ChannelUpdateNameEvent event) {}
+    public void onChannelUpdateFlags(@Nonnull ChannelUpdateFlagsEvent event) {}
     public void onChannelUpdateNSFW(@Nonnull ChannelUpdateNSFWEvent event) {}
     public void onChannelUpdateParent(@Nonnull ChannelUpdateParentEvent event) {}
     public void onChannelUpdatePosition(@Nonnull ChannelUpdatePositionEvent event) {}

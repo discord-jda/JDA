@@ -54,6 +54,13 @@ public enum ChannelField
     NAME("name", AuditLogKey.CHANNEL_NAME),
 
     /**
+     * The flags of the channel.
+     *
+     * @see Channel#getFlags()
+     */
+    FLAGS("flags", AuditLogKey.CHANNEL_FLAGS),
+
+    /**
      * The {@link Category parent} of the channel.
      *
      * <p>Limited to {@link ICategorizableChannel Categorizable Channels} (and implementations).

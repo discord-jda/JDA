@@ -22,6 +22,7 @@ import gnu.trove.set.TLongSet;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.Region;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.channel.ChannelFlag;
 import net.dv8tion.jda.api.events.channel.update.*;
 import net.dv8tion.jda.api.events.guild.override.PermissionOverrideCreateEvent;
 import net.dv8tion.jda.api.events.guild.override.PermissionOverrideDeleteEvent;
@@ -68,6 +69,7 @@ public class ChannelUpdateHandler extends SocketHandler
         final long channelId = content.getLong("id");
         final long parentId = content.isNull("parent_id") ? 0 : content.getLong("parent_id");
         final int position = content.getInt("position");
+        final int flags = content.getInt("flags", 0);
         final String name = content.getString("name");
         final boolean nsfw = content.getBoolean("nsfw");
         final int defaultThreadSlowmode = content.getInt("default_thread_rate_limit_per_user", 0);
@@ -176,6 +178,7 @@ public class ChannelUpdateHandler extends SocketHandler
                 final boolean oldNsfw = forumChannel.isNSFW();
                 final int oldSlowmode = forumChannel.getSlowmode();
                 final int oldDefaultThreadSlowmode = forumChannel.getDefaultThreadSlowmode();
+                final int oldFlags = forumChannel.getRawFlags();
 
                 if (!Objects.equals(oldName, name))
                 {
@@ -233,6 +236,14 @@ public class ChannelUpdateHandler extends SocketHandler
                             new ChannelUpdateDefaultThreadSlowmodeEvent(
                                     getJDA(), responseNumber,
                                     forumChannel, oldDefaultThreadSlowmode, defaultThreadSlowmode));
+                }
+                if (oldFlags != flags)
+                {
+                    forumChannel.setFlags(flags);
+                    getJDA().handleEvent(
+                            new ChannelUpdateFlagsEvent(
+                                    getJDA(), responseNumber,
+                                    forumChannel, ChannelFlag.fromRaw(oldFlags), ChannelFlag.fromRaw(flags)));
                 }
                 break;
             }

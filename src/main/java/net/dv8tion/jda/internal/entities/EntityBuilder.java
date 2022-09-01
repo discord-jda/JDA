@@ -1282,6 +1282,7 @@ public class EntityBuilder
 
         channel
                 .setParentCategory(json.getLong("parent_id", 0))
+                .setFlags(json.getInt("flags", 0))
                 .setName(json.getString("name"))
                 .setTopic(json.getString("topic", null))
                 .setPosition(json.getInt("position"))
