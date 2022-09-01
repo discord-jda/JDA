@@ -114,4 +114,6 @@ public interface IThreadContainerMixin<T extends IThreadContainerMixin<T>> exten
         Route.CompiledRoute route = Route.Channels.LIST_JOINED_PRIVATE_ARCHIVED_THREADS.compile(getId());
         return new ThreadChannelPaginationActionImpl(getJDA(), route, this, true);
     }
+
+    T setDefaultThreadSlowmode(int slowmode);
 }

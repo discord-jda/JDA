@@ -55,6 +55,7 @@ public class ForumChannelImpl extends AbstractGuildChannelImpl<ForumChannelImpl>
     private boolean nsfw = false;
     private int position;
     private int slowmode;
+    protected int defaultThreadSlowmode;
 
     public ForumChannelImpl(long id, GuildImpl guild)
     {
@@ -143,6 +144,12 @@ public class ForumChannelImpl extends AbstractGuildChannelImpl<ForumChannelImpl>
         return topic;
     }
 
+    @Override
+    public int getDefaultThreadSlowmode()
+    {
+        return defaultThreadSlowmode;
+    }
+
     @Nonnull
     @Override
     public ForumPostAction createForumPost(@Nonnull String name, @Nonnull MessageCreateData message)
@@ -178,6 +185,13 @@ public class ForumChannelImpl extends AbstractGuildChannelImpl<ForumChannelImpl>
     public ForumChannelImpl setPosition(int position)
     {
         this.position = position;
+        return this;
+    }
+
+    @Override
+    public ForumChannelImpl setDefaultThreadSlowmode(int defaultThreadSlowmode)
+    {
+        this.defaultThreadSlowmode = defaultThreadSlowmode;
         return this;
     }
 

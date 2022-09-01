@@ -187,6 +187,7 @@ public abstract class ListenerAdapter implements EventListener
     public void onChannelUpdatePosition(@Nonnull ChannelUpdatePositionEvent event) {}
     public void onChannelUpdateRegion(@Nonnull ChannelUpdateRegionEvent event) {}
     public void onChannelUpdateSlowmode(@Nonnull ChannelUpdateSlowmodeEvent event) {}
+    public void onChannelUpdateDefaultThreadSlowmode(@Nonnull ChannelUpdateDefaultThreadSlowmodeEvent event) {}
     public void onChannelUpdateTopic(@Nonnull ChannelUpdateTopicEvent event) {}
     public void onChannelUpdateType(@Nonnull ChannelUpdateTypeEvent event) {}
     public void onChannelUpdateUserLimit(@Nonnull ChannelUpdateUserLimitEvent event) {}

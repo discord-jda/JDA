@@ -70,6 +70,7 @@ public class ChannelUpdateHandler extends SocketHandler
         final int position = content.getInt("position");
         final String name = content.getString("name");
         final boolean nsfw = content.getBoolean("nsfw");
+        final int defaultThreadSlowmode = content.getInt("default_thread_rate_limit_per_user", 0);
         final int slowmode = content.getInt("rate_limit_per_user", 0);
         final DataArray permOverwrites = content.getArray("permission_overwrites");
 
@@ -100,6 +101,7 @@ public class ChannelUpdateHandler extends SocketHandler
                 final int oldPosition = textChannel.getPositionRaw();
                 final boolean oldNsfw = textChannel.isNSFW();
                 final int oldSlowmode = textChannel.getSlowmode();
+                final int oldDefaultThreadSlowmode = textChannel.getDefaultThreadSlowmode();
                 if (!Objects.equals(oldName, name))
                 {
                     textChannel.setName(name);
@@ -133,7 +135,6 @@ public class ChannelUpdateHandler extends SocketHandler
                                     getJDA(), responseNumber,
                                     textChannel, oldPosition, position));
                 }
-
                 if (oldNsfw != nsfw)
                 {
                     textChannel.setNSFW(nsfw);
@@ -142,7 +143,6 @@ public class ChannelUpdateHandler extends SocketHandler
                                     getJDA(), responseNumber,
                                     textChannel, oldNsfw, nsfw));
                 }
-
                 if (oldSlowmode != slowmode)
                 {
                     textChannel.setSlowmode(slowmode);
@@ -150,6 +150,14 @@ public class ChannelUpdateHandler extends SocketHandler
                             new ChannelUpdateSlowmodeEvent(
                                     getJDA(), responseNumber,
                                     textChannel, oldSlowmode, slowmode));
+                }
+                if (oldDefaultThreadSlowmode != defaultThreadSlowmode)
+                {
+                    textChannel.setDefaultThreadSlowmode(defaultThreadSlowmode);
+                    getJDA().handleEvent(
+                            new ChannelUpdateDefaultThreadSlowmodeEvent(
+                                    getJDA(), responseNumber,
+                                    textChannel, oldDefaultThreadSlowmode, defaultThreadSlowmode));
                 }
                 break;
             }
@@ -167,6 +175,7 @@ public class ChannelUpdateHandler extends SocketHandler
                 final int oldPosition = forumChannel.getPositionRaw();
                 final boolean oldNsfw = forumChannel.isNSFW();
                 final int oldSlowmode = forumChannel.getSlowmode();
+                final int oldDefaultThreadSlowmode = forumChannel.getDefaultThreadSlowmode();
 
                 if (!Objects.equals(oldName, name))
                 {
@@ -201,7 +210,6 @@ public class ChannelUpdateHandler extends SocketHandler
                                     getJDA(), responseNumber,
                                     forumChannel, oldPosition, position));
                 }
-
                 if (oldNsfw != nsfw)
                 {
                     forumChannel.setNSFW(nsfw);
@@ -210,7 +218,6 @@ public class ChannelUpdateHandler extends SocketHandler
                                     getJDA(), responseNumber,
                                     forumChannel, oldNsfw, nsfw));
                 }
-
                 if (oldSlowmode != slowmode)
                 {
                     forumChannel.setSlowmode(slowmode);
@@ -218,6 +225,14 @@ public class ChannelUpdateHandler extends SocketHandler
                             new ChannelUpdateSlowmodeEvent(
                                     getJDA(), responseNumber,
                                     forumChannel, oldSlowmode, slowmode));
+                }
+                if (oldDefaultThreadSlowmode != defaultThreadSlowmode)
+                {
+                    forumChannel.setDefaultThreadSlowmode(defaultThreadSlowmode);
+                    getJDA().handleEvent(
+                            new ChannelUpdateDefaultThreadSlowmodeEvent(
+                                    getJDA(), responseNumber,
+                                    forumChannel, oldDefaultThreadSlowmode, defaultThreadSlowmode));
                 }
                 break;
             }

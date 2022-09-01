@@ -1017,6 +1017,7 @@ public class EntityBuilder
             .setTopic(json.getString("topic", null))
             .setPosition(json.getInt("position"))
             .setNSFW(json.getBoolean("nsfw"))
+            .setDefaultThreadSlowmode(json.getInt("default_thread_rate_limit_per_user", 0))
             .setSlowmode(json.getInt("rate_limit_per_user", 0));
 
         createOverridesPass(channel, json.getArray("permission_overwrites"));
@@ -1284,6 +1285,7 @@ public class EntityBuilder
                 .setName(json.getString("name"))
                 .setTopic(json.getString("topic", null))
                 .setPosition(json.getInt("position"))
+                .setDefaultThreadSlowmode(json.getInt("default_thread_rate_limit_per_user", 0))
                 .setSlowmode(json.getInt("rate_limit_per_user", 0))
                 .setNSFW(json.getBoolean("nsfw"));
 

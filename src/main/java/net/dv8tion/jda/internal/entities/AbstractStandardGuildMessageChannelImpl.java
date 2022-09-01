@@ -26,6 +26,7 @@ public abstract class AbstractStandardGuildMessageChannelImpl<T extends Abstract
     protected String topic;
     protected boolean nsfw;
     protected long latestMessageId;
+    protected int defaultThreadSlowmode;
 
     public AbstractStandardGuildMessageChannelImpl(long id, GuildImpl guild)
     {
@@ -52,6 +53,12 @@ public abstract class AbstractStandardGuildMessageChannelImpl<T extends Abstract
     }
 
     @Override
+    public int getDefaultThreadSlowmode()
+    {
+        return defaultThreadSlowmode;
+    }
+
+    @Override
     @SuppressWarnings("unchecked")
     public T setTopic(String topic)
     {
@@ -72,6 +79,14 @@ public abstract class AbstractStandardGuildMessageChannelImpl<T extends Abstract
     public T setLatestMessageIdLong(long latestMessageId)
     {
         this.latestMessageId = latestMessageId;
+        return (T) this;
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public T setDefaultThreadSlowmode(int defaultThreadSlowmode)
+    {
+        this.defaultThreadSlowmode = defaultThreadSlowmode;
         return (T) this;
     }
 }

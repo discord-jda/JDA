@@ -16,10 +16,7 @@
 
 package net.dv8tion.jda.api.audit;
 
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.GuildChannel;
-import net.dv8tion.jda.api.entities.ICategorizableChannel;
-import net.dv8tion.jda.api.entities.ThreadChannel;
+import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import net.dv8tion.jda.api.entities.sticker.GuildSticker;
 
@@ -227,6 +224,13 @@ public enum AuditLogKey
      * <p>Expected type: <b>Integer</b>
      */
     CHANNEL_SLOWMODE("rate_limit_per_user"),
+
+    /**
+     * Change of the {@link IThreadContainer#getDefaultThreadSlowmode()} value.
+     *
+     * <p>Expected type: <b>Integer</b>
+     */
+    CHANNEL_DEFAULT_THREAD_SLOWMODE("default_thread_rate_limit_per_user"),
 
     /**
      * Change of the {@link net.dv8tion.jda.api.entities.VoiceChannel#getBitrate() VoiceChannel.getBitrate()} value.
