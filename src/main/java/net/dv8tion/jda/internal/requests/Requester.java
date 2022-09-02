@@ -193,7 +193,7 @@ public class Requester
                         url, lastResponse.code(), attempt + 1);
                 try
                 {
-                    Thread.sleep(500 << (attempt + 1));
+                    Thread.sleep(500 << attempt);
                 }
                 catch (InterruptedException ignored)
                 {
