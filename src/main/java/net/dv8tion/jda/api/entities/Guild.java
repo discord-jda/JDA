@@ -3040,7 +3040,10 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    CacheRestAction<GuildScheduledEvent> retrieveScheduledEventById(long id);
+    default CacheRestAction<GuildScheduledEvent> retrieveScheduledEventById(long id)
+    {
+        return retrieveScheduledEventById(Long.toUnsignedString(id));
+    }
 
     /**
      * Retrieves a {@link GuildScheduledEvent} by its ID.
