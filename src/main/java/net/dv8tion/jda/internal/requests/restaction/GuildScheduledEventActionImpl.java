@@ -64,15 +64,22 @@ public class GuildScheduledEventActionImpl extends AuditableRestActionImpl<Guild
         this.name = name;
         this.startTime = Helpers.toOffsetDateTime(startTime);
         Checks.notNull(channel, "Channel");
-        if (!channel.getGuild().equals(guild)) {
+        if (!channel.getGuild().equals(guild))
+        {
             throw new IllegalArgumentException("Invalid parameter: Channel has to be from the same guild as the scheduled event!");
-        } else if (channel instanceof StageChannel) {
+        }
+        else if (channel instanceof StageChannel)
+        {
             this.channelId = channel.getIdLong();
             this.entityType = 1;
-        } else if (channel instanceof VoiceChannel) {
+        }
+        else if (channel instanceof VoiceChannel)
+        {
             this.channelId = channel.getIdLong();
             this.entityType = 2;
-        } else {
+        }
+        else
+        {
             throw new IllegalArgumentException("Invalid parameter: Can only set location to Voice and Stage Channels!");
         }
     }
