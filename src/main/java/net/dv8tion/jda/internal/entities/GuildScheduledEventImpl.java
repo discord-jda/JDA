@@ -122,7 +122,7 @@ public class GuildScheduledEventImpl implements GuildScheduledEvent
     @Override
     public GuildChannelUnion getChannel()
     {
-        if (type.equals(Type.STAGE_INSTANCE) || type.equals(Type.VOICE))
+        if (type == Type.STAGE_INSTANCE || type == Type.VOICE)
             return (GuildChannelUnion) guild.getGuildChannelById(location);
         return null;
     }

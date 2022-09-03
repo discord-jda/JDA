@@ -86,5 +86,4 @@ public class GuildScheduledEventUpdateLocationEvent extends GenericGuildSchedule
     {
         return super.getNewValue();
     }
-
 }

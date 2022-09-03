@@ -118,5 +118,4 @@ public interface GuildScheduledEventAction extends AuditableRestAction<GuildSche
     @Nonnull
     @CheckReturnValue
     GuildScheduledEventAction setImage(@Nullable Icon icon);
-
 }

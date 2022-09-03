@@ -184,7 +184,6 @@ public interface GuildScheduledEventManager extends Manager<GuildScheduledEventM
      *             <li>If the provided {@link GuildChannel} is not from the same guild</li>
      *             <li>If the provided {@link GuildChannel} is not a {@link StageChannel} or {@link VoiceChannel}</li>
      *         </ul>
-     *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have
      *         {@link net.dv8tion.jda.api.Permission#MANAGE_EVENTS Permission.MANAGE_EVENTS},

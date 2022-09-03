@@ -39,7 +39,7 @@ public class GuildScheduledEventUpdateHandler extends SocketHandler
     {
         if (!getJDA().isCacheFlagSet(CacheFlag.GUILD_SCHEDULED_EVENTS))
             return null;
-        long guildId = content.getUnsignedLong("guild_id", 0L);
+        long guildId = content.getUnsignedLong("guild_id");
         if (getJDA().getGuildSetupController().isLocked(guildId))
             return guildId;
 
