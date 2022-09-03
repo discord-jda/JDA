@@ -265,8 +265,6 @@ public interface GuildScheduledEventManager extends Manager<GuildScheduledEventM
      *             <li>If the provided end time is before the start time</li>
      *             <li>If the provided end time is {@code null}</li>
      *         </ul>
-     * @throws java.lang.IllegalStateException
-     *         If an end time is provided and the event is not set to take place at an external location
      *
      * @return GuildScheduledEventManager for chaining convenience
      *
