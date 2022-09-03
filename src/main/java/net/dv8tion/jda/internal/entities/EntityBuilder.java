@@ -183,20 +183,15 @@ public class EntityBuilder
         if (!getJDA().isCacheFlagSet(CacheFlag.GUILD_SCHEDULED_EVENTS))
             return;
         SnowflakeCacheViewImpl<GuildScheduledEvent> eventView = guildObj.getScheduledEventsView();
-        try (UnlockHook hook = eventView.writeLock())
+        for (int i = 0; i < array.length(); i++)
         {
-            TLongObjectMap<GuildScheduledEvent> eventMap = eventView.getMap();
-            for (int i = 0; i < array.length(); i++)
+            DataObject object = array.getObject(i);
+            if (object.isNull("id"))
             {
-                DataObject object = array.getObject(i);
-                if (object.isNull("id"))
-                {
-                    LOG.error("Received GUILD_CREATE with a scheduled event with a null ID. JSON: {}", object);
-                    continue;
-                }
-                final long eventId = object.getLong("id");
-                eventMap.put(eventId, createGuildScheduledEvent(guildObj, object));
+                LOG.error("Received GUILD_CREATE with a scheduled event with a null ID. JSON: {}", object);
+                continue;
             }
+            createGuildScheduledEvent(guildObj, object);
         }
     }
 
@@ -963,7 +958,10 @@ public class EntityBuilder
             try (UnlockHook hook = guildScheduledEventView.writeLock())
             {
                 guildScheduledEvent = new GuildScheduledEventImpl(id, guild);
-                guildScheduledEventView.getMap().put(id, guildScheduledEvent);
+                if (getJDA().isCacheFlagSet(CacheFlag.GUILD_SCHEDULED_EVENTS))
+                {
+                    guildScheduledEventView.getMap().put(id, guildScheduledEvent);
+                }
             }
         }
 
