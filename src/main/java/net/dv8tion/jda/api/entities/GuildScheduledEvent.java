@@ -136,22 +136,18 @@ public interface GuildScheduledEvent extends ISnowflake, Comparable<GuildSchedul
     }
 
     /**
-     * Determines if this event has a creator associated with it.
-     * <br>This will return {@code false} for events created prior to October 21st, 2021 when Discord first started keep track of who created an event.
+     * The {@link Status status} of the scheduled event.
      *
-     * @return {@code true} if this event has a creator associated with it, {@code false} otherwise
+     * @return The status, or {@link Status#UNKNOWN} if the status is unknown to JDA.
      *
-     * @see    #getCreatorIdLong()
-     * @see    #getCreatorId()
-     * @see    #getCreator()
      */
     @Nonnull
     Status getStatus();
 
     /**
-     * Returns the type of the event. Possible types include
+     * The {@link Type type} of the scheduled event.
      *
-     * @return The type, or {@link Type#UNKNOWN} if the event type is unknown to JDA.
+     * @return The type, or {@link Type#UNKNOWN} if the type is unknown to JDA.
      */
     @Nonnull
     Type getType();
@@ -343,7 +339,7 @@ public interface GuildScheduledEvent extends ISnowflake, Comparable<GuildSchedul
     int compareTo(@Nonnull GuildScheduledEvent guildScheduledEvent);
 
     /**
-     * Represents the status of a scheduled guild event.
+     * Represents the status of a scheduled event.
      *
      * @see    GuildScheduledEvent#getStatus
      */
@@ -403,7 +399,6 @@ public interface GuildScheduledEvent extends ISnowflake, Comparable<GuildSchedul
          */
         UNKNOWN(-1),
         /**
-         *
          * An event with it's own {@link net.dv8tion.jda.api.entities.StageInstance StageInstance}
          */
         STAGE_INSTANCE(1),
