@@ -4542,40 +4542,14 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
 
     /**
      * Creates a new {@link GuildScheduledEvent}.
+     * Events created with this method will be of {@link GuildScheduledEvent.Type#EXTERNAL Type.EXTERNAL}.
+     * These events are set to take place at an external location.
      *
      * <p><b>Requirements</b><br>
      *
-     * Events that are created are required to have a name, a location, and a start time. Depending on the
-     * type of location provided, an event will be of one of three different {@link GuildScheduledEvent.Type Types}:
-     * <ol>
-     *     <li>
-     *         {@link GuildScheduledEvent.Type#STAGE_INSTANCE Type.STAGE_INSTANCE}
-     *         <br>These events are set to take place inside of a {@link StageChannel}. The
-     *         following permissions are required in the specified stage channel in order to create an event there:
-     *          <ul>
-     *              <li>{@link Permission#MANAGE_EVENTS}</li>
-     *              <li>{@link Permission#MANAGE_CHANNEL}</li>
-     *              <li>{@link Permission#VOICE_MUTE_OTHERS}</li>
-     *              <li>{@link Permission#VOICE_MOVE_OTHERS}}</li>
-     *         </ul>
-     *     </li>
-     *     <li>
-     *         {@link GuildScheduledEvent.Type#VOICE Type.VOICE}
-     *         <br>These events are set to take place inside of a {@link VoiceChannel}. The
-     *         following permissions are required in the specified voice channel in order to create an event there:
-     *         <ul>
-     *             <li>{@link Permission#MANAGE_EVENTS}</li>
-     *             <li>{@link Permission#VIEW_CHANNEL}</li>
-     *             <li>{@link Permission#VOICE_CONNECT}</li>
-     *         </ul>
-     *     </li>
-     *     <li>
-     *         {@link GuildScheduledEvent.Type#EXTERNAL Type.EXTERNAL}
-     *         <br>These events are set to take place at an external location. {@link Permission#MANAGE_EVENTS}
-     *         is required on the guild level in order to create this type of event. Additionally, an end time <em>must</em>
-     *         also be specified.
-     *     </li>
-     * </ol>
+     * Events are required to have a name, location and start time.
+     * Additionally, an end time <em>must</em> also be specified for events of {@link GuildScheduledEvent.Type#EXTERNAL Type.EXTERNAL}.
+     * {@link Permission#MANAGE_EVENTS} is required on the guild level in order to create this type of event.
      *
      * <p><b>Example</b><br>
      * <pre>{@code
@@ -4614,8 +4588,8 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      *
      * <p><b>Requirements</b><br>
      *
-     * Events that are created are required to have a name, a location, and a start time. Depending on the
-     * type of location provided, an event will be of one of three different {@link GuildScheduledEvent.Type Types}:
+     * Events are required to have a name, channel and start time. Depending on the
+     * type of channel provided, an event will be of one of two different {@link GuildScheduledEvent.Type Types}:
      * <ol>
      *     <li>
      *         {@link GuildScheduledEvent.Type#STAGE_INSTANCE Type.STAGE_INSTANCE}
@@ -4637,12 +4611,6 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      *             <li>{@link Permission#VIEW_CHANNEL}</li>
      *             <li>{@link Permission#VOICE_CONNECT}</li>
      *         </ul>
-     *     </li>
-     *     <li>
-     *         {@link GuildScheduledEvent.Type#EXTERNAL Type.EXTERNAL}
-     *         <br>These events are set to take place at an external location. {@link Permission#MANAGE_EVENTS}
-     *         is required on the guild level in order to create this type of event. Additionally, an end time <em>must</em>
-     *         also be specified.
      *     </li>
      * </ol>
      *
