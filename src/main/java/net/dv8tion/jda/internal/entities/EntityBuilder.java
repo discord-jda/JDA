@@ -990,7 +990,7 @@ public class EntityBuilder
         {
         case STAGE_INSTANCE:
         case VOICE:
-            guildScheduledEvent.setLocation(json.get("channel_id").toString());
+            guildScheduledEvent.setLocation(json.getString("channel_id"));
             break;
         case EXTERNAL:
             String externalLocation = json.getObject("entity_metadata").getString("location");
