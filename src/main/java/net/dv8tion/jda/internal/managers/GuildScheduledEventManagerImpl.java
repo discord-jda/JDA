@@ -179,8 +179,6 @@ public class GuildScheduledEventManagerImpl extends ManagerBase<GuildScheduledEv
                 throw new IllegalStateException("GuildScheduledEventType " + entityType + " is not supported!");
             }
         }
-
-
         if (shouldUpdate(START_TIME))
             object.put("scheduled_start_time", startTime.format(DateTimeFormatter.ISO_DATE_TIME));
         if (shouldUpdate(END_TIME))

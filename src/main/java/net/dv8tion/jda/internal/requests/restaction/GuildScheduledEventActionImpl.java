@@ -44,7 +44,7 @@ public class GuildScheduledEventActionImpl extends AuditableRestActionImpl<Guild
     protected long channelId;
     protected String location;
     protected OffsetDateTime startTime, endTime;
-    protected int entityType;
+    protected final GuildScheduledEvent.Type entityType;
 
     public GuildScheduledEventActionImpl(String name, String location, TemporalAccessor startTime, TemporalAccessor endTime, Guild guild)
     {
@@ -54,7 +54,7 @@ public class GuildScheduledEventActionImpl extends AuditableRestActionImpl<Guild
         this.startTime = Helpers.toOffsetDateTime(startTime);
         this.endTime = Helpers.toOffsetDateTime(endTime);
         this.location = location;
-        this.entityType = 3;
+        this.entityType = GuildScheduledEvent.Type.EXTERNAL;
     }
 
     public GuildScheduledEventActionImpl(String name, GuildChannel channel, TemporalAccessor startTime, Guild guild)
@@ -68,10 +68,10 @@ public class GuildScheduledEventActionImpl extends AuditableRestActionImpl<Guild
             throw new IllegalArgumentException("Invalid parameter: Channel has to be from the same guild as the scheduled event!");
         } else if (channel instanceof StageChannel) {
             this.channelId = channel.getIdLong();
-            this.entityType = 1;
+            this.entityType = GuildScheduledEvent.Type.STAGE_INSTANCE;
         } else if (channel instanceof VoiceChannel) {
             this.channelId = channel.getIdLong();
-            this.entityType = 2;
+            this.entityType = GuildScheduledEvent.Type.VOICE;
         } else {
             throw new IllegalArgumentException("Invalid parameter: Can only set location to Voice and Stage Channels!");
         }
@@ -134,10 +134,20 @@ public class GuildScheduledEventActionImpl extends AuditableRestActionImpl<Guild
         object.put("privacy_level", 2);
         object.put("name", name);
         object.put("scheduled_start_time", startTime.format(DateTimeFormatter.ISO_DATE_TIME));
-        if (entityType == 1 || entityType == 2)
+
+        switch (entityType)
+        {
+        case STAGE_INSTANCE:
+        case VOICE:
             object.put("channel_id", channelId);
-        if (entityType == 3 && location != null && location.length() > 0)
+            break;
+        case EXTERNAL:
             object.put("entity_metadata", DataObject.empty().put("location", location));
+            break;
+        default:
+            throw new IllegalStateException("GuildScheduledEventType " + entityType + " is not supported!");
+        }
+
         if (description != null)
             object.put("description", description);
         if (image != null)
@@ -157,14 +167,13 @@ public class GuildScheduledEventActionImpl extends AuditableRestActionImpl<Guild
         Checks.notNull(startTime, "Start Time");
         Checks.check(startTime.isAfter(OffsetDateTime.now()), "Cannot schedule event in the past!");
 
-        if (entityType == 3) {
+        if (entityType == GuildScheduledEvent.Type.EXTERNAL) {
             Checks.notNull(location, "Location");
             Checks.notBlank(location, "Location");
             Checks.notEmpty(location, "Location");
             Checks.notLonger(location, GuildScheduledEvent.MAX_LOCATION_LENGTH, "Location");
             Checks.notNull(endTime, "End Time");
             Checks.check((endTime).isAfter(startTime), "Cannot schedule event to end before starting!");
-
         }
 
     }
