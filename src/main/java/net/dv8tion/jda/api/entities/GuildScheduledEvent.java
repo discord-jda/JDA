@@ -132,7 +132,7 @@ public interface GuildScheduledEvent extends ISnowflake, Comparable<GuildSchedul
     @Nullable
     default String getCreatorId()
     {
-        return getCreatorIdLong() == 0 ? null : String.valueOf(getCreatorIdLong());
+        return getCreatorIdLong() == 0 ? null : Long.toUnsignedString(getCreatorIdLong());
     }
 
     /**
