@@ -29,6 +29,7 @@ import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.managers.PresenceImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.IOUtil;
+import net.dv8tion.jda.api.exceptions.InvalidTokenException;
 import net.dv8tion.jda.internal.utils.config.AuthorizationConfig;
 import net.dv8tion.jda.internal.utils.config.MetaConfig;
 import net.dv8tion.jda.internal.utils.config.SessionConfig;
@@ -39,7 +40,6 @@ import okhttp3.OkHttpClient;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.security.auth.login.LoginException;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.stream.Collectors;
@@ -1740,7 +1740,7 @@ public class JDABuilder
      * {@link net.dv8tion.jda.api.hooks.EventListener EventListener} to listen for the
      * {@link net.dv8tion.jda.api.events.ReadyEvent ReadyEvent}.
      *
-     * @throws LoginException
+     * @throws InvalidTokenException
      *         If the provided token is invalid.
      * @throws IllegalArgumentException
      *         If the provided token is empty or null. Or the provided intents/cache configuration is not possible.
@@ -1751,7 +1751,7 @@ public class JDABuilder
      * @see    net.dv8tion.jda.api.JDA#awaitReady()
      */
     @Nonnull
-    public JDA build() throws LoginException
+    public JDA build()
     {
         checkIntents();
         OkHttpClient httpClient = this.httpClient;

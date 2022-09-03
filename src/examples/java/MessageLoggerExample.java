@@ -120,11 +120,6 @@ public class MessageLoggerExample extends ListenerAdapter
             // Now we can access the fully loaded cache and show some statistics or do other cache dependent things
             System.out.println("Guilds: " + jda.getGuildCache().size());
         }
-        catch (LoginException e)
-        {
-            // This is thrown if the token is invalid or incorrectly formatted
-            e.printStackTrace();
-        }
         catch (InterruptedException e)
         {
             // Thrown if the awaitReady() call is interrupted

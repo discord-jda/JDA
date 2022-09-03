@@ -25,6 +25,7 @@ import net.dv8tion.jda.api.hooks.IEventManager;
 import net.dv8tion.jda.api.hooks.VoiceDispatchInterceptor;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.api.exceptions.InvalidTokenException;
 import net.dv8tion.jda.api.utils.ChunkingFilter;
 import net.dv8tion.jda.api.utils.Compression;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
@@ -40,7 +41,6 @@ import okhttp3.OkHttpClient;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.security.auth.login.LoginException;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.function.IntFunction;
@@ -2142,7 +2142,7 @@ public class  DefaultShardManagerBuilder
      *
      * <p>Note that this method is async and as such will <b>not</b> block until all shards are started.
      *
-     * @throws  LoginException
+     * @throws  InvalidTokenException
      *          If the provided token is invalid.
      * @throws  IllegalArgumentException
      *          If the provided token is empty or null. Or the provided intents/cache configuration is not possible.
@@ -2153,7 +2153,7 @@ public class  DefaultShardManagerBuilder
      *         to whether or not loading has finished when this returns.
      */
     @Nonnull
-    public ShardManager build() throws LoginException, IllegalArgumentException
+    public ShardManager build() throws IllegalArgumentException
     {
         return build(true);
     }
@@ -2171,7 +2171,7 @@ public class  DefaultShardManagerBuilder
      *         Whether the login process will be started. If this is false, then you will need to manually call
      *         {@link net.dv8tion.jda.api.sharding.ShardManager#login()} to start it.
      *
-     * @throws  LoginException
+     * @throws  InvalidTokenException
      *          If the provided token is invalid and {@code login} is true
      * @throws  IllegalArgumentException
      *          If the provided token is empty or null. Or the provided intents/cache configuration is not possible.
@@ -2181,7 +2181,7 @@ public class  DefaultShardManagerBuilder
      * finished when this returns.
      */
     @Nonnull
-    public ShardManager build(boolean login) throws LoginException, IllegalArgumentException
+    public ShardManager build(boolean login) throws IllegalArgumentException
     {
         checkIntents();
         boolean useShutdownNow = shardingFlags.contains(ShardingConfigFlag.SHUTDOWN_NOW);

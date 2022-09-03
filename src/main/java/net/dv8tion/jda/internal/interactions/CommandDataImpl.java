@@ -17,8 +17,8 @@
 package net.dv8tion.jda.internal.interactions;
 
 import net.dv8tion.jda.api.interactions.DiscordLocale;
-import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
@@ -30,12 +30,12 @@ import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.interactions.command.localization.LocalizationMapper;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.Nonnull;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class CommandDataImpl implements SlashCommandData
@@ -146,7 +146,7 @@ public class CommandDataImpl implements SlashCommandData
                     return type == OptionType.SUB_COMMAND;
                 })
                 .map(SubcommandData::fromData)
-                .collect(Collectors.toList());
+                .collect(Helpers.toUnmodifiableList());
     }
 
     @Nonnull
@@ -160,7 +160,7 @@ public class CommandDataImpl implements SlashCommandData
                     return type == OptionType.SUB_COMMAND_GROUP;
                 })
                 .map(SubcommandGroupData::fromData)
-                .collect(Collectors.toList());
+                .collect(Helpers.toUnmodifiableList());
     }
 
     @Nonnull
@@ -354,6 +354,6 @@ public class CommandDataImpl implements SlashCommandData
         return options.stream(DataArray::getObject)
                 .map(OptionData::fromData)
                 .filter(it -> it.getType().getKey() > OptionType.SUB_COMMAND_GROUP.getKey())
-                .collect(Collectors.toList());
+                .collect(Helpers.toUnmodifiableList());
     }
 }
