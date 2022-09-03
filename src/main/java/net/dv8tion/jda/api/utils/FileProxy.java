@@ -187,7 +187,7 @@ public class FileProxy
     protected CompletableFuture<Path> downloadToPath(String url)
     {
         final HttpUrl parsedUrl = HttpUrl.parse(url);
-        Checks.check(parsedUrl != null, "URL '" + url + "' is invalid");
+        Checks.check(parsedUrl != null, "URL '%s' is invalid", url);
 
         final List<String> segments = parsedUrl.pathSegments();
         final String fileName = segments.get(segments.size() - 1);
@@ -202,7 +202,7 @@ public class FileProxy
         final Path absolute = path.toAbsolutePath();
         //Check if the parent path, the folder, exists
         final Path parent = absolute.getParent();
-        Checks.check(parent != null && Files.exists(parent), "Parent folder of the file '" + absolute + "' does not exist.");
+        Checks.check(parent != null && Files.exists(parent), "Parent folder of the file '%s' does not exist.", absolute);
 
         final DownloadTask downloadTask = downloadInternal(url);
 
