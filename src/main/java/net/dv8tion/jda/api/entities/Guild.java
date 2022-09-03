@@ -4607,6 +4607,15 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      *     .queue();
      * }</pre>
      *
+     * @param  name
+     *         the name for this scheduled event, 1-100 characters
+     * @param  location
+     *         the external location for this scheduled event, 1-100 characters
+     * @param  startTime
+     *         the start time for this scheduled event, can't be in the past or after the end time
+     * @param  endTime
+     *         the end time for this scheduled event, has to be later than the start time
+     *
      * @throws java.lang.IllegalArgumentException
      *         <ul>
      *             <li>If a required parameter is {@code null} or empty</li>
@@ -4666,6 +4675,13 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      *     .setDescription("Come and have your cacti judged! _Must be spikey to enter_")
      *     .queue();
      * }</pre>
+     *
+     * @param  name
+     *         the name for this scheduled event, 1-100 characters
+     * @param  channel
+     *         the voice or stage channel where this scheduled event will take place
+     * @param  startTime
+     *         the start time for this scheduled event, can't be in the past
      *
      * @throws java.lang.IllegalArgumentException
      *         <ul>
