@@ -65,6 +65,10 @@ public class GuildScheduledEventManagerImpl extends ManagerBase<GuildScheduledEv
     @CheckReturnValue
     public GuildScheduledEventManagerImpl setName(@Nonnull String name)
     {
+        Checks.notNull(name, "Name");
+        Checks.notBlank(name, "Name");
+        Checks.notEmpty(name, "Name");
+        Checks.notLonger(name, GuildScheduledEvent.MAX_NAME_LENGTH, "Name");
         this.name = name;
         set |= NAME;
         return this;
@@ -74,6 +78,7 @@ public class GuildScheduledEventManagerImpl extends ManagerBase<GuildScheduledEv
     @Override
     public GuildScheduledEventManager setDescription(@Nullable String description)
     {
+        Checks.notLonger(description, GuildScheduledEvent.MAX_DESCRIPTION_LENGTH, "Description");
         this.description = description;
         set |= DESCRIPTION;
         return this;
@@ -120,6 +125,10 @@ public class GuildScheduledEventManagerImpl extends ManagerBase<GuildScheduledEv
     @Override
     public GuildScheduledEventManager setLocation(@Nonnull String location)
     {
+        Checks.notNull(location, "Location");
+        Checks.notBlank(location, "Location");
+        Checks.notEmpty(location, "Location");
+        Checks.notLonger(location, GuildScheduledEvent.MAX_LOCATION_LENGTH, "Location");
         this.location = location;
         this.entityType = GuildScheduledEvent.Type.EXTERNAL;
         set |= LOCATION;
@@ -130,6 +139,7 @@ public class GuildScheduledEventManagerImpl extends ManagerBase<GuildScheduledEv
     @Override
     public GuildScheduledEventManager setStartTime(@Nonnull TemporalAccessor startTime)
     {
+        Checks.notNull(startTime, "Start Time");
         this.startTime = Helpers.toOffsetDateTime(startTime);
         set |= START_TIME;
         return this;
@@ -139,6 +149,7 @@ public class GuildScheduledEventManagerImpl extends ManagerBase<GuildScheduledEv
     @Override
     public GuildScheduledEventManager setEndTime(@Nonnull TemporalAccessor endTime)
     {
+        Checks.notNull(endTime, "End Time");
         this.endTime = Helpers.toOffsetDateTime(endTime);
         set |= END_TIME;
         return this;
@@ -148,6 +159,9 @@ public class GuildScheduledEventManagerImpl extends ManagerBase<GuildScheduledEv
     @Override
     public GuildScheduledEventManager setStatus(@Nonnull GuildScheduledEvent.Status status)
     {
+        Checks.notNull(status, "Status");
+        Checks.check(status != GuildScheduledEvent.Status.UNKNOWN, "Cannot set the event status to an unknown status!");
+        Checks.check(status != GuildScheduledEvent.Status.SCHEDULED && getGuildScheduledEvent().getStatus() != GuildScheduledEvent.Status.ACTIVE, "Cannot perform status update!");
         this.status = status;
         set |= STATUS;
         return this;
@@ -193,25 +207,10 @@ public class GuildScheduledEventManagerImpl extends ManagerBase<GuildScheduledEv
 
     private void preChecks()
     {
-        if (shouldUpdate(NAME))
-        {
-            Checks.notNull(name, "Name");
-            Checks.notBlank(name, "Name");
-            Checks.notEmpty(name, "Name");
-            Checks.notLonger(name, GuildScheduledEvent.MAX_NAME_LENGTH, "Name");
-        }
 
-        if (shouldUpdate(DESCRIPTION))
-        {
-            Checks.notLonger(description, GuildScheduledEvent.MAX_DESCRIPTION_LENGTH, "Description");
-        }
 
         if (shouldUpdate(LOCATION))
         {
-            Checks.notNull(location, "Location");
-            Checks.notBlank(location, "Location");
-            Checks.notEmpty(location, "Location");
-            Checks.notLonger(location, GuildScheduledEvent.MAX_LOCATION_LENGTH, "Location");
             Checks.check((endTime).isAfter(startTime), "Cannot schedule event to end before starting!");
             Checks.check(getGuildScheduledEvent().getStatus() == GuildScheduledEvent.Status.SCHEDULED, "Cannot update location of non-scheduled event.");
             if (entityType == GuildScheduledEvent.Type.EXTERNAL && endTime == null && getGuildScheduledEvent().getEndTime() == null)
@@ -220,22 +219,12 @@ public class GuildScheduledEventManagerImpl extends ManagerBase<GuildScheduledEv
 
         if (shouldUpdate(START_TIME))
         {
-            Checks.notNull(startTime, "Start Time");
             Checks.check(startTime.isAfter(OffsetDateTime.now()), "Cannot schedule event in the past!");
             Checks.check(getGuildScheduledEvent().getStatus() == GuildScheduledEvent.Status.SCHEDULED, "Cannot update start time of non-scheduled event!");
             Checks.check((endTime == null && getGuildScheduledEvent().getEndTime() == null) || (endTime == null ? getGuildScheduledEvent().getEndTime() : endTime).isAfter(startTime), "Cannot schedule event to end before starting!");
         }
 
         if (shouldUpdate(END_TIME))
-        {
-            Checks.notNull(endTime, "End Time");
             Checks.check((startTime == null ? getGuildScheduledEvent().getStartTime() : startTime).isBefore(endTime), "Cannot schedule event to end before starting!");
-        }
-
-        if (shouldUpdate(STATUS))
-        {
-            Checks.check(status != GuildScheduledEvent.Status.UNKNOWN, "Cannot set the event status to an unknown status!");
-            Checks.check(status != GuildScheduledEvent.Status.SCHEDULED && getGuildScheduledEvent().getStatus() != GuildScheduledEvent.Status.ACTIVE, "Cannot perform status update!");
-        }
     }
 }

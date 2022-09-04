@@ -21,6 +21,7 @@ import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.time.OffsetDateTime;
+import java.time.temporal.TemporalAccessor;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 
@@ -90,15 +91,30 @@ public interface GuildScheduledEventAction extends AuditableRestAction<GuildSche
     Guild getGuild();
 
     /**
+     * Sets the name for the new {@link GuildScheduledEvent GuildScheduledEvent}.
+     *
+     * @param  name
+     *         The name for the new {@link GuildScheduledEvent GuildScheduledEvent}
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the new name is blank, empty, {@code null}, or contains more than {@value GuildScheduledEvent#MAX_NAME_LENGTH}
+     *         characters
+     *
+     * @return The current GuildScheduledEventAction, for chaining convenience
+     */
+    @Nonnull
+    GuildScheduledEventAction setName(@Nonnull String name);
+
+    /**
      * Sets the description for the new {@link GuildScheduledEvent GuildScheduledEvent}.
      * This field may include markdown.
      *
      * @param  description
      *         The description for the new {@link GuildScheduledEvent GuildScheduledEvent},
-     *         or {@code null} for no description.
+     *         or {@code null} for no description
      *
      * @throws java.lang.IllegalArgumentException
-     *         If the new description is longer than {@value GuildScheduledEvent#MAX_DESCRIPTION_LENGTH} characters.
+     *         If the new description is longer than {@value GuildScheduledEvent#MAX_DESCRIPTION_LENGTH} characters
      *
      * @return The current GuildScheduledEventAction, for chaining convenience
      */
@@ -107,11 +123,48 @@ public interface GuildScheduledEventAction extends AuditableRestAction<GuildSche
     GuildScheduledEventAction setDescription(@Nullable String description);
 
     /**
+     * <p>Sets the time that the new {@link GuildScheduledEvent} will start at.
+     * Events of {@link GuildScheduledEvent.Type#EXTERNAL Type.EXTERNAL} will automatically
+     * start at this time, but events of {@link GuildScheduledEvent.Type#STAGE_INSTANCE Type.STAGE_INSTANCE}
+     * and {@link GuildScheduledEvent.Type#VOICE Type.VOICE} will need to be manually started,
+     * and will automatically be cancelled a few hours after the start time if not.
+     *
+     * @param  startTime
+     *         The time that the new {@link GuildScheduledEvent} should start at
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided start time is {@code null}, or takes place after the end time
+     *
+     * @return The current GuildScheduledEventAction, for chaining convenience
+     */
+    @Nonnull
+    GuildScheduledEventAction setStartTime(@Nonnull TemporalAccessor startTime);
+
+    /**
+     * Sets the time that the new {@link GuildScheduledEvent} will end at.
+     * Events of {@link GuildScheduledEvent.Type#EXTERNAL Type.EXTERNAL} will automatically
+     * end at this time, and events of {@link GuildScheduledEvent.Type#STAGE_INSTANCE Type.STAGE_INSTANCE}
+     * and {@link GuildScheduledEvent.Type#VOICE Type.VOICE} will end a few minutes after the last
+     * user has left the channel.
+     * <p><b>Note:</b> Setting an end time is only possible for events of {@link GuildScheduledEvent.Type#EXTERNAL Type.EXTERNAL}.
+     *
+     * @param  endTime
+     *         The time that the new {@link GuildScheduledEvent} is set to end at
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided end time is chronologically set before the start time
+     *
+     * @return The current GuildScheduledEventAction, for chaining convenience
+     */
+    @Nonnull
+    GuildScheduledEventAction setEndTime(@Nullable TemporalAccessor endTime);
+
+    /**
      * Sets the cover image for the new {@link GuildScheduledEvent GuildScheduledEvent}.
      *
      * @param  icon
      *         The cover image for the new {@link GuildScheduledEvent GuildScheduledEvent},
-     *         or {@code null} for no cover image.
+     *         or {@code null} for no cover image
      *
      * @return The current GuildScheduledEventAction, for chaining convenience
      */

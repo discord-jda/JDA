@@ -50,9 +50,13 @@ public class GuildScheduledEventActionImpl extends AuditableRestActionImpl<Guild
     {
         super(guild.getJDA(), Route.Guilds.CREATE_SCHEDULED_EVENT.compile(guild.getId()));
         this.guild = guild;
-        this.name = name;
-        this.startTime = Helpers.toOffsetDateTime(startTime);
-        this.endTime = Helpers.toOffsetDateTime(endTime);
+        setName(name);
+        setStartTime(startTime);
+        setEndTime(endTime);
+        Checks.notNull(location, "Location");
+        Checks.notBlank(location, "Location");
+        Checks.notEmpty(location, "Location");
+        Checks.notLonger(location, GuildScheduledEvent.MAX_LOCATION_LENGTH, "Location");
         this.location = location;
         this.entityType = GuildScheduledEvent.Type.EXTERNAL;
     }
@@ -61,8 +65,8 @@ public class GuildScheduledEventActionImpl extends AuditableRestActionImpl<Guild
     {
         super(guild.getJDA(), Route.Guilds.CREATE_SCHEDULED_EVENT.compile(guild.getId()));
         this.guild = guild;
-        this.name = name;
-        this.startTime = Helpers.toOffsetDateTime(startTime);
+        setName(name);
+        setStartTime(startTime);
         Checks.notNull(channel, "Channel");
         if (!channel.getGuild().equals(guild))
         {
@@ -108,6 +112,17 @@ public class GuildScheduledEventActionImpl extends AuditableRestActionImpl<Guild
         return guild;
     }
 
+    @Nonnull
+    @Override
+    public GuildScheduledEventActionImpl setName(@Nullable String name)
+    {
+        Checks.notNull(name, "Name");
+        Checks.notBlank(name, "Name");
+        Checks.notEmpty(name, "Name");
+        Checks.notLonger(name, GuildScheduledEvent.MAX_NAME_LENGTH, "Name");
+        this.name = name;
+        return this;
+    }
 
     @Nonnull
     @Override
@@ -122,6 +137,26 @@ public class GuildScheduledEventActionImpl extends AuditableRestActionImpl<Guild
 
     @Nonnull
     @Override
+    public GuildScheduledEventAction setStartTime(@Nonnull TemporalAccessor startTime)
+    {
+        Checks.notNull(startTime, "Start Time");
+        Checks.check(Helpers.toOffsetDateTime(startTime).isAfter(OffsetDateTime.now()), "Cannot schedule event in the past!");
+        this.startTime = Helpers.toOffsetDateTime(startTime);
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    public GuildScheduledEventAction setEndTime(@Nullable TemporalAccessor endTime)
+    {
+        Checks.notNull(endTime, "End Time");
+        Checks.check(Helpers.toOffsetDateTime(endTime).isAfter(startTime), "Cannot schedule event to end before its starting!");
+        this.endTime = Helpers.toOffsetDateTime(endTime);
+        return this;
+    }
+
+    @Nonnull
+    @Override
     public GuildScheduledEventAction setImage(@Nullable Icon icon)
     {
         this.image = icon;
@@ -131,7 +166,6 @@ public class GuildScheduledEventActionImpl extends AuditableRestActionImpl<Guild
     @Override
     protected RequestBody finalizeData()
     {
-        preChecks();
         DataObject object = DataObject.empty();
         object.put("entity_type", entityType);
         object.put("privacy_level", 2);
@@ -160,27 +194,6 @@ public class GuildScheduledEventActionImpl extends AuditableRestActionImpl<Guild
 
         return getRequestBody(object);
     }
-
-    private void preChecks()
-    {
-        Checks.notNull(name, "Name");
-        Checks.notBlank(name, "Name");
-        Checks.notEmpty(name, "Name");
-        Checks.notLonger(name, GuildScheduledEvent.MAX_NAME_LENGTH, "Name");
-        Checks.notNull(startTime, "Start Time");
-        Checks.check(startTime.isAfter(OffsetDateTime.now()), "Cannot schedule event in the past!");
-
-        if (entityType == GuildScheduledEvent.Type.EXTERNAL) {
-            Checks.notNull(location, "Location");
-            Checks.notBlank(location, "Location");
-            Checks.notEmpty(location, "Location");
-            Checks.notLonger(location, GuildScheduledEvent.MAX_LOCATION_LENGTH, "Location");
-            Checks.notNull(endTime, "End Time");
-            Checks.check((endTime).isAfter(startTime), "Cannot schedule event to end before starting!");
-        }
-
-    }
-
 
     @Override
     protected void handleSuccess(Response response, Request<GuildScheduledEvent> request)
