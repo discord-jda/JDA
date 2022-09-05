@@ -9,9 +9,9 @@ Based on the current `master` changes!
 
 1. Adding a new Method or Class
     - If your addition is not internal (e.g. an impl class or private method) you have to write documentation.
-        - For that please follow the [JavaDoc template](https://github.com/DV8FromTheWorld/JDA/wiki/6%29-JDA-Structure-Guide#javadoc)
-    - Keep your code consistent! [example](https://github.com/DV8FromTheWorld/JDA/wiki/5%29-contributing#examples)
-        - Follow the guides provided at [JDA Structure Guide](https://github.com/DV8FromTheWorld/JDA/wiki/6%29-JDA-Structure-Guide)
+        - For that please follow the [JavaDoc template](https://jda.wiki/contributing/structure-guide/#javadoc)
+    - Keep your code consistent! [example](https://jda.wiki/contributing/contributing/#making-changes)
+        - Follow the guides provided at [JDA Structure Guide](https://jda.wiki/contributing/structure-guide/)
         - Compare your code style to the one used all over JDA and ensure you
           do not break the consistency (if you find issues in the JDA style you can include and update it)
     - Do not remove existing functionality, use deprecation instead (for reference [deprecation policy](https://github.com/DV8FromTheWorld/JDA#deprecation-policy))
@@ -27,7 +27,7 @@ Based on the current `master` changes!
       or [Keeping a Fork Updated](https://robots.thoughtbot.com/keeping-a-github-fork-updated))
       
 4. Only open Pull Requests to master
-    - Look at the [Repository Structure](https://github.com/DV8FromTheWorld/JDA/wiki/11%29-Repository-Structure) for further details
+    - Look at the [Repository Structure](https://jda.wiki/contributing/repository-structure/) for further details
       
-For more information please consult the [Contributing](https://github.com/DV8FromTheWorld/JDA/wiki/5%29-Contributing)
+For more information please consult the [Contributing](https://jda.wiki/contributing/contributing/)
 section of our wiki.
