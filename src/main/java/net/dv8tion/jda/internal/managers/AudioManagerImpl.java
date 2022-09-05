@@ -57,7 +57,6 @@ public class AudioManagerImpl implements AudioManager
     protected boolean selfDeafened = false;
 
     protected long timeout = DEFAULT_CONNECTION_TIMEOUT;
-    protected int speakingDelay = 0;
 
     public AudioManagerImpl(GuildImpl guild)
     {
@@ -157,11 +156,9 @@ public class AudioManagerImpl implements AudioManager
     }
 
     @Override
+    @Deprecated
     public void setSpeakingDelay(int millis)
     {
-        this.speakingDelay = millis;
-        if (audioConnection != null)
-            audioConnection.setSpeakingDelay(millis);
     }
 
     @Nonnull
@@ -320,7 +317,6 @@ public class AudioManagerImpl implements AudioManager
         audioConnection.setReceivingHandler(receiveHandler);
         audioConnection.setQueueTimeout(queueTimeout);
         audioConnection.setSpeakingMode(speakingModes);
-        audioConnection.setSpeakingDelay(speakingDelay);
     }
 
     public void setConnectedChannel(AudioChannel channel)

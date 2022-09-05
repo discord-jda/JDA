@@ -77,53 +77,34 @@ public interface IPacketProvider
 
     /**
      * Used to retrieve an audio packet to send to Discord. The packet provided is already converted to Opus and
-     * encrypted, and as such is completely ready to be sent to Discord. The {@code changeTalking} parameter is used
-     * to control whether or not the talking indicator should be changed if the
-     * {@link net.dv8tion.jda.api.audio.AudioSendHandler AudioSendHandler} cannot provide an audio packet.
-     * <br>The {@link java.nio.ByteBuffer#position()} will be positioned on the start of the packet to send
+     * encrypted, and as such is completely ready to be sent to Discord.
+     *
+     * <p>The {@link java.nio.ByteBuffer#position()} will be positioned on the start of the packet to send
      * and the {@link java.nio.ByteBuffer#limit()} at the end of it. Use {@link java.nio.ByteBuffer#remaining()}
      * to check the length of the packet.
      *
-     * <p>Use case for this parameter would be front-loading or queuing many audio packets ahead of send time, and if the AudioSendHandler
-     * did not have enough to fill the entire queue, you would have {@code changeTalking} set to {@code false} until the queue
-     * was empty. At that point, you would switch to {@code true} when requesting a new packet due to the fact that if
-     * one was not available, the developer would not have a packet to send, thus the logged in account is no longer "talking".
-     *
      * <p><b>Note:</b> When the AudioSendHandler cannot or does not provide a new packet to send, this method will return null.
      *
-     * <p><u>The buffer used here may be used again on the next call to this getter, if you plan on storing the data copy it.
+     * <p><u>The buffer used here may be used again on the next call to this getter, if you plan on storing the data, copy it.
      * The buffer was created using {@link ByteBuffer#allocate(int)} and is not direct.</u>
-     *
-     * @param  changeTalking
-     *         Whether or not to change the talking indicator if the AudioSendHandler cannot provide a new audio packet.
      *
      * @return Possibly-null {@link ByteBuffer} containing an encoded and encrypted packet
      *         of audio data ready to be sent to discord.
      */
     @Nullable
-    ByteBuffer getNextPacketRaw(boolean changeTalking);
+    ByteBuffer getNextPacketRaw(boolean unused);
 
     /**
      * Used to retrieve an audio packet to send to Discord. The packet provided is already converted to Opus and
-     * encrypted, and as such is completely ready to be sent to Discord. The {@code changeTalking} parameter is used
-     * to control whether or not the talking indicator should be changed if the
-     * {@link net.dv8tion.jda.api.audio.AudioSendHandler AudioSendHandler} cannot provide an audio packet.
-     *
-     * <p>Use case for this parameter would be front-loading or queuing many audio packets ahead of send time, and if the AudioSendHandler
-     * did not have enough to fill the entire queue, you would have {@code changeTalking} set to {@code false} until the queue
-     * was empty. At that point, you would switch to {@code true} when requesting a new packet due to the fact that if
-     * one was not available, the developer would not have a packet to send, thus the logged in account is no longer "talking".
+     * encrypted, and as such is completely ready to be sent to Discord.
      *
      * <p><b>Note:</b> When the AudioSendHandler cannot or does not provide a new packet to send, this method will return null.
-     *
-     * @param  changeTalking
-     *         Whether or not to change the talking indicator if the AudioSendHandler cannot provide a new audio packet.
      *
      * @return Possibly-null {@link java.net.DatagramPacket DatagramPacket} containing an encoded and encrypted packet
      *         of audio data ready to be sent to discord.
      */
     @Nullable
-    DatagramPacket getNextPacket(boolean changeTalking);
+    DatagramPacket getNextPacket(boolean unused);
 
     /**
      * This method is used to indicate a connection error to JDA so that the connection can be properly shutdown.
