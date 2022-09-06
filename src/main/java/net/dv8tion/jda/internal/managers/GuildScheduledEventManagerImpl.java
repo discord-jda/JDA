@@ -211,7 +211,8 @@ public class GuildScheduledEventManagerImpl extends ManagerBase<GuildScheduledEv
 
         if (shouldUpdate(LOCATION))
         {
-            Checks.check((endTime).isAfter(startTime), "Cannot schedule event to end before starting!");
+            if (entityType == GuildScheduledEvent.Type.EXTERNAL)
+                Checks.check((endTime).isAfter(startTime), "Cannot schedule event to end before starting!");
             Checks.check(getGuildScheduledEvent().getStatus() == GuildScheduledEvent.Status.SCHEDULED, "Cannot update location of non-scheduled event.");
             if (entityType == GuildScheduledEvent.Type.EXTERNAL && endTime == null && getGuildScheduledEvent().getEndTime() == null)
                 throw new IllegalStateException("Missing required parameter: End Time");
