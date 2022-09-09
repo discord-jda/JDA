@@ -19,6 +19,8 @@ package net.dv8tion.jda.api.interactions.callbacks;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.interactions.InteractionHook;
+import net.dv8tion.jda.api.interactions.components.ActionRow;
+import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction;
 import net.dv8tion.jda.api.utils.FileUpload;
@@ -30,7 +32,10 @@ import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import java.io.File;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Interactions which allow message replies in the channel they were used in.
@@ -209,65 +214,62 @@ public interface IReplyCallback extends IDeferrableCallback
         return deferReply().addEmbeds(embed).addEmbeds(embeds);
     }
 
-//    /**
-//     * Reply to this interaction and acknowledge it.
-//     * <br>This will send a reply message for this interaction.
-//     * You can use {@link ReplyAction#setEphemeral(boolean) setEphemeral(true)} to only let the target user see the message.
-//     * Replies are non-ephemeral by default.
-//     *
-//     * <p><b>You only have 3 seconds to acknowledge an interaction!</b>
-//     * <br>When the acknowledgement is sent after the interaction expired, you will receive {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_INTERACTION ErrorResponse.UNKNOWN_INTERACTION}.
-//     * <p>If your handling can take longer than 3 seconds, due to various rate limits or other conditions, you should use {@link #deferReply()} instead.
-//     *
-//     * @param  components
-//     *         The {@link LayoutComponent LayoutComponents} to send, such as {@link ActionRow}
-//     *
-//     * @throws IllegalArgumentException
-//     *         If null is provided
-//     *
-//     * @return {@link ReplyAction}
-//     */
-//    @Nonnull
-//    @CheckReturnValue
-//    default ReplyAction replyComponents(@Nonnull Collection<? extends LayoutComponent> components)
-//    {
-//        if (components.stream().anyMatch(it -> !(it instanceof ActionRow)))
-//            throw new UnsupportedOperationException("Only ActionRow layouts are currently supported.");
-//        List<ActionRow> rows = components.stream()
-//                .map(ActionRow.class::cast)
-//                .collect(Collectors.toList());
-//        return deferReply().addActionRows(rows);
-//    }
-//
-//    /**
-//     * Reply to this interaction and acknowledge it.
-//     * <br>This will send a reply message for this interaction.
-//     * You can use {@link ReplyAction#setEphemeral(boolean) setEphemeral(true)} to only let the target user see the message.
-//     * Replies are non-ephemeral by default.
-//     *
-//     * <p><b>You only have 3 seconds to acknowledge an interaction!</b>
-//     * <br>When the acknowledgement is sent after the interaction expired, you will receive {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_INTERACTION ErrorResponse.UNKNOWN_INTERACTION}.
-//     * <p>If your handling can take longer than 3 seconds, due to various rate limits or other conditions, you should use {@link #deferReply()} instead.
-//     *
-//     * @param  components
-//     *         The {@link LayoutComponent LayoutComponents} to send, such as {@link ActionRow}
-//     *
-//     * @throws IllegalArgumentException
-//     *         If null is provided
-//     *
-//     * @return {@link ReplyAction}
-//     */
-//    @Nonnull
-//    @CheckReturnValue
-//    default ReplyAction replyComponents(@Nonnull LayoutComponent component, @Nonnull LayoutComponent... components)
-//    {
-//        Checks.notNull(component, "LayoutComponents");
-//        Checks.noneNull(components, "LayoutComponents");
-//        List<LayoutComponent> layouts = new ArrayList<>();
-//        layouts.add(component);
-//        Collections.addAll(layouts, components);
-//        return replyComponents(layouts);
-//    }
+    /**
+     * Reply to this interaction and acknowledge it.
+     * <br>This will send a reply message for this interaction.
+     * You can use {@link ReplyCallbackAction#setEphemeral(boolean) setEphemeral(true)} to only let the target user see the message.
+     * Replies are non-ephemeral by default.
+     *
+     * <p><b>You only have 3 seconds to acknowledge an interaction!</b>
+     * <br>When the acknowledgement is sent after the interaction expired, you will receive {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_INTERACTION ErrorResponse.UNKNOWN_INTERACTION}.
+     * <p>If your handling can take longer than 3 seconds, due to various rate limits or other conditions, you should use {@link #deferReply()} instead.
+     *
+     * @param  components
+     *         The {@link LayoutComponent LayoutComponents} to send, such as {@link ActionRow}
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided or more than {@value Message#MAX_COMPONENT_COUNT} component layouts are provided
+     *
+     * @return {@link ReplyCallbackAction}
+     */
+    @Nonnull
+    @CheckReturnValue
+    default ReplyCallbackAction replyComponents(@Nonnull Collection<? extends LayoutComponent> components)
+    {
+        return deferReply().setComponents(components);
+    }
+
+    /**
+     * Reply to this interaction and acknowledge it.
+     * <br>This will send a reply message for this interaction.
+     * You can use {@link ReplyCallbackAction#setEphemeral(boolean) setEphemeral(true)} to only let the target user see the message.
+     * Replies are non-ephemeral by default.
+     *
+     * <p><b>You only have 3 seconds to acknowledge an interaction!</b>
+     * <br>When the acknowledgement is sent after the interaction expired, you will receive {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_INTERACTION ErrorResponse.UNKNOWN_INTERACTION}.
+     * <p>If your handling can take longer than 3 seconds, due to various rate limits or other conditions, you should use {@link #deferReply()} instead.
+     *
+     * @param  component
+     *         The {@link LayoutComponent} to send
+     * @param  other
+     *         Any addition {@link LayoutComponent LayoutComponents} to send
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided or more than {@value Message#MAX_COMPONENT_COUNT} component layouts are provided
+     *
+     * @return {@link ReplyCallbackAction}
+     */
+    @Nonnull
+    @CheckReturnValue
+    default ReplyCallbackAction replyComponents(@Nonnull LayoutComponent component, @Nonnull LayoutComponent... other)
+    {
+        Checks.notNull(component, "LayoutComponents");
+        Checks.noneNull(other, "LayoutComponents");
+        List<LayoutComponent> layouts = new ArrayList<>(1 + other.length);
+        layouts.add(component);
+        Collections.addAll(layouts, other);
+        return replyComponents(layouts);
+    }
 
     /**
      * Reply to this interaction and acknowledge it.

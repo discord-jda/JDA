@@ -33,6 +33,7 @@ import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.WebhookMessageCreateActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.WebhookMessageEditActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import java.util.Collection;
@@ -67,6 +68,13 @@ public abstract class AbstractWebhookClient<T> implements WebhookClient<T>
     public WebhookMessageCreateAction<T> sendMessageEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
     {
         return sendRequest().addEmbeds(embeds);
+    }
+
+    @Nonnull
+    @Override
+    public WebhookMessageCreateAction<T> sendMessageComponents(@NotNull Collection<? extends LayoutComponent> components)
+    {
+        return sendRequest().setComponents(components);
     }
 
     @Nonnull
