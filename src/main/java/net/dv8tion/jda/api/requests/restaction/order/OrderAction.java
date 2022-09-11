@@ -123,7 +123,7 @@ public interface OrderAction<T, M extends OrderAction<T, M>> extends RestAction<
      * The entity which is currently at the {@link #getSelectedPosition() selected position}
      *
      * @throws java.lang.IllegalStateException
-     *         If no entity has been selected yet
+     *         If no entity has been selected yet, use {@link #selectPosition(Object)}
      *
      * @return The currently selected entity
      */
@@ -138,7 +138,7 @@ public interface OrderAction<T, M extends OrderAction<T, M>> extends RestAction<
      *         The amount of positions that should be moved
      *
      * @throws java.lang.IllegalStateException
-     *         If no entity has been selected yet
+     *         If no entity has been selected yet, use {@link #selectPosition(Object)}
      * @throws java.lang.IllegalArgumentException
      *         If the specified amount would cause the entity to go out-of-bounds
      *
@@ -157,7 +157,7 @@ public interface OrderAction<T, M extends OrderAction<T, M>> extends RestAction<
      *         The amount of positions that should be moved
      *
      * @throws java.lang.IllegalStateException
-     *         If no entity has been selected yet
+     *         If no entity has been selected yet, use {@link #selectPosition(Object)}
      * @throws java.lang.IllegalArgumentException
      *         If the specified amount would cause the entity to go out-of-bounds
      *
@@ -177,7 +177,7 @@ public interface OrderAction<T, M extends OrderAction<T, M>> extends RestAction<
      *         The new not-negative position for the currently selected entity
      *
      * @throws java.lang.IllegalStateException
-     *         If no entity has been selected yet
+     *         If no entity has been selected yet, use {@link #selectPosition(Object)}
      * @throws java.lang.IllegalArgumentException
      *         If the specified position is out-of-bounds
      *
@@ -185,9 +185,51 @@ public interface OrderAction<T, M extends OrderAction<T, M>> extends RestAction<
      *
      * @see    #moveDown(int)
      * @see    #moveUp(int)
+     * @see    #moveBelow(Object)
+     * @see    #moveAbove(Object)
      */
     @Nonnull
     M moveTo(int position);
+
+    /**
+     * Moves the currently selected entity below the specified target entity.
+     *
+     * @param  other
+     *         The reference entity that should end up above the selected entity
+     *
+     * @throws IllegalStateException
+     *         If no entity has been selected yet, use {@link #selectPosition(Object)}
+     * @throws IllegalArgumentException
+     *         If the specified target entity is not managed by this instance or null
+     *
+     * @return The current OrderAction sub-implementation instance
+     *
+     * @see    #moveUp(int)
+     * @see    #moveDown(int)
+     * @see    #moveAbove(Object)
+     */
+    @Nonnull
+    M moveBelow(@Nonnull T other);
+
+    /**
+     * Moves the currently selected entity above the specified target entity.
+     *
+     * @param  other
+     *         The reference entity that should end up below the selected entity
+     *
+     * @throws IllegalStateException
+     *         If no entity has been selected yet, use {@link #selectPosition(Object)}
+     * @throws IllegalArgumentException
+     *         If the specified target entity is not managed by this instance or null
+     *
+     * @return The current OrderAction sub-implementation instance
+     *
+     * @see    #moveUp(int)
+     * @see    #moveDown(int)
+     * @see    #moveBelow(Object)
+     */
+    @Nonnull
+    M moveAbove(@Nonnull T other);
 
     /**
      * Swaps the currently selected entity with the entity located
@@ -197,7 +239,7 @@ public interface OrderAction<T, M extends OrderAction<T, M>> extends RestAction<
      *         0 based index of target position
      *
      * @throws java.lang.IllegalStateException
-     *         If no entity has been selected yet
+     *         If no entity has been selected yet, use {@link #selectPosition(Object)}
      * @throws java.lang.IllegalArgumentException
      *         If the specified position is out-of-bounds
      *
@@ -214,7 +256,7 @@ public interface OrderAction<T, M extends OrderAction<T, M>> extends RestAction<
      *         Target entity to switch positions with
      *
      * @throws java.lang.IllegalStateException
-     *         If no entity has been selected yet
+     *         If no entity has been selected yet, use {@link #selectPosition(Object)}
      * @throws java.lang.IllegalArgumentException
      *         If the specified position is out-of-bounds,
      *         or if the target entity is {@code null} or not

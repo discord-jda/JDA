@@ -16,11 +16,14 @@
 
 package net.dv8tion.jda.api.requests.restaction.order;
 
+import net.dv8tion.jda.api.entities.Category;
 import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.GuildChannel;
 
+import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.EnumSet;
 
 /**
@@ -70,5 +73,47 @@ public interface ChannelOrderAction extends OrderAction<GuildChannel, ChannelOrd
     default EnumSet<ChannelType> getChannelTypes()
     {
         return ChannelType.fromSortBucket(getSortBucket());
+    }
+
+    /**
+     * Set the parent category for the currently selected channel.
+     *
+     * @param  category
+     *         The new parent category, or null to not have any category
+     * @param  syncPermissions
+     *         Whether to sync the permissions of the channel to the new category
+     *
+     * @throws IllegalStateException
+     *         If no entity has been selected yet, use {@link #selectPosition(Object)}
+     * @throws IllegalArgumentException
+     *         If the provided category is not in the same guild as the channel
+     *
+     * @return The current ChannelOrderAction
+     */
+    @Nonnull
+    @CheckReturnValue
+    ChannelOrderAction setCategory(@Nullable Category category, boolean syncPermissions);
+
+    /**
+     * Set the parent category for the currently selected channel.
+     *
+     * <p>By default, this will not sync the permissions with the new category.
+     * You can use {@link #setCategory(Category, boolean)} to sync permissions.
+     *
+     * @param  category
+     *         The new parent category, or null to not have any category
+     *
+     * @throws IllegalStateException
+     *         If no entity has been selected yet, use {@link #selectPosition(Object)}
+     * @throws IllegalArgumentException
+     *         If the provided category is not in the same guild as the channel
+     *
+     * @return The current ChannelOrderAction
+     */
+    @Nonnull
+    @CheckReturnValue
+    default ChannelOrderAction setCategory(@Nullable Category category)
+    {
+        return setCategory(category, false);
     }
 }
