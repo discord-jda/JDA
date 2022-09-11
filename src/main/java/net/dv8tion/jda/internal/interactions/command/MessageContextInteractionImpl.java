@@ -27,29 +27,30 @@ public class MessageContextInteractionImpl extends ContextInteractionImpl<Messag
 {
     public MessageContextInteractionImpl(JDAImpl jda, DataObject data)
     {
-        super(jda, data, resolved -> parse(jda, data, resolved));
+        super(jda, data);
+    }
+
+    @Override
+    protected Message parse(DataObject interaction, DataObject resolved)
+    {
+        DataObject messages = resolved.getObject("messages");
+        DataObject message = messages.getObject(messages.keys().iterator().next());
+
+        Guild guild = null;
+        if (!interaction.isNull("guild_id"))
+        {
+            long guildId = interaction.getUnsignedLong("guild_id");
+            guild = api.getGuildById(guildId);
+            if (guild == null)
+                throw new IllegalStateException("Cannot find guild for resolved message object.");
+        }
+
+        return api.getEntityBuilder().createMessageWithLookup(message, guild, false);
     }
 
     @Override
     public MessageChannelUnion getChannel()
     {
         return (MessageChannelUnion) super.getChannel();
-    }
-
-    private static Message parse(JDAImpl api, DataObject interactionData, DataObject resolved)
-    {
-        DataObject messages = resolved.getObject("messages");
-        DataObject message = messages.getObject(messages.keys().iterator().next());
-
-        //Hopefully in the future we can ask 'message.hasKey("guild_id")' instead.
-        Guild guild = null;
-        if (!interactionData.isNull("guild_id"))
-        {
-            long guildId = interactionData.getUnsignedLong("guild_id");
-            guild = api.getGuildById(guildId);
-            if (guild == null)
-                throw new IllegalStateException("Cannot find guild for resolved message object.");
-        }
-        return api.getEntityBuilder().createMessageWithLookup(message, guild, false);
     }
 }
