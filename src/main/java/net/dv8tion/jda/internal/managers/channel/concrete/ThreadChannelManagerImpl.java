@@ -16,14 +16,30 @@
 
 package net.dv8tion.jda.internal.managers.channel.concrete;
 
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.ThreadChannel;
+import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.channel.concrete.ThreadChannelManager;
 import net.dv8tion.jda.internal.managers.channel.ChannelManagerImpl;
+import net.dv8tion.jda.internal.utils.Checks;
 
 public class ThreadChannelManagerImpl extends ChannelManagerImpl<ThreadChannel, ThreadChannelManager> implements ThreadChannelManager
 {
     public ThreadChannelManagerImpl(ThreadChannel channel)
     {
         super(channel);
+    }
+
+    @Override
+    protected boolean checkPermissions()
+    {
+        final Member selfMember = getGuild().getSelfMember();
+
+        Checks.checkAccess(selfMember, channel);
+        if (!channel.isOwner() && !selfMember.hasPermission(channel, Permission.MANAGE_THREADS))
+            throw new InsufficientPermissionException(channel, Permission.MANAGE_THREADS);
+
+        return super.checkPermissions();
     }
 }
