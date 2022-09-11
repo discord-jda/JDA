@@ -607,6 +607,7 @@ public interface Command extends ISnowflake
         private final List<Choice> choices;
         private Number minValue;
         private Number maxValue;
+        private Integer minLength, maxLength;
 
         public Option(@Nonnull DataObject json)
         {
@@ -627,6 +628,10 @@ public interface Command extends ISnowflake
                 this.minValue = json.getDouble("min_value");
             if (!json.isNull("max_value"))
                 this.maxValue = json.getDouble("max_value");
+            if (!json.isNull("min_length"))
+                this.minLength = json.getInt("min_length");
+            if (!json.isNull("max_length"))
+                this.maxLength = json.getInt("max_length");
         }
 
         /**
@@ -753,6 +758,32 @@ public interface Command extends ISnowflake
         }
 
         /**
+         * The minimum length for strings which can be provided for this option.
+         * <br>This returns {@code null} if the value is not set or if the option
+         * is not of type {@link OptionType#STRING STRING}.
+         *
+         * @return The minimum length for strings for this option or {@code null}
+         */
+        @Nullable
+        public Integer getMinLength()
+        {
+            return minLength;
+        }
+
+        /**
+         * The maximum length for strings which can be provided for this option.
+         * <br>This returns {@code null} if the value is not set or if the option
+         * is not of type {@link OptionType#STRING STRING}.
+         *
+         * @return The maximum length for strings for this option or {@code null}
+         */
+        @Nullable
+        public Integer getMaxLength()
+        {
+            return maxLength;
+        }
+
+        /**
          * The predefined choices available for this option.
          * <br>If no choices are defined, this returns an empty list.
          *
@@ -767,7 +798,7 @@ public interface Command extends ISnowflake
         @Override
         public int hashCode()
         {
-            return Objects.hash(name, description, type, choices, channelTypes, minValue, maxValue, required, autoComplete);
+            return Objects.hash(name, description, type, choices, channelTypes, minValue, maxValue, minLength, maxLength, required, autoComplete);
         }
 
         @Override
@@ -782,6 +813,8 @@ public interface Command extends ISnowflake
                 && Objects.equals(other.channelTypes, channelTypes)
                 && Objects.equals(other.minValue, minValue)
                 && Objects.equals(other.maxValue, maxValue)
+                && Objects.equals(other.minLength, minLength)
+                && Objects.equals(other.maxLength, maxLength)
                 && other.required == required
                 && other.autoComplete == autoComplete
                 && other.type == type;
