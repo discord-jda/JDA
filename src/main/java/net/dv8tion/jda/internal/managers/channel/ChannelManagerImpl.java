@@ -26,6 +26,7 @@ import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.channel.ChannelManager;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.entities.mixin.channel.attribute.IPermissionContainerMixin;
+import net.dv8tion.jda.internal.entities.mixin.channel.middleman.GuildChannelMixin;
 import net.dv8tion.jda.internal.managers.ManagerBase;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.PermOverrideData;
@@ -571,8 +572,7 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
         final Member selfMember = getGuild().getSelfMember();
 
         Checks.checkAccess(selfMember, channel);
-        if (!selfMember.hasPermission(channel, Permission.MANAGE_CHANNEL))
-            throw new InsufficientPermissionException(channel, Permission.MANAGE_CHANNEL);
+        ((GuildChannelMixin<?>) channel).checkCanManage();
 
         return super.checkPermissions();
     }

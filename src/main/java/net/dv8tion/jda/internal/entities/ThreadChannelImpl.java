@@ -280,6 +280,15 @@ public class ThreadChannelImpl extends AbstractGuildChannelImpl<ThreadChannelImp
         return new ThreadChannelManagerImpl(this);
     }
 
+    @Override
+    public void checkCanManage()
+    {
+        if (isOwner())
+            return;
+
+        checkPermission(Permission.MANAGE_THREADS);
+    }
+
     public CacheView.SimpleCacheView<ThreadMember> getThreadMemberView()
     {
         return threadMembers;
