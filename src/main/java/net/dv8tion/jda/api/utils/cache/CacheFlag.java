@@ -16,13 +16,17 @@
 
 package net.dv8tion.jda.api.utils.cache;
 
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.requests.GatewayIntent;
+import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Collection;
 import java.util.EnumSet;
 
 /**
@@ -78,7 +82,19 @@ public enum CacheFlag
      *
      * @since 4.3.0
      */
-    ONLINE_STATUS(GatewayIntent.GUILD_PRESENCES)
+    ONLINE_STATUS(GatewayIntent.GUILD_PRESENCES),
+    /** Enables cache for {@link JDA#getVoiceChannelCache()} */
+    CHANNELS_VOICE(null),
+    /** Enables cache for {@link JDA#getStageChannelCache()} */
+    CHANNELS_STAGE(null),
+    /** Enables cache for {@link JDA#getTextChannelCache()} */
+    CHANNELS_TEXT(null),
+    /** Enables cache for {@link JDA#getNewsChannelCache()} */
+    CHANNELS_NEWS(null),
+    /** Enables cache for {@link JDA#getThreadChannelCache()} */
+    CHANNELS_THREAD(null),
+    /** Enables cache for {@link JDA#getCategoryCache()} */
+    CHANNELS_CATEGORY(null)
     ;
 
     private static final EnumSet<CacheFlag> privileged = EnumSet.of(ACTIVITY, CLIENT_STATUS, ONLINE_STATUS);
@@ -124,5 +140,72 @@ public enum CacheFlag
     public static EnumSet<CacheFlag> getPrivileged()
     {
         return EnumSet.copyOf(privileged);
+    }
+
+    /**
+     * Converts the provided {@link ChannelType ChannelTypes} to the respective ConfigFlags.
+     *
+     * @param  types
+     *         The channel types
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided
+     *
+     * @return {@link EnumSet} of the cache flags
+     */
+    @Nonnull
+    public static EnumSet<CacheFlag> fromChannels(@Nonnull ChannelType... types)
+    {
+        Checks.noneNull(types, "ChannelType");
+        if (types.length == 0)
+            return EnumSet.noneOf(CacheFlag.class);
+
+        EnumSet<CacheFlag> enabled = EnumSet.noneOf(CacheFlag.class);
+        for (ChannelType type : types)
+        {
+            switch (type)
+            {
+                case TEXT: enabled.add(CHANNELS_TEXT); break;
+                case VOICE: enabled.add(CHANNELS_VOICE); break;
+                case STAGE: enabled.add(CHANNELS_STAGE); break;
+                case NEWS: enabled.add(CHANNELS_NEWS); break;
+                case CATEGORY: enabled.add(CHANNELS_CATEGORY); break;
+                case GUILD_NEWS_THREAD:
+                case GUILD_PUBLIC_THREAD:
+                case GUILD_PRIVATE_THREAD:
+                    enabled.add(CHANNELS_THREAD);
+                    break;
+            }
+        }
+        return enabled;
+    }
+
+    /**
+     * Converts the provided {@link ChannelType ChannelTypes} to the respective ConfigFlags.
+     *
+     * @param  types
+     *         The channel types
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided
+     *
+     * @return {@link EnumSet} of the cache flags
+     */
+    @Nonnull
+    public static EnumSet<CacheFlag> fromChannels(@Nonnull Collection<ChannelType> types)
+    {
+        Checks.noneNull(types, "ChannelType");
+        return fromChannels(types.toArray(new ChannelType[0]));
+    }
+
+    /**
+     * Shortcut for {@code fromChannels(ChannelType.values())}.
+     *
+     * @return All channel related cache flags as {@link EnumSet}
+     */
+    @Nonnull
+    public static EnumSet<CacheFlag> channels()
+    {
+        return fromChannels(ChannelType.values());
     }
 }

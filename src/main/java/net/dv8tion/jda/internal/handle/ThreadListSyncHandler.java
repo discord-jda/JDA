@@ -44,6 +44,9 @@ public class ThreadListSyncHandler extends SocketHandler
             DataObject threadJson = threadsArrayJson.getObject(i);
             ThreadChannel thread = entityBuilder.createThreadChannel(threadJson, guildId);
 
+            // Thread is null if a cache flag is disabled
+            if (thread == null)
+                continue;
             api.handleEvent(new ThreadRevealedEvent(api, responseNumber, thread));
         }
 

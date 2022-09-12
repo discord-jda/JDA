@@ -41,6 +41,7 @@ import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ThreadChannelImpl extends AbstractGuildChannelImpl<ThreadChannelImpl> implements
         ThreadChannel,
@@ -110,7 +111,10 @@ public class ThreadChannelImpl extends AbstractGuildChannelImpl<ThreadChannelImp
     @Override
     public List<Member> getMembers()
     {
-        return null;
+        return getThreadMembers()
+                .stream()
+                .map(ThreadMember::getMember)
+                .collect(Collectors.toList());
     }
 
     @Nonnull

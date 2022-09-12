@@ -17,6 +17,7 @@
 package net.dv8tion.jda.internal.handle;
 
 import net.dv8tion.jda.api.entities.ThreadMember;
+import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.api.utils.cache.CacheView;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
@@ -41,6 +42,9 @@ public class ThreadMemberUpdateHandler extends SocketHandler
         ThreadChannelImpl thread = (ThreadChannelImpl) getJDA().getThreadChannelById(threadId);
         if (thread == null)
         {
+            // Drop event if cache flag is disabled
+            if (!api.isCacheFlagSet(CacheFlag.CHANNELS_THREAD))
+                return null;
             getJDA().getEventCache().cache(EventCache.Type.CHANNEL, threadId, responseNumber, allContent, this::handle);
             EventCache.LOG.debug("THREAD_MEMBER_UPDATE attempted to update a thread that does not exist. JSON: {}", content);
             return null;

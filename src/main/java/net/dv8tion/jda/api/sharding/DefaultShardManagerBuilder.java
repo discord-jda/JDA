@@ -223,7 +223,7 @@ public class  DefaultShardManagerBuilder
      *     <li>{@link #setEnabledIntents(Collection)} is set to {@link GatewayIntent#DEFAULT}</li>
      *     <li>{@link #setMemberCachePolicy(MemberCachePolicy)} is set to {@link MemberCachePolicy#NONE}</li>
      *     <li>{@link #setChunkingFilter(ChunkingFilter)} is set to {@link ChunkingFilter#NONE}</li>
-     *     <li>This disables all existing {@link CacheFlag CacheFlags}</li>
+     *     <li>Disables all {@link CacheFlag CacheFlags} except {@link CacheFlag#channels()}</li>
      * </ul>
      *
      * @param  token
@@ -248,7 +248,7 @@ public class  DefaultShardManagerBuilder
      * <ul>
      *     <li>{@link #setMemberCachePolicy(MemberCachePolicy)} is set to {@link MemberCachePolicy#NONE}</li>
      *     <li>{@link #setChunkingFilter(ChunkingFilter)} is set to {@link ChunkingFilter#NONE}</li>
-     *     <li>This disables all existing {@link CacheFlag CacheFlags}</li>
+     *     <li>Disables all {@link CacheFlag CacheFlags} except {@link CacheFlag#channels()}</li>
      * </ul>
      *
      * <p>You can omit intents in this method to use {@link GatewayIntent#DEFAULT} and enable additional intents with
@@ -288,7 +288,7 @@ public class  DefaultShardManagerBuilder
      * <ul>
      *     <li>{@link #setMemberCachePolicy(MemberCachePolicy)} is set to {@link MemberCachePolicy#NONE}</li>
      *     <li>{@link #setChunkingFilter(ChunkingFilter)} is set to {@link ChunkingFilter#NONE}</li>
-     *     <li>This disables all existing {@link CacheFlag CacheFlags}</li>
+     *     <li>Disables all {@link CacheFlag CacheFlags} except {@link CacheFlag#channels()}</li>
      * </ul>
      *
      * <p>You can omit intents in this method to use {@link GatewayIntent#DEFAULT} and enable additional intents with
@@ -322,6 +322,7 @@ public class  DefaultShardManagerBuilder
         return this.setMemberCachePolicy(MemberCachePolicy.NONE)
                    .setChunkingFilter(ChunkingFilter.NONE)
                    .disableCache(EnumSet.allOf(CacheFlag.class))
+                   .enableCache(CacheFlag.channels())
                    .setLargeThreshold(50);
     }
 
