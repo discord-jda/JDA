@@ -17,9 +17,9 @@
 package net.dv8tion.jda.api.managers.channel.attribute;
 
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.IPermissionContainer;
 import net.dv8tion.jda.api.entities.IPermissionHolder;
 import net.dv8tion.jda.api.entities.PermissionOverride;
+import net.dv8tion.jda.api.entities.channel.attribute.IPermissionContainer;
 import net.dv8tion.jda.api.managers.channel.ChannelManager;
 
 import javax.annotation.CheckReturnValue;

@@ -17,7 +17,14 @@
 package net.dv8tion.jda.api.interactions;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.ISnowflake;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.channel.Channel;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.interactions.callbacks.*;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.components.Modal;
@@ -149,13 +156,13 @@ public interface Interaction extends ISnowflake
     Channel getChannel();
 
     /**
-     * The {@link GuildChannel} this interaction happened in.
+     * The {@link net.dv8tion.jda.api.entities.channel.middleman.GuildChannel} this interaction happened in.
      * <br>If {@link #getChannelType()} is not a guild type, this throws {@link IllegalStateException}!
      *
      * @throws IllegalStateException
      *         If {@link #getChannel()} is not a guild channel
      *
-     * @return The {@link GuildChannel}
+     * @return The {@link net.dv8tion.jda.api.entities.channel.middleman.GuildChannel}
      */
     @Nonnull
     default GuildChannel getGuildChannel()
@@ -164,13 +171,13 @@ public interface Interaction extends ISnowflake
     }
 
     /**
-     * The {@link MessageChannel} this interaction happened in.
+     * The {@link net.dv8tion.jda.api.entities.channel.middleman.MessageChannel} this interaction happened in.
      * <br>If {@link #getChannelType()} is not a message channel type, this throws {@link IllegalStateException}!
      *
      * @throws IllegalStateException
      *         If {@link #getChannel()} is not a message channel
      *
-     * @return The {@link MessageChannel}
+     * @return The {@link net.dv8tion.jda.api.entities.channel.middleman.MessageChannel}
      */
     @Nonnull
     default MessageChannel getMessageChannel()

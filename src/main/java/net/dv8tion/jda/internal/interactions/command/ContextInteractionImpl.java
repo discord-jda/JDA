@@ -22,19 +22,20 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 
 import javax.annotation.Nonnull;
-import java.util.function.Function;
 
 public abstract class ContextInteractionImpl<T> extends CommandInteractionImpl implements ContextInteraction<T>, CommandInteractionPayloadMixin
 {
     private final T target;
     private final CommandInteractionPayloadImpl payload;
 
-    public ContextInteractionImpl(JDAImpl jda, DataObject data, Function<DataObject, T> entityParser)
+    public ContextInteractionImpl(JDAImpl jda, DataObject data)
     {
         super(jda, data);
         this.payload = new CommandInteractionPayloadImpl(jda, data);
-        this.target = entityParser.apply(data.getObject("data").getObject("resolved"));
+        this.target = parse(data, data.getObject("data").getObject("resolved"));
     }
+
+    protected abstract T parse(DataObject interactionData, DataObject resolved);
 
     @Override
     public CommandInteractionPayload getCommandPayload()

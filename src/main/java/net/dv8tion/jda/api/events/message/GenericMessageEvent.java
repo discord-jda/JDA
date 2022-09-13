@@ -16,7 +16,13 @@
 package net.dv8tion.jda.api.events.message;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.channel.unions.GuildMessageChannelUnion;
 import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.events.Event;
@@ -51,7 +57,7 @@ public abstract class GenericMessageEvent extends Event
     }
 
     /**
-     * The {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel} for this Message
+     * The {@link net.dv8tion.jda.api.entities.channel.middleman.MessageChannel MessageChannel} for this Message
      *
      * @return The MessageChannel
      */
@@ -62,7 +68,7 @@ public abstract class GenericMessageEvent extends Event
     }
 
     /**
-     * The {@link net.dv8tion.jda.api.entities.GuildMessageChannel GuildMessageChannel} for this Message
+     * The {@link net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel GuildMessageChannel} for this Message
      *  if it was sent in a Guild.
      * <br>If this Message was not received from a {@link net.dv8tion.jda.api.entities.Guild Guild},
      * this will throw an {@link java.lang.IllegalStateException}.
@@ -102,7 +108,7 @@ public abstract class GenericMessageEvent extends Event
     }
 
     /**
-     * Indicates whether the message is from the specified {@link net.dv8tion.jda.api.entities.ChannelType ChannelType}
+     * Indicates whether the message is from the specified {@link ChannelType ChannelType}
      *
      * @param  type
      *         The ChannelType
@@ -126,7 +132,7 @@ public abstract class GenericMessageEvent extends Event
     }
 
     /**
-     * The {@link net.dv8tion.jda.api.entities.ChannelType ChannelType} for this message
+     * The {@link ChannelType ChannelType} for this message
      *
      * @return The ChannelType
      */
@@ -138,11 +144,11 @@ public abstract class GenericMessageEvent extends Event
 
     /**
      * The {@link net.dv8tion.jda.api.entities.Guild Guild} the Message was received in.
-     * <br>If this Message was not received in a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel},
+     * <br>If this Message was not received in a {@link TextChannel TextChannel},
      * this will throw an {@link java.lang.IllegalStateException}.
      *
      * @throws java.lang.IllegalStateException
-     *         If this was not sent in a {@link net.dv8tion.jda.api.entities.GuildChannel}.
+     *         If this was not sent in a {@link net.dv8tion.jda.api.entities.channel.middleman.GuildChannel}.
      *
      * @return The Guild the Message was received in
      *
@@ -172,7 +178,7 @@ public abstract class GenericMessageEvent extends Event
     }
 
     /**
-     * If the message event was from a {@link net.dv8tion.jda.api.entities.ThreadChannel ThreadChannel}
+     * If the message event was from a {@link ThreadChannel ThreadChannel}
      *
      * @return If the message event was from a ThreadChannel
      *

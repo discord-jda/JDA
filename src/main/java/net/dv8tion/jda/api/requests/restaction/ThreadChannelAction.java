@@ -16,7 +16,11 @@
 
 package net.dv8tion.jda.api.requests.restaction;
 
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
+import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -30,10 +34,10 @@ import java.util.function.BooleanSupplier;
  * This extension allows setting properties before executing the action.
  *
  * @see    Message#createThreadChannel(String)
- * @see    IThreadContainer#createThreadChannel(String)
- * @see    IThreadContainer#createThreadChannel(String, boolean)
- * @see    IThreadContainer#createThreadChannel(String, long)
- * @see    IThreadContainer#createThreadChannel(String, String)
+ * @see    net.dv8tion.jda.api.entities.channel.attribute.IThreadContainer#createThreadChannel(String)
+ * @see    net.dv8tion.jda.api.entities.channel.attribute.IThreadContainer#createThreadChannel(String, boolean)
+ * @see    net.dv8tion.jda.api.entities.channel.attribute.IThreadContainer#createThreadChannel(String, long)
+ * @see    net.dv8tion.jda.api.entities.channel.attribute.IThreadContainer#createThreadChannel(String, String)
  */
 public interface ThreadChannelAction extends AuditableRestAction<ThreadChannel>
 {

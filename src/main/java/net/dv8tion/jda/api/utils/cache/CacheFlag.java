@@ -63,7 +63,7 @@ public enum CacheFlag
      */
     CLIENT_STATUS(GatewayIntent.GUILD_PRESENCES),
     /**
-     * Enables cache for {@link net.dv8tion.jda.api.entities.IPermissionContainer#getMemberPermissionOverrides()}
+     * Enables cache for {@link net.dv8tion.jda.api.entities.channel.attribute.IPermissionContainer#getMemberPermissionOverrides()}
      */
     MEMBER_OVERRIDES,
     /**

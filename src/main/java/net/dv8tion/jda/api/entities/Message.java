@@ -19,6 +19,10 @@ import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
+import net.dv8tion.jda.api.entities.channel.concrete.*;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.channel.unions.GuildMessageChannelUnion;
 import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.entities.emoji.CustomEmoji;
@@ -71,7 +75,7 @@ import java.util.stream.Collectors;
 
 /**
  * Represents a Text message received from Discord.
- * <br>This represents messages received from {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannels}.
+ * <br>This represents messages received from {@link net.dv8tion.jda.api.entities.channel.middleman.MessageChannel MessageChannels}.
  *
  * <p><b>This type is not updated. JDA does not keep track of changes to messages, it is advised to do this via events such
  * as {@link net.dv8tion.jda.api.events.message.MessageUpdateEvent MessageUpdateEvent} and similar.</b>
@@ -298,7 +302,7 @@ public interface Message extends ISnowflake, Formattable
     /**
      * The {@link Mentions} used in this message.
      *
-     * <p>This includes {@link Member Members}, {@link GuildChannel GuildChannels}, {@link Role Roles}, and {@link CustomEmoji CustomEmojis}.
+     * <p>This includes {@link Member Members}, {@link net.dv8tion.jda.api.entities.channel.middleman.GuildChannel GuildChannels}, {@link Role Roles}, and {@link CustomEmoji CustomEmojis}.
      * Can also be used to check if a message mentions {@code @everyone} or {@code @here}.
      *
      * <p><b>Example</b><br>
@@ -344,7 +348,7 @@ public interface Message extends ISnowflake, Formattable
      * <br>You can check the type of channel this message was sent from using {@link #isFromType(ChannelType)} or {@link #getChannelType()}.
      *
      * <p>Discord does not provide a member object for messages returned by {@link RestAction RestActions} of any kind.
-     * This will return null if the message was retrieved through {@link MessageChannel#retrieveMessageById(long)} or similar means,
+     * This will return null if the message was retrieved through {@link net.dv8tion.jda.api.entities.channel.middleman.MessageChannel#retrieveMessageById(long)} or similar means,
      * unless the member is already cached.
      *
      * @return Message author, or {@code null} if the message was not sent in a GuildMessageChannel, or if the message was sent by a Webhook.
@@ -371,7 +375,7 @@ public interface Message extends ISnowflake, Formattable
      * <p>This includes resolving:
      * <br>{@link User Users} / {@link net.dv8tion.jda.api.entities.Member Members}
      * to their @Username/@Nickname format,
-     * <br>{@link net.dv8tion.jda.api.entities.GuildChannel GuildChannels} to their #ChannelName format,
+     * <br>{@link net.dv8tion.jda.api.entities.channel.middleman.GuildChannel GuildChannels} to their #ChannelName format,
      * <br>{@link net.dv8tion.jda.api.entities.Role Roles} to their @RoleName format
      * <br>{@link CustomEmoji Custom Emojis} (not unicode emojis!) to their {@code :name:} format.
      *
@@ -438,15 +442,15 @@ public interface Message extends ISnowflake, Formattable
     String getNonce();
 
     /**
-     * Used to determine if this Message was received from a {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel}
-     * of the {@link net.dv8tion.jda.api.entities.ChannelType ChannelType} specified.
+     * Used to determine if this Message was received from a {@link MessageChannel}
+     * of the {@link net.dv8tion.jda.api.entities.channel.ChannelType ChannelType} specified.
      *
      * <p>Useful for restricting functionality to a certain type of channels.
      *
      * @param  type
-     *         The {@link net.dv8tion.jda.api.entities.ChannelType ChannelType} to check against.
+     *         The {@link ChannelType ChannelType} to check against.
      *
-     * @return True if the {@link net.dv8tion.jda.api.entities.ChannelType ChannelType} which this message was received
+     * @return True if the {@link net.dv8tion.jda.api.entities.channel.ChannelType ChannelType} which this message was received
      *         from is the same as the one specified by {@code type}.
      */
     boolean isFromType(@Nonnull ChannelType type);
@@ -463,7 +467,7 @@ public interface Message extends ISnowflake, Formattable
     }
 
     /**
-     * Gets the {@link net.dv8tion.jda.api.entities.ChannelType ChannelType} that this message was received from.
+     * Gets the {@link net.dv8tion.jda.api.entities.channel.ChannelType ChannelType} that this message was received from.
      *
      * @return The ChannelType which this message was received from.
      */
@@ -480,7 +484,7 @@ public interface Message extends ISnowflake, Formattable
     boolean isWebhookMessage();
 
     /**
-     * Returns the {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel} that this message was sent in.
+     * Returns the {@link net.dv8tion.jda.api.entities.channel.middleman.MessageChannel MessageChannel} that this message was sent in.
      *
      * @return The MessageChannel of this Message
      */
@@ -488,7 +492,7 @@ public interface Message extends ISnowflake, Formattable
     MessageChannelUnion getChannel();
 
     /**
-     * Returns the {@link net.dv8tion.jda.api.entities.GuildMessageChannel GuildMessageChannel} that this message was sent in
+     * Returns the {@link net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel GuildMessageChannel} that this message was sent in
      *  if it was sent in a Guild.
      *
      * @throws java.lang.IllegalStateException
@@ -500,23 +504,23 @@ public interface Message extends ISnowflake, Formattable
     GuildMessageChannelUnion getGuildChannel();
 
     /**
-     * The {@link net.dv8tion.jda.api.entities.Category Category} this
+     * The {@link Category Category} this
      * message was sent in. This will always be {@code null} for DMs.
-     * <br>Equivalent to {@code getGuildChannel().getParentCategory()} if this was sent in a {@link GuildMessageChannel}.
+     * <br>Equivalent to {@code getGuildChannel().getParentCategory()} if this was sent in a {@link net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel}.
      *
-     * @return {@link net.dv8tion.jda.api.entities.Category Category} for this message
+     * @return {@link net.dv8tion.jda.api.entities.channel.concrete.Category Category} for this message
      */
     @Nullable
     Category getCategory();
 
     /**
      * Returns the {@link net.dv8tion.jda.api.entities.Guild Guild} that this message was sent in.
-     * <br>This is just a shortcut to {@link #getGuildChannel()}{@link net.dv8tion.jda.api.entities.GuildChannel#getGuild() .getGuild()}.
+     * <br>This is just a shortcut to {@link #getGuildChannel()}{@link net.dv8tion.jda.api.entities.channel.middleman.GuildChannel#getGuild() .getGuild()}.
      * <br><b>This is only valid if the Message was actually sent in a GuildMessageChannel.</b>
      * <br>You can check the type of channel this message was sent from using {@link #isFromType(ChannelType)} or {@link #getChannelType()}.
      *
      * @throws java.lang.IllegalStateException
-     *         If this was not sent in a {@link net.dv8tion.jda.api.entities.GuildChannel}.
+     *         If this was not sent in a {@link net.dv8tion.jda.api.entities.channel.middleman.GuildChannel}.
      *
      * @return The Guild this message was sent in
      *
@@ -695,7 +699,7 @@ public interface Message extends ISnowflake, Formattable
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
      *     <br>The request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
      *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
-     *         was revoked in the {@link net.dv8tion.jda.api.entities.GuildMessageChannel GuildMessageChannel}</li>
+     *         was revoked in the {@link net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel GuildMessageChannel}</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
      *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or
@@ -732,7 +736,7 @@ public interface Message extends ISnowflake, Formattable
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
      *     <br>The request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
      *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
-     *         was revoked in the {@link net.dv8tion.jda.api.entities.GuildMessageChannel GuildMessageChannel}</li>
+     *         was revoked in the {@link GuildMessageChannel}</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
      *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or
@@ -770,7 +774,7 @@ public interface Message extends ISnowflake, Formattable
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
      *     <br>The request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
      *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
-     *         was revoked in the {@link net.dv8tion.jda.api.entities.GuildMessageChannel GuildMessageChannel}</li>
+     *         was revoked in the {@link GuildMessageChannel}</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
      *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or
@@ -811,7 +815,7 @@ public interface Message extends ISnowflake, Formattable
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
      *     <br>The request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
      *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
-     *         was revoked in the {@link net.dv8tion.jda.api.entities.GuildMessageChannel GuildMessageChannel}</li>
+     *         was revoked in the {@link GuildMessageChannel}</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
      *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or
@@ -855,7 +859,7 @@ public interface Message extends ISnowflake, Formattable
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
      *     <br>The request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
      *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
-     *         was revoked in the {@link net.dv8tion.jda.api.entities.GuildMessageChannel GuildMessageChannel}</li>
+     *         was revoked in the {@link GuildMessageChannel}</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
      *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or
@@ -895,7 +899,7 @@ public interface Message extends ISnowflake, Formattable
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
      *     <br>The request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
      *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
-     *         was revoked in the {@link net.dv8tion.jda.api.entities.GuildMessageChannel GuildMessageChannel}</li>
+     *         was revoked in the {@link GuildMessageChannel}</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
      *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or
@@ -939,7 +943,7 @@ public interface Message extends ISnowflake, Formattable
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
      *     <br>The request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
      *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
-     *         was revoked in the {@link net.dv8tion.jda.api.entities.GuildMessageChannel GuildMessageChannel}</li>
+     *         was revoked in the {@link GuildMessageChannel}</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
      *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or
@@ -961,7 +965,7 @@ public interface Message extends ISnowflake, Formattable
      * @throws IllegalStateException
      *         If the message is not authored by this bot
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If this is a {@link net.dv8tion.jda.api.entities.GuildMessageChannel GuildMessageChannel} and this account does not have
+     *         If this is a {@link GuildMessageChannel} and this account does not have
      *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
      * @throws java.util.IllegalFormatException
      *         If a format string contains an illegal syntax,
@@ -990,7 +994,7 @@ public interface Message extends ISnowflake, Formattable
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
      *     <br>The request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
      *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
-     *         was revoked in the {@link net.dv8tion.jda.api.entities.GuildMessageChannel GuildMessageChannel}</li>
+     *         was revoked in the {@link GuildMessageChannel}</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
      *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or
@@ -1035,7 +1039,7 @@ public interface Message extends ISnowflake, Formattable
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
      *     <br>The request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
      *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
-     *         was revoked in the {@link net.dv8tion.jda.api.entities.GuildMessageChannel GuildMessageChannel}</li>
+     *         was revoked in the {@link GuildMessageChannel}</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
      *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or
@@ -1241,6 +1245,53 @@ public interface Message extends ISnowflake, Formattable
     }
 
     /**
+     * Shortcut for {@code getChannel().sendMessageComponents(component, other).setMessageReference(this)}.
+     *
+     * @param  component
+     *         The {@link LayoutComponent} to send
+     * @param  other
+     *         Any addition {@link LayoutComponent LayoutComponents} to send
+     *
+     * @throws InsufficientPermissionException
+     *         If {@link MessageChannel#sendMessageComponents(LayoutComponent, LayoutComponent...)} throws
+     * @throws IllegalArgumentException
+     *         If {@link MessageChannel#sendMessageComponents(LayoutComponent, LayoutComponent...)} throws
+     *
+     * @return {@link MessageCreateAction}
+     */
+    @Nonnull
+    @CheckReturnValue
+    default MessageCreateAction replyComponents(@Nonnull LayoutComponent component, @Nonnull LayoutComponent... other)
+    {
+        Checks.notNull(component, "LayoutComponents");
+        Checks.noneNull(other, "LayoutComponents");
+        List<LayoutComponent> components = new ArrayList<>(1 + other.length);
+        components.add(component);
+        Collections.addAll(components, other);
+        return replyComponents(components);
+    }
+
+    /**
+     * Shortcut for {@code getChannel().sendMessageComponents(components).setMessageReference(this)}.
+     *
+     * @param  components
+     *         The {@link LayoutComponent LayoutComponents} to send
+     *
+     * @throws InsufficientPermissionException
+     *         If {@link MessageChannel#sendMessageComponents(Collection)} throws
+     * @throws IllegalArgumentException
+     *         If {@link MessageChannel#sendMessageComponents(Collection)} throws
+     *
+     * @return {@link MessageCreateAction}
+     */
+    @Nonnull
+    @CheckReturnValue
+    default MessageCreateAction replyComponents(@Nonnull Collection<? extends LayoutComponent> components)
+    {
+        return getChannel().sendMessageComponents(components).setMessageReference(this);
+    }
+
+    /**
      * Shortcut for {@code getChannel().sendMessageFormat(format, args).setMessageReference(this)}-
      *
      * @param  format
@@ -1305,23 +1356,23 @@ public interface Message extends ISnowflake, Formattable
     /**
      * Deletes this Message from Discord.
      * <br>If this Message was not sent by the currently logged in account, then this will fail unless the Message is from
-     * a {@link GuildChannel} and the current account has
+     * a {@link net.dv8tion.jda.api.entities.channel.middleman.GuildChannel} and the current account has
      * {@link Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE} in the channel.
      *
-     * <p><u>To delete many messages at once in a {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel}
-     * you should use {@link net.dv8tion.jda.api.entities.MessageChannel#purgeMessages(List) MessageChannel.purgeMessages(List)} instead.</u>
+     * <p><u>To delete many messages at once in a {@link net.dv8tion.jda.api.entities.channel.middleman.MessageChannel MessageChannel}
+     * you should use {@link net.dv8tion.jda.api.entities.channel.middleman.MessageChannel#purgeMessages(List) MessageChannel.purgeMessages(List)} instead.</u>
      *
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>The delete was attempted after the account lost access to the {@link GuildChannel}
+     *     <br>The delete was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.channel.middleman.GuildChannel}
      *         due to {@link Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} being revoked, or the
      *         account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
      *         typically due to being kicked or removed.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The delete was attempted after the account lost {@link Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE} in
-     *         the {@link GuildChannel} when deleting another Member's message
+     *         the {@link net.dv8tion.jda.api.entities.channel.middleman.GuildChannel} when deleting another Member's message
      *         or lost {@link Permission#MESSAGE_MANAGE}.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
@@ -1329,24 +1380,24 @@ public interface Message extends ISnowflake, Formattable
      * </ul>
      *
      * @throws MissingAccessException
-     *         If the currently logged in account does not have {@link Member#hasAccess(GuildChannel) access} in this channel.
+     *         If the currently logged in account does not have {@link Member#hasAccess(net.dv8tion.jda.api.entities.channel.middleman.GuildChannel) access} in this channel.
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If this Message was not sent by the currently logged in account, the Message was sent in a
-     *         {@link GuildChannel GuildChannel}, and the currently logged in account
+     *         {@link net.dv8tion.jda.api.entities.channel.middleman.GuildChannel GuildChannel}, and the currently logged in account
      *         does not have {@link Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE} in
      *         the channel.
      * @throws java.lang.IllegalStateException
      *         <ul>
      *              <li>If this Message was not sent by the currently logged in account and it was <b>not</b> sent in a
-     *              {@link GuildChannel GuildChannel}.</li>
+     *              {@link net.dv8tion.jda.api.entities.channel.middleman.GuildChannel GuildChannel}.</li>
      *              <li>If this Message is ephemeral</li>
      *              <li>If this message type cannot be deleted. (See {@link MessageType#canDelete()})</li>
      *         </ul>
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      *
-     * @see    net.dv8tion.jda.api.entities.TextChannel#deleteMessages(java.util.Collection) TextChannel.deleteMessages(Collection)
-     * @see    net.dv8tion.jda.api.entities.MessageChannel#purgeMessages(java.util.List) MessageChannel.purgeMessages(List)
+     * @see    TextChannel#deleteMessages(java.util.Collection) TextChannel.deleteMessages(Collection)
+     * @see    net.dv8tion.jda.api.entities.channel.middleman.MessageChannel#purgeMessages(java.util.List) MessageChannel.purgeMessages(List)
      */
     @Nonnull
     @CheckReturnValue
@@ -1369,28 +1420,28 @@ public interface Message extends ISnowflake, Formattable
 
     /**
      * Used to add the Message to the {@link #getChannel() MessageChannel's} pinned message list.
-     * <br>This is a shortcut method to {@link MessageChannel#pinMessageById(String)}.
+     * <br>This is a shortcut method to {@link net.dv8tion.jda.api.entities.channel.middleman.MessageChannel#pinMessageById(String)}.
      *
      * <p>The success or failure of this action will not affect the return of {@link #isPinned()}.
      *
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>The pin request was attempted after the account lost access to the {@link GuildChannel}
+     *     <br>The pin request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.channel.middleman.GuildChannel}
      *         due to {@link Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} being revoked, or the
      *         account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
      *         typically due to being kicked or removed.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The pin request was attempted after the account lost {@link Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE} in
-     *         the {@link GuildChannel}.</li>
+     *         the {@link net.dv8tion.jda.api.entities.channel.middleman.GuildChannel}.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
      *     <br>If the message has already been deleted. This might also be triggered for ephemeral messages.</li>
      * </ul>
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If this Message is from a {@link GuildChannel} and:
+     *         If this Message is from a {@link net.dv8tion.jda.api.entities.channel.middleman.GuildChannel} and:
      *         <br><ul>
      *             <li>Missing {@link Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}.
      *             <br>The account needs access the the channel to pin a message in it.</li>
@@ -1408,28 +1459,28 @@ public interface Message extends ISnowflake, Formattable
 
     /**
      * Used to remove the Message from the {@link #getChannel() MessageChannel's} pinned message list.
-     * <br>This is a shortcut method to {@link MessageChannel#unpinMessageById(String)}.
+     * <br>This is a shortcut method to {@link net.dv8tion.jda.api.entities.channel.middleman.MessageChannel#unpinMessageById(String)}.
      *
      * <p>The success or failure of this action will not affect the return of {@link #isPinned()}.
      *
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>The unpin request was attempted after the account lost access to the {@link GuildChannel}
+     *     <br>The unpin request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.channel.middleman.GuildChannel}
      *         due to {@link Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} being revoked, or the
      *         account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
      *         typically due to being kicked or removed.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The unpin request was attempted after the account lost {@link Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE} in
-     *         the {@link GuildChannel}.</li>
+     *         the {@link net.dv8tion.jda.api.entities.channel.middleman.GuildChannel}.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
      *     <br>If the message has already been deleted. This might also be triggered for ephemeral messages.</li>
      * </ul>
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If this Message is from a {@link GuildChannel} and:
+     *         If this Message is from a {@link net.dv8tion.jda.api.entities.channel.middleman.GuildChannel} and:
      *         <br><ul>
      *             <li>Missing {@link Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}.
      *             <br>The account needs access the the channel to pin a message in it.</li>
@@ -1458,7 +1509,7 @@ public interface Message extends ISnowflake, Formattable
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>The reaction request was attempted after the account lost access to the {@link GuildChannel}
+     *     <br>The reaction request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.channel.middleman.GuildChannel}
      *         due to {@link Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} being revoked
      *     <br>Also can happen if the account lost the {@link Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
      *
@@ -1471,7 +1522,7 @@ public interface Message extends ISnowflake, Formattable
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The reaction request was attempted after the account lost {@link Permission#MESSAGE_ADD_REACTION Permission.MESSAGE_ADD_REACTION}
      *         or {@link Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}
-     *         in the {@link GuildChannel} when adding the reaction.</li>
+     *         in the {@link net.dv8tion.jda.api.entities.channel.middleman.GuildChannel} when adding the reaction.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_EMOJI UNKNOWN_EMOJI}
      *     <br>The provided emoji was deleted, doesn't exist, or is not available to the currently logged-in account in this channel.</li>
@@ -1484,7 +1535,7 @@ public interface Message extends ISnowflake, Formattable
      *         The {@link Emoji} to add as a reaction to this Message.
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the MessageChannel this message was sent in was a {@link GuildChannel}
+     *         If the MessageChannel this message was sent in was a {@link net.dv8tion.jda.api.entities.channel.middleman.GuildChannel}
      *         and the logged in account does not have
      *         <ul>
      *             <li>{@link Permission#MESSAGE_ADD_REACTION Permission.MESSAGE_ADD_REACTION}</li>
@@ -1494,7 +1545,7 @@ public interface Message extends ISnowflake, Formattable
      *         <ul>
      *             <li>If the provided {@link Emoji} is null.</li>
      *             <li>If the provided {@link Emoji} is a custom emoji and cannot be used in the current channel.
-     *                 See {@link RichCustomEmoji#canInteract(User, MessageChannel)} or {@link RichCustomEmoji#canInteract(Member)} for more information.</li>
+     *                 See {@link RichCustomEmoji#canInteract(User, net.dv8tion.jda.api.entities.channel.middleman.MessageChannel)} or {@link RichCustomEmoji#canInteract(Member)} for more information.</li>
      *         </ul>
      * @throws IllegalStateException
      *         If this message is ephemeral
@@ -1509,28 +1560,28 @@ public interface Message extends ISnowflake, Formattable
      * Removes all reactions from this Message.
      * <br>This is useful for moderator commands that wish to remove all reactions at once from a specific message.
      *
-     * <p>Please note that you <b>can't</b> clear reactions if this message was sent in a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}!
+     * <p>Please note that you <b>can't</b> clear reactions if this message was sent in a {@link PrivateChannel PrivateChannel}!
      *
      * <p><b>Neither success nor failure of this request will affect this Message's {@link #getReactions()} return as Message is immutable.</b>
      *
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>The clear-reactions request was attempted after the account lost access to the {@link GuildChannel}
+     *     <br>The clear-reactions request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.channel.middleman.GuildChannel}
      *         due to {@link Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} being revoked, or the
      *         account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
      *         typically due to being kicked or removed.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The clear-reactions request was attempted after the account lost {@link Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE}
-     *         in the {@link GuildChannel} when adding the reaction.</li>
+     *         in the {@link net.dv8tion.jda.api.entities.channel.middleman.GuildChannel} when adding the reaction.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
      *     <br>If the message has already been deleted. This might also be triggered for ephemeral messages.</li>
      * </ul>
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the MessageChannel this message was sent in was a {@link GuildChannel}
+     *         If the MessageChannel this message was sent in was a {@link net.dv8tion.jda.api.entities.channel.middleman.GuildChannel}
      *         and the currently logged in account does not have {@link Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE}
      *         in the channel.
      * @throws java.lang.IllegalStateException
@@ -1549,7 +1600,7 @@ public interface Message extends ISnowflake, Formattable
     /**
      * Removes all reactions for the specified {@link Emoji}.
      *
-     * <p>Please note that you <b>can't</b> clear reactions if this message was sent in a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}!
+     * <p>Please note that you <b>can't</b> clear reactions if this message was sent in a {@link PrivateChannel PrivateChannel}!
      *
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
@@ -1598,7 +1649,7 @@ public interface Message extends ISnowflake, Formattable
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>The reaction request was attempted after the account lost access to the {@link GuildChannel}
+     *     <br>The reaction request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.channel.middleman.GuildChannel}
      *         due to {@link Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} being revoked
      *     <br>Also can happen if the account lost the {@link Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
      *
@@ -1613,13 +1664,13 @@ public interface Message extends ISnowflake, Formattable
      *         The {@link Emoji} reaction to remove as a reaction from this Message.
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the MessageChannel this message was sent in was a {@link GuildChannel}
+     *         If the MessageChannel this message was sent in was a {@link net.dv8tion.jda.api.entities.channel.middleman.GuildChannel}
      *         and the logged in account does not have {@link Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}
      * @throws java.lang.IllegalArgumentException
      *         <ul>
      *             <li>If the provided {@link Emoji} is null.</li>
      *             <li>If the provided {@link Emoji} is a custom emoji and cannot be used in the current channel.
-     *                 See {@link RichCustomEmoji#canInteract(User, MessageChannel)} or {@link RichCustomEmoji#canInteract(Member)} for more information.</li>
+     *                 See {@link RichCustomEmoji#canInteract(User, net.dv8tion.jda.api.entities.channel.middleman.MessageChannel)} or {@link RichCustomEmoji#canInteract(Member)} for more information.</li>
      *         </ul>
      * @throws IllegalStateException
      *         If this is an ephemeral message
@@ -1633,7 +1684,7 @@ public interface Message extends ISnowflake, Formattable
     /**
      * Removes a {@link User User's} reaction from this Message using an {@link Emoji}.
      *
-     * <p>Please note that you <b>can't</b> remove reactions of other users if this message was sent in a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}!
+     * <p>Please note that you <b>can't</b> remove reactions of other users if this message was sent in a {@link PrivateChannel PrivateChannel}!
      *
      * <p>This message instance will not be updated by this operation.
      *
@@ -1645,13 +1696,13 @@ public interface Message extends ISnowflake, Formattable
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>The reaction request was attempted after the account lost access to the {@link GuildChannel}
+     *     <br>The reaction request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.channel.middleman.GuildChannel}
      *         due to {@link Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} being revoked
      *     <br>Also can happen if the account lost the {@link Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The reaction request was attempted after the account lost {@link Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE}
-     *         in the {@link GuildChannel} when removing the reaction.</li>
+     *         in the {@link net.dv8tion.jda.api.entities.channel.middleman.GuildChannel} when removing the reaction.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_EMOJI UNKNOWN_EMOJI}
      *     <br>The provided emoji was deleted, doesn't exist, or is not available to the currently logged-in account in this channel.</li>
@@ -1666,13 +1717,13 @@ public interface Message extends ISnowflake, Formattable
      *         The {@link User} to remove the reaction for.
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the MessageChannel this message was sent in was a {@link GuildChannel}
+     *         If the MessageChannel this message was sent in was a {@link net.dv8tion.jda.api.entities.channel.middleman.GuildChannel}
      *         and the logged in account does not have {@link Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}.
      * @throws java.lang.IllegalArgumentException
      *         <ul>
      *             <li>If the provided {@code emoji} is null.</li>
      *             <li>If the provided {@code emoji} cannot be used in the current channel.
-     *                 See {@link RichCustomEmoji#canInteract(User, MessageChannel)} or {@link RichCustomEmoji#canInteract(Member)} for more information.</li>
+     *                 See {@link RichCustomEmoji#canInteract(User, net.dv8tion.jda.api.entities.channel.middleman.MessageChannel)} or {@link RichCustomEmoji#canInteract(Member)} for more information.</li>
      *             <li>If the provided user is null</li>
      *         </ul>
      * @throws java.lang.IllegalStateException
@@ -1701,7 +1752,7 @@ public interface Message extends ISnowflake, Formattable
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>The retrieve request was attempted after the account lost access to the {@link GuildChannel}
+     *     <br>The retrieve request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.channel.middleman.GuildChannel}
      *         due to {@link Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} being revoked
      *     <br>Also can happen if the account lost the {@link Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
      *
@@ -1716,7 +1767,7 @@ public interface Message extends ISnowflake, Formattable
      *         The {@link Emoji} to retrieve users for.
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the MessageChannel this message was sent in was a {@link GuildChannel} and the
+     *         If the MessageChannel this message was sent in was a {@link net.dv8tion.jda.api.entities.channel.middleman.GuildChannel} and the
      *         logged in account does not have {@link Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY} in the channel.
      * @throws java.lang.IllegalArgumentException
      *         If the provided {@link Emoji} is null.
@@ -1754,14 +1805,14 @@ public interface Message extends ISnowflake, Formattable
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>The clear-reactions request was attempted after the account lost access to the {@link GuildChannel}
+     *     <br>The clear-reactions request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.channel.middleman.GuildChannel}
      *         due to {@link Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} being revoked, or the
      *         account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
      *         typically due to being kicked or removed.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The suppress-embeds request was attempted after the account lost {@link Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE}
-     *         in the {@link GuildChannel} when adding the reaction.</li>
+     *         in the {@link net.dv8tion.jda.api.entities.channel.middleman.GuildChannel} when adding the reaction.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
      *     <br>If the message has already been deleted. This might also be triggered for ephemeral messages.</li>
@@ -1771,11 +1822,11 @@ public interface Message extends ISnowflake, Formattable
      *         Whether the embed should be suppressed
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the MessageChannel this message was sent in was a {@link GuildChannel}
+     *         If the MessageChannel this message was sent in was a {@link net.dv8tion.jda.api.entities.channel.middleman.GuildChannel}
      *         and the currently logged in account does not have
      *         {@link Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE} in the channel.
      * @throws net.dv8tion.jda.api.exceptions.PermissionException
-     *         If the MessageChannel this message was sent in was a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}
+     *         If the MessageChannel this message was sent in was a {@link PrivateChannel PrivateChannel}
      *         and the message was not sent by the currently logged in account.
      * @throws IllegalStateException
      *         If this Message is ephemeral
@@ -1799,7 +1850,7 @@ public interface Message extends ISnowflake, Formattable
      *     <br>The request was attempted after the account lost access to the
      *         {@link net.dv8tion.jda.api.entities.Guild Guild}
      *         typically due to being kicked or removed, or after {@link Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
-     *         was revoked in the {@link GuildChannel}</li>
+     *         was revoked in the {@link net.dv8tion.jda.api.entities.channel.middleman.GuildChannel}</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The request was attempted after the account lost
@@ -1818,7 +1869,7 @@ public interface Message extends ISnowflake, Formattable
      *             <li>If the message is ephemeral.</li>
      *         </ul>
      * @throws MissingAccessException
-     *         If the currently logged in account does not have {@link Member#hasAccess(GuildChannel) access} in this channel.
+     *         If the currently logged in account does not have {@link Member#hasAccess(net.dv8tion.jda.api.entities.channel.middleman.GuildChannel) access} in this channel.
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have
      *         {@link Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} in this channel
@@ -1873,10 +1924,10 @@ public interface Message extends ISnowflake, Formattable
     boolean isEphemeral();
 
     /**
-     * Returns a possibly {@code null} {@link net.dv8tion.jda.api.entities.ThreadChannel ThreadChannel} that was started from this message.
+     * Returns a possibly {@code null} {@link ThreadChannel ThreadChannel} that was started from this message.
      * This can be {@code null} due to no ThreadChannel being started from it or the ThreadChannel later being deleted.
      *
-     * @return The {@link net.dv8tion.jda.api.entities.ThreadChannel ThreadChannel} that was started from this message.
+     * @return The {@link ThreadChannel ThreadChannel} that was started from this message.
      */
     @Nullable
     ThreadChannel getStartedThread();
@@ -1923,7 +1974,7 @@ public interface Message extends ISnowflake, Formattable
          */
         ROLE("<@&(\\d+)>", "roles"),
         /**
-         * Represents a mention for a {@link GuildChannel}
+         * Represents a mention for a {@link net.dv8tion.jda.api.entities.channel.middleman.GuildChannel}
          * <br>The first and only group matches the id of the mention.
          */
         CHANNEL("<#(\\d+)>", null),

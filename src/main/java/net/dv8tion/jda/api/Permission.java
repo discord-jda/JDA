@@ -198,7 +198,7 @@ public enum Permission
     }
 
     /**
-     * Whether this permission is specifically for {@link net.dv8tion.jda.api.entities.TextChannel TextChannels}
+     * Whether this permission is specifically for {@link net.dv8tion.jda.api.entities.channel.concrete.TextChannel TextChannels}
      *
      * @return True, if and only if this permission can only be applied to text channels
      */
@@ -208,7 +208,7 @@ public enum Permission
     }
 
     /**
-     * Whether this permission is specifically for {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels}
+     * Whether this permission is specifically for {@link net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel VoiceChannels}
      *
      * @return True, if and only if this permission can only be applied to voice channels
      */

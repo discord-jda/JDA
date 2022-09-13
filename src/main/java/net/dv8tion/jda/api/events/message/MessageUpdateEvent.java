@@ -24,7 +24,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
- * Indicates that a Message was edited in a {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel}.
+ * Indicates that a Message was edited in a {@link net.dv8tion.jda.api.entities.channel.middleman.MessageChannel MessageChannel}.
  * 
  * <p>Can be used to detect a Message is edited in either a private or guild channel. Providing a MessageChannel and Message.
  * <br>This also includes whether a message is being pinned.

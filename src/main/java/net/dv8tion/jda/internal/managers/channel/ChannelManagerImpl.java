@@ -21,11 +21,22 @@ import gnu.trove.set.TLongSet;
 import gnu.trove.set.hash.TLongHashSet;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.Region;
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.IPermissionHolder;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.PermissionOverride;
+import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
+import net.dv8tion.jda.api.entities.channel.attribute.IPermissionContainer;
+import net.dv8tion.jda.api.entities.channel.concrete.Category;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.channel.ChannelManager;
 import net.dv8tion.jda.api.utils.data.DataObject;
-import net.dv8tion.jda.internal.entities.mixin.channel.attribute.IPermissionContainerMixin;
+import net.dv8tion.jda.internal.entities.channel.mixin.attribute.IPermissionContainerMixin;
+import net.dv8tion.jda.internal.entities.channel.mixin.middleman.GuildChannelMixin;
 import net.dv8tion.jda.internal.managers.ManagerBase;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.PermOverrideData;
@@ -258,7 +269,7 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
     @CheckReturnValue
     public M removePermissionOverride(final long id)
     {
-        if (isPermissionChecksEnabled() && !getGuild().getSelfMember().hasPermission((IPermissionContainer) getChannel(), Permission.MANAGE_PERMISSIONS))
+        if (isPermissionChecksEnabled() && !getGuild().getSelfMember().hasPermission(getChannel(), Permission.MANAGE_PERMISSIONS))
             throw new InsufficientPermissionException(getChannel(), Permission.MANAGE_PERMISSIONS);
         withLock(lock, (lock) ->
         {
@@ -571,17 +582,15 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
         final Member selfMember = getGuild().getSelfMember();
 
         Checks.checkAccess(selfMember, channel);
-        if (!selfMember.hasPermission(channel, Permission.MANAGE_CHANNEL))
-            throw new InsufficientPermissionException(channel, Permission.MANAGE_CHANNEL);
+        ((GuildChannelMixin<?>) channel).checkCanManage();
 
         return super.checkPermissions();
     }
 
     protected void checkPermission(Permission permission, String errMessage)
     {
-        if (!getGuild().getSelfMember().hasPermission(getChannel(), permission)) {
+        if (!getGuild().getSelfMember().hasPermission(getChannel(), permission))
             throw new InsufficientPermissionException(getChannel(), permission, errMessage);
-        }
     }
 
     protected Collection<PermOverrideData> getOverrides()

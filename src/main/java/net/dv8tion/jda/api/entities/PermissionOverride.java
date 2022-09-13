@@ -17,6 +17,7 @@ package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.unions.IPermissionContainerUnion;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.PermissionOverrideAction;
@@ -30,12 +31,12 @@ import java.util.EnumSet;
  * Represents the specific {@link net.dv8tion.jda.api.entities.Member Member} or {@link net.dv8tion.jda.api.entities.Role Role}
  * permission overrides that can be set for channels.
  *
- * @see IPermissionContainer#upsertPermissionOverride(IPermissionHolder)
+ * @see net.dv8tion.jda.api.entities.channel.attribute.IPermissionContainer#upsertPermissionOverride(IPermissionHolder)
  *
- * @see IPermissionContainer#getPermissionOverrides()
- * @see IPermissionContainer#getPermissionOverride(IPermissionHolder)
- * @see IPermissionContainer#getMemberPermissionOverrides()
- * @see IPermissionContainer#getRolePermissionOverrides()
+ * @see net.dv8tion.jda.api.entities.channel.attribute.IPermissionContainer#getPermissionOverrides()
+ * @see net.dv8tion.jda.api.entities.channel.attribute.IPermissionContainer#getPermissionOverride(IPermissionHolder)
+ * @see net.dv8tion.jda.api.entities.channel.attribute.IPermissionContainer#getMemberPermissionOverrides()
+ * @see net.dv8tion.jda.api.entities.channel.attribute.IPermissionContainer#getRolePermissionOverrides()
  */
 public interface PermissionOverride extends ISnowflake
 {
@@ -137,9 +138,9 @@ public interface PermissionOverride extends ISnowflake
     Role getRole();
 
     /**
-     * The {@link IPermissionContainer GuildChannel} that this PermissionOverride affects.
+     * The {@link net.dv8tion.jda.api.entities.channel.attribute.IPermissionContainer GuildChannel} that this PermissionOverride affects.
      *
-     * @return Never-null related {@link IPermissionContainer GuildChannel} that this override is part of.
+     * @return Never-null related {@link net.dv8tion.jda.api.entities.channel.attribute.IPermissionContainer GuildChannel} that this override is part of.
      */
     @Nonnull
     IPermissionContainerUnion getChannel();

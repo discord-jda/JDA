@@ -18,6 +18,7 @@ package net.dv8tion.jda.api.utils.messages;
 
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -50,7 +51,7 @@ import java.util.List;
  * } // closes wave.gif if an error occurred
  * }</pre>
  *
- * @see net.dv8tion.jda.api.entities.MessageChannel#sendMessage(MessageCreateData) MessageChannel.sendMessage(data)
+ * @see MessageChannel#sendMessage(MessageCreateData)
  * @see net.dv8tion.jda.api.interactions.callbacks.IReplyCallback#reply(MessageCreateData) IReplyCallback.reply(data)
  * @see net.dv8tion.jda.api.interactions.InteractionHook#sendMessage(MessageCreateData) InteractionHook.sendMessage(data)
  * @see MessageEditBuilder
@@ -211,7 +212,7 @@ public class MessageCreateBuilder extends AbstractMessageBuilder<MessageCreateDa
     @Override
     public boolean isEmpty()
     {
-        return Helpers.isBlank(content) && embeds.isEmpty() && files.isEmpty();
+        return Helpers.isBlank(content) && embeds.isEmpty() && files.isEmpty() && components.isEmpty();
     }
 
     @Override
@@ -232,8 +233,8 @@ public class MessageCreateBuilder extends AbstractMessageBuilder<MessageCreateDa
         List<LayoutComponent> components = new ArrayList<>(this.components);
         AllowedMentionsData mentions = this.mentions.copy();
 
-        if (content.isEmpty() && embeds.isEmpty() && files.isEmpty())
-            throw new IllegalStateException("Cannot build an empty message. You need at least one of content, embeds, or files");
+        if (content.isEmpty() && embeds.isEmpty() && files.isEmpty() && components.isEmpty())
+            throw new IllegalStateException("Cannot build an empty message. You need at least one of content, embeds, components, or files");
 
         int length = Helpers.codePointLength(content);
         if (length > Message.MAX_CONTENT_LENGTH)
