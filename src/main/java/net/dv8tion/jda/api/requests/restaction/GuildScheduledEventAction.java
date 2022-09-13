@@ -37,7 +37,7 @@ import java.util.function.BooleanSupplier;
  * <ol>
  *     <li>
  *         {@link GuildScheduledEvent.Type#STAGE_INSTANCE Type.STAGE_INSTANCE}
- *         <br>These events are set to take place inside of a {@link net.dv8tion.jda.api.entities.StageChannel StageChannel}. The
+ *         <br>These events are set to take place inside of a {@link net.dv8tion.jda.api.entities.channel.concrete.StageChannel StageChannel}. The
  *         following permissions are required in the specified stage channel in order to create an event there:
  *          <ul>
  *              <li>{@link net.dv8tion.jda.api.Permission#MANAGE_EVENTS Permission.MANAGE_EVENTS}</li>
@@ -48,7 +48,7 @@ import java.util.function.BooleanSupplier;
  *     </li>
  *     <li>
  *         {@link GuildScheduledEvent.Type#VOICE Type.VOICE}
- *         <br>These events are set to take place inside of a {@link net.dv8tion.jda.api.entities.VoiceChannel}. The
+ *         <br>These events are set to take place inside of a {@link net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel}. The
  *         following permissions are required in the specified voice channel in order to create an event there:
  *         <ul>
  *             <li>{@link net.dv8tion.jda.api.Permission#MANAGE_EVENTS Permission.MANAGE_EVENTS}</li>
@@ -66,7 +66,7 @@ import java.util.function.BooleanSupplier;
  *
  * @see    net.dv8tion.jda.api.entities.Guild
  * @see    Guild#createScheduledEvent(String, String, OffsetDateTime, OffsetDateTime) 
- * @see    Guild#createScheduledEvent(String, GuildChannel, OffsetDateTime) 
+ * @see    Guild#createScheduledEvent(String, net.dv8tion.jda.api.entities.channel.middleman.GuildChannel, OffsetDateTime)
  */
 public interface GuildScheduledEventAction extends AuditableRestAction<GuildScheduledEvent>
 {

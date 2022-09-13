@@ -403,7 +403,7 @@ public interface GuildScheduledEvent extends ISnowflake, Comparable<GuildSchedul
          */
         STAGE_INSTANCE(1),
         /**
-         * An event inside a {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel}
+         * An event inside a {@link net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel VoiceChannel}
          */
         VOICE(2),
         /**

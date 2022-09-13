@@ -16,6 +16,7 @@
 package net.dv8tion.jda.api.managers;
 
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -182,7 +183,7 @@ public interface GuildScheduledEventManager extends Manager<GuildScheduledEventM
      *         <ul>
      *             <li>If the provided {@link GuildChannel} is {@code null}</li>
      *             <li>If the provided {@link GuildChannel} is not from the same guild</li>
-     *             <li>If the provided {@link GuildChannel} is not a {@link StageChannel} or {@link VoiceChannel}</li>
+     *             <li>If the provided {@link GuildChannel} is not a {@link net.dv8tion.jda.api.entities.channel.concrete.StageChannel} or {@link net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel}</li>
      *         </ul>
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have

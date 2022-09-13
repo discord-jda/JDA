@@ -17,6 +17,9 @@
 package net.dv8tion.jda.internal.managers;
 
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.channel.concrete.StageChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.managers.GuildScheduledEventManager;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.requests.Route;
@@ -207,8 +210,6 @@ public class GuildScheduledEventManagerImpl extends ManagerBase<GuildScheduledEv
 
     private void preChecks()
     {
-
-
         if (shouldUpdate(LOCATION))
         {
             if (entityType == GuildScheduledEvent.Type.EXTERNAL)

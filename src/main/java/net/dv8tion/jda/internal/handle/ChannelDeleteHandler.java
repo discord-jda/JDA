@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.internal.handle;
 
+import net.dv8tion.jda.api.entities.GuildScheduledEvent;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.concrete.*;
 import net.dv8tion.jda.api.events.channel.ChannelDeleteEvent;

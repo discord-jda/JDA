@@ -15,7 +15,7 @@ import javax.annotation.Nullable;
  *
  * <p> It should be noted that {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvents} are not
  * actual gateway events found in the {@link net.dv8tion.jda.api.events} package, but are rather entities similar to
- * {@link net.dv8tion.jda.api.entities.User User} or {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} objects
+ * {@link net.dv8tion.jda.api.entities.User User} or {@link net.dv8tion.jda.api.entities.channel.concrete.TextChannel TextChannel} objects
  * representing a <a href="https://support.discord.com/hc/en-us/articles/4409494125719-Scheduled-Events">guild's scheduled events</a>.
  *
  * <p><b>Requirements</b><br>
