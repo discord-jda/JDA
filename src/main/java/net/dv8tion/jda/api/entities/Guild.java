@@ -15,6 +15,9 @@
  */
 package net.dv8tion.jda.api.entities;
 
+import net.dv8tion.jda.annotations.DeprecatedSince;
+import net.dv8tion.jda.annotations.ForRemoval;
+import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.Region;
@@ -542,7 +545,6 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * The Features of the {@link net.dv8tion.jda.api.entities.Guild Guild}.
      * <p>
      * <a target="_blank" href="https://discord.com/developers/docs/resources/guild#guild-object-guild-features"><b>List of Features</b></a>
-     *
      *
      * @return Never-null, unmodifiable Set containing all of the Guild's features.
      */
@@ -1900,7 +1902,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
 
     /**
      * Retrieves an immutable list of the currently banned {@link net.dv8tion.jda.api.entities.User Users}.
-     * <br>If you wish to ban or unban a user, use either {@link #ban(UserSnowflake, int)} or
+     * <br>If you wish to ban or unban a user, use either {@link #ban(UserSnowflake, int, TimeUnit)} or
      * {@link #unban(UserSnowflake)}.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
@@ -1922,7 +1924,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
 
     /**
      * Retrieves a {@link net.dv8tion.jda.api.entities.Guild.Ban Ban} of the provided {@link UserSnowflake}.
-     * <br>If you wish to ban or unban a user, use either {@link #ban(UserSnowflake, int)} or {@link #unban(UserSnowflake)}.
+     * <br>If you wish to ban or unban a user, use either {@link #ban(UserSnowflake, int, TimeUnit)} or {@link #unban(UserSnowflake)}.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
      * the returned {@link RestAction RestAction} include the following:
@@ -3187,10 +3189,20 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      *         </ul>
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
+     *
+     * @deprecated
+     *         Use {@link #kick(UserSnowflake)} and {@link AuditableRestAction#reason(String)} instead.
      */
     @Nonnull
     @CheckReturnValue
-    AuditableRestAction<Void> kick(@Nonnull UserSnowflake user, @Nullable String reason);
+    @Deprecated
+    @ForRemoval
+    @ReplaceWith("kick(user).reason(reason)")
+    @DeprecatedSince("5.0.0")
+    default AuditableRestAction<Void> kick(@Nonnull UserSnowflake user, @Nullable String reason)
+    {
+        return kick(user).reason(reason);
+    }
 
     /**
      * Kicks a {@link net.dv8tion.jda.api.entities.Member Member} from the {@link net.dv8tion.jda.api.entities.Guild Guild}.
@@ -3224,20 +3236,32 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    default AuditableRestAction<Void> kick(@Nonnull UserSnowflake user)
-    {
-        return kick(user, null);
-    }
+    AuditableRestAction<Void> kick(@Nonnull UserSnowflake user);
 
     /**
-     * Bans the user specified by the provided {@link UserSnowflake} and deletes messages sent by the user based on the amount of delDays.
-     * <br>If you wish to ban a user without deleting any messages, provide delDays with a value of 0.
+     * Bans the user specified by the provided {@link UserSnowflake} and deletes messages sent by the user based on the {@code deletionTimeframe}.
+     * <br>If you wish to ban a user without deleting any messages, provide {@code deletionTimeframe} with a value of 0.
+     * To set a ban reason, use {@link AuditableRestAction#reason(String)}.
      *
      * <p>You can unban a user with {@link net.dv8tion.jda.api.entities.Guild#unban(UserSnowflake) Guild.unban(UserReference)}.
      *
      * <p><b>Note:</b> {@link net.dv8tion.jda.api.entities.Guild#getMembers()} will still contain the {@link net.dv8tion.jda.api.entities.User User's}
      * {@link net.dv8tion.jda.api.entities.Member Member} object (if the User was in the Guild)
      * until Discord sends the {@link net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent GuildMemberRemoveEvent}.
+     *
+     * <p><b>Examples</b><br>
+     * Banning a user without deleting any messages:
+     * <pre>{@code
+     * guild.ban(user, 0, TimeUnit.SECONDS)
+     *      .reason("Banned for rude behavior")
+     *      .queue();
+     * }</pre>
+     * Banning a user and deleting messages from the past hour:
+     * <pre>{@code
+     * guild.ban(user, 1, TimeUnit.HOURS)
+     *      .reason("Banned for spamming")
+     *      .queue();
+     * }</pre>
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
      * the returned {@link RestAction RestAction} include the following:
@@ -3252,10 +3276,10 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * @param  user
      *         The {@link UserSnowflake} for the user to ban.
      *         This can be a member or user instance or {@link User#fromId(long)}.
-     * @param  delDays
-     *         The history of messages, in days, that will be deleted.
-     * @param  reason
-     *         The reason for this action or {@code null} if there is no specified reason
+     * @param  deletionTimeframe
+     *         The timeframe for the history of messages that will be deleted. (seconds precision)
+     * @param  unit
+     *         Timeframe unit as a {@link TimeUnit} (for example {@code ban(user, 7, TimeUnit.DAYS)}).
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#BAN_MEMBERS} permission.
@@ -3264,64 +3288,18 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      *         <br>See {@link Member#canInteract(Member)}
      * @throws java.lang.IllegalArgumentException
      *         <ul>
-     *             <li>If the provided amount of days (delDays) is less than 0.</li>
-     *             <li>If the provided amount of days (delDays) is bigger than 7.</li>
-     *             <li>If the provided reason is longer than 512 characters.</li>
-     *             <li>If the provided user is {@code null}</li>
+     *             <li>If the provided deletionTimeframe is negative.</li>
+     *             <li>If the provided deletionTimeframe is longer than 7 days.</li>
+     *             <li>If the provided user or time unit is {@code null}</li>
      *         </ul>
      *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
+     * @return {@link AuditableRestAction}
+     *
+     * @see    AuditableRestAction#reason(String)
      */
     @Nonnull
     @CheckReturnValue
-    AuditableRestAction<Void> ban(@Nonnull UserSnowflake user, int delDays, @Nullable String reason);
-
-    /**
-     * Bans the {@link UserSnowflake} and deletes messages sent by the user based on the amount of delDays.
-     * <br>If you wish to ban a member without deleting any messages, provide delDays with a value of 0.
-     *
-     * <p>You can unban a user with {@link net.dv8tion.jda.api.entities.Guild#unban(UserSnowflake) Guild.unban(UserReference)}.
-     *
-     * <p><b>Note:</b> {@link net.dv8tion.jda.api.entities.Guild#getMembers()} will still contain the
-     * {@link net.dv8tion.jda.api.entities.Member Member} until Discord sends the
-     * {@link net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent GuildMemberRemoveEvent}.
-     *
-     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link RestAction RestAction} include the following:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
-     *     <br>The target Member cannot be banned due to a permission discrepancy</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_USER UNKNOWN_USER}
-     *     <br>The specified User does not exit</li>
-     * </ul>
-     *
-     * @param  user
-     *         The {@link UserSnowflake} for the user to ban.
-     *         This can be a member or user instance or {@link User#fromId(long)}.
-     * @param  delDays
-     *         The history of messages, in days, that will be deleted.
-     *
-     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#BAN_MEMBERS} permission.
-     * @throws net.dv8tion.jda.api.exceptions.HierarchyException
-     *         If the logged in account cannot ban the other user due to permission hierarchy position.
-     *         <br>See {@link Member#canInteract(Member)}
-     * @throws java.lang.IllegalArgumentException
-     *         <ul>
-     *             <li>If the provided amount of days (delDays) is less than 0.</li>
-     *             <li>If the provided amount of days (delDays) is bigger than 7.</li>
-     *             <li>If the provided user is {@code null}</li>
-     *         </ul>
-     *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
-     */
-    @Nonnull
-    @CheckReturnValue
-    default AuditableRestAction<Void> ban(@Nonnull UserSnowflake user, int delDays)
-    {
-        return ban(user, delDays, null);
-    }
+    AuditableRestAction<Void> ban(@Nonnull UserSnowflake user, int deletionTimeframe, @Nonnull TimeUnit unit);
 
     /**
      * Unbans the specified {@link UserSnowflake} from this Guild.
@@ -3333,7 +3311,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      *     <br>The target Member cannot be unbanned due to a permission discrepancy</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_USER UNKNOWN_USER}
-     *     <br>The specified User is invalid</li>
+     *     <br>The specified User does not exist</li>
      * </ul>
      *
      * @param  user
@@ -4564,12 +4542,16 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * {@link net.dv8tion.jda.api.requests.restaction.order.OrderAction#moveUp(int) up}/{@link net.dv8tion.jda.api.requests.restaction.order.OrderAction#moveDown(int) down}
      * or {@link net.dv8tion.jda.api.requests.restaction.order.OrderAction#moveTo(int) to} a specific position.
      *
-     * <p>This uses <b>ascending</b> ordering which means the lowest role is first!
-     * <br>This means the highest role appears at index {@code n - 1} and the lower role at index {@code 0}.
+     * <p>You can also move roles to a position relative to another role, by using {@link net.dv8tion.jda.api.requests.restaction.order.OrderAction#moveBelow(Object) moveBelow(...)}
+     * and {@link net.dv8tion.jda.api.requests.restaction.order.OrderAction#moveAbove(Object) moveAbove(...)}.
+     *
+     * <p>This uses <b>descending</b> ordering which means the highest role is first!
+     * <br>This means the lowest role appears at index {@code n - 1} and the highest role at index {@code 0}.
      * <br>Providing {@code true} to {@link #modifyRolePositions(boolean)} will result in the ordering being
-     * in ascending order, with the lower role at index {@code n - 1} and the highest at index {@code 0}.
+     * in ascending order, with the highest role at index {@code n - 1} and the lowest at index {@code 0}.
+     *
      * <br>As a note: {@link net.dv8tion.jda.api.entities.Member#getRoles() Member.getRoles()}
-     * and {@link net.dv8tion.jda.api.entities.Guild#getRoles() Guild.getRoles()} are both in descending order.
+     * and {@link net.dv8tion.jda.api.entities.Guild#getRoles() Guild.getRoles()} are both in descending order, just like this method.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
      * <ul>
@@ -4580,13 +4562,13 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      *     <br>The currently logged in account was removed from the Guild</li>
      * </ul>
      *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.order.RoleOrderAction RoleOrderAction}
+     * @return {@link RoleOrderAction}
      */
     @Nonnull
     @CheckReturnValue
     default RoleOrderAction modifyRolePositions()
     {
-        return modifyRolePositions(true);
+        return modifyRolePositions(false);
     }
 
     /**
@@ -4612,7 +4594,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      *         <br>As a note: {@link net.dv8tion.jda.api.entities.Member#getRoles() Member.getRoles()}
      *         and {@link net.dv8tion.jda.api.entities.Guild#getRoles() Guild.getRoles()} are both in descending order.
      *
-     * @return {@link RoleOrderAction RoleOrderAction}
+     * @return {@link RoleOrderAction}
      */
     @Nonnull
     @CheckReturnValue

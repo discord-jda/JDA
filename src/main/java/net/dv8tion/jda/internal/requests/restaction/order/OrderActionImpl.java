@@ -185,13 +185,13 @@ public abstract class OrderActionImpl<T, M extends OrderAction<T, M>>
         if (ascendingOrder)
         {
             Checks.check(selectedPosition + amount < orderList.size(),
-                    "Amount provided to move down is too large and would be out of bounds." +
+                    "Amount provided to move down is too large and would be out of bounds. " +
                             "Selected position: " + selectedPosition + " Amount: " + amount + " Largest Position: " + orderList.size());
         }
         else
         {
-            Checks.check(selectedPosition - amount >= orderList.size(),
-                    "Amount provided to move down is too large and would be out of bounds." +
+            Checks.check(selectedPosition - amount >= 0,
+                    "Amount provided to move down is too large and would be out of bounds. " +
                             "Selected position: " + selectedPosition + " Amount: " + amount + " Largest Position: " + orderList.size());
         }
 
@@ -211,7 +211,34 @@ public abstract class OrderActionImpl<T, M extends OrderAction<T, M>>
 
         T selectedItem = orderList.remove(selectedPosition);
         orderList.add(position, selectedItem);
+        selectedPosition = position;
 
+        return (M) this;
+    }
+
+    @Nonnull
+    @Override
+    @SuppressWarnings("unchecked")
+    public M moveBelow(@Nonnull T other)
+    {
+        validateInput(other);
+        int index = getCurrentOrder().indexOf(other);
+        moveTo(index);
+        if (isAscendingOrder())
+            return moveDown(1);
+        return (M) this;
+    }
+
+    @Nonnull
+    @Override
+    @SuppressWarnings("unchecked")
+    public M moveAbove(@Nonnull T other)
+    {
+        validateInput(other);
+        int index = getCurrentOrder().indexOf(other);
+        moveTo(index);
+        if (!isAscendingOrder())
+            return moveUp(1);
         return (M) this;
     }
 
@@ -228,6 +255,7 @@ public abstract class OrderActionImpl<T, M extends OrderAction<T, M>>
         T swapItem = orderList.get(swapPosition);
         orderList.set(swapPosition, selectedItem);
         orderList.set(selectedPosition, swapItem);
+        selectedPosition = swapPosition;
 
         return (M) this;
     }

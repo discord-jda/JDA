@@ -278,10 +278,10 @@ public class EntityBuilder
             guildView.getMap().put(guildId, guildObj);
         }
 
-        guildObj.setFeatures(featuresArray.map(it ->
-            StreamSupport.stream(it.spliterator(), false)
-                         .map(String::valueOf)
-                         .collect(Collectors.toSet())
+        guildObj.setFeatures(featuresArray.map(array ->
+            array.stream(DataArray::getString)
+                 .map(String::intern) // Prevent allocating the same feature string over and over
+                 .collect(Collectors.toSet())
         ).orElse(Collections.emptySet()));
 
         SnowflakeCacheViewImpl<Role> roleView = guildObj.getRolesView();

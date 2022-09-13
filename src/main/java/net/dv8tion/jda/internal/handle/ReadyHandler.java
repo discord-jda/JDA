@@ -51,13 +51,15 @@ public class ReadyHandler extends SocketHandler
         }
 
         DataObject selfJson = content.getObject("user");
+        // Inject the application id which isn't added to the self user by default
         selfJson.put("application_id", // Used to update SelfUser#getApplicationId
             content.optObject("application")
                 .map(obj -> obj.getUnsignedLong("id"))
                 .orElse(selfJson.getUnsignedLong("id"))
         );
-
+        // SelfUser is already created in login(...) but this just updates it to the current state from the api, and injects the application id
         builder.createSelfUser(selfJson);
+
         if (getJDA().getGuildSetupController().setIncompleteCount(distinctGuilds.size()))
         {
             distinctGuilds.forEachEntry((id, guild) ->

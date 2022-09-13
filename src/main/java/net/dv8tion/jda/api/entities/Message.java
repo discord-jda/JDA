@@ -1245,6 +1245,53 @@ public interface Message extends ISnowflake, Formattable
     }
 
     /**
+     * Shortcut for {@code getChannel().sendMessageComponents(component, other).setMessageReference(this)}.
+     *
+     * @param  component
+     *         The {@link LayoutComponent} to send
+     * @param  other
+     *         Any addition {@link LayoutComponent LayoutComponents} to send
+     *
+     * @throws InsufficientPermissionException
+     *         If {@link MessageChannel#sendMessageComponents(LayoutComponent, LayoutComponent...)} throws
+     * @throws IllegalArgumentException
+     *         If {@link MessageChannel#sendMessageComponents(LayoutComponent, LayoutComponent...)} throws
+     *
+     * @return {@link MessageCreateAction}
+     */
+    @Nonnull
+    @CheckReturnValue
+    default MessageCreateAction replyComponents(@Nonnull LayoutComponent component, @Nonnull LayoutComponent... other)
+    {
+        Checks.notNull(component, "LayoutComponents");
+        Checks.noneNull(other, "LayoutComponents");
+        List<LayoutComponent> components = new ArrayList<>(1 + other.length);
+        components.add(component);
+        Collections.addAll(components, other);
+        return replyComponents(components);
+    }
+
+    /**
+     * Shortcut for {@code getChannel().sendMessageComponents(components).setMessageReference(this)}.
+     *
+     * @param  components
+     *         The {@link LayoutComponent LayoutComponents} to send
+     *
+     * @throws InsufficientPermissionException
+     *         If {@link MessageChannel#sendMessageComponents(Collection)} throws
+     * @throws IllegalArgumentException
+     *         If {@link MessageChannel#sendMessageComponents(Collection)} throws
+     *
+     * @return {@link MessageCreateAction}
+     */
+    @Nonnull
+    @CheckReturnValue
+    default MessageCreateAction replyComponents(@Nonnull Collection<? extends LayoutComponent> components)
+    {
+        return getChannel().sendMessageComponents(components).setMessageReference(this);
+    }
+
+    /**
      * Shortcut for {@code getChannel().sendMessageFormat(format, args).setMessageReference(this)}-
      *
      * @param  format

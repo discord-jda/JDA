@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.exceptions.AccountTypeException;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
+import net.dv8tion.jda.api.exceptions.InvalidTokenException;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
@@ -29,7 +30,6 @@ import net.dv8tion.jda.internal.utils.JDALogger;
 import org.slf4j.Logger;
 
 import javax.annotation.Nonnull;
-import javax.security.auth.login.LoginException;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.TimeUnit;
@@ -99,7 +99,7 @@ public class SessionControllerAdapter implements SessionController
                 else if (response.code == 401)
                 {
                     api.shutdownNow();
-                    request.onFailure(new LoginException("The provided token is invalid!"));
+                    request.onFailure(new InvalidTokenException("The provided token is invalid!"));
                 }
                 else
                 {

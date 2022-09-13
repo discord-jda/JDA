@@ -52,9 +52,10 @@ public class InteractionCreateHandler extends SocketHandler
     protected Long handleInternally(DataObject content)
     {
         int type = content.getInt("type");
-        if (content.getInt("version", 1) != 1)
+        int version = content.getInt("version", 1);
+        if (version != 1)
         {
-            WebSocketClient.LOG.debug("Received interaction with version {}. This version is currently unsupported by this version of JDA. Consider updating!", content.getInt("version", 1));
+            WebSocketClient.LOG.debug("Received interaction with version {}. This version is currently unsupported by this version of JDA. Consider updating!", version);
             return null;
         }
 

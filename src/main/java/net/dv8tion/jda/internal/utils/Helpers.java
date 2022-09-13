@@ -29,6 +29,8 @@ import java.time.temporal.TemporalAccessor;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.ToLongFunction;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 /**
  * This class has major inspiration from <a href="https://commons.apache.org/proper/commons-lang/" target="_blank">Lang 3</a>
@@ -282,5 +284,10 @@ public final class Helpers
             cursor = cursor.getCause();
         }
         return false;
+    }
+
+    public static <T> Collector<T, ?, List<T>> toUnmodifiableList()
+    {
+        return Collectors.collectingAndThen(Collectors.toList(), Collections::unmodifiableList);
     }
 }

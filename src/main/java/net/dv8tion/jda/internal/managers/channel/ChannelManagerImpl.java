@@ -581,8 +581,7 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
         final Member selfMember = getGuild().getSelfMember();
 
         Checks.checkAccess(selfMember, channel);
-        if (!selfMember.hasPermission(channel, Permission.MANAGE_CHANNEL))
-            throw new InsufficientPermissionException(channel, Permission.MANAGE_CHANNEL);
+        ((GuildChannelMixin<?>) channel).checkCanManage();
 
         return super.checkPermissions();
     }
