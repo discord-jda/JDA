@@ -18,8 +18,8 @@ package net.dv8tion.jda.api.managers;
 
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Icon;
-import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.Webhook;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.unions.IWebhookContainerUnion;
 
 import javax.annotation.CheckReturnValue;
@@ -103,11 +103,11 @@ public interface WebhookManager extends Manager<WebhookManager>
     Webhook getWebhook();
 
     /**
-     * The {@link net.dv8tion.jda.api.entities.IWebhookContainer channel} that this Manager's
+     * The {@link net.dv8tion.jda.api.entities.channel.attribute.IWebhookContainer channel} that this Manager's
      * {@link net.dv8tion.jda.api.entities.Webhook Webhook} is in.
      * <br>This is logically the same as calling {@code getWebhook().getChannel()}
      *
-     * @return The parent {@link net.dv8tion.jda.api.entities.IWebhookContainer} instance.
+     * @return The parent {@link net.dv8tion.jda.api.entities.channel.attribute.IWebhookContainer} instance.
      */
     @Nonnull
     default IWebhookContainerUnion getChannel()
@@ -160,12 +160,12 @@ public interface WebhookManager extends Manager<WebhookManager>
     WebhookManager setAvatar(@Nullable Icon icon);
 
     /**
-     * Sets the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} of the selected {@link net.dv8tion.jda.api.entities.Webhook Webhook}.
+     * Sets the {@link TextChannel TextChannel} of the selected {@link net.dv8tion.jda.api.entities.Webhook Webhook}.
      *
      * <p>A webhook channel <b>must not</b> be {@code null} and <b>must</b> be in the same {@link net.dv8tion.jda.api.entities.Guild Guild}!
      *
      * @param  channel
-     *         The new {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
+     *         The new {@link TextChannel TextChannel}
      *         for the selected {@link net.dv8tion.jda.api.entities.Webhook Webhook}
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException

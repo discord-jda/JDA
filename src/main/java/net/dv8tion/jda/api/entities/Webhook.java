@@ -17,6 +17,8 @@
 package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
 import net.dv8tion.jda.api.entities.channel.unions.IWebhookContainerUnion;
 import net.dv8tion.jda.api.managers.WebhookManager;
 import net.dv8tion.jda.api.requests.RestAction;
@@ -112,15 +114,15 @@ public interface Webhook extends ISnowflake
     Guild getGuild();
 
     /**
-     * The {@link net.dv8tion.jda.api.entities.IWebhookContainer channel} instance this Webhook is attached to.
+     * The {@link net.dv8tion.jda.api.entities.channel.attribute.IWebhookContainer channel} instance this Webhook is attached to.
      * Webhooks are created on specific channels so that they can interact with that channel.
-     * With regard to {@link ThreadChannel threads}, Webhooks are attached to their {@link IThreadContainer parent channel}
-     * and then the Webhooks can post to the {@link IThreadContainer parent} <i>and</i> the {@link ThreadChannel thread} too.
+     * With regard to {@link ThreadChannel threads}, Webhooks are attached to their {@link net.dv8tion.jda.api.entities.channel.attribute.IThreadContainer parent channel}
+     * and then the Webhooks can post to the {@link net.dv8tion.jda.api.entities.channel.attribute.IThreadContainer parent} <i>and</i> the {@link ThreadChannel thread} too.
      *
      * @throws IllegalStateException
      *         If this webhooks {@link #isPartial() is partial}
      *
-     * @return The current {@link IWebhookContainer channel} that this webhook is attached to.
+     * @return The current {@link net.dv8tion.jda.api.entities.channel.attribute.IWebhookContainer channel} that this webhook is attached to.
      */
     @Nonnull
     //TODO-v5: Should we introduce StandardIWebhookContainer? (IWebhookContainer + StandardGuildChannel)

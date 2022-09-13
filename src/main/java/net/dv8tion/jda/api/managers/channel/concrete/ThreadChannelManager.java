@@ -16,7 +16,7 @@
 
 package net.dv8tion.jda.api.managers.channel.concrete;
 
-import net.dv8tion.jda.api.entities.ThreadChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
 import net.dv8tion.jda.api.managers.channel.ChannelManager;
 
 /**
@@ -44,7 +44,7 @@ public interface ThreadChannelManager extends ChannelManager<ThreadChannel, Thre
      * Sets the <b><u>slowmode</u></b> of the selected {@link ThreadChannel}.
      * <br>Provide {@code 0} to reset the slowmode of the {@link ThreadChannel}.
      *
-     * <p>A channel slowmode <b>must not</b> be negative nor greater than {@link net.dv8tion.jda.api.entities.TextChannel#MAX_SLOWMODE TextChannel.MAX_SLOWMODE}!
+     * <p>A channel slowmode <b>must not</b> be negative nor greater than {@link net.dv8tion.jda.api.entities.channel.concrete.TextChannel#MAX_SLOWMODE TextChannel.MAX_SLOWMODE}!
      *
      * <p>Note: Bots are unaffected by this.
      * <br>Having {@link net.dv8tion.jda.api.Permission#MESSAGE_MANAGE MESSAGE_MANAGE} or
@@ -57,7 +57,7 @@ public interface ThreadChannelManager extends ChannelManager<ThreadChannel, Thre
      * @return this ThreadChannelManager for chaining convenience
      *
      * @throws IllegalArgumentException
-     *         If the provided slowmode is negative or greater than {@link net.dv8tion.jda.api.entities.TextChannel#MAX_SLOWMODE TextChannel.MAX_SLOWMODE}
+     *         If the provided slowmode is negative or greater than {@link net.dv8tion.jda.api.entities.channel.concrete.TextChannel#MAX_SLOWMODE TextChannel.MAX_SLOWMODE}
      *
      * @see ThreadChannel#getSlowmode()
      */

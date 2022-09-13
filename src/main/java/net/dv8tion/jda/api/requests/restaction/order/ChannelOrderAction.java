@@ -16,10 +16,10 @@
 
 package net.dv8tion.jda.api.requests.restaction.order;
 
-import net.dv8tion.jda.api.entities.Category;
-import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.GuildChannel;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
+import net.dv8tion.jda.api.entities.channel.concrete.Category;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -55,7 +55,7 @@ public interface ChannelOrderAction extends OrderAction<GuildChannel, ChannelOrd
 
     /**
      * The sorting bucket for this order action.
-     * <br>Multiple different {@link net.dv8tion.jda.api.entities.ChannelType ChannelTypes} can
+     * <br>Multiple different {@link ChannelType ChannelTypes} can
      * share a common sorting bucket.
      *
      * @return The sorting bucket
@@ -63,11 +63,11 @@ public interface ChannelOrderAction extends OrderAction<GuildChannel, ChannelOrd
     int getSortBucket();
 
     /**
-     * The {@link net.dv8tion.jda.api.entities.ChannelType ChannelTypes} for the {@link #getSortBucket() sorting bucket}.
+     * The {@link ChannelType ChannelTypes} for the {@link #getSortBucket() sorting bucket}.
      *
      * @return The channel types
      *
-     * @see    net.dv8tion.jda.api.entities.ChannelType#fromSortBucket(int)
+     * @see    ChannelType#fromSortBucket(int)
      */
     @Nonnull
     default EnumSet<ChannelType> getChannelTypes()

@@ -16,7 +16,10 @@
 
 package net.dv8tion.jda.api.entities.channel.unions;
 
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
+import net.dv8tion.jda.api.entities.channel.attribute.IThreadContainer;
+import net.dv8tion.jda.api.entities.channel.concrete.*;
+import net.dv8tion.jda.api.entities.channel.middleman.*;
 
 import javax.annotation.Nonnull;
 
@@ -215,7 +218,7 @@ public interface GuildChannelUnion extends GuildChannel
     AudioChannel asAudioChannel();
 
     /**
-     * Casts this union to a {@link IThreadContainer}.
+     * Casts this union to a {@link net.dv8tion.jda.api.entities.channel.attribute.IThreadContainer}.
      * This method exists for developer discoverability.
      *
      * Note: This is effectively equivalent to using the cast operator:
@@ -228,9 +231,9 @@ public interface GuildChannelUnion extends GuildChannel
      * You can use <code>channel instanceof IThreadContainer</code> to validate whether you can call this method.
      *
      * @throws IllegalStateException
-     *         If the channel represented by this union is not actually a {@link IThreadContainer}.
+     *         If the channel represented by this union is not actually a {@link net.dv8tion.jda.api.entities.channel.attribute.IThreadContainer}.
      *
-     * @return The channel as a {@link IThreadContainer}
+     * @return The channel as a {@link net.dv8tion.jda.api.entities.channel.attribute.IThreadContainer}
      */
     IThreadContainer asThreadContainer();
 

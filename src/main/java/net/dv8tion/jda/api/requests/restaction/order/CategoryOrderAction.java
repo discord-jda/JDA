@@ -16,13 +16,13 @@
 
 package net.dv8tion.jda.api.requests.restaction.order;
 
-import net.dv8tion.jda.api.entities.Category;
+import net.dv8tion.jda.api.entities.channel.concrete.Category;
 
 import javax.annotation.Nonnull;
 
 /**
  * An extension of {@link ChannelOrderAction ChannelOrderAction} with
- * similar functionality, but constrained to the bounds of a single {@link net.dv8tion.jda.api.entities.Category Category}.
+ * similar functionality, but constrained to the bounds of a single {@link net.dv8tion.jda.api.entities.channel.concrete.Category Category}.
  * <br>To apply the changes you must finish the {@link net.dv8tion.jda.api.requests.RestAction RestAction}.
  *
  * <p>Before you can use any of the {@code move} methods
@@ -36,10 +36,10 @@ import javax.annotation.Nonnull;
 public interface CategoryOrderAction extends ChannelOrderAction
 {
     /**
-     * Gets the {@link net.dv8tion.jda.api.entities.Category Category}
+     * Gets the {@link net.dv8tion.jda.api.entities.channel.concrete.Category Category}
      * controlled by this CategoryOrderAction.
      *
-     * @return The {@link net.dv8tion.jda.api.entities.Category Category}
+     * @return The {@link net.dv8tion.jda.api.entities.channel.concrete.Category Category}
      *         of this CategoryOrderAction.
      */
     @Nonnull

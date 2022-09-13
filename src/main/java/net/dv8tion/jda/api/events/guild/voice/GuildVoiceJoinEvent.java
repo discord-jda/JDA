@@ -17,13 +17,13 @@
 package net.dv8tion.jda.api.events.guild.voice;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.AudioChannel;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
 
 import javax.annotation.Nonnull;
 
 /**
- * Indicates that a {@link net.dv8tion.jda.api.entities.Member Member} connected to a {@link net.dv8tion.jda.api.entities.AudioChannel AudioChannel}.
+ * Indicates that a {@link net.dv8tion.jda.api.entities.Member Member} connected to a {@link net.dv8tion.jda.api.entities.channel.middleman.AudioChannel AudioChannel}.
  *
  * <p><b>When the {@link net.dv8tion.jda.api.entities.Member Member} is moved a {@link net.dv8tion.jda.api.events.guild.voice.GuildVoiceMoveEvent GuildVoiceMoveEvent} is fired instead</b>
  *

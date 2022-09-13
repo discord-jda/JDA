@@ -23,6 +23,11 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.Region;
 import net.dv8tion.jda.api.audio.hooks.ConnectionStatus;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.channel.Channel;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
+import net.dv8tion.jda.api.entities.channel.concrete.*;
+import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.unions.DefaultGuildChannelUnion;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import net.dv8tion.jda.api.entities.sticker.GuildSticker;
@@ -69,7 +74,6 @@ import net.dv8tion.jda.internal.requests.restaction.pagination.AuditLogPaginatio
 import net.dv8tion.jda.internal.requests.restaction.pagination.BanPaginationActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
-import net.dv8tion.jda.internal.utils.PermissionUtil;
 import net.dv8tion.jda.internal.utils.UnlockHook;
 import net.dv8tion.jda.internal.utils.cache.AbstractCacheView;
 import net.dv8tion.jda.internal.utils.cache.MemberCacheViewImpl;
@@ -682,13 +686,7 @@ public class GuildImpl implements Guild
     public List<GuildChannel> getChannels(boolean includeHidden)
     {
         Member self = getSelfMember();
-        Predicate<GuildChannel> filterHidden = it -> {
-            //TODO-v5: Do we need to if-protected cast here? If the channel _isnt_ a IPermissionContainer, then would we even be using this filter on it?
-            if (it instanceof IPermissionContainer) {
-                return self.hasPermission((IPermissionContainer) it, Permission.VIEW_CHANNEL);
-            }
-            return false;
-        };
+        Predicate<GuildChannel> filterHidden = it -> self.hasPermission(it, Permission.VIEW_CHANNEL);
 
         List<GuildChannel> channels;
         SnowflakeCacheViewImpl<Category> categoryView = getCategoriesView();
@@ -1309,11 +1307,12 @@ public class GuildImpl implements Guild
         if (channel == null)
             throw new IllegalStateException("You cannot move a Member who isn't in an AudioChannel!");
 
-        if (!PermissionUtil.checkPermission((IPermissionContainer) channel, getSelfMember(), Permission.VOICE_MOVE_OTHERS))
+        Member selfMember = getSelfMember();
+        if (!selfMember.hasPermission(channel, Permission.VOICE_MOVE_OTHERS))
             throw new InsufficientPermissionException(channel, Permission.VOICE_MOVE_OTHERS, "This account does not have Permission to MOVE_OTHERS out of the channel that the Member is currently in.");
 
         if (audioChannel != null
-            && !getSelfMember().hasPermission(audioChannel, Permission.VOICE_CONNECT)
+            && !selfMember.hasPermission(audioChannel, Permission.VOICE_CONNECT)
             && !member.hasPermission(audioChannel, Permission.VOICE_CONNECT))
             throw new InsufficientPermissionException(audioChannel, Permission.VOICE_CONNECT,
                                                       "Neither this account nor the Member that is attempting to be moved have the VOICE_CONNECT permission " +

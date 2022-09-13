@@ -17,14 +17,15 @@
 package net.dv8tion.jda.api.requests.restaction;
 
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.requests.FluentRestAction;
 import net.dv8tion.jda.api.utils.messages.MessageEditData;
 import net.dv8tion.jda.api.utils.messages.MessageEditRequest;
 
 /**
- * Specialized {@link net.dv8tion.jda.api.requests.RestAction RestAction} used for editing existing messages in {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannels}.
+ * Specialized {@link net.dv8tion.jda.api.requests.RestAction RestAction} used for editing existing messages in {@link MessageChannel MessageChannels}.
  *
- * @see net.dv8tion.jda.api.entities.MessageChannel#editMessageById(long, MessageEditData) MessageChannel.editMessageById(...)
+ * @see MessageChannel#editMessageById(long, MessageEditData) MessageChannel.editMessageById(...)
  */
 public interface MessageEditAction extends MessageEditRequest<MessageEditAction>, FluentRestAction<Message, MessageEditAction>
 {

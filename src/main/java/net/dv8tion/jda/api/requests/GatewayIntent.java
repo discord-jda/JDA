@@ -146,7 +146,7 @@ public enum GatewayIntent
      *
      * <p>This specifically affects messages received through the message history of a channel, or through {@link GenericMessageEvent Message Events}.
      * The content restriction does not apply if the message <b>mentions the bot directly</b> (using @username), sent by the bot itself,
-     * or if the message is a direct message from a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}.
+     * or if the message is a direct message from a {@link net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel PrivateChannel}.
      * Affected are all user-generated content fields of a message, such as:
      * <ul>
      *     <li>{@link Message#getContentRaw()}, {@link Message#getContentDisplay()}, {@link Message#getContentStripped()}</li>

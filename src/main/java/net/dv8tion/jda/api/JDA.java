@@ -17,7 +17,11 @@
 package net.dv8tion.jda.api;
 
 import net.dv8tion.jda.api.entities.*;
-import net.dv8tion.jda.api.entities.channel.IGuildChannelContainer;
+import net.dv8tion.jda.api.entities.channel.Channel;
+import net.dv8tion.jda.api.entities.channel.attribute.IGuildChannelContainer;
+import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import net.dv8tion.jda.api.entities.sticker.*;
 import net.dv8tion.jda.api.hooks.IEventManager;
@@ -1244,7 +1248,7 @@ public interface JDA extends IGuildChannelContainer
 
     /**
      * {@link net.dv8tion.jda.api.utils.cache.SnowflakeCacheView SnowflakeCacheView} of
-     * all cached {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannels} visible to this JDA session.
+     * all cached {@link PrivateChannel PrivateChannels} visible to this JDA session.
      *
      * @return {@link net.dv8tion.jda.api.utils.cache.SnowflakeCacheView SnowflakeCacheView}
      */
@@ -1252,14 +1256,14 @@ public interface JDA extends IGuildChannelContainer
     SnowflakeCacheView<PrivateChannel> getPrivateChannelCache();
 
     /**
-     * An unmodifiable list of all known {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannels}.
+     * An unmodifiable list of all known {@link PrivateChannel PrivateChannels}.
      *
      * <p>This copies the backing store into a list. This means every call
      * creates a new list with O(n) complexity. It is recommended to store this into
      * a local variable or use {@link #getPrivateChannelCache()} and use its more efficient
      * versions of handling these values.
      *
-     * @return Possibly-empty list of all {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannels}.
+     * @return Possibly-empty list of all {@link PrivateChannel PrivateChannels}.
      */
     @Nonnull
     default List<PrivateChannel> getPrivateChannels()
@@ -1268,16 +1272,16 @@ public interface JDA extends IGuildChannelContainer
     }
 
     /**
-     * This returns the {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel} which has the same id as the one provided.
-     * <br>If there is no known {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel} with an id that matches the provided
+     * This returns the {@link PrivateChannel PrivateChannel} which has the same id as the one provided.
+     * <br>If there is no known {@link PrivateChannel PrivateChannel} with an id that matches the provided
      * one, then this returns {@code null}.
      *
      * @param  id
-     *         The id of the {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}.
+     *         The id of the {@link PrivateChannel PrivateChannel}.
      * @throws java.lang.NumberFormatException
      *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
      *
-     * @return Possibly-null {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel} with matching id.
+     * @return Possibly-null {@link PrivateChannel PrivateChannel} with matching id.
      */
     @Nullable
     default PrivateChannel getPrivateChannelById(@Nonnull String id)
@@ -1286,14 +1290,14 @@ public interface JDA extends IGuildChannelContainer
     }
 
     /**
-     * This returns the {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel} which has the same id as the one provided.
-     * <br>If there is no known {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel} with an id that matches the provided
+     * This returns the {@link PrivateChannel PrivateChannel} which has the same id as the one provided.
+     * <br>If there is no known {@link PrivateChannel PrivateChannel} with an id that matches the provided
      * one, then this returns {@code null}.
      *
      * @param  id
-     *         The id of the {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}.
+     *         The id of the {@link PrivateChannel PrivateChannel}.
      *
-     * @return Possibly-null {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel} with matching id.
+     * @return Possibly-null {@link PrivateChannel PrivateChannel} with matching id.
      */
     @Nullable
     default PrivateChannel getPrivateChannelById(long id)
@@ -1382,7 +1386,7 @@ public interface JDA extends IGuildChannelContainer
      *
      * <p><b>Hint</b>: To check whether you can use an {@link RichCustomEmoji} in a specific
      * context you can use {@link RichCustomEmoji#canInteract(net.dv8tion.jda.api.entities.Member)} or {@link
-     * RichCustomEmoji#canInteract(net.dv8tion.jda.api.entities.User, net.dv8tion.jda.api.entities.MessageChannel)}
+     * RichCustomEmoji#canInteract(net.dv8tion.jda.api.entities.User, MessageChannel)}
      *
      * <p><b>Unicode emojis are not included as {@link RichCustomEmoji Custom Emoji}!</b>
      *
