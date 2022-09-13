@@ -523,7 +523,7 @@ public interface MessageChannel extends Channel, Formattable
      *     <br>if this channel was deleted</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#CANNOT_SEND_TO_USER CANNOT_SEND_TO_USER}
-     *     <br>If this is a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel} and the currently logged in account
+     *     <br>If this is a {@link PrivateChannel} and the currently logged in account
      *         does not share any Guilds with the recipient User</li>
      * </ul>
      *
@@ -537,7 +537,7 @@ public interface MessageChannel extends Channel, Formattable
      * @throws IllegalArgumentException
      *         If any of the components is null or more than {@value Message#MAX_COMPONENT_COUNT} component layouts are provided
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If this is a {@link net.dv8tion.jda.api.entities.GuildMessageChannel GuildMessageChannel} and this account does not have
+     *         If this is a {@link GuildMessageChannel} and this account does not have
      *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} or {@link net.dv8tion.jda.api.Permission#MESSAGE_SEND Permission.MESSAGE_SEND}
      *
      * @return {@link MessageCreateAction}
@@ -563,7 +563,7 @@ public interface MessageChannel extends Channel, Formattable
      *     <br>if this channel was deleted</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#CANNOT_SEND_TO_USER CANNOT_SEND_TO_USER}
-     *     <br>If this is a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel} and the currently logged in account
+     *     <br>If this is a {@link PrivateChannel} and the currently logged in account
      *         does not share any Guilds with the recipient User</li>
      * </ul>
      *
@@ -593,7 +593,7 @@ public interface MessageChannel extends Channel, Formattable
      * @throws IllegalArgumentException
      *         If any of the components is null or more than {@value Message#MAX_COMPONENT_COUNT} component layouts are provided
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If this is a {@link net.dv8tion.jda.api.entities.GuildMessageChannel GuildMessageChannel} and this account does not have
+     *         If this is a {@link GuildMessageChannel} and this account does not have
      *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} or {@link net.dv8tion.jda.api.Permission#MESSAGE_SEND Permission.MESSAGE_SEND}
      *
      * @return {@link MessageCreateAction}
