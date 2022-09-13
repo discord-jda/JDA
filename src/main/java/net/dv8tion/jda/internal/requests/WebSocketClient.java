@@ -380,7 +380,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                   .addListener(this)
                   .connect();
         }
-        catch (IOException | WebSocketException | NullPointerException e)
+        catch (IOException | WebSocketException | IllegalArgumentException e)
         {
             resumeUrl = null;
             api.resetGatewayUrl();
