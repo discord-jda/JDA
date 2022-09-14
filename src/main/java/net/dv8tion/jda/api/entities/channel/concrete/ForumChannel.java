@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.attribute.IAgeRestrictedChannel;
 import net.dv8tion.jda.api.entities.channel.attribute.IThreadContainer;
+import net.dv8tion.jda.api.entities.channel.attribute.IWebhookContainer;
 import net.dv8tion.jda.api.entities.channel.forums.ForumTag;
 import net.dv8tion.jda.api.entities.channel.middleman.StandardGuildChannel;
 import net.dv8tion.jda.api.managers.channel.concrete.ForumChannelManager;
@@ -46,7 +47,7 @@ import java.util.List;
  * @see Guild#createForumChannel(String, Category)
  * @see #createForumPost(String, MessageCreateData)
  */
-public interface ForumChannel extends StandardGuildChannel, IThreadContainer, IAgeRestrictedChannel
+public interface ForumChannel extends StandardGuildChannel, IThreadContainer, IWebhookContainer, IAgeRestrictedChannel
 {
     /**
      * The maximum length of a forum topic ({@value #MAX_FORUM_TOPIC_LENGTH})

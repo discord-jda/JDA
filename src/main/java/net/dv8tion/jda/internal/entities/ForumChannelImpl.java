@@ -35,6 +35,7 @@ import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 import net.dv8tion.jda.internal.entities.channel.middleman.AbstractGuildChannelImpl;
 import net.dv8tion.jda.internal.entities.channel.mixin.attribute.IThreadContainerMixin;
+import net.dv8tion.jda.internal.entities.channel.mixin.attribute.IWebhookContainerMixin;
 import net.dv8tion.jda.internal.entities.channel.mixin.middleman.StandardGuildChannelMixin;
 import net.dv8tion.jda.internal.managers.channel.concrete.ForumChannelManagerImpl;
 import net.dv8tion.jda.internal.requests.restaction.ForumPostActionImpl;
@@ -52,6 +53,7 @@ public class ForumChannelImpl extends AbstractGuildChannelImpl<ForumChannelImpl>
         implements ForumChannel,
                    GuildChannelUnion,
                    StandardGuildChannelMixin<ForumChannelImpl>,
+                   IWebhookContainerMixin<ForumChannelImpl>,
                    IThreadContainerMixin<ForumChannelImpl>
 {
     private final TLongObjectMap<PermissionOverride> overrides = MiscUtil.newLongMap();
