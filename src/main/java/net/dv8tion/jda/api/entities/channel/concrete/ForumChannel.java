@@ -17,8 +17,13 @@
 package net.dv8tion.jda.api.entities.channel.concrete;
 
 import net.dv8tion.jda.annotations.Incubating;
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.ForumTag;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.channel.Channel;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.attribute.IAgeRestrictedChannel;
+import net.dv8tion.jda.api.entities.channel.attribute.IThreadContainer;
+import net.dv8tion.jda.api.entities.channel.middleman.StandardGuildChannel;
 import net.dv8tion.jda.api.managers.channel.concrete.ForumChannelManager;
 import net.dv8tion.jda.api.requests.restaction.ChannelAction;
 import net.dv8tion.jda.api.requests.restaction.ForumPostAction;
@@ -87,7 +92,7 @@ public interface ForumChannel extends StandardGuildChannel, IThreadContainer, IA
 
     /**
      * The slowmode set for this ForumChannel.
-     * <br>If slowmode is set this returns an {@code int} between 1 and {@link net.dv8tion.jda.api.entities.TextChannel#MAX_SLOWMODE TextChannel.MAX_SLOWMODE}.
+     * <br>If slowmode is set this returns an {@code int} between 1 and {@link net.dv8tion.jda.api.entities.channel.concrete.TextChannel#MAX_SLOWMODE TextChannel.MAX_SLOWMODE}.
      * <br>If not set this returns {@code 0}.
      *
      * <p>Note bots are unaffected by this.
@@ -95,7 +100,7 @@ public interface ForumChannel extends StandardGuildChannel, IThreadContainer, IA
      * {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} permission also
      * grants immunity to slowmode.
      *
-     * @return The slowmode for this ForumChannel, between 1 and {@link net.dv8tion.jda.api.entities.TextChannel#MAX_SLOWMODE TextChannel.MAX_SLOWMODE}, or {@code 0} if no slowmode is set.
+     * @return The slowmode for this ForumChannel, between 1 and {@link net.dv8tion.jda.api.entities.channel.concrete.TextChannel#MAX_SLOWMODE TextChannel.MAX_SLOWMODE}, or {@code 0} if no slowmode is set.
      */
     int getSlowmode();
 

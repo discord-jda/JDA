@@ -18,7 +18,7 @@ package net.dv8tion.jda.api.events.thread;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.ThreadChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
 import net.dv8tion.jda.api.events.Event;
 
 import javax.annotation.Nonnull;

@@ -187,7 +187,7 @@ public class FileProxy
     protected CompletableFuture<Path> downloadToPath(String url)
     {
         final HttpUrl parsedUrl = HttpUrl.parse(url);
-        Checks.check(parsedUrl != null, "URL '" + url + "' is not valid");
+        Checks.check(parsedUrl != null, "URL '%s' is invalid", url);
 
         final List<String> segments = parsedUrl.pathSegments();
         final String fileName = segments.get(segments.size() - 1);
@@ -198,8 +198,11 @@ public class FileProxy
 
     protected CompletableFuture<Path> downloadToPath(String url, Path path)
     {
+        //Turn this into an absolute path so we can check the parent folder
+        final Path absolute = path.toAbsolutePath();
         //Check if the parent path, the folder, exists
-        Checks.check(Files.exists(path.getParent()), "Parent folder of the file '" + path.toAbsolutePath() + "' does not exist.");
+        final Path parent = absolute.getParent();
+        Checks.check(parent != null && Files.exists(parent), "Parent folder of the file '%s' does not exist.", absolute);
 
         final DownloadTask downloadTask = downloadInternal(url);
 
@@ -208,14 +211,14 @@ public class FileProxy
             {
                 //Temporary file follows this pattern: filename + random_number + ".part"
                 // The random number is generated until a filename becomes valid, until no file with the same name exists in the tmp directory
-                final Path tmpPath = Files.createTempFile(path.getFileName().toString(), ".part");
+                final Path tmpPath = Files.createTempFile(absolute.getFileName().toString(), ".part");
                 //A user might use a file's presence as an indicator of something being successfully downloaded,
                 //This might prevent a file from being partial, say, if the user shuts down its bot while it's downloading something
                 //Meanwhile, the time window to "corrupt" a file is very small when moving it
                 //This is why we copy the file into a temporary file and then move it.
                 Files.copy(stream, tmpPath, StandardCopyOption.REPLACE_EXISTING);
-                Files.move(tmpPath, path, StandardCopyOption.REPLACE_EXISTING);
-                return path;
+                Files.move(tmpPath, absolute, StandardCopyOption.REPLACE_EXISTING);
+                return absolute;
             }
             catch (IOException e)
             {

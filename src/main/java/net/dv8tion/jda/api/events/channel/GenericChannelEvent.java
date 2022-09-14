@@ -17,10 +17,10 @@
 package net.dv8tion.jda.api.events.channel;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.Channel;
-import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.GuildChannel;
+import net.dv8tion.jda.api.entities.channel.Channel;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.unions.ChannelUnion;
 import net.dv8tion.jda.api.events.Event;
 
@@ -68,11 +68,11 @@ public class GenericChannelEvent extends Event
 
     /**
      * The {@link net.dv8tion.jda.api.entities.Guild Guild} in which this channel event happened.
-     * <br>If this channel event was not received in a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel},
+     * <br>If this channel event was not received in a {@link net.dv8tion.jda.api.entities.channel.concrete.TextChannel TextChannel},
      * this will throw an {@link java.lang.IllegalStateException}.
      *
      * @throws java.lang.IllegalStateException
-     *         If this channel event did not happen in a {@link net.dv8tion.jda.api.entities.GuildChannel}.
+     *         If this channel event did not happen in a {@link net.dv8tion.jda.api.entities.channel.middleman.GuildChannel}.
      *
      * @return The Guild in which this channel event happened
      *

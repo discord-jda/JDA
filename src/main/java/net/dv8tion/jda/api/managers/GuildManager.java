@@ -18,8 +18,8 @@ package net.dv8tion.jda.api.managers;
 
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Icon;
-import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.entities.VoiceChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -190,7 +190,7 @@ public interface GuildManager extends Manager<GuildManager>
     GuildManager setSplash(@Nullable Icon splash);
 
     /**
-     * Sets the AFK {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel} of this {@link net.dv8tion.jda.api.entities.Guild Guild}.
+     * Sets the AFK {@link net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel VoiceChannel} of this {@link net.dv8tion.jda.api.entities.Guild Guild}.
      *
      * @param  afkChannel
      *         The new afk channel for this {@link net.dv8tion.jda.api.entities.Guild Guild}
@@ -206,7 +206,7 @@ public interface GuildManager extends Manager<GuildManager>
     GuildManager setAfkChannel(@Nullable VoiceChannel afkChannel);
 
     /**
-     * Sets the system {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} of this {@link net.dv8tion.jda.api.entities.Guild Guild}.
+     * Sets the system {@link net.dv8tion.jda.api.entities.channel.concrete.TextChannel TextChannel} of this {@link net.dv8tion.jda.api.entities.Guild Guild}.
      *
      * @param  systemChannel
      *         The new system channel for this {@link net.dv8tion.jda.api.entities.Guild Guild}
@@ -222,7 +222,7 @@ public interface GuildManager extends Manager<GuildManager>
     GuildManager setSystemChannel(@Nullable TextChannel systemChannel);
 
     /**
-     * Sets the rules {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} of this {@link net.dv8tion.jda.api.entities.Guild Guild}.
+     * Sets the rules {@link net.dv8tion.jda.api.entities.channel.concrete.TextChannel TextChannel} of this {@link net.dv8tion.jda.api.entities.Guild Guild}.
      *
      * @param  rulesChannel
      *         The new rules channel for this {@link net.dv8tion.jda.api.entities.Guild Guild}
@@ -238,7 +238,7 @@ public interface GuildManager extends Manager<GuildManager>
     GuildManager setRulesChannel(@Nullable TextChannel rulesChannel);
 
     /**
-     * Sets the community updates {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} of this {@link net.dv8tion.jda.api.entities.Guild Guild}.
+     * Sets the community updates {@link net.dv8tion.jda.api.entities.channel.concrete.TextChannel TextChannel} of this {@link net.dv8tion.jda.api.entities.Guild Guild}.
      *
      * @param  communityUpdatesChannel
      *         The new community updates channel for this {@link net.dv8tion.jda.api.entities.Guild Guild}

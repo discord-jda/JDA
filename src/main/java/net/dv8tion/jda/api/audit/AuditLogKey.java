@@ -16,7 +16,15 @@
 
 package net.dv8tion.jda.api.audit;
 
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.channel.Channel;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
+import net.dv8tion.jda.api.entities.channel.attribute.ICategorizableChannel;
+import net.dv8tion.jda.api.entities.channel.attribute.IThreadContainer;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import net.dv8tion.jda.api.entities.sticker.GuildSticker;
 
@@ -217,16 +225,16 @@ public enum AuditLogKey
     CHANNEL_PARENT("parent_id"),
 
     /**
-     * Change of the {@link net.dv8tion.jda.api.entities.TextChannel#getTopic() TextChannel.getTopic()} value.
-     * <br>Only for {@link net.dv8tion.jda.api.entities.ChannelType#TEXT ChannelType.TEXT}
+     * Change of the {@link TextChannel#getTopic() TextChannel.getTopic()} value.
+     * <br>Only for {@link ChannelType#TEXT ChannelType.TEXT}
      *
      * <p>Expected type: <b>String</b>
      */
     CHANNEL_TOPIC("topic"),
 
     /**
-     * Change of the {@link net.dv8tion.jda.api.entities.TextChannel#getSlowmode() TextChannel.getSlowmode()} value.
-     * <br>Only for {@link net.dv8tion.jda.api.entities.ChannelType#TEXT ChannelType.TEXT}
+     * Change of the {@link TextChannel#getSlowmode() TextChannel.getSlowmode()} value.
+     * <br>Only for {@link ChannelType#TEXT ChannelType.TEXT}
      *
      * <p>Expected type: <b>Integer</b>
      */
@@ -240,16 +248,16 @@ public enum AuditLogKey
     CHANNEL_DEFAULT_THREAD_SLOWMODE("default_thread_rate_limit_per_user"),
 
     /**
-     * Change of the {@link net.dv8tion.jda.api.entities.VoiceChannel#getBitrate() VoiceChannel.getBitrate()} value.
-     * <br>Only for {@link net.dv8tion.jda.api.entities.ChannelType#VOICE ChannelType.VOICE}
+     * Change of the {@link VoiceChannel#getBitrate() VoiceChannel.getBitrate()} value.
+     * <br>Only for {@link ChannelType#VOICE ChannelType.VOICE}
      *
      * <p>Expected type: <b>Integer</b>
      */
     CHANNEL_BITRATE("bitrate"),
 
     /**
-     * Change of the {@link net.dv8tion.jda.api.entities.VoiceChannel#getUserLimit() VoiceChannel.getUserLimit()} value.
-     * <br>Only for {@link net.dv8tion.jda.api.entities.ChannelType#VOICE ChannelType.VOICE}
+     * Change of the {@link VoiceChannel#getUserLimit() VoiceChannel.getUserLimit()} value.
+     * <br>Only for {@link ChannelType#VOICE ChannelType.VOICE}
      *
      * <p>Expected type: <b>Integer</b>
      */
@@ -264,7 +272,7 @@ public enum AuditLogKey
 
     /**
      * Change of the {@link net.dv8tion.jda.api.Region Region} value.
-     * <br>Only for {@link net.dv8tion.jda.api.entities.ChannelType#VOICE ChannelType.VOICE} and {@link net.dv8tion.jda.api.entities.ChannelType#STAGE ChannelType.STAGE}
+     * <br>Only for {@link ChannelType#VOICE ChannelType.VOICE} and {@link ChannelType#STAGE ChannelType.STAGE}
      *
      * <p>Expected type: <b>String</b></p>
      */
@@ -272,7 +280,7 @@ public enum AuditLogKey
 
     /**
      * The integer type of this channel.
-     * <br>Use with {@link net.dv8tion.jda.api.entities.ChannelType#fromId(int) ChannelType.fromId(int)}.
+     * <br>Use with {@link ChannelType#fromId(int) ChannelType.fromId(int)}.
      *
      * <p>Expected type: <b>int</b>
      */
@@ -295,14 +303,14 @@ public enum AuditLogKey
     // THREADS
 
     /**
-     * Change of the {@link net.dv8tion.jda.api.entities.ThreadChannel#getName() ThreadChannel.getName()} value.
+     * Change of the {@link ThreadChannel#getName() ThreadChannel.getName()} value.
      *
      * <p>Expected type: <b>String</b>
      */
     THREAD_NAME("name"),
 
     /**
-     * Change of the {@link net.dv8tion.jda.api.entities.ThreadChannel#getSlowmode() ThreadChannel.getSlowmode()} value.
+     * Change of the {@link ThreadChannel#getSlowmode() ThreadChannel.getSlowmode()} value.
      *
      * <p>Expected type: <b>Integer</b>
      */

@@ -542,6 +542,44 @@ public class DataArray implements Iterable<Object>, SerializableArray
     }
 
     /**
+     * Resolves the value at the specified index to a double.
+     *
+     * @param  index
+     *         The index to resolve
+     *
+     * @throws net.dv8tion.jda.api.exceptions.ParsingException
+     *         If the value is of the wrong type
+     *
+     * @return The resolved double value
+     */
+    public double getDouble(int index)
+    {
+        Double value = get(Double.class, index, Double::parseDouble, Number::doubleValue);
+        if (value == null)
+            throw valueError(index, "double");
+        return value;
+    }
+
+    /**
+     * Resolves the value at the specified index to a double.
+     *
+     * @param  index
+     *         The index to resolve
+     * @param  defaultValue
+     *         Alternative value to use when the value associated with the index is null
+     *
+     * @throws net.dv8tion.jda.api.exceptions.ParsingException
+     *         If the value is of the wrong type
+     *
+     * @return The resolved double value
+     */
+    public double getDouble(int index, double defaultValue)
+    {
+        Double value = get(Double.class, index, Double::parseDouble, Number::doubleValue);
+        return value == null ? defaultValue : value;
+    }
+
+    /**
      * Appends the provided value to the end of the array.
      *
      * @param  value

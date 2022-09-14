@@ -17,7 +17,10 @@
 package net.dv8tion.jda.api.managers.channel.middleman;
 
 import net.dv8tion.jda.api.Region;
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
+import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
 import net.dv8tion.jda.api.managers.channel.ChannelManager;
 
 import javax.annotation.CheckReturnValue;
@@ -37,7 +40,7 @@ public interface AudioChannelManager<T extends AudioChannel, M extends AudioChan
      *         The new bitrate for the selected {@link VoiceChannel VoiceChannel}
      *
      * @throws IllegalStateException
-     *         If the selected {@link GuildChannel GuildChannel}'s type is not {@link ChannelType#VOICE VOICE}
+     *         If the selected {@link net.dv8tion.jda.api.entities.channel.middleman.GuildChannel GuildChannel}'s type is not {@link ChannelType#VOICE VOICE}
      * @throws IllegalArgumentException
      *         If the provided bitrate is less than 8000 or greater than {@link Guild#getMaxBitrate()}.
      *
@@ -75,7 +78,7 @@ public interface AudioChannelManager<T extends AudioChannel, M extends AudioChan
      * @param region
      *        The new {@link Region Region}
      * @throws IllegalStateException
-     *         If the selected {@link GuildChannel GuildChannel}'s type is not {@link ChannelType#VOICE VOICE}
+     *         If the selected {@link net.dv8tion.jda.api.entities.channel.middleman.GuildChannel GuildChannel}'s type is not {@link ChannelType#VOICE VOICE}
      * @throws IllegalArgumentException
      *         If the provided Region is not in the list of usable values
      * @return ChannelManager for chaining convenience

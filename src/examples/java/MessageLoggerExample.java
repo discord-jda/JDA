@@ -17,9 +17,9 @@
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
-import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
@@ -119,11 +119,6 @@ public class MessageLoggerExample extends ListenerAdapter
 
             // Now we can access the fully loaded cache and show some statistics or do other cache dependent things
             System.out.println("Guilds: " + jda.getGuildCache().size());
-        }
-        catch (LoginException e)
-        {
-            // This is thrown if the token is invalid or incorrectly formatted
-            e.printStackTrace();
         }
         catch (InterruptedException e)
         {

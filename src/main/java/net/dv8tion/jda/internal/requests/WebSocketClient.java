@@ -22,8 +22,8 @@ import gnu.trove.map.TLongObjectMap;
 import net.dv8tion.jda.api.*;
 import net.dv8tion.jda.api.audio.hooks.ConnectionListener;
 import net.dv8tion.jda.api.audio.hooks.ConnectionStatus;
-import net.dv8tion.jda.api.entities.AudioChannel;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
 import net.dv8tion.jda.api.events.*;
 import net.dv8tion.jda.api.exceptions.ParsingException;
 import net.dv8tion.jda.api.managers.AudioManager;
@@ -346,38 +346,41 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             throw new RejectedExecutionException("JDA is shutdown!");
         initiating = true;
 
-        String url = (resumeUrl != null ? resumeUrl : api.getGatewayUrl())
-                + "?encoding=" + encoding.name().toLowerCase()
-                + "&v=" + JDAInfo.DISCORD_GATEWAY_VERSION;
-        if (compression != Compression.NONE)
-        {
-            url += "&compress=" + compression.getKey();
-            switch (compression)
-            {
-                case ZLIB:
-                    if (decompressor == null || decompressor.getType() != Compression.ZLIB)
-                        decompressor = new ZlibDecompressor(api.getMaxBufferSize());
-                    break;
-                default:
-                    throw new IllegalStateException("Unknown compression");
-            }
-        }
-
         try
         {
+            String gatewayUrl = resumeUrl != null ? resumeUrl : api.getGatewayUrl();
+            gatewayUrl = IOUtil.addQuery(gatewayUrl,
+                "encoding", encoding.name().toLowerCase(),
+                "v", JDAInfo.DISCORD_GATEWAY_VERSION
+            );
+            if (compression != Compression.NONE)
+            {
+                gatewayUrl = IOUtil.addQuery(gatewayUrl, "compress", compression.getKey());
+                switch (compression)
+                {
+                    case ZLIB:
+                        if (decompressor == null || decompressor.getType() != Compression.ZLIB)
+                            decompressor = new ZlibDecompressor(api.getMaxBufferSize());
+                        break;
+                    default:
+                        throw new IllegalStateException("Unknown compression");
+                }
+            }
+
             WebSocketFactory socketFactory = new WebSocketFactory(api.getWebSocketFactory());
-            IOUtil.setServerName(socketFactory, url);
+            IOUtil.setServerName(socketFactory, gatewayUrl);
             if (socketFactory.getSocketTimeout() > 0)
                 socketFactory.setSocketTimeout(Math.max(1000, socketFactory.getSocketTimeout()));
             else
                 socketFactory.setSocketTimeout(10000);
-            socket = socketFactory.createSocket(url);
+
+            socket = socketFactory.createSocket(gatewayUrl);
             socket.setDirectTextMessage(true);
             socket.addHeader("Accept-Encoding", "gzip")
                   .addListener(this)
                   .connect();
         }
-        catch (IOException | WebSocketException e)
+        catch (IOException | WebSocketException | IllegalArgumentException e)
         {
             resumeUrl = null;
             api.resetGatewayUrl();
