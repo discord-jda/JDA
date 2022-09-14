@@ -22,6 +22,7 @@ import gnu.trove.set.hash.TLongHashSet;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.Region;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.channel.ChannelFlag;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.attribute.IPermissionContainer;
 import net.dv8tion.jda.api.entities.channel.concrete.Category;
@@ -62,6 +63,7 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
 
     protected T channel;
 
+    protected final EnumSet<ChannelFlag> flags;
     protected ThreadChannel.AutoArchiveDuration autoArchiveDuration;
     protected List<BaseForumTag> availableTags;
     protected List<String> appliedTags;
@@ -88,6 +90,7 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
         super(channel.getJDA(), Route.Channels.MODIFY_CHANNEL.compile(channel.getId()));
         this.channel = channel;
         this.type = channel.getType();
+        this.flags = channel.getFlags();
 
         if (isPermissionChecksEnabled())
             checkPermissions();
@@ -133,6 +136,23 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
                 this.overridesAdd.clear();
             });
         }
+
+        if ((fields & PINNED) == PINNED)
+        {
+            if (channel.getFlags().contains(ChannelFlag.PINNED))
+                this.flags.add(ChannelFlag.PINNED);
+            else
+                this.flags.remove(ChannelFlag.PINNED);
+        }
+
+        if ((fields & REQUIRE_TAG) == REQUIRE_TAG)
+        {
+            if (channel.getFlags().contains(ChannelFlag.REQUIRE_TAG))
+                this.flags.add(ChannelFlag.REQUIRE_TAG);
+            else
+                this.flags.remove(ChannelFlag.REQUIRE_TAG);
+        }
+
         return (M) this;
     }
 
@@ -158,6 +178,8 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
         this.region = null;
         this.availableTags = null;
         this.appliedTags = null;
+        this.flags.clear();
+        this.flags.addAll(channel.getFlags());
         withLock(lock, (lock) ->
         {
             this.overridesRem.clear();
@@ -543,6 +565,26 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
         return (M) this;
     }
 
+    public M setPinned(boolean pinned)
+    {
+        if (pinned)
+            flags.add(ChannelFlag.PINNED);
+        else
+            flags.remove(ChannelFlag.PINNED);
+        set |= PINNED;
+        return (M) this;
+    }
+
+    public M setRequireTag(boolean requireTag)
+    {
+        if (requireTag)
+            flags.add(ChannelFlag.REQUIRE_TAG);
+        else
+            flags.remove(ChannelFlag.REQUIRE_TAG);
+        set |= REQUIRE_TAG;
+        return (M) this;
+    }
+
     public M setAvailableTags(List<? extends BaseForumTag> tags)
     {
         if (type != ChannelType.FORUM)
@@ -606,6 +648,8 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
             frame.put("available_tags", DataArray.fromCollection(availableTags));
         if (shouldUpdate(APPLIED_TAGS))
             frame.put("applied_tags", DataArray.fromCollection(appliedTags));
+        if (shouldUpdate(PINNED | REQUIRE_TAG))
+            frame.put("flags", ChannelFlag.getRaw(flags));
 
         withLock(lock, (lock) ->
         {

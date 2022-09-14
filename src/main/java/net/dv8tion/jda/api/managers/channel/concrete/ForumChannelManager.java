@@ -48,6 +48,21 @@ public interface ForumChannelManager extends
         IAgeRestrictedChannelManager<ForumChannel, ForumChannelManager>
 {
     /**
+     * Sets the tag requirement state of this {@link ForumChannel}.
+     * <br>If true, all new posts must have at least one tag.
+     *
+     * @param  requireTag
+     *         The new tag requirement state for the selected {@link ForumChannel}
+     *
+     * @return ChannelManager for chaining convenience.
+     *
+     * @see    ForumChannel#isRequireTag()
+     */
+    @Nonnull
+    @CheckReturnValue
+    ForumChannelManager setRequireTag(boolean requireTag);
+
+    /**
      * Sets the <b><u>slowmode</u></b> of the selected {@link ForumChannel}.
      * <br>Provide {@code 0} to reset the slowmode of the {@link ForumChannel}
      *

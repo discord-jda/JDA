@@ -147,6 +147,27 @@ public interface ThreadChannelManager extends ChannelManager<ThreadChannel, Thre
     ThreadChannelManager setInvitable(boolean invitable);
 
     /**
+     * Sets the pinned state of this ThreadChannel.
+     *
+     * <br>This property can only be set on forum post threads.
+     *
+     * @param  pinned
+     *         The new pinned state for the selected {@link ThreadChannel}
+     *
+     * @throws IllegalStateException
+     *         If the selected {@link ThreadChannel} is not a forum post thread
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the currently logged in account is not the thread owner or does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_THREADS MANAGE_THREADS} permission.
+     *
+     * @return this ThreadChannelManager for chaining convenience.
+     *
+     * @see ThreadChannel#isPinned()
+     */
+    @Nonnull
+    @CheckReturnValue
+    ThreadChannelManager setPinned(boolean pinned);
+
+    /**
      * Sets the applied {@link net.dv8tion.jda.api.entities.channel.forums.ForumTag ForumTags} for this forum post thread.
      * <br>This is only applicable to public threads inside forum channels. The tags must be from the forum channel.
      * You can get the list of available tags with {@link ForumChannel#getAvailableTags()}.

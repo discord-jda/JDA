@@ -18,8 +18,10 @@ package net.dv8tion.jda.api.entities.channel;
 
 import net.dv8tion.jda.api.entities.channel.concrete.ForumChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
+import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
+import java.util.Collection;
 import java.util.EnumSet;
 
 /**
@@ -75,5 +77,19 @@ public enum ChannelFlag
         }
 
         return set;
+    }
+
+    /**
+     * The raw bitset value for the provided flags.
+     *
+     * @return The raw value
+     */
+    public static int getRaw(@Nonnull Collection<ChannelFlag> flags)
+    {
+        Checks.notNull(flags, "Flags");
+        int raw = 0;
+        for (ChannelFlag flag : flags)
+            raw |= flag.getRaw();
+        return raw;
     }
 }

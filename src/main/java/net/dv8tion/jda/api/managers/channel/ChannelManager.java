@@ -78,6 +78,14 @@ public interface ChannelManager<T extends GuildChannel, M extends ChannelManager
     long AVAILABLE_TAGS        = 1 << 15;
     /** Used to reset the applied tags field */
     long APPLIED_TAGS          = 1 << 16;
+    /**
+     * Used to reset the pinned state field
+     */
+    long PINNED                = 1 << 17;
+    /**
+     * Used to reset the require tag state field
+     */
+    long REQUIRE_TAG           = 1 << 18;
 
     /**
      * Resets the fields specified by the provided bit-flag pattern.
@@ -103,6 +111,8 @@ public interface ChannelManager<T extends GuildChannel, M extends ChannelManager
      *     <li>{@link #INVITEABLE}</li>
      *     <li>{@link #AVAILABLE_TAGS}</li>
      *     <li>{@link #APPLIED_TAGS}</li>
+     *     <li>{@link #PINNED}</li>
+     *     <li>{@link #REQUIRE_TAG}</li>
      * </ul>
      *
      * @param  fields
@@ -136,6 +146,8 @@ public interface ChannelManager<T extends GuildChannel, M extends ChannelManager
      *     <li>{@link #INVITEABLE}</li>
      *     <li>{@link #AVAILABLE_TAGS}</li>
      *     <li>{@link #APPLIED_TAGS}</li>
+     *     <li>{@link #PINNED}</li>
+     *     <li>{@link #REQUIRE_TAG}</li>
      * </ul>
      *
      * @param  fields
