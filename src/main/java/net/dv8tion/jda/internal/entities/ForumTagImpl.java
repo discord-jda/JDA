@@ -24,10 +24,17 @@ public class ForumTagImpl extends ForumTagSnowflakeImpl implements ForumTag
 {
     private boolean moderated;
     private String name;
+    private int position;
 
     public ForumTagImpl(long id)
     {
         super(id);
+    }
+
+    @Override
+    public int getPosition()
+    {
+        return position;
     }
 
     @Nonnull
@@ -52,6 +59,12 @@ public class ForumTagImpl extends ForumTagSnowflakeImpl implements ForumTag
     public ForumTagImpl setName(String name)
     {
         this.name = name;
+        return this;
+    }
+
+    public ForumTagImpl setPosition(int position)
+    {
+        this.position = position;
         return this;
     }
 

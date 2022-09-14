@@ -1283,10 +1283,9 @@ public class EntityBuilder
 
         if (api.isCacheFlagSet(CacheFlag.FORUM_TAGS))
         {
-            ForumChannelImpl tmp = channel;
-            json.getArray("available_tags")
-                    .stream(DataArray::getObject)
-                    .forEach(obj -> createForumTag(tmp, obj));
+            DataArray tags = json.getArray("available_tags");
+            for (int i = 0; i < tags.length(); i++)
+                createForumTag(channel, tags.getObject(i), i);
         }
 
         channel
@@ -1305,7 +1304,7 @@ public class EntityBuilder
         return channel;
     }
 
-    public ForumTagImpl createForumTag(ForumChannelImpl channel, DataObject json)
+    public ForumTagImpl createForumTag(ForumChannelImpl channel, DataObject json, int index)
     {
         final long id = json.getUnsignedLong("id");
         SortedSnowflakeCacheViewImpl<ForumTag> cache = channel.getAvailableTagCache();
@@ -1321,7 +1320,8 @@ public class EntityBuilder
         }
 
         tag.setName(json.getString("name"))
-           .setModerated(json.getBoolean("moderated"));
+           .setModerated(json.getBoolean("moderated"))
+           .setPosition(index);
         return tag;
     }
 

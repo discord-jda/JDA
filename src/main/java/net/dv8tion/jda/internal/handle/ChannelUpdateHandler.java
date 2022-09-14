@@ -19,6 +19,7 @@ package net.dv8tion.jda.internal.handle;
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import gnu.trove.set.TLongSet;
+import gnu.trove.set.hash.TLongHashSet;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.Region;
 import net.dv8tion.jda.api.entities.ForumTag;
@@ -680,7 +681,7 @@ public class ChannelUpdateHandler extends SocketHandler
         try (UnlockHook hook = view.writeLock())
         {
             TLongObjectMap<ForumTag> cache = view.getMap();
-            TLongSet removedTags = cache.keySet();
+            TLongSet removedTags = new TLongHashSet(cache.keySet());
 
             for (int i = 0; i < tags.length(); i++)
             {
@@ -697,6 +698,7 @@ public class ChannelUpdateHandler extends SocketHandler
                     // TODO: Emoji
 
                     // TODO: Events?
+                    impl.setPosition(i);
                     String oldName = impl.getName();
                     if (!name.equals(oldName))
                     {
@@ -709,7 +711,7 @@ public class ChannelUpdateHandler extends SocketHandler
                 }
                 else
                 {
-                    ForumTag tag = builder.createForumTag(channel, tagJson);
+                    ForumTag tag = builder.createForumTag(channel, tagJson, i);
                     cache.put(id, tag);
                 }
             }

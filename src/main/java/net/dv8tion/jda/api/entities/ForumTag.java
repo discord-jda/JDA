@@ -32,6 +32,13 @@ public interface ForumTag extends ISnowflake, Comparable<ForumTag>
     int MAX_NAME_LENGTH = 20;
 
     /**
+     * The tag position, used for sorting.
+     *
+     * @return The tag position.
+     */
+    int getPosition();
+
+    /**
      * The name of the tag.
      *
      * @return The name
@@ -52,6 +59,6 @@ public interface ForumTag extends ISnowflake, Comparable<ForumTag>
     default int compareTo(@Nonnull ForumTag o)
     {
         Checks.notNull(o, "ForumTag");
-        return Long.compare(getIdLong(), o.getIdLong());
+        return Integer.compare(getPosition(), o.getPosition());
     }
 }
