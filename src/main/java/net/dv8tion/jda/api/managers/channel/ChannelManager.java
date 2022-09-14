@@ -76,6 +76,8 @@ public interface ChannelManager<T extends GuildChannel, M extends ChannelManager
     long INVITEABLE            = 1 << 14;
     /** Used to reset the available tags field */
     long AVAILABLE_TAGS        = 1 << 15;
+    /** Used to reset the applied tags field */
+    long APPLIED_TAGS          = 1 << 16;
 
     /**
      * Resets the fields specified by the provided bit-flag pattern.
@@ -95,6 +97,12 @@ public interface ChannelManager<T extends GuildChannel, M extends ChannelManager
      *     <li>{@link #PERMISSION}</li>
      *     <li>{@link #TYPE}</li>
      *     <li>{@link #REGION}</li>
+     *     <li>{@link #AUTO_ARCHIVE_DURATION}</li>
+     *     <li>{@link #ARCHIVED}</li>
+     *     <li>{@link #LOCKED}</li>
+     *     <li>{@link #INVITEABLE}</li>
+     *     <li>{@link #AVAILABLE_TAGS}</li>
+     *     <li>{@link #APPLIED_TAGS}</li>
      * </ul>
      *
      * @param  fields
@@ -122,6 +130,12 @@ public interface ChannelManager<T extends GuildChannel, M extends ChannelManager
      *     <li>{@link #PERMISSION}</li>
      *     <li>{@link #TYPE}</li>
      *     <li>{@link #REGION}</li>
+     *     <li>{@link #AUTO_ARCHIVE_DURATION}</li>
+     *     <li>{@link #ARCHIVED}</li>
+     *     <li>{@link #LOCKED}</li>
+     *     <li>{@link #INVITEABLE}</li>
+     *     <li>{@link #AVAILABLE_TAGS}</li>
+     *     <li>{@link #APPLIED_TAGS}</li>
      * </ul>
      *
      * @param  fields

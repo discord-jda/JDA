@@ -19,6 +19,7 @@ package net.dv8tion.jda.api.entities.channel.concrete;
 import net.dv8tion.jda.annotations.Incubating;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.Channel;
+import net.dv8tion.jda.api.entities.channel.ChannelFlag;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.attribute.IAgeRestrictedChannel;
 import net.dv8tion.jda.api.entities.channel.attribute.IThreadContainer;
@@ -115,6 +116,16 @@ public interface ForumChannel extends StandardGuildChannel, IThreadContainer, IW
      */
     @Nullable
     String getTopic();
+
+    /**
+     * Whether all new forum posts must have a tag.
+     *
+     * @return True, if all new posts must have a tag.
+     */
+    default boolean isRequireTag()
+    {
+        return getFlags().contains(ChannelFlag.REQUIRE_TAG);
+    }
 
     /**
      * Creates a new forum post (thread) in this forum.

@@ -21,10 +21,7 @@ import gnu.trove.set.TLongSet;
 import gnu.trove.set.hash.TLongHashSet;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.Region;
-import net.dv8tion.jda.api.entities.IPermissionHolder;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.PermissionOverride;
-import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.attribute.IPermissionContainer;
 import net.dv8tion.jda.api.entities.channel.concrete.Category;
@@ -32,7 +29,9 @@ import net.dv8tion.jda.api.entities.channel.concrete.ForumChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
 import net.dv8tion.jda.api.entities.channel.forums.BaseForumTag;
+import net.dv8tion.jda.api.entities.channel.forums.ForumTagSnowflake;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
+import net.dv8tion.jda.api.entities.channel.unions.IThreadContainerUnion;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.channel.ChannelManager;
 import net.dv8tion.jda.api.utils.data.DataArray;
@@ -65,6 +64,7 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
 
     protected ThreadChannel.AutoArchiveDuration autoArchiveDuration;
     protected List<BaseForumTag> availableTags;
+    protected List<String> appliedTags;
     protected ChannelType type;
     protected String name;
     protected String parent;
@@ -123,6 +123,8 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
             this.region = null;
         if ((fields & AVAILABLE_TAGS) == AVAILABLE_TAGS)
             this.availableTags = null;
+        if ((fields & APPLIED_TAGS) == APPLIED_TAGS)
+            this.appliedTags = null;
         if ((fields & PERMISSION) == PERMISSION)
         {
             withLock(lock, (lock) ->
@@ -155,6 +157,7 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
         this.topic = null;
         this.region = null;
         this.availableTags = null;
+        this.appliedTags = null;
         withLock(lock, (lock) ->
         {
             this.overridesRem.clear();
@@ -550,6 +553,23 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
         return (M) this;
     }
 
+    public M setAppliedTags(Collection<? extends ForumTagSnowflake> tags)
+    {
+        if (type != ChannelType.GUILD_PUBLIC_THREAD)
+            throw new IllegalStateException("Can only set applied tags on public thread channels.");
+        Checks.noneNull(tags, "Applied Tags");
+        Checks.check(tags.size() <= ForumChannel.MAX_POST_TAGS, "Cannot apply more than %d tags to a post thread!", ForumChannel.MAX_POST_TAGS);
+        ThreadChannel thread = (ThreadChannel) getChannel();
+        IThreadContainerUnion parentChannel = thread.getParentChannel();
+        if (!(parentChannel instanceof ForumChannel))
+            throw new IllegalStateException("Cannot apply tags to threads outside of forum channels.");
+        if (tags.isEmpty() && parentChannel.asForumChannel().isRequireTag())
+            throw new IllegalArgumentException("Cannot remove all tags from a forum post which requires at least one tag! See ForumChannel#isRequireTag()");
+        this.appliedTags = tags.stream().map(ISnowflake::getId).collect(Collectors.toList());
+        set |= APPLIED_TAGS;
+        return (M) this;
+    }
+
     @Override
     protected RequestBody finalizeData()
     {
@@ -584,6 +604,8 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
             frame.put("invitable", invitable);
         if (shouldUpdate(AVAILABLE_TAGS))
             frame.put("available_tags", DataArray.fromCollection(availableTags));
+        if (shouldUpdate(APPLIED_TAGS))
+            frame.put("applied_tags", DataArray.fromCollection(appliedTags));
 
         withLock(lock, (lock) ->
         {

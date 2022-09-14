@@ -18,6 +18,7 @@ package net.dv8tion.jda.api.entities.channel.concrete;
 
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.ChannelField;
+import net.dv8tion.jda.api.entities.channel.ChannelFlag;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.attribute.IMemberContainer;
 import net.dv8tion.jda.api.entities.channel.attribute.IThreadContainer;
@@ -139,6 +140,16 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer
      * @see    ChannelField#INVITABLE
      */
     boolean isInvitable();
+
+    /**
+     * Whether this thread is a pinned forum post.
+     *
+     * @return True, if this is a pinned forum post.
+     */
+    default boolean isPinned()
+    {
+        return getFlags().contains(ChannelFlag.PINNED);
+    }
 
     /**
      * Gets the {@link IThreadContainer parent channel} of this thread.

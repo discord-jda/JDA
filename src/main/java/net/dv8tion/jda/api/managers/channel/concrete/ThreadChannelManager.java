@@ -16,8 +16,14 @@
 
 package net.dv8tion.jda.api.managers.channel.concrete;
 
+import net.dv8tion.jda.api.entities.channel.concrete.ForumChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
+import net.dv8tion.jda.api.entities.channel.forums.ForumTagSnowflake;
 import net.dv8tion.jda.api.managers.channel.ChannelManager;
+
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
+import java.util.Collection;
 
 /**
  * Manager providing functionality common for all {@link ThreadChannel ThreadChannels}.
@@ -39,7 +45,6 @@ import net.dv8tion.jda.api.managers.channel.ChannelManager;
  */
 public interface ThreadChannelManager extends ChannelManager<ThreadChannel, ThreadChannelManager>
 {
-
     /**
      * Sets the <b><u>slowmode</u></b> of the selected {@link ThreadChannel}.
      * <br>Provide {@code 0} to reset the slowmode of the {@link ThreadChannel}.
@@ -61,6 +66,8 @@ public interface ThreadChannelManager extends ChannelManager<ThreadChannel, Thre
      *
      * @see ThreadChannel#getSlowmode()
      */
+    @Nonnull
+    @CheckReturnValue
     ThreadChannelManager setSlowmode(int slowmode);
 
     /**
@@ -75,7 +82,9 @@ public interface ThreadChannelManager extends ChannelManager<ThreadChannel, Thre
      *
      * @see ThreadChannel#getAutoArchiveDuration()
      */
-    ThreadChannelManager setAutoArchiveDuration(ThreadChannel.AutoArchiveDuration autoArchiveDuration);
+    @Nonnull
+    @CheckReturnValue
+    ThreadChannelManager setAutoArchiveDuration(@Nonnull ThreadChannel.AutoArchiveDuration autoArchiveDuration);
 
     /**
      * Sets the archived state of this ThreadChannel.
@@ -83,16 +92,16 @@ public interface ThreadChannelManager extends ChannelManager<ThreadChannel, Thre
      * @param  archived
      *         The new archived state for the selected {@link ThreadChannel}
      *
-     * @return this ThreadChannelManager for chaining convenience
-     *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the currently logged in account is not the thread owner or does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_THREADS MANAGE_THREADS} permission.
+     *         Or if the thread is locked (archived by a moderator) and the current account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_THREADS MANAGE_THREADS} permission.
      *
-     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the thread is locked (archived by a moderator) and the current account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_THREADS MANAGE_THREADS} permission.
+     * @return this ThreadChannelManager for chaining convenience
      *
      * @see ThreadChannel#isArchived()
      */
+    @Nonnull
+    @CheckReturnValue
     ThreadChannelManager setArchived(boolean archived);
 
     /**
@@ -103,13 +112,15 @@ public interface ThreadChannelManager extends ChannelManager<ThreadChannel, Thre
      * @param  locked
      *         The new locked state for the selected {@link ThreadChannel}
      *
-     * @return this ThreadChannelManager for chaining convenience.
-     *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the currently logged in account is not the thread owner or does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_THREADS MANAGE_THREADS} permission.
      *
+     * @return this ThreadChannelManager for chaining convenience.
+     *
      * @see ThreadChannel#isLocked()
      */
+    @Nonnull
+    @CheckReturnValue
     ThreadChannelManager setLocked(boolean locked);
 
     /**
@@ -120,16 +131,41 @@ public interface ThreadChannelManager extends ChannelManager<ThreadChannel, Thre
      * @param  invitable
      *         The new invitable state for the selected {@link ThreadChannel}
      *
-     * @return this ThreadChannelManager for chaining convenience.
-     *
      * @throws IllegalStateException
      *         If the selected {@link ThreadChannel} is not a private ThreadChannel
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the currently logged in account is not the thread owner or does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_THREADS MANAGE_THREADS} permission.
      *
+     * @return this ThreadChannelManager for chaining convenience.
+     *
      * @see ThreadChannel#isInvitable()
      * @see ThreadChannel#isPublic()
      */
+    @Nonnull
+    @CheckReturnValue
     ThreadChannelManager setInvitable(boolean invitable);
+
+    /**
+     * Sets the applied {@link net.dv8tion.jda.api.entities.channel.forums.ForumTag ForumTags} for this forum post thread.
+     * <br>This is only applicable to public threads inside forum channels. The tags must be from the forum channel.
+     * You can get the list of available tags with {@link ForumChannel#getAvailableTags()}.
+     *
+     * @param  tags
+     *         The new tags for the thread
+     *
+     * @throws IllegalStateException
+     *         If the thread is not a forum post
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If null is provided</li>
+     *             <li>If more than {@value ForumChannel#MAX_POST_TAGS} tags are provided</li>
+     *             <li>If at least one tag is {@link ForumChannel#isRequireTag() required} and none were provided</li>
+     *         </ul>
+     *
+     * @return this ThreadChannelManager for chaining convenience.
+     */
+    @Nonnull
+    @CheckReturnValue
+    ThreadChannelManager setAppliedTags(@Nonnull Collection<? extends ForumTagSnowflake> tags);
 }
