@@ -17,9 +17,9 @@
 package net.dv8tion.jda.api.events.channel.update;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.ForumTag;
 import net.dv8tion.jda.api.entities.channel.ChannelField;
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
+import net.dv8tion.jda.api.entities.channel.forums.ForumTag;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;

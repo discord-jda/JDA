@@ -14,36 +14,19 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.entities;
+package net.dv8tion.jda.api.entities.channel.forums;
 
 import net.dv8tion.jda.api.entities.emoji.CustomEmoji;
 import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
 import net.dv8tion.jda.api.entities.emoji.UnicodeEmoji;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.SerializableData;
-import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-/**
- * Represents a Discord Forum Tag.
- * <br>These tags can be applied to forum posts to help categorize them.
- */
-public interface ForumTag extends ISnowflake, Comparable<ForumTag>, SerializableData
+public interface BaseForumTag extends SerializableData
 {
-    /**
-     * The maximum length of a forum tag name ({@value #MAX_NAME_LENGTH})
-     */
-    int MAX_NAME_LENGTH = 20;
-
-    /**
-     * The tag position, used for sorting.
-     *
-     * @return The tag position.
-     */
-    int getPosition();
-
     /**
      * The name of the tag.
      *
@@ -68,19 +51,11 @@ public interface ForumTag extends ISnowflake, Comparable<ForumTag>, Serializable
     @Nullable
     EmojiUnion getEmoji();
 
-    @Override
-    default int compareTo(@Nonnull ForumTag o)
-    {
-        Checks.notNull(o, "ForumTag");
-        return Integer.compare(getPosition(), o.getPosition());
-    }
-
     @Nonnull
     @Override
     default DataObject toData()
     {
         DataObject json = DataObject.empty()
-                .put("id", getId())
                 .put("name", getName())
                 .put("moderated", isModerated());
         EmojiUnion emoji = getEmoji();

@@ -16,7 +16,7 @@
 
 package net.dv8tion.jda.internal.entities;
 
-import net.dv8tion.jda.api.entities.ForumTagSnowflake;
+import net.dv8tion.jda.api.entities.channel.forums.ForumTagSnowflake;
 
 public class ForumTagSnowflakeImpl implements ForumTagSnowflake
 {

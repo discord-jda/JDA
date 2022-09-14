@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.entities.channel.ChannelField;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.attribute.IMemberContainer;
 import net.dv8tion.jda.api.entities.channel.attribute.IThreadContainer;
+import net.dv8tion.jda.api.entities.channel.forums.ForumTag;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import net.dv8tion.jda.api.entities.channel.unions.GuildMessageChannelUnion;
 import net.dv8tion.jda.api.entities.channel.unions.IThreadContainerUnion;
@@ -168,10 +169,10 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer
     }
 
     /**
-     * The {@link ForumTag forum tags} applied to this thread.
+     * The {@link net.dv8tion.jda.api.entities.channel.forums.ForumTag forum tags} applied to this thread.
      * <br>This will be an empty list if the thread was not created in a {@link net.dv8tion.jda.api.entities.channel.concrete.ForumChannel ForumChannel}.
      *
-     * @return Immutable {@link List} of {@link ForumTag ForumTags} applied to this post
+     * @return Immutable {@link List} of {@link net.dv8tion.jda.api.entities.channel.forums.ForumTag ForumTags} applied to this post
      */
     @Nonnull
     List<ForumTag> getAppliedTags();

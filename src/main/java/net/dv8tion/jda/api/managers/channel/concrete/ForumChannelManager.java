@@ -17,9 +17,10 @@
 package net.dv8tion.jda.api.managers.channel.concrete;
 
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.ForumTag;
 import net.dv8tion.jda.api.entities.channel.concrete.ForumChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.channel.forums.BaseForumTag;
+import net.dv8tion.jda.api.entities.channel.forums.ForumTagData;
 import net.dv8tion.jda.api.managers.channel.attribute.IAgeRestrictedChannelManager;
 import net.dv8tion.jda.api.managers.channel.middleman.StandardGuildChannelManager;
 
@@ -71,7 +72,33 @@ public interface ForumChannelManager extends
     @CheckReturnValue
     ForumChannelManager setSlowmode(int slowmode);
 
+    /**
+     * Sets the <b><u>available tags</u></b> of the selected {@link ForumChannel}.
+     * <br>Tags will be ordered based on the provided list order.
+     *
+     * <p>This is a full replacement of the tags list, all missing tags will be removed.
+     * You can use {@link ForumTagData} to create new tags or update existing ones.
+     *
+     * <p><b>Example</b>
+     * <pre>{@code
+     * List<BaseForumTag> tags = new ArrayList<>(channel.getAvailableTags());
+     * tags.add(new ForumTagData("question").setModerated(true)); // add a new tag
+     * tags.set(0, ForumTagData.from(tags.get(0)).setName("bug report")); // update an existing tag
+     * // Update the tag list
+     * channel.getManager().setAvailableTags(tags).queue();
+     * }</pre>
+     *
+     * @param  tags
+     *         The new available tags in the desired order.
+     *
+     * @throws IllegalArgumentException
+     *         If the provided list is null or contains null elements
+     *
+     * @return ChannelManager for chaining convenience
+     *
+     * @see    ForumChannel#getAvailableTags()
+     */
     @Nonnull
     @CheckReturnValue
-    ForumChannelManager setAvailableTags(@Nonnull List<? extends ForumTag> tags);
+    ForumChannelManager setAvailableTags(@Nonnull List<? extends BaseForumTag> tags);
 }

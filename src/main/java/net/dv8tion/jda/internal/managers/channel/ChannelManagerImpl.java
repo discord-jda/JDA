@@ -21,13 +21,17 @@ import gnu.trove.set.TLongSet;
 import gnu.trove.set.hash.TLongHashSet;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.Region;
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.IPermissionHolder;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.PermissionOverride;
+import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.attribute.IPermissionContainer;
 import net.dv8tion.jda.api.entities.channel.concrete.Category;
 import net.dv8tion.jda.api.entities.channel.concrete.ForumChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
+import net.dv8tion.jda.api.entities.channel.forums.BaseForumTag;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.channel.ChannelManager;
@@ -60,7 +64,7 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
     protected T channel;
 
     protected ThreadChannel.AutoArchiveDuration autoArchiveDuration;
-    protected List<ForumTag> availableTags;
+    protected List<BaseForumTag> availableTags;
     protected ChannelType type;
     protected String name;
     protected String parent;
@@ -536,7 +540,7 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
         return (M) this;
     }
 
-    public M setAvailableTags(List<? extends ForumTag> tags)
+    public M setAvailableTags(List<? extends BaseForumTag> tags)
     {
         if (type != ChannelType.FORUM)
             throw new IllegalStateException("Can only set available tags on forum channels.");
@@ -549,7 +553,7 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
     @Override
     protected RequestBody finalizeData()
     {
-        DataObject frame = DataObject.empty().put("name", getChannel().getName());
+        DataObject frame = DataObject.empty();
         if (shouldUpdate(NAME))
             frame.put("name", name);
         if (shouldUpdate(TYPE))
