@@ -16,6 +16,7 @@
 package net.dv8tion.jda.api.hooks;
 
 import net.dv8tion.jda.api.events.GenericEvent;
+import net.dv8tion.jda.api.events.interaction.GenericInteractionCreateEvent;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.utils.ClassWalker;
 
@@ -91,6 +92,12 @@ public class AnnotatedEventManager implements IEventManager
                 {
                     try
                     {
+                        if (event instanceof GenericInteractionCreateEvent)
+                        {
+                            if (!method.receiveAcknowledged && ((GenericInteractionCreateEvent) event).isAcknowledged()) {
+                                return;
+                            }
+                        }
                         method.method.setAccessible(true);
                         method.method.invoke(key, event);
                     }
