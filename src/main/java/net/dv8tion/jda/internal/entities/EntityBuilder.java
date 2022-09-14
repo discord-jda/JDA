@@ -1321,6 +1321,7 @@ public class EntityBuilder
 
         tag.setName(json.getString("name"))
            .setModerated(json.getBoolean("moderated"))
+           .setEmoji(json)
            .setPosition(index);
         return tag;
     }

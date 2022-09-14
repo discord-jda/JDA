@@ -17,6 +17,10 @@
 package net.dv8tion.jda.internal.entities;
 
 import net.dv8tion.jda.api.entities.ForumTag;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
+import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
+import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.internal.entities.emoji.CustomEmojiImpl;
 
 import javax.annotation.Nonnull;
 
@@ -25,6 +29,7 @@ public class ForumTagImpl extends ForumTagSnowflakeImpl implements ForumTag
     private boolean moderated;
     private String name;
     private int position;
+    private Emoji emoji;
 
     public ForumTagImpl(long id)
     {
@@ -50,6 +55,12 @@ public class ForumTagImpl extends ForumTagSnowflakeImpl implements ForumTag
         return moderated;
     }
 
+    @Override
+    public EmojiUnion getEmoji()
+    {
+        return (EmojiUnion) emoji;
+    }
+
     public ForumTagImpl setModerated(boolean moderated)
     {
         this.moderated = moderated;
@@ -65,6 +76,17 @@ public class ForumTagImpl extends ForumTagSnowflakeImpl implements ForumTag
     public ForumTagImpl setPosition(int position)
     {
         this.position = position;
+        return this;
+    }
+
+    public ForumTagImpl setEmoji(DataObject json)
+    {
+        if (!json.isNull("emoji_id"))
+            this.emoji = new CustomEmojiImpl("", json.getUnsignedLong("emoji_id"), false);
+        else if (!json.isNull("emoji_name"))
+            this.emoji = Emoji.fromUnicode(json.getString("emoji_name"));
+        else
+            this.emoji = null;
         return this;
     }
 

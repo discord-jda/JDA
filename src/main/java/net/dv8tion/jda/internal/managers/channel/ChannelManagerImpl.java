@@ -21,10 +21,7 @@ import gnu.trove.set.TLongSet;
 import gnu.trove.set.hash.TLongHashSet;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.Region;
-import net.dv8tion.jda.api.entities.IPermissionHolder;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.PermissionOverride;
-import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.attribute.IPermissionContainer;
 import net.dv8tion.jda.api.entities.channel.concrete.Category;
@@ -34,6 +31,7 @@ import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.channel.ChannelManager;
+import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.entities.channel.mixin.attribute.IPermissionContainerMixin;
 import net.dv8tion.jda.internal.entities.channel.mixin.middleman.GuildChannelMixin;
@@ -46,8 +44,10 @@ import okhttp3.RequestBody;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @SuppressWarnings("unchecked") //We do a lot of (M) and (T) casting that we know is correct but the compiler warns about.
@@ -60,6 +60,7 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
     protected T channel;
 
     protected ThreadChannel.AutoArchiveDuration autoArchiveDuration;
+    protected List<ForumTag> availableTags;
     protected ChannelType type;
     protected String name;
     protected String parent;
@@ -116,6 +117,8 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
             this.topic = null;
         if ((fields & REGION) == REGION)
             this.region = null;
+        if ((fields & AVAILABLE_TAGS) == AVAILABLE_TAGS)
+            this.availableTags = null;
         if ((fields & PERMISSION) == PERMISSION)
         {
             withLock(lock, (lock) ->
@@ -147,6 +150,7 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
         this.parent = null;
         this.topic = null;
         this.region = null;
+        this.availableTags = null;
         withLock(lock, (lock) ->
         {
             this.overridesRem.clear();
@@ -532,6 +536,16 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
         return (M) this;
     }
 
+    public M setAvailableTags(List<? extends ForumTag> tags)
+    {
+        if (type != ChannelType.FORUM)
+            throw new IllegalStateException("Can only set available tags on forum channels.");
+        Checks.noneNull(tags, "Available Tags");
+        this.availableTags = new ArrayList<>(tags);
+        set |= AVAILABLE_TAGS;
+        return (M) this;
+    }
+
     @Override
     protected RequestBody finalizeData()
     {
@@ -564,6 +578,8 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
             frame.put("locked", locked);
         if (shouldUpdate(INVITEABLE))
             frame.put("invitable", invitable);
+        if (shouldUpdate(AVAILABLE_TAGS))
+            frame.put("available_tags", DataArray.fromCollection(availableTags));
 
         withLock(lock, (lock) ->
         {

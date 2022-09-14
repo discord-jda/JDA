@@ -695,10 +695,10 @@ public class ChannelUpdateHandler extends SocketHandler
 
                     String name = tagJson.getString("name");
                     boolean moderated = tagJson.getBoolean("moderated");
-                    // TODO: Emoji
 
                     // TODO: Events?
                     impl.setPosition(i);
+                    impl.setEmoji(tagJson);
                     String oldName = impl.getName();
                     if (!name.equals(oldName))
                     {

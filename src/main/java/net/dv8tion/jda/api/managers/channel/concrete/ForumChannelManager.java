@@ -17,6 +17,7 @@
 package net.dv8tion.jda.api.managers.channel.concrete;
 
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.ForumTag;
 import net.dv8tion.jda.api.entities.channel.concrete.ForumChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.managers.channel.attribute.IAgeRestrictedChannelManager;
@@ -24,6 +25,7 @@ import net.dv8tion.jda.api.managers.channel.middleman.StandardGuildChannelManage
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
+import java.util.List;
 
 /**
  * Manager providing functionality to modify a {@link ForumChannel ForumChannel}.
@@ -68,4 +70,8 @@ public interface ForumChannelManager extends
     @Nonnull
     @CheckReturnValue
     ForumChannelManager setSlowmode(int slowmode);
+
+    @Nonnull
+    @CheckReturnValue
+    ForumChannelManager setAvailableTags(@Nonnull List<? extends ForumTag> tags);
 }
