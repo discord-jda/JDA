@@ -30,5 +30,12 @@ import java.lang.annotation.*;
 @Inherited
 public @interface SubscribeEvent
 {
-    boolean receiveAcknowledged() default false;
+    /**
+     *
+     * If the event is an instance of {@link net.dv8tion.jda.api.events.interaction.GenericInteractionCreateEvent} and
+     * has been acknowledged then if this is set to false the annotated event listener will not be called.
+     *
+     * @return If the event listener should receive events that have already been acknowledged
+     */
+    boolean receiveAcknowledged() default true;
 }
