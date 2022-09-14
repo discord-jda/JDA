@@ -30,4 +30,5 @@ import java.lang.annotation.*;
 @Inherited
 public @interface SubscribeEvent
 {
+    boolean receiveAcknowledged() default false;
 }

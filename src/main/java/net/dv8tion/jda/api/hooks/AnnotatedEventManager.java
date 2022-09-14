@@ -52,7 +52,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class AnnotatedEventManager implements IEventManager
 {
     private final Set<Object> listeners = ConcurrentHashMap.newKeySet();
-    private final Map<Class<?>, Map<Object, List<Method>>> methods = new ConcurrentHashMap<>();
+    private final Map<Class<?>, Map<Object, List<AnnotatedEventListener>>> methods = new ConcurrentHashMap<>();
 
     @Override
     public void register(@Nonnull Object listener)
@@ -84,15 +84,15 @@ public class AnnotatedEventManager implements IEventManager
     {
         for (Class<?> eventClass : ClassWalker.walk(event.getClass()))
         {
-            Map<Object, List<Method>> listeners = methods.get(eventClass);
+            Map<Object, List<AnnotatedEventListener>> listeners = methods.get(eventClass);
             if (listeners != null)
             {
                 listeners.forEach((key, value) -> value.forEach(method ->
                 {
                     try
                     {
-                        method.setAccessible(true);
-                        method.invoke(key, event);
+                        method.method.setAccessible(true);
+                        method.method.invoke(key, event);
                     }
                     catch (IllegalAccessException | InvocationTargetException e1)
                     {
@@ -136,10 +136,33 @@ public class AnnotatedEventManager implements IEventManager
                     {
                         methods.get(eventClass).put(listener, new CopyOnWriteArrayList<>());
                     }
-
-                    methods.get(eventClass).get(listener).add(m);
+                    boolean receiveAcknowledged = m.getAnnotation(SubscribeEvent.class).receiveAcknowledged();
+                    methods.get(eventClass).get(listener).add(new AnnotatedEventListener(m, receiveAcknowledged));
                 }
             }
+        }
+    }
+
+    private static class AnnotatedEventListener
+    {
+
+        protected final Method method;
+        protected final boolean receiveAcknowledged;
+
+        private AnnotatedEventListener(java.lang.reflect.Method method, boolean receiveAcknowledged)
+        {
+            this.method = method;
+            this.receiveAcknowledged = receiveAcknowledged;
+        }
+
+        public java.lang.reflect.Method getMethod()
+        {
+            return this.method;
+        }
+
+        public boolean isReceiveAcknowledged()
+        {
+            return this.receiveAcknowledged;
         }
     }
 }
