@@ -983,7 +983,7 @@ public interface IGuildChannelContainer
 
 
     /**
-     * {@link net.dv8tion.jda.api.utils.cache.SnowflakeCacheView SnowflakeCacheView} of {@link ForumChannel}.
+     * {@link SnowflakeCacheView SnowflakeCacheView} of {@link ForumChannel}.
      *
      * <p>This getter exists on any instance of {@link IGuildChannelContainer} and only checks the caches with the relevant scoping.
      * For {@link Guild}, {@link JDA}, or {@link ShardManager},
@@ -992,13 +992,13 @@ public interface IGuildChannelContainer
      * <br>If this is called on {@link JDA} or {@link ShardManager}, this may return null immediately after building, because the cache isn't initialized yet.
      * To make sure the cache is initialized after building your {@link JDA} instance, you can use {@link JDA#awaitReady()}.
      *
-     * @return {@link net.dv8tion.jda.api.utils.cache.SnowflakeCacheView SnowflakeCacheView}
+     * @return {@link SnowflakeCacheView SnowflakeCacheView}
      */
     @Nonnull
     SnowflakeCacheView<ForumChannel> getForumChannelCache();
 
     /**
-     * Gets a list of all {@link net.dv8tion.jda.api.entities.channel.concrete.ForumChannel ForumChannels}
+     * Gets a list of all {@link ForumChannel ForumChannels}
      * in this Guild that have the same name as the one provided.
      * <br>If there are no channels with the provided name, then this returns an empty list.
      *
@@ -1010,11 +1010,11 @@ public interface IGuildChannelContainer
      * To make sure the cache is initialized after building your {@link JDA} instance, you can use {@link JDA#awaitReady()}.
      *
      * @param  name
-     *         The name used to filter the returned {@link ThreadChannel ThreadChannels}.
+     *         The name used to filter the returned {@link ForumChannel ForumChannels}.
      * @param  ignoreCase
      *         Determines if the comparison ignores case when comparing. True - case insensitive.
      *
-     * @return Possibly-empty immutable list of all ThreadChannel names that match the provided name.
+     * @return Possibly-empty immutable list of all ForumChannel names that match the provided name.
      */
     @Nonnull
     default List<ForumChannel> getForumChannelsByName(@Nonnull String name, boolean ignoreCase)
