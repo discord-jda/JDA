@@ -64,8 +64,8 @@ public class ThreadChannelImpl extends AbstractGuildChannelImpl<ThreadChannelImp
 {
     private final ChannelType type;
     private final CacheView.SimpleCacheView<ThreadMember> threadMembers = new CacheView.SimpleCacheView<>(ThreadMember.class, null);
-    private final TLongSet appliedTags = new TLongHashSet(ForumChannel.MAX_POST_TAGS);
 
+    private TLongSet appliedTags = new TLongHashSet(ForumChannel.MAX_POST_TAGS);
     private AutoArchiveDuration autoArchiveDuration;
     private IThreadContainerUnion parentChannel;
     private boolean locked;
@@ -421,8 +421,9 @@ public class ThreadChannelImpl extends AbstractGuildChannelImpl<ThreadChannelImp
 
     public ThreadChannelImpl setAppliedTags(LongStream tags)
     {
-        this.appliedTags.clear();
-        tags.forEach(this.appliedTags::add);
+        TLongSet set = new TLongHashSet(ForumChannel.MAX_POST_TAGS);
+        tags.forEach(set::add);
+        this.appliedTags = set;
         return this;
     }
 

@@ -17,12 +17,11 @@
 package net.dv8tion.jda.internal.handle;
 
 import gnu.trove.set.TLongSet;
-import gnu.trove.set.hash.TLongHashSet;
 import net.dv8tion.jda.api.entities.channel.ChannelFlag;
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
-import net.dv8tion.jda.api.entities.channel.forums.ForumTag;
 import net.dv8tion.jda.api.events.channel.update.*;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
+import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.channel.concrete.ThreadChannelImpl;
@@ -30,7 +29,7 @@ import net.dv8tion.jda.internal.utils.Helpers;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.IntStream;
+import java.util.stream.LongStream;
 
 public class ThreadUpdateHandler extends SocketHandler
 {
@@ -153,22 +152,22 @@ public class ThreadUpdateHandler extends SocketHandler
                     thread, oldInvitable, invitable));
         }
 
-        if (api.isCacheFlagSet(CacheFlag.FORUM_TAGS))
+        if (api.isCacheFlagSet(CacheFlag.FORUM_TAGS) && !content.isNull("applied_tags"))
         {
             final TLongSet oldTags = thread.getAppliedTagsSet();
-            final TLongSet tags = content.optArray("applied_tags").map(array ->
-                new TLongHashSet(IntStream.range(0, array.length())
-                    .mapToLong(array::getUnsignedLong)
-                    .toArray())
-            ).orElseGet(TLongHashSet::new);
+            thread.setAppliedTags(content.getArray("applied_tags")
+                    .stream(DataArray::getUnsignedLong)
+                    .mapToLong(Long::longValue));
+            final TLongSet tags = thread.getAppliedTagsSet();
 
             if (!oldTags.equals(tags))
             {
-                List<ForumTag> oldTagList = thread.getAppliedTags();
+                List<Long> oldTagList = LongStream.of(oldTags.toArray()).boxed().collect(Helpers.toUnmodifiableList());
+                List<Long> newTagList = LongStream.of(tags.toArray()).boxed().collect(Helpers.toUnmodifiableList());
                 api.handleEvent(
                     new ChannelUpdateAppliedTagsEvent(
                         api, responseNumber,
-                        thread, oldTagList));
+                        thread, oldTagList, newTagList));
             }
         }
 
