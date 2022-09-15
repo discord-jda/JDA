@@ -450,7 +450,7 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
     @CheckReturnValue
     public M setTopic(String topic)
     {
-        checkTypes(TOPIC_SUPPORTED, "topic");
+        Checks.checkSupportedChannelTypes(TOPIC_SUPPORTED, type, "topic");
         if (topic != null)
         {
             if (type == ChannelType.FORUM)
@@ -467,7 +467,7 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
     @CheckReturnValue
     public M setNSFW(boolean nsfw)
     {
-        checkTypes(NSFW_SUPPORTED, "NSFW (age-restriction)");
+        Checks.checkSupportedChannelTypes(NSFW_SUPPORTED, type, "NSFW (age-restriction)");
         this.nsfw = nsfw;
         set |= NSFW;
         return (M) this;
@@ -477,7 +477,7 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
     @CheckReturnValue
     public M setSlowmode(int slowmode)
     {
-        checkTypes(SLOWMODE_SUPPORTED, "slowmode");
+        Checks.checkSupportedChannelTypes(SLOWMODE_SUPPORTED, type, "slowmode");
         Checks.check(slowmode <= TextChannel.MAX_SLOWMODE && slowmode >= 0, "Slowmode per user must be between 0 and %d (seconds)!", TextChannel.MAX_SLOWMODE);
         this.slowmode = slowmode;
         set |= SLOWMODE;
@@ -718,12 +718,5 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
             return true;
         });
         return data.valueCollection();
-    }
-
-    protected void checkTypes(EnumSet<ChannelType> supported, String what)
-    {
-        if (!supported.contains(type))
-            throw new IllegalArgumentException("Can only configure " + what + " for channels of types " +
-                    supported.stream().map(ChannelType::name).collect(Collectors.joining(", ")));
     }
 }

@@ -46,7 +46,6 @@ import javax.annotation.Nullable;
 import java.util.EnumSet;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
-import java.util.stream.Collectors;
 
 public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActionImpl<T> implements ChannelAction<T>
 {
@@ -161,7 +160,7 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
     @CheckReturnValue
     public ChannelActionImpl<T> setTopic(String topic)
     {
-        checkTypes(TOPIC_SUPPORTED, "Topic");
+        Checks.checkSupportedChannelTypes(TOPIC_SUPPORTED, type, "Topic");
         if (topic != null)
         {
             if (type == ChannelType.FORUM)
@@ -178,7 +177,7 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
     @CheckReturnValue
     public ChannelActionImpl<T> setNSFW(boolean nsfw)
     {
-        checkTypes(NSFW_SUPPORTED, "NSFW (age-restricted)");
+        Checks.checkSupportedChannelTypes(NSFW_SUPPORTED, type, "NSFW (age-restricted)");
         this.nsfw = nsfw;
         return this;
     }
@@ -188,7 +187,7 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
     @CheckReturnValue
     public ChannelActionImpl<T> setSlowmode(int slowmode)
     {
-        checkTypes(SLOWMODE_SUPPORTED, "Slowmode");
+        Checks.checkSupportedChannelTypes(SLOWMODE_SUPPORTED, type, "Slowmode");
         Checks.check(slowmode <= TextChannel.MAX_SLOWMODE && slowmode >= 0, "Slowmode must be between 0 and %d (seconds)!", TextChannel.MAX_SLOWMODE);
         this.slowmode = slowmode;
         return this;
@@ -399,12 +398,5 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
                 return;
         }
         request.onSuccess(clazz.cast(channel));
-    }
-
-    protected void checkTypes(EnumSet<ChannelType> supported, String what)
-    {
-        if (!supported.contains(type))
-            throw new IllegalArgumentException("Can only configure " + what + " for channels of types " +
-                    supported.stream().map(ChannelType::name).collect(Collectors.joining(", ")));
     }
 }
