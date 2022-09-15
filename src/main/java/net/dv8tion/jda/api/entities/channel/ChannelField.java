@@ -82,6 +82,7 @@ public enum ChannelField
     POSITION("position", null), //Discord doesn't track Channel position changes in AuditLog.
 
     DEFAULT_THREAD_SLOWMODE("default_thread_slowmode", AuditLogKey.CHANNEL_DEFAULT_THREAD_SLOWMODE),
+    DEFAULT_REACTION_EMOJI("default_reaction_emoji", AuditLogKey.CHANNEL_DEFAULT_REACTION_EMOJI),
 
     //Text Specific
 

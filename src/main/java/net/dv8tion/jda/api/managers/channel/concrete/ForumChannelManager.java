@@ -21,11 +21,13 @@ import net.dv8tion.jda.api.entities.channel.concrete.ForumChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.forums.BaseForumTag;
 import net.dv8tion.jda.api.entities.channel.forums.ForumTagData;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.managers.channel.attribute.IAgeRestrictedChannelManager;
 import net.dv8tion.jda.api.managers.channel.middleman.StandardGuildChannelManager;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.List;
 
 /**
@@ -116,4 +118,19 @@ public interface ForumChannelManager extends
     @Nonnull
     @CheckReturnValue
     ForumChannelManager setAvailableTags(@Nonnull List<? extends BaseForumTag> tags);
+
+    /**
+     * Sets the <b><u>default reaction emoji</u></b> of the selected {@link ForumChannel}.
+     * <br>This does not support custom emoji from other guilds.
+     *
+     * @param  emoji
+     *         The new default reaction emoji, or null to unset.
+     *
+     * @return ChannelManager for chaining convenience
+     *
+     * @see    ForumChannel#getDefaultReaction()
+     */
+    @Nonnull
+    @CheckReturnValue
+    ForumChannelManager setDefaultReaction(@Nullable Emoji emoji);
 }

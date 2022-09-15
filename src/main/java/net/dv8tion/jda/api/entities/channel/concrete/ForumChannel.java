@@ -26,6 +26,7 @@ import net.dv8tion.jda.api.entities.channel.attribute.IThreadContainer;
 import net.dv8tion.jda.api.entities.channel.attribute.IWebhookContainer;
 import net.dv8tion.jda.api.entities.channel.forums.ForumTag;
 import net.dv8tion.jda.api.entities.channel.middleman.StandardGuildChannel;
+import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
 import net.dv8tion.jda.api.managers.channel.concrete.ForumChannelManager;
 import net.dv8tion.jda.api.requests.restaction.ChannelAction;
 import net.dv8tion.jda.api.requests.restaction.ForumPostAction;
@@ -126,6 +127,14 @@ public interface ForumChannel extends StandardGuildChannel, IThreadContainer, IW
     {
         return getFlags().contains(ChannelFlag.REQUIRE_TAG);
     }
+
+    /**
+     * The emoji which will show up on new forum posts as default reaction.
+     *
+     * @return The default reaction for new forum posts.
+     */
+    @Nullable
+    EmojiUnion getDefaultReaction();
 
     /**
      * Creates a new forum post (thread) in this forum.

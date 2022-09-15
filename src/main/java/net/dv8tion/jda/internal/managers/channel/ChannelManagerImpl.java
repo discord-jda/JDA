@@ -33,6 +33,9 @@ import net.dv8tion.jda.api.entities.channel.forums.BaseForumTag;
 import net.dv8tion.jda.api.entities.channel.forums.ForumTagSnowflake;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.unions.IThreadContainerUnion;
+import net.dv8tion.jda.api.entities.emoji.CustomEmoji;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
+import net.dv8tion.jda.api.entities.emoji.UnicodeEmoji;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.channel.ChannelManager;
 import net.dv8tion.jda.api.utils.data.DataArray;
@@ -67,6 +70,7 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
     protected ThreadChannel.AutoArchiveDuration autoArchiveDuration;
     protected List<BaseForumTag> availableTags;
     protected List<String> appliedTags;
+    protected Emoji defaultReactionEmoji;
     protected ChannelType type;
     protected String name;
     protected String parent;
@@ -128,6 +132,8 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
             this.availableTags = null;
         if ((fields & APPLIED_TAGS) == APPLIED_TAGS)
             this.appliedTags = null;
+        if ((fields & DEFAULT_REACTION) == DEFAULT_REACTION)
+            this.defaultReactionEmoji = null;
         if ((fields & PERMISSION) == PERMISSION)
         {
             withLock(lock, (lock) ->
@@ -178,6 +184,7 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
         this.region = null;
         this.availableTags = null;
         this.appliedTags = null;
+        this.defaultReactionEmoji = null;
         this.flags.clear();
         this.flags.addAll(channel.getFlags());
         withLock(lock, (lock) ->
@@ -612,6 +619,15 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
         return (M) this;
     }
 
+    public M setDefaultReaction(Emoji emoji)
+    {
+        if (type != ChannelType.FORUM)
+            throw new IllegalStateException("Can only set default reaction on forum channels.");
+        this.defaultReactionEmoji = emoji;
+        set |= DEFAULT_REACTION;
+        return (M) this;
+    }
+
     @Override
     protected RequestBody finalizeData()
     {
@@ -650,6 +666,15 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
             frame.put("applied_tags", DataArray.fromCollection(appliedTags));
         if (shouldUpdate(PINNED | REQUIRE_TAG))
             frame.put("flags", ChannelFlag.getRaw(flags));
+        if (shouldUpdate(DEFAULT_REACTION))
+        {
+            if (defaultReactionEmoji instanceof CustomEmoji)
+                frame.put("default_reaction_emoji", DataObject.empty().put("emoji_id", ((CustomEmoji) defaultReactionEmoji).getId()));
+            else if (defaultReactionEmoji instanceof UnicodeEmoji)
+                frame.put("default_reaction_emoji", DataObject.empty().put("emoji_name", defaultReactionEmoji.getName()));
+            else
+                frame.put("default_reaction_emoji", null);
+        }
 
         withLock(lock, (lock) ->
         {

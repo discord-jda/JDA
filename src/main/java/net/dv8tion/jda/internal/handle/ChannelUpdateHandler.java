@@ -34,6 +34,7 @@ import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
 import net.dv8tion.jda.api.entities.channel.forums.ForumTag;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
+import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
 import net.dv8tion.jda.api.events.channel.update.*;
 import net.dv8tion.jda.api.events.guild.override.PermissionOverrideCreateEvent;
 import net.dv8tion.jda.api.events.guild.override.PermissionOverrideDeleteEvent;
@@ -178,6 +179,13 @@ public class ChannelUpdateHandler extends SocketHandler
             case FORUM:
             {
                 final String topic = content.getString("topic", null);
+                final EmojiUnion defaultReaction = content.optObject("default_reaction_emoji")
+                        .map(json -> {
+                            json.opt("emoji_id").ifPresent(id -> json.put("id", id));
+                            json.opt("emoji_name").ifPresent(n -> json.put("name", n));
+                            return EntityBuilder.createEmoji(json);
+                        })
+                        .orElse(null);
 
                 ForumChannelImpl forumChannel = (ForumChannelImpl) channel;
                 content.optArray("available_tags").ifPresent(array -> handleTagsUpdate(forumChannel, array));
@@ -191,6 +199,7 @@ public class ChannelUpdateHandler extends SocketHandler
                 final int oldSlowmode = forumChannel.getSlowmode();
                 final int oldDefaultThreadSlowmode = forumChannel.getDefaultThreadSlowmode();
                 final int oldFlags = forumChannel.getRawFlags();
+                final EmojiUnion oldDefaultReaction = forumChannel.getDefaultReaction();
 
                 if (!Objects.equals(oldName, name))
                 {
@@ -256,6 +265,14 @@ public class ChannelUpdateHandler extends SocketHandler
                             new ChannelUpdateFlagsEvent(
                                     getJDA(), responseNumber,
                                     forumChannel, ChannelFlag.fromRaw(oldFlags), ChannelFlag.fromRaw(flags)));
+                }
+                if (!Objects.equals(oldDefaultReaction, defaultReaction))
+                {
+                    forumChannel.setDefaultReaction(content.optObject("default_reaction_emoji").orElse(null));
+                    getJDA().handleEvent(
+                            new ChannelUpdateDefaultReactionEvent(
+                                    getJDA(), responseNumber,
+                                    forumChannel, oldDefaultReaction, defaultReaction));
                 }
                 break;
             }

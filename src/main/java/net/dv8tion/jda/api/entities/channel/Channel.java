@@ -89,6 +89,7 @@ public interface Channel extends IMentionable
     @CheckReturnValue
     RestAction<Void> delete();
 
+    @Nonnull
     @Override
     default String getAsMention()
     {

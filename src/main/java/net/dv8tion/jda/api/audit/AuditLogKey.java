@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.attribute.ICategorizableChannel;
 import net.dv8tion.jda.api.entities.channel.attribute.IThreadContainer;
+import net.dv8tion.jda.api.entities.channel.concrete.ForumChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
@@ -246,6 +247,13 @@ public enum AuditLogKey
      * <p>Expected type: <b>Integer</b>
      */
     CHANNEL_DEFAULT_THREAD_SLOWMODE("default_thread_rate_limit_per_user"),
+
+    /**
+     * Change of the {@link ForumChannel#getDefaultReaction()} value.
+     *
+     * <p>Expected type: <b>Map</b> containing {@code emoji_id} and {@code emoji_name}
+     */
+    CHANNEL_DEFAULT_REACTION_EMOJI("default_reaction_emoji"),
 
     /**
      * Change of the {@link VoiceChannel#getBitrate() VoiceChannel.getBitrate()} value.

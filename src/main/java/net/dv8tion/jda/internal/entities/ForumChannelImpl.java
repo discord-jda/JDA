@@ -26,17 +26,21 @@ import net.dv8tion.jda.api.entities.channel.concrete.Category;
 import net.dv8tion.jda.api.entities.channel.concrete.ForumChannel;
 import net.dv8tion.jda.api.entities.channel.forums.ForumTag;
 import net.dv8tion.jda.api.entities.channel.unions.GuildChannelUnion;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
+import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
 import net.dv8tion.jda.api.managers.channel.concrete.ForumChannelManager;
 import net.dv8tion.jda.api.requests.restaction.ChannelAction;
 import net.dv8tion.jda.api.requests.restaction.ForumPostAction;
 import net.dv8tion.jda.api.requests.restaction.ThreadChannelAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
+import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 import net.dv8tion.jda.internal.entities.channel.middleman.AbstractGuildChannelImpl;
 import net.dv8tion.jda.internal.entities.channel.mixin.attribute.IThreadContainerMixin;
 import net.dv8tion.jda.internal.entities.channel.mixin.attribute.IWebhookContainerMixin;
 import net.dv8tion.jda.internal.entities.channel.mixin.middleman.StandardGuildChannelMixin;
+import net.dv8tion.jda.internal.entities.emoji.CustomEmojiImpl;
 import net.dv8tion.jda.internal.managers.channel.concrete.ForumChannelManagerImpl;
 import net.dv8tion.jda.internal.requests.restaction.ForumPostActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -59,6 +63,7 @@ public class ForumChannelImpl extends AbstractGuildChannelImpl<ForumChannelImpl>
     private final TLongObjectMap<PermissionOverride> overrides = MiscUtil.newLongMap();
     private final SortedSnowflakeCacheViewImpl<ForumTag> tagCache = new SortedSnowflakeCacheViewImpl<>(ForumTag.class, ForumTag::getName, Comparator.naturalOrder());
 
+    private Emoji defaultReaction;
     private String topic;
     private long parentCategoryId;
     private boolean nsfw = false;
@@ -162,6 +167,12 @@ public class ForumChannelImpl extends AbstractGuildChannelImpl<ForumChannelImpl>
     }
 
     @Override
+    public EmojiUnion getDefaultReaction()
+    {
+        return (EmojiUnion) defaultReaction;
+    }
+
+    @Override
     public int getDefaultThreadSlowmode()
     {
         return defaultThreadSlowmode;
@@ -238,6 +249,17 @@ public class ForumChannelImpl extends AbstractGuildChannelImpl<ForumChannelImpl>
     public ForumChannelImpl setFlags(int flags)
     {
         this.flags = flags;
+        return this;
+    }
+
+    public ForumChannelImpl setDefaultReaction(DataObject emoji)
+    {
+        if (emoji != null && !emoji.isNull("emoji_id"))
+            this.defaultReaction = new CustomEmojiImpl("", emoji.getUnsignedLong("emoji_id"), false);
+        else if (emoji != null && !emoji.isNull("emoji_name"))
+            this.defaultReaction = Emoji.fromUnicode(emoji.getString("emoji_name"));
+        else
+            this.defaultReaction = null;
         return this;
     }
 }
