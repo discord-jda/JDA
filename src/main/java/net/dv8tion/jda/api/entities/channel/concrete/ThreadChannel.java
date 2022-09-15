@@ -176,7 +176,7 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer
         if (getParentChannel() instanceof GuildMessageChannel)
             return (GuildMessageChannelUnion) getParentChannel();
 
-        throw new UnsupportedOperationException("Parent of this thread is not a MessageChannel. Parent is type: " + getParentChannel().getType().getId());
+        throw new UnsupportedOperationException("Parent of this thread is not a MessageChannel. Parent: " + getParentChannel());
     }
 
     /**
@@ -964,7 +964,6 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer
      */
     enum AutoArchiveDuration
     {
-        //TODO: I dislike this naming scheme. Need to come up with something better.
         TIME_1_HOUR(60),
         TIME_24_HOURS(1440),
         TIME_3_DAYS(4320),
