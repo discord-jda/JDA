@@ -41,6 +41,7 @@ import okhttp3.RequestBody;
 
 import javax.annotation.Nonnull;
 import java.util.Collection;
+import java.util.function.BooleanSupplier;
 
 public class ForumPostActionImpl extends RestActionImpl<ForumPost> implements ForumPostAction, MessageCreateBuilderMixin<ForumPostAction>
 {
@@ -56,6 +57,27 @@ public class ForumPostActionImpl extends RestActionImpl<ForumPost> implements Fo
         this.builder = builder;
         this.channel = channel;
         setName(name);
+    }
+
+    @Nonnull
+    @Override
+    public ForumPostAction setCheck(BooleanSupplier checks)
+    {
+        return (ForumPostAction) super.setCheck(checks);
+    }
+
+    @Nonnull
+    @Override
+    public ForumPostAction addCheck(@Nonnull BooleanSupplier checks)
+    {
+        return (ForumPostAction) super.addCheck(checks);
+    }
+
+    @Nonnull
+    @Override
+    public ForumPostAction deadline(long timestamp)
+    {
+        return (ForumPostAction) super.deadline(timestamp);
     }
 
     @Nonnull
