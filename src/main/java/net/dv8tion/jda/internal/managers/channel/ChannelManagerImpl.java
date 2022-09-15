@@ -32,6 +32,7 @@ import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
 import net.dv8tion.jda.api.entities.channel.forums.BaseForumTag;
 import net.dv8tion.jda.api.entities.channel.forums.ForumTagSnowflake;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.StandardGuildMessageChannel;
 import net.dv8tion.jda.api.entities.channel.unions.IThreadContainerUnion;
 import net.dv8tion.jda.api.entities.emoji.CustomEmoji;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
@@ -449,14 +450,13 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
     @CheckReturnValue
     public M setTopic(String topic)
     {
-        if (TOPIC_SUPPORTED.contains(type))
-            throw new IllegalStateException("Can only set topic on text, forum, and news channels");
+        checkTypes(TOPIC_SUPPORTED, "topic");
         if (topic != null)
         {
             if (type == ChannelType.FORUM)
                 Checks.notLonger(topic, ForumChannel.MAX_FORUM_TOPIC_LENGTH, "Topic");
             else
-                Checks.notLonger(topic, 1024, "Topic");
+                Checks.notLonger(topic, StandardGuildMessageChannel.MAX_TOPIC_LENGTH, "Topic");
         }
         this.topic = topic;
         set |= TOPIC;

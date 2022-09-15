@@ -26,6 +26,7 @@ import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.concrete.Category;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.StandardGuildMessageChannel;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.utils.Checks;
 
@@ -149,12 +150,14 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
      * Sets the topic for the new TextChannel
      *
      * @param  topic
-     *         The topic for the new GuildChannel (max 1024 chars)
+     *         The topic for the new GuildChannel
      *
      * @throws UnsupportedOperationException
      *         If this ChannelAction is not for a TextChannel
      * @throws IllegalArgumentException
-     *         If the provided topic is longer than 1024 chars
+     *         If the provided topic is greater than {@value StandardGuildMessageChannel#MAX_TOPIC_LENGTH} in length.
+     *         For {@link net.dv8tion.jda.api.entities.channel.concrete.ForumChannel ForumChannels},
+     *         this limit is {@value net.dv8tion.jda.api.entities.channel.concrete.ForumChannel#MAX_FORUM_TOPIC_LENGTH} instead.
      *
      * @return The current ChannelAction, for chaining convenience
      */

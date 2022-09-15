@@ -45,14 +45,14 @@ public interface StandardGuildMessageChannelManager<T extends StandardGuildMessa
      /**
      * Sets the <b><u>topic</u></b> of the selected {@link StandardGuildMessageChannel channel}.
      *
-     * <p>A channel topic <b>must not</b> be more than {@code 1024} characters long!
-     *
      * @param  topic
      *         The new topic for the selected channel,
      *         {@code null} or empty String to reset
      *
      * @throws IllegalArgumentException
-     *         If the provided topic is greater than {@code 1024} in length
+     *         If the provided topic is greater than {@value StandardGuildMessageChannel#MAX_TOPIC_LENGTH} in length.
+     *         For {@link net.dv8tion.jda.api.entities.channel.concrete.ForumChannel ForumChannels},
+     *         this limit is {@value net.dv8tion.jda.api.entities.channel.concrete.ForumChannel#MAX_FORUM_TOPIC_LENGTH} instead.
      *
      * @return ChannelManager for chaining convenience
      */
