@@ -18,6 +18,7 @@ package net.dv8tion.jda.api.entities.channel;
 
 import net.dv8tion.jda.api.audit.AuditLogKey;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.channel.attribute.IThreadContainer;
 import net.dv8tion.jda.api.entities.channel.concrete.*;
 import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.StandardGuildMessageChannel;
@@ -81,7 +82,18 @@ public enum ChannelField
      */
     POSITION("position", null), //Discord doesn't track Channel position changes in AuditLog.
 
+    /**
+     * The default slowmode applied to threads in a {@link net.dv8tion.jda.api.entities.channel.attribute.IThreadContainer ThreadContainer}.
+     *
+     * @see IThreadContainer#getDefaultThreadSlowmode()
+     */
     DEFAULT_THREAD_SLOWMODE("default_thread_slowmode", AuditLogKey.CHANNEL_DEFAULT_THREAD_SLOWMODE),
+
+    /**
+     * The default reaction emoji used in a {@link ForumChannel}.
+     *
+     * @see ForumChannel#getDefaultReaction()
+     */
     DEFAULT_REACTION_EMOJI("default_reaction_emoji", AuditLogKey.CHANNEL_DEFAULT_REACTION_EMOJI),
 
     //Text Specific
