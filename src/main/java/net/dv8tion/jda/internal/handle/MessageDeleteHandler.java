@@ -78,7 +78,7 @@ public class MessageDeleteHandler extends SocketHandler
             ThreadChannelImpl gThread = (ThreadChannelImpl) channel;
 
             gThread.setMessageCount(Math.max(0, gThread.getMessageCount() - 1));
-            // Not decrementing total since that should include deleted as well
+            // Not decrementing totalMessageCount since that should include deleted as well
         }
 
         getJDA().handleEvent(new MessageDeleteEvent(getJDA(), responseNumber, messageId, channel));
