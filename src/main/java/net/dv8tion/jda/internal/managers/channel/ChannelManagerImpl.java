@@ -605,7 +605,7 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
     public M setAppliedTags(Collection<? extends ForumTagSnowflake> tags)
     {
         if (type != ChannelType.GUILD_PUBLIC_THREAD)
-            throw new IllegalStateException("Can only set applied tags on public thread channels.");
+            throw new IllegalStateException("Can only set applied tags on forum post thread channels.");
         Checks.noneNull(tags, "Applied Tags");
         Checks.check(tags.size() <= ForumChannel.MAX_POST_TAGS, "Cannot apply more than %d tags to a post thread!", ForumChannel.MAX_POST_TAGS);
         ThreadChannel thread = (ThreadChannel) getChannel();
