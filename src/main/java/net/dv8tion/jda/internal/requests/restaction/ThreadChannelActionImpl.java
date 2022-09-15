@@ -45,7 +45,7 @@ public class ThreadChannelActionImpl extends AuditableRestActionImpl<ThreadChann
 
     public ThreadChannelActionImpl(GuildChannel channel, String name, ChannelType type)
     {
-        super(channel.getJDA(), Route.Channels.CREATE_THREAD_WITHOUT_MESSAGE.compile(channel.getId()));
+        super(channel.getJDA(), Route.Channels.CREATE_THREAD.compile(channel.getId()));
         this.guild = channel.getGuild();
         this.type = type;
         this.parentMessageId = null;
@@ -55,7 +55,7 @@ public class ThreadChannelActionImpl extends AuditableRestActionImpl<ThreadChann
 
     public ThreadChannelActionImpl(GuildChannel channel, String name, String parentMessageId)
     {
-        super(channel.getJDA(), Route.Channels.CREATE_THREAD_WITH_MESSAGE.compile(channel.getId(), parentMessageId));
+        super(channel.getJDA(), Route.Channels.CREATE_THREAD_FROM_MESSAGE.compile(channel.getId(), parentMessageId));
         this.guild = channel.getGuild();
         this.type = channel.getType() == ChannelType.TEXT ? ChannelType.GUILD_PUBLIC_THREAD : ChannelType.GUILD_NEWS_THREAD;
         this.parentMessageId = parentMessageId;

@@ -53,7 +53,7 @@ public class ForumPostActionImpl extends RestActionImpl<ForumPost> implements Fo
 
     public ForumPostActionImpl(ForumChannel channel, String name, MessageCreateBuilder builder)
     {
-        super(channel.getJDA(), Route.Channels.CREATE_THREAD_WITHOUT_MESSAGE.compile(channel.getId()));
+        super(channel.getJDA(), Route.Channels.CREATE_THREAD.compile(channel.getId()));
         this.builder = builder;
         this.channel = channel;
         setName(name);
