@@ -25,6 +25,14 @@ import net.dv8tion.jda.api.utils.data.SerializableData;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+/**
+ * Information describing a forum tag.
+ * <br>This is an abstraction used to simplify managing tags.
+ *
+ * @see ForumTag
+ * @see ForumTagData
+ * @see ForumTagSnowflake
+ */
 public interface BaseForumTag extends SerializableData
 {
     /**
