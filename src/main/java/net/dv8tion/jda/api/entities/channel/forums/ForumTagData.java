@@ -21,7 +21,6 @@ import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
 import net.dv8tion.jda.api.managers.channel.concrete.ForumChannelManager;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.utils.Checks;
-import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -150,7 +149,7 @@ public class ForumTagData implements BaseForumTag
         return (EmojiUnion) emoji;
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public DataObject toData()
     {
