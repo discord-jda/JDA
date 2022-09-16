@@ -17,14 +17,14 @@
 package net.dv8tion.jda.api.events.channel.forum;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.channel.Channel;
+import net.dv8tion.jda.api.entities.channel.concrete.ForumChannel;
 import net.dv8tion.jda.api.entities.channel.forums.ForumTag;
 
 import javax.annotation.Nonnull;
 
 public class ForumTagRemoveEvent extends GenericForumTagEvent
 {
-    public ForumTagRemoveEvent(@Nonnull JDA api, long responseNumber, @Nonnull Channel channel, @Nonnull ForumTag tag)
+    public ForumTagRemoveEvent(@Nonnull JDA api, long responseNumber, @Nonnull ForumChannel channel, @Nonnull ForumTag tag)
     {
         super(api, responseNumber, channel, tag);
     }
