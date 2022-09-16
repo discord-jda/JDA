@@ -35,6 +35,11 @@ import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
 import net.dv8tion.jda.api.entities.channel.forums.ForumTag;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
+import net.dv8tion.jda.api.events.channel.forum.ForumTagAddEvent;
+import net.dv8tion.jda.api.events.channel.forum.ForumTagRemoveEvent;
+import net.dv8tion.jda.api.events.channel.forum.update.ForumTagUpdateEmojiEvent;
+import net.dv8tion.jda.api.events.channel.forum.update.ForumTagUpdateModeratedEvent;
+import net.dv8tion.jda.api.events.channel.forum.update.ForumTagUpdateNameEvent;
 import net.dv8tion.jda.api.events.channel.update.*;
 import net.dv8tion.jda.api.events.guild.override.PermissionOverrideCreateEvent;
 import net.dv8tion.jda.api.events.guild.override.PermissionOverrideDeleteEvent;
@@ -713,29 +718,39 @@ public class ChannelUpdateHandler extends SocketHandler
                     String name = tagJson.getString("name");
                     boolean moderated = tagJson.getBoolean("moderated");
 
-                    // TODO: Events?
-                    impl.setPosition(i);
-                    impl.setEmoji(tagJson);
                     String oldName = impl.getName();
+                    EmojiUnion oldEmoji = impl.getEmoji();
+
+                    impl.setEmoji(tagJson);
+
+                    impl.setPosition(i);
+                    if (!Objects.equals(oldEmoji, impl.getEmoji()))
+                    {
+                        api.handleEvent(new ForumTagUpdateEmojiEvent(api, responseNumber, channel, impl, oldEmoji));
+                    }
                     if (!name.equals(oldName))
                     {
                         impl.setName(name);
+                        api.handleEvent(new ForumTagUpdateNameEvent(api, responseNumber, channel, impl, oldName));
                     }
                     if (moderated != impl.isModerated())
                     {
                         impl.setModerated(moderated);
+                        api.handleEvent(new ForumTagUpdateModeratedEvent(api, responseNumber, channel, impl, moderated));
                     }
                 }
                 else
                 {
                     ForumTag tag = builder.createForumTag(channel, tagJson, i);
                     cache.put(id, tag);
+                    api.handleEvent(new ForumTagAddEvent(api, responseNumber, channel, tag));
                 }
             }
 
-            // TODO: Events?
             removedTags.forEach(id -> {
                 ForumTag tag = cache.remove(id);
+                if (tag != null)
+                    api.handleEvent(new ForumTagRemoveEvent(api, responseNumber, channel, tag));
                 return true;
             });
         }

@@ -39,7 +39,7 @@ import java.util.function.Consumer;
 public interface AbstractThreadCreateAction<T, R extends AbstractThreadCreateAction<T, R>> extends FluentRestAction<T, R>
 {
     /**
-     * The guild to create this {@link GuildChannel} in
+     * The guild to create this {@link GuildChannel} for.
      *
      * @return The guild
      */
@@ -47,7 +47,7 @@ public interface AbstractThreadCreateAction<T, R extends AbstractThreadCreateAct
     Guild getGuild();
 
     /**
-     * The {@link ChannelType} for the resulting channel
+     * The {@link ChannelType} for the resulting channel.
      *
      * @return The channel type
      */
@@ -55,7 +55,7 @@ public interface AbstractThreadCreateAction<T, R extends AbstractThreadCreateAct
     ChannelType getType();
 
     /**
-     * Sets the name for the new GuildChannel
+     * Sets the name for the new GuildChannel.
      *
      * @param  name
      *         The not-null name for the new GuildChannel (up to {@value Channel#MAX_NAME_LENGTH} characters)
