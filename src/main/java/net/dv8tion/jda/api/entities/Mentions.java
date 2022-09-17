@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.emoji.CustomEmoji;
+import net.dv8tion.jda.api.interactions.commands.ICommandReference;
 import org.apache.commons.collections4.Bag;
 
 import javax.annotation.Nonnull;
@@ -324,6 +325,14 @@ public interface Mentions
      */
     @Nonnull
     Bag<Member> getMembersBag();
+
+    //TODO docs
+    @Nonnull
+    List<ICommandReference> getSlashCommands();
+
+    //TODO docs
+    @Nonnull
+    Bag<ICommandReference> getSlashCommandsBag();
 
     /**
      * Combines all instances of {@link net.dv8tion.jda.api.entities.IMentionable IMentionable}

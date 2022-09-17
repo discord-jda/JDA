@@ -23,6 +23,8 @@ import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.emoji.CustomEmoji;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
+import net.dv8tion.jda.api.interactions.commands.ICommandReference;
+import net.dv8tion.jda.api.interactions.commands.SlashCommandReference;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.GuildImpl;
@@ -49,6 +51,7 @@ public abstract class AbstractMentions implements Mentions
     protected List<Role> mentionedRoles;
     protected List<GuildChannel> mentionedChannels;
     protected List<CustomEmoji> mentionedEmojis;
+    protected List<ICommandReference> mentionedSlashCommands;
 
     public AbstractMentions(String content, JDAImpl jda, GuildImpl guild, boolean mentionsEveryone)
     {
@@ -185,6 +188,22 @@ public abstract class AbstractMentions implements Mentions
 
     @Nonnull
     @Override
+    public synchronized List<ICommandReference> getSlashCommands()
+    {
+        if (mentionedSlashCommands != null)
+            return mentionedSlashCommands;
+        return mentionedSlashCommands = Collections.unmodifiableList(processMentions(Message.MentionType.SLASH_COMMAND, new ArrayList<>(), true, this::matchSlashCommand));
+    }
+
+    @Nonnull
+    @Override
+    public Bag<ICommandReference> getSlashCommandsBag()
+    {
+        return processMentions(Message.MentionType.SLASH_COMMAND, new HashBag<>(), false, this::matchSlashCommand);
+    }
+
+    @Nonnull
+    @Override
     @SuppressWarnings("ConstantConditions")
     public List<IMentionable> getMentions(@Nonnull Message.MentionType... types)
     {
@@ -212,6 +231,9 @@ public abstract class AbstractMentions implements Mentions
                 break;
             case EMOJI:
                 mentions.addAll(getCustomEmojis());
+                break;
+            case SLASH_COMMAND:
+                mentions.addAll(getSlashCommands());
                 break;
 //            case EVERYONE:
 //            case HERE:
@@ -258,6 +280,10 @@ public abstract class AbstractMentions implements Mentions
                 if (mentionable instanceof Emoji && getCustomEmojis().contains(mentionable))
                     return true;
                 break;
+            case SLASH_COMMAND:
+                if (mentionable instanceof ICommandReference && getSlashCommands().contains(mentionable))
+                    return true;
+                break;
 //           default: continue;
             }
         }
@@ -300,6 +326,11 @@ public abstract class AbstractMentions implements Mentions
         if (emoji == null)
             emoji = Emoji.fromCustom(name, emojiId, animated);
         return emoji;
+    }
+
+    protected ICommandReference matchSlashCommand(Matcher matcher)
+    {
+        return new SlashCommandReference(matcher.group(1), Long.parseLong(matcher.group(2)));
     }
 
     protected abstract boolean isUserMentioned(IMentionable mentionable);

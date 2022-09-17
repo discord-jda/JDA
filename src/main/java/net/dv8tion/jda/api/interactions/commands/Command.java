@@ -48,7 +48,7 @@ import java.util.stream.Collectors;
  * @see Guild#retrieveCommandById(String)
  * @see Guild#retrieveCommands()
  */
-public interface Command extends ISnowflake
+public interface Command extends ISnowflake, ICommandReference
 {
     /**
      * Delete this command.

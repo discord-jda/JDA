@@ -1990,7 +1990,12 @@ public interface Message extends ISnowflake, Formattable
         /**
          * Represents a mention for all users in a server, literal {@code @everyone}.
          */
-        EVERYONE("@everyone", "everyone");
+        EVERYONE("@everyone", "everyone"),
+        /**
+         * Represents a mention for a slash command
+         * <br>The first group is the command name, and the second group is the command ID
+         */
+        SLASH_COMMAND("</([\\w-]+):(\\d+)>", null);
 
         private final Pattern pattern;
         private final String parseKey;
