@@ -28,6 +28,7 @@ import net.dv8tion.jda.api.entities.channel.forums.ForumTag;
 import net.dv8tion.jda.api.entities.channel.unions.GuildChannelUnion;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
+import net.dv8tion.jda.api.entities.emoji.UnicodeEmoji;
 import net.dv8tion.jda.api.managers.channel.concrete.ForumChannelManager;
 import net.dv8tion.jda.api.requests.restaction.ChannelAction;
 import net.dv8tion.jda.api.requests.restaction.ForumPostAction;
@@ -99,10 +100,17 @@ public class ForumChannelImpl extends AbstractGuildChannelImpl<ForumChannelImpl>
     public ChannelAction<ForumChannel> createCopy(@Nonnull Guild guild)
     {
         Checks.notNull(guild, "Guild");
-        ChannelAction<ForumChannel> action = guild.createForumChannel(name).setNSFW(nsfw).setTopic(topic).setSlowmode(slowmode);
+        ChannelAction<ForumChannel> action = guild.createForumChannel(name)
+                .setNSFW(nsfw)
+                .setTopic(topic)
+                .setSlowmode(slowmode)
+                .setAvailableTags(getAvailableTags());
+        if (defaultReaction instanceof UnicodeEmoji)
+            action.setDefaultReaction(defaultReaction);
         if (guild.equals(getGuild()))
         {
             Category parent = getParentCategory();
+            action.setDefaultReaction(defaultReaction);
             if (parent != null)
                 action.setParent(parent);
             for (PermissionOverride o : overrides.valueCollection())

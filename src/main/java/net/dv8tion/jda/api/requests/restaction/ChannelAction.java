@@ -26,8 +26,12 @@ import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.attribute.ISlowmodeChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.Category;
+import net.dv8tion.jda.api.entities.channel.concrete.ForumChannel;
+import net.dv8tion.jda.api.entities.channel.forums.BaseForumTag;
+import net.dv8tion.jda.api.entities.channel.forums.ForumTagData;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.StandardGuildMessageChannel;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.utils.Checks;
 
@@ -35,8 +39,7 @@ import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Collection;
-import java.util.concurrent.TimeUnit;
-import java.util.function.BooleanSupplier;
+import java.util.List;
 
 /**
  * Extension of {@link net.dv8tion.jda.api.requests.RestAction RestAction} specifically
@@ -57,20 +60,8 @@ import java.util.function.BooleanSupplier;
  * @param <T>
  *        The type of channel to create
  */
-public interface ChannelAction<T extends GuildChannel> extends AuditableRestAction<T>
+public interface ChannelAction<T extends GuildChannel> extends FluentAuditableRestAction<T, ChannelAction<T>>
 {
-    @Nonnull
-    @Override
-    ChannelAction<T> setCheck(@Nullable BooleanSupplier checks);
-
-    @Nonnull
-    @Override
-    ChannelAction<T> timeout(long timeout, @Nonnull TimeUnit unit);
-
-    @Nonnull
-    @Override
-    ChannelAction<T> deadline(long timestamp);
-
     /**
      * The guild to create this {@link GuildChannel} in
      *
@@ -203,6 +194,41 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
     @Nonnull
     @CheckReturnValue
     ChannelAction<T> setSlowmode(int slowmode);
+
+    /**
+     * Sets the <b><u>default reaction emoji</u></b> of the new {@link ForumChannel}.
+     * <br>This does not support custom emoji from other guilds.
+     *
+     * @param  emoji
+     *         The new default reaction emoji, or null to unset.
+     *
+     * @return The current ChannelAction, for chaining convenience
+     *
+     * @see    ForumChannel#getDefaultReaction()
+     */
+    @Nonnull
+    @CheckReturnValue
+    ChannelAction<T> setDefaultReaction(@Nullable Emoji emoji);
+
+    /**
+     * Sets the <b><u>available tags</u></b> of the new {@link ForumChannel}.
+     * <br>Tags will be ordered based on the provided list order.
+     *
+     * <p>You can use {@link ForumTagData} to create new tags.
+     *
+     * @param  tags
+     *         The new available tags in the desired order.
+     *
+     * @throws IllegalArgumentException
+     *         If the provided list is null or contains null elements
+     *
+     * @return The current ChannelAction, for chaining convenience
+     *
+     * @see    ForumChannel#getAvailableTags()
+     */
+    @Nonnull
+    @CheckReturnValue
+    ChannelAction<T> setAvailableTags(@Nonnull List<? extends BaseForumTag> tags);
 
     /**
      * Adds a new Role or Member {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverride}

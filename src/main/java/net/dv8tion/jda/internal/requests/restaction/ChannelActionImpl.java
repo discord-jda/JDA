@@ -27,8 +27,12 @@ import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.attribute.ISlowmodeChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.Category;
 import net.dv8tion.jda.api.entities.channel.concrete.ForumChannel;
+import net.dv8tion.jda.api.entities.channel.forums.BaseForumTag;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.StandardGuildMessageChannel;
+import net.dv8tion.jda.api.entities.emoji.CustomEmoji;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
+import net.dv8tion.jda.api.entities.emoji.UnicodeEmoji;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
@@ -40,11 +44,14 @@ import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.PermissionUtil;
 import okhttp3.RequestBody;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 
@@ -64,6 +71,10 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
     protected String name;
     protected Category parent;
     protected Integer position;
+
+    // --forum only--
+    protected List<? extends BaseForumTag> availableTags;
+    protected Emoji defaultReactionEmoji;
 
     // --text/forum/voice only--
     protected Integer slowmode = null;
@@ -86,6 +97,13 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
         this.guild = guild;
         this.type = type;
         this.name = name;
+    }
+
+    @Nonnull
+    @Override
+    public ChannelActionImpl<T> reason(@Nullable String reason)
+    {
+        return (ChannelActionImpl<T>) super.reason(reason);
     }
 
     @Nonnull
@@ -192,6 +210,23 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
         Checks.checkSupportedChannelTypes(SLOWMODE_SUPPORTED, type, "Slowmode");
         Checks.check(slowmode <= ISlowmodeChannel.MAX_SLOWMODE && slowmode >= 0, "Slowmode must be between 0 and %d (seconds)!", ISlowmodeChannel.MAX_SLOWMODE);
         this.slowmode = slowmode;
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    public ChannelAction<T> setDefaultReaction(@Nullable Emoji emoji)
+    {
+        this.defaultReactionEmoji = emoji;
+        return this;
+    }
+
+    @NotNull
+    @Override
+    public ChannelAction<T> setAvailableTags(@NotNull List<? extends BaseForumTag> tags)
+    {
+        Checks.noneNull(tags, "Tags");
+        this.availableTags = new ArrayList<>(tags);
         return this;
     }
 
@@ -351,11 +386,19 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
         if (slowmode != null)
             object.put("rate_limit_per_user", slowmode);
 
-        //Text and News
+        //Text, Forum, and News
         if (topic != null && !topic.isEmpty())
             object.put("topic", topic);
         if (nsfw != null)
             object.put("nsfw", nsfw);
+
+        //Forum only
+        if (defaultReactionEmoji instanceof CustomEmoji)
+            object.put("default_reaction_emoji", DataObject.empty().put("emoji_id", ((CustomEmoji) defaultReactionEmoji).getId()));
+        else if (defaultReactionEmoji instanceof UnicodeEmoji)
+            object.put("default_reaction_emoji", DataObject.empty().put("emoji_name", defaultReactionEmoji.getName()));
+        if (availableTags != null)
+            object.put("available_tags", DataArray.fromCollection(availableTags));
 
         //Voice only
         if (userlimit != null)
