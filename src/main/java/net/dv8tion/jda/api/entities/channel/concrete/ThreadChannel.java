@@ -59,10 +59,6 @@ import java.util.List;
  */
 public interface ThreadChannel extends GuildMessageChannel, IMemberContainer, ISlowmodeChannel
 {
-    //TODO fields that need to be researched:
-    // - rate_limit_per_user
-    // - last_pin_timestamp (do we even use this for Text/News channels?)
-
     /**
      * Whether this thread is public or not.
      *
