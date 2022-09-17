@@ -48,4 +48,25 @@ public class SlashCommandReference implements ICommandReference
     {
         return "</" + getName() + ":" + getIdLong() + ">";
     }
+
+    @Override
+    public String toString()
+    {
+        return String.format("SlashCommandReference: name=%s, id=%d", name, id);
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        SlashCommandReference that = (SlashCommandReference) o;
+        return id == that.id;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return (int) (id ^ (id >>> 32));
+    }
 }
