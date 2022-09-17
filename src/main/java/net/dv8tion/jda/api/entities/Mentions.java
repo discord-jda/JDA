@@ -326,11 +326,45 @@ public interface Mentions
     @Nonnull
     Bag<Member> getMembersBag();
 
-    //TODO docs
+    /**
+     * An immutable list of all mentioned {@link ICommandReference slash commands}.
+     * <br>If none were mentioned, this list is empty. Elements are sorted in order of appearance.
+     *
+     * <p>Be aware these mentions could be not mentioning an actual command
+     *
+     * @return Immutable list of mentioned slash commands, or an empty list
+     */
     @Nonnull
     List<ICommandReference> getSlashCommands();
 
-    //TODO docs
+    /**
+     * A {@link org.apache.commons.collections4.Bag Bag} of mentioned {@link ICommandReference slash commands}.
+     * <br>This can be used to retrieve the amount of times a slash commands was mentioned.
+     *
+     * <p>Be aware these mentions could be not mentioning an actual command
+     *
+     * <p><b>Example</b><br>
+     * <pre>{@code
+     * void sendCount(Message msg)
+     * {
+     *     List<ICommandReference> mentions = msg.getMentions().getSlashCommands(); // distinct list, in order of appearance
+     *     Bag<ICommandReference> count = msg.getMentions().getSlashCommandsBag();
+     *     StringBuilder content = new StringBuilder();
+     *     for (ICommandReference commandRef : mentions)
+     *     {
+     *         content.append(commandRef.getAsMention())
+     *                .append(": ")
+     *                .append(count.getCount(commandRef))
+     *                .append("\n");
+     *     }
+     *     msg.getChannel().sendMessage(content.toString()).queue();
+     * }
+     * }</pre>
+     *
+     * @return {@link org.apache.commons.collections4.Bag Bag} of mentioned slash commands
+     *
+     * @see    #getSlashCommands()
+     */
     @Nonnull
     Bag<ICommandReference> getSlashCommandsBag();
 
