@@ -29,7 +29,9 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * Indicates that the tags applied to a {@link ThreadChannel forum post} have been updated.
+ * Indicates that the tags applied to a {@link ThreadChannel forum post thread} have been updated.
+ *
+ * @see ChannelField#APPLIED_TAGS
  */
 public class ChannelUpdateAppliedTagsEvent extends GenericChannelUpdateEvent<List<Long>>
 {

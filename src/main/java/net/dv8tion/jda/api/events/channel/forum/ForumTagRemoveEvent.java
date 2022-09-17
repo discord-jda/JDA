@@ -21,7 +21,15 @@ import net.dv8tion.jda.api.entities.channel.concrete.ForumChannel;
 import net.dv8tion.jda.api.entities.channel.forums.ForumTag;
 
 import javax.annotation.Nonnull;
+import java.util.Collection;
 
+/**
+ * Indicates that a {@link ForumTag} was removed from a {@link ForumChannel}.
+ *
+ * <p><b>Requirements</b><br>
+ * This requires {@link net.dv8tion.jda.api.utils.cache.CacheFlag#FORUM_TAGS CacheFlag.FORUM_TAGS} to be enabled.
+ * {@link net.dv8tion.jda.api.JDABuilder#createLight(String, Collection) JDABuilder.createLight(...)} disables this by default.
+ */
 public class ForumTagRemoveEvent extends GenericForumTagEvent
 {
     public ForumTagRemoveEvent(@Nonnull JDA api, long responseNumber, @Nonnull ForumChannel channel, @Nonnull ForumTag tag)

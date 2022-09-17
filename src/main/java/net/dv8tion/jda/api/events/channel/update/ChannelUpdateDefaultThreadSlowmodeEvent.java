@@ -19,9 +19,17 @@ package net.dv8tion.jda.api.events.channel.update;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.ChannelField;
+import net.dv8tion.jda.api.entities.channel.attribute.IThreadContainer;
 
 import javax.annotation.Nonnull;
 
+/**
+ * Indicates that the {@link IThreadContainer#getDefaultThreadSlowmode() default thread slowmode} of a {@link IThreadContainer thread container channel} changed.
+ *
+ * <p>Can be used to retrieve the old default thread slowmode and the new one.
+ *
+ * @see ChannelField#DEFAULT_THREAD_SLOWMODE
+ */
 public class ChannelUpdateDefaultThreadSlowmodeEvent extends GenericChannelUpdateEvent<Integer>
 {
     public ChannelUpdateDefaultThreadSlowmodeEvent(@Nonnull JDA api, long responseNumber, @Nonnull Channel channel, int oldValue, int newValue)

@@ -24,6 +24,13 @@ import net.dv8tion.jda.api.entities.channel.ChannelFlag;
 import javax.annotation.Nonnull;
 import java.util.EnumSet;
 
+/**
+ * Indicates that the {@link Channel#getFlags() flags} of a {@link Channel} changed.
+ *
+ * <p>Can be used to retrieve the old flags and the new ones.
+ *
+ * @see ChannelField#FLAGS
+ */
 public class ChannelUpdateFlagsEvent extends GenericChannelUpdateEvent<EnumSet<ChannelFlag>>
 {
     public ChannelUpdateFlagsEvent(@Nonnull JDA api, long responseNumber, @Nonnull Channel channel, @Nonnull EnumSet<ChannelFlag> oldValue, @Nonnull EnumSet<ChannelFlag> newValue)

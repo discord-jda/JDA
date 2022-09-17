@@ -23,7 +23,17 @@ import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Collection;
 
+/**
+ * Indicates that the {@link ForumTag#getEmoji() emoji} of a {@link ForumTag} changed.
+ *
+ * <p><b>Requirements</b><br>
+ * This requires {@link net.dv8tion.jda.api.utils.cache.CacheFlag#FORUM_TAGS CacheFlag.FORUM_TAGS} to be enabled.
+ * {@link net.dv8tion.jda.api.JDABuilder#createLight(String, Collection) JDABuilder.createLight(...)} disables this by default.
+ *
+ * <p>Identifier: {@code emoji}
+ */
 public class ForumTagUpdateEmojiEvent extends GenericForumTagUpdateEvent<EmojiUnion>
 {
     public static final String IDENTIFIER = "emoji";

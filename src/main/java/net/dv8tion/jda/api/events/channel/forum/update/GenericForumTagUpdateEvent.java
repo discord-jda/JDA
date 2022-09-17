@@ -23,7 +23,18 @@ import net.dv8tion.jda.api.events.UpdateEvent;
 import net.dv8tion.jda.api.events.channel.forum.GenericForumTagEvent;
 
 import javax.annotation.Nonnull;
+import java.util.Collection;
 
+/**
+ * Abstraction of all {@link ForumTag} updates.
+ *
+ * <p><b>Requirements</b><br>
+ * This requires {@link net.dv8tion.jda.api.utils.cache.CacheFlag#FORUM_TAGS CacheFlag.FORUM_TAGS} to be enabled.
+ * {@link net.dv8tion.jda.api.JDABuilder#createLight(String, Collection) JDABuilder.createLight(...)} disables this by default.
+ *
+ * @param <T>
+ *        The type of the updated field
+ */
 public abstract class GenericForumTagUpdateEvent<T> extends GenericForumTagEvent implements UpdateEvent<ForumTag, T>
 {
     private final T previous;
