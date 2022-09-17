@@ -83,13 +83,96 @@ public interface ForumChannel extends StandardGuildChannel, IThreadContainer, IW
         return createCopy(getGuild());
     }
 
+    /**
+     * The available {@link ForumTag ForumTags} for this forum channel.
+     * <br>Tags are sorted by their {@link ForumTag#getPosition() position} ascending.
+     *
+     * @return {@link SortedSnowflakeCacheView} of {@link ForumTag}
+     */
     @Nonnull
     SortedSnowflakeCacheView<ForumTag> getAvailableTagCache();
 
+    /**
+     * The available {@link ForumTag ForumTags} for this forum channel.
+     * <br>Tags are sorted by their {@link ForumTag#getPosition() position} ascending.
+     *
+     * <p>This is a shortcut for {@link #getAvailableTagCache() getAvailableTagCache().asList()}.
+     * This method will copy the underlying cache into the list, running in {@code O(n)} time.
+     *
+     * <p>This requires {@link net.dv8tion.jda.api.utils.cache.CacheFlag#FORUM_TAGS CacheFlag.FORUM_TAGS} to be enabled.
+     *
+     * @return Immutable {@link List} of {@link ForumTag}
+     */
     @Nonnull
     default List<ForumTag> getAvailableTags()
     {
         return getAvailableTagCache().asList();
+    }
+
+    /**
+     * The available {@link ForumTag ForumTags} for this forum channel.
+     * <br>Tags are sorted by their {@link ForumTag#getPosition() position} ascending.
+     *
+     * <p>This is a shortcut for {@link #getAvailableTagCache() getAvailableTagCache().getElementsByName(name, ignoreCase)}.
+     * This method will copy the underlying cache into the list, running in {@code O(n)} time.
+     *
+     * <p>This requires {@link net.dv8tion.jda.api.utils.cache.CacheFlag#FORUM_TAGS CacheFlag.FORUM_TAGS} to be enabled.
+     *
+     * @param  name
+     *         The name of the tag
+     * @param  ignoreCase
+     *         Whether to use {@link String#equalsIgnoreCase(String)}
+     *
+     * @throws IllegalArgumentException
+     *         If the name is {@code null}
+     *
+     * @return Immutable {@link List} of {@link ForumTag} with the given name
+     */
+    @Nonnull
+    default List<ForumTag> getAvailableTagsByName(@Nonnull String name, boolean ignoreCase)
+    {
+        return getAvailableTagCache().getElementsByName(name, ignoreCase);
+    }
+
+    /**
+     * Retrieves the tag for the provided id.
+     *
+     * <p>This requires {@link net.dv8tion.jda.api.utils.cache.CacheFlag#FORUM_TAGS CacheFlag.FORUM_TAGS} to be enabled.
+     *
+     * @param  id
+     *         The tag id
+     *
+     * @return The tag for the provided id, or {@code null} if no tag with that id exists
+     *
+     * @see    net.dv8tion.jda.api.entities.channel.forums.ForumTagSnowflake#fromId(long)
+     */
+    @Nullable
+    default ForumTag getAvailableTagById(long id)
+    {
+        return getAvailableTagCache().getElementById(id);
+    }
+
+    /**
+     * Retrieves the tag for the provided id.
+     *
+     * <p>This requires {@link net.dv8tion.jda.api.utils.cache.CacheFlag#FORUM_TAGS CacheFlag.FORUM_TAGS} to be enabled.
+     *
+     * @param  id
+     *         The tag id
+     *
+     * @throws IllegalArgumentException
+     *         If the provided id is null
+     * @throws NumberFormatException
+     *         If the provided id is not a valid snowflake
+     *
+     * @return The tag for the provided id, or {@code null} if no tag with that id exists
+     *
+     * @see    net.dv8tion.jda.api.entities.channel.forums.ForumTagSnowflake#fromId(String)
+     */
+    @Nullable
+    default ForumTag getAvailableTagById(@Nonnull String id)
+    {
+        return getAvailableTagCache().getElementById(id);
     }
 
     /**
