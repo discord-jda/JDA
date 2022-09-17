@@ -277,7 +277,7 @@ public abstract class AbstractMentions implements Mentions
                     return true;
                 break;
             case EMOJI:
-                if (mentionable instanceof Emoji && getCustomEmojis().contains(mentionable))
+                if (mentionable instanceof CustomEmoji && getCustomEmojis().contains(mentionable))
                     return true;
                 break;
             case SLASH_COMMAND:
