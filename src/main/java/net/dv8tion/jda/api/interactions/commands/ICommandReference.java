@@ -42,5 +42,8 @@ public interface ICommandReference extends IMentionable
      */
     @Nonnull
     @Override
-    String getAsMention();
+    default String getAsMention()
+    {
+        return "</" + getName() + ":" + getIdLong() + ">";
+    }
 }

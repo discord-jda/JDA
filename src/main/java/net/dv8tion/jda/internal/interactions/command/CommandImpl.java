@@ -221,13 +221,6 @@ public class CommandImpl implements Command
         return id;
     }
 
-    @Nonnull
-    @Override
-    public String getAsMention()
-    {
-        return "</" + getName() + ":" + getIdLong() + ">";
-    }
-
     @Override
     public String toString()
     {
