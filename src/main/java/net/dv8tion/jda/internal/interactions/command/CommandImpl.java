@@ -221,6 +221,14 @@ public class CommandImpl implements Command
         return id;
     }
 
+    @Nonnull
+    @Override
+    public String getAsMention()
+    {
+        Checks.check(getType() == Type.SLASH, "Only slash commands can be mentioned");
+        return Command.super.getAsMention();
+    }
+
     @Override
     public String toString()
     {
