@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.ChannelFlag;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.attribute.IAgeRestrictedChannel;
+import net.dv8tion.jda.api.entities.channel.attribute.ISlowmodeChannel;
 import net.dv8tion.jda.api.entities.channel.attribute.IThreadContainer;
 import net.dv8tion.jda.api.entities.channel.attribute.IWebhookContainer;
 import net.dv8tion.jda.api.entities.channel.forums.ForumTag;
@@ -49,7 +50,7 @@ import java.util.List;
  * @see Guild#createForumChannel(String, Category)
  * @see #createForumPost(String, MessageCreateData)
  */
-public interface ForumChannel extends StandardGuildChannel, IThreadContainer, IWebhookContainer, IAgeRestrictedChannel
+public interface ForumChannel extends StandardGuildChannel, IThreadContainer, IWebhookContainer, IAgeRestrictedChannel, ISlowmodeChannel
 {
     /**
      * The maximum length of a forum topic ({@value #MAX_FORUM_TOPIC_LENGTH})
@@ -90,24 +91,6 @@ public interface ForumChannel extends StandardGuildChannel, IThreadContainer, IW
     {
         return getAvailableTagCache().asList();
     }
-
-    // TODO: Should this be in StandardGuildMessageChannel?
-
-    /**
-     * The slowmode set for this ForumChannel.
-     * <br>If slowmode is set this returns an {@code int} between 1 and {@link net.dv8tion.jda.api.entities.channel.concrete.TextChannel#MAX_SLOWMODE TextChannel.MAX_SLOWMODE}.
-     * <br>If not set this returns {@code 0}.
-     *
-     * <p>Note bots are unaffected by this.
-     * <br>Having {@link net.dv8tion.jda.api.Permission#MESSAGE_MANAGE MESSAGE_MANAGE} or
-     * {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} permission also
-     * grants immunity to slowmode.
-     *
-     * @return The slowmode for this ForumChannel, between 1 and {@link net.dv8tion.jda.api.entities.channel.concrete.TextChannel#MAX_SLOWMODE TextChannel.MAX_SLOWMODE}, or {@code 0} if no slowmode is set.
-     */
-    int getSlowmode();
-
-    // TODO: Should this be in StandardGuildChannel?
 
     /**
      * The topic set for this channel, this is referred to as <em>Guidelines</em> in the official Discord client.

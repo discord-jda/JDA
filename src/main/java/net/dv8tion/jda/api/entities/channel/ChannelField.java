@@ -18,6 +18,8 @@ package net.dv8tion.jda.api.entities.channel;
 
 import net.dv8tion.jda.api.audit.AuditLogKey;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.channel.attribute.IAgeRestrictedChannel;
+import net.dv8tion.jda.api.entities.channel.attribute.ISlowmodeChannel;
 import net.dv8tion.jda.api.entities.channel.attribute.IThreadContainer;
 import net.dv8tion.jda.api.entities.channel.concrete.*;
 import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
@@ -110,18 +112,19 @@ public enum ChannelField
     /**
      * The NSFW state of the channel.
      *
-     * <p>Limited to {@link StandardGuildMessageChannel StandardGuildMessageChannels} (and implementations).
+     * <p>Limited to {@link IAgeRestrictedChannel IAgeRestrictedChannels} (and implementations).
      *
-     * @see StandardGuildMessageChannel#isNSFW()
+     * @see IAgeRestrictedChannel#isNSFW()
      */
     NSFW("nsfw", AuditLogKey.CHANNEL_NSFW),
 
     /**
-     * The state of slow mode in the channel.  This defines the minimum time between message sends.
+     * The state of slow mode in the channel.
+     * <br>This defines the minimum time between message sends.
      *
-     * <p>Limited to {@link TextChannel Text Channels}.
+     * <p>Limited to {@link ISlowmodeChannel ISlowmodeChannels} (and implementations).
      *
-     * @see TextChannel#getSlowmode()
+     * @see ISlowmodeChannel#getSlowmode()
      */
     SLOWMODE("slowmode", AuditLogKey.CHANNEL_SLOWMODE),
 

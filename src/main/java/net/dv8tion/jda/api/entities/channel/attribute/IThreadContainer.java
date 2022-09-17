@@ -42,7 +42,7 @@ import java.util.stream.Collectors;
 public interface IThreadContainer extends GuildChannel, IPermissionContainer
 {
     /**
-     * The default {@link ThreadChannel#getSlowmode() slowmode} for thread channels that is copied on thread creation.
+     * The default {@link ISlowmodeChannel#getSlowmode() slowmode} for thread channels that is copied on thread creation.
      * <br>Users have to wait this amount of seconds before sending another message to the same thread.
      *
      * @return The default slowmode seconds for new threads, or {@code 0} if unset

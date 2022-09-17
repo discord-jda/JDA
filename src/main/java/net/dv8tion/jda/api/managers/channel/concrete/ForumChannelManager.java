@@ -16,13 +16,12 @@
 
 package net.dv8tion.jda.api.managers.channel.concrete;
 
-import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.channel.concrete.ForumChannel;
-import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.forums.BaseForumTag;
 import net.dv8tion.jda.api.entities.channel.forums.ForumTagData;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.managers.channel.attribute.IAgeRestrictedChannelManager;
+import net.dv8tion.jda.api.managers.channel.attribute.ISlowmodeChannelManager;
 import net.dv8tion.jda.api.managers.channel.middleman.StandardGuildChannelManager;
 
 import javax.annotation.CheckReturnValue;
@@ -47,7 +46,8 @@ import java.util.List;
  */
 public interface ForumChannelManager extends
         StandardGuildChannelManager<ForumChannel, ForumChannelManager>,
-        IAgeRestrictedChannelManager<ForumChannel, ForumChannelManager>
+        IAgeRestrictedChannelManager<ForumChannel, ForumChannelManager>,
+        ISlowmodeChannelManager<ForumChannel, ForumChannelManager>
 {
     /**
      * Sets the tag requirement state of this {@link ForumChannel}.
@@ -63,31 +63,6 @@ public interface ForumChannelManager extends
     @Nonnull
     @CheckReturnValue
     ForumChannelManager setRequireTag(boolean requireTag);
-
-    /**
-     * Sets the <b><u>slowmode</u></b> of the selected {@link ForumChannel}.
-     * <br>Provide {@code 0} to reset the slowmode of the {@link ForumChannel}
-     *
-     * <p>A channel slowmode <b>must not</b> be negative nor greater than {@link TextChannel#MAX_SLOWMODE TextChannel.MAX_SLOWMODE}!
-     *
-     * <p>Note: Bots are unaffected by this.
-     * <br>Having {@link Permission#MESSAGE_MANAGE MESSAGE_MANAGE} or
-     * {@link Permission#MANAGE_CHANNEL MANAGE_CHANNEL} permission also
-     * grants immunity to slowmode.
-     *
-     * @param  slowmode
-     *         The new slowmode for the selected {@link ForumChannel}
-     *
-     * @throws IllegalArgumentException
-     *         If the provided slowmode is negative or greater than {@link TextChannel#MAX_SLOWMODE TextChannel.MAX_SLOWMODE}
-     *
-     * @return ChannelManager for chaining convenience
-     *
-     * @see    ForumChannel#getSlowmode()
-     */
-    @Nonnull
-    @CheckReturnValue
-    ForumChannelManager setSlowmode(int slowmode);
 
     /**
      * Sets the <b><u>available tags</u></b> of the selected {@link ForumChannel}.

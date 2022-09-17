@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.entities.channel.concrete.ForumChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
 import net.dv8tion.jda.api.entities.channel.forums.ForumTagSnowflake;
 import net.dv8tion.jda.api.managers.channel.ChannelManager;
+import net.dv8tion.jda.api.managers.channel.attribute.ISlowmodeChannelManager;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -43,33 +44,8 @@ import java.util.Collection;
  * @see ThreadChannel#getManager()
  * @see ThreadChannel
  */
-public interface ThreadChannelManager extends ChannelManager<ThreadChannel, ThreadChannelManager>
+public interface ThreadChannelManager extends ChannelManager<ThreadChannel, ThreadChannelManager>, ISlowmodeChannelManager<ThreadChannel, ThreadChannelManager>
 {
-    /**
-     * Sets the <b><u>slowmode</u></b> of the selected {@link ThreadChannel}.
-     * <br>Provide {@code 0} to reset the slowmode of the {@link ThreadChannel}.
-     *
-     * <p>A channel slowmode <b>must not</b> be negative nor greater than {@link net.dv8tion.jda.api.entities.channel.concrete.TextChannel#MAX_SLOWMODE TextChannel.MAX_SLOWMODE}!
-     *
-     * <p>Note: Bots are unaffected by this.
-     * <br>Having {@link net.dv8tion.jda.api.Permission#MESSAGE_MANAGE MESSAGE_MANAGE} or
-     * {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} permission also
-     * grants immunity to slowmode.
-     *
-     * @param  slowmode
-     *         The new slowmode, in seconds, for the selected {@link ThreadChannel}
-     *
-     * @return this ThreadChannelManager for chaining convenience
-     *
-     * @throws IllegalArgumentException
-     *         If the provided slowmode is negative or greater than {@link net.dv8tion.jda.api.entities.channel.concrete.TextChannel#MAX_SLOWMODE TextChannel.MAX_SLOWMODE}
-     *
-     * @see ThreadChannel#getSlowmode()
-     */
-    @Nonnull
-    @CheckReturnValue
-    ThreadChannelManager setSlowmode(int slowmode);
-
     /**
      * Sets the inactive time before autoarchiving of this ThreadChannel.
      *

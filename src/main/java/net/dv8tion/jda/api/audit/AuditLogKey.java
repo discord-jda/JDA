@@ -16,10 +16,14 @@
 
 package net.dv8tion.jda.api.audit;
 
+import net.dv8tion.jda.annotations.DeprecatedSince;
+import net.dv8tion.jda.annotations.ForRemoval;
+import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.attribute.ICategorizableChannel;
+import net.dv8tion.jda.api.entities.channel.attribute.ISlowmodeChannel;
 import net.dv8tion.jda.api.entities.channel.attribute.IThreadContainer;
 import net.dv8tion.jda.api.entities.channel.concrete.ForumChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
@@ -234,8 +238,7 @@ public enum AuditLogKey
     CHANNEL_TOPIC("topic"),
 
     /**
-     * Change of the {@link TextChannel#getSlowmode() TextChannel.getSlowmode()} value.
-     * <br>Only for {@link ChannelType#TEXT ChannelType.TEXT}
+     * Change of the {@link ISlowmodeChannel#getSlowmode()} value.
      *
      * <p>Expected type: <b>Integer</b>
      */
@@ -318,10 +321,16 @@ public enum AuditLogKey
     THREAD_NAME("name"),
 
     /**
-     * Change of the {@link ThreadChannel#getSlowmode() ThreadChannel.getSlowmode()} value.
+     * Change of the {@link ISlowmodeChannel#getSlowmode()} value.
      *
      * <p>Expected type: <b>Integer</b>
+     *
+     * @deprecated Use {@link #CHANNEL_SLOWMODE} instead
      */
+    @Deprecated
+    @ForRemoval
+    @DeprecatedSince("5.0.0")
+    @ReplaceWith("CHANNEL_SLOWMODE")
     THREAD_SLOWMODE("rate_limit_per_user"),
 
     /**

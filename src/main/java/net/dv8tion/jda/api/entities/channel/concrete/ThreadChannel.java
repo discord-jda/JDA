@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.entities.channel.ChannelField;
 import net.dv8tion.jda.api.entities.channel.ChannelFlag;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.attribute.IMemberContainer;
+import net.dv8tion.jda.api.entities.channel.attribute.ISlowmodeChannel;
 import net.dv8tion.jda.api.entities.channel.attribute.IThreadContainer;
 import net.dv8tion.jda.api.entities.channel.forums.ForumTag;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
@@ -56,7 +57,7 @@ import java.util.List;
  * @see Guild#getThreadChannelById(long)
  * @see Guild#getThreadChannelCache()
  */
-public interface ThreadChannel extends GuildMessageChannel, IMemberContainer
+public interface ThreadChannel extends GuildMessageChannel, IMemberContainer, ISlowmodeChannel
 {
     //TODO fields that need to be researched:
     // - rate_limit_per_user
@@ -573,15 +574,6 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer
      */
     @Nonnull
     OffsetDateTime getTimeCreated();
-
-    /**
-     * The slowmode time of this thread. This determines the time each non-moderator must wait before sending another message.
-     *
-     * @return The amount of time in seconds a ThreadMember must wait between sending messages.
-     *
-     * @see    net.dv8tion.jda.api.managers.channel.concrete.ThreadChannelManager#setSlowmode(int)
-     */
-    int getSlowmode();
 
     /**
      * Joins this thread, adding the current account to the member list of this thread.
