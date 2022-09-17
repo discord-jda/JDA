@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.interactions.commands;
+package net.dv8tion.jda.internal.interactions.command;
+
+import net.dv8tion.jda.api.interactions.commands.ICommandReference;
 
 import javax.annotation.Nonnull;
 
-//TODO docs
 public class SlashCommandReference implements ICommandReference
 {
     private final long id;
