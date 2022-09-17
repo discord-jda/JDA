@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.entities.channel.forums.ForumPost;
 import net.dv8tion.jda.api.entities.channel.forums.ForumTagSnowflake;
 import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 import net.dv8tion.jda.api.utils.messages.MessageCreateRequest;
+import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
 import java.util.Arrays;
@@ -81,6 +82,7 @@ public interface ForumPostAction extends AbstractThreadCreateAction<ForumPost, F
     @Nonnull
     default ForumPostAction setTags(@Nonnull ForumTagSnowflake... tags)
     {
+        Checks.noneNull(tags, "Tags");
         return setTags(Arrays.asList(tags));
     }
 }

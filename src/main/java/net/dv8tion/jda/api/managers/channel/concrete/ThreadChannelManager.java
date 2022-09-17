@@ -21,9 +21,11 @@ import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
 import net.dv8tion.jda.api.entities.channel.forums.ForumTagSnowflake;
 import net.dv8tion.jda.api.managers.channel.ChannelManager;
 import net.dv8tion.jda.api.managers.channel.attribute.ISlowmodeChannelManager;
+import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
+import java.util.Arrays;
 import java.util.Collection;
 
 /**
@@ -165,4 +167,31 @@ public interface ThreadChannelManager extends ChannelManager<ThreadChannel, Thre
     @Nonnull
     @CheckReturnValue
     ThreadChannelManager setAppliedTags(@Nonnull Collection<? extends ForumTagSnowflake> tags);
+
+    /**
+     * Sets the applied {@link net.dv8tion.jda.api.entities.channel.forums.ForumTag ForumTags} for this forum post thread.
+     * <br>This is only applicable to public threads inside forum channels. The tags must be from the forum channel.
+     * You can get the list of available tags with {@link ForumChannel#getAvailableTags()}.
+     *
+     * @param  tags
+     *         The new tags for the thread
+     *
+     * @throws IllegalStateException
+     *         If the thread is not a forum post
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If null is provided</li>
+     *             <li>If more than {@value ForumChannel#MAX_POST_TAGS} tags are provided</li>
+     *             <li>If at least one tag is {@link ForumChannel#isRequireTag() required} and none were provided</li>
+     *         </ul>
+     *
+     * @return this ThreadChannelManager for chaining convenience.
+     */
+    @Nonnull
+    @CheckReturnValue
+    default ThreadChannelManager setAppliedTags(@Nonnull ForumTagSnowflake... tags)
+    {
+        Checks.noneNull(tags, "Tags");
+        return setAppliedTags(Arrays.asList(tags));
+    }
 }
