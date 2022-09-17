@@ -58,11 +58,11 @@ public interface ForumChannelManager extends
      *
      * @return ChannelManager for chaining convenience.
      *
-     * @see    ForumChannel#isRequireTag()
+     * @see    ForumChannel#isTagRequired()
      */
     @Nonnull
     @CheckReturnValue
-    ForumChannelManager setRequireTag(boolean requireTag);
+    ForumChannelManager setTagRequired(boolean requireTag);
 
     /**
      * Sets the <b><u>available tags</u></b> of the selected {@link ForumChannel}.

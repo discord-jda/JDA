@@ -582,7 +582,7 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
         return (M) this;
     }
 
-    public M setRequireTag(boolean requireTag)
+    public M setTagRequired(boolean requireTag)
     {
         if (requireTag)
             flags.add(ChannelFlag.REQUIRE_TAG);
@@ -612,7 +612,7 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
         IThreadContainerUnion parentChannel = thread.getParentChannel();
         if (!(parentChannel instanceof ForumChannel))
             throw new IllegalStateException("Cannot apply tags to threads outside of forum channels.");
-        if (tags.isEmpty() && parentChannel.asForumChannel().isRequireTag())
+        if (tags.isEmpty() && parentChannel.asForumChannel().isTagRequired())
             throw new IllegalArgumentException("Cannot remove all tags from a forum post which requires at least one tag! See ForumChannel#isRequireTag()");
         this.appliedTags = tags.stream().map(ISnowflake::getId).collect(Collectors.toList());
         set |= APPLIED_TAGS;

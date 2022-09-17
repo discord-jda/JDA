@@ -56,7 +56,7 @@ public interface ForumPostAction extends AbstractThreadCreateAction<ForumPost, F
      *
      * @throws IllegalArgumentException
      *         If null is provided or more than {@value ForumChannel#MAX_POST_TAGS} tags are provided,
-     *         or if at least one is {@link ForumChannel#isRequireTag() required} and none were provided.
+     *         or if at least one is {@link ForumChannel#isTagRequired() required} and none were provided.
      *
      * @return The current ForumPostAction for chaining convenience
      *
@@ -74,7 +74,7 @@ public interface ForumPostAction extends AbstractThreadCreateAction<ForumPost, F
      *
      * @throws IllegalArgumentException
      *         If null is provided or more than {@value ForumChannel#MAX_POST_TAGS} tags are provided,
-     *         or if at least one is {@link ForumChannel#isRequireTag() required} and none were provided.
+     *         or if at least one is {@link ForumChannel#isTagRequired() required} and none were provided.
      *
      * @return The current ForumPostAction for chaining convenience
      *

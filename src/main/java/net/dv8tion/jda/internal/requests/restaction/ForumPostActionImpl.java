@@ -100,7 +100,7 @@ public class ForumPostActionImpl extends RestActionImpl<ForumPost> implements Fo
     {
         Checks.noneNull(tags, "Tags");
         Checks.check(tags.size() <= ForumChannel.MAX_POST_TAGS, "Provided more than %d tags.", ForumChannel.MAX_POST_TAGS);
-        Checks.check(!channel.isRequireTag() || !tags.isEmpty(), "This forum requires at least one tag per post! See ForumChannel#isRequireTag()");
+        Checks.check(!channel.isTagRequired() || !tags.isEmpty(), "This forum requires at least one tag per post! See ForumChannel#isRequireTag()");
         this.appliedTags.clear();
         tags.forEach(t -> this.appliedTags.add(t.getIdLong()));
         return this;
@@ -150,7 +150,7 @@ public class ForumPostActionImpl extends RestActionImpl<ForumPost> implements Fo
                 json.put("auto_archive_duration", autoArchiveDuration.getMinutes());
             if (!appliedTags.isEmpty())
                 json.put("applied_tags", appliedTags.toArray());
-            else if (getChannel().isRequireTag())
+            else if (getChannel().isTagRequired())
                 throw new IllegalStateException("Cannot create posts without a tag in this forum. Apply at least one tag!");
             return getMultipartBody(message.getFiles(), json);
         }

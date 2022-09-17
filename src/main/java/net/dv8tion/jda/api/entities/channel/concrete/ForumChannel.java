@@ -106,7 +106,7 @@ public interface ForumChannel extends StandardGuildChannel, IThreadContainer, IW
      *
      * @return True, if all new posts must have a tag.
      */
-    default boolean isRequireTag()
+    default boolean isTagRequired()
     {
         return getFlags().contains(ChannelFlag.REQUIRE_TAG);
     }

@@ -159,7 +159,7 @@ public interface ThreadChannelManager extends ChannelManager<ThreadChannel, Thre
      *         <ul>
      *             <li>If null is provided</li>
      *             <li>If more than {@value ForumChannel#MAX_POST_TAGS} tags are provided</li>
-     *             <li>If at least one tag is {@link ForumChannel#isRequireTag() required} and none were provided</li>
+     *             <li>If at least one tag is {@link ForumChannel#isTagRequired() required} and none were provided</li>
      *         </ul>
      *
      * @return this ThreadChannelManager for chaining convenience.
@@ -182,7 +182,7 @@ public interface ThreadChannelManager extends ChannelManager<ThreadChannel, Thre
      *         <ul>
      *             <li>If null is provided</li>
      *             <li>If more than {@value ForumChannel#MAX_POST_TAGS} tags are provided</li>
-     *             <li>If at least one tag is {@link ForumChannel#isRequireTag() required} and none were provided</li>
+     *             <li>If at least one tag is {@link ForumChannel#isTagRequired() required} and none were provided</li>
      *         </ul>
      *
      * @return this ThreadChannelManager for chaining convenience.
