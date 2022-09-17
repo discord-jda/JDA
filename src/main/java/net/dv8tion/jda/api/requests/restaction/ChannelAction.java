@@ -22,9 +22,10 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.IPermissionHolder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
+import net.dv8tion.jda.api.entities.channel.attribute.ISlowmodeChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.Category;
-import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.StandardGuildMessageChannel;
 import net.dv8tion.jda.api.utils.MiscUtil;
@@ -90,10 +91,10 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
      * Sets the name for the new GuildChannel
      *
      * @param  name
-     *         The not-null name for the new GuildChannel (1-100 chars long)
+     *         The not-null name for the new GuildChannel (1-{@value Channel#MAX_NAME_LENGTH} characters long)
      *
      * @throws java.lang.IllegalArgumentException
-     *         If the provided name is null or not between 1-100 chars long
+     *         If the provided name is null or not between 1-{@value Channel#MAX_NAME_LENGTH} characters long
      *
      * @return The current ChannelAction, for chaining convenience
      */
@@ -182,7 +183,7 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
 
     /**
      * Sets the slowmode value, which limits the amount of time that individual users must wait
-     * between sending messages in the new TextChannel. This is measured in seconds.
+     * between sending messages in the new channel. This is measured in seconds.
      *
      * <p>Note: Bots are unaffected by this.
      * <br>Having {@link net.dv8tion.jda.api.Permission#MESSAGE_MANAGE MESSAGE_MANAGE} or
@@ -193,9 +194,9 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
      *         The number of seconds required to wait between sending messages in the channel.
      *
      * @throws UnsupportedOperationException
-     *         If this ChannelAction is not for a TextChannel
+     *         If this ChannelAction is not for a {@link ISlowmodeChannel}
      * @throws IllegalArgumentException
-     *         If the {@code slowmode} is greater than {@link TextChannel#MAX_SLOWMODE TextChannel.MAX_SLOWMODE}, or less than 0
+     *         If the {@code slowmode} is greater than {@link ISlowmodeChannel#MAX_SLOWMODE ISlowmodeChannel.MAX_SLOWMODE}, or less than 0
      *
      * @return The current ChannelAction, for chaining convenience
      */

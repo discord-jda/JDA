@@ -17,6 +17,7 @@
 package net.dv8tion.jda.api.managers.channel;
 
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.managers.Manager;
 
@@ -188,7 +189,7 @@ public interface ChannelManager<T extends GuildChannel, M extends ChannelManager
     /**
      * Sets the <b><u>name</u></b> of the selected {@link GuildChannel GuildChannel}.
      *
-     * <p>A channel name <b>must not</b> be {@code null} nor empty or more than 100 characters long!
+     * <p>A channel name <b>must not</b> be {@code null} nor empty or more than {@value Channel#MAX_NAME_LENGTH} characters long!
      * <br>TextChannel names may only be populated with alphanumeric (with underscore and dash).
      *
      * <p><b>Example</b>: {@code mod-only} or {@code generic_name}
@@ -198,7 +199,7 @@ public interface ChannelManager<T extends GuildChannel, M extends ChannelManager
      *         The new name for the selected {@link GuildChannel GuildChannel}
      *
      * @throws IllegalArgumentException
-     *         If the provided name is {@code null} or not between 1-100 characters long
+     *         If the provided name is {@code null} or not between 1-{@value Channel#MAX_NAME_LENGTH} characters long
      *
      * @return ChannelManager for chaining convenience
      */

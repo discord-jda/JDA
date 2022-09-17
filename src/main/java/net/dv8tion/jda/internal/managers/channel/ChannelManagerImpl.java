@@ -22,12 +22,13 @@ import gnu.trove.set.hash.TLongHashSet;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.Region;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.ChannelFlag;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.attribute.IPermissionContainer;
+import net.dv8tion.jda.api.entities.channel.attribute.ISlowmodeChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.Category;
 import net.dv8tion.jda.api.entities.channel.concrete.ForumChannel;
-import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
 import net.dv8tion.jda.api.entities.channel.forums.BaseForumTag;
 import net.dv8tion.jda.api.entities.channel.forums.ForumTagSnowflake;
@@ -378,7 +379,7 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
         Checks.notBlank(name, "Name");
         name = name.trim();
         Checks.notEmpty(name, "Name");
-        Checks.notLonger(name, 100, "Name");
+        Checks.notLonger(name, Channel.MAX_NAME_LENGTH, "Name");
         this.name = name;
         set |= NAME;
         return (M) this;
@@ -478,7 +479,7 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
     public M setSlowmode(int slowmode)
     {
         Checks.checkSupportedChannelTypes(SLOWMODE_SUPPORTED, type, "slowmode");
-        Checks.check(slowmode <= TextChannel.MAX_SLOWMODE && slowmode >= 0, "Slowmode per user must be between 0 and %d (seconds)!", TextChannel.MAX_SLOWMODE);
+        Checks.check(slowmode <= ISlowmodeChannel.MAX_SLOWMODE && slowmode >= 0, "Slowmode per user must be between 0 and %d (seconds)!", ISlowmodeChannel.MAX_SLOWMODE);
         this.slowmode = slowmode;
         set |= SLOWMODE;
         return (M) this;

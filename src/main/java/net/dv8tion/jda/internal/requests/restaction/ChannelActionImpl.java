@@ -22,10 +22,11 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.Region;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
+import net.dv8tion.jda.api.entities.channel.attribute.ISlowmodeChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.Category;
 import net.dv8tion.jda.api.entities.channel.concrete.ForumChannel;
-import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.StandardGuildMessageChannel;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
@@ -127,7 +128,7 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
     public ChannelActionImpl<T> setName(@Nonnull String name)
     {
         Checks.notEmpty(name, "Name");
-        Checks.notLonger(name, 100, "Name");
+        Checks.notLonger(name, Channel.MAX_NAME_LENGTH, "Name");
         this.name = name;
         return this;
     }
@@ -188,7 +189,7 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
     public ChannelActionImpl<T> setSlowmode(int slowmode)
     {
         Checks.checkSupportedChannelTypes(SLOWMODE_SUPPORTED, type, "Slowmode");
-        Checks.check(slowmode <= TextChannel.MAX_SLOWMODE && slowmode >= 0, "Slowmode must be between 0 and %d (seconds)!", TextChannel.MAX_SLOWMODE);
+        Checks.check(slowmode <= ISlowmodeChannel.MAX_SLOWMODE && slowmode >= 0, "Slowmode must be between 0 and %d (seconds)!", ISlowmodeChannel.MAX_SLOWMODE);
         this.slowmode = slowmode;
         return this;
     }
@@ -345,7 +346,7 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
         if (parent != null)
             object.put("parent_id", parent.getId());
 
-        //Text only
+        //Text and Forum
         if (slowmode != null)
             object.put("rate_limit_per_user", slowmode);
 

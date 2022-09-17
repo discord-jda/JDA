@@ -17,6 +17,7 @@
 package net.dv8tion.jda.internal.requests.restaction;
 
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
@@ -111,7 +112,7 @@ public class ThreadChannelActionImpl extends AuditableRestActionImpl<ThreadChann
     public ThreadChannelActionImpl setName(@Nonnull String name)
     {
         Checks.notEmpty(name, "Name");
-        Checks.notLonger(name, 100, "Name");
+        Checks.notLonger(name, Channel.MAX_NAME_LENGTH, "Name");
         this.name = name;
         return this;
     }
