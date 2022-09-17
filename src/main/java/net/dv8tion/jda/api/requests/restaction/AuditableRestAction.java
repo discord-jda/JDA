@@ -80,12 +80,18 @@ public interface AuditableRestAction<T> extends RestAction<T>
      */
     @Nonnull
     @Override
-    AuditableRestAction<T> timeout(long timeout, @Nonnull TimeUnit unit);
+    default AuditableRestAction<T> timeout(long timeout, @Nonnull TimeUnit unit)
+    {
+        return (AuditableRestAction<T>) RestAction.super.timeout(timeout, unit);
+    }
 
     /**
      * {@inheritDoc}
      */
     @Nonnull
     @Override
-    AuditableRestAction<T> deadline(long timestamp);
+    default AuditableRestAction<T> deadline(long timestamp)
+    {
+        return (AuditableRestAction<T>) RestAction.super.deadline(timestamp);
+    }
 }

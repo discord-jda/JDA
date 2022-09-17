@@ -65,6 +65,13 @@ public class ThreadChannelActionImpl extends AuditableRestActionImpl<ThreadChann
 
     @Nonnull
     @Override
+    public ThreadChannelActionImpl reason(String reason)
+    {
+        return (ThreadChannelActionImpl) super.reason(reason);
+    }
+
+    @Nonnull
+    @Override
     public ThreadChannelActionImpl setCheck(BooleanSupplier checks)
     {
         return (ThreadChannelActionImpl) super.setCheck(checks);

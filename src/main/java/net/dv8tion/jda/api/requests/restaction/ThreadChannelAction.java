@@ -21,9 +21,6 @@ import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.concurrent.TimeUnit;
-import java.util.function.BooleanSupplier;
 
 /**
  * Extension of {@link net.dv8tion.jda.api.requests.RestAction RestAction} specifically
@@ -36,20 +33,8 @@ import java.util.function.BooleanSupplier;
  * @see    net.dv8tion.jda.api.entities.channel.attribute.IThreadContainer#createThreadChannel(String, long)
  * @see    net.dv8tion.jda.api.entities.channel.attribute.IThreadContainer#createThreadChannel(String, String)
  */
-public interface ThreadChannelAction extends AbstractThreadCreateAction<ThreadChannel, ThreadChannelAction>, AuditableRestAction<ThreadChannel>
+public interface ThreadChannelAction extends AbstractThreadCreateAction<ThreadChannel, ThreadChannelAction>, FluentAuditableRestAction<ThreadChannel, ThreadChannelAction>
 {
-    @Nonnull
-    @Override
-    ThreadChannelAction setCheck(@Nullable BooleanSupplier checks);
-
-    @Nonnull
-    @Override
-    ThreadChannelAction timeout(long timeout, @Nonnull TimeUnit unit);
-
-    @Nonnull
-    @Override
-    ThreadChannelAction deadline(long timestamp);
-
     //TODO-v5: Docs
     @Nonnull
     @CheckReturnValue
