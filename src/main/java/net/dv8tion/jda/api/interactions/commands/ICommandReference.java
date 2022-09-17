@@ -18,8 +18,29 @@ package net.dv8tion.jda.api.interactions.commands;
 
 import net.dv8tion.jda.api.entities.IMentionable;
 
-//TODO docs
+import javax.annotation.Nonnull;
+
+/**
+ * Represents a mentionable slash command.
+ */
 public interface ICommandReference extends IMentionable
 {
+    /**
+     * Returns the name of the slash command
+     *
+     * @return the name of the slash command
+     */
     String getName();
+
+    /**
+     * {@inheritDoc}
+     *
+     * <p><b>This will only work on slash commands !</b>
+     *
+     * @throws IllegalStateException
+     *         If the command is a slash command (i.e. of type {@link Command.Type#SLASH}
+     */
+    @Nonnull
+    @Override
+    String getAsMention();
 }
