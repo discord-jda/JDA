@@ -830,20 +830,33 @@ public interface Command extends ISnowflake, ICommandReference
     /**
      * An Subcommand for a command.
      */
-    class Subcommand
+    class Subcommand implements ICommandReference
     {
+        private final ICommandReference parentCommand; //Could be Command or SubcommandGroup
         private final String name, description;
         private final LocalizationMap nameLocalizations;
         private final LocalizationMap descriptionLocalizations;
         private final List<Option> options;
 
-        public Subcommand(DataObject json)
+        public Subcommand(ICommandReference parentCommand, DataObject json)
         {
+            this.parentCommand = parentCommand;
             this.name = json.getString("name");
             this.nameLocalizations = LocalizationUtils.unmodifiableFromProperty(json, "name_localizations");
             this.description = json.getString("description");
             this.descriptionLocalizations = LocalizationUtils.unmodifiableFromProperty(json, "description_localizations");
             this.options = CommandImpl.parseOptions(json, CommandImpl.OPTION_TEST, Option::new);
+        }
+
+        /**
+         * {@inheritDoc}
+         *
+         * <p><b>This will return the ID of the top level command</b>
+         */
+        @Override
+        public long getIdLong()
+        {
+            return parentCommand.getIdLong();
         }
 
         /**
@@ -866,6 +879,13 @@ public interface Command extends ISnowflake, ICommandReference
         public LocalizationMap getNameLocalizations()
         {
             return nameLocalizations;
+        }
+
+        @Nonnull
+        @Override
+        public String getCommandPath()
+        {
+            return parentCommand.getCommandPath() + " " + getName();
         }
 
         /**
@@ -928,20 +948,33 @@ public interface Command extends ISnowflake, ICommandReference
     /**
      * An Subcommand Group for a command.
      */
-    class SubcommandGroup
+    class SubcommandGroup implements ICommandReference
     {
+        private final Command parentCommand;
         private final String name, description;
         private final LocalizationMap nameLocalizations;
         private final LocalizationMap descriptionLocalizations;
         private final List<Subcommand> subcommands;
 
-        public SubcommandGroup(DataObject json)
+        public SubcommandGroup(Command parentCommand, DataObject json)
         {
+            this.parentCommand = parentCommand;
             this.name = json.getString("name");
             this.nameLocalizations = LocalizationUtils.unmodifiableFromProperty(json, "name_localizations");
             this.description = json.getString("description");
             this.descriptionLocalizations = LocalizationUtils.unmodifiableFromProperty(json, "description_localizations");
-            this.subcommands = CommandImpl.parseOptions(json, CommandImpl.SUBCOMMAND_TEST, Subcommand::new);
+            this.subcommands = CommandImpl.parseOptions(json, CommandImpl.SUBCOMMAND_TEST, (DataObject o) -> new Subcommand(this, o));
+        }
+
+        /**
+         * {@inheritDoc}
+         *
+         * <p><b>This will return the ID of the top level command</b>
+         */
+        @Override
+        public long getIdLong()
+        {
+            return parentCommand.getIdLong();
         }
 
         /**
@@ -964,6 +997,13 @@ public interface Command extends ISnowflake, ICommandReference
         public LocalizationMap getNameLocalizations()
         {
             return nameLocalizations;
+        }
+
+        @Nonnull
+        @Override
+        public String getCommandPath()
+        {
+            return parentCommand.getCommandPath() + " " + getName();
         }
 
         /**

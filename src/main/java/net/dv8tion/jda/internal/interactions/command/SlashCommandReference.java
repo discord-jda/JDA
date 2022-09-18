@@ -19,15 +19,21 @@ package net.dv8tion.jda.internal.interactions.command;
 import net.dv8tion.jda.api.interactions.commands.ICommandReference;
 
 import javax.annotation.Nonnull;
+import java.util.Objects;
+import java.util.StringJoiner;
 
 public class SlashCommandReference implements ICommandReference
 {
     private final long id;
     private final String name;
+    private final String subcommand;
+    private final String subcommandGroup;
 
-    public SlashCommandReference(String name, long id)
+    public SlashCommandReference(String name, String subcommandGroup, String subcommand, long id)
     {
         this.name = name;
+        this.subcommandGroup = subcommandGroup;
+        this.subcommand = subcommand;
         this.id = id;
     }
 
@@ -44,22 +50,38 @@ public class SlashCommandReference implements ICommandReference
         return name;
     }
 
+    @Nonnull
+    @Override
+    public String getCommandPath()
+    {
+        final StringJoiner joiner = new StringJoiner(" ");
+        joiner.add(name);
+        if (subcommandGroup != null)
+            joiner.add(subcommandGroup);
+        if (subcommand != null)
+            joiner.add(subcommand);
+
+        return joiner.toString();
+    }
+
     @Override
     public String toString()
     {
-        return "SlashCommandReference: " + getName() + " (" + getId() + ")";
+        return "SlashCommandReference: " + getCommandPath() + " (" + getId() + ")";
     }
 
     @Override
     public boolean equals(Object o)
     {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (!(o instanceof SlashCommandReference)) return false;
 
         SlashCommandReference that = (SlashCommandReference) o;
 
         if (id != that.id) return false;
-        return name.equals(that.name);
+        if (!name.equals(that.name)) return false;
+        if (!Objects.equals(subcommand, that.subcommand)) return false;
+        return Objects.equals(subcommandGroup, that.subcommandGroup);
     }
 
     @Override
@@ -67,6 +89,8 @@ public class SlashCommandReference implements ICommandReference
     {
         int result = Long.hashCode(id);
         result = 31 * result + name.hashCode();
+        result = 31 * result + (subcommand != null ? subcommand.hashCode() : 0);
+        result = 31 * result + (subcommandGroup != null ? subcommandGroup.hashCode() : 0);
         return result;
     }
 }

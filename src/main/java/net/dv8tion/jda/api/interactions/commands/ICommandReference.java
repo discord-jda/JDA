@@ -34,6 +34,14 @@ public interface ICommandReference extends IMentionable
     String getName();
 
     /**
+     * Returns the entire path (separated with spaces) of this command
+     *
+     * @return the entire path (separated with spaces) of this command
+     */
+    @Nonnull
+    String getCommandPath();
+
+    /**
      * {@inheritDoc}
      *
      * <p><b>This will only work on slash commands!</b>

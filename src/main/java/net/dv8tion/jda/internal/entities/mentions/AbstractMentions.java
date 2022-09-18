@@ -330,7 +330,7 @@ public abstract class AbstractMentions implements Mentions
 
     protected ICommandReference matchSlashCommand(Matcher matcher)
     {
-        return new SlashCommandReference(matcher.group(1), Long.parseLong(matcher.group(2)));
+        return new SlashCommandReference(matcher.group(1), matcher.group(2), matcher.group(3), Long.parseLong(matcher.group(4)));
     }
 
     protected abstract boolean isUserMentioned(IMentionable mentionable);

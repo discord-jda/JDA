@@ -75,8 +75,8 @@ public class CommandImpl implements Command
         this.guildId = guild != null ? guild.getIdLong() : 0L;
         this.applicationId = json.getUnsignedLong("application_id", api.getSelfUser().getApplicationIdLong());
         this.options = parseOptions(json, OPTION_TEST, Command.Option::new);
-        this.groups = parseOptions(json, GROUP_TEST, Command.SubcommandGroup::new);
-        this.subcommands = parseOptions(json, SUBCOMMAND_TEST, Command.Subcommand::new);
+        this.groups = parseOptions(json, GROUP_TEST, (DataObject o) -> new SubcommandGroup(this, o));
+        this.subcommands = parseOptions(json, SUBCOMMAND_TEST, (DataObject o) -> new Subcommand(this, o));
         this.version = json.getUnsignedLong("version", id);
 
         this.defaultMemberPermissions = json.isNull("default_member_permissions")
@@ -153,6 +153,13 @@ public class CommandImpl implements Command
     public LocalizationMap getNameLocalizations()
     {
         return nameLocalizations;
+    }
+
+    @Nonnull
+    @Override
+    public String getCommandPath()
+    {
+        return name;
     }
 
     @Nonnull
