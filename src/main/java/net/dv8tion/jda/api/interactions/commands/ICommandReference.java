@@ -53,6 +53,6 @@ public interface ICommandReference extends IMentionable
     @Override
     default String getAsMention()
     {
-        return "</" + getName() + ":" + getIdLong() + ">";
+        return "</" + getCommandPath() + ":" + getIdLong() + ">";
     }
 }
