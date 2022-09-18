@@ -55,13 +55,18 @@ public class SlashCommandReference implements ICommandReference
     {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
+
         SlashCommandReference that = (SlashCommandReference) o;
-        return id == that.id;
+
+        if (id != that.id) return false;
+        return name.equals(that.name);
     }
 
     @Override
     public int hashCode()
     {
-        return (int) (id ^ (id >>> 32));
+        int result = Long.hashCode(id);
+        result = 31 * result + name.hashCode();
+        return result;
     }
 }
