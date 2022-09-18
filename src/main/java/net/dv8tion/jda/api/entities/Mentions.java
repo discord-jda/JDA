@@ -347,10 +347,10 @@ public interface Mentions
      * <pre>{@code
      * void sendCount(Message msg)
      * {
-     *     List<ICommandReference> mentions = msg.getMentions().getSlashCommands(); // distinct list, in order of appearance
-     *     Bag<ICommandReference> count = msg.getMentions().getSlashCommandsBag();
+     *     List<SlashCommandReference> mentions = msg.getMentions().getSlashCommands(); // distinct list, in order of appearance
+     *     Bag<SlashCommandReference> count = msg.getMentions().getSlashCommandsBag();
      *     StringBuilder content = new StringBuilder();
-     *     for (ICommandReference commandRef : mentions)
+     *     for (SlashCommandReference commandRef : mentions)
      *     {
      *         content.append(commandRef.getAsMention())
      *                .append(": ")
