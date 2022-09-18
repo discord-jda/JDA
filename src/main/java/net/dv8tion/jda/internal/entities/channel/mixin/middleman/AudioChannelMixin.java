@@ -20,7 +20,8 @@ import gnu.trove.map.TLongObjectMap;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.channel.unions.AudioChannelUnion;
 
-public interface AudioChannelMixin<T extends AudioChannelMixin<T>> extends AudioChannelUnion, GuildChannelMixin<T>
+public interface AudioChannelMixin<T extends AudioChannelMixin<T>>
+        extends AudioChannelUnion, StandardGuildChannelMixin<T>
 {
     // ---- State Accessors ----
     TLongObjectMap<Member> getConnectedMembersMap();

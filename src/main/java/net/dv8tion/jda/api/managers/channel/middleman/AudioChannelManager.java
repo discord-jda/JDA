@@ -27,7 +27,8 @@ import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 
 //todo-v5: Docs
-public interface AudioChannelManager<T extends AudioChannel, M extends AudioChannelManager<T, M>> extends ChannelManager<T, M>
+public interface AudioChannelManager<T extends AudioChannel, M extends AudioChannelManager<T, M>>
+        extends ChannelManager<T, M>, StandardGuildChannelManager<T, M>
 {
     /**
      * Sets the <b><u>bitrate</u></b> of the selected {@link VoiceChannel VoiceChannel}.
