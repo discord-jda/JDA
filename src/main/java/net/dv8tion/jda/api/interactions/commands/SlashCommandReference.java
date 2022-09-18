@@ -14,14 +14,16 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.internal.interactions.command;
-
-import net.dv8tion.jda.api.interactions.commands.ICommandReference;
+package net.dv8tion.jda.api.interactions.commands;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Objects;
 import java.util.StringJoiner;
 
+/**
+ * Represents a slash command mention, such as {@code </ban soft:1021082477038678126>}
+ */
 public class SlashCommandReference implements ICommandReference
 {
     private final long id;
@@ -48,6 +50,28 @@ public class SlashCommandReference implements ICommandReference
     public String getName()
     {
         return name;
+    }
+
+    /**
+     * Returns the subcommand of the slash command
+     *
+     * @return the subcommand of the slash command
+     */
+    @Nullable
+    public String getSubcommand()
+    {
+        return subcommand;
+    }
+
+    /**
+     * Returns the subcommand group of the slash command
+     *
+     * @return the subcommand group of the slash command
+     */
+    @Nullable
+    public String getSubcommandGroup()
+    {
+        return subcommandGroup;
     }
 
     @Nonnull
