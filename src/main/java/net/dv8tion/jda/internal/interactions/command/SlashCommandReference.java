@@ -18,6 +18,8 @@ package net.dv8tion.jda.internal.interactions.command;
 
 import net.dv8tion.jda.api.interactions.commands.ICommandReference;
 
+import javax.annotation.Nonnull;
+
 public class SlashCommandReference implements ICommandReference
 {
     private final long id;
@@ -35,6 +37,7 @@ public class SlashCommandReference implements ICommandReference
         return id;
     }
 
+    @Nonnull
     @Override
     public String getName()
     {

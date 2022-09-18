@@ -30,6 +30,7 @@ public interface ICommandReference extends IMentionable
      *
      * @return the name of the slash command
      */
+    @Nonnull
     String getName();
 
     /**
