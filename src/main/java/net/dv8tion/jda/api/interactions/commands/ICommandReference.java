@@ -39,7 +39,7 @@ public interface ICommandReference extends IMentionable
      * <p><b>This will only work on slash commands!</b>
      *
      * @throws IllegalStateException
-     *         If the command is not a slash command (i.e. not of type {@link Command.Type#SLASH}
+     *         If the command is not a slash command (i.e. not of type {@link Command.Type#SLASH})
      */
     @Nonnull
     @Override
