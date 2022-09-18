@@ -47,7 +47,7 @@ public class SlashCommandReference implements ICommandReference
     @Override
     public String toString()
     {
-        return String.format("SlashCommandReference: name=%s, id=%d", name, id);
+        return "SlashCommandReference: " + getName() + " (" + getId() + ")";
     }
 
     @Override
