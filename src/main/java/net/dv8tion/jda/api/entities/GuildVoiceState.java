@@ -148,7 +148,7 @@ public interface GuildVoiceState extends ISnowflake
      * in the {@link Guild} returned from {@link #getGuild()}.
      * <br>If this is {@code false}, {@link #getChannel()} will return {@code null}.
      *
-     * @return True, if the {@link Member} is currently connecte to an {@link AudioChannel} in this {@link Guild}
+     * @return True, if the {@link Member} is currently connected to an {@link AudioChannel} in this {@link Guild}
      */
     boolean inAudioChannel();
 
