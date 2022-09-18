@@ -20,7 +20,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.emoji.CustomEmoji;
-import net.dv8tion.jda.api.interactions.commands.ICommandReference;
+import net.dv8tion.jda.api.interactions.commands.SlashCommandReference;
 import org.apache.commons.collections4.Bag;
 
 import javax.annotation.Nonnull;
@@ -327,7 +327,7 @@ public interface Mentions
     Bag<Member> getMembersBag();
 
     /**
-     * An immutable list of all mentioned {@link ICommandReference slash commands}.
+     * An immutable list of all mentioned {@link SlashCommandReference slash commands}.
      * <br>If none were mentioned, this list is empty. Elements are sorted in order of appearance.
      *
      * <p>Be aware these mentions could be not mentioning an actual command
@@ -335,10 +335,10 @@ public interface Mentions
      * @return Immutable list of mentioned slash commands, or an empty list
      */
     @Nonnull
-    List<ICommandReference> getSlashCommands();
+    List<SlashCommandReference> getSlashCommands();
 
     /**
-     * A {@link org.apache.commons.collections4.Bag Bag} of mentioned {@link ICommandReference slash commands}.
+     * A {@link org.apache.commons.collections4.Bag Bag} of mentioned {@link SlashCommandReference slash commands}.
      * <br>This can be used to retrieve the amount of times a slash commands was mentioned.
      *
      * <p>Be aware these mentions could be not mentioning an actual command
@@ -366,7 +366,7 @@ public interface Mentions
      * @see    #getSlashCommands()
      */
     @Nonnull
-    Bag<ICommandReference> getSlashCommandsBag();
+    Bag<SlashCommandReference> getSlashCommandsBag();
 
     /**
      * Combines all instances of {@link net.dv8tion.jda.api.entities.IMentionable IMentionable}

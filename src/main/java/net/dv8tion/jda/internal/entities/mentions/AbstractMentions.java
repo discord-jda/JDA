@@ -51,7 +51,7 @@ public abstract class AbstractMentions implements Mentions
     protected List<Role> mentionedRoles;
     protected List<GuildChannel> mentionedChannels;
     protected List<CustomEmoji> mentionedEmojis;
-    protected List<ICommandReference> mentionedSlashCommands;
+    protected List<SlashCommandReference> mentionedSlashCommands;
 
     public AbstractMentions(String content, JDAImpl jda, GuildImpl guild, boolean mentionsEveryone)
     {
@@ -188,7 +188,7 @@ public abstract class AbstractMentions implements Mentions
 
     @Nonnull
     @Override
-    public synchronized List<ICommandReference> getSlashCommands()
+    public synchronized List<SlashCommandReference> getSlashCommands()
     {
         if (mentionedSlashCommands != null)
             return mentionedSlashCommands;
@@ -197,7 +197,7 @@ public abstract class AbstractMentions implements Mentions
 
     @Nonnull
     @Override
-    public Bag<ICommandReference> getSlashCommandsBag()
+    public Bag<SlashCommandReference> getSlashCommandsBag()
     {
         return processMentions(Message.MentionType.SLASH_COMMAND, new HashBag<>(), false, this::matchSlashCommand);
     }
@@ -281,8 +281,13 @@ public abstract class AbstractMentions implements Mentions
                     return true;
                 break;
             case SLASH_COMMAND:
-                if (mentionable instanceof ICommandReference && getSlashCommands().contains(mentionable))
-                    return true;
+                if (mentionable instanceof ICommandReference)
+                {
+                    final ICommandReference reference = (ICommandReference) mentionable;
+                    for (SlashCommandReference r : getSlashCommands())
+                        if (r.getCommandPath().equals(reference.getCommandPath()) && r.getIdLong() == reference.getIdLong())
+                            return true;
+                }
                 break;
 //           default: continue;
             }
@@ -328,7 +333,7 @@ public abstract class AbstractMentions implements Mentions
         return emoji;
     }
 
-    protected ICommandReference matchSlashCommand(Matcher matcher)
+    protected SlashCommandReference matchSlashCommand(Matcher matcher)
     {
         return new SlashCommandReference(matcher.group(1), matcher.group(2), matcher.group(3), Long.parseLong(matcher.group(4)));
     }
