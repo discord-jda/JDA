@@ -225,7 +225,8 @@ public class CommandImpl implements Command
     @Override
     public String getAsMention()
     {
-        Checks.check(getType() == Type.SLASH, "Only slash commands can be mentioned");
+        if (getType() != Type.SLASH)
+            throw new IllegalStateException("Only slash commands can be mentioned");
         return Command.super.getAsMention();
     }
 
