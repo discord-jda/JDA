@@ -26,6 +26,7 @@ import net.dv8tion.jda.api.audio.hooks.ConnectionStatus;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
+import net.dv8tion.jda.api.entities.channel.unions.AudioChannelUnion;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.JDALogger;
 import org.slf4j.Logger;
@@ -176,15 +177,13 @@ public interface AudioManager
     Guild getGuild();
 
     /**
-     * The {@link net.dv8tion.jda.api.entities.channel.middleman.AudioChannel AudioChannel} that JDA currently has an audio connection
-     * to. If JDA currently doesn't have an audio connection to an {@link net.dv8tion.jda.api.entities.channel.middleman.AudioChannel AudioChannel}
-     * this will return {@code null}.
+     * The {@link AudioChannelUnion} that JDA currently has an audio connection to.
+     * <br>If JDA currently doesn't have an active audio connection, this will return {@code null}.
      *
-     * @return The {@link net.dv8tion.jda.api.entities.channel.middleman.AudioChannel AudioChannel} the audio connection is connected to
-     *         or {@code null} if not connected.
+     * @return The {@link AudioChannelUnion} the audio connection is connected to, or {@code null} if not connected.
      */
     @Nullable
-    AudioChannel getConnectedChannel();
+    AudioChannelUnion getConnectedChannel();
 
     /**
      * This can be used to find out if JDA currently has an active audio connection with a
