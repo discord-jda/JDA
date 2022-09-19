@@ -28,10 +28,7 @@ import net.dv8tion.jda.api.entities.PermissionOverride;
 import net.dv8tion.jda.api.entities.channel.ChannelFlag;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.attribute.IThreadContainer;
-import net.dv8tion.jda.api.entities.channel.concrete.Category;
-import net.dv8tion.jda.api.entities.channel.concrete.NewsChannel;
-import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
-import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.*;
 import net.dv8tion.jda.api.entities.channel.forums.ForumTag;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
@@ -284,7 +281,10 @@ public class ChannelUpdateHandler extends SocketHandler
                 if (oldSortOrder != sortOrder)
                 {
                     forumChannel.setDefaultSortOrder(sortOrder);
-
+                    getJDA().handleEvent(
+                            new ChannelUpdateDefaultSortOrderEvent(
+                                    getJDA(), responseNumber,
+                                    forumChannel, ForumChannel.SortOrder.fromKey(oldSortOrder), ForumChannel.SortOrder.fromKey(sortOrder)));
                 }
                 break;
             }
