@@ -44,7 +44,6 @@ import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.PermissionUtil;
 import okhttp3.RequestBody;
-import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -217,14 +216,18 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
     @Override
     public ChannelAction<T> setDefaultReaction(@Nullable Emoji emoji)
     {
+        if (type != ChannelType.FORUM)
+            throw new UnsupportedOperationException("Can only set default reaction emoji on a ForumChannel!");
         this.defaultReactionEmoji = emoji;
         return this;
     }
 
-    @NotNull
+    @Nonnull
     @Override
-    public ChannelAction<T> setAvailableTags(@NotNull List<? extends BaseForumTag> tags)
+    public ChannelAction<T> setAvailableTags(@Nonnull List<? extends BaseForumTag> tags)
     {
+        if (type != ChannelType.FORUM)
+            throw new UnsupportedOperationException("Can only set available tags on a ForumChannel!");
         Checks.noneNull(tags, "Tags");
         this.availableTags = new ArrayList<>(tags);
         return this;
