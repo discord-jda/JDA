@@ -87,6 +87,8 @@ public interface ForumChannel extends StandardGuildChannel, IThreadContainer, IW
      * The available {@link ForumTag ForumTags} for this forum channel.
      * <br>Tags are sorted by their {@link ForumTag#getPosition() position} ascending.
      *
+     * <p>This requires {@link net.dv8tion.jda.api.utils.cache.CacheFlag#FORUM_TAGS CacheFlag.FORUM_TAGS} to be enabled.
+     *
      * @return {@link SortedSnowflakeCacheView} of {@link ForumTag}
      */
     @Nonnull
