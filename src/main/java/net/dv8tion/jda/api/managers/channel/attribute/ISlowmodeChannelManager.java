@@ -23,6 +23,14 @@ import net.dv8tion.jda.api.managers.channel.ChannelManager;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 
+/**
+ * Manager which supports setting slowmode of a channel.
+ *
+ * @param <T>
+ *        The concrete {@link ISlowmodeChannel} type
+ * @param <M>
+ *        The concrete manager type
+ */
 public interface ISlowmodeChannelManager<T extends ISlowmodeChannel, M extends ISlowmodeChannelManager<T, M>>
         extends ChannelManager<T, M>
 {
