@@ -194,6 +194,7 @@ public class ChannelUpdateHandler extends SocketHandler
 
                 ForumChannelImpl forumChannel = (ForumChannelImpl) channel;
                 content.optArray("available_tags").ifPresent(array -> handleTagsUpdate(forumChannel, array));
+                int sortOrder = content.getInt("default_sort_order", ((ForumChannelImpl) channel).getRawSortOrder());
 
                 //If any properties changed, update the values and fire the proper events.
                 final long oldParentId = forumChannel.getParentCategoryIdLong();
@@ -204,6 +205,7 @@ public class ChannelUpdateHandler extends SocketHandler
                 final int oldSlowmode = forumChannel.getSlowmode();
                 final int oldDefaultThreadSlowmode = forumChannel.getDefaultThreadSlowmode();
                 final int oldFlags = forumChannel.getRawFlags();
+                final int oldSortOrder = forumChannel.getRawSortOrder();
                 final EmojiUnion oldDefaultReaction = forumChannel.getDefaultReaction();
 
                 if (!Objects.equals(oldName, name))
@@ -278,6 +280,11 @@ public class ChannelUpdateHandler extends SocketHandler
                             new ChannelUpdateDefaultReactionEvent(
                                     getJDA(), responseNumber,
                                     forumChannel, oldDefaultReaction, defaultReaction));
+                }
+                if (oldSortOrder != sortOrder)
+                {
+                    forumChannel.setDefaultSortOrder(sortOrder);
+
                 }
                 break;
             }
