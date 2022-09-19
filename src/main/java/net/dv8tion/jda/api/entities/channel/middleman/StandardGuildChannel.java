@@ -30,9 +30,12 @@ import javax.annotation.Nonnull;
 
 /**
  * Represents a standard {@link GuildChannel} which are the "<i>normal</i>" channels that are present in the channel sidebar.
- * They include functionality "expected" of normal Discord channels like {@link net.dv8tion.jda.api.entities.channel.attribute.IPermissionContainer permissions},
- * {@link net.dv8tion.jda.api.entities.channel.attribute.IInviteContainer invite support}, {@link IPositionableChannel positioning}, the ability
- * {@link net.dv8tion.jda.api.entities.channel.attribute.ICategorizableChannel to be categorized}, and more.
+ * <br>They include functionality "expected" of normal Discord channels like
+ * {@link IPermissionContainer permissions},
+ * {@link IInviteContainer invite support},
+ * {@link IPositionableChannel positioning},
+ * the ability {@link ICategorizableChannel to be categorized},
+ * and more.
  *
  * @see GuildMessageChannel
  * @see TextChannel
