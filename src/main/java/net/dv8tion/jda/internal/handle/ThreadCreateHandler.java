@@ -18,6 +18,7 @@ package net.dv8tion.jda.internal.handle;
 
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
 import net.dv8tion.jda.api.events.channel.ChannelCreateEvent;
+import net.dv8tion.jda.api.events.thread.ThreadRevealedEvent;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 
@@ -35,9 +36,14 @@ public class ThreadCreateHandler extends SocketHandler
         if (api.getGuildSetupController().isLocked(guildId))
             return guildId;
 
+        if (api.getThreadChannelById(content.getUnsignedLong("id")) != null)
+            return null;
         ThreadChannel thread = api.getEntityBuilder().createThreadChannel(content, guildId);
 
-        api.handleEvent(new ChannelCreateEvent(api, responseNumber, thread));
+        if (content.getBoolean("newly_created"))
+            api.handleEvent(new ChannelCreateEvent(api, responseNumber, thread));
+        else
+            api.handleEvent(new ThreadRevealedEvent(api, responseNumber, thread));
 
         return null;
     }
