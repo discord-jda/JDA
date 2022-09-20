@@ -793,6 +793,7 @@ public interface RestAction<T>
     @CheckReturnValue
     default RestAction<T> onSuccess(@Nonnull Consumer<? super T> consumer)
     {
+        Checks.notNull(consumer, "Consumer");
         return map(result -> {
             consumer.accept(result);
             return result;
