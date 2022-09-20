@@ -28,7 +28,10 @@ import net.dv8tion.jda.api.entities.PermissionOverride;
 import net.dv8tion.jda.api.entities.channel.ChannelFlag;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.attribute.IThreadContainer;
-import net.dv8tion.jda.api.entities.channel.concrete.*;
+import net.dv8tion.jda.api.entities.channel.concrete.Category;
+import net.dv8tion.jda.api.entities.channel.concrete.NewsChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
 import net.dv8tion.jda.api.entities.channel.forums.ForumTag;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
@@ -191,7 +194,7 @@ public class ChannelUpdateHandler extends SocketHandler
 
                 ForumChannelImpl forumChannel = (ForumChannelImpl) channel;
                 content.optArray("available_tags").ifPresent(array -> handleTagsUpdate(forumChannel, array));
-                int sortOrder = content.getInt("default_sort_order", ((ForumChannelImpl) channel).getRawSortOrder());
+//                int sortOrder = content.getInt("default_sort_order", ((ForumChannelImpl) channel).getRawSortOrder());
 
                 //If any properties changed, update the values and fire the proper events.
                 final long oldParentId = forumChannel.getParentCategoryIdLong();
@@ -202,7 +205,7 @@ public class ChannelUpdateHandler extends SocketHandler
                 final int oldSlowmode = forumChannel.getSlowmode();
                 final int oldDefaultThreadSlowmode = forumChannel.getDefaultThreadSlowmode();
                 final int oldFlags = forumChannel.getRawFlags();
-                final int oldSortOrder = forumChannel.getRawSortOrder();
+//                final int oldSortOrder = forumChannel.getRawSortOrder();
                 final EmojiUnion oldDefaultReaction = forumChannel.getDefaultReaction();
 
                 if (!Objects.equals(oldName, name))
@@ -278,14 +281,14 @@ public class ChannelUpdateHandler extends SocketHandler
                                     getJDA(), responseNumber,
                                     forumChannel, oldDefaultReaction, defaultReaction));
                 }
-                if (oldSortOrder != sortOrder)
-                {
-                    forumChannel.setDefaultSortOrder(sortOrder);
-                    getJDA().handleEvent(
-                            new ChannelUpdateDefaultSortOrderEvent(
-                                    getJDA(), responseNumber,
-                                    forumChannel, ForumChannel.SortOrder.fromKey(oldSortOrder), ForumChannel.SortOrder.fromKey(sortOrder)));
-                }
+//                if (oldSortOrder != sortOrder)
+//                {
+//                    forumChannel.setDefaultSortOrder(sortOrder);
+//                    getJDA().handleEvent(
+//                            new ChannelUpdateDefaultSortOrderEvent(
+//                                    getJDA(), responseNumber,
+//                                    forumChannel, ForumChannel.SortOrder.fromKey(oldSortOrder), ForumChannel.SortOrder.fromKey(sortOrder)));
+//                }
                 break;
             }
             case NEWS:
