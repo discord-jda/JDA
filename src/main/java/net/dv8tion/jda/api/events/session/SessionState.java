@@ -16,15 +16,52 @@
 
 package net.dv8tion.jda.api.events.session;
 
+/**
+ * State of a gateway session.
+ *
+ * @see GenericSessionEvent
+ */
 public enum SessionState
 {
+    /**
+     * The session is fully loaded, including all guilds.
+     *
+     * @see ReadyEvent
+     */
     READY,
 
+    /**
+     * The session cache has been invalidated.
+     *
+     * @see SessionInvalidateEvent
+     */
     INVALIDATED,
+
+    /**
+     * The session has disconnected, possibly to resume.
+     *
+     * @see SessionResumedEvent
+     */
     DISCONNECTED,
 
+    /**
+     * The session has resumed successfully after disconnecting.
+     *
+     * @see SessionResumedEvent
+     */
     RESUMED,
+
+    /**
+     * The session has been recreated after being {@link #INVALIDATED invalidated}.
+     *
+     * @see SessionRecreateEvent
+     */
     RECREATED,
 
+    /**
+     * The session has been closed and will not be reconnected.
+     *
+     * @see ShutdownEvent
+     */
     SHUTDOWN,
 }

@@ -29,8 +29,7 @@ import java.time.OffsetDateTime;
  * unless {@link net.dv8tion.jda.api.JDABuilder#setAutoReconnect(boolean) JDABuilder.setAutoReconnect(Boolean)}
  * has been provided {@code false} or the disconnect was too fatal in which case a {@link ShutdownEvent} is fired.
  *
- * <p>When reconnecting was successful either a {@link SessionRecreateEvent ReconnectEvent}
- * <b>or</b> {@link SessionResumedEvent ResumedEvent} is fired.
+ * <p>When reconnecting was successful either a {@link SessionRecreateEvent} <b>or</b> {@link SessionResumedEvent} is fired.
  */
 public class SessionDisconnectEvent extends GenericSessionEvent
 {

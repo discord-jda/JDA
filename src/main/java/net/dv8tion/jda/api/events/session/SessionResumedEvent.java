@@ -23,7 +23,7 @@ import javax.annotation.Nonnull;
  * Indicates that JDA successfully resumed its connection to the gateway.
  * <br>All Objects are still in place and events are replayed.
  *
- * <p>Can be used to marks the continuation of event flow stopped by the {@link SessionDisconnectEvent DisconnectEvent}.
+ * <p>Can be used to detect the continuation of event flow stopped by the {@link SessionDisconnectEvent}.
  */
 public class SessionResumedEvent extends GenericSessionEvent
 {

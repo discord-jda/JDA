@@ -21,6 +21,10 @@ import net.dv8tion.jda.api.events.Event;
 
 import javax.annotation.Nonnull;
 
+/**
+ * Events which update the gateway session status.
+ * <p>This is primarily used to inform about the connection state and whether a resume happens.
+ */
 public abstract class GenericSessionEvent extends Event
 {
     protected final SessionState state;
@@ -31,6 +35,11 @@ public abstract class GenericSessionEvent extends Event
         this.state = state;
     }
 
+    /**
+     * The new session state.
+     *
+     * @return {@link SessionState}
+     */
     @Nonnull
     public SessionState getState()
     {
