@@ -40,7 +40,7 @@ public enum SessionState
     /**
      * The session has disconnected, possibly to resume.
      *
-     * @see SessionResumedEvent
+     * @see SessionDisconnectEvent
      */
     DISCONNECTED,
 
