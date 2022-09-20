@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.IPermissionHolder;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.attribute.ICopyableChannel;
 import net.dv8tion.jda.api.entities.channel.attribute.IMemberContainer;
 import net.dv8tion.jda.api.entities.channel.attribute.IPermissionContainer;
@@ -57,10 +58,8 @@ import java.util.stream.Collectors;
 public interface Category extends GuildChannel, ICopyableChannel, IPositionableChannel, IPermissionContainer, IMemberContainer
 {
     /**
-     * All {@link GuildChannel Channels} listed
-     * for this Category
-     * <br>This may contain {@link VoiceChannel VoiceChannels},
-     * and {@link TextChannel TextChannels}!
+     * All {@link GuildChannel Channels} listed for this Category.
+     * <br>Includes all types of channels, except for threads.
      *
      * @return Immutable list of all child channels
      */
@@ -72,6 +71,7 @@ public interface Category extends GuildChannel, ICopyableChannel, IPositionableC
         channels.addAll(getVoiceChannels());
         channels.addAll(getStageChannels());
         channels.addAll(getNewsChannels());
+        channels.addAll(getForumChannels());
         Collections.sort(channels);
 
         return Collections.unmodifiableList(channels);
@@ -86,9 +86,11 @@ public interface Category extends GuildChannel, ICopyableChannel, IPositionableC
     @Nonnull
     default List<TextChannel> getTextChannels()
     {
-        return Collections.unmodifiableList(getGuild().getTextChannelCache().stream()
-            .filter(channel -> equals(channel.getParentCategory()))
-            .sorted().collect(Collectors.toList()));
+        return Collections.unmodifiableList(getGuild().getTextChannelCache().applyStream(stream ->
+            stream.filter(channel -> equals(channel.getParentCategory()))
+                  .sorted()
+                  .collect(Collectors.toList())
+        ));
     }
 
     /**
@@ -100,9 +102,26 @@ public interface Category extends GuildChannel, ICopyableChannel, IPositionableC
     @Nonnull
     default List<NewsChannel> getNewsChannels()
     {
-        return Collections.unmodifiableList(getGuild().getNewsChannelCache().stream()
-            .filter(channel -> equals(channel.getParentCategory()))
-            .sorted().collect(Collectors.toList()));
+        return Collections.unmodifiableList(getGuild().getNewsChannelCache().applyStream(stream ->
+            stream.filter(channel -> equals(channel.getParentCategory()))
+                  .sorted()
+                  .collect(Collectors.toList())
+        ));
+    }
+
+    /**
+     * All {@link net.dv8tion.jda.api.entities.channel.concrete.ForumChannel ForumChannels} listed for this Category
+     *
+     * @return Immutable list of all child ForumChannels
+     */
+    @Nonnull
+    default List<ForumChannel> getForumChannels()
+    {
+        return Collections.unmodifiableList(getGuild().getForumChannelCache().applyStream(stream ->
+            stream.filter(channel -> equals(channel.getParentCategory()))
+                  .sorted()
+                  .collect(Collectors.toList())
+        ));
     }
 
     /**
@@ -114,9 +133,11 @@ public interface Category extends GuildChannel, ICopyableChannel, IPositionableC
     @Nonnull
     default List<VoiceChannel> getVoiceChannels()
     {
-        return Collections.unmodifiableList(getGuild().getVoiceChannelCache().stream()
-            .filter(channel -> equals(channel.getParentCategory()))
-            .sorted().collect(Collectors.toList()));
+        return Collections.unmodifiableList(getGuild().getVoiceChannelCache().applyStream(stream ->
+            stream.filter(channel -> equals(channel.getParentCategory()))
+                  .sorted()
+                  .collect(Collectors.toList())
+        ));
     }
 
     /**
@@ -128,9 +149,11 @@ public interface Category extends GuildChannel, ICopyableChannel, IPositionableC
     @Nonnull
     default List<StageChannel> getStageChannels()
     {
-        return Collections.unmodifiableList(getGuild().getStageChannelCache().stream()
-            .filter(channel -> equals(channel.getParentCategory()))
-            .sorted().collect(Collectors.toList()));
+        return Collections.unmodifiableList(getGuild().getStageChannelCache().applyStream(stream ->
+            stream.filter(channel -> equals(channel.getParentCategory()))
+                  .sorted()
+                  .collect(Collectors.toList())
+        ));
     }
 
     /**
@@ -156,12 +179,12 @@ public interface Category extends GuildChannel, ICopyableChannel, IPositionableC
      * </ul>
      *
      * @param  name
-     *         The name of the TextChannel to create
+     *         The name of the TextChannel to create (up to {@value Channel#MAX_NAME_LENGTH} characters)
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL} permission
      * @throws IllegalArgumentException
-     *         If the provided name is {@code null} or empty or greater than 100 characters in length
+     *         If the provided name is {@code null}, empty, or longer than {@value Channel#MAX_NAME_LENGTH} characters
      *
      * @return A specific {@link ChannelAction ChannelAction}
      *         <br>This action allows to set fields for the new TextChannel before creating it
@@ -169,6 +192,43 @@ public interface Category extends GuildChannel, ICopyableChannel, IPositionableC
     @Nonnull
     @CheckReturnValue
     ChannelAction<TextChannel> createTextChannel(@Nonnull String name);
+
+    /**
+     * Creates a new {@link net.dv8tion.jda.api.entities.channel.concrete.NewsChannel NewsChannel} with this Category as parent.
+     * For this to be successful, the logged in account has to have the
+     * {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} Permission in this Category.
+     *
+     * <p>This will copy all {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverrides} of this Category!
+     * Unless the bot is unable to sync it with this category due to permission escalation.
+     * See {@link IPermissionHolder#canSync(IPermissionContainer, IPermissionContainer)} for details.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
+     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The channel could not be created due to a permission discrepancy</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>The {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL VIEW_CHANNEL} permission was removed</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MAX_CHANNELS MAX_CHANNELS}
+     *     <br>The maximum number of channels were exceeded</li>
+     * </ul>
+     *
+     * @param  name
+     *         The name of the NewsChannel to create (up to {@value Channel#MAX_NAME_LENGTH} characters)
+     *
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL} permission
+     * @throws IllegalArgumentException
+     *         If the provided name is {@code null}, empty, or longer than {@value Channel#MAX_NAME_LENGTH} characters
+     *
+     * @return A specific {@link ChannelAction ChannelAction}
+     *         <br>This action allows to set fields for the new NewsChannel before creating it
+     */
+    @Nonnull
+    @CheckReturnValue
+    ChannelAction<NewsChannel> createNewsChannel(@Nonnull String name);
 
     /**
      * Creates a new {@link VoiceChannel VoiceChannel} with this Category as parent.
@@ -193,12 +253,12 @@ public interface Category extends GuildChannel, ICopyableChannel, IPositionableC
      * </ul>
      *
      * @param  name
-     *         The name of the VoiceChannel to create
+     *         The name of the VoiceChannel to create (up to {@value Channel#MAX_NAME_LENGTH} characters)
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL} permission
      * @throws IllegalArgumentException
-     *         If the provided name is {@code null} or empty or greater than 100 characters in length
+     *         If the provided name is {@code null}, empty, or longer than {@value Channel#MAX_NAME_LENGTH} characters
      *
      * @return A specific {@link ChannelAction ChannelAction}
      *         <br>This action allows to set fields for the new VoiceChannel before creating it
@@ -230,12 +290,12 @@ public interface Category extends GuildChannel, ICopyableChannel, IPositionableC
      * </ul>
      *
      * @param  name
-     *         The name of the StageChannel to create
+     *         The name of the StageChannel to create (up to {@value Channel#MAX_NAME_LENGTH} characters)
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL} permission
      * @throws IllegalArgumentException
-     *         If the provided name is {@code null} or empty or greater than 100 characters in length
+     *         If the provided name is {@code null}, empty, or longer than {@value Channel#MAX_NAME_LENGTH} characters
      *
      * @return A specific {@link ChannelAction ChannelAction}
      *         <br>This action allows to set fields for the new StageChannel before creating it
@@ -243,6 +303,43 @@ public interface Category extends GuildChannel, ICopyableChannel, IPositionableC
     @Nonnull
     @CheckReturnValue
     ChannelAction<StageChannel> createStageChannel(@Nonnull String name);
+
+    /**
+     * Creates a new {@link ForumChannel} with this Category as parent.
+     * For this to be successful, the logged in account has to have the
+     * {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} Permission in this Category.
+     *
+     * <p>This will copy all {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverrides} of this Category!
+     * Unless the bot is unable to sync it with this category due to permission escalation.
+     * See {@link IPermissionHolder#canSync(IPermissionContainer, IPermissionContainer)} for details.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
+     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The channel could not be created due to a permission discrepancy</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>The {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL VIEW_CHANNEL} permission was removed</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MAX_CHANNELS MAX_CHANNELS}
+     *     <br>The maximum number of channels were exceeded</li>
+     * </ul>
+     *
+     * @param  name
+     *         The name of the ForumChannel to create (up to {@value Channel#MAX_NAME_LENGTH} characters)
+     *
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL} permission
+     * @throws IllegalArgumentException
+     *         If the provided name is {@code null}, empty, or longer than {@value Channel#MAX_NAME_LENGTH} characters
+     *
+     * @return A specific {@link ChannelAction ChannelAction}
+     *         <br>This action allows to set fields for the new ForumChannel before creating it
+     */
+    @Nonnull
+    @CheckReturnValue
+    ChannelAction<ForumChannel> createForumChannel(@Nonnull String name);
 
     /**
      * Modifies the positional order of this Category's nested {@link #getTextChannels() TextChannels} and {@link #getNewsChannels() NewsChannels}.

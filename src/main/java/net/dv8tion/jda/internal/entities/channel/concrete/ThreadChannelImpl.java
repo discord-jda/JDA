@@ -16,13 +16,19 @@
 
 package net.dv8tion.jda.internal.entities.channel.concrete;
 
+import gnu.trove.set.TLongSet;
+import gnu.trove.set.hash.TLongHashSet;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.ThreadMember;
+import net.dv8tion.jda.api.entities.channel.ChannelFlag;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.attribute.IPermissionContainer;
+import net.dv8tion.jda.api.entities.channel.attribute.IThreadContainer;
+import net.dv8tion.jda.api.entities.channel.concrete.ForumChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
+import net.dv8tion.jda.api.entities.channel.forums.ForumTag;
 import net.dv8tion.jda.api.entities.channel.unions.IThreadContainerUnion;
 import net.dv8tion.jda.api.managers.channel.concrete.ThreadChannelManager;
 import net.dv8tion.jda.api.requests.RestAction;
@@ -47,8 +53,10 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.time.OffsetDateTime;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.LongStream;
 
 public class ThreadChannelImpl extends AbstractGuildChannelImpl<ThreadChannelImpl> implements
         ThreadChannel,
@@ -57,23 +65,33 @@ public class ThreadChannelImpl extends AbstractGuildChannelImpl<ThreadChannelImp
     private final ChannelType type;
     private final CacheView.SimpleCacheView<ThreadMember> threadMembers = new CacheView.SimpleCacheView<>(ThreadMember.class, null);
 
+    private TLongSet appliedTags = new TLongHashSet(ForumChannel.MAX_POST_TAGS);
     private AutoArchiveDuration autoArchiveDuration;
+    private IThreadContainerUnion parentChannel;
     private boolean locked;
     private boolean archived;
     private boolean invitable;
-    private long parentChannelId;
     private long archiveTimestamp;
     private long creationTimestamp;
     private long ownerId;
     private long latestMessageId;
     private int messageCount;
+    private int totalMessageCount;
     private int memberCount;
     private int slowmode;
+    private int flags;
 
     public ThreadChannelImpl(long id, GuildImpl guild, ChannelType type)
     {
         super(id, guild);
         this.type = type;
+    }
+
+    @Nonnull
+    @Override
+    public EnumSet<ChannelFlag> getFlags()
+    {
+        return ChannelFlag.fromRaw(flags);
     }
 
     @Nonnull
@@ -93,6 +111,12 @@ public class ThreadChannelImpl extends AbstractGuildChannelImpl<ThreadChannelImp
     public int getMessageCount()
     {
         return messageCount;
+    }
+
+    @Override
+    public int getTotalMessageCount()
+    {
+        return totalMessageCount;
     }
 
     @Override
@@ -118,15 +142,28 @@ public class ThreadChannelImpl extends AbstractGuildChannelImpl<ThreadChannelImp
     @Override
     public List<Member> getMembers()
     {
-        return null;
+        return Collections.emptyList();
     }
 
     @Nonnull
     @Override
-    @SuppressWarnings("ConstantConditions")
     public IThreadContainerUnion getParentChannel()
     {
-        return (IThreadContainerUnion) guild.getGuildChannelById(parentChannelId);
+        return parentChannel;
+    }
+
+    @Nonnull
+    @Override
+    public List<ForumTag> getAppliedTags()
+    {
+        IThreadContainerUnion parent = getParentChannel();
+        if (parent.getType() != ChannelType.FORUM)
+            return Collections.emptyList();
+        return parent.asForumChannel()
+                .getAvailableTagCache()
+                .streamUnordered()
+                .filter(tag -> this.appliedTags.contains(tag.getIdLong()))
+                .collect(Helpers.toUnmodifiableList());
     }
 
     @Nonnull
@@ -136,6 +173,7 @@ public class ThreadChannelImpl extends AbstractGuildChannelImpl<ThreadChannelImp
         return this.getParentMessageChannel().retrieveMessageById(this.getIdLong());
     }
 
+    @Nonnull
     @Override
     public IPermissionContainer getPermissionContainer()
     {
@@ -315,9 +353,9 @@ public class ThreadChannelImpl extends AbstractGuildChannelImpl<ThreadChannelImp
         return this;
     }
 
-    public ThreadChannelImpl setParentChannelId(long parentChannelId)
+    public ThreadChannelImpl setParentChannel(IThreadContainer channel)
     {
-        this.parentChannelId = parentChannelId;
+        this.parentChannel = (IThreadContainerUnion) channel;
         return this;
     }
 
@@ -363,6 +401,12 @@ public class ThreadChannelImpl extends AbstractGuildChannelImpl<ThreadChannelImp
         return this;
     }
 
+    public ThreadChannelImpl setTotalMessageCount(int messageCount)
+    {
+        this.totalMessageCount = Math.max(messageCount, this.messageCount); // If this is 0 we use the older count
+        return this;
+    }
+
     public ThreadChannelImpl setMemberCount(int memberCount)
     {
         this.memberCount = memberCount;
@@ -375,11 +419,35 @@ public class ThreadChannelImpl extends AbstractGuildChannelImpl<ThreadChannelImp
         return this;
     }
 
+    public ThreadChannelImpl setAppliedTags(LongStream tags)
+    {
+        TLongSet set = new TLongHashSet(ForumChannel.MAX_POST_TAGS);
+        tags.forEach(set::add);
+        this.appliedTags = set;
+        return this;
+    }
+
+    public ThreadChannelImpl setFlags(int flags)
+    {
+        this.flags = flags;
+        return this;
+    }
+
     public long getArchiveTimestamp()
     {
         return archiveTimestamp;
     }
 
+    public TLongSet getAppliedTagsSet()
+    {
+        return appliedTags;
+    }
+
+
+    public int getRawFlags()
+    {
+        return flags;
+    }
 
     // -- Object overrides --
 
@@ -391,8 +459,7 @@ public class ThreadChannelImpl extends AbstractGuildChannelImpl<ThreadChannelImp
 
     private void checkUnarchived()
     {
-        if (archived) {
+        if (archived)
             throw new IllegalStateException("Cannot modify a ThreadChannel while it is archived!");
-        }
     }
 }

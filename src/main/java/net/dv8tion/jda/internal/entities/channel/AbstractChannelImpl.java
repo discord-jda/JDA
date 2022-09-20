@@ -112,6 +112,13 @@ public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> impl
     }
 
     @Nonnull
+    @Override
+    public ForumChannel asForumChannel()
+    {
+        return Helpers.safeChannelCast(this, ForumChannel.class);
+    }
+
+    @Nonnull
     public MessageChannel asMessageChannel()
     {
         return Helpers.safeChannelCast(this, MessageChannel.class);

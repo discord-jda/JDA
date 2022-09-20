@@ -16,10 +16,10 @@
 
 package net.dv8tion.jda.api.managers.channel.concrete;
 
-import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.managers.channel.attribute.ISlowmodeChannelManager;
 import net.dv8tion.jda.api.managers.channel.middleman.StandardGuildMessageChannelManager;
 
 import javax.annotation.CheckReturnValue;
@@ -40,33 +40,8 @@ import javax.annotation.Nonnull;
  *
  * @see net.dv8tion.jda.api.entities.channel.concrete.TextChannel#getManager()
  */
-public interface TextChannelManager extends StandardGuildMessageChannelManager<TextChannel, TextChannelManager>
+public interface TextChannelManager extends StandardGuildMessageChannelManager<TextChannel, TextChannelManager>, ISlowmodeChannelManager<TextChannel, TextChannelManager>
 {
-    /**
-     * Sets the <b><u>slowmode</u></b> of the selected {@link TextChannel TextChannel}.
-     * <br>Provide {@code 0} to reset the slowmode of the {@link TextChannel TextChannel}
-     *
-     * <p>A channel slowmode <b>must not</b> be negative nor greater than {@link TextChannel#MAX_SLOWMODE TextChannel.MAX_SLOWMODE}!
-     *
-     * <p>Note: Bots are unaffected by this.
-     * <br>Having {@link Permission#MESSAGE_MANAGE MESSAGE_MANAGE} or
-     * {@link Permission#MANAGE_CHANNEL MANAGE_CHANNEL} permission also
-     * grants immunity to slowmode.
-     *
-     * @see net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel#getSlowmode()
-     *
-     * @param  slowmode
-     *         The new slowmode for the selected {@link TextChannel TextChannel}
-     *
-     * @throws IllegalArgumentException
-     *         If the provided slowmode is negative or greater than {@link TextChannel#MAX_SLOWMODE TextChannel.MAX_SLOWMODE}
-     *
-     * @return ChannelManager for chaining convenience
-     */
-    @Nonnull
-    @CheckReturnValue
-    TextChannelManager setSlowmode(int slowmode);
-
     /**
      * Converts the selected channel to a different {@link ChannelType}.
      *

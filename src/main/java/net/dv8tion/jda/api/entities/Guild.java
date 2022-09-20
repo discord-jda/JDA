@@ -21,6 +21,7 @@ import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.Region;
+import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.attribute.ICopyableChannel;
 import net.dv8tion.jda.api.entities.channel.attribute.IGuildChannelContainer;
 import net.dv8tion.jda.api.entities.channel.attribute.IInviteContainer;
@@ -1282,21 +1283,24 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     @Override
     SortedSnowflakeCacheView<VoiceChannel> getVoiceChannelCache();
 
+    @Nonnull
+    @Override
+    SortedSnowflakeCacheView<ForumChannel> getForumChannelCache();
+
     /**
      * Populated list of {@link GuildChannel channels} for this guild.
-     * This includes all types of channels, such as category/voice/text.
-     * <br>This includes hidden channels by default.
+     * <br>This includes all types of channels, except for threads.
+     * <br>This includes hidden channels by default,
+     * you can use {@link #getChannels(boolean) getChannels(false)} to exclude hidden channels.
      *
      * <p>The returned list is ordered in the same fashion as it would be by the official discord client.
      * <ol>
-     *     <li>TextChannel and NewsChannel without parent</li>
-     *     <li>VoiceChannel without parent</li>
-     *     <li>StageChannel without parent</li>
+     *     <li>TextChannel, ForumChannel, and NewsChannel without parent</li>
+     *     <li>VoiceChannel and StageChannel without parent</li>
      *     <li>Categories
      *         <ol>
-     *             <li>TextChannel and NewsChannel with category as parent</li>
-     *             <li>VoiceChannel with category as parent</li>
-     *             <li>StageChannel with category as parent</li>
+     *             <li>TextChannel, ForumChannel, and NewsChannel with category as parent</li>
+     *             <li>VoiceChannel and StageChannel with category as parent</li>
      *         </ol>
      *     </li>
      * </ol>
@@ -1313,22 +1317,19 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
 
     /**
      * Populated list of {@link GuildChannel channels} for this guild.
-     * This includes all types of channels, such as category/voice/text.
+     * <br>This includes all types of channels, except for threads.
      *
      * <p>The returned list is ordered in the same fashion as it would be by the official discord client.
      * <ol>
-     *     <li>TextChannel and NewsChannel without parent</li>
-     *     <li>VoiceChannel without parent</li>
-     *     <li>StageChannel without parent</li>
+     *     <li>TextChannel, ForumChannel, and NewsChannel without parent</li>
+     *     <li>VoiceChannel and StageChannel without parent</li>
      *     <li>Categories
      *         <ol>
-     *             <li>TextChannel and NewsChannel with category as parent</li>
-     *             <li>VoiceChannel with category as parent</li>
-     *             <li>StageChannel with category as parent</li>
+     *             <li>TextChannel, ForumChannel, and NewsChannel with category as parent</li>
+     *             <li>VoiceChannel and StageChannel with category as parent</li>
      *         </ol>
      *     </li>
      * </ol>
-     *
      *
      * @param  includeHidden
      *         Whether to include channels with denied {@link Permission#VIEW_CHANNEL View Channel Permission}
@@ -3889,12 +3890,12 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * </ul>
      *
      * @param  name
-     *         The name of the TextChannel to create
+     *         The name of the TextChannel to create (up to {@value Channel#MAX_NAME_LENGTH} characters)
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL} permission
      * @throws IllegalArgumentException
-     *         If the provided name is {@code null} or empty or greater than 100 characters in length
+     *         If the provided name is {@code null}, blank, or longer than {@value Channel#MAX_NAME_LENGTH} characters
      *
      * @return A specific {@link net.dv8tion.jda.api.requests.restaction.ChannelAction ChannelAction}
      *         <br>This action allows to set fields for the new TextChannel before creating it
@@ -3921,14 +3922,14 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * </ul>
      *
      * @param  name
-     *         The name of the TextChannel to create
+     *         The name of the TextChannel to create (up to {@value Channel#MAX_NAME_LENGTH} characters)
      * @param  parent
      *         The optional parent category for this channel, or null
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL} permission
      * @throws IllegalArgumentException
-     *         If the provided name is {@code null} or empty or greater than 100 characters in length;
+     *         If the provided name is {@code null}, blank, or longer than {@value Channel#MAX_NAME_LENGTH} characters;
      *         or the provided parent is not in the same guild.
      *
      * @return A specific {@link net.dv8tion.jda.api.requests.restaction.ChannelAction ChannelAction}
@@ -3953,12 +3954,12 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * </ul>
      *
      * @param  name
-     *         The name of the NewsChannel to create
+     *         The name of the NewsChannel to create (up to {@value Channel#MAX_NAME_LENGTH} characters)
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL} permission
      * @throws IllegalArgumentException
-     *         If the provided name is {@code null} or empty or greater than 100 characters in length
+     *         If the provided name is {@code null}, blank, or longer than {@value Channel#MAX_NAME_LENGTH} characters
      *
      * @return A specific {@link net.dv8tion.jda.api.requests.restaction.ChannelAction ChannelAction}
      *         <br>This action allows to set fields for the new NewsChannel before creating it
@@ -3985,14 +3986,14 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * </ul>
      *
      * @param  name
-     *         The name of the NewsChannel to create
+     *         The name of the NewsChannel to create (up to {@value Channel#MAX_NAME_LENGTH} characters)
      * @param  parent
      *         The optional parent category for this channel, or null
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL} permission
      * @throws IllegalArgumentException
-     *         If the provided name is {@code null} or empty or greater than 100 characters in length;
+     *         If the provided name is {@code null}, blank, or longer than {@value Channel#MAX_NAME_LENGTH} characters;
      *         or the provided parent is not in the same guild.
      *
      * @return A specific {@link net.dv8tion.jda.api.requests.restaction.ChannelAction ChannelAction}
@@ -4017,12 +4018,12 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * </ul>
      *
      * @param  name
-     *         The name of the VoiceChannel to create
+     *         The name of the VoiceChannel to create (up to {@value Channel#MAX_NAME_LENGTH} characters)
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL} permission
      * @throws IllegalArgumentException
-     *         If the provided name is {@code null} or empty or greater than 100 characters in length
+     *         If the provided name is {@code null}, blank, or longer than {@value Channel#MAX_NAME_LENGTH} characters
      *
      * @return A specific {@link ChannelAction ChannelAction}
      *         <br>This action allows to set fields for the new VoiceChannel before creating it
@@ -4049,14 +4050,14 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * </ul>
      *
      * @param  name
-     *         The name of the VoiceChannel to create
+     *         The name of the VoiceChannel to create (up to {@value Channel#MAX_NAME_LENGTH} characters)
      * @param  parent
      *         The optional parent category for this channel, or null
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL} permission
      * @throws IllegalArgumentException
-     *         If the provided name is {@code null} or empty or greater than 100 characters in length;
+     *         If the provided name is {@code null}, blank, or longer than {@value Channel#MAX_NAME_LENGTH} characters;
      *         or the provided parent is not in the same guild.
      *
      * @return A specific {@link ChannelAction ChannelAction}
@@ -4081,12 +4082,12 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * </ul>
      *
      * @param  name
-     *         The name of the StageChannel to create
+     *         The name of the StageChannel to create (up to {@value Channel#MAX_NAME_LENGTH} characters)
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL} permission
      * @throws IllegalArgumentException
-     *         If the provided name is {@code null} or empty or greater than 100 characters in length
+     *         If the provided name is {@code null}, blank, or longer than {@value Channel#MAX_NAME_LENGTH} characters
      *
      * @return A specific {@link ChannelAction ChannelAction}
      *         <br>This action allows to set fields for the new StageChannel before creating it
@@ -4113,14 +4114,14 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * </ul>
      *
      * @param  name
-     *         The name of the StageChannel to create
+     *         The name of the StageChannel to create (up to {@value Channel#MAX_NAME_LENGTH} characters)
      * @param  parent
      *         The optional parent category for this channel, or null
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL} permission
      * @throws IllegalArgumentException
-     *         If the provided name is {@code null} or empty or greater than 100 characters in length;
+     *         If the provided name is {@code null}, blank, or longer than {@value Channel#MAX_NAME_LENGTH} characters;
      *         or the provided parent is not in the same guild.
      *
      * @return A specific {@link ChannelAction ChannelAction}
@@ -4129,6 +4130,70 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     @Nonnull
     @CheckReturnValue
     ChannelAction<StageChannel> createStageChannel(@Nonnull String name, @Nullable Category parent);
+
+    /**
+     * Creates a new {@link ForumChannel} in this Guild.
+     * For this to be successful, the logged in account has to have the {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} Permission.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
+     * the returned {@link RestAction RestAction} include the following:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The channel could not be created due to a permission discrepancy</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MAX_CHANNELS MAX_CHANNELS}
+     *     <br>The maximum number of channels were exceeded</li>
+     * </ul>
+     *
+     * @param  name
+     *         The name of the ForumChannel to create (up to {@value Channel#MAX_NAME_LENGTH} characters)
+     *
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL} permission
+     * @throws IllegalArgumentException
+     *         If the provided name is {@code null}, blank, or longer than {@value Channel#MAX_NAME_LENGTH} characters
+     *
+     * @return A specific {@link ChannelAction ChannelAction}
+     *         <br>This action allows to set fields for the new ForumChannel before creating it
+     */
+    @Nonnull
+    @CheckReturnValue
+    default ChannelAction<ForumChannel> createForumChannel(@Nonnull String name)
+    {
+        return createForumChannel(name, null);
+    }
+
+    /**
+     * Creates a new {@link ForumChannel} in this Guild.
+     * For this to be successful, the logged in account has to have the {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} Permission.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
+     * the returned {@link RestAction RestAction} include the following:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The channel could not be created due to a permission discrepancy</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MAX_CHANNELS MAX_CHANNELS}
+     *     <br>The maximum number of channels were exceeded</li>
+     * </ul>
+     *
+     * @param  name
+     *         The name of the ForumChannel to create (up to {@value Channel#MAX_NAME_LENGTH} characters)
+     * @param  parent
+     *         The optional parent category for this channel, or null
+     *
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL} permission
+     * @throws IllegalArgumentException
+     *         If the provided name is {@code null}, blank, or longer than {@value Channel#MAX_NAME_LENGTH} characters;
+     *         or the provided parent is not in the same guild.
+     *
+     * @return A specific {@link ChannelAction ChannelAction}
+     *         <br>This action allows to set fields for the new ForumChannel before creating it
+     */
+    @Nonnull
+    @CheckReturnValue
+    ChannelAction<ForumChannel> createForumChannel(@Nonnull String name, @Nullable Category parent);
 
     /**
      * Creates a new {@link Category Category} in this Guild.
@@ -4145,12 +4210,12 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * </ul>
      *
      * @param  name
-     *         The name of the Category to create
+     *         The name of the Category to create (up to {@value Channel#MAX_NAME_LENGTH} characters)
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL} permission
      * @throws IllegalArgumentException
-     *         If the provided name is {@code null} or empty or greater than 100 characters in length
+     *         If the provided name is {@code null}, blank, or longer than {@value Channel#MAX_NAME_LENGTH} characters
      *
      * @return A specific {@link ChannelAction ChannelAction}
      *         <br>This action allows to set fields for the new Category before creating it

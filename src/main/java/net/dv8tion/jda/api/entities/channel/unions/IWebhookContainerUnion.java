@@ -19,6 +19,7 @@ package net.dv8tion.jda.api.entities.channel.unions;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.attribute.IThreadContainer;
 import net.dv8tion.jda.api.entities.channel.attribute.IWebhookContainer;
+import net.dv8tion.jda.api.entities.channel.concrete.ForumChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.NewsChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
@@ -37,6 +38,7 @@ import javax.annotation.Nonnull;
  * <ul>
  *     <li>{@link TextChannel}</li>
  *     <li>{@link NewsChannel}</li>
+ *     <li>{@link ForumChannel}</li>
  * </ul>
  */
 public interface IWebhookContainerUnion extends IWebhookContainer
@@ -85,7 +87,27 @@ public interface IWebhookContainerUnion extends IWebhookContainer
     @Nonnull
     NewsChannel asNewsChannel();
 
-    //TODO: Add asForumChannel
+    /**
+     * Casts this union to a {@link ForumChannel}.
+     * This method exists for developer discoverability.
+     *
+     * Note: This is effectively equivalent to using the cast operator:
+     * <pre><code>
+     * //These are the same!
+     * ForumChannel channel = union.asForumChannel();
+     * ForumChannel channel2 = (ForumChannel) union;
+     * </code></pre>
+     *
+     * You can use {@link #getType()} to see if the channel is of type {@link ChannelType#FORUM} to validate
+     * whether you can call this method in addition to normal instanceof checks: <code>channel instanceof ForumChannel</code>
+     *
+     * @throws IllegalStateException
+     *         If the channel represented by this union is not actually a {@link ForumChannel}.
+     *
+     * @return The channel as a {@link ForumChannel}
+     */
+    @Nonnull
+    ForumChannel asForumChannel();
 
     /**
      * Casts this union to a {@link net.dv8tion.jda.api.entities.channel.attribute.IThreadContainer}.
