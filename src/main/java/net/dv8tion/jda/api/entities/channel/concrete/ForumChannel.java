@@ -204,13 +204,13 @@ public interface ForumChannel extends StandardGuildChannel, IThreadContainer, IW
     @Nullable
     EmojiUnion getDefaultReaction();
 
-    /**
-     * The default order used to show threads.
-     *
-     * @return The default order used to show threads.
-     */
-    @Nonnull
-    SortOrder getDefaultSortOrder();
+//    /**
+//     * The default order used to show threads.
+//     *
+//     * @return The default order used to show threads.
+//     */
+//    @Nonnull
+//    SortOrder getDefaultSortOrder();
 
     /**
      * Creates a new forum post (thread) in this forum.
@@ -243,60 +243,60 @@ public interface ForumChannel extends StandardGuildChannel, IThreadContainer, IW
     @CheckReturnValue
     ForumPostAction createForumPost(@Nonnull String name, @Nonnull MessageCreateData message);
 
-    /**
-     * The order used to sort forum posts.
-     */
-    enum SortOrder
-    {
-        /**
-         * Sort by recent activity, including unarchive, message, reaction, and thread creation.
-         */
-        RECENT_ACTIVITY(0),
-        /**
-         * Sort by the time the post was originally created.
-         */
-        CREATION_TIME(1),
-        /**
-         * Placeholder for possible future order modes.
-         */
-        UNKNOWN(-1),
-        ;
-
-        private final int order;
-
-        SortOrder(int order)
-        {
-            this.order = order;
-        }
-
-        /**
-         * The underlying value as used by Discord.
-         *
-         * @return The raw order key
-         */
-        public int getKey()
-        {
-            return order;
-        }
-
-        /**
-         * The {@link SortOrder} for the provided key.
-         *
-         * @param  key
-         *         The key to get the {@link SortOrder} for
-         *
-         * @return The {@link SortOrder} for the provided key, or {@link #UNKNOWN} if the key is not known
-         */
-        @Nonnull
-        public static SortOrder fromKey(int key)
-        {
-            for (SortOrder order : values())
-            {
-                if (order.order == key)
-                    return order;
-            }
-
-            return UNKNOWN;
-        }
-    }
+//    /**
+//     * The order used to sort forum posts.
+//     */
+//    enum SortOrder
+//    {
+//        /**
+//         * Sort by recent activity, including unarchive, message, reaction, and thread creation.
+//         */
+//        RECENT_ACTIVITY(0),
+//        /**
+//         * Sort by the time the post was originally created.
+//         */
+//        CREATION_TIME(1),
+//        /**
+//         * Placeholder for possible future order modes.
+//         */
+//        UNKNOWN(-1),
+//        ;
+//
+//        private final int order;
+//
+//        SortOrder(int order)
+//        {
+//            this.order = order;
+//        }
+//
+//        /**
+//         * The underlying value as used by Discord.
+//         *
+//         * @return The raw order key
+//         */
+//        public int getKey()
+//        {
+//            return order;
+//        }
+//
+//        /**
+//         * The {@link SortOrder} for the provided key.
+//         *
+//         * @param  key
+//         *         The key to get the {@link SortOrder} for
+//         *
+//         * @return The {@link SortOrder} for the provided key, or {@link #UNKNOWN} if the key is not known
+//         */
+//        @Nonnull
+//        public static SortOrder fromKey(int key)
+//        {
+//            for (SortOrder order : values())
+//            {
+//                if (order.order == key)
+//                    return order;
+//            }
+//
+//            return UNKNOWN;
+//        }
+//    }
 }

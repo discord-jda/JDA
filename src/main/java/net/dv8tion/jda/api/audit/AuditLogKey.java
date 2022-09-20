@@ -311,13 +311,13 @@ public enum AuditLogKey
      */
     CHANNEL_AVAILABLE_TAGS("available_tags"),
 
-    /**
-     * The {@link ForumChannel#getDefaultSortOrder()} value.
-     * <br>Only for {@link ChannelType#FORUM}.
-     *
-     * <p>Expected type: <b>Integer</b>
-     */
-    CHANNEL_DEFAULT_SORT_ORDER("default_sort_order"),
+//    /**
+//     * The {@link ForumChannel#getDefaultSortOrder()} value.
+//     * <br>Only for {@link ChannelType#FORUM}.
+//     *
+//     * <p>Expected type: <b>Integer</b>
+//     */
+//    CHANNEL_DEFAULT_SORT_ORDER("default_sort_order"),
 
     // THREADS
 

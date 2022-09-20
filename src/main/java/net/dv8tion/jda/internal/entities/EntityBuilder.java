@@ -1293,7 +1293,7 @@ public class EntityBuilder
                 .setParentCategory(json.getLong("parent_id", 0))
                 .setFlags(json.getInt("flags", 0))
                 .setDefaultReaction(json.optObject("default_reaction_emoji").orElse(null))
-                .setDefaultSortOrder(json.getInt("default_sort_order", -1))
+//                .setDefaultSortOrder(json.getInt("default_sort_order", -1))
                 .setName(json.getString("name"))
                 .setTopic(json.getString("topic", null))
                 .setPosition(json.getInt("position"))
